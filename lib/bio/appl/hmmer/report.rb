@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.1 2002/11/04 16:07:40 k Exp $
+#  $Id: report.rb,v 1.2 2003/02/04 06:28:22 m Exp $
 #
 
 module Bio
@@ -78,14 +78,12 @@ module Bio
             end
           end
         end
-#        if data != "\n"
         if is_hmmsearch
           data.sub!(/(.+?)\n\n\n%/m, '')
           @histogram = $1
 
           @statistical_detail = {}
           data.sub!(/(.+?)\n\n/m, '')
-p $1
           $1.each do |l|
             @statistical_detail[$1] = $2.to_f if /^\s*(.+)\s*=\s*(\S+)/ =~ l
           end
