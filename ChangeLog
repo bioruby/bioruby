@@ -1,3 +1,16 @@
+2003-10-07  GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+
+	* lib/bio/db/nbrf.rb
+
+	  Newly added NBRF/PIR flatfile sequence format class.
+
+2003-09-30  GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+
+	* lib/bio/db/pdb.rb
+
+	  Newly added PDB database flatfile format class.
+	  This is pre-alpha version, specs shall be changed frequently.
+
 2003-08-22  KATAYAMA Toshiaki <k@bioruby.org>
 
 	* BioRuby 0.5.2 released.
