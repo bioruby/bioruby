@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggorg.rb,v 0.8 2002/06/19 05:03:00 k Exp $
+#  $Id: keggorg.rb,v 0.9 2002/07/26 05:37:24 m Exp $
 #
 
 module Bio
@@ -33,10 +33,10 @@ module Bio
   #   end
   #
   # genome           KEGG Genome Database
-  # gn               Release 22.0+/06-04, Jun 02
+  # gn               Release 22.0+/07-10, Jul 02
   #                  Institute for Chemical Research, Kyoto University
-  #                  91 entries
-  #                  Last update:  02/06/04
+  #                  95 entries
+  #                  Last update:  02/07/10
   #                  <dbget> <fasta> <blast>
   #
   KEGGORG = {
@@ -47,6 +47,7 @@ module Bio
     'atc' => [ 'A.tumefaciens_C', 'Agrobacterium tumefaciens C58 (Cereon)' ],
     'ath' => [ 'A.thaliana', 'Arabidopsis thaliana' ],
     'atu' => [ 'A.tumefaciens', 'Agrobacterium tumefaciens C58 (U.Washington/Dupont)' ],
+    'bas' => [ 'B.aphidicola_Sg', 'Buchnera aphidicola Sg (symbiont of Schizaphis graminum)' ],
     'bbu' => [ 'B.burgdorferi', 'Borrelia burgdorferi B31' ],
     'bha' => [ 'B.halodurans', 'Bacillus halodurans C-125' ],
     'bme' => [ 'B.melitensis', 'Brucella melitensis 16M' ],
@@ -61,6 +62,7 @@ module Bio
     'cpe' => [ 'C.perfringens', 'Clostridium perfringens 13' ],
     'cpj' => [ 'C.pneumoniae_J138', 'Chlamydophila pneumoniae J138' ],
     'cpn' => [ 'C.pneumoniae', 'Chlamydophila pneumoniae CWL029' ],
+    'cte' => [ 'C.tepidum', 'Chlorobium tepidum TLS' ],
     'ctr' => [ 'C.trachomatis', 'Chlamydia trachomatis serovar D' ],
     'ddi' => [ 'D.discoideum', 'Dictyostelium discoideum' ],
     'dme' => [ 'D.melanogaster', 'Drosophila melanogaster' ],
@@ -106,9 +108,11 @@ module Bio
     'rno' => [ 'R.norvegicus', 'Rattus norvegicus' ],
     'rpr' => [ 'R.prowazekii', 'Rickettsia prowazekii Madrid E' ],
     'rso' => [ 'R.solanacearum', 'Ralstonia solanacearum GMI1000' ],
+    'sam' => [ 'S.aureus_MW2', 'Staphylococcus aureus MW2' ],
     'sau' => [ 'S.aureus_N315', 'Staphylococcus aureus N315, meticillin-resistant (MRSA)' ],
     'sav' => [ 'S.aureus_Mu50', 'Staphylococcus aureus Mu50, MRSA strain with vancomycin resistance (VRSA)' ],
     'sce' => [ 'S.cerevisiae', 'Saccharomyces cerevisiae S288C' ],
+    'sco' => [ 'S.coelicolor', 'Streptomyces coelicolor A3(2)' ],
     'sme' => [ 'S.meliloti', 'Sinorhizobium meliloti 1021' ],
     'spm' => [ 'S.pyogenes_M18', 'Streptococcus pyogenes MGAS8232 (serotype M18)' ],
     'spn' => [ 'S.pneumoniae', 'Streptococcus pneumoniae TIGR4' ],
@@ -134,5 +138,4 @@ module Bio
   }
 
 end
-
 
