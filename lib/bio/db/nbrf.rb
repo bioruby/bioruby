@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: nbrf.rb,v 1.1 2003/10/07 12:55:11 ng Exp $
+#  $Id: nbrf.rb,v 1.2 2003/10/10 11:49:43 ng Exp $
 #
 
 require 'bio/db'
@@ -187,7 +187,8 @@ automatically.
 --- Bio::NBRF#seq
 
       Returns a joined sequence line as a String.
-      Returns Bio::Sequence::NA
+      Returns Bio::Sequence::NA, Bio::Sequence::AA or Bio::Sequence,
+      according to the sequence type.
 
 --- Bio::NBRF#length
 
