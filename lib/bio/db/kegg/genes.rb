@@ -1,7 +1,7 @@
 #
 # bio/db/kegg/genes.rb - KEGG/GENES database class
 #
-#   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genes.rb,v 0.11 2001/12/15 02:48:31 katayama Exp $
+#  $Id: genes.rb,v 0.12 2002/03/04 08:10:55 katayama Exp $
 #
 
 require 'bio/db'
@@ -35,13 +35,15 @@ module Bio
 	super(entry, TAGSIZE)
       end
 
+
       def entry
 	unless @data['ENTRY']
-	  hash = {}
-	  if @orig['ENTRY'].length > 30
-	    hash['id']       = @orig['ENTRY'][12..29].strip
-	    hash['division'] = @orig['ENTRY'][30..39].strip
-	    hash['organism'] = @orig['ENTRY'][40..80].strip
+	  hash = Hash.new('')
+	  if get('ENTRY').length > 30
+	    e = get('ENTRY')
+	    hash['id']       = e[12..29].strip
+	    hash['division'] = e[30..39].strip
+	    hash['organism'] = e[40..80].strip
 	  end
 	  @data['ENTRY'] = hash
 	end
@@ -64,8 +66,12 @@ module Bio
 	field_fetch('NAME')
       end
 
-      def gene
+      def genes
 	name.split(', ')
+      end
+
+      def gene
+	genes.first
       end
 
       def definition
@@ -78,7 +84,7 @@ module Bio
 
       def position
 	unless @data['POSITION']
-	  @data['POSITION'] = field_fetch('POSITION').gsub(/\s/, '')
+	  @data['POSITION'] = fetch('POSITION').gsub(/\s/, '')
 	end
 	@data['POSITION']
       end
@@ -86,7 +92,7 @@ module Bio
       def dblinks
 	unless @data['DBLINKS']
 	  hash = {}
-	  @orig['DBLINKS'].scan(/(\S+):\s*(\S+)\n/).each do |k, v|
+	  get('DBLINKS').scan(/(\S+):\s*(\S+)\n/).each do |k, v|
 	    hash[k] = v
 	  end
 	  @data['DBLINKS'] = hash
@@ -97,7 +103,7 @@ module Bio
       def codon_usage(codon = nil)
 	unless @data['CODON_USAGE']
 	  ary = []
-	  @orig['CODON_USAGE'].sub(/.*/,'').each_line do |line|	# cut 1st line
+	  get('CODON_USAGE').sub(/.*/,'').each_line do |line|	# cut 1st line
 	    line.scan(/\d+/).each do |cu|
 	      ary.push(cu.to_i)
 	    end
@@ -117,7 +123,7 @@ module Bio
 
       def aaseq
 	unless @data['AASEQ']
-	  @data['AASEQ'] = Sequence::AA.new(field_fetch('AASEQ').gsub(/[\s\d\/]+/, ''))
+	  @data['AASEQ'] = Sequence::AA.new(fetch('AASEQ').gsub(/[\s\d\/]+/, ''))
 	end
 	@data['AASEQ']
       end
@@ -128,7 +134,7 @@ module Bio
 
       def ntseq
 	unless @data['NTSEQ']
-	  @data['NTSEQ'] = Sequence::NA.new(field_fetch('NTSEQ').gsub(/[\s\d\/]+/, ''))
+	  @data['NTSEQ'] = Sequence::NA.new(fetch('NTSEQ').gsub(/[\s\d\/]+/, ''))
 	end
 	@data['NTSEQ']
       end
@@ -145,7 +151,10 @@ module Bio
 
 end
 
+
+
 if __FILE__ == $0
+
   require 'bio/io/dbget'
 
   e = Bio::DBGET.bget('eco b0010')
@@ -165,6 +174,7 @@ if __FILE__ == $0
   p g.aalen
   p g.naseq
   p g.nalen
+
 end
 
 
@@ -172,22 +182,53 @@ end
 
 = Bio::KEGG::GENES
 
+=== Initialize
+
 --- Bio::KEGG::GENES.new
---- Bio::KEGG::GENES#entry
---- Bio::KEGG::GENES#entry_id
---- Bio::KEGG::GENES#division
---- Bio::KEGG::GENES#name
---- Bio::KEGG::GENES#gene
---- Bio::KEGG::GENES#definition
---- Bio::KEGG::GENES#keggclass
---- Bio::KEGG::GENES#position
---- Bio::KEGG::GENES#dblinks
---- Bio::KEGG::GENES#codon_usage
---- Bio::KEGG::GENES#aaseq
---- Bio::KEGG::GENES#aalen
---- Bio::KEGG::GENES#ntseq
---- Bio::KEGG::GENES#ntlen
---- Bio::KEGG::GENES#naseq
---- Bio::KEGG::GENES#nalen
+
+=== ENTRY
+
+--- Bio::KEGG::GENES#entry -> Hash
+--- Bio::KEGG::GENES#entry_id -> String
+--- Bio::KEGG::GENES#division -> String
+--- Bio::KEGG::GENES#organism -> String
+
+=== NAME
+
+--- Bio::KEGG::GENES#name -> String
+--- Bio::KEGG::GENES#genes -> Array
+--- Bio::KEGG::GENES#gene -> String
+
+=== DEFINITION
+
+--- Bio::KEGG::GENES#definition -> String
+
+=== CLASS
+
+--- Bio::KEGG::GENES#keggclass -> String
+
+=== POSITION
+
+--- Bio::KEGG::GENES#position -> String
+
+=== DBLINKS
+
+--- Bio::KEGG::GENES#dblinks -> Hash
+
+=== CODON_USAGE
+
+--- Bio::KEGG::GENES#codon_usage(codon = nil) -> Array or Fixnum
+
+=== AASEQ
+
+--- Bio::KEGG::GENES#aaseq -> Bio::Sequence::AA
+--- Bio::KEGG::GENES#aalen -> Fixnum
+
+=== NTSEQ
+
+--- Bio::KEGG::GENES#ntseq -> Bio::Sequence::NA
+--- Bio::KEGG::GENES#naseq -> Bio::Sequence::NA
+--- Bio::KEGG::GENES#ntlen -> Fixnum
+--- Bio::KEGG::GENES#nalen -> Fixnum
 
 =end
