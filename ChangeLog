@@ -1,3 +1,14 @@
+2004-10-09  GOTO Naohisa <ng@bioruby.org>
+
+	* lib/bio/appl/sim4.rb
+
+	  Newly added sim4 wrapper class.
+	  This is test version, specs would be changed frequently.
+
+	* lib/bio/appl/sim4/report.rb
+
+	  Newly added sim4 result parser class.
+
 2004-08-25  KATAYAMA Toshiaki <k@bioruby.org>
 
 	* BioRuby 0.6.1 released.
