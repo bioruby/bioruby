@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: transfac.rb,v 1.5 2001/12/15 02:59:00 katayama Exp $
+#  $Id: transfac.rb,v 1.6 2002/05/28 14:44:20 k Exp $
 #
 
 require "bio/db"
@@ -297,13 +297,6 @@ module Bio
     # BS      species)
     def bs
       field_fetch('BS')
-    end
-
-    # DR      External databases (EMBL/GenBank accession no.; EMBL identifier
-    # DR      (_g_ene/_r_na); SwissProt accession no.; identifier; PIR number;
-    # DR      code; FlyBase accession;gene name; PDB IDcode)
-    def dr
-      field_fetch('DR')
     end
 
   end
