@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 # 
-#  $Id: br_bioflat.rb,v 1.5 2002/09/04 11:23:23 ng Exp $ 
+#  $Id: br_bioflat.rb,v 1.6 2002/09/11 11:37:34 ng Exp $ 
 # 
 
 require 'bio'
@@ -27,15 +27,28 @@ require 'bio'
 def do_index
   is_bdb = (/bdb/i).match(ARGV[0]) ? Bio::FlatFileIndex::MAGIC_BDB : nil
   dbname = ARGV[1]
-  if ARGV[2] =~ /\-\-?format/
+  if ARGV[2] =~ /^\-\-?format/
     format = ARGV[3]
     files  = ARGV[4..-1]
   else
     format = nil
     files  = ARGV[2..-1]
   end
+
+  options = {}
+  if files[0] =~ /^\-\-?sort\=(.*)/i then
+    files.shift
+    options['external_sort_program'] = $1
+  elsif files[0] =~ /^\-\-?sort\-internal/i then
+    files.shift
+  elsif files[0] =~ /^\-\-?no\-?te?mp/i then
+    files.shift
+    options['onmemory'] = true
+  end
+
   files.shift if files[0] == '--files'
-  Bio::FlatFileIndex::Indexer::makeindex(is_bdb, dbname, format, *files)
+
+  Bio::FlatFileIndex::makeindex(is_bdb, dbname, format, options, *files)
 end
 
 
@@ -57,7 +70,7 @@ end
 
 def usage
   print "Create index: \n"
-  print "#{$0} --makeindex DBNAME [--format CLASS] [--files] FILENAME...\n"
+  print "#{$0} --makeindex DBNAME [--format CLASS] [--sort=PROGRAM|--sort-internal|--no-temporary-files] [--files] FILENAME...\n"
   print "#{$0} --makeindexBDB DBNAME [--format CLASS] [--files] FILENAME...\n"
   print "Search: \n"
   print "#{$0} [--search] DBNAME KEYWORD...\n"
