@@ -19,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.35 2004/06/23 14:52:00 k Exp $
+#  $Id: sequence.rb,v 0.36 2004/08/23 23:46:57 k Exp $
 #
 
 require 'bio/data/na'
@@ -350,8 +350,11 @@ module Bio
 
   end
 
-  # alias for short
-  Seq = Sequence
+
+  class Seq < Sequence
+    attr_accessor :entry_id, :definition, :features, :references, :comments,
+      :date, :keywords, :dblinks, :taxonomy, :moltype
+  end
 
 end
 
