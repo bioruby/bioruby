@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.11 2002/05/28 14:49:06 k Exp $
+#  $Id: blast.rb,v 1.12 2002/05/29 08:39:45 k Exp $
 #
 
 require 'net/http'
@@ -107,13 +107,19 @@ module Bio
       host = "blast.genome.ad.jp"
       path = "/sit-bin/nph-blast"
 
+      matrix = @matrix ? @matrix : 'blosum62'
+      filter = @filter ? @filter : 'T'
+
       form = {
 	'prog'		=> @program,
 	'dbname'	=> @db,
 	'sequence'	=> CGI.escape(query),
 	'other_param'	=> CGI.escape(@option),
-	'matrix'	=> @matrix,	# same as -M BLOSUM80
-	'filter'	=> @filter,
+	'matrix'	=> matrix,	# same as -M BLOSUM80
+	'filter'	=> filter,
+	'V_value'	=> 500,		# default value for GenomeNet
+	'B_value'	=> 250,		# default value for GenomeNet
+        'alignment_view' => 0,
       }
 
       data = []
@@ -214,14 +220,16 @@ end
   # ----------+-------+---------------------------------------------------
   #  @program | query | @db (supported in GenomeNet)
   # ----------+-------+---------------------------------------------------
-  #  blastp   | AA    | nr-aa, genes, vgenes, swissprot, swissprot-upd,
-  # ----------+-------+ pir, prf, pdbstr
+  #  blastp   | AA    | nr-aa, genes, vgenes.pep, swissprot, swissprot-upd,
+  # ----------+-------+ pir, prf, pdbstr + KEGG
   #  blastx   | NA    | 
   # ----------+-------+---------------------------------------------------
   #  blastn   | NA    | nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss,
   # ----------+-------+ htgs, dbsts, embl-nonst, embnonst-upd, epd,
-  #  tblastn  | AA    | genes-nt, genome, vgenes.nuc
+  #  tblastn  | AA    | genes-nt, genome, vgenes.nuc + KEGG
   # ----------+-------+---------------------------------------------------
+
+See http://blast.genome.ad.jp/ideas/ideas.html#blast for more details.
 
 =end
 

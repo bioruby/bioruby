@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.8 2002/05/28 14:49:06 k Exp $
+#  $Id: fasta.rb,v 1.9 2002/05/29 08:39:45 k Exp $
 #
 
 require 'net/http'
@@ -185,9 +185,19 @@ end
   # ----------+-------+---------------------------------------------------
   #  @program | query | @db (supported in GenomeNet)
   # ----------+-------+---------------------------------------------------
-  #  fasta    | AA    | nr-aa, genes, vgenes, swissprot, swissprot-upd,
-  #           |       | pir, prf, pdbstr
+  #  fasta    | AA    | nr-aa, genes, vgenes.pep, swissprot, swissprot-upd,
+  #           |       | pir, prf, pdbstr + GENES
+  #           +-------+---------------------------------------------------
+  #           | NA    | nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss,
+  #           |       | htgs, dbsts, embl-nonst, embnonst-upd, epd,
+  #           |       | genes-nt, genome, vgenes.nuc + GENES
   # ----------+-------+---------------------------------------------------
+  #  tfasta   | AA    | nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss,
+  #           |       | htgs, dbsts, embl-nonst, embnonst-upd,
+  #           |       | genes-nt, genome, vgenes.nuc + GENES
+  # ----------+-------+---------------------------------------------------
+
+See http://fasta.genome.ad.jp/ideas/ideas.html#fasta for more details.
 
 =end
 
