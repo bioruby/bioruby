@@ -26,8 +26,12 @@ class GenBank
     @data = {}					# Hash of the parsed entry
 
     tag = ''					# temporal key
+    @orig[tag] = ''
 
     entry.each_line do |line|
+      # to avoid null line (especially at the 1st line - gb:AARPOB2)
+      next if line =~ /^$/
+
       if line =~ /^\w/
 	tag = tag_get(line)
 	@orig[tag] = '' unless @orig[tag]	# String
