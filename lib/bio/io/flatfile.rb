@@ -1,7 +1,7 @@
 #
 # bio/io/flatfile.rb - flatfile access wrapper class
 #
-#   Copyright (C) 2001 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+#   Copyright (C) 2001, 2002 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,31 +17,38 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.3 2001/12/15 01:47:01 katayama Exp $
+#  $Id: flatfile.rb,v 1.4 2002/08/16 17:17:51 k Exp $
 #
 
 module Bio
 
   class FlatFile
 
-    def self.open(dbclass, filename)
-      ios = File.open(filename)
+    def self.open(dbclass, filename, *mode)
+      ios = File.open(filename, *mode)
       self.new(dbclass, ios)
     end
 
-    def initialize(dbclass, stream)
-      @ios	= stream
+    def initialize(dbclass, stream, raw = false)
+      @io	= stream
       @dbclass	= dbclass
       @rs	= dbclass::DELIMITER
+      self.raw	= raw
     end
+    attr_reader :dbclass, :io
 
     def next_entry
-      if e = @ios.gets(@rs) then
-	@dbclass.new(e)
+      if @entry_raw = @io.gets(@rs) then
+	if raw then
+	  @entry_raw
+	else
+	  @dbclass.new(@entry_raw)
+	end
       else
 	nil
       end
     end
+    attr_reader :entry_raw
 
     def each_entry
       while e = self.next_entry
@@ -59,12 +66,17 @@ module Bio
     end
 
     def rewind
-      @ios.rewind
+      @io.rewind
     end
 
     def close
-      @ios.close
+      @io.close
     end
+
+    def raw=(bool)
+      @raw = (bool ? true : false)
+    end
+    attr_reader :raw
 
   end
 
@@ -130,6 +142,19 @@ end
 
       Closes input stream.
       (Same as IO#close)
+
+--- Bio::FlatFile#raw=
+
+      Assign true or false.  If true, the next_entry method returns
+      a entry as a text, whereas if false, as a parsed object.
+
+--- Bio::FlatFile#raw
+
+      Returns current state of the raw mode.
+
+--- Bio::FlatFile#entry_raw
+
+      Returns the current entry as a text.
 
 =end
 
