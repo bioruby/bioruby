@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.13 2002/06/25 03:23:03 k Exp $
+#  $Id: blast.rb,v 1.14 2002/06/25 11:00:11 k Exp $
 #
 
 require 'net/http'
@@ -37,20 +37,26 @@ module Bio
       @option	= "-m #{@format} #{option}"
       @server	= server
 
-      @output	= ''
       @blastall = 'blastall'
       @matrix	= nil
       @filter	= nil
+
+      @output	= ''
     end
-    attr_accessor :program, :db, :option, :server, :output, :blastall,
-      :matrix, :filter
+    attr_accessor :program, :db, :option, :server, :blastall, :matrix, :filter
+    attr_reader :output
 
     def format=(num)
-      @format = num
+      @format = num.to_i
       @option.gsub!(/\s*-m\s+\d+/, '')
       @option += " -m #{num} "
     end
+    attr_reader :format
     attr_accessor :parser
+
+    def self.parser(parser)
+      require "bio/appl/blast/#{parser}"
+    end
 
     def self.local(program, db, option = '')
       self.new(program, db, option, 'local')
@@ -70,14 +76,14 @@ module Bio
 
     def parse_result(data)
       case @format
-      when 7 || '7'
+      when 7
 	case @parser
 	when 'rexml'
 	  require 'bio/appl/blast/rexml'
 	when 'xmlparser'
 	  require 'bio/appl/blast/xmlparser'
 	end
-      when 8 || '8'
+      when 8
 	require 'bio/appl/blast/format8'
       end
       Report.new(data)
@@ -86,6 +92,8 @@ module Bio
 
     def exec_local(query)
       cmd = "#{@blastall} -p #{@program} -d #{@db} #{@option}"
+      cmd += " -M #{@matrix}" if @matrix
+      cmd += " -F #{@filter}" if @filter
       
       report = nil
 
@@ -118,7 +126,7 @@ module Bio
 	'dbname'	=> @db,
 	'sequence'	=> CGI.escape(query),
 	'other_param'	=> CGI.escape(@option),
-	'matrix'	=> matrix,	# same as -M BLOSUM80
+	'matrix'	=> matrix,
 	'filter'	=> filter,
 	'V_value'	=> 500,		# default value for GenomeNet
 	'B_value'	=> 250,		# default value for GenomeNet
@@ -222,6 +230,23 @@ end
 --- Bio::Blast#filter
 
       Accessors for the factory parameters.
+
+--- Bio::Blast#format
+--- Bio::Blast#format=(number)
+
+      Accessors for the -m option.
+
+--- Bio::Blast#parser
+--- Bio::Blast#parser=(parser)
+
+      Accessors to select which parser will be used by the factory.
+
+--- Bio::Blast.parser(parser)
+
+      Import Bio::Blast::Report class by requiring directed parser.
+
+      This class method will be useful when you already have blast
+      output files and want to use appropriate Report class for parsing.
 
 
 == Available databases for Blast.remote(@program, @db, option, 'genomenet')
