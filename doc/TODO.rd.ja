@@ -1,31 +1,12 @@
 =begin
 
-  $Id: TODO.rd.ja,v 1.6 2001/12/19 12:21:08 katayama Exp $
+  $Id: TODO.rd.ja,v 1.7 2002/06/18 20:48:58 k Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
 = TODO
 
-== 当面の課題
-
-* cvs pserver のアカウント
-* bioruby.org 別マシン化ひつよう？
-* RWiki 教えて偉い人コーナー
-* RWiki のページ分割
-
 == 0.4 (stable branch)
-
-* ChangeLog ファイル作る
-
-* ドキュメント
-  * リファレンス
-    * 全クラスに doc template 埋め込む
-
-* BioRuby-DB を作る
-  * bio/io/brdb.rb と各 bio/db/**/*.rb
-  * 作成スクリプト sample (support?) へ
-
-* sample/ のライセンス文変更は？ ていうか sample/ 消す
 
 * DB 系全クラス
   * id -> entry_id
@@ -36,31 +17,28 @@
     * Bio::MEDLINE#references は存在し無い
     * Bio::MEDLINE#reference は Reference オブジェクトを返す
 
-* db.rb
-  * デザイン見直し
-    * いちおう、現行のままあまりいじらずに、@data に別 IO からの
-      アクセサみたいなのでいいんじゃないかと（名前空間 etc)
-  * private メソッドの整理
-    * \001 の gsub/split にコメント
-
-* Bio::GenBank::Features クラス → EMBL にも
+* Bio::Features クラス → EMBL にも
 
 * matrix.rb 廃止
  * そんな汎用的でないので aaindex.rb, microarray.rb, prosite.rb などで
    それぞれ実装
 
-* FASTA/BLAST/HMMER など → Design.rd.ja (lib/bio/appl/ に)
-  * アライメントオブジェクト
-    * class Bio::Alignment
-      * class Bio::Alignment::Pairwise  or class Bio::PairwiseAlignment
-      * class Bio::Alignment::Multiple  or class Bio::MultipleAlignment
+* アライメントオブジェクト (未)
+  * class Bio::Alignment ?
+    * class Bio::Alignment::Pairwise  or class Bio::PairwiseAlignment
+    * class Bio::Alignment::Multiple  or class Bio::MultipleAlignment
     * アライメントビューアもほしい
-  * Pjotr さんの BLAST はどうなった？
-  * BLAST は -m 7 (xml) 固定でいく？
 
-* 遅くとも 12 月中に出す
+* HMMER など
+
+* BioSQL 最新スペック
+
+* sample/ 整理
 
 == 0.5 (devel branch)
+
+* DAS, Biblio - SOAP
+* BDB 対応
 
 * PDB パーザ
   * challange CASP?
@@ -71,20 +49,14 @@
 
 * モチーフ系 InterPro (incl. Pfam etc.) 処理系
 
-* パラレル
+* パラレル化
 
 * ext/ のマージ
-
-* インターフェイス → Design.rd.ja
-  * MySQL bio/io/brdb.rb → bioruby-db
-  * HTTP bio/io/{ncbi,embl,genomenet}.rb → GenomeNet/NCBI/EMBL etc.
 
 * テスト環境の整備
   * Test::Unit 使う？
     * 外部ファイル、ネットワークがいる場合どうするか
   * インストール時に make check みたいなことができないか
-
-* インストール時に dbget → bget, bfind などへのリンク？
 
 * 例外処理
   * せっかく Ruby なのでちゃんと Exception を投げるようにする？
