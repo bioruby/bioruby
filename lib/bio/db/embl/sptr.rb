@@ -15,7 +15,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: sptr.rb,v 1.2 2001/11/03 07:58:23 nakao Exp $
+#  $Id: sptr.rb,v 1.3 2001/11/05 17:08:11 nakao Exp $
 
 
 #Line code Content                      Occurrence in an entry
@@ -44,7 +44,7 @@
 #     // - termination line             (ends each entry; 1 per entry)
 #--------- ---------------------------  --------------------------------
 
-modulpe Bio
+module Bio
 
   require 'bio/db'
   require 'bio/sequence'
