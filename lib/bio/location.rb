@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: location.rb,v 0.13 2002/05/15 06:44:44 k Exp $
+#  $Id: location.rb,v 0.14 2002/05/16 05:21:54 k Exp $
 #
 
 module Bio
@@ -141,6 +141,11 @@ module Bio
     
       return nil				# out of range 
     end 
+
+    def offset_aa(n)
+      n = (n - 1) * 3 + 1
+      offset(n)
+    end
 
 
     private
@@ -318,6 +323,7 @@ end
 --- Bio::Locations#each { |l| ... }
 --- Bio::Locations#span
 --- Bio::Locations#offset(number)
+--- Bio::Locations#offset_aa(number)
 
 
 == Appendix : GenBank location descriptor classification
