@@ -19,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.33 2003/07/10 10:34:31 k Exp $
+#  $Id: sequence.rb,v 0.34 2004/02/03 10:16:59 k Exp $
 #
 
 require 'bio/data/na'
@@ -83,7 +83,7 @@ module Bio
     end
 
     def window_search(window_size, step_size = 1)
-      i = nil                                     
+      i = 0
       0.step(self.length - window_size, step_size) do |i| 
         yield self[i, window_size]                        
       end                          
