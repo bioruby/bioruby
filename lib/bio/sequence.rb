@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.17 2001/12/15 08:36:33 okuji Exp $
+#  $Id: sequence.rb,v 0.18 2001/12/19 01:17:19 katayama Exp $
 #
 
 require 'bio/data/na'
@@ -66,14 +66,14 @@ module Bio
 
     def to_fasta(header = '', width = nil)
       ">#{header}\n" +
-	if width
-	  self.gsub(Regexp.new(".{1,#{width}}"), "\\0\n")
-	else
-	  self + "\n"
-	end
+      if width
+	self.to_s.gsub(Regexp.new(".{1,#{width}}"), "\\0\n")
+      else
+	self.to_s + "\n"
+      end
     end
 
-    def fasta(factory, header = '')
+    def fasta(factory, header = nil)
       factory.query(self.to_fasta(header))
     end
 
@@ -139,34 +139,39 @@ module Bio
       def initialize(str)
 	super
 	self.downcase!
-	self.tr!('u', 't')
 	self.tr!(" \t\n\r",'')
       end
 
       # This method depends on Locations class, see bio/location.rb
       def splicing(position)
-	mRNA = NA.new('')
+	mRNA = ''
 	Locations.new(position).each do |location|
 	  if location.sequence
-	    mRNA << location.sequence
+	    mRNA += location.sequence
 	  else
-	    exon = subseq(location.from,location.to)
+	    exon = self.subseq(location.from,location.to)
 	    exon = exon.complement if location.strand < 0
-	    mRNA << exon
+	    mRNA += exon
 	  end
 	end
-	return mRNA
+	if mRNA.index('u')
+	  mRNA.tr!('t', 'u')
+	end
+	return NA.new(mRNA)
       end
 
       def complement
-	str = self.reverse
-	str.tr!('atgcrymkdhvbswn', 'tacgyrkmhdbvswn')
-	NA.new(str)
+	if self.index('u')
+	  self.reverse.tr('augcrymkdhvbswn', 'uacgyrkmhdbvswn')
+	else
+	  self.reverse.tr('atgcrymkdhvbswn', 'tacgyrkmhdbvswn')
+	end
       end
 
       # CodonTable is defined in bio/data/codontable.rb
       def codon_table(table = 1, codon = nil)
 	if codon
+	  codon.tr!('u', 't')
 	  CodonTable[table][codon]
 	else
 	  CodonTable[table]
@@ -174,23 +179,24 @@ module Bio
       end
 
       def translate(frame = 1, table = 1)
-	ct = self.codon_table(table)
 	frame -= 1
-	aaseq = AA.new('')
-	frame.step(self.length - 3, 3) do |i|
-	  codon = self[i,3]
+	ct    = self.codon_table(table)
+	naseq = self.tr('u', 't')
+	aaseq = ''
+	frame.step(naseq.length - 3, 3) do |i|
+	  codon = naseq[i,3].to_s
 	  if ct[codon]
 	    aaseq << ct[codon]
 	  else
 	    aaseq << "X"
 	  end
 	end
-	return aaseq
+	return AA.new(aaseq)
       end
 
       def gc_percent
 	count = self.composition
-	at = count['a'] + count['t']
+	at = count['a'] + count['t'] + count['u']
 	gc = count['g'] + count['c']
 	gc = format("%.1f", gc.to_f / (at + gc) * 100)
 	return gc.to_f
@@ -198,24 +204,45 @@ module Bio
       alias gc gc_percent
 
       def illegal_bases
-	self.scan(/[^atgc]/).sort.uniq
+	self.scan(/[^atgcu]/).sort.uniq
       end
 
+      # NucleicAcid_weight is defined in bio/data/na.rb
       def molecular_weight(hash = nil)
-	hash = NucleicAcid_weight unless hash
-	total(hash)
+	nw = NucleicAcid_weight
+	if self.index('u')
+	  hash = {
+	    'g' => nw['guanine']  + nw['ribose_phosphate'] - nw['water'],
+	    'c' => nw['cytosine'] + nw['ribose_phosphate'] - nw['water'],
+	    'a' => nw['adenine']  + nw['ribose_phosphate'] - nw['water'],
+	    'u' => nw['uracil']   + nw['ribose_phosphate'] - nw['water'],
+	  }
+	else
+	  hash = {
+	    'g' => nw['guanine']  + nw['deoxyribose_phosphate'] - nw['water'],
+	    'c' => nw['cytosine'] + nw['deoxyribose_phosphate'] - nw['water'],
+	    'a' => nw['adenine']  + nw['deoxyribose_phosphate'] - nw['water'],
+	    't' => nw['thymine']  + nw['deoxyribose_phosphate'] - nw['water'],
+	  }
+	end unless hash
+	total(hash) + nw['water']
       end
 
+      # NucleicAcid is defined in bio/data/na.rb
       def to_re
+	hash = NucleicAcid
+	if self.index('u')
+	  NucleicAcid.each {|k,v| hash[k] = v.tr('t', 'u')}
+	end
 	re = ''
 	self.each_byte do |x|
-	  if NucleicAcid[x.chr]
-	    re << NucleicAcid[x.chr]
+	  if hash[x.chr]
+	    re += hash[x.chr]
 	  else
-	    re << '.'
+	    re += '.'
 	  end
 	end
-	return /#{re}/
+	return Regexp.new(re)
       end
 
       def to_a
@@ -225,13 +252,10 @@ module Bio
 	end
 	return array
       end
-
-      def rna
-	self.tr('t', 'u')
-      end
+      alias to_ary to_a
 
       def pikachu
-	self.tr("atgc", "pika")	# joke, of cource :-)
+	self.tr("atgc", "pika")		# joke, of cource :-)
       end
 
       def randomize(*arg, &block)
@@ -255,26 +279,31 @@ module Bio
 	self.tr!(" \t\n\r",'')
       end
 
-      def to_a(short = nil)
+      # AminoAcid is defined in bio/data/aa.rb
+      def to_a
 	array = []
 	self.each_byte do |x|
-	  if short
-	    array.push(AminoAcid[x.chr])
-	  else
-	    array.push(AminoAcid[AminoAcid[x.chr]])
-	  end
+	  array.push(AminoAcid[x.chr])
 	end
 	return array
       end
 
+      def to_ary
+	self.to_a.map do |x|
+	  AminoAcid[x]
+	end
+      end
+
+      # AminoAcid_weight is defined in bio/data/aa.rb
       def molecular_weight(hash = nil)
 	hash = AminoAcid_weight unless hash
-	total(hash)
+	total(hash) - NucleicAcid_weight['water'] * (self.length - 1)
       end
 
       def randomize(*arg, &block)
 	AA.new(super(*arg, &block))
       end
+
 
       def AA.randomize(*arg, &block)
 	AA.new('').randomize(*arg, &block)
@@ -291,82 +320,139 @@ if __FILE__ == $0
 
   puts "== Test Bio::Sequence::NA.new"
   p Bio::Sequence::NA.new('')
-  p na = Bio::Sequence::NA.new('aaaatttggccggtttaaaa')
+  p na = Bio::Sequence::NA.new('atgcatgcATGCATGCAAAA')
+  p rna = Bio::Sequence::NA.new('augcaugcaugcaugcaaaa')
 
-  puts "== Test Bio::Sequence::NA#[]"
-  p na[0,5]
+  puts "\n== Test Bio::Sequence::AA.new"
+  p Bio::Sequence::AA.new('')
+  p aa = Bio::Sequence::AA.new('ACDEFGHIKLMNPQRSTVWYU')
 
-  puts "== Test Bio::Sequence::NA#splicing"
+  puts "\n== Test Bio::Sequence#to_s"
+  p na.to_s
+  p aa.to_s
+
+  puts "\n== Test Bio::Sequence#to_str"
+  p na.to_str
+  p aa.to_str
+
+  puts "\n== Test Bio::Sequence#subseq(2,6)"
+  p na
+  p na.subseq(2,6)
+
+  puts "\n== Test Bio::Sequence#[2,6]"
+  p na
+  p na[2,6]
+
+  puts "\n== Test Bio::Sequence#to_fasta('hoge', 8)"
+  puts na.to_fasta('hoge', 8)
+
+  puts "\n== Test Bio::Sequence#window_search(15)"
+  p na
+  na.window_search(15) {|x| p x}
+
+  puts "\n== Test Bio::Sequence#total({'a'=>0.1,'t'=>0.2,'g'=>0.3,'c'=>0.4})"
+  p na.total({'a'=>0.1,'t'=>0.2,'g'=>0.3,'c'=>0.4})
+
+  puts "\n== Test Bio::Sequence#composition"
+  p na
+  p na.composition
+  p rna
+  p rna.composition
+
+  puts "\n== Test Bio::Sequence::NA#splicing('complement(join(1..5,16..20))')"
+  p na
   p na.splicing("complement(join(1..5,16..20))")
+  p rna
+  p rna.splicing("complement(join(1..5,16..20))")
 
-  puts "== Test Bio::Sequence::NA#complement"
+  puts "\n== Test Bio::Sequence::NA#complement"
+  p na.complement
+  p rna.complement
   p Bio::Sequence::NA.new('tacgyrkmhdbvswn').complement
+  p Bio::Sequence::NA.new('uacgyrkmhdbvswn').complement
 
+  puts "\n== Test Bio::Sequence::NA#codon_table"
+  p na.codon_table
+  p na.codon_table(2)
 
+  puts "\n== Test Bio::Sequence::NA#translate"
+  p na
+  p na.translate
+  p rna
+  p rna.translate
 
-  puts "\n == Test: Bio::Sequence.random(counts) =="
-  counts = {'a'=>30,'c'=>24,'g'=>40,'t'=>30}
-  s = Bio::Sequence::NA.randomize(counts)
-  p s
-  p s.type
+  puts "\n== Test Bio::Sequence::NA#gc_percent"
+  p na.gc
+  p rna.gc
 
-  puts "\n == Test: Bio::Sequence::NA#randomize ==" 
-  seq = 'gtcgcacatgactgcttgctaatcgtatcagtgatcgatgatcacgatgaacgctagctag'
-  s = Bio::Sequence::NA.new(seq)
-  puts "Counts: #{s.composition.inspect}"
-  print "Orginal:    "
-  puts s
-  print "Randomized: "
-  s.randomize do |b|
-    print b
-  end
-  puts 
-  puts "Randomized: #{s.randomize}"
-  puts "Randomized: #{s.randomize}"
-  puts "Randomized: #{s.randomize}"
-  puts "Randomized: #{s.randomize}"
-  puts "Randomized: #{s.randomize}"
-  p s.randomize.type
+  puts "\n== Test Bio::Sequence::NA#illegal_bases"
+  p na.illegal_bases
+  p Bio::Sequence::NA.new('tacgyrkmhdbvswn').illegal_bases
+  p Bio::Sequence::NA.new('abcdefghijklmnopqrstuvwxyz-!%#$@').illegal_bases
 
-  puts "\n == Test: Bio::Sequence::NA.randomize(counts) =="
-  counts = {'a'=>30,'c'=>24,'g'=>40,'t'=>30}
-  puts "counts: #{counts.inspect}"
-  Bio::Sequence::NA.randomize(counts) do |i|
-    print i
-  end
-  puts
-  p counts
-  rd = Bio::Sequence::NA.randomize(counts) 
-  puts rd
-  p rd.type
+  puts "\n== Test Bio::Sequence::NA#molecular_weight"
+  p na
+  p na.molecular_weight
+  p rna
+  p rna.molecular_weight
 
+  puts "\n== Test Bio::Sequence::NA#to_re"
+  p Bio::Sequence::NA.new('atgcrymkdhvbswn')
+  p Bio::Sequence::NA.new('atgcrymkdhvbswn').to_re
+  p Bio::Sequence::NA.new('augcrymkdhvbswn')
+  p Bio::Sequence::NA.new('augcrymkdhvbswn').to_re
 
-  puts "\n == Test: Bio::Sequence::AA#randomize =="
+  puts "\n== Test Bio::Sequence::NA#to_a"
+  p na.to_a
+
+  puts "\n== Test Bio::Sequence::NA#pikachu"
+  p na.pikachu
+
+  puts "\n== Test Bio::Sequence::NA#randomize"
+  print "Orig  : "; p na
+  print "Rand  : "; p na.randomize
+  print "Rand  : "; p na.randomize
+  print "Rand  : "; p na.randomize.randomize
+  print "Block : "; na.randomize do |x| print x end; puts
+
+  print "Orig  : "; p rna
+  print "Rand  : "; p rna.randomize
+  print "Rand  : "; p rna.randomize
+  print "Rand  : "; p rna.randomize.randomize
+  print "Block : "; rna.randomize do |x| print x end; puts
+
+  puts "\n== Test Bio::Sequence::NA.randomize(counts)"
+  print "Count : "; p counts = {'a'=>10,'c'=>20,'g'=>30,'t'=>40}
+  print "Rand  : "; p Bio::Sequence::NA.randomize(counts)
+  print "Count : "; p counts = {'a'=>10,'c'=>20,'g'=>30,'u'=>40}
+  print "Rand  : "; p Bio::Sequence::NA.randomize(counts)
+  print "Block : "; Bio::Sequence::NA.randomize(counts) {|x| print x}; puts
+
+  puts "\n== Test Bio::Sequence::AA#to_a"
+  p aa
+  p aa.to_a
+
+  puts "\n== Test Bio::Sequence::AA#to_ary"
+  p aa
+  p aa.to_ary
+
+  puts "\n== Test Bio::Sequence::AA#molecular_weight"
+  p aa.subseq(1,20)
+  p aa.subseq(1,20).molecular_weight
+
+  puts "\n== Test Bio::Sequence::AA#randomize"
   aaseq = 'MRVLKFGGTSVANAERFLRVADILESNARQGQVATVLSAPAKITNHLVAMIEKTISGQDA'
   s = Bio::Sequence::AA.new(aaseq)
-  print "Orginal:    "
-  puts s
-  puts "Randomized: #{s.randomize}"
-  puts "Randomized: #{s.randomize}"
-  puts "Randomized: #{s.randomize}"
-  puts "Randomized: #{s.randomize}"
-  puts "Randomized: #{s.randomize}"
-  p s.type
+  print "Orig  : "; p s
+  print "Rand  : "; p s.randomize
+  print "Rand  : "; p s.randomize
+  print "Rand  : "; p s.randomize.randomize
+  print "Block : "; s.randomize {|x| print x}; puts
 
-
-  counts = s.composition
-  puts "\n == Test: Bio::Sequence::AA.randomize(counts) =="
-  print "counts: "
-  p counts
-  ra = Bio::Sequence::AA.randomize(counts)
-  p ra
-  p ra.type
-  Bio::Sequence::AA.randomize(counts) {|h|
-    print h
-  }
-  puts 
-  ra = Bio::Sequence::AA.randomize(counts)
-  p ra.type
+  puts "\n== Test Bio::Sequence::AA.randomize(counts)"
+  print "Count : "; p counts = s.composition
+  print "Rand  : "; puts Bio::Sequence::AA.randomize(counts)
+  print "Block : "; Bio::Sequence::AA.randomize(counts) {|x| print x}; puts
 
 end
 
@@ -458,6 +544,7 @@ end
       Convert the universal code string into the regular expression.
 
 --- Bio::Sequence::NA#to_a
+--- Bio::Sequence::NA#to_ary
 
       Convert the self string into the list of the names of the each base.
 
@@ -480,10 +567,14 @@ end
 
       Generate a amino acid sequence object from a string.
 
---- Bio::Sequence::AA#to_a(short)
+--- Bio::Sequence::AA#to_a
 
       Generate the list of the names of the each residue along with the
-      sequence.  If the argument is given (and true), returns short names.
+      sequence (3 letters code).
+
+--- Bio::Sequence::NA#to_ary
+
+      Similar to to_a but returns long names.
 
 --- Bio::Sequence::AA#molecular_weight(hash)
 
