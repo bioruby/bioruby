@@ -3,6 +3,24 @@
 
 BioRuby project aims to implement integrated environment for Bioinformatics.
 
+== WHERE TO GET
+
+* WWW
+  * ((<URL:http://bioruby.org/>)) for more informations.
+
+* FTP
+  * ((<URL:ftp://ftp.bioruby.org/bioruby/>))
+
+* CVS
+    % cvs -d :pserver:anonymous@cvs.bioruby.org:/export/cvs login
+    CVS password: (no password is required, just return)
+    % cvs -d :pserver:anonymous@cvs.bioruby.org:/export/cvs co bioruby
+
+== REQUIREMENT
+
+* Ruby 1.6.6 or newer version is required.
+  * ((<URL:http://www.ruby-lang.org/>))
+
 == INSTALL
 
   % ruby install.rb config
@@ -19,9 +37,13 @@ BioRuby project aims to implement integrated environment for Bioinformatics.
 == LICENCE
 
 * GPL for applications, LGPL for libraries.
-* install.rb comes from ((<URL:http://www.loveruby.net/en/setup.html>))
+* install.rb comes from ((<setup|URL:http://www.loveruby.net/en/setup.html>)).
 
-== AUTHOR
+== AUTHORS
 
-((<BioRuby project|URL:http://bioruby.org/>))
+* KATAYAMA Toshiaki <k@bioruby.org>, project leader
+* Yoshinori K. Okuji <okuji@enbug.org>
+* Mitsuteru S. Nakao <n@bioruby.org>
+* KAWASHIMA Shuichi <s@bioruby.org>
+* GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 
