@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.14 2001/11/23 02:28:31 katayama Exp $
+#  $Id: sequence.rb,v 0.15 2001/12/15 01:49:37 katayama Exp $
 #
 
 require 'bio/data/na'
@@ -37,6 +37,19 @@ module Bio
       self[s..e]
     end
 
+    def to_fasta(header = '', width = nil)
+      ">#{header}\n" +
+	if width
+	  self.gsub(Regexp.new(".{1,#{width}}"), "\\0\n")
+	else
+	  self + "\n"
+	end
+    end
+
+    def fasta(factory, header = '')
+      factory.query(self.to_fasta(header))
+    end
+
     def window_search(window_size)
       0.upto(self.length - window_size) do |i|
 	yield self[i, window_size]
@@ -53,15 +66,6 @@ module Bio
 	end
       end
       return sum
-    end
-
-    def to_fasta(header = '', width = nil)
-      ">#{header}\n" +
-	if width
-	  self.gsub(Regexp.new(".{1,#{width}}"), "\\0\n")
-	else
-	  self + "\n"
-	end
     end
 
     def composition
@@ -358,6 +362,17 @@ end
 
       Returns the subsequence of the self string.
 
+--- Bio::Sequence#to_fasta(header = '', width = nil)
+
+      Output the FASTA format string of the sequence.  The 1st argument is
+      used as the comment string.  If the 2nd option is given, the output
+      sequence will be folded.
+
+--- Bio::Sequence#fasta(factory, header = '')
+
+      Execute fasta by the factory (Bio::Fasta object) and returns
+      Bio::Fasta::Report object.  See Bio::Fasta for more details.
+
 --- Bio::Sequence#window_search(window_size)
 
       This method yields a window search along with the self sequence with
@@ -368,12 +383,6 @@ end
       This method receive a hash of residues/bases to the particular values,
       and sum up the value along with the self sequence.  Especially useful
       to use with the window_search method and amino acid indices etc.
-
---- Bio::Sequence#to_fasta(header = '', width = nil)
-
-      Output the FASTA format string of the sequence.  The 1st argument is
-      used as the comment string.  If the 2nd option is given, the output
-      sequence will be folded.
 
 --- Bio::Sequence#composition
 
