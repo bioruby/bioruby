@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genes.rb,v 0.18 2005/02/09 08:31:02 k Exp $
+#  $Id: genes.rb,v 0.19 2005/02/09 08:41:38 k Exp $
 #
 
 require 'bio/db'
@@ -162,7 +162,7 @@ module Bio
         base.each_with_index do |x, i|
           base.each_with_index do |y, j|
             base.each_with_index do |z, k|
-              hash["#{x}#{y}#{z}"] = list[i*16 + j*4 * k]
+              hash["#{x}#{y}#{z}"] = list[i*16 + j*4 + k]
             end
           end
         end
