@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.17 2004/02/04 12:12:36 k Exp $
+#  $Id: fasta.rb,v 1.18 2004/03/04 16:16:42 ngoto Exp $
 #
 
 require 'bio/db'
@@ -52,9 +52,32 @@ module Bio
 
     def seq
       unless defined?(@seq)
-        @seq = Sequence.new(@data.tr(" \t\r\n0-9", ''))	# lazy clean up
+	unless /\A\s*^\#/ =~ @data then
+	  @seq = Sequence.new(@data.tr(" \t\r\n0-9", '')) # lazy clean up
+	else
+	  a = @data.split(/(^\#.*$)/)
+	  i = 0
+	  cmnt = {}
+	  s = []
+	  a.each do |x|
+            if /^# ?(.*)$/ =~ x then
+	      cmnt[i] ? cmnt[i] << "\n" << $1 : cmnt[i] = $1
+	    else
+	      x.tr!(" \t\r\n0-9", '') # lazy clean up
+	      i += x.length
+	      s << x
+	    end
+	  end
+	  @comment = cmnt
+	  @seq = Bio::Sequence.new(s.join(''))
+	end
       end
       @seq
+    end
+
+    def comment
+      seq
+      @comment
     end
 
     def length

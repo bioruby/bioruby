@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.22 2003/10/08 05:28:43 ng Exp $
+#  $Id: flatfile.rb,v 1.23 2004/03/04 16:16:42 ngoto Exp $
 #
 
 module Bio
@@ -301,9 +301,9 @@ module Bio
       when /^>.+$/
 	if text =~ /^>([PF]1|[DR][LC]|N[13]|XX)\;.+/ then
 	  Bio::NBRF
-	elsif text =~ /^>.+$\s^\s*[-a-zA-Z_\.\[\]\(\)\*\+\$]+/ then
+	elsif text =~ /^>.+$\s+(^\#.*$\s*)*^\s*\d*\s*[-a-zA-Z_\.\[\]\(\)\*\+\$]+/ then
 	  Bio::FastaFormat
-	elsif text =~ /^>.+$\s^\s*[0-9]+/ then
+	elsif text =~ /^>.+$\s+^\s*\d+(\s+\d+)*\s*$/ then
 	  Bio::FastaNumericFormat
 	else
 	  false #fail to determine
