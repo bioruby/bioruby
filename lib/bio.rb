@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.12 2001/11/12 18:10:28 nakao Exp $
+#  $Id: bio.rb,v 1.13 2001/11/12 20:52:25 katayama Exp $
 #
 
 module Bio
@@ -70,9 +70,9 @@ require 'bio/db/ddbj'
 ## EMBL/TrEMBL/Swiss-Prot/SPTR
 
 require 'bio/db/embl'
-#require 'bio/db/sptr'
-#require 'bio/db/trembl'
-#require 'bio/db/swissprot'
+require 'bio/db/sptr'
+require 'bio/db/trembl'
+require 'bio/db/swissprot'
 
 ## KEGG
 
@@ -109,11 +109,10 @@ require 'bio/db/medline'
 
 require 'bio/db/fasta'
 
-### External Applications
+### Applications
 
 #require 'bio/appl/fasta'
-#require 'bio/appl/blast'
-require 'bio/appl/blast/blast_report.rb'
+require 'bio/appl/blast'
 #require 'bio/appl/hmmer'
 
 ### misc utils
