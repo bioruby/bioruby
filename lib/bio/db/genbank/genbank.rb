@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.23 2002/03/27 08:48:30 katayama Exp $
+#  $Id: genbank.rb,v 0.24 2002/06/23 20:00:16 k Exp $
 #
 
 require 'bio/db'
@@ -173,7 +173,7 @@ module Bio
     def common_name
       source['common_name']
     end
-    alias varnacular_name common_name
+    alias :varnacular_name :common_name
 
     def organism
       source['organism']
@@ -337,6 +337,7 @@ module Bio
       end
       @data['SEQUENCE']
     end
+    alias :seq :naseq
 
 
     ### private methods
@@ -595,6 +596,7 @@ end
       Returns contents of the ORIGIN record as a String.
 
 --- Bio::GenBank#naseq -> Bio::Sequence::NA
+--- Bio::GenBank#seq -> Bio::Sequence::NA
 
       Returns DNA sequence in the ORIGIN record as a Bio::Sequence::NA object.
 
