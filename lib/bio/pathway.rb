@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.6 2001/11/12 21:24:05 katayama Exp $
+#  $Id: pathway.rb,v 1.7 2001/11/13 02:26:11 katayama Exp $
 #
 
 require 'bio/matrix'
@@ -221,7 +221,27 @@ end
 
 
 if __FILE__ == $0
-  # test code here
+
+  data = <<END
+a b 1
+a c 1
+b d 1
+c e 1
+END
+
+  ary = []
+
+  data.each_line do |line|
+    ary << Bio::Relation.new(*line.split(/\s+/))
+  end
+
+  p ary
+
+  graph = Bio::Pathway.new(ary)
+
+  p graph
+
+  puts graph.to_matrix
 end
 
 =begin
