@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genome.rb,v 0.8 2001/11/08 16:47:30 nakao Exp $
+#  $Id: genome.rb,v 0.9 2001/12/15 02:52:54 katayama Exp $
 #
 
 
@@ -32,40 +32,32 @@ module Bio
       DELIMITER	= RS = "\n///\n"
       TAGSIZE	= 12
 
-      ##
-      #
       def initialize(entry)
 	super(entry, TAGSIZE)
       end
 
-      ##
       # ENTRY (1 per entry)
-      def entry
+      def entry_id
 	field_fetch('ENTRY')
       end
-      alias id entry # It should eliminate, conflicting Object#id (n)
       
-      ##
       # NAME (1 per entry)
       def name
 	field_fetch('NAME')
       end
 
-      ##
       # DEFINITION (1 per entry)
       def definition
 	field_fetch('DEFINITION')
       end
       alias organism definition
 
-      ##
       # TAXONOMY(1 per entry)
       def taxid
 	field_sub('TAXONOMY')
 	return @data['TAXONOMY']['TAXONOMY']
       end
       
-      ##
       # TAXONOMY/LINEAGE (1 per entry)
       def lineage
 	field_sub('TAXONOMY')
@@ -73,34 +65,28 @@ module Bio
       end
       alias taxonomy lineage
 
-      ##
       # MORPHOLOGY (1 per entry)
       def morphology
 	field_fetch('MORPHOLOGY')
       end
       
-      ##
       # PHYSIOLOGY (0 or 1 per entry)
       def physiology
 	field_fetch('PHYSIOLOGY')
       end
       
-      ##
       # ENVIRONMENT (0 or 1 per entry)
       def environment
 	field_fetch('ENVIRONMENT')
       end
 
-      ##
       # COMMENT (0 or 1 per entry)
       def comment
 	field_fetch('COMMENT')
       end
       
-      ##
       # REFERENCE (1 per entry)
       # REFERENCE/AUTHOR (>=1 per entry)
-      #
       def reference(num = nil, tag = nil)
 	field_multi_sub('REFERENCE')
 
@@ -119,12 +105,10 @@ module Bio
 	end				#   obj.reference
       end
 
-      ##
       # CHROMOSOME (>=1 pre entry)
       # CHROMOSOME 
       #   SEQUENCE
       #   LEGNTH
-      #
       def chromosome(num = nil, tag = nil)
 	unless @data['CHROMOSOME']
 	  field_multi_sub('CHROMOSOME')
@@ -148,7 +132,6 @@ module Bio
       end
 
 
-      ##
       # CHROMOSOME (>=1 pre entry)
       # MITOCHON (>=0 per entry)
       # PLASMID (>=0 per entry)
@@ -189,7 +172,6 @@ module Bio
       end
       protected :chromosomes
       
-      ##
       # CHROMOSOME (>=1 pre entry)
       #   SEQUENCE
       #   LEGNTH
@@ -211,7 +193,6 @@ module Bio
 	end
       end
 
-      ##
       # PLASMID (>=0 per entry)
       #   SEQUENCE
       #   LEGNTH
@@ -233,7 +214,6 @@ module Bio
 	end
       end
 
-      ##
       # MITOCHON (>=0 per entry)
       #   SEQUENCE
       #   LEGNTH
@@ -257,7 +237,6 @@ module Bio
       alias mitochondorion mitochon
 
 
-      ##
       # STATISTICS (0 or 1 per entry)
       # STATISTICS  Number of nucleotides:             N
       #     Number of protein genes:           N
@@ -306,13 +285,11 @@ module Bio
 	end
       end
 
-      ##
       # GENOMEMAP (1 per entry)
       def genomemap
 	field_fetch('GENOMEMAP')
       end
 
-      ##
       # GENECATALOG (1 per entry)
       def genecatalog
 	field_fetch('GENECATALOG')
@@ -320,13 +297,12 @@ module Bio
       
     end
     
-  end				# class KEGG
+  end
 
-end				# module Bio
+end
 
 
 
-# Tasting codes
 if __FILE__ == $0
 
   genomes = 'genome'
@@ -432,43 +408,40 @@ File:
 end
 
 
-
 =begin
 
-The BioRuby Project
+= Bio::KEGG::GENOME
 
-= Bio::DB::KEGG::GENOME
+--- Bio::KEGG::GENOME.new(entry)
 
---- Bio::DB::KEGG::GENOME#new(entry)
+--- Bio::KEGG::GENOME#entry
+--- Bio::KEGG::GENOME#name
+--- Bio::KEGG::GENOME#definition
+--- Bio::KEGG::GENOME#organism
+--- Bio::KEGG::GENOME#taxid
+--- Bio::KEGG::GENOME#lineage
+--- Bio::KEGG::GENOME#taxonomy
+--- Bio::KEGG::GENOME#morphology
+--- Bio::KEGG::GENOME#physiology
+--- Bio::KEGG::GENOME#environment
+--- Bio::KEGG::GENOME#comment
 
---- Bio::DB::KEGG::GENOME#entry
---- Bio::DB::KEGG::GENOME#name
---- Bio::DB::KEGG::GENOME#definition
---- Bio::DB::KEGG::GENOME#organism
---- Bio::DB::KEGG::GENOME#taxid
---- Bio::DB::KEGG::GENOME#lineage
---- Bio::DB::KEGG::GENOME#taxonomy
---- Bio::DB::KEGG::GENOME#morphology
---- Bio::DB::KEGG::GENOME#physiology
---- Bio::DB::KEGG::GENOME#environment
---- Bio::DB::KEGG::GENOME#comment
-
---- Bio::DB::KEGG::GENOME#chromosome(num = nil, tag = nil)
---- Bio::DB::KEGG::GENOME#plasmid(num = nil, tag = nil)
---- Bio::DB::KEGG::GENOME#mitochon(num = nil, tag = nil)
+--- Bio::KEGG::GENOME#chromosome(num = nil, tag = nil)
+--- Bio::KEGG::GENOME#plasmid(num = nil, tag = nil)
+--- Bio::KEGG::GENOME#mitochon(num = nil, tag = nil)
 
 
---- Bio::DB::KEGG::GENOME#statistics(num = nil)
---- Bio::DB::KEGG::GENOME#nalen
---- Bio::DB::KEGG::GENOME#num_gene
---- Bio::DB::KEGG::GENOME#num_rna
---- Bio::DB::KEGG::GENOME#gc
---- Bio::DB::KEGG::GENOME#genomemap
---- Bio::DB::KEGG::GENOME#genecatalog
+--- Bio::KEGG::GENOME#statistics(num = nil)
+--- Bio::KEGG::GENOME#nalen
+--- Bio::KEGG::GENOME#num_gene
+--- Bio::KEGG::GENOME#num_rna
+--- Bio::KEGG::GENOME#gc
+--- Bio::KEGG::GENOME#genomemap
+--- Bio::KEGG::GENOME#genecatalog
 
 
 = See also.
-  ftp://ftp.genome.ad.jp/pub/kegg/genomes/genome
 
+((<URL:ftp://ftp.genome.ad.jp/pub/kegg/genomes/genome>))
 
 =end
