@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: registry.rb,v 1.6 2002/08/14 01:33:00 k Exp $
+#  $Id: registry.rb,v 1.7 2002/08/29 14:13:11 k Exp $
 #
 
 require 'net/http'
@@ -51,11 +51,9 @@ module Bio
 	    return serv_biofetch(db)
 	  when 'biosql'
 	    return serv_biosql(db)
-	  when 'index-flat'
-	    raise NotImplementedError
-	  when 'index-berkeleydb'
-	    raise NotImplementedError
-	  when 'bsane-corba' || 'biocorba'
+	  when 'index-flat', 'index-berkeleydb'
+	    return serv_flat(db)
+	  when 'bsane-corba', 'biocorba'
 	    raise NotImplementedError
 	  when 'xembl'
 	    raise NotImplementedError
@@ -122,6 +120,11 @@ module Bio
       # We can not manage biodbname (for name space) in BioSQL yet.
       #db.biodbname
 
+      return serv
+    end
+
+    def serv_flat(db)
+      serv = Bio::FlatFileIndex.new(db.location)
       return serv
     end
 
