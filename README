@@ -51,8 +51,10 @@ and DBGET etc.
     which SOAP4R depends such as [RAA:date2], [RAA:devel-logger],
     [RAA:http-access] (version >= j) with one of [RAA:xmlscan], [RAA:rexml],
     [RAA:rexml-stable], [RAA:xmlparser], [RAA:nqxml] are also needed.
-    * If you are using Ruby (version >= 1.8), xmlscan, rexml and date2 are
-      already included in the Ruby installation.
+
+  Note that 'strscan', 'rexml', 'pp', 'date2' and 'xmlscan' are 
+  included in the Ruby 1.8.0 distibution (you don't need to install
+  them by yourself).
 
 * External applications can be used if installed
 
