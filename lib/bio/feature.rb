@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: feature.rb,v 1.1 2002/03/04 07:42:41 katayama Exp $
+#  $Id: feature.rb,v 1.2 2002/03/27 08:32:05 katayama Exp $
 #
 
 require 'bio/location'
@@ -26,10 +26,10 @@ module Bio
 
   class Feature
 
-    def initialize(type = '', position = '', qualifiers = [])
-      @type, @position, @qualifiers = type, position, qualifiers
+    def initialize(feature = '', position = '', qualifiers = [])
+      @feature, @position, @qualifiers = feature, position, qualifiers
     end
-    attr_accessor :type, :position, :qualifiers
+    attr_accessor :feature, :position, :qualifiers
 
     def locations
       Locations.new(@position)
@@ -50,9 +50,9 @@ module Bio
     class Qualifier
 
       def initialize(key, value)
-	@type, @value = key, value
+	@qualifier, @value = key, value
       end
-      attr_reader :type, :value
+      attr_reader :qualifier, :value
 
     end
 
@@ -86,9 +86,9 @@ end
 
 = Bio::Feature
 
---- Bio::Feature.new(type = '', position = '', qualifiers = [])
+--- Bio::Feature.new(feature = '', position = '', qualifiers = [])
 
---- Bio::Feature#type -> String
+--- Bio::Feature#feature -> String
 --- Bio::Feature#position -> String
 --- Bio::Feature#qualifiers -> Array
 
@@ -100,7 +100,7 @@ end
 
 --- Bio::Feature::Qualifier.new(key, value)
 
---- Bio::Feature::Qualifier#type -> String
+--- Bio::Feature::Qualifier#qualifier -> String
 --- Bio::Feature::Qualifier#value -> String
 
 = Bio::Features
