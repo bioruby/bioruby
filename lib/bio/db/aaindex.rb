@@ -17,114 +17,162 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aaindex.rb,v 1.6 2001/11/06 16:58:52 okuji Exp $
+#  $Id: aaindex.rb,v 1.7 2001/12/15 03:03:53 katayama Exp $
 #
-
-module Bio
 
 require "bio/db"
 require "bio/matrix"
 
-class AAindex < KEGGDB
+module Bio
 
-  DELIMITER     = RS = "\n//\n"
-  TAGSIZE       = 2
+  class AAindex < KEGGDB
 
-  def initialize(entry)
-    super(entry, TAGSIZE)
-  end
+    DELIMITER	= RS = "\n//\n"
+    TAGSIZE	= 2
 
-  def id
-    field_fetch('H')
-  end
-
-  def definition
-    field_fetch('D')
-  end
-
-  def dblinks
-    field_fetch('R')
-  end
-
-  def author
-    field_fetch('A')
-  end
-
-  def title
-    field_fetch('T')
-  end
-
-  def journal
-    field_fetch('J')
-  end
-
-end
-
-
-class AAindex1 < AAindex
-
-  def initialize(entry)
-    super(entry)
-  end
-
-  def correlation_coefficient
-    field_fetch('C')
-  end
-
-  def index
-    hash = {}; i = 0
-    aa   = %w( A R N D C Q E G H I L K M F P S T W Y V )
-    field_fetch('I').scan(/[\d\.]+/).each do |value|
-      hash[aa[i]] = value.to_f
-      i += 1
+    def initialize(entry)
+      super(entry, TAGSIZE)
     end
-    return hash
-  end
 
-end
-
-
-class AAindex2 < AAindex
-
-  def initialize(entry)
-    super(entry)
-    @aa = {}		# used to determine row/column of the aa
-  end
-  attr_reader :aa
-
-  def matrix
-    field = field_fetch('I')
-
-    case field
-    when / (ARNDCQEGHILKMFPSTWYV)\s+(.*)/	# 20x19/2 matrix
-      aalist = $1
-      values = $2.split(/\s+/)
-
-      0.upto(aalist.length - 1) do |i|
-        @aa[aalist[i].chr] = i
-      end
-
-      ma = Array.new
-      20.times do |i|
-	ma.push(Array.new(20))			# 2D array of 20x(20)
-      end
-
-      for i in 0 .. 19 do
-        for j in i .. 19 do
-          ma[i][j] = values[i + j*(j+1)/2].to_f
-          ma[j][i] = ma[i][j]
-        end
-      end
-      Matrix[*ma]
-
-    when / -ARNDCQEGHILKMFPSTWYV /		# 21x20/2 matrix (with gap)
-      raise NotImplementedError
-    when / ACDEFGHIKLMNPQRSTVWYJ- /		# 21x21 matrix (with gap)
-      raise NotImplementedError
+    def entry_id
+      field_fetch('H')
     end
+
+    def definition
+      field_fetch('D')
+    end
+
+    def dblinks
+      field_fetch('R')
+    end
+
+    def author
+      field_fetch('A')
+    end
+
+    def title
+      field_fetch('T')
+    end
+
+    def journal
+      field_fetch('J')
+    end
+
+  end
+
+
+  class AAindex1 < AAindex
+
+    def initialize(entry)
+      super(entry)
+    end
+
+    def correlation_coefficient
+      field_fetch('C')
+    end
+
+    def index
+      hash = {}; i = 0
+      aa   = %w( A R N D C Q E G H I L K M F P S T W Y V )
+      field_fetch('I').scan(/[\d\.]+/).each do |value|
+	hash[aa[i]] = value.to_f
+	i += 1
+      end
+      return hash
+    end
+
+  end
+
+
+  class AAindex2 < AAindex
+
+    def initialize(entry)
+      super(entry)
+      @aa = {}		# used to determine row/column of the aa
+    end
+    attr_reader :aa
+
+    def matrix
+      field = field_fetch('I')
+
+      case field
+      when / (ARNDCQEGHILKMFPSTWYV)\s+(.*)/	# 20x19/2 matrix
+	aalist = $1
+	values = $2.split(/\s+/)
+
+	0.upto(aalist.length - 1) do |i|
+	  @aa[aalist[i].chr] = i
+	end
+
+	ma = Array.new
+	20.times do
+	  ma.push(Array.new(20))		# 2D array of 20x(20)
+	end
+
+	for i in 0 .. 19 do
+	  for j in i .. 19 do
+	    ma[i][j] = values[i + j*(j+1)/2].to_f
+	    ma[j][i] = ma[i][j]
+	  end
+	end
+	Matrix[*ma]
+
+      when / -ARNDCQEGHILKMFPSTWYV /		# 21x20/2 matrix (with gap)
+	raise NotImplementedError
+      when / ACDEFGHIKLMNPQRSTVWYJ- /		# 21x21 matrix (with gap)
+	raise NotImplementedError
+      end
+    end
+
   end
 
 end
 
-end				# module Bio
 
+if __FILE__ == $0
+  require 'bio/io/dbget'
+
+  puts "### AAindex1 (PRAM900102)"
+  aax1 = Bio::AAindex1.new(Bio::DBGET.bget('aax1 PRAM900102'))
+  p aax1.entry_id
+  p aax1.definition
+  p aax1.dblinks
+  p aax1.author
+  p aax1.title
+  p aax1.journal
+  p aax1.correlation_coefficient
+  p aax1.index
+  puts "### AAindex2 (HENS920102)"
+  aax2 = Bio::AAindex2.new(Bio::DBGET.bget('aax2 HENS920102'))
+  p aax2.entry_id
+  p aax2.definition
+  p aax2.dblinks
+  p aax2.author
+  p aax2.title
+  p aax2.journal
+  puts aax2.matrix.dump
+  p aax2.aa
+end
+
+=begin
+
+= Bio::AAindex
+
+--- Bio::AAindex.new(entry)
+--- Bio::AAindex#entry_id
+--- Bio::AAindex#definition
+--- Bio::AAindex#dblinks
+--- Bio::AAindex#author
+--- Bio::AAindex#title
+--- Bio::AAindex#journal
+
+= Bio::AAindex1
+
+--- Bio::AAindex1#correlation_coefficient
+--- Bio::AAindex1#index
+
+= Bio::AAindex2
+
+--- Bio::AAindex2#matrix
+
+=end
