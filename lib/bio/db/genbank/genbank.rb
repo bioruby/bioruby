@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.28 2002/11/22 22:57:59 k Exp $
+#  $Id: genbank.rb,v 0.29 2003/01/27 19:52:12 k Exp $
 #
 
 require 'bio/db/genbank'
@@ -68,7 +68,7 @@ module Bio
 
     def each_cds
       features.each do |feature|
-        if feature.type == 'CDS'
+        if feature.feature == 'CDS'
           yield(feature)
         end
       end
@@ -76,7 +76,7 @@ module Bio
 
     def each_gene
       features.each do |feature|
-        if feature.type == 'gene'
+        if feature.feature == 'gene'
           yield(feature)
         end
       end

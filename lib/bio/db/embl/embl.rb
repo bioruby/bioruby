@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: embl.rb,v 1.15 2002/08/16 17:34:52 k Exp $
+#  $Id: embl.rb,v 1.16 2003/01/27 19:52:13 k Exp $
 #
 
 require 'bio/db/embl'
@@ -257,28 +257,28 @@ module Bio
 
 	@data['FT'] = Features.new(ary)
       end
-      @data['FT']
+      if block_given?
+        @data['FT'].each do |f|
+          yield f
+        end
+      else
+        @data['FT']
+      end
     end
     alias features ft
 
-    ##
-    # Bio::EMBL#each_cds -> Hash
-    #
     def each_cds
       ft.each do |feature|
-	if feature.type == 'CDS'
-	  yield feature		# iterate only for the 'CDS' FT
+	if feature.feature == 'CDS'
+	  yield feature
 	end
       end
     end
 
-    ##
-    # Bio::EMBL#each_gene -> Hash
-    #
     def each_gene
       ft.each do |feature|
-	if feature.type == 'gene'
-	  yield feature		# iterate only for the 'gene' FT
+	if feature.feature == 'gene'
+	  yield feature
 	end
       end
     end
