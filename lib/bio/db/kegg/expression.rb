@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: expression.rb,v 1.5 2001/11/14 13:16:19 shuichi Exp $
+#  $Id: expression.rb,v 1.6 2001/11/15 13:42:41 shuichi Exp $
 #
 
 require "bio/db"
@@ -105,16 +105,33 @@ module Bio
         Math.sqrt(var)
       end
 
-      def up_regulate(num=20)
+      def up_regulate(num=20, threshold=nil)
         hash = logy_minus_logx
         ary = hash.to_a.sort{|a, b| b[1] <=> a[1]}
+        if threshold != nil
+          i = 0
+          while ary[i][1] > threshold
+            i += 1
+          end
+          return ary[0..i]
+        else
+          return ary[0..num]
+        end
         ary[0..num]
       end
 
-      def down_regulate(num=20)
+      def down_regulate(num=20, threshold=nil)
         hash = logy_minus_logx
         ary = hash.to_a.sort{|a, b| a[1] <=> b[1]}
-        ary[0..num]
+        if threshold != nil
+          i = 0
+          while ary[i][1] < threshold
+            i += 1
+          end
+          return ary[0..i]
+        else
+          return ary[0..num]
+        end
       end
 
       def logy_minus_logx
