@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: prosite.rb,v 0.6 2002/03/04 07:58:11 katayama Exp $
+#  $Id: prosite.rb,v 0.7 2003/03/19 08:04:39 k Exp $
 #
 
 require 'bio/db'
@@ -387,7 +387,7 @@ module Bio
       pattern.gsub!(/\{(\w+)\}/) { |m|
 	'[^' + $1 + ']'		# (3) not accepted at a given position : '{}'
       }
-      pattern.gsub!(/\((\w+)\)/) { |m|
+      pattern.gsub!(/\(([\d,]+)\)/) { |m|
 	'{' + $1 + '}'		# (4) repetition of an element : (n), (n,m)
       }
       pattern.tr!('x', '.')	# (5) any amino acid is accepted : 'x'
