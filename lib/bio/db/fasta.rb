@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: fasta.rb,v 1.1 2001/11/01 11:55:16 katayama Exp $
+#  $Id: fasta.rb,v 1.2 2001/11/02 10:24:13 katayama Exp $
 #
 
 require 'bio/db'
@@ -24,13 +24,13 @@ module Bio
   class FastaFormat < DB
 
     DELIMITER	= RS = "\n>"
-    
+
     def initialize(str)
       @header = str[/.*/].sub(/^>/, '').strip		# 1st line
-      @seq    = str.sub(/.*/, '').gsub(/\s+/, '')	# seq line
+      @seq    = str.sub(/.*/, '').tr(" \t\n\r>0-9", '')	# seq line
     end
-    attr_accessor :header
-    
+    attr_accessor :header, :seq
+
     def definition
       @header
     end
@@ -38,21 +38,21 @@ module Bio
     def length
       @seq.length
     end
-    
+
     def naseq
       @naseq = Sequence::NA.new(@seq) unless @naseq
       @naseq
     end
-    
+
     def nalen
       self.naseq.length
     end
-    
+
     def aaseq
       @aaseq = Sequence::AA.new(@seq) unless @aaseq
       @aaseq
     end
-    
+
     def aalen
       self.aaseq.length
     end
