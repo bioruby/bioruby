@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: db.rb,v 0.15 2002/06/18 20:18:15 k Exp $
+#  $Id: db.rb,v 0.16 2002/06/23 20:10:19 k Exp $
 #
 
 #require 'bio/id'
@@ -295,6 +295,10 @@ list if appropriate:
 
       The length of the amino acid sequence of the entry.
 
+--- seq		-> Bio::Sequence::NA or Bio::Sequence::AA
+
+      Returns an appropriate sequence object.
+
 --- position	-> String
 
       The position of the sequence in the entry or in the genome (depends on
@@ -372,3 +376,5 @@ Stores an EMBL style (EMBL, TrEMBL, Swiss-Prot etc.) entry.
       Returns the contents of the entry as a Hash.
 
 =end
+
+
