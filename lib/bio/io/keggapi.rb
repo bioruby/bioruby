@@ -1,7 +1,7 @@
 #
 # bio/io/keggapi.rb - KEGG API access class
 #
-#   Copyright (C) 2004 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2003, 2004 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,45 +17,28 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggapi.rb,v 1.5 2004/06/04 07:40:08 k Exp $
+#  $Id: keggapi.rb,v 1.6 2004/06/23 14:34:32 k Exp $
 #
 
-begin
-  require 'soap/wsdlDriver'
-rescue LoadError
-end
+require 'bio/io/soapwsdl'
 require 'uri'
 require 'net/http'
 
 module Bio
 class KEGG
 
-class API
+class API < Bio::SOAPWSDL
+
+  SERVER_URI = "http://soap.genome.jp/KEGG.wsdl"
 
   def initialize(wsdl = nil)
-    @wsdl = wsdl || 'http://soap.genome.jp/KEGG.wsdl'
+    @wsdl = wsdl || SERVER_URI
     @log = nil
     @start = 1
     @max_results = 100
     create_driver
   end
-  attr_reader :wsdl, :log
   attr_accessor :start, :max_results
-
-  def create_driver
-    @driver = SOAP::WSDLDriverFactory.new(@wsdl).create_driver
-    @driver.generate_explicit_type = true	# Ruby obj <-> SOAP obj
-  end
-
-  def wsdl=(url)
-    @wsdl = url
-    create_driver
-  end
-
-  def log=(io)
-    @log = io
-    @driver.wiredump_dev = @log
-  end
 
   def method_missing(*arg)
     results = @driver.send(*arg)
@@ -118,23 +101,43 @@ class API
 
 
   def get_entries(ary = [])
-    str = ary.join(" ")
-    @driver.send(:bget, str)
+    result = ''
+    step = [@max_results, 50].min
+    0.step(ary.length, step) do |i|
+      str = ary[i, step].join(" ")
+      result << @driver.send(:bget, str)
+    end
+    return result
   end
 
   def get_aaseqs(ary = [])
-    str = "-f -n a " + ary.join(" ")
-    @driver.send(:bget, str)
+    result = ''
+    step = [@max_results, 50].min
+    0.step(ary.length, step) do |i|
+      str = "-f -n a " + ary[i, step].join(" ")
+      result << @driver.send(:bget, str)
+    end
+    return result
   end
 
   def get_naseqs(ary = [])
-    str = "-f -n n " + ary.join(" ")
-    @driver.send(:bget, str)
+    result = ''
+    step = [@max_results, 50].min
+    0.step(ary.length, step) do |i|
+      str = "-f -n n " + ary[i, step].join(" ")
+      result << @driver.send(:bget, str)
+    end
+    return result
   end
 
   def get_definitions(ary = [])
-    str = ary.join(" ")
-    @driver.send(:btit, str)
+    result = ''
+    step = [@max_results, 50].min
+    0.step(ary.length, step) do |i|
+      str = ary[i, step].join(" ")
+      result << @driver.send(:btit, str)
+    end
+    return result
   end
 
 
@@ -249,6 +252,9 @@ if __FILE__ == $0
   puts "--- get_definitions(['eco:b0002', 'eco:b0003'])"
   puts serv.get_definitions(["eco:b0002", "eco:b0003"])
 
+  puts "--- get_definitions(('eco:b0001'..'eco:b0200').to_a)"
+  puts serv.get_definitions(("eco:b0001".."eco:b0200").to_a)
+
   puts "=== LinkDB"
 
   puts "### get_linkdb_by_entry('eco:b0002', 'pathway', 1, 5)"
@@ -349,22 +355,26 @@ if __FILE__ == $0
   puts "### get_motifs_by_gene('eco:b0002', 'pfam')"
   list = serv.get_motifs_by_gene("eco:b0002", "pfam")
   list.each do |motif|
-  end
+    puts motif.motif_id
+  end if list
 
   puts "### get_motifs_by_gene('eco:b0002', 'tfam')"
   list = serv.get_motifs_by_gene("eco:b0002", "tfam")
   list.each do |motif|
-  end
+    puts motif.motif_id
+  end if list
 
   puts "### get_motifs_by_gene('eco:b0002', 'pspt')"
   list = serv.get_motifs_by_gene("eco:b0002", "pspt")
   list.each do |motif|
-  end
+    puts motif.motif_id
+  end if list
 
   puts "### get_motifs_by_gene('eco:b0002', 'pspf')"
   list = serv.get_motifs_by_gene("eco:b0002", "pspf")
   list.each do |motif|
-  end
+    puts motif.motif_id
+  end if list
 
   puts "### get_motifs_by_gene('eco:b0002', 'all')"
   list = serv.get_motifs_by_gene("eco:b0002", "all")
