@@ -1,7 +1,7 @@
 #
 # bio/db/kegg/compound.rb - KEGG/COMPOUND database class
 #
-#   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: compound.rb,v 0.6 2002/08/19 02:01:47 k Exp $
+#  $Id: compound.rb,v 0.7 2002/08/19 02:17:02 k Exp $
 #
 
 require 'bio/db'
@@ -42,10 +42,7 @@ module Bio
 
       # NAME
       def names
-	unless @data['NAME']
-	  @data['NAME'] = get('NAME').split("\n").map{ |l| tag_cut(l) }
-	end
-	@data['NAME']
+        lines_fetch('NAME') 
       end
       def name
 	names[0]
@@ -66,10 +63,7 @@ module Bio
 
       # PATHWAY
       def pathways
-	unless @data['PATHWAY']
-	  @data['PATHWAY'] = get('PATHWAY').split("\n").map{ |l| tag_cut(l) }
-	end
-	@data['PATHWAY']
+        lines_fetch('PATHWAY') 
       end
 
       # ENZYME
@@ -82,10 +76,7 @@ module Bio
 
       # DBLINKS
       def dblinks
-	unless @data['DBLINKS']
-	  @data['DBLINKS'] = get('DBLINKS').split("\n").map{ |l| tag_cut(l) }
-	end
-	@data['DBLINKS']
+        lines_fetch('DBLINKS')
       end
 
     end
