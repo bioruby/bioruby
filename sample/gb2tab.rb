@@ -18,7 +18,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: gb2tab.rb,v 0.5 2001/10/17 14:43:10 katayama Exp $
+#  $Id: gb2tab.rb,v 0.6 2002/03/25 19:46:00 okuji Exp $
 #
 
 require 'bio/db/genbank'
@@ -127,7 +127,7 @@ Example usage in zsh:
   % for i in *.seq
   > do
   >   base=`basename $i .seq`
-  >   perl -pe "s/_HOGE_/$base/g" gb2tab.sql | mysql
+  >   ruby -pe "$_.gsub!(/_HOGE_/,'$base')" gb2tab.sql | mysql
   > done
 
 gb2tab.sql:
