@@ -18,32 +18,34 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: gb2tab.rb,v 0.6 2002/03/25 19:46:00 okuji Exp $
+#  $Id: gb2tab.rb,v 0.7 2002/03/27 05:46:14 katayama Exp $
 #
 
-require 'bio/db/genbank'
+require 'bio'
 
 include Bio
 
-ARGV.each do |seqfile|
+ARGV.each do |gbkfile|
 
-  seq  = open("#{seqfile}")
-  body = open("#{seqfile}.tab", "w")
-  ft   = open("#{seqfile}.ft.tab", "w")
-  ref  = open("#{seqfile}.ref.tab", "w")
+  gbk  = open("#{gbkfile}")
+  body = open("#{gbkfile}.tab", "w")
+  ft   = open("#{gbkfile}.ft.tab", "w")
+  ref  = open("#{gbkfile}.ref.tab", "w")
+  seq  = open("#{gbkfile}.seq.tab", "w")
   
-  while entry = seq.gets(GenBank::DELIMITER)
+  while entry = gbk.gets(GenBank::DELIMITER)
   
     gb = GenBank.new(entry)
   
     ### MAIN BODY
-  
+
+    versions = gb.versions.inspect
     kw = gb.keywords.inspect
     seg = gb.segment.inspect
     bc = gb.basecount.inspect
   
     ary = [
-      gb.id,
+      gb.entry_id,
       gb.nalen,
       gb.strand,
       gb.natype,
@@ -52,9 +54,7 @@ ARGV.each do |seqfile|
       gb.date,
       gb.definition,
       gb.accession,
-      gb.acc_version,
-      gb.gi,
-  #   gb.nid,
+      versions,
       kw,
       seg,
       gb.common_name,
@@ -63,7 +63,6 @@ ARGV.each do |seqfile|
       gb.comment,
       bc,
       gb.origin,
-      gb.naseq,
     ]
   
     body.puts ary.join("\t")
@@ -72,20 +71,15 @@ ARGV.each do |seqfile|
   
     num = 0
   
-    gb.features do |f|
+    gb.features.each do |f|
       num += 1
   
-      f.each do |qualifier, value|
-
-	if qualifier == 'db_xref'
-	  value = f['db_xref'].inspect
-	end
-  
+      f.each do |q|
 	ary = [
-	  gb.id,
+	  gb.entry_id,
 	  num,
-	  qualifier,
-	  value,
+	  q.type,
+	  q.value,
 	]
 	ft.puts ary.join("\t")
       end
@@ -94,28 +88,50 @@ ARGV.each do |seqfile|
 
     ### REFERENCE
   
-    gb.reference do |r|
+    num = 0
+
+    gb.references.each do |r|
+      num += 1
   
       ary = [
-	gb.id,
-	r['REFERENCE'],
-	r['AUTHORS'],
-	r['TITLE'],
-	r['JOURNAL'],
-	r['MEDLINE'],
-	r['PUBMED'],
-	r['REMARK'],
+	gb.entry_id,
+	num,
+	r.authors,
+	r.title,
+	r.journal,
+	r.medline,
+	r.pubmed,
       ]
   
       ref.puts ary.join("\t")
     end
-  
+
+    ### SEQUENCE
+
+    maxlen = 16 * 10 ** 6
+
+    num = 0
+
+    0.step(gb.nalen, maxlen) do |i|
+      num += 1
+
+      ary = [
+	gb.entry_id,
+	num,
+	gb.naseq[i, maxlen]
+      ]
+
+      seq.puts ary.join("\t")
+
+    end
+
   end
 
-  seq.close
+  gbk.close
   body.close
   ft.close
   ref.close
+  seq.close
 
 end
 
@@ -123,17 +139,19 @@ end
 
 Example usage in zsh:
 
-  % gb2tab.rb *.seq
-  % for i in *.seq
+  % gb2tab.rb *.gbk
+  % for i in *.gbk
   > do
-  >   base=`basename $i .seq`
-  >   ruby -pe "$_.gsub!(/_HOGE_/,'$base')" gb2tab.sql | mysql
+  >   base=`basename $i .gbk`
+  >   ruby -pe "gsub(/_HOGE_/,'$base')" gb2tab.sql | mysql
   > done
 
 gb2tab.sql:
 
 CREATE DATABASE IF NOT EXISTS genbank;
-CREATE TABLE IF NOT EXISTS genbank._HOGE_ (
+USE genbank;
+
+CREATE TABLE IF NOT EXISTS _HOGE_ (
 	id		varchar(16)	NOT NULL PRIMARY KEY,
 	nalen		integer,
 	strand		varchar(5),
@@ -143,8 +161,7 @@ CREATE TABLE IF NOT EXISTS genbank._HOGE_ (
 	date		varchar(10),
 	definition	varchar(255),
 	accession	varchar(30),
-	acc_version	varchar(30),
-	gi		varchar(30),
+	versions	varchar(30),
 	keywords	varchar(255),
 	segment		varchar(255),
 	source		varchar(255),
@@ -153,37 +170,46 @@ CREATE TABLE IF NOT EXISTS genbank._HOGE_ (
 	comment		text,
 	basecount	varchar(255),
 	origin		varchar(255),
-	naseq		mediumtext,
-	INDEX idx (organism)
+	KEY (division),
+	KEY (accession),
+	KEY (organism)
 );
-LOAD DATA LOCAL INFILE '_HOGE_.seq.tab' INTO TABLE genbank._HOGE_;
+LOAD DATA LOCAL INFILE '_HOGE_.gbk.tab' INTO TABLE _HOGE_;
 
-CREATE TABLE IF NOT EXISTS genbank._HOGE_ft (
+CREATE TABLE IF NOT EXISTS _HOGE_ft (
 	id		varchar(16)	NOT NULL,
 	num		integer,
 	qualifier	varchar(30),
 	value		text,
-	INDEX idx (id)
+	KEY (id)
 );
-LOAD DATA LOCAL INFILE '_HOGE_.seq.ft.tab' INTO TABLE genbank._HOGE_ft;
+LOAD DATA LOCAL INFILE '_HOGE_.gbk.ft.tab' INTO TABLE _HOGE_ft;
 
-CREATE TABLE IF NOT EXISTS genbank._HOGE_ref (
+CREATE TABLE IF NOT EXISTS _HOGE_ref (
 	id		varchar(16)	NOT NULL,
-	reference	varchar(255),
+	num		integer,
 	authors		text,
 	title		text,
 	journal		text,
 	medline		varchar(255),
 	pubmed		varchar(255),
-	remark		varchar(255),
-	INDEX idx (id, medline)
+	KEY (id),
+	KEY (medline)
 );
-LOAD DATA LOCAL INFILE '_HOGE_.seq.ref.tab' INTO TABLE genbank._HOGE_ref;
+LOAD DATA LOCAL INFILE '_HOGE_.gbk.ref.tab' INTO TABLE _HOGE_ref;
+
+CREATE TABLE IF NOT EXISTS _HOGE_seq (
+	id		varchar(16)	NOT NULL,
+	num		integer,
+	naseq		mediumtext,
+	KEY (id)
+);
+LOAD DATA LOCAL INFILE '_HOGE_.gbk.seq.tab' INTO TABLE _HOGE_seq;
 
 
 gbmerge.sql sample:
 
-CREATE TABLE IF NOT EXISTS genbank.gb (
+CREATE TABLE IF NOT EXISTS gb (
 	id		varchar(16)	NOT NULL PRIMARY KEY,
 	nalen		integer,
 	strand		varchar(5),
@@ -211,12 +237,12 @@ CREATE TABLE IF NOT EXISTS genbank.gb (
 	gbvrt
 );
 
-CREATE TABLE IF NOT EXISTS genbank.gbft (
+CREATE TABLE IF NOT EXISTS gbft (
 	id		varchar(16)	NOT NULL,
 	num		integer,
 	qualifier	varchar(30),
 	value		text,
-	INDEX idx (id)
+	KEY (id)
 ) TYPE=MERGE UNION=(
 	gbbct1ft,
 	gbbct2ft,
@@ -224,7 +250,7 @@ CREATE TABLE IF NOT EXISTS genbank.gbft (
 	gbvrtft
 );
 
-CREATE TABLE IF NOT EXISTS genbank.gbref (
+CREATE TABLE IF NOT EXISTS gbref (
 	id		varchar(16)	NOT NULL,
 	reference	varchar(255),
 	authors		text,
@@ -232,8 +258,8 @@ CREATE TABLE IF NOT EXISTS genbank.gbref (
 	journal		text,
 	medline		varchar(255),
 	pubmed		varchar(255),
-	remark		varchar(255),
-	INDEX idx (id, medline)
+	KEY (id),
+	KEY (medline)
 ) TYPE=MERGE UNION=(
 	gbbct1ref,
 	gbbct2ref,
