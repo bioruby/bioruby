@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.21 2002/06/06 00:48:27 k Exp $
+#  $Id: sequence.rb,v 0.22 2002/06/18 19:42:38 k Exp $
 #
 
 require 'bio/data/na'
@@ -30,38 +30,28 @@ module Bio
 
   # Nucleic/Amino Acid sequence
 
-  class Sequence
+  class Sequence < String
 
-    # Should use the Forwardable module, but it doesn't work well with
-    # some methods (e.g. []), so use our own hack at the moment. Maybe
-    # a Ruby's bug.
-    def method_missing(name, *args, &block)
-      s = @str.send(name, *args, &block)
-      if not s.kind_of? String
-	s
-      else
-	type.new s
-      end
-    end
-
-    # These shouldn't be converted to Sequence automatically.
     def to_s
-      @str
+      "%s" % self
+    end
+    alias :to_str :to_s
+
+    def to_seq
+      self.class.new(self)
     end
 
-    def to_str
-      @str
+    def <<(*arg)
+      super(self.class.new(*arg))
     end
-    # End.
+    alias :concat :<<
 
-    def initialize(str)
-      @str = str
+    def +(*arg)
+      self.class.new(super(*arg))
     end
 
-    def ==(a)
-      self.class == a.class and self.to_s == a.to_s
-    end
-    
+
+
     def subseq(s = 1, e = self.length)
       s -= 1
       e -= 1
@@ -78,6 +68,10 @@ module Bio
     end
 
     def fasta(factory, header = nil)
+      factory.query(self.to_fasta(header))
+    end
+
+    def blast(factory, header = nil)
       factory.query(self.to_fasta(header))
     end
 
@@ -106,7 +100,6 @@ module Bio
       end
       return count
     end
-
 
     def randomize(hash = nil)
       length = self.length
@@ -307,7 +300,6 @@ module Bio
 	AA.new(super(*arg, &block))
       end
 
-
       def AA.randomize(*arg, &block)
 	AA.new('').randomize(*arg, &block)
       end
@@ -469,6 +461,10 @@ end
 
 You can use Bio::Seq instead of Bio::Sequence for short.
 
+--- Bio::Sequence#to_seq
+
+      Force self to reformat for clean up.
+
 --- Bio::Sequence#subseq(start = 1, end = self.length)
 
       Returns the subsequence of the self string.
@@ -483,6 +479,11 @@ You can use Bio::Seq instead of Bio::Sequence for short.
 
       Execute fasta by the factory (Bio::Fasta object) and returns
       Bio::Fasta::Report object.  See Bio::Fasta for more details.
+
+--- Bio::Sequence#blast(factory, header = '')
+
+      Execute blast by the factory (Bio::Blast object) and returns
+      Bio::Blast::Report object.  See Bio::Blast for more details.
 
 --- Bio::Sequence#window_search(window_size)
 
