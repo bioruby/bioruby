@@ -1,17 +1,15 @@
 #
 # bio/sequence.rb - biological sequence class
 #
-#   Copyright (c) 2000 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2000, 2001 KATAYAMA Toshiaki <k@bioruby.org>
 #
 
 # Nucleic/Amino Acid sequence
 
 class Sequence < String
 
-  def subseq(str, s, e)
-    s += 1
-    e += 1
-    return str[s..e]
+  def initialize(str)
+    super
   end
 
 end
@@ -22,23 +20,23 @@ end
 class NAseq < Sequence
 
   def initialize(str)
-    str.downcase!
-    return str
+    super.downcase!
+    super.tr!('u', 't')
   end
 
   NucleicAcids = {
     # IUPAC code : Faisst and Meyer (Nucleic Acids Res. 20:3-26, 1992)
 
-    "w"=>"[at]", "s"=>"[gc]",
-    "r"=>"[ag]", "y"=>"[tc]",
-    "m"=>"[ac]", "k"=>"[tg]",
+    "w"=>/[at]/, "s"=>/[gc]/,
+    "r"=>/[ag]/, "y"=>/[tc]/,
+    "m"=>/[ac]/, "k"=>/[tg]/,
 
-    "d"=>"[atg]",
-    "h"=>"[atc]",
-    "v"=>"[agc]",
-    "b"=>"[tgc]",
+    "d"=>/[atg]/,
+    "h"=>/[atc]/,
+    "v"=>/[agc]/,
+    "b"=>/[tgc]/,
 
-    "n"=>"[atgc]",
+    "n"=>/[atgc]/,
 
     "a"=>"adenine",
     "t"=>"thymine",
@@ -126,57 +124,58 @@ class NAseq < Sequence
     },
   ]
 
-  def count(str, na)
-    na.downcase!
-    num = 0
-    str.each_byte do |x|
-      num += 1 if x == na
+  def subseq(s = 1, e = self.length)
+    s -= 1
+    e -= 1
+    return NAseq.new(self[s..e])
+  end
+
+  def count(base)
+    b = base.downcase[0]
+    n = 0
+    self.each_byte do |x|
+      n += 1 if x == b
     end
-    return num
+    return n
   end
 
-  def complement(str)
-    str.reverse!
-    str.tr!("ATGCatgc", "TACGtagc")
-    return str
+  def complement
+    str = self.reverse
+    str.tr!("atgc", "tacg")
+    return NAseq.new(str)
   end
 
-  def translate(str, frame = 1, table = 1)
-    num = frame - 1
-    while num < str.length
-      codon = str[num,3]
-      aaseq += CodonTable[table][codon]
-      num += 3
+  def translate(frame = 1, table = 1)
+    frame -= 1
+    aaseq = AAseq.new('')
+    frame.step(self.length - 3, 3) do |i|
+      codon = self[i,3]
+      if CodonTable[table][codon]
+	aaseq << CodonTable[table][codon]
+      else
+	aaseq << "X"
+      end
     end
     return aaseq
   end
 
-  def gc_percent(str)
-    num_a = num_t = num_g = num_c = num_o = 0
-    str.each_byte do |x|
-      case x
-      when a
-	num_a += 1
-      when t
-	num_t += 1
-      when g
-	num_g += 1
-      when c
-	num_c += 1
-      else
-	num_o += 1
-      end
+  def gc_percent
+    count = Hash.new(0)
+    self.scan(/./) do |b|
+      count[b] += 1
     end
-    num_gc = num_g + num_c
-    num_atgc = num_a + num_t + num_g + num_c
-    gc = sprintf("%.1f", num_gc / num_atgc * 100)
+    at = count['a'] + count['t']
+    gc = count['g'] + count['c']
+    gc = sprintf("%.1f", gc.to_f / (at + gc) * 100)
     return gc
   end
+  alias gc gc_percent
 
-  def illegal_bases(str)
-    str.scan("^[atgc]").sort.squeeze!
-    return str
+  def illegal_bases
+    a = self.scan(/[^atgc]/).sort.uniq
+    return a
   end
+  alias ib illegal_bases
 
 end
 
@@ -186,7 +185,7 @@ end
 class AAseq < Sequence
 
   def initialize(str)
-    str.upcase!
+    super.upcase!
   end
 
   AminoAcids = {
@@ -194,7 +193,7 @@ class AAseq < Sequence
     "F"=>"Phe", "G"=>"Gly", "H"=>"His", "I"=>"Ile",
     "K"=>"Lys", "L"=>"Leu", "M"=>"Met", "N"=>"Asn",
     "P"=>"Pro", "Q"=>"Gln", "R"=>"Arg", "S"=>"Ser",
-    "T"=>"Thr", "V"=>"Val", "W"=>"Trp", "Y"=>"Tyr", 
+    "T"=>"Thr", "V"=>"Val", "W"=>"Trp", "Y"=>"Tyr",
 
     "Ala"=>"alanine",
     "Cys"=>"cysteine",
@@ -218,19 +217,25 @@ class AAseq < Sequence
     "Tyr"=>"tyrosine",
   }
 
-  def count(str, aa)
-    aa.upcase!
-    num = 0
-    str.each_byte do |x|
-      num += 1 if x == aa
-    end
-    return num
+  def subseq(s = 1, e = self.length)
+    s -= 1
+    e -= 1
+    return AAseq.new(self[s..e])
   end
 
-  def to_list(str)
-    array = Array.new
+  def count(amino)
+    a = amino.upcase[0]
+    n = 0
     str.each_byte do |x|
-      array.push(AminoAcids[x])
+      n += 1 if x == a
+    end
+    return n
+  end
+
+  def to_list
+    array = []
+    self.each_byte do |x|
+      array.push(AminoAcids[x.chr])
     end
     return array
   end
