@@ -1,3 +1,10 @@
+2004-08-25  KATAYAMA Toshiaki <k@bioruby.org>
+
+	* BioRuby 0.6.1 released.
+	  * fix for the packaging miss of 0.6.0
+	  * bin/*.rb are renamed to bin/br_*.rb (similar to the BioPerl's
+	    convention: bp_*.pl)
+
 2004-08-24  KATAYAMA Toshiaki <k@bioruby.org>
 
 	* BioRuby 0.6.0 released.
