@@ -62,21 +62,18 @@ and DBGET etc.
 
 == INSTALL
 
-In the bioruby source directory (such as bioruby-x.x.x/),
-
-  % ruby extconf.rb
-  % su
-  # make site-install 
-
-or
+In the bioruby source directory (such as bioruby-x.x.x/), run install.rb
+as follows:
 
   % ruby install.rb config
   % ruby install.rb setup
   % su
   # ruby install.rb install
 
-If you are using Mac OS X, the last two lines would be
+If you are using Mac OS X, you should use 'sudo' command instead of 'su'.
 
+  % ruby install.rb config
+  % ruby install.rb setup
   % sudo ruby install.rb install
 
 You can try
