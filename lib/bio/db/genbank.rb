@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.21 2002/03/04 07:56:58 katayama Exp $
+#  $Id: genbank.rb,v 0.22 2002/03/27 05:16:24 katayama Exp $
 #
 
 require 'bio/db'
@@ -38,12 +38,12 @@ module Bio
     class Locus
       def initialize(locus_line)
         if locus_line.length > 75 			# after Rel 126.0
-	  @entry_id = locus_line[12..30].strip
-	  @seq_len  = locus_line[31..41].to_i
-	  @strand   = locus_line[46..48].strip
-	  @natype   = locus_line[49..54].strip
-	  @circular = locus_line[55..63].strip
-	  @division = locus_line[64..67].strip
+	  @entry_id = locus_line[12..27].strip
+	  @seq_len  = locus_line[29..39].to_i
+	  @strand   = locus_line[44..46].strip
+	  @natype   = locus_line[47..52].strip
+	  @circular = locus_line[55..62].strip
+	  @division = locus_line[63..66].strip
 	  @date     = locus_line[68..78].strip
         else
 	  @entry_id = locus_line[12..21].strip
