@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: bio.rb,v 1.3 2001/09/17 22:46:27 katayama Exp $
+#  $Id: bio.rb,v 1.4 2001/09/26 19:17:57 katayama Exp $
 #
 #    This modlue provides eazy loading of all BioRuby products.
 #    By using this module, you you don't need to conscious about
@@ -23,41 +23,44 @@
 ### Sequence
 
 require 'bio/sequence'
-# require 'bio/data/na'		# included by sequence.rb
-# require 'bio/data/aa'		# included by sequence.rb
-# require 'bio/data/codontable'	# included by sequence.rb
-
-### Matrix
-
-require 'bio/matrix'
 
 ### Locations
 
-require 'bio/location'
+require 'bio/location'		# included by bio/sequence.rb
 
 ### Reference
 
-require 'bio/reference'
+# require 'bio/reference'	# included by bio/db.rb
 
-### IO
+### Matrix/Vector
+
+require 'bio/matrix'
+
+### IO interfaces
 
 require 'bio/io/dbget'
 require 'bio/io/pubmed'
 
+### Constants
+
+# require 'bio/data/na'		# included by bio/sequence.rb
+# require 'bio/data/aa'		# included by bio/sequence.rb
+# require 'bio/data/codontable'	# included by bio/sequence.rb
+# require 'bio/data/keggorg'	# included by bio/db.rb
+
 ### DB parsers
 
 # require 'bio/db'		# included by bio/db/*.rb
-# require 'bio/data/keggorg'	# included by db.rb
 
-# DDBJ
+# GenBank/RefSeq/DDBJ
+require 'bio/db/genbank'
+require 'bio/db/refseq'
 require 'bio/db/ddbj'
 
-# GenBank
-require 'bio/db/genbank'
-
-# EMBL/TrEMBL
+# EMBL/TrEMBL/Swiss-Prot
 #require 'bio/db/embl'
 #require 'bio/db/trembl'
+#require 'bio/db/swissprot'
 
 # KEGG
 require 'bio/db/kegg/genome'
