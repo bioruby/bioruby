@@ -17,34 +17,34 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: compound.rb,v 0.4 2001/11/06 16:58:52 okuji Exp $
+#  $Id: compound.rb,v 0.5 2001/12/15 02:50:35 katayama Exp $
 #
-
-module Bio
 
 require 'bio/db'
 
-class KEGG
+module Bio
 
-class COMPOUND < KEGGDB
+  class KEGG
 
-  DELIMITER	= RS = "\n///\n"
-  TAGSIZE	= 12
+    class COMPOUND < KEGGDB
 
-  def initialize(entry)
-    super(entry, TAGSIZE)
+      DELIMITER	= RS = "\n///\n"
+      TAGSIZE	= 12
+
+      def initialize(entry)
+	super(entry, TAGSIZE)
+      end
+
+      # ENTRY
+      # NAME
+      # FORMULA
+      # PATHWAY
+      # ENZYME
+      # DBLINKS
+
+    end
+
   end
 
-  # ENTRY
-  # NAME
-  # FORMULA
-  # PATHWAY
-  # ENZYME
-  # DBLINKS
-
 end
-
-end				# class KEGG
-
-end				# module Bio
 

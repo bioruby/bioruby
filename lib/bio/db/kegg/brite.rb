@@ -17,35 +17,35 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: brite.rb,v 0.4 2001/11/06 16:58:52 okuji Exp $
+#  $Id: brite.rb,v 0.5 2001/12/15 02:50:35 katayama Exp $
 #
-
-module Bio
 
 require 'bio/db'
 
-class KEGG
+module Bio
 
-class BRITE < KEGGDB
+  class KEGG
 
-  DELIMITER	= RS = "\n///\n"
-  TAGSIZE	= 12
+    class BRITE < KEGGDB
 
-  def initialize(entry)
-    super(entry, TAGSIZE)
+      DELIMITER	= RS = "\n///\n"
+      TAGSIZE	= 12
+
+      def initialize(entry)
+	super(entry, TAGSIZE)
+      end
+
+      # ENTRY
+      # DEFINITION
+      # RELATION
+      # FACTORS
+      # INTERACTION
+      # SOURCE
+      # REFERENCE
+
+    end
+
   end
 
-  # ENTRY
-  # DEFINITION
-  # RELATION
-  # FACTORS
-  # INTERACTION
-  # SOURCE
-  # REFERENCE
-
 end
-
-end				# class KEGG
-
-end				# module Bio
 
