@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.15 2001/11/14 09:08:49 shuichi Exp $
+#  $Id: pathway.rb,v 1.16 2001/11/14 09:15:51 shuichi Exp $
 #
 
 require 'bio/matrix'
@@ -230,7 +230,8 @@ module Bio
     end
 
 
-    # Floyd method
+    # Floyd-Wardshall alogrithm for solving the all-pairs shortest-paths
+    # problem on a directed graph G = (V, E)
     def floyd_warshall
       inf = 1 / 0.0
 
@@ -447,7 +448,7 @@ end
 --- Bio::Pathway#bfs_shortest_path(node1, node2)
 --- Bio::Pathway#dijkstra(root)
 --- Bio::Pathway#bellman_ford(root)
---- Bio::Pathway#floyd
+--- Bio::Pathway#floyd_warshall
 
 = Bio::Relation
 
