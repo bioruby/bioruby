@@ -1,7 +1,7 @@
 #
-# bio/db/sptr.rb - SwissProt and TrEMBL protein sequence database parser class
+# bio/db/embl/sptr.rb - SwissProt and TrEMBL database class
 # 
-#   Copyright (C) 2001 Mitsuteru S. Nakao <n@bioruby.org>
+#   Copyright (C) 2001, 2002 Mitsuteru S. Nakao <n@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,50 +17,17 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.12 2002/06/25 11:56:14 k Exp $
+#  $Id: sptr.rb,v 1.13 2002/08/16 17:34:52 k Exp $
 #
 
 require 'bio/db/embl'
 
 module Bio
 
-  #      Content                      Occurrence in an entry
-  # ---- ---------------------------  --------------------------------
-  # ID - identification               (begins each entry; 1 per entry)
-  # AC - accession number(s)          (>=1 per entry)
-  # DT - date                         (3 per entry)
-  # DE - description                  (>=1 per entry)
-  # GN - gene name(s)                 (>=0 per entry; optional)
-  # OS - organism species             (>=1 per entry)
-  # OG - organelle                    (0 or 1 per entry; optional)
-  # OC - organism classification      (>=1 per entry)
-  # OX - organism taxonomy x-ref      (>=1 per entry)
-  # RN - reference number             (>=1 per entry)
-  # RP - reference positions          (>=1 per entry)
-  # RC - reference comment(s)         (>=0 per entry; optional)
-  # RX - reference cross-reference(s) (>=0 per entry; optional)
-  # RA - reference author(s)          (>=1 per entry)
-  # RT - reference title              (>=0 per entry; optional)
-  # RL - reference location           (>=1 per entry)
-  # CC - comments or notes            (>=0 per entry; optional)
-  # DR - database cross-references    (>=0 per entry; optional)
-  # KW - keywords                     (>=1 per entry)
-  # FT - feature table data           (>=0 per entry; optional)
-  # SQ - sequence header              (1 per entry)
-  #    - (blanks) The sequence data   (>=1 per entry)
-  # // - termination line             (ends each entry; 1 per entry)
-  # ---- ---------------------------  --------------------------------
-
   class SPTR < EMBLDB
 
     include EMBL_COMMON
     
-    DELIMITER	= RS = "\n//\n"
-    TAGSIZE	= 5
-    
-    def initialize(entry)
-      super(entry, TAGSIZE)
-    end
 
     # ID Line
     #
@@ -488,115 +455,124 @@ module Bio
       end
     end
 
+  end
 
-    # // Line; termination line (end; 1/entry)
-
-  end # class SPTR
-
-end # module Bio
+end
 
 
-# testing codes
 if __FILE__ == $0
 end
 
 
-
 =begin
 
-= NAME
+= Bio::SPTR
 
-  sptr.rb - A parser object class for SWISS-PROT/TrEMBL entry
-
-== Usage:
-
-  require 'bio/db/sptr'
-  emb = Bio::SPTR.new(data)
-
-== Author
-
-  Mitsuteru S. Nakao <n@BioRuby.org>
-  The BioRuby Project (http://BioRuby.org/)
-
-== Class
-
-  class  Bio::SPTR
-
-== Methods
-
-* Initialize
+=== Initialize
 
 --- Bio::SPTR.new(a_sp_entry)
 
-* ID Line (Identification)
+=== ID line (Identification)
 
 --- Bio::SPTR#id_line -> Hash
 --- Bio::SPTR#id_line(key) -> String
+
        key = (ENTRY_NAME|MOLECULE_TYPE|DATA_CLASS|SEQUENCE_LENGTH)
+
 --- Bio::SPTR#entry -> String
-             #entryname -> String
+--- Bio::SPTR#entryname -> String
 --- Bio::SPTR#molecule -> String
 --- Bio::SPTR#division -> String
 --- Bio::SPTR#sequencelength -> Int
     
-* AC Lines (Accession number)
+=== AC lines (Accession number)
 
 --- Bio::SPTR#ac -> Array
 --- Bio::SPTR#accession -> String
  
-* GN Line (Gene name(s))
+=== GN line (Gene name(s))
 
 --- Bio::SPTR#gn -> Array(Array)
 --- Bio::SPTR#gene_name -> Bio::SPTR#gn[0][0]
 
-* DT Lines (Date) 
+=== DT lines (Date) 
 
 --- Bio::SPTR#dt -> Hash
 --- Bio::SPTR#dt(key) -> String
+
       key = (created|annotation|sequence)
+
 --- Bio::SPTR.dt['updated']
 
-* DE Lines (Description)
+=== DE lines (Description)
 
 --- Bio::SPTR#de -> String
 
-* KW Lines (Keyword)
+=== KW lines (Keyword)
 
 --- Bio::SPTR#kw -> Array
 
-* OS Lines (Organism species)
+=== OS lines (Organism species)
 
 --- Bio::SPTR#os -> Array
 
-* OC Lines (organism classification)
+=== OC lines (organism classification)
 
 --- Bio::SPTR#oc -> Array
 
-* OG Line (Organella)
+=== OG line (Organella)
 
 --- Bio::SPTR#og -> String
 
-* OX Line (Organism taxonomy cross-reference)
+=== OX line (Organism taxonomy cross-reference)
 
 --- Bio::SPTR#ox -> Hash
 
-* RN RC RP RX RA RT RL Lines (Reference)  
+=== RN RC RP RX RA RT RL lines (Reference)  
 
 --- Bio::SPTR#ref -> Array
 
-* DR Lines (Database cross-reference)
+=== DR lines (Database cross-reference)
 
 --- Bio::SPTR#dr -> Hash
 --- Bio::SPTR#dr(dbname) -> Array
 
-* FT Lines (Feature table data)
+=== FT lines (Feature table data)
 
 --- Bio::SPTR#ft -> Hash
 --- Bio::SPTR#ft(feature_name) -> Array
 
-* SQ Lines (Sequence header and data)
+=== SQ lines (Sequence header and data)
 
 --- Bio::SPTR#sq -> Hash
 --- Bio::EMBL#seq -> Bio::Sequece::AA
 
 =end
+
+  #      Content                      Occurrence in an entry
+  # ---- ---------------------------  --------------------------------
+  # ID - identification               (begins each entry; 1 per entry)
+  # AC - accession number(s)          (>=1 per entry)
+  # DT - date                         (3 per entry)
+  # DE - description                  (>=1 per entry)
+  # GN - gene name(s)                 (>=0 per entry; optional)
+  # OS - organism species             (>=1 per entry)
+  # OG - organelle                    (0 or 1 per entry; optional)
+  # OC - organism classification      (>=1 per entry)
+  # OX - organism taxonomy x-ref      (>=1 per entry)
+  # RN - reference number             (>=1 per entry)
+  # RP - reference positions          (>=1 per entry)
+  # RC - reference comment(s)         (>=0 per entry; optional)
+  # RX - reference cross-reference(s) (>=0 per entry; optional)
+  # RA - reference author(s)          (>=1 per entry)
+  # RT - reference title              (>=0 per entry; optional)
+  # RL - reference location           (>=1 per entry)
+  # CC - comments or notes            (>=0 per entry; optional)
+  # DR - database cross-references    (>=0 per entry; optional)
+  # KW - keywords                     (>=1 per entry)
+  # FT - feature table data           (>=0 per entry; optional)
+  # SQ - sequence header              (1 per entry)
+  #    - (blanks) The sequence data   (>=1 per entry)
+  # // - termination line             (ends each entry; 1 per entry)
+  # ---- ---------------------------  --------------------------------
+

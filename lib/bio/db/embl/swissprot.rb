@@ -1,7 +1,7 @@
 #
-# bio/db/swissprot.rb - SwissProt database class
+# bio/db/embl/swissprot.rb - SwissProt database class
 # 
-#   Copyright (C) 2001 Mitsuteru S. Nakao <n@bioruby.org>
+#   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,10 +17,10 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: swissprot.rb,v 1.1 2001/11/12 20:52:25 katayama Exp $
+#  $Id: swissprot.rb,v 1.2 2002/08/16 17:34:52 k Exp $
 #
 
-require 'bio/db/sptr'
+require 'bio/db/embl/sptr'
 
 module Bio
 
