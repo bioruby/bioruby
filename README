@@ -40,6 +40,7 @@ and DBGET etc.
 
 * Ruby library -- ((<URL:http://raa.ruby-lang.org/>))
 
+  * [RAA:strscan] for parsing Blast default output.
   * [RAA:rexml] for parsing Blast XML output and using DAS.
   * [RAA:xmlparser] can be used for faster Blast XML parsing.
   * [RAA:ruby-dbi] and at least one driver from [RAA:mysql-ruby],
@@ -86,11 +87,11 @@ for more details.
 If you want to use the OBDA (Open Bio Database Access) to obtain database
 entries, copy a sample config file
 
-  etc/bioinfomatics/seqdatabase.ini
+  etc/bioinformatics/seqdatabase.ini
 
 to
 
-  /etc/bioinfomatics/seqdatabase.ini	(system wide configuration)
+  /etc/bioinformatics/seqdatabase.ini	(system wide configuration)
 
 or
 
