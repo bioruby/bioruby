@@ -1,7 +1,7 @@
 #
 # bio/db/embl.rb - Common methods for EMBL style database classes
 #
-#   Copyright (C) 2001,2002,2003 Mitsuteru C. Nakao <n@bioruby.org>
+#   Copyright (C) 2001,2002,2003,2004 Mitsuteru C. Nakao <n@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: embl.rb,v 1.20 2003/09/08 07:23:16 n Exp $
+#  $Id: embl.rb,v 1.21 2004/07/21 04:55:58 nakao Exp $
 #
 
 require 'bio/db'
@@ -55,6 +55,7 @@ module Bio
       @data['AC']
     end
     alias accessions ac
+
     # Bio::EMBL_COMMON#accession  -> String
     def accession
       ac[0]
@@ -168,17 +169,17 @@ module Bio
 
 
     # R Lines
-    # RN RC RP RX RA RT RL
+    # RN RC RP RX RA RT RL RG
     # Bio::EMBL_COMMON#ref -> Array
     def ref
       unless @data['R']
 	ary = Array.new
 	get('R').split(/\nRN   /).each do |str|
 	  raw = {'RN' => '', 'RC' => '', 'RP' => '', 'RX' => '', 
-	    'RA' => '', 'RT' => '', 'RL' => ''}
+	    'RA' => '', 'RT' => '', 'RL' => '', 'RG' => ''}
 	  str = 'RN   ' + str unless /^RN   / =~ str
 	  str.split("\n").each do |line|
-	    if /^(R[NPXARLCT])   (.+)/ =~ line
+	    if /^(R[NPXARLCTG])   (.+)/ =~ line
 	      raw[$1] += $2 + ' '
 	    else
 	      raise "Invalid format in R lines, \n[#{line}]\n"
@@ -278,6 +279,7 @@ end # module Bio
 #     RP - reference positions        (>=1 per entry)
 #     RX - reference cross-reference  (>=0 per entry)
 #     RA - reference author(s)        (>=1 per entry)
+#     RG - reference group            (>=0 per entry)
 #     RT - reference title            (>=1 per entry)
 #     RL - reference location         (>=1 per entry)
 #     DR - database cross-reference   (>=0 per entry)

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.19 2003/09/08 05:52:05 n Exp $
+#  $Id: sptr.rb,v 1.20 2004/07/21 04:55:58 nakao Exp $
 #
 
 require 'bio/db/embl'
@@ -211,10 +211,10 @@ module Bio
       unless @data['OX']
 	tmp = fetch('OX').sub(/\.$/,'').split(/;/).map {|e| e.strip }
 	hsh = Hash.new
-	tmp.each do |e|
+	tmp.each {|e|
 	  db,refs = e.split(/=/)
 	  hsh[db] = refs.split(/, */)
-	end
+        }
 	@data['OX'] = hsh
       end
       return @data['OX']
@@ -270,7 +270,7 @@ module Bio
 	return cc if get('CC').size == 0 # 12KD_MYCSM has no CC lines.
 
 	begin
-	  fetch('CC').split(/#{cmt}/)[0].sub(dlm,'').split(dlm).each do |tmp|
+	  fetch('CC').split(/#{cmt}/)[0].sub(dlm,'').split(dlm).each {|tmp|
 	    if /(^[A-Z ]+[A-Z]): (.+)/ =~ tmp
 	      key  = $1
 	      body = $2.gsub(/- (?!AND)/,'-')
@@ -283,7 +283,7 @@ module Bio
 	      raise ["Error: #{entry_id}: CC Lines", '',
 		tmp, '', '', fetch('CC'),''].join("\n")
 	    end
-	  end
+          }
 	rescue NameError
 	  if fetch('CC') == ''
             return {}
@@ -324,9 +324,9 @@ module Bio
 	if /Comment=(.+?);/m =~ ap
 	  tmp['Comment'] = $1
 	end
-	ap.scan(/Name=.+?Sequence=.+?;/).each do |ent|
+	ap.scan(/Name=.+?Sequence=.+?;/).each {|ent|
 	  tmp['Variants'] << cc_ap_variants_parse(ent)
-	end
+        }
 	return tmp
 
 
@@ -336,9 +336,9 @@ module Bio
 	db = @data['CC']['DATABASE']
 	return db unless db
 
-	db.each do |e|
+	db.each {|e|
 	  db = {'NAME'=>nil,'NOTE'=>nil,'WWW'=>nil,'FTP'=>nil}
-	  e.sub(/.$/,'').split(/;/).each do |line|
+	  e.sub(/.$/,'').split(/;/).each {|line|
 	    case line
 	    when /NAME=(.+)/
 	      db['NAME'] = $1
@@ -349,9 +349,9 @@ module Bio
 	    when /FTP="(.+)"/
 	      db['FTP'] = $1
 	    end 
-	  end
+          }
 	  tmp.push(db)
-	end
+        }
 	return tmp
 
       when 'MASS SPECTOROMETRY'
@@ -360,9 +360,9 @@ module Bio
 	ms = @data['CC']['MASS SPECTOROMETRY']
 	return ms unless ms
 
-	ms.each do |m|
+	ms.each {|m|
 	  mass = {'MW'=>nil,'MW_ERR'=>nil,'METHOD'=>nil,'RANGE'=>nil}
-	  m.sub(/.$/,'').split(/;/).each do |line|
+	  m.sub(/.$/,'').split(/;/).each {|line|
 	    case line
 	    when /MW=(.+)/
 	      mass['MW'] = $1.to_f
@@ -373,9 +373,9 @@ module Bio
 	    when /RANGE="(\d+-\d+)"/ 
 	      mass['RANGE'] = $1          # RANGE class ? 
 	    end 
-	  end
+          }
 	  tmp.push(mass)
-	end
+        }
 	return tmp
 
       when nil
@@ -503,7 +503,8 @@ module Bio
 	table.each_key {|k|
 	  table[k].each {|e|
 	    if / -> / =~ e['Description']
-	      e['Description'].sub!(/([A-Z][A-Z ]*[A-Z]*) -> ([A-Z][A-Z ]*[A-Z]*)/){ 
+              pattern = /([A-Z][A-Z ]*[A-Z]*) -> ([A-Z][A-Z ]*[A-Z]*)/
+	      e['Description'].sub!(pattern) {  
 		a = $1
 		b = $2
 		a.gsub(/ /,'') + " -> " + b.gsub(/ /,'') 
@@ -565,6 +566,7 @@ module Bio
 	@data['SQ']
       end
     end
+
     # @orig[''] as sequence
     # blank Line; sequence data (>=1)
     # Bio::SPTR#seq  -> Bio::Sequence::AA
@@ -583,6 +585,8 @@ end
 
 
 if __FILE__ == $0
+  # Usage: ruby __FILE__ uniprot_sprot.dat 
+  # Usage: ruby __FILE__ uniprot_sprot.dat | egrep '^RuntimeError'
 
   begin
     require 'pp'
@@ -593,7 +597,11 @@ if __FILE__ == $0
   def cmd(cmd, tag = nil, ent = $ent)
     puts " ==> #{cmd} "
     puts Bio::SPTR.new(ent).get(tag) if tag
-    p eval(cmd)
+    begin
+      p eval(cmd)
+    rescue RuntimeError
+      puts "RuntimeError(#{Bio::SPTR.new($ent).entry_id})}: #{$!} "
+    end
     puts
   end
 
@@ -723,9 +731,9 @@ Class for a entry in the SWISS-PROT/TrEMBL database.
 
 --- Bio::SPTR#ox -> {'NCBI_TaxID' => [], ...}
 
-=== RN RC RP RX RA RT RL lines (Reference)  
+=== RN RC RP RX RA RT RL RG lines (Reference)  
 
---- Bio::SPTR#ref -> [{'RN' => int, 'RP' => str, 'RC' => str, 'RX' => str, ''RT' => str, 'RL' => str, 'RA' => str, 'RC' => str},...]
+--- Bio::SPTR#ref -> [{'RN' => int, 'RP' => str, 'RC' => str, 'RX' => str, ''RT' => str, 'RL' => str, 'RA' => str, 'RC' => str, 'RG' => str},...]
 
 === DR lines (Database cross-reference)
 
@@ -773,4 +781,5 @@ Class for a entry in the SWISS-PROT/TrEMBL database.
   #    - (blanks) The sequence data   (>=1 per entry)
   # // - termination line             (ends each entry; 1 per entry)
   # ---- ---------------------------  --------------------------------
+
 
