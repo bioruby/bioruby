@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.1 2002/08/21 17:49:12 ng Exp $ 
+#  $Id: indexer.rb,v 1.2 2002/08/22 09:38:31 ng Exp $ 
 # 
 
 module Bio
@@ -139,6 +139,9 @@ module Bio
 
       def self.makeindexBDB(name, format, pri, sec,
 			    add_sec_ns, *files)
+	unless defined?(BDB)
+	  raise RuntimeError, "Berkeley DB support not found"
+	end
 	DEBUG.print "makeing BDB DataBank...\n"
 	fmt = Parser.new(format, pri, sec)
 	fmt.add_secondary_namespaces(*add_sec_ns)
