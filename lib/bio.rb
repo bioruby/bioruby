@@ -13,10 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: bio.rb,v 1.2 2001/08/21 17:49:05 katayama Exp $
+#  $Id: bio.rb,v 1.3 2001/09/17 22:46:27 katayama Exp $
 #
-#    This modlue provides eazy loading of BioRuby products and
-#    by using this module, you you don't need to conscious about
+#    This modlue provides eazy loading of all BioRuby products.
+#    By using this module, you you don't need to conscious about
 #    organization changes in the BioRuby repositiory.
 #
 
@@ -35,9 +35,14 @@ require 'bio/matrix'
 
 require 'bio/location'
 
+### Reference
+
+require 'bio/reference'
+
 ### IO
 
 require 'bio/io/dbget'
+require 'bio/io/pubmed'
 
 ### DB parsers
 
@@ -55,12 +60,12 @@ require 'bio/db/genbank'
 #require 'bio/db/trembl'
 
 # KEGG
-#require 'bio/db/kegg/brite'
-#require 'bio/db/kegg/cell'
-#require 'bio/db/kegg/compound'
-#require 'bio/db/kegg/enzyme'
-require 'bio/db/kegg/genes'
 require 'bio/db/kegg/genome'
+require 'bio/db/kegg/genes'
+require 'bio/db/kegg/brite'
+require 'bio/db/kegg/cell'
+require 'bio/db/kegg/compound'
+require 'bio/db/kegg/enzyme'
 
 # AAindex
 require 'bio/db/aaindex'
@@ -73,6 +78,9 @@ require 'bio/db/prosite'
 
 # LITDB
 require 'bio/db/litdb'
+
+# MEDLINE
+require 'bio/db/medline'
 
 ### misc utils
 
