@@ -1,3 +1,12 @@
+2003-10-13  KATAYAMA Toshiaki <k@bioruby.org>
+
+	* BioRuby 0.5.3 released.
+
+	  Fixed bugs in Blast XML parsers: xmlparser.rb is fixed not to
+	  omit the string after ' and " in sequence definitions,
+	  rexml.rb is fixed not to raise NoMethodError as "undefined
+	  method `each_element_with_text' for nil:NilClass".
+
 2003-10-07  GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 
 	* lib/bio/db/nbrf.rb

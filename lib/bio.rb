@@ -1,7 +1,7 @@
 #
 # bio.rb - Loading all BioRuby modules
 #
-#   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,11 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.35 2003/10/08 05:29:32 ng Exp $
+#  $Id: bio.rb,v 1.36 2003/10/13 14:27:41 k Exp $
 #
 
 module Bio
-  BIORUBY_VERSION = [0, 5, 2].extend(Comparable)
+  BIORUBY_VERSION = [0, 5, 3].extend(Comparable)
 end
 
 
