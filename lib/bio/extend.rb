@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: extend.rb,v 1.1 2002/06/23 20:02:32 k Exp $
+#  $Id: extend.rb,v 1.2 2002/07/30 09:25:38 k Exp $
 #
 
 require 'bio/sequence'
@@ -50,17 +50,15 @@ class String
 
 
   # folding with conscious about word boundaries with prefix string
-  def fill(fill_column = 80, indent = 0, separater = ' ', prefix = '')
-    str = ''
+  def fill(fill_column = 80, indent = 0, separater = ' ', prefix = '', first_line_only = true)
 
     # size : allowed length of the actual text
     unless (size = fill_column - indent) > 0
       raise "[Error] indent > fill_column"
     end
 
-    head = prefix + ' ' * (indent - prefix.length)
     n = pos = 0
-
+    str = []
     while n < self.length
       pos = self[n, size].rindex(separater)
 
@@ -69,15 +67,24 @@ class String
       end
 
       if pos
-        str << head + self[n, pos+separater.length] + "\n"
+        str << self[n, pos+separater.length]
         n += pos + separater.length
       else				# line too long or the last line
-        str << head + self[n, size] + "\n"
+        str << self[n, size]
         n += size
       end
     end
+    str = str.join("\n")
 
-    return str
+    str[0,0] = prefix + ' ' * (indent - prefix.length)
+    if first_line_only
+      head = ' ' * indent
+    else
+      head = prefix + ' ' * (indent - prefix.length)
+    end
+    str.gsub!("\n", "\n#{head}")
+
+    return str.chomp
   end
 
 end
