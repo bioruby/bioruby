@@ -17,12 +17,16 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.15 2001/12/07 16:57:04 katayama Exp $
+#  $Id: bio.rb,v 1.16 2001/12/19 12:22:37 katayama Exp $
 #
 
 module Bio
   BIORUBY_VERSION = 0.3
 end
+
+### ID
+
+require 'bio/id'		# required by bio/db.rb
 
 ### Sequence
 
@@ -49,6 +53,7 @@ require 'bio/pathway'
 require 'bio/io/flatfile'
 require 'bio/io/dbget'
 require 'bio/io/pubmed'
+require 'bio/io/brdb'
 
 ### Constants
 
@@ -105,7 +110,7 @@ require 'bio/db/litdb'
 
 require 'bio/db/medline'
 
-## FASTA
+## FASTA format
 
 require 'bio/db/fasta'
 
@@ -113,12 +118,7 @@ require 'bio/db/fasta'
 
 #require 'bio/appl/hmmer'
 require 'bio/appl/fasta'
-
-begin
-  require 'xmlparser'
-  require 'bio/appl/blast'
-rescue LoadError
-end
+require 'bio/appl/blast'
 
 ### misc utils
 
