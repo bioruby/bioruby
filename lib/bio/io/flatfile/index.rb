@@ -17,14 +17,14 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: index.rb,v 1.4 2002/08/28 12:32:24 ng Exp $ 
+#  $Id: index.rb,v 1.5 2002/08/29 13:35:40 ng Exp $ 
 # 
 
 
 module Bio
   class FlatFileIndex
     MAGIC_FLAT = 'flat/1'
-    MAGIC_BDB = 'BerkeleyDB/1'
+    MAGIC_BDB  = 'BerkeleyDB/1'
 
     #########################################################
     def self.open(name)
@@ -35,6 +35,12 @@ module Bio
       @db = DataBank.open(name)
     end
 
+    # common interface defined in registry.rb
+    def get_by_id(key)
+      search(key).to_s
+    end
+
+    # original methods
     def close
       check_closed?
       @db.close
@@ -49,14 +55,26 @@ module Bio
       end
     end
 
-    def check_closed?
-      @db or raise IOError, 'closed databank'
+    def default_namespaces=(names)
+      if names then
+	@names = []
+	names.each { |x| @names.push(x.dup) }
+      else
+	@names = nil
+      end
     end
-    private :check_closed?
+
+    def default_namespaces
+      @names
+    end
 
     def search(key)
       check_closed?
-      @db.search_all(key)
+      if @names then
+	@db.search_namespaces(key, *@names)
+      else
+	@db.search_all(key)
+      end
     end
 
     def search_namespaces(key, *names)
@@ -71,7 +89,11 @@ module Bio
 
     def include?(key)
       check_closed?
-      r = @db.search_all_get_unique_id(key)
+      if @names then
+	r = @db.search_namespaces_get_unique_id(key, *@names)
+      else
+	r = @db.search_all_get_unique_id(key)
+      end
       if r.empty? then
 	nil
       else
@@ -127,6 +149,12 @@ module Bio
     def always_check_consistency(bool)
       @db.always_check
     end
+
+    # private methods
+    def check_closed?
+      @db or raise IOError, 'closed databank'
+    end
+    private :check_closed?
 
     #########################################################
 
@@ -913,3 +941,174 @@ module Bio
   end #class FlatFileIndex
 end #module Bio
 
+######################################################################
+
+=begin
+
+= Bio::FlatFileIndex
+
+--- Bio::FlatFileIndex.new(dbname)
+--- Bio::FlatFileIndex.open(dbname)
+
+      Opens existing databank. Databank is a directory which contains
+      indexed files and configuration files. The type of the databank
+      (flat or BerkeleyDB) are determined automatically.
+
+--- Bio::FlatFileIndex#close
+
+      Closes opened databank.
+
+--- Bio::FlatFileIndex#closed?
+
+      Returns true if already closed. Otherwise, returns false.
+
+--- Bio::FlatFileIndex#get_by_id(key)
+
+      Common interface defined in registry.rb.
+      Searching databank and returns entry (or entries) as a string.
+      Multiple entries (contatinated to one string) may be returned.
+      Returns empty string If not found.
+
+--- Bio::FlatFileIndex#search(key)
+
+      Searching databank and returns a Bio::FlatFileIndex::Results object.
+
+--- Bio::FlatFileIndex#include?(key)
+
+      Searching databank.
+      If found, returns an array of unique IDs (primary identifiers).
+      If not found, returns nil.
+
+--- Bio::FlatFileIndex#search_primary(key)
+
+      Searching only primary namespece.
+      Returns a Bio::FlatFileIndex::Results object.
+
+--- Bio::FlatFileIndex#search_namespaces(key, name1, name2, ...)
+
+      Searching only specific namespeces.
+      Returns a Bio::FlatFileIndex::Results object.
+
+--- Bio::FlatFileIndex#include_in_primary?(key)
+
+      Same as #include?, but serching only primary namespace.
+
+--- Bio::FlatFileIndex#include_in_namespaces?(key, name1, name2, ...)
+
+      Same as #include?, but serching only specific namespaces.
+
+--- Bio::FlatFileIndex#namespaces
+
+      Returns names of namespaces defined in the databank.
+      (example: [ 'LOCUS', 'ACCESSION', 'VERSION' ] )
+
+--- Bio::FlatFileIndex#primary_namespace
+
+      Returns name of primary namespace.
+
+--- Bio::FlatFileIndex#secondary_namespaces
+
+      Returns names of secondary namespaces.
+
+--- Bio::FlatFileIndex#default_namespaces= [ str1, str2, ... ]
+--- Bio::FlatFileIndex#default_namespaces= nil
+
+      Set default namespaces.
+      nil means all namespaces in the databank.
+      Default namespaces specified in this method only affect 
+      #get_by_id, #search, and #include? methods.
+      Default of default namespaces is nil (that is, all namespaces
+      are search destinations by default).
+
+--- Bio::FlatFileIndex#default_namespaces
+
+      Returns default namespaces.
+      nil means all namespaces.
+
+--- Bio::FlatFileIndex#check_consistency
+
+      Raise RuntimeError if flatfiles are changed after creating
+      the databank. (This check only compare file sizes as
+      described in the OBDA specification.)
+
+--- Bio::FlatFileIndex#always_check_consistency=(bool)
+--- Bio::FlatFileIndex#always_check_consistency
+
+      If true, consistency checks are performed every time
+      accessing flatfiles. If nil/false, no checks are performed.
+      Default of always_check_consistency is true.
+
+== Bio::FlatFileIndex::Results
+
+      This object is made by Bio::FlatFileIndex methods.
+      Currently, this class inherits Hash, but internal
+      structure of this class may be changed anytime.
+      Only using methods described below are strongly recomended.
+
+--- Bio::FlatFileIndex::Results#to_a
+
+      Returns an array of strings.
+      If no search results are exist, returns an empty array.
+
+--- Bio::FlatFileIndex::Results#each
+
+      Iterates over each result(string).
+      Same as to_a.each.
+
+--- Bio::FlatFileIndex::Results#to_s
+
+      Returns a string. (concatinated if multiple results exists).
+      Same as to_a.join('').
+
+--- Bio::FlatFileIndex::Results#size
+
+      Returns number of results.
+      Same as to_a.size.
+
+--- Bio::FlatFileIndex::Results#+(res)
+
+      Add search results.
+      "a + b" means "a OR b".
+      * Example
+          # I want to search 'ADH_IRON_1' OR 'ADH_IRON_2'
+          db = Bio::FlatFIleIndex.new(location)
+          a1 = db.search('ADH_IRON_1')
+          a2 = db.search('ADH_IRON_2')
+          # a1 and a2 are Bio::FlatFileIndex::Results objects.
+          print a1 + a2
+
+--- Bio::FlatFileIndex::Results#*(res)
+
+      Returns set intersection of results.
+      "a * b" means "a AND b".
+      * Example
+          # I want to search 'HIS_KIN' AND 'human'
+          db = Bio::FlatFIleIndex.new(location)
+          hk = db.search('HIS_KIN')
+          hu = db.search('human')
+          # hk and hu are Bio::FlatFileIndex::Results objects.
+          print hk * hu
+
+== Bio::FlatFileIndex::DEBUG
+
+      Module for output debug messages.
+      Default setting: If $DEBUG or $VERBOSE is true, output debug
+      messages to STDERR; Otherwise, don't output messages.
+
+--- Bio::FlatFileIndex::DEBUG.out=(io)
+
+      Set debug messages output destination.
+      If true is given, outputs to STDERR.
+      If nil is given, outputs nothing.
+      This method affects ALL of FlatFileIndex related objects/methods.
+
+== Other classes/modules
+
+      Classes/modules not described in this file are internal use only.
+
+== SEE ALSO
+
+* ((<URL:http://obda.open-bio.org/>))
+* ((<URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/obda-specs/?cvsroot=obf-common>))
+
+=end
