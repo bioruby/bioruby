@@ -18,10 +18,12 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: gb2tab.rb,v 0.10 2002/04/18 08:03:27 k Exp $
+#  $Id: gb2tab.rb,v 0.11 2002/04/22 09:10:10 k Exp $
 #
 
 require 'bio'
+
+$stderr.puts Time.now
 
 ARGV.each do |gbkfile|
 
@@ -37,11 +39,6 @@ ARGV.each do |gbkfile|
   
     ### MAIN BODY
 
-    versions = gb.versions.inspect
-    kw = gb.keywords.inspect
-    seg = gb.segment.inspect
-    bc = gb.basecount.inspect
-  
     ary = [
       gb.entry_id,
       gb.nalen,
@@ -52,14 +49,14 @@ ARGV.each do |gbkfile|
       gb.date,
       gb.definition,
       gb.accession,
-      versions,
-      kw,
-      seg,
+      gb.versions.inspect,
+      gb.keywords.inspect,
+      gb.segment.inspect,
       gb.common_name,
       gb.organism,
       gb.taxonomy,
       gb.comment,
-      bc,
+      gb.basecount.inspect,
       gb.origin,
     ]
   
@@ -72,10 +69,19 @@ ARGV.each do |gbkfile|
     gb.features.each do |f|
       num += 1
 
-      from, to = f.locations.span
+      span_min, span_max = f.locations.span
 
       if f.qualifiers.empty?
-	ary = [ gb.entry_id, num, f.feature, f.position, from, to, '', '' ]
+	ary = [
+	    gb.entry_id,
+	    num,
+	    f.feature,
+	    f.position,
+	    span_min,
+	    span_max,
+	    '',
+	    '',
+	]
 	ft.puts ary.join("\t")
       else
 	f.each do |q|
@@ -84,8 +90,8 @@ ARGV.each do |gbkfile|
 	    num,
 	    f.feature,
 	    f.position,
-	    from,
-	    to,
+	    span_min,
+	    span_max,
 	    q.qualifier,
 	    q.value,
 	  ]
@@ -105,7 +111,7 @@ ARGV.each do |gbkfile|
       ary = [
 	gb.entry_id,
 	num,
-	r.authors,
+	r.authors.inspect,
 	r.title,
 	r.journal,
 	r.medline,
@@ -144,6 +150,8 @@ ARGV.each do |gbkfile|
 
 end
 
+$stderr.puts Time.now
+
 =begin
 
 Example usage in zsh:
@@ -151,8 +159,8 @@ Example usage in zsh:
   % gb2tab.rb *.seq
   % for i in *.seq
   > do
-  >   hoge=`basename $i .seq`
-  >   ruby -pe "gsub(/%HOGE%/,'$hoge')" gb2tab.sql | mysql
+  >   base=`basename $i .seq`
+  >   ruby -pe "gsub(/%HOGE%/,'$base')" gb2tab.sql | mysql
   > done
 
 gb2tab.sql:
