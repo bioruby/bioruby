@@ -1,7 +1,7 @@
 #
 # bio/db/embl.rb - Common methods for EMBL style database classes
 #
-#   Copyright (C) 2001, 2002 Mitsuteru S. Nakao <n@bioruby.org>
+#   Copyright (C) 2001,2002,2003 Mitsuteru C. Nakao <n@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: embl.rb,v 1.15 2002/08/16 17:34:52 k Exp $
+#  $Id: embl.rb,v 1.16 2003/02/19 03:42:50 n Exp $
 #
 
 require 'bio/db'
@@ -59,6 +59,19 @@ module Bio
     def accession
       ac[0]
     end
+
+
+    # DE Line:
+    def de
+      unless @data['DE']
+	@data['DE'] = fetch('DE')
+      end
+      @data['DE']
+    end
+    alias :description :de	
+    # API
+    alias :definition :de
+      
 
 
     # OS Line; organism species (>=1)
