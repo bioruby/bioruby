@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.24 2002/07/02 01:41:29 k Exp $
+#  $Id: sequence.rb,v 0.25 2002/11/22 23:16:19 k Exp $
 #
 
 require 'bio/data/na'
@@ -214,32 +214,32 @@ module Bio
 	self.scan(/[^atgcu]/).sort.uniq
       end
 
-      # NucleicAcid_weight is defined in bio/data/na.rb
+      # NucleicAcid is defined in bio/data/na.rb
       def molecular_weight(hash = nil)
-	nw = NucleicAcid_weight
+	nw = NucleicAcid.weight
 	if self.index('u')
 	  hash = {
-	    'g' => nw['guanine']  + nw['ribose_phosphate'] - nw['water'],
-	    'c' => nw['cytosine'] + nw['ribose_phosphate'] - nw['water'],
-	    'a' => nw['adenine']  + nw['ribose_phosphate'] - nw['water'],
-	    'u' => nw['uracil']   + nw['ribose_phosphate'] - nw['water'],
+	    'g' => nw[:guanine]  + nw[:ribose_phosphate] - nw[:water],
+	    'c' => nw[:cytosine] + nw[:ribose_phosphate] - nw[:water],
+	    'a' => nw[:adenine]  + nw[:ribose_phosphate] - nw[:water],
+	    'u' => nw[:uracil]   + nw[:ribose_phosphate] - nw[:water],
 	  }
 	else
 	  hash = {
-	    'g' => nw['guanine']  + nw['deoxyribose_phosphate'] - nw['water'],
-	    'c' => nw['cytosine'] + nw['deoxyribose_phosphate'] - nw['water'],
-	    'a' => nw['adenine']  + nw['deoxyribose_phosphate'] - nw['water'],
-	    't' => nw['thymine']  + nw['deoxyribose_phosphate'] - nw['water'],
+	    'g' => nw[:guanine]  + nw[:deoxyribose_phosphate] - nw[:water],
+	    'c' => nw[:cytosine] + nw[:deoxyribose_phosphate] - nw[:water],
+	    'a' => nw[:adenine]  + nw[:deoxyribose_phosphate] - nw[:water],
+	    't' => nw[:thymine]  + nw[:deoxyribose_phosphate] - nw[:water],
 	  }
 	end unless hash
-	total(hash) + nw['water']
+	total(hash) + nw[:water]
       end
 
       # NucleicAcid is defined in bio/data/na.rb
       def to_re
-	hash = NucleicAcid
+	hash = NucleicAcid.names
 	if self.index('u')
-	  NucleicAcid.each {|k,v| hash[k] = v.tr('t', 'u')}
+	  NucleicAcid.names.each {|k,v| hash[k] = v.tr('t', 'u')}
 	end
 	re = ''
 	self.each_byte do |x|
@@ -255,13 +255,13 @@ module Bio
       def names
 	array = []
 	self.each_byte do |x|
-	  array.push(NucleicAcid[x.chr.upcase])
+	  array.push(NucleicAcid.names[x.chr.upcase])
 	end
 	return array
       end
 
       def pikachu
-	self.tr("atgc", "pika")		# joke, of cource :-)
+	self.tr("atgc", "pika")		# joke, of course :-)
       end
 
     end
@@ -281,21 +281,21 @@ module Bio
       def codes
 	array = []
 	self.each_byte do |x|
-	  array.push(AminoAcid[x.chr])
+	  array.push(AminoAcid.names[x.chr])
 	end
 	return array
       end
 
       def names
 	self.codes.map do |x|
-	  AminoAcid[x]
+	  AminoAcid.names[x]
 	end
       end
 
-      # AminoAcid_weight is defined in bio/data/aa.rb
+      # AminoAcid is defined in bio/data/aa.rb
       def molecular_weight(hash = nil)
-	hash = AminoAcid_weight unless hash
-	total(hash) - NucleicAcid_weight['water'] * (self.length - 1)
+	hash = AminoAcid.weight unless hash
+	total(hash) - NucleicAcid.weight[:water] * (self.length - 1)
       end
 
     end
