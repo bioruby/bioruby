@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.20 2004/07/21 04:55:58 nakao Exp $
+#  $Id: sptr.rb,v 1.21 2004/08/09 09:59:28 nakao Exp $
 #
 
 require 'bio/db/embl'
@@ -479,7 +479,7 @@ module Bio
 	      end
 
 	      case table[last_feature].last['Description']
-	      when /(\w[\w ]*\w*) -> (\w[\w ]*\w*)/
+	      when /(\w[\w ]*\w*) - ?> (\w[\w ]*\w*)/
 		original = $1
 		swap = $2
 		original = original.gsub(/ /,'').strip
