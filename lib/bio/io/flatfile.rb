@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.18 2003/07/28 08:28:59 ng Exp $
+#  $Id: flatfile.rb,v 1.19 2003/07/29 09:22:18 ng Exp $
 #
 
 module Bio
@@ -277,6 +277,9 @@ module Bio
 	  nil #unknown
 	end
 
+      when /^CLUSTAL .*\(.*\).*sequence +alignment/
+	Bio::ClustalW::Report
+
       when /^>.+$/
 	if text =~ /^>.+$\s^\s*[-a-zA-Z_\.\[\]\(\)\*\+\$]+/ then
 	  Bio::FastaFormat
@@ -342,6 +345,15 @@ end
           Bio::FlatFile.open(nil, "embl/est_hum17.dat")
       * Example 3
           Bio::FlatFile.open(Bio::GenBank, STDIN)
+
+      If it is called with block, the block will be executed with
+      a newly opened Bio::FlatFile instance object. If filename
+      is given, the file is automatically closed when leaving the block.
+
+      * Example 4
+          Bio::FlatFile.open(nil, 'test4.fst') do |ff|
+              ff.each { |e| print e.definition, "\n" }
+          end
 
 --- Bio::FlatFile.new(dbclass, stream)
 
