@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.13 2003/04/24 15:47:02 ng Exp $
+#  $Id: flatfile.rb,v 1.14 2003/07/15 03:17:53 ng Exp $
 #
 
 module Bio
@@ -130,7 +130,7 @@ module Bio
     end
 
     def ungets(str)
-      @prefetch << str
+      @prefetch = str + @prefetch
       nil
     end
 
@@ -145,7 +145,8 @@ module Bio
     end
 
     def ungetc(c)
-      @prefetch << sprintf("%c", c)
+      @prefetch = sprintf("%c", c) + @prefetch
+      nil
     end
 
     def raw=(bool)
