@@ -1,41 +1,101 @@
 =begin
 
-  $Id: TODO.rd.ja,v 1.1 2001/10/30 04:29:25 katayama Exp $
+  $Id: TODO.rd.ja,v 1.2 2001/11/08 13:31:03 katayama Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
 = TODO
 
+== 当面の課題
+
+* cvs pserver のアカウント
+* cvsmailer
+  * From 強制→ cvs@bioruby.org
+* cvs@bioruby.org のアナウンス
+* bioruby.org 別マシン化ひつよう？
+* 宴会
+
+
 == 0.4 (stable branch)
 
 * インストーラ
+  * （済） -k
+
 * ドキュメント
   * リファレンス
+    * 各クラスに埋め込む
   * チュートリアル
+    * （済） -k
   * 256
+
 * Sequence::RNA
   * NA を継承？
     * gsub('NA', 'DNA') も？
   * DNA, RNA コンテナ？
+
+* FastaFormat で quality な数値データどうする？
+
 * db.rb
   * デザイン見直し
   * private メソッドの整理
+    * \001 の gsub/split にコメント
   * EMBL 系
+    * （済） -n
+
+* bin/, sample/ のライセンス文変更は？
+
 * codontable 全部組み込む
 
 == 0.5 (devel branch)
 
 * ext/ のマージ
-* FASTA/BLAST/HMMER など
+
+* FASTA/BLAST/HMMER など → Design.rd.ja (lib/bio/appl/ に?)
+  * アライメントオブジェクト
+    * class Bio::Alignment
+      * class Bio::Alignment::Pairwise  or class Bio::PairwiseAlignment
+      * class Bio::Alignment::Multiple  or class Bio::MultipleAlignment
+    * アライメントビューアもほしい
+  * FastaFormat オブジェクトに .fasta などのメソッド？
+  * Pjotr さんの BLAST はどうなった？
+  * BLAST は -m 7 (xml) 固定、FASTA -m 10 固定でいく？
+  * ネットワークごし（サーバ）とローカルの実行のインターフェイス
+
+* モチーフ系
+
+* インターフェイス → Design.rd.ja
+  * FlatFile
+    * 済み
+  * MySQL → bioruby-db ?
+  * HTTP → GenomeNet/NCBI/EMBL etc.
+
+* Pathway 仕上げる
+
 * テスト環境の整備
-  * Unit か test スクリプトか何か
+  * Test::Unit 使う？
+    * 外部ファイル、ネットワークがいる場合どうするか
+  * インストール時に make check みたいなことができないか
+
 * 例外処理
+  * せっかく Ruby なのでちゃんと Exception を投げるようにする
+
+* スレッド
+  * 今のところあまり使う場面はないかも知れないけど… GUI とかで？
+
+* ドキュメント翻訳
+  * Thai
+  * Korea
+  * Russia
+  * French
+
+* 可変引数は hash 渡し、simbol などの利も考える？
 
 == 1.0
 
 * Ruby/Gtk による GUI なファクトリー
-  * GO の xml と GtkTree
-* アプリ
+  * GO の xml と GtkTree → メモリ足りぬ…
+
+* キラーアプリの開発 :-)
 
 =end
 
