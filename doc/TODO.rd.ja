@@ -1,6 +1,6 @@
 =begin
 
-  $Id: TODO.rd.ja,v 1.8 2002/06/25 07:58:59 k Exp $
+  $Id: TODO.rd.ja,v 1.9 2002/06/26 00:08:17 k Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -8,15 +8,7 @@
 
 == 0.4 (stable branch)
 
-* DB 系全クラス
-  * 複数のオブジェクト (String 含む) が返る場合複数形、一つだけオブジェクトが
-    返る場合複数形のメソッド名にする。
-    * Bio::GenBank#references で Reference オブジェクトの Array が返る
-    * Bio::GenBank#reference は存在し無い
-    * Bio::MEDLINE#references は存在し無い
-    * Bio::MEDLINE#reference は Reference オブジェクトを返す
-
-* Bio::Features クラス → EMBL にも
+* Bio::Reference クラス → EMBL にも?
 
 * matrix.rb 廃止
  * そんな汎用的でないので aaindex.rb, microarray.rb, prosite.rb などで
@@ -28,26 +20,17 @@
     * class Bio::Alignment::Multiple  or class Bio::MultipleAlignment
     * アライメントビューアもほしい
 
-* Blast の API 整備
-  * xmlparser.rb
-    * change Blast::Report#statistics -> Blast::Report::Iteration#statistics
-      * Blast::Report#statistics should return last iteration's statistics
-    * add Blast::Report::Iteration#message
-      * add Blast::Report#message to return last iteration's message
-
-* HMMER, EMBOSS など
-
 * BioSQL 最新スペック
-
-* BioRegistry サーバ、ini ファイルセットアップ
-
-* sample/ 整理
 
 
 == 0.5 (devel branch)
 
-* DAS, Biblio - SOAP
-* BDB 対応
+* Flat, BDB 対応
+* BioCORBA
+* DAS, Biblio, XEMBL - SOAP
+* 遺伝研の SOAP サーバ
+
+* HMMER, EMBOSS など
 
 * PDB パーザ
   * challange CASP?
