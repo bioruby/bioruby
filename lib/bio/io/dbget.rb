@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: dbget.rb,v 1.8 2003/06/14 01:10:31 k Exp $
+#  $Id: dbget.rb,v 1.9 2004/08/24 00:05:58 k Exp $
 #
 
 require 'socket'
@@ -27,8 +27,8 @@ module Bio
 
   class DBGET
 
-#   SERV = "dbgetserv.genome.ad.jp"	# default DBGET server address
-    SERV = "dbget.genome.ad.jp"		# default DBGET server address
+#   SERV = "dbgetserv.genome.jp"	# default DBGET server address
+    SERV = "dbget.genome.jp"		# default DBGET server address
     PORT = "3266"			# default DBGET port number
 
     def DBGET.dbget(com, arg, serv = nil, port = nil)
@@ -151,7 +151,7 @@ end
 = Bio::DBGET
 
 Accessing the GenomeNet/DBGET data retrieval system
-((<URL:http://www.genome.ad.jp/dbget/>)).
+((<URL:http://www.genome.jp/dbget/>)).
 
 --- Bio::DBGET.dbget(com, arg, serv = nil, port = nil)
 
@@ -175,7 +175,7 @@ Accessing the GenomeNet/DBGET data retrieval system
       Note that options in the above example can be omitted.  If 'arg' is
       empty, the help message with a list of options for 'com' will be
       shown by default.  Supported database names will be found at the
-      GenomeNet DBGET web page ((<URL:http://www.genome.ad.jp/dbget/>)).
+      GenomeNet DBGET web page ((<URL:http://www.genome.jp/dbget/>)).
 
 --- BIO::DBGET.alink(arg)
 --- Bio::DBGET.bfind(arg)
