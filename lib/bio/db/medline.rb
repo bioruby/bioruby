@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: medline.rb,v 1.9 2004/02/05 13:03:24 k Exp $
+#  $Id: medline.rb,v 1.10 2004/02/08 00:30:54 k Exp $
 #
 
 require 'bio/db'
@@ -41,7 +41,7 @@ module Bio
 
     # Reference object
     def reference
-      hash = Hash.new
+      hash = Hash.new('')
 
       hash['authors']	= authors
       hash['title']	= title
@@ -51,8 +51,10 @@ module Bio
       hash['pages']	= pages
       hash['year']	= year
       hash['pubmed']	= pmid
-      hash['medline']	= ui
-      hash['abstract']  = abstract
+      hash['medline']  	= ui
+      hash['abstract']	= abstract
+      hash['mesh']	= mesh
+      hash['affiliations'] = affiliations
 
       hash.delete_if { |k, v| v.nil? or v.empty? }
 
@@ -177,12 +179,16 @@ module Bio
     end
     alias mesh mh
 
-
-    ### Other MEDLINE tags
-
     # AD   - Affiliation
     #   Institutional affiliation and address of the first author, and grant
     #   numbers.
+    def ad
+      @pubmed['AD'].strip.split(/\n/)
+    end
+    alias affiliations ad
+
+
+    ### Other MEDLINE tags
 
     # AID  - Article Identifier
     #   Article ID values may include the pii (controlled publisher identifier)

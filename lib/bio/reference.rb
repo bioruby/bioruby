@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: reference.rb,v 1.13 2004/02/05 13:14:38 k Exp $
+#  $Id: reference.rb,v 1.14 2004/02/08 00:30:54 k Exp $
 #
 
 module Bio
@@ -25,7 +25,7 @@ module Bio
   class Reference
 
     def initialize(hash)
-      hash.default = nil
+      hash.default = ''
       @authors	= hash['authors']	# [ "Hoge, J.P.", "Fuga, F.B." ]
       @title	= hash['title']		# "Title of the study."
       @journal	= hash['journal']	# "Theor. J. Hoge"
@@ -35,11 +35,16 @@ module Bio
       @year	= hash['year']		# 2001
       @pubmed	= hash['pubmed']	# 12345678
       @medline	= hash['medline']	# 98765432
-      @abstract = hash['abstract']
-      @url      = hash['url']
+      @abstract	= hash['abstract']
+      @url	= hash['url']
+      @mesh	= hash['mesh']
+      @affiliations = hash['affiliations']
+      @authors	= [] if @authors.empty?
+      @mesh	= [] if @mesh.empty?
+      @affiliations = [] if @affiliations.empty?
     end
     attr_reader :authors, :title, :journal, :volume, :issue, :pages, :year,
-      :pubmed, :medline, :abstract, :url
+      :pubmed, :medline, :abstract, :url, :mesh, :affiliations
 
     def format(style = nil, option = nil)
       case style
@@ -78,21 +83,30 @@ module Bio
       @authors.each do |author|
         lines << "%A #{author}"
       end
-      lines << "%D #{@year}" if @year
-      lines << "%T #{@title}" if @title
-      lines << "%J #{@journal}" if @journal
-      lines << "%V #{@volume}" if @volume
-      lines << "%N #{@issue}" if @issue
-      lines << "%P #{@pages}" if @pages
-      lines << "%M #{@pubmed}" if @pubmed
-      lines << "%U #{@url}" if @url
-      lines << "%X #{@abstract}" if @abstract
+      lines << "%D #{@year}" unless @year.empty?
+      lines << "%T #{@title}" unless @title.empty?
+      lines << "%J #{@journal}" unless @journal.empty?
+      lines << "%V #{@volume}" unless @volume.empty?
+      lines << "%N #{@issue}" unless @issue.empty?
+      lines << "%P #{@pages}" unless @pages.empty?
+      lines << "%M #{@pubmed}" unless @pubmed.empty?
+      if @pubmed
+        cgi = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi"
+        opts = "cmd=Retrieve&db=PubMed&dopt=Citation&list_uids"
+        @url = "#{cgi}?#{opts}=#{@pubmed}"
+      end
+      lines << "%U #{@url}" unless @url.empty?
+      lines << "%X #{@abstract}" unless @abstract.empty?
+      @mesh.each do |term|
+        lines << "%K #{term}"
+      end
+      lines << "%+ #{@affiliations.join(' ')}" unless @affiliations.empty?
       return lines.join("\n")
     end
 
     def bibitem(item = nil)
       item  = "PMID:#{@pubmed}" unless item
-      pages = @pages.sub('-', '--') if @pages
+      pages = @pages.sub('-', '--')
       return <<-"END".collect {|line| line.strip}.join("\n")
 	\\bibitem{#{item}}
 	#{@authors.join(', ')}
@@ -104,7 +118,7 @@ module Bio
     def bibtex(section = nil)
       section = "article" unless section
       authors = authors_join(' and ')
-      pages   = @pages.sub('-', '--') if @pages
+      pages   = @pages.sub('-', '--')
       return <<-"END".gsub(/\t/, '')
 	@#{section}{PMID:#{@pubmed},
 	  author  = {#{authors}},
@@ -155,7 +169,7 @@ module Bio
       else
 	authors = @authors.collect {|name| rev_name(name)}.join(', ')
       end
-      page_from, = @pages.split('-') if @pages
+      page_from, = @pages.split('-')
       "#{authors}, #{@journal} #{@volume} #{page_from} (#{@year})."
     end
 
@@ -204,8 +218,10 @@ module Bio
       if authors.length > 1
 	last = authors.pop
 	authors = authors.join(sep) + "#{amp}" + last
-      else
+      elsif authors.length == 1
 	authors = authors.pop
+      else
+	authors = ""
       end
     end
 
@@ -261,6 +277,8 @@ end
 --- Bio::Reference#medline -> Fixnum
 --- Bio::Reference#abstract -> String
 --- Bio::Reference#url -> String
+--- Bio::Reference#mesh -> Array
+--- Bio::Reference#affiliations -> Array
 
 --- Bio::Reference#format(style = nil, option = nil) -> String
 
