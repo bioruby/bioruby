@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.28 2003/04/24 15:38:28 k Exp $
+#  $Id: bio.rb,v 1.29 2003/06/25 06:01:56 k Exp $
 #
 
 module Bio
@@ -86,6 +86,7 @@ require 'bio/db/kegg/brite'
 require 'bio/db/kegg/cell'
 require 'bio/db/kegg/microarray'
 require 'bio/db/kegg/keggtab'
+require 'bio/db/kegg/ko'
 
 ## other formats
 
