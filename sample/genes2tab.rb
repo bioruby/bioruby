@@ -18,7 +18,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: genes2tab.rb,v 0.4 2001/10/24 02:53:03 katayama Exp $
+#  $Id: genes2tab.rb,v 0.5 2002/06/23 20:21:56 k Exp $
 #
 
 require 'bio/db/kegg/genes'
@@ -38,7 +38,7 @@ while entry = gets(KEGG::GENES::DELIMITER)
   end
 
   ary = [
-    genes.id,
+    genes.entry_id,
     genes.division,
     genes.organism,
     genes.name,

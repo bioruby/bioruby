@@ -18,7 +18,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: genome2tab.rb,v 0.4 2001/10/24 02:53:03 katayama Exp $
+#  $Id: genome2tab.rb,v 0.5 2002/06/23 20:21:56 k Exp $
 #
 
 require 'bio/db/kegg/genome'
@@ -29,18 +29,15 @@ while entry = gets(KEGG::GENOME::DELIMITER)
 
   genome = KEGG::GENOME.new(entry)
 
-  ref = genome.reference.inspect
-  chr = genome.chromosome.inspect
+  ref = genome.references.inspect
+  chr = genome.chromosomes.inspect
 
   ary = [
-    genome.id,
+    genome.entry_id,
     genome.name,
     genome.definition,
     genome.taxid,
     genome.taxonomy,
-    genome.morphology,
-    genome.physiology,
-    genome.environment,
     genome.comment,
     ref,
     chr,
@@ -49,7 +46,6 @@ while entry = gets(KEGG::GENOME::DELIMITER)
     genome.num_rna,
     genome.gc,
     genome.genomemap,
-    genome.genecatalog,
   ]
 
   puts ary.join("\t")
@@ -65,9 +61,6 @@ CREATE TABLE IF NOT EXISTS db_name.genome (
 	definition	varchar(255),
 	taxid		varchar(30),
 	taxonomy	varchar(255),
-	morphology	varchar(255),
-	physiology	varchar(255),
-	environment	varchar(255),
 	comment		varchar(255),
 	reference	text,
 	chromosome	text,
@@ -76,7 +69,6 @@ CREATE TABLE IF NOT EXISTS db_name.genome (
 	num_rna		integer,
 	gc		float,
 	genomemap	varchar(30),
-	genecatalog	varchar(30)
 );
 LOAD DATA LOCAL INFILE 'genome.tab' INTO TABLE db_name.genome;
 

@@ -14,11 +14,11 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: genes2pep.rb,v 0.3 2001/10/24 02:53:03 katayama Exp $
+#  $Id: genes2pep.rb,v 0.4 2002/06/23 20:21:56 k Exp $
 #
 
 require 'bio/db/kegg/genes'
-require 'bio/util/fold'
+require 'bio/extend'
 
 include Bio
 
@@ -27,7 +27,7 @@ while gets(KEGG::GENES::DELIMITER)
 
   next if genes.aalen == 0
 
-  puts ">#{genes.id}  #{genes.definition}"
+  puts ">#{genes.entry_id}  #{genes.definition}"
   puts genes.aaseq.fold(60+12, 12)
 end
 
