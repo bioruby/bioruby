@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: rexml.rb,v 1.5 2002/06/25 08:52:57 k Exp $
+#  $Id: rexml.rb,v 1.6 2002/06/25 16:56:37 k Exp $
 #
 
 begin
@@ -34,11 +34,11 @@ module Bio
 	d = REXML::Document.new(data)
 
 	@program = Program.new(d)
-	a = [ @program.query_id, @program.query_len ]
+	query_info = [ @program.query_id, @program.query_def, @program.query_len ]
 
 	@iterations = []
 	d.elements.each("*//Iteration") do |e|
-	  @iterations.push(Iteration.new(e, *a))
+	  @iterations.push(Iteration.new(e, *query_info))
 	end
       end
       attr_reader :iterations
@@ -56,7 +56,7 @@ module Bio
 
       # <for blastall> shortcut for the last iteration's hits
       def each_hit
-	@iterations[-1].each do |x|
+	@iterations.last.each do |x|
 	  yield x
 	end
       end
@@ -64,17 +64,17 @@ module Bio
 
       # shortcut for the last iteration's hits
       def hits
-	@iterations[-1].hits
+	@iterations.last.hits
       end
 
       # shortcut for the last iteration's statistics
       def statistics
-	@iterations[-1].statistics
+	@iterations.last.statistics
       end
 
       # shortcut for the last iteration's message (for checking 'CONVERGED')
       def message
-	@iterations[-1].message
+	@iterations.last.message
       end
 
       class Program
@@ -143,7 +143,7 @@ module Bio
 
       class Hit
 	def initialize(e, *args)
-	  @query_id, @query_len = *args
+	  @query_id, @query_def, @query_len = *args
 	  @hit = {}
 	  @hsps = []
 	  e.elements.each do |h|
@@ -173,22 +173,27 @@ module Bio
 
 	# Compatible with Bio::Fasta::Report::Hit
 
-	attr_reader :query_id, :query_len
+	attr_reader :query_id, :query_def, :query_len
 	alias :target_id :accession
+	alias :target_def :definition
 	alias :target_len :len
 
 	# Shortcut methods for the best Hsp
 
-	def evalue;		@hsps[0].evalue;		end
-	def bit_score;		@hsps[0].bit_score;		end
-	def identity;		@hsps[0].identity;		end
-	def overlap;		@hsps[0].align_len;		end
+	def evalue;		@hsps.first.evalue;		end
+	def bit_score;		@hsps.first.bit_score;		end
+	def identity;		@hsps.first.identity;		end
+	def overlap;		@hsps.first.align_len;		end
 
-	def query_start;	@hsps[0].query_from;		end
-	def query_end;		@hsps[0].query_to;		end
-	def target_start;	@hsps[0].hit_from;		end
-	def target_end;		@hsps[0].hit_to;		end
-	def direction;		@hsps[0].hit_frame <=> 0;	end
+	def query_seq;		@hsps.first.qseq;		end
+	def target_seq;		@hsps.first.hseq;		end
+	def midline;		@hsps.first.midline;		end
+
+	def query_start;	@hsps.first.query_from;		end
+	def query_end;		@hsps.first.query_to;		end
+	def target_start;	@hsps.first.hit_from;		end
+	def target_end;		@hsps.first.hit_to;		end
+	def direction;		@hsps.first.hit_frame <=> 0;	end
 	def lap_at
 	  [ query_start, query_end, target_start, target_end ]
 	end
@@ -296,22 +301,30 @@ if __FILE__ == $0
   print "      hit.definition    #=> "; p hit.definition
   print "      hit.accession     #=> "; p hit.accession
 
-  print "        --- compat ---\n"
+  print "        --- compatible/shortcut ---\n"
   print "      hit.query_id      #=> "; p hit.query_id
+  print "      hit.query_def     #=> "; p hit.query_def
   print "      hit.query_len     #=> "; p hit.query_len
   print "      hit.target_id     #=> "; p hit.target_id
+  print "      hit.target_def    #=> "; p hit.target_def
   print "      hit.target_len    #=> "; p hit.target_len
+
   print "      hit.evalue        #=> "; p hit.evalue
   print "      hit.bit_score     #=> "; p hit.bit_score
   print "      hit.identity      #=> "; p hit.identity
   print "      hit.overlap       #=> "; p hit.overlap
+
+  print "      hit.query_seq     #=> "; p hit.query_seq
+  print "      hit.midline       #=> "; p hit.midline
+  print "      hit.target_seq    #=> "; p hit.target_seq
+
   print "      hit.query_start   #=> "; p hit.query_start
   print "      hit.query_end     #=> "; p hit.query_end
   print "      hit.target_start  #=> "; p hit.target_start
   print "      hit.target_end    #=> "; p hit.target_end
   print "      hit.direction     #=> "; p hit.direction
   print "      hit.lap_at        #=> "; p hit.lap_at
-  print "        --- compat ---\n"
+  print "        --- compatible/shortcut ---\n"
 
   print "      hit.hsps.size     #=> "; p hit.hsps.size
   puts
@@ -461,8 +474,10 @@ Summerized results of the blast execution hits.
       Accessors for the Hit values.
 
 --- Bio::Blast::Report::Hit#query_id
+--- Bio::Blast::Report::Hit#query_def
 --- Bio::Blast::Report::Hit#query_len
 --- Bio::Blast::Report::Hit#target_id
+--- Bio::Blast::Report::Hit#target_def
 --- Bio::Blast::Report::Hit#target_len
 
       Compatible methods with Bio::Fasta::Report::Hit class.
@@ -471,6 +486,11 @@ Summerized results of the blast execution hits.
 --- Bio::Blast::Report::Hit#bit_score
 --- Bio::Blast::Report::Hit#identity
 --- Bio::Blast::Report::Hit#overlap
+
+--- Bio::Blast::Report::Hit#query_seq
+--- Bio::Blast::Report::Hit#midline
+--- Bio::Blast::Report::Hit#target_seq
+
 --- Bio::Blast::Report::Hit#query_start
 --- Bio::Blast::Report::Hit#query_end
 --- Bio::Blast::Report::Hit#target_start
@@ -478,7 +498,8 @@ Summerized results of the blast execution hits.
 --- Bio::Blast::Report::Hit#direction
 --- Bio::Blast::Report::Hit#lap_at
 
-      Shortcut methods for the best Hsp, compatible with Fasta class.
+      Shortcut methods for the best Hsp, some are also compatible with
+      Bio::Fasta::Report::Hit class.
 
 
 == Bio::Blast::Report::Hsp
