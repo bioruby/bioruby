@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.21 2003/08/21 11:28:27 ng Exp $
+#  $Id: flatfile.rb,v 1.22 2003/10/08 05:28:43 ng Exp $
 #
 
 module Bio
@@ -282,6 +282,9 @@ module Bio
 	  nil #unknown
 	end
 
+      when /^HEADER    .{40}\d\d\-[A-Z]{3}\-\d\d   [0-9A-Z]{4}/
+	Bio::PDB
+
       when /^CLUSTAL .*\(.*\).*sequence +alignment/
 	Bio::ClustalW::Report
 
@@ -296,7 +299,9 @@ module Bio
 	Bio::Blast::Default::Report_TBlast
 
       when /^>.+$/
-	if text =~ /^>.+$\s^\s*[-a-zA-Z_\.\[\]\(\)\*\+\$]+/ then
+	if text =~ /^>([PF]1|[DR][LC]|N[13]|XX)\;.+/ then
+	  Bio::NBRF
+	elsif text =~ /^>.+$\s^\s*[-a-zA-Z_\.\[\]\(\)\*\+\$]+/ then
 	  Bio::FastaFormat
 	elsif text =~ /^>.+$\s^\s*[0-9]+/ then
 	  Bio::FastaNumericFormat
