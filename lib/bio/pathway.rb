@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.21 2001/11/16 07:41:03 shuichi Exp $
+#  $Id: pathway.rb,v 1.22 2001/11/17 06:55:24 katayama Exp $
 #
 
 require 'bio/matrix'
@@ -26,20 +26,67 @@ module Bio
 
   class Pathway
 
-    # Graph (adjacency list) generation from the list of Relation
-    def initialize(list, undirected = nil)
+    # Initial graph (adjacency list) generation from the list of Relation
+    def initialize(relations, undirected = false)
       @undirected = undirected
-      @graph = {}
+      @relations = relations
+      @graph = {}		# adjacency list expression of the graph
       @index = {}		# numbering each node in matrix
       @label = {}		# additional information on each node
-      list.each do |rel|
-	append(rel)
-      end
+      self.to_list		# generate adjacency list
     end
-    attr_reader :graph, :index
+    attr_reader :relations, :graph, :index
     attr_accessor :label
 
-    def append(rel)
+    def directed?
+      @undirected ? false : true
+    end
+
+    def undirected?
+      @undirected ? true : false
+    end
+
+    def directed
+      if undirected?
+	@undirected = false
+	self.to_list
+      end
+    end
+
+    def undirected
+      if directed?
+	@undirected = true
+	self.to_list
+      end
+    end
+
+    # clear @relations to reduce the usage of memory
+    def clear_relations!
+      @relations.clear
+    end
+
+    # reconstruct @relations from the adjacency list @graph
+    def to_relations
+      @relations.clear
+      @graph.each_key do |from|
+        @graph[from].each do |to, w|
+          @relations << Relation.new(from, to, w)
+        end
+      end
+      return @relations
+    end
+
+
+    # Graph (adjacency list) generation from the Relations
+    def to_list
+      @graph.clear
+      @relations.each do |rel|
+	append(rel, false)	# append to @graph without push to @relations
+      end
+    end
+
+    def append(rel, add_rel = true)
+      @relations.push(rel) if add_rel
       if @graph[rel.from].nil?
 	@graph[rel.from] = {}
       end
@@ -65,15 +112,13 @@ module Bio
 
     # Convert adjacency list to adjacency matrix
     def to_matrix(default_value = nil, diagonal_value = nil)
-      @graph.keys.each_with_index do |k, i|
-	@index[k] = i
-      end
 
-      # note: following code only makes references to the same [] object
+      # Note: following code only fills the outer Array with the reference
+      # to the same inner Array object.
       #
       #   matrix = Array.new(nodes, Array.new(nodes))
       #
-      # so create each Array object as follows:
+      # so create a new Array object for each row as follows:
 
       matrix = Array.new
       nodes.times do |i|
@@ -86,15 +131,30 @@ module Bio
 	end
       end
 
-      @graph.each do |from, hash|
-	hash.each do |to, relation|
-	  x = @index[from]
-	  y = @index[to]
-	  matrix[x][y] = relation
+      # assign index number for each node
+      @graph.keys.each_with_index do |k, i|
+	@index[k] = i
+      end
+
+      if @relations.empty?		# only used after clear_relations!
+	@graph.each do |from, hash|
+	  hash.each do |to, relation|
+	    x = @index[from]
+	    y = @index[to]
+	    matrix[x][y] = relation
+	  end
+	end
+      else
+	@relations.each do |rel|
+	  x = @index[rel.from]
+	  y = @index[rel.to]
+	  matrix[x][y] = rel.relation
+	  matrix[y][x] = rel.relation if @undirected
 	end
       end
       Matrix[*matrix]
     end
+
 
     # pretty printer of the adjacency matrix (format depends on Matrix#dump)
     def matrix_dump(*arg)
@@ -102,6 +162,20 @@ module Bio
       sorted = @index.sort {|a,b| a[1] <=> b[1]}
       index  = "# " + sorted.collect{|x| x[0]}.join(", ")
       matrix.dump(index)
+    end
+
+    # pretty printer of the adjacency list
+    def list_dump
+      list = ""
+      @graph.each do |from, hash|
+	list << "#{from} => "
+	a = []
+	hash.each do |to, relation|
+	  a.push("#{to} (#{relation})")
+	end
+	list << a.join(", ") + "\n"
+      end
+      list
     end
 
 
@@ -122,65 +196,6 @@ module Bio
 	end
       end
       return sub_graph
-    end
-
-    def to_relation
-      rel = []
-      @graph.each_key do |from|
-        @graph[from].each do |to, w|
-          rel << Relation.new(from, to, w)
-        end
-      end
-      return rel
-    end
- 
-    # Kruskal method for finding minimam spaninng trees
-    def kruskal
-      # initialize
-      rel = self.to_relation.sort{|a, b| a <=> b}
-      index = []
-      for i in 0 .. (rel.size - 1) do
-        for j in (i + 1) .. (rel.size - 1) do
-          if rel[i] == rel[j]
-            index << j
-          end
-        end
-      end
-      index.sort{|x, y| y<=>x}.each do |i|
-        rel[i, 1] = []
-      end
-      mst = []
-      seen = Hash.new()
-      @graph.each_key do |x|
-        seen[x] = nil
-      end
-      i = 1
-      # initialize end
-
-      rel.each do |r|
-        if seen[r.node[0]] == nil
-          seen[r.node[0]] = 0
-        end
-        if seen[r.node[1]] == nil
-          seen[r.node[1]] = 0
-        end
-        if seen[r.node[0]] == seen[r.node[1]] && seen[r.node[0]] == 0
-          mst << r
-          seen[r.node[0]] = i
-          seen[r.node[1]] = i
-        elsif seen[r.node[0]] != seen[r.node[1]]
-          mst << r
-          v1 = seen[r.node[0]].dup
-          v2 = seen[r.node[1]].dup
-          seen.each do |k, v|
-            if v == v1 || v == v2
-              seen[k] = i
-            end
-          end
-        end
-        i += 1
-      end
-      return Pathway.new(mst)
     end
 
 
@@ -233,7 +248,7 @@ module Bio
       queue = [ root ]
 
       while from = queue.shift
-	@graph[from].keys.each do |to|
+	@graph[from].each_key do |to|
 	  unless visited[to]
 	    visited[to] = true
 	    distance[to] = distance[from] + 1
@@ -272,7 +287,7 @@ module Bio
       dfs_visit = Proc.new { |from|
 	visited[from] = true
 	distance[from] = [count += 1]
-	@graph[from].keys.each do |to|
+	@graph[from].each_key do |to|
 	  unless visited[to]
 	    predecessor[to] = from
 	    dfs_visit.call(to)
@@ -281,7 +296,7 @@ module Bio
 	distance[from].push(count += 1)
       }
 
-      @graph.keys.each do |node|
+      @graph.each_key do |node|
 	unless visited[node]
 	  dfs_visit.call(node)
 	end
@@ -366,6 +381,56 @@ module Bio
     alias floyd floyd_warshall
 
 
+    # Kruskal method for finding minimam spaninng trees
+    def kruskal
+      # initialize
+      rel = self.to_relations.sort{|a, b| a <=> b}
+      index = []
+      for i in 0 .. (rel.size - 1) do
+        for j in (i + 1) .. (rel.size - 1) do
+          if rel[i] == rel[j]
+            index << j
+          end
+        end
+      end
+      index.sort{|x, y| y<=>x}.each do |i|
+        rel[i, 1] = []
+      end
+      mst = []
+      seen = Hash.new()
+      @graph.each_key do |x|
+        seen[x] = nil
+      end
+      i = 1
+      # initialize end
+
+      rel.each do |r|
+        if seen[r.node[0]] == nil
+          seen[r.node[0]] = 0
+        end
+        if seen[r.node[1]] == nil
+          seen[r.node[1]] = 0
+        end
+        if seen[r.node[0]] == seen[r.node[1]] && seen[r.node[0]] == 0
+          mst << r
+          seen[r.node[0]] = i
+          seen[r.node[1]] = i
+        elsif seen[r.node[0]] != seen[r.node[1]]
+          mst << r
+          v1 = seen[r.node[0]].dup
+          v2 = seen[r.node[1]].dup
+          seen.each do |k, v|
+            if v == v1 || v == v2
+              seen[k] = i
+            end
+          end
+        end
+        i += 1
+      end
+      return Pathway.new(mst)
+    end
+
+
     private
 
 
@@ -375,7 +440,7 @@ module Bio
       distance = {}
       predecessor = {}
 
-      @graph.keys.each do |k|
+      @graph.each_key do |k|
         distance[k] = inf
         predecessor[k] = nil
       end
@@ -384,6 +449,7 @@ module Bio
     end
 
   end
+
 
 
   class Relation
@@ -406,7 +472,7 @@ module Bio
       @edge
     end
 
-    def ==(rel)
+    def ===(rel)
       if self.edge == rel.edge and
 	 self.node[0] == rel.node[1] and
 	 self.node[1] == rel.node[0]
@@ -417,12 +483,15 @@ module Bio
     end
 
     def <=>(rel)
+      unless self.edge.kind_of? Comparable
+	raise "[Error] edge is not comparable"
+      end
       if self.edge > rel.edge
         return 1
       elsif self.edge < rel.edge
         return -1
       elsif self.edge == rel.edge
-        return 1
+        return 0
       end
     end
 
@@ -488,6 +557,9 @@ if __FILE__ == $0
 
   puts "--- Test matrix_dump method"
   puts graph.matrix_dump(0)
+
+  puts "--- Test list_dump method"
+  puts graph.list_dump
 
   puts "--- Labeling some nodes"
   list = { 'q' => "L1", 's' => "L2", 'v' => "L3", 'w' => "L4" }
@@ -569,30 +641,51 @@ end
 
 --- Bio::Pathway#new(list, undirected = nil)
 
---- Bio::Pathway#label
---- Bio::Pathway#label=(hash)
+--- Bio::Pathway#relations
 --- Bio::Pathway#graph
 --- Bio::Pathway#index
 
---- Bio::Pathway#append(rel)
+--- Bio::Pathway#label
+--- Bio::Pathway#label=(hash)
+
+--- Bio::Pathway#directed?
+--- Bio::Pathway#undirected?
+--- Bio::Pathway#directed
+--- Bio::Pathway#undirected
+
+--- Bio::Pathway#clear_relations!
+--- Bio::Pathway#to_relations
+
+--- Bio::Pathway#to_list
+--- Bio::Pathway#append(rel, add_rel = true)
 --- Bio::Pathway#nodes
 --- Bio::Pathway#edges
+
 --- Bio::Pathway#to_matrix(default_value = nil, diagonal_value = nil)
+
 --- Bio::Pathway#matrix_dump(default_value = nil, diagonal_value = nil)
+--- Bio::Pathway#list_dump
+
 --- Bio::Pathway#subgraph(list = nil)
 --- Bio::Pathway#common_subgraph(graph)
 --- Bio::Pathway#clique
---- Bio::Pathway#small_world
 --- Bio::Pathway#cliquishness(node)
+--- Bio::Pathway#small_world
+
 --- Bio::Pathway#breadth_first_search(root)
 --- Bio::Pathway#bfs(root)
 --- Bio::Pathway#bfs_shortest_path(node1, node2)
---- Bio::Pathway#depth_first_search(root)
---- Bio::Pathway#dfs(root)
+--- Bio::Pathway#depth_first_search
+--- Bio::Pathway#dfs
+
 --- Bio::Pathway#dijkstra(root)
 --- Bio::Pathway#bellman_ford(root)
 --- Bio::Pathway#floyd_warshall
 --- Bio::Pathway#floyd
+--- Bio::Pathway#kruskal
+
+
+--- Bio::Pathway#initialize_single_source(root)
 
 = Bio::Relation
 
@@ -606,6 +699,7 @@ end
 --- Bio::Relation#relation
 
 --- Bio::Relation#===(rel)
+--- Bio::Relation#<=>(rel)
 
 =end
 
