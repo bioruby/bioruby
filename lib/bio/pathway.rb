@@ -2,6 +2,7 @@
 # bio/pathway.rb - Binary relations and Graph algorithms
 #
 #   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+#                      KAWASHIMA Shuichi <s@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.26 2002/08/30 06:31:47 o Exp $
+#  $Id: pathway.rb,v 1.27 2003/03/31 10:25:36 k Exp $
 #
 
 require 'matrix'
@@ -986,3 +987,4 @@ compare Bio::Relation objects if the edges have Comparable property.
       the module Comparable.
 
 =end
+
