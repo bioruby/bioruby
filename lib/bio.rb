@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.9 2001/11/06 16:58:51 okuji Exp $
+#  $Id: bio.rb,v 1.10 2001/11/08 12:45:29 katayama Exp $
 #
 
 module Bio
@@ -115,6 +115,7 @@ require 'bio/db/fasta'
 
 ### misc utils
 
+require 'bio/util/hoge'
 require 'bio/util/fold'
 
 #
