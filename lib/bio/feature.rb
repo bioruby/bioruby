@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: feature.rb,v 1.3 2002/04/15 03:06:17 k Exp $
+#  $Id: feature.rb,v 1.4 2002/06/18 04:56:23 k Exp $
 #
 
 require 'bio/location'
@@ -83,6 +83,10 @@ module Bio
       @features.each do |x|
 	yield x
       end
+    end
+
+    def [](*arg)
+      @features[*arg]
     end
 
   end
