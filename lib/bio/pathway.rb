@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.28 2003/06/14 00:46:15 k Exp $
+#  $Id: pathway.rb,v 1.29 2004/01/29 01:29:15 k Exp $
 #
 
 require 'matrix'
@@ -843,7 +843,7 @@ from the @graph by to_relations method.
          g.subgraph
 
          list = [ 'a', 'b', 'c' ]
-         g.subrraph(list)
+         g.subgraph(list)
 
 --- Bio::Pathway#common_subgraph(graph)
 
