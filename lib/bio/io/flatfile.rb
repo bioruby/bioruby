@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.29 2004/06/21 07:27:29 ngoto Exp $
+#  $Id: flatfile.rb,v 1.30 2004/06/21 08:45:16 ngoto Exp $
 #
 
 module Bio
@@ -26,14 +26,7 @@ module Bio
 
     include Enumerable
 
-    def self.open(*arg)
-      # 1st arg: dbclass
-      dbclass = nil
-      if arg[0].is_a?(Module) or !arg[0] then
-        dbclass = arg.shift
-      end
-      # 2nd arg: filename or IO object
-      file = arg.shift
+    def self.open(dbclass, file, *arg)
       # 3rd and 4th arg: mode, perm (passed to File.open)
       openmode = []
       while x = arg[0] and !x.is_a?(Hash)
@@ -60,12 +53,11 @@ module Bio
     end
 
     def self.auto(*arg, &block)
-      #warn "Bio::FlatFile.auto is deprecated; use Bio::FlatFile.open instead."
-      self.open(*arg, &block)
+      self.open(nil, *arg, &block)
     end
 
     def self.to_a(*arg)
-      self.open(*arg) do |ff|
+      self.auto(*arg) do |ff|
         raise 'cannot determine file format' unless ff.dbclass
         ff.to_a
       end
@@ -353,9 +345,7 @@ end
 
 --- Bio::FlatFile.auto(filename_or_stream[, mode, perm, options])
 
-      This method is now an alias of FlatFile.open and will be deprecated.
-
-      Same as Bio::FlatFile.open(filename_or_stream, mode, perm, options).
+      Same as Bio::FlatFile.open(nil, filename_or_stream, mode, perm, options).
 
       * Example 1
           Bio::FlatFile.auto(ARGF)
@@ -364,14 +354,13 @@ end
       * Example 3
           Bio::FlatFile.auto(IO.popen("gzip -dc nc1101.flat.gz"))
 
---- Bio::FlatFile.open([dbclass, ] filename_or_stream[, mode, perm, options])
+--- Bio::FlatFile.open(dbclass, filename_or_stream[, mode, perm, options])
 
       Prepare to read a file or a stream 'filename_or_stream'
       which contains 'dbclass'-style formatted data.
 
-      'dbclass' shoud be a class (or module) or nil (default: nil).
+      'dbclass' shoud be a class (or module) or nil.
       e.g. Bio::GenBank, Bio::FastaFormat.
-      Otherwise, 'dbclass' will be regarded to be omitted.
 
       If 'filename_or_stream' is a filename (which doesn't have gets method),
       the method opens a local file named 'filename_or_stream'
@@ -388,22 +377,13 @@ end
       * Example 2
           Bio::FlatFile.open(nil, "embl/est_hum17.dat")
       * Example 3
-          Bio::FlatFile.open(Bio::GenBank, STDIN)
-
-     First argument ('dbclass') can be omitted.
-
-      * Example 4
-          Bio::FlatFile.open(ARGF)
-      * Example 5
-          Bio::FlatFile.open("embl/est_hum17.dat")
-      * Example 6
-          Bio::FlatFile.open(IO.popen("gzip -dc nc1101.flat.gz"))
+          Bio::FlatFile.open(Bio::GenBank, $stdin)
 
       If it is called with block, the block will be executed with
       a newly opened Bio::FlatFile instance object. If filename
       is given, the file is automatically closed when leaving the block.
 
-      * Example 7
+      * Example 4
           Bio::FlatFile.open(nil, 'test4.fst') do |ff|
               ff.each { |e| print e.definition, "\n" }
           end
@@ -425,12 +405,12 @@ end
 
       * Example 3
           Bio::FlatFile.new(nil, $stdin, :raw=>true)
-      * Example 3 in old style (will be deprecated)
+      * Example 3 in old style (deprecated)
           Bio::FlatFile.new(nil, $stdin, true)
 
 --- Bio::FlatFile.to_a(filename_or_stream, *arg)
 
-      Same as FlatFile.open(filename_or_stream, *arg).to_a
+      Same as FlatFile.auto(filename_or_stream, *arg).to_a
 
 --- Bio::FlatFile#next_entry
 
