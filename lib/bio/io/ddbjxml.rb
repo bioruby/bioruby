@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: ddbjxml.rb,v 1.2 2003/06/14 01:12:35 k Exp $
+#  $Id: ddbjxml.rb,v 1.3 2004/05/14 03:06:51 k Exp $
 #
 
 require 'bio/db/genbank/ddbj'
@@ -122,7 +122,9 @@ For more informations, see:
 
 You need ((<RAA:SOAP4R>)) version >= 1.4.8.1 to use this module.
 Currently, the WSDL::WSDLParser::UnknownElementError error occured
-and seems be not working (WSDL format problem?).
+and seems to be not working (WSDL format problem?).
+
+2004/05/01 It is now working, need to add samples in testcode
 
 == Blast
 == ClustalW
