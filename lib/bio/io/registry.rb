@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: registry.rb,v 1.10 2003/02/18 15:45:42 ng Exp $
+#  $Id: registry.rb,v 1.11 2003/02/21 12:45:31 k Exp $
 #
 
 require 'uri'
@@ -50,7 +50,7 @@ module Bio
 
     def get_database(dbname)
       @registry.each do |db|
-	if db.database == dbname
+	if db.database == dbname.downcase
 	  case db.protocol
 	  when 'biofetch'
 	    return serv_biofetch(db)
@@ -71,7 +71,7 @@ module Bio
 
     def query(dbname)
       @registry.each do |db|
-	return db if db.database == dbname
+	return db if db.database == dbname.downcase
       end
     end
 
@@ -111,6 +111,7 @@ module Bio
       stanza.each_line do |line|
 	case line
 	when /^\[(.*)\]/
+          dbname = $1.downcase
 	  db = Bio::Registry::DB.new($1)
 	  @registry.push(db)
 	when /=/
@@ -122,7 +123,7 @@ module Bio
 
     def serv_biofetch(db)
       serv = Bio::Fetch.new(db.location)
-      serv.database = db.dbname or db.biodbname
+      serv.database = db.dbname
       return serv
     end
 
@@ -224,12 +225,13 @@ end
 --- Bio::Registry#db(dbname)
 
       Returns a dababase handle (Bio::SQL, Bio::Fetch etc.) or nil
-      if not found.  The handles should have get_by_id method.
+      if not found (case insensitive).
+      The handles should have get_by_id method.
 
 --- Bio::Registry#query(dbname)
 
       Returns a Registry::DB object corresponding to the first dbname
-      entry in the registry records.
+      entry in the registry records (case insensitive).
 
 == Bio::Registry::DB
 
