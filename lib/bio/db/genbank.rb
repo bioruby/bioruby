@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.27 2002/11/22 22:58:46 k Exp $
+#  $Id: genbank.rb,v 0.28 2003/01/27 19:51:07 k Exp $
 #
 
 require 'bio/db'
@@ -173,7 +173,13 @@ module Bio
         end
 	@data['REFERENCE'] = References.new(ary)
       end
-      @data['REFERENCE']
+      if block_given?
+        @data['REFERENCE'].each do |r|
+          yield r
+        end
+      else
+        @data['REFERENCE']
+      end
     end
 
 
@@ -227,7 +233,13 @@ module Bio
 
 	@data['FEATURES'] = Features.new(ary)
       end
-      @data['FEATURES']
+      if block_given?
+        @data['FEATURES'].each do |f|
+          yield f
+        end
+      else
+        @data['FEATURES']
+      end
     end
 
 
