@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Design.rd.ja,v 1.3 2001/12/08 09:28:21 katayama Exp $
+  $Id: Design.rd.ja,v 1.4 2001/12/15 01:52:48 katayama Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -162,6 +162,9 @@ lib/bio/io/ 以下には、ゲノムネットによるデータ取得を行なう DBGET クラス
   * ncbi.rb と同様の BLAST と FASTA, CLASTALW などのサービス
   * SSDB の統合
 
+あと、gb = Bio::Genbank.new() として箱だけ作っておいてデータをあとで渡す
+gb.data(hash) のようなメソッドがあってもいいかも知れません。
+
 === lib/bio/appl/ ツール系
 
 FASTA(SSEARCH), [PSI-]BLAST, HMMER, CLUSTALW などの外部アプリを使った処
@@ -174,16 +177,16 @@ FASTA(SSEARCH), [PSI-]BLAST, HMMER, CLUSTALW などの外部アプリを使った処
 
     factory = Bio::Fasta.remote('fasta', 'genes')
     fa_res = f.fasta(factory)   # f は Bio::FastaFormat オブジェクト
-    # 以下はまだ
     fa_res = seq.fasta(factory) # seq は Bio::Sequence::AA オブジェクトなど
+    # 以下は実装されてない
     puts fa_res.top(10, with_id, by_optscore)
     puts fa_res.best.alignment
 
 * 新しく生成したファクトリに、サーバ、query、target などを設定して、アプ
   リを実行するメソッドを呼ぶ
 
-    fasta = Bio::Fasta.local(prog, target, opt)
-    fa_res = fasta.query(seq)
+    factory = Bio::Fasta.local(prog, target, opt)
+    fa_res = factory.query(seq)
 
 などいくつかの実装方法が考えられます（Bio::Fasta では両系統インプリして
 います）。ファクトリやメソッドへのオプションの渡し方は細々としたものは
@@ -223,7 +226,7 @@ hash を投げる感じでやっています。
 （下の例では ID の＄を展開されないように全角にしていますが、実際は $ です）。
 
     #
-    # bio/sequence.rb - biological sequence class
+    # bio/hoge.rb - biological hoge class
     #
     #   Copyright (C) 2000, 2001 KATAYAMA Toshiaki <k@bioruby.org>
     #
@@ -253,37 +256,19 @@ hash を投げる感じでやっています。
 
 === 本体
 
-本体は module Bio で括り、必要なクラスを実装します。歴史的経緯で module
-Bio 内はまだインデントされていませんが、追加モジュールはインデントしても
-構いません。しかし、新しい Ruby のバージョンで class Bio::Hoge の形式で
-クラス定義ができるようになれば、こちらを採用するかも知れません。
+本体は module Bio で括り、必要なクラスを実装します。本体内では # を使っ
+てコメントをつけ、RD を使ったコメントはファイルの最後のドキュメント部ま
+では出てこないようにします。
 
-    現行                  今後                  将来？
-    
-    module Bio            require 'hogehoge'    require 'hogehoge'
-    
-    require 'hogehoge'    module Bio            class Bio::Hoge
-                                                end
-    class Hoge              class Hoge
-    end                     end                 class Bio::Fuga
-                                                end
-    class Fuga              class Fuga
-    end                     end
-    
-    end # module Bio      end
-
-本体内では # を使ってコメントをつけ、RD を使ったコメントはファイルの最後
-のドキュメント部までは出てこないようにします。
-
-    require 'hogehoge'
+    require 'foo/bar'
 
     modlue Bio
 
       class Hoge
 
         # this method do hogehoge
-        def hoge
-          fuga = Array.new		# storing fugafuga data
+        def hoge(fuga)
+          @fuga = fuga		# storing data fuga
         end
 
         def gege
@@ -326,15 +311,17 @@ Bio 内はまだインデントされていませんが、追加モジュールはインデントしても
 
     =begin
 
-    = Bio::Sequence
+    = Bio::Hoge
 
-    --- Bio::Sequence#subseq(start = 1, end = length)
+    Hoge クラスの概要説明。
 
-          Returns subsequence of ...
+    --- Bio::Hoge.new(fuga)
 
-    --- Bio::Sequence#window_search(window_size)
+          クラスメソッドの説明。
 
-          This method ...
+    --- Bio::Hoge#to_a
+
+          メソッドの説明。
 
     =end
 
