@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: embl.rb,v 1.16 2003/01/27 19:52:13 k Exp $
+#  $Id: embl.rb,v 1.17 2003/02/19 03:41:28 n Exp $
 #
 
 require 'bio/db/embl'
@@ -162,9 +162,6 @@ module Bio
     ##
     # DE Line; description (>=1)
     #
-    def de
-      fetch('DE')
-    end
 
 
     ##

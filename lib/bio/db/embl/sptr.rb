@@ -1,7 +1,7 @@
 #
 # bio/db/embl/sptr.rb - SwissProt and TrEMBL database class
 # 
-#   Copyright (C) 2001, 2002 Mitsuteru S. Nakao <n@bioruby.org>
+#   Copyright (C) 2001,2002,2003 Mitsuteru C. Nakao <n@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.14 2002/09/10 08:31:16 n Exp $
+#  $Id: sptr.rb,v 1.15 2003/02/19 03:40:41 n Exp $
 #
 
 require 'bio/db/embl'
@@ -135,10 +135,7 @@ module Bio
     # SYNONYM        >=0
     # CONTEINS       >=0
     #
-    def de 
-      fetch('DE')
-    end
-    alias definition de 	
+
 
     # GN Line: Gene name(s) (>=0, optional)
     # GN   HNS OR DRDX OR OSMZ OR BGLY.
