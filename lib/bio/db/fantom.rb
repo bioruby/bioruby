@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fantom.rb,v 1.2 2003/04/24 15:25:13 ng Exp $
+#  $Id: fantom.rb,v 1.3 2003/04/24 15:48:01 ng Exp $
 #
 
 begin
@@ -51,7 +51,8 @@ module Bio
 	  end
 	  doc = REXML::Document.new(x)
 	  @elem = doc.elements[self.class::Data_XPath]
-	  raise 'element is null' unless @elem
+	  #raise 'element is null' unless @elem
+	  @elem = REXML::Document.new('') unless @elem
 	end
       end
 
