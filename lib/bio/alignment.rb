@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: alignment.rb,v 1.6 2004/03/30 13:12:24 ngoto Exp $
+#  $Id: alignment.rb,v 1.7 2004/11/13 15:41:10 ngoto Exp $
 #
 
 require 'bio/sequence'
@@ -574,7 +574,7 @@ module Bio
 	end
 	total = a.size
 	a2 = h.to_a.sort do |x,y|
-	  z = (x[1] <=> y[1])
+	  z = (y[1] <=> x[1])
 	  z = (a.index(x[0]) <=> a.index(y[0])) if z == 0
 	  z
 	end
@@ -614,7 +614,7 @@ module Bio
       self.each_site do |a|
 	a2 = a.collect { |c| c.downcase }.sort.uniq
 	if a2.size == 1 then
-	  cstr << a[0]
+	  cstr << a2[0]
 	  next
 	end
 	a3 = a2.join('')
@@ -626,6 +626,10 @@ module Bio
 	  when -1
 	    a2 = a3.gsub(gap_regexp, '').split('')
 	  end
+	end
+	if a2.size == 1 then
+	  cstr << a2[0]
+	  next
 	end
 	if r = subsetof?(IUPAC_NUC, a2) then
 	  cstr << r[0]
