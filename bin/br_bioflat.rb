@@ -18,29 +18,95 @@
 #  along with this program; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 # 
-#  $Id: br_bioflat.rb,v 1.9 2002/12/03 18:54:43 k Exp $ 
+#  $Id: br_bioflat.rb,v 1.10 2003/02/19 04:08:08 k Exp $ 
 # 
 
 require 'bio'
 
+def usage
+  print <<EOM
+Search:
+  #{$0} [--search] [DIR/]DBNAME KEYWORDS
+Create index:
+  #{$0} --create --location DIR --dbname DBNAME [--format <genbank|embl|fasta>] [options...] [--files] FILES
+
+Create index options:
+  --primary=UNIQUE       set primary namespece to UNIQUE
+                           Default primary/secondary namespaces depend on
+                           each format of flatfiles.
+  --secondary=KEY        set secondary namespaces.
+                           You may use this option many times to specify
+                           more than one namespace.
+  --add-secondary=KEY    add secondary namespaces to default specification.
+                           You can use this option many times.
+
+Options only valid for --create --type flat:
+  --sort=BUILTIN         use builtin sort routine (default)
+  --sort=HS              (same as --sort=BUILTIN)
+  --sort=LM              builtin sort routine, slow but memory efficient
+  --sort=/path/to/sort   use external sort program (e.g. /usr/bin/sort)
+  --no-temporary-files   do everything on memory
+
+Backward compatibility:
+  --makeindex DIR/DBNAME
+      same as --create --type flat --location DIR --dbname DBNAME
+  --makeindexBDB DIR/DBNAME
+      same as --create --type bdb  --location DIR --dbname DBNAME
+  --format CLASS
+      instead of genbank|embl|fasta, specifing a class name is allowed
+EOM
+
+end
+
 
 def do_index
-  is_bdb = (/bdb/i).match(ARGV[0]) ? Bio::FlatFileIndex::MAGIC_BDB : nil
-  dbname = ARGV[1]
-  format = nil
-  files  = ARGV[2..-1]
+  case ARGV[0]
+  when /^\-\-?make/
+    dbpath = ARGV[1]
+    args = ARGV[2..-1]
+    is_bdb = nil
+  when /^\-\-?make.*bdb/i
+    dbname = ARGV[1]
+    args = ARGV[2..-1]
+    is_bdb = Bio::FlatFileIndex::MAGIC_BDB
+  when /^\-\-create/
+    args = ARGV[1..-1]
+  else
+    usage
+  end
+
   options = {}
 
-  while files[0] =~ /^\-/
-    x = files.shift
-    case x
+  while args.first =~ /^\-/
+    case args.shift
+
+    # OBDA stuff
+
+    when /^\-\-?format/
+      args.shift
+      format = nil		# throw this f*ckin' mess for auto detect :)
+    when /^\-\-?location/
+      location = args.shift.chomp('/')
+    when /^\-\-?dbname/
+      dbname = args.shift
+    when /^\-\-?indextype/
+      indextype = args.shift
+      case indextype
+      when /bdb/
+	is_bdb = Bio::FlatFileIndex::MAGIC_BDB
+      when /flat/
+	is_bdb = nil
+      else
+	usage
+      end
+
+    # BioRuby extension
+
     when /^\-\-?files/i
       break
 
     when /^\-\-?format\=(.*)/i
       format = $1
-    when /^\-\-?format/i
-      format = files.shift
 
     when /^\-\-?sort\=(.*)/i
       options['sort_program'] = $1
@@ -68,7 +134,8 @@ def do_index
     end
   end
 
-  Bio::FlatFileIndex::makeindex(is_bdb, dbname, format, options, *files)
+  dbpath = "#{location}/#{dbname}" unless dbpath
+  Bio::FlatFileIndex::makeindex(is_bdb, dbpath, format, options, *args)
 end
 
 
@@ -88,38 +155,9 @@ def do_search
 end
 
 
-def usage
-  print "Search: \n"
-  print "#{$0} [--search] DBNAME KEYWORD...\n"
-  print "Create index: \n"
-  print "#{$0} --makeindex DBNAME [--format CLASS] [options...] [--files] FILENAME...\n"
-  print "#{$0} --makeindexBDB DBNAME [--format CLASS] [options...] [--files] FILENAME...\n"
-  print <<EOM
-
-Create index options:
-  --primary=UNIQUE       set primary namespece to UNIQUE
-                           Default primary/secondary namespaces depend on
-                           each format of flatfiles.
-  --secondary=KEY        set secondary namespaces.
-                           You may use this option many times to specify
-                           more than one namespace.
-  --add-secondary=KEY    add secondary namespaces to default specification.
-                           You can use this option many times.
-Options only valid for --makeindex:
-  --sort=BUILTIN         use builtin sort routine (default)
-  --sort=HS              (same as --sort=BUILTIN)
-  --sort=LM              builtin sort routine, slow but memory efficient
-  --sort=/path/to/sort   use external sort program (e.g. /usr/bin/sort)
-  --no-temporary-files   do everything on memory
-
-EOM
-
-end
-
-
 if ARGV.size > 1
   case ARGV[0]
-  when /--make/
+  when /--make/, /--create/
     Bio::FlatFileIndex::DEBUG.out = true
     do_index
   when /--search/
