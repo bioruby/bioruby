@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: reference.rb,v 1.14 2004/02/08 00:30:54 k Exp $
+#  $Id: reference.rb,v 1.15 2005/01/06 12:28:16 k Exp $
 #
 
 module Bio
@@ -54,8 +54,8 @@ module Bio
 	return bibitem(option)
       when 'bibtex'
 	return bibtex(option)
-      when 'abstract'
-	return abstract(option)
+      when 'rd'
+	return rd(option)
       when /^nature$/i
 	return nature(option)
       when /^science$/i
@@ -137,7 +137,7 @@ module Bio
       "#{authors} (#{@year}). \"#{@title}\" #{@journal} #{@volume}:#{@pages}."
     end
 
-    def abstract(str = nil)
+    def rd(str = nil)
       @abstract ||= str
       lines = []
       lines << "== " + @title
@@ -285,7 +285,7 @@ end
 --- Bio::Reference#endnote
 --- Bio::Reference#bibitem(item = nil) -> String
 --- Bio::Reference#bibtex(section = nil) -> String
---- Bio::Reference#abstract(str = nil) -> String
+--- Bio::Reference#rd(str = nil) -> String
 --- Bio::Reference#nature(short = false) -> String
 --- Bio::Reference#science -> String
 --- Bio::Reference#genome_biol -> String

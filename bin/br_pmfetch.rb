@@ -2,7 +2,7 @@
 #
 # pmfetch - PubMed client
 #
-#  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
+#  Copyright (C) 2004, 2005 Toshiaki Katayama <k@bioruby.org>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-PROG_VER  = '$Id: br_pmfetch.rb,v 1.3 2004/07/27 07:44:42 k Exp $'
+PROG_VER  = '$Id: br_pmfetch.rb,v 1.4 2005/01/06 12:28:16 k Exp $'
 PROG_NAME = File.basename($0)
 
 
@@ -89,7 +89,7 @@ class PMFetch
   ### default options
 
   def initialize
-    @format = 'abstract'
+    @format = 'rd'
     @search_opts = {
       'retmax' => 20,
     }
@@ -163,7 +163,7 @@ Options:
      --version                   Output version number, then exit
 
 Formats:
- endnote, medline, bibitem, bibtex, report, abstract
+ endnote, medline, bibitem, bibtex, report, rd,
  nature, science, genome_res, genome_biol, nar, current, trends, cell
 
 Sort:
@@ -387,7 +387,7 @@ Search articles indexed in PubMed during the period of 2001/04/01 to 2001/08/31
 Output format can be changed by --format option.
 
   % PMFetch -q "transcription factor" -j development -v 131 -i 3 -f report
-  % PMFetch -q "transcription factor" -j development -v 131 -i 3 -f abstract
+  % PMFetch -q "transcription factor" -j development -v 131 -i 3 -f rd
   % PMFetch -q "transcription factor" -j development -v 131 -i 3 -f endnote
   % PMFetch -q "transcription factor" -j development -v 131 -i 3 -f medline
   % PMFetch -q "transcription factor" -j development -v 131 -i 3 -f bibitem
