@@ -1,6 +1,6 @@
 =begin
  
-  $Id: KEGG_API.rd.ja,v 1.3 2004/03/03 11:51:07 k Exp $
+  $Id: KEGG_API.rd.ja,v 1.4 2004/03/06 08:44:08 k Exp $
    
     Copyright (C) 2004 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -195,6 +195,86 @@ Axis の jar ファイルが /path/to/lib/ 以下に置いてある場合、CLASSPATH に
   % java -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar:/path/to/lib/commons-logging.jar:/path/to/lib/commons-discovery.jar:/path/to/lib/saaj.jar:/path/to/lib/wsdl4j.jar:. GetGenesByPathway path:ecob00020
 
 のようにコンパイルして実行できます。
+
+ところで、上記の例のように、文字列や文字列の配列が返ってくる場合には問
+題ないのですが KEGG API のメソッドの中には独自に定義されたデータ構造で
+結果を返すものも多くあります。これらを扱うには WSDL ファイルから自動生
+成された KEGG API のクラスを使うのが簡単です。
+
+このために Apache の axis-1.2alpha (axis-1_1 ではうまく動きません）を
+インストールして、
+
+  % cp axis-1_2alpha/lib/* /path/to/lib/
+
+以下のように実行します。生成されたファイルの不具合を直すために、
+((<axisfix.pl|URL:http://www.genome.ad.jp/kegg/soap/support/axisfix.pl>))
+スクリプトを入手しておきます。
+
+  % java -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar:/path/to/lib/commons-logging.jar:/path/to/lib/commons-discovery.jar:/path/to/lib/saaj.jar:/path/to/lib/wsdl4j.jar:. org.apache.axis.wsdl.WSDL2J -p keggapi  http://soap.genome.ad.jp/KEGG.wsdl
+  % perl -i axisfix.pl keggapi/KEGGBindingStub.java
+  % javac -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar:/path/to/lib/wsdl4j.jar:. keggapi/KEGGLocator.java
+  % jar cvf keggapi.jar keggapi/*
+  % javadoc -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar -d keggapi_javadoc keggapi/*.java
+
+このようにしてできた keggapi.jar ファイルを以下の URL からダウンロード
+することもできます。
+
+  * ((<URL:http://www.genome.ad.jp/kegg/soap/support/keggapi.jar>))
+
+keggapi.jar ファイルを使って上記のプログラムを書き直した例は次のように
+なります。
+
+  import keggapi.*;
+  
+  class GetGenesByPathway {
+          public static void main(String[] args) throws Exception {
+                  KEGGLocator  locator = new KEGGLocator();
+                  KEGGPortType serv    = locator.getKEGGPort();
+  
+                  String   query   = args[0];
+                  String[] results = serv.get_genes_by_pathway(query);
+  
+                  for (int i = 0; i < results.length; i++) {
+                          System.out.println(results[i]);
+                  }
+          }
+  }
+
+次は、文字列ではなく SSDBResult 型の配列が戻ってくる例です。
+
+  import keggapi.*;
+  
+  class GetBestNeighborsByGene {
+          public static void main(String[] args) throws Exception {
+                  KEGGLocator  locator  = new KEGGLocator();
+                  KEGGPortType serv     = locator.getKEGGPort();
+  
+                  String       query    = args[0];
+                  String[]     orglist  = {"all"};
+                  SSDBResult[] results  = null;
+  
+                  results = serv.get_best_neighbors_by_gene(query, 500, orglist);
+  
+                  for (int i = 0; i < results.length; i++) {
+                          String gene1  = results[i].getKid1();
+                          String gene2  = results[i].getKid2();
+                          int    score  = results[i].getSw_score();
+                          System.out.println(gene1 + "" + gene2 + "" + score);
+                  }
+          }
+  }
+
+このプログラムは以下のように CLASSPATH に keggapi.jar ファイルも加えて
+コンパイル、実行します。
+
+  % javac -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar:/path/to/lib/wsdl4j.jar:/path/to/keggapi.jar GetBestNeighborsByGene.java
+
+  % java -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar:/path/to/lib/commons-logging.jar:/path/to/lib/commons-discovery.jar:/path/to/lib/saaj.jar:/path/to/lib/wsdl4j.jar:/path/to/keggapi.jar:. GetBestNeighborsByGene eco:b0002
+
+他の戻り値と型ごとの値の取り出し方などについては、WSDL2Java により生成
+された以下のドキュメントを参照してください。
+
+  * ((<URL:http://www.genome.ad.jp/kegg/soap/doc/keggapi_javadoc_ja/>))
 
 == KEGG API リファレンス
 
