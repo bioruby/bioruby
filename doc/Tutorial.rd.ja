@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.7 2002/06/22 03:11:36 k Exp $
+  $Id: Tutorial.rd.ja,v 1.8 2002/06/26 00:05:10 k Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -22,26 +22,26 @@
     
     seq = Bio::Sequence::NA.new("atgcatgcaaaa")
     
-    puts seq				# 元の配列
-    puts seq.complement			# 相補配列 (Sequence::NA オブジェクト)
-    puts seq.subseq(3,8)		# 3 塩基目から 8 塩基目まで
+    puts seq                            # 元の配列
+    puts seq.complement                 # 相補配列 (Sequence::NA オブジェクト)
+    puts seq.subseq(3,8)                # 3 塩基目から 8 塩基目まで
     
-    p seq.gc_percent			# GC 塩基の割合 (Float)
-    p seq.composition			# 全塩基組成 (Hash)
+    p seq.gc_percent                    # GC 塩基の割合 (Float)
+    p seq.composition                   # 全塩基組成 (Hash)
     
-    puts seq.translate			# 翻訳配列 (Sequence::AA オブジェクト)
-    puts seq.translate(2)		# ２文字目から翻訳（普通は１から）
-    puts seq.translate(1,11)		# 11番目のコドンテーブルを使用
+    puts seq.translate                  # 翻訳配列 (Sequence::AA オブジェクト)
+    puts seq.translate(2)               # ２文字目から翻訳（普通は１から）
+    puts seq.translate(1,11)            # 11番目のコドンテーブルを使用
     
-    p seq.translate.to_a		# アミノ酸を３文字コードで表示 (Array)
-    p seq.translate.to_ary		# アミノ酸を名前で表示 (Array)
-    p seq.translate.composition		# アミノ酸組成 (Hash)
-    p seq.translate.molecular_weight	# 分子量を計算 (Float)
+    p seq.translate.to_a                # アミノ酸を３文字コードで表示 (Array)
+    p seq.translate.to_ary              # アミノ酸を名前で表示 (Array)
+    p seq.translate.composition         # アミノ酸組成 (Hash)
+    p seq.translate.molecular_weight    # 分子量を計算 (Float)
     
-    puts seq.complement.translate	# 相補配列の翻訳
+    puts seq.complement.translate       # 相補配列の翻訳
 
-実際には Sequence::NA オブジェクトはファイルから読み込んだ文字列から生成
-したり、データベースから取得したものを使ったりします。たとえば、
+実際には Bio::Sequence::NA オブジェクトはファイルから読み込んだ文字列か
+ら生成したり、データベースから取得したものを使ったりします。たとえば、
 
     #!/usr/bin/env ruby
     
@@ -71,6 +71,7 @@
 
 しかし、いちいちファイルを作るのも面倒なので、次はデータベースから必要な
 情報を取得してみます。
+
 
 == GenBank のパース (Bio::GenBank クラス)
 
@@ -103,14 +104,14 @@ GenBank 形式のファイル（元の ftp://ftp.ncbi.nih.gov/genbank/ の .seq ファ
     
     while entry = gets(Bio::GenBank::RS)
       # GenBank の１エントリごとに
-      gb = Bio::GenBank::new(entry)
+      gb = Bio::GenBank.new(entry)
 
       # ACCESSION 番号と生物種名を表示
       puts "==> #{gb.accession} - #{gb.organism}"
     
       gb.features do |feature|          # FEATURES の要素を一つずつ処理
         position = feature.position
-        hash = feature.assoc		# レガシーだが簡単のためハッシュに直す
+        hash = feature.assoc            # レガシーだが簡単のためハッシュに直す
         # /translation= がなければスキップ
         next unless hash['translation']
         # 遺伝子名などの情報
@@ -129,6 +130,11 @@ GenBank 形式のファイル（元の ftp://ftp.ncbi.nih.gov/genbank/ の .seq ファ
 伝子の切り出しやアミノ酸への翻訳に BioRuby のバグがあれば、最後の２行で
 表示されるアミノ酸配列が異なる事になります。
 
+注：上記のように assoc メソッドで Feature オブジェクトからハッシュを生成
+すると qualifier をキーとしてデータを取り出すことができるので便利ですが、
+キーが同一の複数の qualifier が 1 つの feature 中に存在する場合、情報が
+失われます（これを防ぐためにデフォルトではデータを配列で持たせています）。
+
 この後、新しくフラットファイルを扱うラッパークラス FlatFile が実装された
 ので、今なら、最初の例は次のように書き直すこともできます。
 
@@ -142,8 +148,7 @@ GenBank 形式のファイル（元の ftp://ftp.ncbi.nih.gov/genbank/ の .seq ファ
       puts gb.naseq.to_fasta(definition, 60)    
     end
 
-逆に、上記のスクリプトで作った FASTA フォーマットのファイルを読み込むに
-は、
+逆に、FASTA フォーマットのファイルを読み込むには、
 
     #!/usr/bin/env ruby
     
@@ -158,212 +163,343 @@ GenBank 形式のファイル（元の ftp://ftp.ncbi.nih.gov/genbank/ の .seq ファ
 
 などとすることができます。
 
+=== GenBank 以外のデータベース
+
+BioRuby では、GenBank 以外のデータベースについても基本的なやり方は同じで、
+データベースの１エントリを対応するデータベースのクラスに渡せば、パースさ
+れた結果がオブジェクトになって返ってきます。
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+    
+    ff = Bio::FlatFile.new(Bio::データベースクラス名, ARGF)
+    ff.each_entry do |entry|
+      p entry.entry_id          # エントリの ID
+      p entry.definition        # エントリの説明文
+      p entry.seq               # 配列データベースの場合
+    end
+
+パースされたオブジェクトから、エントリ中のそれぞれの部分を取り出すための
+メソッドはデータベース毎に異なります。よくある項目については
+
+  * entry_id メソッド → エントリの ID 番号が返る
+  * definition メソッド → エントリの定義行が返る
+  * reference メソッド → リファレンスオブジェクトが返る
+  * organism メソッド → 生物種名
+  * seq や naseq や aaseq メソッド → 対応する配列オブジェクトが返る
+
+などのように共通化しようとしていますが、全てのメソッドが実装されているわ
+けではありません（bio/db.rb 参照）。また、細かい部分は各データベースパー
+ザ毎に異なるので、それぞれのドキュメントに従います。
+
+原則として、メソッド名が複数形の場合は、オブジェクトが配列として返ります。
+たとえば references メソッドを持つクラスは複数の Bio::Reference オブジェ
+クトを Array にして返しますが、別のクラスでは単数形の reference メソッド
+しかなく、１つの Bio::Reference オブジェクトだけを返す、といった感じです。
+
+
 == FASTA による相同性検索を行う（Bio::Fasta クラス）
 
 問い合わせ配列が FASTA 形式で入った query.pep がある時、ローカルとリモー
-トで FASTA 検索を行うには、それぞれ以下のようにします。
+トで FASTA 検索を行う方法です。ローカルの場合は ssearch なども同様に使う
+ことができます。
 
 === ローカルの場合
 
 FASTA がインストールされていることを確認して（コマンド名が fasta34 でパ
 スが通っている場合の例で説明します）、検索対象とする FASTA 形式のデータ
-ベースファイル target.pep を準備し、
+ベースファイル target.pep と、FASTA 形式で問い合わせ配列がいくつか入った
+ファイル query.pep を準備し、
 
     #!/usr/bin/env ruby
     
     require 'bio'
-
+    
     # FASTA を実行する環境オブジェクトを作る（ssearch などでも良い）
     factory = Bio::Fasta.local('fasta34', ARGV.pop)
-
+    
     # フラットファイルを読み込み、FastaFormat オブジェクトのリストにする
     ff = Bio::FlatFile.new(Bio::FastaFormat, ARGF)
-
+    
     # １エントリずつの FastaFormat オブジェクトに対し
     ff.each do |entry|
-      # '>' で始まるコメント行の内容を表示
-      puts entry.definition
-
+      # '>' で始まるコメント行の内容を進行状況がわりに標準エラー出力に表示
+      $stderr.puts "Searching ... " + entry.definition
+   
       # FASTA による相同性検索を実行、結果は Fasta::Report オブジェクト
-      fasta_result = factory.query(entry)
-
-      # ヒットしたものの中で、オーバーラップ領域が 150 残基以上のものに対し
-      fasta_result.lap_over(150).each do |r|
-
-        # FASTA の evalue と、名前、オーバーラップ領域を表示
-        print "evalue #{r.evalue} : #{r.query_id} => #{r.target_id} at "
-        p r.lap_at
+      report = factory.query(entry)
+    
+      # ヒットしたものそれぞれに対し
+      report.each do |hit|
+        # evalue が 0.0001 以下の場合
+        if hit.evalue < 0.0001
+          # その evalue と、名前、オーバーラップ領域を表示
+          print "#{hit.query_id} : evalue #{hit.evalue}\t#{hit.target_id} at "
+          p hit.lap_at
+        end
       end
     end
 
+というスクリプトを f_search.rb という名前で作ったとすると、
+
+    % ./f_search.rb query.pep target.pep > f_search.out
+
+のように実行すれば検索することができます。
+
 ここで factory は繰り返し FASTA を実行するために、あらかじめ作っておく実
-行環境です。上の例では Fasta オブジェクトの query メソッドを使って検索
-していますが、問い合わせ配列に対して
+行環境です。上の例では Fasta オブジェクトの query メソッドを使って検索し
+ていますが、逆に問い合わせ配列に対し
 
     seq = ">test seq\nYQVLEEIGRGSFGSVRKVIHIPTKKLLVRKDIKYGHMNSKE"
     seq.fasta(factory)
 
-のように factory を渡す fasta メソッドを呼ぶ方法もあります。
+のように factory を渡して fasta メソッドを呼ぶ方法もあります。
 
-FASTA のオプションを与えたい場合、３番目の引数に FASTA のコマンドライン
-オプションを書いて渡します。ktup 値をデフォルトから変更する場合はアクセ
-サで指定します。
-
-例えば ktup 値を 1 にして、ベスト 10 位以内のヒットを得る場合のオプショ
+FASTA コマンドにオプションを与えたい場合、３番目の引数に FASTA のコマン
+ドラインオプションを書いて渡します。ktup 値だけはメソッドで指定します。
+たとえば ktup 値を 1 にして、トップ 10 位以内のヒットを得る場合のオプショ
 ンは、以下のようになります。
 
-    factory = Bio::Fasta.local('fasta33', 'target.pep', '-b 10')
+    factory = Bio::Fasta.local('fasta34', 'target.pep', '-b 10')
     factory.ktup = 1
 
-Fasta#query や FastaFormat#fasta メソッドの返り値は Bio::Fasta::Report
-オブジェクトです。様々なメソッドで FASTA の出力結果のほぼ全てを自由に取
-り出せるようになっています。例えば identity, overlap などのスコアや、
-query_len, target_len で配列の長さなどを取り出すことができます。
+Bio::Fasta#query メソッドなどの返り値は Bio::Fasta::Report オブジェクト
+です。この Report オブジェクトから、様々なメソッドで FASTA の出力結果の
+ほぼ全てを自由に取り出せるようになっています。特にヒットしたターゲットに
+対するスコアなどの主な情報は、
 
-さて、上記のスクリプトを f_search.rb という名前で作ったとすると、
+    report.each do |hit|
+      puts hit.evalue           # E-value
+      puts hit.sw               # Smith-Waterman スコア (*)
+      puts hit.identity         # % identity
+      puts hit.overlap          # オーバーラップしている領域の長さ 
+      puts hit.query_id         # 問い合わせ配列の ID
+      puts hit.query_def        # 問い合わせ配列のコメント
+      puts hit.query_len        # 問い合わせ配列の長さ
+      puts hit.query_seq        # 問い合わせ配列
+      puts hit.target_id        # ヒットした配列の ID
+      puts hit.target_def       # ヒットした配列のコメント
+      puts hit.target_len       # ヒットした配列の長さ
+      puts hit.target_seq       # ヒットした配列
+      puts hit.query_start      # 相同領域の問い合わせ配列での開始残基位置
+      puts hit.query_end        # 相同領域の問い合わせ配列での終了残基位置
+      puts hit.target_start     # 相同領域のターゲット配列での開始残基位置
+      puts hit.target_end       # 相同領域のターゲット配列での終了残基位置
+      puts hit.lap_at           # 上記４位置の数値の配列
+    end
 
-    % ./f_search.rb query.pep target.pep
+などのメソッドで呼び出せるようにしています。これらのメソッドの多くは後で
+見るように Bio::Blast::Report と共通にしてあるのですが、FASTA 固有の値を
+取り出すメソッドなどが必要な場合は、Bio::Fasta::Report クラスのドキュメ
+ントを参照してください。検索結果から様々な値をどのように取り出すかはスク
+リプト次第です。
 
-とすれば検索できます。先の例では、オーバーラップしている領域の長さで選択
-する lap_over メソッドを使って結果を絞り込んでみましたが、検索結果から様々
-な値をどのように取り出すかはスクリプト次第です。
+さらに、パースする前の手を加えていない fasta コマンドの実行結果が必要な
+場合には、
+
+    report = factory.query(entry)
+    puts factory.output
+
+のように、query のあとで factory オブジェクトの output メソッドを使えば
+取り出すことができます。
+
 
 === リモートの場合
 
 今のところ GenomeNet (fasta.genome.ad.jp) での検索をサポートしています。
-factory の作り方と使用可能な検索対象データベースが決まっていること以外は
-同じ使い方ができます。
+リモートの場合は使用可能な検索対象データベースが決まっていますが、それ以
+外の点については Bio::Fasta.remote と Bio::Fasta.local は同じように使う
+ことができます。
+
+GenomeNet の検索対象データベース：
+
+  * アミノ酸配列データベース
+    * nr-aa, genes, vgenes.pep, swissprot, swissprot-upd, pir, prf, pdbstr
+
+  * 塩基配列データベース
+    * nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss, htgs, dbsts,
+      embl-nonst, embnonst-upd, genes-nt, genome, vgenes.nuc
+
+まず、この中から検索したいデータベースを選択します。問い合わせ配列の種類
+と検索するデータベースの種類によってプログラムが決まります。
+
+  * 問い合わせ配列がアミノ酸のとき
+    * 対象データベースがアミノ酸配列データベースの場合、program は 'fasta'
+    * 対象データベースが核酸配列データベースの場合、program は 'tfasta'
+
+  * 問い合わせ配列が核酸配列のとき
+    * 対象データベースが核酸配列データベースの場合、program は 'fasta'
+
+プログラムとデータベースの組み合せが決まったら
 
     program = 'fasta'
     database = 'genes'
-
+    
     factory = Bio::Fasta.remote(program, database)
 
-問い合わせがアミノ酸配列のとき：
+としてファクトリーを作り、ローカルの場合と同じように factory.query など
+のメソッドで検索を実行します。
 
-  * 対象データベースが以下のアミノ酸配列データベースのいずれかの場合
-    program は 'fasta' にします。
-
-    * nr-aa, genes, vgenes.pep, swissprot, swissprot-upd, pir, prf, pdbstr
-
-  * 対象データベースが以下の核酸配列データベースのいずれかの場合
-    program は 'tfasta' にします。
-
-    * nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss, htgs, dbsts,
-      embl-nonst, embnonst-upd, genes-nt, genome, vgenes.nuc
-
-問い合わせ配列が核酸配列のとき：
-
-  * 対象データベースは以下の核酸配列データベースのいずれかで、
-    program は 'fasta' にします。
-
-    * nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss, htgs, dbsts,
-      embl-nonst, embnonst-upd, genes-nt, genome, vgenes.nuc
 
 == BLAST による相同性検索を行う（Bio::Blast クラス）
 
-プログラムが異なるため Bio::Blast::Report オブジェクトからデータを取り出す
-メソッドが多少違いますが、最小限の API は共通にしてありますので、上記の例
-で Bio::Fasta を Bio::Blast と置き換えて実行すれば基本的にはＯＫです。
-BLAST もローカルと GenomeNet (blast.genome.ad.jp) での検索をサポートしてい
-ます。
+BLAST もローカルと GenomeNet (blast.genome.ad.jp) での検索をサポートして
+います。できるだけ Bio::Fasta と API を共通にしていますので、上記の例を 
+Bio::Blast と読み替えれば基本的には大丈夫です。
 
-デフォルトでは -m 8 の Tab 切りの出力形式を扱うので得られるデータが少ない
-ですが、REXML か XMLParser をインストールすれば -m 7 の XML 形式の出力を
-使って BLAST の全出力から結果を取り出すことができます。
+たとえば、先の f_search.rb は
 
-    factory = Bio::Blast.local(program, database, option)
-    factory.format = 7			# XML 形式での出力を指定
-    factory.parser = 'xmlparser'	# デフォルトは 'rexml'
+    # BLAST を実行する環境オブジェクトを作る
+    factory = Bio::Blast.local('blastp', ARGV.pop) 
 
-    blast_result = factory.query(seq)	# Bio::Blast::Report オブジェクト
+と変更するだけで同じように実行できます。
 
-これは Bio::Blast.remote の場合も同じです。
+同様に、GenomeNet に対して検索する場合には Bio::Blast.remote を使います。
+この引数で FASTA と異なるのは program です。
 
-== DBGET システム (Bio::DBGET クラス)
+  * 問い合わせ配列がアミノ酸のとき
+    * 対象データベースがアミノ酸配列データベースの場合、program は 'blastp'
+    * 対象データベースが核酸配列データベースの場合、program は 'tblastn'
 
-次は、ゲノムネットから DBGET を使って特定のデータベースエントリを取得す
-る例です。DBGET では bfind によるエントリの検索と bget によるエントリの
-取得ができます。
+  * 問い合わせ配列が塩基配列のとき
+    * 対象データベースがアミノ酸配列データベースの場合、program は 'blastx'
+    * 対象データベースが塩基配列データベースの場合、program は 'blastn'
 
-Bio::DBGET.bfind メソッドには、検索対象のデータベース名と検索キーワード
-を与えます。例えば GenBank データベースで cyclin と kinase をキーワード
-に持つエントリを検索するには、以下のようにします。
+をそれぞれ指定します。
 
-    % ruby -r bio -e 'puts Bio::DBGET.bfind("genbank cyclin kinase")'
-    gb:AB010087 [AB010087] Pseudomonas aeruginosa rpsB, tsf, pyrH, f...
-    gb:AF016224 [AF016224] Caenorhabditis elegans WD-40 repeat prote...
-         :
+ところで、Bio::Blast は、外部ライブラリに依存しないようにデフォルトでは 
+-m 8 のタブ区切りの出力形式を扱うようにしています。しかしこのフォーマッ
+トでは得られるデータが限られているので、-m 7 の XML 形式の出力を使うこと
+をお勧めします。Ruby の REXML か XMLParser ライブラリを別途インストール
+すれば、配列やアライメントを含む BLAST の全出力結果を使うことができます。
 
-結果のうち、左端に表示されているのが「データベース名:エントリ名」の表記
-で、Bio::DBGET.bget メソッドを使って実際にこのエントリを取ってくることが
-できます。
+これらを切り替えるには Bio::Blast#format= と Bio::Blast#parser= メソッド
+を使います。XML (-m 7) 形式での出力を指定し、結果を REXML でパースする場
+合は、
 
-    % ruby -r bio -e 'puts Bio::DBGET.bget("gb:AB010087")'
+    factory = Bio::Blast.local(program, database)
+    factory.format = 7                  # XML 形式での出力を指定
+    factory.parser = 'rexml'            # REXML ライブラリを使う（デフォルト）
+    report = factory.query(seq)
 
-これを利用して先の GenBank オブジェクトを作るには、
+のようにします。GenomeNet で検索し、結果を XMLParser でパースする場合は、
 
-    #!/usr/bin/env ruby
-    
-    require 'bio'
-    
-    entry = Bio::DBGET.bget("gb:AB010087")
-    gb = Bio::GenBank.new(entry)
+    factory = Bio::Blast.remote(program, database)
+    factory.format = 7                  # XML 形式での出力を指定
+    factory.parser = 'xmlparser'        # XMLParser ライブラリを使う
+    report = factory.query(seq)
 
-のようにスクリプトを書くことになります。簡単な処理なら、
+のようになります。
 
-    % ruby -r bio -e 'include Bio
-    > gb = GenBank.new(DBGET.bget("gb:AB010087"))
-    > p gb.naseq'
+すでに見たように Bio::Fasta::Report と Bio::Blast::Report の Hit オブジェ
+クトはいくつか共通のメソッドを持っています。BLAST 固有のメソッドで良く使
+いそうなものには bit_score や midline などがあります。
 
-などとコマンドラインで実行しても良いでしょう。
-
-=== dbget コマンド
-
-また、BioRuby をインストールすると、上記の例と同じことを実行するプログラ
-ムである dbget コマンドも（/usr/bin/dbget などに）インストールされている
-はずです。この dbget コマンドを使えば、ゲノムネットの検索、データ取得を
-以下のようにコマンドラインで実行することができます。さらに、dbget に対し
-以下の例のようにメソッド名でリンクを張れば、メソッド名の動作をするプログ
-ラムになります。
-
-    % dbget bget gb:AB010087
-
-    # cd /usr/bin               ← dbget コマンドのインストール先
-    # ln -s dbget bfind
-    # ln -s dbget bget
-    
-    % bfind genbank cyclin kinase
-    % bget gb:AB010087
-
-DBGET で検索、取得できるデータベースは多数あるので、詳細は DBGET のウェ
-ブページ ((<URL:http://www.genome.ad.jp/dbget/>)) を参照してください。
-
-== KEGG::GENES のパース (Bio::KEGG::GENES, Bio::AAindex1 クラス)
-
-次は、DBGET で KEGG の GENES データベースから古細菌 Halobacterium のバク
-テリアロドプシン遺伝子 (VNG1467G) を取ってきて、アミノ酸指標データベース
-である AAindex から取り出したαヘリックスの指標 (BURA740101) を使って、
-幅 15 残基のウィンドウサーチをする例です。
-
-    #!/usr/bin/env ruby
-    
-    require 'bio'
-    
-    entry = Bio::DBGET.bget('hal:VNG1467G')
-    aaseq = Bio::KEGG::GENES.new(entry).aaseq
-    
-    entry = Bio::DBGET.bget('aax1:BURA740101')
-    helix = Bio::AAindex1.new(entry).index
-    
-    position = 1
-    win_size = 15
-    
-    aaseq.window_search(win_size) do |subseq|
-      score = subseq.total(helix)
-      puts [ position, score ].join("\t")
-      position += 1
+    report.each do |hit|
+      puts hit.bit_score        # bit スコア (*)
+      puts hit.query_seq        # 問い合わせ配列
+      puts hit.midline          # アライメントの midline 文字列 (*)
+      puts hit.target_seq       # ヒットした配列
+      
+      puts hit.evalue           # E-value
+      puts hit.identity         # % identity
+      puts hit.overlap          # オーバーラップしている領域の長さ 
+      puts hit.query_id         # 問い合わせ配列の ID
+      puts hit.query_def        # 問い合わせ配列のコメント
+      puts hit.query_len        # 問い合わせ配列の長さ
+      puts hit.target_id        # ヒットした配列の ID
+      puts hit.target_def       # ヒットした配列のコメント
+      puts hit.target_len       # ヒットした配列の長さ
+      puts hit.query_start      # 相同領域の問い合わせ配列での開始残基位置
+      puts hit.query_end        # 相同領域の問い合わせ配列での終了残基位置
+      puts hit.target_start     # 相同領域のターゲット配列での開始残基位置
+      puts hit.target_end       # 相同領域のターゲット配列での終了残基位置
+      puts hit.lap_at           # 上記４位置の数値の配列
     end
+
+簡便のため、スコアなどいくつかの情報はベストの Hsp の値を Hit から参照し
+ています。
+
+逆に、Hit の内部の Hsp オブジェクトを直接見ないと取れない値が必要な場合
+や、各 Hsp を全部見たい場合、blastpgp で各 Iteration オブジェクト毎の値
+が必要な場合などもあると思います。Bio::Blast::Report オブジェクトは実際
+には
+
+  * Bio::Blast::Report オブジェクトの @iteratinos に
+    * Bio::Blast::Report::Iteration オブジェクトの Array が入っており
+      Bio::Blast::Report::Iteration オブジェクトの @hits に
+      * Bio::Blast::Report::Hits オブジェクトの Array が入っており
+        Bio::Blast::Report::Hits オブジェクトの @hsps に
+        * Bio::Blast::Report::Hsp オブジェクトの Array が入っている
+
+という階層構造になっており、それぞれが内部の値を取り出すためのメソッドを
+持っています。これらのメソッドの詳細や、BLAST 実行時のパラメータと統計情
+報などの値が必要な場合には、 bio/appl/blast/rexml.rb 内のドキュメントや
+テストコードを参照してください。
+
+=== 既存の BLAST 出力ファイルをパースする
+
+BLAST を実行した結果ファイルがすでに保存してあって、これを解析したい場合
+には（Bio::Blast オブジェクトを作らずに） Bio::Blast::Report オブジェク
+トを作りたい、ということになります。このとき、結果ファイルのフォーマット
+と、XML の場合どのライブラリを使うかによってパーザを切り替える必要があり
+ます。これには Bio::Blast.parser というクラスメソッドを使います。
+
+例えば、blastall -m 7 の結果が XML のまま保存されているファイルがいくつ
+かあって、REXML を使って解析したい場合、
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+    
+    Bio::Blast.parser('rexml')  # REXML 版の Bio::Blast::Report パーザを使う
+    
+    ARGV.each do |blast_result_file|
+      # 引数で与えたファイル名のファイルを順番に開く
+      blast_result = File.open(blast_result_file).read
+
+      # 開いたファイルの中身 (XML の文字列) を解析する
+      report = Bio::Blast::Report.new(blast_result)
+    
+      # 以下は通常の Bio::Blast::Report オブジェクトの使い方と同様
+      puts "Hits for " + report.query_def + " against " + report.db
+      report.each do |hit|
+        print hit.target_id, "\t", hit.evalue, "\n" if hit.evalue < 0.001
+      end
+    end
+
+のようなスクリプト hits_under_0.001.rb を書いて、
+
+   % ./hits_under_0.001.rb *.xml
+
+などと実行すれば、引数に与えた BLAST の結果ファイル *.xml を順番に処理で
+きます。
+
+今のところ Bio::Blast.parser の引数に与えられるのは -m 7 の XML フォーマッ
+トを解析する 'rexml' と 'xmlparser' か、-m 8 のタブ区切りフォーマットを
+解析する 'format8' のいずれかで、これらは BioRuby の bio/appl/blast/ ディ
+レクトリ以下にあるパーザのファイル名です。
+
+=== リモート検索サイトを追加するには
+
+Blast 検索は NCBI をはじめ様々なサイトでサービスされていますが、今のとこ
+ろ BioRuby では GenomeNet 以外には対応していません。これらのサイトは、
+
+  * CGI を呼び出す（コマンドラインオプションはそのサイト用に処理する）
+  * -m 8 など BioRuby がパーザを持っている出力フォーマットで blast の
+    出力を取り出す
+
+ことさえできれば、query を受け取って検索結果を Bio::Blast::Report.new に
+渡すようなメソッドを定義するだけで使えるようになります。具体的には、この
+メソッドを「exec_サイト名」のような名前で Bio::Blast の private メソッド
+として登録すると、４番目の引数に「サイト名」を指定して
+
+    factory = Bio::Blast.remote(program, db, option, 'サイト名')
+
+のように呼び出せるようになっています。完成したら BioRuby プロジェクトま
+で送ってもらえれば取り込ませて頂きます。
+
 
 == PubMed を引いて引用文献リストを作る (Bio::PubMed クラス)
 
@@ -375,12 +511,13 @@ DBGET で検索、取得できるデータベースは多数あるので、詳細は DBGET のウェ
     require 'bio'
     
     ARGV.each do |id|
-      entry = Bio::PubMed.query(id)
-      ref = Bio::MEDLINE.new(entry).reference
-      puts ref.bibtex
+      entry = Bio::PubMed.query(id)     # PubMed を取得するクラスメソッド
+      medline = Bio::MEDLINE.new(entry) # Bio::MEDLINE オブジェクト
+      reference = medline.reference     # Bio::Reference オブジェクト
+      puts reference.bibtex             # BibTeX フォーマットで出力
     end
 
-このスクリプトを pm2bibtex.rb など好きな名前で保存し、
+このスクリプトを pmfetch.rb など好きな名前で保存し、
 
     % ./pm2bibtex.rb 11024183 10592278 10592173
 
@@ -388,29 +525,239 @@ DBGET で検索、取得できるデータベースは多数あるので、詳細は DBGET のウェ
 て MEDLINE フォーマットをパースし BibTeX フォーマットに変換して出力して
 くれるはずです。
 
-ここでは bibtex メソッドで BibTeX フォーマットに変換していますが、（強調
-など文字の修飾はできませんが）Nature や NAR などいくつかの雑誌のフォーマッ
-トにも対応しています。
-
 他にも、キーワードで検索する機能もあります。
 
-    % ruby -r bio -e '
-    ary = Bio::PubMed.search("bioinformatics genome")
-    ary.each do |x|
-      puts Bio::MEDLINE.new(x).reference.format("Nature"), "\n"
-    end'
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+    
+    # コマンドラインで与えたキーワードのリストを１つの文字列にする
+    keywords = ARGV.join(' ')
+    
+    # PubMed をキーワードで検索
+    entries = Bio::PubMed.search(keywords)
+    
+    entries.each do |entry|
+      medline = Bio::MEDLINE.new(entry) # Bio::MEDLINE オブジェクト
+      reference = medline.reference     # Bio::Reference オブジェクト
+      puts reference.bibtex             # BibTeX フォーマットで出力
+    end
 
-== BioSQL
+このスクリプトを pmsearch.rb など好きな名前で保存し
 
-to be written...
+    % ./pm2bibtex.rb genome bioinformatics
+
+など検索したいキーワードを引数に並べて実行すると、PubMed をキーワード検
+索してヒットした論文のリストを BibTeX フォーマットで出力します。
+
+ちなみに、ここでは bibtex メソッドで BibTeX フォーマットに変換しています
+が、nature メソッドや nar などいくつかの雑誌のフォーマットにも対応してい
+ます（強調など文字の修飾はできないので実用には手直しが必要ですが）。
+
+Bio::Reference クラスに合うように各データベースパーザが REFERENCE 行など
+を処理するのは少し大変なのですが、対応すれば BibTeX などに変換できるのは
+便利ではないかと思います（人名など例外が多くて実際にはかなり面倒くさい）。
+
+
+== BioRuby のサンプルプログラムの使い方
+
+BioRuby のパッケージには samples/ ディレクトリ以下にいくつかのサンプルプ
+ログラムが含まれています。古いものも混じっていますし、量もとても十分とは
+言えないので、実用的で面白いサンプルの提供は歓迎です。
+
+=== GenBank をパースして MySQL につっこむ
+
+例として ((<NCBI|URL:ftp://ftp.ncbi.nlm.gov/genbank/>)) からダウンロード
+して解凍した GenBank データベースを MySQL に入れてみます。
+
+    % gb2tab.rb *.seq           # パースしてタブ区切りのファイルに
+    % gbtab2mysql.rb            # タブ切りファイルを MySQL に
+
+処理が終るまでに少なくとも数日かかります。
+
+ここで使っている schema は後に説明する BioSQL とは異なる BioRuby の独自
+フォーマットですが、テーブルの数が ent, ref, ft, seq （それぞれエントリ
+本体、REFERENCE、FEATURES、塩基配列を格納）の４つに絞ってあるのが特徴で
+す。BioSQL と比べると、複雑な検索用に自前で SQL を書く場合に JOIN が少な
+くてラクですし、プログラム的にも効率が良いと思います。
+
+ちなみに、ref と ft は GenBank の１エントリ中に複数回現れる要素であるた
+め、また塩基配列は（RefSeq データベースに適用する場合など）ゲノム配列の
+ように極めて長い配列は分割して格納したほうが良いため、それぞれ別テーブル
+にしています。
+
+
+= OBDA
+
+OBDA (Open Bio Sequence Database Access) とは、2002 年の１月と２月に
+Arizona と Cape Town の２回に分けて行われた BioHackathon において、
+BioPerl, BioJava, BioPython, BioRuby などの各プロジェクトを中心とした
+メンバー間で合意された配列データベースへの共通アクセス方法です。
+
+* BioRegistry
+  * データベース毎に配列をどこにどのように取りに行くかを指定する仕組み
+
+* Flatfile
+  * フラットファイルの dbm インデクシングと bdb インデクシング
+
+* BioFetch
+  * HTTP 経由でデータベースからエントリを取得するサーバとクライアント
+
+* BioSQL
+  * MySQL や PostgreSQL などのデータベースに配列データベースを格納する
+    ための schema と、エントリを取り出すためのメソッド
+
+* BioCORBA
+  * EBI の CORBA サーバなどによるエントリの取得
+
+* XEMBL
+  * HTTP と SOAP による EMBL データベースの XML による取得
+
+* BioDAS
+  * SOAP による DAS アノテーションの取得
+
+それぞれの詳細は ((<URL:http://obda.open-bio.org/>)) を参照してください。
+各 spec は CVS で cvs.open-bio.org の obf-common/ 以下に置いてあります。
+
+== BioRegistry
+
+設定ファイルを読み込んで、各データベースごとのエントリ取得方法を個人やサ
+イト毎のレベルで指定できるようにするものです。設定ファイルの検索は、
+
+  * 指定したファイル
+  * ~/.bioinformatics/seqdatabase.ini
+  * /etc/bioinformatics/seqdatabase.ini
+  * http://www.open-bio.org/registry/seqdatabase.ini
+
+の順に行われます。BioRuby の実装では最初に見つかった設定が優先ですが、後
+のファイルにしか書かれていない情報も追加されるようになっています。従って
+システム管理者が /etc/bioinformatics/ に置いた設定ファイルのうち個人的に
+変更したいものだけ ~/.bioinformatics/ で上書きするといった使い方ができる
+ようになっています。最後の open-bio.org の設定は、ローカルな設定ファイル
+が見つからない場合にだけ取りに行きます。
+
+設定ファイルの中身は stanza フォーマットと呼ばれる書式で記述します。
+
+    [データベース名]
+    protocol=プロトコル名
+    location=サーバ名
+
+のようなエントリを単位として必要なだけ定義します。データベース名は、自分
+が使用するためのラベルなので分かりやすいものをつければ良く、実際のデータ
+ベースの名前と異なっていても構わないようです。同じ名前のデータベースが複
+数あるときは最初に書かれているものから順に接続を試すように提案されていま
+すが、BioRuby では対応していません。
+
+また、プロトコルの種類によっては location 以外にも（MySQL のユーザ名など）
+さらにオプションが必要な場合があります。ここで protocol には
+
+  * index-berkeleydb
+  * index-flat
+  * biofetch
+  * biosql
+  * bsane-corba
+  * xembl
+
+が指定できますが、今のところ BioRuby で扱えるのは biofetch と biosql だ
+けです。index については class FlatFile に Index 用のサブクラスを作れば
+よさそうですが、CORBA と SOAP については得意な方が手伝って下さることを期
+待します。
+
+BioRegistry を使うには、まず
+
+    reg = Bio::Registry.new
+
+として設定ファイルを読み込みます。
+
+    # 設定ファイルに書いたデータベース名でサーバへ接続
+    serv = reg.get_database('genbank')
+    
+    # ID を指定してエントリを取得
+    entry = serv.get_by_id('AA2CG')
+
+ここで serv は設定ファイルの [genbank] の欄で指定した protocol プロトコ
+ルに対応するサーバオブジェクトで、Bio::SQL や Bio::Fetch などのインスタ
+ンスが返っているはずです（データベース名が見つからなかった場合は nil）。
+あとは OBDA 共通ののエントリ取得メソッド get_by_id を呼んだり、サーバオ
+ブジェクト毎に固有のメソッドを呼ぶことになりますので、以下の BioFetch や
+BioSQL の解説を参照してください。
 
 == BioFetch
 
-to be written...
+BioFetch は CGI を経由してサーバからデータベースのエントリを取得する仕様
+で、サーバが受け取る CGI のオプション名、エラーコードなどが決められてい
+ます。クライアントは HTTP を使ってデータベース、ID、フォーマットなどを指
+定し、エントリを取得します。
 
-== サンプルプログラムの使い方
+BioRuby プロジェクトでは BioHackathon の間に GenomeNet の DBGET システム
+をバックエンドとした BioFetch サーバを実装して、bioruby.org で運用してい
+ます。また、このサーバのソースコードは BioRuby の sample/ ディレクトリに
+入っています。現在のところ BioFetch サーバはこの BioRuby のものと EBI の
+２ヶ所しかありません。
 
-=== パースしたデータベースエントリを MySQL につっこむ
+BioFetch を使ってエントリを取得するには、いくつかの方法があります。
+
+(1) ウェブブラウザから検索する方法（以下のページを開く）
+
+      http://bioruby.org/cgi-bin/biofetch.rb
+
+(2) BioRuby と一緒にインストールされる biofetch コマンドを用いる方法
+
+      % biofetch db_name entry_id
+
+(3) スクリプトの中から Bio::Fetch クラスを直接使う方法
+
+      serv = Bio::Fetch.new(server_url)
+      entry = serv.fetch(db_name, entry_id)
+
+(4) スクリプトの中で BioRegistry 経由で Bio::Fetch クラスを間接的に使う方法
+
+      reg = Bio::Registry.new
+      serv = reg.get_database('genbank')
+      entry = serv.get_by_id('AA2CG')
+
+最後の BioRegistry を使う場合は seqdatabase.ini で
+
+    [genbank]
+    protocol=biofetch
+    location=http://bioruby.org/cgi-bin/biofetch.rb
+    biodbname=genbank
+
+などと指定しておく必要があります（この記述によって BioRegistry で生成さ
+れた Bio::Fetch サーバに対してはサーバの URL とデータベース名の指定が済
+んでいることになります）。
+
+=== BioFetch と Bio::KEGG::GENES, Bio::AAindex1 を組み合わせた例
+
+次のプログラムは、BioFetch を使って KEGG の GENES データベースから古細菌
+Halobacterium のバクテリアロドプシン遺伝子 (VNG1467G) を取ってきて、同じ
+ようにアミノ酸指標データベースである AAindex から取得したαヘリックスの
+指標 (BURA740101) を使って、幅 15 残基のウィンドウサーチをする例です。
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+
+    entry = Bio::Fetch.query('hal', 'VNG1467G')
+    aaseq = Bio::KEGG::GENES.new(entry).aaseq
+    
+    entry = Bio::Fetch.query('aax1', 'BURA740101')
+    helix = Bio::AAindex1.new(entry).index
+    
+    position = 1
+    win_size = 15
+    
+    aaseq.window_search(win_size) do |subseq|
+      score = subseq.total(helix)
+      puts [ position, score ].join("\t")
+      position += 1
+    end
+
+ここで使っているクラスメソッド Bio::Fetch.query は暗黙に bioruby.org の
+BioFetch サーバを使う専用のショートカットです。
+
+
+== BioSQL
 
 to be written...
 
