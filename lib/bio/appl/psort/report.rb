@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.1 2003/04/10 06:25:25 n Exp $
+#  $Id: report.rb,v 1.2 2003/04/10 06:32:10 n Exp $
 #
 
 require 'bio/sequence'
@@ -199,7 +199,8 @@ module Bio
 	    self.definition = tmp.join(' ').chomp
 	  end
 	  scl = self.definition.split(' ')[0]
-	  self.scl = scl if SclNames.index(scl)
+
+	  self.scl = scl if SclNames.keys.index(scl)
 	end
 
 
