@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.12 2003/04/21 06:40:02 ng Exp $
+#  $Id: fasta.rb,v 1.13 2003/04/21 15:01:54 ng Exp $
 #
 
 require 'bio/db'
@@ -187,7 +187,7 @@ module Bio
       end
     end #def initialize
 
-    attr_reader :list_ids, :info
+    attr_reader :list_ids
     attr_reader :entry_id
 
     def add_defline(str)
@@ -213,7 +213,7 @@ module Bio
 	  if !match_EC(x, false) and x =~ /\A[A-Z]/ then
 	    di = [  x ]
 	    @list_ids << di
-	    @info['organism'] = di unless @info['organism']
+	    @info['organism'] = x unless @info['organism']
 	  end
 	end
 
@@ -246,6 +246,7 @@ module Bio
       else
 	i = line
 	d = ''
+	match_EC(i)
 	this_line = [ '', [ i ], d ]
       end
 
@@ -258,7 +259,7 @@ module Bio
       str.scan /EC\:((:?[\-\d]+\.){3}(:?[\-\d]+))/i do |x|
 	di = [ 'EC', $1 ]
 	if write_flag then
-	  @info['ec'] = di if (!@info['ec'] or @info['ec'].to_s =~ /\-/)
+	  @info['ec'] = di[1] if (!@info['ec'] or @info['ec'].to_s =~ /\-/)
 	  @list_ids << di
 	end
       end
@@ -279,7 +280,6 @@ module Bio
       di = str.split(':', 2)
       di << nil if di.size <= 1 
       @list_ids << di
-      @info[di[0].downcase] = di unless @info[di[0]]
       di
     end
     private :parse_ColonSepID
@@ -305,14 +305,12 @@ module Bio
 	    end
 	  end
 	  data << di
-	  @info[idtype] = di unless @info[idtype]
 	else
 	  if token.length > 0 then
 	    # UCID (uncontrolled identifiers)
 	    di = [ token ]
 	    data << di
-	    idtype = 'ucid'
-	    @info[idtype] = di unless @info[idtype]
+	    @info['ucid'] = token unless @info['ucid']
 	  end
 	  break #while
 	end
@@ -350,43 +348,69 @@ module Bio
 	  end
 	end
       end
+      r.concat (words(true, []).find_all do |x|
+	x =~ /\A[A-Z][A-Za-z0-9\_]*[0-9]+[A-Za-z0-9\_]+\z/ or
+		    x =~ /\A[A-Z][A-Z0-9]*\_[A-Z0-9\_]+\z/
+      end)
       r
     end
 
-    def words(case_sensitive = nil)
-      a = descriptions.join(' ').split(/[\.\,\;\:\(\)\[\]\{\}\"\'\/\s]+/)
+    KillWords = [
+      'an', 'the', 'this', 'that',
+      'is', 'are', 'were', 'was', 'be', 'can', 'may', 'might',
+      'as', 'at', 'by', 'for', 'in', 'of', 'on', 'to', 'with',
+      'and', 'or', 'not',
+      'dna', 'rna', 'mrna', 'cdna', 'orf',
+      'aa', 'nt', 'pct', 'id', 'ec', 'sp', 'subsp',
+      'similar', 'involved', 'identical', 'identity',
+      'complete', 'partial', 'cds', 'clone', 'library',
+      'homolog', 'homologue', 'homologs', 'homologous',
+      'protein', 'proteins', 'gene', 'genes',
+      'sequence', 'sequences',
+    ]
+    KillWordsHash = {}
+    KillWords.each { |x| KillWordsHash[x] = true }
+
+    KillRegexpArray = [
+      /\A\d{1,3}\%?\z/,
+      /\A[A-Z][A-Za-z0-9\_]*[0-9]+[A-Za-z0-9\_]+\z/,
+      /\A[A-Z][A-Z0-9]*\_[A-Z0-9\_]+\z/
+    ]
+
+    def words(case_sensitive = nil, kill_regexp = self.class::KillRegexpArray,
+	      kwhash = self.class::KillWordsHash)
+      a = descriptions.join(' ').split(/[\.\,\;\:\(\)\[\]\{\}\<\>\"\'\`\~\/\|\?\!\&\@\#\s\x00-\x1f\x7f]+/)
       a.collect! { |x| x.downcase } unless case_sensitive
-      r = a.find_all do |x|
+      a.collect! do |x|
+	x.sub! /\A[\$\*\-\+]+/, ''
+	x.sub! /[\$\*\-\=]+\z/, ''
 	if x.size <= 1 then
 	  nil
+	elsif kwhash[x.downcase] then
+	  nil
 	else
-	  case x
-	  when 'an', 'is', 'are', 'were', 'the', 'id', 'protein'
+	  if kill_regexp.find { |expr| expr =~ x } then
 	    nil
 	  else
-	    true
+	    x
 	  end
 	end
       end
-      r.uniq!
-      r
-    end
-
-    def get_all(db)
-      if di = @info[db.to_s] then
-	di
-      else
-	nil
-      end
+      a.compact!
+      a.sort!
+      a.uniq!
+      a
     end
 
     def get(db)
+      db =db.to_s
       r = nil
-      if di = @info[db.to_s] then
-	if di.size <= 2 then
+      unless r = @info[db] then
+	di = @list_ids.find { |x| x[0] == db.to_s }
+	if di and di.size <= 2 then
 	  r = di[-1]
-	else
-	  labels = self.class::NSIDs[db.to_s]
+	elsif di then
+	  labels = self.class::NSIDs[db]
 	  [ 'acc_version', 'entry_id',
 	    'locus', 'accession', 'number'].each do |x|
 	    if i = labels.index(x) then
@@ -396,8 +420,7 @@ module Bio
 	  end
 	  r = di[1..-1].find { |x| x } unless r
 	end
-      else
-	r = nil
+	@info[db] = r if r
       end
       r
     end
@@ -413,7 +436,7 @@ module Bio
       nil
     end
 
-    def get_all_id_by_type(*tstrarg)
+    def get_all_by_type(*tstrarg)
       d = []
       @list_ids.each do |x|
 	if labels = self.class::NSIDs[x[0]] then
@@ -450,7 +473,7 @@ module Bio
 
     def accessions
       unless defined?(@accessions) then
-	@accessions = get_all_id_by_type('accession', 'acc_version')
+	@accessions = get_all_by_type('accession', 'acc_version')
 	@accessions.collect! { |x| x.sub(/\..*\z/, '') }
       end
       @accessions
@@ -588,7 +611,6 @@ automatically.
       Returns the stored one entry as a FASTA format. (same as to_s)
 
 --- Bio::FastaFormat#definition
---- Bio::FastaFormat#entry_id
 
       Returns the comment line of the FASTA formatted data.
 
@@ -632,6 +654,37 @@ automatically.
       Bio::Sequence::AA object respectively. 'nalen' and 'aalen' methods
       return the length of them.
 
+--- Bio::FastaFormat#identifiers
+
+      Parsing FASTA Defline, and extract IDs.
+      IDs are NSIDs (NCBI standard FASTA sequence identifiers)
+      or ":"-separated IDs.
+      It returns a Bio::FastaDefline instance.
+
+--- Bio::FastaFormat#entry_id
+
+      Parsing FASTA Defline (using #identifiers method), and
+      shows a possibly unique identifier.
+      It returns a string.
+
+--- Bio::FastaFormat#gi
+--- Bio::FastaFormat#locus
+--- Bio::FastaFormat#accession
+--- Bio::FastaFormat#acc_version
+
+      Parsing FASTA Defline (using #identifiers method), and
+      shows GI/locus/accession/accession with version number.
+      If a entry has more than two of such IDs,
+      only the first ID are shown.
+      It returns a string or nil.
+
+--- Bio::FastaFormat#accessions
+
+      Parsing FASTA Defline (using #identifiers method), and
+      shows accession numbers.
+      It returns an array of strings.
+
+--- Bio::FastaFormat
 
 = Bio::FastaNumericFormat
 
@@ -649,7 +702,6 @@ automatically.
       Stores the comment and the list of the numerical data.
 
 --- Bio::FastaNumericFormat#definition
---- Bio::FastaNumericFormat#entry_id
 
       The comment line of the FASTA formatted data.
 
@@ -669,6 +721,124 @@ automatically.
 --- Bio::FastaNumericFormat#[](n)
 
       Returns the n-th element.
+
+--- Bio::FastaNumericFormat#identifiers
+--- Bio::FastaNumericFormat#entry_id
+--- Bio::FastaNumericFormat#gi
+--- Bio::FastaNumericFormat#locus
+--- Bio::FastaNumericFormat#accession
+--- Bio::FastaNumericFormat#acc_version
+--- Bio::FastaNumericFormat#accessions
+
+      Same as Bio::FastaFormat.
+
+
+= Bio::FastaDefline
+
+      Parsing FASTA Defline, and extract IDs and other informations.
+      IDs are NSIDs (NCBI standard FASTA sequence identifiers)
+      or ":"-separated IDs.
+      
+--- see also:
+      ftp://ftp.ncbi.nih.gov/blast/documents/README.formatdb
+      http://blast.wustl.edu/doc/FAQ-Indexing.html#Identifiers
+
+--- Bio::FastaDefline.new(str)
+
+      Parses given string.
+
+--- Bio::FastaFormat#entry_id
+
+      Shows a possibly unique identifier.
+      Returns a string.
+
+--- Bio::FastaDefline#gi
+--- Bio::FastaDefline#locus
+--- Bio::FastaDefline#accession
+--- Bio::FastaDefline#acc_version
+
+      Shows GI/locus/accession/accession with version number.
+      If the entry has more than two of such IDs,
+      only the first ID are shown.
+      Returns a string or nil.
+
+--- Bio::FastaFormat#accessions
+
+      Shows accession numbers.
+      Returns an array of strings.
+
+--- Bio::FastaDefline#add_defline(str)
+
+      Parses given string and adds parsed data.
+
+--- Bio::FastaDefline#to_s
+
+      Shows original string.
+      Note that the result of this method may be different from
+      original string which is given in FastaDefline.new method.
+
+--- Bio::FastaDefline#id_strings
+
+      Shows ID-like strings.
+      Returns an array of strings.
+
+--- Bio::FastaDefline#list_ids
+
+      Shows array that contains IDs (or ID-like strings).
+      Returns an array of arrays of strings.
+
+--- Bio::FastaDefline#description
+--- Bio::FastaDefline#descriptions
+
+--- Bio::FastaDefline#words(case_sensitive = nil,
+                            kill_words_regexp_array, kill_words_hash)
+
+--- Bio::FastaDefline#get(tag_of_id)
+
+--- Bio::FastaDefline#get_by_type(type_of_id)
+
+--- Bio::FastaDefline#get_all_by_type(type_of_id)
+
+--- examples:
+      rub = Bio::FastaDefline.new('>gi|671595|emb|CAA85678.1| rubisco large subunit [Perovskia abrotanoides]')
+      rub.entry_id       ==> 'gi|671595'
+      rub.get('emb')     ==> 'CAA85678.1'
+      rub.emb            ==> 'CAA85678.1'
+      rub.gi             ==> '671595'
+      rub.accession      ==> 'CAA85678'
+      rub.accessions     ==> [ 'CAA85678' ]
+      rub.acc_version    ==> 'CAA85678.1'
+      rub.locus          ==> nil
+      rub.list_ids       ==> [["gi", "671595"],
+                              ["emb", "CAA85678.1", nil],
+                              ["Perovskia abrotanoides"]]
+
+      ckr = Bio::FastaDefline.new(">gi|2495000|sp|Q63931|CCKR_CAVPO CHOLECYSTOKININ TYPE A RECEPTOR (CCK-A RECEPTOR) (CCK-AR)\001gi|2147182|pir||I51898 cholecystokinin A receptor - guinea pig\001gi|544724|gb|AAB29504.1| cholecystokinin A receptor; CCK-A receptor [Cavia]")
+      ckr.entry_id      ==> "gi|2495000"
+      ckr.sp            ==> "CCKR_CAVPO"
+      ckr.pir           ==> "I51898"
+      ckr.gb            ==> "AAB29504.1"
+      ckr.gi            ==> "2495000"
+      ckr.accession     ==> "AAB29504"
+      ckr.accessions    ==> ["Q63931", "AAB29504"]
+      ckr.acc_version   ==> "AAB29504.1"
+      ckr.locus         ==> nil
+      ckr.description   ==>
+        "CHOLECYSTOKININ TYPE A RECEPTOR (CCK-A RECEPTOR) (CCK-AR)"
+      ckr.descriptions  ==>
+        ["CHOLECYSTOKININ TYPE A RECEPTOR (CCK-A RECEPTOR) (CCK-AR)",
+         "cholecystokinin A receptor - guinea pig",
+         "cholecystokinin A receptor; CCK-A receptor [Cavia]"]
+      ckr.words         ==> 
+        ["cavia", "cck-a", "cck-ar", "cholecystokinin", "guinea", "pig",
+         "receptor", "type"]
+      ckr.id_strings    ==>
+        ["2495000", "Q63931", "CCKR_CAVPO", "2147182", "I51898",
+         "544724", "AAB29504.1", "Cavia"]
+      ckr.list_ids      ==>
+        [["gi", "2495000"], ["sp", "Q63931", "CCKR_CAVPO"],
+         ["gi", "2147182"], ["pir", nil, "I51898"], ["gi", "544724"],
+         ["gb", "AAB29504.1", nil], ["Cavia"]]
 
 =end
 
