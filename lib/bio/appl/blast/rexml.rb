@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: rexml.rb,v 1.6 2002/06/25 16:56:37 k Exp $
+#  $Id: rexml.rb,v 1.7 2002/11/22 23:14:35 k Exp $
 #
 
 begin
@@ -193,7 +193,6 @@ module Bio
 	def query_end;		@hsps.first.query_to;		end
 	def target_start;	@hsps.first.hit_from;		end
 	def target_end;		@hsps.first.hit_to;		end
-	def direction;		@hsps.first.hit_frame <=> 0;	end
 	def lap_at
 	  [ query_start, query_end, target_start, target_end ]
 	end
@@ -322,7 +321,6 @@ if __FILE__ == $0
   print "      hit.query_end     #=> "; p hit.query_end
   print "      hit.target_start  #=> "; p hit.target_start
   print "      hit.target_end    #=> "; p hit.target_end
-  print "      hit.direction     #=> "; p hit.direction
   print "      hit.lap_at        #=> "; p hit.lap_at
   print "        --- compatible/shortcut ---\n"
 
@@ -495,7 +493,6 @@ Summerized results of the blast execution hits.
 --- Bio::Blast::Report::Hit#query_end
 --- Bio::Blast::Report::Hit#target_start
 --- Bio::Blast::Report::Hit#target_end
---- Bio::Blast::Report::Hit#direction
 --- Bio::Blast::Report::Hit#lap_at
 
       Shortcut methods for the best Hsp, some are also compatible with
