@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.16 2001/11/14 09:15:51 shuichi Exp $
+#  $Id: pathway.rb,v 1.17 2001/11/14 09:34:22 shuichi Exp $
 #
 
 require 'bio/matrix'
@@ -251,6 +251,20 @@ module Bio
     end
     alias floyd floyd_warshall
 
+    def cliquishness(node)
+      a = @graph[node].keys
+      sg = subgraph(a)
+      sum = 0
+      sg.graph.each do |k, v|
+        sum += v.size
+      end
+      edges = sum / 2
+      nodes = sg.nodes
+      complete = (nodes * (nodes - 1)) / 2
+      return nodes.to_f/complete.to_f
+    end
+ 
+
     private
 
 
@@ -449,8 +463,9 @@ end
 --- Bio::Pathway#dijkstra(root)
 --- Bio::Pathway#bellman_ford(root)
 --- Bio::Pathway#floyd_warshall
+--- Bio::Pathway#cliquishness(node)
 
-= Bio::Relation
+=::Relation
 
 --- Bio::Relation#new(node1, node2, edge)
 
