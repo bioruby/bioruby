@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: codontable.rb,v 0.10 2004/06/26 04:39:07 k Exp $
+#  $Id: codontable.rb,v 0.11 2004/06/28 04:30:56 k Exp $
 #
 
 module Bio
@@ -26,22 +26,36 @@ class CodonTable
 
   def self.[](i)
     hash = Tables[i]
+    raise "ERROR: Unknown codon table No.#{i}" unless hash
     definition = Definitions[i]
     start = Starts[i]
     stop = Stops[i]
     self.new(hash, definition, start, stop)
   end
 
-  def initialize(hash, definition = nil, start_re = nil, stop_re = nil)
+  def self.copy(i)
+    ct = self[i]
+    return Marshal.load(Marshal.dump(ct))
+  end
+
+  def initialize(hash, definition = nil, start = [], stop = [])
     @table = hash
     @definition = definition
-    @start = start_re
-    @stop = stop_re || generate_stop_re
+    @start = start
+    @stop = stop.empty? ? generate_stop : stop
   end
   attr_accessor :table, :definition, :start, :stop
 
   def [](codon)
     @table[codon]
+  end
+
+  def []=(codon, aa)
+    @table[codon] = aa
+  end
+
+  def each(&block)
+    @table.each(&block)
   end
 
   def revtrans(aa)
@@ -56,23 +70,23 @@ class CodonTable
   end
 
   def start_codon?(codon)
-    @start.match(codon) ? true : false
+    @start.include?(codon.downcase)
   end
 
   def stop_codon?(codon)
-    @stop.match(codon) ? true : false
+    @stop.include?(codon.downcase)
   end
 
-  def generate_stop_re
+  def generate_stop
     list = []
     @table.each do |codon, aa|
       if aa == '*'
         list << codon
       end
     end
-    Regexp.new(list.join('|'), Regexp::IGNORECASE)
+    return list
   end
-  private :generate_stop_re
+  private :generate_stop
 
   Definitions = {
 
@@ -98,44 +112,44 @@ class CodonTable
 
 
   Starts = {
-    1	=> /ttg|ctg|atg/i,     # /ttg|ctg|atg|gtg/i ? NCBI #SG1 document
-    2	=> /att|atc|ata|atg|gtg/i,
-    3	=> /ata|atg/i,
-    4	=> /tta|ttg|ctg|att|atc|ata|atg|gtg/i,
-    5	=> /ttg|att|atc|ata|atg|gtg/i,
-    6	=> /atg/i,
-    9	=> /atg|gtg/i,
-    10	=> /atg/i,
-    11	=> /ttg|ctg|att|atc|ata|atg|gtg/i,
-    12	=> /ctg|atg/i,
-    13	=> /atg/i,
-    14	=> /atg/i,
-    15	=> /atg/i,
-    16	=> /atg/i,
-    21	=> /atg|gtg/i,
-    22	=> /atg/i,
-    23	=> /att|atg|gtg/i,
+    1	=> %w(ttg ctg atg),     # %w(ttg ctg atg gtg)? cf. NCBI #SG1 document
+    2	=> %w(att atc ata atg gtg),
+    3	=> %w(ata atg),
+    4	=> %w(tta ttg ctg att atc ata atg gtg),
+    5	=> %w(ttg att atc ata atg gtg),
+    6	=> %w(atg),
+    9	=> %w(atg gtg),
+    10	=> %w(atg),
+    11	=> %w(ttg ctg att atc ata atg gtg),
+    12	=> %w(ctg atg),
+    13	=> %w(atg),
+    14	=> %w(atg),
+    15	=> %w(atg),
+    16	=> %w(atg),
+    21	=> %w(atg gtg),
+    22	=> %w(atg),
+    23	=> %w(att atg gtg),
   }
 
 
   Stops = {
-    1	=> /taa|tag|tga/i,
-    2	=> /taa|tag|aga|agg/i,
-    3	=> /taa|tag/i,
-    4	=> /taa|tag/i,
-    5	=> /taa|tag/i,
-    6	=> /tga/i,
-    9	=> /taa|tag/i,
-    10	=> /taa|tag/i,
-    11	=> /taa|tag|tga/i,
-    12	=> /taa|tag|tga/i,
-    13	=> /taa|tag/i,
-    14	=> /tag/i,
-    15	=> /taa|tga/i,
-    16	=> /taa|tga/i,
-    21	=> /taa|tag/i,
-    22	=> /tca|taa|tga/i,
-    23	=> /tta|taa|tag|tga/i,
+    1	=> %w(taa tag tga),
+    2	=> %w(taa tag aga agg),
+    3	=> %w(taa tag),
+    4	=> %w(taa tag),
+    5	=> %w(taa tag),
+    6	=> %w(tga),
+    9	=> %w(taa tag),
+    10	=> %w(taa tag),
+    11	=> %w(taa tag tga),
+    12	=> %w(taa tag tga),
+    13	=> %w(taa tag),
+    14	=> %w(tag),
+    15	=> %w(taa tga),
+    16	=> %w(taa tga),
+    21	=> %w(taa tag),
+    22	=> %w(tca taa tga),
+    23	=> %w(tta taa tag tga),
   }
 
 
@@ -656,8 +670,6 @@ if __FILE__ == $0
 
   else
 
-    # Boring test code comes here as usual
-    
     begin
       require 'pp'
       alias :p :pp
@@ -665,10 +677,15 @@ if __FILE__ == $0
     end
 
     puts "### Bio::CodonTable[1]"
-    ct1 = Bio::CodonTable[1]
+    p ct1 = Bio::CodonTable[1]
 
     puts ">>> Bio::CodonTable#table"
     p ct1.table
+
+    puts ">>> Bio::CodonTable#each"
+    ct1.each do |codon, aa|
+      puts "#{codon} -- #{aa}"
+    end
 
     puts ">>> Bio::CodonTable#definition"
     p ct1.definition
@@ -690,6 +707,14 @@ if __FILE__ == $0
     
     puts ">>> Bio::CodonTable#stop_codon?('aaa')"
     p ct1.stop_codon?('aaa')
+
+    puts ">>> ct1_copy = Bio::CodonTable.copy(1)"
+    p ct1_copy = Bio::CodonTable.copy(1)
+    puts ">>> ct1_copy['tga'] = 'U'"
+    p ct1_copy['tga'] = 'U'
+    puts " orig : #{ct1['tga']}"
+    puts " copy : #{ct1_copy['tga']}"
+
 
     puts "### ct = Bio::CodonTable.new(hash, definition)"
     hash = {
@@ -763,7 +788,15 @@ obtain hard coded codon table as a Bio::CodonTable object.
 
   table = Bio::CodonTable[1]
 
---- Bio::CodonTable.new(hash, definition = nil, start_re = nil, stop_re = nil)
+--- Bio::CodonTable.copy(num)
+
+Similar to Bio::CodonTable[num] but returns copied codon table.
+You can modify the codon table without influencing hard coded tables.
+
+  table = Bio::CodonTable.copy(1)
+  table['tga'] = 'U'
+
+--- Bio::CodonTable.new(hash, definition = nil, start = [], stop = [])
 
 Create your own codon table by passing a Hash table of codons and relevant
 amino acids.  You can give table's name as a definition.
@@ -771,8 +804,8 @@ amino acids.  You can give table's name as a definition.
   hash = { 'ttt' => 'F', 'ttc' => 'ttc', ... }
   table = Bio::CodonTable.new(hash, "my codon table")
 
-Two Regexps 'start_re' and 'stop_re' can be specified which is used by
-'start_codon?' and 'stop_codon?' methods.
+Two Arrays 'start' and 'stop' can be specified which contains a list of
+start and stop codons used by 'start_codon?' and 'stop_codon?' methods.
 
 --- Bio::CodonTable#[codon]
 
@@ -782,23 +815,29 @@ translating a DNA sequence into amino acid sequence.
   table = Bio::CodonTable[1]
   table['ttt']  # => F
 
---- Bio::CodonTable#table
---- Bio::CodonTable#table=(hash)
+--- Bio::CodonTable#[codon]=(aa)
 
-Accessor methods for a Hash of the currently selected codon table.
+Modify the codon table.  Use with caution as it may break hard coded
+tables.  If you want to modify existing table, you should use copy
+method instead of [] method to generate CodonTable object to modify.
 
---- Bio::CodonTable#definition
---- Bio::CodonTable#definition=(string)
+  table = Bio::CodonTable.copy(1)
+  table['tga'] = 'U'	# This is OK.
 
-Accessor methods for the name of the currently selected table.
+  table = Bio::CodonTable.new(hash, definition, ... )
+  table['tga'] = 'U'	# This is also OK.
 
---- Bio::CodonTable#start
---- Bio::CodonTable#start=(regexp)
---- Bio::CodonTable#stop
---- Bio::CodonTable#stop=(regexp)
+  table = Bio::CodonTable[1]
+  table['tga'] = 'U'	# not recommended as it rewrites a hard coded table
 
-Accessor methods for a Regexp which will match start codon or
-stop codon respectively.
+--- Bio::CodonTable#each
+
+Iterates on codon table hash.
+
+  table = Bio::CodonTable[1]
+  table.each do |codon, aa|
+    puts "#{codon} -- #{aa}"
+  end  
 
 --- Bio::CodonTable#revtrans(aa)
 
@@ -816,5 +855,23 @@ codon table, otherwise false.
 
 Returns true if the codon is a stop codon in the currently selected
 codon table, otherwise false.
+
+--- Bio::CodonTable#table
+--- Bio::CodonTable#table=(hash)
+
+Accessor methods for a Hash of the currently selected codon table.
+
+--- Bio::CodonTable#definition
+--- Bio::CodonTable#definition=(string)
+
+Accessor methods for the name of the currently selected table.
+
+--- Bio::CodonTable#start
+--- Bio::CodonTable#start=(array)
+--- Bio::CodonTable#stop
+--- Bio::CodonTable#stop=(array)
+
+Accessor methods for an Array which contains a list of start or stop
+codons respectively.
 
 =end
