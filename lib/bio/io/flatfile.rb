@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.31 2005/03/10 13:05:26 ngoto Exp $
+#  $Id: flatfile.rb,v 1.32 2005/03/12 06:29:37 ngoto Exp $
 #
 
 module Bio
@@ -318,6 +318,8 @@ module Bio
 
       when /^psLayout version \d+\s*$/
         Bio::Blat::Report
+      when /^\-\-SPIDEY version .+\-\-$/
+	Bio::Spidey::Report
 
       when /^seq1 \= .*\, \d+ bp(\r|\r?\n)seq2 \= .*\, \d+ bp(\r|\r?\n)/
         Bio::Sim4::Report
