@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.30 2003/03/31 10:07:48 k Exp $
+#  $Id: genbank.rb,v 0.31 2003/09/08 07:26:54 n Exp $
 #
 
 require 'bio/db'
@@ -66,11 +66,11 @@ module Bio
     end
 
     def accession
-      acc_version.split('.').first
+      acc_version.split(/\./).first
     end
 
     def version
-      acc_version.split('.').last.to_i
+      acc_version.split(/\./).last.to_i
     end
 
     def gi
@@ -87,7 +87,7 @@ module Bio
     # KEYWORDS
     def keywords
       unless @data['KEYWORDS']
-        @data['KEYWORDS'] = fetch('KEYWORDS').chomp('.').split('; ')
+        @data['KEYWORDS'] = fetch('KEYWORDS').chomp('.').split(/; /)
       end
       @data['KEYWORDS']
     end
@@ -150,9 +150,9 @@ module Bio
 	    case tag_get(field)
 	    when /AUTHORS/
 	      authors = truncate(tag_cut(field))
-	      authors = authors.split(', ')
-	      authors[-1] = authors[-1].split('\s+and\s+')
-	      authors = authors.flatten.map { |a| a.sub(',', ', ') }
+	      authors = authors.split(/, /)
+	      authors[-1] = authors[-1].split(/\s+and\s+/)
+	      authors = authors.flatten.map { |a| a.sub(/,/, ', ') }
 	      hash['authors']	= authors
 	    when /TITLE/
 	      hash['title']	= truncate(tag_cut(field)) + '.'

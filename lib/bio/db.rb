@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: db.rb,v 0.23 2003/07/16 03:36:56 ng Exp $
+#  $Id: db.rb,v 0.24 2003/09/08 07:26:54 n Exp $
 #
 
 require 'bio/sequence'
@@ -49,7 +49,7 @@ module Bio
     end
 
     def fetch(tag, skip = 0)
-      field = @orig[tag].split("\n", skip + 1).last
+      field = @orig[tag].split(/\n/, skip + 1).last.to_s
       truncate(field.gsub(/^.{0,#{@tagsize}}/,''))
     end
 
@@ -78,7 +78,7 @@ module Bio
 
     def lines_fetch(tag) 
       unless @data[tag]  
-        @data[tag] = get(tag).split("\n").map{ |l| tag_cut(l) }  
+        @data[tag] = get(tag).split(/\n/).map{ |l| tag_cut(l) }  
       end  
       @data[tag]  
     end 
