@@ -1,5 +1,5 @@
 # 
-# bio/io/flatfile/bdb.rb - flatfile index by Berkley DB 
+# bio/io/flatfile/bdb.rb - OBDA flatfile index by Berkley DB 
 # 
 #   Copyright (C) 2002 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp> 
 # 
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: bdb.rb,v 1.1 2002/08/19 11:43:37 k Exp $ 
+#  $Id: bdb.rb,v 1.2 2002/08/21 18:05:02 ng Exp $ 
 # 
  
 begin 
@@ -45,51 +45,60 @@ module Bio
       module_function :flag_write
     end #module BDBdefault
 
-    class BDBDataBank
-      def initialize(name, *arg)
+    class BDBwrapper
+      def initialize(name, filename, *arg)
 	@dbname = name
-	self.open(*arg)
+	@file = nil
+	@filename = filename
+	#self.open(*arg)
       end
-      attr_reader :file
 
       def filename
-	File.join(@dbname, 'config')
+	File.join(@dbname, @filename)
       end
 
       def open(flag = BDBdefault.flag_read,
 	       permission = BDBdefault.permission)
 	unless @file then
+	  DEBUG.print "BDBwrapper: open #{filename}\n"
 	  @file = BDB::Btree.open(filename, nil, flag, permission)
 	end
 	true
       end
 
       def close
-	@file.close
-	@file = nil
+	if @file
+	  DEBUG.print "BDBwrapper: close #{filename}\n"
+	  @file.close
+	  @file = nil
+	end
 	nil
       end
 
-      def primary
-	self.open
-	@file['primary_namespace']
+      def [](arg)
+	#self.open
+	if @file then
+	  @file[arg]
+	else
+	  nil
+	end
       end
 
-      def secondary
-	self.open
-	@file['secondary_namespaces']
+      def []=(key, val)
+	#self.open
+	@file[key.to_s] = val.to_s
       end
 
-      def writeback_primary(pri)
-	@file['primary_namespace'] = pri.name
+      def writeback_array(prefix, array, *arg)
+	self.close
+	self.open(*arg)
+	array.each_with_index do |val, key|
+	  @file["#{prefix}#{key}"] = val.to_s
+	end
       end
-      def writeback_secondary(sec_names)
-	@file['secondary_namespaces'] = sec_names.to_s
-      end
-    end #class BDBDataBank
+    end #class BDBwrapper
 
-    module BDBsolution
-
+    module BDB_1
       class BDBMappingFile
 	def self.open(*arg)
 	  self.new(*arg)
@@ -186,118 +195,6 @@ module Bio
 	end
       end #class BDBMappingFile
 
-      class Fields
-	def initialize(bdbfile)
-	  @file = bdbfile
-	end
-
-	def [](n)
-	  x = @file[n.to_s]
-	  if x then
-	    Field.new_from_string(x)
-	  else
-	    nil
-	  end
-	end
-
-	def []=(n, data)
-	  if data.is_a?(Field) then
-	    @file[n.to_s] = data.to_s
-	  elsif data then
-	    self[n] = Field.new_from_string(data)
-	  else #data is nil
-	    #@file[n.to_s] = data
-	    @file.delete(n.to_s)
-	  end
-	  self[n.to_s]
-	end
-
-	def add(*arg)
-	  k = self.keys
-	  if k.empty? then
-	    i = 0
-	  else
-	    i = k.max + 1
-	  end
-	  arg.each do |x|
-	    self[i] = Field.new_from_string(x)
-	    i += 1
-	  end
-	end
-
-	def each
-	  @file.each do |i, x|
-	    yield(Field.new_from_string(x)) if x and /\A\d+\z/ =~ i 
-	  end
-	  self
-	end
-
-	def each_with_index
-	  @file.each do |i, x|
-	    yield(Field.new_from_string(x), i.to_i) if x and /\A\d+\z/ =~ i
-	  end
-	  self
-	end
-
-	def keys
-	  r = []
-	  self.each_with_index do |x, i|
-	    r << i
-	  end
-	  r
-	end
-
-	def each_key
-	  self.each_with_index do |x, i|
-	    yield i
-	  end
-	end
-
-        def check_all
-          r = true
-          self.each do |x|
-            r = x.check
-            break unless r
-          end
-          r
-        end
-        alias :check :check_all
-
-        def close_all
-          self.each do |x|
-            x.close
-          end
-          nil
-        end
-        alias :close :close_all
-
-	def recalc_all
-	  self.each_key do |x|
-	    if x and /\A\d+\z/ =~ i then
-	      y = self[x]
-	      y.recalc
-	      self[x] = y.to_s
-	    end
-	  end
-	  true
-	end
-	alias :recalc :recalc_all
-
-	def set_list(ary)
-	  ary.each do |x|
-	    self[x[0]] = x[1]
-	  end
-	end
-
-	def show_list
-	  r = []
-	  self.each_with_index do |x, i|
-	    r << [ i.to_i, x ]
-	  end
-	  r
-	end
-      end #class Fields
-
       class PrimaryNameSpace < Template::NameSpace
 	def mapping(filename)
 	  BDBMappingFile.new(filename)
@@ -329,7 +226,7 @@ module Bio
 	  r
 	end
       end #class SecondaryNameSpace
-    end #module BDBsolution
+    end #module BDB_1
 
   end #class FlatFileIndex
 end #module Bio

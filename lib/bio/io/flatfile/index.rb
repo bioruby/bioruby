@@ -1,5 +1,5 @@
 # 
-# bio/io/flatfile/index.rb - flatfile index 
+# bio/io/flatfile/index.rb - OBDA flatfile index 
 # 
 #   Copyright (C) 2002 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp> 
 # 
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: index.rb,v 1.1 2002/08/19 11:43:37 k Exp $ 
+#  $Id: index.rb,v 1.2 2002/08/21 18:05:02 ng Exp $ 
 # 
 
 
@@ -121,12 +121,42 @@ module Bio
       @db.check_consistency
     end
 
-    def always_check=(bool)
+    def always_check_consistency=(bool)
       @db.always_check=(bool)
     end
-    def always_check(bool)
+    def always_check_consistency(bool)
       @db.always_check
     end
+
+    #########################################################
+
+    class Results < Hash
+
+      def +(a)
+	raise 'argument must be Results class' unless a.is_a?(self.class)
+	res = self.dup
+	res.update(a)
+	res
+      end
+
+      def *(a)
+	raise 'argument must be class' unless a.is_a?(self.class)
+	res = self.class.new
+	a.each_key { |x| res.store(x, a[x]) if self[x] }
+	res
+      end
+
+      def to_s
+	self.values.join
+      end
+
+      #alias :each_orig :each
+      alias :each :each_value
+      #alias :to_a_orig :to_a
+      alias :to_a :values
+
+    end #class Results
+
     #########################################################
 
     module DEBUG
@@ -166,7 +196,7 @@ module Bio
 	def mapping(filename)
 	  # should be redifined in child class
 	  raise NotImplementedError, "should be redefined in child class"
-	  #FlatOnly::FlatMappingFile.new(filename)
+	  #Flat_1::FlatMappingFile.new(filename)
 	end
 
 	def initialize(dbname, name)
@@ -197,7 +227,7 @@ module Bio
       end #class NameSpace
     end #module Template
 
-    class Field
+    class FileID
       def self.new_from_string(str)
 	a = str.split("\t", 2)
 	a[1] = a[1].to_i if a[1]
@@ -213,7 +243,7 @@ module Bio
 
       def check
 	r =  (File.size(@filename) == @filesize)
-	DEBUG.print "Field: File.size(#{@filename.inspect})", (r ? '==' : '!=') , "#{@filesize} ", (r ? ': good!' : ': bad!'), "\n"
+	DEBUG.print "FileID: File.size(#{@filename.inspect})", (r ? '==' : '!=') , "#{@filesize} ", (r ? ': good!' : ': bad!'), "\n"
 	r
       end
 
@@ -223,7 +253,7 @@ module Bio
 
       def to_s(i = nil)
 	if i then
-	  str = "field_#{i}\t"
+	  str = "fileid_#{i}\t"
 	else
 	  str = ''
 	end
@@ -233,7 +263,7 @@ module Bio
 
       def open
 	unless @io then
-	  DEBUG.print "Field: open #{@filename}\n"
+	  DEBUG.print "FileID: open #{@filename}\n"
 	  @io = File.open(@filename, 'rb')
 	  true
 	else
@@ -243,7 +273,7 @@ module Bio
 
       def close
 	if @io then
-	  DEBUG.print "Field: close #{@filename}\n"
+	  DEBUG.print "FileID: close #{@filename}\n"
 	  @io.close
 	  @io = nil
 	  nil
@@ -267,9 +297,91 @@ module Bio
 	close
 	data
       end
-    end #class Field
+    end #class FileID
 
-    module FlatOnly
+    class FileIDs < Array
+      def initialize(prefix, hash)
+	@hash = hash
+	@prefix = prefix
+      end
+
+      def [](n)
+	r = super(n)
+	if r then
+	  r
+	else
+	  data = @hash["#{@prefix}#{n}"]
+	  if data then
+	    self[n] = data
+	  end
+	  super(n)
+	end
+      end
+
+      def []=(n, data)
+	if data.is_a?(FileID) then
+	  super(n, data)
+	elsif data then
+	  a = data.split("\t", 2)
+	  super(n, FileID.new(a[0], a[1].to_i))
+	else
+	  # data is nil
+	  super(n, nil)
+	end
+	self[n]
+      end
+
+      def add(*arg)
+	arg.each do |filename|
+	  self << FileID.new(filename)
+	end
+      end
+      
+      def each
+	(0...self.size).each do |i|
+	  x = self[i]
+	  yield(x) if x
+	end
+	self
+      end
+
+      def each_with_index
+	(0...self.size).each do |i|
+	  x = self[i]
+	  yield(x, i) if x
+	end
+	self
+      end
+
+      def check_all
+	r = true
+	self.each do |x|
+	  r = x.check
+	  break unless r
+	end
+	r
+      end
+      alias :check :check_all
+
+      def close_all
+	self.each do |x|
+	  x.close
+	end
+	nil
+      end
+      alias :close :close_all
+
+      def recalc_all
+	self.each do |x|
+	  x.recalc
+	end
+	true
+      end
+      alias :recalc :recalc_all
+
+    end #class FileIDs
+
+    module Flat_1
       class Record
 	def initialize(str, size = nil)
 	  a = str.split("\t")
@@ -453,83 +565,6 @@ module Bio
 	end
       end #class FlatMappingFile
 
-      class Fields < Array
-	def []=(n, data)
-	  if data.is_a?(Field) then
-	    super(n, data)
-	  elsif data then
-	    a = data.split("\t", 2)
-	    super(n, Field.new(a[0], a[1].to_i))
-	  else
-	    # data is nil
-	    super(n, nil)
-	  end
-	  self[n]
-	end
-
-	def add(*arg)
-	  arg.each do |filename|
-	    self << Field.new(filename)
-	  end
-	end
-
-	def each
-	  (0...self.size).each do |i|
-	    x = self[i]
-	    yield(x) if x
-	  end
-	  self
-	end
-
-	def each_with_index
-	  (0...self.size).each do |i|
-	    x = self[i]
-	    yield(x, i) if x
-	  end
-	  self
-	end
-
-	def check_all
-	  r = true
-	  self.each do |x|
-	    r = x.check
-	    break unless r
-	  end
-	  r
-	end
-	alias :check :check_all
-
-	def close_all
-	  self.each do |x|
-	    x.close
-	  end
-	  nil
-	end
-	alias :close :close_all
-
-	def recalc_all
-	  self.each do |x|
-	    x.recalc
-	  end
-	  true
-	end
-	alias :recalc :recalc_all
-
-	def set_list(ary)
-	  ary.each do |x|
-	    self[ary[0]] = ary[1]
-	  end
-	end
-
-	def show_list
-	  r = []
-	  each_with_index do |x, i|
-	    r << [ i, x ]
-	  end
-	  r
-	end
-      end #class Fields
-
       class PrimaryNameSpace < Template::NameSpace
 	def mapping(filename)
 	  FlatMappingFile.new(filename)
@@ -553,7 +588,7 @@ module Bio
 	  r
 	end
       end #class SecondaryNameSpace
-    end #module FlatOnly
+    end #module Flat_1
 
 
     class NameSpaces < Hash
@@ -618,20 +653,17 @@ module Bio
     end #class NameSpaces
 
     class DataBank
-      def self.write(db, mode = 'wb')
-	unless FileTest.directory?(db.dbname) then
-	  Dir.mkdir(db.dbname)
-	end
-	f = File.open(File.join(db.dbname, 'config.dat'), mode)
-	f.write db.to_s
-	f.close
+      def self.filename(dbname)
+	File.join(dbname, 'config.dat')
       end
 
-      def self.read(name, mode = 'rb')
-	f = File.open(File.join(name, 'config.dat'), mode)
+      def self.read(name, mode = 'rb', *bdbarg)
+	f = File.open(filename(name), mode)
 	hash = IOroutines::file2hash(f)
 	f.close
-	self.new(name, nil, hash)
+	db = self.new(name, nil, hash)
+	db.bdb_open(*bdbarg)
+	db
       end
 
       def self.open(*arg)
@@ -640,52 +672,32 @@ module Bio
 
       def initialize(name, idx_type = nil, hash = {})
 	@dbname = name.dup
-	#p @dbname
-	@fields = nil
 	@bdb = nil
-	@bdbdata = nil
+
 	@always_check = true
 	self.index_type = (hash['index'] or idx_type)
 
-	set_primary_namespace(nil)
-	set_secondary_namespaces(nil)
-
 	if @bdb then
-	  self.open_bdbdata
-	  self.init_fields
-	  set_primary_namespace(@bdbdata.primary)
-	  set_secondary_namespaces(@bdbdata.secondary)
+	  @config = BDBwrapper.new(@dbname, 'config')
+	  @bdb_fileids = BDBwrapper.new(@dbname, 'fileids')
+	  @nsclass_pri = BDB_1::PrimaryNameSpace
+	  @nsclass_sec = BDB_1::SecondaryNameSpace
 	else
-	  self.init_fields
-	  @misc = {}
-	  hash.each do |key,val|
-	    case key
-	    when 'format'
-	      self.format = val.to_s.dup
-	    when 'primary_namespace'
-	      set_primary_namespace(val)
-	    when 'secondary_namespaces'
-	      set_secondary_namespaces(val)
-	    when /\Afield_(\d+)\z/
-	      @fields[$1.to_i] = val
-	    else
-	      @misc[key] = val.to_s.dup
-	    end
-	  end
+	  @config = hash
+	  @nsclass_pri = Flat_1::PrimaryNameSpace
+	  @nsclass_sec = Flat_1::SecondaryNameSpace
 	end
 	true
       end
 
-      attr_reader :dbname, :index_type, :format, :fields
-      attr_reader :primary, :secondary
-      attr_reader :always_check
+      attr_reader :dbname, :index_type
 
       def index_type=(str)
 	case str
 	when MAGIC_BDB
 	  @index_type = MAGIC_BDB
 	  @bdb = true
-	  unless defined?(Bio::FlatFileIndex::BDBDataBank)
+	  unless defined?(Bio::FlatFileIndex::BDB_1)
 	    raise RuntimeError, "Berkeley DB support not found"
 	  end
 	when MAGIC_FLAT, '', nil, false
@@ -696,6 +708,124 @@ module Bio
 	end
       end
 
+      def to_s
+	a = ""
+	a << "index\t#{@index_type}\n"
+
+	unless @bdb then
+	  a << "format\t#{@format}\n"
+	  @fileids.each_with_index do |x, i|
+	    a << "#{x.to_s(i)}\n"
+	  end
+	  a << "primary_namespace\t#{@primary.name}\n"
+	  a << "secondary_namespaces\t"
+	  a << @secondary.names.join("\t")
+	  a << "\n"
+	end
+	a
+      end
+
+      def bdb_open(*bdbarg)
+	if @bdb then
+	  @config.close
+	  @config.open(*bdbarg)
+	  @bdb_fileids.close
+	  @bdb_fileids.open(*bdbarg)
+	  true
+	else
+	  nil
+	end
+      end
+
+      def write(mode = 'wb', *bdbarg)
+	unless FileTest.directory?(@dbname) then
+	  Dir.mkdir(@dbname)
+	end
+	f = File.open(self.class.filename(@dbname), mode)
+	f.write self.to_s
+	f.close
+
+	if @bdb then
+	  bdb_open(*bdbarg)
+	  @config['format'] = format
+	  @config['primary_namespace'] = @primary.name
+	  @config['secondary_namespaces'] = @secondary.names.join("\t")
+	  @bdb_fileids.writeback_array('', fileids, *bdbarg)
+	end
+	true
+      end
+
+      def close
+	DEBUG.print "DataBank: close #{@dbname}\n"
+	primary.close
+	secondary.close
+	fileids.close
+	if @bdb then
+	  @config.close
+	  @bdb_fileids.close
+	end
+	nil
+      end
+
+      ##parameters
+      def primary
+	unless @primary then
+	  self.primary = @config['primary_namespace']
+	end
+	@primary
+      end
+
+      def primary=(pri_name)
+	if !pri_name or pri_name.empty? then
+	  pri_name = 'UNIQUE'
+	end
+	@primary = @nsclass_pri.new(@dbname, pri_name)
+	@primary
+      end
+
+      def secondary
+	unless @secondary then
+	  self.secondary = @config['secondary_namespaces']
+	end
+	@secondary
+      end
+
+      def secondary=(sec_names)
+	if !sec_names then
+	  sec_names = []
+	end
+	@secondary = NameSpaces.new(@dbname, @nsclass_sec, sec_names)
+	@secondary
+      end
+
+      def format=(str)
+	@format = str.to_s.dup
+      end
+
+      def format
+	unless @format then
+	  format = @config['format']
+	end
+	@format
+      end
+
+      def fileids
+	unless @fileids then
+	  init_fileids
+	end
+	@fileids
+      end
+
+      def init_fileids
+	if @bdb then
+	  @fileids = FileIDs.new('', @bdb_fileids)
+	else
+	  @fileids = FileIDs.new('fileid_', @config)
+	end
+	@fileids
+      end
+
+      # high level methods
       def always_check=(bool)
 	if bool then
 	  @always_check = true
@@ -703,108 +833,19 @@ module Bio
 	  @always_check = false
 	end
       end
-
-      def open_bdbdata(*arg)
-	unless @bdbdata then
-	  @bdbdata = BDBDataBank.new(@dbname, *arg)
-	end
-	true
-      end
-
-      def close_bdbdata
-	if @bdbdata then
-	  @bdbdata.close
-	  @bdbdata = nil
-	end
-	nil
-      end
-
-      def writeback_namespaces
-	@bdbdata.writeback_primary(@primary)
-	@bdbdata.writeback_secondary(@secondary)
-      end
-
-      def init_fields
-	if @bdb then
-	  @fields = BDBsolution::Fields.new(@bdbdata.file)
-	else
-	  @fields = FlatOnly::Fields.new
-	end
-      end
-
-      def reinit_fields
-	ls = nil
-	if @fields then
-	  ls = @fields.show_list
-	end
-	init_fields
-	@fields.set_list(ls) if ls
-	@fields
-      end
-
-      def format=(str)
-	@format = str.to_s.dup
-      end
-
-      def set_primary_namespace(pri_name)
-	if !pri_name or pri_name.empty? then
-	  pri_name = 'UNIQUE'
-	end
-	if @bdb then
-	  nsclass = BDBsolution::PrimaryNameSpace
-	else
-	  nsclass = FlatOnly::PrimaryNameSpace
-	end
-	@primary = nsclass.new(@dbname, pri_name)
-      end
-
-      def set_secondary_namespaces(sec_names)
-	if !sec_names then
-	  sec_names = []
-	end
-	if @bdb then
-	  nsclass = BDBsolution::SecondaryNameSpace
-	else
-	  nsclass = FlatOnly::SecondaryNameSpace
-	end
-	@secondary = NameSpaces.new(@dbname, nsclass, sec_names)
-      end
-
-      def to_s
-	a = ""
-	a << "index\t#{@index_type}\n"
-
-	unless @bdb then
-	  a << "format\t#{@format}\n"
-	  @fields.each_with_index do |x, i|
-	    a << "#{x.to_s(i)}\n"
-	  end
-	  a << "primary_namespace\t#{@primary.name}\n"
-	  str = "secondary_namespaces"
-	  @secondary.names.each do |x|
-	    str << "\t#{x}"
-	  end
-	  str << "\n"
-	  a << str
-	  @misc.each do |i, x|
-	    a << "#{i}\t#{x}\n"
-	  end
-	end
-	a
-      end
+      attr_reader :always_check
 
       def get_flatfile_data(f, pos, length)
-	fi = fields[f.to_i]
+	fi = fileids[f.to_i]
 	if @always_check then
 	  raise "flatfile #{fi.filename.inspect} may be modified" unless fi.check
 	end
 	fi.get(pos.to_i, length.to_i)
       end
 
-      # high level methods
       def search_all_get_unique_id(key)
-	s = @secondary.search(key)
-	p = @primary.include?(key)
+	s = secondary.search(key)
+	p = primary.include?(key)
 	s.push p if p
 	s.sort!
 	s.uniq!
@@ -812,10 +853,11 @@ module Bio
       end
 
       def search_primary(*arg)
-	r = []
+	r = Results.new
 	arg.each do |x|
-	  a = @primary.search(x)
-	  a.each { |y| r << get_flatfile_data(*y) }
+	  a = primary.search(x)
+	  # a is empty or a.size==1 because primary key must be unique
+	  r.store(x, get_flatfile_data(*a[0])) unless a.empty?
 	end
 	r
       end
@@ -827,21 +869,21 @@ module Bio
 
       def search_primary_get_unique_id(key)
 	s = []
-	p = @primary.include?(key)
+	p = primary.include?(key)
 	s.push p if p
 	s
       end
 
       def search_namespaces_get_unique_id(key, *names)
-	if names.include?(@primary.name) then
+	if names.include?(primary.name) then
 	  n2 = names.dup
-	  n2.delete(@primary.name)
-	  p = @primary.include?(key)
+	  n2.delete(primary.name)
+	  p = primary.include?(key)
 	else
 	  n2 = names
 	  p = nil
 	end
-	s = @secondary.search_names(key, *n2)
+	s = secondary.search_names(key, *n2)
 	s.push p if p
 	s.sort!
 	s.uniq!
@@ -853,20 +895,11 @@ module Bio
 	search_primary(*s)
       end
 
-      def close
-	@primary.close
-	@secondary.close
-	@fields.close
-	close_bdbdata
-	nil
-      end
-
       def check_consistency
-	@fields.check_all
+	fileids.check_all
       end
     end #class DataBank
 
   end #class FlatFileIndex
 end #module Bio
-
 
