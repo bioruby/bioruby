@@ -1,3 +1,10 @@
+2005-04-04  Mitsuteru Nakao <n@bioruby.org>
+
+        * lib/bio/db/go.rb
+
+          Newly added Bio::GO::External2go class for parsing 
+          external2go file.
+
 2004-12-13  KATAYAMA Toshiaki <k@bioruby.org>
 
 	* BioRuby 0.6.2 released.
