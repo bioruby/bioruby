@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Design.rd.ja,v 1.5 2001/12/19 12:21:08 katayama Exp $
+  $Id: Design.rd.ja,v 1.6 2002/06/18 06:36:53 k Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -189,17 +189,12 @@ FASTA(SSEARCH), [PSI-]BLAST, HMMER, CLUSTALW などの外部アプリを使った処
     fa_res = factory.query(seq)
 
 などいくつかの実装方法が考えられます（Bio::Fasta では両系統インプリして
-います）。ファクトリやメソッドへのオプションの渡し方は細々としたものは
-hash を投げる感じでやっています。
+います）。
 
-    # ここまでやって全部 hash でもいいかもしれないし、重要度で分けてもいい
-    hash['server'] = "fasta.genome.ad.jp"
-    hash['db'] = "nr-aa"
-    fa_res = seq.fasta(hash)
+ファクトリやメソッドへのオプションの渡し方は、複雑な物はシンボルをキーに
+した hash にした方が良いかもしれません。もしくは名前つき引数待ち？
 
-    hash['server'] = "local"
-    hash['db'] = "/bio/db/fasta/genbank/hoge.f"
-    fasta = Bio::FASTA.new(hash)
+    res = a.query(:hoge => fuga, :hoge2 => fuga2)
 
 今後他のアプリのインターフェイスも実装しながら仕様を決めていきたいと思
 います。
@@ -279,6 +274,10 @@ hash を投げる感じでやっています。
 
     end
 
+RDoc を使えばクラスやメソッドの上に書かれたコメントから HTML などを生成
+できるようです。今後 ri 用の出力もできるようになってきたら、採用するかも
+しれません。
+
 === テストコード部
 
 テストコードはクラス定義など本体部分のあとにをつけることにします。テスト
@@ -347,7 +346,8 @@ hash を投げる感じでやっています。
 
 * 前述のように、ソースコード本体内では RD によるドキュメントは禁止します。
   理由は純粋にコードが読みづらくなるからです。ソース中で # を使って必要
-  なコメントを追加する事は歓迎します。
+  なコメントを追加する事は歓迎します。(前述のように RDoc 準拠にするかも
+  しれません)
 
 == 開発に参加するには
 
