@@ -15,6 +15,7 @@
 #
 
 require 'bio/sequence'
+require 'bio/db/gblocation'
 
 class GenBank
 
@@ -245,6 +246,8 @@ class GenBank
     parse_ORIGIN unless @data['SEQUENCE']
     @data['SEQUENCE']
   end
+  alias nt naseq
+  alias na naseq
 
 
   ### change the default to private method below the line
@@ -599,7 +602,7 @@ class GenBank
     body = ''			# temporal feature contents (pos, /qualifier=)
 
     @orig['FEATURES'].each_line do |line|
-      if line =~ /^ {5}(\S+)\s+(\S+)/
+      if line =~ /^ {5}(\S+)\s+(.*)/
 	@data['FEATURES'].push(parse_qualifiers(head, body)) unless head.empty?
 	head, body = $1, $2
       else
