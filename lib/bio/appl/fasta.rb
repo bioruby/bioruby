@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.2 2001/12/08 04:39:55 katayama Exp $
+#  $Id: fasta.rb,v 1.3 2001/12/08 08:57:25 katayama Exp $
 #
 
 require 'bio/sequence'
@@ -28,24 +28,24 @@ module Bio
 
   class Fasta
 
-    def initialize(server, program, db, option = {})
-      @server	= server
+    def initialize(program, db, option = {}, remote = false)
       @program	= program
       @db	= db
       @option	= option
+      @remote	= remote
     end
-    attr_reader :server, :program, :db, :option
+    attr_reader :program, :db, :option, :remote
 
     def Fasta.local(program, db, option = {})
-      self.new(nil, program, db, option)
+      self.new(program, db, option)
     end
 
-    def Fasta.remote(server, program, db, option = {})
-      self.new(server, program, db, option)
+    def Fasta.remote(program, db, option = {})
+      self.new(program, db, option, true)
     end
 
     def query(query)
-      report = @server ? remote_fasta(query) : local_fasta(query)
+      report = @remote ? remote_fasta(query) : local_fasta(query)
       return report
     end
 
@@ -86,7 +86,6 @@ module Bio
     end
 
     def remote_fasta(query)
-      # @server should be changed URI (uri.rb) object in Ruby 1.7
       host = "fasta.genome.ad.jp"
 #     path = "/sit-bin/nph-fasta"
       path = "/sit-bin/nph-fasta.ktym"		# GenomeNet nph- bug work around
@@ -130,13 +129,13 @@ module Bio
 
       response, result = Net::HTTP.new(host).post(path, data)
 
-      return Report.new(result, @server)
+      return Report.new(result, @remote)
     end
 
 
     class Report
 
-      def initialize(data, remote = nil)
+      def initialize(data, remote = false)
 	if remote
 	  data.gsub!(/\n>>/, "\n>")		# GenomeNet '>' increment bug
         end
@@ -336,18 +335,18 @@ end
 
 = Bio::Fasta
 
---- Bio::Fasta.new(server, program, db, option = {})
+--- Bio::Fasta.new(program, db, option = {}, remote = false)
 --- Bio::Fasta.local(program, db, option = {})
---- Bio::Fasta.remote(server, program, db, option = {})
+--- Bio::Fasta.remote(program, db, option = {})
 --- Bio::Fasta#query(query)
---- Bio::Fasta#server
 --- Bio::Fasta#program
 --- Bio::Fasta#db
 --- Bio::Fasta#option
+--- Bio::Fasta#remote
 
 == Bio::Fasta::Report
 
---- Bio::Fasta::Report.new(data)
+--- Bio::Fasta::Report.new(data, remote = false)
 --- Bio::Fasta::Report#list
 --- Bio::Fasta::Report#log
 --- Bio::Fasta::Report#program
