@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.12 2001/11/14 01:16:44 katayama Exp $
+#  $Id: pathway.rb,v 1.13 2001/11/14 04:33:09 katayama Exp $
 #
 
 require 'bio/matrix'
@@ -69,7 +69,7 @@ module Bio
 	@index[k] = i
       end
 
-      # note : following code only makes references to the same []
+      # note: following code only makes references to the same [] object
       #
       #   matrix = Array.new(nodes, Array.new(nodes))
       #
@@ -92,7 +92,13 @@ module Bio
 
 
     # Select labeled nodes and generate subgraph
-    def subgraph
+    def subgraph(list = nil)
+      if list
+	@label.clear
+	list.each do |node|
+	  @label[node] = true
+	end
+      end
       sub_graph = Pathway.new([], @undirected)
       @graph.each do |from, hash|
 	next unless @label[from]
@@ -125,7 +131,7 @@ module Bio
     end
 
 
-    # Breadth first search implementation from the textbook
+    # Breadth first search solves steps and path to the each node
     def breadth_first_search(root)
       seen = {}
       distance = {}
@@ -187,7 +193,6 @@ module Bio
           end
         end
       end
-
       return distance, predecessor
     end
 
@@ -227,8 +232,7 @@ module Bio
 
 
     def initialize_single_source(root)
-      # inf.infinite? => true
-      inf = 1 / 0.0
+      inf = 1 / 0.0				# inf.infinite? -> true
 
       distance = {}
       predecessor = {}
@@ -264,6 +268,16 @@ module Bio
       @edge
     end
 
+    def ===(rel)
+      if self.edge == rel.edge and
+	 self.node[0] == rel.node[1] and
+	 self.node[1] == rel.node[0]
+	return true
+      else
+	return false
+      end
+    end
+
   end
 
 end
@@ -271,6 +285,13 @@ end
 
 
 if __FILE__ == $0
+
+  r1 = Bio::Relation.new('a', 'b', 1)
+  r2 = Bio::Relation.new('b', 'a', 1)
+  r3 = Bio::Relation.new('b', 'a', 2)
+  p r1 === r2
+  p r1 === r3
+# p [ r1, r2, r3 ].uniq
 
   # Sample Graph :
   #                  +----------------+
@@ -321,6 +342,9 @@ if __FILE__ == $0
 
   puts "--- Extract subgraph by label"
   p graph.subgraph
+
+  puts "--- Extract subgraph by list"
+  p graph.subgraph(['q', 't', 'x', 'y', 'z'])
 
   puts "--- Test to_matrix method"
   p graph.to_matrix
