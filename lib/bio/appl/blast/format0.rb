@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format0.rb,v 1.4 2003/08/11 15:11:22 ng Exp $
+#  $Id: format0.rb,v 1.5 2003/08/12 08:35:15 ng Exp $
 #
 
 begin
@@ -677,13 +677,16 @@ module Bio
 		  if sc[1] == sc[2] then
 		    @query_frame = 1
 		    @hit_frame = 1
-		  else # Plus/Minus
+		  elsif sc[1] == 'Plus' then # Plus/Minus
 		    # complement sequence against xml(-m 7)
 		    # In xml(-m 8), -1=>Plus, 1=>Minus ???
 		    #@query_frame = -1
 		    #@hit_frame = 1
 		    @query_frame = 1
 		    @hit_frame = -1
+		  else # Minus/Plus
+		    @query_frame = -1
+		    @hit_frame = 1
 		  end
 		elsif sc.skip(/Frame *\= *([\-\+]\d+)( *\/ *([\-\+]\d+))?/) then
 		  @query_frame = sc[1].to_i
