@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.20 2001/11/15 10:51:39 shuichi Exp $
+#  $Id: pathway.rb,v 1.21 2001/11/16 07:41:03 shuichi Exp $
 #
 
 require 'bio/matrix'
@@ -198,10 +198,14 @@ module Bio
     def cliquishness(node)
       a = @graph[node].keys
       sg = subgraph(a)
-      edges = sg.edges / 2.0
-      nodes = sg.nodes
-      complete = (nodes * (nodes - 1)) / 2.0
-      return edges/complete
+      if sg.graph.size != 0
+        edges = sg.edges / 2.0
+        nodes = sg.nodes
+        complete = (nodes * (nodes - 1)) / 2.0
+        return edges/complete
+      else
+        return 0.0
+      end
     end
 
 
