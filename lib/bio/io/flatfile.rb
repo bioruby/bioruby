@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.8 2002/09/05 11:32:15 ng Exp $
+#  $Id: flatfile.rb,v 1.9 2002/09/11 11:41:28 ng Exp $
 #
 
 module Bio
@@ -79,8 +79,9 @@ module Bio
     end
 
     def rewind
+      r = @io.rewind
       @prefetch = ''
-      @io.rewind
+      r
     end
 
     def close
@@ -89,6 +90,12 @@ module Bio
 
     def pos
       @io.pos - @prefetch.size
+    end
+
+    def pos=(p)
+      r = (@io.pos = p)
+      @prefetch = ''
+      r
     end
 
     def eof?
@@ -148,6 +155,7 @@ module Bio
     end
 
     def self.autodetect(text)
+      require 'bio'
       case text
       when /^LOCUS       .+ bp .*[a-z]*[DR]?NA/
 	Bio::GenBank
