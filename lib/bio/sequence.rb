@@ -1,7 +1,7 @@
 #
 # bio/sequence.rb - biological sequence class
 #
-#   Copyright (C) 2000-2003 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2000-2004 KATAYAMA Toshiaki <k@bioruby.org>
 #   Copyright (C) 2001 Yoshinori K. Okuji <o@bioruby.org>
 #   Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
 #
@@ -19,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.34 2004/02/03 10:16:59 k Exp $
+#  $Id: sequence.rb,v 0.35 2004/06/23 14:52:00 k Exp $
 #
 
 require 'bio/data/na'
@@ -200,18 +200,13 @@ module Bio
 	self
       end
 
-      # CodonTable is defined in bio/data/codontable.rb
-      def codon_table(table = 1, codon = nil)
-	if codon
-	  CodonTable[table][codon.downcase.tr('u', 't')]
-	else
-	  CodonTable[table]
-	end
-      end
-
-      def translate(frame = 1, table = 1)
-	ct    = self.codon_table(table)
-	naseq = self.tr('u', 't')
+      def translate(frame = 1, table = 1, unknown = 'X')
+        if table.is_a?(Bio::CodonTable)
+	  ct = table
+        else
+          ct = Bio::CodonTable[table]
+        end
+	naseq = self.dna
 	case frame
 	when 1, 2, 3
 	  frame -= 1
@@ -224,16 +219,9 @@ module Bio
 	else
 	  frame = 0
 	end
-	aaseq = ''
-	frame.step(naseq.length - 3, 3) do |i|
-	  codon = naseq[i,3].to_s
-	  if ct[codon]
-	    aaseq << ct[codon]
-	  else
-	    aaseq << "X"
-	  end
-	end
-	return AA.new(aaseq)
+        nalen = naseq.length - (naseq.length - frame) % 3
+	aaseq = naseq[frame, nalen].gsub(/.{3}/) {|codon| ct[codon] or unknown}
+	return Bio::Sequence::AA.new(aaseq)
       end
 
       def gc_percent
@@ -333,6 +321,10 @@ module Bio
 	self.tr!(" \t\n\r",'')
       end
 
+      def to_re
+	return Regexp.new(self)
+      end
+
       # AminoAcid is defined in bio/data/aa.rb
       def codes
 	array = []
@@ -414,10 +406,6 @@ if __FILE__ == $0
   p rna.complement
   p Bio::Sequence::NA.new('tacgyrkmhdbvswn').complement
   p Bio::Sequence::NA.new('uacgyrkmhdbvswn').complement
-
-  puts "\n== Test Bio::Sequence::NA#codon_table"
-  p na.codon_table
-  p na.codon_table(2)
 
   puts "\n== Test Bio::Sequence::NA#translate"
   p na
@@ -602,14 +590,12 @@ You can use Bio::Seq instead of Bio::Sequence for short.
 
       Returns a reverse complement sequence (including the universal codes).
 
---- Bio::Sequence::NA#codon_table(table = 1, codon = nil)
-
-      Look up the codon table or select a codon table from the list.
-
---- Bio::Sequence::NA#translate(frame = 1, table = 1)
+--- Bio::Sequence::NA#translate(frame = 1, table = 1, unknown = 'X')
 
       Translate into the amino acid sequence from the given frame and the
-      selected codon table.
+      selected codon table.  The table also can be a Bio::CodonTable object.
+      The 'unknown' character is used for invalid/unknown codon (can be
+      used for 'nnn' and/or gap translation in practice).
 
       Frame can be 1, 2 or 3 for the forward strand and -1, -2 or -3
       (4, 5 or 6 is also accepted) for the reverse strand.
