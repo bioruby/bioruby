@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.16 2003/03/16 18:01:39 n Exp $
+#  $Id: sptr.rb,v 1.17 2003/03/17 09:09:01 n Exp $
 #
 
 require 'bio/db/embl'
@@ -259,27 +259,31 @@ module Bio
     def cc(num = nil)
       # @data['CC'] = {'DATABASE'=>['hoge','fuga']}
       unless @data['CC']
-	cc = Hash.new
+	cc  = Hash.new
 	cmt = '-' * (77 - 4 + 1)
 	dlm = /-!- /
 
 	begin
 	  fetch('CC').split(cmt)[0].sub(dlm,'').split(dlm).each do |tmp|
-	    if tmp =~ /(^[A-Z ]+): (.+)[\.!]/
-	      unless cc['$1']
-		cc[$1] = [$2]
+	    if tmp =~ /(^[A-Z ]+[A-Z]): (.+)[\.!]/
+	      key  = $1
+	      body = $2.gsub('- ','-')
+	      unless cc[key]
+		cc[key] = [body]
 	      else
-		cc[$1].puch($2)
+		cc[key].push(body)
 	      end
 	    else
-	      raise "Error: CC Lines \n\n#{tmp.inspect}\n\n#{fetch('CC')}\n";
+	      raise ["Error: #{entry_id}: CC Lines", '',
+		tmp,'','',fetch('CC'),''].join("\n")
 	    end
 	  end
 	rescue NameError
 	  if fetch('CC') == ''
             return {}
           else
-	    raise "Invalid CC Lines, \n'#{self.get('CC').inspect}'\n"
+	    raise "Invalid CC Lines: #{entry_id}: \n'#{self.get('CC')}'\n" +
+	      "(#{$!})"
           end
 	end
 
@@ -293,8 +297,8 @@ module Bio
 	tmp = Array.new
 	@data['CC']['DATABASE'].each do |e|
 	  db = {'NAME'=>nil,'NOTE'=>nil,'WWW'=>nil,'FTP'=>nil}
-	  e.sub(/.$/,'').split(';').each do |l|
-	    case l
+	  e.sub(/.$/,'').split(';').each do |line|
+	    case line
 	    when /NAME=(.+)/
 	      db['NAME'] = $1
 	    when /NOTE=(.+)/
@@ -314,8 +318,8 @@ module Bio
 	tmp = Array.new
 	@data['CC']['MASS SPECTOROMETRY'].each do |m|
 	  mass = {'MW'=>nil,'MW_ERR'=>nil,'METHOD'=>nil,'RANGE'=>nil}
-	  m.sub(/.$/,'').split(';').each do |l|
-	    case l
+	  m.sub(/.$/,'').split(';').each do |line|
+	    case line
 	    when /MW=(.+)/
 	      mass['MW'] = $1.to_f
 	    when /MW_ERR=(.+)/
@@ -388,7 +392,7 @@ module Bio
 	    else
 	      from = line[14..19].strip
 	      to   = line[21..26].strip
-	      desc = line[34..74].strip mbox.kyoto-inet.or.jpif line[34..74]
+	      desc = line[34..74].strip if line[34..74]
 
 	      table[feature] = [] unless table[feature]
 	      table[feature] << {'From' => from, 'To' => to, 'Description' => desc}
@@ -407,6 +411,9 @@ module Bio
 		b = $2
 		a.gsub(' ','') + " -> " + b.gsub(' ','') 
 	      }
+	    end
+	    if /- [\w\d]/ =~ e['Description']
+	      e['Description'].gsub!(/([\w\d]- [\w\d])/) { $1.sub(' ','') }
 	    end
 	  }
 	}
