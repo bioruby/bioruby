@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.8 2001/11/13 07:45:59 shuichi Exp $
+#  $Id: pathway.rb,v 1.9 2001/11/13 10:16:20 katayama Exp $
 #
 
 require 'bio/matrix'
@@ -25,8 +25,6 @@ require 'bio/matrix'
 module Bio
 
   class Pathway
-
-    INF = 999999
 
     # Graph (adjacency list) generation from the list of Relation
     def initialize(list, undirected = nil)
@@ -192,20 +190,21 @@ module Bio
         distance[k] = v
         predecessor[k] = root
       end
-      queue = distance.dup
-      queue.delete(root)
 
-      while queue.size != 0
-        ary = queue.to_a.sort{|a, b| a[1] <=> b[1]} # extranct a node having minimal distance
-        u = ary[0][0]
+      # extranct a node having minimal distance
+      queue = distance.to_a.sort{|a, b| a[1] <=> b[1]}
+
+      queue.each do |u|
+	u = u[0]
         @graph[u].each do |k, v|
-          if distance[k] > distance[u] + @graph[u][k] # relaxing procedure of root -> 'u' -> 'k'
-            distance[k] = distance[u] + @graph[u][k]
+	  # relaxing procedure of root -> 'u' -> 'k'
+          if distance[k] > distance[u] + v
+            distance[k] = distance[u] + v
             predecessor[k] = u
           end
         end
-        queue.delete(u)
       end
+
       return distance, predecessor
     end
 
@@ -213,12 +212,19 @@ module Bio
       raise NotImplementedError
     end
 
+
+    private
+
     def initialize_single_source(root)
+
+      # inf.infinite? => true
+      inf = 1 / 0.0
+
       distance = {}
       predecessor = {}
 
       @graph.keys.each do |k|
-        distance[k] = INF
+        distance[k] = inf
         predecessor[k] = nil
       end
       distance[root] = 0
@@ -255,17 +261,27 @@ end
 
 if __FILE__ == $0
 
-  data = <<END
-a b 1
-a c 1
-b d 1
-c e 1
-END
+  data = [
+    [ 'q', 's', 1, ],
+    [ 'q', 't', 1, ],
+    [ 'q', 'w', 1, ],
+    [ 'r', 'u', 1, ],
+    [ 'r', 'y', 1, ],
+    [ 's', 'v', 1, ],
+    [ 't', 'x', 1, ],
+    [ 't', 'y', 1, ],
+    [ 'u', 'y', 1, ],
+    [ 'v', 'w', 1, ],
+    [ 'w', 's', 1, ],
+    [ 'x', 'z', 1, ],
+    [ 'y', 'q', 1, ],
+    [ 'z', 'x', 1, ],
+  ]
 
   ary = []
 
-  data.each_line do |line|
-    ary << Bio::Relation.new(*line.split(/\s+/))
+  data.each do |x|
+    ary << Bio::Relation.new(*x)
   end
 
   p ary
@@ -274,7 +290,13 @@ END
 
   p graph
 
-  puts graph.to_matrix
+  # test to_matrix method
+  p graph.to_matrix
+
+  # test dijkstra method
+  dist, pred = graph.dijkstra('q')
+  p dist
+  p pred
 end
 
 =begin
