@@ -13,23 +13,38 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: aa.rb,v 0.2 2001/06/21 05:48:10 katayama Exp $
+#  $Id: aa.rb,v 0.3 2001/09/26 18:46:02 katayama Exp $
 #
 
-module AminoAcids
+module AminoAcid
 
-  AA = {
+  AA_name = {
 
     # IUPAC code
     # * http://www.iupac.org/
     # * http://www.chem.qmw.ac.uk/iubmb/newsletter/1999/item3.html
 
-    'A'	=> 'Ala', 'C' => 'Cys', 'D' => 'Asp', 'E' => 'Glu',
-    'F'	=> 'Phe', 'G' => 'Gly', 'H' => 'His', 'I' => 'Ile',
-    'K'	=> 'Lys', 'L' => 'Leu', 'M' => 'Met', 'N' => 'Asn',
-    'P'	=> 'Pro', 'Q' => 'Gln', 'R' => 'Arg', 'S' => 'Ser',
-    'T'	=> 'Thr', 'V' => 'Val', 'W' => 'Trp', 'Y' => 'Tyr',
-    'U'	=> 'Sec',
+    'A' => 'Ala',
+    'C' => 'Cys',
+    'D' => 'Asp',
+    'E' => 'Glu',
+    'F' => 'Phe',
+    'G' => 'Gly',
+    'H' => 'His',
+    'I' => 'Ile',
+    'K' => 'Lys',
+    'L' => 'Leu',
+    'M' => 'Met',
+    'N' => 'Asn',
+    'P' => 'Pro',
+    'Q' => 'Gln',
+    'R' => 'Arg',
+    'S' => 'Ser',
+    'T' => 'Thr',
+    'V' => 'Val',
+    'W' => 'Trp',
+    'Y' => 'Tyr',
+    'U' => 'Sec',
 
     'Ala' => 'alanine',
     'Cys' => 'cysteine',
@@ -55,9 +70,35 @@ module AminoAcids
 
   }
 
-  def aa(code)
-    AA[code]
-  end
+  AA_weight = {
+
+    # AAindex FASG760101
+    # * Molecular weight (Fasman, 1976)
+    #   Fasman, G.D., ed.
+    #   Handbook of Biochemistry and Molecular Biology", 3rd ed., Proteins -
+    #   Volume 1, CRC Press, Cleveland (1976)
+
+    'A' => 89.09,
+    'C' => 121.15,
+    'D' => 133.10,
+    'E' => 147.13,
+    'F' => 165.19,
+    'G' => 75.07,
+    'H' => 155.16,
+    'I' => 131.17,
+    'K' => 146.19,
+    'L' => 131.17,
+    'M' => 149.21,
+    'N' => 132.12,
+    'P' => 115.13,
+    'Q' => 146.15,
+    'R' => 174.20,
+    'S' => 105.09,
+    'T' => 119.12,
+    'V' => 117.15,
+    'W' => 204.24,
+    'Y' => 181.19,
+  }
 
 end
 

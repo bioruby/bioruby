@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: codontable.rb,v 0.2 2001/06/21 05:50:20 katayama Exp $
+#  $Id: codontable.rb,v 0.3 2001/09/26 18:46:02 katayama Exp $
 #
 
 module CodonTable
@@ -86,8 +86,12 @@ module CodonTable
 
   }
 
-  def ct(codon, table = 1)
-    CT[table][codon]
+  def codon_table(table = 1, codon = nil)
+    if codon
+      CT[table][codon]
+    else
+      CT[table]
+    end
   end
 
 end
