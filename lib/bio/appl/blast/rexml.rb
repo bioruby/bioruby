@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: rexml.rb,v 1.2 2002/06/22 03:13:08 k Exp $
+#  $Id: rexml.rb,v 1.3 2002/06/24 10:49:24 k Exp $
 #
 
 begin
@@ -34,13 +34,18 @@ module Bio
 	d = REXML::Document.new(data)
 
 	@program = Program.new(d)
-	@iterations = []
+	a = [ @program.query_id, @program.query_len ]
 
+	@iterations = []
 	d.elements.each("/BlastOutput/BlastOutput_iterations/Iteration") do |e|
-	  @iterations.push(Iteration.new(e))
+	  @iterations.push(Iteration.new(e, *a))
 	end
       end
-      attr_reader :program, :iterations
+      attr_reader :iterations
+
+      def method_missing(name, *args, &block)
+	@program.send(name, *args, &block)	 # program, query_id etc.
+      end
 
       def each_iteration
 	@iterations.each do |x|
@@ -49,61 +54,60 @@ module Bio
       end
 
       # shortcut for @iterations[0]
-      def each
+      def each_hit
 	@iterations[0].each do |x|
 	  yield x
 	end
       end
+      alias :each :each_hit
 
 
       class Program
 	def initialize(dom)
 	  @program = {}
+	  @parameters = {}
+	  @statistics = {}
 	  dom.elements["/BlastOutput"].each_element_with_text do |e|
 	    name, text = e.name, e.text
 	    case name
 	    when 'BlastOutput_param'
 	      e.elements["Parameters"].each_element_with_text do |p|
-		@program[p.name] = p.text
+		k = p.name.sub(/Parameters_/, '')
+		v = p.text =~ /\D/ ? p.text : p.text.to_i
+		@parameters[k] = v
 	      end
 	    else
 	      @program[name] = text if text.strip.size > 0
 	    end
 	  end
+	  dom.elements["*//Statistics"].each_element_with_text do |e|
+	    k = e.name.sub(/Statistics_/, '')
+	    v = e.text =~ /\D/ ? e.text.to_f : e.text.to_i
+	    @statistics[k] = v
+	  end
 	end
-	attr_reader :program
+	attr_reader :parameters, :statistics
       
-	def version;	@program['BlastOutput_version'];		end
-	def reference;	@program['BlastOutput_reference'];		end
-	def db;		@program['BlastOutput_db'];			end
-	def query_id;	@program['BlastOutput_query-ID'];		end
-	def query_def;	@program['BlastOutput_query-def'];		end
-	def query_len;	@program['BlastOutput_query-len'].to_i;		end
-	def expect;	@program['Parameters_expect'].to_i;		end
-	def include;	@program['Parameters_include'].to_i;		end
-	def match;	@program['Parameters_sc-match'].to_i;		end
-	def mismatch;	@program['Parameters_sc-mismatch'].to_i;	end
-	def gap_open;	@program['Parameters_gap-open'].to_i;		end
-	def gap_extend;	@program['Parameters_gap-extend'].to_i;		end
-	def filter;	@program['Parameters_filter'];			end
+	def program;	@program['BlastOutput_program'];	end
+	def version;	@program['BlastOutput_version'];	end
+	def reference;	@program['BlastOutput_reference'];	end
+	def db;		@program['BlastOutput_db'];		end
+	def query_id;	@program['BlastOutput_query-ID'];	end
+	def query_def;	@program['BlastOutput_query-def'];	end
+	def query_len;	@program['BlastOutput_query-len'].to_i;	end
       end
 
 
       class Iteration
-	def initialize(e)
+	def initialize(e, *args)
 	  e.elements.each do |i|
 	    case i.name
 	    when 'Iteration_iter-num'
 	      @num = i.text.to_i
-	    when 'Iteration_stat'
-	      @stat = {}
-	      i.elements["Statistics"].each_element_with_text do |s|
-		@stat[s.name] = s.text
-	      end
 	    when 'Iteration_hits'
 	      @hits = []
 	      i.elements.each("Hit") do |h|
-		@hits.push(Hit.new(h))
+		@hits.push(Hit.new(h, *args))
 	      end
 	    end
 	  end
@@ -115,19 +119,12 @@ module Bio
 	    yield x
 	  end
 	end
-
-	def db_len;	@stat['Statistics_db-len'].to_i;	end
-	def db_num;	@stat['Statistics_db-num'].to_i;	end
-	def eff_space;	@stat['Statistics_eff-space'].to_f;	end
-	def entropy;	@stat['Statistics_entropy'].to_f;	end
-	def hsp_len;	@stat['Statistics_hsp-len'].to_i;	end
-	def kappa;	@stat['Statistics_kappa'].to_f;		end
-	def lambda;	@stat['Statistics_lambda'].to_f;	end
       end
 
 
       class Hit
-	def initialize(e)
+	def initialize(e, *args)
+	  @query_id, @query_len = *args
 	  @hit = {}
 	  @hsps = []
 	  e.elements.each do |h|
@@ -151,66 +148,30 @@ module Bio
 
 	def num;		@hit['Hit_num'].to_i;		end
 	def hit_id;		@hit['Hit_id'];			end
-	def hit_def;		@hit['Hit_def'];		end
-	def hit_accession;	@hit['Hit_accession'];		end
-	def hit_len;		@hit['Hit_len'].to_i;		end
+	def len;		@hit['Hit_len'].to_i;		end
+	def definition;		@hit['Hit_def'];		end
+	def accession;		@hit['Hit_accession'];		end
 
-	# Access methods for the best Hsp
+	# Compatible with Bio::Fasta::Report::Hit
 
-	def evalue
-	  @hsps[0].evalue
-	end
+	attr_reader :query_id, :query_len
+	alias :target_id :accession
+	alias :target_len :len
 
-	def bit
-	  @hsps[0].bit
-	end
+	# Shortcut methods for the best Hsp
 
-	def identity
-	  @hsps[0].identity
-	end
+	def evalue;		@hsps[0].evalue;		end
+	def bit_score;		@hsps[0].bit_score;		end
+	def identity;		@hsps[0].identity;		end
+	def overlap;		@hsps[0].align_len;		end
 
-	def overlap
-	  @hsps[0].overlap
-	end
-
-#	def query_id
-#	  # BlastOutput_query-def
-#	end
-
-	def target_id
-	  hit_accession
-	end
-
-#	def query_len
-#	  # BlastOutput_query-len
-#	end
-
-	def target_len
-	  hit_len
-	end
-
-	def query_start
-	  @hsps[0].query_start
-	end
-
-	def query_end
-	  @hsps[0].query_end
-	end
-
-	def target_start
-	  @hsps[0].target_start
-	end
-
-	def target_end
-	  @hsps[0].target_end
-	end
-
+	def query_start;	@hsps[0].query_from;		end
+	def query_end;		@hsps[0].query_to;		end
+	def target_start;	@hsps[0].hit_from;		end
+	def target_end;		@hsps[0].hit_to;		end
+	def direction;		@hsps[0].hit_frame <=> 0;	end
 	def lap_at
-	  @hsps[0].lap_at
-	end
-
-	def direction
-	  @hsps[0].direction
+	  [ query_start, query_end, target_start, target_end ]
 	end
       end
 
@@ -224,7 +185,7 @@ module Bio
 	end
 
 	def num;		@hsp['Hsp_num'].to_i;		end
-	def bit;		@hsp['Hsp_bit-score'].to_f;	end
+	def bit_score;		@hsp['Hsp_bit-score'].to_f;	end
 	def score;		@hsp['Hsp_score'].to_i;		end
 	def evalue;		@hsp['Hsp_evalue'].to_f;	end
 	def query_from;		@hsp['Hsp_query-from'].to_i;	end
@@ -243,20 +204,6 @@ module Bio
 	def qseq;		@hsp['Hsp_qseq'];		end
 	def hseq;		@hsp['Hsp_hseq'];		end
 	def midline;		@hsp['Hsp_midline'];		end
-
-	alias :overlap :align_len
-	alias :query_start :query_from
-	alias :query_end :query_to
-	alias :target_start :hit_from
-	alias :target_end :hit_to
-
-	def lap_at
-	  [ query_start, query_end, target_start, target_end ]
-	end
-
-	def direction
-	  hit_frame <=> 0
-	end
       end
 
     end
@@ -266,16 +213,120 @@ end
 
 
 if __FILE__ == $0
-  begin
-    require 'pp'
-    alias :p :pp
-  rescue
-  end
+#  begin
+#    require 'pp'
+#    alias :p :pp
+#  rescue
+#  end
 
   rep = Bio::Blast::Report.new(ARGF.read)
-  rep.each do |x|
-    p x
+
+  print "# === Bio::Tools::Blast::Report\n"
+  puts
+  print "  rep.program           #=> "; p rep.program
+  print "  rep.version           #=> "; p rep.version
+  print "  rep.reference         #=> "; p rep.reference
+  print "  rep.db                #=> "; p rep.db
+  print "  rep.query_id          #=> "; p rep.query_id
+  print "  rep.query_def         #=> "; p rep.query_def
+  print "  rep.query_len         #=> "; p rep.query_len
+  puts
+
+  print "# === Parameters\n"
+  puts
+  print "  rep.parameters        #=> "; p rep.parameters
+  puts
+
+  print "# === Statistics\n"
+  puts
+  print "  rep.statistics        #=> "; p rep.statistics
+  puts
+
+  print "# === Iterations\n"
+  puts
+  print "  rep.itrerations.each do |itr|\n"
+  puts
+
+  rep.iterations.each do |itr|
+      
+  print "# --- Bio::Blast::Report::Iteration\n"
+  puts
+
+  print "    itr.num             #=> "; p itr.num
+  print "    itr.hits.size       #=> "; p itr.hits.size
+  puts
+
+  print "    itr.hits.each do |hit|\n"
+  puts
+
+  itr.hits.each do |hit|
+
+  print "# --- Bio::Blast::Report::Hit\n"
+  puts
+
+  print "      hit.num           #=> "; p hit.num
+  print "      hit.hit_id        #=> "; p hit.hit_id
+  print "      hit.len           #=> "; p hit.len
+  print "      hit.definition    #=> "; p hit.definition
+  print "      hit.accession     #=> "; p hit.accession
+
+  print "        --- compat ---\n"
+  print "      hit.query_id      #=> "; p hit.query_id
+  print "      hit.query_len     #=> "; p hit.query_len
+  print "      hit.target_id     #=> "; p hit.target_id
+  print "      hit.target_len    #=> "; p hit.target_len
+  print "      hit.evalue        #=> "; p hit.evalue
+  print "      hit.bit_score     #=> "; p hit.bit_score
+  print "      hit.identity      #=> "; p hit.identity
+  print "      hit.overlap       #=> "; p hit.overlap
+  print "      hit.query_start   #=> "; p hit.query_start
+  print "      hit.query_end     #=> "; p hit.query_end
+  print "      hit.target_start  #=> "; p hit.target_start
+  print "      hit.target_end    #=> "; p hit.target_end
+  print "      hit.direction     #=> "; p hit.direction
+  print "      hit.lap_at        #=> "; p hit.lap_at
+  print "        --- compat ---\n"
+
+  print "      hit.hsps.size     #=> "; p hit.hsps.size
+  puts
+
+  print "      hit.hsps.each do |hsp|\n"
+  puts
+
+  hit.hsps.each do |hsp|
+
+  print "# --- Bio::Blast::Report::Hsp\n"
+  puts
+  print "        hsp.num         #=> "; p hsp.num
+  print "        hsp.bit_score   #=> "; p hsp.bit_score 
+  print "        hsp.score       #=> "; p hsp.score
+  print "        hsp.evalue      #=> "; p hsp.evalue
+  print "        hsp.identity    #=> "; p hsp.identity
+  print "        hsp.gaps        #=> "; p hsp.gaps
+  print "        hsp.positive    #=> "; p hsp.positive
+  print "        hsp.align_len   #=> "; p hsp.align_len
+  print "        hsp.density     #=> "; p hsp.density
+
+  print "        hsp.query_frame #=> "; p hsp.query_frame
+  print "        hsp.query_from  #=> "; p hsp.query_from
+  print "        hsp.query_to    #=> "; p hsp.query_to
+
+  print "        hsp.hit_frame   #=> "; p hsp.hit_frame
+  print "        hsp.hit_from    #=> "; p hsp.hit_from
+  print "        hsp.hit_to      #=> "; p hsp.hit_to
+
+  print "        hsp.pattern_from#=> "; p hsp.pattern_from
+  print "        hsp.pattern_to  #=> "; p hsp.pattern_to
+
+  print "        hsp.qseq        #=> "; p hsp.qseq
+  print "        hsp.midline     #=> "; p hsp.midline
+  print "        hsp.hseq        #=> "; p hsp.hseq
+  puts
+
   end
+  end
+  end
+
 end
 
 
@@ -285,7 +336,33 @@ end
 
 Summerized results of the blast execution hits.
 
---- Bio::Blast::Report.new(data)
+--- Bio::Blast::Report.new(xml)
+
+      Passing a XML output from 'blastall -m 7' as a String.
+
+--- Bio::Blast::Report#program
+--- Bio::Blast::Report#version
+--- Bio::Blast::Report#reference
+--- Bio::Blast::Report#db
+--- Bio::Blast::Report#query_id
+--- Bio::Blast::Report#query_def
+--- Bio::Blast::Report#query_len
+
+      Accessors for the BlastOutput values (via method_missing sended
+      to the Bio::Blast::Report::Program object internally).
+
+--- Bio::Blast::Report#parameters
+
+      Returns a Hash containing execution parameters (valid keys are:
+      'expect', 'include', 'sc-match', 'sc-mismatch', 'gap-open',
+      'gap-extend', 'filter').
+
+--- Bio::Blast::Report#statistics
+
+      Returns a Hash containing execution statistics (valid keys are:
+      'db-len', 'db-num', 'eff-space', 'entropy', 'hsp-len', 'kappa',
+      'lambda').
+
 --- Bio::Blast::Report#iterations
 
       Returns an Array of Bio::Blast::Report::Iteration objects.
@@ -294,35 +371,11 @@ Summerized results of the blast execution hits.
 
       Iterates on each Bio::Blast::Report::Iteration object.
 
+--- Bio::Blast::Report#each_hit
 --- Bio::Blast::Report#each
 
-      Iterates on each Bio::Blast::Report::Hit object (first Iteration).
-
-
-== Bio::Blast::Report::Program
-
---- Bio::Blast::Report::Program#program
-
-      Accessor for the internal structure.
-
---- Bio::Blast::Report::Program#version
---- Bio::Blast::Report::Program#reference
---- Bio::Blast::Report::Program#db
---- Bio::Blast::Report::Program#query_id
---- Bio::Blast::Report::Program#query_def
---- Bio::Blast::Report::Program#query_len
-
-      Accessors for the BlastOutput values.
-
---- Bio::Blast::Report::Program#expect
---- Bio::Blast::Report::Program#include
---- Bio::Blast::Report::Program#match
---- Bio::Blast::Report::Program#mismatch
---- Bio::Blast::Report::Program#gap_open
---- Bio::Blast::Report::Program#gap_extend
---- Bio::Blast::Report::Program#filter
-
-      Accessors for the Parameters values.
+      Iterates on each Bio::Blast::Report::Hit object of the the
+      first Iteration.
 
 
 == Bio::Blast::Report::Iteration
@@ -339,16 +392,6 @@ Summerized results of the blast execution hits.
 
       Iterates on each Bio::Blast::Report::Hit object.
 
---- Bio::Blast::Report::Iteration#db_len
---- Bio::Blast::Report::Iteration#db_num
---- Bio::Blast::Report::Iteration#eff_space
---- Bio::Blast::Report::Iteration#entropy
---- Bio::Blast::Report::Iteration#hsp_len
---- Bio::Blast::Report::Iteration#kappa
---- Bio::Blast::Report::Iteration#lambda
-
-      Accessors for the Statistics values.
-
 
 == Bio::Blast::Report::Hit
 
@@ -360,58 +403,41 @@ Summerized results of the blast execution hits.
 
       Returns an Array of Bio::Blast::Report::Hsp objects.
 
-#--- Bio::Blast::Report::Hit#query_id
-#--- Bio::Blast::Report::Hit#query_len
+--- Bio::Blast::Report::Hit#num
+--- Bio::Blast::Report::Hit#hit_id
+--- Bio::Blast::Report::Hit#len
+--- Bio::Blast::Report::Hit#definition
+--- Bio::Blast::Report::Hit#accession
+
+      Accessors for the Hit values.
+
+--- Bio::Blast::Report::Hit#query_id
+--- Bio::Blast::Report::Hit#query_len
 --- Bio::Blast::Report::Hit#target_id
 --- Bio::Blast::Report::Hit#target_len
 
-      Matching subjects.
+      Compatible methods with Bio::Fasta::Report::Hit class.
 
 --- Bio::Blast::Report::Hit#evalue
---- Bio::Blast::Report::Hit#bit
+--- Bio::Blast::Report::Hit#bit_score
 --- Bio::Blast::Report::Hit#identity
-
-      Matching scores (best Hsp's).
-
+--- Bio::Blast::Report::Hit#overlap
 --- Bio::Blast::Report::Hit#query_start
 --- Bio::Blast::Report::Hit#query_end
 --- Bio::Blast::Report::Hit#target_start
 --- Bio::Blast::Report::Hit#target_end
---- Bio::Blast::Report::Hit#overlap
---- Bio::Blast::Report::Hit#lap_at
 --- Bio::Blast::Report::Hit#direction
+--- Bio::Blast::Report::Hit#lap_at
 
-      Matching regions (best Hsp's).
-
---- Bio::Blast::Report::Hit#num
---- Bio::Blast::Report::Hit#hit_id
---- Bio::Blast::Report::Hit#hit_def
---- Bio::Blast::Report::Hit#hit_accession
---- Bio::Blast::Report::Hit#hit_len
-
-      Accessors for the Hit values.
+      Shortcut methods for the best Hsp, compatible with Fasta class.
 
 
 == Bio::Blast::Report::Hsp
 
---- Bio::Blast::Report::Hsp#evalue
---- Bio::Blast::Report::Hsp#bit
---- Bio::Blast::Report::Hsp#identity
-
-      Matching scores.
-
---- Bio::Blast::Report::Hsp#query_start
---- Bio::Blast::Report::Hsp#query_end
---- Bio::Blast::Report::Hsp#target_start
---- Bio::Blast::Report::Hsp#target_end
---- Bio::Blast::Report::Hsp#overlap
---- Bio::Blast::Report::Hsp#lap_at
---- Bio::Blast::Report::Hsp#direction
-
-      Matching regions.
-
 --- Bio::Blast::Report::Hsp#num
+--- Bio::Blast::Report::Hsp#bit_score
 --- Bio::Blast::Report::Hsp#score
+--- Bio::Blast::Report::Hsp#evalue
 --- Bio::Blast::Report::Hsp#query_from
 --- Bio::Blast::Report::Hsp#query_to
 --- Bio::Blast::Report::Hsp#hit_from
@@ -420,6 +446,7 @@ Summerized results of the blast execution hits.
 --- Bio::Blast::Report::Hsp#pattern_to
 --- Bio::Blast::Report::Hsp#query_frame
 --- Bio::Blast::Report::Hsp#hit_frame
+--- Bio::Blast::Report::Hsp#identity
 --- Bio::Blast::Report::Hsp#positive
 --- Bio::Blast::Report::Hsp#gaps
 --- Bio::Blast::Report::Hsp#align_len
@@ -427,7 +454,5 @@ Summerized results of the blast execution hits.
 --- Bio::Blast::Report::Hsp#qseq
 --- Bio::Blast::Report::Hsp#hseq
 --- Bio::Blast::Report::Hsp#midline
-
-      Accessors for the Hsp values.
 
 =end
