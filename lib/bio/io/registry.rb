@@ -17,9 +17,10 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: registry.rb,v 1.8 2002/11/22 22:56:16 k Exp $
+#  $Id: registry.rb,v 1.9 2003/02/18 15:13:20 k Exp $
 #
 
+require 'uri'
 require 'net/http'
 require 'bio/io/sql'
 require 'bio/io/fetch'
@@ -27,7 +28,6 @@ require 'bio/io/flatfile/index'
 require 'bio/io/flatfile/bdb'
 #require 'bio/io/corba'
 #require 'bio/io/xembl'
-#require 'bio/io/soap'
 
 module Bio
 
@@ -35,12 +35,17 @@ module Bio
 
     def initialize(file = nil)
       @registry = Array.new
-
       read_local(file) if file
-      read_local("#{ENV['HOME']}/.bioinformatics/seqdatabase.ini")
-      read_local("/etc/bioinformatics/seqdatabase.ini")
-
-      read_remote if @registry.empty?
+      env_path = ENV['OBDA_SEARCH_PATH']
+      if env_path and env_path.size > 0
+	read_env(env_path)
+      else
+	read_local("#{ENV['HOME']}/.bioinformatics/seqdatabase.ini")
+	read_local("/etc/bioinformatics/seqdatabase.ini")
+	if @registry.empty?
+	  read_remote("http://www.open-bio.org/registry/seqdatabase.ini")
+	end
+      end
     end
 
     def get_database(dbname)
@@ -51,7 +56,7 @@ module Bio
 	    return serv_biofetch(db)
 	  when 'biosql'
 	    return serv_biosql(db)
-	  when 'index-flat', 'index-berkeleydb'
+	  when 'flat', 'index-flat', 'index-berkeleydb'
 	    return serv_flat(db)
 	  when 'bsane-corba', 'biocorba'
 	    raise NotImplementedError
@@ -72,6 +77,16 @@ module Bio
 
     private
 
+    def read_env(path)
+      path.split('+').each do |elem|
+	if /:/.match(elem)
+	  read_remote(elem)
+	else
+	  read_local(elem)
+	end
+      end
+    end
+
     def read_local(file)
       if File.readable?(file)
 	stanza = File.open(file).read
@@ -79,14 +94,20 @@ module Bio
       end
     end
 
-    def read_remote(host='www.open-bio.org', path='/registry/seqdatabase.ini')
-      Net::HTTP.start(host, 80) do |http|
+    def read_remote(url)
+      schema, user, host, port, path, = URI.parse(url).to_a
+      Net::HTTP.start(host, port) do |http|
 	response, = http.get(path)
 	parse_stanza(response.body)
       end
     end
 
     def parse_stanza(stanza)
+      return unless stanza
+      if stanza[/.*/] =~ /VERSION\s*=\s*(\S+)/
+	@spec_version = $1	# for internal use (may differ on each file)
+	stanza[/.*/] = ''	# remove VERSION line
+      end
       stanza.each_line do |line|
 	case line
 	when /^\[(.*)\]/
@@ -101,30 +122,42 @@ module Bio
 
     def serv_biofetch(db)
       serv = Bio::Fetch.new(db.location)
-      serv.database = db.biodbname
+      serv.database = db.dbname or db.biodbname
       return serv
     end
 
     def serv_biosql(db)
+      location, port = db.location.split(':')
+      port = db.port unless port
+
       case db.driver
       when /mysql/i
 	driver = 'Mysql'
       when /pg|postgres/i
 	driver = 'Pg'
+      when /oracle/
+      when /sybase/
+      when /sqlserver/
+      when /access/
+      when /csv/
+      when /informix/
+      when /odbc/
+      when /rdb/
       end
 
-      dbi = [ "dbi", driver, db.dbname, db.location ].compact.join(':')
-      dbi += ';port=' + db.port if db.port
+      dbi = [ "dbi", driver, db.dbname, location ].compact.join(':')
+      dbi += ';port=' + port if port
       serv = Bio::SQL.new(dbi, db.user, db.pass)
 
       # We can not manage biodbname (for name space) in BioSQL yet.
-      #db.biodbname
+      # use db.biodbname here!!
 
       return serv
     end
 
     def serv_flat(db)
       serv = Bio::FlatFileIndex.new(db.location)
+      # use db.dbname here!!
       return serv
     end
 
