@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: registry.rb,v 1.4 2002/06/26 00:07:07 k Exp $
+#  $Id: registry.rb,v 1.5 2002/07/30 10:03:54 k Exp $
 #
 
 require 'net/http'
@@ -27,6 +27,7 @@ require 'bio/io/fetch'
 #require 'bio/io/bdb'
 #require 'bio/io/corba'
 #require 'bio/io/xembl'
+#require 'bio/io/soap'
 
 module Bio
 
@@ -76,18 +77,18 @@ module Bio
     def read_local(file)
       if File.readable?(file)
 	stanza = File.open(file).read
-	parse(stanza)
+	parse_stanza(stanza)
       end
     end
 
     def read_remote(host='www.open-bio.org', path='/registry/seqdatabase.ini')
       Net::HTTP.start(host, 80) do |http|
 	response, = http.get(path)
-	parse(response.body)
+	parse_stanza(response.body)
       end
     end
 
-    def parse(stanza)
+    def parse_stanza(stanza)
       stanza.each_line do |line|
 	case line
 	when /^\[(.*)\]/
@@ -185,13 +186,13 @@ end
 --- Bio::Registry#get_database(dbname)
 --- Bio::Registry#db(dbname)
 
-      Returns dababase handle (i.e. Bio::SQL, Bio::Fetch etc.) or nil
+      Returns a dababase handle (Bio::SQL, Bio::Fetch etc.) or nil
       if not found.  The handles should have get_by_id method.
 
 --- Bio::Registry#query(dbname)
 
-      Returns a Registry::DB object corresponding to the first dbname entry
-      in the registry records.
+      Returns a Registry::DB object corresponding to the first dbname
+      entry in the registry records.
 
 == Bio::Registry::DB
 
