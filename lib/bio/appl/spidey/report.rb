@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.1 2004/10/10 14:57:22 ngoto Exp $
+#  $Id: report.rb,v 1.2 2004/10/13 16:53:03 ngoto Exp $
 #
 
 require 'bio'
@@ -414,14 +414,10 @@ end #module Bio
 --- Bio::Spidey::Report#query_id
 
     Returns the identifier of query sequence.
-    The value will be filename or (first word of) sequence definition
-    according to sim4 run-time options.
 
 --- Bio::Spidey::Report#query_def
 
     Returns the definition of query sequence.
-    The value will be filename or (first word of) sequence definition
-    according to sim4 run-time options.
 
 --- Bio::Spidey::Report#query_len
 
@@ -518,7 +514,7 @@ end #module Bio
 
 == Bio::Spidey::Report::SegmentPair
 
-    Sequence segment pair of sim4 result.
+    Sequence segment pair of SPIDEY result.
     Similar to Bio::Blast::Report::HSP but lacks many methods.
     For mRNA-genome mapping programs, unlike other homology search programs,
     the class is used not only for exons but also for introns.
