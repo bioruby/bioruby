@@ -1,7 +1,7 @@
 #
 # bio/db/kegg/keggtab.rb - KEGG keggtab class
 #
-#   Copyright (C) 2001 Mitsuteru S. Nakao <n@bioruby.org>
+#   Copyright (C) 2001 Mitsuteru C. Nakao <n@bioruby.org>
 #   Copyright (C) 2003 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggtab.rb,v 1.3 2003/04/15 12:45:16 k Exp $
+#  $Id: keggtab.rb,v 1.4 2003/06/14 01:11:07 k Exp $
 #
 
 module Bio
