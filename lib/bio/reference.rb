@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: reference.rb,v 1.2 2001/09/18 05:59:29 katayama Exp $
+#  $Id: reference.rb,v 1.3 2001/09/20 07:25:25 katayama Exp $
 #
 
 class Reference
@@ -51,6 +51,8 @@ class Reference
       return cell
     when 'bibitem'
       return bibitem(option)
+    when 'bibtex'
+      return bibtex(option)
     else
       return general
     end
@@ -63,12 +65,30 @@ class Reference
   end
 
   def bibitem(item = nil)
-    item = "PMID@pubmed" unless item
+    item  = "PMID@pubmed" unless item
+    pages = @pages.sub('-', '--')
     return <<-"END".collect {|line| line.strip}.join("\n")
 	\\bibitem{#{item}}
 	#{@authors.join(', ')}
 	#{@title},
-	{\\em #{@journal}}, #{@volume}(#{@issue}):#{@pages}, #{@year}.
+	{\\em #{@journal}}, #{@volume}(#{@issue}):#{pages}, #{@year}.
+    END
+  end
+
+  def bibtex(section = nil)
+    section = "article" unless section
+    authors = authors_join(' and ')
+    pages   = @pages.sub('-', '--')
+    return <<-END
+	@#{section}{PMID#{@pubmed},
+	  author  = {#{authors}},
+	  title   = {#{@title}},
+	  journal = {#{@journal}},
+	  year    = {#{@year}},
+	  volume  = {#{@volume}},
+	  number  = {#{@issue}},
+	  pages   = {#{pages}},
+	}
     END
   end
 
