@@ -13,49 +13,335 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
+#  $Id: prosite.rb,v 0.3 2001/06/21 08:19:30 katayama Exp $
+#
 
-class PROSITE
+require 'bio/db'
 
-  DELIMITER = "\n//\n"
-  TAGSIZE = 5
+class PROSITE < EMBLDB
+
+  DELIMITER	= RS = "\n//\n"
+  TAGSIZE	= 5
 
   def initialize(entry)
-    @orig = {}					# Hash of the original entry
-    @data = {}					# Hash of the parsed entry
+    super(entry, TAGSIZE)
+  end
 
-    tag = ''					# temporal key
-    @orig[tag] = ''
 
-    entry.each_line do |line|
-      next if line =~ /^$/
-
-      oldtag = tag
-      tag = tag_get(line)
-      if tag != oldtag
-        @orig[tag] = '' unless @orig[tag]	# String
-      end
-      @orig[tag] << line
+  # ID  Identification                     (Begins each entry; 1 per entry)
+  #
+  #  ID   ENTRY_NAME; ENTRY_TYPE.  (ENTRY_TYPE : PATTERN, MATRIX, RULE)
+  #
+  def name
+    unless @data['ID']
+      @data['ID'], @data['TYPE'] = fetch('ID').chomp('.').split('; ')
     end
+    @data['ID']
+  end
+  def division
+    unless @data['TYPE']
+      name
+    end
+    @data['TYPE']
   end
 
 
-  ### general method to return block of the tag and contens as is
-  def get(tag)
-    @orig[tag]			# returns nil when not found
+  # AC  Accession number                   (1 per entry)
+  #
+  #  AC   PSnnnnn;
+  #
+  def ac
+    unless @data['AC']
+      @data['AC'] = fetch('AC').chomp(';')
+    end
+    @data['AC']
   end
+  alias id ac
 
 
-  ### general method to return contens without tag and extra white spaces
-  def fetch(tag)
-    if get(tag)
-      str = ''
-      get(tag).each_line do |line|
-        str << tag_cut(line)
+  # DT  Date                               (1 per entry)
+  #
+  #  DT   MMM-YYYY (CREATED); MMM-YYYY (DATA UPDATE); MMM-YYYY (INFO UPDATE).
+  #
+  def dt
+    field_fetch('DT')
+  end
+  alias date dt
+
+
+  # DE  Short description                  (1 per entry)
+  #
+  #  DE   Description.
+  #
+  def de
+    field_fetch('DE')
+  end
+  alias definition de
+
+
+  # PA  Pattern                            (>=0 per entry)
+  #
+  #  see - pa2re method
+  #
+  def pa
+    field_fetch('PA')
+    @data['PA'] = fetch('PA') unless @data['PA']
+    @data['PA'].gsub!(/\s+/, '') if @data['PA']
+    @data['PA']
+  end
+  alias pattern pa
+
+
+  # MA  Matrix/profile                     (>=0 per entry)
+  #
+  #  see - ma2re method
+  #
+  def ma
+    field_fetch('MA')
+  end
+  alias profile ma
+
+
+  # RU  Rule                               (>=0 per entry)
+  #
+  #  RU   Rule_Description.
+  #
+  #  The rule is described in ordinary English and is free-format.
+  #
+  def ru
+    field_fetch('RU')
+  end
+  alias rule ru
+
+
+  # NR  Numerical results                  (>=0 per entry)
+  #
+  #   - SWISS-PROT scan statistics of true and false positives/negatives
+  #
+  # /RELEASE       SWISS-PROT release  number and  total  number  of  sequence
+  #                entries in that release.
+  # /TOTAL         Total number of hits in SWISS-PROT.
+  # /POSITIVE      Number of  hits on proteins that are known to belong to the
+  #                set in consideration.
+  # /UNKNOWN       Number of  hits on  proteins that  could possibly belong to
+  #                the set in consideration.
+  # /FALSE_POS     Number of false hits (on unrelated proteins).
+  # /FALSE_NEG     Number of known missed hits.
+  # /PARTIAL       Number of  partial sequences  which belong  to the  set  in
+  #                consideration, but  which  are  not  hit  by the pattern or
+  #                profile because they are partial (fragment) sequences.
+  #
+  def nr(key = nil)
+    unless @data['NR']
+      hash = {}			# temporal hash
+      fetch('NR').scan(%r{/(\S+)=([^;]+);}).each do |k, v|
+	if v =~ /^(\d+)\((\d+)\)$/
+	  hits = $1.to_i		# the number of hits
+	  seqs = $2.to_i		# the number of sequences
+	  v = [hits, seqs]
+	elsif v =~ /(\d+),(\d+)/
+	  sprel = $1.to_i		# the number of SWISS-PROT release
+	  spseq = $2.to_i		# the number of SWISS-PROT sequences
+	  v = [sprel, spseq]
+	else
+	  v = v.to_i
+	end
+	hash[k] = v
       end
-      return truncate(str)
+      @data['NR'] = hash
+    end
+
+    if block_given?
+      @data['NR'].each do |k, v|
+        yield(k, v)
+      end
+    elsif key
+      @data['NR'][key]
     else
-      return nil		# compatible with get()
+      @data['NR']
     end
+  end
+  alias statistics nr
+  def release
+    statistics('RELEASE')
+  end
+  def total
+    statistics('TOTAL')
+  end
+  def positive
+    statistics('POSITIVE')
+  end
+  def unknown
+    statistics('UNKNOWN')
+  end
+  def false_pos
+    statistics('FALSE_POS')
+  end
+  def false_neg
+    statistics('FALSE_NEG')
+  end
+  def partial
+    statistics('PARTIAL')
+  end
+
+
+  # CC  Comments                           (>=0 per entry)
+  #
+  #  CC   /QUALIFIER=data; /QUALIFIER=data; .......
+  #
+  # /TAXO-RANGE    Taxonomic range.
+  # /MAX-REPEAT    Maximum known  number of  repetitions of  the pattern  in a
+  #                single protein.
+  # /SITE          Indication of an `interesting' site in the pattern.
+  # /SKIP-FLAG     Indication of  an entry that can be, in some cases, ignored
+  #                by a program (because it is too unspecific).
+  #
+  def cc(key = nil)
+    unless @data['CC']
+      hash = {}			# temporal hash
+      fetch('CC').scan(%r{/(\S+)=([^;]+);}).each do |k, v|
+	hash[k] = v
+      end
+      @data['CC'] = hash
+    end
+
+    if block_given?
+      @data['CC'].each do |k, v|
+        yield(k, v)
+      end
+    elsif key
+      @data['CC'][key]
+    else
+      @data['CC']
+    end
+  end
+  alias comment cc
+  def taxon_range(expand = nil)
+    range = comment('TAXO-RANGE')
+    if range and expand
+      expand = []
+      range.scan(/./) do |x|
+	case x
+	when 'A'; expand.push('archaebacteria')
+	when 'B'; expand.push('bacteriophages')
+	when 'E'; expand.push('eukaryotes')
+	when 'P'; expand.push('prokaryotes')
+	when 'V'; expand.push('eukaryotic viruses')
+	end
+      end
+      range = expand
+    end
+    return range
+  end
+  def max_repeat
+    comment('MAX-REPEAT').to_i
+  end
+  def site
+    if comment('SITE')
+      num, desc = comment('SITE').split(',')
+    end
+    return [num.to_i, desc]
+  end
+  def skip_flag
+    if comment('SKIP-FLAG') == 'TRUE'
+      return true
+    end
+  end
+
+
+  # DR  Cross-references to SWISS-PROT     (>=0 per entry)
+  #
+  #  DR   AC_NB, ENTRY_NAME, C; AC_NB, ENTRY_NAME, C; AC_NB, ENTRY_NAME, C;
+  #
+  # -  `AC_NB' is  the SWISS-PROT  primary accession  number of  the entry  to
+  #    which reference is being made.
+  # -  `ENTRY_NAME' is the SWISS-PROT entry name.
+  # -  `C' is a one character flag that can be one of the following:
+  #
+  #  T  For a true positive.
+  #  N  For a  false negative;  a sequence  which  belongs  to  the  set  under
+  #     consideration, but  which has  not been  picked up  by the  pattern  or
+  #     profile.
+  #  P  For a  `potential' hit;  a sequence  that  belongs  to  the  set  under
+  #     consideration, but  which was  not picked up because the region(s) that
+  #     are used  as a  'fingerprint' (pattern or profile) is not yet available
+  #     in the data bank (partial sequence).
+  #  ?  For an unknown; a sequence which possibly could belong to the set under
+  #     consideration.
+  #  F  For a  false positive;  a sequence  which does not belong to the set in
+  #     consideration.
+  #
+  def dr(key = nil)
+    unless @data['DR']
+      hash = {}			# temporal hash
+      if fetch('DR')
+        fetch('DR').scan(/(\w+)\s*, (\w+)\s*, (.);/).each do |a, e, c|
+          hash[a] = [e, c]	# SWISS-PROT : accession, entry, true/false
+        end
+      end
+      @data['DR'] = hash
+    end
+
+    if block_given?
+      @data['DR'].each do |k, v|
+        yield(k, v)
+      end
+    elsif key
+      @data['DR'][key]
+    else
+      @data['DR']
+    end
+  end
+  alias sp_xref dr
+  def list_xref(flag, by_name = nil)
+    ary = []
+    sp_xref do |sp_acc, value|
+      if value[1] == flag
+	if by_name
+	  sp_name = value[0]
+	  ary.push(sp_name)
+	else
+	  ary.push(sp_acc)
+	end
+      end
+    end
+    return ary
+  end
+  def list_truepositive(by_name = nil)
+    list_xref('T', by_name)
+  end
+  def list_falsenegative(by_name = nil)
+    list_xref('F', by_name)
+  end
+  def list_falsepositive(by_name = nil)
+    list_xref('P', by_name)
+  end
+  def list_potentialhit(by_name = nil)
+    list_xref('P', by_name)
+  end
+  def list_unknown(by_name = nil)
+    list_xref('?', by_name)
+  end
+
+
+  # 3D  Cross-references to PDB            (>=0 per entry)
+  #
+  #  3D   name; [name2;...]
+  #
+  def pdb_xref
+    unless @data['3D']
+      @data['3D'] = fetch('3D').split(/; /)
+    end
+    @data['3D']
+  end
+
+
+  # DO  Pointer to the documentation file  (1 per entry)
+  #
+  #  DO   PDOCnnnnn;
+  #
+  def pdoc_xref
+    @data['DO'] = fetch('DO').chomp(';')
   end
 
 
@@ -98,7 +384,7 @@ class PROSITE
   #  translated as: Ala-any-[Ser or Thr]-[Ser or Thr]-(any or none)-Val
   #
   def pa2re(pattern)
-    pattern.gsub!(/\s+/, '')	# remove white spaces
+    pattern.gsub!(/\s/, '')	# remove white spaces
     pattern.sub!(/\.$/, '')	# (1) remove trailing '.'
     pattern.sub!(/^</, '^')	# (2) restricted to the N-terminal : `<'
     pattern.sub!(/>$/, '$')	# (2) restricted to the C-terminal : `>'
@@ -119,214 +405,6 @@ class PROSITE
   # prosite/profile.txt:
   #
   def ma2re(matrix)
-  end
-
-
-  # ID  Identification                     (Begins each entry; 1 per entry)
-  def id(key = nil)
-    unless @data['ID']
-      hash = {}			# temporal hash
-      if fetch('ID')
-        hash['name'], hash['type'] = fetch('ID').gsub(/(\s+|\.)/,'').split(';')
-      end
-      @data['ID'] = hash
-    end
-
-    if key
-      @data['ID'][key]
-    elsif block_given?
-      @data['ID'].each do |k, v|
-        yield(k,v)
-      end
-    else
-      @data['ID']
-    end
-  end
-
-  # AC  Accession number                   (1 per entry)
-  def ac
-    @data['AC'] = fetch('AC') unless @data['AC']
-    @data['AC'].gsub!(/;$/, '') if @data['AC']
-    @data['AC']
-  end
-
-  # DT  Date                               (1 per entry)
-  def dt
-    @data['DT'] = fetch('DT') unless @data['DT']
-    @data['DT']
-  end
-
-  # DE  Short description                  (1 per entry)
-  def de
-    @data['DE'] = fetch('DE') unless @data['DE']
-    @data['DE']
-  end
-
-  # PA  Pattern                            (>=0 per entry)
-  def pa
-    @data['PA'] = fetch('PA') unless @data['PA']
-    @data['PA'].gsub!(/\s+/, '') if @data['PA']
-    @data['PA']
-  end
-
-  # MA  Matrix/profile                     (>=0 per entry)
-  def ma
-    @data['MA'] = fetch('MA') unless @data['MA']
-    @data['MA']
-  end
-
-  # RU  Rule                               (>=0 per entry)
-  def ru
-    @data['RU'] = fetch('RU') unless @data['RU']
-    @data['RU']
-  end
-
-  # NR  Numerical results                  (>=0 per entry)
-  #   - statistics of true and false positives/negatives
-  def nr(key = nil)
-    unless @data['NR']
-      hash = {}			# temporal hash
-      if fetch('NR')
-        fetch('NR').scan(%r{/(\S+)=([^;]+);}).each do |k, v|
-          if v =~ /^(\d+)\((\d+)\)$/
-            v = [$1, $2]
-          end
-          hash[k] = v
-        end
-      end
-      @data['NR'] = hash
-    end
-
-    if key
-      @data['NR'][key]
-    elsif block_given?
-      @data['NR'].each do |k, v|
-        yield(k, v)
-      end
-    else
-      @data['NR']
-    end
-  end
-
-  # CC  Comments                           (>=0 per entry)
-  def cc(key = nil, expand_range = false)
-    unless @data['CC']
-      hash = {}			# temporal hash
-      if fetch('CC')
-        fetch('CC').scan(%r{/(\S+)=([^;]+);}).each do |k, v|
-          if k =~ /TAXO-RANGE/ and expand_range
-            v.gsub!(/\?/, '')
-            v.each_byte do |x|
-              case x.chr
-              when 'A'; v.sub!('A', 'archaebacteria, ') ;
-              when 'B'; v.sub!('B', 'bacteriophages, ') ;
-              when 'E'; v.sub!('E', 'eukaryotes, ') ;
-              when 'P'; v.sub!('P', 'prokaryotes, ') ;
-              when 'V'; v.sub!('V', 'eukaryotic viruses, ') ;
-              end
-            end
-            v.sub!(/, $/, '')
-          end
-          hash[k] = v
-        end
-      end
-      @data['CC'] = hash
-    end
-
-    if key
-      @data['CC'][key]
-    elsif block_given?
-      @data['CC'].each do |k, v|
-        yield(k, v)
-      end
-    else
-      @data['CC']
-    end
-  end
-
-  # DR  Cross-references to SWISS-PROT     (>=0 per entry)
-  def dr(key = nil)
-    unless @data['DR']
-      hash = {}			# temporal hash
-      if fetch('DR')
-        fetch('DR').scan(%r{(\w+)\s*, (\w+)\s+, (.);}).each do |a, e, c|
-          hash[a] = [e, c]	# SWISS-PROT : Accession, Entry, True/False
-        end
-      end
-      @data['DR'] = hash
-    end
-
-    if key
-      @data['DR'][key]
-    elsif block_given?
-      @data['DR'].each do |k, v|
-        yield(k, v)
-      end
-    else
-      @data['DR']
-    end
-  end
-  alias sp dr
-
-  # 3D  Cross-references to PDB            (>=0 per entry)
-  def pdb
-    unless @data['3D']
-      array = []		# temporal array
-      if fetch('3D')
-        array = fetch('3D').split(/; /)
-      end
-      @data['3D'] = array
-    end
-
-    @data['3D']
-  end
-
-  # DO  Pointer to the documentation file  (1 per entry)
-  def pdoc
-    @data['DO'] = fetch('DO') unless @data['DO']
-    @data['DO'].gsub!(/;$/, '') if @data['DO']
-    @data['DO']
-  end
-
-
-  ### change the default to private method below the line
-  private
-
-  # remove extra white spaces
-  def truncate(str)
-    return str.gsub(/\s+/, ' ').strip
-  end
-
-  def truncate!(str)
-    # do not chain these lines to avoid performing on nil
-    str.gsub!(/\s+/, ' ')
-    str.strip!
-    return str
-  end
-
-
-  # remove tag field from the line
-  def tag_cut(str)
-    if str.length > TAGSIZE
-      return str[TAGSIZE..str.length]
-    else
-      return ''			# to avoid returning nil
-    end
-  end
-
-  def tag_cut!(str)
-    str[0,tag_size] = ''
-    return str
-  end
-
-
-  # get tag field of the line
-  def tag_get(str)
-    if str.length > TAGSIZE
-      return str[0,TAGSIZE].strip
-    else
-      return ''			# to avoid returning nil
-    end
   end
 
 end
