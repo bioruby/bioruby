@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: genbank.rb,v 0.16 2001/08/06 19:25:36 katayama Exp $
+#  $Id: genbank.rb,v 0.17 2001/09/01 07:19:35 katayama Exp $
 #
 
 require 'bio/db'
@@ -93,7 +93,7 @@ class GenBank < NCBIDB
 	hash['date']     = @orig['LOCUS'][68..78].strip
       else
 	hash['name']     = @orig['LOCUS'][12..21].strip
-	hash['length']   = @orig['LOCUS'][22..28].to_i
+	hash['length']   = @orig['LOCUS'][22..29].to_i
 	hash['strand']   = @orig['LOCUS'][33..35].strip
 	hash['natype']   = @orig['LOCUS'][36..39].strip
 	hash['circular'] = @orig['LOCUS'][42..51].strip
