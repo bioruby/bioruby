@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.31 2003/07/30 14:14:19 ng Exp $
+#  $Id: bio.rb,v 1.32 2003/08/21 02:20:41 n Exp $
 #
 
 module Bio
@@ -102,6 +102,7 @@ require 'bio/db/prosite'
 require 'bio/db/litdb'
 require 'bio/db/medline'
 require 'bio/db/fantom'
+require 'bio/db/go'
 
 
 ### IO interface modules
