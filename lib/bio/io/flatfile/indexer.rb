@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.13 2003/04/21 15:52:11 ng Exp $ 
+#  $Id: indexer.rb,v 1.14 2003/05/09 12:07:46 ng Exp $ 
 # 
 
 module Bio
@@ -66,6 +66,10 @@ module Bio
 	    GenPeptParser.new(*arg)
 	  when 'fasta', 'Bio::FastaFormat'
 	    FastaFormatParser.new(*arg)
+	  when 'Bio::FANTOM::MaXML::Sequence'
+	    MaXMLSequenceParser.new(*arg)
+	  when 'Bio::FANTOM::MaXML::Cluster'
+	    MaXMLClusterParser.new(*arg)
 	  else
 	    raise 'unknown or unsupported format'
 	  end #case dbclass.to_s
@@ -133,7 +137,7 @@ module Bio
 		  DEBUG.print "Fatal error occurred, stop creating index...\n"
 		  raise evar
 		else
-		  DEBUG.print "Databank might be corrupt!\n"
+		  DEBUG.print "This entry shall be incorrectly indexed.\n"
 		end
 	      end #rescue
 	      pos = @flatfile.pos
@@ -143,8 +147,8 @@ module Bio
 	  def parse_primary
 	    r = self.primary.proc.call(@entry)
 	    unless r.is_a?(String) and r.length > 0
-	      @fatal = true
-	      raise 'primary id must be a non-void string'
+	      #@fatal = true
+	      raise 'primary id must be a non-void string (skipped tis entry)'
 	    end
 	    r
 	  end
@@ -269,8 +273,8 @@ module Bio
 	    if p = self.primary.proc then
 	      r = p.call(@entry)
 	      unless r.is_a?(String) and r.length > 0
-		@fatal = true
-		raise 'primary id must be a non-void string'
+		#@fatal = true
+		raise 'primary id must be a non-void string (skipped this entry)'
 	      end
 	      r
 	    else
@@ -300,6 +304,80 @@ module Bio
 	    @flatfile.pos = pos
 	  end
 	end #class FastaFormatParser
+
+	class MaXMLSequenceParser < TemplateParser
+	  NAMESTYLE = NameSpaces.new(
+	     NameSpace.new( 'id', Proc.new { |x| x.entry_id } ),
+	     NameSpace.new( 'altid', Proc.new { |x| x.id_strings } ),
+	     NameSpace.new( 'gene_ontology', Proc.new { |x|
+			     x.annotations.get_all_by_qualifier('gene_ontology').collect { |y|
+			       y.anntext
+			     }
+			   }),
+	     NameSpace.new( 'datasrc', Proc.new { |x|
+			     a = []
+			     x.annotations.each { |y|
+			       y.datasrc.each { |z|
+				 a << z.split('|',2)[-1]
+				 a << z
+			       }
+			     }
+			     a.sort!
+			     a.uniq!
+			     a
+			   })
+				     )
+	  PRIMARY = 'id'
+	  SECONDARY = [ 'altid', 'gene_ontology', 'datasrc' ]
+	  def initialize(pri_name = nil, sec_names = nil)
+	    super()
+	    self.format = 'raw'
+	    self.dbclass = Bio::FANTOM::MaXML::Sequence
+	    self.set_primary_namespace((pri_name or PRIMARY))
+	    unless sec_names then
+	      sec_names = self.class::SECONDARY
+	    end
+	    self.add_secondary_namespaces(*sec_names)
+	  end
+	end #class MaXMLSequenceParser
+
+	class MaXMLClusterParser < TemplateParser
+	  NAMESTYLE = NameSpaces.new(
+	     NameSpace.new( 'id', Proc.new { |x| x.entry_id } ),
+	     NameSpace.new( 'altid', Proc.new { |x| x.sequences.id_strings } ),
+	     NameSpace.new( 'datasrc', Proc.new { |x|
+			     a = x.sequences.collect { |y|
+			       MaXMLSequenceParser::NAMESTYLE['datasrc'].proc.call(y)
+			     }
+			     a.flatten!
+			     a.sort!
+			     a.uniq!
+			     a
+			   }),
+	     NameSpace.new( 'gene_ontology', Proc.new { |x|
+			     a = x.sequences.collect { |y|
+			       MaXMLSequenceParser::NAMESTYLE['gene_ontology'].proc.call(y)
+			     }
+			     a.flatten!
+			     a.sort!
+			     a.uniq!
+			     a
+			   })
+				     )
+	  PRIMARY = 'id'
+	  SECONDARY = [ 'altid', 'gene_ontology', 'datasrc' ]
+	  def initialize(pri_name = nil, sec_names = nil)
+	    super()
+	    self.format = 'raw'
+	    self.dbclass = Bio::FANTOM::MaXML::Cluster
+	    self.set_primary_namespace((pri_name or PRIMARY))
+	    unless sec_names then
+	      sec_names = self.class::SECONDARY
+	    end
+	    self.add_secondary_namespaces(*sec_names)
+	  end
+	end #class MaXMLSequenceParser
+
       end #module Parser
 
       def self.makeindexBDB(name, parser, options, *files)
