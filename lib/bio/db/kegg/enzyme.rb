@@ -1,7 +1,7 @@
 #
 # bio/db/kegg/enzyme.rb - KEGG/ENZYME database class
 #
-#   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: enzyme.rb,v 0.5 2001/12/15 02:50:35 katayama Exp $
+#  $Id: enzyme.rb,v 0.6 2002/08/19 02:25:02 k Exp $
 #
 
 require 'bio/db'
@@ -36,20 +36,86 @@ module Bio
       end
 
       # ENTRY
+      def entry_id
+	field_fetch('ENTRY')
+      end
+
       # NAME
+      def names
+	lines_fetch('NAME')
+      end
+      def name
+        names[0]
+      end
+
       # CLASS
+      def classes
+	lines_fetch('CLASS')
+      end
+
       # SYSNAME
+      def sysname
+	field_fetch('SYSNAME')
+      end
+
       # REACTION ';'
+      def reaction
+	field_fetch('REACTION')
+      end
+      
       # SUBSTRATE
+      def substrates
+	lines_fetch('SUBSTRATE')
+      end
+
       # PRODUCT
+      def products
+	lines_fetch('PRODUCT')
+      end
+
       # COFACTOR
+      def cofactors
+	lines_fetch('COFACTOR')
+      end
+
       # COMMENT
+      def comment
+	field_fetch('COMMENT')
+      end
+
       # PATHWAY
+      def pathways
+	lines_fetch('PATHWAY')
+      end
+
       # GENES
+      def genes
+	lines_fetch('GENES')
+      end
+
       # DISEASE
+      def diseases
+	lines_fetch('DISEASE')
+      end
+
       # MOTIF
+      def motifs
+	lines_fetch('MOTIF')
+      end
+
       # STRUCTURES
+      def structures
+	unless @data['STRUCTURES']
+	  @data['STRUCTURES'] =
+	    fetch('STRUCTURES').sub(/(PDB: )*/,'').split("\s+")
+	end
+	@data['STRUCTURES']
+      end
+
       # DBLINKS
+      def dblinks
+	lines_fetch('DBLINKS')
+      end
 
     end
 
