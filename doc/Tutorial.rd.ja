@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.6 2002/06/18 06:27:30 k Exp $
+  $Id: Tutorial.rd.ja,v 1.7 2002/06/22 03:11:36 k Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -268,12 +268,12 @@ factory の作り方と使用可能な検索対象データベースが決まっていること以外は
 BLAST もローカルと GenomeNet (blast.genome.ad.jp) での検索をサポートしてい
 ます。
 
-デフォルトでは -m 7 の Tab 切りの出力形式を扱うので得られるデータが少ない
-ですが、REXML か XMLParser をインストールすれば -m 8 の XML 形式の出力を
+デフォルトでは -m 8 の Tab 切りの出力形式を扱うので得られるデータが少ない
+ですが、REXML か XMLParser をインストールすれば -m 7 の XML 形式の出力を
 使って BLAST の全出力から結果を取り出すことができます。
 
     factory = Bio::Blast.local(program, database, option)
-    factory.format = 8			# XML 形式での出力を指定
+    factory.format = 7			# XML 形式での出力を指定
     factory.parser = 'xmlparser'	# デフォルトは 'rexml'
 
     blast_result = factory.query(seq)	# Bio::Blast::Report オブジェクト
