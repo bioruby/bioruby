@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: rexml.rb,v 1.1 2002/05/28 14:49:06 k Exp $
+#  $Id: rexml.rb,v 1.2 2002/06/22 03:13:08 k Exp $
 #
 
 begin
@@ -273,7 +273,6 @@ if __FILE__ == $0
   end
 
   rep = Bio::Blast::Report.new(ARGF.read)
-  rep.
   rep.each do |x|
     p x
   end
