@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#  $Id: biofetch.rb,v 1.12 2004/02/21 19:25:05 k Exp $
+#  $Id: biofetch.rb,v 1.13 2004/03/24 01:04:39 k Exp $
 #
 
 require 'cgi'
@@ -146,7 +146,7 @@ class BioFetch
         if entry.respond_to?(:seq)
           seq = entry.seq
         elsif entry.respond_to?(:aaseq)
-          seq = entry.naseq
+          seq = entry.aaseq
         elsif entry.respond_to?(:naseq)
           seq = entry.naseq
         end
