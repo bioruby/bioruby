@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.20 2002/05/16 05:22:30 k Exp $
+#  $Id: sequence.rb,v 0.21 2002/06/06 00:48:27 k Exp $
 #
 
 require 'bio/data/na'
@@ -56,6 +56,10 @@ module Bio
 
     def initialize(str)
       @str = str
+    end
+
+    def ==(a)
+      self.class == a.class and self.to_s == a.to_s
     end
     
     def subseq(s = 1, e = self.length)
