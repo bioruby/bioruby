@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.5 2001/11/20 04:27:11 nakao Exp $
+#  $Id: blast.rb,v 1.6 2001/11/20 11:32:36 nakao Exp $
 #
 
 #require 'net/http'
@@ -92,7 +92,7 @@ module Bio
 
     ##
     # execute blastall in remote server
-p    def remote_blast(query)
+    def remote_blast(query)
       raise NotImplementError, "Not yet implimented"
 #
 #      http = New::HTTP.new(@server['host'],@server['port'])
