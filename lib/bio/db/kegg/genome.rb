@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genome.rb,v 0.7 2001/11/08 06:10:34 nakao Exp $
+#  $Id: genome.rb,v 0.8 2001/11/08 16:47:30 nakao Exp $
 #
 
 
@@ -40,7 +40,6 @@ module Bio
 
       ##
       # ENTRY (1 per entry)
-      #
       def entry
 	field_fetch('ENTRY')
       end
@@ -48,14 +47,12 @@ module Bio
       
       ##
       # NAME (1 per entry)
-      #
       def name
 	field_fetch('NAME')
       end
 
       ##
       # DEFINITION (1 per entry)
-      #
       def definition
 	field_fetch('DEFINITION')
       end
@@ -96,7 +93,6 @@ module Bio
 
       ##
       # COMMENT (0 or 1 per entry)
-      #
       def comment
 	field_fetch('COMMENT')
       end
@@ -125,6 +121,9 @@ module Bio
 
       ##
       # CHROMOSOME (>=1 pre entry)
+      # CHROMOSOME 
+      #   SEQUENCE
+      #   LEGNTH
       #
       def chromosome(num = nil, tag = nil)
 	unless @data['CHROMOSOME']
@@ -132,14 +131,14 @@ module Bio
 	  @data['CHROMOSOME'] += field_multi_sub('MITOCHON')
 	  @data['CHROMOSOME'] += field_multi_sub('PLASMID')
 	end
-
+  
 	if block_given?
 	  @data['CHROMOSOME'].each do |chr|
-	    yield(chr)			# Hash of each CHROMOSOME
-	  end				#   obj.chromosome do |c| p c end
+	    yield(chr)			    # Hash of each CHROMOSOME
+	  end				    #   obj.chromosome do |c| p c end
 	elsif num
-	  if tag
-	    @data['CHROMOSOME'][num-1][tag]# tag contents of num'th CHROMOSOME
+	  if tag  # ::= (LENGTH|SEQUENCE)
+	    @data['CHROMOSOME'][num-1][tag] # tag contents of num'th CHROMOSOME
 	  else				#   obj.chromosome(2, 'LENGTH') -> 2nd
 	    @data['CHROMOSOME'][num-1]	# Hash of num'th CHROMOSOME
 	  end				#   obj.chromosome(3) -> 3rd CHROMOSOME
@@ -148,8 +147,122 @@ module Bio
 	end				#   obj.chromosome
       end
 
+
+      ##
+      # CHROMOSOME (>=1 pre entry)
+      # MITOCHON (>=0 per entry)
+      # PLASMID (>=0 per entry)
+      #
+      # * Backward compativility
+      #   old GENOME#chromosome
+      #    == GENOME#chromosome + GENOME#plasmid + GENOME#mitochon
+      #   old GENOME#chromosome(num)
+      #    == GENOME#chromosome(num)
+      #   old GENOME#chromosome(tag)
+      #    == GENOME#chromosome(tag)
+      #   old GENOME#chromosome {}
+      #    == (GENOME#chromosome + GENOME#plasmid + GENOME#mitochon).each {}
+      # 
+      def chromosomes(type = nil, num = nil, tag = nil)
+	unless @data['CHROMOSOMES']
+	  @data['CHROMOSOMES'] = Hash.new
+	  @data['CHROMOSOMES']['CHROMOSOME'] = field_multi_sub('CHROMOSOME')
+	  @data['CHROMOSOMES']['MITOCHON'] = field_multi_sub('MITOCHON')
+	  @data['CHROMOSOMES']['PLASMID'] = field_multi_sub('PLASMID')
+	end
+	if block_given?
+	  @data['CHROMOSOMES'].each do |type,chr|
+	    yield(type,chr)		    # Type=>Hash of each CHROMOSOME
+	  end
+	elsif num and type
+	  if tag  # ::= (LENGTH|SEQUENCE|#{type})
+	    @data['CHROMOSOMES'][type][num-1][tag] # tag contents of 
+	                                           # num'th CHROMOSOME
+	  else
+	    @data['CHROMOSOMES'][type][num-1]	# Hash of num'th CHROMOSOMES
+	  end
+	elsif type
+	  @data['CHROMOSOMES'][type]    # Array of Hash 
+	else
+	  @data['CHROMOSOMES']          # Array of Hash of CHROMOSOMES(default)
+	end				
+      end
+      protected :chromosomes
+      
+      ##
+      # CHROMOSOME (>=1 pre entry)
+      #   SEQUENCE
+      #   LEGNTH
+      #
+      def chromosome(num = nil, tag = nil)
+	if block_given?
+	  chromnosomes('CHROMOSOME').each do |chr|
+	    yield(chr)		         # Hash of each CHROMOSOME
+	  end
+	elsif num
+	  if tag # ::= (LENGTH|SEQUENCE|CHROMOSOME)
+	    chromosomes('CHROMOSOME', num, tag)
+	  else
+	    chromosomes('CHROMOSOME', num)
+	  end
+	else
+	  #[{'LENGTH'=>str, 'SEQUENCE'=>str, 'CHROMOSOME'=>str}]
+	  chromosomes('CHROMOSOME') 
+	end
+      end
+
+      ##
+      # PLASMID (>=0 per entry)
+      #   SEQUENCE
+      #   LEGNTH
+      # 
+      def plasmid(num = nil, tag = nil)
+	if block_given?
+	  chromnosomes('PLASMID').each do |chr|
+	    yield(chr)		         # Hash of each PLASMID
+	  end
+	pppelsif num
+	  if tag # ::= (LENGTH|SEQUENCE|PLASMID)
+	    chromosomes('PLASMID', num, tag)
+	  else
+	    chromosomes('PLASMID', num)
+	  end
+	else
+	  #[{'LENGTH'=>str, 'SEQUENCE'=>str, 'PLASMID'=>str}]
+	  chromosomes('PLASMID')
+	end
+      end
+
+      ##
+      # MITOCHON (>=0 per entry)
+      #   SEQUENCE
+      #   LEGNTH
+      #
+      def mitochon(num = nil, tag = nil)
+	if block_given?
+	  chromnosomes('MITOCHON').each do |chr|
+	    yield(chr)		         # Hash of each MITOCHON
+	  end
+	elsif num
+	  if tag # ::= (LENGTH|SEQUENCE|MITOCHON)
+	    chromosomes('MITOCHON', num, tag)
+	  else
+	    chromosomes('MITOCHON', num)
+	  end
+	else
+	  #[{'LENGTH'=>str, 'SEQUENCE'=>str, 'MITOCHON'=>str}]
+	  chromosomes('MITOCHON')
+	end
+      end
+      alias mitochondorion mitochon
+
+
       ##
       # STATISTICS (0 or 1 per entry)
+      # STATISTICS  Number of nucleotides:             N
+      #     Number of protein genes:           N
+      #     Number of RNA genes:               N
+      #     G+C content:                    NN.N%
       #
       def statistics(num = nil)
 	unless @data['STATISTICS']
@@ -170,6 +283,7 @@ module Bio
 	  nil
 	end
       end
+      alias length nalen
       def num_gene
 	if statistics(1)
 	  statistics(1).to_i
@@ -194,14 +308,12 @@ module Bio
 
       ##
       # GENOMEMAP (1 per entry)
-      #
       def genomemap
 	field_fetch('GENOMEMAP')
       end
 
       ##
       # GENECATALOG (1 per entry)
-      #
       def genecatalog
 	field_fetch('GENECATALOG')
       end
@@ -212,8 +324,111 @@ module Bio
 
 end				# module Bio
 
+
+
 # Tasting codes
 if __FILE__ == $0
+
+  genomes = 'genome'
+  
+
+  def puts_eval(code)
+    if code =~ /^(p\w*) (.+)$/
+      opt = $1
+      script = $2
+      case opt
+      when 'p'
+	print "\n  == p #{script}\n   #==> "
+	p eval script
+ 
+     when 'puts'
+	print "\n  == p #{script}\n   #==> \n"
+	puts eval script
+      end
+    end
+  end
+
+  begin 
+    fio = File.open(genomes)
+  rescue
+    raise "
+Error: No such file: 'genome' in the current directory.
+
+
+Pseudo-test code for bio/db/kegg/genome.rb
+
+Usage:
+ $  cd /some/where/genome
+ $ ruby /some/where/bio/db/kegg/genome/rb
+
+File:
+ genome  - KEGG/GENOME database flatfile 
+           (ftp://ftp.genome.ad.jp/pub/kegg/genomes/genome)
+
+"
+  end
+
+  while entry = fio.gets(Bio::KEGG::GENOME::DELIMITER)
+
+    puts "\n\n== start entry =="
+    $genome = nil
+    $genome = Bio::KEGG::GENOME.new(entry)
+
+    test_codes = [
+      "puts $genome.get('ENTRY')",
+      'p $genome.entry',
+      "puts $genome.get('NAME')",
+      'p $genome.name',
+      "puts $genome.get('DEFINITION')",
+      'p $genome.definition',
+      "puts $genome.get('TAXONOMY')",
+      'p $genome.taxid',
+      'p $genome.lineage',
+
+      "puts $genome.get('PHYSIOLOGY')",
+      'p $genome.physiology',
+      "puts $genome.get('MORPHOLOGY')",
+      'p $genome.morphology',
+      "puts $genome.get('ENVIRONMENT')",
+      'p $genome.environment',
+      
+      "puts $genome.get('REFERENCE')",
+      'p $genome.reference',
+
+      "puts $genome.get('CHROMOSOME')",
+#      'p $genome.chromosomes',
+      'p $genome.chromosome',
+      "puts $genome.get('PLASMID')",
+      'p $genome.plasmid',
+      "puts $genome.get('MITOCHON')",
+      'p $genome.mitochon',
+
+      "puts $genome.get('STATISTICS')",
+      'p $genome.statistics',
+      'p $genome.nalen',
+      'p $genome.num_gene',
+      'p $genome.num_rna',
+      'p $genome.gc',
+      
+      "puts $genome.get('GENOMEMAP')",
+      'p $genome.genomemap',
+      "puts $genome.get('GENECATALOG')",
+      'p $genome.genecatalog'
+
+
+    ]
+
+    test_codes.each do |code|
+      puts_eval(code)
+    end
+
+    puts "\n== end entry ==\n"
+  end
+
+  fio.close
+
+
+  puts "\n==  ==\n"
 end
 
 
@@ -237,7 +452,12 @@ The BioRuby Project
 --- Bio::DB::KEGG::GENOME#physiology
 --- Bio::DB::KEGG::GENOME#environment
 --- Bio::DB::KEGG::GENOME#comment
+
 --- Bio::DB::KEGG::GENOME#chromosome(num = nil, tag = nil)
+--- Bio::DB::KEGG::GENOME#plasmid(num = nil, tag = nil)
+--- Bio::DB::KEGG::GENOME#mitochon(num = nil, tag = nil)
+
+
 --- Bio::DB::KEGG::GENOME#statistics(num = nil)
 --- Bio::DB::KEGG::GENOME#nalen
 --- Bio::DB::KEGG::GENOME#num_gene
@@ -245,7 +465,6 @@ The BioRuby Project
 --- Bio::DB::KEGG::GENOME#gc
 --- Bio::DB::KEGG::GENOME#genomemap
 --- Bio::DB::KEGG::GENOME#genecatalog
-
 
 
 = See also.
