@@ -1,6 +1,6 @@
 =begin
  
-  $Id: KEGG_API.rd.ja,v 1.5 2004/06/04 07:42:04 k Exp $
+  $Id: KEGG_API.rd.ja,v 1.6 2004/08/24 00:21:55 k Exp $
    
     Copyright (C) 2004 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -25,16 +25,61 @@ KEGG API を使う方法を説明します。後半のリファレンスで KEGG API の全機能を
   * ((<WSDL ファイル>))
   * ((<用語の凡例>))
   * ((<戻り値のデータ型>))
+    * ((<SSDBRelation 型>)), ((<ArrayOfSSDBRelation 型>))
+    * ((<MotifResult 型>)), ((<ArrayOfMotifResult 型>))
+    * ((<Definition 型>)), ((<ArrayOfDefinition 型>))
+    * ((<LinkDBRelation 型>)), ((<ArrayOfLinkDBRelation 型>))
   * ((<メソッド一覧>))
     * ((<メタ情報>))
+      * ((<list_databases>)),
+        ((<list_organisms>)),
+        ((<list_pathways>))
     * ((<DBGET>))
+      * ((<binfo>)),
+        ((<bfind>)),
+        ((<bget>)),
+        ((<btit>))
     * ((<LinkDB>))
+      * ((<get_linkdb_by_entry>))
     * ((<SSDB>))
+      * ((<get_neighbors_by_gene>)),
+        ((<get_best_best_neighbors_by_gene>)),
+        ((<get_best_neighbors_by_gene>)),
+        ((<get_reverse_best_neighbors_by_gene>)),
+        ((<get_paralogs_by_gene>)),
+        ((<get_similarity_between_genes>))
     * ((<Motif>))
+      * ((<get_motifs_by_gene>)),
+        ((<get_genes_by_motifs>))
     * ((<KO, OC, PC>))
+      * ((<get_ko_by_gene>)),
+        ((<get_ko_members>)),
+        ((<get_oc_members_by_gene>)),
+        ((<get_pc_members_by_gene>))
     * ((<PATHWAY>))
+      * ((<mark_pathway_by_objects>)),
+        ((<color_pathway_by_objects>))
+      * ((<get_genes_by_pathway>)),
+        ((<get_enzymes_by_pathway>)),
+        ((<get_compounds_by_pathway>)),
+        ((<get_reactions_by_pathway>))
+      * ((<get_pathways_by_genes>)),
+        ((<get_pathways_by_enzymes>)),
+        ((<get_pathways_by_compounds>)),
+        ((<get_pathways_by_reactions>))
+      * ((<get_linked_pathways>))
+      * ((<get_genes_by_enzyme>)),
+        ((<get_enzymes_by_gene>))
+      * ((<get_enzymes_by_compound>)),
+        ((<get_enzymes_by_reaction>)),
+        ((<get_compounds_by_enzyme>)),
+        ((<get_compounds_by_reaction>)),
+        ((<get_reactions_by_enzyme>)),
+        ((<get_reactions_by_compound>))
     * ((<GENES>))
+      * ((<get_genes_by_organism>))
     * ((<GENOME>))
+      * ((<get_number_of_genes_by_organism>))
 
 == イントロダクション
 
@@ -346,10 +391,8 @@ axis-1_2beta/lib 以下にある jar ファイルをインストール先のディレクト
   % jar cvf keggapi.jar keggapi/*
   % javadoc -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar -d keggapi_javadoc keggapi/*.java
 
-このようにしてできた keggapi.jar ファイルは以下の URL からダウンロード
-することもできます(javadoc の英語版は -locale en_US で生成)。
-
-  * ((<URL:http://www.genome.jp/kegg/soap/support/keggapi.jar>))
+javadoc の英語版が必要な場合は javadoc に -locale en_US オプションを
+つけて実行します。
 
 以下は、Python の例と同様に、指定した KEGG/PATHWAY に載っている遺伝子の
 リストを表示するサンプルコードです。
@@ -619,12 +662,27 @@ binfo コマンドへの引数を文字列で渡します。
   # 全てのデータベースの最新情報
   binfo('all')
 
+--- bfind(string)
+
+DBGET の bfind コマンドへのラッパーです。キーワードによりエントリを
+検索することができます。一度に与えられるキーワードの数は 100 個以下に
+制限されています。
+
+戻値：
+  string
+
+例：
+  # デフィニションに E-cadherin と human を持つ GenBank のエントリを検索
+  bfind("gb E-cadherin human")
+
+
 --- bget(string)
 
 指定した entry_id のエントリを返します。GENES の遺伝子エントリをはじめ、
 ゲノムネットの DBGET システムで提供されている様々なデータベース
 (list_databases を参照) のエントリを全て取得できます。bget コマンドへの
-コマンドラインオプションを文字列で渡します。
+コマンドラインオプションを文字列で渡します。一度に取得できるエントリの
+数は 100 個以下に制限されています。
 
 戻値：
   string
@@ -637,22 +695,11 @@ binfo コマンドへの引数を文字列で渡します。
   # FASTA フォーマットの塩基配列を取得
   bget("-f -n a eco:b0002 hin:tRNA-Cys-1")
 
---- bfind(string)
-
-DBGET の bfind コマンドへのラッパーです。キーワードによりエントリを
-検索することができます。
-
-戻値：
-  string
-
-例：
-  # デフィニションに E-cadherin と human を持つ GenBank のエントリを検索
-  bfind("gb E-cadherin human")
-
 --- btit(string)
 
 DBGET の btit コマンドへのラッパーです。指定したエントリの ID に対応す
-るデフィニションを返します。
+るデフィニションを返します。一度に与えられるエントリの数は 100 個以下に
+制限されています。
 
 戻値：
   string
@@ -1137,6 +1184,15 @@ GENOMES データベースに対するメソッドの一覧です。GENOME データベースについて
 例：
   # 大腸菌が持つ遺伝子の数
   get_number_of_genes_by_organism('eco')
+
+
+== Notes
+
+Last updated: July 12, 2004
+
+This document is written and maintained by Toshiaki Katayama.
+
+Copyright (C) 2003, 2004 Toshiaki Katayama <k@bioruby.org>
 
 =end
 
