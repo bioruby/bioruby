@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: bio.rb,v 1.5 2001/10/17 14:43:10 katayama Exp $
+#  $Id: bio.rb,v 1.6 2001/10/29 16:58:13 nakao Exp $
 #
 
 module Bio
@@ -62,9 +62,10 @@ require 'bio/db/genbank'
 require 'bio/db/refseq'
 require 'bio/db/ddbj'
 
-## EMBL/TrEMBL/Swiss-Prot
+## EMBL/TrEMBL/Swiss-Prot/SPTR
 
-#require 'bio/db/embl'
+require 'bio/db/embl'
+#require 'bio/db/sptr'
 #require 'bio/db/trembl'
 #require 'bio/db/swissprot'
 
