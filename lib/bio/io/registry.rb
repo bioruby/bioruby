@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: registry.rb,v 1.5 2002/07/30 10:03:54 k Exp $
+#  $Id: registry.rb,v 1.6 2002/08/14 01:33:00 k Exp $
 #
 
 require 'net/http'
@@ -52,13 +52,13 @@ module Bio
 	  when 'biosql'
 	    return serv_biosql(db)
 	  when 'index-flat'
-	    raize NotImplementedError
+	    raise NotImplementedError
 	  when 'index-berkeleydb'
-	    raize NotImplementedError
+	    raise NotImplementedError
 	  when 'bsane-corba' || 'biocorba'
-	    raize NotImplementedError
+	    raise NotImplementedError
 	  when 'xembl'
-	    raize NotImplementedError
+	    raise NotImplementedError
 	  end
 	end
       end
