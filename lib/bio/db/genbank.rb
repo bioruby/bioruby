@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.22 2002/03/27 05:16:24 katayama Exp $
+#  $Id: genbank.rb,v 0.23 2002/03/27 08:48:30 katayama Exp $
 #
 
 require 'bio/db'
@@ -346,7 +346,7 @@ module Bio
     def parse_qualifiers(ary)
       feature = Feature.new
 
-      feature.type = ary.shift
+      feature.feature = ary.shift
       feature.position = ary.shift.gsub(/\s/, '')
 
       ary.each do |f|
