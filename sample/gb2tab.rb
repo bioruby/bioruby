@@ -18,24 +18,22 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: gb2tab.rb,v 0.7 2002/03/27 05:46:14 katayama Exp $
+#  $Id: gb2tab.rb,v 0.8 2002/03/27 20:54:50 katayama Exp $
 #
 
 require 'bio'
 
-include Bio
-
 ARGV.each do |gbkfile|
 
-  gbk  = open("#{gbkfile}")
-  body = open("#{gbkfile}.tab", "w")
-  ft   = open("#{gbkfile}.ft.tab", "w")
-  ref  = open("#{gbkfile}.ref.tab", "w")
-  seq  = open("#{gbkfile}.seq.tab", "w")
+  gbk = open("#{gbkfile}")
+  ent = open("#{gbkfile}.ent.tab", "w")
+  ft  = open("#{gbkfile}.ft.tab", "w")
+  ref = open("#{gbkfile}.ref.tab", "w")
+  seq = open("#{gbkfile}.seq.tab", "w")
   
-  while entry = gbk.gets(GenBank::DELIMITER)
+  while entry = gbk.gets(Bio::GenBank::DELIMITER)
   
-    gb = GenBank.new(entry)
+    gb = Bio::GenBank.new(entry)
   
     ### MAIN BODY
 
@@ -65,7 +63,7 @@ ARGV.each do |gbkfile|
       gb.origin,
     ]
   
-    body.puts ary.join("\t")
+    ent.puts ary.join("\t")
   
     ### FEATURES
   
@@ -73,17 +71,28 @@ ARGV.each do |gbkfile|
   
     gb.features.each do |f|
       num += 1
-  
-      f.each do |q|
-	ary = [
-	  gb.entry_id,
-	  num,
-	  q.type,
-	  q.value,
-	]
+
+      from, to = f.locations.span
+
+      if f.qualifiers.empty?
+	ary = [ gb.entry_id, num, f.feature, f.position, from, to, '', '' ]
 	ft.puts ary.join("\t")
+      else
+	f.each do |q|
+	  ary = [
+	    gb.entry_id,
+	    num,
+	    f.feature,
+	    f.position,
+	    from,
+	    to,
+	    q.qualifier,
+	    q.value,
+	  ]
+	  ft.puts ary.join("\t")
+	end
       end
-  
+
     end
 
     ### REFERENCE
@@ -128,7 +137,7 @@ ARGV.each do |gbkfile|
   end
 
   gbk.close
-  body.close
+  ent.close
   ft.close
   ref.close
   seq.close
@@ -139,11 +148,11 @@ end
 
 Example usage in zsh:
 
-  % gb2tab.rb *.gbk
-  % for i in *.gbk
+  % gb2tab.rb *.seq
+  % for i in *.seq
   > do
-  >   base=`basename $i .gbk`
-  >   ruby -pe "gsub(/_HOGE_/,'$base')" gb2tab.sql | mysql
+  >   hoge=`basename $i .seq`
+  >   ruby -pe "gsub(/%HOGE%/,'$hoge')" gb2tab.sql | mysql
   > done
 
 gb2tab.sql:
@@ -151,7 +160,7 @@ gb2tab.sql:
 CREATE DATABASE IF NOT EXISTS genbank;
 USE genbank;
 
-CREATE TABLE IF NOT EXISTS _HOGE_ (
+CREATE TABLE IF NOT EXISTS %HOGE% (
 	id		varchar(16)	NOT NULL PRIMARY KEY,
 	nalen		integer,
 	strand		varchar(5),
@@ -170,22 +179,33 @@ CREATE TABLE IF NOT EXISTS _HOGE_ (
 	comment		text,
 	basecount	varchar(255),
 	origin		varchar(255),
+	KEY (nalen),
 	KEY (division),
 	KEY (accession),
-	KEY (organism)
+	KEY (organism),
+	KEY (taxonomy)
 );
-LOAD DATA LOCAL INFILE '_HOGE_.gbk.tab' INTO TABLE _HOGE_;
+LOAD DATA LOCAL INFILE '%HOGE%.seq.ent.tab' INTO TABLE %HOGE%;
 
-CREATE TABLE IF NOT EXISTS _HOGE_ft (
+CREATE TABLE IF NOT EXISTS %HOGE%ft (
 	id		varchar(16)	NOT NULL,
 	num		integer,
+	feature		varchar(30),
+	position	text,
+	span_min	integer,
+	span_max	integer,
 	qualifier	varchar(30),
 	value		text,
-	KEY (id)
+	KEY (id),
+	KEY (num),
+	KEY (feature),
+	KEY (span_min),
+	KEY (span_max),
+	KEY (qualifier)
 );
-LOAD DATA LOCAL INFILE '_HOGE_.gbk.ft.tab' INTO TABLE _HOGE_ft;
+LOAD DATA LOCAL INFILE '%HOGE%.seq.ft.tab' INTO TABLE %HOGE%ft;
 
-CREATE TABLE IF NOT EXISTS _HOGE_ref (
+CREATE TABLE IF NOT EXISTS %HOGE%ref (
 	id		varchar(16)	NOT NULL,
 	num		integer,
 	authors		text,
@@ -194,17 +214,18 @@ CREATE TABLE IF NOT EXISTS _HOGE_ref (
 	medline		varchar(255),
 	pubmed		varchar(255),
 	KEY (id),
-	KEY (medline)
+	KEY (medline),
+	KEY (pubmed)
 );
-LOAD DATA LOCAL INFILE '_HOGE_.gbk.ref.tab' INTO TABLE _HOGE_ref;
+LOAD DATA LOCAL INFILE '%HOGE%.seq.ref.tab' INTO TABLE %HOGE%ref;
 
-CREATE TABLE IF NOT EXISTS _HOGE_seq (
+CREATE TABLE IF NOT EXISTS %HOGE%seq (
 	id		varchar(16)	NOT NULL,
 	num		integer,
 	naseq		mediumtext,
 	KEY (id)
 );
-LOAD DATA LOCAL INFILE '_HOGE_.gbk.seq.tab' INTO TABLE _HOGE_seq;
+LOAD DATA LOCAL INFILE '%HOGE%.seq.seq.tab' INTO TABLE %HOGE%seq;
 
 
 gbmerge.sql sample:
@@ -219,8 +240,7 @@ CREATE TABLE IF NOT EXISTS gb (
 	date		varchar(10),
 	definition	varchar(255),
 	accession	varchar(30),
-	acc_version	varchar(30),
-	gi		varchar(30),
+	versions	varchar(30),
 	keywords	varchar(255),
 	segment		varchar(255),
 	source		varchar(255),
@@ -229,42 +249,68 @@ CREATE TABLE IF NOT EXISTS gb (
 	comment		text,
 	basecount	varchar(255),
 	origin		varchar(255),
-	naseq		mediumtext
+	KEY (nalen),
+	KEY (division),
+	KEY (accession),
+	KEY (organism),
+	KEY (taxonomy)
 ) TYPE=MERGE UNION=(
 	gbbct1,
 	gbbct2,
-	...,		# list up all tables
+	...,		# list up all tables by yourself
 	gbvrt
 );
 
 CREATE TABLE IF NOT EXISTS gbft (
 	id		varchar(16)	NOT NULL,
 	num		integer,
+	feature		varchar(30),
+	position	text,
+	span_min	integer,
+	span_max	integer,
 	qualifier	varchar(30),
 	value		text,
-	KEY (id)
+	KEY (id),
+	KEY (num),
+	KEY (feature),
+	KEY (span_min),
+	KEY (span_max),
+	KEY (qualifier)
 ) TYPE=MERGE UNION=(
 	gbbct1ft,
 	gbbct2ft,
-	...,		# list up all ft tables
+	...,		# list up all ft tables by yourself
 	gbvrtft
 );
 
 CREATE TABLE IF NOT EXISTS gbref (
 	id		varchar(16)	NOT NULL,
-	reference	varchar(255),
+	num		integer,
 	authors		text,
 	title		text,
 	journal		text,
 	medline		varchar(255),
 	pubmed		varchar(255),
 	KEY (id),
-	KEY (medline)
+	KEY (medline),
+	KEY (pubmed)
 ) TYPE=MERGE UNION=(
 	gbbct1ref,
 	gbbct2ref,
-	...,		# list up all ref tables
+	...,		# list up all ref tables by yourself
 	gbvrtref
+);
+
+CREATE TABLE IF NOT EXISTS gbseq (
+	id		varchar(16)	NOT NULL,
+	num		integer,
+	naseq		mediumtext,
+	KEY (id)
+) TYPE=MERGE UNION=(
+	gbbct1seq,
+	gbbct2seq,
+	...,		# list up all seq tables by yourself
+	gbvrtseq
 );
 
 =end
