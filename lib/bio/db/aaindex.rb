@@ -13,8 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
+#  $Id: aaindex.rb,v 1.2 2001/08/21 10:49:33 katayama Exp $
+#
 
-require "bio/biomatrix"
+require "bio/matrix"
 require "bio/db"
 
 class AAindex < NCBIDB
