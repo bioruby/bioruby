@@ -1,3 +1,13 @@
+2003-08-22  KATAYAMA Toshiaki <k@bioruby.org>
+
+	* BioRuby 0.5.2 released.
+
+	  Fixed to be loaded in Ruby 1.8.0 without warnings.
+
+	* doc/KEGG_API.rd.ja:
+
+	  Newly added a Japanese document on the KEGG API.
+
 2003-08-12  GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 
 	* lib/bio/appl/blast/format0.rb
