@@ -15,7 +15,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: biofetch.rb,v 1.2 2002/02/04 11:19:00 katayama Exp $
+#  $Id: biofetch.rb,v 1.3 2002/02/05 07:42:30 katayama Exp $
 #
 
 require 'bio'
@@ -153,7 +153,7 @@ def print_result_page(query)
   id = query['id'].split(/\W/)		# not only ','
 
   if id.length > MAX_ID_NUM
-    error_6(id.length)
+    error_5(id.length)
   end
 
   case query['style']
@@ -183,7 +183,7 @@ def print_result_page(query)
     begin
       result = Bio::DBGET.bget("#{db} #{query_id} #{format}")
     rescue
-      error_5(query_id,db)
+      error_4(query_id,db)
     end
 
     if result =~ /No such database name in DBTAB/
@@ -222,18 +222,13 @@ def error_3(format,db)
   print_error_page(str)
 end
 
-def error_4(db)
-  str = "ERROR 4 Unknown database [#{db}]."
+def error_4(id, db)
+  str = "ERROR 4 ID [#{id}] not found in database [#{db}]."
   print_error_page(str)
 end
 
-def error_5(id, db)
-  str = "ERROR 5 ID [#{id}] not found in database [#{db}]."
-  print_error_page(str)
-end
-
-def error_6(count)
-  str = "ERROR 6 Too many IDs [#{count}]. Max [#{MAX_ID_NUM}] allowed."
+def error_5(count)
+  str = "ERROR 5 Too many IDs [#{count}]. Max [#{MAX_ID_NUM}] allowed."
   print_error_page(str)
 end
 
