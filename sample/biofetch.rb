@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#  $Id: biofetch.rb,v 1.14 2004/07/06 13:28:17 k Exp $
+#  $Id: biofetch.rb,v 1.15 2004/08/24 00:08:54 k Exp $
 #
 
 require 'cgi'
@@ -153,7 +153,7 @@ class BioFetch
   end
 
   def goto_html_style_page(db, id_list, format)
-    url = "http://www.genome.ad.jp/dbget-bin/www_bget"
+    url = "http://www.genome.jp/dbget-bin/www_bget"
     opt = '-f+' if /fasta/.match(format)
     ids = id_list.join('%2B')
     print "Location: #{url}?#{opt}#{db}+#{ids}\n\n"
@@ -315,7 +315,7 @@ __END__
 <H1>
 <IMG src="http://bioruby.org/img/ruby.png" align="middle">
 BioFetch interface to
-<A href="http://www.genome.ad.jp/dbget/">GenomeNet/DBGET</A>
+<A href="http://www.genome.jp/dbget/">GenomeNet/DBGET</A>
 </H1>
 
 <P>This page allows you to retrieve up to <!var:max_id_num> entries at a time from various up-to-date biological databases.</P>
