@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aaindex.rb,v 1.10 2002/08/30 06:31:47 o Exp $
+#  $Id: aaindex.rb,v 1.11 2002/11/22 23:02:56 k Exp $
 #
 
 require "bio/db"
@@ -127,11 +127,35 @@ module Bio
 
     def initialize(entry)
       super(entry)
-      @aa = {}		# used to determine row/column of the aa
     end
-    attr_reader :aa
+
+    def rows
+      label_data
+      @rows
+    end
+
+    def cols
+      label_data
+      @cols
+    end
 
     def matrix
+      ma = Array.new
+
+      data = label_data
+      data.each_line do |line|
+        list = line.strip.split(/\s+/).map{|x| x.to_f}
+        ma.push(list)
+      end
+
+      Matrix[*ma]
+    end
+
+    def old_matrix	# for AAindex <= ver 5.0
+
+      @aa = {}		# used to determine row/column of the aa
+      attr_reader :aa
+
       field = field_fetch('I')
 
       case field
@@ -163,16 +187,28 @@ module Bio
       end
     end
 
+    private
+
+    def label_data
+      label, data = get('M').split("\n", 2)
+      if /M rows = (\S+), cols = (\S+)/.match(label)
+        rows, cols = $1, $2
+        @rows = rows.split('')
+        @cols = cols.split('')
+      end
+      return data
+    end
+
   end
 
 end
 
 
 if __FILE__ == $0
-  require 'bio/io/dbget'
+  require 'bio/io/fetch'
 
   puts "### AAindex1 (PRAM900102)"
-  aax1 = Bio::AAindex1.new(Bio::DBGET.bget('aax1 PRAM900102'))
+  aax1 = Bio::AAindex1.new(Bio::Fetch.query('aaindex1', 'PRAM900102', 'raw'))
   p aax1.entry_id
   p aax1.definition
   p aax1.dblinks
@@ -182,15 +218,20 @@ if __FILE__ == $0
   p aax1.correlation_coefficient
   p aax1.index
   puts "### AAindex2 (HENS920102)"
-  aax2 = Bio::AAindex2.new(Bio::DBGET.bget('aax2 HENS920102'))
+  aax2 = Bio::AAindex2.new(Bio::Fetch.query('aaindex2', 'HENS920102', 'raw'))
   p aax2.entry_id
   p aax2.definition
   p aax2.dblinks
   p aax2.author
   p aax2.title
   p aax2.journal
+  p aax2.rows
+  p aax2.cols
   p aax2.matrix
-  p aax2.aa
+  p aax2.matrix[2,2]
+  p aax2.matrix.determinant
+  p aax2.matrix.rank
+  p aax2.matrix.transpose
 end
 
 =begin
@@ -214,5 +255,8 @@ end
 = Bio::AAindex2
 
 --- Bio::AAindex2#matrix
+--- Bio::AAindex2#rows
+--- Bio::AAindex2#cols
 
 =end
+
