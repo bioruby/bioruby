@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggapi.rb,v 1.2 2003/03/31 18:08:52 k Exp $
+#  $Id: keggapi.rb,v 1.3 2003/04/09 05:30:31 k Exp $
 #
 
 begin
@@ -30,121 +30,101 @@ module Bio
   class KEGG
     class API
 
-      SERVER_URI = 'http://soap.genome.ad.jp/'
+      MIN_SW_THRESHOLD = 100  # server default for SSDB, should not be changed.
 
-      def initialize(wsdl_path = '', log = nil)
-	wsdl = Bio::KEGG::API::SERVER_URI + wsdl_path
-	@driver = SOAP::WSDLDriverFactory.new(wsdl).createDriver
+      def initialize(log = nil)
+	@wsdl = 'http://soap.genome.ad.jp/KEGG.wsdl'
+	@driver = SOAP::WSDLDriverFactory.new(@wsdl).createDriver
 	@driver.generateEncodeType = true	# ?
 	if log
 	  @driver.setWireDumpFileBase(log)
 	end
+	@fields = [ :kid2, :sw_score ]
+      end
+      attr_accessor :fields
+
+      def method_missing(*arg)
+	@driver.send(*arg)
       end
 
+      ### SSDB
 
-      class SSDB < API
+      ## SSDBResultArray type
 
-	MIN_SW_THRESHOLD = 100	# server default, should not be changed.
+      def get_all_neighbors_by_gene(keggid, threshold = 100, orglist = nil)
+	th_check threshold
+	filter @driver.get_all_neighbors_by_gene(keggid, threshold, orglist)
+      end
 
-	def initialize(log = nil)
-	  super('SSDB.wsdl', log)
-	  @fields = [ :kid2, :sw_score ]
-	end
-	attr_accessor :fields
+      def get_best_neighbors_by_gene(keggid, threshold = 100, orglist = nil)
+	th_check threshold
+	filter @driver.get_best_neighbors_by_gene(keggid, threshold, orglist)
+      end
 
-	### SSDBResultArray type
-
-        def get_all_neighbors_by_gene(keggid, threshold = 100, orglist = nil)
-	  th_check threshold
-	  filter @driver.get_all_neighbors_by_gene(keggid, threshold, orglist)
-        end
-
-        def get_best_neighbors_by_gene(keggid, threshold = 100, orglist = nil)
-	  th_check threshold
-	  filter @driver.get_best_neighbors_by_gene(keggid, threshold, orglist)
-        end
-
-        def get_best_best_neighbors_by_gene(keggid, threshold = 100, orglist = nil)
-	  th_check threshold
-	  filter @driver.get_best_best_neighbors_by_gene(keggid, threshold, orglist)
-        end
+      def get_best_best_neighbors_by_gene(keggid, threshold = 100, orglist = nil)
+	th_check threshold
+	filter @driver.get_best_best_neighbors_by_gene(keggid, threshold, orglist)
+      end
  
-        def get_reverse_best_neighbors_by_gene(keggid, threshold = 100, orglist = nil)
-	  th_check threshold
-          filter @driver.get_reverse_best_neighbors_by_gene(keggid, threshold, orglist)
-        end
+      def get_reverse_best_neighbors_by_gene(keggid, threshold = 100, orglist = nil)
+	th_check threshold
+	filter @driver.get_reverse_best_neighbors_by_gene(keggid, threshold, orglist)
+      end
 
-        def get_paralogs_by_gene(keggid, threshold = 100)
-	  th_check threshold
-          filter @driver.get_paralogs_by_gene(keggid, threshold)
-        end
+      def get_paralogs_by_gene(keggid, threshold = 100)
+	th_check threshold
+	filter @driver.get_paralogs_by_gene(keggid, threshold)
+      end
 
-        def get_best_homologs_by_genes(keggorg, keggidlist)
-          filter @driver.get_best_homologs_by_genes(keggorg, keggidlist)
-        end
+      def get_best_homologs_by_genes(keggorg, keggidlist)
+	filter @driver.get_best_homologs_by_genes(keggorg, keggidlist)
+      end
 
-        def get_best_best_homologs_by_genes(keggorg, keggidlist)
-          filter @driver.get_best_best_homologs_by_genes(keggorg, keggidlist),
-	    [:kid1, :kid2, :sw_score]
-        end
+      def get_best_best_homologs_by_genes(keggorg, keggidlist)
+	filter @driver.get_best_best_homologs_by_genes(keggorg, keggidlist),
+	  [:kid1, :kid2, :sw_score]
+      end
 
-	### SSDBResult type
+      ## SSDBResult type
 
-        def get_score_between_genes(keggid1, keggid2)
-          if r = @driver.get_score_between_genes(keggid1, keggid2)
-	    r.sw_score
-	  end
-        end
-
-	### string type
-
-        def get_definition_by_gene(keggid)
-          @driver.get_definition_by_gene(keggid)
-        end
-
-	### MOTIFResultArray type
-
-        def get_common_motifs_by_genes(keggidlist)
-          filter @driver.get_common_motifs_by_genes(keggidlist),
-	    [:mid, :definition]
-        end
-
-	### GeneArray type
-
-        def get_genes_by_motifs(motiflist)
-          filter @driver.get_genes_by_motifs(motiflist),
-	    [:kid, :keggdef]
-        end
-
-	private
-
-	def th_check(threshold)
-	  if threshold < MIN_SW_THRESHOLD
-	    raise "threshold #{threshold} (< #{MIN_SW_THRESHOLD}) is out of range"
-	  end
-	end
-
-	def filter(results, fields = nil)
-	  fields = @fields unless fields.is_a?(Array)
-	  array = []
-          if results
-	    results.each do |r|
-	      array << fields.collect { |m| r.send(m) }
-	    end
-	  end
-	  return array
+      def get_score_between_genes(keggid1, keggid2)
+	if r = @driver.get_score_between_genes(keggid1, keggid2)
+	  r.sw_score
 	end
       end
 
+      ## MOTIFResultArray type
 
-      class PATHWAY < API
-	def initialize(log = nil)
-	  super('PATHWAY.wsdl', log)
-	end
+      def get_common_motifs_by_genes(keggidlist)
+	filter @driver.get_common_motifs_by_genes(keggidlist),
+	  [:mid, :definition]
+      end
 
-	def method_missing(*arg)
-	  @driver.send(*arg)
+      ## GeneArray type
+
+      def get_genes_by_motifs(motiflist)
+	filter @driver.get_genes_by_motifs(motiflist),
+	  [:kid, :keggdef]
+      end
+
+
+      private
+
+      def th_check(threshold)
+	if threshold < MIN_SW_THRESHOLD
+	  raise "threshold #{threshold} (< #{MIN_SW_THRESHOLD}) is out of range"
 	end
+      end
+
+      def filter(results, fields = nil)
+	fields = @fields unless fields.is_a?(Array)
+	array = []
+	if results
+	  results.each do |r|
+	    array << fields.collect { |m| r.send(m) }
+	  end
+	end
+	return array
       end
 
     end
@@ -160,27 +140,27 @@ if __FILE__ == $0
   rescue LoadError
   end
 
-  puts ">>> KEGG API / SSDB"
-# driver = Bio::KEGG::API::SSDB.new('keggapi/ssdblog')
-  driver = Bio::KEGG::API::SSDB.new
+  puts ">>> KEGG API"
+# serv = Bio::KEGG::API.new('keggapi/log')
+  serv = Bio::KEGG::API.new
 
   puts "### get_all_neighbors_by_gene('eco:b0002', 500)"
-  p driver.get_all_neighbors_by_gene('eco:b0002', 500)
+  p serv.get_all_neighbors_by_gene('eco:b0002', 500)
 
   puts " -- get_all_neighbors_by_gene('eco:b0002', 500, 'hin')"
-  p driver.get_all_neighbors_by_gene('eco:b0002', 500, 'hin')
+  p serv.get_all_neighbors_by_gene('eco:b0002', 500, 'hin')
 
   puts " -- get_all_neighbors_by_gene('eco:b0002', 500, ['hin', 'ece'])"
-  p driver.get_all_neighbors_by_gene('eco:b0002', 500, ['hin', 'ece'])
+  p serv.get_all_neighbors_by_gene('eco:b0002', 500, ['hin', 'ece'])
 
   puts " -- add :definition2 field"
-  driver.fields = [:kid2, :sw_score, :definition2]
-  p driver.fields
-  p driver.get_all_neighbors_by_gene('eco:b0002', 500, ['hin', 'ece'])
+  serv.fields = [:kid2, :sw_score, :definition2]
+  p serv.fields
+  p serv.get_all_neighbors_by_gene('eco:b0002', 500, ['hin', 'ece'])
 
   puts " -- return all the fields"
   # to return all the fields
-  driver.fields = [
+  serv.fields = [
     :kid1,
     :kid2,
     :sw_score,
@@ -196,77 +176,71 @@ if __FILE__ == $0
     :definition2,
     :length1,
     :length2,
-    :sid,
-    :complete,
-    :sp_group,
   ]
-  p driver.get_all_neighbors_by_gene('eco:b0002', 2000, ['hin', 'ece'])
+  p serv.get_all_neighbors_by_gene('eco:b0002', 2000, ['hin', 'ece'])
   # reset fields to the defaults
-  driver.fields = [:kid2, :sw_score]
+  serv.fields = [:kid2, :sw_score]
 
   puts "### get_best_neighbors_by_gene('eco:b0002', 500)"
-  p driver.get_best_neighbors_by_gene('eco:b0002', 500)
+  p serv.get_best_neighbors_by_gene('eco:b0002', 500)
 
   puts "### get_best_best_neighbors_by_gene('eco:b0002', 500)"
-  p driver.get_best_best_neighbors_by_gene('eco:b0002', 500)
+  p serv.get_best_best_neighbors_by_gene('eco:b0002', 500)
 
   puts "### get_reverse_best_neighbors_by_gene('eco:b0002', 500)"
-  p driver.get_reverse_best_neighbors_by_gene('eco:b0002', 500)
+  p serv.get_reverse_best_neighbors_by_gene('eco:b0002', 500)
 
   puts "### get_paralogs_by_gene('eco:b0002', 500)"
-  p driver.get_paralogs_by_gene('eco:b0002', 500)
+  p serv.get_paralogs_by_gene('eco:b0002', 500)
 
   puts "### get_best_homologs_by_genes('hin', 'eco:b0002')"
   list = 'eco:b0002'
-  p driver.get_best_homologs_by_genes('hin', list)
+  p serv.get_best_homologs_by_genes('hin', list)
 
   puts " -- get_best_homologs_by_genes('hin', ['eco:b0002', 'eco:b0003', ...])"
   list = ['eco:b0002', 'eco:b0003', 'eco:b0004', 'eco:b0005', 'eco:b0006']
-  p driver.get_best_homologs_by_genes('hin', list)
+  p serv.get_best_homologs_by_genes('hin', list)
 
   puts "### get_best_best_homologs_by_genes('hin', 'eco:b0002')"
   list = 'eco:b0002'
-  p driver.get_best_best_homologs_by_genes('hin', list)
+  p serv.get_best_best_homologs_by_genes('hin', list)
 
   puts " -- get_best_best_homologs_by_genes('hin', ['eco:b0002', ...])"
   list = ['eco:b0002', 'eco:b0003', 'eco:b0004', 'eco:b0005', 'eco:b0006']
-  p driver.get_best_best_homologs_by_genes('hin', list)
+  p serv.get_best_best_homologs_by_genes('hin', list)
 
   puts "### get_score_between_genes('eco:b0002', 'eco:b3940')"
-  p driver.get_score_between_genes('eco:b0002', 'eco:b3940')
+  p serv.get_score_between_genes('eco:b0002', 'eco:b3940')
 
   puts "### get_definition_by_gene('eco:b0002')"
-  p driver.get_definition_by_gene('eco:b0002')
+  p serv.get_definition_by_gene('eco:b0002')
 
   puts "### get_common_motifs_by_genes(['eco:b0002', 'eco:b3940'])"
   list = ['eco:b0002', 'eco:b3940']
-  p driver.get_common_motifs_by_genes(list)
+  p serv.get_common_motifs_by_genes(list)
 
   puts "### get_genes_by_motifs(['pf:DnaJ', 'ps:DNAJ_2'])"
   list = ['pf:DnaJ', 'ps:DNAJ_2']
-  p driver.get_genes_by_motifs(list)
+  p serv.get_genes_by_motifs(list)
 
-  puts ">>> KEGG API / PATHWAY"
-# driver = Bio::KEGG::API::PATHWAY.new('keggapi/pathlog')
-  driver = Bio::KEGG::API::PATHWAY.new
 
   puts "### get_genes_by_pathway('path:eco00020')"
-  p driver.get_genes_by_pathway('path:eco00020')
+  p serv.get_genes_by_pathway('path:eco00020')
 
   puts "### get_compounds_by_pathway('path:eco00020')"
-  p driver.get_compounds_by_pathway('path:eco00020')
+  p serv.get_compounds_by_pathway('path:eco00020')
 
   puts "### get_enzymes_by_pathway('path:eco00020')"
-  p driver.get_enzymes_by_pathway('path:eco00020')
+  p serv.get_enzymes_by_pathway('path:eco00020')
 
   puts "### get_pathways_by_genes(['eco:b0077' , 'eco:b0078'])"
-  p driver.get_pathways_by_genes(['eco:b0077' , 'eco:b0078'])
+  p serv.get_pathways_by_genes(['eco:b0077' , 'eco:b0078'])
 
   puts "### get_pathways_by_compounds(['cpd:C00033', 'cpd:C00158'])"
-  p driver.get_pathways_by_compounds(['cpd:C00033', 'cpd:C00158'])
+  p serv.get_pathways_by_compounds(['cpd:C00033', 'cpd:C00158'])
 
   puts "### get_pathways_by_enzymes(['ec:1.3.99.1'])"
-  p driver.get_pathways_by_enzymes(['ec:1.3.99.1'])
+  p serv.get_pathways_by_enzymes(['ec:1.3.99.1'])
 
 end
 
@@ -280,27 +254,19 @@ general informations on KEGG API, see:
 
   * ((<URL:http://www.genome.ad.jp/kegg/soap/>))
 
-== SSDB
+--- Bio::KEGG::API.new(log_file_name_prefix = nil)
 
-This section describes the KEGG API for SSDB database.  For more details
-on SSDB, see:
-
-  * ((<URL:http://www.genome.ad.jp/kegg/ssdb/>))
-
---- Bio::KEGG::API::SSDB.new(log_file_name_prefix = nil)
-
-Connect to the KEGG API's SOAP server.  A WSDL file for accessing the
-SSDB database will be automatically downloaded and parsed to generate
-the SOAP client driver.
+Connect to the KEGG API's SOAP server.  A WSDL file will be automatically
+downloaded and parsed to generate the SOAP client driver.
 
 You can specify a prefix string of the log file name as an argument.
 If specified, SOAP messages will be logged in the working directory.
 
   # Normal use
-  serv = Bio::KEGG::API::SSDB.new
+  serv = Bio::KEGG::API.new
 
-  # Log files will be saved in 'log/' sub directory with prefix 'ssdb_'
-  serv = Bio::KEGG::API::SSDB.new("log/ssdb_")
+  # Log files will be saved in 'log/' sub directory with prefix 'kegg_'
+  serv = Bio::KEGG::API.new("log/kegg_")
 
 In the following description,
 
@@ -315,6 +281,13 @@ In the following description,
 
   * 'threshold' is a threshold value for the Smith-Waterman score (no fewer
     than 100).
+
+== SSDB
+
+This section describes the KEGG API for SSDB database.  For more details
+on SSDB, see:
+
+  * ((<URL:http://www.genome.ad.jp/kegg/ssdb/>))
 
 --- get_all_neighbors_by_gene(keggid, threshold = 100, orglist = nil)
 
@@ -433,9 +406,6 @@ SSDBResultArray type) as
   definition2	definition string of the kid2
   length1	amino acid length of the kid1
   length2	amino acid length of the kid2
-  sid
-  complete
-  sp_group
 
 However, in most cases, users will not need all of them.  In BioRuby,  
 we default it to return 'kid2' and 'sw_score' fields only if appropriate.
@@ -458,21 +428,6 @@ This section describes the KEGG API for PATHWAY database.  For more details
 on PATHWAY database, see:
 
   * ((<URL:http://www.genome.ad.jp/kegg/kegg2.html#pathway>))
-
---- Bio::KEGG::API::PATHWAY.new(log_file_name_prefix = nil)
-
-Connect to the KEGG API's SOAP server.  A WSDL file for accessing the
-PATHWAY database will be automatically downloaded and parsed to generate
-the SOAP client driver.
-
-You can specify a prefix string of the log file name as an argument.
-If specified, SOAP messages will be logged in the working directory.
-
-  # Normal use
-  serv = Bio::KEGG::API::PATHWAY.new
-
-  # Log files will be saved in 'log/' sub directory with prefix 'pathway_'
-  serv = Bio::KEGG::API::PATHWAY.new("log/pathway_")
 
 --- get_genes_by_pathway(pathwayid)
 
