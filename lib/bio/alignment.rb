@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: alignment.rb,v 1.4 2003/07/30 13:50:06 ng Exp $
+#  $Id: alignment.rb,v 1.5 2003/10/20 14:15:49 ng Exp $
 #
 
 require 'bio/sequence'
@@ -988,9 +988,15 @@ module Bio
     end
     private :avoid_same_name
 
-    def to_fasta_array(width = nil, flag_avoid_same_name = nil)
+    def to_fasta_array(*arg)
       #(original)
-      if flag_avoid_same_name then
+      width = nil
+      if arg[0].is_a?(Integer) then
+	width = arg.shift
+      end
+      options = (arg.shift or {})
+      width = options[:width] unless width
+      if options[:avoid_same_name] then
 	na = avoid_same_name(self.keys, 30)
       else
 	na = self.keys.collect { |k| k.to_s.gsub(/[\r\n\x00]/, ' ') }
@@ -1021,7 +1027,7 @@ module Bio
       self.to_fasta_array(*arg).join('')
     end
 
-    def to_clustal(mline = nil, options = {})
+    def to_clustal(options = {})
       #(original)
       aln = [ "CLUSTAL   (0.00) multiple sequence alignment\n\n" ]
       len = self.seq_length
@@ -1034,10 +1040,10 @@ module Bio
       if options[:replace_space]
 	sn.collect! { |x| x.gsub(/\s/, '_') }
       end
-      unless options[:not_escape]
+      if !options.has_key?(:escape) or options[:escape]
 	sn.collect! { |x| x.gsub(/[\:\;\,\(\)]/, '_') }
       end
-      unless options[:not_split]
+      if !options.has_key?(:split) or options[:split]
 	sn.collect! { |x| x.split(/\s/)[0].to_s }
       end
 
@@ -1051,8 +1057,9 @@ module Bio
 	sep = ' ' * 6
       end
       seqregexp = Regexp.new("(.{1,#{seqwidth}})")
+      gchar = (options[:gap_char] or '-')
 
-      aseqs = self.collect { |s| s.gsub(gap_regexp, gap_char) }
+      aseqs = self.collect { |s| s.to_s.gsub(self.gap_regexp, gchar) }
       case options[:case].to_s
       when /lower/i
 	aseqs.each { |s| s.downcase! }
@@ -1061,30 +1068,29 @@ module Bio
       end
 
       case options[:type].to_s
-      when /protein/i
+      when /protein/i, /aa/i
 	mopt = { :type => :aa }
-      when /dna/i
+      when /na/i
 	mopt = { :type => :na }
       else
 	mopt = {}
       end
-      mline = self.match_line(mopt) unless mline
+      mline = (options[:match_line] or self.match_line(mopt))
 
       aseqs << mline
       aseqs.collect! do |s|
 	snx = sn.shift
 	head = sprintf("%*s", -namewidth, snx.to_s)[0, namewidth] + sep
-	s << (gap_char * (len - s.length))
+	s << (gchar * (len - s.length))
 	s.gsub!(seqregexp, "\\1\n")
 	a = s.split(/^/)
 	if options[:seqnos] and snx then
 	  i = 0
 	  a.each do |x|
 	    x.chomp!
-	    l = x.gsub(gap_regexp, '').length
+	    l = x.tr(gchar, '').length
 	    i += l
-	    x << " #{i}" if l > 0
-	    x << "\n"
+	    x.concat(l > 0 ? " #{i}\n" : "\n")
 	  end
 	end
 	a.collect { |x| head + x }
@@ -1226,10 +1232,10 @@ end #module Bio
 
 - Data format conversion
 
--- Bio::Alignment#to_fasta_array(*arg)
--- Bio::Alignment#to_fastaformat_array(*arg)
--- Bio::Alignment#to_fasta(width, flag_avoid_same_name = nil)
--- Bio::Alignment#to_clustal(match_line = nil, options...)
+-- Bio::Alignment#to_fasta_array([ width, ] options...)
+-- Bio::Alignment#to_fastaformat_array([ width, ] options...)
+-- Bio::Alignment#to_fasta([ width, ] options...)
+-- Bio::Alignment#to_clustal(options...)
 
 
 
