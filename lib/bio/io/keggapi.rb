@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggapi.rb,v 1.3 2003/04/09 05:30:31 k Exp $
+#  $Id: keggapi.rb,v 1.4 2004/01/29 01:49:16 k Exp $
 #
 
 begin
@@ -95,9 +95,9 @@ module Bio
 
       ## MOTIFResultArray type
 
-      def get_common_motifs_by_genes(keggidlist)
-	filter @driver.get_common_motifs_by_genes(keggidlist),
-	  [:mid, :definition]
+      def get_common_motifs_by_genes(targetdb, keggidlist, threshold = nil)
+	filter @driver.get_common_motifs_by_genes(targetdb, keggidlist, threshold),
+	  [:mid, :definition, :kid, :seq_f, :seq_t, :score, :evalue]
       end
 
       ## GeneArray type
