@@ -17,12 +17,16 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: matrix.rb,v 1.4 2001/11/06 16:58:51 okuji Exp $
+#  $Id: matrix.rb,v 1.5 2001/11/14 09:11:51 shuichi Exp $
 #
 
 require 'matrix'
 
 class Matrix
+
+  def []=(i, j, k)
+    @rows[i][j] = k
+  end
 
   def promoter_search(seq, threshold)
     result = []
