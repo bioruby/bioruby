@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.16 2003/07/16 09:19:16 ng Exp $
+#  $Id: flatfile.rb,v 1.17 2003/07/18 14:55:52 ng Exp $
 #
 
 module Bio
@@ -27,12 +27,27 @@ module Bio
     include Enumerable
 
     def self.open(dbclass, f, *mode)
-      f = File.open(f, *mode) unless f.respond_to?(:gets)
-      self.new(dbclass, f)
+      raw = false
+      openmode = []
+      while x = mode.shift and !x.is_a?(Hash)
+	openmode << x
+      end
+      if x.is_a?(Hash) then
+	raw = x[:raw]
+      end
+      f = File.open(f, *openmode) unless f.respond_to?(:gets)
+      self.new(dbclass, f, raw)
     end
 
     def self.auto(f, *mode)
       self.open(nil, f, *mode)
+    end
+
+    def self.to_a(f, *mode)
+      ff = self.auto(f, *mode)
+      a = ff.to_a
+      ff.close unless f.respond_to?(:gets)
+      a
     end
 
     def initialize(dbclass, stream, raw = false)
@@ -327,6 +342,11 @@ end
           Bio::FlatFile.new(Bio::GenBank, ARGF)
       * Example 2
           Bio::FlatFile.new(Bio::GenBank, IO.popen("gzip -dc nc1101.flat.gz"))
+
+--- Bio::FlatFile.to_a(filename_or_stream, *mode)
+
+      Same as FlatFile.auto(filename_or_stream, *mode).to_a
+
 
 --- Bio::FlatFile#next_entry
 
