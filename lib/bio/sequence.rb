@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: sequence.rb,v 0.6 2001/08/06 19:26:49 katayama Exp $
+#  $Id: sequence.rb,v 0.7 2001/09/26 18:40:54 katayama Exp $
 #
 
 require 'bio/data/na'
@@ -25,14 +25,37 @@ require 'bio/location'
 
 class Sequence < String
 
-  include NucleicAcids
-  include AminoAcids
+  include NucleicAcid
+  include AminoAcid
   include CodonTable
 
-  def subseq(s, e)
+  def initialize(str)
+    str.tr!(" \t\n\r",'')
+    super
+  end
+
+  def subseq(s = 1, e = self.length)
     s -= 1
     e -= 1
     self[s..e]
+  end
+
+  def window_search(window_size)
+    0.upto(self.length - window_size) do |i|
+      yield self[i, window_size]
+    end
+  end
+
+  def total(hash)
+    sum = 0.0
+    self.each_byte do |x|
+      begin
+	sum += hash[x.chr]
+      rescue
+	raise "[Error] illegal character : #{x.chr}"
+      end
+    end
+    return sum
   end
 
 end
@@ -49,6 +72,10 @@ class NAseq < Sequence
     end
   end
 
+  def [](*arg)
+    NAseq.new(super(*arg))
+  end
+
   def splicing(position)	# see Locations class
     mRNA = NAseq.new('')
     Locations.new(position).each do |location|
@@ -60,11 +87,7 @@ class NAseq < Sequence
 	mRNA << exon
       end
     end
-    mRNA
-  end
-
-  def subseq(s = 1, e = self.length)
-    NAseq.new(super)
+    return mRNA
   end
 
   def complement
@@ -74,54 +97,63 @@ class NAseq < Sequence
   end
 
   def translate(frame = 1, table = 1)
+    ct = codon_table(table)
     frame -= 1
     aaseq = AAseq.new('')
     frame.step(self.length - 3, 3) do |i|
       codon = self[i,3]
-      if ct(codon, table)
-	aaseq << ct(codon, table)
+      if ct[codon]
+	aaseq << ct[codon]
       else
 	aaseq << "X"
       end
     end
-    aaseq
+    return aaseq
   end
 
   def gc_percent
     count = Hash.new(0)
-    self.scan(/./) do |b|
-      count[b] += 1
+    self.scan(/./) do |base|
+      count[base] += 1
     end
     at = count['a'] + count['t']
     gc = count['g'] + count['c']
     gc = format("%.1f", gc.to_f / (at + gc) * 100)
-    gc.to_f
+    return gc.to_f
   end
   alias gc gc_percent
 
   def illegal_bases
     self.scan(/[^atgc]/).sort.uniq
   end
-  alias ib illegal_bases
+
+  def molecular_weight(hash = nil)
+    hash = NA_weight unless hash
+    total(hash)
+  end
 
   def to_re
     re = ''
     self.each_byte do |x|
-      if na(x.chr)
-	re << na(x.chr)
+      if NA_name[x.chr]
+	re << NA_name[x.chr]
       else
 	re << '.'
       end
     end
-    /#{re}/
+    return /#{re}/
   end
 
-  def to_list
+  def to_a
     array = []
     self.each_byte do |x|
-      array.push(na(x.chr.upcase))
+      array.push(NA_name[x.chr.upcase])
     end
-    array
+    return array
+  end
+
+  def rna
+    super.tr!('t', 'u')
   end
 
   def pikachu
@@ -141,22 +173,25 @@ class AAseq < Sequence
     end
   end
 
-  def subseq(s = 1, e = self.length)
-    AAseq.new(super)
+  def [](*arg)
+    AAseq.new(super(*arg))
   end
 
-  def to_3
+  def to_a(short = nil)
     array = []
     self.each_byte do |x|
-      array.push(aa(x.chr))
+      if short
+	array.push(AA_name[x.chr])
+      else
+	array.push(AA_name[AA_name[x.chr]])
+      end
     end
-    array
+    return array
   end
 
-  def to_list
-    to_3.collect do |a|
-      a = aa(a)
-    end
+  def molecular_weight(hash = nil)
+    hash = AA_weight unless hash
+    total(hash)
   end
 
 end
