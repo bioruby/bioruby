@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.27 2003/03/31 10:25:36 k Exp $
+#  $Id: pathway.rb,v 1.28 2003/06/14 00:46:15 k Exp $
 #
 
 require 'matrix'
@@ -257,6 +257,7 @@ module Bio
       queue = [ root ]
 
       while from = queue.shift
+	next unless @graph[from]
 	@graph[from].each_key do |to|
 	  unless visited[to]
 	    visited[to] = true
@@ -342,7 +343,7 @@ module Bio
     end
 
 
-    # Dijkstra method to solve the sortest path problem in the weighted graph.
+    # Dijkstra method to solve the shortest path problem in the weighted graph.
     def dijkstra(root)
       distance, predecessor = initialize_single_source(root)
       @graph[root].each do |k, v|
@@ -722,8 +723,8 @@ end
 
 Bio::Pathway is a general graph object initially constructed by the list of
 the ((<Bio::Relation>)) objects.  The basic concept of the Bio::Pathway object
-is to store the graph as an adjacency list (in the instance variable @graph),
-and converting the list into the adjacency matrix by calling to_matrix method
+is to store a graph as an adjacency list (in the instance variable @graph),
+and converting the list into an adjacency matrix by calling to_matrix method
 on demand.  However, in some cases, it is convenient to have the original list
 of the ((<Bio::Relation>))s, Bio::Pathway object also stores the list (as the
 instance variable @relations) redundantly.
