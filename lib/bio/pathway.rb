@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.10 2001/11/13 11:02:40 katayama Exp $
+#  $Id: pathway.rb,v 1.11 2001/11/13 14:12:35 shuichi Exp $
 #
 
 require 'bio/matrix'
@@ -188,6 +188,31 @@ module Bio
         end
       end
 
+      return distance, predecessor
+    end
+
+    # Bellman-Ford method for solving the single-source shortest-paths
+    # problem in the graph in which edge weights can be negative.
+    def bellman_ford(root)
+      distance, predecessor = initialize_single_source(root)
+      for i in 1 ..(self.nodes - 1) do
+        @graph.each_key do |u|
+          @graph[u].each do |v, w|
+	    # relaxing procedure of root -> 'u' -> 'v'
+            if distance[v] > distance[u] + w
+              distance[v] = distance[u] + w
+              predecessor[v] = u
+            end
+          end
+        end
+      end
+      @graph.each_key do |u|
+        @graph[u].each do |v, w|
+          if distance[v] > distance[u] + w
+            return false
+          end
+        end
+      end
       return distance, predecessor
     end
 
