@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.6 2002/02/05 08:44:00 katayama Exp $
+#  $Id: fasta.rb,v 1.7 2002/04/22 09:29:18 k Exp $
 #
 
 require 'bio/sequence'
@@ -128,17 +128,26 @@ module Bio
 
       response, result = Net::HTTP.new(host).post(path, data)
 
-      return Report.new(result, @remote)
+      result_path = nil
+
+      result.each do |line|
+	if /href="http:\/\/#{host}(.*?)".*Show all result/.match(line)
+	  result_path = $1
+	  break
+	end
+      end
+
+      if result_path
+	response, result = Net::HTTP.new(host).get(result_path)
+	return Report.new(result, @remote)
+      end
+
     end
 
 
     class Report
 
       def initialize(data, remote = false)
-	if remote
-	  data.gsub!(/\n>>/, "\n>")		# GenomeNet '>' increment bug
-        end
-
 	# header lines - brief list of the hits
         if data.sub!(/.*\nThe best scores are/m, '')
 	  data.sub!(/(.*)\n\n>>>/m, '')
@@ -331,6 +340,9 @@ end
 
 
 if __FILE__ == $0
+  require 'pp'
+  serv = Bio::Fasta.remote('fasta', 'genes')
+  pp serv.query(ARGF.read)
 end
 
 
