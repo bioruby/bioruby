@@ -1,5 +1,7 @@
 2003-07-16  KATAYAMA Toshiaki  <k@bioruby.org>
 
+	* BioRuby version 0.5.1 released.
+
 	* lib/bio/sequence.rb: some methods (using 'rna?' internally) were
 	  temporally unusable by the changes in 0.5.0 is fixed.
 
