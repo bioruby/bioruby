@@ -1,5 +1,5 @@
 #
-# bio/db/genpept.rb - GenPept database class
+# bio/db/genbank/genpept.rb - GenPept database class
 #
 #   Copyright (C) 2002 KATAYAMA Toshiaki <k@bioruby.org>
 #
@@ -17,14 +17,20 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genpept.rb,v 1.1 2002/07/30 10:13:34 k Exp $
+#  $Id: genpept.rb,v 1.2 2002/08/16 17:30:24 k Exp $
 #
 
 require 'bio/db/genbank'
 
 module Bio
 
-  class GenPept < GenBank
+  class GenPept < NCBIDB
+
+    include GENBANK_COMMON
+
+    alias :aalen :seq_len
+    alias :aaseq :seq
+
 
     # LOCUS
     class Locus
@@ -37,8 +43,6 @@ module Bio
       end
     end
 
-    alias :aalen :nalen
-    undef :nalen, :strand, :natype, :each_cds, :each_gene, :basecount, :gc
 
     # ORIGIN
     def origin
@@ -50,9 +54,7 @@ module Bio
       end
       @data['ORIGIN']
     end
-    alias :aaseq :naseq
-    undef :naseq
-    alias :seq :aaseq
+
 
     # DBSOURCE
     def dbsource

@@ -1,7 +1,7 @@
 #
-# bio/db/refseq.rb - RefSeq database class
+# bio/db/genbank/refseq.rb - RefSeq database class
 #
-#   Copyright (C) 2000, 2001 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2000-2002 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,10 +17,10 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: refseq.rb,v 1.4 2001/12/15 02:59:23 katayama Exp $
+#  $Id: refseq.rb,v 1.5 2002/08/16 17:30:24 k Exp $
 #
 
-require 'bio/db/genbank'
+require 'bio/db/genbank/genbank'
 
 module Bio
 
