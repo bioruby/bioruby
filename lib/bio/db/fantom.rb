@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fantom.rb,v 1.7 2003/06/12 07:30:04 ng Exp $
+#  $Id: fantom.rb,v 1.8 2003/06/13 15:40:40 ng Exp $
 #
 
 begin
@@ -140,13 +140,23 @@ module Bio
 	end
 
 	def representative_sequence
-	  rid = representative_seqid
-	  rid ? sequences[representative_seqid] : nil
+	  unless defined?(@representative_sequence)
+	    rid = representative_seqid
+ 	    @representative_sequence =
+	      rid ? sequences[representative_seqid] : nil
+	  end
+	  @representative_sequence
 	end
+	alias :representative_clone :representative_sequence
 
 	def representative_annotations
 	  e = representative_sequence
 	  e ? e.annotations : nil
+	end
+
+	def representative_cloneid
+	  e = representative_sequence
+	  e ? e.cloneid : nil
 	end
 
 	define_element_text_method(%w(fantomid))
@@ -425,14 +435,20 @@ end #module Bio
  Returns Bio::FANTOM::MaXML::Sequence object or nil.
 
 --- Bio::FANTOM::MaXML::Cluster#representataive_sequence
+--- Bio::FANTOM::MaXML::Cluster#representataive_clone
 
  Shows a sequence of repesentative_seqid.
  Returns Bio::FANTOM::MaXML::Sequence object (or nil).
 
 -- Bio::FANTOM::MaXML::Cluster#representative_annotations
 
- Shows annotations of repesentative_seqid.
+ Shows annotations of repesentative sequence.
  Returns Bio::FANTOM::MaXML::Annotations object (or nil).
+
+-- Bio::FANTOM::MaXML::Cluster#representative_cloneid
+
+ Shows cloneid of repesentative sequence.
+ Returns String (or nil).
 
 
 = Bio::FANTOM::MaXML::Sequences
