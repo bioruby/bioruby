@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genpept.rb,v 1.3 2002/08/19 11:13:30 k Exp $
+#  $Id: genpept.rb,v 1.4 2003/03/31 10:22:20 k Exp $
 #
 
 require 'bio/db/genbank'
@@ -55,7 +55,7 @@ module Bio
         ori = get('ORIGIN')[/.*/]			# 1st line
         seq = get('ORIGIN').sub(/.*/, '')		# sequence lines
         @data['ORIGIN']   = truncate(tag_cut(ori))
-        @data['SEQUENCE'] = Sequence::AA.new(seq.tr('^a-z', ''))
+        @data['SEQUENCE'] = Sequence::AA.new(seq.gsub(/\s|\d/, ''))
       end
       @data['ORIGIN']
     end

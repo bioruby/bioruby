@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.29 2003/01/27 19:52:12 k Exp $
+#  $Id: genbank.rb,v 0.30 2003/03/31 10:22:20 k Exp $
 #
 
 require 'bio/db/genbank'
@@ -114,7 +114,7 @@ module Bio
         ori = get('ORIGIN')[/.*/]			# 1st line
         seq = get('ORIGIN').sub(/.*/, '')		# sequence lines
         @data['ORIGIN']   = truncate(tag_cut(ori))
-        @data['SEQUENCE'] = Sequence::NA.new(seq.tr('^a-zA-Z', ''))
+        @data['SEQUENCE'] = Sequence::NA.new(seq.gsub(/\s|\d/, ''))
       end
       @data['ORIGIN']
     end
@@ -241,9 +241,9 @@ end
 
 === ACCESSION
 
---- Bio::GenBank#accession -> String
+--- Bio::GenBank#accessions -> Array
 
-      Returns contents of the ACCESSION record as a String.
+      Returns contents of the ACCESSION record as an Array.
 
 === VERSION
 
@@ -251,14 +251,18 @@ end
 
       Returns contents of the VERSION record as an Array of Strings.
 
---- Bio::GenBank#version -> String
+--- Bio::GenBank#acc_version -> String
+--- Bio::GenBank#accession -> String
+--- Bio::GenBank#version -> Fixnum
 --- Bio::GenBank#gi -> String
 
       Access methods for the contents of the VERSION record.
 
-      The 'version' method returns the first part of the VERSION record
-      as a "ACCESSION.VERSION" String, and the 'gi' method returns the
-      second part of the VERSION record as a "GI:#######" String.
+      The 'acc_version' method returns the first part of the VERSION record
+      as a "ACCESSION.VERSION" String, 'accession' method returns the ACCESSION
+      part of the acc_version, 'version' method returns the VERSION part of the
+      acc_version as a Fixnum, and the 'gi' method returns the second part of
+      the VERSION record as a "GI:#######" String.
 
 === NID
 
