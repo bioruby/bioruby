@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: compound.rb,v 0.7 2002/08/19 02:17:02 k Exp $
+#  $Id: compound.rb,v 0.8 2004/02/04 14:00:24 k Exp $
 #
 
 require 'bio/db'
@@ -56,7 +56,7 @@ module Bio
       # REACTION
       def reactions
 	unless @data['REACTION']
-	  @data['REACTION'] = fetch('REACTION').split("\s+")
+	  @data['REACTION'] = fetch('REACTION').split(/\s+/)
 	end
 	@data['REACTION']
       end

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genome.rb,v 0.11 2003/09/20 08:17:36 k Exp $
+#  $Id: genome.rb,v 0.12 2004/02/04 14:02:41 k Exp $
 #
 
 require 'bio/db'
@@ -91,7 +91,7 @@ module Bio
 	      when /AUTHORS/
 		authors = truncate(tag_cut(field))
 		authors = authors.split(', ')
-		authors[-1] = authors[-1].split('\s+and\s+')
+		authors[-1] = authors[-1].split(/\s+and\s+/)
 		authors = authors.flatten.map { |a| a.sub(',', ', ') }
 		hash['authors']	= authors
 	      when /TITLE/

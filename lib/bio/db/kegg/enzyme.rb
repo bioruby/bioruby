@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: enzyme.rb,v 0.6 2002/08/19 02:25:02 k Exp $
+#  $Id: enzyme.rb,v 0.7 2004/02/04 14:00:58 k Exp $
 #
 
 require 'bio/db'
@@ -107,7 +107,7 @@ module Bio
       def structures
 	unless @data['STRUCTURES']
 	  @data['STRUCTURES'] =
-	    fetch('STRUCTURES').sub(/(PDB: )*/,'').split("\s+")
+	    fetch('STRUCTURES').sub(/(PDB: )*/,'').split(/\s+/)
 	end
 	@data['STRUCTURES']
       end
