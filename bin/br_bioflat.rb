@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 # 
-#  $Id: br_bioflat.rb,v 1.10 2003/02/19 04:08:08 k Exp $ 
+#  $Id: br_bioflat.rb,v 1.11 2003/02/28 10:29:40 ng Exp $ 
 # 
 
 require 'bio'
@@ -29,6 +29,8 @@ Search:
   #{$0} [--search] [DIR/]DBNAME KEYWORDS
 Create index:
   #{$0} --create --location DIR --dbname DBNAME [--format <genbank|embl|fasta>] [options...] [--files] FILES
+Update index:
+  #{$0} --update --location DIR --dbname DBNAME [options...] [--files] FILES
 
 Create index options:
   --primary=UNIQUE       set primary namespece to UNIQUE
@@ -40,26 +42,23 @@ Create index options:
   --add-secondary=KEY    add secondary namespaces to default specification.
                            You can use this option many times.
 
-Options only valid for --create --type flat:
-  --sort=BUILTIN         use builtin sort routine (default)
-  --sort=HS              (same as --sort=BUILTIN)
-  --sort=LM              builtin sort routine, slow but memory efficient
+Options only valid for --create (or --update) --type flat:
   --sort=/path/to/sort   use external sort program (e.g. /usr/bin/sort)
-  --no-temporary-files   do everything on memory
+  --sort=BUILTIN         use builtin sort routine
 
 Backward compatibility:
   --makeindex DIR/DBNAME
       same as --create --type flat --location DIR --dbname DBNAME
   --makeindexBDB DIR/DBNAME
       same as --create --type bdb  --location DIR --dbname DBNAME
-  --format CLASS
+  --format=CLASS
       instead of genbank|embl|fasta, specifing a class name is allowed
 EOM
 
 end
 
 
-def do_index
+def do_index(mode = :create)
   case ARGV[0]
   when /^\-\-?make/
     dbpath = ARGV[1]
@@ -69,7 +68,7 @@ def do_index
     dbname = ARGV[1]
     args = ARGV[2..-1]
     is_bdb = Bio::FlatFileIndex::MAGIC_BDB
-  when /^\-\-create/
+  when /^\-\-create/, /^\-\-update/
     args = ARGV[1..-1]
   else
     usage
@@ -78,7 +77,7 @@ def do_index
   options = {}
 
   while args.first =~ /^\-/
-    case args.shift
+    case x = args.shift
 
     # OBDA stuff
 
@@ -89,7 +88,7 @@ def do_index
       location = args.shift.chomp('/')
     when /^\-\-?dbname/
       dbname = args.shift
-    when /^\-\-?indextype/
+    when /^\-\-?(index)?type/
       indextype = args.shift
       case indextype
       when /bdb/
@@ -135,7 +134,11 @@ def do_index
   end
 
   dbpath = "#{location}/#{dbname}" unless dbpath
-  Bio::FlatFileIndex::makeindex(is_bdb, dbpath, format, options, *args)
+  if mode == :update then
+    Bio::FlatFileIndex::update_index(dbpath, format, options, *args)
+  else
+    Bio::FlatFileIndex::makeindex(is_bdb, dbpath, format, options, *args)
+  end
 end
 
 
@@ -160,6 +163,9 @@ if ARGV.size > 1
   when /--make/, /--create/
     Bio::FlatFileIndex::DEBUG.out = true
     do_index
+  when /--update/
+    Bio::FlatFileIndex::DEBUG.out = true
+    do_index(:update)
   when /--search/
     do_search
   else #default is search

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: index.rb,v 1.5 2002/08/29 13:35:40 ng Exp $ 
+#  $Id: index.rb,v 1.6 2003/02/28 10:29:40 ng Exp $ 
 # 
 
 
@@ -210,19 +210,7 @@ module Bio
       end
     end #module DEBUG
 
-    module IOroutines
-      def file2hash(fileobj)
-	hash = {}
-	fileobj.each do |line|
-	  line.chomp!
-	  a = line.split("\t", 2)
-	  hash[a[0]] = a[1]
-	end
-	hash
-      end
-      module_function :file2hash
-      private :file2hash
-    end #module IOroutines
+    #########################################################
 
     module Template
       class NameSpace
@@ -373,7 +361,22 @@ module Bio
 	  self << FileID.new(filename)
 	end
       end
-      
+
+      def cache_all
+	a = @hash.keys.collect do |k|
+	  if k =~ /\A#{Regexp.escape(@prefix)}(\d+)/ then
+	    $1.to_i
+	  else
+	    nil
+	  end
+	end
+	a.compact!
+	a.each do |i|
+	  self[i]
+	end
+	a
+      end
+
       def each
 	(0...self.size).each do |i|
 	  x = self[i]
@@ -391,6 +394,7 @@ module Bio
       end
 
       def check_all
+	self.cache_all
 	r = true
 	self.each do |x|
 	  r = x.check
@@ -409,6 +413,7 @@ module Bio
       alias :close :close_all
 
       def recalc_all
+	self.cache_all
 	self.each do |x|
 	  x.recalc
 	end
@@ -426,7 +431,7 @@ module Bio
 	  @key = a.shift.to_s
 	  @val = a
 	  @size = (size or str.length)
-	  DEBUG.print "key=#{@key.inspect},val=#{@val.inspect},size=#{@size}\n"
+	  #DEBUG.print "key=#{@key.inspect},val=#{@val.inspect},size=#{@size}\n"
 	end
 	attr_reader :key, :val, :size
 
@@ -440,6 +445,10 @@ module Bio
 
 	def self.create(size, key, val)
 	  self.new(self.to_string(size, key, val))
+	end
+
+	def ==(x)
+	  self.to_s == x.to_s
 	end
       end #class Record
 
@@ -497,7 +506,7 @@ module Bio
 	  rs = record_size
 	  seek(i)
 	  str = @file.read(rs)
-	  DEBUG.print "get_record(#{i})=#{str.inspect}\n"
+	  #DEBUG.print "get_record(#{i})=#{str.inspect}\n"
 	  str
 	end
 
@@ -557,10 +566,136 @@ module Bio
 	  @records = 0
 	end
 
-	def self.create(record_size, filename, mode = 'wb+')
-	  f = self.new(filename, mode)
-	  f.init(record_size)
+	# export/import/edit data
+	def each
+	  n = records
+	  seek(0)
+	  (0...n).each do |i|
+	    yield Record.new(get_record(i))
+	  end
+	  self
 	end
+
+	def export_tsv(stream)
+	  self.each do |x|
+	    stream << "#{x.to_s}\n"
+	  end
+	  stream
+	end
+
+	def init_with_sorted_tsv_file(filename, flag_primary = false)
+	  rec_size = 1
+	  f = File.open(filename)
+	  f.each do |y|
+	    rec_size = y.chomp.length if rec_size < y.chomp.length
+	  end
+	  self.init(rec_size)
+
+	  prev = nil
+	  f.rewind
+	  if flag_primary then
+	    f.each do |y|
+	      x = Record.new(y.chomp, rec_size)
+	      if prev then
+		if x.key == prev.key
+		  DEBUG.print "Warining: overwrote unique id #{x.key.inspect}\n"
+		else
+		  self.add_record(prev.to_s)
+		end
+	      end
+	      prev = x
+	    end
+	    self.add_record(prev.to_s) if prev
+	  else
+	    f.each do |y|
+	      x = Record.new(y.chomp, rec_size)
+	      self.add_record(x.to_s) if x != prev
+	      prev = x
+	    end
+	  end
+	  f.close
+	  self
+	end
+
+	def self.external_sort_proc(sort_program = '/usr/bin/sort')
+	  Proc.new do |out, in1, *files|
+	    system(sort_program, '-o', out, in1, *files)
+	  end
+	end
+
+	def self.external_merge_sort_proc(sort_program = '/usr/bin/sort')
+	  Proc.new do |out, in1, *files|
+	    # (in1 may be sorted)
+	    tf_all = []
+	    tfn_all = []
+	    files.each do |fn|
+	      tf = Tempfile.open('sort')
+	      tf.close(false)
+	      system(sort_program, '-o', tf.path, fn)
+	      tf_all << tf
+	      tfn_all << tf.path
+	    end
+	    system(sort_program, '-m', '-o', out, in1, *tfn_all)
+	    tf_all.each do |tf|
+	      tf.close(true)
+	    end
+	  end
+	end
+
+	def self.external_merge_proc(sort_program = '/usr/bin/sort')
+	  Proc.new do |out, in1, *files|
+	    # files (and in1) must be sorted
+	    system(sort_program, '-m', '-o', out, in1, *files)
+	  end
+	end
+
+	def self.internal_sort_proc
+	  Proc.new do |out, in1, *files|
+	    a = IO.readlines(in1)
+	    files.each do |fn|
+	      IO.foreach(fn) do |x|
+		a << x
+	      end
+	    end
+	    a.sort!
+	    of = File.open(out, 'w')
+	    a.each { |x| of << x }
+	    of.close
+	  end
+	end
+
+	def import_tsv_files(flag_primary, mode, sort_proc, *files)
+	  require 'tempfile'
+
+	  tmpfile1 = Tempfile.open('flat')
+	  self.export_tsv(tmpfile1) unless mode == :new
+	  tmpfile1.close(false)
+
+	  tmpfile0 = Tempfile.open('sorted')
+	  tmpfile0.close(false)
+
+	  sort_proc.call(tmpfile0.path, tmpfile1.path, *files)
+
+	  tmpmap = self.class.new(self.filename + ".#{$$}.tmp~", 'wb+')
+	  tmpmap.init_with_sorted_tsv_file(tmpfile0.path, flag_primary)
+	  tmpmap.close
+	  self.close
+
+	  begin
+	    File.rename(self.filename, self.filename + ".#{$$}.bak~")
+	  rescue Errno::ENOENT
+	  end
+	  File.rename(tmpmap.filename, self.filename)
+	  begin
+	    File.delete(self.filename + ".#{$$}.bak~")
+	  rescue Errno::ENOENT
+	  end
+
+	  tmpfile0.close(true)
+	  tmpfile1.close(true)
+	  self
+	end
+
 
 	# methods for searching
 	def search(key)
@@ -690,13 +825,24 @@ module Bio
     end #class NameSpaces
 
     class DataBank
+      def self.file2hash(fileobj)
+	hash = {}
+	fileobj.each do |line|
+	  line.chomp!
+	  a = line.split("\t", 2)
+	  hash[a[0]] = a[1]
+	end
+	hash
+      end
+      private_class_method :file2hash
+
       def self.filename(dbname)
 	File.join(dbname, 'config.dat')
       end
 
       def self.read(name, mode = 'rb', *bdbarg)
 	f = File.open(filename(name), mode)
-	hash = IOroutines::file2hash(f)
+	hash = file2hash(f)
 	f.close
 	db = self.new(name, nil, hash)
 	db.bdb_open(*bdbarg)
@@ -842,7 +988,7 @@ module Bio
 
       def format
 	unless @format then
-	  format = @config['format']
+	  self.format = @config['format']
 	end
 	@format
       end

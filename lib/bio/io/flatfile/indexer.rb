@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.6 2002/09/16 08:14:05 ng Exp $ 
+#  $Id: indexer.rb,v 1.7 2003/02/28 10:29:40 ng Exp $ 
 # 
 
 module Bio
@@ -260,21 +260,32 @@ module Bio
 
 	DEBUG.print "reading files...\n"
 
+	addindex_bdb(db, BDBdefault::flag_write, 0, parser, options, *files)
+	db.close
+	true
+      end #def
+
+      def self.addindex_bdb(db, flag, fileids_base, parser, options, *files)
+	DEBUG.print "reading files...\n"
+
 	pn = db.primary
 	pn.file.close
-	pn.file.flag = BDBdefault.flag_write
+	pn.file.flag = flag
 
 	db.secondary.each_files do |x|
 	  x.file.close
-	  x.file.flag = BDBdefault.flag_write
+	  x.file.flag = flag
+	  x.file.open
+	  x.file.close
 	end
 
-	db.fileids.each_with_index do |fobj, fileid|
-	  filename = fobj.filename
+	fileid = fileids_base
+	files.each do |filename|
 	  parser.open_flatfile(fileid, filename)
 	  parser.each do |pos, len|
 	    p = parser.parse_primary
-	    pn.file.add_exclusive(p, [ fileid, pos, len ])
+	    #pn.file.add_exclusive(p, [ fileid, pos, len ])
+	    pn.file.add_overwrite(p, [ fileid, pos, len ])
 	    #DEBUG.print "#{p} #{fileid} #{pos} #{len}\n"
 	    parser.parse_secondary do |sn, sp|
 	      db.secondary[sn].file.add_nr(sp, p)
@@ -282,22 +293,14 @@ module Bio
 	    end
 	  end
 	  parser.close_flatfile
+	  fileid += 1
 	end
-	db.close
 	true
-      end
+      end #def
 
       def self.makeindexFlat(name, parser, options, *files)
-	if options['onmemory'] then
-	  makeindexFlat_onmemory(name, parser, options, *files)
-	else
-	  makeindexFlat_tempfile(name, parser, options, *files)
-	end
-      end
+	DEBUG.print "makeing flat/1 DataBank using temporary files...\n"
 
-      def self.makeindexFlat_onmemory(name, parser, options, *files)
-	# options are not used in this method
-	DEBUG.print "makeing flat/1 DataBank...\n"
 	db = DataBank.new(name, nil)
 	db.format = parser.format
 	db.fileids.add(*files)
@@ -308,85 +311,14 @@ module Bio
 	DEBUG.print "writing DabaBank...\n"
 	db.write('wb')
 
-	pdata = []
-	sdata = {}
-	parser.secondary.names.each { |x| sdata[x] = [] }
-
-	DEBUG.print "reading files...\n"
-	files.each_with_index do |filename, fileid|
-	  parser.open_flatfile(fileid, filename)
-	  parser.each do |pos, len|
-	    p = parser.parse_primary
-	    pdata << [ p, [ fileid, pos, len ] ]
-	    #DEBUG.print "#{p} #{fileid} #{pos} #{len}\n"
-	    parser.parse_secondary do |sn, sp|
-	      sdata[sn] << [ sp, p ]
-	      #DEBUG.print "#{sp} #{p}\n"
-	    end
-	  end
-	  parser.close_flatfile
-	end
-
-	DEBUG.print "sorting primary (#{parser.primary.name})...\n"
-	pdata.sort! do |x, y|
-	  r = (x[0] <=> y[0])
-	  if r == 0 then
-	    raise RuntimeError, "keys must be unique, but duplicated key #{x[0].inspect} exists"
-	  end
-	  r
-	end
-	DEBUG.print "writing primary (#{parser.primary.name})...\n"
-	psize = get_record_size(pdata)
-	write_mapfile(pdata, psize, db.primary.file)
-
-	sdata.each do |i, a|
-	  DEBUG.print "sorting secondary (#{i})...\n"
-	  a.sort! { |x, y| x[0] <=> y[0] }
-	  ssize = get_record_size(a)
-	  DEBUG.print "writing secondary (#{i})...\n"
-	  write_mapfile(a, ssize, db.secondary[i].file)
-	end
-	  
+	addindex_flat(db, :new, 0, parser, options, *files)
 	db.close
 	true
       end #def
 
-      def self.get_record_size(a)
-	size = 0
-	a.each do |x|
-	  l = x.flatten.join("\t").length
-	  if l > size
-	    size = l
-	  end
-	end
-	size + 1
-      end
-
-      def self.write_mapfile(data, rec_size, mapfile)
-	mapfile.mode = 'wb'
-	mapfile.init(rec_size)
-	data.each do |x|
-	  mapfile.write_record(x.flatten.join("\t"))
-	end
-	mapfile.close
-	mapfile.mode = 'rb'
-	true
-      end
-
-      def self.makeindexFlat_tempfile(name, parser, options, *files)
-	DEBUG.print "makeing flat/1 DataBank using temporary files...\n"
+      def self.addindex_flat(db, mode, fileids_base, parser, options, *files)
 	require 'tempfile'
 	prog = options['sort_program']
-
-	db = DataBank.new(name, nil)
-	db.format = parser.format
-	db.fileids.add(*files)
-	db.primary = parser.primary.name
-	db.secondary = parser.secondary.names
-
-	db.fileids.recalc
-	DEBUG.print "writing DabaBank...\n"
-	db.write('wb')
 
 	DEBUG.print "prepare temporary files...\n"
 	tempbase = "bioflat#{rand(10000)}-"
@@ -399,7 +331,8 @@ module Bio
 	end
 
 	DEBUG.print "reading files...\n"
-	files.each_with_index do |filename, fileid|
+	fileid = fileids_base
+	files.each do |filename|
 	  parser.open_flatfile(fileid, filename)
 	  parser.each do |pos, len|
 	    p = parser.parse_primary
@@ -411,146 +344,132 @@ module Bio
 	    end
 	  end
 	  parser.close_flatfile
+	  fileid += 1
 	end
 
+	sort_proc = chose_sort_proc(prog, mode)
+	pfile.close(false)
 	DEBUG.print "sorting primary (#{parser.primary.name})...\n"
-	pfile2 = Tempfile.open(tempbase + 'primary2-')
-	DEBUG.print "open temporary file #{pfile2.path.inspect}\n"
-	file_sort_write(pfile, pfile2, db.primary.file, prog, true)
-	DEBUG.print "close temporary file #{pfile.path.inspect}\n"
-	pfile.close
-	DEBUG.print "close temporary file #{pfile2.path.inspect}\n"
-	pfile2.close
+	db.primary.file.import_tsv_files(true, mode, sort_proc, pfile.path)
+	pfile.close(true)
 
 	parser.secondary.names.each do |x|
 	  DEBUG.print "sorting secondary (#{x})...\n"
-	  tmpfile = Tempfile.open(tempbase + 'secondary2-')
-	  DEBUG.print "open temporary file #{tmpfile.path.inspect}\n"
-	  file_sort_write(sfiles[x], tmpfile, db.secondary[x].file, prog)
-	  DEBUG.print "close temporary file #{sfiles[x].path.inspect}\n"
-	  sfiles[x].close
-	  DEBUG.print "close temporary file #{tmpfile.path.inspect}\n"
-	  tmpfile.close
+	  sfiles[x].close(false)
+	  db.secondary[x].file.import_tsv_files(false, mode, sort_proc,
+						sfiles[x].path)
+	  sfiles[x].close(true)
+	end
+	true
+      end #def
+
+      DEFAULT_SORT = '/usr/bin/sort'
+      def self.chose_sort_proc(prog, mode = :new)
+	case prog
+	when /^builtin$/i, /^hs$/i, /^lm$/i
+	  DEBUG.print "sort: internal sort routine\n"
+	  sort_proc = mapfile.internal_sort_proc
+	when nil, ''
+	  if FileTest.executable?(DEFAULT_SORT)
+	    DEBUG.print "sort: #{DEFAULT_SORT}\n"
+	    if mode == :new then
+	      sort_proc = Flat_1::FlatMappingFile::external_sort_proc(DEFAULT_SORT)
+	    else
+	      sort_proc = Flat_1::FlatMappingFile::external_merge_sort_proc(DEFAULT_SORT)
+	    end
+	  else
+	    DEBUG.print "sort: internal sort routine\n"
+	    sort_proc = Flat_1::FlatMappingFile::internal_sort_proc
+	  end
+	else
+	  DEBUG.print "sort: #{prog}\n"
+	  if mode == :new then
+	    sort_proc = Flat_1::FlatMappingFile::external_sort_proc(prog)
+	  else
+	    sort_proc = Flat_1::FlatMappingFile::external_merge_sort_proc(prog)
+	  end
+	end
+	sort_proc
+      end
+
+      def self.addindex(name, parser, options, *files)
+	db = DataBank.open(name)
+	raise 'Index is not up to date' unless db.fileids.check_all
+
+	if parser then
+	  raise 'file format mismatch' if db.format != parser.format
+	else
+	  dbclass_orig =
+	    Bio::FlatFile.autodetect_file(db.fileids[0].filename)
+	  dbclass_new =
+	    Bio::FlatFile.autodetect_file(files[0])
+	  case db.format
+	  when 'swiss', 'embl'
+	    parser = Parser.new(db.format)
+	    if dbclass_new and dbclass_new != parser.dbclass
+	      raise 'file format mismatch'
+	    end
+	  when 'genbank'
+	    dbclass = dbclass_orig or dbclass_new
+	    if dbclass == Bio::GenBank or dbclass == Bio::GenPept
+	      parser = Parser.new(dbclass_orig)
+	    elsif !dbclass then
+	      raise 'cannnot determine format. please specify manually.'
+	    else
+	      raise 'file format mismatch'
+	    end
+	    if dbclass_new and dbclass_new != parser.dbclass
+	      raise 'file format mismatch'
+	    end
+	  else
+	    raise 'unsupported format'
+	  end
+	end
+
+	parser.set_primary_namespace(db.primary.name)
+	parser.add_secondary_namespaces(*db.secondary.names)
+
+	fileids_base = db.fileids.size
+	db.fileids.add(*files)
+
+	db.fileids.recalc
+	DEBUG.print "writing DabaBank...\n"
+	db.write('wb', BDBdefault::flag_append)
+
+	case db.index_type
+	when MAGIC_BDB
+	  addindex_bdb(db, BDBdefault::flag_append,
+		       fileids_base, parser, options, *files)
+	when MAGIC_FLAT
+	  addindex_flat(db, :add, fileids_base, parser, options, *files)
+	else
+	  raise 'Unsupported index type'
 	end
 
 	db.close
 	true
       end #def
-
-      def self.file_get_record_size(a, primary = nil)
-	size = 0
-	pn = nil
-	pn2 = nil
-	a.each do |x|
-	  x.chomp!
-	  l = x.length
-	  if l > size
-	    size = l
-	  end
-	  if primary then
-	    pn2 = x.split("\t", 2)[0]
-	    if pn == pn2 then
-	      raise RuntimeError, "keys must be unique, but duplicated key #{pn.inspect} exists"
-	    else
-	      pn = pn2
-	    end
-	  end
-	end
-	size + 1
-      end
-
-      def self.file_write_mapfile(data, rec_size, mapfile)
-	mapfile.mode = 'wb'
-	mapfile.init(rec_size)
-	data.each do |x|
-	  x.chomp!
-	  mapfile.write_record(x)
-	end
-	mapfile.close
-	mapfile.mode = 'rb'
-	true
-      end
-
-      def self.file_sort_write(file, tmpfile, mapfile, prog, primary = nil)
-	file.flush
-	file.pos = 0
-	case prog
-	when /^builtin$/i, /^hs$/i, nil
-	  filesort_internal_highspeed(file, tmpfile)
-	when /^lm$/i
-	  filesort_internal_lowmemory(file, tmpfile)
-	else
-	  filesort_external(file.path, tmpfile, prog)
-	end
-	tmpfile.flush
-	tmpfile.pos = 0
-	ssize = file_get_record_size(tmpfile, primary)
-	DEBUG.print "writing to file...\n"
-	tmpfile.pos = 0
-	file_write_mapfile(tmpfile, ssize, mapfile)
-      end
-
-      def self.filesort_external(filename, out, prog = '/usr/bin/sort')
-	require 'open3'
-	DEBUG.print "executing #{prog.inspect}\n"
-	Open3.popen3(prog, filename) do |i, o, e|
-	  o.each { |line| out << line }
-	end
-	DEBUG.print "end: sort\n"
-      end
-
-      def self.filesort_internal_highspeed(file, out)
-	DEBUG.print "begin sort=HS\n"
-	a = []
-	file.each do |line|
-	  a << line
-	end
-	a.sort!
-	a.each do |line|
-	  out << line
-	end
-	DEBUG.print "end: sort\n"
-      end
-
-      def self.filesort_internal_lowmemory(file, out)
-	DEBUG.print "begin sort=LM\n"
-	p = file.pos
-	a = []
-	file.each do |line|
-	  a << p
-	  p = file.pos
-	end
-	a.sort! do |x, y|
-	  file.pos = x
-	  xdata = file.gets
-	  file.pos = y
-	  ydata = file.gets
-	  xdata <=> ydata
-	end
-	a.each do |x|
-	  file.pos = x
-	  out << file.gets
-	end
-	DEBUG.print "end: sort\n"
-      end
-
     end #module Indexer
+
+    ##############################################################
+    def self.formatstring2class(format_string)
+      case format
+      when /genbank/i
+	dbclass = Bio::GenBank
+      when /genpept/i
+	dbclass = Bio::GenPept
+      when /embl/i
+	dbclass = Bio::EMBL
+      when /sptr/i
+	dbclass = Bio::SPTR
+      else
+	raise "Unsupported format : #{format}"
+      end
+    end
 
     def self.makeindex(is_bdb, dbname, format, options, *files)
       if format then
-	case format
-	when /genbank/i
-	  dbclass = Bio::GenBank
-	  add_secondary = nil
-	when /genpept/i
-	  dbclass = Bio::GenPept
-	when /embl/i
-	  dbclass = Bio::EMBL
-	when /sptr/i
-	  dbclass = Bio::SPTR
-	else
-	  raise "Unsupported format : #{format}"
-	end
+	dbclass = formatstring2class(format)
       else
 	dbclass = Bio::FlatFile.autodetect_file(files[0])
 	raise "Cannot determine format" unless dbclass
@@ -578,6 +497,15 @@ module Bio
       end
     end #def makeindex
 
+    def self.update_index(dbname, format, options, *files)
+      if format then
+	parser = Indexer::Parser.new(dbclass)
+      else
+	parser = nil
+      end
+      Indexer::addindex(dbname, parser, options, *files)
+    end #def update_index
+
   end #class FlatFileIndex
 end #module Bio
 
@@ -587,6 +515,10 @@ end #module Bio
 
 --- Bio::FlatFile.makeindex(is_bdb, dbname, format, options, *files)
 
-      Creating index files (called a databank) of given files.
+      Create index files (called a databank) of given files.
+
+--- Bio::FlatFile.update_index(dbname, format, options, *files)
+
+      Add entries to databank.
 
 =end

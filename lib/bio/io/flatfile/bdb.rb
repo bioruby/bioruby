@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: bdb.rb,v 1.4 2002/11/25 14:14:08 ng Exp $ 
+#  $Id: bdb.rb,v 1.5 2003/02/28 10:29:40 ng Exp $ 
 # 
  
 begin 
@@ -43,6 +43,11 @@ module Bio
 	(BDB::CREATE | BDB::TRUNCATE)
       end
       module_function :flag_write
+
+      def flag_append
+	'r+'
+      end
+      module_function :flag_append
     end #module BDBdefault
 
     class BDBwrapper
@@ -94,6 +99,14 @@ module Bio
 	self.open(*arg)
 	array.each_with_index do |val, key|
 	  @file["#{prefix}#{key}"] = val.to_s
+	end
+      end
+
+      def keys
+	if @file then
+	  @file.keys
+	else
+	  []
 	end
       end
     end #class BDBwrapper
@@ -162,6 +175,18 @@ module Bio
 	  end
 	  @bdb[key] = val
 	  #DEBUG.print "add_exclusive: key=#{key.inspect}, val=#{val.inspect}\n"
+	  val
+	end
+
+	def add_overwrite(key, val)
+	  open
+	  val = val.to_a.join("\t")
+	  s = @bdb[key]
+	  if s then
+	    DEBUG.print "Warining: overwrote unique id #{key.inspect}\n"
+	  end
+	  @bdb[key] = val
+	  #DEBUG.print "add_overwrite: key=#{key.inspect}, val=#{val.inspect}\n"
 	  val
 	end
 
