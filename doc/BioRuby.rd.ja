@@ -1,0 +1,134 @@
+=begin
+
+  $Id: BioRuby.rd.ja,v 1.1 2001/10/30 04:18:11 katayama Exp $
+
+  Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+
+= BioRuby プロジェクト
+
+BioRuby は、Bioinformatics で必要とされる、データベースの検索、データの
+取得とパース、配列解析からパスウェイ解析まで様々な計算、などに必要となる
+様々な機能を Ruby 言語で実装し、簡単に扱えるようにするプロジェクトです。
+
+他の先行プロジェクトとしては BioPerl, BioPython, BioJava など様々なもの
+があります。完成度では歴史の長い BioPerl が最も充実していると思いますが、
+BioPerl は配列主体の複雑な構造で、データセンターでの利用が主に想定されて
+いるように思えますし、そもそも Perl で複雑なデータ構造を扱うとソースコー
+ドが読みづらくなります。この結果、メンテナンスや改良が難しくなります。他
+のプロジェクトにもそれぞれ利点があると思いますが、いずれにしても後発で開
+発の途中段階にあることを考えれば、自分の使いやすい言語で必要な機能を実装
+して行っても十分に追い付けると思います。
+
+BioRuby では、シンプルで強力な Ruby 言語のアドバンテージを生かし、分かり
+やすいコードでエンドユーザに必要な機能を実装していきたいと思います。特に
+Ruby のあらゆるオブジェクトという発想は、モノを扱う生物学にも素直に当て
+はめやすいコンセプトですし、トライ＆エラーで作業を進める事ができるインター
+プリタ言語は C や Java と比べてウェットなラボの研究者にも馴染みやすいと
+思います。
+
+また、Ruby では Perl 譲りの強力な文字列処理に加え、Perl の後づけの OO に
+よるオマジナイや、頻出する local, my などが不要で、複雑なデータ構造もク
+ラスですっきりと表現できるため、本質的な部分に専念してコーディングするこ
+とができます。これにより、開発の効率も高くなるため、他のプロジェクトが手
+掛けていない領域にもいち早く取り組んでいけると思います。
+
+さらに、Ruby 自体が日本で開発された言語であるのに加え BioRuby も日本初の
+オープンな Bio* プロジェクトです。このため、情報が日本語で得られ、開発も
+日本語で行なえる点、KEGG など日本独自のシステムへの対応なども行ないやす
+い点も BioRuby のメリットでしょう。
+
+BioRuby のウェブサイト ((<URL:http://bioruby.org/>)) で、最新のお知らせ、
+ソースの入手方法、メーリングリストなどの情報と、他のドキュメントやコメン
+トなどの情報が得られます。
+
+== 使い方
+
+BioRuby を使うスクリプトの中で
+
+  require 'bio'
+
+としてください。
+
+全てのクラスは module Bio の下に追加されますが、必要に応じて
+
+  include Bio
+
+とすることで、Bio:: を省いて各クラスを使う事ができます。
+
+== BioRuby の概略
+
+bio.rb を require すると、以下のクラスや定数などが使えるようになります。
+現在実装されている主な機能は、
+
+* アミノ酸配列や塩基配列の、翻訳やウィンドウサーチなどを含む操作、
+  スプライシングなどを表す GenBank 形式の location フォーマットの処理
+* ゲノムネット ((<URL:http://www.genome.ad.jp>)) の検索とデータ取得
+* GenBank や KEGG など様々なデータベースの細かいパース
+* PubMed/MEDLINE などの引用文献データの取得と整形
+* パスウェイ解析に必要なグラフと２項関係の操作
+
+などです。詳しい使用方法については、個々のクラスに関するドキュメントや、
+チュートリアルを参照して下さい。
+
+他に、まだ未統合ですが、クラスタリングや Smith-Waterman アルゴリズムの実
+装なども行なわれています。
+
+=== クラス階層
+
+  クラス階層                            ファイル                実装レベル
+  |- class String
+  |  `- class Bio::Sequence             bio/sequence.rb         stable
+  |     |- class Bio::Sequence::AA      bio/sequence.rb         stable
+  |     `- class Bio::Sequence::NA      bio/sequence.rb         stable
+  |- class Bio::Locations               bio/location.rb         stable
+  |- class Bio::Location                bio/location.rb         stable
+  |- class Bio::Reference               bio/reference.rb        beta
+  |- class Bio::Pathway                 bio/pathway.rb          beta
+  |- class Bio::Relation                bio/pathway.rb          beta
+  |- class Bio::DB                      bio/db.rb               beta
+  |  |- class Bio::NCBIDB               bio/db.rb               beta
+  |  |  |- class Bio::GenBank           bio/db/genbank.rb       stable
+  |  |  |  |- class Bio::RefSeq         bio/db/refseq.rb        stable
+  |  |  |  `- class Bio::DDBJ           bio/db/ddbj.rb          stable
+  |  |  |- class Bio::MEDLINE           bio/db/medline.rb       stable
+  |  |  |- class Bio::LITDB             bio/db/litdb.rb         stable
+  |  |  `- class Bio::KEGGDB            bio/db.rb               beta
+  |  |     |- class Bio::AAindex        bio/db/aaindex.rb       beta
+  |  |     |  |- class Bio::AAindex1    bio/db/aaindex.rb
+  |  |     |  `- class Bio::AAindex2    bio/db/aaindex.rb
+  |  |     |- class Bio::KEGG::GENES    bio/db/kegg/genes.rb    stable
+  |  |     |- class Bio::KEGG::GENOME   bio/db/kegg/genome.rb   stable
+  |  |     |- class Bio::KEGG::BRITE    bio/db/kegg/brite.rb    alpha
+  |  |     |- class Bio::KEGG::CELL     bio/db/kegg/cell.rb     beta
+  |  |     |- class Bio::KEGG::ENZYME   bio/db/kegg/enzyme.rb   alpha
+  |  |     `- class Bio::KEGG::COMPOUND bio/db/kegg/compound.rb alpha
+  |  `- class Bio::EMBLDB               bio/db.rb               alpha
+  |     |- class Bio::PROSITE           bio/db/prosite.rb       beta
+  |     `- class Bio::TRANSFAC          bio/db/transfac.rb      beta
+  |         |- class Bio::TFMATRIX      bio/db/transfac.rb
+  |         |- class Bio::TFSITE        bio/db/transfac.rb
+  |         |- class Bio::TFFACTOR      bio/db/transfac.rb
+  |         |- class Bio::TFCELL        bio/db/transfac.rb
+  |         |- class Bio::TFCLASS       bio/db/transfac.rb
+  |         `- class Bio::TFGENE        bio/db/transfac.rb
+  |- class Bio::DBGET                   bio/io/dbget.rb         stable
+  `- class Bio::PubMed                  bio/io/pubmed.rb        stable
+
+=== メソッド追加
+
+  Matrix                                bio/matrix.rb           alpha
+  Vector                                bio/matrix.rb           alpha
+  String                                bio/util/fold.rb        stable
+
+=== 定数
+
+  Bio::BIORUBY_VERSION                  bio.rb
+  Bio::AminoAcid                        bio/data/aa.rb
+  Bio::AminoAcid_weight                 bio/data/aa.rb
+  Bio::NucleicAcid                      bio/data/na.rb
+  Bio::NucleicAcid_weight               bio/data/na.rb
+  Bio::CodonTable                       bio/data/codontable.rb
+  Bio::KEGGORG                          bio/data/keggorg.rb
+
+=end
+
