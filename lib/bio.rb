@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.25 2002/09/01 16:24:27 o Exp $
+#  $Id: bio.rb,v 1.26 2002/11/22 23:18:26 k Exp $
 #
 
 module Bio
@@ -123,6 +123,6 @@ require 'bio/db/fasta'
 
 require 'bio/appl/fasta'
 require 'bio/appl/blast'
-#require 'bio/appl/hmmer'
+require 'bio/appl/hmmer'
 require 'bio/appl/emboss'
 
