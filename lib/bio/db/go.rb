@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: go.rb,v 1.2 2003/09/08 05:56:28 n Exp $
+#  $Id: go.rb,v 1.3 2004/06/11 08:17:26 nakao Exp $
 #
 
 require 'bio/pathway'
@@ -28,23 +28,8 @@ module Bio
 
     class Ontology < Bio::Pathway
 
-      def initialize(str)
-	@id2term      = {}
-	@header_lines = {}
-	@id2id        = {}
-	rels = dag_edit_format_parser(str)
-	super(rels)
-      end
-      attr_reader :header_lines, :id2term, :id2id
-	
-
-      def goid2term(goid)
-	term = id2term[goid]
-	term = id2term[id2id[goid]] if term == nil
-	term
-      end
-
-
+      # Parsing GOID line in the DAGEdit format  
+      # GO:ID[ ; GO:ID...]
       def self.parse_goids(line)
 	goids = []
 	loop {
@@ -59,12 +44,32 @@ module Bio
 	    break
 	  end
 	}
-	goids
+	return goids
       end
+
+
+      def initialize(str)
+	@id2term      = {}
+	@header_lines = {}
+	@id2id        = {}
+ 	adj_list = dag_edit_format_parser(str)
+	super(adj_list)
+      end
+      attr_reader :header_lines, :id2term, :id2id
+	
+      #
+      def goid2term(goid)
+	term = id2term[goid]
+	term = id2term[id2id[goid]] if term == nil
+	return term
+      end
+
+
 
 
       private
 
+      # constructing adjaency list for the given ontology
       def dag_edit_format_parser(str)
 	stack    = []
 	adj_list = []
@@ -123,13 +128,12 @@ module Bio
 	    end
 	  end
 	}
-
-	adj_list
+	return adj_list
       end
 
 
       def parse_goids(line)
-	Ontology.parse_goids(line)
+	self.parse_goids(line)
       end
 
 
@@ -144,7 +148,7 @@ module Bio
 	    break
 	  end
 	}
-	synonyms
+	return synonyms
       end
 
     end # class Ontology
@@ -156,7 +160,7 @@ module Bio
 
       DELIMITER = RS = "\n"
 
-      # gene_association.* parser
+      # gene_association.* file parser
       def self.parser(str)
 	if block_given?
 	  str.each(DELIMITER) {|line|
@@ -172,6 +176,7 @@ module Bio
 	  return galist
 	end
       end
+
 
       def initialize(entry) 
         tmp = entry.chomp.split(/\t/)
@@ -189,7 +194,7 @@ module Bio
         @taxon             = tmp[12]
         @date              = tmp[13]
       end
-      attr_reader :db_object_id, :db_object_symbol,
+      attr_reader :db, :db_object_id, :db_object_symbol,
 	:db_reference, :evidence, :with, :aspect, 
 	:db_object_name, :db_object_synonym, :db_object_type, 
 	:taxon, :date 
@@ -271,16 +276,16 @@ end
 
 = Bio::GO
 
-* Classes for ((<The Gene Ontology Project|URL:http://www.geneontology.org>)).
+* Classes for ((<Gene Ontology|URL:http://www.geneontology.org>)).
 
 
 = Bio::GO::Ontology < Bio::Pathway
 
-* Container class for ontologies in the DAG Edit format. 
+* Container class for ontologies in the DAG Edit format.
 
-  compo_data = File.open('component.oontology').read
-  compo = Bio::GO::Ontology.new(compo_data)
-  p compo.bfs_shortest_path('0003673','0005632')
+  c_data = File.open('component.oontology').read
+  go_c = Bio::GO::Ontology.new(c_data)
+  p go_c.bfs_shortest_path('0003673','0005632')
 
 
 --- Bio::GO::Ontology.new(data)
@@ -294,7 +299,7 @@ end
 
 --- Bio::GO::Ontology#goid2term(GO_ID)
 
-      Returns a GO_Term correspondig with the GO_ID.
+      Returns a GO_Term correspondig with the given GO_ID.
 
 --- Bio::GO::Ontology.parse_goids(line)
 
@@ -307,8 +312,11 @@ end
 * Data parser for the gene_association go annotation.
   See also ((<the file format|URL:http://www.geneontology.org/doc/GO.annotation.html#file>)).
 
+
   mgi_data = File.open('gene_association.mgi').read
   mgi = Bio::GO::GeneAssociation.parser(mgi_data)
+
+or
 
   Bio::GO::GeneAssociation.parser(mgi_data) {|entry|
     p [entry.entry_id, entry.evidence, entry.goid]
@@ -320,10 +328,9 @@ end
       Retruns an Array of parsed gene_association flatfile.
       Block is acceptable.  
 
-
 --- Bio::GO::GeneAssociation.new(line)
 
-      Parsing an entry in the gene_association flatfile.  
+      Parsing an entry (in a line) in the gene_association flatfile.  
 
 --- Bio::GO::GeneAssociation.DELIMITER
 
