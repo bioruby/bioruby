@@ -17,22 +17,207 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pdb.rb,v 1.2 2003/10/01 14:13:56 ng Exp $
+#  $Id: pdb.rb,v 1.3 2004/03/02 17:02:40 k Exp $
 #
 
 # *** CAUTION ***
 # This is pre-alpha version. Specs shall be changed frequently.
+#
+# Modified by Alex Gutteridge 2004
 
 require 'bio/db'
+require 'bio/data/aa'
+require 'matrix' #for Vector
 
 module Bio
+
+  class Coordinate < Vector
+    def self.[](x,y,z)
+      super
+    end
+
+    def self.elements(array, *a)
+      raise 'Size of given array must be 3' if array.size != 3
+      super
+    end
+
+    def x; self[0]; end
+    def y; self[1]; end
+    def z; self[2]; end
+    def x=(n); self[0]=n; end
+    def y=(n); self[1]=n; end
+    def z=(n); self[2]=n; end
+
+    # Definition of 'to_ary' means objects of the class is
+    # implicitly regarded as an array.
+    def to_ary; self.to_a; end
+
+    def xyz; self; end
+
+    def distance(object2)
+      unless object2.is_a?(Vector)
+	begin
+	  object2 = object2.xyz
+	rescue NameError
+	  object2 = Vector.elements(object2.to_a)
+	end
+      end
+      (self - object2).r
+    end
+  end #class Coordinate
+
+  module PDBUtils
+
+    #Returns the geometric centre (average co-ord)
+    #of any AtomFinder (or .each_atom) implementing object
+    def geometricCentre
+      x = y = z = count = 0
+
+      self.each_atom{ |atom|
+	x += atom.x
+	y += atom.y
+	z += atom.z
+	count += 1
+      }
+
+      x = x / count
+      y = y / count
+      z = z / count
+
+      Bio::Coordinate[x,y,z]
+    end
+
+    #Returns the centre of gravity for any
+    #AtomFinder implementing object
+    #Blleurgh! - working out what element it is from the atom name is
+    #tricky - this'll work in most cases but not metals etc...
+    ElementMass = {
+      'H' => 1,
+      'C' => 12,
+      'N' => 14,
+      'O' => 16,
+      'S' => 32,
+      'P' => 31
+    }
+    def centreOfGravity
+      x = y = z = total = 0
+      self.each_atom{ |atom|
+	element = atom.element[0,1]
+	mass    = ElementMass[element]
+	total += mass
+	x += atom.x * mass
+	y += atom.y * mass
+	z += atom.z * mass
+      }
+
+      x = x / total
+      y = y / total
+      z = z / total
+
+      Bio::Coordinate[x,y,z]
+    end
+
+    #Every class in the heirarchy implements finder, this takes 
+    #a class which determines which type of object to find, the associated
+    #block is then run in classic .find style
+    def finder(findtype,&block)
+      if findtype == Bio::PDB::Atom
+        return self.find_atom(block)
+      elsif findtype == Bio::PDB::Residue
+        return self.find_residue(block)
+      elsif findtype == Bio::PDB::Chain
+        return self.find_chain(block)
+      elsif findtype == Bio::PDB::Model
+        return self.find_model(block)
+      else
+        raise "you can't find a #{findtype}"
+      end
+    end
+    
+  end #module PDBUtils
+  
+  #The *Finder modules implement a find_* method which returns
+  #an array of anything for which the block evals true
+  #The .models style methods act as classic iterators
+  module ModelFinder
+    def find_model(block)
+      array = []
+      self.each_model{ |model|
+        array.push(model) if block.call(model)
+      }
+      return array
+    end
+    #Note that each_model is defined in Bio::PDB class.
+  end #module ModelFinder
+  
+  #The heirarchical nature of the objects allow us to re-use the
+  #methods from the previous level - e.g. A PDB object can use the .models
+  #method defined in ModuleFinder to iterate through the models to find the
+  #chains
+  module ChainFinder
+    def find_chain(block)
+      array = []
+      self.each_chain{ |chain|
+        array.push(chain) if block.call(chain)
+      }
+      return array
+    end
+    def each_chain()
+      #Note that Bio::PDB::Model#each_chain has its own code
+      self.each_model{ |model|
+	model.each{ |chain| yield chain }
+      }
+    end
+  end #module ChainFinder
+  
+  module ResidueFinder
+    def find_residue(block)
+      array = []
+      self.each_residue{ |residue|
+        array.push(residue) if block.call(residue)
+      }
+      return array
+    end
+    def each_residue()
+      #Note that Bio::PDB::Chain#each_residue has its own code
+      self.each_chain{ |chain|
+	chain.each{ |residue| yield residue }
+      }
+    end
+  end #module ResidueFinder
+  
+  module AtomFinder
+    def find_atom(block)
+      array = []
+      self.each_atom{ |atom|
+        array.push(atom) if block.call(atom)
+      }
+      return array
+    end
+    def each_atom()
+      #Note that Bio::PDB::Residue#each_atom has its own code
+      self.each_residue{ |residue|
+	residue.each{ |atom| yield atom }
+      }
+    end
+  end #module AtomFinder
+
+  #This is the main PDB class which takes care of parsing, annotations
+  #and is the entry way to the co-ordinate data held in models
   class PDB < DB
 
-    #DELIMITER = RS = "\nEND                                                                             \n"
+    include Bio::PDBUtils
+    include AtomFinder
+    include ResidueFinder
+    include ChainFinder
+    include ModelFinder
+    include Enumerable
+
     DELIMITER = RS = nil # 1 file 1 entry
 
     Pdb_Continuation = nil
 
+    #Modules required by the field definitions
     module Pdb_Integer
       def self.new(str)
 	str.strip.to_i
@@ -64,6 +249,9 @@ module Bio
 	str.gsub(/\s+\z/, '')
       end
     end
+
+    #Creates a new module with a string left justified to the
+    #length given in nn
     def self.Pdb_String(nn)
       m = Module.new
       m.module_eval {
@@ -74,7 +262,6 @@ module Bio
       }
       m
     end
-    #private_class_method :Pdb_String
 
     Pdb_LString = String
     def self.Pdb_LString(nn)
@@ -87,12 +274,10 @@ module Bio
       }
       m
     end
-    #private_class_method :Pdb_LString
 
     def self.Pdb_Real(fmt)
       Pdb_String
     end
-    #private_class_method :Pdb_Real
 
     module Pdb_StringRJ
       def self.new(str)
@@ -108,23 +293,40 @@ module Bio
     Pdb_AChar        = Pdb_String
     Pdb_Character    = Pdb_LString
 
+    #Field definition class - each record contains a FieldDef which
+    #contains an array of field definintions( range, type, symbol)
+    #a hash of the symbols used, and a flag to say whether it continues
+    #over muiltiple lines or not.
+    #The symbol hash has symbols as keys and an array of types and string 
+    #ranges as values
     class FieldDef
+
       def initialize(*ary)
+
 	@definition = ary
 	@symbols = {}
 	@cont = false
 
+        #For each field definition (range,type,symbol)
 	ary.each do |x|
 	  range = (x[0] - 1)..(x[1] - 1)
+          #If type is nil (Pdb_Continuation) then set @cont to the range
+          #(other wise it is false to indicate no continuation in this FieldDef
 	  unless x[2] then
 	    @cont = range
 	  else
 	    klass = x[2]
 	    sym = x[3]
+            #If the symbol is a proper symbol then...
 	    if sym.is_a?(Symbol) then
+              #..if we have the symbol already in the symbol hash
+              #then add the range onto the range array
 	      if @symbols.has_key?(sym) then
 		@symbols[sym][1] << range
 	      else
+                #Other wise put a new symbol in with its type and range
+                #range is given its own array, not sure why. Can you 
+                #have anumber of ranges (I suppose so!)
 		@symbols[sym] = [ klass, [ range ] ]
 	      end
 	    end
@@ -137,6 +339,8 @@ module Bio
 	@cont
       end
 
+      #Each method - returns the symbol(k), type(x[0]) and range
+      #of each symbol. Or rather the array of ranges(x[1])
       def each
 	@symbols.each do |k, x|
 	  yield k, x[0], x[1]
@@ -144,10 +348,18 @@ module Bio
       end
     end #class FieldDef
 
+    #Record class - contains the original string, the type (str[0..5])
+    #and the definition (looked up from the Definition hash). Each definition
+    #is an array of FieldDef(s). parse is a flag to say whether the string
+    #has been parsed. Parsing auto-generates hash entries using the symbol 
+    #table. Remember Record is just a hash!
     class Record < Hash
       def initialize(str)
 	@str = str
+        #fetch_type just does str[0..5]
 	@type = fetch_type(str)
+        #get definition does the lookup in the Definition hash and some
+        #munging if the type is JRNL or REMARK
 	@definition = get_definition(str)
 	@parse = nil
       end #def initialize
@@ -158,6 +370,8 @@ module Bio
 	@parse = false
       end
 
+      #Return original string for this record (usually just @str, but
+      #sometimes add on the continuation data from other lines
       def original_data
 	if defined?(@cont_data) then
 	  [ @str, *@cont_data ]
@@ -166,13 +380,20 @@ module Bio
 	end
       end
 
+      #Called when we need to access the data, takes the string
+      #and the array of FieldDefs and parses it out
       def do_parse
 	return self if @parse
 	str = @str
+        #.each returns the symbol (key), the type (klass) and range array
 	@definition.each do |key, klass, ranges|
+          #If we only have one range then pull that out
+          #and store it in the hash
 	  if ranges.size <= 1 then
 	    self[key] = klass.new(str[ranges.first])
 	  else
+            #Go through each range and add the string to an array
+            #set the hash key to point to that array
 	    ary = []
 	    ranges.each do |r|
 	      ary << klass.new(str[r]) unless str[r].to_s.strip.empty?
@@ -180,16 +401,21 @@ module Bio
 	    self[key] = ary
 	  end
 	end #each
+        #If we have continuations then for each line of extra data...
 	if defined?(@cont_data) then
 	  @cont_data.each do |str|
+            #Get the symbol, type and range array 
 	    @definition.each do |key, klass, ranges|
+              #If there's one range then grab that range
 	      if ranges.size <= 1 then
 		r = ranges.first
 		unless str[r].to_s.strip.empty?
+                  #and concatenate the new data onto the old
 		  v = klass.new(str[r])
 		  self[key].concat(v) if self[key] != v
 		end
 	      else
+                #If there's more than one range then add to the array
 		ary = self[key]
 		ranges.each do |r|
 		  ary << klass.new(str[r]) unless str[r].to_s.strip.empty?
@@ -207,6 +433,8 @@ module Bio
       end
       private :fetch_type
 
+      #If this can contiunue then return the str associated with the
+      #Pdb_Continuation field definition. Hmmmm. Still not sure here
       def fetch_cont(str)
 	(c = continue?) ? str[c].to_i : -1
       end
@@ -216,15 +444,21 @@ module Bio
 	@type
       end
 
+      #Returns true if this record has a field type which allows 
+      #continuations
       def continue?
 	@definition.continue?
       end
 
+      #Adds continuation data to the record from str
       def add_continuation(str)
+        #Check that this record can continue
+        #and that str has the same type and definition
 	return false unless self.continue?
 	return false unless fetch_type(str) == @type
 	return false unless get_definition(str) == @definition
 	return false unless fetch_cont(str) >= 2
+        #If all this is OK then add onto @cont_data
 	unless defined?(@cont_data)
 	  @cont_data = []
 	end
@@ -232,6 +466,8 @@ module Bio
 	self
       end
 
+      #Basically just look up the definition in Definition hash
+      #do some munging for JRNL and REMARK
       def get_definition(str)
 	d = Definition[@type]
 	return d if d
@@ -262,6 +498,7 @@ module Bio
 	d
       end
 
+      #The clever bit - doesn't parse anything until its asked for
       def method_missing(name)
 	self.do_parse
 	unless @definition.symbols[name] then
@@ -272,6 +509,8 @@ module Bio
       end
     end #class Record
 
+
+    #Definition hash - contains all the rules for parsing each field
     # based on format V 2.2, 16-DEC-1996
     #
     # http://www.rcsb.org/pdb/docs/format/pdbguide2.2/guide2.2_frame.html
@@ -979,35 +1218,189 @@ module Bio
       'TER'    => true,
     }
 
+    #Aha! Our entry into the world of PDB parsing, we initialise a PDB
+    #object with the whole PDB file as a string
+    #each PDB has an array of the lines of the original file
+    #a bit memory-tastic! A hash of records and an array of models
+    #also has an id
     def initialize(str)
+
       @data = str.split(/[\r\n]+/)
       @hash = {}
-      @model = [ [] ]
+      @models = []
       @id = nil
+
+      #Flag to say whether the current line is part of a continuation
       cont = false
+
+      #Empty current model
+      cModel   = Bio::PDB::Model.new
+      cChain   = Bio::PDB::Chain.new
+      cResidue = Bio::PDB::Residue.new
+
+      #Goes through each line and replace that line with a PDB::Record
       @data.collect! do |line|
+        #Go to next if the previous line was contiunation able, and
+        #add_continuation returns true. Line is added by add_continuation
 	next if cont and cont = cont.add_continuation(line)
+        #Make the new record
 	f = Record.new(line)
+        #Set cont
 	cont = f if f.continue?
+        #Set the hash to point to this record either by adding to an
+        #array, or on it's own
 	key = f.record_type
 	if a = @hash[key] then
 	  a << f
 	else
 	  @hash[key] = [ f ]
 	end
-	if key == 'MODEL' then
-	  @model.pop if @model.last.empty?
-	  @model << [ f ]
-	elsif Coordinate_fileds[key] then
-	  @model.last << f
-	end
+
+        #The meat of the atom parsing - could be speeded up I think
+	if key == 'ATOM' or key == 'HETATM' then
+
+          #Do my own parsing here because this is speed critical
+          #This makes it x5 faster because otherwise you're calling
+          #methods on f all the time
+          serial     = line[6,5].to_i
+          name       = line[12,4].strip
+          altLoc     = line[16,1].strip
+          resName    = line[17,3].strip
+          chainID    = line[21,1].strip
+          resSeq     = line[22,4].to_i
+          iCode      = line[26,1].strip
+          x          = line[30,8].to_f
+          y          = line[38,8].to_f
+          z          = line[46,8].to_f
+          occupancy  = line[54,6].to_f
+          tempFactor = line[60,6].to_f
+
+          #Ignore solvent for now
+          #TODO: add solvent to each model where appropriate
+          if key == 'HETATM' and resName == 'HOH' then next end
+
+          #Make residue we add 'LIGAND' to the id if it's a HETATM
+          #I think this is neccessary because some PDB files reuse
+          #numbers for HETATMS
+          residueID = "#{resSeq}#{iCode}".strip
+          if key == 'HETATM'
+            residueID = "LIGAND" << residueID
+          end
+
+          #If this atom is part of the current residue then add it to
+          #the current residue straight away
+          if chainID == cChain.id and residueID == cResidue.id
+
+            #If we have this chain and residue just add the atom
+            atom = Atom.new(serial,name,altLoc,
+                            x,y,z,
+                            occupancy,tempFactor,
+                            cResidue)
+            cResidue.addAtom(atom) 
+
+          elsif !cModel[chainID]
+
+            #If we don't have anyhting, add a new chain, residue and atom
+            newChain   = Chain.new(chainID,cModel)
+            cModel.addChain(newChain)
+
+            if key == 'ATOM'
+              newResidue = Residue.new(resName,resSeq,iCode,
+                                       newChain)
+              newChain.addResidue(newResidue)
+            else
+              newResidue = Residue.new(resName,resSeq,iCode,
+                                       newChain,true)
+              newChain.addLigand(newResidue)
+            end
+
+            atom = Atom.new(serial,name,altLoc,
+                            x,y,z,
+                            occupancy,tempFactor,
+                            newResidue)
+            newResidue.addAtom(atom)
+
+            cChain   = newChain
+            cResidue = newResidue
+
+          elsif !cModel[chainID][residueID]
+
+            #If we have the chain (but not the residue)
+            #make a new residue, add it and add the atom
+            chain = cModel[chainID]
+
+            if key == 'ATOM'
+              newResidue = Residue.new(resName,resSeq,iCode,
+                                       chain)
+              chain.addResidue(newResidue)
+            else
+              newResidue = Residue.new(resName,resSeq,iCode,
+                                       chain,true)
+              chain.addLigand(newResidue)
+            end
+
+            atom = Atom.new(serial,name,altLoc,
+                            x,y,z,
+                            occupancy,tempFactor,
+                            newResidue)
+            newResidue.addAtom(atom)
+
+            cResidue = newResidue
+
+          end
+
+        elsif key == 'MODEL'
+          if cModel.model_serial
+            self.addModel(cModel)
+          end
+          model_serial = line[6,5]
+          cModel = Model.new(model_serial)
+        end
 	f
       end #each
+      #At the end we need to add the final model
+      self.addModel(cModel)
       @data.compact!
     end #def initialize
 
     attr_reader :data, :hash
 
+    #Adds a Bio::Model to the current strucutre
+    def addModel(model)
+      @models.push(model)
+      self
+    end
+    
+    #Iterates over the models
+    def each
+      @models.each{ |model| yield model }
+    end
+    #Alias needed for Bio::PDB::ModelFinder
+    alias :each_model :each
+    
+    #Provides keyed access to the models based on serial number
+    def [](key)
+      model = @models.find{ |model| key == model.model_serial }
+      if model
+        return model
+      else
+        $stderr.print "Error finding model: #{key}\n"
+        return nil
+      end
+    end
+    
+    #Stringifies to a list of atom records - we could add the annotation
+    #as well if needed
+    def to_s
+      string = ""
+      @models.each{ |model| string << model.to_s }
+      return string
+    end
+    
+    #Makes a hash out of an array of PDB::Records and some kind of symbol
+    #.__send__ invokes the method specified by the symbol.
+    #Essentially it ends up with a hash with keys given in the sub_record
+    #Not sure I fully understand this
     def make_hash(ary, meth)
       h = {}
       ary.each do |f|
@@ -1019,6 +1412,7 @@ module Bio
     end
     private :make_hash
 
+    #Takes an array and returns another array of PDB::Records
     def make_grouping(ary, meth)
       a = []
       k_prev = nil
@@ -1041,6 +1435,7 @@ module Bio
     end
 
     # PDB original methods
+    #Returns a hash of the REMARK records based on the remarkNum
     def remark(nn = nil)
       unless defined?(@remark)
 	h = make_hash(self.record('REMARK'), :remarkNum)
@@ -1055,6 +1450,7 @@ module Bio
       nn ? @remark[nn] : @remark
     end
 
+    #Returns a hash of journal entries
     def jrnl(sub_record = nil)
       unless defined?(@jrnl)
 	@jrnl = make_hash(self.record('JRNL'), :sub_record)
@@ -1062,6 +1458,8 @@ module Bio
       sub_record ? @jrnl[sub_record] : @jrnl
     end
 
+    #Finding methods - just grabs the record with the appropriate id
+    #or returns and array of all of them
     def helix(helixID = nil)
       if helixID then
 	self.record('HELIX').find { |f| f.helixID == helixID }
@@ -1093,14 +1491,21 @@ module Bio
       self.record('SSBOND')
     end
 
+    #Get seqres - we get this to return a nice Bio::Seq object
     def seqres(chainID = nil)
       unless defined?(@seqres)
 	h = make_hash(self.record('SEQRES'), :chainID)
+        newHash = {}
 	h.each do |k, a|
 	  a.collect! { |f| f.resName }
 	  a.flatten!
+          a.collect!{ |aa|
+            aa = aa.capitalize
+            aa = AminoAcid.names.invert[aa]
+          }
+          newHash[k] = Bio::Sequence::AA.new(a.to_s)
 	end
-	@seqres = h
+	@seqres = newHash
       end
       if chainID then
 	@seqres[chainID]
@@ -1114,21 +1519,6 @@ module Bio
 	self.record('DBREF').find_all { |f| f.chainID == chainID }
       else
 	self.record('DBREF')
-      end
-    end
-
-    def model(model_serial = nil)
-      if model_serial then
-	if a = @model.find { |x|
-	    x[0] and x[0].record_type == 'MODEL' and
-	      x[0].model_serial == model_serial
-	  } then
-	  a
-	else
-	  nil
-	end
-      else
-	@model
       end
     end
 
@@ -1158,7 +1548,301 @@ module Bio
       self.record('REVDAT').first.modNum
     end
 
+  #Atom class
+  class Atom
+
+    include PDBUtils
+    include Comparable
+
+    attr_accessor :serial, :element, :alt_loc, :x, :y, :z,
+      :occ, :bfac, :residue
+
+    def initialize(serial, element, alt_loc, x, y, z, occ, bfac, residue = nil)
+
+      @serial  = serial
+      @element = element
+      @alt_loc = alt_loc
+      @x       = x
+      @y       = y
+      @z       = z
+      @occ     = occ
+      @bfac    = bfac
+
+      @residue = residue
+
+    end
+
+    #Returns a Bio::Coordinate value
+    def xyz
+      Bio::Coordinate[@x,@y,@z]
+    end
+
+    #Returns an array of co-ords
+    def to_a
+      [@x,@y,@z]
+    end
+
+    #Caliculate distance
+    def distance(object2)
+      self.xyz.distance(object2)
+    end
+
+    #Sorts based on serial numbers
+    def <=>(other)
+      return @serial <=> other.serial
+    end
+
+    #Stringifies to PDB format
+    def to_s
+      if @element.length < 4
+        elementOutput = " " << "%-3s" % @element
+      else
+        elementOutput = @element
+      end
+      if @residue.hetatm
+        "HETATM%5s %s%1s%3s %1s%4s%1s   %8.3f%8.3f%8.3f%6.2f%6.2f" % [ @serial, elementOutput, @alt_loc, @residue.resName, @residue.chain.id, @residue.resSeq, @residue.iCode, @x, @y, @z, @occ, @bfac ]
+      else
+        "ATOM  %5s %s%1s%3s %1s%4s%1s   %8.3f%8.3f%8.3f%6.2f%6.2f" % [ @serial, elementOutput, @alt_loc, @residue.resName, @residue.chain.id, @residue.resSeq, @residue.iCode, @x, @y, @z, @occ, @bfac ]
+      end
+    end
+    
+  end
+  
+  #Residue class - id is a composite of resSeq and iCode
+  class Residue
+    
+    include PDBUtils
+    include AtomFinder
+    include Enumerable
+    include Comparable
+    
+    attr_reader :resSeq, :iCode, :id
+    attr_accessor :resName, :chain, :hetatm
+
+    def initialize(resName = nil, resSeq = nil, iCode = nil, 
+                   chain = nil, hetatm = false)
+      
+      @resName = resName
+      @resSeq  = resSeq
+      @iCode   = iCode
+
+      @hetatm  = hetatm
+
+      if (!@resSeq and !@iCode)
+        @id = nil
+      else
+        @id = @resSeq.to_s << @iCode
+        if @hetatm
+          @id = 'LIGAND' << @id
+        end
+      end
+      
+      @chain   = chain
+    
+      @atoms   = Array.new
+      
+    end
+    
+    #Keyed access to atoms based on element e.g. ["CA"]
+    def [](key)
+      atom = @atoms.find{ |atom| key == atom.element }
+      if atom
+        return atom
+      else
+        return nil
+      end
+    end
+    
+    #Need to define these to make sure id is correctly updated
+    def resSeq=(resSeq)
+      @resSeq = resSeq
+      @id      = resSeq.to_s << @iCode
+      if @hetatm
+        @id = 'LIGAND' << @id
+      end
+    end
+    
+    def iCode=(iCode)
+      @iCode = iCode
+      @id    = @resSeq.to_s << iCode
+      if @hetatm
+        @id = 'LIGAND' << @id
+      end
+    end
+    
+    #Adds an atom to this residue
+    def addAtom(atom)
+      @atoms.push(atom)
+      self
+    end
+    
+    #Iterator over the atoms
+    def each
+      @atoms.each{ |atom| yield atom }
+    end
+    #Alias to override AtomFinder#each_atom
+    alias :each_atom :each
+    
+    #Sorts based on resSeq and iCode if need be
+    def <=>(other)
+      if @resSeq != other.resSeq
+        return @resSeq <=> other.resSeq
+      else
+        return @iCode <=> other.iCode
+      end
+    end
+    
+    #Stringifies each atom
+    def to_s
+      string = ""
+      @atoms.each{ |atom| string << atom.to_s << "\n" }
+      return string
+    end
+    
+  end
+  
+  #Chain class - haven't implemented bound ligands or solvent
+  class Chain
+    
+    include PDBUtils
+    include AtomFinder
+    include ResidueFinder
+    include Enumerable
+    include Comparable
+    
+    attr_reader :model
+    attr_accessor :id
+    
+    def initialize(id = nil, model = nil)
+      
+      @id       = id
+      
+      @model    = model
+      
+      @residues = Array.new
+      @ligands  = Array.new
+      
+    end
+    
+    #Keyed access to residues based on ids
+    def [](key)
+      #If you want to find HETATMS you need to add LIGAND to the id
+      if key.to_s[0,6] == 'LIGAND'
+        residue = @ligands.find{ |residue| key.to_s == residue.id }
+      else
+        residue = @residues.find{ |residue| key.to_s == residue.id }
+      end
+      if residue
+        return residue
+      else
+        return nil
+      end
+    end
+    
+    #Add a residue to this chain
+    def addResidue(residue)
+      @residues.push(residue)
+      self
+    end
+
+    #Add a ligand to this chain
+    def addLigand(residue)
+      @ligands.push(residue)
+      self
+    end
+    
+    #Residue iterator
+    def each
+      @residues.each{ |residue| yield residue }
+    end
+    #Alias to override ResidueFinder#each_residue
+    alias :each_residue :each
+    
+    #Sort based on chain id
+    def <=>(other)
+      return @id <=> other.id
+    end
+    
+    #Stringifies each residue
+    def to_s
+      string = ""
+      @residues.each{ |residue| string << residue.to_s }
+      string = string << "TER\n"
+      return string
+    end
+    
+  end
+  
+  #Model class
+  class Model
+    
+    include PDBUtils
+    include AtomFinder
+    include ResidueFinder
+    include ChainFinder
+    include Enumerable
+    include Comparable
+    
+    attr_reader :structure
+    attr_accessor :model_serial
+    
+    def initialize(model_serial = nil, structure = nil)
+      
+      @model_serial = model_serial
+      
+      @structure    = structure
+      
+      @chains       = Array.new
+      
+    end
+    
+    #Adds a chain
+    def addChain(chain)
+      
+      @chains.push(chain)
+      self
+      
+    end
+    
+    #Chain iterator
+    def each
+      @chains.each{ |chain| yield chain }
+    end
+    #Alias to override ChainFinder#each_chain
+    alias :each_chain :each
+    
+    #Sorts models based on serial number
+    def <=>(other)
+      return @mode_serial <=> other.model_serial
+    end
+    
+    #Keyed access to chains
+    def [](key)
+      chain = @chains.find{ |chain| key == chain.id }
+      if chain
+        return chain
+      else
+        return nil
+      end
+    end
+    
+    #stringifies to chains
+    def to_s
+      string = ""
+      if model_serial
+        string = "MODEL     #{model_serial}" #Should use proper formatting
+      end
+      @chains.each{ |chain| string << chain.to_s }
+      if model_serial
+        string << "ENDMDL"
+      end
+      return string
+    end
+    
+  end
+
   end #class PDB
+
 end #module Bio
 
 =begin
@@ -1249,6 +1933,29 @@ end #module Bio
  If turnId is given, it only returns a record corresponding to given turnId.
  (Returns an Bio::PDB::Record instance.)
 
+--- Bio::PDB.addModel(model)
+
+ Adds a model to the current structure
+ Returns self
+
+--- Bio::PDB.each
+
+ Iterates over each of the models in the structure
+ Returns Bio::PDB::Models
+
+--- Bio::PDB[](key)
+
+ Returns the model with the given key as serial number
+
+--- Bio::PDB.to_s
+
+ Returns a string of Bio::PDB::Models. This propogates down the heirarchy
+ till you get to Bio::PDB::Atoms which are outputed in PDB format
+
+
+= Bio::PDB::Atom
+
+ A class for atom data - each ATOM line is parsed into an Atom object
 
 = Bio::PDB::Record < Hash
 
@@ -1288,7 +1995,7 @@ end #module Bio
  When accessing via rec.xxxxx style (described below), 
  do_parse is automatically called.
 
- Returns self.
+ Returns self
 
 --- Bio::PDB::Record#"anything"
 
