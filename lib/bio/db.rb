@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: db.rb,v 0.24 2003/09/08 07:26:54 n Exp $
+#  $Id: db.rb,v 0.25 2004/03/02 17:46:12 k Exp $
 #
 
 require 'bio/sequence'
@@ -99,7 +99,7 @@ module Bio
 
     def toptag2array(str)
       sep = "\001"
-      str.gsub(/\n(\S)/, "\n#{sep}\\1").split(sep)
+      str.gsub(/\n([A-Za-z\/])/, "\n#{sep}\\1").split(sep)
     end
 
     def subtag2array(str)
