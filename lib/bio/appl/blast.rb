@@ -1,5 +1,5 @@
 #
-# bio/appl/blast.rb - BLAST Execute Factory and Report Parser
+# bio/appl/blast.rb - BLAST Execution Factory and Report Parser
 # 
 #   Copyright (C) 2001 Mitsuteru S. Nakao <n@bioruby.org>
 #
@@ -17,55 +17,67 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.3 2001/11/12 22:07:14 nakao Exp $
+#  $Id: blast.rb,v 1.4 2001/11/20 04:15:40 nakao Exp $
 #
 
-require 'xmlparser'
-require 'bio'
+#require 'net/http'
+begin
+  require 'xmlparser'
+ensure LoadError
+end
 
 module Bio
-  class Blast
-    class BioBlastError < Exception; end
 
+  class Blast
+
+    class BlastExecError < StandardError; end
+    class BlastOptionsError < ArgumentError; end
+
+    ##
+    # server = { 'host'=>'localhost','port'=>8080, 'cgi'=>'/blast.cgi',
+    #            'proxy'=>'proxy', 'proxy_port'=>8000 }
     # opts = {'-m' => 7, '-e' => 0.0 , ...}
-    def initialize (server, blastall, program, db, opts)
-      @server = server
-      @blastall =  blastall
-      @io = nil
-      @program = program
-      @db = db
-      @opts = opts
+    def initialize (server = nil, blastall = nil, \
+		    program = nil, db = nil, opts = nil)
+      @server   = server
+      @blastall = blastall
+      @program  = program
+      @db       = db
+      @opts     = opts
+      @io       = nil
     end
     attr_accessor :server, :program, :db, :opts
+    # Blast#server['pryxy'] = 'proxy'
+    # Blast#server['pryxy_port'] = 8000
     ##
     # constructor for local blastall
     # blastall: /path/to/blastall
-    # program: (blastp|blastn|tblastx|blasty|...)
-    # db: /path/to/db
-    # opts = {'-e' => 0.1, ... } 
+    # program:  (blastp|blastn|tblastx|blasty|...)
+    # db:       /path/to/db
+    # opts:     {'-e' => 0.1, ... } 
     def Blast.local (blastall, program, db, opts = nil)
       self.new(nil, blastall, program, db, opts)
     end
 
     ##
     # constructor for remote blast server
-    # server = URI in String
     def Blast.remote (server, program, db, opts = nil)
       self.new(server, nil, program, db, opts)
     end
     #
     # constructor for remote blast server on NCBI
     def Blast.ncbi (program, db, opts = nil)
-      server = 'http://www.ncbi.nlm.nih.gov/blast/blast.cgi'
+      server = {'server'=>'NCBI',
+	'host'=>'www.ncbi.nlm.nih.gov','cgi'=>'/blast/blast.cgi'}
       self.new(server, nil, program, db, opts)
     end
     #
     # constructor for remote blast server on GenomeNet
     def Blast.genomenet (program, db, opts = nil)
-      server = 'http://blast.genomenet.ad.jp/sit-bin/nph-blast'
+      server = {'server'=>'GenomeNet',
+	'host'=>'blast.genome.ad.jp','cgi'=>'/sit-bin/nph-blast'}
       self.new(server, nil, program, db, opts)
     end
-
     
     ##
     # query in (multi) fasta format file in String
@@ -77,12 +89,50 @@ module Bio
       end
     end
     alias exec query
+
     ##
     # execute blastall in remote server
     def remote_blast(query)
-      raise "Not yet implimented"
+      raise NotImplementError, "Not yet implimented"
+#
+#      http = New::HTTP.new(@server['host'],@server['port'])
+#      data = set_post_data(opts,query) 
+#      result = http.post2(@server['cgi'], data)
+#      reports = preparse(result.body)
+#
+#	return reports.read.split("\n<\\?xml").collect { |entry|	
+#	  unless entry =~ /^<.xml/
+#	    Report.new('<?xml'+entry)
+#	  else
+#	    Report.new(entry)
+#	  end
+#	}
+#
     end
     private :remote_blast
+    #
+    def set_post_data
+      raise NotImplementError, "Not yet implimented"
+#----------------------------#{$id(%13x)}
+#Content-Disposition: form-data; name="#{name}"
+#
+#----------------------------#{$id(%13x)}
+#Content-Disposition: form-data; name="upload_file"; filename="#{filename}"
+#Content-Type: application/octet-stream
+#
+#
+#----------------------------#{$id(%13x)}--
+# data = "
+    end
+    private :set_post_data
+    #
+    def preparse(data)
+      raise NotImplementError, "Not yet implimented"
+    end
+    private :preparse
+
+
+
     ##
     # execute blastall in local machine
     def local_blast(query)
@@ -92,51 +142,50 @@ module Bio
 	if k =~ /^-[eFGEXIqrvbfgQDaOJMWzkPYSTlUyZRnLA]$/
 	  cmd += " #{k} #{v} "
 	else
-	  raise "Error: Invalid option #{k} #{v}"
+	  raise BlastError, "Error: Invalid option #{k} #{v}"
 	end
       } if @opts.type == Hash
 
       begin 
 	@io = IO.popen(cmd, "w+")
-	@io.sync = 1
+	@io.sync = 1   
 	@io.puts(query)
 	@io.close_write
 
-	#
-	# Multi Queries, Multi XML Reports
-	return @io.read.split("\n<\\?x").collect { |entry|	
-	  unless entry =~ /^<.x/
-	    Report.new('<?x'+entry)
+	# Returns Multi Queries, Multi XML Reports
+	return @io.read.split("\n<\\?xml").collect { |entry|	
+	  unless entry =~ /^<.xml/
+	    Report.new('<?xml'+entry)
 	  else
 	    Report.new(entry)
 	  end
 	}
 
-      rescue BioBlastError
+      rescue BlastExecError
 	raise "Error: #{$!} #{cmd} \n"
       ensure
 	@io.close
       end
-
     end
     private :local_blast
 
     ## ``blastall'' and ``db'' check methods
     #
-    # Executable file?
+    # Executable file ?
     def blastall?
-      File.stat(@blastall).executable_real?
+      File.stat(@blastall).executable?
     end
     #
     # Readable db ?
     def db?
-      File.stat(@db).readable_real?
+      File.stat(@db).readable?
     end
 
 
 
-    #
+    ##
     # Blast (-m 7) XML Report Parser Class
+    # xmlparser used.
     # This class is tested blastn -m 7 report only.
     class Report
 
@@ -292,12 +341,12 @@ module Bio
       # Bio::Blast::Report::Hit
       class Hit
 	def initialize(num=nil, id=nil, def_=nil,accession=nil, len=nil)
-	  @num = num
-	  @_id = id
-	  @_def = def_
+	  @num       = num
+	  @_id       = id
+	  @_def      = def_
 	  @accession = accession
-	  @len = len
-	  @hsp = Array.new
+	  @len       = len
+	  @hsp       = Array.new
 	end
 	attr_accessor :num, :_id, :_def, :accession, :len, :hsp
 	def add_hsp(hsp)
@@ -342,13 +391,13 @@ module Bio
 
       def parse_parameters(hash)
 	labels = { 
-	  'expect' => 'Parameters_expect',
-	  'include' => 'Parameters_include',
-	  'sc-match' => 'Parameters_so-match',
+	  'expect'      => 'Parameters_expect',
+	  'include'     => 'Parameters_include',
+	  'sc-match'    => 'Parameters_so-match',
 	  'sc-mismatch' => 'Parameters_so-mismatch',
-	  'gep-open' => 'Parameters_gap-open',
-	  'gap-extend' => 'Parameters_gap-extend',
-	  'filter' => 'Parameters_filter'
+	  'gep-open'    => 'Parameters_gap-open',
+	  'gap-extend'  => 'Parameters_gap-extend',
+	  'filter'      => 'Parameters_filter'
 	}
 	labels.each do |k,v|
 	  @parameters[k] = hash[v].to_i unless k == 'filter'
@@ -357,13 +406,13 @@ module Bio
 
       def parse_statistics(hash)
 	labels = {
-	  'db-num' => 'Statistics_db-num',
-	  'db-len' => 'Statistics_db-len',
-	  'hsp-len' => 'Statistics_hsp-len',
-	  'eff-space' => 'Statistics_eff-space',
-	  'kappa' => 'Statistics_kappa',
-	  'lambda' => 'Statistics_lambda',
-	  'entropy' => 'Statistics_entropy'
+	  'db-num'     => 'Statistics_db-num',
+	  'db-len'     => 'Statistics_db-len',
+	  'hsp-len'    => 'Statistics_hsp-len',
+	  'eff-space'  => 'Statistics_eff-space',
+	  'kappa'      => 'Statistics_kappa',
+	  'lambda'     => 'Statistics_lambda',
+	  'entropy'    => 'Statistics_entropy'
 	}
 	labels.each do |k,v|
 	  if k == 'dn-num' or k == 'db-len' or k == 'hsp-len'
