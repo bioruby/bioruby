@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genes.rb,v 0.13 2002/08/29 19:17:51 k Exp $
+#  $Id: genes.rb,v 0.14 2002/11/22 22:57:38 k Exp $
 #
 
 require 'bio/db'
@@ -155,9 +155,9 @@ end
 
 if __FILE__ == $0
 
-  require 'bio/io/dbget'
+  require 'bio/io/fetch'
 
-  e = Bio::DBGET.bget('eco b0010')
+  e = Bio::Fetch.query('eco', 'b0010')
   g = Bio::KEGG::GENES.new(e)
 
   p g.entry

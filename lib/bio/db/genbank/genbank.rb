@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.27 2002/09/05 07:22:25 k Exp $
+#  $Id: genbank.rb,v 0.28 2002/11/22 22:57:59 k Exp $
 #
 
 require 'bio/db/genbank'
@@ -133,14 +133,13 @@ if __FILE__ == $0
   rescue LoadError
   end
 
-  require 'bio/io/dbget'
+  require 'bio/io/fetch'
 
   puts "### GenBank"
   if ARGV.size > 0
     gb = Bio::GenBank.new(ARGF.read)
   else
-#   gb = Bio::GenBank.new(Bio::DBGET.bget('gb LPATOVGNS'))
-    gb = Bio::GenBank.new(Bio::DBGET.bget('gb IRO125195'))
+    gb = Bio::GenBank.new(Bio::Fetch.query('gb', 'LPATOVGNS'))
   end
 
   puts "## LOCUS"

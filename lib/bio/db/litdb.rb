@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: litdb.rb,v 0.4 2001/12/15 03:02:03 katayama Exp $
+#  $Id: litdb.rb,v 0.5 2002/11/22 22:58:18 k Exp $
 #
 
 require 'bio/db'
@@ -95,17 +95,17 @@ end
 
 
 if __FILE__ == $0
-  require 'bio/io/dbget'
+  require 'bio/io/fetch'
 
-  entry = Bio::DBGET.bget('litdb 0308004') 
+  entry = Bio::Fetch.query('litdb', '0308004') 
   puts entry
   p Bio::LITDB.new(entry).reference
 
-  entry = Bio::DBGET.bget('litdb 0309094')
+  entry = Bio::Fetch.query('litdb', '0309094')
   puts entry
   p Bio::LITDB.new(entry).reference
 
-  entry = Bio::DBGET.bget('litdb 0309093')
+  entry = Bio::Fetch.query('litdb', '0309093')
   puts entry
   p Bio::LITDB.new(entry).reference
 end
