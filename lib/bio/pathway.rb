@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.23 2001/11/18 13:41:18 katayama Exp $
+#  $Id: pathway.rb,v 1.24 2001/11/22 10:59:27 katayama Exp $
 #
 
 require 'bio/matrix'
@@ -60,7 +60,7 @@ module Bio
       end
     end
 
-    # clear @relations to reduce the usage of memory
+    # clear @relations to reduce the memory usage
     def clear_relations!
       @relations.clear
     end
@@ -219,8 +219,8 @@ module Bio
 
     # Returns completeness of the edge density among the surrounded nodes
     def cliquishness(node)
-      a = @graph[node].keys
-      sg = subgraph(a)
+      neighbors = @graph[node].keys
+      sg = subgraph(neighbors)
       if sg.graph.size != 0
         edges = sg.edges / 2.0
         nodes = sg.nodes
@@ -270,7 +270,6 @@ module Bio
     alias bfs breadth_first_search
 
 
-    # simple application of bfs
     def bfs_shortest_path(node1, node2)
       distance, route = breadth_first_search(node1)
       step = distance[node2]
@@ -284,24 +283,45 @@ module Bio
     end
 
 
-    # Depth first search yields much information about the structure of a graph
-    # and the predecessor subgraph form a forest of trees.
+    # Depth first search yields much information about the structure of the
+    # graph especially on the classification of the edges.
     def depth_first_search
       visited = {}
-      distance = {}
-      predecessor = {}
+      timestamp = {}
+      tree_edges = {}
+      back_edges = {}
+      cross_edges = {}
+      forward_edges = {}
       count = 0
 
       dfs_visit = Proc.new { |from|
 	visited[from] = true
-	distance[from] = [count += 1]
+	timestamp[from] = [count += 1]
 	@graph[from].each_key do |to|
-	  unless visited[to]
-	    predecessor[to] = from
+	  if visited[to]
+	    if timestamp[to].size > 1
+	      if timestamp[from].first < timestamp[to].first
+		# forward edge (black)
+		p "#{from} -> #{to} : forward edge" if $DEBUG
+		forward_edges[from] = to
+	      else
+		# cross edge (black)
+		p "#{from} -> #{to} : cross edge" if $DEBUG
+		cross_edges[from] = to
+	      end
+	    else
+	      # back edge (gray)
+	      p "#{from} -> #{to} : back edge" if $DEBUG
+	      back_edges[from] = to
+	    end
+	  else
+	    # tree edge (white)
+	    p "#{from} -> #{to} : tree edge" if $DEBUG
+	    tree_edges[to] = from
 	    dfs_visit.call(to)
 	  end
 	end
-	distance[from].push(count += 1)
+	timestamp[from].push(count += 1)
       }
 
       @graph.each_key do |node|
@@ -309,9 +329,16 @@ module Bio
 	  dfs_visit.call(node)
 	end
       end
-      return distance, predecessor
+      return timestamp, tree_edges, back_edges, cross_edges, forward_edges
     end
     alias dfs depth_first_search
+
+
+    def dfs_topological_sort
+      # sorted by finished time reversely and collect node names only
+      timestamp, = self.depth_first_search
+      timestamp.sort {|a,b| b[1][1] <=> a[1][1]}.collect {|x| x.first }
+    end
 
 
     # Dijkstra method to solve the sortest path problem in the weighted graph.
@@ -607,9 +634,40 @@ if __FILE__ == $0
   p path
 
   puts "--- Test depth_first_search method"
-  distance, predecessor = graph.depth_first_search
-  p distance
-  p predecessor
+  timestamp, tree, back, cross, forward = graph.depth_first_search
+  p timestamp
+  print "tree edges : "; p tree
+  print "back edges : "; p back
+  print "cross edges : "; p cross
+  print "forward edges : "; p forward
+
+  puts "--- Test dfs_topological_sort method"
+  #
+  # Professor Bumstead topologically sorts his clothing when getting dressed.
+  #
+  #  "undershorts"       "socks"
+  #     |      |            |
+  #     v      |            v           "watch"
+  #  "pants" --+-------> "shoes"
+  #     |
+  #     v
+  #  "belt" <----- "shirt" ----> "tie" ----> "jacket"
+  #     |                                       ^
+  #     `---------------------------------------'
+  #
+  dag = Bio::Pathway.new([
+    Bio::Relation.new("undeershorts", "pants", true),
+    Bio::Relation.new("undeershorts", "shoes", true),
+    Bio::Relation.new("socks", "shoes", true),
+    Bio::Relation.new("watch", "watch", true),
+    Bio::Relation.new("pants", "belt", true),
+    Bio::Relation.new("pants", "shoes", true),
+    Bio::Relation.new("shirt", "belt", true),
+    Bio::Relation.new("shirt", "tie", true),
+    Bio::Relation.new("tie", "jacket", true),
+    Bio::Relation.new("belt", "jacket", true),
+  ])
+  p dag.dfs_topological_sort
 
   puts "--- Test dijkstra method"
   distance, predecessor = graph.dijkstra('q')
@@ -666,10 +724,10 @@ Note: you can clear the @relations list by calling clear_relations! method to
 reduce the memory usage, and the content of the @relations can be re-generated
 from the @graph by to_relations method.
 
---- Bio::Pathway#new(list, undirected = nil)
+--- Bio::Pathway#new(list, undirected = false)
 
       Generate Bio::Pathway object from the list of Bio::Relation objects.
-      If the second argument is assigned, undirected graph is generated.
+      If the second argument is true, undirected graph is generated.
 
         r1 = Bio::Relation.new('a', 'b', 1)
         r2 = Bio::Relation.new('a', 'c', 5)
@@ -679,22 +737,22 @@ from the @graph by to_relations method.
 
 --- Bio::Pathway#relations
 
-      Read-only accesser for the internal list of the Bio::Relation objects
+      Read-only accessor for the internal list of the Bio::Relation objects
       '@relations'.
 
 --- Bio::Pathway#graph
 
-      Read-only accesser for the adjacency list of the graph.
+      Read-only accessor for the adjacency list of the graph.
 
 --- Bio::Pathway#index
 
-      Read-only accesser for the row/column index (@index) of the adjacency
+      Read-only accessor for the row/column index (@index) of the adjacency
       matrix.  Contents of the hash @index is created by calling to_matrix
       method.
 
 --- Bio::Pathway#label
 
-      Accesser for the hash of the label assigned to the each node.  You can
+      Accessor for the hash of the label assigned to the each node.  You can
       label some of the nodes in the graph by passing a hash to the label
       and select subgraphs which contain labeled nodes only by subgraph method.
 
@@ -706,74 +764,77 @@ from the @graph by to_relations method.
 --- Bio::Pathway#directed?
 --- Bio::Pathway#undirected?
 
-        Returns true or false respond to the internal state of the graph.
+      Returns true or false respond to the internal state of the graph.
 
 --- Bio::Pathway#directed
 --- Bio::Pathway#undirected
 
-        Changes the internal state of the graph between 'directed' and
-        'undirected' and re-generate adjacency list.  The undirected graph
-        can be converted to directed graph, however, the edge between two
-        nodes will be simply doubled to both ends.
-        Note that these method can not be used without the list of the
-        Bio::Relation objects (internally stored in @relations variable).
-        Thus if you already called clear_relations! method, call
-        to_relations first.
+      Changes the internal state of the graph between 'directed' and
+      'undirected' and re-generate adjacency list.  The undirected graph
+      can be converted to directed graph, however, the edge between two
+      nodes will be simply doubled to both ends.
+      Note that these method can not be used without the list of the
+      Bio::Relation objects (internally stored in @relations variable).
+      Thus if you already called clear_relations! method, call
+      to_relations first.
 
 --- Bio::Pathway#clear_relations!
 --- Bio::Pathway#to_relations
 
-        Clear @relations array and re-generate @relations from @graph.
-        Useful when you want to reduce the memory usage of the object.
+      Clear @relations array and re-generate @relations from @graph.
+      Useful when you want to reduce the memory usage of the object.
 
 --- Bio::Pathway#to_list
 
-        Generate the adjcancecy list @graph from @relations (called by
-        initialize and in some other cases when @relations has been changed).
+      Generate the adjcancecy list @graph from @relations (called by
+      initialize and in some other cases when @relations has been changed).
 
 --- Bio::Pathway#append(rel, add_rel = true)
 
-        Add an Bio::Relation object to the @graph and @relations.
+      Add an Bio::Relation object 'rel' to the @graph and @relations.
+      If the second argument is false, @relations is not modified (only
+      useful when genarating @graph from @relations internally).
 
 --- Bio::Pathway#delete(rel)
 
-        Remove an Bio::Relation from the @graph and @relations.
+      Remove an edge indicated by the Bio::Relation object 'rel' from the
+      @graph and the @relations.
 
 --- Bio::Pathway#nodes
 --- Bio::Pathway#edges
 
-        Returns the number of the nodes or edges in the graph.
+      Returns the number of the nodes or edges in the graph.
 
 --- Bio::Pathway#to_matrix(default_value = nil, diagonal_value = nil)
 
-        Returns adjacency list expression of the graph as the Matrix object.
-        If one argument was assigned, matrix will be filled with the value.
-        If two arguments were assigned, the diagonal constituent of the
-        matrix will be filled with the second value besides the above.
+      Returns the adjacency matrix expression of the graph as a Matrix object.
+      If the first argument was assigned, the matrix will be filled with
+      the given value.  The second argument indicates the value of the
+      diagonal constituents of the matrix besides the above.
 
 --- Bio::Pathway#dump_matrix(default_value = nil, diagonal_value = nil)
 --- Bio::Pathway#dump_list
 
-        These are pretty printer of the graph.  The dump_matrix method
-        accepts the same arguments as to_matrix.  Useful when you want to
-        check the internal state of the adjacency list or the matrix (for
-        the debug etc.) easily.
+      These are pretty printer of the graph.  The dump_matrix method
+      accepts the same arguments as to_matrix.  Useful when you want to
+      check the internal state of the adjacency list or the matrix (for
+      the debug etc.) easily.
 
 --- Bio::Pathway#subgraph(list = nil)
 
-        This method select some nodes and returns new Bio::Pathway object
-        consists of selected nodes only.
-        If the list of the nodes (as Array) is assigned as the argument,
-        use the list to select the nodes from the graph.  If no argument
-        is assigned, internal property of the graph @label is used to select
-        the nodes.
+      This method select some nodes and returns new Bio::Pathway object
+      consists of selected nodes only.
+      If the list of the nodes (as Array) is assigned as the argument,
+      use the list to select the nodes from the graph.  If no argument
+      is assigned, internal property of the graph @label is used to select
+      the nodes.
 
-           hash = { 'a' => 'secret', 'b' => 'important', 'c' => 'important' }
-           g.label = hash
-           g.subgraph
+         hash = { 'a' => 'secret', 'b' => 'important', 'c' => 'important' }
+         g.label = hash
+         g.subgraph
 
-           list = [ 'a', 'b', 'c' ]
-           g.subrraph(list)
+         list = [ 'a', 'b', 'c' ]
+         g.subrraph(list)
 
 --- Bio::Pathway#common_subgraph(graph)
 
@@ -796,12 +857,15 @@ from the @graph by to_relations method.
 --- Bio::Pathway#breadth_first_search(root)
 
       Breadth first search solves steps and path to the each node and forms
-      a tree contains all reachable vertices from the root node.
-      The weight of the edges are not considered by this method.
+      a tree contains all reachable vertices from the root node.  This method
+      returns the result in 2 hashes - 1st one shows the steps from root node
+      and 2nd hash shows the structure of the tree.
+
+      The weight of the edges are not considered in this method.
 
 --- Bio::Pathway#bfs(root)
 
-      Alias for breadth_first_search.
+      Alias for the breadth_first_search method.
 
 --- Bio::Pathway#bfs_shortest_path(node1, node2)
 
@@ -810,13 +874,26 @@ from the @graph by to_relations method.
 
 --- Bio::Pathway#depth_first_search
 
-      Depth first search yields much information about the structure of a graph
-      and the predecessor subgraph form a forest of trees.
-      The weight of the edges are not considered by this method.
+      Depth first search yields much information about the structure of the
+      graph especially on the classification of the edges.  This method returns
+      5 hashes - 1st one shows the timestamps of each node containing the first
+      discoverd time and the search finished time in an array.  The 2nd, 3rd,
+      4th, and 5th hashes contain 'tree edges', 'back edges', 'cross edges',
+      'forward edges' respectively.
+
+      If $DEBUG is true (e.g. ruby -d), this method prints the progression
+      of the search.
+
+      The weight of the edges are not considered in this method.
 
 --- Bio::Pathway#dfs
 
-      Alias for depth_first_search.
+      Alias for the depth_first_search method.
+
+--- Bio::Pathway#dfs_topological_sort
+
+      Topological sort of the directed acyclic graphs ("dags") by using
+      depth_first_search.
 
 --- Bio::Pathway#dijkstra(root)
 
@@ -834,7 +911,7 @@ from the @graph by to_relations method.
 
 --- Bio::Pathway#floyd
 
-      Alias for floyd_warshall.
+      Alias for the floyd_warshall method.
 
 --- Bio::Pathway#kruskal
 
@@ -859,11 +936,11 @@ compare Bio::Relation objects if the edges have Comparable property.
 
 --- Bio::Relation#node
 
-      Accesser for the @node.
+      Accessor for the @node.
 
 --- Bio::Relation#edge
 
-      Accesser for the @edge.
+      Accessor for the @edge.
 
 --- Bio::Relation#from
 
