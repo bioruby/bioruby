@@ -13,8 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: cell.rb,v 1.2 2001/09/14 13:26:54 shuichi Exp $
+#  $Id: cell.rb,v 1.3 2001/10/17 14:43:11 katayama Exp $
 #
+
+module Bio
 
 require "bio/db"
 
@@ -74,4 +76,6 @@ class CELL < KEGGDB
   end
 
 end
+
+end				# module Bio
 

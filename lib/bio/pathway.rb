@@ -13,53 +13,162 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: pathway.rb,v 1.1 2001/10/04 07:32:45 katayama Exp $
+#  $Id: pathway.rb,v 1.2 2001/10/17 14:43:11 katayama Exp $
 #
+
+module Bio
 
 require 'bio/matrix'
 
-class BioPathway
+class Pathway
 
-=begin
-  def initialize(list)
-    # [directed] [weighted] graph generation from the list of BioRelation
-    @node = Hash.new([])	# hash of array of nodes (V:vertices)
-    @edge = Hash.new([])	# hash of array of edge  (E:edges)
-    list.each do |x|
-      @node[x.from].push(x.to)
-      @edge[x.to].push(x.relation)
+  # Graph (adjacency list) generation from the list of Relation
+  def initialize(list, undirected = nil)
+    @undirected = undirected
+    @index = {}
+    @label = {}
+    @graph = {}
+    list.each do |rel|
+      append(rel)
     end
   end
-=end
+  attr_accessor :label
+  attr_reader :graph, :index
 
-  def initialize(list)
-    # [directed] [weighted] graph generation from the list of BioRelation
-    @graph = Hash.new([])
-    list.each do |x|
-      @graph[x.from].push([x.to, x.relation])
+  def append(rel)
+    if @graph[rel.from].nil?
+      @graph[rel.from] = {}
     end
+    if @graph[rel.to].nil?
+      @graph[rel.to] = {}
+    end
+    @graph[rel.from][rel.to] = rel.relation
+    @graph[rel.to][rel.from] = rel.relation if @undirected
   end
 
+  def nodes
+    @graph.keys.length
+  end
+
+  def edges
+    edges = 0
+    @graph.each_value do |v|
+      edges += v.size
+    end
+    edges
+  end
+
+  # Convert adjacency list to adjacency matrix
   def to_matrix
-    # convert adjacency list to adjacency matrix (BioMatrix)
-    matrix = Array.new([])
-    @graph.each do |key,val|
-      x = key
-      y = val.shift
-      r = val.shift		# relation (weight)
-      matrix[x][y] = r
+    @graph.keys.each_with_index do |k, i|
+      @index[k] = i
     end
-    return matrix
+
+    # note : following code only makes reference to the same []
+    #matrix = Array.new(nodes, Array.new(nodes))
+
+    matrix = Array.new
+    nodes.times do |i|
+      matrix.push(Array.new(nodes))
+    end
+
+    @graph.each do |from, hash|
+      hash.each do |to, relation|
+	x = @index[from]
+	y = @index[to]
+	matrix[x][y] = relation		# Bug: matrix[x][y] == matrix[x+1][y] !
+      end
+    end
+    Matrix[*matrix]
+  end
+
+  # Select labeled nodes and generate subgraph
+  def subgraph
+    sub_graph = Pathway.new([], @undirected)
+    @graph.each do |from, hash|
+      next unless @label[from]
+      hash.each do |to, relation|
+	next unless @label[to]
+	sub_graph.append(Relation.new(from, to, relation))
+      end
+    end
+    return sub_graph
+  end
+
+  def common_subgraph(graph)
+  end
+
+  def clique
+  end
+
+  def small_world
+    freq = Hash.new(0)
+    @graph.each_value do |v|
+      freq[v.size] += 1
+    end
+    return freq
   end
 
   def breadth_first_search(root)
+    white = -1; gray = 0; black = 1
+
+    color = Hash.new(white)
+    distance = {}
+    predecessor = {}
+
+    color[root] = gray
+    distance[root] = 0
+    predecessor[root] = nil
+
+    queue = [ root ]
+
+    while from = queue.shift
+      @graph[from].keys.each do |to|
+	if color[to] == white
+	  color[to] = gray
+	  distance[to] = distance[from] + 1
+	  predecessor[to] = from
+	  queue.push(to)
+	end
+      end
+      color[from] = black
+    end
+
+    return distance, predecessor
   end
   alias bfs breadth_first_search
 
-  def reach(node1, node2)
+  def bfs_distance(root)
+    seen = {}
+    distance = {}
+
+    seen[root] = true
+    distance[root] = 0
+
+    queue = [ root ]
+
+    while from = queue.shift
+      @graph[from].keys.each do |to|
+	unless seen[to]
+	  seen[to] = true
+	  distance[to] = distance[from] + 1
+	  queue.push(to)
+	end
+      end
+    end
+    return distance
   end
 
-  def label(hash)
+  def shortest_path(node1, node2)
+    distance, route = breadth_first_search(node1)
+    step = distance[node2]
+    node = node2
+    path = [ node2 ]
+    while node != node1 and route[node]
+      node = route[node]
+      path.unshift(node)
+    end
+    return step, path
   end
 
   def dijkstra
@@ -68,13 +177,10 @@ class BioPathway
   def floyd
   end
 
-  def common_subgraph(graph)
-  end
-
 end
 
 
-class BioRelation
+class Relation
 
   def initialize(node1, node2, edge)
     @node = [node1, node2]
@@ -83,11 +189,11 @@ class BioRelation
   attr_accessor :node, :edge
 
   def from
-    @node.shift
+    @node[0]
   end
 
   def to
-    @node.pop
+    @node[1]
   end
 
   def relation
@@ -95,3 +201,6 @@ class BioRelation
   end
 
 end
+
+end				# module Bio
+

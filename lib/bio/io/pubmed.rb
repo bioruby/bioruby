@@ -1,5 +1,5 @@
 #
-# bio/io/pubmed.rb - NCBI Entrez/PubMed client class
+# bio/io/pubmed.rb - NCBI Entrez/PubMed client module
 #
 #   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 #
@@ -13,26 +13,29 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: pubmed.rb,v 1.4 2001/09/26 02:02:52 katayama Exp $
+#  $Id: pubmed.rb,v 1.5 2001/10/17 14:43:12 katayama Exp $
 #
 #  For more informations :
-#    http://www.ncbi.nlm.nih.gov/entrez/query/static/overview.html
-#    http://www.ncbi.nlm.nih.gov/entrez/query/static/linking.html
-#    http://www.ncbi.nlm.nih.gov/entrez/query/static/help/pmhelp.html#MEDLINEDisplayFormat
-#    http://www.ncbi.nlm.nih.gov/entrez/query/static/help/pmhelp.html#SearchFieldDescriptionsandTags
-#    http://www.ncbi.nlm.nih.gov/entrez/utils/utils_index.html
-#    http://www.ncbi.nlm.nih.gov/entrez/utils/pmfetch_help.html
+#    http://www.ncbi.nlm.nih.gov
+#      /entrez/query/static/overview.html
+#      /entrez/query/static/linking.html
+#      /entrez/query/static/help/pmhelp.html#MEDLINEDisplayFormat
+#      /entrez/query/static/help/pmhelp.html#SearchFieldDescriptionsandTags
+#      /entrez/utils/utils_index.html
+#      /entrez/utils/pmfetch_help.html
 #
+
+module Bio
 
 require 'net/http'
 
-module PubMed
+class PubMed
 
-  def query(id)
+  def PubMed.query(id)
     host = "www.ncbi.nlm.nih.gov"
-    http = Net::HTTP.new(host)
-
     path = "/entrez/query.fcgi?cmd=Text&dopt=MEDLINE&db=PubMed&uid="
+
+    http = Net::HTTP.new(host)
 
     result = http.get(path + id.to_s).pop
 
@@ -44,11 +47,27 @@ module PubMed
     end
   end
 
-  def search(str)
+  def PubMed.pmfetch(id)
     host = "www.ncbi.nlm.nih.gov"
+    path = "/entrez/utils/pmfetch.fcgi?mode=text&report=medline&db=PubMed&id="
+
     http = Net::HTTP.new(host)
 
+    result = http.get(path + id.to_s).pop
+
+    if result =~ /#{id}\s+Error/
+      raise( result )
+    else
+      result = result.gsub("\r", "\n").squeeze("\n").gsub(/<\/?pre>/, '')
+      return result
+    end
+  end
+
+  def PubMed.search(str)
+    host = "www.ncbi.nlm.nih.gov"
     path = "/entrez/query.fcgi?cmd=Search&doptcmdl=MEDLINE&db=PubMed&term="
+
+    http = Net::HTTP.new(host)
 
     if str =~ /\s+/
       str = str.split(/\s+/).join('+')
@@ -65,23 +84,7 @@ module PubMed
     end
   end
 
-  def pmfetch(id)
-    host = "www.ncbi.nlm.nih.gov"
-    http = Net::HTTP.new(host)
-
-    path = "/entrez/utils/pmfetch.fcgi?mode=text&report=medline&db=PubMed&id="
-
-    result = http.get(path + id.to_s).pop
-
-    if result =~ /#{id}\s+Error/
-      raise( result )
-    else
-      result = result.gsub("\r", "\n").squeeze("\n").gsub(/<\/?pre>/, '')
-      return result
-    end
-  end
-
-  module_function :query, :search, :pmfetch
-
 end
+
+end				# module Bio
 

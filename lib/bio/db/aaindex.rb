@@ -13,13 +13,15 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: aaindex.rb,v 1.4 2001/09/26 19:13:38 katayama Exp $
+#  $Id: aaindex.rb,v 1.5 2001/10/17 14:43:11 katayama Exp $
 #
+
+module Bio
 
 require "bio/db"
 require "bio/matrix"
 
-class AAindex < NCBIDB
+class AAindex < KEGGDB
 
   DELIMITER     = RS = "\n//\n"
   TAGSIZE       = 2
@@ -54,6 +56,7 @@ class AAindex < NCBIDB
 
 end
 
+
 class AAindex1 < AAindex
 
   def initialize(entry)
@@ -76,8 +79,8 @@ class AAindex1 < AAindex
 
 end
 
-class AAindex2 < AAindex
 
+class AAindex2 < AAindex
 
   def initialize(entry)
     super(entry)
@@ -97,20 +100,27 @@ class AAindex2 < AAindex
         @aa[aalist[i].chr] = i
       end
 
-      ma = Array.new(20, [])		# 2D array of 20x(20)
+      ma = Array.new
+      20.times do |i|
+	ma.push(Array.new(20))			# 2D array of 20x(20)
+      end
+
       for i in 0 .. 19 do
         for j in i .. 19 do
           ma[i][j] = values[i + j*(j+1)/2].to_f
           ma[j][i] = ma[i][j]
         end
       end
-      BioMatrix[*ma]
+      Matrix[*ma]
 
-    when / -ARNDCQEGHILKMFPSTWYV /	# 21x20/2 matrix (with gap)
+    when / -ARNDCQEGHILKMFPSTWYV /		# 21x20/2 matrix (with gap)
       raise NotImplementedError
-    when / ACDEFGHIKLMNPQRSTVWYJ- /	# 21x21 matrix (with gap)
+    when / ACDEFGHIKLMNPQRSTVWYJ- /		# 21x21 matrix (with gap)
       raise NotImplementedError
     end
   end
 
 end
+
+end				# module Bio
+

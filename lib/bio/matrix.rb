@@ -13,14 +13,14 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: matrix.rb,v 1.2 2001/08/21 11:08:08 katayama Exp $
+#  $Id: matrix.rb,v 1.3 2001/10/17 14:43:10 katayama Exp $
 #
 
 require 'matrix'
 
-class BioMatrix < Matrix
+class Matrix
 
-  def win_search(seq, threshold)
+  def promoter_search(seq, threshold)
     result = []
     row_size = self.row_size
     seq_size = seq.size
@@ -44,6 +44,8 @@ class BioMatrix < Matrix
     end
     result
   end
+
+  private
 
   def get_weight_na(na, col)
     case na.downcase
@@ -78,10 +80,9 @@ class BioMatrix < Matrix
 end
 
 
-class BioVector < Vector
+class Vector
 
-  include Math
-
+  # Correlation coefficient
   def cc(v)
     Vector.Raise ErrDimensionMismatch if size != v.size
 
@@ -97,8 +98,10 @@ class BioVector < Vector
       s_total += (x - x_mean)*(y - y_mean)
     end
 
-    if sqrt(x_total * y_total) != 0.0
-      s_total/sqrt(x_total * y_total)
+    sqrt = Math.sqrt(x_total * y_total)
+
+    if sqrt != 0.0
+      s_total/sqrt
     else
       0.0
     end
@@ -113,4 +116,5 @@ class BioVector < Vector
   end
 
 end
+
 

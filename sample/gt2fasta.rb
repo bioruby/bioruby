@@ -14,11 +14,13 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: gt2fasta.rb,v 0.1 2001/06/21 08:25:36 katayama Exp $
+#  $Id: gt2fasta.rb,v 0.2 2001/10/17 14:43:10 katayama Exp $
 #
 
 require 'bio/db/genbank'
 require 'bio/util/fold'
+
+include Bio
 
 while gets(GenBank::DELIMITER)
   gb = GenBank.new($_)

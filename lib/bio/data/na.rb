@@ -13,12 +13,12 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: na.rb,v 0.3 2001/09/26 18:46:02 katayama Exp $
+#  $Id: na.rb,v 0.4 2001/10/17 14:43:11 katayama Exp $
 #
 
-module NucleicAcid
+module Bio
 
-  NA_name = {
+  NucleicAcid = {
 
     # IUPAC code
     # * Faisst and Meyer (Nucleic Acids Res. 20:3-26, 1992)
@@ -52,7 +52,7 @@ module NucleicAcid
 
   }
 
-  NA_weight = {
+  NucleicAcid_weight = {
 
     # Calculated by BioPerl's SeqStats.pm :-)
 
@@ -62,5 +62,5 @@ module NucleicAcid
     'C' => 289.215,
   }
 
-end
+end				# module Bio
 

@@ -13,8 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: genes.rb,v 0.7 2001/06/21 02:39:23 katayama Exp $
+#  $Id: genes.rb,v 0.8 2001/10/17 14:43:12 katayama Exp $
 #
+
+module Bio
 
 require 'bio/db'
 
@@ -127,7 +129,7 @@ class GENES < KEGGDB
 
   def aaseq
     unless @data['AASEQ']
-      @data['AASEQ'] = AAseq.new(field_fetch('AASEQ').gsub(/[\s\d\/]+/, ''))
+      @data['AASEQ'] = Sequence::AA.new(field_fetch('AASEQ').gsub(/[\s\d\/]+/, ''))
     end
     @data['AASEQ']
   end
@@ -138,7 +140,7 @@ class GENES < KEGGDB
 
   def ntseq
     unless @data['NTSEQ']
-      @data['NTSEQ'] = NAseq.new(field_fetch('NTSEQ').gsub(/[\s\d\/]+/, ''))
+      @data['NTSEQ'] = Sequence::NA.new(field_fetch('NTSEQ').gsub(/[\s\d\/]+/, ''))
     end
     @data['NTSEQ']
   end
@@ -150,3 +152,6 @@ class GENES < KEGGDB
   alias nalen ntlen
 
 end
+
+end				# module Bio
+

@@ -18,10 +18,12 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: genes2tab.rb,v 0.2 2001/09/11 05:27:50 katayama Exp $
+#  $Id: genes2tab.rb,v 0.3 2001/10/17 14:43:10 katayama Exp $
 #
 
 require 'bio/db/kegg/genes'
+
+include Bio
 
 while entry = gets(GENES::DELIMITER)
 

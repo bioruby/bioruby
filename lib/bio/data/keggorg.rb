@@ -13,10 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
 #  Library General Public License for more details. 
 #
-#  $Id: keggorg.rb,v 0.2 2001/06/21 03:54:50 katayama Exp $
+#  $Id: keggorg.rb,v 0.3 2001/10/17 14:43:11 katayama Exp $
 #
 
-module KEGGORG
+module Bio
 
   # % genome2tab.rb genome | cut -f 1-3 | sort
   #
@@ -26,7 +26,7 @@ module KEGGORG
   #                  53 entries
   #                  Last update:  01/05/30
   #                  <dbget> 
-  KO = {
+  KEGGORG = {
     'aae' => [ 'A.aeolicus', 'Aquifex aeolicus VF5' ],
     'afu' => [ 'A.fulgidus', 'Archaeoglobus fulgidus VC-16' ],
     'ape' => [ 'A.pernix', 'Aeropyrum pernix K1' ],
@@ -82,21 +82,5 @@ module KEGGORG
     'xfa' => [ 'X.fastidiosa', 'Xylella fastidiosa 9a5c' ],
   }
 
-  def keggorg2organism(korg)
-    return KO[korg][0]
-  end
-
-  def keggorg2species(korg)
-    return KO[korg][1]
-  end
-
-  def species2keggorg(species)
-    KO.each do |korg, sp|
-      if sp[1] =~ /#{species}/
-	return korg
-      end
-    end
-  end
-
-end
+end				# module Bio
 

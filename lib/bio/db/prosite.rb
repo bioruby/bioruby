@@ -13,8 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: prosite.rb,v 0.3 2001/06/21 08:19:30 katayama Exp $
+#  $Id: prosite.rb,v 0.4 2001/10/17 14:43:11 katayama Exp $
 #
+
+module Bio
 
 require 'bio/db'
 
@@ -408,4 +410,6 @@ class PROSITE < EMBLDB
   end
 
 end
+
+end				# module Bio
 

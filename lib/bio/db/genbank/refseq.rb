@@ -13,11 +13,16 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: refseq.rb,v 1.1 2001/09/01 07:27:02 katayama Exp $
+#  $Id: refseq.rb,v 1.2 2001/10/17 14:43:11 katayama Exp $
 #
+
+module Bio
 
 require 'bio/db/genbank'
 
 class RefSeq < GenBank
   # Nothing to do (RefSeq database format is completely same as GenBank)
 end
+
+end				# module Bio
+

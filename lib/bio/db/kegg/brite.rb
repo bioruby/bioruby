@@ -13,8 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: brite.rb,v 0.1 2001/06/25 07:16:38 katayama Exp $
+#  $Id: brite.rb,v 0.2 2001/10/17 14:43:11 katayama Exp $
 #
+
+module Bio
 
 require 'bio/db'
 
@@ -36,3 +38,6 @@ class BRITE < KEGGDB
   # REFERENCE
 
 end
+
+end				# module Bio
+

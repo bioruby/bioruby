@@ -13,8 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: genbank.rb,v 0.17 2001/09/01 07:19:35 katayama Exp $
+#  $Id: genbank.rb,v 0.18 2001/10/17 14:43:11 katayama Exp $
 #
+
+module Bio
 
 require 'bio/db'
 
@@ -534,14 +536,14 @@ class GenBank < NCBIDB
   #  - The ORIGIN line is followed by sequence data (multiple records).
   #
   # origin - returns contents of the ORIGIN record as String
-  # naseq - returns DNA sequence in the ORIGIN record as NAseq object
+  # naseq - returns DNA sequence in the ORIGIN record as Sequence::NA object
   #
   def origin
     unless @data['ORIGIN']
       ori = @orig['ORIGIN'][/.*/]			# 1st line
       seq = @orig['ORIGIN'].sub(/.*/, '')		# sequence lines
       @data['ORIGIN']   = truncate(tag_cut(ori))
-      @data['SEQUENCE'] = NAseq.new(seq.tr('^a-z', ''))	# without [\s\d\/]+
+      @data['SEQUENCE'] = Sequence::NA.new(seq.tr('^a-z', ''))	# without [\s\d\/]+
     end
     @data['ORIGIN']
   end
@@ -574,8 +576,8 @@ class GenBank < NCBIDB
 
 	case qualifier
 	when 'translation'
-	  hash[qualifier] = AAseq.new(data.gsub(/\s/, ''))
-#	  hash[qualifier] = AAseq.new(data.tr('^A-Z', ''))
+	  hash[qualifier] = Sequence::AA.new(data.gsub(/\s/, ''))
+#	  hash[qualifier] = Sequence::AA.new(data.tr('^A-Z', ''))
 	when 'db_xref'
 	  if hash[qualifier].empty?
 	    hash[qualifier] = []
@@ -593,4 +595,6 @@ class GenBank < NCBIDB
   end
 
 end
+
+end				# module Bio
 

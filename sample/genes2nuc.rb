@@ -14,11 +14,13 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: genes2nuc.rb,v 0.1 2001/06/21 08:24:16 katayama Exp $
+#  $Id: genes2nuc.rb,v 0.2 2001/10/17 14:43:10 katayama Exp $
 #
 
 require 'bio/db/kegg/genes'
 require 'bio/util/fold'
+
+include Bio
 
 while gets(GENES::DELIMITER)
   genes = GENES.new($_)

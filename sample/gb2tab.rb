@@ -18,10 +18,12 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: gb2tab.rb,v 0.4 2001/08/28 05:04:45 katayama Exp $
+#  $Id: gb2tab.rb,v 0.5 2001/10/17 14:43:10 katayama Exp $
 #
 
 require 'bio/db/genbank'
+
+include Bio
 
 ARGV.each do |seqfile|
 

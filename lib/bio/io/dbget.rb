@@ -16,26 +16,32 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: dbget.rb,v 1.2 2001/09/12 07:26:42 katayama Exp $
+#  $Id: dbget.rb,v 1.3 2001/10/17 14:43:12 katayama Exp $
 #
+
+module Bio
 
 require 'socket'
 
-module DBGET
+class DBGET
 
-  def dbget(com, arg)
+  SERV = "dbgetserv.genome.ad.jp"	# default DBGET server address
+  PORT = "3266"				# default DBGET port number
 
-    addr="dbgetserv.genome.ad.jp"	# default DBGET server address
-    port="3266"				# default DBGET port number
+  def DBGET.dbget(com, arg, serv = nil, port = nil)
 
-    if ENV["DBGET"] =~ /:/		# overwrite DBGET serv/port
-      addr, port = ENV["DBGET"].split(':')
+    unless serv or port			# if both of serv and port are nil
+      if ENV["DBGET"] =~ /:/		# and ENV["DBGET"] exists
+	serv, port = ENV["DBGET"].split(':')
+      end
     end
+    serv = serv ? serv : SERV
+    port = port ? port : PORT
 
     query = "#{com} #{arg}\n"		# DBGET query string
     result = ''				# DBGET result
 
-    sock = TCPSocket.open("#{addr}", "#{port}")
+    sock = TCPSocket.open("#{serv}", "#{port}")
 
     sock.write(query)			# submit query
     sock.flush				# buffer flush
@@ -51,26 +57,23 @@ module DBGET
 
     return result
   end
-  module_function :dbget
 
 
-  ### optional module functions (in alphabetical order)
+  ### Individual DBGET functions (in alphabetical order)
 
   # alink("db entry")	- print relations
-  def alink(arg) 
+  def DBGET.alink(arg) 
     dbget("alink", arg)
   end
-  module_function :alink
 
   # bacc("db entry")	- get accession(s)
 
   # bent("db entry")	- get entry name
 
-  # bfind("db keyword")	- search entris by keyword
-  def bfind(arg)
+  # bfind("db keyword")	- search entries by keyword
+  def DBGET.bfind(arg)
     dbget("bfind", arg)
   end
-  module_function :bfind
 
   # bget("<options> [<dbname>:][<id> ..]") - get entry by ID 
   #
@@ -81,48 +84,43 @@ module DBGET
   #   -h      print help message
   #   -V      print version
   #
-  def bget(arg)
+  def DBGET.bget(arg)
     dbget("bget", arg)
   end
-  module_function :bget
 
   # binfo("db")		- get database information
-  def binfo(arg)
+  def DBGET.binfo(arg)
     dbget("binfo", arg)
   end
-  module_function :binfo
 
   # blink("db entry")	- print link informations
-  def blink(arg)
+  def DBGET.blink(arg)
     dbget("blink", arg)
   end
-  module_function :blink
 
   # bman ("db entry")	- print manual page
-  def bman(arg)
+  def DBGET.bman(arg)
     dbget("bman", arg)
   end
-  module_function :bman
 
   # bref("db entry")	- get references and authors
-  def bref(arg) 
+  def DBGET.bref(arg) 
     dbget("bref", arg)
   end
-  module_function :bref
 
   # btab ("db entry")	- get/generate database alias table
-  def btab(arg) 
+  def DBGET.btab(arg) 
     dbget("btab", arg)
   end
-  module_function :btab
 
   # btit("db entry ..")	- get entry definition
-  def btit(arg) 
+  def DBGET.btit(arg) 
     dbget("btit", arg)
   end
-  module_function :btit
 
   # lmarge ("db entry")
 
 end
+
+end				# module Bio
 

@@ -13,8 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: reference.rb,v 1.3 2001/09/20 07:25:25 katayama Exp $
+#  $Id: reference.rb,v 1.4 2001/10/17 14:43:11 katayama Exp $
 #
+
+module Bio
 
 class Reference
 
@@ -177,4 +179,6 @@ class Reference
   end
 
 end
+
+end				# module Bio
 

@@ -13,8 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: location.rb,v 0.6 2001/09/26 18:18:47 katayama Exp $
+#  $Id: location.rb,v 0.7 2001/10/17 14:43:10 katayama Exp $
 #
+
+module Bio
 
 class Location
 
@@ -197,6 +199,7 @@ class Locations
 
 end
 
+end				# module Bio
 
 
 =begin

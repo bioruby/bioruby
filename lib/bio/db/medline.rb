@@ -13,8 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: medline.rb,v 1.3 2001/09/26 18:50:51 katayama Exp $
+#  $Id: medline.rb,v 1.4 2001/10/17 14:43:11 katayama Exp $
 #
+
+module Bio
 
 require 'bio/db'
 
@@ -287,4 +289,5 @@ class MEDLINE < NCBIDB
 
 end
 
+end				# module Bio
 

@@ -13,11 +13,16 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: ddbj.rb,v 1.1 2001/08/21 12:48:32 katayama Exp $
+#  $Id: ddbj.rb,v 1.2 2001/10/17 14:43:11 katayama Exp $
 #
+
+module Bio
 
 require 'bio/db/genbank'
 
 class DDBJ < GenBank
   # Nothing to do (DDBJ database format is completely same as GenBank)
 end
+
+end				# module Bio
+

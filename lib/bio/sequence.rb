@@ -13,8 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: sequence.rb,v 0.7 2001/09/26 18:40:54 katayama Exp $
+#  $Id: sequence.rb,v 0.8 2001/10/17 14:43:11 katayama Exp $
 #
+
+module Bio
 
 require 'bio/data/na'
 require 'bio/data/aa'
@@ -24,15 +26,6 @@ require 'bio/location'
 # Nucleic/Amino Acid sequence
 
 class Sequence < String
-
-  include NucleicAcid
-  include AminoAcid
-  include CodonTable
-
-  def initialize(str)
-    str.tr!(" \t\n\r",'')
-    super
-  end
 
   def subseq(s = 1, e = self.length)
     s -= 1
@@ -58,141 +51,164 @@ class Sequence < String
     return sum
   end
 
+
+  # Nucleic Acid sequence
+
+  class NA < Sequence
+
+    def initialize(str)
+      if str
+	str.downcase!
+	str.tr!('u', 't')
+	str.tr!(" \t\n\r",'')
+	super
+      end
+    end
+
+    def [](*arg)
+      a = super(*arg)
+      a.is_a?(String) ? NA.new(a) : a
+    end
+
+    # bio/location.rb
+    def splicing(position)	# see Locations class
+      mRNA = NA.new('')
+      Locations.new(position).each do |location|
+	if location.sequence
+	  mRNA << location.sequence
+	else
+	  exon = subseq(location.from,location.to)
+	  exon = exon.complement if location.strand < 0
+	  mRNA << exon
+	end
+      end
+      return mRNA
+    end
+
+    def complement
+      str = self.reverse
+      str.tr!('atgc', 'tacg')
+      NA.new(str)
+    end
+
+    # bio/data/codontable.rb
+    def codon_table(table = 1, codon = nil)
+      if codon
+	CodonTable[table][codon]
+      else
+	CodonTable[table]
+      end
+    end
+
+    def translate(frame = 1, table = 1)
+      ct = codon_table(table)
+      frame -= 1
+      aaseq = AA.new('')
+      frame.step(self.length - 3, 3) do |i|
+	codon = self[i,3]
+	if ct[codon]
+	  aaseq << ct[codon]
+	else
+	  aaseq << "X"
+	end
+      end
+      return aaseq
+    end
+
+    def base_composition
+      count = Hash.new(0)
+      self.scan(/./) do |base|
+	count[base] += 1
+      end
+      return count
+    end
+
+    def gc_percent
+      count = base_composition
+      at = count['a'] + count['t']
+      gc = count['g'] + count['c']
+      gc = format("%.1f", gc.to_f / (at + gc) * 100)
+      return gc.to_f
+    end
+    alias gc gc_percent
+
+    def illegal_bases
+      self.scan(/[^atgc]/).sort.uniq
+    end
+
+    def molecular_weight(hash = nil)
+      hash = NucleicAcid_weight unless hash
+      total(hash)
+    end
+
+    def to_re
+      re = ''
+      self.each_byte do |x|
+	if NucleicAcid[x.chr]
+	  re << NucleicAcid[x.chr]
+	else
+	  re << '.'
+	end
+      end
+      return /#{re}/
+    end
+
+    def to_a
+      array = []
+      self.each_byte do |x|
+	array.push(NucleicAcid[x.chr.upcase])
+      end
+      return array
+    end
+
+    def rna
+      self.tr('t', 'u')
+    end
+
+    def pikachu
+      self.tr("atgc", "pika")	# joke, of cource :-)
+    end
+
+  end
+
+
+  # Amino Acid sequence
+
+  class AA < Sequence
+
+    def initialize(str)
+      if str
+	str.upcase!
+	str.tr!(" \t\n\r",'')
+	super
+      end
+    end
+
+    def [](*arg)
+      a = super(*arg)
+      a.is_a?(String) ? AA.new(a) : a
+    end
+
+    def to_a(short = nil)
+      array = []
+      self.each_byte do |x|
+	if short
+	  array.push(AminoAcid[x.chr])
+	else
+	  array.push(AminoAcid[AminoAcid[x.chr]])
+	end
+      end
+      return array
+    end
+
+    def molecular_weight(hash = nil)
+      hash = AminoAcid_weight unless hash
+      total(hash)
+    end
+
+  end
+
 end
 
-
-# Nucleic Acid sequence
-
-class NAseq < Sequence
-
-  def initialize(str)
-    if str
-      super.downcase!
-      super.tr!('u', 't')
-    end
-  end
-
-  def [](*arg)
-    NAseq.new(super(*arg))
-  end
-
-  def splicing(position)	# see Locations class
-    mRNA = NAseq.new('')
-    Locations.new(position).each do |location|
-      if location.sequence
-	mRNA << location.sequence
-      else
-	exon = subseq(location.from,location.to)
-	exon = exon.complement if location.strand < 0
-	mRNA << exon
-      end
-    end
-    return mRNA
-  end
-
-  def complement
-    str = self.reverse
-    str.tr!('atgc', 'tacg')
-    NAseq.new(str)
-  end
-
-  def translate(frame = 1, table = 1)
-    ct = codon_table(table)
-    frame -= 1
-    aaseq = AAseq.new('')
-    frame.step(self.length - 3, 3) do |i|
-      codon = self[i,3]
-      if ct[codon]
-	aaseq << ct[codon]
-      else
-	aaseq << "X"
-      end
-    end
-    return aaseq
-  end
-
-  def gc_percent
-    count = Hash.new(0)
-    self.scan(/./) do |base|
-      count[base] += 1
-    end
-    at = count['a'] + count['t']
-    gc = count['g'] + count['c']
-    gc = format("%.1f", gc.to_f / (at + gc) * 100)
-    return gc.to_f
-  end
-  alias gc gc_percent
-
-  def illegal_bases
-    self.scan(/[^atgc]/).sort.uniq
-  end
-
-  def molecular_weight(hash = nil)
-    hash = NA_weight unless hash
-    total(hash)
-  end
-
-  def to_re
-    re = ''
-    self.each_byte do |x|
-      if NA_name[x.chr]
-	re << NA_name[x.chr]
-      else
-	re << '.'
-      end
-    end
-    return /#{re}/
-  end
-
-  def to_a
-    array = []
-    self.each_byte do |x|
-      array.push(NA_name[x.chr.upcase])
-    end
-    return array
-  end
-
-  def rna
-    super.tr!('t', 'u')
-  end
-
-  def pikachu
-    self.tr("atgc", "pika")	# joke, of cource :-)
-  end
-
-end
-
-
-# Amino Acid sequence
-
-class AAseq < Sequence
-
-  def initialize(str)
-    if str
-      super.upcase!
-    end
-  end
-
-  def [](*arg)
-    AAseq.new(super(*arg))
-  end
-
-  def to_a(short = nil)
-    array = []
-    self.each_byte do |x|
-      if short
-	array.push(AA_name[x.chr])
-      else
-	array.push(AA_name[AA_name[x.chr]])
-      end
-    end
-    return array
-  end
-
-  def molecular_weight(hash = nil)
-    hash = AA_weight unless hash
-    total(hash)
-  end
-
-end
+end				# module Bio
 

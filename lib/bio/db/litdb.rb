@@ -13,8 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: litdb.rb,v 0.1 2001/06/25 07:28:07 katayama Exp $
+#  $Id: litdb.rb,v 0.2 2001/10/17 14:43:11 katayama Exp $
 #
+
+module Bio
 
 require 'bio/db'
 
@@ -66,3 +68,6 @@ class LITDB < NCBIDB
   end
 
 end
+
+end				# module Bio
+

@@ -13,11 +13,13 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: transfac.rb,v 1.2 2001/08/21 10:54:16 katayama Exp $
+#  $Id: transfac.rb,v 1.3 2001/10/17 14:43:11 katayama Exp $
 #
 
-require "bio/matrix"
+module Bio
+
 require "bio/db"
+require "bio/matrix"
 
 class TRANSFAC < EMBLDB
 
@@ -116,28 +118,24 @@ class TFMATRIX < TRANSFAC
 
 
   def ma
-    @ma_dat = {}
-    @ma_ary = []
-    @key = '';
+    ma_dat = {}
+    ma_ary = []
+    key = ''
     @orig.each do |k, v|
-      if k =~ /^(\d+)/
-        if k[0, 1] == '0'
-          @key = k.sub(/0/, '').to_i
-        else
-          @key = k.to_i
-        end
-        @ma_dat[@key] = fetch(k) unless @ma_dat[@key]
+      if k =~ /^0*(\d+)/
+        key = $1.to_i
+        ma_dat[key] = fetch(k) unless ma_dat[key]
       end
     end
-    @ma_dat.keys.sort.each_with_index do |k, i|
-      @rep_nt = @ma_dat[k].slice!(-1, 1)
-      @ma_dat[k].slice!(-1, 1)
-      @ma_ary[i] = @ma_dat[k].split(/\s+/)
-      @ma_ary[i].each_with_index do |x, j|
-        @ma_ary[i][j] = x.to_i
+    ma_dat.keys.sort.each_with_index do |k, i|
+      rep_nt = ma_dat[k].slice!(-1, 1)
+      ma_dat[k].slice!(-1, 1)
+      ma_ary[i] = ma_dat[k].split(/\s+/)
+      ma_ary[i].each_with_index do |x, j|
+        ma_ary[i][j] = x.to_i
       end
     end
-    @m = BioMatrix[*@ma_ary]
+    Matrix[*ma_ary]
   end
 
   # BA      Statistical basis
@@ -387,4 +385,6 @@ class TFGENE < TRANSFAC
   end
 
 end
+
+end				# module Bio
 

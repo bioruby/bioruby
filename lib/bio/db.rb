@@ -13,15 +13,18 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: db.rb,v 0.6 2001/09/26 18:18:08 katayama Exp $
+#  $Id: db.rb,v 0.7 2001/10/17 14:43:10 katayama Exp $
 #
+
+module Bio
 
 require 'bio/sequence'
 require 'bio/reference'
 #require 'bio/id'
 #require 'bio/taxonomy'
+require 'bio/data/keggorg'
 
-class BioDB
+class DB
 
   ### sub classes should define the following constants if appropriate
 
@@ -91,7 +94,7 @@ class BioDB
     raise NotImplementedError
   end
 
-  # returns DNA/RNA sequence as NAseq
+  # returns DNA/RNA sequence as Sequence::NA
   def naseq
     raise NotImplementedError
   end
@@ -101,7 +104,7 @@ class BioDB
     raise NotImplementedError
   end
 
-  # returns Amino Acid sequence as AAseq
+  # returns Amino Acid sequence as Sequence::AA
   def aaseq
     raise NotImplementedError
   end
@@ -242,7 +245,7 @@ class BioDB
 end
 
 
-class NCBIDB < BioDB
+class NCBIDB < DB
 
   def initialize(entry, tagsize)
     @tagsize = tagsize
@@ -266,11 +269,27 @@ end
 
 
 class KEGGDB < NCBIDB
-  require 'bio/data/keggorg'; include KEGGORG
+
+  def keggorg2organism(korg)
+    return KEGGORG[korg][0]
+  end
+
+  def keggorg2species(korg)
+    return KEGGORG[korg][1]
+  end
+
+  def species2keggorg(species)
+    KEGGORG.each do |korg, sp|
+      if sp[1] =~ /#{species}/
+	return korg
+      end
+    end
+  end
+
 end
 
 
-class EMBLDB < BioDB
+class EMBLDB < DB
 
   def initialize(entry, tagsize)
     @tagsize = tagsize
@@ -296,4 +315,6 @@ class EMBLDB < BioDB
   end
 
 end
+
+end				# module Bio
 

@@ -13,12 +13,12 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: codontable.rb,v 0.3 2001/09/26 18:46:02 katayama Exp $
+#  $Id: codontable.rb,v 0.4 2001/10/17 14:43:11 katayama Exp $
 #
 
-module CodonTable
+module Bio
 
-  CT = {
+  CodonTable = {
 
     # codon table 1  - Standard (Eukaryote)
     1 => {
@@ -86,13 +86,5 @@ module CodonTable
 
   }
 
-  def codon_table(table = 1, codon = nil)
-    if codon
-      CT[table][codon]
-    else
-      CT[table]
-    end
-  end
-
-end
+end				# module Bio
 
