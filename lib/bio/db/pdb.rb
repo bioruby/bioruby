@@ -17,11 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pdb.rb,v 1.1 2003/09/30 11:19:11 ng Exp $
+#  $Id: pdb.rb,v 1.2 2003/10/01 14:13:56 ng Exp $
 #
 
 # *** CAUTION ***
-# This is a test version. Specs shall be changed in the future.
+# This is pre-alpha version. Specs shall be changed frequently.
 
 require 'bio/db'
 
@@ -149,6 +149,7 @@ module Bio
 	@str = str
 	@type = fetch_type(str)
 	@definition = get_definition(str)
+	@parse = nil
       end #def initialize
 
       attr_reader :definition
@@ -157,8 +158,16 @@ module Bio
 	@parse = false
       end
 
+      def original_data
+	if defined?(@cont_data) then
+	  [ @str, *@cont_data ]
+	else
+	  [ @str ]
+	end
+      end
+
       def do_parse
-	return nil if defined?(@parse)
+	return self if @parse
 	str = @str
 	@definition.each do |key, klass, ranges|
 	  if ranges.size <= 1 then
@@ -297,7 +306,7 @@ module Bio
 		   ),
 
       'TITLE' => \
-      FieldDef.new([  9, 10,  Pdb_Continuation, nil ],
+      FieldDef.new([  9, 10, Pdb_Continuation, nil ],
 		   [ 11, 70, Pdb_String, :title ]
 		   ),
 
@@ -976,7 +985,7 @@ module Bio
       @model = [ [] ]
       @id = nil
       cont = false
-      @data.each do |line|
+      @data.collect! do |line|
 	next if cont and cont = cont.add_continuation(line)
 	f = Record.new(line)
 	cont = f if f.continue?
@@ -992,7 +1001,9 @@ module Bio
 	elsif Coordinate_fileds[key] then
 	  @model.last << f
 	end
+	f
       end #each
+      @data.compact!
     end #def initialize
 
     attr_reader :data, :hash
@@ -1023,6 +1034,7 @@ module Bio
       end
       a
     end
+    private :make_grouping
 
     def record(name)
       @hash[name]
@@ -1031,7 +1043,14 @@ module Bio
     # PDB original methods
     def remark(nn = nil)
       unless defined?(@remark)
-	@remark = make_hash(self.record('REMARK'), :remarkNum)
+	h = make_hash(self.record('REMARK'), :remarkNum)
+	h.each do |i, a|
+	    a.shift # remove first record (= space only)
+	  if i != 1 and i != 2 then
+	    a.collect! { |f| f.text.gsub(/\s+\z/, '') }
+	  end
+	end
+	@remark = h
       end
       nn ? @remark[nn] : @remark
     end
@@ -1052,7 +1071,7 @@ module Bio
     end
 
     def turn(turnId = nil)
-      if turnID then
+      if turnId then
 	self.record('TURN').find { |f| f.turnId == turnId }
       else
 	self.record('TURN')
@@ -1072,6 +1091,22 @@ module Bio
 
     def ssbond
       self.record('SSBOND')
+    end
+
+    def seqres(chainID = nil)
+      unless defined?(@seqres)
+	h = make_hash(self.record('SEQRES'), :chainID)
+	h.each do |k, a|
+	  a.collect! { |f| f.resName }
+	  a.flatten!
+	end
+	@seqres = h
+      end
+      if chainID then
+	@seqres[chainID]
+      else
+	@seqres
+      end
     end
 
     def dbref(chainID = nil)
@@ -1099,6 +1134,10 @@ module Bio
 
     def keywords
       self.record('KEYWDS').collect { |f| f.keywds }.flatten
+    end
+
+    def classification
+      self.record('HEADER').first.classification
     end
 
     # Bio::DB methods
@@ -1157,6 +1196,10 @@ end #module Bio
  Keywords in "KEYWDS".
  Returns an array of string.
 
+--- Bio::PDB#classification
+
+ Classification in "HEADER".
+
 --- Bio::PDB#record(name)
 
  Gets all records whose record type is 'name'.
@@ -1166,8 +1209,9 @@ end #module Bio
 
  Gets REMARK records.
  If no arguments, it returns all REMARK records as a hash.
- If remark number is specified, it returns only corresponding REMARK records
- as an array of Bio::PDB::Record instances.
+ If remark number is specified, returns only corresponding REMARK records.
+ If number == 1 or 2 ("REMARK   1" or "REMARK   2"), returns an array
+ of Bio::PDB::Record instances. Otherwise, returns an array of strings.
 
 --- Bio::PDB#jrnl(sub_record = nil)
 
@@ -1176,12 +1220,19 @@ end #module Bio
  If sub record name is specified, it returns only corresponding records
  as an array of Bio::PDB::Record instances.
 
+--- Bio::PDB#seqres(chainID = nil)
+
+ Amino acid or nucleic acid sequence of backbone residues in "SEQRES".
+ If chainID is given, it returns corresponding sequence as an array of string.
+ Otherwise, returns a hash which contains all sequences.
+
 --- Bio::PDB#helix(helixID = nil)
 
  Gets HELIX records.
- If no arguments are given, it returns all HELIX records. 
+ If no arguments are given, it returns all HELIX records.
+ (Returns an array of Bio::PDB::Record instances.)
  If helixID is given, it only returns records corresponding to given helixID.
- Returns an array of Bio::PDB::Record instances.
+ (Returns an Bio::PDB::Record instance.)
 
 --- Bio::PDB#sheet(sheetID = nil)
 
@@ -1194,8 +1245,9 @@ end #module Bio
 
  Gets TURN records.
  If no arguments are given, it returns all TURN records. 
- If helixID is given, it only returns records corresponding to given turnId.
- Returns an array of Bio::PDB::Record instances.
+ (Returns an array of Bio::PDB::Record instances.)
+ If turnId is given, it only returns a record corresponding to given turnId.
+ (Returns an Bio::PDB::Record instance.)
 
 
 = Bio::PDB::Record < Hash
@@ -1216,21 +1268,33 @@ end #module Bio
  it adds 'line' and returns self.
  Otherwise, returns false.
 
---- Bio::PDB::Record#do_parse
+--- Bio::PDB::Record#original_data
 
- In order to speeding up processing of PDB File format,
- fields have not been parsed before calling this method.
- If you want to use this class as a hash, you must call this method once.
- Returns self.
+ Original text (except that "\n" are truncated) of this record.
+ Returns an array of string.
 
 --- Bio::PDB::Record#record_type
 
  Record type of this record, e.g. "HEADER", "ATOM".
 
+--- Bio::PDB::Record#do_parse
+
+ In order to speeding up processing of PDB File format,
+ fields have not been parsed before calling this method.
+
+ If you want to use this class as a hash (not so recommended),
+ you must call this method once.
+
+ When accessing via rec.xxxxx style (described below), 
+ do_parse is automatically called.
+
+ Returns self.
+
 --- Bio::PDB::Record#"anything"
 
  Same as Bio::PDB::Record#[](:anything) after do_parse.
  For example, r.helixID is same as r.do_parse; r[:helixID] .
+
 
 = Bio::PDB::FieldDef
 
