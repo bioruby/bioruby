@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: clustalw.rb,v 1.3 2003/07/29 09:23:00 ng Exp $
+#  $Id: clustalw.rb,v 1.4 2003/10/20 14:17:55 ng Exp $
 #
 
 require 'tempfile'
@@ -48,7 +48,7 @@ module Bio
 	end
 	break if seqtype
       end
-      query_string(seqs.to_fasta(70, true), seqtype)
+      query_string(seqs.to_fasta(70, :avoid_same_name => true), seqtype)
     end
 
     def query_by_filename(path, seqtype = nil)
