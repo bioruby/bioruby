@@ -17,61 +17,77 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: na.rb,v 0.7 2001/12/19 02:17:48 katayama Exp $
+#  $Id: na.rb,v 0.8 2002/11/22 23:10:12 k Exp $
 #
 
 module Bio
 
-  NucleicAcid = {
+  class NucleicAcid
 
     # IUPAC code
     # * Faisst and Meyer (Nucleic Acids Res. 20:3-26, 1992)
     # * http://www.ncbi.nlm.nih.gov/collab/FT/
 
-    'y'	=> '[tc]',	# pYrimidine
-    'r'	=> '[ag]',	# puRine
-    'w'	=> '[at]',	# Weak
-    's'	=> '[gc]',	# Strong
-    'k'	=> '[tg]',	# Keto
-    'm'	=> '[ac]',	# aMino
+    Names = {
 
-    'b'	=> '[tgc]',	# not A
-    'd'	=> '[atg]',	# not C
-    'h'	=> '[atc]',	# not G
-    'v'	=> '[agc]',	# not T
+      'y'	=> '[tc]',	# pYrimidine
+      'r'	=> '[ag]',	# puRine
+      'w'	=> '[at]',	# Weak
+      's'	=> '[gc]',	# Strong
+      'k'	=> '[tg]',	# Keto
+      'm'	=> '[ac]',	# aMino
 
-    'n' => '[atgc]',
+      'b'	=> '[tgc]',	# not A
+      'd'	=> '[atg]',	# not C
+      'h'	=> '[atc]',	# not G
+      'v'	=> '[agc]',	# not T
 
-    'a'	=> 'a',
-    't'	=> 't',
-    'g'	=> 'g',
-    'c'	=> 'c',
-    'u'	=> 'u',
+      'n'	=> '[atgc]',
 
-    'A'	=> 'adenine',
-    'T'	=> 'thymine',
-    'G'	=> 'guanine',
-    'C'	=> 'cytosine',
-    'U'	=> 'uracil',
+      'a'	=> 'a',
+      't'	=> 't',
+      'g'	=> 'g',
+      'c'	=> 'c',
+      'u'	=> 'u',
 
-  }
+      'A'	=> 'adenine',
+      'T'	=> 'thymine',
+      'G'	=> 'guanine',
+      'C'	=> 'cytosine',
+      'U'	=> 'uracil',
 
-  NucleicAcid_weight = {
+    }
 
-    # Calculated by BioPerl's Bio::Tools::SeqStats.pm :-)
+    Weight = {
 
-    'adenine'	=> 135.15,
-    'thymine'	=> 126.13,
-    'guanine'	=> 151.15,
-    'cytosine'	=> 111.12,
-    'uracil'	=> 112.10,
+      # Calculated by BioPerl's Bio::Tools::SeqStats.pm :-)
 
-    'deoxyribose_phosphate'	=> 196.11,
-    'ribose_phosphate'		=> 212.11,
+      :adenine		=> 135.15,
+      :thymine		=> 126.13,
+      :guanine		=> 151.15,
+      :cytosine		=> 111.12,
+      :uracil		=> 112.10,
 
-    'water'	=> 18.015,
+      :deoxyribose_phosphate	=> 196.11,
+      :ribose_phosphate		=> 212.11,
 
-  }
+      :water		=> 18.015,
+
+    }
+
+    def na
+      Names
+    end
+
+    def self.names
+      Names
+    end
+
+    def self.weight
+      Weight
+    end
+
+  end
 
 end
 
