@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format10.rb,v 1.1 2002/05/28 14:49:07 k Exp $
+#  $Id: format10.rb,v 1.2 2002/11/04 16:32:41 k Exp $
 #
 
 module Bio
@@ -114,11 +114,31 @@ module Bio
 	attr_reader :definition, :score, :query, :target
 
 	def evalue
-	  if @score['sw_expect']
-	    @score['sw_expect'].to_f
-	  else
+	  if @score['fa_expect']
 	    @score['fa_expect'].to_f
+	  elsif @score['sw_expect']
+	    @score['sw_expect'].to_f
+	  elsif @score['fx_expect']
+	    @score['fx_expect'].to_f
+	  elsif @score['tx_expect']
+	    @score['tx_expect'].to_f
 	  end
+	end
+
+	def bit_score
+	  if @score['fa_bits']
+	    @score['fa_bits'].to_f
+	  elsif @score['sw_bits']
+	    @score['sw_bits'].to_f
+	  elsif @score['fx_bits']
+	    @score['fx_bits'].to_f
+	  elsif @score['tx_bits']
+	    @score['tx_bits'].to_f
+	  end
+	end
+
+	def direction
+	  @score['fa_frame'] || @score['sw_frame'] || @score['fx_frame'] || @score['tx_frame']
 	end
 
 	def sw
@@ -322,6 +342,7 @@ Log of the fasta execution environments.
       Accessors for the internal structures.
 
 --- Bio::Fasta::Report::Hit#evalue
+--- Bio::Fasta::Report::Hit#bit_score
 --- Bio::Fasta::Report::Hit#sw
 --- Bio::Fasta::Report::Hit#identity
 
@@ -347,6 +368,7 @@ Log of the fasta execution environments.
 --- Bio::Fasta::Report::Hit#target_end
 --- Bio::Fasta::Report::Hit#overlap
 --- Bio::Fasta::Report::Hit#lap_at
+--- Bio::Fasta::Report::Hit#direction
 
       Matching regions.
 
