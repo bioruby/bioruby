@@ -17,17 +17,25 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: matrix.rb,v 1.5 2001/11/14 09:11:51 shuichi Exp $
+#  $Id: matrix.rb,v 1.6 2001/11/15 09:19:16 katayama Exp $
 #
 
 require 'matrix'
 
 class Matrix
 
+  # Assignment
   def []=(i, j, k)
     @rows[i][j] = k
   end
 
+  # Printing
+  def dump(index = nil)
+    "[#{index}\n" + @rows.collect{|row|
+      "  " + row.inspect
+    }.join(",\n")+"\n]"
+  end
+  
   def promoter_search(seq, threshold)
     result = []
     row_size = self.row_size
