@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: embl.rb,v 1.19 2003/07/16 05:24:20 n Exp $
+#  $Id: embl.rb,v 1.20 2003/09/08 07:23:16 n Exp $
 #
 
 require 'bio/db'
@@ -47,7 +47,7 @@ module Bio
     def ac
       unless @data['AC']
 	tmp = Array.new
-	field_fetch('AC').split(' ').each do |e|
+	field_fetch('AC').split(/ /).each do |e|
 	  tmp.push(e.sub(/;/,''))
 	end
 	@data['AC'] = tmp
@@ -119,8 +119,10 @@ module Bio
     def og
       unless @data['OG']
 	og = Array.new
-	fetch('OG').sub(/.$/,'').sub(/ and/,'').split(',').each do |tmp|
-	  og.push(tmp.strip)
+	if get('OG').size > 0
+	  fetch('OG').sub(/\.$/,'').sub(/ and/,'').split(/,/).each do |tmp|
+	    og.push(tmp.strip)
+	  end
 	end
 	@data['OG'] = og
       end
@@ -136,7 +138,7 @@ module Bio
     def oc
       unless @data['OC']
 	begin
-	  @data['OC'] = fetch('OC').sub(/.$/,'').split(';').collect {|e|
+	  @data['OC'] = fetch('OC').sub(/.$/,'').split(/;/).map {|e|
 	    e.strip 
 	  }
 	rescue NameError
@@ -153,8 +155,12 @@ module Bio
     #                 #keywords  -> Array
     def kw
       unless @data['KW']
-	tmp = fetch('KW').sub(/.$/,'')
-	@data['KW'] = tmp.split(';').collect{|e| e.strip }	
+	if get('KW').size > 0
+	  tmp = fetch('KW').sub(/.$/,'')
+	  @data['KW'] = tmp.split(/;/).map {|e| e.strip }	
+	else
+	  @data['KW'] = []
+	end
       end
       @data['KW']
     end
@@ -199,7 +205,7 @@ module Bio
 	  ent.each {|key, value|
 	    case key
 	    when 'RA'
-	      hash['authors'] = value.split(', ')
+	      hash['authors'] = value.split(/, /)
 	    when 'RT'
 	      hash['title'] = value
 	    when 'RL'
@@ -214,7 +220,7 @@ module Bio
 	      end
 	    when 'RX'  # PUBMED, MEDLINE
 	      value.split('.').each {|item|
-		tag, xref = item.split('; ').map {|i| i.strip }
+		tag, xref = item.split(/; /).map {|i| i.strip }
 		hash[ tag.downcase ]  = xref
 	      }
 	    end
@@ -236,8 +242,8 @@ module Bio
     def dr
       unless @data['DR']
 	tmp = Hash.new
-	self.get('DR').split("\n").each do |db|
-	  a = db.sub(/^DR   /,'').sub(/.$/,'').strip.split(";[ ]")
+	self.get('DR').split(/\n/).each do |db|
+	  a = db.sub(/^DR   /,'').sub(/.$/,'').strip.split(/;[ ]/)
 	  dbname = a.shift
 	  tmp[dbname] = Array.new unless tmp[dbname]
 	  tmp[dbname].push(a)
@@ -246,7 +252,7 @@ module Bio
       end
       if block_given?
 	@data['DR'].each do |k,v|
-	  yield(k,v)
+	  yield(k, v)
 	end
       else
 	@data['DR']

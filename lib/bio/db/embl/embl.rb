@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: embl.rb,v 1.18 2003/06/14 01:11:06 k Exp $
+#  $Id: embl.rb,v 1.19 2003/09/08 07:23:16 n Exp $
 #
 
 require 'bio/db/embl'
@@ -141,7 +141,7 @@ module Bio
     def dt(key=nil)
       unless @data['DT']
 	tmp = Hash.new
-	dt_line = self.get('DT').split("\n")
+	dt_line = self.get('DT').split(/\n/)
 	tmp['created'] = dt_line[0].sub(/\w{2}   /,'').strip
 	tmp['updated'] = dt_line[1].sub(/\w{2}   /,'').strip
 	@data['DT'] = tmp
@@ -248,7 +248,7 @@ module Bio
 	  end
 	end
 
-        ary.collect! do |subary|
+        ary.map! do |subary|
 	  parse_qualifiers(subary)
         end
 
@@ -382,6 +382,54 @@ end
 
 
 if __FILE__ == $0
+  while ent = $<.gets(Bio::EMBL::RS)
+    puts "\n ==> e = Bio::EMBL.new(ent) "
+    e = Bio::EMBL.new(ent)
+
+    puts "\n ==> e.entry_id "
+    p e.entry_id
+    puts "\n ==> e.id_line "
+    p e.id_line
+    puts "\n ==> e.id_line('molecule') "
+    p e.id_line('molecule')
+    puts "\n ==> e.molecule "
+    p e.molecule
+    puts "\n ==> e.ac "
+    p e.ac
+    puts "\n ==> e.sv "
+    p e.sv
+    puts "\n ==> e.dt "
+    p e.dt
+    puts "\n ==> e.dt('created') "
+    p e.dt('created')
+    puts "\n ==> e.de "
+    p e.de
+    puts "\n ==> e.kw "
+    p e.kw
+    puts "\n ==> e.os "
+    p e.os
+    puts "\n ==> e.oc "
+    p e.oc
+    puts "\n ==> e.og "
+    p e.og
+    puts "\n ==> e.ref "
+    p e.ref
+    puts "\n ==> e.dr "
+    p e.dr
+    puts "\n ==> e.ft "
+    p e.ft
+    puts "\n ==> e.each_cds {|c| p c}"
+    p e.each_cds {|c| p c }
+    puts "\n ==> e.sq "
+    p e.sq
+    puts "\n ==> e.sq('a') "
+    p e.sq('a')
+    puts "\n ==> e.gc"    
+    p e.gc
+    puts "\n ==> e.seq "
+    p e.seq
+  end
+
 end
 
 
