@@ -22,12 +22,12 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: goslim.rb,v 1.2 2003/05/13 10:29:35 n Exp $
+#  $Id: goslim.rb,v 1.3 2003/05/13 10:45:42 n Exp $
 #
 
 
 
-SCRIPT_VERSION = '$Id: goslim.rb,v 1.2 2003/05/13 10:29:35 n Exp $'
+SCRIPT_VERSION = '$Id: goslim.rb,v 1.3 2003/05/13 10:45:42 n Exp $'
 
 USAGE = "${__FILE__} - GO slim
 Usage:
@@ -187,7 +187,7 @@ end
 # main
 #
 
-require 'go'
+require 'bio/db/go'
 
 aspects = ['process', 'function', 'component']
 rootids = {
