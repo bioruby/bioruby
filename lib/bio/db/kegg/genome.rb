@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: genome.rb,v 0.2 2001/06/21 03:11:24 katayama Exp $
+#  $Id: genome.rb,v 0.3 2001/06/25 06:57:53 katayama Exp $
 #
 
 require 'bio/db'
@@ -62,6 +62,10 @@ class GENOME < KEGGDB
 
   def environment
     field_fetch('ENVIRONMENT')
+  end
+
+  def comment
+    field_fetch('COMMENT')
   end
 
   def reference(num = nil, tag = nil)
