@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Design.rd.ja,v 1.2 2001/11/08 13:02:20 katayama Exp $
+  $Id: Design.rd.ja,v 1.3 2001/12/08 09:28:21 katayama Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -165,29 +165,31 @@ lib/bio/io/ 以下には、ゲノムネットによるデータ取得を行なう DBGET クラス
 === lib/bio/appl/ ツール系
 
 FASTA(SSEARCH), [PSI-]BLAST, HMMER, CLUSTALW などの外部アプリを使った処
-理は、（サンプルコードはありますが）クラスとしての実装はまだ進んでいませ
-ん。入出力 (io) と結果の処理を分離して、ローカルな実行、http などによる
-リモート実行、結果のフォーマットなどを意識せずに、結果がパースされ格納さ
-れた FASTA オブジェクトなどが返るといいと思いますが
+理を行います。ローカルな実行、http などによるリモート実行、結果のフォー
+マットなどを意識せずに、結果がパースされ格納された FASTA オブジェクトな
+どが返るような感じにしていきます。
 
 * query となるオブジェクトに、アプリを実行するメソッドを実装（必要な引数
   を与える）
 
-    # seq は Bio::Sequence::AA オブジェクトなど
-    fa_res = seq.fasta('local', target, opt)    # FASTA の結果オブジェクト
-    fa_res = seq.fasta(server, target, opt)     # 同上
+    factory = Bio::Fasta.remote('fasta', 'genes')
+    fa_res = f.fasta(factory)   # f は Bio::FastaFormat オブジェクト
+    # 以下はまだ
+    fa_res = seq.fasta(factory) # seq は Bio::Sequence::AA オブジェクトなど
     puts fa_res.top(10, with_id, by_optscore)
     puts fa_res.best.alignment
 
 * 新しく生成したファクトリに、サーバ、query、target などを設定して、アプ
   リを実行するメソッドを呼ぶ
 
-    fasta = Bio::FASTA.new(server, target, opt)
+    fasta = Bio::Fasta.local(prog, target, opt)
     fa_res = fasta.query(seq)
 
-などいくつかの実装方法が考えられます（両方あってもいいかも）。ファクトリ
-やメソッドへのオプションの渡し方は hash を投げてもいいでしょう。
+などいくつかの実装方法が考えられます（Bio::Fasta では両系統インプリして
+います）。ファクトリやメソッドへのオプションの渡し方は細々としたものは
+hash を投げる感じでやっています。
 
+    # ここまでやって全部 hash でもいいかもしれないし、重要度で分けてもいい
     hash['server'] = "fasta.genome.ad.jp"
     hash['db'] = "nr-aa"
     fa_res = seq.fasta(hash)
@@ -196,7 +198,8 @@ FASTA(SSEARCH), [PSI-]BLAST, HMMER, CLUSTALW などの外部アプリを使った処
     hash['db'] = "/bio/db/fasta/genbank/hoge.f"
     fasta = Bio::FASTA.new(hash)
 
-今後実装しながら仕様を決めていきたいと思います。
+今後他のアプリのインターフェイスも実装しながら仕様を決めていきたいと思
+います。
 
 == コーディングスタイル
 
