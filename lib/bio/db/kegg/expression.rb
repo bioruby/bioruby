@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: expression.rb,v 1.4 2001/11/08 13:50:59 shuichi Exp $
+#  $Id: expression.rb,v 1.5 2001/11/14 13:16:19 shuichi Exp $
 #
 
 require "bio/db"
@@ -27,8 +27,21 @@ module Bio
   class KEGG
 
     class Microarrays
+
       def initialize(ary)	# ary = [ Microarray, Microarray, ... ]
+        @orf2val = Hash.new('')
+        ary.each do |x|
+          x.orf2val.each do |k, v|
+            if !@orf2val.key?(k)
+              @orf2val[k] = v
+            else 
+              @orf2val[k].concat(v)
+            end
+          end
+        end
       end
+      attr_reader :orf2val
+
     end
 
     class Microarray
@@ -118,4 +131,3 @@ module Bio
   end
 
 end
-
