@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pubmed.rb,v 1.9 2003/06/02 10:19:31 k Exp $
+#  $Id: pubmed.rb,v 1.10 2004/01/29 01:33:14 k Exp $
 #
 
 require 'net/http'
@@ -96,7 +96,7 @@ module Bio
       http = Net::HTTP.new(host)
       response, = http.get(path + ids)
       result = response.body
-      result = result.split("\n\n+")
+      result = result.split(/\n\n+/)
       return result
     end
 
@@ -118,7 +118,8 @@ if __FILE__ == $0
   Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics)").each do |x|
     p x
   end
-  Bio::PubMed.efetch("10592173")
+  puts "--- ---"
+  puts Bio::PubMed.efetch("10592173", "14693808")
 
 end
 
