@@ -657,6 +657,19 @@ class Installer
   end
 
   #
+  # TASK test
+  #
+
+  def exec_test
+    testdir = 'test'
+    $stderr.printf "Running all tests in %s...\n", testdir if verbose?
+    require 'test/unit'
+    runner = Test::Unit::AutoRunner.new(true)
+    runner.to_run << testdir
+    runner.run
+  end
+
+  #
   # TASK install
   #
 
@@ -864,6 +877,7 @@ class ToplevelInstaller < Installer
     [ 'config',   'saves your configurations' ],
     [ 'show',     'shows current configuration' ],
     [ 'setup',    'compiles extention or else' ],
+    [ 'test',     'runs unit tests' ],
     [ 'install',  'installs files' ],
     [ 'clean',    "does `make clean' for each extention" ],
     [ 'distclean',"does `make distclean' for each extention" ]
@@ -1017,6 +1031,7 @@ Typical installation procedure is:
     out.puts 'Typical Installation Procedure:'
     out.puts "  $ ruby #{File.basename $0} config"
     out.puts "  $ ruby #{File.basename $0} setup"
+    out.puts "  $ ruby #{File.basename $0} test"
     out.puts "  # ruby #{File.basename $0} install (may require root privilege)"
     out.puts
     out.puts 'Detailed Usage:'
