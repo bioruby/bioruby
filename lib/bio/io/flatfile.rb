@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.20 2003/08/05 11:46:30 ng Exp $
+#  $Id: flatfile.rb,v 1.21 2003/08/21 11:28:27 ng Exp $
 #
 
 module Bio
@@ -284,6 +284,16 @@ module Bio
 
       when /^CLUSTAL .*\(.*\).*sequence +alignment/
 	Bio::ClustalW::Report
+
+      when /^BLAST.? +[\-\.\w]+\-WashU +\[[\-\.\w ]+\]/
+	Bio::Blast::WU::Report
+      when /^TBLAST.? +[\-\.\w]+\-WashU +\[[\-\.\w ]+\]/
+	Bio::Blast::WU::Report_TBlast
+
+      when /^BLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/
+	Bio::Blast::Default::Report
+      when /^TBLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/
+	Bio::Blast::Default::Report_TBlast
 
       when /^>.+$/
 	if text =~ /^>.+$\s^\s*[-a-zA-Z_\.\[\]\(\)\*\+\$]+/ then
