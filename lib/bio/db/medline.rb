@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: medline.rb,v 1.4 2001/10/17 14:43:11 katayama Exp $
+#  $Id: medline.rb,v 1.5 2001/10/31 03:36:28 katayama Exp $
 #
 
 module Bio
@@ -142,9 +142,9 @@ class MEDLINE < NCBIDB
     authors = []
     au.split(/\n/).each do |author|
       if author =~ / /
-        name, initial = author.split(/\s+/)
-        initial = initial.split(//).join('. ')
-        author = "#{name}, #{initial}"
+        name = author.split(/\s+/)
+        initial = name.pop.split(//).join('. ')
+        author = "#{name.join(' ')}, #{initial}"
       end
       authors.push("#{author}.")
     end
