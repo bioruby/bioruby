@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.27 2004/06/21 07:03:27 ngoto Exp $
+#  $Id: flatfile.rb,v 1.28 2004/06/21 07:23:02 ngoto Exp $
 #
 
 module Bio
@@ -60,6 +60,7 @@ module Bio
     end
 
     def self.auto(*arg, &block)
+      #warn "Bio::FlatFile.auto is deprecated; use Bio::FlatFile.open instead."
       self.open(*arg, &block)
     end
 
@@ -75,16 +76,15 @@ module Bio
       # 2nd arg: IO object
       @io = stream
       # 3rd arg: options (nil or a Hash)
-      raw = false
+      self.raw = false
       if options.is_a?(Hash) then
-        raw = options[:raw] if options.has_key?(:raw)
+        self.raw = options[:raw] if options.has_key?(:raw)
       else
-        raw = options
+        self.raw = options
       end
-      self.raw = raw
       # initialize prefetch buffer
       @prefetch = ''
-      # 1st arg: database class (file format)
+      # 1st arg: database class (or file format autodetection)
       if dbclass then
 	self.dbclass = dbclass
       else
