@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format0.rb,v 1.3 2003/08/07 14:11:47 ng Exp $
+#  $Id: format0.rb,v 1.4 2003/08/11 15:11:22 ng Exp $
 #
 
 begin
@@ -40,14 +40,11 @@ module Bio
 
 	def initialize(str)
 	  str = str.sub(/\A\s+/, '')
-	  str.sub!(/\n(BLAST.*)/m, "\n") # remove trailing entries for sure
+	  str.sub!(/\n(T?BLAST.*)/m, "\n") # remove trailing entries for sure
 	  @entry_overrun = $1
 	  data = str.split(/(?:^[ \t]*\n)+/)
-	  
-	  @f0header = data.shift
-	  @f0reference = data.shift
-	  @f0query = data.shift
-	  @f0database = data.shift
+
+	  format0_split_headers(data)
 	  @iterations = format0_split_search(data)
 	  format0_split_stat_params(data)
 	end
@@ -148,7 +145,7 @@ module Bio
 	  unless defined?(@query_def)
 	    sc = StringScanner.new(@f0query)
 	    sc.skip(/\s*/)
-	    if sc.skip_until(/Query\= /) then
+	    if sc.skip_until(/Query\= */) then
 	      q = []
 	      begin
 		q << sc.scan(/.*/)
@@ -162,7 +159,7 @@ module Bio
 
 	def format0_parse_header
 	  unless defined?(@program)
-	    if /(\w+) +([\.\d]+) *\[ *([\-\.\w]+) *\]/ =~ @f0header.to_s
+	    if /(\w+) +([\w\-\.\d]+) *\[ *([\-\.\w]+) *\] *(\[.+\])?/ =~ @f0header.to_s
 	      @program = $1
 	      @version = "#{$1} #{$2} [#{$3}]"
 	      @version_number = $2
@@ -171,9 +168,19 @@ module Bio
 	  end
 	end
 
+	def format0_split_headers(data)
+	  @f0header = data.shift
+	  @f0reference = data.shift
+	  @f0query = data.shift
+	  @f0database = data.shift
+	end
+
 	def format0_split_stat_params(data)
-	  @f0dbstat = F0dbstat.new(data.shift)
-	  lkh = []
+	  dbs = []
+	  while r = data.first and /^ *Database\:/ =~ r
+	    dbs << data.shift
+	  end
+	  @f0dbstat = F0dbstat.new(dbs)
 	  i = -1
 	  while r = data[0] and /^Lambda/ =~ r
 	    #i -= 1 unless /^Gapped/ =~ r
@@ -194,8 +201,8 @@ module Bio
 	end
 
 	class F0dbstat
-	  def initialize(str)
-	    @f0dbstat = str
+	  def initialize(ary)
+	    @f0dbstat = ary
 	    @hash = {}
 	  end
 	  attr_reader :f0dbstat
@@ -205,7 +212,7 @@ module Bio
 	    sc = StringScanner.new(str)
 	    sc.skip(/\s*/)
 	    while sc.rest?
-	      if sc.skip(/([\-\,\.\'\(\)\w ]+)\: *(.+)/) then
+	      if sc.skip(/([\#\-\,\.\'\(\)\w ]+)\: *(.*)/) then
 		hash[sc[1]] = sc[2]
 	      else
 		#p sc.peek(20)
@@ -228,7 +235,7 @@ module Bio
 		if sc.skip(/([\-\,\.\'\(\)\w ]+)\: *(.+)/) then
 		  hash[sc[1]] = sc[2]
 		else
-		  p sc.peek(20)
+		  #p sc.peek(20)
 		  raise ScanError
 		end
 		sc.skip(/\s*/)
@@ -279,7 +286,7 @@ module Bio
 
 	  def parse_dbstat
 	    unless defined?(@parse_dbstat)
-	      parse_colon_separated(@hash, @f0dbstat)
+	      parse_colon_separated(@hash, @f0dbstat[0].to_s)
 	      @database = @hash['Database']
 	      @posted_date = @hash['Posted date']
 	      if val = @hash['Number of letters in database'] then
@@ -587,10 +594,10 @@ module Bio
 	      d = []
 	      begin
 		d << sc.scan(/.*/)
-		sc.skip(/\s*^ ?/)
-	      end until !sc.rest? or r = sc.skip(/ *Length *\= *(\d+)\s*\z/)
+		sc.skip(/\s*/)
+	      end until !sc.rest? or r = sc.skip(/ *Length *\= *([\,\d]+)\s*\z/)
 	      @len = (r ? sc[1].to_i : nil)
-	      @definition = d.join("\x01")
+	      @definition = d.join(" ")
 	      @parse_hitname = true
 	    end
 	  end
@@ -683,6 +690,18 @@ module Bio
 		  if sc[2] then
 		    @hit_frame = sc[3].to_i
 		  end
+		elsif sc.skip(/Score *\= *([e\-\.\d]+) +\(([e\-\.\d]+) *bits *\)/) then
+		  #WU-BLAST
+		  @score = sc[1]
+		  @bit_score = sc[2]
+		elsif sc.skip(/P *\= * ([e\-\.\d]+)/) then
+		  #WU-BLAST
+		  @p_sum_n = nil
+		  @pvalue = sc[1]
+		elsif sc.skip(/Sum +P *\( *(\d+) *\) *\= *([e\-\.\d]+)/) then
+		  #WU-BLAST
+		  @p_sum_n = sc[1].to_i
+		  @pvalue = sc[2]
 		else
 		  raise ScanError
 		end
@@ -785,6 +804,11 @@ module Bio
 	end #class HSP
 
       end #class Report
+
+      class Report_TBlast < Report
+	DELIMITER = RS = "\nTBLAST"
+      end #class Report_TBlast
+
     end #module Default
   end #class Blast
 end #module Bio
@@ -985,8 +1009,14 @@ end #if __FILE__ == $0
 
 =begin
 
-= Bio::Blast::Report::Default
+= Bio::Blast::Default::Report
 
     NCBI BLAST default (-m 0 option) output parser
+
+= Bio::Blast::Default::Report_TBlast
+
+    NCBI BLAST default (-m 0 option) output parser for TBLAST.
+    All methods are equal to Bio::Blast::Default::Report.
+    Only DELIMITER (and RS) is different.
 
 =end
