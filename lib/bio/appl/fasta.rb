@@ -17,12 +17,12 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.5 2001/12/15 01:51:00 katayama Exp $
+#  $Id: fasta.rb,v 1.6 2002/02/05 08:44:00 katayama Exp $
 #
 
 require 'bio/sequence'
 require 'net/http'
-require 'cgi-lib'
+require 'cgi' unless defined?(CGI)
 
 module Bio
 
