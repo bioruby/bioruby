@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.7 2001/11/13 02:26:11 katayama Exp $
+#  $Id: pathway.rb,v 1.8 2001/11/13 07:45:59 shuichi Exp $
 #
 
 require 'bio/matrix'
@@ -25,6 +25,8 @@ require 'bio/matrix'
 module Bio
 
   class Pathway
+
+    INF = 999999
 
     # Graph (adjacency list) generation from the list of Relation
     def initialize(list, undirected = nil)
@@ -184,12 +186,43 @@ module Bio
       return step, path
     end
 
-    def dijkstra
-      raise NotImplementedError
+    def dijkstra(root)
+      distance, predecessor = initialize_single_source(root)
+      @graph[root].each do |k, v|
+        distance[k] = v
+        predecessor[k] = root
+      end
+      queue = distance.dup
+      queue.delete(root)
+
+      while queue.size != 0
+        ary = queue.to_a.sort{|a, b| a[1] <=> b[1]} # extranct a node having minimal distance
+        u = ary[0][0]
+        @graph[u].each do |k, v|
+          if distance[k] > distance[u] + @graph[u][k] # relaxing procedure of root -> 'u' -> 'k'
+            distance[k] = distance[u] + @graph[u][k]
+            predecessor[k] = u
+          end
+        end
+        queue.delete(u)
+      end
+      return distance, predecessor
     end
 
     def floyd
       raise NotImplementedError
+    end
+
+    def initialize_single_source(root)
+      distance = {}
+      predecessor = {}
+
+      @graph.keys.each do |k|
+        distance[k] = INF
+        predecessor[k] = nil
+      end
+      distance[root] = 0
+      return distance, predecessor
     end
 
   end
