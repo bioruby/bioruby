@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.14 2002/06/25 11:00:11 k Exp $
+#  $Id: blast.rb,v 1.15 2002/06/25 14:57:35 k Exp $
 #
 
 require 'net/http'
@@ -153,7 +153,7 @@ module Bio
 	end
 	if result_path
 	  response, result = Net::HTTP.new(host).get(result_path)
-	  if %r|<pre>.*?</pre>.*<pre>(.*)</pre>|mi.match(result)
+	  if %r|<pre>.*?</pre>.*<pre>\s*(.*)</pre>|mi.match(result)
 	    @output = $1
 	    report = parse_result(@output)
 	  end

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.11 2002/06/25 11:01:13 k Exp $
+#  $Id: fasta.rb,v 1.12 2002/06/25 14:57:35 k Exp $
 #
 
 require 'net/http'
@@ -135,7 +135,7 @@ module Bio
 	end
 	if result_path
 	  response, result = Net::HTTP.new(host).get(result_path)
-	  if %r|<pre>.*?</pre>.*<pre>(.*)</pre>|mi.match(result)
+	  if %r|<pre>.*?</pre>.*<pre>\s*(.*)</pre>|mi.match(result)
 	    @output = $1
 	    report = parse_result(@output)
 	  end
