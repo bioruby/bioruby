@@ -15,148 +15,149 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: biofetch.rb,v 1.4 2002/02/05 08:48:22 katayama Exp $
+#  $Id: biofetch.rb,v 1.5 2002/02/05 20:23:04 katayama Exp $
 #
 
-require 'cgi-lib'
-require 'bio'
+require 'cgi'
+require 'bio/io/dbget'
 
 MAX_ID_NUM = 50
 
-def print_query_page
-  CGI::print {
-    CGI::tag('html') {
-      CGI::tag('head') {
-        CGI::tag('title') {
+def print_query_page(cgi)
+  cgi.out do
+    cgi.html do
+      cgi.head do
+        cgi.title {
           "BioFetch interface to GenomeNet/DBGET"
         } +
-        CGI::tag('link', {'rel'=>'icon', 'href'=>'http://bioruby.org/icon/1.png', 'type'=>'image/png'})
-      } + 
-      CGI::tag('body', {'bgcolor'=>'#ffffff'}) {
-        CGI::tag('h1') {
-          CGI::tag('img', {'src'=>'http://bioruby.org/icon/big.png', 'align'=>'middle'}) +
+        cgi.link('rel'=>'icon', 'href'=>'http://bioruby.org/icon/1.png', 'type'=>'image/png')
+      end + 
+      cgi.body('bgcolor'=>'#ffffff') do
+        cgi.h1 {
+          cgi.img('src'=>'http://bioruby.org/icon/big.png', 'align'=>'middle') +
           "BioFetch interface to " +
-          CGI::tag('a', {'href'=>'http://www.genome.ad.jp/dbget/'}) {
+          cgi.a('href'=>'http://www.genome.ad.jp/dbget/') {
             "GenomeNet/DBGET"
           }
         } +
-	CGI::tag('p') {
+	cgi.p {
           "This page allows you to retrieve up to #{MAX_ID_NUM} entries at the time from various up-to-date biological databases."
 	} +
-        CGI::tag('hr') +
-        CGI::tag('form', {'action'=>'biofetch.rb', 'method'=>'GET'}) {
-						# test POST
-          CGI::tag('select', {'name'=>'db'}) {
-            CGI::tag('option', {'value'=>'embl-today'}) { "EMBL" } +
-            CGI::tag('option', {'value'=>'genbank-today'}) { "GenBank" } +
-            CGI::tag('option', {'value'=>'refseq-today'}) { "RefSeq" } +
-            CGI::tag('option', {'value'=>'swissprot-today'}) { "Swiss-Prot" } +
-            CGI::tag('option', {'value'=>'pir'}) { "PIR" } +
-            CGI::tag('option', {'value'=>'prf'}) { "PRF" } +
-            CGI::tag('option', {'value'=>'pdb-today'}) { "PDB" } +
-            CGI::tag('option', {'value'=>'pdbstr-today'}) { "PDBSTR" } +
-            CGI::tag('option', {'value'=>'epd'}) { "EPD" } +
-            CGI::tag('option', {'value'=>'transfac'}) { "TRANSFAC" } +
-            CGI::tag('option', {'value'=>'prosite'}) { "PROSITE" } +
-            CGI::tag('option', {'value'=>'pmd'}) { "PMD" } +
-            CGI::tag('option', {'value'=>'litdb'}) { "LITDB" } +
-            CGI::tag('option', {'value'=>'omim'}) { "OMIM" } +
-            CGI::tag('option', {'value'=>'ligand'}) { "KEGG/LIGAND" } +
-            CGI::tag('option', {'value'=>'pathway'}) { "KEGG/PATHWAY" } +
-            CGI::tag('option', {'value'=>'brite'}) { "KEGG/BRITE" } +
-            CGI::tag('option', {'value'=>'genes'}) { "KEGG/GENES" } +
-            CGI::tag('option', {'value'=>'genome'}) { "KEGG/GENOME" } +
-            CGI::tag('option', {'value'=>'linkdb'}) { "LinkDB" } +
-            CGI::tag('option', {'value'=>'aaindex'}) { "AAindex" }
+        cgi.hr +
+        cgi.form('action'=>'biofetch.rb') {
+          cgi.select('name'=>'db') {
+            cgi.option('value'=>'embl-today') { "EMBL" } +
+            cgi.option('value'=>'genbank-today') { "GenBank" } +
+            cgi.option('value'=>'refseq-today') { "RefSeq" } +
+            cgi.option('value'=>'swissprot-today') { "Swiss-Prot" } +
+            cgi.option('value'=>'pir') { "PIR" } +
+            cgi.option('value'=>'prf') { "PRF" } +
+            cgi.option('value'=>'pdb-today') { "PDB" } +
+            cgi.option('value'=>'pdbstr-today') { "PDBSTR" } +
+            cgi.option('value'=>'epd') { "EPD" } +
+            cgi.option('value'=>'transfac') { "TRANSFAC" } +
+            cgi.option('value'=>'prosite') { "PROSITE" } +
+            cgi.option('value'=>'pmd') { "PMD" } +
+            cgi.option('value'=>'litdb') { "LITDB" } +
+            cgi.option('value'=>'omim') { "OMIM" } +
+            cgi.option('value'=>'ligand') { "KEGG/LIGAND" } +
+            cgi.option('value'=>'pathway') { "KEGG/PATHWAY" } +
+            cgi.option('value'=>'brite') { "KEGG/BRITE" } +
+            cgi.option('value'=>'genes') { "KEGG/GENES" } +
+            cgi.option('value'=>'genome') { "KEGG/GENOME" } +
+            cgi.option('value'=>'linkdb') { "LinkDB" } +
+            cgi.option('value'=>'aaindex') { "AAindex" }
           } +
-          CGI::tag('input', {'type'=>'text', 'name'=>'id', 'size'=>'40', 'maxlength'=>'1000'}) +
-          CGI::tag('select', {'name'=>'format'}) {
-            CGI::tag('option', {'value'=>'default'}) { "Default" } +
-            CGI::tag('option', {'value'=>'fasta'}) { "Fasta" }
+          cgi.input('type'=>'text', 'name'=>'id', 'size'=>'40', 'maxlength'=>'1000') +
+          cgi.select('name'=>'format') {
+            cgi.option('value'=>'default') { "Default" } +
+            cgi.option('value'=>'fasta') { "Fasta" }
           } +
-          CGI::tag('select', {'name'=>'style'}) {
-            CGI::tag('option', {'value'=>'raw'}) { "Raw" } +
-            CGI::tag('option', {'value'=>'html'}) { "HTML" }
+          cgi.select('name'=>'style') {
+            cgi.option('value'=>'raw') { "Raw" } +
+            cgi.option('value'=>'html') { "HTML" }
           } +
-          CGI::tag('input', {'type'=>'submit'})
+          cgi.input('type'=>'submit')
         } +
-        CGI::tag('hr') +
-        CGI::tag('h2') {
+        cgi.hr +
+        cgi.h2 {
           "Direct access"
         } +
-	CGI::tag('p') {
+	cgi.p {
           "http://bioruby.org/cgi-bin/biofetch.rb?format=(default|fasta|...);style=(html|raw);db=(embl|genbank|...);id=ID[,ID,ID,...]"
         } +
-	CGI::tag('p') {
+	cgi.p {
           "(NOTE: the option separator ';' can be '&')"
         } +
-	CGI::tag('dl') {
-	  CGI::tag('dt') + CGI::tag('u') { "format" } + " (optional)" +
-          CGI::tag('dd') + "default|fasta|..." +
-	  CGI::tag('dt') + CGI::tag('u') { "style" } + " (required)" +
-          CGI::tag('dd') + "html|raw" +
-	  CGI::tag('dt') + CGI::tag('u') { "db" } + " (required)" +
-          CGI::tag('dd') + "embl-today|embl|genbank-today|genbank|refseq-today|refseq|swissprot-today|swissprot|pir|prf|pdb-today|pdb|pdbstr-today|pdbstr|epd|transfac|prosite|pmd|litdb|omim|ligand|pathway|brite|genes|genome|linkdb|aaindex|..." +
-	  CGI::tag('dt') + CGI::tag('u') { "id" } + " (required)" +
-          CGI::tag('dd') + "comma separated list of IDs"
+	cgi.dl {
+	  cgi.dt + cgi.u { "format" } + " (optional)" +
+          cgi.dd + "default|fasta|..." +
+	  cgi.dt + cgi.u { "style" } + " (required)" +
+          cgi.dd + "html|raw" +
+	  cgi.dt + cgi.u { "db" } + " (required)" +
+          cgi.dd + "embl-today|embl|genbank-today|genbank|refseq-today|refseq|swissprot-today|swissprot|pir|prf|pdb-today|pdb|pdbstr-today|pdbstr|epd|transfac|prosite|pmd|litdb|omim|ligand|pathway|brite|genes|genome|linkdb|aaindex|..." +
+	  cgi.dt + cgi.u { "id" } + " (required)" +
+          cgi.dd + "comma separated list of IDs"
         } +
-	CGI::tag('p') {
+	cgi.p {
           "See the BioFetch specification for more details. "
         } +
-        CGI::tag('h2') {
+        cgi.h2 {
           "Examples"
         } +
-        CGI::tag('dl') {
-          CGI::tag('dt') + CGI::tag('a', {'href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq-today;id=NC_000844'}) { "rs:NC_000844" } + " (default/raw)" +
-          CGI::tag('dd') + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq-today;id=NC_000844" +
-          CGI::tag('dt') + CGI::tag('a', {'href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=refseq-today;id=NC_000844'}) { "rs:NC_000844" } + " (fasta/raw)" +
-          CGI::tag('dd') + "http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=refseq-today;id=NC_000844" +
-          CGI::tag('dt') + CGI::tag('a', {'href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=html;db=refseq-today;id=NC_000844'}) { "rs:NC_000844" } + " (default/html)" +
-          CGI::tag('dd') + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=html;db=refseq-today;id=NC_000844" +
-          CGI::tag('dt') + CGI::tag('a', {'href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq-today;id=NC_000844,NC_000846'}) { "rs:NC_000844,NC_000846" } + " (default/raw, multiple)" +
-          CGI::tag('dd') + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq-today;id=NC_000844,NC_000846" +
-          CGI::tag('dt') + CGI::tag('a', {'href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=embl-today;id=BUM'}) { "embl:BUM" } + " (default/raw)" +
-          CGI::tag('dd') + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=embl-today;id=BUM" +
-          CGI::tag('dt') + CGI::tag('a', {'href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=swissprot-today;id=CYC_BOVIN'}) { "sp:CYC_BOVIN" } + " (default/raw)" +
-          CGI::tag('dd') + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=swissprot-today;id=CYC_BOVIN" +
-          CGI::tag('dt') + CGI::tag('a', {'href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=swissprot-today;id=CYC_BOVIN'}) { "sp:CYC_BOVIN" } + " (fasta/raw)" +
-          CGI::tag('dd') + "http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=swissprot-today;id=CYC_BOVIN" +
-          CGI::tag('dt') + CGI::tag('a', {'href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=genes;id=b0015'}) { "genes:b0015" } + " (default/raw)" +
-          CGI::tag('dd') + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=genes;id=b0015" +
-          CGI::tag('dt') + CGI::tag('a', {'href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=prosite;id=PS00028'}) { "ps:PS00028" } + " (default/raw)" +
-          CGI::tag('dd') + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=prosite;id=PS00028"
-#         CGI::tag('dt') + CGI::tag('a', {'href'=>''}) { "" } +
-#         CGI::tag('dd') + ""
+        cgi.dl {
+          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq-today;id=NC_000844') { "rs:NC_000844" } + " (default/raw)" +
+          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq-today;id=NC_000844" +
+          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=refseq-today;id=NC_000844') { "rs:NC_000844" } + " (fasta/raw)" +
+          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=refseq-today;id=NC_000844" +
+          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=html;db=refseq-today;id=NC_000844') { "rs:NC_000844" } + " (default/html)" +
+          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=html;db=refseq-today;id=NC_000844" +
+          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq-today;id=NC_000844,NC_000846') { "rs:NC_000844,NC_000846" } + " (default/raw, multiple)" +
+          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq-today;id=NC_000844,NC_000846" +
+          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=embl-today;id=BUM') { "embl:BUM" } + " (default/raw)" +
+          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=embl-today;id=BUM" +
+          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=swissprot-today;id=CYC_BOVIN') { "sp:CYC_BOVIN" } + " (default/raw)" +
+          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=swissprot-today;id=CYC_BOVIN" +
+          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=swissprot-today;id=CYC_BOVIN') { "sp:CYC_BOVIN" } + " (fasta/raw)" +
+          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=swissprot-today;id=CYC_BOVIN" +
+          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=genes;id=b0015') { "genes:b0015" } + " (default/raw)" +
+          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=genes;id=b0015" +
+          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=prosite;id=PS00028') { "ps:PS00028" } + " (default/raw)" +
+          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=prosite;id=PS00028"
+#         cgi.dt + cgi.a('href'=>'') { "" } +
+#         cgi.dd + ""
         } +
-        CGI::tag('h2') {
+        cgi.h2 {
           "Other BioFetch implementations"
         } +
-        CGI::tag('a', {'href'=>'http://www.ebi.ac.uk/cgi-bin/dbfetch'}) {
+        cgi.a('href'=>'http://www.ebi.ac.uk/cgi-bin/dbfetch') {
           "dbfetch at EBI"
         } +
-        CGI::tag('hr') +
-        CGI::tag('div', {'align'=>'right'}) {
-          CGI::tag('a', {'href'=>'http://bioruby.org'}) {
-            CGI::tag('img', {'border'=>'0', 'src'=>'http://bioruby.org/button/1.gif'})
+        cgi.hr +
+        cgi.div('align'=>'right') {
+          cgi.a('href'=>'http://bioruby.org') {
+            cgi.img('border'=>'0', 'src'=>'http://bioruby.org/button/1.gif')
           }
         }
-      }
-    }
-  }
+      end
+    end
+  end
 end
 
 
 
-def print_result_page(query)
+def print_result_page(cgi)
 
-  db = query['db'].downcase
-  id = query['id'].split(/\W/)		# not only ','
+  db = cgi['db'].first.downcase
+  id = cgi['id'].first.split(/\W/)		# not only ','
+  style = cgi['style'].first
+  format = cgi['format'].first
 
   if id.length > MAX_ID_NUM
     error_5(id.length)
   end
 
-  case query['style']
+  case style
   when /html/i
     id = id.join('%2B')
     print "Location: http://genome.jp/dbget-bin/www_bget?#{db}+#{id}\n\n"
@@ -164,16 +165,18 @@ def print_result_page(query)
   when /raw/i
     ;
   else
-    error_2(query['style'])
+    error_2(style)
   end
 
-  case query['format']
+  case format
   when /fasta/i
     format = '-f'
   when /default/i
     format = ''
+  when nil
+    ;
   else
-    error_3(query['format'],db)
+    error_3(format,db)
   end
 
 
@@ -201,9 +204,8 @@ end
 
 
 def print_error_page(str)
-  CGI::print {
-    str
-  }
+  print "Content-type: text/plain; charset=UTF-8\n\n"
+  puts str
   exit
 end
 
@@ -235,11 +237,11 @@ end
 
 
 begin
-  query = CGI.new
-  if query['id'].nil?
-    print_query_page
+  cgi = CGI.new('html3')
+  if cgi['id'].empty?
+    print_query_page(cgi)
   else
-    print_result_page(query)
+    print_result_page(cgi)
   end
 end
 
