@@ -1,5 +1,5 @@
 #
-# bio/dbget.rb - DBGET client module
+# bio/io/dbget.rb - DBGET client module
 #
 #  Interface to GenomeNet DBGET system - http://www.genome.ad.jp/dbget/
 #
@@ -16,13 +16,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: dbget.rb,v 1.1 2001/08/21 13:48:33 katayama Exp $
-#
-#  ChangeLog:
-#    2000/11/20 v0.1 (n) initial version
-#    2000/11/24 v0.2 (k) clean up rewrite
-#    2001/01/29 v1.0 (k) change class to module
-#    2001/02/20 v1.1 (k) LGPL
+#  $Id: dbget.rb,v 1.2 2001/09/12 07:26:42 katayama Exp $
 #
 
 require 'socket'
