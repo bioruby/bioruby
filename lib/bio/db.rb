@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: db.rb,v 0.13 2002/04/08 07:50:54 k Exp $
+#  $Id: db.rb,v 0.14 2002/06/07 11:29:20 n Exp $
 #
 
 require 'bio/id'
@@ -207,12 +207,12 @@ module Bio
       unless @data['OS']
 	os=Array.new
 	fetch('OS').split(',').each do |tmp|
-	  if tmp =~ /([A-Z][a-z]+ [a-z]+)/
+	  if tmp =~ /([A-Z][a-z]+ [a-zA-Z0-9]+)/
 	    org=$1
 	    tmp =~ /\((.+)\)/ 
 	    os.push({'name'=>$1, 'os'=>org})
 	  else
-	    raise "Error: OS Line \n#{fetch('OS')}\n"
+	    raise "Error: OS Line. #{$!}\n#{fetch('OS')}\n"
 	  end
 	end
 	@data['OS']=os
@@ -246,7 +246,11 @@ module Bio
     #
     # Bio::SPTR#oc  -> Array
     def oc
-      fetch('OC').sub(/.$/,'').split(';').collect {|e| e.strip }
+      begin
+	fetch('OC').sub(/.$/,'').split(';').collect {|e| e.strip }
+      rescue NameError
+	nil
+      end
     end
 
 
