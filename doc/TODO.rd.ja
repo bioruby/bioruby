@@ -1,6 +1,6 @@
 =begin
 
-  $Id: TODO.rd.ja,v 1.15 2004/08/23 23:08:07 k Exp $
+  $Id: TODO.rd.ja,v 1.16 2004/08/24 00:18:03 k Exp $
 
   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -9,8 +9,7 @@
 * 定期リリース
 
 * ドキュメント更新
-  * チュートリアル
-    * BioFlat, Bio::DB.open, PubMed (E-Utils)
+  * チュートリアル追記
   * 英語化
   * RDoc
 
