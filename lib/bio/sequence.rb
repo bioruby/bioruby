@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.16 2001/12/15 03:29:07 okuji Exp $
+#  $Id: sequence.rb,v 0.17 2001/12/15 08:36:33 okuji Exp $
 #
 
 require 'bio/data/na'
@@ -35,15 +35,24 @@ module Bio
     # Should use the Forwardable module, but it doesn't work well with
     # some methods (e.g. []), so use our own hack at the moment. Maybe
     # a Ruby's bug.
-    STRING_METHODS = [:to_str]
     def method_missing(name, *args, &block)
       s = @str.__send__(name, *args, &block)
-      if not s.kind_of? String or STRING_METHODS.include? name
+      if not s.kind_of? String
 	s
       else
 	type.new s
       end
     end
+
+    # These shouldn't be converted to Sequence automatically.
+    def to_s
+      @str
+    end
+
+    def to_str
+      @str
+    end
+    # End.
 
     def initialize(str)
       @str = str
