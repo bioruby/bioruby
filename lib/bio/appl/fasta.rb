@@ -17,12 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.15 2004/08/23 23:48:02 k Exp $
+#  $Id: fasta.rb,v 1.16 2004/08/25 06:29:10 k Exp $
 #
 
 require 'net/http'
 require 'cgi' unless defined?(CGI)
-require 'bio/appl/fasta/report'
 
 module Bio
 

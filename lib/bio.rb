@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.37 2004/08/24 00:13:08 k Exp $
+#  $Id: bio.rb,v 1.38 2004/08/25 06:32:14 k Exp $
 #
 
 module Bio
@@ -125,7 +125,6 @@ require 'bio/appl/blast'
 require 'bio/appl/blast/report'
 require 'bio/appl/blast/format0'
 require 'bio/appl/blast/wublast'
-require 'bio/appl/blast/format7'
 require 'bio/appl/blast/rexml'
 require 'bio/appl/blast/xmlparser'
 require 'bio/appl/blast/format8'
