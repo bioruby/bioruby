@@ -1,7 +1,7 @@
 #
 # bio/appl/fasta.rb - FASTA wrapper
 #
-#   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001,2002 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,10 +17,9 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.7 2002/04/22 09:29:18 k Exp $
+#  $Id: fasta.rb,v 1.8 2002/05/28 14:49:06 k Exp $
 #
 
-require 'bio/sequence'
 require 'net/http'
 require 'cgi' unless defined?(CGI)
 
@@ -28,54 +27,63 @@ module Bio
 
   class Fasta
 
-    def initialize(program, db, option = {}, remote = false)
+    def initialize(program, db, option = '', server = 'local')
+      @format	= 10
+
       @program	= program
       @db	= db
-      @option	= option
-      @remote	= remote
-    end
-    attr_reader :program, :db, :option, :remote
+      @option	= "-Q -H -m #{@format} #{option}"	# need -a ?
+      @server	= server
 
-    def Fasta.local(program, db, option = {})
-      self.new(program, db, option)
+      @ktup	= nil
+      @matrix	= nil
+    end
+    attr_accessor :program, :db, :option, :server, :ktup, :matrix
+
+    def format=(num)
+      @format = num
+      @option.gsub!(/\s*-m\s+\d+/, '')
+      @option += " -m #{num} "
     end
 
-    def Fasta.remote(program, db, option = {})
-      self.new(program, db, option, true)
+    def self.local(program, db, option = '')
+      self.new(program, db, option, 'local')
+    end
+
+    def self.remote(program, db, option = '', server = 'genomenet')
+      self.new(program, db, option, server)
     end
 
     def query(query)
-      report = @remote ? remote_fasta(query) : local_fasta(query)
-      return report
+      return self.send("exec_#{@server}", query)
     end
 
 
     private
 
-    def local_fasta(query)
-      raise "[Error] can't open #{@db}" unless test(?R, @db)
 
-      cmd = "#{@program} -Q -H -a -m 10"
-
-      @option.each do |opt, value|
-	next if opt.kind_of?(Symbol)
-	if opt =~ /^-/
-	  cmd += " #{opt} #{value}"
-	end
+    def parse_result(data)
+      case @format
+      when 6 || '6'
+	require 'bio/appl/fasta/format6'
+      when 10 || '10'
+	require 'bio/appl/fasta/format10'
       end
+      Report.new(data) 
+   end
 
-      cmd += " -n" if query.type == Bio::Sequence::NA
-      cmd += " @ #{@db}"
-      cmd += " #{@option[:ktup]}" if @option[:ktup]
 
-      report = false
+    def exec_local(query)
+      cmd = "#{@program} #{@option} @ #{@db} #{@ktup}"
+
+      report = nil
 
       begin
 	io = IO.popen(cmd, "w+")
 	io.sync = true
 	io.puts(query)
 	io.close_write
-	report = Report.new(io.read)
+	report = parse_result(io.read)
       rescue
 	raise "[Error] command execution failed : #{cmd}"
       ensure
@@ -85,253 +93,46 @@ module Bio
       return report
     end
 
-    def remote_fasta(query)
+
+    def exec_genomenet(query)
       host = "fasta.genome.ad.jp"
       path = "/sit-bin/nph-fasta"
 
-      # ----------+-------+---------------------------------------------------
-      #  @program | query | @db (supported in GenomeNet)
-      # ----------+-------+---------------------------------------------------
-      #  fasta    | AA    | nr-aa, genes, vgenes, swissprot, swissprot-upd,
-      #           |       | pir, prf, pdbstr
-      #           +-------+---------------------------------------------------
-      #           | NA    | nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss,
-      #           |       | htgs, dbsts, embl-nonst, embnonst-upd, genes-nt,
-      #           |       | vgenes-nt, vgenome, epd
-      # ----------+-------+---------------------------------------------------
-      #  tfasta   | AA    | nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss,
-      #           |       | htgs, dbsts, embl-nonst, embnonst-upd, genes-nt,
-      #           |       | vgenes-nt, vgenome
-      # ----------+-------+---------------------------------------------------
+      form = {
+	'prog'		=> @program,
+	'dbname'	=> @db,
+	'sequence'	=> CGI.escape(query),
+	'other_param'	=> CGI.escape(@option),
+	'ktup_value'	=> @ktup,
+	'matrix'	=> @matrix,
+      }
 
-      max_hits  = @option[:hits]   ? @option[:hits]   : 200
-      max_align = @option[:align]  ? @option[:align]  : 50
+      data = []
 
-      other_param = "-a -m 10"
-      @option.each do |opt, value|
-	next if opt.kind_of?(Symbol)
-	if opt =~ /^-/
-	  other_param += " #{opt} #{value}"
-	end
+      form.each do |k, v|
+	data.push("#{k}=#{v}") if v
       end
 
-      query = CGI.escape(query)
-      other_param = CGI.escape(other_param)
+      report = nil
 
-      data = "sequence=#{query}&other_param=#{other_param}"
-      data += "&dbname=#{@db}"
-      data += "&prog=#{@program}"
-      data += "&b_value=#{max_hits}"
-      data += "&d_value=#{max_align}"
-      data += "&ktup_value=#{@option[:ktup]}" if @option[:ktup]
-      data += "&matrix=#{@option[:matrix]}" if @option[:matrix]
-
-      response, result = Net::HTTP.new(host).post(path, data)
-
-      result_path = nil
-
-      result.each do |line|
-	if /href="http:\/\/#{host}(.*?)".*Show all result/.match(line)
-	  result_path = $1
-	  break
-	end
-      end
-
-      if result_path
-	response, result = Net::HTTP.new(host).get(result_path)
-	return Report.new(result, @remote)
-      end
-
-    end
-
-
-    class Report
-
-      def initialize(data, remote = false)
-	# header lines - brief list of the hits
-        if data.sub!(/.*\nThe best scores are/m, '')
-	  data.sub!(/(.*)\n\n>>>/m, '')
-	  @list = "The best scores are" + $1
-	else
-	  data.sub!(/.*\n!!\s+/m, '')
-	  data.sub!(/.*/) { |x| @list = x; '' }
-	end
-
-	# body lines - fasta execution result
-	program, *hits = data.split(/\n>>/)
-
-	# trailing lines - log messages of the execution
-	@log = hits.pop
-        @log.sub!(/.*<\n/m, '')
-        @log.sub!(/\n<.*/m, '') if remote
-        @log.strip!
-
-	# parse results
-	@program = Program.new(program)
-	@hits = []
-
-	hits.each do |x|
-	  @hits.push(Hit.new(x))
-	end
-      end
-      attr_reader :list, :log, :program, :hits
-
-      def each
-	@hits.each do |x|
-	  yield x
-	end
-      end
-
-      def threshold(evalue_max = 0.1)
-	list = []
-	@hits.each do |x|
-	  list.push(x) if x.evalue <= evalue_max
-	end
-	return list
-      end
-
-      def lap_over(length_min = 0)
-	list = []
-	@hits.each do |x|
-	  list.push(x) if x.overlap > length_min
-	end
-	return list
-      end
-
-
-      class Program
-
-	def initialize(data)
-	  @definition, *program = data.split(/\n/)
-	  @program = {}
-
-	  pat = /;\s+([^:]+):\s+(.*)/
-
-	  program.each do |x|
-	    if pat.match(x)
-	      @program[$1] = $2
-	    end
+      begin
+	response, result = Net::HTTP.new(host).post(path, data.join('&'))
+	result_path = nil
+	result.each do |line|
+	  if %r|href="http://#{host}(.*?)".*Show all result|i.match(line)
+	    result_path = $1
+	    break
 	  end
 	end
-	attr_reader :definition, :program
-
-	def command_line
-	  @program['mp_argv']
+	if result_path
+	  response, result = Net::HTTP.new(host).get(result_path)
+	  if %r|<pre>.*?</pre>.*<pre>(.*)</pre>|mi.match(result)
+	    report = parse_result($1)
+	  end
 	end
-
-	def version
-	  @program['mp_ver']
-	end
-
       end
 
-
-      class Hit
-
-	def initialize(data)
-	  score, query, target = data.split(/\n>/)
-
-	  @definition, *score = score.split(/\n/)
-	  @score = {}
-
-	  pat = /;\s+([^:]+):\s+(.*)/
-
-	  score.each do |x|
-	    if pat.match(x)
-	      @score[$1] = $2
-	    end
-	  end
-
-	  @query = Query.new(query)
-	  @target = Target.new(target)
-	end
-	attr_reader :definition, :score, :query, :target
-
-	def evalue
-	  if @score['sw_expect']
-	    @score['sw_expect'].to_f
-	  else
-	    @score['fa_expect'].to_f
-	  end
-	end
-
-	def sw
-	  @score['sw_score'].to_i
-	end
-
-	def ident
-	  @score['sw_ident'].to_f
-	end
-
-	def overlap
-	  @score['sw_overlap'].to_i
-	end
-
-	def lap_at
-	  [
-	    @query.data['al_start'].to_i,
-	    @query.data['al_stop'].to_i,
-	    @target.data['al_start'].to_i,
-	    @target.data['al_stop'].to_i,
-	  ]
-	end
-
-	def q_id
-	  @query.definition
-	end
-
-	def t_id
-	  @target.definition
-	end
-
-	def q_len
-	  @query.length
-	end
-
-	def t_len
-	  @target.length
-	end
-
-
-	class Query
-
-	  def initialize(data)
-	    definition, *data = data.split(/\n/)
-
-	    @definition = definition.sub(/ .*/, '')
-	    @data = {}
-	    @sequence = ''
-
-	    pat = /;\s+([^:]+):\s+(.*)/
-
-	    data.each do |x|
-	      if pat.match(x)
-		@data[$1] = $2
-	      else
-		@sequence += x
-	      end
-	    end
-	  end
-	  attr_reader :definition, :data, :sequence
-
-	  def seq
-	    if @data['sq_type'] == 'p'
-	      Bio::Sequence::AA.new(@sequence)
-	    else
-	      Bio::Sequence::NA.new(@sequence)
-	    end
-	  end
-
-	  def length
-	    @data['sq_len'].to_i
-	  end
-
-	end
-
-	class Target < Query; end
-
-      end
-
+      return report
     end
 
   end
@@ -340,9 +141,17 @@ end
 
 
 if __FILE__ == $0
-  require 'pp'
+  begin
+    require 'pp'
+    alias :p :pp
+  rescue
+  end
+
+# serv = Bio::Fasta.local('fasta34', 'hoge.nuc')
+# serv = Bio::Fasta.local('fasta34', 'hoge.pep')
+# serv = Bio::Fasta.local('ssearch34', 'hoge.pep')
   serv = Bio::Fasta.remote('fasta', 'genes')
-  pp serv.query(ARGF.read)
+  p serv.query(ARGF.read)
 end
 
 
@@ -350,68 +159,35 @@ end
 
 = Bio::Fasta
 
---- Bio::Fasta.new(program, db, option = {}, remote = false)
---- Bio::Fasta.local(program, db, option = {})
---- Bio::Fasta.remote(program, db, option = {})
+--- Bio::Fasta.new(program, db, option = '', server = 'local')
+--- Bio::Fasta.local(program, db, option = '')
+--- Bio::Fasta.remote(program, db, option = '', server = 'genomenet')
+
+      Returns a Fasta factory object (Bio::Fasta).
+
+      For the develpper, you can add server 'hoge' by adding
+      Bio::Fasta#exec_hoge(query) method.
+
 --- Bio::Fasta#query(query)
+
+      Execute fasta search and returns Report object (Bio::Fasta::Report).
+
 --- Bio::Fasta#program
 --- Bio::Fasta#db
 --- Bio::Fasta#option
---- Bio::Fasta#remote
+--- Bio::Fasta#server
+--- Bio::Fasta#ktup
 
-== Bio::Fasta::Report
+      Accessors for the factory parameters.
 
---- Bio::Fasta::Report.new(data, remote = false)
---- Bio::Fasta::Report#list
---- Bio::Fasta::Report#log
---- Bio::Fasta::Report#program
---- Bio::Fasta::Report#hits
---- Bio::Fasta::Report#each
---- Bio::Fasta::Report#threshold(evalue_max = 0.1)
---- Bio::Fasta::Report#lap_over(length_min = 0)
+== Available databases for Fasta.remote(@program, @db, option, 'genomenet')
 
-=== Bio::Fasta::Report::Program
-
---- Bio::Fasta::Report::Program.new(data)
---- Bio::Fasta::Report::Program#definition
---- Bio::Fasta::Report::Program#program
---- Bio::Fasta::Report::Program#command_line
---- Bio::Fasta::Report::Program#version
-
-=== Bio::Fasta::Report::Hit
-
---- Bio::Fasta::Report::Hit.new(data)
---- Bio::Fasta::Report::Hit#definition
---- Bio::Fasta::Report::Hit#score
---- Bio::Fasta::Report::Hit#query
---- Bio::Fasta::Report::Hit#target
---- Bio::Fasta::Report::Hit#evalue
---- Bio::Fasta::Report::Hit#sw
---- Bio::Fasta::Report::Hit#ident
---- Bio::Fasta::Report::Hit#overlap
---- Bio::Fasta::Report::Hit#lap_at
---- Bio::Fasta::Report::Hit#q_id
---- Bio::Fasta::Report::Hit#q_len
---- Bio::Fasta::Report::Hit#t_id
---- Bio::Fasta::Report::Hit#t_len
-
-=== Bio::Fasta::Report::Hit::Query
-
---- Bio::Fasta::Report::Hit::Query.new(data)
---- Bio::Fasta::Report::Hit::Query#definition
---- Bio::Fasta::Report::Hit::Query#data
---- Bio::Fasta::Report::Hit::Query#sequence
---- Bio::Fasta::Report::Hit::Query#seq
---- Bio::Fasta::Report::Hit::Query#length
-
-=== Bio::Fasta::Report::Hit::Target
-
---- Bio::Fasta::Report::Hit::Target.new(data)
---- Bio::Fasta::Report::Hit::Target#definition
---- Bio::Fasta::Report::Hit::Target#data
---- Bio::Fasta::Report::Hit::Target#sequence
---- Bio::Fasta::Report::Hit::Target#seq
---- Bio::Fasta::Report::Hit::Target#length
+  # ----------+-------+---------------------------------------------------
+  #  @program | query | @db (supported in GenomeNet)
+  # ----------+-------+---------------------------------------------------
+  #  fasta    | AA    | nr-aa, genes, vgenes, swissprot, swissprot-upd,
+  #           |       | pir, prf, pdbstr
+  # ----------+-------+---------------------------------------------------
 
 =end
 
