@@ -1,7 +1,7 @@
 #
 # bio/io/ddbjxml.rb - DDBJ SOAP server access class
 #
-#   Copyright (C) 2003 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2003, 2004 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: ddbjxml.rb,v 1.3 2004/05/14 03:06:51 k Exp $
+#  $Id: ddbjxml.rb,v 1.4 2004/06/23 08:24:59 k Exp $
 #
 
 require 'bio/db/genbank/ddbj'
@@ -28,64 +28,92 @@ rescue LoadError
 end
 
 module Bio
-  class DDBJ
+class DDBJ
 
-    class XML
+class XML
 
-      SERVER_URI = 'http://xml.nig.ac.jp/wsdl/'
+  BASE_URI = "http://xml.nig.ac.jp/wsdl/"
 
-      def initialize(wsdl_path = '', log = nil)
-	wsdl = Bio::DDBJ::XML::SERVER_URI + wsdl_path
-	@driver = SOAP::WSDLDriverFactory.new(wsdl).createDriver
-	@driver.generateEncodeType = true
-	if log
-	  @driver.setWireDumpFileBase(log)
-	end
-      end
+  def initialize(wsdl = nil)
+    @wsdl = wsdl
+    @log = nil
+    create_driver
+  end
 
-      def method_missing(*arg)
-	@driver.send(*arg)
-      end
+  attr_reader :wsdl, :log
 
-      class Blast < XML
-	def initialize(log = nil)
-	  super('Blast.wsdl', log)
-	end
-      end
-      class ClustalW < XML
-	def initialize(log = nil)
-	  super('ClustalW.wsdl', log)
-	end
-      end
-      class DDBJ < XML
-	def initialize(log = nil)
-	  super('DDBJ.wsdl', log)
-	end
-      end
-      class Fasta < XML
-	def initialize(log = nil)
-	  super('Fasta.wsdl', log)
-	end
-      end
-      class GetEntry < XML
-	def initialize(log = nil)
-	  super('GetEntry.wsdl', log)
-	end
-      end
-      class SRS < XML
-	def initialize(log = nil)
-	  super('SRS.wsdl', log)
-	end
-      end
-      class TxSearch < XML
-	def initialize(log = nil)
-	  super('TxSearch.wsdl', log)
-	end
-      end
+  def create_driver
+    @driver = SOAP::WSDLDriverFactory.new(@wsdl).create_driver
+    @driver.generate_explicit_type = true	# Ruby obj <-> SOAP obj
+  end
 
+  def wsdl=(url)
+    @wsdl = url
+    create_driver
+  end
+
+  def log=(io)
+    @log = io
+    @driver.wiredump_dev = @log
+  end
+
+  def method_missing(*arg)
+    @driver.send(*arg)
+  end
+
+  class Blast < XML
+    SERVER_URI = BASE_URI + "Blast.wsdl"
+    def initialize(wsdl = nil)
+      super(wsdl || SERVER_URI)
     end
   end
-end
+
+  class ClustalW < XML
+    SERVER_URI = BASE_URI + "ClustalW.wsdl"
+    def initialize(wsdl = nil)
+      super(wsdl || SERVER_URI)
+    end
+  end
+  
+  class DDBJ < XML
+    SERVER_URI = BASE_URI + "DDBJ.wsdl"
+    def initialize(wsdl = nil)
+      super(wsdl || SERVER_URI)
+    end
+  end
+  
+  class Fasta < XML
+    SERVER_URI = BASE_URI + "Fasta.wsdl"
+    def initialize(wsdl = nil)
+      super(wsdl || SERVER_URI)
+    end
+  end
+  
+  class GetEntry < XML
+    SERVER_URI = BASE_URI + "GetEntry.wsdl"
+    def initialize(wsdl = nil)
+      super(wsdl || SERVER_URI)
+    end
+  end
+  
+  class SRS < XML
+    SERVER_URI = BASE_URI + "SRS.wsdl"
+    def initialize(wsdl = nil)
+      super(wsdl || SERVER_URI)
+    end
+  end
+  
+  class TxSearch < XML
+    SERVER_URI = BASE_URI + "TxSearch.wsdl"
+    def initialize(wsdl = nil)
+      super(wsdl || SERVER_URI)
+    end
+  end
+
+end # XML
+
+end # DDBJ
+end # Bio
 
 
 if __FILE__ == $0
@@ -96,24 +124,25 @@ if __FILE__ == $0
   rescue LoadError
   end
 
-  puts ">>> DDBJ/DDBJ"
-  driver = Bio::DDBJ::XML::DDBJ.new
+  puts ">>> Bio::DDBJ::XML::DDBJ"
+  serv = Bio::DDBJ::XML::DDBJ.new
+  serv.log = STDERR
 
   puts "### getFFEntry('AB000050')"
-  p driver.getFFEntry('AB000050')
+  puts serv.getFFEntry('AB000050')
 
-  puts ">>> DDBJ/GetEntry"
-  driver = Bio::DDBJ::XML::GetEntry.new
+  puts ">>> Bio::DDBJ::XML::GetEntry"
+  serv = Bio::DDBJ::XML::GetEntry.new
 
   puts "### getDDBJEntry('AB000050')"
-  p driver.getDDBJEntry('AB000050')
+  puts serv.getDDBJEntry('AB000050')
 
 end
 
 
 =begin
 
-= Bio::DDBJ::SOAP
+= Bio::DDBJ::XML
 
 This class access the DDBJ web services by SOAP/WSDL.
 For more informations, see:
