@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.14 2001/11/14 08:09:10 katayama Exp $
+#  $Id: pathway.rb,v 1.15 2001/11/14 09:08:49 shuichi Exp $
 #
 
 require 'bio/matrix'
@@ -231,10 +231,24 @@ module Bio
 
 
     # Floyd method
-    def floyd
-      raise NotImplementedError
-    end
+    def floyd_warshall
+      inf = 1 / 0.0
 
+      m = self.to_matrix(inf, 0)
+      d = m.dup
+      n = self.nodes
+      for k in 0 .. n - 1 do
+        for i in 0 .. n - 1 do
+          for j in 0 .. n - 1 do
+            if d[i, j] > d[i, k] + d[k, j]
+              d[i, j] = d[i, k] + d[k, j]
+            end
+          end
+        end
+      end
+      return d
+    end
+    alias floyd floyd_warshall
 
     private
 
