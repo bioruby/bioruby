@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.1 2001/12/07 15:56:56 katayama Exp $
+#  $Id: fasta.rb,v 1.2 2001/12/08 04:39:55 katayama Exp $
 #
 
 require 'bio/sequence'
@@ -88,7 +88,8 @@ module Bio
     def remote_fasta(query)
       # @server should be changed URI (uri.rb) object in Ruby 1.7
       host = "fasta.genome.ad.jp"
-      path = "/sit-bin/nph-fasta"
+#     path = "/sit-bin/nph-fasta"
+      path = "/sit-bin/nph-fasta.ktym"		# GenomeNet nph- bug work around
 
       # ----------+-------+---------------------------------------------------
       #  @program | query | dbname (supported in GenomeNet)
@@ -127,27 +128,34 @@ module Bio
       data += "&ktup_value=#{@option[:ktup]}" if @option[:ktup]
       data += "&matrix=#{@option[:matrix]}" if @option[:matrix]
 
-      # Hey, post doesn't work with nph- script?
       response, result = Net::HTTP.new(host).post(path, data)
 
-      return Report.new(result)
+      return Report.new(result, @server)
     end
 
 
     class Report
 
-      def initialize(data)
+      def initialize(data, remote = nil)
+	if remote
+	  data.gsub!(/\n>>/, "\n>")		# GenomeNet '>' increment bug
+        end
+
 	# header lines - brief list of the hits
         data.sub!(/.*\nThe best scores are/m, '')
 	data.sub!(/(.*)\n\n>>>/m, '')
 	@list = "The best scores are" + $1
 
-	# tailer lines - log messages of the execution
-	data.sub!(/\n>>><<<(.*)/m, '')
-	@log = $1.strip
-
+	# body lines - fasta execution result
 	program, *hits = data.split(/\n>>/)
 
+	# trailing lines - log messages of the execution
+	@log = hits.pop
+        @log.sub!(/.*<\n/m, '')
+        @log.sub!(/\n<.*/m, '') if remote
+        @log.strip!
+
+	# parse results
 	@program = Program.new(program)
 	@hits = []
 
@@ -392,3 +400,4 @@ end
 --- Bio::Fasta::Report::Hit::Target#length
 
 =end
+
