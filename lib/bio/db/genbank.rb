@@ -5,6 +5,7 @@
 #
 
 require 'bio/db'
+require 'bio/sequence'
 
 class GenBank < BioDB
 
@@ -41,7 +42,7 @@ class GenBank < BioDB
 #  end
 
 
-  # Record tag's start and end line numbers in hash
+  # Store start and end line numbers of tags in hash
   # @index["LOCUS"] = [1, 1], @index["SOURCE"] = [8, 13], ...
   def initialize(@entry)
     @index = {}
@@ -66,7 +67,7 @@ class GenBank < BioDB
   def get(tag)
     s = @index[tag][0]
     e = @index[tag][1]
-    @entry[s..e]
+    @hash[tag] = @entry[s..e]
   end
 
 
@@ -88,18 +89,16 @@ class GenBank < BioDB
   # 53-55   The division code (see Section 3.3)
   # 63-73   Date, in the form dd-MMM-yyyy (e.g., 15-MAR-1991)
   def parse_LOCUS
-    (
-     @hash["LOCUS_NAME"],
-     @hash["LOCUS_LENGTH"],
-     @hash["LOCUS_STRAND"],
-     @hash["LOCUS_NATYPE"],
-     @hash["LOCUS_CIRCULAR"],
-     @hash["LOCUS_GBDIV"],
-     @hash["LOCUS_DATE"],
-     ) =
-      @hash["LOCUS"].unpack('@12 A10 @22 A7 @33 A3 @36 A3 @42 A10 @52 A3 @62 A11')
+    get(LOCUS)
+    locus = @hash['LOCUS']
+    @hash['LOCUS_NAME']		= locus.unpack('@12 A10').strip
+    @hash['LOCUS_LENGTH']	= locus.unpack('@22 C7')
+    @hash['LOCUS_STRAND']	= locus.unpack('@33 A3').strip
+    @hash['LOCUS_NATYPE']	= locus.unpack('@36 A3').strip
+    @hash['LOCUS_CIRCULAR']	= locus.unpack('@42 A10').strip
+    @hash['LOCUS_GBDIV']	= locus.unpack('@52 A3').strip
+    @hash['LOCUS_DATE']		= locus.unpack('@62 A11').strip
   end
-
 
   # There is no limit on the number of lines that may be part of
   # the DEFINITION. The last line must end with a period.
