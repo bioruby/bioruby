@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: reaction.rb,v 1.1 2004/10/22 10:15:10 k Exp $
+#  $Id: reaction.rb,v 1.2 2004/10/22 10:16:05 k Exp $
 #
 
 require 'bio/db'
@@ -90,8 +90,8 @@ if __FILE__ == $0
   p rn.name
   p rn.definition
   p rn.equation
-  p cpd.rpairs
-  p cpd.pathways
-  p cpd.enzymes
+  p rn.rpairs
+  p rn.pathways
+  p rn.enzymes
 end
 
