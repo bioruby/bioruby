@@ -1,0 +1,286 @@
+=begin
+
+  $Id: Design.rd.ja,v 1.1 2001/10/30 04:25:51 katayama Exp $
+
+  Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+
+= BioRuby の開発方針とデザイン
+
+新しくモジュールを追加する場合は CVS の以下のレポジトリに、内容に従って
+適切に commit します。メーリングリストなどで contribute されたコードは
+本人に committer になってもらうか、スタッフが commit します。
+
+  bioruby/bin/          アプリケーション
+         /lib/bio/      Ruby で書かれたライブラリ
+                 /appl/   外部アプリの処理 (？)
+                 /data/   生物学的な定数などデータそのもの
+                 /db/     データベースパーザ
+                 /io/     データの入出力
+                 /util/   その他
+         /doc/          ドキュメント
+         /ext/          C で書かれたライブラリ
+         /sample/       サンプルコード
+
+== Ruby 部分についてのデザイン（bioruby/lib/bio/ 以下）
+
+これまでに行なわれた実装のデザインコンセプトと、今後の方針などについてま
+とめておきます。
+
+Ruby のクラスは module Bio で囲むことで、名前空間を切り分ける事にします。
+
+=== lib/bio/ データ構造系
+
+配列やグラフ、行列、文献などの抽象データ構造を扱うクラスは lib/bio/ 直下
+に配置しています。これらは各データベース・パーザなどからも直接呼ばれます。
+
+他に、アライメントクラスなどの実装が必要かも知れません。また、データベー
+スとエントリを一意に表す ID クラス、生物種の系統分類を表す Taxonomy クラ
+スや GeneOntology などのクラスもあると便利かも知れません。
+
+=== lib/bio/db/ データベース・パーザ系
+
+使い方の簡単さ vs 実装の複雑さ、処理の早さ vs メモリの重さ、などバランス
+の問題で必ずしも良いとは言えない場合もありますが、lib/bio/db.rb では以下
+のような独自のアイデア（すでに同様な試みがなされていたかどうかは調べてい
+ません）を採用しています。新しくパーザを追加する場合も参考にして下さい。
+
+  エントリ      それぞれのデータベースにおける１つのデータ単位
+                例) GenBank なら LOCUS から // までの全ての行
+  デリミタ      エントリとエントリを区切る文字列
+                例) GenBank なら // だけの行
+  タグ          エントリの左端数カラムなどに記されるトップレベルの識別子
+                例) GenBank なら DEFINITION や FEATURES など
+  フィールド    タグ毎に意味のある単位をなす複数行からなるブロック
+                例) GenBank なら SOURCE に含まれる taxonomy までの行全部など
+
+BioRuby のデータベース・パーザは、１エントリ分の文字列を .new に渡す事で
+パースした結果を保持するインスタンスを返すデザインになっています。各デー
+タベースからエントリ単位のデータを得る方法については今のところユーザ任せ
+ですが、逆にネット越しに DBGET したもの、NCBI から取ってきたもの、ローカ
+ルに持っているコピー、などどこからエントリを得たか (io) に関わらず、パー
+ザはエントリをパースする処理に専念できます。
+
+最終的には全てのデータはあらかじめパースして tab 切りのデータに切り刻み、
+MySQL などに突っ込んでしまってパースの必要がないような世界にしたいです。
+
++ データベース構造の抽象化
+
+lib/bio/db/ 以下のモジュールは、lib/bio/db.rb を require し、少なくとも
+DB クラスを継承します。さらに、いくつかのデータベースは類似の構造を持っ
+ているため、とりあえず NCBI 型（KEGG も含む）、EMBL 型に分けて、パースの
+際に共通で使えるメソッドを共有しようとしています。ただし、実際にはこれら
+の形式に当てはまらないデータベースも多いので、DB だけを継承する場合もあ
+るでしょう。
+
+今後、もう少し（特に EMBL 系）パースの際に共通で使える切り出し系のメソッ
+ドの整備が必要です。
+
++ フィールドに対する共通の API を定義
+
+様々なデータベースでよく共通して現れるようなフィールドに対しては、アクセ
+スメソッドのスケルトンを DB クラスで定義しています。パーサを書く場合、ク
+ラス DB に含まれるメソッド名のアクセスメソッドをできるだけ（上書き）定義
+します。
+
+このように、フィールドに対する共通のメソッド名が、各データベースのパーサ
+で適切に実装されていれば、データベース毎にメソッドを覚える必要が減ります。
+例えば、データベースが異なっても「エントリの説明フィールド」取得のための
+メソッドは .definition だろうと推測しやすくなります。
+
++ 必要な時までパースを遅らせる（on-demand parsing）
+
+GenBank など複雑な構造のデータベースをパースする際にもスループットを良く
+するため、最初はフィールド毎に切り分ける前処理だけを行ない、特定のフィー
+ルド内のデータを要求するメソッドが呼ばれた時だけ実際にフィールド内のデー
+タを細かくパースする処理を行ないます。もちろんこの時パースされるのは、必
+要なフィールドだけです。
+
++ 一度パースした結果はキャッシュしておく
+
+上記の on-demand parsing でパースした結果は、オブジェクト内にキャッシュ
+しておくので、２度目以降のメソッドコールでは保持しているパース済みのデー
+タを返します。これにより重いパースを繰り返すようなオーバーヘッドを無くし
+ています。
+
+=== lib/bio/data/ 定数、データ系
+
+lib/bio/data/ 以下に、いくつかのデータ（アミノ酸の名前、KEGG での生物種
+名、コドン表など）が定数として置かれています。
+
+  Bio::AminoAcid → アミノ酸の名前を表すハッシュ、など
+
+これらは、必要なクラスにアクセスメソッドを定義しても良いでしょう。
+
+=== lib/bio/io/ インターフェイス、IO 系
+
+lib/bio/io/ 以下には、ゲノムネットによるデータ取得を行なう DBGET クラス
+と NCBI の PubMed による MEDLINE データ取得を行なう PubMed クラスがあり
+ます。各メソッドはクラスメソッドとして定義されているので、あらかじめイン
+スタンスを作らなくても Bio::DBGET.bget("eco:b0001") などと直接実行できま
+す（が、これがベストかどうかはまだ分からない）。
+
+他には、フラットファイル形式のラッパーとなる flatfile.rb や、MySQL に対
+して入出力を行なう mysql.rb（bioruby-db？）、NCBI（FASTA, BLAST も含めて）
+など Web ベースのアクセスを行なうもの、などの実装も必要でしょう。
+
+* flatfile.rb のアイデア
+
+    # ローカルのファイルを GenBank フォーマットとして処理
+    flatfile = Bio::FlatFile.new('GenBank', 'data/gbvrl1.seq')
+
+    # エントリごとに Bio::GenBank オブジェクトを生成
+    gb = flatfile.next_entry
+    flatfile.each_entry do |gb|
+      puts gb.definition
+    end
+
+* bioruby-db (mysql.rb, postgresql.rb etc.) のアイデア
+
+    db = Bio::DBI.new('GenBank', 'server')
+    gb = db.get(id)
+
+* ncbi.rb のアイデア（PubMed もここに？）
+
+    gb = Bio::NCBI.new('GenBank', id)
+    fa = Bio::NCBI::BLAST.new(query, target)
+
+* genomenet.rb のアイデア（DBGET もここに？）
+  * ncbi.rb と同様の BLAST と FASTA, CLASTALW などのサービス
+  * SSDB の統合
+
+=== lib/bio/appl/ ツール系
+
+FASTA(SSEARCH), [PSI-]BLAST, HMMER, CLUSTALW などの外部アプリを使った処
+理は、（サンプルコードはありますが）クラスとしての実装はまだ進んでいませ
+ん。入出力 (io) と結果の処理を分離して、ローカルな実行、http などによる
+リモート実行、結果のフォーマットなどを意識せずに、結果がパースされ格納さ
+れた FASTA オブジェクトなどが返るといいと思いますが
+
+* query となるオブジェクトに、アプリを実行するメソッドを実装（必要な引数
+  を与える）
+
+    # seq は Bio::Sequence::AA オブジェクトなど
+    fa_res = seq.fasta('local', target, opt)    # FASTA の結果オブジェクト
+    fa_res = seq.fasta(server, target, opt)     # 同上
+    puts fa_res.top(10, with_id, by_optscore)
+    puts fa_res.best.alignment
+
+* 新しく生成したファクトリに、サーバ、query、target などを設定して、アプ
+  リを実行するメソッドを呼ぶ
+
+    fasta = Bio::FASTA.new(server, target, opt)
+    fa_res = fasta.query(seq)
+
+などいくつかの実装方法が考えられます（両方あってもいいかも）。ファクトリ
+やメソッドへのオプションの渡し方は hash を投げてもいいでしょう。
+
+    hash['server'] = "fasta.genome.ad.jp"
+    hash['db'] = "nr-aa"
+    fa_res = seq.fasta(hash)
+
+    hash['server'] = "local"
+    hash['db'] = "/bio/db/fasta/genbank/hoge.f"
+    fasta = Bio::FASTA.new(hash)
+
+今後実装しながら仕様を決めていきたいと思います。
+
+== コーディングスタイル
+
+クラス設計、メソッド定義など全般において、KISS が基本です。ただし、なん
+でもかんでも class に分解してしまえば良いわけではないでしょう。概念とし
+て一つのまとまりだと思えるものまで分解すればよく、特に使い回しのきかない
+オブジェクトを生成する必要はないと思います。
+
+技術的な事については、常に改善の余地があると思います。書き換える事により
+シンプルで分かりやすくなる場合、今後の開発がスムーズになると思われる場合
+には、どんどん修正していきます。逆に、多少効率が良くなるとしても何をやっ
+ているか分かりにくくなる場合、必要性が高いと思える積極的な理由が見つから
+ない場合は採用を見合わせることもあると思います。いずれにしても、バージョ
+ン 1.0 までは下位互換性を犠牲にした変更も行なう予定です。
+
+ソースコード中には日本語など非 ASCII の文字列は含まないようにします。
+
+=== ヘッダ部
+
+ヘッダ部には、ファイル名、概要、著作権者、ライセンス、CVS の ID を書きます。
+
+    #
+    # bio/sequence.rb - biological sequence class
+    #
+    #   Copyright (C) 2000, 2001 KATAYAMA Toshiaki <k@bioruby.org>
+    #
+    #  This library is free software; you can redistribute it and/or
+    #  modify it under the terms of the GNU Library General Public
+    #  License as published by the Free Software Foundation; either
+    #  version 2 of the License, or (at your option) any later version.
+    #
+    #  This library is distributed in the hope that it will be useful,
+    #  but WITHOUT ANY WARRANTY; without even the implied warranty of
+    #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    #  Library General Public License for more details.
+    #
+    #  $Id: Design.rd.ja,v 1.1 2001/10/30 04:25:51 katayama Exp $
+    #
+
+アプリケーションやサンプルコードを書く場合は、ruby のパスに依存しないよ
+うに１行目を
+
+    #!/usr/bin/env ruby
+
+のように始めるのも良いでしょう。
+
+
+=== ドキュメント部
+
+これまで、各クラスについては、あまりドキュメント化されていませんでしたが、
+今後はヘッダ部と、以下の本体の間に RD でメソッドなどのドキュメントを追加
+することにしていきます。
+
+ただし、
+
+* ソースの中には ASCII 以外の文字を入れない方針のため、日本語のドキュメ
+  ントは、この部分ではなく別ファイルに記述し、doc/ ディレクトリ以下に置
+  くなどします。この際、拡張子に .ja を付けて、ファイル名からも日本語と
+  分かるようにします。
+
+* このドキュメント部で RD を許す代わりに、以下のソースコード本体内では
+  RD によるドキュメントは禁止します。理由は純粋にコードが良みづらくなる
+  からですが、コメントを # を使って追加する事は歓迎します。
+
+=== 本体
+
+本体は module Bio で括り、必要なクラスを実装します。歴史的経緯で module
+Bio 内はまだインデントされていませんが、追加モジュールはインデントしても
+構いません。しかし、新しい Ruby のバージョンで class Bio::Hoge の形式で
+クラス定義ができるようになれば、こちらを採用するかも知れません。
+
+    現行                  今後                  将来？
+    
+    module Bio            require 'hogehoge'    require 'hogehoge'
+    
+    require 'hogehoge'    module Bio            class Bio::Hoge
+                                                end
+    class Hoge              class Hoge
+    end                     end                 class Bio::Fuga
+                                                end
+    class Fuga              class Fuga
+    end                     end
+    
+    end # module Bio      end
+
+=== 例外処理
+
+今後は、Ruby の例外処理をもう少し生かしたコードにしていく必要があります。
+
+=== 動作テスト
+
+動作確認のための仕組みはまだ整っていません。今後、テスト用のスクリプトや 
+Unit テストの採用などを検討していきます。
+
+== 開発に参加するには
+
+BioRuby のウェブサイト ((<URL:http://bioruby.org>)) を見て、メーリングリ
+ストに参加するか、スタッフ <staff@bioruby.org> に連絡してください。
+
+=end
+
