@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: alignment.rb,v 1.3 2003/07/28 10:53:14 ng Exp $
+#  $Id: alignment.rb,v 1.4 2003/07/30 13:50:06 ng Exp $
 #
 
 require 'bio/sequence'
@@ -310,9 +310,8 @@ module Bio
     #
     ### instance-variable-related methods
     #
-    def dup
-      #(Hash-like)
-      na = self.class.new(self)
+    def new(*arg)
+      na = self.class.new(*arg)
       if defined?(@seqclass)
 	na.seqclass = @seqclass
       end
@@ -327,13 +326,19 @@ module Bio
       end
       na
     end
+    protected :new
+
+    def dup
+      #(Hash-like)
+      self.new(self)
+    end
 
     #
     ### methods below should not access instance variables
     #
     def merge(*other)
       #(Hash-like)
-      na = self.class.new(self)
+      na = self.new(self)
       na.merge!(*other)
       na
     end
@@ -395,10 +400,31 @@ module Bio
 
     def collect_align
       #(original)
-      na = self.class.new
+      na = self.new
       self.each_pair do |k, s|
 	na.store(k, yield(s))
       end
+      na
+    end
+
+    def compact!
+      #(Array-like)
+      d = []
+      self.each_pair do |k, s|
+	if !s or s.empty?
+	  d << k
+	end
+      end
+      d.each do |k|
+	self.delete(d)
+      end
+      d.empty? ? nil : d
+    end
+
+    def compact
+      #(Array-like)
+      na = self.dup
+      na.compact!
       na
     end
 
@@ -423,7 +449,7 @@ module Bio
 
     def purge(*arg)
       #(BioPerl) AlignI::purge like method
-      purged = self.class.new
+      purged = self.new
       arg.each do |k|
 	if self[k] then
 	  purged.store(k, self.delete(k))
@@ -434,7 +460,7 @@ module Bio
 
     def select(*arg)
       #(original)
-      na = self.class.new
+      na = self.new
       if block_given? then
 	# 'arg' is ignored
 	# nearly same action as Array#select(Enumerable#select)
@@ -453,12 +479,19 @@ module Bio
     end
 
     def slice(*arg)
+      #(String-like)
       #(BioPerl) AlignI::slice like method
+      self.collect_align do |s|
+	s.slice(*arg)
+      end
+    end
+
+    def subseq(*arg)
+      #(original)
       self.collect_align do |s|
 	s.subseq(*arg)
       end
     end
-    alias :subseq :slice
 
     def window(*arg)
       #(original)
@@ -729,13 +762,20 @@ module Bio
       mstr
     end
 
-    def normalize
+    def normalize!
       #(original)
       len = self.seq_length
       self.each do |s|
 	s << (gap_char * (len - s.length)) if s.length < len
       end
       self
+    end
+
+    def normalize
+      #(original)
+      na = self.dup
+      na.normalize!
+      na
     end
 
     def rstrip!
@@ -821,9 +861,13 @@ module Bio
       na
     end
 
-    def concatinate(aln)
-      #(original)
-      if aln.is_a?(self.class) then
+    def concat(aln)
+      #(String-like)
+      if aln.respond_to?(:to_str) then #aln.is_a?(String)
+	self.each do |s|
+	  s << aln
+	end
+      elsif aln.is_a?(self.class) then
 	aln.each_pair do |k, s|
 	  self[k] << s
 	end
@@ -831,6 +875,28 @@ module Bio
 	i = 0
 	aln.each do |s|
 	  self.order(i) << s
+	  i += 1
+	end
+      end
+      self
+    end
+
+    def replace_slice(*arg)
+      #(original)
+      aln = arg.pop
+      if aln.respond_to?(:to_str) then #aln.is_a?(String)
+	self.each do |s|
+	  s[*arg] = aln
+	end
+      elsif aln.is_a?(self.class) then
+	aln.each_pair do |k, s|
+	  self[k][*arg] = s
+	end
+      else
+	i = 0
+	aln.each do |s|
+	  self.order(i)[*arg] = s
+	  i += 1
 	end
       end
       self
@@ -848,7 +914,7 @@ module Bio
 	  raise 'alignment result is inconsistent with input data'
 	end
       end
-      a2 = self.class.new
+      a2 = self.new
       a0.keys.each do |k|
 	a2.store(self.keys[k], a1[k.to_s])
       end
@@ -1100,6 +1166,8 @@ end #module Bio
 -- Bio::Alignment#collect!
 -- Bio::Alignment#index(seq)
 -- Bio::Alignment#select { |x| ...  }
+-- Bio::Alignment#compact!
+-- Bio::Alignment#compact
 
 -- Bio::Alignment#collect
 -- Bio::Alignment#to_a
@@ -1116,9 +1184,10 @@ end #module Bio
 -- Bio::Alignment#consensus_string(threshold = 1, options...)
 -- Bio::Alignment#consensus(threshold = 1, options...)
 -- Bio::Alignment#consensus_iupac(options...)
+-- Bio::Alignment#match_line(options...)
+
 -- Bio::Alignment#convert_match(match_char = '.')
 -- Bio::Alignment#convert_unmatch(match_char = '.')
--- Bio::Alignment#match_line(options...)
 
 - String-oriented methods
 
@@ -1128,11 +1197,16 @@ end #module Bio
 -- Bio::Alignment#lstrip
 -- Bio::Alignment#strip!
 -- Bio::Alignment#strip
+-- Bio::Alignment#concat(aln)
+-- Bio::Alignment#slice(*arg)
 
+-- Bio::Alignment#seq_length
+-- Bio::Alignment#subseq(*arg)
 -- Bio::Alignment#remove_gap!
 -- Bio::Alignment#remove_gap
--- Bio::Alignment#seq_length
+-- Bio::Alignment#normalize!
 -- Bio::Alignment#normalize
+-- Bio::Alignment#replace_slice(x[, y], aln)
 
 - Original methods
 
@@ -1145,7 +1219,6 @@ end #module Bio
 -- Bio::Alignment#window(*arg)
 -- Bio::Alignment#each_site
 -- Bio::Alignment#each_window(window_size, step = 1)
--- Bio::Alignment#concatinate(aln)
 
 - Perform multiple alignment
 
@@ -1165,7 +1238,7 @@ end #module Bio
  Adds another sequence 'seq' to the alignment.
  Note: This method does not align sequences.
 
- add_seq(seq) returns internal id.
+ add_seq(seq) returns key (or internal id, if key isn't given).
 
 -- Bio::Alignment#remove_seq(x)
 
