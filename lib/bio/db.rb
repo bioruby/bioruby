@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: db.rb,v 0.1 2001/06/21 02:35:28 katayama Exp $
+#  $Id: db.rb,v 0.2 2001/06/21 08:15:53 katayama Exp $
 #
 
 require 'bio/sequence'
@@ -94,18 +94,14 @@ class DB
   def aalen
   end
 
-  # returns motif as Motif or Pattern or Profile?
-  def motif
+  # returns Pattern or Profile?
+  def pattern
   end
   def profile
   end
 
   # returns 3D coordinates of the Amino Acid? or Array of the coordinates?
   def coordinates
-  end
-
-  # returns fold (alpha, beta...) of the Sequence as ?
-  def fold
   end
 
 
@@ -250,7 +246,7 @@ end
 
 class EMBLDB < DB
 
-  def init(entry, tagsize)
+  def initialize(entry, tagsize)
     @tagsize = tagsize
     @orig = entry2hash(entry)			# Hash of the original entry
     @data = {}					# Hash of the parsed entry
@@ -261,7 +257,7 @@ class EMBLDB < DB
   # returns hash of the EMBL style fields (EMBL, Swiss-Prot etc.)
   def entry2hash(entry)
     hash = Hash.new('')
-    tag = ''
+    tag = oldtag = ''
     entry.each_line do |line|
       next if line =~ /^$/
       tag = tag_get(line)
