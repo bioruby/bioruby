@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.13 2001/11/12 20:52:25 katayama Exp $
+#  $Id: bio.rb,v 1.14 2001/11/20 11:50:07 katayama Exp $
 #
 
 module Bio
@@ -112,12 +112,17 @@ require 'bio/db/fasta'
 ### Applications
 
 #require 'bio/appl/fasta'
-require 'bio/appl/blast'
 #require 'bio/appl/hmmer'
+
+begin
+  require 'xmlparser'
+  require 'bio/appl/blast'
+rescue LoadError
+end
 
 ### misc utils
 
-require 'bio/util/hoge'
+#require 'bio/util/hoge'
 require 'bio/util/fold'
 
 #
