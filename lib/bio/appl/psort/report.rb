@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.2 2003/04/10 06:32:10 n Exp $
+#  $Id: report.rb,v 1.3 2003/06/27 02:16:56 n Exp $
 #
 
 require 'bio/sequence'
@@ -220,9 +220,10 @@ module Bio
 
 	def set_prediction(str)
 	  case str
-	  when /prediction for \S+? is (\w{3}) \(k=(\d+)\)/
-	    self.pred = $1
-	    self.k    = $2
+	  when /prediction for (\S+?) is (\w{3}) \(k=(\d+)\)/
+	    @entry_id ||= $1
+	    @pred = $2
+	    @k    = $3
 	  else
 	    raise ArgumentError, 
 	      "Invalid format at(#{self.entry_id}):\n[#{str}]\n"
