@@ -1,6 +1,6 @@
 =begin
 
-  $Id: BioRuby.rd.ja,v 1.4 2001/12/08 09:28:21 katayama Exp $
+  $Id: BioRuby.rd.ja,v 1.5 2001/12/15 03:24:10 katayama Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -82,9 +82,9 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |	`- class Bio::Sequence::NA	bio/sequence.rb		stable
   |- class Bio::Locations		bio/location.rb		stable
   |- class Bio::Location		bio/location.rb		stable
-  |- class Bio::Reference		bio/reference.rb	beta
-  |- class Bio::Pathway			bio/pathway.rb		beta
-  |- class Bio::Relation		bio/pathway.rb		beta
+  |- class Bio::Reference		bio/reference.rb	stable
+  |- class Bio::Pathway			bio/pathway.rb		stable
+  |- class Bio::Relation		bio/pathway.rb		stable
   |- class Bio::DB			bio/db.rb		beta
   |  |- class Bio::FastaFormat		bio/db/fasta.rb		stable
   |  |- class Bio::NCBIDB		bio/db.rb		beta
@@ -98,7 +98,7 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |  |	   |  |- class Bio::AAindex1	bio/db/aaindex.rb	beta
   |  |	   |  `- class Bio::AAindex2	bio/db/aaindex.rb	beta
   |  |	   |- class Bio::KEGG::GENES	bio/db/kegg/genes.rb	stable
-  |  |	   |- class Bio::KEGG::GENOME	bio/db/kegg/genome.rb	stable
+  |  |	   |- class Bio::KEGG::GENOME	bio/db/kegg/genome.rb	beta
   |  |	   |- class Bio::KEGG::BRITE	bio/db/kegg/brite.rb	alpha
   |  |	   |- class Bio::KEGG::CELL	bio/db/kegg/cell.rb	beta
   |  |	   |- class Bio::KEGG::ENZYME	bio/db/kegg/enzyme.rb	alpha
@@ -116,6 +116,8 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |	    |- class Bio::TFCELL	bio/db/transfac.rb	beta
   |	    |- class Bio::TFCLASS	bio/db/transfac.rb	beta
   |	    `- class Bio::TFGENE	bio/db/transfac.rb	beta
+  |- class Bio::KEGG::DBname		bio/db/kegg/keggtab.rb	beta
+  |- class Bio::KEGG::Keggtab		bio/db/kegg/keggtab.rb	beta
   |- class Bio::KEGG::Microarray	bio/db/kegg/microarray.rb	alpha
   |- class Bio::KEGG::Microarrays	bio/db/kegg/microarray.rb	alpha
   |- class Bio::FlatFile		bio/io/flatfile.rb	stable
@@ -179,6 +181,8 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |  |- ENZYME				bio/db/kegg/enzyme.rb	class
   |  |- GENES				bio/db/kegg/genes.rb	class
   |  |- GENOME				bio/db/kegg/genome.rb	class
+  |  |- Keggtab				bio/db/kegg/keggtab.rb	class
+  |  |- DBname				bio/db/kegg/keggtab.rb	class
   |  |- Microarray			bio/db/kegg/microarray.rb	class
   |  `- Microarrays			bio/db/kegg/microarray.rb	class
   |- KEGGDB				bio/db.rb		class
@@ -197,9 +201,9 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |- RefSeq				bio/db/refseq.rb	class
   |- Relation				bio/pathway.rb		class
   |- Sequence				bio/sequence.rb		class
-  |  |- NA				bio/sequence.rb		class
+  |  |- AA				bio/sequence.rb		class
   |  `- NA				bio/sequence.rb		class
-  |- SwissProt				bio/db/swissprot.rb	beta
+  |- SwissProt				bio/db/swissprot.rb	class
   |- SPTR				bio/db/sptr.rb		class
   |- TFCELL				bio/db/transfac.rb	class
   |- TFCLASS				bio/db/transfac.rb	class
@@ -208,7 +212,7 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |- TFMATRIX				bio/db/transfac.rb	class
   |- TFSITE				bio/db/transfac.rb	class
   |- TRANSFAC				bio/db/transfac.rb	class
-  `- TrEMBL				bio/db/trembl.rb	beta
+  `- TrEMBL				bio/db/trembl.rb	class
 
 === ファイル階層
 
