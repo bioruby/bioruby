@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: go.rb,v 1.3 2004/06/11 08:17:26 nakao Exp $
+#  $Id: go.rb,v 1.4 2004/06/11 08:21:07 nakao Exp $
 #
 
 require 'bio/pathway'
@@ -133,7 +133,7 @@ module Bio
 
 
       def parse_goids(line)
-	self.parse_goids(line)
+	Ontology.parse_goids(line)
       end
 
 
