@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 # 
-#  $Id: br_bioflat.rb,v 1.12 2003/02/28 15:01:47 ng Exp $ 
+#  $Id: br_bioflat.rb,v 1.13 2003/04/22 10:22:36 ng Exp $ 
 # 
 
 require 'bio'
@@ -154,10 +154,16 @@ def do_search
   db = Bio::FlatFileIndex.open(dbname)
   ARGV.each do |key|
     STDERR.print "Searching for \'#{key}\'...\n"
-    r = db.search(key)
+    #r = db.search(key)
+    #STDERR.print "OK, #{r.size} entry found\n"
+    #if r.size > 0 then
+    #  print r
+    #end
+    r = db.include?(key)
+    r = [] unless r
     STDERR.print "OK, #{r.size} entry found\n"
-    if r.size > 0 then
-      print r
+    r.each do |i|
+      print db.search_primary(i)
     end
   end
   db.close
