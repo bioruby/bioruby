@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.2 2003/02/04 06:28:22 m Exp $
+#  $Id: report.rb,v 1.3 2003/02/04 07:15:17 m Exp $
 #
 
 module Bio
@@ -132,26 +132,26 @@ module Bio
           @hmmseq = ''
           @flatseq = ''
           @midline = ''
-          @hit_frame = 1
           @query_frame = 1
+          @target_frame = 1
         end
         attr_accessor :accession, :domain, :seq_f, :seq_t, :seq_ft,
 	  :hmm_f, :hmm_t, :hmm_ft, :score, :evalue, :midline, :hmmseq,
-	  :flatseq, :hit_frame, :query_frame
+	  :flatseq, :query_frame, :target_frame
 
-        def qseq
+        def query_seq
           if @is_hmmsearch; @hmmseq else; @flatseq end
         end
 
-        def hseq
+        def target_seq
           if @is_hmmsearch; @flatseq else; @hmmseq end
         end
 
-        def hit_from
+        def target_from
           if @is_hmmsearch; @seq_f else; @hmm_f end
         end
 
-        def hit_to
+        def target_to
           if @is_hmmsearch; @seq_t else; @hmm_t end
         end
 
@@ -307,10 +307,16 @@ end
 --- Bio::HMMER::Report::Hsp#score
 --- Bio::HMMER::Report::Hsp#evalue
 
---- Bio::HMMER::Report::Hsp#qseq
+--- Bio::HMMER::Report::Hsp#midline
+--- Bio::HMMER::Report::Hsp#hmmseq
+--- Bio::HMMER::Report::Hsp#flatseq
+--- Bio::HMMER::Report::Hsp#query_frame
+--- Bio::HMMER::Report::Hsp#target_frame
+
+--- Bio::HMMER::Report::Hsp#query_seq
 --- Bio::HMMER::Report::Hsp#query_from
 --- Bio::HMMER::Report::Hsp#query_to
---- Bio::HMMER::Report::Hsp#hseq
+--- Bio::HMMER::Report::Hsp#target_seq
 --- Bio::HMMER::Report::Hsp#target_from
 --- Bio::HMMER::Report::Hsp#target_to
 
