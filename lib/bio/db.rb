@@ -13,14 +13,15 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: db.rb,v 0.5 2001/08/21 18:10:50 katayama Exp $
+#  $Id: db.rb,v 0.6 2001/09/26 18:18:08 katayama Exp $
 #
 
 require 'bio/sequence'
+require 'bio/reference'
 #require 'bio/id'
 #require 'bio/taxonomy'
 
-class BIODB
+class BioDB
 
   ### sub classes should define the following constants if appropriate
 
@@ -32,76 +33,95 @@ class BIODB
 
   # returns ENTRY ID as String
   def id
+    raise NotImplementedError
   end
 
   # returns DB division (gb -> VRL, ps -> PATTERN etc.) as String
   def division
+    raise NotImplementedError
   end
 
   # returns date of the ENTRY as String
   def date
+    raise NotImplementedError
   end
 
   # returns Array of gene names of the ENTRY as String
   def gene
+    raise NotImplementedError
   end
 
   # returns DEFINITION as String
   def definition
+    raise NotImplementedError
   end
 
-  # returns REFERENCE as String or Array or Reference? : ref.rb
+  # returns REFERENCE as Reference : bio/reference.rb
   def reference
+    raise NotImplementedError
   end
 
   # returns links to other DBs as Array of String or DBlinks? : id.rb
   def dblinks
+    raise NotImplementedError
   end
 
   # returns organism as String
   def organism
+    raise NotImplementedError
   end
 
   # returns KEGG organism code (3 letters) as String
   def keggorg
+    raise NotImplementedError
   end
 
   # returns taxonomy as String or Taxonomy? : taxonomy.rb
   def taxonomy
+    raise NotImplementedError
   end
 
   # returns Sequence position in the ENTRY or in the GENOME as String
   def position
+    raise NotImplementedError
   end
 
   # returns Gene Ontology or KEGG map or classification of the ENTRY as ?
   def ontology
+    raise NotImplementedError
   end
 
   # returns DNA/RNA sequence as NAseq
   def naseq
+    raise NotImplementedError
   end
 
   # returns DNA/RNA sequence length as integer
   def nalen
+    raise NotImplementedError
   end
 
   # returns Amino Acid sequence as AAseq
   def aaseq
+    raise NotImplementedError
   end
 
   # returns Amino Acid sequence length as integer
   def aalen
+    raise NotImplementedError
   end
 
   # returns Pattern or Profile?
   def pattern
+    raise NotImplementedError
   end
   def profile
+    raise NotImplementedError
   end
 
   # returns 3D coordinates of the Amino Acid? or Array of the coordinates?
   def coordinates
+    raise NotImplementedError
   end
 
 
@@ -222,7 +242,7 @@ class BIODB
 end
 
 
-class NCBIDB < BIODB
+class NCBIDB < BioDB
 
   def initialize(entry, tagsize)
     @tagsize = tagsize
@@ -250,7 +270,7 @@ class KEGGDB < NCBIDB
 end
 
 
-class EMBLDB < BIODB
+class EMBLDB < BioDB
 
   def initialize(entry, tagsize)
     @tagsize = tagsize
