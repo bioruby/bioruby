@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.9 2002/12/03 09:09:21 k Exp $
+#  $Id: fasta.rb,v 1.10 2003/02/25 14:48:55 k Exp $
 #
 
 require 'bio/db'
@@ -31,31 +31,30 @@ module Bio
     DELIMITER	= RS = "\n>"
 
     def initialize(str)
-      @entry = '>' + str.sub(/^>/, '').sub(/^>.*/m, '')
-      @definition = @seq = nil
+      @definition = str[/.*/].sub(/^>/, '').strip	# 1st line
+      @data = str.sub(/.*/, '')				# rests
+      @data.sub!(/^>.*/m, '')	# remove trailing entries for sure
     end
-    attr_reader :entry
+    attr_accessor :definition, :data
+
+    def entry
+      @entry = ">#{@definition}\n#{@data.strip}\n"
+    end
     alias :to_s :entry
 
-    def fasta(factory)
+    def entry_id
+      @definition[/\S+/]
+    end
+
+    def query(factory)
       factory.query(@entry)
     end
-    alias :blast :fasta
-
-    def definition
-      unless @definition
-        @definition = @entry[/.*/].sub(/^>/, '').strip		# 1st line
-      end
-      @definition
-    end
-
-    def entry_id
-      definition[/\S+/]
-    end
+    alias :fasta :query
+    alias :blast :query
 
     def seq
       unless @seq
-        @seq = @entry.sub(/.*/, '').tr(" \t\r\n0-9", '')	# the rest
+        @seq = @data.tr(" \t\r\n0-9", '') 	# lazy clean up
       end
       @seq
     end
@@ -84,13 +83,13 @@ module Bio
 
   class FastaNumericFormat < FastaFormat
 
-    undef fasta, seq, naseq, nalen, aaseq, aalen
+    undef query, blast, fasta, seq, naseq, nalen, aaseq, aalen
 
     def data
-      unless @data
-	@data = @entry.sub(/.*/, '').strip.split(/\s+/).map {|x| x.to_i}
+      unless @list
+	@list = @data.strip.split(/\s+/).map {|x| x.to_i}
       end
-      @data
+      @list
     end
 
     def length
@@ -136,16 +135,31 @@ KTGDPLEWRRLFKKISTICRDIILIPN
 END
 
   f = Bio::FastaFormat.new(f_str)
-  p f.entry
-  p f.definition
+  puts "### FastaFormat"
+  puts "# entry"
+  puts f.entry
+  puts "# entry_id"
   p f.entry_id
+  puts "# definition"
+  p f.definition
+  puts "# data"
+  p f.data
+  puts "# seq"
   p f.seq
+  puts "# seq.type"
   p f.seq.type
+  puts "# length"
   p f.length
+  puts "# aaseq"
   p f.aaseq
+  puts "# aaseq.type"
   p f.aaseq.type
+  puts "# aaseq.composition"
   p f.aaseq.composition
+  puts "# aalen"
   p f.aalen
+
+  puts
 
   n_str = <<END
 >CRA3575282.F 
@@ -154,15 +168,26 @@ END
 END
 
   n = Bio::FastaNumericFormat.new(n_str)
+  puts "### FastaNumericFormat"
+  puts "# entry"
+  puts n.entry
+  puts "# entry_id"
+  p n.entry_id
+  puts "# definition"
   p n.definition
+  puts "# data"
   p n.data
+  puts "# length"
   p n.length
+  puts "# percent to ratio by yield"
   n.each do |x|
     p x/100.0
   end
+  puts "# first three"
   p n[0]
   p n[1]
   p n[2]
+  puts "# last one"
   p n[-1]
 
 end
@@ -200,6 +225,7 @@ automatically.
 
       Returns a joined sequence line as a String.
 
+--- Bio::FastaFormat#query(factory)
 --- Bio::FastaFormat#fasta(factory)
 --- Bio::FastaFormat#blast(factory)
 
