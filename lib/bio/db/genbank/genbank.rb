@@ -10,7 +10,6 @@ class GenBank
 
   def initialize(entry)
     @data = {}					# Hash of the entry
-    @parsed = {}				# Hash for the parsed flag
 
     tag = ''					# temporal key
 
@@ -46,19 +45,19 @@ class GenBank
   end
 
 
-  # locus - returns pieces of the LOCUS record as String or Fixnum
+  # locus - returns pieces of the LOCUS record as Hash of String or Fixnum
   #   (key : name, length, strand, natype, circular, gbdiv, date)
   def locus(key = nil)
-    hash = parse_LOCUS
+    parse_LOCUS unless @locus
     if key			# returns the LOCUS value of the key
-      hash[key]
+      @locus[key]
     else
       if block_given?		# acts as each_locus()
-	hash.each do |k, v|
+	@locus.each do |k, v|
 	  yield(k, v)
 	end
       else			# returns the whole LOCUS as Hash
-	hash
+	@locus
       end
     end
   end
@@ -68,25 +67,27 @@ class GenBank
 
   # definition - returns contents of the DEFINITION record as String
   def definition
-    parse_DEFINITION
+    parse_DEFINITION unless @definition
+    @definition
   end
   alias d definition
 
 
   # accession - returns contents of the ACCESSION record as String
   def accession
-    parse_ACCESSION
+    parse_ACCESSION unless @accession
+    @accession
   end
   alias a accession
 
 
   # version - returns contents of the VERSION record as Array of String
   def version(gi_only = nil)
-    ary = parse_VERSION
+    parse_VERSION unless @version
     if gi_only
-      ary[1]			# returns GI: as String
+      @version[1]		# returns GI: as String
     else
-      ary			# returns A.V and GI: as Array
+      @version			# returns A.V and GI: as Array
     end
   end
   alias v version
@@ -94,13 +95,13 @@ class GenBank
 
   # keywords - returns contents of the KEYWORDS record as Array of String
   def keywords
-    ary = parse_KEYWORDS
+    parse_KEYWORDS unless @keywords
     if block_given?		# acts as each_keyword()
-      ary.each do |k|
+      @keywords.each do |k|
 	yield(k)
       end
     else			# returns the whole KEYWORDS as Array
-      ary
+      @keywords
     end
   end
   alias k keywords
@@ -109,23 +110,24 @@ class GenBank
 
   # segment - returns contents of the SEGMENT record as Array of Fixnum
   def segment
-    parse_SEGMENT
+    parse_SEGMENT unless @segment
+    @segment
   end
 
 
   # source - returns contents of the SOURCE record as Hash of String
   #   (key : name, organism, taxonomy)
   def source(key = nil)
-    hash = parse_SOURCE
+    parse_SOURCE unless @source
     if key			# returns the SOURCE value of the key
-      hash[key]
+      @source[key]
     else
       if block_given?		# acts as each_source()
-	hash.each do |k, v|
+	@source.each do |k, v|
 	  yield(k, v)
 	end
       else			# returns the whole SOURCE as Hash
-	hash
+	@source
       end
     end
   end
@@ -136,18 +138,18 @@ class GenBank
   # reference - returns contents of the REFERENCE record as Array of Hash
   #   (key : AUTHORS, TITLE, JOURNAL, MEDLINE, PUBMED, REMARK)
   def reference(num = 0, key = 'REFERENCE')
-    ary = parse_REFERENCE
+    parse_REFERENCE unless @references
     num = num - 1
     if num < 0
       if block_given?		# acts as each_reference()
-	ary.each do |r|
+	@references.each do |r|
 	  yield(r)
 	end
       else			# returns the whole REFERENCE Hash as Array
-	ary
+	@references
       end
     else			# returns one value of the REFERENCE Hash
-      ary[num][key]
+      @references[num][key]
     end
   end
   alias r reference
@@ -157,33 +159,34 @@ class GenBank
 
   # comment - returns contents of the COMMENT record as String
   def comment
-    parse_COMMENT
+    parse_COMMENT unless @comment
+    @comment
   end
 
 
   # features - returns contents of the FEATURES record as Array of Hash
   #   (key : feature, position, ...)
   def features(num = 0, key = 'position')
-    ary = parse_FEATURES
+    parse_FEATURES unless @features
     num = num - 1
     if num < 0
       if block_given?		# acts as each_feature()
-	ary.each do |f|
+	@features.each do |f|
 	  yield(f)
 	end
       else			# returns the whole FEATURES Hash as Array
-	ary
+	@features
       end
     else			# returns one value of the FEATURES Hash
-      ary[num][key]
+      @features[num][key]
     end
   end
   alias f features
   alias each_feature features
 
   def each_cds
-    ary = parse_FEATURES
-    ary.each do |f|
+    parse_FEATURES unless @features
+    @features.each do |f|
       if f['feature'] == 'CDS'
 	yield(f)		# iterate only for the 'CDS' features
       end
@@ -191,8 +194,8 @@ class GenBank
   end
 
   def each_gene
-    ary = parse_FEATURES
-    ary.each do |f|
+    parse_FEATURES unless @features
+    @features.each do |f|
       if f['feature'] == 'gene'
 	yield(f)		# iterate only for the 'gene' features
       end
@@ -203,17 +206,17 @@ class GenBank
   # basecount - returns the BASE COUNT of the base as Fixnum
   #   (base : a, t, g, c and o for others)
   def basecount(base = nil)
-    hash = parse_BASE_COUNT
+    parse_BASE_COUNT unless @bc
     if base			# returns the BASE COUNT of the given base
       base.downcase!
-      hash[base]
+      @bc[base]
     else
       if block_given?		# acts as each_basecount()
 	%w{ a t g c o }.each do |b|
-	  yield(b, hash[b]) if hash[b]
+	  yield(b, @bc[b]) if @bc[b]
 	end
       else			# returns the whole BASE COUNT Hash
-	hash
+	@bc
       end
     end
   end
@@ -224,13 +227,14 @@ class GenBank
 
   # origin - returns contents of the ORIGIN record as String
   def origin
-    parse_ORIGIN
+    parse_ORIGIN unless @origin
+    @origin
   end
 
 
   # naseq - returns DNA sequence in the ORIGIN record as NAseq object
   def naseq
-    parse_ORIGIN
+    parse_ORIGIN unless @sequence
     @sequence
   end
 
@@ -272,7 +276,12 @@ class GenBank
     return str[0,12].strip	# tag field length of the GenBank is 12
   end
 
-
+  def parse(tag)
+    case tag
+    when
+      parse_HOGE
+    end
+  end
 
   # LOCUS  - A short mnemonic name for the entry, chosen to suggest the
   #  sequence's definition. Mandatory keyword/exactly one record.
@@ -297,8 +306,6 @@ class GenBank
   # 63-73   Date, in the form dd-MMM-yyyy (e.g., 15-MAR-1991)
   #
   def parse_LOCUS
-    return @locus if @parsed['LOCUS']; @parsed['LOCUS'] = true
-
     @locus = {}
 
     if @data['LOCUS']
@@ -342,10 +349,7 @@ class GenBank
   # complete unless "Partial" is noted.
   #
   def parse_DEFINITION
-    return @definition if @parsed['DEFINITION']; @parsed['DEFINITION'] = true
-
     @definition = fetch('DEFINITION')
-
     return @definition
   end
 
@@ -366,10 +370,7 @@ class GenBank
   # numbers might be present, starting at position 13.
   #
   def parse_ACCESSION
-    return @accession if @parsed['ACCESSION']; @parsed['ACCESSION'] = true
-
     @accession = fetch('ACCESSION')
-
     return @accession
   end
 
@@ -404,8 +405,6 @@ class GenBank
   # would become 10456892.
   #
   def parse_VERSION
-    return @version if @parsed['VERSION']; @parsed['VERSION'] = true
-
     @version = []
 
     if @data['VERSION']
@@ -439,8 +438,6 @@ class GenBank
   # period.
   #
   def parse_KEYWORDS
-    return @keywords if @parsed['KEYWORDS']; @parsed['KEYWORDS'] = true
-
     @keywords = []
 
     if @data['KEYWORDS']
@@ -462,8 +459,6 @@ class GenBank
   # segments.
   #
   def parse_SEGMENT
-    return @segment if @parsed['SEGMENT']; @parsed['SEGMENT'] = true
-
     @segment = []
 
     if @data['SEGMENT']    
@@ -495,8 +490,6 @@ class GenBank
   # semicolons and ending with a period.
   #
   def parse_SOURCE
-    return @source if @parsed['SOURCE']; @parsed['SOURCE'] = true
-
     @source = {}
 
     if @data['SOURCE'] =~ /SOURCE\s+([^.]+.)\s+ORGANISM\s+(.*)\s+([^.]+.)/
@@ -536,8 +529,6 @@ class GenBank
   # (optional), PUBMED (optional), and REMARK (optional).
   #
   def parse_REFERENCE
-    return @references if @parsed['REFERENCE']; @parsed['REFERENCE'] = true
-
     @references = []
 
     return @references unless @data['REFERENCE']
@@ -572,10 +563,7 @@ class GenBank
   #  records.
   #
   def parse_COMMENT
-    return @comment if @parsed['COMMENT']; @parsed['COMMENT'] = true
-
     @comment = fetch('COMMENT')
-
     return @comment
   end
 
@@ -594,8 +582,6 @@ class GenBank
   #   http://www.ncbi.nlm.nih.gov/collab/FT/index.html
   #
   def parse_FEATURES
-    return @features if @parsed['FEATURES']; @parsed['FEATURES'] = true
-
     @features = []
 
     return @features unless @data['FEATURES']
@@ -642,8 +628,6 @@ class GenBank
   #  code in the sequence. Mandatory keyword/exactly one record.
   #
   def parse_BASE_COUNT
-    return @bc if @parsed['BASE COUNT']; @parsed['BASE COUNT'] = true
-
     @bc = Hash.new(0)		# set the default value of the hash to 0
 				# - others ('o') is not always existing
 
@@ -665,9 +649,8 @@ class GenBank
   #  - The ORIGIN line is followed by sequence data (multiple records).
   #
   def parse_ORIGIN
-    return @origin if @parsed['ORIGIN']; @parsed['ORIGIN'] = true
-
     @origin = ''
+
     seqence = ''		# temporal sequence String
 
     if @data['ORIGIN']
