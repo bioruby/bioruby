@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.11 2001/11/13 14:12:35 shuichi Exp $
+#  $Id: pathway.rb,v 1.12 2001/11/14 01:16:44 katayama Exp $
 #
 
 require 'bio/matrix'
@@ -64,7 +64,7 @@ module Bio
 
 
     # Convert adjacency list to adjacency matrix
-    def to_matrix
+    def to_matrix(default_value = nil)
       @graph.keys.each_with_index do |k, i|
 	@index[k] = i
       end
@@ -77,7 +77,7 @@ module Bio
 
       matrix = Array.new
       nodes.times do |i|
-	matrix.push(Array.new(nodes))
+	matrix.push(Array.new(nodes, default_value))
       end
 
       @graph.each do |from, hash|
