@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: rexml.rb,v 1.4 2002/06/25 07:56:06 k Exp $
+#  $Id: rexml.rb,v 1.5 2002/06/25 08:52:57 k Exp $
 #
 
 begin
@@ -61,6 +61,11 @@ module Bio
 	end
       end
       alias :each :each_hit
+
+      # shortcut for the last iteration's hits
+      def hits
+	@iterations[-1].hits
+      end
 
       # shortcut for the last iteration's statistics
       def statistics
@@ -379,18 +384,6 @@ Summerized results of the blast execution hits.
         'expect', 'include', 'sc-match', 'sc-mismatch', 'gap-open',
         'gap-extend', 'filter'
 
---- Bio::Blast::Report#statistics
-
-      Returns a Hash containing execution statistics of the last iteration.
-      Valid keys are:
-        'db-len', 'db-num', 'eff-space', 'entropy', 'hsp-len',
-        'kappa', 'lambda'
-
---- Bio::Blast::Report#message
-
-      Returns a String (or nil) containing execution message of the last
-      iteration (typically "CONVERGED").
-
 --- Bio::Blast::Report#iterations
 
       Returns an Array of Bio::Blast::Report::Iteration objects.
@@ -404,6 +397,22 @@ Summerized results of the blast execution hits.
 
       Iterates on each Bio::Blast::Report::Hit object of the the
       last Iteration.
+
+--- Bio::Blast::Report#statistics
+
+      Returns a Hash containing execution statistics of the last iteration.
+      Valid keys are:
+        'db-len', 'db-num', 'eff-space', 'entropy', 'hsp-len',
+        'kappa', 'lambda'
+
+--- Bio::Blast::Report#message
+
+      Returns a String (or nil) containing execution message of the last
+      iteration (typically "CONVERGED").
+
+--- Bio::Blast::Report#hits
+
+      Returns a Array of Bio::Blast::Report::Hits of the last iteration.
 
 
 == Bio::Blast::Report::Iteration
