@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.14 2003/04/22 10:24:02 ng Exp $
+#  $Id: fasta.rb,v 1.15 2003/05/14 13:09:24 ng Exp $
 #
 
 require 'bio/db'
@@ -239,12 +239,12 @@ module Bio
 	# examples:
 	# >ABC12345 this is test
 	i = $1
-	d = $2
+	d = $2.to_s
 	@list_ids << [ i ]
 	this_line = [  '', [ i ], d ]
 	match_EC(d)
       else
-	i = line
+	i = str
 	d = ''
 	match_EC(i)
 	this_line = [ '', [ i ], d ]

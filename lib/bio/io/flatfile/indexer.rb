@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.14 2003/05/09 12:07:46 ng Exp $ 
+#  $Id: indexer.rb,v 1.15 2003/05/14 13:09:24 ng Exp $ 
 # 
 
 module Bio
@@ -148,7 +148,7 @@ module Bio
 	    r = self.primary.proc.call(@entry)
 	    unless r.is_a?(String) and r.length > 0
 	      #@fatal = true
-	      raise 'primary id must be a non-void string (skipped tis entry)'
+	      raise 'primary id must be a non-void string (skipped this entry)'
 	    end
 	    r
 	  end
