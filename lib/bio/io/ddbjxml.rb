@@ -17,8 +17,10 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: ddbjxml.rb,v 1.1 2003/04/08 01:29:36 k Exp $
+#  $Id: ddbjxml.rb,v 1.2 2003/06/14 01:12:35 k Exp $
 #
+
+require 'bio/db/genbank/ddbj'
 
 begin
   require 'soap/wsdlDriver'
