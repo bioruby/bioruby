@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: codontable.rb,v 0.8 2004/06/23 01:37:19 k Exp $
+#  $Id: codontable.rb,v 0.9 2004/06/23 03:37:04 k Exp $
 #
 
 module Bio
@@ -29,7 +29,7 @@ class CodonTable
     definition = Definitions[i]
     start = Starts[i]
     stop = Stops[i]
-    self.new(hash, name, start, stop)
+    self.new(hash, definition, start, stop)
   end
 
   def initialize(hash, definition = nil, start_re = nil, stop_re = nil)
