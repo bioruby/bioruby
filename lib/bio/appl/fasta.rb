@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.10 2002/06/25 03:23:49 k Exp $
+#  $Id: fasta.rb,v 1.11 2002/06/25 11:01:13 k Exp $
 #
 
 require 'net/http'
@@ -35,17 +35,23 @@ module Bio
       @option	= "-Q -H -m #{@format} #{option}"	# need -a ?
       @server	= server
 
-      @output	= ''
       @ktup	= nil
       @matrix	= nil
+
+      @output	= ''
     end
-    attr_accessor :program, :db, :option, :server, :output,
-      :ktup, :matrix
+    attr_accessor :program, :db, :option, :server, :ktup, :matrix
+    attr_reader :output
 
     def format=(num)
-      @format = num
+      @format = num.to_i
       @option.gsub!(/\s*-m\s+\d+/, '')
       @option += " -m #{num} "
+    end
+    attr_reader :format
+
+    def self.parser(parser)
+      require "bio/appl/fasta/#{parser}"
     end
 
     def self.local(program, db, option = '')
@@ -66,9 +72,9 @@ module Bio
 
     def parse_result(data)
       case @format
-      when 6 || '6'
+      when 6
 	require 'bio/appl/fasta/format6'
-      when 10 || '10'
+      when 10
 	require 'bio/appl/fasta/format10'
       end
       Report.new(data)
@@ -187,6 +193,18 @@ end
 --- Bio::Fasta#ktup
 
       Accessors for the factory parameters.
+
+--- Bio::Fasta#format
+--- Bio::Fasta#format=(number)
+
+      Accessors for the -m option.
+
+--- Bio::Fasta.parser(parser)
+
+      Import Bio::Fasta::Report class by requiring specified parser.
+
+      This class method will be useful when you already have fasta
+      output files and want to use appropriate Report class for parsing.
 
 
 == Available databases for Fasta.remote(@program, @db, option, 'genomenet')
