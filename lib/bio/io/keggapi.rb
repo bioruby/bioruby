@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggapi.rb,v 1.1 2003/03/31 10:03:45 k Exp $
+#  $Id: keggapi.rb,v 1.2 2003/03/31 18:08:52 k Exp $
 #
 
 begin
@@ -44,7 +44,7 @@ module Bio
 
       class SSDB < API
 
-	MIN_SW_THRESHOLD = 70	# server default, should not be changed.
+	MIN_SW_THRESHOLD = 100	# server default, should not be changed.
 
 	def initialize(log = nil)
 	  super('SSDB.wsdl', log)
@@ -120,7 +120,7 @@ module Bio
 
 	def th_check(threshold)
 	  if threshold < MIN_SW_THRESHOLD
-	    raise "threshold #{threshold} (< 70) is out of range"
+	    raise "threshold #{threshold} (< #{MIN_SW_THRESHOLD}) is out of range"
 	  end
 	end
 
@@ -314,8 +314,7 @@ In the following description,
     (e.g. 'database:entry' or 'keggorg':'gene name') used in KEGG.
 
   * 'threshold' is a threshold value for the Smith-Waterman score (no fewer
-    than 70).  Default value for the threshold is 100 in BioRuby
-    implementation and 70 in server side implementation.
+    than 100).
 
 --- get_all_neighbors_by_gene(keggid, threshold = 100, orglist = nil)
 
@@ -334,10 +333,9 @@ fields by 'fields=' method (see below).
   # H. influenzae with 'sw_score' over 500.
   serv.get_all_neighbors_by_gene('eco:b0002', 500, ['ece', 'hin'])
 
-  # Use the minimum threshold score 70 to retrieve all the result stored
-  # in SSDB.  You can use a String 'hin' instead of Array ['hin'] when
-  # searching single target organism.
-  serv.get_all_neighbors_by_gene('eco:b0002', 70, 'hin')
+  # You can use a String 'hin' instead of Array ['hin'] when searching
+  # single target organism.
+  serv.get_all_neighbors_by_gene('eco:b0002', 500, 'hin')
 
 --- get_best_best_neighbors_by_gene(keggid, threshold = 100, orglist = nil)
 
@@ -520,3 +518,4 @@ Search all pathways which include all the given enzymes.
   serv.get_pathways_by_enzymes(['ec:1.3.99.1'])
 
 =end
+
