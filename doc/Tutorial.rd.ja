@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.9 2002/06/27 02:18:57 k Exp $
+  $Id: Tutorial.rd.ja,v 1.10 2002/07/03 09:09:13 k Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -513,8 +513,8 @@ Blast 検索は NCBI をはじめ様々なサイトでサービスされていますが、今のとこ
 
 == PubMed を引いて引用文献リストを作る (Bio::PubMed クラス)
 
-最後は、NCBI の文献データベース PubMed を検索して引用文献リストを作成す
-る例です。
+次は、NCBI の文献データベース PubMed を検索して引用文献リストを作成する
+例です。
 
     #!/usr/bin/env ruby
     
@@ -529,7 +529,7 @@ Blast 検索は NCBI をはじめ様々なサイトでサービスされていますが、今のとこ
 
 このスクリプトを pmfetch.rb など好きな名前で保存し、
 
-    % ./pm2bibtex.rb 11024183 10592278 10592173
+    % ./pmfetch.rb 11024183 10592278 10592173
 
 など引用したい論文の PubMed ID (PMID) を引数に並べると NCBI にアクセスし
 て MEDLINE フォーマットをパースし BibTeX フォーマットに変換して出力して
@@ -555,18 +555,80 @@ Blast 検索は NCBI をはじめ様々なサイトでサービスされていますが、今のとこ
 
 このスクリプトを pmsearch.rb など好きな名前で保存し
 
-    % ./pm2bibtex.rb genome bioinformatics
+    % ./pmsearch.rb genome bioinformatics
 
 など検索したいキーワードを引数に並べて実行すると、PubMed をキーワード検
 索してヒットした論文のリストを BibTeX フォーマットで出力します。
 
 ちなみに、ここでは bibtex メソッドで BibTeX フォーマットに変換しています
-が、nature メソッドや nar などいくつかの雑誌のフォーマットにも対応してい
-ます（強調など文字の修飾はできないので実用には手直しが必要ですが）。
+が、後述のように bibitem メソッドも使える他、nature メソッドや nar など
+いくつかの雑誌のフォーマットにも対応しています（強調など文字の修飾はでき
+ないので実用には手直しが必要ですが）。
 
 Bio::Reference クラスに合うように各データベースパーザが REFERENCE 行など
-を処理するのは少し大変なのですが、対応すれば BibTeX などに変換できるのは
-便利ではないかと思います（人名など例外が多くて実際にはかなり面倒くさい）。
+を処理するのは少し大変なのですが、対応すれば BibTeX 形式などに変換できる
+のは便利ではないかと思います（人名など例外が多くて実際にはパーザを作るの
+はかなり面倒くさいです）。
+
+=== BibTeX の使い方のメモ
+
+上記の例で集めた BibTeX フォーマットのリストを TeX で使う方法を簡単にま
+とめておきます。引用しそうな文献を
+
+    % ./pmfetch.rb 10592173 >> genoinfo.bib
+    % ./pmsearch.rb genome bioinformatics >> genoinfo.bib
+
+などとして genoinfo.bib ファイルに集めて保存しておき、
+
+    \documentclass{jarticle}
+    \begin{document}
+    \bibliographystyle{plain}
+    ほにゃらら KEGG データベース~\cite{PMID:10592173}はふがほげである。
+    \bibliography{genoinfo}
+    \end{document}
+
+というファイル hoge.tex を書いて、
+
+    % platex hoge
+    % bibtex hoge   # → genoinfo.bib の処理
+    % platex hoge   # → 文献リストの作成
+    % platex hoge   # → 文献番号
+
+とすると無事 hoge.dvi ができあがります。
+    
+=== bibitem の使い方のメモ
+
+文献用に別の .bib ファイルを作りたくない場合は Reference#bibitem メソッ
+ドの出力を使います。上記の pmfetch.rb や pmsearch.rb の
+
+    puts reference.bibtex
+
+の行を
+
+    puts reference.bibitem
+
+に書き換えるなどして、出力結果を
+
+    \documentclass{jarticle}
+    \begin{document}
+    ほにゃらら KEGG データベース~\cite{PMID:10592173}はふがほげである。
+
+    \begin{thebibliography}{00}
+
+    \bibitem{PMID:10592173}
+    Kanehisa, M., Goto, S.
+    KEGG: kyoto encyclopedia of genes and genomes.,
+    {\em Nucleic Acids Res}, 28(1):27--30, 2000.
+
+    \end{thebibliography}
+    \end{document}
+
+のように \begin{thebibliography} で囲みます。これを hoge.tex とすると
+
+    % platex hoge   # → 文献リストの作成
+    % platex hoge   # → 文献番号
+
+と２回処理すればできあがりです。
 
 
 == BioRuby のサンプルプログラムの使い方
