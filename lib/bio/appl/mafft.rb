@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: mafft.rb,v 1.2 2003/07/25 17:14:27 ng Exp $
+#  $Id: mafft.rb,v 1.3 2003/07/29 09:25:24 ng Exp $
 #
 
 require 'bio/db/fasta'
@@ -91,11 +91,12 @@ module Bio
       Open3.popen3(*@command) do |din, dout, derr|
 	din.close
 	derr.sync = true
-	Thread.start do
+	t = Thread.start do
 	  @log = derr.read
 	end
 	ff = Bio::FlatFile.new(Bio::FastaFormat, dout)
 	@output = ff.to_a
+	t.join
       end
       @log
     end
