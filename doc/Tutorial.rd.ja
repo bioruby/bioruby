@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.1 2001/10/30 05:56:26 katayama Exp $
+  $Id: Tutorial.rd.ja,v 1.2 2001/11/08 13:04:25 katayama Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -46,7 +46,7 @@
     require 'bio'
     include Bio                 # include Bio とすると、以下 Bio:: が省略できる
     
-    input_seq = readlines.join  # 引数で与えられたファイルの全行を読み込む
+    input_seq = ARGF.read       # 引数で与えられたファイルの全行を読み込む
     
     my_naseq = Sequence::NA.new(input_seq)
     my_aaseq = my_naseq.translate
@@ -66,7 +66,7 @@
 
 のようになります。ちなみに、このくらいの例なら短くすると１行で書けます。
 
-    % ruby -r bio -e 'p Bio::Sequence::NA.new(readlines.join).translate' my_naseq.txt
+    % ruby -r bio -e 'p Bio::Sequence::NA.new($<.read).translate' my_naseq.txt
 
 しかし、いちいちファイルを作るのも面倒なので、次はデータベースから必要な
 情報を取得してみます。
@@ -125,6 +125,36 @@ GenBank 形式のファイル（元の ftp://ftp.ncbi.nih.gov/genbank/ の .seq ファ
 元に、塩基配列から exon 部分を切り出したりする強力なメソッドです。もし遺
 伝子の切り出しやアミノ酸への翻訳に BioRuby のバグがあれば、最後の２行で
 表示されるアミノ酸配列が異なる事になります。
+
+この後、新しくフラットファイルを扱うラッパークラス FlatFile が実装された
+ので、今なら、最初の例は次のように書き直すこともできます。
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+    
+    ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
+    ff.each_entry do |gb|
+      definition = [gb.accession, gb.definition].join(" ")
+      puts gb.naseq.to_fasta(definition, 60)    
+    end
+
+逆に、上記のスクリプトで作った FASTA フォーマットのファイルを読み込むに
+は、
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+    
+    ff = Bio::FlatFile.new(Bio::FastaFormat, ARGF)
+    ff.each_entry do |x|
+      puts x.definition
+      puts x.nalen
+      puts x.naseq
+    end
+
+などとすることができます。将来 FastaFormat のオブジェクトに対して相同性
+検索などのメソッドが実装されるかもしれません。
 
 == DBGET システム (Bio::DBGET クラス)
 
