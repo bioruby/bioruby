@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: xmlparser.rb,v 1.11 2003/06/16 18:50:48 k Exp $
+#  $Id: xmlparser.rb,v 1.12 2003/09/29 10:00:41 ng Exp $
 #
 
 begin
@@ -41,6 +41,7 @@ module Bio
 	  hash = Hash.new
 
 	  parser.parse(xml) do |type, name, data|
+	    #print "type=#{type.inspect} name=#{name.inspect} data=#{data.inspect}\n" # for DEBUG
 	    case type
 	    when XMLParser::START_ELEM
 	      tag_stack.push(name)
@@ -84,6 +85,8 @@ module Bio
 	    when XMLParser::CDATA
 	      if hash[tag_stack.last].nil?
 		hash[tag_stack.last] = data unless data.strip.empty?
+	      else
+		hash[tag_stack.last].concat(data) if data
 	      end
 	    when XMLParser::PI
 	    end
