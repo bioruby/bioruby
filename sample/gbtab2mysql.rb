@@ -95,16 +95,16 @@ end
 
 
 def merge_table(dbh, tables)
-  query = "CREATE TABLE IF NOT EXISTS gb ( #{$schema_ent} )" +
+  query = "CREATE TABLE IF NOT EXISTS ent ( #{$schema_ent} )" +
 		" TYPE=MERGE UNION=( #{tables.join(', ')} )"
   dbh.execute(query)
-  query = "CREATE TABLE IF NOT EXISTS gbft ( #{$schema_ft} )" +
+  query = "CREATE TABLE IF NOT EXISTS ft ( #{$schema_ft} )" +
 		" TYPE=MERGE UNION=( #{tables.join('ft, ') + 'ft' } )"
   dbh.execute(query)
-  query = "CREATE TABLE IF NOT EXISTS gbref ( #{$schema_ref} )" +
+  query = "CREATE TABLE IF NOT EXISTS ref ( #{$schema_ref} )" +
 		" TYPE=MERGE UNION=( #{tables.join('ref, ') + 'ref' } )"
   dbh.execute(query)
-  query = "CREATE TABLE IF NOT EXISTS gbseq ( #{$schema_seq} )" +
+  query = "CREATE TABLE IF NOT EXISTS seq ( #{$schema_seq} )" +
 		" TYPE=MERGE UNION=( #{tables.join('seq, ') + 'seq' } )"
   dbh.execute(query)
 end
