@@ -1,8 +1,8 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.10 2002/07/03 09:09:13 k Exp $
+  $Id: Tutorial.rd.ja,v 1.11 2002/07/30 09:55:47 k Exp $
 
-  Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+  Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 
 = BioRuby の使い方
 
@@ -639,7 +639,7 @@ BioRuby のパッケージには samples/ ディレクトリ以下にいくつかのサンプルプ
 
 === GenBank をパースして MySQL につっこむ
 
-例として ((<NCBI|URL:ftp://ftp.ncbi.nlm.gov/genbank/>)) からダウンロード
+例として ((<NCBI|URL:ftp://ftp.ncbi.nih.gov/genbank/>)) からダウンロード
 して解凍した GenBank データベースを MySQL に入れてみます。
 
     % gb2tab.rb *.seq           # パースしてタブ区切りのファイルに
