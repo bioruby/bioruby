@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.6 2002/09/04 11:19:30 ng Exp $
+#  $Id: flatfile.rb,v 1.7 2002/09/04 13:04:08 ng Exp $
 #
 
 module Bio
@@ -153,29 +153,29 @@ module Bio
 	Bio::GenBank
       when /^LOCUS       .+ aa .+/
 	Bio::GenPept
-      when /UI  \- [0-9]+$/
+      when /^UI  \- [0-9]+$/
 	Bio::MEDLINE
 	
       when /^ID   .+\; *(DNA|RNA|XXX)\;/
 	Bio::EMBL
-      when /^ID   .+; *PRT;/
+      when /^ID   .+\; *PRT\;/
 	Bio::SPTR
-      when /ID   [-A-Za-z0-9_\.]+\; (PATTERN|RULE|MATRIX)\.$/
+      when /^ID   [-A-Za-z0-9_\.]+\; (PATTERN|RULE|MATRIX)\.$/
 	Bio::PROSITE
-      when /AC  [-A-Za-z0-9_\.]+$/
+      when /^AC  [-A-Za-z0-9_\.]+$/
 	Bio::TRANSFAC
 
       when /^H [-A-Z0-9_\.]+$/
 	if text =~ /^I Data/ then
 	  Bio::AAindex2
-	elsif text =~ /I    A\/L/ then
+	elsif text =~ /^I    A\/L/ then
 	  Bio::AAindex1
 	else
-	  false # fail to determine
+	  false #fail to determine
 	end
+
       when /^CODE        [0-9]+$/
 	Bio::LITDB
-
       when /^Entry           [A-Z0-9]+/
 	Bio::KEGG::BRITE
 	
