@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: location.rb,v 0.5 2001/08/06 19:20:05 katayama Exp $
+#  $Id: location.rb,v 0.6 2001/09/26 18:18:47 katayama Exp $
 #
 
 class Location
@@ -39,19 +39,19 @@ class Location
       s = $1.to_i
       e = $2.to_i
       if e - s < 0
-	raise "Error  invalid range : #{location}"
+	raise "[Error] invalid range : #{location}"
       end
     when /^<?(\d+)\^>?(\d+)$/				# (C, I) n^m
       s = $1.to_i
       e = $2.to_i
       if e - s != 1
-	raise "Error  invalid range : #{location}"
+	raise "[Error] invalid range : #{location}"
       end
     when /^"?([ATGCatgc]+)"?$/				# (H) literal sequence
       sequence = $1.downcase
       s = e = nil
     else
-      raise "Error - unknown location format : #{location}"
+      raise "[Error] unknown location format : #{location}"
     end
 
     @from	= s		# start position of the location
