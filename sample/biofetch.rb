@@ -15,11 +15,11 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: biofetch.rb,v 1.3 2002/02/05 07:42:30 katayama Exp $
+#  $Id: biofetch.rb,v 1.4 2002/02/05 08:48:22 katayama Exp $
 #
 
-require 'bio'
 require 'cgi-lib'
+require 'bio'
 
 MAX_ID_NUM = 50
 
