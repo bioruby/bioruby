@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: reference.rb,v 1.12 2004/02/05 13:05:42 k Exp $
+#  $Id: reference.rb,v 1.13 2004/02/05 13:14:38 k Exp $
 #
 
 module Bio
@@ -92,7 +92,7 @@ module Bio
 
     def bibitem(item = nil)
       item  = "PMID:#{@pubmed}" unless item
-      pages = @pages.sub('-', '--')
+      pages = @pages.sub('-', '--') if @pages
       return <<-"END".collect {|line| line.strip}.join("\n")
 	\\bibitem{#{item}}
 	#{@authors.join(', ')}
@@ -104,7 +104,7 @@ module Bio
     def bibtex(section = nil)
       section = "article" unless section
       authors = authors_join(' and ')
-      pages   = @pages.sub('-', '--')
+      pages   = @pages.sub('-', '--') if @pages
       return <<-"END".gsub(/\t/, '')
 	@#{section}{PMID:#{@pubmed},
 	  author  = {#{authors}},
@@ -155,7 +155,7 @@ module Bio
       else
 	authors = @authors.collect {|name| rev_name(name)}.join(', ')
       end
-      page_from, = @pages.split('-')
+      page_from, = @pages.split('-') if @pages
       "#{authors}, #{@journal} #{@volume} #{page_from} (#{@year})."
     end
 
@@ -196,7 +196,7 @@ module Bio
     private
 
     def strip_dots(data)
-      data.tr(',.', '')
+      data.tr(',.', '') if data
     end
 
     def authors_join(amp, sep = ', ')
