@@ -1,13 +1,18 @@
 =begin
 
-  $Id: TODO.rd.ja,v 1.14 2003/06/25 05:51:10 k Exp $
+  $Id: TODO.rd.ja,v 1.15 2004/08/23 23:08:07 k Exp $
 
   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 
 = TODO
 
-* チュートリアル更新
-  * BioFlat, Bio::DB.open, PubMed (E-Utils)
+* 定期リリース
+
+* ドキュメント更新
+  * チュートリアル
+    * BioFlat, Bio::DB.open, PubMed (E-Utils)
+  * 英語化
+  * RDoc
 
 * サンプル整理 (*2tab とか)
   * sample/README.rd[.ja]
@@ -31,6 +36,7 @@
     * Bio::SQL::Sequence も含めた内部構造
     * genpept, refseq(NP_)
     * Bio::Reference クラス → EMBL にも?
+  * test GenBank >350k
 
 * Blast, Fasta, Hmmer
   * blast, hmmer のレポート -> Bio::FlatFile からもアクセス
@@ -42,9 +48,25 @@
     * Bio::Blast::Report::Hit#total_identical_residues
     * Bio::Blast::Report::Hit#total_convserved_residues
 
-* Bio::LSID [bioperl-l 2002 7/15 seq namespace method]
+* MAFFT, T-Coffee, CLUSTALW → アラインメント
+  * アライメントオブジェクト
+    * class Bio::Alignment ?
+    * class Bio::Alignment::Pairwise or class Bio::PairwiseAlignment ?
+    * class Bio::Alignment::Multiple or class Bio::MultipleAlignment ?
+    * アライメントビューアもほしい
+  * Blast refactering
+  * AlignFactory -> SearchIO化
+  * Bio::Align で Bio::Blast::Report などのアライメントを
+    保持するのにつかう
+  * アラインメントクラスで CIGAR フォーマット
+
+* KGMLパーサ
+  * Pathwayクラスにdijkstra -> Graph
+  * Treeクラス
 
 * lib/bio/db/kegg/keggtab.rb と lib/bio/data/keggorg.rb の統合？
+
+* Bio::LSID [bioperl-l 2002 7/15 seq namespace method]
 
 * コーディングスタイル
   * camelCase 禁止
@@ -52,24 +74,7 @@
   * tab なし 2 スペースインデント
   * 最終的には RDoc 付加？ (Rimport を使うのがいいかも)
   * クラス名、モジュール名は camelCase、定数は大文字で _ で区切る
-
-
-== Featuers
-
-=== IO, APPL
-
-* 遺伝研の SOAP サーバ
-  * http://xml.nig.ac.jp/ SRS, FASTA, BLAST, CLUSTALW, Taxonomy
-  * 対応したつもりだけど使えない → WSDL が悪い？
-
-* MAFFT, T-Coffee, CLUSTALW → アラインメント
-  * アライメントオブジェクト
-    * class Bio::Alignment ?
-    * class Bio::Alignment::Pairwise or class Bio::PairwiseAlignment ?
-    * class Bio::Alignment::Multiple or class Bio::MultipleAlignment ?
-    * アライメントビューアもほしい
-
-* アラインメントクラスで CIGAR フォーマット
+  * Array, Hash以上にネストしたらクラスを作る方針
 
 === DB
 
@@ -111,6 +116,8 @@
   * French
 
 == OTHERS
+
+* midi
 
 * q--p
   * RSS
