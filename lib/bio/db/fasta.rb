@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.13 2003/04/21 15:01:54 ng Exp $
+#  $Id: fasta.rb,v 1.14 2003/04/22 10:24:02 ng Exp $
 #
 
 require 'bio/db'
@@ -359,14 +359,15 @@ module Bio
       'an', 'the', 'this', 'that',
       'is', 'are', 'were', 'was', 'be', 'can', 'may', 'might',
       'as', 'at', 'by', 'for', 'in', 'of', 'on', 'to', 'with',
-      'and', 'or', 'not',
+      'from', 'and', 'or', 'not',
       'dna', 'rna', 'mrna', 'cdna', 'orf',
       'aa', 'nt', 'pct', 'id', 'ec', 'sp', 'subsp',
       'similar', 'involved', 'identical', 'identity',
-      'complete', 'partial', 'cds', 'clone', 'library',
+      'cds', 'clone', 'library', 'contig', 'contigs',
       'homolog', 'homologue', 'homologs', 'homologous',
       'protein', 'proteins', 'gene', 'genes',
-      'sequence', 'sequences',
+      'product', 'products', 'sequence', 'sequences', 
+      'strain', 'strains', 'region', 'regions',
     ]
     KillWordsHash = {}
     KillWords.each { |x| KillWordsHash[x] = true }
@@ -380,7 +381,6 @@ module Bio
     def words(case_sensitive = nil, kill_regexp = self.class::KillRegexpArray,
 	      kwhash = self.class::KillWordsHash)
       a = descriptions.join(' ').split(/[\.\,\;\:\(\)\[\]\{\}\<\>\"\'\`\~\/\|\?\!\&\@\#\s\x00-\x1f\x7f]+/)
-      a.collect! { |x| x.downcase } unless case_sensitive
       a.collect! do |x|
 	x.sub! /\A[\$\*\-\+]+/, ''
 	x.sub! /[\$\*\-\=]+\z/, ''
@@ -397,6 +397,7 @@ module Bio
 	end
       end
       a.compact!
+      a.collect! { |x| x.downcase } unless case_sensitive
       a.sort!
       a.uniq!
       a
