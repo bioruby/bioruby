@@ -1,7 +1,7 @@
 #
 # bio/io/dbget.rb - GenomeNet/DBGET client module
 #
-#   Copyright (C) 2000  Mitsuteru S. Nakao <n@bioruby.org>
+#   Copyright (C) 2000  Mitsuteru C. Nakao <n@bioruby.org>
 #   Copyright (C) 2000, 2001 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: dbget.rb,v 1.7 2002/05/15 06:33:37 k Exp $
+#  $Id: dbget.rb,v 1.8 2003/06/14 01:10:31 k Exp $
 #
 
 require 'socket'
@@ -27,7 +27,8 @@ module Bio
 
   class DBGET
 
-    SERV = "dbgetserv.genome.ad.jp"	# default DBGET server address
+#   SERV = "dbgetserv.genome.ad.jp"	# default DBGET server address
+    SERV = "dbget.genome.ad.jp"		# default DBGET server address
     PORT = "3266"			# default DBGET port number
 
     def DBGET.dbget(com, arg, serv = nil, port = nil)
