@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: go.rb,v 1.1 2003/05/08 03:44:30 n Exp $
+#  $Id: go.rb,v 1.2 2003/09/08 05:56:28 n Exp $
 #
 
 require 'bio/pathway'
@@ -73,7 +73,7 @@ module Bio
 	  if /^!(.+?):\s+(\S.+)$/ =~ line  # Parsing head lines
 	    tag   = $1
 	    value = $2
-	    tag.gsub!('-','_')
+	    tag.gsub!(/-/,'_')
 	    next if tag == 'type'
 	    instance_eval("@header_lines['#{tag}'] = '#{value}'")
 
@@ -152,7 +152,6 @@ module Bio
 
 
     # $CVSROOT/go/gene-associations/gene_association.*
-
     class GeneAssociation# < Bio::DB
 
       DELIMITER = RS = "\n"
@@ -175,7 +174,7 @@ module Bio
       end
 
       def initialize(entry) 
-        tmp = entry.chomp.split("\t")
+        tmp = entry.chomp.split(/\t/)
         @db                = tmp[0]
         @db_object_id      = tmp[1]
         @db_object_symbol  = tmp[2]
@@ -258,6 +257,8 @@ if __FILE__ == $0
 
   puts "\n #==> ga.size"
   p ga.size
+
+  puts "\n #==> ga[100]"
   p ga[100]
 
   
@@ -303,7 +304,7 @@ end
 
 = Bio::GO::GeneAssociation < Bio::DB
 
-* Data parser for flatfile of the gene_association go annotation.
+* Data parser for the gene_association go annotation.
   See also ((<the file format|URL:http://www.geneontology.org/doc/GO.annotation.html#file>)).
 
   mgi_data = File.open('gene_association.mgi').read
@@ -320,7 +321,7 @@ end
       Block is acceptable.  
 
 
---- Bio::GO::GeneAssociation.new(entry)
+--- Bio::GO::GeneAssociation.new(line)
 
       Parsing an entry in the gene_association flatfile.  
 
