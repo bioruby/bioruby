@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.11 2002/07/30 09:55:47 k Exp $
+  $Id: Tutorial.rd.ja,v 1.12 2002/12/13 17:59:34 k Exp $
 
   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -651,7 +651,8 @@ BioRuby のパッケージには samples/ ディレクトリ以下にいくつかのサンプルプ
 フォーマットですが、テーブルの数が ent, ref, ft, seq （それぞれエントリ
 本体、REFERENCE、FEATURES、塩基配列を格納）の４つに絞ってあるのが特徴で
 す。BioSQL と比べると、複雑な検索用に自前で SQL を書く場合に JOIN が少な
-くてラクですし、プログラム的にも効率が良いと思います。
+くてラクですし、プログラム的にも効率が良いと思います。（とはいえ、今後は
+BioSQL を主に扱っていくことになると思います）
 
 ちなみに、ref と ft は GenBank の１エントリ中に複数回現れる要素であるた
 め、また塩基配列は（RefSeq データベースに適用する場合など）ゲノム配列の
@@ -669,8 +670,8 @@ BioPerl, BioJava, BioPython, BioRuby などの各プロジェクトを中心とした
 * BioRegistry
   * データベース毎に配列をどこにどのように取りに行くかを指定する仕組み
 
-* Flatfile
-  * フラットファイルの dbm インデクシングと bdb インデクシング
+* BioFlat
+  * フラットファイルのインデックス作成と bdb を使ったインデックス
 
 * BioFetch
   * HTTP 経由でデータベースからエントリを取得するサーバとクライアント
@@ -683,7 +684,7 @@ BioPerl, BioJava, BioPython, BioRuby などの各プロジェクトを中心とした
   * EBI の CORBA サーバなどによるエントリの取得
 
 * XEMBL
-  * HTTP と SOAP による EMBL データベースの XML による取得
+  * CGI と SOAP による EMBL データベースの XML による取得
 
 * BioDAS
   * SOAP による DAS アノテーションの取得
@@ -706,7 +707,8 @@ BioPerl, BioJava, BioPython, BioRuby などの各プロジェクトを中心とした
 システム管理者が /etc/bioinformatics/ に置いた設定ファイルのうち個人的に
 変更したいものだけ ~/.bioinformatics/ で上書きするといった使い方ができる
 ようになっています。最後の open-bio.org の設定は、ローカルな設定ファイル
-が見つからない場合にだけ取りに行きます。
+が見つからない場合にだけ取りに行きます。サンプルの seqdatabase.ini ファ
+イルが bioruby のソースパッケージに入っていますので参照してください。
 
 設定ファイルの中身は stanza フォーマットと呼ばれる書式で記述します。
 
@@ -718,22 +720,20 @@ BioPerl, BioJava, BioPython, BioRuby などの各プロジェクトを中心とした
 が使用するためのラベルなので分かりやすいものをつければ良く、実際のデータ
 ベースの名前と異なっていても構わないようです。同じ名前のデータベースが複
 数あるときは最初に書かれているものから順に接続を試すように提案されていま
-すが、BioRuby では対応していません。
+すが、今のところ BioRuby では対応していません。
 
 また、プロトコルの種類によっては location 以外にも（MySQL のユーザ名など）
 さらにオプションが必要な場合があります。ここで protocol には
 
-  * index-berkeleydb
   * index-flat
+  * index-berkeleydb
   * biofetch
   * biosql
   * bsane-corba
   * xembl
 
-が指定できますが、今のところ BioRuby で扱えるのは biofetch と biosql だ
-けです。index については class FlatFile に Index 用のサブクラスを作れば
-よさそうですが、CORBA と SOAP については得意な方が手伝って下さることを期
-待します。
+が指定できますが、今のところ開発者のマンパワー不足により BioRuby で扱え
+るのは index-flat, index-berkleydb, biofetch と biosql だけです。
 
 BioRegistry を使うには、まず
 
@@ -753,6 +753,38 @@ BioRegistry を使うには、まず
 あとは OBDA 共通ののエントリ取得メソッド get_by_id を呼んだり、サーバオ
 ブジェクト毎に固有のメソッドを呼ぶことになりますので、以下の BioFetch や
 BioSQL の解説を参照してください。
+
+
+== BioFlat
+
+BioFlat はフラットファイルに対してインデックスを作成し、エントリを高速に
+取り出す仕組みです。外部ライブラリに依存しないシンプルな index-flat イン
+デックスと Berkeley DB (bdb) を使った index-berkeleydb インデックスの作
+成を行うことができます。インデックスの作成には bioruby パッケージに附属
+する bioflat コマンドを使って、
+
+    % bioflat --makeindex データベース名 [--format クラス名] ファイル名
+
+のようにします。クラス名は BioRuby での各データベースのパーザ名前になり
+ますが、フォーマットの自動認識機能を内蔵しているので省略可能です。検索は、
+
+    % bioflat データベース名 エントリID
+
+とします。具体的に GenBank の gbbct*.seq ファイルにインデックスを作成し
+て検索する場合、
+
+    % bioflat --makeindex my_bctdb --format GenBank gbbct*.seq
+    % bioflat my_bctdb A16STM262
+
+のような感じになります。
+
+Ruby の bdb モジュールを別途インストールしてある場合は Berkeley DB を利
+用してインデックスを作成することができます。この場合、
+
+    % bioflat --makeindex-bdb データベース名 [--format クラス名] ファイル名
+
+のように makeindex オプションに bdb をつけます。
+
 
 == BioFetch
 
