@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 # 
-#  $Id: br_bioflat.rb,v 1.13 2003/04/22 10:22:36 ng Exp $ 
+#  $Id: br_bioflat.rb,v 1.14 2003/08/27 17:28:30 ng Exp $ 
 # 
 
 require 'bio'
@@ -26,7 +26,15 @@ require 'bio'
 def usage
   print <<EOM
 Search:
-  #{$0} [--search] [DIR/]DBNAME KEYWORDS
+  #{$0} [--search] [options...] [DIR/]DBNAME KEYWORDS
+or
+  #{$0} [--search] --location DIR --dbname DBNAME [options...] KEYWORDS
+
+Search options:
+  --namespace NAME       set serch namespace to NAME
+  (or --name NAME)         You can set this option many times to specify
+                           more than one namespace.
+
 Create index:
   #{$0} --create --location DIR --dbname DBNAME [--format <genbank|embl|fasta>] [options...] [--files] FILES
 Update index:
@@ -56,6 +64,14 @@ Backward compatibility:
       same as --create --type bdb  --location DIR --dbname DBNAME
   --format=CLASS
       instead of genbank|embl|fasta, specifing a class name is allowed
+
+Show namespaces:
+  #{$0} --show-namespaces [--location DIR --dbname DBNAME] [DIR/DBNAME]
+or
+  #{$0} --show-namespaces [--format=CLASS]
+or
+  #{$0} --show-namespaces --files file
+
 EOM
 
 end
@@ -139,7 +155,7 @@ def do_index(mode = :create)
     end
   end
 
-  dbpath = "#{location}/#{dbname}" unless dbpath
+  dbpath = File.join(location, dbname) unless dbpath
   if mode == :update then
     Bio::FlatFileIndex::update_index(dbpath, format, options, *args)
   else
@@ -149,8 +165,30 @@ end
 
 
 def do_search
-  ARGV.shift if ARGV[0] == '--search'
-  dbname = ARGV.shift
+  dbname = nil
+  location = nil
+  names = []
+  while x = ARGV.shift
+    case x
+    when /\A\-\-?search/i
+      #do nothing
+    when /\A\-\-?location/i
+      location = ARGV.shift.to_s.chomp('/')
+    when /\A\-\-?dbname/i
+      dbname = ARGV.shift
+    when /\A\-\-?name(?:space)?(?:\=(.+))?/i
+      if $1 then
+	names << $1
+      elsif x = ARGV.shift
+	names << x
+      end
+    else
+      ARGV.unshift x
+      break
+    end
+  end
+  dbname = ARGV.shift unless dbname
+  dbname = File.join(location, dbname) unless location.to_s.empty?
   db = Bio::FlatFileIndex.open(dbname)
   ARGV.each do |key|
     STDERR.print "Searching for \'#{key}\'...\n"
@@ -159,7 +197,16 @@ def do_search
     #if r.size > 0 then
     #  print r
     #end
-    r = db.include?(key)
+    begin
+      if names.empty? then
+	r = db.include?(key)
+      else
+	r = db.include_in_namespaces?(key, *names)
+      end
+    rescue RuntimeError
+      STDERR.print "ERROR: #{$!}\n"
+      next
+    end
     r = [] unless r
     STDERR.print "OK, #{r.size} entry found\n"
     r.each do |i|
@@ -170,6 +217,62 @@ def do_search
 end
 
 
+def do_show_namespaces
+  dbname = nil
+  location = nil
+  files = nil
+  format = nil
+  names = []
+  while x = ARGV.shift
+    case x
+    when /\A\-\-?(show\-)?name(space)?s/i
+      #do nothing
+    when /\A\-\-?location/i
+      location = ARGV.shift.to_s.chomp('/')
+    when /\A\-\-?dbname/i
+      dbname = ARGV.shift
+    when /\A\-\-?format(?:\=(.+))?/i
+      if $1 then
+	format = $1
+      elsif x = ARGV.shift
+	format = x
+      end
+    when /\A\-\-?files/i
+      files = ARGV
+      break
+    else
+      ARGV.unshift x
+      break
+    end
+  end
+  if files then
+    k = nil
+    files.each do |x|
+      k = Bio::FlatFile.autodetect_file(x)
+      break if k
+    end
+    if k then
+      STDERR.print "Format: #{k.to_s}\n"
+      format = k
+    else
+      STDERR.print "ERROR: couldn't determine file format\n"
+      return
+    end
+  end
+  STDERR.print "Namespaces: (first line: primary namespace)\n"
+  if format then
+    parser = Bio::FlatFileIndex::Indexer::Parser.new(format)
+    print parser.primary.name, "\n"
+    puts parser.secondary.keys
+  else
+    dbname = ARGV.shift unless dbname
+    dbname = File.join(location, dbname) unless location.to_s.empty?
+    db = Bio::FlatFileIndex.open(dbname)
+    puts db.namespaces
+    db.close
+  end
+end
+
 if ARGV.size > 1
   case ARGV[0]
   when /--make/, /--create/
@@ -178,6 +281,8 @@ if ARGV.size > 1
   when /--update/
     Bio::FlatFileIndex::DEBUG.out = true
     do_index(:update)
+  when /\A\-\-?(show\-)?name(space)?s/i
+    do_show_namespaces
   when /--search/
     do_search
   else #default is search
