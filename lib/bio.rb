@@ -17,32 +17,45 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.26 2002/11/22 23:18:26 k Exp $
+#  $Id: bio.rb,v 1.27 2003/02/25 16:24:11 k Exp $
 #
 
 module Bio
-  BIORUBY_VERSION = [0, 4, 0].extend(Comparable)
+  BIORUBY_VERSION = [0, 5, 0].extend(Comparable)
 end
 
-### Sequence
+
+
+### Basic data type modules
+
+## Sequence
 
 require 'bio/sequence'		# required by bio/db.rb
 
-### Locations/Location
+## Locations/Location
 
 require 'bio/location'		# required by bio/sequence.rb
 
-### Features/Feature
+## Features/Feature
 
 require 'bio/feature'		# required by bio/db.rb
 
-### Reference
+## References/Reference
 
 require 'bio/reference'		# required by bio/db.rb
 
-### Pathway/Relation
+## Pathway/Relation
 
 require 'bio/pathway'
+
+
+### Constants
+
+require 'bio/data/na'		# required by bio/sequence.rb
+require 'bio/data/aa'		# required by bio/sequence.rb
+require 'bio/data/codontable'	# required by bio/sequence.rb
+require 'bio/data/keggorg'
+
 
 ### IO interface modules
 
@@ -51,18 +64,14 @@ require 'bio/io/flatfile'
 require 'bio/io/flatfile/indexer'
 require 'bio/io/flatfile/index'
 require 'bio/io/flatfile/bdb'
+require 'bio/io/fetch'
+require 'bio/io/sql'
+
 require 'bio/io/dbget'
 require 'bio/io/pubmed'
-require 'bio/io/sql'
-require 'bio/io/fetch'
+require 'bio/io/das'
 #require 'bio/io/brdb'
 
-### Constants
-
-require 'bio/data/na'		# required by bio/sequence.rb
-require 'bio/data/aa'		# required by bio/sequence.rb
-require 'bio/data/codontable'	# required by bio/sequence.rb
-require 'bio/data/keggorg'
 
 ### DB parsers
 
@@ -95,29 +104,16 @@ require 'bio/db/kegg/cell'
 require 'bio/db/kegg/microarray'
 require 'bio/db/kegg/keggtab'
 
-## AAindex
+## other formats
 
 require 'bio/db/aaindex'
-
-## TRANSFAC
-
 require 'bio/db/transfac'
-
-## Prosite
-
 require 'bio/db/prosite'
-
-## LITDB
-
 require 'bio/db/litdb'
-
-## MEDLINE
-
 require 'bio/db/medline'
-
-## FASTA format
-
 require 'bio/db/fasta'
+require 'bio/db/gff'
+
 
 ### Applications
 
@@ -125,4 +121,8 @@ require 'bio/appl/fasta'
 require 'bio/appl/blast'
 require 'bio/appl/hmmer'
 require 'bio/appl/emboss'
+require 'bio/appl/tmhmm/report'
+require 'bio/appl/targetp/report'
+require 'bio/appl/sosui/report'
+
 
