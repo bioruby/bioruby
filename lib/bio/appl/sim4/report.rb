@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.1 2004/10/08 17:41:08 ngoto Exp $
+#  $Id: report.rb,v 1.2 2004/10/10 14:54:23 ngoto Exp $
 #
 
 module Bio
@@ -114,7 +114,7 @@ module Bio
         def hseq;       @seq2.seq;  end
 
         def align_len
-          @midline ? @midline.length : nil
+          (@midline and @seq1.seq and @seq2.seq) ? @midline.length : nil
         end
       end #class SegmentPair
       
@@ -247,9 +247,9 @@ module Bio
         def target_id;  seq2.entry_id;   end
         def target_def; seq2.definition; end
 
-        def hit_id;     seq2.entry_id;   end
-        def len;        seq2.len;        end
-        def definition; seq2.definition; end
+        alias hit_id     target_id
+        alias len        target_len
+        alias definition target_def
 
         alias hsps exons
         def each(&x); exons.each(&x); end
@@ -276,7 +276,7 @@ end #module Bio
     Creates new Bio::Sim4::Report object from String.
     You can use Bio::FlatFile to read a file.
   
-    Currently, format A=0, A=3, or A=4 are supported.
+    Currently, format A=0, A=3, and A=4 are supported.
     (A=1, A=2, A=5 are NOT supported yet.)
 
     Note that 'seq1' in sim4 result is always regarded as 'query',
@@ -310,13 +310,13 @@ end #module Bio
 --- Bio::Sim4::Report#query_id
 
     Returns the identifier of query sequence.
-    The value is filename or (first word of) sequence definition
+    The value will be filename or (first word of) sequence definition
     according to sim4 run-time options.
 
 --- Bio::Sim4::Report#query_def
 
     Returns the definition of query sequence.
-    The value is filename or (first word of) sequence definition
+    The value will be filename or (first word of) sequence definition
     according to sim4 run-time options.
 
 --- Bio::Sim4::Report#query_len
@@ -338,14 +338,14 @@ end #module Bio
 --- Bio::Sim4::Report::Hit#target_id
 
     Returns the identifier of subject sequence.
-    The value is filename or (first word of) sequence definition
+    The value will be filename or (first word of) sequence definition
     according to sim4 run-time options.
 
 --- Bio::Sim4::Report::Hit#definition
 --- Bio::Sim4::Report::Hit#target_def
 
     Returns the identifier of subject sequence.
-    The value is filename or (first word of) sequence definition
+    The value will be filename or (first word of) sequence definition
     according to sim4 run-time options.
 
 --- Bio::Sim4::Report::Hit#len
@@ -379,15 +379,17 @@ end #module Bio
 
     Returns segment pairs (exons and introns) of the hit.
     Each segment pair is a Bio::Sim4::Report::SegmentPair object.
-    (Note that intron data is not always supplied according to run-time
-    options of the program.)
+    Returns an array of Bio::Sim4::Report::SegmentPair objects.
+    (Note that intron data is not always available
+    according to run-time options of the program.)
 
 --- Bio::Sim4::Report::Hit#introns
 
     Returns introns of the hit.
-    Each intron is a Bio::Sim4::Report::SegmentPair object.
-    (Note that intron data is not always supplied according to run-time
-    options of the program.)
+    Some of them would contain untranscribed regions.
+    Returns an array of Bio::Sim4::Report::SegmentPair objects.
+    (Note that intron data is not always available
+    according to run-time options of the program.)
 
 --- Bio::Sim4::Report::Hit#seq1
 --- Bio::Sim4::Report::Hit#seq2
@@ -416,7 +418,7 @@ end #module Bio
     Similar to Bio::Blast::Report::HSP but lacks many methods.
     For mRNA-genome mapping programs, unlike other homology search programs,
     the class is used not only for exons but also for introns.
-    (Note that intron data is not always supplied according to run-time
+    (Note that intron data would not be available according to run-time
     options of the program.)
 
 --- Bio::Sim4::Report::SegmentPair#query_from
@@ -430,6 +432,7 @@ end #module Bio
 --- Bio::Sim4::Report::SegmentPair#midline
 
     Returns the "midline" of the segment pair.
+    Returns nil if no alignment data are available.
 
 --- Bio::Sim4::Report::SegmentPair#percent_identity
 
