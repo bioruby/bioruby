@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: db.rb,v 0.12 2001/12/19 12:30:54 katayama Exp $
+#  $Id: db.rb,v 0.13 2002/04/08 07:50:54 k Exp $
 #
 
 require 'bio/id'
@@ -102,101 +102,27 @@ module Bio
 
     private
 
-    # returns hash of the NCBI style fields (GenBank, KEGG etc.)
+    def toptag2array(str)
+      sep = "\001"
+      str.gsub(/\n(\S)/, "\n#{sep}\\1").split(sep)
+    end
+
+    def subtag2array(str)
+      sep = "\001"
+      str.gsub(/\n(\s{1,#{@tagsize-1}}\S)/, "\n#{sep}\\1").split(sep)
+    end
+
     def entry2hash(entry)
       hash = Hash.new('')
 
-# this routine originally was
-#
-#     tag = ''
-#     entry.each_line do |line|
-#       next if line =~ /^$/
-#	if line =~ /^\w/
-#	  tag = tag_get(line)
-#	end
-#	hash[tag] += line
-#     end
-#
-# however, this method was very slow because of the storm of malloc calls.
-
-      separator = "\001"
-      fields = entry.gsub(/\n(\w)/, "\n#{separator}\\1").split(separator)
+      fields = toptag2array(entry)
 
       fields.each do |field|
-	tag = tag_get(field)
-	hash[tag] += field
+        tag = tag_get(field)
+        hash[tag] += field
       end
       return hash
     end
-
-    ## DO NOT USE FOLLOWING METHODS                               ##
-    ## I will clean up (remove?) following methods in next update ##
-
-    ## used in db.rb only
-
-    # split fields into Array of the field by the same tag name
-    def toptag_array(field)
-      ary = []
-      field.each_line do |line|		# this may also slow : see entry2hash
-	if line =~ /^\w/
-	  ary.push(line)
-	else
-	  ary.last << line
-	end
-      end
-      return ary
-    end
-
-    # split a field into Hash by subtag
-    def subtag_hash(field)
-      hash = Hash.new('')
-      sub = ''
-      field.each_line do |line|		# this may also slow : see entry2hash
-	tmp = tag_get(line)
-	if tmp.length > 0
-	  sub = tmp
-	end
-	hash[sub] += truncate(tag_cut(line))
-      end
-      return hash
-    end
-
-    # (2) returns Array of String of the multiple fields (REFERENCE etc.)
-    def field_multi(tag)
-      unless @data[tag]
-	field = get(tag)
-	@data[tag] = toptag_array(field)
-      end
-      return @data[tag]
-    end
-
-    ## used in genome.rb
-
-    # (3) returns Hash of String of the subtag (SOURCE etc.)
-    def field_sub(tag)
-      unless @data[tag]
-	field = get(tag)
-	@data[tag] = subtag_hash(field)
-      end
-      return @data[tag]
-    end
-
-    ## used in genome.rb, genbank.rb
-
-    # (2)+(3)returns Array of Hash of String of the multiple fields with subtag
-    def field_multi_sub(tag)
-      unless @data[tag]
-	ary = []
-	field = get(tag)
-	toptag_array(field).each do |f|
-	  hash = subtag_hash(f)
-	  ary.push(hash)
-	end
-	@data[tag] = ary
-      end
-      return @data[tag]
-    end
-
 
   end
 
