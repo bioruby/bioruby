@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: pubmed.rb,v 1.3 2001/09/17 22:31:28 katayama Exp $
+#  $Id: pubmed.rb,v 1.4 2001/09/26 02:02:52 katayama Exp $
 #
 #  For more informations :
 #    http://www.ncbi.nlm.nih.gov/entrez/query/static/overview.html
@@ -60,8 +60,7 @@ module PubMed
       raise( result )
     else
       result = result.gsub("\r", "\n").squeeze("\n")
-      # FIXME : substitution fails because '.' doesn't match "\n"
-      #result = result.sub(/.*<pre>/, '').sub(/<\/pre>.*/, '')
+      result = result.sub(/.*<pre>/m, '').sub(/<\/pre>.*/m, '')
       return result
     end
   end
