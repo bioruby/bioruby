@@ -3,47 +3,99 @@
 
 BioRuby project aims to implement integrated environment for Bioinformatics.
 
+Object oriented scripting language Ruby has many good points suitable for
+bioinfomatics research.  Powerful regular expressions like Perl, purely
+object oriented, simple and very clean syntax -- easy to learn for beginners,
+easy to use for biologists, powerful enough for developers.
+
+In BioRuby, you can retrieve biological database entries from flat files,
+internet web servers and local relational databases.  These database entries
+can be parsed to extract any information you need.  Biological sequences are
+treated with Ruby's powerful string methods and regular expressions.  Daily
+tools like Blast, Fasta and Hmmer programs can be executed and the results
+are fully parsed to extract scores and/or alignments.  BioRuby also supports
+some databases and web services developed in Japan such as KEGG, AAindex,
+and DBGET etc.
+
+
 == WHERE TO GET
 
-* WWW
-  * ((<URL:http://bioruby.org/>)) for more informations.
+* WWW -- ((<URL:http://bioruby.org/>))
 
-* FTP
-  * ((<URL:ftp://ftp.bioruby.org/bioruby/>))
+* FTP -- ((<URL:ftp://ftp.bioruby.org/bioruby/>))
 
-* CVS
+* CVS -- ((<URL:http://cvs.bioruby.org/>))
+
     % cvs -d :pserver:anonymous@cvs.bioruby.org:/export/cvs login
-    CVS password: (no password is required, just return)
+    CVS password: (no password is required, just push return)
     % cvs -d :pserver:anonymous@cvs.bioruby.org:/export/cvs co bioruby
 
-== REQUIREMENT
 
-* Ruby 1.6.6 or newer version is required.
-  * ((<URL:http://www.ruby-lang.org/>))
+== REQUIREMENTS
+
+* Ruby 1.6.6 or newer -- ((<URL:http://www.ruby-lang.org/>))
+
+
+== OPTIONAL REQUIREMENTS
+
+* Ruby library -- ((<URL:http://raa.ruby-lang.org/>))
+
+  * [RAA:rexml] for parsing Blast XML output and using DAS.
+  * [RAA:xmlparser] can be used for faster Blast XML parsing.
+  * [RAA:ruby-dbi] and at least one driver from [RAA:mysql-ruby],
+    [RAA:postgres], [RAA:oracle] to use with BioSQL.
+  * [RAA:bdb] for faster flat file indexing.
+  * [RAA:pp] for pretty print in debug.
+
+* External applications can be used if installed
+
+  * Blast 2.2.5 or better for local blast execution
+  * FASTA for local fasta, ssearch execution
+  * HMMER for local hmmsearch, hmmpfam execution
+
 
 == INSTALL
+
+In the bioruby source directory (such as bioruby-x.x.x/),
 
   % ruby install.rb config
   % ruby install.rb setup
   # ruby install.rb install
 
-  ("ruby install.rb --help" for more details)
+If you are using Mac OS X, last line can be
+
+  % sudo ruby install.rb install
+
+You can try
+
+  % ruby install.rb --help
+
+for more details.
+
 
 == USAGE
+
+You can load all BioRuby classes just by require 'bio' and all the
+BioRuby classes are defined under the module Bio for the name space.
+See the documentation for each class.
 
   #!/usr/bin/env ruby
   require 'bio'
 
+
 == LICENCE
 
-* GPL for applications, LGPL for libraries.
-* install.rb comes from ((<setup|URL:http://www.loveruby.net/en/setup.html>)).
+GPL for applications, LGPL for libraries.  Note that, install.rb
+included in the BioRuby package comes from [RAA:setup] by Minero Aoki.
+
 
 == AUTHORS
 
-* KATAYAMA Toshiaki <k@bioruby.org>, project leader
+* KATAYAMA Toshiaki <k@bioruby.org>, Project leader
 * Yoshinori K. Okuji <okuji@enbug.org>
 * Mitsuteru S. Nakao <n@bioruby.org>
 * KAWASHIMA Shuichi <s@bioruby.org>
-* GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+* GOTO Naohisa <ng@bioruby.org>
+
+  * and some others on the Internet...
 
