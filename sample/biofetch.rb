@@ -1,8 +1,8 @@
-#!/usr/local/bin/ruby
+#!/usr/proj/bioruby/bin/ruby
 #
-# biofetch.rb : BioFetch server (interface to GenomeNet/DBGET)
+# biofetch.rb : BioFetch server (interface to GenomeNet/DBGET via KEGG API)
 #
-#   Copyright (C) 2002 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2002-2004 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -18,150 +18,16 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#  $Id: biofetch.rb,v 1.8 2002/04/26 06:46:00 k Exp $
+#  $Id: biofetch.rb,v 1.9 2004/01/29 01:37:22 k Exp $
 #
 
 require 'cgi'
-require 'bio/io/dbget'
+require 'html/template'
+require 'bio/io/keggapi'
 
 MAX_ID_NUM = 50
-BIOFETCH_URL = 'http://bioruby.org/cgi-bin/biofetch.rb'
 
-def print_query_page(cgi)
-  cgi.out do
-    cgi.html do
-      cgi.head do
-        cgi.title {
-          "BioFetch interface to GenomeNet/DBGET"
-        } +
-        cgi.link('rel'=>'icon', 'href'=>'http://bioruby.org/icon/1.png', 'type'=>'image/png')
-      end + 
-      cgi.body('bgcolor'=>'#ffffff') do
-        cgi.h1 {
-          cgi.img('src'=>'http://bioruby.org/icon/big.png', 'align'=>'middle') +
-          "BioFetch interface to " +
-          cgi.a('href'=>'http://www.genome.ad.jp/dbget/') {
-            "GenomeNet/DBGET"
-          }
-        } +
-	cgi.p {
-          "This page allows you to retrieve up to #{MAX_ID_NUM} entries at the time from various up-to-date biological databases."
-	} +
-        cgi.hr +
-        cgi.form('action'=>'biofetch.rb') {
-          cgi.select('name'=>'db') {
-            cgi.option('value'=>'embl-today') { "EMBL" } +
-            cgi.option('value'=>'genbank-today') { "GenBank" } +
-            cgi.option('value'=>'refseq') { "RefSeq" } +
-            cgi.option('value'=>'swissprot-today') { "Swiss-Prot" } +
-            cgi.option('value'=>'pir') { "PIR" } +
-            cgi.option('value'=>'prf') { "PRF" } +
-            cgi.option('value'=>'pdb-today') { "PDB" } +
-            cgi.option('value'=>'pdbstr-today') { "PDBSTR" } +
-            cgi.option('value'=>'epd') { "EPD" } +
-            cgi.option('value'=>'transfac') { "TRANSFAC" } +
-            cgi.option('value'=>'prosite') { "PROSITE" } +
-            cgi.option('value'=>'pmd') { "PMD" } +
-            cgi.option('value'=>'litdb') { "LITDB" } +
-            cgi.option('value'=>'omim') { "OMIM" } +
-            cgi.option('value'=>'ligand') { "KEGG/LIGAND" } +
-            cgi.option('value'=>'pathway') { "KEGG/PATHWAY" } +
-            cgi.option('value'=>'brite') { "KEGG/BRITE" } +
-            cgi.option('value'=>'genes') { "KEGG/GENES" } +
-            cgi.option('value'=>'genome') { "KEGG/GENOME" } +
-            cgi.option('value'=>'linkdb') { "LinkDB" } +
-            cgi.option('value'=>'aaindex') { "AAindex" }
-          } +
-          cgi.input('type'=>'text', 'name'=>'id', 'size'=>'40', 'maxlength'=>'1000') +
-          cgi.select('name'=>'format') {
-            cgi.option('value'=>'default') { "Default" } +
-            cgi.option('value'=>'fasta') { "Fasta" }
-          } +
-          cgi.select('name'=>'style') {
-            cgi.option('value'=>'raw') { "Raw" } +
-            cgi.option('value'=>'html') { "HTML" }
-          } +
-          cgi.input('type'=>'submit')
-        } +
-        cgi.hr +
-        cgi.h2 {
-          "Direct access"
-        } +
-	cgi.p {
-          "#{BIOFETCH_URL}?format=(default|fasta|...);style=(html|raw);db=(embl|genbank|...);id=ID[,ID,ID,...]"
-        } +
-	cgi.p {
-          "(NOTE: the option separator ';' can be '&')"
-        } +
-	cgi.dl {
-	  cgi.dt + cgi.u { "format" } + " (optional)" +
-          cgi.dd + "default|fasta|..." +
-	  cgi.dt + cgi.u { "style" } + " (required)" +
-          cgi.dd + "html|raw" +
-	  cgi.dt + cgi.u { "db" } + " (required)" +
-          cgi.dd + "embl-today|embl|genbank-today|genbank|refseq|swissprot-today|swissprot|pir|prf|pdb-today|pdb|pdbstr-today|pdbstr|epd|transfac|prosite|pmd|litdb|omim|ligand|pathway|brite|genes|genome|linkdb|aaindex|..." +
-	  cgi.dt + cgi.u { "id" } + " (required)" +
-          cgi.dd + "comma separated list of IDs"
-        } +
-	cgi.p {
-          "See the " + cgi.a('href'=>'http://obda.open-bio.org') { "BioFetch specification" } + " for more details."
-        } +
-	cgi.h2 {
-          "Server informations"
-	} +
-	cgi.dl {
-	  cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?info=dbs") { "What are the databases available?" } +
-	  cgi.dd + "#{BIOFETCH_URL}?info=dbs" +
-	  cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?info=formats;db=embl") { "What are the formats this database X has?" } +
-	  cgi.dd + "#{BIOFETCH_URL}?info=formats;db=embl" +
-	  cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?info=maxids") { "How many entries can be retrieved simultaneously?" } +
-	  cgi.dd + "#{BIOFETCH_URL}?info=maxids"
-	} +
-        cgi.h2 {
-          "Examples"
-        } +
-        cgi.dl {
-          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=default;style=raw;db=refseq;id=NC_000844") { "rs:NC_000844" } + " (default/raw)" +
-	  cgi.dd + "#{BIOFETCH_URL}?format=default;style=raw;db=refseq;id=NC_000844" +
-          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=fasta;style=raw;db=refseq;id=NC_000844") { "rs:NC_000844" } + " (fasta/raw)" +
-          cgi.dd + "#{BIOFETCH_URL}?format=fasta;style=raw;db=refseq;id=NC_000844" +
-          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=default;style=html;db=refseq;id=NC_000844") { "rs:NC_000844" } + " (default/html)" +
-          cgi.dd + "#{BIOFETCH_URL}?format=default;style=html;db=refseq;id=NC_000844" +
-          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=default;style=raw;db=refseq;id=NC_000844,NC_000846") { "rs:NC_000844,NC_000846" } + " (default/raw, multiple)" +
-          cgi.dd + "#{BIOFETCH_URL}?format=default;style=raw;db=refseq;id=NC_000844,NC_000846" +
-          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=default;style=raw;db=embl-today;id=BUM") { "embl:BUM" } + " (default/raw)" +
-          cgi.dd + "#{BIOFETCH_URL}?format=default;style=raw;db=embl-today;id=BUM" +
-          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=default;style=raw;db=swissprot-today;id=CYC_BOVIN") { "sp:CYC_BOVIN" } + " (default/raw)" +
-          cgi.dd + "#{BIOFETCH_URL}?format=default;style=raw;db=swissprot-today;id=CYC_BOVIN" +
-          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=fasta;style=raw;db=swissprot-today;id=CYC_BOVIN") { "sp:CYC_BOVIN" } + " (fasta/raw)" +
-          cgi.dd + "#{BIOFETCH_URL}?format=fasta;style=raw;db=swissprot-today;id=CYC_BOVIN" +
-          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=default;style=raw;db=genes;id=b0015") { "genes:b0015" } + " (default/raw)" +
-          cgi.dd + "#{BIOFETCH_URL}?format=default;style=raw;db=genes;id=b0015" +
-          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=default;style=raw;db=prosite;id=PS00028") { "ps:PS00028" } + " (default/raw)" +
-          cgi.dd + "#{BIOFETCH_URL}?format=default;style=raw;db=prosite;id=PS00028"
-#         cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}") { "" } +
-#         cgi.dd + "#{BIOFETCH_URL}"
-        } +
-        cgi.h2 {
-          "Other BioFetch implementations"
-        } +
-        cgi.a('href'=>'http://www.ebi.ac.uk/cgi-bin/dbfetch') {
-          "dbfetch at EBI"
-        } +
-        cgi.hr +
-        cgi.div('align'=>'right') {
-          cgi.a('href'=>'http://bioruby.org') {
-            cgi.img('border'=>'0', 'src'=>'http://bioruby.org/button/1.gif')
-          }
-        }
-      end
-    end
-  end
-end
-
-
-
-def print_error_page(str)
+def print_text_page(str)
   print "Content-type: text/plain; charset=UTF-8\n\n"
   puts str
   exit
@@ -169,142 +35,349 @@ end
 
 def error_1(db)
   str = "ERROR 1 Unknown database [#{db}]."
-  print_error_page(str)
+  print_text_page(str)
 end
 
 def error_2(style)
   str = "ERROR 2 Unknown style [#{style}]."
-  print_error_page(str)
+  print_text_page(str)
 end
 
 def error_3(format, db)
   str = "ERROR 3 Format [#{format}] not known for database [#{db}]."
-  print_error_page(str)
+  print_text_page(str)
 end
 
-def error_4(id, db)
-  str = "ERROR 4 ID [#{id}] not found in database [#{db}]."
-  print_error_page(str)
+def error_4(entry_id, db)
+  str = "ERROR 4 ID [#{entry_id}] not found in database [#{db}]."
+  print_text_page(str)
 end
 
 def error_5(count)
   str = "ERROR 5 Too many IDs [#{count}]. Max [#{MAX_ID_NUM}] allowed."
-  print_error_page(str)
+  print_text_page(str)
 end
 
 def error_6(info)
   str = "ERROR 6 Illegal information request [#{info}]."
-  print_error_page(str)
+  print_text_page(str)
 end
 
 
-def print_result_page(cgi)
-
-  db = cgi['db'].first.downcase
-  id = cgi['id'].first.split(/\W/)		# not only ','
-  style = cgi['style'].first
-  format = cgi['format'].first
-
-  if id.length > MAX_ID_NUM
-    error_5(id.length)
-  end
-
-  case style
-  when /html/i
-    id = id.join('%2B')
-    print "Location: http://genome.jp/dbget-bin/www_bget?#{db}+#{id}\n\n"
-    exit
-  when /raw/i
-    ;
-  else
-    error_2(style)
-  end
-
-  case format
-  when /fasta/i
-    format = '-f'
-  when /default/i
-    format = ''
-  when nil
-    ;
-  else
-    error_3(format, db)
-  end
-
-
-  entry = ''
-
-  id.each do |query_id|
-    begin
-      result = Bio::DBGET.bget("#{db} #{query_id} #{format}")
-    rescue
-      error_4(query_id, db)
-    end
-
-    if result =~ /No such entry/
-      error_4(query_id, db)
-    end
-
-    if result =~ /No such database name in DBTAB/
-      error_1(db)
-    else
-      entry += result
-    end
-  end
-
-  print "Content-type: text/plain; charset=UTF-8\n\n"
-  puts entry
-
+def keggapi_dbinfo
+  serv = Bio::KEGG::API.new
+  serv.list_databases
 end
 
+def list_databases
+  ary = []
+  if dbinfo = keggapi_dbinfo
+    dbinfo.each do |line|
+      ary.push(line.split[1])
+    end
+  end
+  return ary[3..-1]
+end
 
-def print_info_page(cgi)
-  info = cgi['info'].first
+def check_fasta_ok(db)
+  # sequence databases supported by Bio::FlatFile.auto
+  /genes|gb|genbank|genpept|rs|refseq|emb|sp|swiss|pir/.match(db)
+end
+
+def show_info_page(info, db)
   case info
-  when /db/i
-    result = Bio::DBGET.binfo('dbget')
-    db_list = Array.new
-    result.each do |line|
-      db_list.push(line.split[1])
+  when /db/
+    if db_list = list_databases
+      str = db_list.sort.join(' ')
+    else
+      str = "Error: list_databases"
     end
-    str = db_list[3..-1].sort.join(' ')
-    print_error_page(str)
-  when /format/i
-    str = "default fasta"
-    print_error_page(str)
-  when /maxid/i
+    print_text_page(str)
+  when /format/
+    fasta = " fasta" if check_fasta_ok(db)
+    str = "default#{fasta}"
+    print_text_page(str)
+  when /maxid/
     str = MAX_ID_NUM.to_s
-    print_error_page(str)
+    print_text_page(str)
   else
     error_6(info)
   end
 end
 
+def check_dbname(db)
+  error_1(db) unless list_databases.include?(db)
+end
 
+def check_style(style)
+  error_2(style) unless /html|raw/.match(style)
+end
+
+def check_format(format, db)
+  error_3(format, db) if format && ! /fasta|default/.match(format)
+end
+
+def check_number_of_id(num)
+  error_5(num) if num > MAX_ID_NUM
+end
+
+def goto_html_style_page(db, id_list, format)
+  url = "http://www.genome.ad.jp/dbget-bin/www_bget"
+  opt = '-f+' if /fasta/.match(format)
+  ids = id_list.join('%2B')
+  print "Location: #{url}?#{opt}#{db}+#{ids}\n\n"
+  exit
+end
+
+def convert_to_fasta_format(str, db)
+  require 'bio'
+  require 'stringio'
+
+  fasta = Array.new
+
+  entries = StringIO.new(str)
+  Bio::FlatFile.auto(entries) do |ff|
+    ff.each do |entry|
+      seq = nil
+      if entry.respond_to?(:seq)
+        seq = entry.seq
+      elsif entry.respond_to?(:aaseq)
+        seq = entry.naseq
+      elsif entry.respond_to?(:naseq)
+        seq = entry.naseq
+      end
+      if seq
+        entry_id   = entry.respond_to?(:entry_id)   ? entry.entry_id   : ''
+        definition = entry.respond_to?(:definition) ? entry.definition : ''
+        fasta << seq.to_fasta("#{db}:#{entry_id} #{definition}", 60)
+      end
+    end
+  end
+
+  return fasta.join
+end
+
+def keggapi_bget(db, id_list, format)
+  serv = Bio::KEGG::API.new
+
+  results = Array.new
+
+  id_list.each do |query_id|
+    entry_id = "#{db}:#{query_id}"
+    if result = serv.get_entries(entry_id)
+      results << result
+    else
+      error_4(query_id, db)
+    end
+  end
+
+  if /fasta/.match(format)
+    entries = convert_to_fasta_format(results.join, db)
+  else
+    entries = results.join
+  end
+
+  return entries
+end
+
+def show_result_page(db, id_list, style, format)
+  check_style(style)
+  check_format(format, db)
+  check_number_of_id(id_list.length)
+  check_dbname(db)
+
+  if /html/.match(style)
+    goto_html_style_page(db, id_list, format)
+  end
+
+  entries = keggapi_bget(db, id_list, format)
+  print_text_page(entries)
+end
 
 begin
-  cgi = CGI.new('html3')
+  cgi = CGI.new
+
   if cgi['info'].empty?
     if cgi['id'].empty?
-      print_query_page(cgi)
+      html = HTML::Template.new
+      html.set_html(DATA.read)
+      html.param('max_id_num' => MAX_ID_NUM)
+      cgi.out do
+        html.output
+      end
     else
-      print_result_page(cgi)
+      db = cgi['db'].downcase
+      id_list = cgi['id'].split(/\W/)		# not only ','
+      style = cgi['style'].downcase
+      format = cgi['format'].downcase
+      show_result_page(db, id_list, style, format)
     end
   else
-    print_info_page(cgi)
+    db = cgi['db'].downcase
+    info = cgi['info'].downcase
+    show_info_page(info, db)
   end
 end
 
 
 =begin
 
-This program is created during BioHackathon 2002, Tucson and updated
+This program was created during BioHackathon 2002, Tucson and updated
 in Cape Town :)
 
-You can not run this CGI program without having internally accessible
-DBGET server.
+Rewrited in 2004 to use KEGG API as the bioruby.org server left from Kyoto
+University (where DBGET runs) and the old version could not run without
+having internally accessible DBGET server.
 
 =end
 
 
+__END__
 
+<HTML>
+<HEAD>
+  <TITLE>BioFetch interface to GenomeNet/DBGET</TITLE>
+  <LINK href="http://bioruby.org/img/favicon.png" rel="icon" type="image/png">
+  <LINK href="http://bioruby.org/css/bioruby.css" rel="stylesheet" type="text/css">
+</HEAD>
+
+<BODY bgcolor="#ffffff">
+
+<H1>
+<IMG src="http://bioruby.org/img/ruby.png" align="middle">
+BioFetch interface to
+<A href="http://www.genome.ad.jp/dbget/">GenomeNet/DBGET</A>
+</H1>
+
+<P>This page allows you to retrieve up to <!var:max_id_num> entries at the time from various up-to-date biological databases.</P>
+
+<HR>
+
+<FORM METHOD="post" ENCTYPE="application/x-www-form-urlencoded" action="biofetch.rb">
+
+<SELECT name="db">
+<OPTION value="genbank">GenBank</OPTION>
+<OPTION value="refseq">RefSeq</OPTION>
+<OPTION value="embl">EMBL</OPTION>
+<OPTION value="swissprot">Swiss-Prot</OPTION>
+<OPTION value="pir">PIR</OPTION>
+<OPTION value="prf">PRF</OPTION>
+<OPTION value="pdb">PDB</OPTION>
+<OPTION value="pdbstr">PDBSTR</OPTION>
+<OPTION value="epd">EPD</OPTION>
+<OPTION value="transfac">TRANSFAC</OPTION>
+<OPTION value="prosite">PROSITE</OPTION>
+<OPTION value="pmd">PMD</OPTION>
+<OPTION value="litdb">LITDB</OPTION>
+<OPTION value="omim">OMIM</OPTION>
+<OPTION value="ligand">KEGG/LIGAND</OPTION>
+<OPTION value="pathway">KEGG/PATHWAY</OPTION>
+<OPTION value="brite">KEGG/BRITE</OPTION>
+<OPTION value="genes">KEGG/GENES</OPTION>
+<OPTION value="genome">KEGG/GENOME</OPTION>
+<OPTION value="linkdb">LinkDB</OPTION>
+<OPTION value="aaindex">AAindex</OPTION>
+</SELECT>
+
+<INPUT name="id" size="40" type="text" maxlength="1000">
+
+<SELECT name="format">
+<OPTION value="default">Default</OPTION>
+<OPTION value="fasta">Fasta</OPTION>
+</SELECT>
+
+<SELECT name="style">
+<OPTION value="raw">Raw</OPTION>
+<OPTION value="html">HTML</OPTION>
+</SELECT>
+
+<INPUT type="submit">
+
+</FORM>
+
+<HR>
+
+<H2>Direct access</H2>
+
+<P>http://bioruby.org/cgi-bin/biofetch.rb?format=(default|fasta|...);style=(html|raw);db=(genbank|embl|...);id=ID[,ID,ID,...]</P>
+<P>(NOTE: the option separator ';' can be '&')</P>
+
+<DL>
+  <DT> <U>format</U> (optional)
+  <DD> default|fasta|...
+
+  <DT> <U>style</U> (required)
+  <DD> html|raw
+
+  <DT> <U>db</U> (required)
+  <DD> genbank|refseq|embl|swissprot|pir|prf|pdb|pdbstr|epd|transfac|prosite|pmd|litdb|omim|ligand|pathway|brite|genes|genome|linkdb|aaindex|...
+
+  <DT> <U>id</U> (required)
+  <DD> comma separated list of IDs
+</DL>
+
+<P>See the <A href="http://obda.open-bio.org/">BioFetch specification</A> for more details.</P>
+
+<H2>Server informations</H2>
+
+<DL>
+  <DT> <A href="?info=dbs">What databases are available?</A>
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?info=dbs
+
+  <DT> <A href="?info=formats;db=embl">What formats does the database X have?</A>
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?info=formats;db=embl
+
+  <DT> <A href="?info=maxids">How many entries can be retrieved simultaneously?</A>
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?info=maxids
+</DL>
+
+<H2>Examples</H2>
+
+<DL>
+  <DT> <A href="?format=default;style=raw;db=refseq;id=NC_000844">rs:NC_000844</A> (default/raw)
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq;id=NC_000844
+
+  <DT> <A href="?format=fasta;style=raw;db=refseq;id=NC_000844">rs:NC_000844</A> (fasta/raw)
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=refseq;id=NC_000844
+
+  <DT> <A href="?format=default;style=html;db=refseq;id=NC_000844">rs:NC_000844</A> (default/html)
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=html;db=refseq;id=NC_000844
+
+  <DT> <A href="?format=default;style=raw;db=refseq;id=NC_000844,NC_000846">rs:NC_000844,NC_000846</A> (default/raw, multiple)
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq;id=NC_000844,NC_000846
+
+  <DT> <A href="?format=default;style=raw;db=embl;id=BUM">embl:BUM</A> (default/raw)
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=embl;id=BUM
+
+  <DT> <A href="?format=default;style=raw;db=swissprot;id=CYC_BOVIN">sp:CYC_BOVIN</A> (default/raw)
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=swissprot;id=CYC_BOVIN
+
+  <DT> <A href="?format=fasta;style=raw;db=swissprot;id=CYC_BOVIN">sp:CYC_BOVIN</A> (fasta/raw)
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=swissprot;id=CYC_BOVIN
+
+  <DT> <A href="?format=default;style=raw;db=genes;id=b0015">genes:b0015</A> (default/raw)
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=genes;id=b0015
+
+  <DT> <A href="?format=default;style=raw;db=prosite;id=PS00028">ps:PS00028</A> (default/raw)
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=prosite;id=PS00028
+</DL>
+
+<H2>Other BioFetch implementations</H2>
+
+<UL>
+  <LI> <A href="http://www.ebi.ac.uk/cgi-bin/dbfetch">dbfetch at EBI</A>
+</UL>
+
+<HR>
+
+<DIV align=right>
+<I>
+staff@Bio<span class="ruby">Ruby</span>.org
+</I>
+<BR>
+<BR>
+<A href="http://bioruby.org/"><IMG border=0 src="/img/banner.gif"></A>
+</DIV>
+
+</BODY>
+</HTML>
