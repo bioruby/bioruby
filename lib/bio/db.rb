@@ -17,10 +17,9 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: db.rb,v 0.16 2002/06/23 20:10:19 k Exp $
+#  $Id: db.rb,v 0.17 2002/06/25 23:15:54 k Exp $
 #
 
-#require 'bio/id'
 require 'bio/sequence'
 require 'bio/reference'
 require 'bio/feature'
@@ -231,8 +230,6 @@ Every sub class should define the following constants if appropriate:
       DELIMITER	= RS = "\n//\n"
       TAGSIZE	= 12		# You can omit this line if not needed
 
-#     Bio::ID.register('hoge', Bio::Hoge)
-
       def initialize(entry)
       end
 
@@ -272,8 +269,6 @@ list if appropriate:
 
       The reference field(s) of the entry.
 
-# --- dblink	-> Bio::ID
-# --- dblinks	-> Array of Bio::ID
 --- dblink	-> String
 --- dblinks	-> Array of String
 
