@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.24 2004/03/16 04:13:09 ngoto Exp $
+#  $Id: flatfile.rb,v 1.25 2004/03/24 01:19:18 k Exp $
 #
 
 module Bio
@@ -264,7 +264,7 @@ module Bio
       when /^Entry           [A-Z0-9]+/
 	Bio::KEGG::BRITE
 	
-      when /^ENTRY       .+ CDS /
+      when /^ENTRY       .+ (CDS|gene|.*RNA) /
 	Bio::KEGG::GENES
       when /^ENTRY       EC [0-9\.]+$/
 	Bio::KEGG::ENZYME
