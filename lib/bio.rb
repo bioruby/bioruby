@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.27 2003/02/25 16:24:11 k Exp $
+#  $Id: bio.rb,v 1.28 2003/04/24 15:38:28 k Exp $
 #
 
 module Bio
@@ -25,24 +25,23 @@ module Bio
 end
 
 
-
 ### Basic data type modules
 
 ## Sequence
 
-require 'bio/sequence'		# required by bio/db.rb
+require 'bio/sequence'
 
 ## Locations/Location
 
-require 'bio/location'		# required by bio/sequence.rb
+require 'bio/location'
 
 ## Features/Feature
 
-require 'bio/feature'		# required by bio/db.rb
+require 'bio/feature'
 
 ## References/Reference
 
-require 'bio/reference'		# required by bio/db.rb
+require 'bio/reference'
 
 ## Pathway/Relation
 
@@ -51,35 +50,19 @@ require 'bio/pathway'
 
 ### Constants
 
-require 'bio/data/na'		# required by bio/sequence.rb
-require 'bio/data/aa'		# required by bio/sequence.rb
-require 'bio/data/codontable'	# required by bio/sequence.rb
+require 'bio/data/na'
+require 'bio/data/aa'
+require 'bio/data/codontable'
 require 'bio/data/keggorg'
-
-
-### IO interface modules
-
-require 'bio/io/registry'
-require 'bio/io/flatfile'
-require 'bio/io/flatfile/indexer'
-require 'bio/io/flatfile/index'
-require 'bio/io/flatfile/bdb'
-require 'bio/io/fetch'
-require 'bio/io/sql'
-
-require 'bio/io/dbget'
-require 'bio/io/pubmed'
-require 'bio/io/das'
-#require 'bio/io/brdb'
 
 
 ### DB parsers
 
-require 'bio/db'		# required by bio/db/*.rb
+require 'bio/db'
 
 ## GenBank/RefSeq/DDBJ
 
-require 'bio/db/genbank'	# required by bio/db/genbank/*.rb
+require 'bio/db/genbank'
 require 'bio/db/genbank/genbank'
 require 'bio/db/genbank/genpept'
 require 'bio/db/genbank/refseq'
@@ -87,7 +70,7 @@ require 'bio/db/genbank/ddbj'
 
 ## EMBL/TrEMBL/Swiss-Prot/SPTR
 
-require 'bio/db/embl'		# required by bio/db/embl/*.rb
+require 'bio/db/embl'
 require 'bio/db/embl/embl'
 require 'bio/db/embl/sptr'
 require 'bio/db/embl/trembl'
@@ -106,13 +89,32 @@ require 'bio/db/kegg/keggtab'
 
 ## other formats
 
+require 'bio/db/fasta'
+require 'bio/db/gff'
 require 'bio/db/aaindex'
 require 'bio/db/transfac'
 require 'bio/db/prosite'
 require 'bio/db/litdb'
 require 'bio/db/medline'
-require 'bio/db/fasta'
-require 'bio/db/gff'
+require 'bio/db/fantom'
+
+
+### IO interface modules
+
+require 'bio/io/registry'
+require 'bio/io/flatfile'
+require 'bio/io/flatfile/indexer'
+require 'bio/io/flatfile/index'
+require 'bio/io/flatfile/bdb'
+require 'bio/io/fetch'
+require 'bio/io/sql'
+
+require 'bio/io/dbget'
+require 'bio/io/keggapi'
+require 'bio/io/pubmed'
+require 'bio/io/das'
+require 'bio/io/ddbjxml'
+#require 'bio/io/brdb'
 
 
 ### Applications
@@ -121,6 +123,7 @@ require 'bio/appl/fasta'
 require 'bio/appl/blast'
 require 'bio/appl/hmmer'
 require 'bio/appl/emboss'
+require 'bio/appl/psort'
 require 'bio/appl/tmhmm/report'
 require 'bio/appl/targetp/report'
 require 'bio/appl/sosui/report'
