@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fantom.rb,v 1.8 2003/06/13 15:40:40 ng Exp $
+#  $Id: fantom.rb,v 1.9 2003/07/28 08:32:10 ng Exp $
 #
 
 begin
@@ -102,7 +102,7 @@ module Bio
       end
       def self.define_element_text_method(array)
 	array.each do |tagstr|
-	  module_eval ("
+	  module_eval("
 	    def #{tagstr}
 	      unless defined?(@#{tagstr})
 		@#{tagstr} = gsub_entities(@elem.text('#{tagstr}'))
@@ -257,7 +257,7 @@ module Bio
 
 	def self.define_id_method(array)
 	  array.each do |tagstr|
-	    module_eval ("
+	    module_eval("
 	      def #{tagstr}
 	        unless defined?(@#{tagstr})
 		  @#{tagstr} = gsub_entities(@elem.text('#{tagstr}'))

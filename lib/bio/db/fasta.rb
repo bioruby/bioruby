@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.15 2003/05/14 13:09:24 ng Exp $
+#  $Id: fasta.rb,v 1.16 2003/07/28 08:32:10 ng Exp $
 #
 
 require 'bio/db'
@@ -256,7 +256,7 @@ module Bio
 
     def match_EC(str, write_flag = true)
       di = nil
-      str.scan /EC\:((:?[\-\d]+\.){3}(:?[\-\d]+))/i do |x|
+      str.scan(/EC\:((:?[\-\d]+\.){3}(:?[\-\d]+))/i) do |x|
 	di = [ 'EC', $1 ]
 	if write_flag then
 	  @info['ec'] = di[1] if (!@info['ec'] or @info['ec'].to_s =~ /\-/)
@@ -348,10 +348,10 @@ module Bio
 	  end
 	end
       end
-      r.concat (words(true, []).find_all do |x|
-	x =~ /\A[A-Z][A-Za-z0-9\_]*[0-9]+[A-Za-z0-9\_]+\z/ or
-		    x =~ /\A[A-Z][A-Z0-9]*\_[A-Z0-9\_]+\z/
-      end)
+      r.concat( words(true, []).find_all do |x|
+		 x =~ /\A[A-Z][A-Za-z0-9\_]*[0-9]+[A-Za-z0-9\_]+\z/ or
+		   x =~ /\A[A-Z][A-Z0-9]*\_[A-Z0-9\_]+\z/
+	       end)
       r
     end
 
@@ -382,8 +382,8 @@ module Bio
 	      kwhash = self.class::KillWordsHash)
       a = descriptions.join(' ').split(/[\.\,\;\:\(\)\[\]\{\}\<\>\"\'\`\~\/\|\?\!\&\@\#\s\x00-\x1f\x7f]+/)
       a.collect! do |x|
-	x.sub! /\A[\$\*\-\+]+/, ''
-	x.sub! /[\$\*\-\=]+\z/, ''
+	x.sub!(/\A[\$\*\-\+]+/, '')
+	x.sub!(/[\$\*\-\=]+\z/, '')
 	if x.size <= 1 then
 	  nil
 	elsif kwhash[x.downcase] then
