@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: registry.rb,v 1.9 2003/02/18 15:13:20 k Exp $
+#  $Id: registry.rb,v 1.10 2003/02/18 15:45:42 ng Exp $
 #
 
 require 'uri'
@@ -156,8 +156,9 @@ module Bio
     end
 
     def serv_flat(db)
-      serv = Bio::FlatFileIndex.new(db.location)
-      # use db.dbname here!!
+      path = db.location
+      path = File.join(path, db.dbname) if db.dbname
+      serv = Bio::FlatFileIndex.open(path)
       return serv
     end
 
