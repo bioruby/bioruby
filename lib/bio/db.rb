@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: db.rb,v 0.25 2004/03/02 17:46:12 k Exp $
+#  $Id: db.rb,v 0.26 2004/06/20 10:30:06 k Exp $
 #
 
 require 'bio/sequence'
@@ -28,8 +28,8 @@ module Bio
 
   class DB
 
-    def self.open(filename, *mode)
-      Bio::FlatFile.open(self, filename, *mode)
+    def self.open(filename, *mode, &block)
+      Bio::FlatFile.open(self, filename, *mode, &block)
     end
 
     def entry_id
