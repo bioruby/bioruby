@@ -1,7 +1,7 @@
 #
 # bio.rb - Loading all BioRuby modules
 #
-#   Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001-2004 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,11 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.36 2003/10/13 14:27:41 k Exp $
+#  $Id: bio.rb,v 1.37 2004/08/24 00:13:08 k Exp $
 #
 
 module Bio
-  BIORUBY_VERSION = [0, 5, 3].extend(Comparable)
+  BIORUBY_VERSION = [0, 6, 0].extend(Comparable)
 end
 
 
@@ -57,7 +57,6 @@ require 'bio/alignment'
 require 'bio/data/na'
 require 'bio/data/aa'
 require 'bio/data/codontable'
-require 'bio/data/keggorg'
 
 
 ### DB parsers
@@ -67,18 +66,10 @@ require 'bio/db'
 ## GenBank/RefSeq/DDBJ
 
 require 'bio/db/genbank'
-require 'bio/db/genbank/genbank'
-require 'bio/db/genbank/genpept'
-require 'bio/db/genbank/refseq'
-require 'bio/db/genbank/ddbj'
 
 ## EMBL/TrEMBL/Swiss-Prot/SPTR
 
 require 'bio/db/embl'
-require 'bio/db/embl/embl'
-require 'bio/db/embl/sptr'
-require 'bio/db/embl/trembl'
-require 'bio/db/embl/swissprot'
 
 ## KEGG
 
@@ -122,6 +113,7 @@ require 'bio/io/keggapi'
 require 'bio/io/pubmed'
 require 'bio/io/das'
 require 'bio/io/ddbjxml'
+#require 'bio/io/esoap'
 #require 'bio/io/brdb'
 
 
@@ -133,6 +125,10 @@ require 'bio/appl/blast'
 require 'bio/appl/blast/report'
 require 'bio/appl/blast/format0'
 require 'bio/appl/blast/wublast'
+require 'bio/appl/blast/format7'
+require 'bio/appl/blast/rexml'
+require 'bio/appl/blast/xmlparser'
+require 'bio/appl/blast/format8'
 require 'bio/appl/hmmer'
 require 'bio/appl/hmmer/report'
 require 'bio/appl/emboss'
