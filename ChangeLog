@@ -1,3 +1,31 @@
+2002-07-30  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* BioRuby version 0.3.9 released.
+	* lib/bio/location.rb:
+	  * Locations#length (size) methods added (contributed by N. Goto)
+	  * Locations#relative method added  (contributed by N. Goto)
+	  * Locations#absolute method is renamed from offset
+	  * Locations#offset, offset_aa methods removed
+	    * use absolute/relative(n, :aa) for _aa
+          * Locations#[], range methods added
+	  * Location#range method added
+	* lib/bio/db/embl.rb:
+	  * fix accession method.
+	* lib/bio/db/genpept.rb:
+	  * temporally added - in the next release, we will make refactoring.
+	* lib/bio/reference.rb:
+	  * in bibtex and bibitem format, "PMIDnum" is changed to "PMID:num".
+	* lib/bio/io/pubmed.rb:
+	  * esearch, efetch methods are added.
+	* lib/bio/db/aaindex.rb:
+	  * fix serious bug in the index method to support negative values.
+	* lib/bio/db.rb:
+	  * fix fetch method to cut tag without fail.
+	* lib/bio/extend.rb:
+	  * added first_line_only option for the prefix in fill method.
+	* doc/Tutorial.rd.ja:
+	  * added docs on BibTeX etc.
+
 2002-06-26  KATAYAMA Toshiaki  <k@bioruby.org>
 
 	* BioRuby version 0.3.8 released.
