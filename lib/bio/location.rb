@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: location.rb,v 0.11 2001/12/15 02:21:14 katayama Exp $
+#  $Id: location.rb,v 0.12 2002/03/04 07:37:12 katayama Exp $
 #
 
 module Bio
@@ -26,16 +26,19 @@ module Bio
 
     # location can be 'ID:' + ('n' or 'n..m' or 'n^m' or "seq") with < or >
 
-    def initialize(location)
+    def initialize(location = nil)
 
-#     sequence = lt = gt = xref_id = nil		# default
-
-      if location =~ /:/				# (G) ID:location
-	xref_id, location = location.split(':')
+      if location
+	if location =~ /:/				# (G) ID:location
+	  xref_id, location = location.split(':')
+	end
+	if location =~ /</				# (I) <,>
+	  lt = true
+	end
+	if location =~ />/
+	  gt = true
+	end
       end
-
-      lt = true if location =~ /</			# (I) <,>
-      gt = true if location =~ />/
 
       # s : start base, e : end base => from, to
       case location
@@ -56,6 +59,8 @@ module Bio
       when /^"?([ATGCatgc]+)"?$/			# (H) literal sequence
 	sequence = $1.downcase
 	s = e = nil
+      when nil
+	;
       else
 	raise "[Error] unknown location format : #{location}"
       end
@@ -70,7 +75,7 @@ module Bio
       @xref_id	= xref_id	# link to the external entry as GenBank ID
     end
 
-    attr_reader :from, :to, :strand, :sequence, :lt, :gt, :xref_id
+    attr_accessor :from, :to, :strand, :sequence, :lt, :gt, :xref_id
 
     # to complement sequence from outside
     def complement
@@ -90,9 +95,14 @@ module Bio
   class Locations
 
     def initialize(position)
-      position   = gbl_cleanup(position)	# preprocessing
-      @locations = gbl_pos2loc(position)	# create array of Location
+      if position.is_a? Array
+	@locations = position
+      else
+	position   = gbl_cleanup(position)	# preprocessing
+	@locations = gbl_pos2loc(position)	# create an Array of Location
+      end
     end
+    attr_accessor :locations
 
     def each
       @locations.each do |x|
