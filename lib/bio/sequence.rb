@@ -3,13 +3,40 @@
 #
 #   Copyright (C) 2000, 2001 KATAYAMA Toshiaki <k@bioruby.org>
 #
+#  This library is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Library General Public
+#  License as published by the Free Software Foundation; either
+#  version 2 of the License, or (at your option) any later version.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Library General Public License for more details.
+#
+
+require 'bio/data/na'
+require 'bio/data/aa'
+require 'bio/data/codontable'
 
 # Nucleic/Amino Acid sequence
 
 class Sequence < String
+  include NucleicAcids
+  include AminoAcids
+  include CodonTable
 
-  def initialize(str)
-    super
+  def subseq(s, e)
+    s -= 1;	s = 1 if s < 0
+    e -= 1;	s = e if s > e
+    self[s..e]
+  end
+
+  def count(char)
+    num = 0
+    self.each_byte do |x|
+      num += 1 if x == char
+    end
+    num
   end
 
 end
@@ -20,129 +47,26 @@ end
 class NAseq < Sequence
 
   def initialize(str)
-    super.downcase!
-    super.tr!('u', 't')
+    if str
+      super.downcase!
+      super.tr!('u', 't')
+    else
+      ""
+    end
   end
 
-  NucleicAcids = {
-    # IUPAC code : Faisst and Meyer (Nucleic Acids Res. 20:3-26, 1992)
-
-    "w"=>/[at]/, "s"=>/[gc]/,
-    "r"=>/[ag]/, "y"=>/[tc]/,
-    "m"=>/[ac]/, "k"=>/[tg]/,
-
-    "d"=>/[atg]/,
-    "h"=>/[atc]/,
-    "v"=>/[agc]/,
-    "b"=>/[tgc]/,
-
-    "n"=>/[atgc]/,
-
-    "a"=>"adenine",
-    "t"=>"thymine",
-    "g"=>"guanine",
-    "c"=>"cytosine",
-
-    "u"=>"uracil",
-  }
-
-  CodonTable = [
-    # codon table 0
-    {},
-
-    # codon table 1
-    {
-      "ttt"=>"F", "tct"=>"S", "tat"=>"Y", "tgt"=>"C",
-      "ttc"=>"F", "tcc"=>"S", "tac"=>"Y", "tgc"=>"C",
-      "tta"=>"L", "tca"=>"S", "taa"=>"*", "tga"=>"*",
-      "ttg"=>"L", "tcg"=>"S", "tag"=>"*", "tgg"=>"W",
-
-      "ctt"=>"L", "cct"=>"P", "cat"=>"H", "cgt"=>"R",
-      "ctc"=>"L", "ccc"=>"P", "cac"=>"H", "cgc"=>"R",
-      "cta"=>"L", "cca"=>"P", "caa"=>"Q", "cga"=>"R",
-      "ctg"=>"L", "ccg"=>"P", "cag"=>"Q", "cgg"=>"R",
-
-      "att"=>"I", "act"=>"T", "aat"=>"N", "agt"=>"S",
-      "atc"=>"I", "acc"=>"T", "aac"=>"N", "agc"=>"S",
-      "ata"=>"I", "aca"=>"T", "aaa"=>"K", "aga"=>"R",
-      "atg"=>"M", "acg"=>"T", "aag"=>"K", "agg"=>"R",
-
-      "gtt"=>"V", "gct"=>"A", "gat"=>"D", "ggt"=>"G",
-      "gtc"=>"V", "gcc"=>"A", "gac"=>"D", "ggc"=>"G",
-      "gta"=>"V", "gca"=>"A", "gaa"=>"E", "gga"=>"G",
-      "gtg"=>"V", "gcg"=>"A", "gag"=>"E", "ggg"=>"G",
-    },
-
-    # codon table 2
-    {},
-
-    # codon table 3
-    {},
-
-    # codon table 4
-    {},
-
-    # codon table 5
-    {},
-
-    # codon table 6
-    {},
-
-    # codon table 7
-    {},
-
-    # codon table 8
-    {},
-
-    # codon table 9
-    {},
-
-    # codon table 10
-    {},
-
-    # codon table 11
-    {
-      "ttt"=>"F", "tct"=>"S", "tat"=>"Y", "tgt"=>"C",
-      "ttc"=>"F", "tcc"=>"S", "tac"=>"Y", "tgc"=>"C",
-      "tta"=>"L", "tca"=>"S", "taa"=>"*", "tga"=>"*",
-      "ttg"=>"L", "tcg"=>"S", "tag"=>"*", "tgg"=>"W",
-
-      "ctt"=>"L", "cct"=>"P", "cat"=>"H", "cgt"=>"R",
-      "ctc"=>"L", "ccc"=>"P", "cac"=>"H", "cgc"=>"R",
-      "cta"=>"L", "cca"=>"P", "caa"=>"Q", "cga"=>"R",
-      "ctg"=>"L", "ccg"=>"P", "cag"=>"Q", "cgg"=>"R",
-
-      "att"=>"I", "act"=>"T", "aat"=>"N", "agt"=>"S",
-      "atc"=>"I", "acc"=>"T", "aac"=>"N", "agc"=>"S",
-      "ata"=>"I", "aca"=>"T", "aaa"=>"K", "aga"=>"R",
-      "atg"=>"M", "acg"=>"T", "aag"=>"K", "agg"=>"R",
-
-      "gtt"=>"V", "gct"=>"A", "gat"=>"D", "ggt"=>"G",
-      "gtc"=>"V", "gcc"=>"A", "gac"=>"D", "ggc"=>"G",
-      "gta"=>"V", "gca"=>"A", "gaa"=>"E", "gga"=>"G",
-      "gtg"=>"V", "gcg"=>"A", "gag"=>"E", "ggg"=>"G",
-    },
-  ]
-
   def subseq(s = 1, e = self.length)
-    s -= 1
-    e -= 1
-    return NAseq.new(self[s..e])
+    NAseq.new(super)
   end
 
   def count(base)
-    b = base.downcase[0]
-    n = 0
-    self.each_byte do |x|
-      n += 1 if x == b
-    end
-    return n
+    super(base.downcase[0])
   end
 
   def complement
     str = self.reverse
-    str.tr!("atgc", "tacg")
-    return NAseq.new(str)
+    str.tr!('atgc', 'tacg')
+    NAseq.new(str)
   end
 
   def translate(frame = 1, table = 1)
@@ -150,13 +74,13 @@ class NAseq < Sequence
     aaseq = AAseq.new('')
     frame.step(self.length - 3, 3) do |i|
       codon = self[i,3]
-      if CodonTable[table][codon]
-	aaseq << CodonTable[table][codon]
+      if ct(codon, table)
+	aaseq << ct(codon, table)
       else
 	aaseq << "X"
       end
     end
-    return aaseq
+    aaseq
   end
 
   def gc_percent
@@ -166,16 +90,40 @@ class NAseq < Sequence
     end
     at = count['a'] + count['t']
     gc = count['g'] + count['c']
-    gc = sprintf("%.1f", gc.to_f / (at + gc) * 100)
-    return gc
+    gc = format("%.1f", gc.to_f / (at + gc) * 100)
+    gc.to_f
   end
   alias gc gc_percent
 
   def illegal_bases
-    a = self.scan(/[^atgc]/).sort.uniq
-    return a
+    self.scan(/[^atgc]/).sort.uniq
   end
   alias ib illegal_bases
+
+  def to_re
+    re = ''
+    self.each_byte do |x|
+      if na(x.chr)
+	re << na(x.chr)
+      else
+	re << 'X'
+      end
+    end
+    /#{re}/
+  end
+
+  def to_list_long
+    array = []
+    self.each_byte do |x|
+      array.push(na(x.chr.upcase))
+    end
+    array
+  end
+  alias to_list to_list_long
+
+  def pikachu
+    self.tr("atgc", "pika")	# joke, of cource :-)
+  end
 
 end
 
@@ -185,59 +133,34 @@ end
 class AAseq < Sequence
 
   def initialize(str)
-    super.upcase!
+    if str
+      super.upcase!
+    else
+      ""
+    end
   end
 
-  AminoAcids = {
-    "A"=>"Ala", "C"=>"Cys", "D"=>"Asp", "E"=>"Glu",
-    "F"=>"Phe", "G"=>"Gly", "H"=>"His", "I"=>"Ile",
-    "K"=>"Lys", "L"=>"Leu", "M"=>"Met", "N"=>"Asn",
-    "P"=>"Pro", "Q"=>"Gln", "R"=>"Arg", "S"=>"Ser",
-    "T"=>"Thr", "V"=>"Val", "W"=>"Trp", "Y"=>"Tyr",
-
-    "Ala"=>"alanine",
-    "Cys"=>"cysteine",
-    "Asp"=>"aspartic acid",
-    "Glu"=>"glutamic acid",
-    "Phe"=>"phenylalanine",
-    "Gly"=>"glycine",
-    "His"=>"histidine",
-    "Ile"=>"isoleucine",
-    "Lys"=>"lysine",
-    "Leu"=>"leucine",
-    "Met"=>"methionine",
-    "Asn"=>"asparagine",
-    "Pro"=>"proline",
-    "Gln"=>"glutamine",
-    "Arg"=>"arginine",
-    "Ser"=>"serine",
-    "Thr"=>"threonine",
-    "Val"=>"valine",
-    "Trp"=>"tryptophan",
-    "Tyr"=>"tyrosine",
-  }
-
   def subseq(s = 1, e = self.length)
-    s -= 1
-    e -= 1
-    return AAseq.new(self[s..e])
+    AAseq.new(super)
   end
 
   def count(amino)
-    a = amino.upcase[0]
-    n = 0
-    str.each_byte do |x|
-      n += 1 if x == a
-    end
-    return n
+    super(amino.upcase[0])
   end
 
   def to_list
     array = []
     self.each_byte do |x|
-      array.push(AminoAcids[x.chr])
+      array.push(aa(x.chr))
     end
-    return array
+    array
+  end
+
+  def to_list_long
+    array = to_list
+    array.collect do |a|
+      a = aa(a)
+    end
   end
 
 end
