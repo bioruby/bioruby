@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: das.rb,v 1.2 2003/02/21 03:36:49 k Exp $
+#  $Id: das.rb,v 1.3 2003/02/21 09:15:45 k Exp $
 #
 
 begin
@@ -26,6 +26,7 @@ rescue LoadError
 end
 require 'uri'
 require 'net/http'
+require 'bio/sequence'
 
 module Bio
 
@@ -211,84 +212,78 @@ module Bio
       doc.elements.each('/descendant::GFF') do |e|
         gff.version = e.attributes['version']
         gff.href = e.attributes['href']
-        e.elements.each('/descendant::SEGMENT') do |e|
+        e.elements.each('SEGMENT') do |e|
 	  segment = SEGMENT.new
 	  segment.entry_id = e.attributes['id']
 	  segment.start = e.attributes['start']
 	  segment.stop = e.attributes['stop']
 	  segment.version = e.attributes['version']
 	  segment.label = e.attributes['label']
-	  e.elements.each('/descendant::FEATURE') do |e|
+	  e.elements.each('FEATURE') do |e|
 	    feature = FEATURE.new
 	    feature.entry_id = e.attributes['id']
 	    feature.label = e.attributes['label']
-	    e.elements.each('/descendant::TYPE') do |e|
-	      t = TYPE.new
-	      t.entry_id = e.attributes['id']
-	      t.category = e.attributes['category']
-	      t.reference = e.attributes['referrence']
-	      t.label = e.text
-	      feature.type << t
-	    end
-	    e.elements.each('/descendant::METHOD') do |e|
-	      feature.method_id = e.attributes['id']
-	      feature.method = e.text
-	    end
-	    e.elements.each('/descendant::START') do |e|
-	      feature.start = e.text
-	    end
-	    e.elements.each('/descendant::STOP') do |e|
-	      feature.stop = e.text
-	    end
-	    e.elements.each('/descendant::SCORE') do |e|
-	      feature.score = e.text
-	    end
-	    e.elements.each('/descendant::ORIENTATION') do |e|
-	      feature.orientation = e.text
-	    end
-	    e.elements.each('/descendant::PHASE') do |e|
-	      feature.phase = e.text
-	    end
-	    e.elements.each('/descendant::NOTE') do |e|
-	      feature.notes << e.text
-	    end
-	    e.elements.each('/descendant::LINK') do |e|
-	      link = LINK.new
-	      link.href = e.attributes['href']
-	      link.text = e.text
-	      feature.links << link
-	    end
-	    e.elements.each('/descendant::TARGET') do |e|
-	      target = TARGET.new
-	      target.entry_id = e.attributes['id']
-	      target.start = e.attributes['start']
-	      target.stop = e.attributes['stop']
-	      target.name = e.text
-	      feature.targets << target
-	    end
-	    e.elements.each('/descendant::GROUP') do |e|
-	      group = GROUP.new
-	      group.entry_id = e.attributes['id']
-	      group.label = e.attributes['label']
-	      group.type = e.attributes['type']
-	      e.elements.each('/descendant::NOTE') do |e|
-		group.notes << e.text
-	      end
-	      e.elements.each('/descendant::LINK') do |e|
+	    e.elements.each do |e|
+	      case e.name
+	      when 'TYPE'
+		type = TYPE.new
+		type.entry_id = e.attributes['id']
+		type.category = e.attributes['category']
+		type.reference = e.attributes['referrence']
+		type.label = e.text
+		feature.types << type
+	      when 'METHOD'
+		feature.method_id = e.attributes['id']
+		feature.method = e.text
+	      when 'START'
+		feature.start = e.text
+	      when 'STOP'
+		feature.stop = e.text
+	      when 'SCORE'
+		feature.score = e.text
+	      when 'ORIENTATION'
+		feature.orientation = e.text
+	      when 'PHASE'
+		feature.phase = e.text
+	      when 'NOTE'
+		feature.notes << e.text
+	      when 'LINK'
 		link = LINK.new
 		link.href = e.attributes['href']
 		link.text = e.text
-		group.linkss << link
-	      end
-	      e.elements.each('/descendant::TARGET') do |e|
+		feature.links << link
+	      when 'TARGET'
 		target = TARGET.new
 		target.entry_id = e.attributes['id']
 		target.start = e.attributes['start']
 		target.stop = e.attributes['stop']
-		target.text = e.text
-		group.targets << target
+		target.name = e.text
+		feature.targets << target
+	      when 'GROUP'
+		group = GROUP.new
+		group.entry_id = e.attributes['id']
+		group.label = e.attributes['label']
+		group.type = e.attributes['type']
+		e.elements.each do |e|
+		  case e.name
+		  when 'NOTE'		# in GROUP
+		    group.notes << e.text
+		  when 'LINK'		# in GROUP
+		    link = LINK.new
+		    link.href = e.attributes['href']
+		    link.text = e.text
+		    group.links << link
+		  when 'TARGET'		# in GROUP
+		    target = TARGET.new
+		    target.entry_id = e.attributes['id']
+		    target.start = e.attributes['start']
+		    target.stop = e.attributes['stop']
+		    target.name = e.text
+		    group.targets << target
+		  end
+		end
+		feature.groups << group
 	      end
-	      feature.groups << group
 	    end
 	    segment.features << feature
 	  end
@@ -313,6 +308,14 @@ module Bio
     end
 
     class SEGMENT
+      def self.region(entry_id, start, stop)
+	segment = self.new
+	segment.entry_id = entry_id
+	segment.start = start
+	segment.stop = stop
+	return segment
+      end
+
       def initialize
 	@features = Array.new		# for FEATURE
 	@types = Array.new		# for TYPE
@@ -389,20 +392,21 @@ if __FILE__ == $0
   rescue LoadError
   end
 
-  wormbase = Bio::DAS.new('www.wormbase.org', 'db', 80)
+  wormbase = Bio::DAS.new('http://www.wormbase.org/db/')
 
+  puts "### test get_dsn"
   p wormbase.get_dsn
-  p wormbase.get_dna('elegans', 'I', 0, 1000)
-  gff = wormbase.get_features('elegans', 'I', 0, 1000)
-  (0..4).each do |i|
-    p gff.segment[i]
-  end
-  gff.segment[5].each do |i|
-    puts '<----- feature ----->\n'
-    i.each do |j|
-      p j
-    end
-  end
+
+  puts "### create segment obj"
+  seg = Bio::DAS::SEGMENT.region('I', 0, 1000)
+  p seg
+
+  puts "### test get_dna"
+  p wormbase.get_dna('elegans', seg)
+
+  puts "### test get_features"
+  gff = wormbase.get_features('elegans', seg)
+  p gff
 
 end
 
