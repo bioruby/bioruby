@@ -17,11 +17,10 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.7 2002/05/28 07:53:38 n Exp $
+#  $Id: sptr.rb,v 1.8 2002/06/07 11:27:51 n Exp $
 #
 
 require 'bio/db'
-require 'bio/sequence'
 
 module Bio
 
@@ -35,6 +34,7 @@ module Bio
   # OS - organism species             (>=1 per entry)
   # OG - organelle                    (0 or 1 per entry; optional)
   # OC - organism classification      (>=1 per entry)
+  # OX - organism taxonomy x-ref      (>=1 per entry)
   # RN - reference number             (>=1 per entry)
   # RP - reference positions          (>=1 per entry)
   # RC - reference comment(s)         (>=0 per entry; optional)
@@ -86,6 +86,7 @@ module Bio
 	tmp['SEQUENCE_LENGTH'] = a[4].to_i
 	@data['ID'] = tmp
       end
+
       if block_given?
 	@data['ID'].each do |k,v|
 	  yield(k,v)
@@ -171,15 +172,25 @@ module Bio
     # GN Line: Gene name(s) (>=0, optional)
     # GN   HNS OR DRDX OR OSMZ OR BGLY.
     # GN   CECA1 AND CECA2.
+    # GN   CECA1 AND (HOGE OR FUGA).
     #
     # GN NAME1 [(AND|OR) NAME]+.
     #
-    # Bio::SPTR#gn -> Array
+    # Bio::SPTR#gn -> Array      # AND 
+    #          #gn[0] -> Array   # OR
     #          #gene_names -> Array
     #
     def gn 
       unless @data['GN']
-	@data['GN'] = fetch('GN').sub(/.$/,'').split(/ OR | AND /)
+	begin
+	  names = fetch('GN').sub(/\.$/,'').split(' AND ')
+	  names.collect! {|synonyms|
+	    synonyms = synonyms.gsub('\(|\)','').split(' OR ').collect {|e|
+	      e.strip 
+	    }
+	  }
+	end
+	@data['GN'] = names
       end
       @data['GN']
     end
@@ -188,7 +199,11 @@ module Bio
     # Bio::SPTR#gene_name -> String
     #
     def gene_name
-      @data['GN'][0]
+      begin
+	@data['GN'][0][0]
+      rescue NameError
+	nil
+      end
     end
 
     # OS Line; organism species (>=1)
@@ -222,6 +237,25 @@ module Bio
     # OC   Theileria.
     #
     # Bio::SPTR#oc  -> Array
+
+    # OX Line; organism taxonomy cross-reference (>=1 per entry)
+    # OX   NCBI_TaxID=1234;
+    # OX   NCBI_TaxID=1234, 2345, 3456, 4567;
+    #
+    # Bio::SPTR#ox -> {'NCBI_TaxID' => ['1234','2345','3456','4567']}
+    def ox
+      unless @data['OX']
+	tmp = fetch('OX').sub(/\.$/,'').split(';').collect {|e| e.strip }
+	hsh = Hash.new
+	tmp.each do |e|
+	  db,refs = e.split('=')
+	  hsh[db] = refs.split(/, */)
+	end
+	@data['OX'] = hsh
+      else
+	@data['CC']
+      end
+    end
 
     # R Lines
     # RN RC RP RX RA RT RL
@@ -257,23 +291,27 @@ module Bio
       # @data['CC'] = {'DATABASE'=>['hoge','fuga']}
       unless @data['CC']
 	cc = Hash.new
-	# too /ad hoc/ (^_^;
-	cmt = \
-   '--------------------------------------------------------------------------'
+	cmt = '-' * (77 - 4 + 1)
 	dlm = /-!- /
-	fetch('CC').split(cmt)[0].sub(dlm,'').split(dlm).each do |tmp|
-	  if tmp =~ /(^[A-Z ]+): (.+)[\.!]/
-	    unless cc['$1']
-	      cc[$1] = [$2]
+
+	begin
+	  fetch('CC').split(cmt)[0].sub(dlm,'').split(dlm).each do |tmp|
+	    if tmp =~ /(^[A-Z ]+): (.+)[\.!]/
+	      unless cc['$1']
+		cc[$1] = [$2]
+	      else
+		cc[$1].puch($2)
+	      end
 	    else
-	      cc[$1].puch($2)
+	      raise "Error: CC Lines \n\n#{tmp.inspect}\n\n#{fetch('CC')}\n";
 	    end
-	  else
-	    raise "Error: CC Lines \n\n#{tmp.inspect}\n\n#{fetch('CC')}\n";
 	  end
+	rescue NameError
 	end
+
 	@data['CC'] = cc
       end
+
       if num == 'DATABASE'
 	# DATABASE: NAME=Text[; NOTE=Text][; WWW="Address"][; FTP="Address"].
 	tmp = Array.new
@@ -294,6 +332,7 @@ module Bio
 	  tmp.push(db)
 	end
 	return tmp
+
       elsif num == 'MASS SPECTOROMETRY'
 	# MASS SPECTROMETRY: MW=XXX[; MW_ERR=XX][; METHOD=XX][;RANGE=XX-XX].
 	tmp = Array.new
@@ -343,38 +382,52 @@ module Bio
     # Col     Data item
     # -----   -----------------
     #  1- 2   FT
-    #  6-13   Key name
+    #  6-13   Feature name 
     # 15-20   `FROM' endpoint
     # 22-27   `TO' endpoint
-    # 35-75   Description
+    # 35-75   Description (>=0 per key)
     # -----   -----------------
     #
-    # Bio::SPTR#ft -> {'Key_name'=>[{'From'=>String,'To'=>String',
+    # Bio::SPTR#ft -> {'feature_name'=>[{'From'=>String,'To'=>String,
     #                  'Description'=>String}],}
-    # Bio::SPTR#ft(key_name) -> [{'From'=>String,'To'=>String',
-    #                             'Description'=>String}],}]
+    # Bio::SPTR#ft(feature_name) -> [{'From'=>String,'To'=>String,
+    #                                 'Description'=>String}]
     #
-    def ft(key = nil)
+    def ft(feature = nil)
       unless @data['FT']
-	tmp = Hash.new
-	dlm = 'FT   '
-	get('FT').split("\n").each do |e|
-	  key_name = e[5..12].strip
-	  tmp[key_name] = Array.new unless tmp[key_name]
-	  tmp[key_name].push({'From'=>e[14..19].strip,'To'=>e[21..26].strip, 
-			       'Description'=>e[34..74].sub('.$','').strip} )
+	table = Hash.new
+	last_feature = nil
+
+	begin
+	  get('FT').split("\n").each do |line|
+	    feature = line[5..12].strip
+
+	    if feature == ''
+	      table[last_feature].last['Description'] << \
+	      line[34..74].sub('\.$','').strip if line[34..74]
+	    else
+	      from        = line[14..19].strip
+	      to          = line[21..26].strip
+	      description = line[34..74].sub('\.$','').strip if line[34..74]
+	      table[feature] = Array.new unless table[feature]
+
+	      table[feature].push({'From' => from, 'To' => to, \
+			   'Description' => description})
+	      last_feature = feature
+	    end
+	  end
 	end
-	@data['FT'] = tmp
+
+	@data['FT'] = table
       end
-      if key
-	@data['FT'][key]
+
+      if feature
+	@data['FT'][feature]
       else
 	@data['FT']
       end
     end
-    # 
-    # ft('SIGNAL').each do {|s| signal=seq[s['From'].to_i..s['To'].to_i] }
-    #
+
 
     # SQ Line; sequence header (1/entry)
     # SQ   SEQUENCE   233 AA;  25630 MW;  146A1B48A1475C86 CRC64;
@@ -387,9 +440,13 @@ module Bio
     #
     def sq(key = nil)
       unless @data['SQ']
-	fetch('SQ') =~ /(\d+) AA\; (\d+) MW; (.+) CRC64;/
-	@data['SQ'] = { 'aalen'=>$1.to_i, 'MW'=>$2.to_i, 'CRC64'=>$3 }
+	if fetch('SQ') =~ /(\d+) AA\; (\d+) MW; (.+) CRC64;/
+	  @data['SQ'] = { 'aalen'=>$1.to_i, 'MW'=>$2.to_i, 'CRC64'=>$3 }
+	else
+	  raise "Invalid SQ Line: \n'#{fetch('SQ')}'"
+	end
       end
+
       if block_given?
 	@data['SQ'].each do |k,v|
 	  yield(k,v)
@@ -411,8 +468,13 @@ module Bio
     # Bio::SPTR#seq  -> Bio::Sequence::AA
     #
     def seq
-      Sequence::AA.new( fetch('').gsub(/ /,'').gsub(/\d+/,'') )
+      unless @data['']
+	@data[''] = Sequence::AA.new( fetch('').gsub(/ /,'').gsub(/\d+/,'') )
+      else
+	@data['']
+      end
     end
+
 
     # // Line; termination line (end; 1/entry)
 
@@ -470,7 +532,8 @@ end
  
 * GN Line (Gene name(s))
 
---- Bio::SPTR#gn -> Array
+--- Bio::SPTR#gn -> Array(Array)
+--- Bio::SPTR#gene_name -> Bio::SPTR#gn[0][0]
 
 * DT Lines (Date) 
 
@@ -499,6 +562,10 @@ end
 
 --- Bio::SPTR#og -> String
 
+* OX Line (Organism taxonomy cross-reference)
+
+--- Bio::SPTR#ox -> Hash
+
 * RN RC RP RX RA RT RL Lines (Reference)  
 
 --- Bio::SPTR#ref -> String 
@@ -511,7 +578,7 @@ end
 * FT Lines (Feature table data)
 
 --- Bio::SPTR#ft -> Hash
---- Bio::SPTR#ft(key) -> Array
+--- Bio::SPTR#ft(feature) -> Array
 
 * SQ Lines (Sequence header and data)
 
