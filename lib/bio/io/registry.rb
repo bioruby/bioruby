@@ -17,14 +17,14 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: registry.rb,v 1.7 2002/08/29 14:13:11 k Exp $
+#  $Id: registry.rb,v 1.8 2002/11/22 22:56:16 k Exp $
 #
 
 require 'net/http'
 require 'bio/io/sql'
 require 'bio/io/fetch'
-#require 'bio/io/flatfile'
-#require 'bio/io/bdb'
+require 'bio/io/flatfile/index'
+require 'bio/io/flatfile/bdb'
 #require 'bio/io/corba'
 #require 'bio/io/xembl'
 #require 'bio/io/soap'
