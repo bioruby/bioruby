@@ -1,0 +1,41 @@
+=begin
+
+  $Id: TODO.rd.ja,v 1.1 2001/10/30 04:29:25 katayama Exp $
+
+  Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+
+= TODO
+
+== 0.4 (stable branch)
+
+* インストーラ
+* ドキュメント
+  * リファレンス
+  * チュートリアル
+  * 256
+* Sequence::RNA
+  * NA を継承？
+    * gsub('NA', 'DNA') も？
+  * DNA, RNA コンテナ？
+* db.rb
+  * デザイン見直し
+  * private メソッドの整理
+  * EMBL 系
+* codontable 全部組み込む
+
+== 0.5 (devel branch)
+
+* ext/ のマージ
+* FASTA/BLAST/HMMER など
+* テスト環境の整備
+  * Unit か test スクリプトか何か
+* 例外処理
+
+== 1.0
+
+* Ruby/Gtk による GUI なファクトリー
+  * GO の xml と GtkTree
+* アプリ
+
+=end
+
