@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: location.rb,v 0.17 2003/01/27 19:52:55 k Exp $
+#  $Id: location.rb,v 0.18 2004/05/14 03:07:26 k Exp $
 #
 
 module Bio
@@ -100,6 +100,8 @@ module Bio
 
   class Locations
 
+    include Enumerable
+
     def initialize(position)
       if position.is_a? Array
 	@locations = position
@@ -118,6 +120,14 @@ module Bio
 
     def [](n)
       @locations[n]
+    end
+
+    def first
+      @locations.first
+    end
+
+    def last
+      @locations.last
     end
 
     def span
@@ -415,6 +425,14 @@ end
 --- Bio::Locations#[](n)
 
       Returns nth Location object.
+
+--- Bio::Locations#first
+
+      Returns first Location object.
+
+--- Bio::Locations#last
+
+      Returns last Location object.
 
 --- Bio::Locations#span
 
