@@ -17,11 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.20 2002/06/25 23:15:54 k Exp $
+#  $Id: bio.rb,v 1.21 2002/07/30 10:14:32 k Exp $
 #
 
 module Bio
-  BIORUBY_VERSION = [0, 3, 8].extend(Comparable)
+  BIORUBY_VERSION = [0, 3, 9].extend(Comparable)
 end
 
 ### Sequence
@@ -72,6 +72,7 @@ require 'bio/db'		# required by bio/db/*.rb
 ## GenBank/RefSeq/DDBJ
 
 require 'bio/db/genbank'
+require 'bio/db/genpept'
 require 'bio/db/refseq'
 require 'bio/db/ddbj'
 
