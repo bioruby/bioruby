@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: xmlparser.rb,v 1.3 2002/06/24 10:50:10 k Exp $
+#  $Id: xmlparser.rb,v 1.4 2002/06/25 07:51:36 k Exp $
 #
 
 begin
@@ -135,7 +135,7 @@ module Bio
       end
 
       def each_hit
-	@iterations[0].each do |x|
+	@iterations[-1].each do |x|
 	  yield x
 	end
       end
@@ -512,7 +512,7 @@ end
 --- Bio::Blast::Report#each_hits
 --- Bio::Blast::Report#each
 
-      Iterates on Bio::Blast::Report::Hit of the first Iteration.
+      Iterates on Bio::Blast::Report::Hit of the last Iteration.
 
 
 = Bio::Blast::Report::Iteration
