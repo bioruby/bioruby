@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.19 2001/11/06 16:58:52 okuji Exp $
+#  $Id: genbank.rb,v 0.20 2002/01/30 15:37:31 katayama Exp $
 #
 
 module Bio
@@ -582,7 +582,7 @@ class GenBank < NCBIDB
 	when 'translation'
 	  hash[qualifier] = Sequence::AA.new(data.gsub(/\s/, ''))
 #	  hash[qualifier] = Sequence::AA.new(data.tr('^A-Z', ''))
-	when 'db_xref'
+	when 'db_xref', 'allele'
 	  if hash[qualifier].empty?
 	    hash[qualifier] = []
 	  end
