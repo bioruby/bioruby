@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: reference.rb,v 1.8 2001/12/08 07:53:06 katayama Exp $
+#  $Id: reference.rb,v 1.9 2002/03/04 07:39:11 katayama Exp $
 #
 
 module Bio
@@ -93,7 +93,7 @@ module Bio
       END
     end
 
-    def nature(short = nil)
+    def nature(short = false)
       if short
 	if @authors.size > 4
 	  authors = "#{@authors[0]} et al."
@@ -185,11 +185,29 @@ module Bio
 
   end
 
+
+  class References
+
+    def initialize(ary = [])
+      @references = ary
+    end
+    attr_accessor :references
+
+    def append(a)
+      @references.push(a) if a.is_a? Reference
+      return self
+    end
+
+    def each
+      @references.each do |x|
+	yield x
+      end
+    end
+
+  end
+
 end
 
-
-if __FILE__ == $0
-end
 
 
 =begin
@@ -198,28 +216,36 @@ end
 
 --- Bio::Reference.new(hash)
 
---- Bio::Reference#authors
---- Bio::Reference#title
---- Bio::Reference#journal
---- Bio::Reference#volume
---- Bio::Reference#issue
---- Bio::Reference#pages
---- Bio::Reference#year
---- Bio::Reference#pubmed
---- Bio::Reference#medline
+--- Bio::Reference#authors -> Array
+--- Bio::Reference#title -> String
+--- Bio::Reference#journal -> String
+--- Bio::Reference#volume -> Fixnum
+--- Bio::Reference#issue -> Fixnum
+--- Bio::Reference#pages -> String
+--- Bio::Reference#year -> Fixnum
+--- Bio::Reference#pubmed -> Fixnum
+--- Bio::Reference#medline -> Fixnum
 
---- Bio::Reference#format(style, option)
+--- Bio::Reference#format(style = nil, option = nil) -> String
 
---- Bio::Reference#bibitem
---- Bio::Reference#bibtex
---- Bio::Reference#nature(short)
---- Bio::Reference#science
---- Bio::Reference#genomebiology
---- Bio::Reference#genomeres
---- Bio::Reference#nar
---- Bio::Reference#cell
---- Bio::Reference#trends
---- Bio::Reference#general
+--- Bio::Reference#bibitem(item = nil) -> String
+--- Bio::Reference#bibtex(section = nil) -> String
+--- Bio::Reference#nature(short = false) -> String
+--- Bio::Reference#science -> String
+--- Bio::Reference#genomebiology -> String
+--- Bio::Reference#genomeres -> String
+--- Bio::Reference#nar -> String
+--- Bio::Reference#cell -> String
+--- Bio::Reference#trends -> String
+--- Bio::Reference#general -> String
+
+= Bio::References
+
+--- Bio::References.new(ary = [])
+
+--- Bio::References#references -> Array
+--- Bio::References#append(a) -> Bio::References
+--- Bio::References#each -> Array
 
 =end
 
