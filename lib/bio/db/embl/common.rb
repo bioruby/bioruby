@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: common.rb,v 1.1 2004/08/23 23:40:35 k Exp $
+#  $Id: common.rb,v 1.2 2004/08/25 16:59:24 k Exp $
 #
 
 module Bio
@@ -70,7 +70,7 @@ module Common
   alias :description :de	
   # API
   alias :definition :de
-    
+  
 
 
   # OS Line; organism species (>=1)
@@ -174,7 +174,7 @@ module Common
       ary = Array.new
       get('R').split(/\nRN   /).each do |str|
         raw = {'RN' => '', 'RC' => '', 'RP' => '', 'RX' => '', 
-          'RA' => '', 'RT' => '', 'RL' => '', 'RG' => ''}
+               'RA' => '', 'RT' => '', 'RL' => '', 'RG' => ''}
         str = 'RN   ' + str unless /^RN   / =~ str
         str.split("\n").each do |line|
           if /^(R[NPXARLCTG])   (.+)/ =~ line
@@ -209,18 +209,18 @@ module Common
             hash['title'] = value
           when 'RL'
             if value =~ /(.*) (\d+) \((\d+)\), (\d+-\d+) \((\d+)\)$/
-      	hash['journal'] = $1
-      	hash['volume']  = $2
-      	hash['issue']   = $3
-      	hash['pages']   = $4
-      	hash['year']    = $5
+              hash['journal'] = $1
+              hash['volume']  = $2
+              hash['issue']   = $3
+              hash['pages']   = $4
+              hash['year']    = $5
             else
-      	hash['journal'] = value
+              hash['journal'] = value
             end
           when 'RX'  # PUBMED, MEDLINE
             value.split('.').each {|item|
-      	tag, xref = item.split(/; /).map {|i| i.strip }
-      	hash[ tag.downcase ]  = xref
+              tag, xref = item.split(/; /).map {|i| i.strip }
+              hash[ tag.downcase ]  = xref
             }
           end
         }

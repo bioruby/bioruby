@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.22 2004/08/23 23:40:35 k Exp $
+#  $Id: sptr.rb,v 1.23 2004/08/25 16:57:12 k Exp $
 #
 
 require 'bio/db'
@@ -276,13 +276,13 @@ class SPTR < EMBLDB
             key  = $1
             body = $2.gsub(/- (?!AND)/,'-')
             unless cc[key]
-      	cc[key] = [body]
+              cc[key] = [body]
             else
-      	cc[key].push(body)
+              cc[key].push(body)
             end
           else
             raise ["Error: #{entry_id}: CC Lines", '',
-      	tmp, '', '', fetch('CC'),''].join("\n")
+                   tmp, '', '', fetch('CC'),''].join("\n")
           end
         }
       rescue NameError
@@ -290,12 +290,12 @@ class SPTR < EMBLDB
           return {}
         else
           raise "Error: Invalid CC Lines: #{entry_id}: " + 
-            "\n'#{self.get('CC')}'\n" +
-            "(#{$!})"
+                        "\n'#{self.get('CC')}'\n" +
+                        "(#{$!})"
         end
       rescue NoMethodError
       end
-
+      
       @data['CC'] = cc
     end
 
@@ -314,7 +314,7 @@ class SPTR < EMBLDB
 
       # Event, Named isoforms, Comment, [Name, Synonyms, IsoId, Sequnce]+
       tmp = {'Event'=>nil, 'Named isoforms'=>nil, 'Comment'=>nil,
-        'Variants' => []}
+             'Variants' => []}
 
       if /Event=(.+?);/ =~ ap
         tmp['Event'] = $1
@@ -461,11 +461,11 @@ class SPTR < EMBLDB
 
             table[feature] = [] unless table[feature]
             table[feature] << {
-      	'From'        => from.to_i, 
-      	'To'          => to.to_i, 
-      	'Description' => desc,
-      	'diff'        => [],
-      	'FTId'        => nil }
+              'From'        => from.to_i, 
+              'To'          => to.to_i, 
+              'Description' => desc,
+              'diff'        => [],
+              'FTId'        => nil }
             last_feature = feature
             next
           end
@@ -474,23 +474,23 @@ class SPTR < EMBLDB
           case last_feature
           when 'VARSPLIC', 'VARIANT', 'CONFLICT'
             if /FTId=(.+?)\./ =~ line   # version 41 >
-      	ftid = $1
-      	table[last_feature].last['FTId'] = ftid
-      	table[last_feature].last['Description'].sub!(/ \/FTId=#{ftid}./,'') 
+              ftid = $1
+              table[last_feature].last['FTId'] = ftid
+              table[last_feature].last['Description'].sub!(/ \/FTId=#{ftid}./,'') 
             end
 
             case table[last_feature].last['Description']
             when /(\w[\w ]*\w*) - ?> (\w[\w ]*\w*)/
-      	original = $1
-      	swap = $2
-      	original = original.gsub(/ /,'').strip
-      	swap = swap.gsub(/ /,'').strip
+              original = $1
+              swap = $2
+              original = original.gsub(/ /,'').strip
+              swap = swap.gsub(/ /,'').strip
             when /Missing/i
-      	original = seq.subseq(table[last_feature].last['From'],
-      			      table[last_feature].last['To'])
-      	swap = ''
+              original = seq.subseq(table[last_feature].last['From'],
+                                    table[last_feature].last['To'])
+              swap = ''
             else
-      	raise line
+              raise line
             end
             table[last_feature].last['diff'] = [original, swap]
           end
@@ -498,7 +498,7 @@ class SPTR < EMBLDB
 
       rescue
         raise "Invalid FT Lines(#{$!}) in #{entry_id}:, \n" + 
-          "'#{self.get('FT')}'\n"
+                  "'#{self.get('FT')}'\n"
       end
 
       table.each_key {|k|
@@ -506,19 +506,19 @@ class SPTR < EMBLDB
           if / -> / =~ e['Description']
             pattern = /([A-Z][A-Z ]*[A-Z]*) -> ([A-Z][A-Z ]*[A-Z]*)/
             e['Description'].sub!(pattern) {  
-      	a = $1
-      	b = $2
-      	a.gsub(/ /,'') + " -> " + b.gsub(/ /,'') 
+              a = $1
+              b = $2
+              a.gsub(/ /,'') + " -> " + b.gsub(/ /,'') 
             }
           end
           if /- [\w\d]/ =~ e['Description']
             e['Description'].gsub!(/([\w\d]- [\w\d]+)/) { 
-      	a = $1
-      	if /- AND/ =~ a
-      	  a
-      	else
-      	  a.sub(/ /,'') 
-      	end
+              a = $1
+              if /- AND/ =~ a
+                a
+              else
+                a.sub(/ /,'') 
+              end
             }
           end
         }
