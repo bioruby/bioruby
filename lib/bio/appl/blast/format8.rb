@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format8.rb,v 1.2 2002/05/28 14:57:58 k Exp $
+#  $Id: format8.rb,v 1.3 2002/06/25 09:28:07 k Exp $
 #
 
 module Bio
@@ -71,8 +71,8 @@ module Bio
 	  @hsps[0].evalue
 	end
 
-	def bit
-	  @hsps[0].bit
+	def bit_score
+	  @hsps[0].bit_score
 	end
 
 	def identity
@@ -125,7 +125,7 @@ module Bio
 	  @query_id, @target_id, @identity, @align_len,
 	    @mismatch, @gap_open,
 	    @query_start, @query_end, @target_start, @target_end,
-	    @evalue, @bit = *ary
+	    @evalue, @bit_score = *ary
 	end
 	attr_reader :query_id, :target_id
 
@@ -133,8 +133,8 @@ module Bio
 	  @evalue.strip.to_f
 	end
 
-	def bit
-	  @bit.to_f
+	def bit_score
+	  @bit_score.to_f
 	end
 
 	def identity
@@ -198,7 +198,7 @@ if __FILE__ == $0
   p best.query_id
   p best.target_id
   p best.evalue
-  p best.bit
+  p best.bit_score
   p best.identity
   p best.overlap
   p best.query_start
@@ -212,7 +212,7 @@ if __FILE__ == $0
   p second_hsp.query_id
   p second_hsp.target_id
   p second_hsp.evalue
-  p second_hsp.bit
+  p second_hsp.bit_score
   p second_hsp.identity
   p second_hsp.overlap
   p second_hsp.mismatch
@@ -267,7 +267,7 @@ according to the MEGABLAST document (README.mbl).
       Matching subjects.
 
 --- Bio::Blast::Report::Hit#evalue
---- Bio::Blast::Report::Hit#bit
+--- Bio::Blast::Report::Hit#bit_score
 --- Bio::Blast::Report::Hit#identity
 
       Matching scores (best Hsp's).
@@ -291,7 +291,7 @@ according to the MEGABLAST document (README.mbl).
       Matching subjects.
 
 --- Bio::Blast::Report::Hsp#evalue
---- Bio::Blast::Report::Hsp#bit
+--- Bio::Blast::Report::Hsp#bit_score
 --- Bio::Blast::Report::Hsp#identity
 
       Matching scores.
