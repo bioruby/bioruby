@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: clustalw.rb,v 1.2 2003/07/25 17:14:27 ng Exp $
+#  $Id: clustalw.rb,v 1.3 2003/07/29 09:23:00 ng Exp $
 #
 
 require 'tempfile'
@@ -25,14 +25,12 @@ require 'bio/sequence'
 require 'bio/alignment'
 require 'bio/appl/alignfactory'
 
+require 'open3'
+
 module Bio
   class ClustalW < AlignFactory
 
-    def initialize(program = 'clustalw', option = '')
-      #
-      # 'program' and 'option' are directly passed to the shell.
-      # This is a potential security hole.
-      #
+    def initialize(program = 'clustalw', option = [])
       super
     end
 
@@ -54,10 +52,6 @@ module Bio
     end
 
     def query_by_filename(path, seqtype = nil)
-      #
-      # 'path' is directly passed to the shell (by using IO.popen).
-      # This may be a strong security hole.
-      #
       require 'bio/appl/clustalw/report'
 
       tf_out = Tempfile.open('clustalout')
@@ -65,9 +59,14 @@ module Bio
       tf_dnd = Tempfile.open('clustaldnd')
       tf_dnd.close(false)
 
-      iopt = "-align -infile=#{path} -outfile=#{tf_out.path} -newtree=#{tf_dnd.path} -outorder=input"
-      iopt += " -type=#{seqtype}" if seqtype
-      opt = "#{iopt} #{@option}"
+      opt = [ "-align",
+	"-infile=#{path}",
+	"-outfile=#{tf_out.path}",
+	"-newtree=#{tf_dnd.path}",
+	"-outorder=input"
+      ]
+      opt << "-type=#{seqtype}" if seqtype
+      opt.concat(@option)
       exec_local(opt)
       tf_out.open
       @output = tf_out.read
@@ -80,15 +79,26 @@ module Bio
     end
     attr_reader :output_dnd
 
+    attr_reader :errorlog
     private
     def exec_local(opt)
-      @command = "#{@program} #{opt}"
-      #STDERR.print "DEBUG: ", @command, "\n"
+      @command = [ @program,  *opt ]
+      #STDERR.print "DEBUG: ", @command.join(" "), "\n"
       @log = nil
-      IO.popen(@command, "r") do |io|
-	io.sync = true
-	@log = io.read
+
+      Open3.popen3(*@command) do |din, dout, derr|
+        din.close
+	t = Thread.start do
+	  @errorlog = derr.read
+	end
+	@log = dout.read
+	t.join
       end
+#      @command_string = @command.join(" ")
+#      IO.popen(@command, "r") do |io|
+#	io.sync = true
+#	@log = io.read
+#      end
       @log
     end
 
@@ -100,14 +110,9 @@ end #module Bio
 
 = Bio::ClustalW
 
---- Bio::ClustalW.new(path_to_clustalw = 'clustalw', option = '')
+--- Bio::ClustalW.new(path_to_clustalw = 'clustalw', option = [])
 
       Creates new alignment factory.
-      !!!CAUTION!!!
-      Both arguments 'path_to_clustalw' and 'option' are directly
-      passed to the UNIX-shell (by using IO.popen).
-      This is a potential security hole.
-      You should escape special characters if you need.
 
 --- Bio::ClustalW#program
 --- Bio::ClustalW#option
@@ -132,17 +137,13 @@ end #module Bio
 --- Bio::ClustalW#query_by_filename(filename)
 
       Performs alignment of sequences in the file named filename.
-      !!!CAUTION!!!
-      Argument 'filename' is directly passed to the UNIX-shell
-      (by using IO.popen).
-      This is a potential security hole.
-      You should escape special characters if you need.
 
 --- Bio::ClustalW#command
 
       Shows latest command-line executed by this factory.
       Note that filenames described in the command-line may already
       be removed because they are temporary files.
+      Returns an array.
 
 --- Bio::ClustalW#log
 
@@ -160,5 +161,9 @@ end #module Bio
 --- Bio::ClustalW#output_dnd
 
       Shows latest alignment guild-tree (filename.dnd).
+
+--- Bio::ClustalW#errorlog
+
+      Shows latest error messages (thourgh stderr) of CLUSTAL W execution.
 
 =end
