@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.26 2004/06/21 04:51:53 ngoto Exp $
+#  $Id: flatfile.rb,v 1.27 2004/06/21 07:03:27 ngoto Exp $
 #
 
 module Bio
@@ -27,19 +27,20 @@ module Bio
     include Enumerable
 
     def self.open(*arg)
+      # 1st arg: dbclass
       dbclass = nil
-      raw = false
-      if arg[0].is_a?(Module) then
+      if arg[0].is_a?(Module) or !arg[0] then
         dbclass = arg.shift
-      elsif !arg[0] then
-        arg.shift
       end
+      # 2nd arg: filename or IO object
       file = arg.shift
+      # 3rd and 4th arg: mode, perm (passed to File.open)
       openmode = []
       while x = arg[0] and !x.is_a?(Hash)
 	openmode << arg.shift
       end
-      # create flatfile object and do action now
+      # rest of arg: passed to FlatFile.new
+      # create a flatfile object
       unless file.respond_to?(:gets)
         # 'file' is a filename
         if block_given? then
@@ -54,16 +55,12 @@ module Bio
       else
         # 'file' is a IO object
         ff = self.new(dbclass, file, *arg)
-        if block_given? then
-          yield ff
-        else
-          ff
-        end
+        block_given? ? (yield ff) : ff
       end
     end
 
-    def self.auto(f, *arg, &block)
-      self.open(nil, f, *arg, &block)
+    def self.auto(*arg, &block)
+      self.open(*arg, &block)
     end
 
     def self.to_a(*arg)
@@ -75,15 +72,19 @@ module Bio
     end
 
     def initialize(dbclass, stream, options = nil)
+      # 2nd arg: IO object
+      @io = stream
+      # 3rd arg: options (nil or a Hash)
       raw = false
       if options.is_a?(Hash) then
         raw = options[:raw] if options.has_key?(:raw)
       else
         raw = options
       end
-      self.raw	= raw
-      @io = stream
+      self.raw = raw
+      # initialize prefetch buffer
       @prefetch = ''
+      # 1st arg: database class (file format)
       if dbclass then
 	self.dbclass = dbclass
       else
@@ -353,7 +354,9 @@ end
 
 --- Bio::FlatFile.auto(filename_or_stream[, mode, perm, options])
 
-      Same as Bio::FlatFile.open(nil, filename_or_stream, mode, perm, options).
+      This method is now an alias of FlatFile.open and will be deprecated.
+
+      Same as Bio::FlatFile.open(filename_or_stream, mode, perm, options).
 
       * Example 1
           Bio::FlatFile.auto(ARGF)
@@ -388,11 +391,20 @@ end
       * Example 3
           Bio::FlatFile.open(Bio::GenBank, STDIN)
 
+     First argument ('dbclass') can be omitted.
+
+      * Example 4
+          Bio::FlatFile.open(ARGF)
+      * Example 5
+          Bio::FlatFile.open("embl/est_hum17.dat")
+      * Example 6
+          Bio::FlatFile.open(IO.popen("gzip -dc nc1101.flat.gz"))
+
       If it is called with block, the block will be executed with
       a newly opened Bio::FlatFile instance object. If filename
       is given, the file is automatically closed when leaving the block.
 
-      * Example 4
+      * Example 7
           Bio::FlatFile.open(nil, 'test4.fst') do |ff|
               ff.each { |e| print e.definition, "\n" }
           end
