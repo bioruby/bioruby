@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.11 2001/11/08 13:54:22 shuichi Exp $
+#  $Id: bio.rb,v 1.12 2001/11/12 18:10:28 nakao Exp $
 #
 
 module Bio
@@ -76,6 +76,7 @@ require 'bio/db/embl'
 
 ## KEGG
 
+require 'bio/db/kegg/keggtab'
 require 'bio/db/kegg/genome'
 require 'bio/db/kegg/genes'
 require 'bio/db/kegg/brite'
@@ -112,6 +113,7 @@ require 'bio/db/fasta'
 
 #require 'bio/appl/fasta'
 #require 'bio/appl/blast'
+require 'bio/appl/blast/blast_report.rb'
 #require 'bio/appl/hmmer'
 
 ### misc utils
