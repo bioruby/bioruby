@@ -1,3 +1,20 @@
+2003-08-12  GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Newly added NCBI BLAST default (-m 0) output parser,
+	  which may be 5-10x faster than BioPerl's parser.
+	  This is alpha version, specs may be frequently changed.
+	  PHI-BLAST support is still incomplete.
+	  Ruby 1.8 recommended. In ruby 1.6, you need strscan.
+
+	* lib/bio/appl/blast/wublast.rb
+
+	  Newly added WU-BLAST default output parser.
+	  This is alpha version, specs may be frequently changed.
+	  Support for parameters and statistics are still incomplete.
+	  Ruby 1.8 recommended. In ruby 1.6, you need strscan.
+
 2003-07-25  GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 
 	* lib/bio/alignment.rb:
