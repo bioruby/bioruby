@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.25 2002/08/16 17:30:23 k Exp $
+#  $Id: genbank.rb,v 0.26 2002/08/19 11:13:30 k Exp $
 #
 
 require 'bio/db'
@@ -33,32 +33,12 @@ module Bio
       super(entry, TAGSIZE)
     end
 
-    # LOCUS
-    class Locus; end
-    def locus
-      @data['LOCUS'] = Locus.new(get('LOCUS')) unless @data['LOCUS']
-      @data['LOCUS']
-    end
-
-    def entry_id
-      locus.entry_id
-    end
-
-    def seq_len
-      locus.seq_len
-    end
-
-    def circular
-      locus.circular
-    end
-
-    def division
-      locus.division
-    end
-
-    def date
-      locus.date
-    end
+    # LOCUS  -- locus is redefined in child classes
+    def entry_id;	locus.entry_id		end
+    def seq_len;	locus.seq_len		end
+    def circular;	locus.circular		end
+    def division;	locus.division		end
+    def date;		locus.date		end
 
 
     # DEFINITION

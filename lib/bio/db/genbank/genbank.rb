@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.25 2002/08/16 17:30:24 k Exp $
+#  $Id: genbank.rb,v 0.26 2002/08/19 11:13:30 k Exp $
 #
 
 require 'bio/db/genbank'
@@ -57,14 +57,13 @@ module Bio
 	:division, :date
     end
 
-
-    def strand
-      locus.strand
+    def locus
+      @data['LOCUS'] = Locus.new(get('LOCUS')) unless @data['LOCUS']
+      @data['LOCUS']
     end
 
-    def natype
-      locus.natype
-    end
+    def strand;		locus.strand		end
+    def natype;		locus.natype		end
 
 
     def each_cds

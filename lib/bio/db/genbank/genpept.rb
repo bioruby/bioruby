@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genpept.rb,v 1.2 2002/08/16 17:30:24 k Exp $
+#  $Id: genpept.rb,v 1.3 2002/08/19 11:13:30 k Exp $
 #
 
 require 'bio/db/genbank'
@@ -41,6 +41,11 @@ module Bio
 	@division = locus_line[63..66].strip
 	@date     = locus_line[68..78].strip
       end
+    end
+
+    def locus
+      @data['LOCUS'] = Locus.new(get('LOCUS')) unless @data['LOCUS']
+      @data['LOCUS']
     end
 
 
