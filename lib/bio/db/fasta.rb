@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.8 2002/12/03 06:15:01 k Exp $
+#  $Id: fasta.rb,v 1.9 2002/12/03 09:09:21 k Exp $
 #
 
 require 'bio/db'
@@ -32,6 +32,7 @@ module Bio
 
     def initialize(str)
       @entry = '>' + str.sub(/^>/, '').sub(/^>.*/m, '')
+      @definition = @seq = nil
     end
     attr_reader :entry
     alias :to_s :entry
