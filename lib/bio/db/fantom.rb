@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fantom.rb,v 1.6 2003/05/08 14:59:10 ng Exp $
+#  $Id: fantom.rb,v 1.7 2003/06/12 07:30:04 ng Exp $
 #
 
 begin
@@ -140,7 +140,8 @@ module Bio
 	end
 
 	def representative_sequence
-	  sequences[representative_seqid]
+	  rid = representative_seqid
+	  rid ? sequences[representative_seqid] : nil
 	end
 
 	def representative_annotations
