@@ -1,20 +1,18 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.12 2002/12/13 17:59:34 k Exp $
+  $Id: Tutorial.rd.ja,v 1.13 2003/07/16 08:49:36 k Exp $
 
-  Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
+  Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>
 
 = BioRuby の使い方
 
 == 塩基・アミノ酸配列を処理する (Bio::Sequence クラス)
 
-簡単な例として、短い塩基配列 atgcatgcaaaa を使って、相補配列への変換、部
-分配列の切り出し、塩基組成の計算、アミノ酸への翻訳、分子量計算などを行なっ
-てみます。アミノ酸への翻訳では、必要に応じて何塩基目から翻訳を開始するか
-フレームを指定したり、codontable.rb で定義されているコドンテーブルの中か
-ら使用するものの番号を指定したりする事ができます。また、Sequence オブジェ
-クトは Ruby の String オブジェクトを継承しているので String のメソッドも
-使う事ができます。
+簡単な例として、短い塩基配列 atgcatgcaaaa を使って、相補配列への変換、
+部分配列の切り出し、塩基組成の計算、アミノ酸への翻訳、分子量計算などを
+行なってみます。アミノ酸への翻訳では、必要に応じて何塩基目から翻訳を開
+始するかフレームを指定したり、codontable.rb で定義されているコドンテー
+ブルの中から使用するものの番号を指定したりする事ができます。
 
     #!/usr/bin/env ruby
     
@@ -39,6 +37,73 @@
     p seq.translate.molecular_weight    # 分子量を計算 (Float)
     
     puts seq.complement.translate       # 相補配列の翻訳
+
+塩基配列は Bio::Sequence::NA クラスの、アミノ酸配列は Bio::Sequence::AA
+クラスのオブジェクトになります。それぞれ Bio::Sequence クラスを継承し
+ているため、多くのメソッドは共通です。良く使うわりには名前が長いので 
+Bio::Seq::NA や Bio::Seq::AA という別名も使うことができます。
+
+Bio::Sequence クラスは Ruby の String クラスを継承しているので String
+クラスが持つメソッドも使う事ができます。例えば部分配列を切り出すには
+subseq(from,to) の他に、String の [] メソッドも使うことができます。た
+だし、Ruby の文字列は 1 文字目を 0 番目として数えますので、塩基配列や
+アミノ酸配列は通常 1 ずらして考えないといけないため注意が必要です
+（subseq メソッドは、内部で 0 base から 1 base への変換をしていて、
+from, to のどちらかでも 0 以下の場合は nil を返すようになっています）。
+
+window_search(window_size, step_size) メソッドを使うと、配列に対してウィ
+ンドウをずらしながらそれぞれの部分配列に対する処理を行うことができます。
+ブロックの中で受け取る部分配列も、元と同じ Bio::Sequence::NA または 
+Bio::Sequence::AA クラスのオブジェクトなので、配列クラスの持つ全てのメ
+ソッドを実行することができます。例えば、
+
+* 100 塩基ごとに（1塩基ずつずらしながら）平均 GC% を計算して表示する
+
+    seq.window_search(100) do |subseq|
+      puts subseq.gc
+    end
+
+また、２番目の引数に移動幅を指定することが出来るようになっているので、
+
+* コドン単位でずらしながら 15 塩基を翻訳して表示する
+
+    seq.window_search(15, 3) do |subseq|
+      puts subseq.translate
+    end
+
+といったことができます。さらに移動幅に満たない右端の部分配列をメソッド
+自体の返り値として戻すようになっているので、
+
+* ゲノム配列を 10000bp ごとにブツ切りにして FASTA フォーマットに整形、
+  このとき末端 1000bp はオーバーラップさせ、10000bp に満たない 3' 端は
+  別途受け取って表示する
+
+    i = 1
+    remainder = seq.window_search(10000, 9000) do |subseq|
+      puts subseq.to_fasta("segment #{i}", 60)
+      i += 1
+    end
+    puts remainder.to_fasta("segment #{i}", 60)
+
+のような事もわりと簡単にできます。
+
+ウィンドウの幅と移動幅を同じにするとオーバーラップしないウィンドウサー
+チができるので、
+
+* コドン頻度を数える
+
+    codon_usage = Hash.new(0)
+    seq.window_search(3, 3) do |subseq|
+      codon_usage[subseq] += 1
+    end
+
+* 10 残基ずつ分子量を計算
+
+    seq.window_search(10, 10) do |subseq|
+      puts subseq.molecular_weight
+    end
+
+といった応用も考えられます。
 
 実際には Bio::Sequence::NA オブジェクトはファイルから読み込んだ文字列か
 ら生成したり、データベースから取得したものを使ったりします。たとえば、
@@ -80,7 +145,8 @@ GenBank 形式のファイル（元の ftp://ftp.ncbi.nih.gov/genbank/ の .seq ファ
 似をして、各エントリから ID と説明文、配列を取り出して FASTA 形式に変換
 してみます。ちなみに gets で使われている DELIMITER は GenBank クラスで定
 義されている定数で、データベースごとに異なるエントリの区切り文字（たとえ
-ば GenBank の場合は //）を覚えていなくても良いようになっています。
+ば GenBank の場合は //）を覚えていなくても良いようになっています。また、
+名前が長いので RS (record separator) という別名もつけてあります。
 
     #!/usr/bin/env ruby
     
@@ -94,17 +160,64 @@ GenBank 形式のファイル（元の ftp://ftp.ncbi.nih.gov/genbank/ の .seq ファ
       puts gb.naseq                     # 塩基配列（Sequence::NA オブジェクト）
     end
 
-次に、GenBank の複雑な FEATURES の中もパースして、遺伝子ごとの塩基配列と
-アミノ酸配列を取り出してみます。Bio::GenBank::RS は DELIMITER というのが
-長いので付けてある別名です (RS は record separator の略) 。
+この後、フラットファイルを扱うラッパークラス Bio::FlatFile が実装され
+たので、次のように書き直すことができます。
 
     #!/usr/bin/env ruby
     
     require 'bio'
     
-    while entry = gets(Bio::GenBank::RS)
-      # GenBank の１エントリごとに
-      gb = Bio::GenBank.new(entry)
+    ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
+    ff.each_entry do |gb|
+      definition = "#{gb.accession} #{gb.definition}"
+      puts gb.naseq.to_fasta(definition, 60)    
+    end
+
+逆に、FASTA フォーマットのファイルを読み込むには、
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+    
+    ff = Bio::FlatFile.new(Bio::FastaFormat, ARGF)
+    ff.each_entry do |f|
+      puts "definition : " + f.definition
+      puts "nalen      : " + f.nalen.to_s
+      puts "naseq      : " + f.naseq
+    end
+
+などとすることができます。
+
+このとき、Bio::FlatFile.new の最初の引数にデータベースファイルのフォー
+マットを BioRuby のクラス名で指定しています。これについて詳しくは次の
+セクションを参照してください。
+
+さらに、各 Bio::DB クラスの open メソッドで同様のことができるようになっ
+たので、ファイル名を指定する場合は
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+    
+    ff = Bio::GenBank.open("gbvrl1.seq")
+    ff.each_entry do |gb|
+      definition = "#{gb.accession} #{gb.definition}"
+      puts gb.naseq.to_fasta(definition, 60)    
+    end
+
+などと書くことができます。
+
+次に、GenBank の複雑な FEATURES の中もパースして、遺伝子ごとの塩基配列と
+アミノ酸配列を取り出してみます。
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+    
+    ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
+
+    # GenBank の１エントリごとに
+    ff.each_entry do |gb|
 
       # ACCESSION 番号と生物種名を表示
       puts "# #{gb.accession} - #{gb.organism}"
@@ -135,43 +248,37 @@ GenBank 形式のファイル（元の ftp://ftp.ncbi.nih.gov/genbank/ の .seq ファ
       end
     end
 
-ここで、splicing は GenBank フォーマットの位置表記（location.rb 参照）を
-元に、塩基配列から exon 部分を切り出したりする強力なメソッドです。もし遺
-伝子の切り出しやアミノ酸への翻訳に BioRuby のバグがあれば、最後の２行で
-表示されるアミノ酸配列が異なる事になります。
+* 注：上記のように assoc メソッドで Feature オブジェクトからハッシュを生成
+  すると qualifier をキーとしてデータを取り出すことができるので便利ですが、
+  キーが同一の複数の qualifier が 1 つの feature 中に存在する場合、情報が
+  失われます（これを防ぐためにデフォルトではデータを配列で持たせています）。
 
-注：上記のように assoc メソッドで Feature オブジェクトからハッシュを生成
-すると qualifier をキーとしてデータを取り出すことができるので便利ですが、
-キーが同一の複数の qualifier が 1 つの feature 中に存在する場合、情報が
-失われます（これを防ぐためにデフォルトではデータを配列で持たせています）。
+ここで、splicing は GenBank フォーマットの position 表記を元に、塩基配
+列から exon 部分を切り出したりする強力なメソッドです。もし遺伝子の切り
+出しやアミノ酸への翻訳に BioRuby のバグがあれば、最後の２行で表示され
+るアミノ酸配列が異なる事になります。
 
-この後、新しくフラットファイルを扱うラッパークラス FlatFile が実装された
-ので、今なら、最初の例は次のように書き直すこともできます。
+この splicing メソッドの引数には GenBank の position 文字列の他に
+Bio::Locations オブジェクトを渡すこともできるようになっています。
+position のフォーマットや Bio::Locations について詳しく知りたい場合は 
+bio/location.rb を見てください。
 
-    #!/usr/bin/env ruby
-    
-    require 'bio'
-    
-    ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
-    ff.each_entry do |gb|
-      definition = [gb.accession, gb.definition].join(" ")
-      puts gb.naseq.to_fasta(definition, 60)    
-    end
+* GenBank などの feature 行から持ってきた position の例
 
-逆に、FASTA フォーマットのファイルを読み込むには、
+    naseq.splicing('join(2035..2050,complement(1775..1818),13..345')
 
-    #!/usr/bin/env ruby
-    
-    require 'bio'
-    
-    ff = Bio::FlatFile.new(Bio::FastaFormat, ARGF)
-    ff.each_entry do |f|
-      puts "definition : " + f.definition
-      puts "nalen      : " + f.nalen.to_s
-      puts "naseq      : " + f.naseq
-    end
+* あらかじめ Locations オブジェクトにしてから渡してもＯＫ
 
-などとすることができます。
+    locs = Bio::Locations.new('join((8298.8300)..10206,1..855)')
+    naseq.splicing(locs)
+
+ちなみに、アミノ酸配列 Bio::Sequence::AA に対しても splicing メソッド
+で部分配列を取り出すことができるようになっています。
+
+* アミノ酸配列のシグナルペプチドを切り出すとか
+
+    aaseq.splicing('21..119')
+
 
 === GenBank 以外のデータベース
 
@@ -179,11 +286,25 @@ BioRuby では、GenBank 以外のデータベースについても基本的なやり方は同じで、
 データベースの１エントリを対応するデータベースのクラスに渡せば、パースさ
 れた結果がオブジェクトになって返ってきます。
 
+データベースのフラットファイルから１エントリずつ取り出してパースされた
+オブジェクトを取り出すには、先にも出てきた Bio::FlatFile を使います。
+Bio::FlatFile.new の引数にはデータベースに対応する BioRuby でのクラス
+名 (Bio::GenBank や Bio::KEGG::GENES など) を指定します。
+
+    ff = Bio::FlatFile.new(Bio::データベースクラス名, ARGF)
+
+が、すばらしいことに、実は FlatFile クラスはデータベースの自動認識がで
+きますので、
+
+    ff = Bio::FlatFile.auto(ARGF)
+
+を使うのが一番簡単です。
+
     #!/usr/bin/env ruby
     
     require 'bio'
     
-    ff = Bio::FlatFile.new(Bio::データベースクラス名, ARGF)
+    ff = Bio::FlatFile.auto(ARGF)
     ff.each_entry do |entry|
       p entry.entry_id          # エントリの ID
       p entry.definition        # エントリの説明文
@@ -381,26 +502,10 @@ Bio::Blast と読み替えれば基本的には大丈夫です。
 ところで、Bio::Blast は、外部ライブラリに依存しないようにデフォルトでは 
 -m 8 のタブ区切りの出力形式を扱うようにしています。しかしこのフォーマッ
 トでは得られるデータが限られているので、-m 7 の XML 形式の出力を使うこと
-をお勧めします。Ruby の REXML か XMLParser ライブラリを別途インストール
+をお勧めします。Ruby の XMLParser か REXML ライブラリを別途インストール
 すれば、配列やアライメントを含む BLAST の全出力結果を使うことができます。
-
-これらを切り替えるには Bio::Blast#format= と Bio::Blast#parser= メソッド
-を使います。XML (-m 7) 形式での出力を指定し、結果を REXML でパースする場
-合は、
-
-    factory = Bio::Blast.local(program, database)
-    factory.format = 7                  # XML 形式での出力を指定
-    factory.parser = 'rexml'            # REXML ライブラリを使う（デフォルト）
-    report = factory.query(seq)
-
-のようにします。GenomeNet で検索し、結果を XMLParser でパースする場合は、
-
-    factory = Bio::Blast.remote(program, database)
-    factory.format = 7                  # XML 形式での出力を指定
-    factory.parser = 'xmlparser'        # XMLParser ライブラリを使う
-    report = factory.query(seq)
-
-のようになります。
+これらの XML ライブラリは処理速度が速い XMLParser, REXML の順で検索され、
+インストールされていれば自動的に使われるようになります。
 
 すでに見たように Bio::Fasta::Report と Bio::Blast::Report の Hit オブジェ
 クトはいくつか共通のメソッドを持っています。BLAST 固有のメソッドで良く使
@@ -445,34 +550,24 @@ Bio::Blast と読み替えれば基本的には大丈夫です。
 
 という階層構造になっており、それぞれが内部の値を取り出すためのメソッドを
 持っています。これらのメソッドの詳細や、BLAST 実行時のパラメータと統計情
-報などの値が必要な場合には、 bio/appl/blast/rexml.rb 内のドキュメントや
-テストコードを参照してください。
+報などの値が必要な場合には、 bio/appl/blast/*.rb 内のドキュメントやテスト
+コードを参照してください。
+
 
 === 既存の BLAST 出力ファイルをパースする
 
 BLAST を実行した結果ファイルがすでに保存してあって、これを解析したい場合
 には（Bio::Blast オブジェクトを作らずに） Bio::Blast::Report オブジェク
-トを作りたい、ということになります。このとき、結果ファイルのフォーマット
-と、XML の場合どのライブラリを使うかによってパーザを切り替える必要があり
-ます。これには Bio::Blast.parser というクラスメソッドを使います。
-
-例えば、blastall -m 7 の結果が XML のまま保存されているファイルがいくつ
-かあって、REXML を使って解析したい場合、
+トを作りたい、ということになります。これには Bio::Blast.reports メソッド
+を使います。ここで対応しているのは blastall -m 7 で実行した XML フォー
+マットの出力です。
 
     #!/usr/bin/env ruby
     
     require 'bio'
-    
-    Bio::Blast.parser('rexml')  # REXML 版の Bio::Blast::Report パーザを使う
-    
-    ARGV.each do |blast_result_file|
-      # 引数で与えたファイル名のファイルを順番に開く
-      blast_result = File.open(blast_result_file).read
 
-      # 開いたファイルの中身 (XML の文字列) を解析する
-      report = Bio::Blast::Report.new(blast_result)
-    
-      # 以下は通常の Bio::Blast::Report オブジェクトの使い方と同様
+    # XML 出力を順にパースして Bio::Blast::Report オブジェクトを返す
+    Bio::Blast.reports(ARGF) do |report|
       puts "Hits for " + report.query_def + " against " + report.db
       report.each do |hit|
         print hit.target_id, "\t", hit.evalue, "\n" if hit.evalue < 0.001
@@ -486,10 +581,11 @@ BLAST を実行した結果ファイルがすでに保存してあって、これを解析したい場合
 などと実行すれば、引数に与えた BLAST の結果ファイル *.xml を順番に処理で
 きます。
 
-今のところ Bio::Blast.parser の引数に与えられるのは -m 7 の XML フォーマッ
-トを解析する 'rexml' と 'xmlparser' か、-m 8 のタブ区切りフォーマットを
-解析する 'format8' のいずれかで、これらは BioRuby の bio/appl/blast/ ディ
-レクトリ以下にあるパーザのファイル名です。
+Blast のバージョンや OS などによって出力される XML の形式が異なる可能性
+があり、時々 XML のパーザがうまく使えないことがあるようです。その場合は
+Blast 2.2.5 以降のバージョンをインストールするか -D や -m などのオプショ
+ンの組み合せを変えて試してみてください。
+
 
 === リモート検索サイトを追加するには
 
@@ -535,7 +631,7 @@ Blast 検索は NCBI をはじめ様々なサイトでサービスされていますが、今のとこ
 て MEDLINE フォーマットをパースし BibTeX フォーマットに変換して出力して
 くれるはずです。
 
-他にも、キーワードで検索する機能もあります。
+他に、キーワードで検索する機能もあります。
 
     #!/usr/bin/env ruby
     
@@ -557,8 +653,36 @@ Blast 検索は NCBI をはじめ様々なサイトでサービスされていますが、今のとこ
 
     % ./pmsearch.rb genome bioinformatics
 
-など検索したいキーワードを引数に並べて実行すると、PubMed をキーワード検
-索してヒットした論文のリストを BibTeX フォーマットで出力します。
+など検索したいキーワードを引数に並べて実行すると、PubMed をキーワード
+検索してヒットした論文のリストを BibTeX フォーマットで出力します。
+
+最近では、これらについて NCBI の意向で E-Utils というウェブプログラム
+群を使うことが推奨されているので、今後は esearch, efetch メソッドを使
+う方が良いでしょう。
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+    
+    keywords = ARGV.join(' ')
+    
+    options = {
+      'maxdate' => '2003/05/31',
+      'retmax' => 1000,
+    }
+    
+    entries = Bio::PubMed.esearch(keywords, options)
+    
+    Bio::PubMed.efetch(entries).each do |entry|
+      medline = Bio::MEDLINE.new(entry)
+      reference = medline.reference
+      puts reference.bibtex
+    end
+
+このスクリプトでは、上記の pmsearch.rb とほぼ同じ処理をしていますが、
+E-Utils の機能により、検索対象の日付や最大ヒット件数などを指定できるよ
+うになっているので、より高機能です。オプションに与えられる引数について
+は ((<E-Utils のヘルプページ|URL:http://eutils.ncbi.nlm.nih.gov/entrez/query/static/eutils_help.html>)) を参照してください。
 
 ちなみに、ここでは bibtex メソッドで BibTeX フォーマットに変換しています
 が、後述のように bibitem メソッドも使える他、nature メソッドや nar など
@@ -637,57 +761,27 @@ BioRuby のパッケージには samples/ ディレクトリ以下にいくつかのサンプルプ
 ログラムが含まれています。古いものも混じっていますし、量もとても十分とは
 言えないので、実用的で面白いサンプルの提供は歓迎です。
 
-=== GenBank をパースして MySQL につっこむ
-
-例として ((<NCBI|URL:ftp://ftp.ncbi.nih.gov/genbank/>)) からダウンロード
-して解凍した GenBank データベースを MySQL に入れてみます。
-
-    % gb2tab.rb *.seq           # パースしてタブ区切りのファイルに
-    % gbtab2mysql.rb            # タブ切りファイルを MySQL に
-
-処理が終るまでに少なくとも数日かかります。
-
-ここで使っている schema は後に説明する BioSQL とは異なる BioRuby の独自
-フォーマットですが、テーブルの数が ent, ref, ft, seq （それぞれエントリ
-本体、REFERENCE、FEATURES、塩基配列を格納）の４つに絞ってあるのが特徴で
-す。BioSQL と比べると、複雑な検索用に自前で SQL を書く場合に JOIN が少な
-くてラクですし、プログラム的にも効率が良いと思います。（とはいえ、今後は
-BioSQL を主に扱っていくことになると思います）
-
-ちなみに、ref と ft は GenBank の１エントリ中に複数回現れる要素であるた
-め、また塩基配列は（RefSeq データベースに適用する場合など）ゲノム配列の
-ように極めて長い配列は分割して格納したほうが良いため、それぞれ別テーブル
-にしています。
-
+to be written...
 
 = OBDA
 
-OBDA (Open Bio Sequence Database Access) とは、2002 年の１月と２月に
-Arizona と Cape Town の２回に分けて行われた BioHackathon において、
-BioPerl, BioJava, BioPython, BioRuby などの各プロジェクトを中心とした
-メンバー間で合意された配列データベースへの共通アクセス方法です。
+OBDA (Open Bio Database Access) とは、2002 年の１月と２月に Arizona と 
+Cape Town の２回に分けて行われた BioHackathon において、BioPerl,
+BioJava, BioPython, BioRuby などの各プロジェクトを中心としたメンバー間で
+合意された配列データベースへの共通アクセス方法です。
 
-* BioRegistry
+* BioRegistry (Directory)
   * データベース毎に配列をどこにどのように取りに行くかを指定する仕組み
 
 * BioFlat
-  * フラットファイルのインデックス作成と bdb を使ったインデックス
+  * フラットファイルの 2 分木または BDB を使ったインデックス作成
 
 * BioFetch
   * HTTP 経由でデータベースからエントリを取得するサーバとクライアント
 
 * BioSQL
-  * MySQL や PostgreSQL などのデータベースに配列データベースを格納する
+  * MySQL や PostgreSQL などの関係データベースに配列データを格納する
     ための schema と、エントリを取り出すためのメソッド
-
-* BioCORBA
-  * EBI の CORBA サーバなどによるエントリの取得
-
-* XEMBL
-  * CGI と SOAP による EMBL データベースの XML による取得
-
-* BioDAS
-  * SOAP による DAS アノテーションの取得
 
 それぞれの詳細は ((<URL:http://obda.open-bio.org/>)) を参照してください。
 各 spec は CVS で cvs.open-bio.org の obf-common/ 以下に置いてあります。
@@ -858,10 +952,24 @@ Halobacterium のバクテリアロドプシン遺伝子 (VNG1467G) を取ってきて、同じ
     end
 
 ここで使っているクラスメソッド Bio::Fetch.query は暗黙に bioruby.org の
-BioFetch サーバを使う専用のショートカットです。
-
+BioFetch サーバを使う専用のショートカットです。（このサーバは内部的には
+ゲノムネットからデータを取得しています。KEGG/GENES データベースの hal や 
+AAindex データベース aax1 のエントリは、他の BioFetch サーバでは取得でき
+ないこともあって、あえて query メソッドを使っています。）
 
 == BioSQL
+
+to be written...
+
+
+= KEGG API
+
+to be written...
+
+
+= APPENDIX
+
+== 必要なライブラリのインストール
 
 to be written...
 
