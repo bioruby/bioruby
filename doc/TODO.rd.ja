@@ -1,23 +1,29 @@
 =begin
 
-  $Id: TODO.rd.ja,v 1.13 2002/11/22 23:19:07 k Exp $
+  $Id: TODO.rd.ja,v 1.14 2003/06/25 05:51:10 k Exp $
 
   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 
 = TODO
 
-== 0.4 (stable branch)
+* チュートリアル更新
+  * BioFlat, Bio::DB.open, PubMed (E-Utils)
 
-* install.rb env 問題
+* サンプル整理 (*2tab とか)
+  * sample/README.rd[.ja]
 
-* sptr 系 definition などメソッドがないい！！ API そろえる
+* cvs.open-bio.org のドキュメント更新
 
-* ORF のリストを返す
-  * http://bioperl.org/pipermail/bioperl-l/2002-July/008672.html
+* Bio::SQL update, name space
 
-* hmmer、Ana ゲノムに saruposon サーチしたときカラムがずれてパースしくる
+* Bio::Fetch
+  * E-Utils
+  * http://www.ncbi.nlm.nih.gov/entrez/query/static/eutils_help.html
 
-* GenBank, EMBL, SPTR, BioSQL の統合、フォーマット変換、やっぱやっとこう
+
+* Bio::Location location coordinate system (style)
+
+* GenBank, EMBL, SPTR, BioSQL の統合、フォーマット相互変換
   * genbank/ @moltype
   * bio/db/seqentry.rb か bio/seqentry.rb あたりにコンテナ SeqEntry を作る
     * InternalSeq とかでも？
@@ -25,54 +31,36 @@
     * Bio::SQL::Sequence も含めた内部構造
     * genpept, refseq(NP_)
     * Bio::Reference クラス → EMBL にも?
-  * BioSQL 最新スペック
-  * BRDB どうする？
 
-* bio/appl/blast/report.rb, bio/appl/fasta/report.rb コンテナ括り出し
-  * hmmer もさっさと書こう
+* Blast, Fasta, Hmmer
+  * blast, hmmer のレポート -> Bio::FlatFile からもアクセス
+  * bio/appl/fasta/report.rb, bio/appl/hmmer/report.rb コンテナ括り出し
   * lib/bio/appl/blast/xmlparser.rb  " problem
-  * lib/bio/appl/megablast.rb ?
+  * lib/bio/appl/megablast.rb 追加？
+  * Blast HSP tiling [bioperl-l 2002 8/13,4,5 ?]
+    * Bio::Blast::Report::Hit#total_alignment_length
+    * Bio::Blast::Report::Hit#total_identical_residues
+    * Bio::Blast::Report::Hit#total_convserved_residues
 
-* Blast HSP tiling [bioperl-l 8/13,4,5 ?]
-
-    Bio::Blast::Report::Hit#total_alignment_length
-    Bio::Blast::Report::Hit#total_identical_residues
-    Bio::Blast::Report::Hit#total_convserved_residues
-
-* bio/io/flatfile.rb OBDA BioFlat  -ng
-  * 置き場所どうしよう？
-  * FlatFile.new|open → エントリそのものを得るためのメソッド
-
-* OBDA spec へのリンク集
-  * flat file http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/obda-specs/flatfile/indexing.txt?rev=1.3&cvsroot=obf-common
+* Bio::LSID [bioperl-l 2002 7/15 seq namespace method]
 
 * lib/bio/db/kegg/keggtab.rb と lib/bio/data/keggorg.rb の統合？
 
-* sample/README.rd[.ja]
-* sample/genome2tab
-* sample/genes2tab
+* コーディングスタイル
+  * camelCase 禁止
+  * = の左右は空ける
+  * tab なし 2 スペースインデント
+  * 最終的には RDoc 付加？ (Rimport を使うのがいいかも)
+  * クラス名、モジュール名は camelCase、定数は大文字で _ で区切る
 
 
-== 0.5 (devel branch)
+== Featuers
 
-=== IO
-
-* eutils in biofetch
-  * http://www.ncbi.nlm.nih.gov/entrez/query/static/eutils_help.html
-
-* SOAP/DAS (Brian, Lincoln), Biblio (Martin), XEMBL - SOAP
+=== IO, APPL
 
 * 遺伝研の SOAP サーバ
   * http://xml.nig.ac.jp/ SRS, FASTA, BLAST, CLUSTALW, Taxonomy
-
-* XEMBL
-
-* BioCORBA
-  * http://corba.ebi.ac.uk/
-
-=== APPL
-
-* HMMER, EMBOSS (MEME, PHYLIP)
+  * 対応したつもりだけど使えない → WSDL が悪い？
 
 * MAFFT, T-Coffee, CLUSTALW → アラインメント
   * アライメントオブジェクト
@@ -80,6 +68,8 @@
     * class Bio::Alignment::Pairwise or class Bio::PairwiseAlignment ?
     * class Bio::Alignment::Multiple or class Bio::MultipleAlignment ?
     * アライメントビューアもほしい
+
+* アラインメントクラスで CIGAR フォーマット
 
 === DB
 
@@ -96,21 +86,20 @@
 
 === 全般
 
-* 1.7 stringIO
+* Ruby 1.8
+  * stringIO
+  * autoload
+  * Array.new(num) { Hoge.new }
 
-* 一部の遅いメソッド C 化 ?
+* ext/
+  * 一部の遅いメソッド C 化 ?
 
-* ext/ のマージ
-
-* パラレル化
+* ジョブをパラレル化するためのクラス
 
 * テスト環境の整備
   * Test::Unit 使う？
     * 外部ファイル、ネットワークがいる場合どうするか
-  * インストール時に make check みたいなことができないか
-
-* 例外処理
-  * せっかく Ruby なのでちゃんと Exception を投げるようにする？
+  * インストール時に make check みたいなことをするか
 
 * スレッド
   * 今のところあまり使う場面はないかも知れないけど… GUI とかで？
@@ -121,28 +110,23 @@
   * Russia
   * French
 
-== 1.0
+== OTHERS
 
 * q--p
-  * RSS 化 ← RSS::Channel ってバグってない？
+  * RSS
+  * tDiary
 
-* aaseqplot 設置
+* gb.bioruby.org で GFF, DAS 対応
+  * ポスター作成アプリ（コマンドライン/CGI）
+  * Ming？
 
-* brgb GFF フォーマット対応 - GMOD と連携
-  * コマンドライン/CGI
-  * ブラウザは GMOD があるので genome plotter としてかなー？
-  * もしくは Ming で攻めてみる？
+* R, SVM/RVM, グラフ 系
 
-* R, SVM/RVM, グラフ ?
-
-* Ruby/Gtk による GUI なファクトリー
+* Ruby/Cocoa, Ruby/Gtk による GUI なファクトリー
   * gsequence
   * biograph
   * GO の xml と GtkTree → メモリ足りぬ…
 
-* キラーアプリの開発 :-)
-
-* 256
+* 本
 
 =end
-
