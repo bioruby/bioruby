@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.14 2001/11/20 11:50:07 katayama Exp $
+#  $Id: bio.rb,v 1.15 2001/12/07 16:57:04 katayama Exp $
 #
 
 module Bio
@@ -111,8 +111,8 @@ require 'bio/db/fasta'
 
 ### Applications
 
-#require 'bio/appl/fasta'
 #require 'bio/appl/hmmer'
+require 'bio/appl/fasta'
 
 begin
   require 'xmlparser'
