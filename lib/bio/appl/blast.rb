@@ -17,11 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.9 2002/01/07 13:06:23 nakao Exp $
+#  $Id: blast.rb,v 1.10 2002/02/05 08:52:10 nakao Exp $
 #
 
 require 'net/http'
-require 'cgi-lib'
+require 'cgi' unless defined?(CGI)
 begin
   require 'xmlparser'
 rescue LoadError
