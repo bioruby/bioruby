@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: db.rb,v 0.21 2002/08/19 02:16:43 k Exp $
+#  $Id: db.rb,v 0.22 2002/12/03 06:13:04 k Exp $
 #
 
 require 'bio/sequence'
@@ -27,6 +27,10 @@ require 'bio/feature'
 module Bio
 
   class DB
+
+    def self.open(filename, *mode)
+      Bio::FlatFile.open(self, filename, *mode)
+    end
 
     def entry_id
       raise NotImplementedError
