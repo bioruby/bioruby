@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.28 2004/06/21 07:23:02 ngoto Exp $
+#  $Id: flatfile.rb,v 1.29 2004/06/21 07:27:29 ngoto Exp $
 #
 
 module Bio
@@ -65,11 +65,10 @@ module Bio
     end
 
     def self.to_a(*arg)
-      a = self.open(*arg) do |ff|
+      self.open(*arg) do |ff|
         raise 'cannot determine file format' unless ff.dbclass
         ff.to_a
       end
-      a
     end
 
     def initialize(dbclass, stream, options = nil)
