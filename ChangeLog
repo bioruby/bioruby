@@ -1,0 +1,27 @@
+
+2001/12/18
+	* lib/bio/id.rb -k
+	  * newly created
+	* lib/bio/io/brdb.rb -k
+	  * newly created
+	* lib/bio/db.rb -k
+	  * template methods are deleted
+	  * detailed docuement added
+	* lib/bio/sequence.rb -k
+	  * to_fasta, complement, translate fixed (due to the changes made
+            in 0.3.3)
+	  * Sequence::NA#initialize doesn't replace 'u' with 't' any longer
+            * gc_percent, complement, translate, to_re, molecular_weight
+              methods are adapted to this change
+	  * molecular_weight changed to calculate more precisely
+	  * test code added 
+	* lib/bio.rb -k
+	  * rescue for require 'bio/appl/blast' is deleted
+
+2001/12/15
+	* lib/bio/sequence.rb -o
+	  * Sequence#to_str added
+
+2001/12/15
+	* version 0.3.3 released -k
+
