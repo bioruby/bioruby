@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 # 
-#  $Id: br_bioflat.rb,v 1.6 2002/09/11 11:37:34 ng Exp $ 
+#  $Id: br_bioflat.rb,v 1.7 2002/09/13 14:47:46 ng Exp $ 
 # 
 
 require 'bio'
@@ -27,26 +27,51 @@ require 'bio'
 def do_index
   is_bdb = (/bdb/i).match(ARGV[0]) ? Bio::FlatFileIndex::MAGIC_BDB : nil
   dbname = ARGV[1]
-  if ARGV[2] =~ /^\-\-?format/
-    format = ARGV[3]
-    files  = ARGV[4..-1]
-  else
-    format = nil
-    files  = ARGV[2..-1]
-  end
-
+  format = nil
+  files  = ARGV[2..-1]
   options = {}
-  if files[0] =~ /^\-\-?sort\=(.*)/i then
-    files.shift
-    options['external_sort_program'] = $1
-  elsif files[0] =~ /^\-\-?sort\-internal/i then
-    files.shift
-  elsif files[0] =~ /^\-\-?no\-?te?mp/i then
-    files.shift
-    options['onmemory'] = true
-  end
 
-  files.shift if files[0] == '--files'
+  while files[0] =~ /^\-/
+    x = files.shift
+    case x
+    when /^\-\-?files/i
+      break
+
+    when /^\-\-?format\=(.*)/i
+      format = $1
+    when /^\-\-?format/i
+      format = files.shift
+
+    when /^\-\-?sort\=(.*)/i
+      files.shift
+      y = $1
+      y = true if y.length <= 0
+      options['external_sort_program'] = y
+    when /^\-\-?sort\-internal/i
+      options['external_sort_program'] = nil
+      options['onmemory'] = nil
+    when /^\-\-?no\-?te?mp/i
+      options['onmemory'] = true
+
+    when /^\-\-?primary.*\=(.*)/i
+      options['primary_namespace'] = $1
+
+    when /^\-\-?add-secondary.*\=(.*)/i
+      unless options['additional_secondary_namespaces'] then
+	options['additional_secondary_namespaces'] = []
+      end
+      options['additional_secondary_namespaces'] << $1 if $1.length > 0
+
+    when /^\-\-?secondary.*\=(.*)/i
+      unless options['secondary_namespaces'] then
+	options['secondary_namespaces'] = []
+      end
+      options['secondary_namespaces'] << $1 if $1.length > 0
+
+    else
+      STDERR.print "Warning: ignoring invalid option #{x.inspect}\n"
+    end
+  end
 
   Bio::FlatFileIndex::makeindex(is_bdb, dbname, format, options, *files)
 end
@@ -69,11 +94,29 @@ end
 
 
 def usage
-  print "Create index: \n"
-  print "#{$0} --makeindex DBNAME [--format CLASS] [--sort=PROGRAM|--sort-internal|--no-temporary-files] [--files] FILENAME...\n"
-  print "#{$0} --makeindexBDB DBNAME [--format CLASS] [--files] FILENAME...\n"
   print "Search: \n"
   print "#{$0} [--search] DBNAME KEYWORD...\n"
+  print "Create index: \n"
+  print "#{$0} --makeindex DBNAME [--format CLASS] [options...] [--files] FILENAME...\n"
+  print "#{$0} --makeindexBDB DBNAME [--format CLASS] [options...] [--files] FILENAME...\n"
+  print <<EOM
+
+Create index options:
+  --primary=UNIQUE       set primary namespece to UNIQUE
+                           Default primary/secondary namespaces depend on
+                           each format of flatfiles.
+  --secondary=KEY        set secondary namespaces.
+                           You may use this option many times to specify
+                           more than one namespace.
+  --add-secondary=KEY    add secondary namespaces to default specification.
+                           You can use this option many times.
+Options only valid for --makeindex:
+  --sort-internal        using internal sort routine (default)
+  --sort=PROGRAM         set external sort program (e.g. /usr/bin/sort)
+  --no-temporary-files   do everything on memory
+
+EOM
+
 end
 
 

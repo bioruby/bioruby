@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.4 2002/09/11 11:37:34 ng Exp $ 
+#  $Id: indexer.rb,v 1.5 2002/09/13 14:47:47 ng Exp $ 
 # 
 
 module Bio
@@ -74,10 +74,13 @@ module Bio
 	  def initialize
 	    @namestyle = self.class::NAMESTYLE
 	    @secondary = NameSpaces.new
+	    @errorlog = []
 	  end
 	  attr_reader :primary, :secondary, :format, :dbclass
-	  
+	  attr_reader :errorlog
+
 	  def set_primary_namespace(name)
+	    DEBUG.print "set_primary_namespace: #{name.inspect}\n"
 	    if name.is_a?(NameSpace) then
 	      @primary = name
 	    else
@@ -99,36 +102,62 @@ module Bio
 	    true
 	  end
 
-	  def open_flatfile(file)
+	  # administration of a single flatfile
+	  def open_flatfile(fileid, file)
+	    @fileid = fileid
+	    @flatfilename = file
+	    DEBUG.print "fileid=#{fileid} file=#{@flatfilename.inspect}\n"
 	    @flatfile = Bio::FlatFile.open(@dbclass, file, 'rb')
 	    @flatfile.raw = nil
 	    @entry = nil
 	  end
+	  attr_reader :fileid
 
 	  def each
 	    pos = @flatfile.pos
 	    @flatfile.each do |x|
 	      @entry = x
 	      len = @flatfile.entry_raw.length
-	      yield pos, len
+	      begin
+		yield pos, len
+	      rescue RuntimeError, NameError => evar
+		DEBUG.print "Caught error: #{evar.inspect}\n"
+		DEBUG.print "in #{@flatfilename.inspect} position #{pos}\n"
+		DEBUG.print "===begin===\n"
+		DEBUG.print @flatfile.entry_raw.to_s.chomp
+		DEBUG.print "\n===end===\n"
+		@errorlog << [ evar, @flatfilename, pos ]
+		if @fatal then
+		  DEBUG.print "Fatal error occurred, stop creating index...\n"
+		  raise evar
+		else
+		  DEBUG.print "Databank might be corrupt!\n"
+		end
+	      end #rescue
 	      pos = @flatfile.pos
 	    end
 	  end
 
 	  def parse_primary
-	    self.primary.proc.call(@entry)
+	    r = self.primary.proc.call(@entry)
+	    unless r.is_a?(String) and r.length > 0
+	      @fatal = true
+	      raise 'primary id must be a non-void string'
+	    end
+	    r
 	  end
 
 	  def parse_secondary
 	    self.secondary.each do |x|
 	      p = x.proc.call(@entry)
 	      p.each do |y|
-		yield x.name, y
+		yield x.name, y if y.length > 0
 	      end
 	    end
 	  end
 
 	  def close_flatfile
+	    DEBUG.print "close flatfile #{@flatfilename.inspect}\n"
 	    @flatfile.close
 	  end
 
@@ -158,6 +187,14 @@ module Bio
 	      end
 	    end
 	    self.add_secondary_namespaces(*sec_names)
+	  end
+	  def open_flatfile(fileid, file)
+	    super
+	    begin
+	      pos = @flatfile.pos
+	      line = @flatfile.io.gets
+	    end until (!line or line =~ /^LOCUS /)
+	    @flatfile.pos = pos
 	  end
 	end #class GenBankParser
 
@@ -234,16 +271,14 @@ module Bio
 
 	db.fileids.each_with_index do |fobj, fileid|
 	  filename = fobj.filename
-	  DEBUG.print fileid, " ", filename, "\n"
-
-	  parser.open_flatfile(filename)
+	  parser.open_flatfile(fileid, filename)
 	  parser.each do |pos, len|
 	    p = parser.parse_primary
 	    pn.file.add_exclusive(p, [ fileid, pos, len ])
-	    DEBUG.print "#{p} #{fileid} #{pos} #{len}\n"
+	    #DEBUG.print "#{p} #{fileid} #{pos} #{len}\n"
 	    parser.parse_secondary do |sn, sp|
 	      db.secondary[sn].file.add_nr(sp, p)
-	      DEBUG.print "#{sp} #{p}\n"
+	      #DEBUG.print "#{sp} #{p}\n"
 	    end
 	  end
 	  parser.close_flatfile
@@ -279,16 +314,14 @@ module Bio
 
 	DEBUG.print "reading files...\n"
 	files.each_with_index do |filename, fileid|
-	  DEBUG.print fileid, " ", filename, "\n"
-
-	  parser.open_flatfile(filename)
+	  parser.open_flatfile(fileid, filename)
 	  parser.each do |pos, len|
 	    p = parser.parse_primary
 	    pdata << [ p, [ fileid, pos, len ] ]
-	    DEBUG.print "#{p} #{fileid} #{pos} #{len}\n"
+	    #DEBUG.print "#{p} #{fileid} #{pos} #{len}\n"
 	    parser.parse_secondary do |sn, sp|
 	      sdata[sn] << [ sp, p ]
-	      DEBUG.print "#{sp} #{p}\n"
+	      #DEBUG.print "#{sp} #{p}\n"
 	    end
 	  end
 	  parser.close_flatfile
@@ -357,44 +390,46 @@ module Bio
 
 	DEBUG.print "prepare temporary files...\n"
 	tempbase = "bioflat#{rand(10000)}-"
-	pfile = Tempfile.open(tempbase + 'primary')
+	pfile = Tempfile.open(tempbase + 'primary-')
 	DEBUG.print "open temporary file #{pfile.path.inspect}\n"
 	sfiles = {}
 	parser.secondary.names.each do |x|
-	  sfiles[x] =  Tempfile.open(tempbase + 'secondary')
+	  sfiles[x] =  Tempfile.open(tempbase + 'secondary-')
 	  DEBUG.print "open temporary file #{sfiles[x].path.inspect}\n"
 	end
 
 	DEBUG.print "reading files...\n"
 	files.each_with_index do |filename, fileid|
-	  DEBUG.print fileid, " ", filename, "\n"
-
-	  parser.open_flatfile(filename)
+	  parser.open_flatfile(fileid, filename)
 	  parser.each do |pos, len|
 	    p = parser.parse_primary
 	    pfile << "#{p}\t#{fileid}\t#{pos}\t#{len}\n"
-	    DEBUG.print "#{p} #{fileid} #{pos} #{len}\n"
+	    #DEBUG.print "#{p} #{fileid} #{pos} #{len}\n"
 	    parser.parse_secondary do |sn, sp|
 	      sfiles[sn] << "#{sp}\t#{p}\n"
-	      DEBUG.print "#{sp} #{p}\n"
+	      #DEBUG.print "#{sp} #{p}\n"
 	    end
 	  end
 	  parser.close_flatfile
 	end
 
 	DEBUG.print "sorting primary (#{parser.primary.name})...\n"
-	pfile2 = Tempfile.open(tempbase + 'primary-2')
+	pfile2 = Tempfile.open(tempbase + 'primary2-')
 	DEBUG.print "open temporary file #{pfile2.path.inspect}\n"
 	file_sort_write(pfile, pfile2, db.primary.file, ext, true)
+	DEBUG.print "close temporary file #{pfile.path.inspect}\n"
 	pfile.close
+	DEBUG.print "close temporary file #{pfile2.path.inspect}\n"
 	pfile2.close
 
 	parser.secondary.names.each do |x|
 	  DEBUG.print "sorting secondary (#{x})...\n"
-	  tmpfile = Tempfile.open(tempbase + 'secondary-2')
+	  tmpfile = Tempfile.open(tempbase + 'secondary2-')
 	  DEBUG.print "open temporary file #{tmpfile.path.inspect}\n"
 	  file_sort_write(sfiles[x], tmpfile, db.secondary[x].file, ext)
+	  DEBUG.print "close temporary file #{sfiles[x].path.inspect}\n"
 	  sfiles[x].close
+	  DEBUG.print "close temporary file #{tmpfile.path.inspect}\n"
 	  tmpfile.close
 	end
 
@@ -497,14 +532,20 @@ module Bio
 	DEBUG.print "file format is #{dbclass}\n"
       end
 
-      parser = Indexer::Parser.new(dbclass)
-      if /(EMBL|SPTR)/ =~ dbclass.to_s then
-	a = [ 'DR' ]
-	parser.add_secondary_namespaces(*a)
+      options = {} unless options
+      pns = options['primary_namespace']
+      sns = options['secondary_namespaces']
+
+      parser = Indexer::Parser.new(dbclass, pns, sns)
+
+      #if /(EMBL|SPTR)/ =~ dbclass.to_s then
+	#a = [ 'DR' ]
+	#parser.add_secondary_namespaces(*a)
+      #end
+      if sns = options['additional_secondary_namespaces'] then
+	parser.add_secondary_namespaces(*sns)
       end
 
-      options = {} unless options
-      
       if is_bdb then
 	Indexer::makeindexBDB(dbname, parser, options, *files)
       else

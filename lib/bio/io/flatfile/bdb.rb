@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: bdb.rb,v 1.2 2002/08/21 18:05:02 ng Exp $ 
+#  $Id: bdb.rb,v 1.3 2002/09/13 14:47:47 ng Exp $ 
 # 
  
 begin 
@@ -149,7 +149,7 @@ module Bio
 	    val = s
 	  end
 	  @bdb[key] = val
-	  DEBUG.print "add: key=#{key.inspect}, val=#{val.inspect}\n"
+	  #DEBUG.print "add: key=#{key.inspect}, val=#{val.inspect}\n"
 	  val
 	end
 
@@ -161,7 +161,7 @@ module Bio
 	    raise RuntimeError, "keys must be unique, but key #{key.inspect} already exists"
 	  end
 	  @bdb[key] = val
-	  DEBUG.print "add_exclusive: key=#{key.inspect}, val=#{val.inspect}\n"
+	  #DEBUG.print "add_exclusive: key=#{key.inspect}, val=#{val.inspect}\n"
 	  val
 	end
 
@@ -178,7 +178,7 @@ module Bio
 	  a.uniq!
 	  str = a.join("\t")
 	  @bdb[key] = str
-	  DEBUG.print "add_nr: key=#{key.inspect}, val=#{str.inspect}\n"
+	  #DEBUG.print "add_nr: key=#{key.inspect}, val=#{str.inspect}\n"
 	  str
 	end
 	    
@@ -231,3 +231,8 @@ module Bio
   end #class FlatFileIndex
 end #module Bio
 
+=begin
+
+  * Classes/modules in this file are internal use only.
+
+=end
