@@ -18,7 +18,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: gb2tab.rb,v 0.3 2001/08/23 01:57:57 katayama Exp $
+#  $Id: gb2tab.rb,v 0.4 2001/08/28 05:04:45 katayama Exp $
 #
 
 require 'bio/db/genbank'
@@ -132,7 +132,7 @@ gb2tab.sql:
 
 CREATE DATABASE IF NOT EXISTS genbank;
 CREATE TABLE IF NOT EXISTS genbank._HOGE_ (
-	id		varchar(15)	NOT NULL PRIMARY KEY,
+	id		varchar(16)	NOT NULL PRIMARY KEY,
 	nalen		integer,
 	strand		varchar(5),
 	natype		varchar(5),
@@ -157,7 +157,7 @@ CREATE TABLE IF NOT EXISTS genbank._HOGE_ (
 LOAD DATA LOCAL INFILE '_HOGE_.seq.tab' INTO TABLE genbank._HOGE_;
 
 CREATE TABLE IF NOT EXISTS genbank._HOGE_ft (
-	id		varchar(15)	NOT NULL,
+	id		varchar(16)	NOT NULL,
 	num		integer,
 	qualifier	varchar(30),
 	value		text,
@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS genbank._HOGE_ft (
 LOAD DATA LOCAL INFILE '_HOGE_.seq.ft.tab' INTO TABLE genbank._HOGE_ft;
 
 CREATE TABLE IF NOT EXISTS genbank._HOGE_ref (
-	id		varchar(15)	NOT NULL,
+	id		varchar(16)	NOT NULL,
 	reference	varchar(255),
 	authors		text,
 	title		text,
@@ -182,7 +182,7 @@ LOAD DATA LOCAL INFILE '_HOGE_.seq.ref.tab' INTO TABLE genbank._HOGE_ref;
 gbmerge.sql sample:
 
 CREATE TABLE IF NOT EXISTS genbank.gb (
-	id		varchar(15)	NOT NULL PRIMARY KEY,
+	id		varchar(16)	NOT NULL PRIMARY KEY,
 	nalen		integer,
 	strand		varchar(5),
 	natype		varchar(5),
@@ -210,7 +210,7 @@ CREATE TABLE IF NOT EXISTS genbank.gb (
 );
 
 CREATE TABLE IF NOT EXISTS genbank.gbft (
-	id		varchar(15)	NOT NULL,
+	id		varchar(16)	NOT NULL,
 	num		integer,
 	qualifier	varchar(30),
 	value		text,
@@ -223,7 +223,7 @@ CREATE TABLE IF NOT EXISTS genbank.gbft (
 );
 
 CREATE TABLE IF NOT EXISTS genbank.gbref (
-	id		varchar(15)	NOT NULL,
+	id		varchar(16)	NOT NULL,
 	reference	varchar(255),
 	authors		text,
 	title		text,
