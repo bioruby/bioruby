@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.26 2002/08/19 11:13:30 k Exp $
+#  $Id: genbank.rb,v 0.27 2002/09/05 07:22:25 k Exp $
 #
 
 require 'bio/db/genbank'
@@ -114,7 +114,7 @@ module Bio
         ori = get('ORIGIN')[/.*/]			# 1st line
         seq = get('ORIGIN').sub(/.*/, '')		# sequence lines
         @data['ORIGIN']   = truncate(tag_cut(ori))
-        @data['SEQUENCE'] = Sequence::NA.new(seq.tr('^a-z', ''))
+        @data['SEQUENCE'] = Sequence::NA.new(seq.tr('^a-zA-Z', ''))
       end
       @data['ORIGIN']
     end
