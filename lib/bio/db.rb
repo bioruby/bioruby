@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: db.rb,v 0.17 2002/06/25 23:15:54 k Exp $
+#  $Id: db.rb,v 0.18 2002/07/25 22:15:00 k Exp $
 #
 
 require 'bio/sequence'
@@ -44,8 +44,9 @@ module Bio
       @orig[tag]
     end
 
-    def fetch(tag)
-      truncate(@orig[tag].gsub(/^.{#{@tagsize}}/,''))
+    def fetch(tag, skip = 0)
+      field = @orig[tag].split("\n", skip + 1).last
+      truncate(field.gsub(/^.{#{@tagsize}}/,''))
     end
 
 
@@ -64,9 +65,9 @@ module Bio
       return str
     end
 
-    def field_fetch(tag)
+    def field_fetch(tag, skip = 0)
       unless @data[tag]
-	@data[tag] = fetch(tag)
+	@data[tag] = fetch(tag, skip)
       end
       return @data[tag]
     end
