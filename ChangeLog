@@ -1,3 +1,144 @@
+2003-06-25  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* BioRuby version 0.5.0 released.
+
+	* lib/bio/appl/blast/report.rb:
+
+	    Refactored from xmlparser.rb, rexml.rb, and format8.rb files.
+	    Formats are auto detected and parsers are automatically
+	    selected by checking whether XMLParser or REXML are installed.
+	    You can call simply as
+	      Bio::Blast::Report.new(blastoutput)
+	    or you can choose parsers/format explicitly by
+	      Bio::Blast::Report.xmlparser(format7blastoutput)
+	      Bio::Blast::Report.rexml(fomat7blastoutput)
+	      Bio::Blast::Report.tab(format8blastoutput)
+	    You can also use newly added class method reports for multiple
+	    xml blast output.
+	      Bio::Blast.reports(output) # output can be IO or String
+
+	* lib/bio/appl/fasta/report.rb:
+
+	    Refactored from format10.rb, format6.rb and sample/* files.
+
+	* lib/bio/appl/hmmer/report.rb:
+
+	    Bug fix and clean up.
+
+	* bin/biogetseq:
+
+	    Newly added OBDA (BioRegistry) entry retrieval command.
+
+	* etc/bioinformatics/seqdatabase.ini, lib/bio/io/registry.rb:
+	    Updated for new OBDA spec (Singapore version).
+	    Including config file versioning and changes in tag names,
+	    support for OBDA_SEARCH_PATH environmental variable.
+
+	* lib/bio/io/keggapi.rb:
+
+	    Newly added KEGG API client library.
+	    <http://www.genome.ad.jp/kegg/soap/>
+
+	* lib/bio/io/ddbjxml.rb:
+
+	    Newly added DDBJ XML client library (test needed).
+	    <http://xml.nig.ac.jp/>
+
+	* lib/bio/io/das.rb:
+
+	    Newly added BioDAS client library.
+
+	* lib/bio/db/gff.rb:
+
+	    Newly added GFF format parser/store library.
+
+	* lib/bio/appl/tmhmm/report.rb:
+
+	    Newly added TMHMM report parser.
+	    <http://www.cbs.dtu.dk/services/TMHMM/>
+
+	* lib/bio/appl/targetp/report.rb:
+
+	    Newly added TargetP report parser.
+	    <http://www.cbs.dtu.dk/services/TargetP/>
+
+	* lib/bio/appl/sosui/report.rb:
+
+	    Newly added SOSUI report parser.
+	    <http://sosui.proteome.bio.tuat.ac.jp/cgi-bin/sosui.cgi>
+
+	* lib/bio/appl/psort/report.rb:
+
+	    Newly added PSORT report parser.
+	    <http://www.psort.org/>, <http://psort.ims.u-tokyo.ac.jp/>
+
+	* lib/bio/appl/genscan/report.rb:
+
+	    Newly added GENSCAN report parser.
+	    <http://genes.mit.edu/GENSCAN.html>
+
+	* lib/bio/db/prosite.rb: bug fix in ps2re method.
+
+	* lib/bio/db/fantom.rb:
+
+	    Newly added FANTOM database parser (XML).
+	    <http://fantom2.gsc.riken.go.jp/>
+
+	* lib/bio/db/go.rb:
+
+	    Newly added GO parser.
+	    <http://www.geneontology.org/>
+
+	* lib/bio/feature.rb:
+	
+	    'each' method now accepts an argument to select specific feature.
+
+	* lib/bio/db/fasta.rb: definition=, data= to change comment line.
+
+	* lib/bio/db/genbank.rb:
+	
+	    References and features now accept a block. 'acc_version' method
+	    is added to return the Accsession.Version string.
+	    'accession' method now returns Accession part of the acc_version.
+	    'version' method now returns Version part of the acc_version as
+	    an integer.
+
+	* lib/bio/db/keggtab.rb:
+
+	    Rewrited for bug fix and clean up (note: some methods renamed!)
+	    * gsub('abrev', 'abbrev') in method names
+	    * db_path_by_keggorg is changed to db_path_by_abbrev
+	    * @bio_root is changed to @bioroot (ENV['BIOROOT'] overrides)
+	    * Bio::KEGG::DBname is changed to Bio::KEGG::Keggtab::DB
+	      * @database is added (a hash with its key db_abbreb)
+	      * database, name, path methods added with its argument db_abbreb
+
+	* lib/bio/io/flatfile.rb:
+
+	   Enumerable mix-in is included.
+
+	* lib/bio/io/flatfile/indexer.rb:
+
+	    Indexing of the FASTA format file is now supported with various
+	    type of definition line.
+
+	* bin/dbget:
+
+	    Removed (moved under sample directory because the port of the
+	    dbget server is now closed).
+
+	* install.rb:
+
+	    Changed to use setup 3.1.4 to avoid installing CVS/ directory.
+
+	* sample/goslim.rb:
+
+	    Added a sample to generate histogram from GO slim.
+
+	* sample/tdiary.rb:
+
+	    Added for tDiary <http://www.tdiary.org/> users. have fun. :)
+
 2003-01-28  KATAYAMA Toshiaki  <k@bioruby.org>
 
 	* BioRuby version 0.4.0 released.
