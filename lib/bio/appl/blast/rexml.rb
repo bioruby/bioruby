@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: rexml.rb,v 1.3 2002/06/24 10:49:24 k Exp $
+#  $Id: rexml.rb,v 1.4 2002/06/25 07:56:06 k Exp $
 #
 
 begin
@@ -37,7 +37,7 @@ module Bio
 	a = [ @program.query_id, @program.query_len ]
 
 	@iterations = []
-	d.elements.each("/BlastOutput/BlastOutput_iterations/Iteration") do |e|
+	d.elements.each("*//Iteration") do |e|
 	  @iterations.push(Iteration.new(e, *a))
 	end
       end
@@ -47,27 +47,36 @@ module Bio
 	@program.send(name, *args, &block)	 # program, query_id etc.
       end
 
+      # <for blastpgp>
       def each_iteration
 	@iterations.each do |x|
 	  yield x
 	end
       end
 
-      # shortcut for @iterations[0]
+      # <for blastall> shortcut for the last iteration's hits
       def each_hit
-	@iterations[0].each do |x|
+	@iterations[-1].each do |x|
 	  yield x
 	end
       end
       alias :each :each_hit
 
+      # shortcut for the last iteration's statistics
+      def statistics
+	@iterations[-1].statistics
+      end
+
+      # shortcut for the last iteration's message (for checking 'CONVERGED')
+      def message
+	@iterations[-1].message
+      end
 
       class Program
 	def initialize(dom)
 	  @program = {}
 	  @parameters = {}
-	  @statistics = {}
-	  dom.elements["/BlastOutput"].each_element_with_text do |e|
+	  dom.root.each_element_with_text do |e|
 	    name, text = e.name, e.text
 	    case name
 	    when 'BlastOutput_param'
@@ -80,14 +89,9 @@ module Bio
 	      @program[name] = text if text.strip.size > 0
 	    end
 	  end
-	  dom.elements["*//Statistics"].each_element_with_text do |e|
-	    k = e.name.sub(/Statistics_/, '')
-	    v = e.text =~ /\D/ ? e.text.to_f : e.text.to_i
-	    @statistics[k] = v
-	  end
 	end
-	attr_reader :parameters, :statistics
-      
+	attr_reader :parameters
+
 	def program;	@program['BlastOutput_program'];	end
 	def version;	@program['BlastOutput_version'];	end
 	def reference;	@program['BlastOutput_reference'];	end
@@ -100,6 +104,8 @@ module Bio
 
       class Iteration
 	def initialize(e, *args)
+	  @message = nil
+	  @statistics = {}
 	  e.elements.each do |i|
 	    case i.name
 	    when 'Iteration_iter-num'
@@ -109,10 +115,18 @@ module Bio
 	      i.elements.each("Hit") do |h|
 		@hits.push(Hit.new(h, *args))
 	      end
+	    when 'Iteration_message'
+	      @message = i.text
+	    when 'Iteration_stat'
+	      i.elements["*//Statistics"].each_element_with_text do |s|
+		k = s.name.sub(/Statistics_/, '')
+		v = s.text =~ /\D/ ? s.text.to_f : s.text.to_i
+		@statistics[k] = v
+	      end
 	    end
 	  end
 	end
-	attr_reader :num, :hits
+	attr_reader :num, :hits, :message, :statistics
 
 	def each
 	  @hits.each do |x|
@@ -237,9 +251,14 @@ if __FILE__ == $0
   print "  rep.parameters        #=> "; p rep.parameters
   puts
 
-  print "# === Statistics\n"
+  print "# === Statistics (last iteration's)\n"
   puts
   print "  rep.statistics        #=> "; p rep.statistics
+  puts
+
+  print "# === Message (last iteration's)\n"
+  puts
+  print "  rep.message           #=> "; p rep.message
   puts
 
   print "# === Iterations\n"
@@ -253,6 +272,8 @@ if __FILE__ == $0
   puts
 
   print "    itr.num             #=> "; p itr.num
+  print "    itr.statistics      #=> "; p itr.statistics
+  print "    itr.message         #=> "; p itr.message
   print "    itr.hits.size       #=> "; p itr.hits.size
   puts
 
@@ -353,15 +374,22 @@ Summerized results of the blast execution hits.
 
 --- Bio::Blast::Report#parameters
 
-      Returns a Hash containing execution parameters (valid keys are:
-      'expect', 'include', 'sc-match', 'sc-mismatch', 'gap-open',
-      'gap-extend', 'filter').
+      Returns a Hash containing execution parameters.
+      Valid keys are:
+        'expect', 'include', 'sc-match', 'sc-mismatch', 'gap-open',
+        'gap-extend', 'filter'
 
 --- Bio::Blast::Report#statistics
 
-      Returns a Hash containing execution statistics (valid keys are:
-      'db-len', 'db-num', 'eff-space', 'entropy', 'hsp-len', 'kappa',
-      'lambda').
+      Returns a Hash containing execution statistics of the last iteration.
+      Valid keys are:
+        'db-len', 'db-num', 'eff-space', 'entropy', 'hsp-len',
+        'kappa', 'lambda'
+
+--- Bio::Blast::Report#message
+
+      Returns a String (or nil) containing execution message of the last
+      iteration (typically "CONVERGED").
 
 --- Bio::Blast::Report#iterations
 
@@ -375,7 +403,7 @@ Summerized results of the blast execution hits.
 --- Bio::Blast::Report#each
 
       Iterates on each Bio::Blast::Report::Hit object of the the
-      first Iteration.
+      last Iteration.
 
 
 == Bio::Blast::Report::Iteration
@@ -391,6 +419,18 @@ Summerized results of the blast execution hits.
 --- Bio::Blast::Report::Iteration#each
 
       Iterates on each Bio::Blast::Report::Hit object.
+
+--- Bio::Blast::Report::Iteration#statistics
+
+      Returns a Hash containing execution statistics.
+      Valid keys are:
+        'db-len', 'db-num', 'eff-space', 'entropy', 'hsp-len',
+        'kappa', 'lambda'
+
+--- Bio::Blast::Report::Iteration#message
+
+      Returns a String (or nil) containing execution message (typically
+      "CONVERGED").
 
 
 == Bio::Blast::Report::Hit
