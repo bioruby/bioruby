@@ -34,13 +34,11 @@ class GenBank
       next if line =~ /^$/
 
       if line =~ /^\w/
-	tag = tag_get(line)
-	@orig[tag] = '' unless @orig[tag]	# String
+        tag = tag_get(line)
+        @orig[tag] = '' unless @orig[tag]	# String
       end
       @orig[tag] << line
     end
-
-    return @orig
   end
 
 
@@ -55,7 +53,7 @@ class GenBank
     if get(tag)
       str = ''
       get(tag).each_line do |line|
-	str << tag_cut(line)
+        str << tag_cut(line)
       end
       return truncate(str)
     else
@@ -72,7 +70,7 @@ class GenBank
       @data['LOCUS'][key]
     elsif block_given?		# acts as each_locus()
       @data['LOCUS'].each do |k, v|
-	yield(k, v)
+        yield(k, v)
       end
     else			# returns the whole LOCUS as Hash
       @data['LOCUS']
@@ -80,6 +78,10 @@ class GenBank
   end
   alias l locus
   alias each_locus locus
+
+  def id
+    locus('name')
+  end
 
 
   # definition - returns contents of the DEFINITION record as String
@@ -115,7 +117,7 @@ class GenBank
     parse_KEYWORDS unless @data['KEYWORDS']
     if block_given?		# acts as each_keyword()
       @data['KEYWORDS'].each do |k|
-	yield(k)
+        yield(k)
       end
     else			# returns the whole KEYWORDS as Array
       @data['KEYWORDS']
@@ -140,7 +142,7 @@ class GenBank
       @data['SOURCE'][key]
     elsif block_given?		# acts as each_source()
       @data['SOURCE'].each do |k, v|
-	yield(k, v)
+        yield(k, v)
       end
     else			# returns the whole SOURCE as Hash
       @data['SOURCE']
@@ -159,7 +161,7 @@ class GenBank
       @data['REFERENCE'][num][key] if @data['REFERENCE'][num]
     elsif block_given?		# acts as each_reference()
       @data['REFERENCE'].each do |r|
-	yield(r)
+        yield(r)
       end
     else			# returns the whole REFERENCE Hash as Array
       @data['REFERENCE']
@@ -186,7 +188,7 @@ class GenBank
       @data['FEATURES'][num][key] if @data['FEATURES'][num]
     elsif block_given?		# acts as each_feature()
       @data['FEATURES'].each do |f|
-	yield(f)
+        yield(f)
       end
     else			# returns the whole FEATURES Hash as Array
       @data['FEATURES']
@@ -199,7 +201,7 @@ class GenBank
     parse_FEATURES unless @data['FEATURES']
     @data['FEATURES'].each do |f|
       if f['feature'] == 'CDS'
-	yield(f)		# iterate only for the 'CDS' features
+        yield(f)		# iterate only for the 'CDS' features
       end
     end
   end
@@ -208,7 +210,7 @@ class GenBank
     parse_FEATURES unless @data['FEATURES']
     @data['FEATURES'].each do |f|
       if f['feature'] == 'gene'
-	yield(f)		# iterate only for the 'gene' features
+        yield(f)		# iterate only for the 'gene' features
       end
     end
   end
@@ -223,7 +225,7 @@ class GenBank
       @data['BASE COUNT'][base]
     elsif block_given?		# acts as each_basecount()
       %w{ a t g c o }.each do |b|
-	yield(b, @data['BASE COUNT'][b]) if @data['BASE COUNT'][b]
+        yield(b, @data['BASE COUNT'][b]) if @data['BASE COUNT'][b]
       end
     else			# returns the whole BASE COUNT Hash
       @data['BASE COUNT']
@@ -246,7 +248,6 @@ class GenBank
     parse_ORIGIN unless @data['SEQUENCE']
     @data['SEQUENCE']
   end
-  alias nt naseq
   alias na naseq
 
 
@@ -325,6 +326,8 @@ class GenBank
       @data['LOCUS']['gbdiv']    = @orig['LOCUS'][52..54].strip
       @data['LOCUS']['date']     = @orig['LOCUS'][62..72].strip
     end
+
+    # len > 61 => unpack('@12 A10 @22 A7 @33 A3 @36 A3 @42 A10 @52 A3 @62 A11')
 
     return @data['LOCUS']
   end
@@ -553,14 +556,14 @@ class GenBank
 
       case tag
       when /REFERENCE/
-	@data['REFERENCE'].push(hash) unless hash.empty?
-	key = tag
-	hash = { key => tag_cut(line) }
+        @data['REFERENCE'].push(hash) unless hash.empty?
+        key = tag
+        hash = { key => tag_cut(line) }
       when /\w+/
-	key = tag
-	hash[key] = tag_cut(line)
+        key = tag
+        hash[key] = tag_cut(line)
       else
-	hash[key] << " " + tag_cut(line)
+        hash[key] << " " + tag_cut(line)
       end
     end
     @data['REFERENCE'].push(hash)
@@ -603,10 +606,10 @@ class GenBank
 
     @orig['FEATURES'].each_line do |line|
       if line =~ /^ {5}(\S+)\s+(.*)/
-	@data['FEATURES'].push(parse_qualifiers(head, body)) unless head.empty?
-	head, body = $1, $2
+        @data['FEATURES'].push(parse_qualifiers(head, body)) unless head.empty?
+        head, body = $1, $2
       else
-	body << line
+        body << line
       end
     end
     @data['FEATURES'].push(parse_qualifiers(head, body))
@@ -625,11 +628,22 @@ class GenBank
     body.scan(%r{ /(\S+)=("[^"]+"|\S+)}).each do |key, value|
       value.tr!('"', '')
       if key == 'translation'
-	value.gsub!(/\s+/, '')
-	hash[key] = AAseq.new(value)		# Amino Acid sequence object
+        value.gsub!(/\s+/, '')
+        hash[key] = AAseq.new(value)		# Amino Acid sequence object
+      elsif key == 'db_xref'
+        unless hash[key]
+          hash[key] = []
+        end
+        hash[key].push(value)
+      elsif key == 'codon_start'
+        hash[key] = value.to_i
       else
-	hash[key] = value
+        hash[key] = value
       end
+    end
+
+    body.scan(%r{ /([^=]+) }).each do |key|	# for /virion etc.
+      hash[key] = true
     end
 
     return hash
@@ -646,7 +660,7 @@ class GenBank
 
     if @orig['BASE COUNT']
       @orig['BASE COUNT'].scan(/(\d+) (\w)/).each do |n, b|
-	@data['BASE COUNT'][b] = n.to_i
+        @data['BASE COUNT'][b] = n.to_i
       end
     end
 
