@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: location.rb,v 0.10 2001/11/12 20:53:14 katayama Exp $
+#  $Id: location.rb,v 0.11 2001/12/15 02:21:14 katayama Exp $
 #
 
 module Bio
@@ -207,6 +207,34 @@ end
 
 
 if __FILE__ == $0
+  [
+    '754^755',
+    'complement(53^54)',
+    'replace(4792^4793,"a")',
+    'replace(1905^1906,"acaaagacaccgccctacgcc")',
+    '157..(800.806)',
+    '(67.68)..(699.703)',
+    '(45934.45974)..46135',
+    '<180..(731.761)',
+    '(88.89)..>1122',
+    'complement((1700.1708)..(1715.1721))',
+    'complement(<22..(255.275))',
+    'complement((64.74)..1525)',
+    'join((8298.8300)..10206,1..855)',
+    'replace((651.655)..(651.655),"")',
+    'one-of(898,900)..983',
+    'one-of(5971..6308,5971..6309)',
+    '8050..one-of(10731,10758,10905,11242)',
+    'one-of(623,627,632)..one-of(628,633,637)',
+    'one-of(845,953,963,1078,1104)..1354',
+    'join(complement(1..61),complement(AP000007.1:252907..253505))',
+    'order(3..26,complement(964..987))',
+    'order(L44135.1:(454.445)..>538,<1..181)',
+  ].each do |x|
+    p x
+    p Bio::Locations.new(x).span
+    p Bio::Locations.new(x)
+  end
 end
 
 
@@ -214,9 +242,9 @@ end
 
 = Bio::Location
 
---- Bio::Location#new(location) # -> Location
+--- Bio::Location.new(location)
 
---- Bio::Location#from # -> Fixnum
+--- Bio::Location#from
 
 --- Bio::Location#to
 --- Bio::Location#strand
@@ -230,7 +258,7 @@ end
 
 = Bio::Locations
 
---- Bio::Locations#new(position)
+--- Bio::Locations.new(position)
 
 --- Bio::Locations#each { |l| ... }
 --- Bio::Locations#span
@@ -244,25 +272,25 @@ According to the GenBank manual 'gbrel.txt', I classified position notations
 into 10 patterns - (A) to (J).
 
       3.4.12.2 Feature Location
-  
-	The second column of the feature descriptor line designates the
+      
+        The second column of the feature descriptor line designates the
       location of the feature in the sequence. The location descriptor
       begins at position 22. Several conventions are used to indicate
       sequence location.
-  
-	Base numbers in location descriptors refer to numbering in the entry,
+      
+        Base numbers in location descriptors refer to numbering in the entry,
       which is not necessarily the same as the numbering scheme used in the
       published report. The first base in the presented sequence is numbered
       base 1. Sequences are presented in the 5 to 3 direction.
-  
+      
       Location descriptors can be one of the following:
-  
+      
   (A) 1. A single base;
-  
+      
   (B) 2. A contiguous span of bases;
-  
+      
   (C) 3. A site between two bases;
-  
+      
   (D) 4. A single base chosen from a range of bases;
   
   (E) 5. A single base chosen from among two or more specified bases;
@@ -270,8 +298,8 @@ into 10 patterns - (A) to (J).
   (F) 6. A joining of sequence spans;
   
   (G) 7. A reference to an entry other than the one to which the feature
-	belongs (i.e., a remote entry), followed by a location descriptor
-	referring to the remote sequence;
+        belongs (i.e., a remote entry), followed by a location descriptor
+        referring to the remote sequence;
   
   (H) 8. A literal sequence (a string of bases enclosed in quotation marks).
   
@@ -290,7 +318,7 @@ into 10 patterns - (A) to (J).
       specified base number. Starting and ending positions can be indicated
       by base number or by one of the operators described below.
   
-	Operators are prefixes that specify what must be done to the indicated
+        Operators are prefixes that specify what must be done to the indicated
       sequence to locate the feature. The following are the operators
       available, along with their most common format and a description.
   
