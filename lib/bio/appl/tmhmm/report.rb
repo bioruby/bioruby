@@ -1,5 +1,5 @@
 #
-# bio/appl/targetp.rb - TMHMM report class
+# bio/appl/tmhmm/report.rb - TMHMM report class
 # 
 #   Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
 #
@@ -17,17 +17,17 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.1 2003/02/19 08:40:20 n Exp $
+#  $Id: report.rb,v 1.2 2003/02/25 15:44:18 k Exp $
 #
 
 module Bio
 
   class TMHMM
 
-    def TMHMM.reports(db)
+    def TMHMM.reports(data)
       entry     = []
       ent_state = ''
-      db.split("\n").each {|line|
+      data.each_line do |line|
 	if /^\#/ =~ line
 	  if ent_state == 'next'
 	    ent_state = 'entry'
@@ -38,19 +38,17 @@ module Bio
 	  ent_state = 'tmh'
 	end
 
-	unless ent_state == 'next'
+	if ent_state != 'next'
 	  entry << line
-
 	else
 	  if block_given?
 	    yield Bio::TMHMM::Report.new(entry)
 	  else
 	    Bio::TMHMM::Report.new(entry)
 	  end
-
 	  entry = [line]
 	end
-      }
+      end
 
       if block_given?
 	yield Bio::TMHMM::Report.new(entry)
@@ -59,9 +57,9 @@ module Bio
       end
     end
 
-    #
-    #
+
     class Report
+
       def initialize(entry = nil)
 	parse_header(entry)
 	@tmhs = parse_tmhs(entry)
@@ -70,12 +68,10 @@ module Bio
 	:exp_aas_in_tmhs, :exp_first_60aa, :total_prob_of_N_in
       alias :length :query_len
 
-      # 
       def helix
 	@tmhs.map {|t| t if t.status == 'TMhelix' }.compact
       end
 
-      #
       def to_s
 	[
 	  [
@@ -88,36 +84,33 @@ module Bio
 	  tmhs.map {|ent| ent.to_s }
 	].flatten.join("\n")
       end
-      
 
 
       private
-      
-      # 
+
       def parse_header(raw)
-	raw.each {|line|
-	  case line 
-	  when /^#/
-	    if    / (\S.+) Length: +(\d+)/ =~ line   
-	      @entry_id  = $1.strip
-	      @query_len = $2.to_i
-	    elsif /Number of predicted TMHs: +(\d+)/ =~ line
-	      @predicted_tmhs  = $1.to_i
-	    elsif /Exp number of AAs in TMHs: +([\d\.]+)/ =~ line
-	      @exp_aas_in_tmhs = $1.to_f
-	    elsif /Exp number, first 60 AAs: +([\d\.]+)/ =~ line
-	      @exp_first_60aa  = $1.to_f
-	    elsif /Total prob of N-in: +([\d\.]+)/ =~ line
-	      @total_prob_of_N_in = $1.to_f
-	    end
+	raw.each do |line|
+	  next unless /^#/.match(line)
+
+	  case line
+	  when / (\S.+) Length: +(\d+)/
+	    @entry_id  = $1.strip
+	    @query_len = $2.to_i
+	  when /Number of predicted TMHs: +(\d+)/
+	    @predicted_tmhs  = $1.to_i
+	  when /Exp number of AAs in TMHs: +([\d\.]+)/
+	    @exp_aas_in_tmhs = $1.to_f
+	  when /Exp number, first 60 AAs: +([\d\.]+)/
+	    @exp_first_60aa  = $1.to_f
+	  when /Total prob of N-in: +([\d\.]+)/
+	    @total_prob_of_N_in = $1.to_f
 	  end
-	}
+	end
       end
 
-      #
       def parse_tmhs(raw)
 	tmhs = []
-	raw.each {|line|
+	raw.each do |line|
 	  case line
 	  when /^[^\#]/
 	    eid,version,status,r0,r1 = line.split(/\s+/)
@@ -126,15 +119,15 @@ module Bio
 					status.strip, 
 					Range.new(r0.to_i, r1.to_i))
 	  end
-	}
+	end
 	tmhs
       end
 
     end # class Report
 
-    #
-    #
+
     class TMH
+
       def initialize(entry_id = nil, version = nil, status = nil, range = nil)
 	@entry_id = entry_id
 	@version  = version
@@ -156,13 +149,14 @@ end # module Bio
 
 
 if __FILE__ == $0
+
   begin
     require 'pp'
-  rescue LoadError
     alias pp p
+  rescue LoadError
   end
 
-  Bio::TMHMM.reports($<.read) {|ent|
+  Bio::TMHMM.reports(ARGF.read) do |ent|
     puts '==>'
     puts ent.to_s
     pp ent
@@ -185,7 +179,8 @@ if __FILE__ == $0
 
     p [:helix, ent.helix]
     p ent.tmhs.map {|t| t if t.status == 'TMhelix' }.compact
-  }
+  end
+
 end
 
 
@@ -193,13 +188,16 @@ end
 
 = Bio::TMHMM
 
+    TMHMM class for ((<URL:http://www.cbs.dtu.dk/services/TMHMM/>))
+
 --- Bio::TMHMM.reports(str) 
 
       Splits multiple reports into a report entry.
 
+
 = Bio::TMHMM::Report
 
-      TMHMM report parser class.
+    TMHMM report parser class.
 
 --- Bio::TMHMM::Report.new(str)
 

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.2 2003/02/21 10:50:24 n Exp $
+#  $Id: report.rb,v 1.3 2003/02/25 15:44:18 k Exp $
 #
 
 
@@ -43,7 +43,7 @@ module Bio
 
 
       private
-      
+
       def parse_tmh(entry)
 	entry.each do |line|
 	  if /NUMBER OF TM HELIX = (\d+)/ =~ line
@@ -68,6 +68,13 @@ end # module Bio
 
 if __FILE__ == $0
 
+  begin
+    require 'pp'
+    alias :p :pp 
+  rescue LoadError
+  end
+
+
   sample = <<HOGE
 >HOGE1
  MEMBRANE PROTEIN
@@ -83,13 +90,6 @@ if __FILE__ == $0
  SOLUBLE PROTEIN
 
 HOGE
-
-  begin
-    require 'pp'
-  rescue LoadError
-    alias :p :pp 
-  end
-
 
   def hoge(ent)
     puts '==='
@@ -111,6 +111,7 @@ HOGE
   while ent = $<.gets(Bio::SOSUI::Report::DELIMITER)
     hoge(ent)
   end
+
 end
 
 
@@ -119,8 +120,8 @@ end
 
 = Bio::SOSUI
 
-    SOSUI related classes.
-    <http://sosui.proteome.bio.tuat.ac.jp/sosuiframe0.html>
+    SOSUI class for
+    ((<URL:http://sosui.proteome.bio.tuat.ac.jp/sosuiframe0.html>))
 
 = Bio::SOSUI::Report
 

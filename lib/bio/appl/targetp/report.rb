@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.1 2003/02/21 10:23:09 n Exp $
+#  $Id: report.rb,v 1.2 2003/02/25 15:44:18 k Exp $
 #
 
 module Bio
@@ -130,6 +130,13 @@ end # moudel Bio
 
 if __FILE__ == $0
 
+  begin
+    require 'pp'
+    alias :p :pp 
+  rescue LoadError
+  end
+
+
   plant = <<HOGE
  
 ### ### ###  T A R G E T P  1.0  prediction results  ### ### ### 
@@ -182,11 +189,6 @@ non_plant_c = <<HOGE
 
 
 HOGE
-  begin
-    require 'pp'
-  rescue LoadError
-    alias :p :pp 
-  end
 
 
   def hoge(e)
@@ -222,6 +224,7 @@ HOGE
   while ent = $<.gets(Bio::TargetP::Report::DELIMITER)
     hoge(ent)
   end
+
 end
 
 
@@ -229,16 +232,11 @@ end
 
 = Bio::TargetP
 
-    TargetP related classes.
-    <http://www.cbs.dtu.dk/services/TargetP/>
-
+    TargetP class for ((<URL:http://www.cbs.dtu.dk/services/TargetP/>))
 
 = Bio::TargetP::Report
 
     A parser and container class for TargetP report.
-
---- Bio::TargetP::Report.DELIMITER
-
 
 --- Bio::TargetP::Report.new(str)
 
@@ -249,32 +247,33 @@ end
 --- Bio::TargetP::Report#query_sequences
 --- Bio::TargetP::Report#cleavage_site_prediction
 
-      included or not included.
-      If it is ``included'', Bio::TargetP::Report#prediction['TPlen'] have
-      a valid value.
+      Returns 'included' or 'not included'.
+      If the value is 'included', Bio::TargetP::Report#prediction['TPlen']
+      contains a valid value.
 
 --- Bio::TargetP::Report#networks
  
       There are PLANT and NON-PLANT networks.
 
+--- Bio::TargetP::Report#entry_id
 --- Bio::TargetP::Report#name
 
       Returns the qeury entry_id.
 
---- Bio::TargetP::Report#entry_id
-
-      Alias to Bio::TargetP::Report#name.
-
 --- Bio::TargetP::Report#query_len
+
+      Returns query length.
+
 --- Bio::TargetP::Report#prediction
 
-      Returns a Hash of a prediction.
-      Keys: Name,Len,SP,mTP,other,Loc,RC
-      PLANT networks addtional key: cTP
-      Cleavage site addtional key: TPlen
+      Returns a Hash of the prediction results.
 
-      The version 1.0 report replaces ``Len'' to ``Length'' and 
-      ``Loc'' to ``Loc.''.
+      Valid keys: Name, Len, SP, mTP, other, Loc, RC
+      Additional key in PLANT networks: cTP
+      Additional key in Cleavage site: TPlen
+
+      Use 'Length' and 'Loc.' instead of 'Len' and 'Loc' respectively
+      for the version 1.0 report.
 
 --- Bio::TargetP::Report#cutoff
       
@@ -283,11 +282,9 @@ end
 --- Bio::TargetP::Report#loc
 
       Returns the predicted localization S, M, C, * or _.
-      
 
 --- Bio::TargetP::Report#rc
 
 
-
-
 =end
+
