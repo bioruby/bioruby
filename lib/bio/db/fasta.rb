@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.7 2002/06/25 13:26:42 k Exp $
+#  $Id: fasta.rb,v 1.8 2002/12/03 06:15:01 k Exp $
 #
 
 require 'bio/db'
@@ -47,7 +47,10 @@ module Bio
       end
       @definition
     end
-    alias :entry_id :definition
+
+    def entry_id
+      definition[/\S+/]
+    end
 
     def seq
       unless @seq
