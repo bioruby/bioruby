@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.23 2002/06/23 19:59:24 k Exp $
+#  $Id: sequence.rb,v 0.24 2002/07/02 01:41:29 k Exp $
 #
 
 require 'bio/data/na'
@@ -131,7 +131,11 @@ module Bio
 	  seq += max.first
 	end
       end
-      return seq
+      return self.class.new(seq)
+    end
+
+    def self.randomize(*arg, &block)
+      self.new('').randomize(*arg, &block)
     end
 
 
@@ -260,14 +264,6 @@ module Bio
 	self.tr("atgc", "pika")		# joke, of cource :-)
       end
 
-      def randomize(*arg, &block)
-	NA.new(super(*arg, &block))
-      end
-
-      def NA.randomize(*arg, &block)
-	NA.new('').randomize(*arg, &block)
-      end
-
     end
 
 
@@ -300,14 +296,6 @@ module Bio
       def molecular_weight(hash = nil)
 	hash = AminoAcid_weight unless hash
 	total(hash) - NucleicAcid_weight['water'] * (self.length - 1)
-      end
-
-      def randomize(*arg, &block)
-	AA.new(super(*arg, &block))
-      end
-
-      def AA.randomize(*arg, &block)
-	AA.new('').randomize(*arg, &block)
       end
 
     end
@@ -515,15 +503,18 @@ You can use Bio::Seq instead of Bio::Sequence for short.
       sequence (used by the class methods NA.randomize, AA.randomize).
       If the block is given, yields for each random residue/base.
 
+--- Bio::Sequence.randomize(composition)
+
+      Generate a new random sequence with the given frequency of bases
+      or residues.  The sequence length is determined by the sum of each
+      base/residue occurences.
+
+
 == Bio::Sequence::NA
 
 --- Bio::Sequence::NA.new(str)
 
       Generate a nucleic acid sequence object from a string.
-
---- Bio::Sequence::NA#[](*arg)
-
-      Replacement for the String#[].
 
 --- Bio::Sequence::NA#splicing(position)
 
@@ -568,14 +559,6 @@ You can use Bio::Seq instead of Bio::Sequence for short.
 
       Output a RNA character string simply by the substitution of 't' to 'u'.
 
---- Bio::Sequence::NA#randomize
-
-      Randomize the nucleotide sequence.
-
---- Bio::Sequence::NA.randomize(composition)
-
-      Generate a new random sequence with the given frequency of the bases.
-      The sequence length is determined by the sum of each base occurences.
 
 == Bio::Sequence::AA
 
@@ -595,15 +578,6 @@ You can use Bio::Seq instead of Bio::Sequence for short.
 --- Bio::Sequence::AA#molecular_weight(hash)
 
       Estimate the weight of this protein.
-
---- Bio::Sequence::AA#randomize
-
-      Randomize the amino acid sequence.
-
---- Bio::Sequence::AA.randomize(composition)
-
-      Generate a new random sequence with the given frequency of the residues.
-      The sequence length is determined by the sum of each residue occurences.
 
 =end
 
