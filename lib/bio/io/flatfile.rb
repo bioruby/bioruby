@@ -17,12 +17,14 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.11 2003/04/21 06:40:02 ng Exp $
+#  $Id: flatfile.rb,v 1.12 2003/04/21 09:08:54 k Exp $
 #
 
 module Bio
 
   class FlatFile
+
+    include Enumerable
 
     def self.open(dbclass, filename, *mode)
       ios = File.open(filename, *mode)
@@ -68,14 +70,6 @@ module Bio
       end
     end
     alias :each :each_entry
-
-    def to_a
-      ary = []
-      while e = self.next_entry
-	ary << e
-      end
-      ary
-    end
 
     def rewind
       r = @io.rewind
