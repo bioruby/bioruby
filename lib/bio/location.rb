@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: location.rb,v 0.14 2002/05/16 05:21:54 k Exp $
+#  $Id: location.rb,v 0.15 2002/06/29 09:58:18 k Exp $
 #
 
 module Bio
@@ -118,7 +118,20 @@ module Bio
       return span_min.from, span_max.to
     end
 
-    def offset(n) 
+    def length
+      len = 0
+      @locations.each do |x|
+	if x.sequence
+	  len += x.sequence.size
+	else
+	  len += (x.to - x.from + 1)
+	end
+      end
+      len
+    end
+    alias :size :length
+
+    def rel2abs(n) 
       return nil unless n > 0			# out of range 
  
       cursor = 0 
@@ -129,7 +142,7 @@ module Bio
           len = x.to - x.from + 1 
         end  
         if n > cursor + len 
-          cursor = cursor + len 
+          cursor += len 
         else 
           if x.strand < 0 
             return x.to - (n - cursor - 1) 
@@ -138,14 +151,49 @@ module Bio
           end 
         end                             
       end 
-    
       return nil				# out of range 
-    end 
-
-    def offset_aa(n)
-      n = (n - 1) * 3 + 1
-      offset(n)
     end
+
+    def rel2abs_aa(n)
+      n = (n - 1) * 3 + 1
+      rel2abs(n)
+    end
+
+    def abs2rel(n)
+      return nil unless n > 0			# out of range
+
+      cursor = 0
+      @locations.each do |x|
+	if x.sequence
+	  len = x.sequence.size
+	else
+	  len = x.to - x.from + 1
+	end
+	if n < x.from or n > x.to then
+	  cursor += len
+	else
+	  if x.strand < 0 then
+	    return x.to - (n - cursor - 1)
+	  else
+	    return n + cursor + 1 - x.from
+	  end
+	end
+      end
+      return nil				# out of range
+    end
+
+    def abs2rel_aa(n)
+      n = abs2rel(n)
+      if n then
+	(n - 1) / 3 + 1
+      else
+	nil
+      end
+    end
+    alias :absolute :rel2abs
+    alias :absolute_aa :rel2abs_aa
+    alias :relative :abs2rel
+    alias :relative_aa :abs2rel_aa
 
 
     private
@@ -280,21 +328,24 @@ if __FILE__ == $0
     p Bio::Locations.new(pos)
   end
 
-  puts "Test offset method"
-  [  
-    '6..15', 
-    'join(6..10,16..30)', 
-    'complement(join(6..10,16..30))', 
-    'join(complement(6..10),complement(16..30))', 
-    'join(6..10,complement(16..30))', 
-  ].each do |pos| 
-    loc = Bio::Locations.new(pos) 
+  puts "Test rel2abs/abs2rel method"
+  [
+    '6..15',
+    'join(6..10,16..30)',
+    'complement(join(6..10,16..30))',
+    'join(complement(6..10),complement(16..30))',
+    'join(6..10,complement(16..30))',
+  ].each do |pos|
+    loc = Bio::Locations.new(pos)
     p pos
-#   p loc 
-    (1..21).each do |x| 
-      print "offsets(#{x}) : ", loc.offset(x), "\n" 
-    end 
-  end 
+#   p loc
+    (1..21).each do |x|
+      print "absolute, rel2abs(#{x}) : ", y = loc.rel2abs(x), "\n"
+      print "relative, abs2rel(#{y}) : ", y ? loc.abs2rel(y) : y, "\n"
+      print "absolute_aa, rel2abs_aa(#{x}) : ", y = loc.rel2abs_aa(x), "\n"
+      print "relative_aa, abs2rel_aa(#{y}) : ", y ? loc.abs2rel_aa(y) : y, "\n"
+    end
+  end
 end
 
 
@@ -322,9 +373,32 @@ end
 
 --- Bio::Locations#each { |l| ... }
 --- Bio::Locations#span
---- Bio::Locations#offset(number)
---- Bio::Locations#offset_aa(number)
 
+--- Bio::Locations#abs2rel(number)
+--- Bio::Locations#relative(number)
+
+      absolute position in DNA (na) -> relative position in RNA (na)
+
+--- Bio::Locations#rel2abs(number)
+--- Bio::Locations#absolute(number)
+
+      relative position in RNA (na) -> absolute position in DNA (na)
+
+--- Bio::Locations#abs2rel_aa(na_number)
+--- Bio::Locations#relative_aa(na_number)
+
+      absolute position in DNA (na) -> relative position in Protein (aa)
+
+--- Bio::Locations#rel2abs_aa(aa_number)
+--- Bio::Locations#absolute_aa(aa_number)
+
+      relative position in Protein (aa) -> absolute position in DNA (na)
+
+      loc = Bio::Locations.new('complement(12838..13533)')
+      loc.absolute(10)        #=> 13524 (rel2abs)
+      loc.relative(13524)     #=> 10    (abs2rel)
+      loc.absolute_aa(10)     #=> 13506 (rel2abs_aa)
+      loc.relative_aa(13506)  #=> 10    (abs2rel_aa)
 
 == Appendix : GenBank location descriptor classification
 
