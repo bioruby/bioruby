@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format8.rb,v 1.1 2002/05/28 14:49:06 k Exp $
+#  $Id: format8.rb,v 1.2 2002/05/28 14:57:58 k Exp $
 #
 
 module Bio
@@ -28,8 +28,8 @@ module Bio
       def initialize(data)
 	@hits = Array.new
 
-	hit = Hit.new		# initial val
-	target_prev = ''	# flag for loop
+	hit = Hit.new
+	target_prev = ''
 
 	data.each do |line|
 	  ary = line.chomp.split("\t")
@@ -45,28 +45,6 @@ module Bio
 	@hits.push(hit)
       end
       attr_reader :hits
-
-=begin
-      def initialize(data)
-        @hits = Array.new
-
-        hsps = []
-	target_prev = ''
-
-        data.each do |line|
-          ary = line.chomp.split("\t")
-	  hsp = Hsp.new(ary)
-
-          if target_prev != hsp.target_id
-            @hits.push(Hit.new(hsps)) unless hsps.empty?
-            hsps = []
-          end
-          hsps.push(hsp)
-          target_prev = hsp.target_id
-        end
-        @hits.push(Hit.new(hsps))
-      end      
-=end
 
       def each
 	@hits.each do |x|
@@ -141,11 +119,6 @@ module Bio
 	end
       end
 
-
-      # Query id, Subject id, percent of identity, alignment length, number of
-      # mismatches (not including gaps), number of gap openings, start of
-      # alignment in query, end of alignment in query, start of alignment in
-      # subject, end of alignment in subject, expected value, bit score.
 
       class Hsp
 	def initialize(ary)
@@ -258,6 +231,15 @@ end
 = Bio::Blast::Report
 
 Summerized results of the blast execution hits.
+
+Tab delimited reports consists of 
+
+  Query id, Subject id, percent of identity, alignment length, number of
+  mismatches (not including gaps), number of gap openings, start of
+  alignment in query, end of alignment in query, start of alignment in
+  subject, end of alignment in subject, expected value, bit score.
+
+according to the MEGABLAST document (README.mbl).
 
 --- Bio::Blast::Report.new(data)
 --- Bio::Blast::Report#each
