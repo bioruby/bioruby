@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.12 2003/04/21 15:40:57 ng Exp $ 
+#  $Id: indexer.rb,v 1.13 2003/04/21 15:52:11 ng Exp $ 
 # 
 
 module Bio
@@ -258,11 +258,12 @@ module Bio
 	  PRIMARY = 'UNIQUE'
 	  SECONDARY = [ 'accession', 'id', 'word' ]
 
-	  def unique_namespace
+	  def unique_primary_key
 	    r = "#{@flatfilename_base}:#{@count}"
 	    @count += 1
 	    r
 	  end
+	  private :unique_primary_key
 
 	  def parse_primary
 	    if p = self.primary.proc then
@@ -273,7 +274,7 @@ module Bio
 	      end
 	      r
 	    else
-	      unique_namespace
+	      unique_primary_key
 	    end
 	  end
 				     
