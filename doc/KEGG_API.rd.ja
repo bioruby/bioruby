@@ -1,6 +1,6 @@
 =begin
  
-  $Id: KEGG_API.rd.ja,v 1.4 2004/03/06 08:44:08 k Exp $
+  $Id: KEGG_API.rd.ja,v 1.5 2004/06/04 07:42:04 k Exp $
    
     Copyright (C) 2004 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -12,6 +12,29 @@ KEGG API を使う方法を説明します。後半のリファレンスで KEGG API の全機能を
 解説します。例として主に Ruby 言語を使って解説しますが、SOAP と WSDL を
 扱うことのできる言語（Perl, Python, Java など）であれば簡単に KEGG API を
 利用することができます。
+
+== 目次
+
+* ((<イントロダクション>))
+* ((<KEGG API の使い方>))
+  * ((<Ruby の場合>))
+  * ((<Perl の場合>))
+  * ((<Python の場合>))
+  * ((<Java の場合>))
+* ((<KEGG API リファレンス>))
+  * ((<WSDL ファイル>))
+  * ((<用語の凡例>))
+  * ((<戻り値のデータ型>))
+  * ((<メソッド一覧>))
+    * ((<メタ情報>))
+    * ((<DBGET>))
+    * ((<LinkDB>))
+    * ((<SSDB>))
+    * ((<Motif>))
+    * ((<KO, OC, PC>))
+    * ((<PATHWAY>))
+    * ((<GENES>))
+    * ((<GENOME>))
 
 == イントロダクション
 
@@ -43,7 +66,7 @@ KEGG の多くの機能を、ウェブページをクリックする代わりに自分のプログラムの
 
 KEGG API に関する最新の情報は以下の URL から得ることができます。
 
-  * ((<URL:http://www.genome.ad.jp/kegg/soap/>))
+  * ((<URL:http://www.genome.jp/kegg/soap/>))
 
 == KEGG API の使い方
 
@@ -66,39 +89,146 @@ Ruby 1.6.8 の場合はさらに SOAP4R が必要とする他のライブラリ (date2, uconv,
 XML のパーザなど) もインストールする必要がありますので、あらかじめ SOAP4R
 のドキュメントに従って入れておきます。
 
-以下のサンプルコードは、大腸菌遺伝子 b0002 と最も相同性の高い遺伝子を
-インフルエンザ菌 (hin) と枯草菌 (bsu) の２生物種から Smith-Waterman
-スコア 500 以上という閾値で検索するプログラムです。
+以下のサンプルコードは、大腸菌の b0002 遺伝子と最も相同性の高い遺伝子
+を、Smith-Waterman スコアの高い順に 5 個検索して表示するプログラムです。
 
   #!/usr/bin/env ruby
   
   require 'soap/wsdlDriver'
   
-  wsdl = "http://soap.genome.ad.jp/KEGG.wsdl"
-  serv = SOAP::WSDLDriverFactory.new(wsdl).createDriver
-  serv.generateEncodeType = true
+  wsdl = "http://soap.genome.jp/KEGG.wsdl"
+  serv = SOAP::WSDLDriverFactory.new(wsdl).create_driver
+  serv.generate_explicit_type = true	# SOAP と Ruby の型変換を有効にする
   
-  result = serv.get_best_neighbors_by_gene('eco:b0002', 500, ['hin', 'bsu'])
-  result.each do |hit|
-    puts [hit.kid1, hit.kid2, hit.sw_score].join("\t")
+  start = 1
+  max_results = 5
+  
+  top5 = serv.get_best_neighbors_by_gene('eco:b0002', start, max_results)
+  top5.each do |hit|
+    print hit.genes_id1, "\t", hit.genes_id2, "\t", hit.sw_score, "\n"
   end
 
-WSDL を用いるためシンプルですが、((<BioRuby|URL:http://bioruby.org/>)) を
-使うとさらにスッキリ書くことができます。
+プログラムの中で 'get_best_neighbors_by_gene' は、KEGG の SSDB データ
+ベースを使って KEGG の GENES に含まれている各生物種の中から最も相同性
+の高い遺伝子を探してくる API です。結果は次のように表示されます。
+
+  eco:b0002       eco:b0002       5283
+  eco:b0002       ecj:JW0001      5283
+  eco:b0002       sfx:S0002       5271
+  eco:b0002       sfl:SF0002      5271
+  eco:b0002       ecc:c0003       5269
+
+うまく動かない場合は、
+
+  serv = SOAP::WSDLDriverFactory.new(wsdl).create_driver
+  serv.wiredump_dev = STDERR	# ←この行を書き足す
+  serv.generate_explicit_type = true
+
+のように wiredump_dev に STDERR を指定した行を追加して実行することで、
+サーバとのやり取りが標準エラーに出力されます。
+
+KEGG API v3.0 から、サーバの負担を軽くしたりタイムアウトを防ぐ目的で、
+大量の結果を返すメソッドには start, max_results 引数が導入され、一度に
+得られる結果の数が制限されるようになりました。このため、これらのメソッ
+ドで全ての結果を得るためにはループを用いる必要があります。
+
+  #!/usr/bin/env ruby
+  
+  require 'soap/wsdlDriver'
+  
+  wsdl = "http://soap.genome.jp/KEGG.wsdl"
+  serv = SOAP::WSDLDriverFactory.new(wsdl).create_driver
+  serv.generate_explicit_type = true
+  
+  start = 1
+  max_results = 100
+  
+  loop do
+    results = serv.get_best_neighbors_by_gene('eco:b0002', start, max_results)
+    break unless results	# 結果が返ってこなければ終了
+    results.each do |hit|
+      print hit.genes_id1, "\t", hit.genes_id2, "\t", hit.sw_score, "\n"
+    end
+    start += max_results
+  end
+
+WSDL を用いているため、これらの例でも Ruby の場合は十分に簡単に書けま
+すが、((<BioRuby|URL:http://bioruby.org/>)) を使うとさらにスッキリ書く
+ことができます。
 
   #!/usr/bin/env ruby
   
   require 'bio'
   
   serv = Bio::KEGG::API.new
-  p serv.get_best_neighbors_by_gene('eco:b0002', 500, ['hin', 'bsu'])
+  
+  results = serv.get_all_best_neighbors_by_gene('eco:b0002')
+  results.each do |hit|
+    print hit.genes_id1, "\t", hit.genes_id2, "\t", hit.sw_score, "\n"
+  end
 
-プログラムの中で 'get_best_neighbors_by_gene' は、KEGG の SSDB データベースを
-使って KEGG の GENES に含まれている各生物種の中から最も相同性の高い遺伝子を
-探してくる API です。結果は以下のようになります。
+BioRuby では 'get_all_best_neighbors_by_gene' メソッドが定義されており、
+自動で上記の例のループを回して全ての結果を返してくれます。また、取り出
+したい名前のリストを渡すと対応する値を配列で返してくれる filter メソッ
+ドを使うこともできます。
 
-  eco:b0002	bsu:BG10350	561
-  eco:b0002	hin:HI0089	3291
+  #!/usr/bin/env ruby
+  
+  require 'bio'
+  
+  serv = Bio::KEGG::API.new
+  
+  results = serv.get_all_best_neighbors_by_gene('eco:b0002')
+  
+  # 欲しい値が遺伝子名のペアと SW スコアだけの場合の例
+  fields = [:genes_id1, :genes_id2, :sw_score]
+  results.each do |hit|
+    puts hit.filter(fields).join("\t")
+  end
+  
+  # それぞれの遺伝子でアライメントされたポジションなども表示させる例
+  fields1 = [:genes_id1, :start_position1, :end_position1, :best_flag_1to2]
+  fields2 = [:genes_id2, :start_position2, :end_position2, :best_flag_2to1]
+  results.each do |hit|
+    print "> score: ", hit.sw_score, ", identity: ", hit.identity, "\n"
+    print "1:\t", hit.filter(fields1).join("\t"), "\n"
+    print "2:\t", hit.filter(fields2).join("\t"), "\n"
+  end
+
+次は、大腸菌 (eco) に対する KEGG パスウェイの一覧を返す例です。
+
+  #!/usr/bin/env ruby
+  
+  require 'bio'
+  
+  serv = Bio::KEGG::API.new
+  
+  list = serv.list_pathways("eco")
+  list.each do |path|
+    print path.entry_id, "\t", path.definition, "\n"
+  end
+
+ArrayOfDefinition 型が返されるので、それぞれについて Definition 型の要
+素 entry_id (パスウェイのID) と definition (パスウェイのタイトル) を取
+り出します（先の SSDB の例も、実は SSDBRelation 型の要素 genes_id1 や
+sw_score などを取り出していたのでした）。
+
+最後の例は、大腸菌の遺伝子 b1002 と b2388 に対応するボックスに色を付け
+たパスウェイ eco00010 の画像を生成して、ファイルに保存する例です。
+
+  #!/usr/bin/env ruby
+  
+  require 'bio'
+  
+  serv = Bio::KEGG::API.new
+  
+  genes = ["eco:b1002", "eco:b2388"]
+  url = serv.mark_pathway_by_objects("path:eco00010", genes)
+  
+  puts url
+
+  # BioRuby の場合、画像を取得して保存するのに save_image メソッドが使える
+  serv.save_image(url, "filename.gif")
 
 === Perl の場合
 
@@ -109,25 +239,64 @@ Perl では、以下のライブラリを追加インストールしておく必要があります。
   * ((<libwww-perl|URL:http://search.cpan.org/author/GAAS/libwww-perl/>))
   * ((<URI|URL:http://search.cpan.org/author/GAAS/URI/>))
 
-以下、Ruby の例と同じ処理を実行するサンプルコードです。
+以下、Ruby の最初の例と同じ処理を実行するサンプルコードです。
 
-  #!/usr/local/bin/perl
+  #!/usr/bin/env perl
   
   use SOAP::Lite;
   
-  $wsdl = 'http://soap.genome.ad.jp/KEGG.wsdl';
+  $wsdl = 'http://soap.genome.jp/KEGG.wsdl';
   
-  my $serv = SOAP::Lite -> service($wsdl);
+  $serv = SOAP::Lite -> service($wsdl);
   
-  my $result = $serv -> get_best_neighbors_by_gene
-                    ( 'eco:b0002',
-                       500,
-                       SOAP::Data->type(array => [hin, bsu])
-                    );
+  $start = 1;
+  $max_results = 5;
   
-  foreach $hit (@{$result}) {
-    print "$hit->{kid1}\t$hit->{kid2}\t$hit->{sw_score}\n";
+  $top5 = $serv->get_best_neighbors_by_gene('eco:b0002', $start, $max_results);
+  
+  foreach $hit (@{$top5}) {
+    print "$hit->{genes_id1}\t$hit->{genes_id2}\t$hit->{sw_score}\n";
   }
+
+同じく、大腸菌の KEGG パスウェイのリストを返す例です。
+
+  #!/usr/bin/env perl
+  
+  use SOAP::Lite;
+  
+  $wsdl = 'http://soap.genome.jp/KEGG.wsdl';
+  
+  $results = SOAP::Lite
+               -> service($wsdl)
+               -> list_pathways("eco");
+  
+  foreach $path (@{$result}) {
+    print "$path->{entry_id}\t$path->{definition}\n";
+  }
+
+SOAP::Lite では引数に配列を渡す時には、
+
+  SOAP::Data->type(array => [value1, value2, .. ])
+
+のように変換する必要があるので注意が必要です。たとえばパスウェイへの色
+づけで遺伝子のリストを渡す場合は、
+
+  #!/usr/bin/env perl
+  
+  use SOAP::Lite;
+  
+  $wsdl = 'http://soap.genome.jp/KEGG.wsdl';
+  
+  $serv = SOAP::Lite -> service($wsdl);
+  
+  $genes = SOAP::Data->type(array => ["eco:b1002", "eco:b2388"]);
+  
+  $result = $serv -> mark_pathway_by_objects("path:eco00010", $genes);
+  
+  print $result;
+
+のようになります。
+
 
 === Python の場合
 
@@ -145,84 +314,45 @@ Python では以下のライブラリを追加インストールしておく必要があります。
 
   from SOAPpy import WSDL
 
-  wsdl = 'http://soap.genome.ad.jp/KEGG.wsdl'
+  wsdl = 'http://soap.genome.jp/KEGG.wsdl'
   serv = WSDL.Proxy(wsdl)
 
-  result = serv.get_genes_by_pathway('path:eco00020')
-  print result
+  results = serv.get_genes_by_pathway('path:eco00020')
+  print results
+
 
 === Java の場合
 
-Java では以下のライブラリをインストールしておく必要があります。
+Java では Apache Axis ライブラリの axis-1.2alpha より新しいバージョン
+(axis-1_1 ではうまく動きません）を入手して、必要な jar ファイルを適切
+なディレクトリに置いておく必要があります。
 
   * ((<Apache Axis|URL:http://ws.apache.org/axis/>))
 
-また、必要な jar ファイルを適切なディレクトリにおいておく必要があります。
+たとえば Apache Axis バージョン axis-1_2beta のバイナリ配布の場合、
+axis-1_2beta/lib 以下にある jar ファイルをインストール先のディレクト
+リにコピーします。
 
-以下は、Python の例と同様に、指定した KEGG/PATHWAY に載っている遺伝子の
-リストを表示するサンプルコードです。
+  % cp axis-1_2beta/lib/* /path/to/lib/
 
-  import org.apache.axis.client.Call;
-  import org.apache.axis.client.Service;
-  import javax.xml.namespace.QName;
-  import java.net.URL;
-
-  public class GetGenesByPathway {
-          public static void main(String[] args) throws Exception {
-                  String query    = args[0];
-                  String wsdl     = "http://soap.genome.ad.jp/KEGG.wsdl";
-                  String namespc  = "SOAP/KEGG";
-                  String srvname  = "KEGG";
-                  String prtname  = "KEGGPort";
-                  String fncname  = "get_genes_by_pathway";
-                  QName service   = new QName(namespc, srvname);
-                  QName port      = new QName(namespc, prtname);
-                  Service serv    = new Service(new URL(wsdl), service);
-                  Call call       = (Call) serv.createCall(port, fncname);
-                  String[] result = (String[]) call.invoke(new Object[]{query});
-
-                  for (int i = 0; i < result.length; i++) {
-                          System.out.println(result[i]);
-                  }
-          }        
-  }
-
-Axis の jar ファイルが /path/to/lib/ 以下に置いてある場合、CLASSPATH に
-指定するか
-
-  % javac -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar GetGenesByPathway.java
-
-  % java -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar:/path/to/lib/commons-logging.jar:/path/to/lib/commons-discovery.jar:/path/to/lib/saaj.jar:/path/to/lib/wsdl4j.jar:. GetGenesByPathway path:ecob00020
-
-のようにコンパイルして実行できます。
-
-ところで、上記の例のように、文字列や文字列の配列が返ってくる場合には問
-題ないのですが KEGG API のメソッドの中には独自に定義されたデータ構造で
-結果を返すものも多くあります。これらを扱うには WSDL ファイルから自動生
-成された KEGG API のクラスを使うのが簡単です。
-
-このために Apache の axis-1.2alpha (axis-1_1 ではうまく動きません）を
-インストールして、
-
-  % cp axis-1_2alpha/lib/* /path/to/lib/
-
-以下のように実行します。生成されたファイルの不具合を直すために、
-((<axisfix.pl|URL:http://www.genome.ad.jp/kegg/soap/support/axisfix.pl>))
+以下のように実行して WSDL から KEGG API 用のクラスを自動生成します。
+また、生成されたファイルの不具合を直すために、
+((<axisfix.pl|URL:http://www.genome.jp/kegg/soap/support/axisfix.pl>))
 スクリプトを入手しておきます。
 
-  % java -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar:/path/to/lib/commons-logging.jar:/path/to/lib/commons-discovery.jar:/path/to/lib/saaj.jar:/path/to/lib/wsdl4j.jar:. org.apache.axis.wsdl.WSDL2J -p keggapi  http://soap.genome.ad.jp/KEGG.wsdl
+  % java -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar:/path/to/lib/commons-logging.jar:/path/to/lib/commons-discovery.jar:/path/to/lib/saaj.jar:/path/to/lib/wsdl4j.jar:. org.apache.axis.wsdl.WSDL2Java -p keggapi  http://soap.genome.jp/KEGG.wsdl
   % perl -i axisfix.pl keggapi/KEGGBindingStub.java
   % javac -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar:/path/to/lib/wsdl4j.jar:. keggapi/KEGGLocator.java
   % jar cvf keggapi.jar keggapi/*
   % javadoc -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar -d keggapi_javadoc keggapi/*.java
 
-このようにしてできた keggapi.jar ファイルを以下の URL からダウンロード
-することもできます。
+このようにしてできた keggapi.jar ファイルは以下の URL からダウンロード
+することもできます(javadoc の英語版は -locale en_US で生成)。
 
-  * ((<URL:http://www.genome.ad.jp/kegg/soap/support/keggapi.jar>))
+  * ((<URL:http://www.genome.jp/kegg/soap/support/keggapi.jar>))
 
-keggapi.jar ファイルを使って上記のプログラムを書き直した例は次のように
-なります。
+以下は、Python の例と同様に、指定した KEGG/PATHWAY に載っている遺伝子の
+リストを表示するサンプルコードです。
 
   import keggapi.*;
   
@@ -240,41 +370,58 @@ keggapi.jar ファイルを使って上記のプログラムを書き直した例は次のように
           }
   }
 
-次は、文字列ではなく SSDBResult 型の配列が戻ってくる例です。
+次は、SSDBRelation 型の配列が戻ってくる例です。
 
   import keggapi.*;
   
   class GetBestNeighborsByGene {
           public static void main(String[] args) throws Exception {
-                  KEGGLocator  locator  = new KEGGLocator();
-                  KEGGPortType serv     = locator.getKEGGPort();
+                  KEGGLocator    locator  = new KEGGLocator();
+                  KEGGPortType   serv     = locator.getKEGGPort();
   
-                  String       query    = args[0];
-                  String[]     orglist  = {"all"};
-                  SSDBResult[] results  = null;
+                  String         query    = args[0];
+                  SSDBRelation[] results  = null;
   
-                  results = serv.get_best_neighbors_by_gene(query, 500, orglist);
+                  results = serv.get_best_neighbors_by_gene(query, 1, 50);
   
                   for (int i = 0; i < results.length; i++) {
-                          String gene1  = results[i].getKid1();
-                          String gene2  = results[i].getKid2();
+                          String gene1  = results[i].getGenes_id1();
+                          String gene2  = results[i].getGenes_id2();
                           int    score  = results[i].getSw_score();
-                          System.out.println(gene1 + "" + gene2 + "" + score);
+                          System.out.println(gene1 + "\t" + gene2 + "\t" + score);
                   }
           }
   }
 
-このプログラムは以下のように CLASSPATH に keggapi.jar ファイルも加えて
-コンパイル、実行します。
+このプログラムは以下のように -classpath オプションに keggapi.jar ファ
+イルも加えてコンパイル、実行します。
 
   % javac -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar:/path/to/lib/wsdl4j.jar:/path/to/keggapi.jar GetBestNeighborsByGene.java
 
   % java -classpath /path/to/lib/axis.jar:/path/to/lib/jaxrpc.jar:/path/to/lib/commons-logging.jar:/path/to/lib/commons-discovery.jar:/path/to/lib/saaj.jar:/path/to/lib/wsdl4j.jar:/path/to/keggapi.jar:. GetBestNeighborsByGene eco:b0002
 
+環境変数 CLASSPATH を指定しておくと、長いオプションを毎回書く必要がな
+くなります。
+
+bash または zsh の場合：
+
+  % for i in /path/to/lib/*.jar
+  do
+    CLASSPATH="${CLASSPATH}:${i}"
+  done
+  % export CLASSPATH
+
+tcsh の場合：
+
+  % foreach i ( /path/to/lib/*.jar )
+    setenv CLASSPATH ${CLASSPATH}:${i}
+  end
+
 他の戻り値と型ごとの値の取り出し方などについては、WSDL2Java により生成
 された以下のドキュメントを参照してください。
 
-  * ((<URL:http://www.genome.ad.jp/kegg/soap/doc/keggapi_javadoc_ja/>))
+  * ((<URL:http://www.genome.jp/kegg/soap/doc/keggapi_javadoc_ja/>))
+
 
 == KEGG API リファレンス
 
@@ -288,19 +435,19 @@ SOAP では、サーバがどのようなメソッドを持っているか知っておく必要が
 ライブラリが処理してくれるはずです。KEGG API の WSDL ファイルは以下の
 URL にあります。
 
-  * ((<URL:http://soap.genome.ad.jp/KEGG.wsdl>))
+  * ((<URL:http://soap.genome.jp/KEGG.wsdl>))
 
-=== 用語
+=== 用語の凡例
 
 以下の解説で出てくる KEGG 関連用語の説明をしておきます。
 
-  * keggorg は KEGG に含まれている生物種をそれぞれ３文字コードで
+  * org は KEGG に含まれている生物種をそれぞれ３文字コードで
     表記したもので、eco が大腸菌、sce が出芽酵母などとなっています。
     ３文字コードのリストは以下のページにあります。
 
-    * ((<URL:http://www.genome.ad.jp/kegg/kegg2.html#genes>))
+    * ((<URL:http://www.genome.jp/kegg/kegg2.html#genes>))
 
-  * db_name は GenomeNet で提供されているデータベース名です。データベース名の
+  * db は GenomeNet で提供されているデータベース名です。データベース名の
     リストについては list_databases メソッドを参照してください。
 
   * entry_id は db_name とエントリ名を ':' で結合した全てのデータベース間で
@@ -335,86 +482,95 @@ URL にあります。
     は KO 番号 K02598 の nitrite transporter NirC のオーソロガスな遺伝子
     グループを指します。
 
-  * threshold は SSDB データベースを検索する際の Smith-Waterman スコアの
-    閾値で、低い値でのヒットが必要でないときは高く設定すると検索が速く
-    なります（100 より低いデータは SSDB に登録されていないため、100 以下の
-    スコアを指定する意味はありません）。
+  * start, max_results は一度に返ってくる結果の数を指定するオプションで、
+    start 番目から max_results 個の結果を受け取ります。全ての結果を得るには
+    start = start + max_results として空の配列が返ってくるまで繰り返し
+    メソッドを呼びます。
 
-=== 戻り値
+  * fg_color_list はパスウェイへの色づけでオブジェクトごとに文字や枠線の
+    色を指定する配列です。
 
-多くの KEGG API メソッドは文字列などの値を返しますが、いくつかのメソッドは
-構造を持った値を返す必要があるため、データ型が定義されています。
+  * fg_color_list はパスウェイへの色づけでオブジェクトごとに背景の
+    色を指定する配列です。
 
-+ SSDBResult 型
+=== 戻り値のデータ型
 
-SSDB データベースの各フィールドに対応する値が入った配列です。多くの場合、
-全てのフィールドの値が必要なわけではありませんが、ユーザが自由に選択できる
-ようになっています。
+KEGG API のメソッドは文字列など単純な値を返すものだけでなく、複雑なデータ
+構造を持った値を返す場合もあり、そのためのデータ型が定義されています。
 
-  kid1         クエリーの genes_id
-  kid2         ターゲットの genes_id
-  sw_score     kid1 と kid2 間の Smith-Waterman スコア
-  ident        kid1 と kid2 間のパーセントアイデンティティ
-  overlap      kid1 と kid2 のオーバーラップ領域の長さ
-  s1_start     kid1 のアライメントの開始残基位置
-  s1_end       kid1 のアライメントの終端残基位置
-  s2_start     kid2 のアライメントの開始残基位置
-  s2_end       kid2 のアライメントの終端残基位置
-  b1           kid1 から見て kid2 がベストヒットなら 1 そうでなければ 0
-  b2           kid2 から見て kid1 がベストヒットなら 1 そうでなければ 0
-  definition1  kid1 のデフィニション文字列
-  definition2  kid2 のデフィニション文字列
-  length1      kid1 のアミノ酸配列の長さ
-  length2      kid2 のアミノ酸配列の長さ
++ SSDBRelation 型
 
-+ SSDBResultArray 型
+SSDB データベースの各フィールドに対応する値が入った配列です。
 
-複数の SSDBResult 型データを含む配列です。
+  genes_id1         クエリーの genes_id (string)
+  genes_id2         ターゲットの genes_id (string)
+  sw_score          genes_id1 と genes_id2 間の Smith-Waterman スコア (int)
+  bit_score         genes_id1 と genes_id2 間の bit スコア (float)
+  identity          genes_id1 と genes_id2 間の アイデンティティ (float)
+  overlap           genes_id1 と genes_id2 のオーバーラップ領域の長さ (int)
+  start_position1   genes_id1 のアライメントの開始残基位置 (int)
+  end_position1     genes_id1 のアライメントの終端残基位置 (int)
+  start_position2   genes_id2 のアライメントの開始残基位置 (int)
+  end_position2     genes_id2 のアライメントの終端残基位置 (int)
+  best_flag_1to2    genes_id1 から見て genes_id2 がベストヒットか (boolean)
+  best_flag_2to1    genes_id2 から見て genes_id1 がベストヒットか (boolean)
+  definition1       genes_id1 のデフィニション文字列 (string)
+  definition2       genes_id2 のデフィニション文字列 (string)
+  length1           genes_id1 のアミノ酸配列の長さ (int)
+  length2           genes_id2 のアミノ酸配列の長さ (int)
 
-+ MOTIFResult 型
++ ArrayOfSSDBRelation 型
 
-  mid          モチーフデータベースのエントリ ID
-  definition   モチーフのデフィニション
-  kid          モチーフを持っている遺伝子の genes_id
-  seq_f        モチーフの開始残基位置
-  seq_t        モチーフの終了残基位置
-  score        モチーフ (PROSITE Profile) のスコア
-  Evalue       モチーフ (Pfam, TIGRfam) の E value
+複数の SSDBRelation 型データを含む配列です。
 
-+ MOTIFResultArray 型
++ MotifResult 型
 
-複数の MOTIFResult 型データを含む配列です。
+  motif_id          モチーフデータベースのエントリ ID (string)
+  definition        モチーフのデフィニション (string)
+  genes_id          モチーフを持っている遺伝子の genes_id (string)
+  start_position    モチーフの開始残基位置 (int)
+  end_position      モチーフの終了残基位置 (int)
+  score             モチーフ (PROSITE Profile, TIGRFAM) のスコア (float)
+  evalue            モチーフ (Pfam) の E-value (double)
 
-+ GENESResult 型
+注：score と evalue のうち、対応する値が無いものについては -1 を返します。
 
-  kid          遺伝子の genes_id
-  keggdef      遺伝子のデフィニション
++ ArrayOfMotifResult 型
 
-+ GENESResultArray 型
+複数の MotifResult 型データを含む配列です。
 
-複数の GENESResult 型データを含む配列です。
++ Definition 型
 
-+ LinkDBResult 型
+  entry_id          データベースエントリーのID (string)
+  definition        エントリーのデフィニション情報 (string)
 
-  entry        データベースのエントリ ID
-  link_type    リンクの種類 (direct, indirect)
-  links        リンク情報
++ ArrayOfDefinition 型
 
-+ LinkDBResultArray 型
+複数の Definitioin 型データを含む配列です。
 
-複数の LinkDBResult 型データを含む配列です。
++ LinkDBRelation 型
 
-=== メソッドリスト
+  entry_id1         データベースのエントリ ID (string)
+  entry_id2         データベースのエントリ ID (string)
+  type              "direct" または "indirect" のリンクの種類 (string)
+  path              リンクの経路 (string)
+
++ ArrayOfLinkDBRelation 型
+
+複数の LinkDBRelation 型データを含む配列です。
+
+=== メソッド一覧
 
 以下、KEGG API の全メソッドのリストです。メソッドにはメタ情報を返すものと
 各データベースに対するものがあります。現在、KEGG にあるデータベースのうち
-KEGG API の対象となっているものは SSDB, PATHWAY, GENES です。これ以外の
-データベースへの対応やメソッドの追加も順次おこなう予定です。
+KEGG API の対象となっているものは SSDB, PATHWAY, GENES, LIGAND です。これ
+以外のデータベースへの対応やメソッドの追加も順次おこなう予定です。
 
 以下の例では、引数などが Ruby 言語の表記に倣って書かれていますが、実際の
 引数（特にリストの渡し方など）は使用する言語によって異なる可能性があります。
 
-==== KEGG メタ情報
+
+==== メタ情報
 
 最新のデータベース情報などを返すためのメソッドです。
 
@@ -423,89 +579,104 @@ KEGG API の対象となっているものは SSDB, PATHWAY, GENES です。これ以外の
 KEGG を提供しているゲノムネットで現在利用できるデータベースの一覧を返します。
 
 戻値：
-  string
+  ArrayOfDefinition
 
 --- list_organisms
 
-現在 KEGG に含まれている生物種 (keggorg) のリストを返します。
+現在 KEGG に含まれている生物種 (org) のリストを返します。
 
 戻値：
-  ArrayOfstring
+  ArrayOfDefinition
 
---- list_pathways
+--- list_pathways(org)
 
-現在 KEGG に含まれているパスウェイのリストを返します。
+現在 KEGG に含まれている指定した生物のパスウェイのリストを返します。引数に
+'map' という文字列を与えるとリファレンスパスウェイのリストを返します。
 
 戻値：
-  ArrayOfstring
+  ArrayOfDefinition
 
---- dbinfo(db_name)
+
+==== DBGET
+
+DBGET システムに対するメソッドの一覧です。DBGET について詳しくは以下の
+ページを参照してください。
+
+  * ((<URL:http://www.genome.jp/dbget/dbget_manual.html>))
+
+--- binfo(string)
 
 指定したデータベースのエントリ数や更新日など詳しい最新情報を返します。
+'all' を渡すと利用可能な全てのデータベースの情報を返します。
+binfo コマンドへの引数を文字列で渡します。
 
 戻値：
   string
 
 例：
-  # GENES データベースの最新情報
-  dbinfo('genes')
+  # GenBank データベースの最新情報
+  binfo('gb')
+  # 全てのデータベースの最新情報
+  binfo('all')
 
-==== DBGET/LinkDB
-
-DBGET/LinkDB システムに対するメソッドの一覧です。DBGET/LinkDB について
-詳しくは以下のページを参照してください。
-
-  * ((<URL:http://www.genome.ad.jp/dbget/dbget_manual.html>))
-
---- get_entries(entry_id_list)
+--- bget(string)
 
 指定した entry_id のエントリを返します。GENES の遺伝子エントリをはじめ、
 ゲノムネットの DBGET システムで提供されている様々なデータベース
-(list_databases を参照) のエントリを全て取得できます。
-
-注：このメソッドは近いうちに bget メソッドに変更になる予定です。
+(list_databases を参照) のエントリを全て取得できます。bget コマンドへの
+コマンドラインオプションを文字列で渡します。
 
 戻値：
   string
 
 例：
-  get_entries(['eco:b0002', 'bsu:BG10065', 'cpd:C00209'])
+  # 複数のエントリを取得
+  bget("eco:b0002 bsu:BG10065 cpd:C00209")
+  # FASTA フォーマットのアミノ酸配列を取得
+  bget("-f -n a eco:b0002 bsu:BG10065")
+  # FASTA フォーマットの塩基配列を取得
+  bget("-f -n a eco:b0002 hin:tRNA-Cys-1")
 
---- bfind(target_db, keyword)
+--- bfind(string)
 
-DBGET の bfind コマンドへのラッパーです。キーワードによりエントリを検
-索することができます。
+DBGET の bfind コマンドへのラッパーです。キーワードによりエントリを
+検索することができます。
 
 戻値：
-  GENESResultArray
+  string
 
 例：
-  # デフィニションに E-cadherin を持つ GenBank のエントリを検索
-  bfind('gb', 'E-cadherin')
+  # デフィニションに E-cadherin と human を持つ GenBank のエントリを検索
+  bfind("gb E-cadherin human")
 
---- btit(entry_id_list)
+--- btit(string)
 
 DBGET の btit コマンドへのラッパーです。指定したエントリの ID に対応す
 るデフィニションを返します。
 
 戻値：
-  GENESResultArray
+  string
 
 例：
   # これら４つの遺伝子のデフィニションを検索
-  btit(["hsa:1798", "mmu:13478", "dme:CG5287-PA", "cel:Y60A3A.14"])
+  btit("hsa:1798 mmu:13478 dme:CG5287-PA cel:Y60A3A.14")
 
---- get_linkdb_by_entry(genes_id, target_db)
 
-指定した entry_id から直接または間接的にリンクされているエントリを、
-target_db で指定したデータベースに対して検索します。
+==== LinkDB
+
+--- get_linkdb_by_entry(entry_id, db, start, max_results)
+
+指定した entry_id から直接または間接的にリンクされているエントリの経路を、
+db で指定したデータベースにたどれるまで検索します。
 
 戻値：
-  LinkDBResultArray
+  ArrayOfLinkDBRelation
 
 例：
   # E. coli の遺伝子 b0002 からリンクのたどれる KEGG/PATHWAY のエントリを検索
-  get_linkdb_by_entry('eco:b0002', 'pathway')
+  get_linkdb_by_entry('eco:b0002', 'pathway', 1, 10)
+  get_linkdb_by_entry('eco:b0002', 'pathway', 11, 10)
+
 
 ==== SSDB
 
@@ -520,132 +691,117 @@ Waterman スコアによる比較ができることからオーソログやパラログ関係にある
 
 SSDB データベースについて詳しくは以下のページを参照してください。
 
-  * ((<URL:http://www.genome.ad.jp/kegg/ssdb/>))
+  * ((<URL:http://www.genome.jp/kegg/ssdb/>))
 
---- get_all_neighbors_by_gene(genes_id, threshold = 100, keggorg_list = nil)
+--- get_neighbors_by_gene(genes_id, org, start, max_results)
 
-指定した genes_id の遺伝子にホモロジーのある全遺伝子を検索します。
-デフォルトは Smith-Waterman スコア 100 以上のものを全て検索しますが
-閾値を設定することでより高いホモロジーのある遺伝子だけに絞り込むことが
-できます。また keggorg のリストを指定することで対象とする生物種を
-絞り込むことができます。
+指定した genes_id の遺伝子にホモロジーのある全遺伝子を指定した生物から
+検索します。また org に 'all' を指定すると全生物種から検索します。
 
 戻値：
-  SSDBResultArray
+  ArrayOfSSDBRelation
 
 例：
-  # 大腸菌の遺伝子 b0002 に相同性のある遺伝子を全て検索
-  get_all_neighbors_by_gene('eco:b0002')
+  # 大腸菌の遺伝子 b0002 に相同性のある遺伝子を全て検索して、結果の１番
+  # から１０番目までを返します
+  get_neighbors_by_gene('eco:b0002', 'all' 1, 10)
+  # 次の１０個を start = start + max_results として取ります
+  get_neighbors_by_gene('eco:b0002', 'all' 11, 10)
   
-  # 上と同じ検索を、スコア 500 以上、対象を大腸菌 O157 株と
-  # インフルエンザ菌に絞り込んで実行
-  get_all_neighbors_by_gene('eco:b0002', 500, ['ece', 'hin'])
-
---- get_best_best_neighbors_by_gene(genes_id, threshold = 100, keggorg_list = nil)
+--- get_best_best_neighbors_by_gene(genes_id, start, max_results)
 
 クエリとターゲットが best-best の関係にある遺伝子だけを検索します。
 
 戻値：
-  SSDBResultArray
+  ArrayOfSSDBRelation
 
 例：
-  # 大腸菌の遺伝子 b0002 から各生物種で best-best の関係にある遺伝子
-  get_best_best_neighbors_by_gene('eco:b0002', 500)
+  # 大腸菌の遺伝子 b0002 から全生物種で best-best の関係にある遺伝子
+  get_best_best_neighbors_by_gene('eco:b0002', 1, 10)
+  get_best_best_neighbors_by_gene('eco:b0002', 11, 10)
 
---- get_best_neighbors_by_gene(genes_id, threshold = 100, keggorg_list = nil)
+--- get_best_neighbors_by_gene(genes_id, start, max_results)
 
 クエリから見てベストヒットの関係にある遺伝子だけを検索します。
 
 戻値：
-  SSDBResultArray
+  ArrayOfSSDBRelation
 
 例：
-  # 大腸菌の遺伝子 b0002 から各生物種で best neighbor の関係にある遺伝子
-  get_best_neighbors_by_gene('eco:b0002', 500)
+  # 大腸菌の遺伝子 b0002 から全生物種で best neighbor の関係にある遺伝子
+  get_best_neighbors_by_gene('eco:b0002', 1, 10)
+  get_best_neighbors_by_gene('eco:b0002', 11, 10)
 
---- get_reverse_best_neighbors_by_gene(genes_id, threshold = 100, keggorg_list = nil)
+--- get_reverse_best_neighbors_by_gene(genes_id, start, max_results)
 
-対象生物種から見てクエリがベストヒットとなる遺伝子を検索します。
+ターゲット側の生物種から見てクエリがベストヒットとなる遺伝子を検索します。
 
 戻値：
-  SSDBResultArray
+  ArrayOfSSDBRelation
 
 例：
   # 大腸菌の遺伝子 b0002 が reverse best neighbor の関係にある遺伝子
-  get_reverse_best_neighbors_by_gene('eco:b0002', 500)
+  get_reverse_best_neighbors_by_gene('eco:b0002', 1, 10)
+  get_reverse_best_neighbors_by_gene('eco:b0002', 11, 10)
 
---- get_paralogs_by_gene(genes_id, threshold = 100)
+--- get_paralogs_by_gene(genes_id, start, max_results)
 
 クエリと同じ生物種内でパラログ遺伝子を検索します。
 
 戻値：
-  SSDBResultArray
+  ArrayOfSSDBRelation
 
 例：
   # 大腸菌の遺伝子 b0002 とパラログの関係にある遺伝子
-  get_paralogs_by_gene('eco:b0002', 500)
+  get_paralogs_by_gene('eco:b0002', 1, 10)
+  get_paralogs_by_gene('eco:b0002', 11, 10)
 
---- get_best_best_homologs_by_genes(keggorg, genes_id_list)
+--- get_similarity_between_genes(genes_id1, genes_id2)
 
-get_best_homologs_by_genes と同様な検索を best-best の関係のあるものに
-絞って行います。ある生物種の遺伝子群が別の生物種のどの遺伝子群にオーソログ
-対応するのかを一度に検索する、といった場合に使えます。
-
-戻値：
-  SSDBResultArray
-
-例：
-  list = ['eco:b0002', 'eco:b0003', 'eco:b0004', 'eco:b0005', 'eco:b0006']
-  get_best_best_homologs_by_genes('hin', list)
-
---- get_score_between_genes(genes_id1, genes_id2)
-
-指定した２つの遺伝子間の Smith-Waterman スコアを返します。
+指定した２つの遺伝子間の Smith-Waterman スコアを含むデータを返します。
 
 戻値：
-  SSDBResult
+  SSDBRelation
 
 例：
-  get_score_between_genes('eco:b0002', 'eco:b3940')
+  # 大腸菌の b0002 遺伝子と b3940 遺伝子間のスコアやアライメント領域を得る
+  get_similarity_between_genes('eco:b0002', 'eco:b3940')
 
---- get_definition_by_gene(genes_id)
 
-指定した遺伝子のデフィニション文字列を返します。
+==== Motif
+
+--- get_motifs_by_gene(genes_id, db)
+
+指定した遺伝子に存在するモチーフのリストを返します。モチーフデータベース
+のリストには、Pfam (pfam), TIGRFAM (tfam), PROSITE pattern (pspt), PROSITE
+profile (pspf) またはこれら全て (all) を指定出来ます。
 
 戻値：
-  string
+  ArrayOfMotifResult
 
 例：
-  get_definition_by_gene('eco:b0002')
+  # 大腸菌の遺伝子 b0002 持つPfamモチーフのリスト
+  get_motifs_by_gene('eco:b0002', 'pfam')
 
---- get_common_motifs_by_genes(target_db_list, genes_id_list, threshold)
-
-指定した遺伝子のリストに共通して存在するモチーフのリストを返します。
-モチーフデータベースのリストには、Pfam (pfam), TIGRFAM (tfam), PROSITE
-(prositepattern, prositeprofile) を指定出来ます。閾値は Pfam か TIGRFAM の
-場合に有効になります。
-
-戻値：
-  MOTIFResultArray
-
-例：
-  # 大腸菌の遺伝子 b0002 と b3940 が共通して持つモチーフのリスト
-  target_db_list = ['pfam', 'tfam']
-  genes_id_list = ['eco:b0002', 'eco:b3940']
-  threshold = 1.0e-10
-  get_common_motifs_by_genes(target_db_list, genes_id_list, threshold)
-
---- get_genes_by_motifs(motif_id_list)
+--- get_genes_by_motifs(motif_id_list, start, max_results)
 
 指定したモチーフを持つ遺伝子を検索します。
 
 戻値：
-  GENESResultArray
+  ArrayOfDefinition
 
 例：
   # Pfam の DnaJ と Prosite の DNAJ_2 にヒットする遺伝子を検索
   list = ['pf:DnaJ', 'ps:DNAJ_2']
-  get_genes_by_motifs(list)
+  get_genes_by_motifs(list, 1, 10)
+  get_genes_by_motifs(list, 11, 10)
+
+
+==== KO, OC, PC
+
+KO (KEGG orthology), OC (KEGG ortholog cluster), PC (KEGG paralog cluster) の
+情報を得るためのメソッドです。KO はキュレーションされたオーソログ遺伝子群、
+OC と PC は機械的にクラスタリングされた相同性のある遺伝子群のデータベースです。
 
 --- get_ko_by_gene(genes_id)
 
@@ -667,31 +823,31 @@ get_best_homologs_by_genes と同様な検索を best-best の関係のあるものに
 
 例：
   # KO 番号 K02208 のアサインされている遺伝子のリスト
-  get_ko_by_gene('ko:K02208')
+  get_ko_by_gene('ko:K02598')
 
---- get_oc_members_by_gene(genes_id)
+--- get_oc_members_by_gene(genes_id, start, max_results)
 
-指定した遺伝子と同じ OC (KEGG Ortholog Cluster) に属する遺伝子のリスト
-を返します。
+指定した遺伝子と同じ OC に属する遺伝子のリストを返します。
 
 戻値：
   ArrayOfstring
 
 例：
   # eco:b0002 遺伝子と同じオーソログクラスターに含まれる遺伝子のリスト
-  get_oc_members_by_gene('eco:b0002')
+  get_oc_members_by_gene('eco:b0002', 1, 10)
+  get_oc_members_by_gene('eco:b0002', 11, 10)
 
---- get_pc_members_by_gene(genes_id)
+--- get_pc_members_by_gene(genes_id, start, max_results)
 
-指定した遺伝子と同じ PC (KEGG Paralog Cluster) に属する遺伝子のリスト
-を返します。
+指定した遺伝子と同じ PC に属する遺伝子のリストを返します。
 
 戻値：
   ArrayOfstring
 
 例：
   # eco:b0002 遺伝子と同じパラログクラスターに含まれる遺伝子のリスト
-  get_pc_members_by_gene('eco:b0002')
+  get_pc_members_by_gene('eco:b0002', 1, 10)
+  get_pc_members_by_gene('eco:b0002', 11, 10)
 
 
 ==== PATHWAY
@@ -699,7 +855,46 @@ get_best_homologs_by_genes と同様な検索を best-best の関係のあるものに
 PATHWAY データベースに対するメソッドの一覧です。PATHWAY データベースに
 ついて詳しくは以下のページを参照してください。
 
-  * ((<URL:http://www.genome.ad.jp/kegg/kegg2.html#pathway>))
+  * ((<URL:http://www.genome.jp/kegg/kegg2.html#pathway>))
+
++ パスウェイへの色づけ
+
+--- mark_pathway_by_objects(pathway_id, object_id_list)
+
+指定した生物種で、与えられたパスウェイマップの与えられたオブジェクト
+（遺伝子、化合物、酵素番号）の対応する枠に色をつけた画像を生成、
+画像の URL を返します。
+
+戻値：
+  string
+
+例：
+  # 大腸菌のパスウェイ path:eco00260 上の遺伝子 eco:b0002 と Homoserine
+  # の cpd:C00263 に対応するボックスを赤く着色した画像の URL
+  obj_list = ['eco:b0002', 'cpd:C00263']
+  mark_pathway_by_objects('path:eco00260', obj_list)
+
+--- color_pathway_by_objects(pathway_id, object_id_list, fg_color_list, bg_color_list)
+
+指定したパスウェイの与えられたオブジェクト（遺伝子、化合物、酵素）に対し、
+文字と枠に fg_color_list で指定した色、背景に bg_color_list で指定した色を
+つけた画像を生成、画像の URL を返します。object_id_list と fg_color_list,
+bg_color_list の要素の数と順番を揃えるように注意する必要があります。
+
+戻値：
+  string
+
+例：
+  # パスウェイ path:eco00053 上に載っている大腸菌の遺伝子 eco:b0207 を
+  # 背景が赤、文字と枠を青で着色し、eco:b1300 の背景を黄色、文字と枠を緑で
+  # 着色した画像の URL を返します。
+  obj_list = ['eco:b0207', 'eco:b1300']
+  fg_list  = ['blue', '#00ff00']
+  bg_list  = ['#ff0000', 'yellow']
+  color_pathway_by_objects('path:eco00053', obj_list, fg_list, bg_list)
+
+
++ パスウェイ上のオブジェクト検索
 
 --- get_genes_by_pathway(pathway_id)
 
@@ -735,6 +930,20 @@ pathway_id に含まれる keggorg で指定します。
   # パスウェイ 00020 に載っている化合物のリスト
   get_compounds_by_pathway('path:eco00020')
 
+--- get_reactions_by_pathway(pathway_id)
+
+指定したパスウェイに載っているリアクション番号のリストを返します。
+
+戻値：
+  ArrayOfstring
+
+例：
+  # パスウェイ 00260 番に載っているリアクションのリスト
+  get_reactions_by_pathways('path:map00260')
+
+
++ オブジェクトからパスウェイ検索
+
 --- get_pathways_by_genes(genes_id_list)
 
 指定した遺伝子が全て載っているパスウェイのリストを返します。
@@ -744,7 +953,7 @@ pathway_id に含まれる keggorg で指定します。
 
 例：
   # 大腸菌の遺伝子 b0077 と b0078 が両方載っているパスウェイのリスト
-  get_pathways_by_genes(['eco:b0077' , 'eco:b0078'])
+  get_pathways_by_genes(['eco:b0077', 'eco:b0078'])
 
 --- get_pathways_by_enzymes(enzyme_id_list)
 
@@ -770,8 +979,7 @@ pathway_id に含まれる keggorg で指定します。
 
 --- get_pathways_by_reactions(reaction_id_list)
 
-指定した REACTION データベースのリアクション番号を全て含むパスウェイの
-リストを返します。
+指定したリアクション番号が全て載っているパスウェイのリストを返します。
 
 戻値：
   ArrayOfstring
@@ -781,43 +989,13 @@ pathway_id に含まれる keggorg で指定します。
   # 反応を含むパスウェイのリスト
   get_pathways_by_reactions(['rn:R00959', 'rn:R02740', 'rn:R00960', 'rn:R01786'])
 
---- get_reactions_by_pathways(pathway_id_list)
 
-指定した全てのパスウェイに載っているリアクション番号のリストを返します。
-
-戻値：
-  ArrayOfstring
-
-例：
-  # パスウェイ 00260 番に載っているリアクションのリスト
-  get_reactions_by_pathways(['path:map00260'])
-
---- get_enzymes_by_reactions(reaction_id_list)
-
-指定したリアクション番号に対応する酵素番号のリストを返します。
-
-戻値：
-  ArrayOfstring
-
-例：
-  # リアクション番号 R00100 を含む酵素番号のリスト
-  get_enzymes_by_reactions(['rn:R00100'])
-
---- get_genes_by_enzymes(enzyme_id_list, keggorg_list)
-
-対象生物種において、指定した酵素番号を持つ遺伝子のリストを返します。
-
-戻値：
-  ArrayOfstring
-
-例：
-  # 酵素番号 1.1.1.1 と 1.2.1.1 を持つ大腸菌の遺伝子のリスト
-  get_genes_by_enzymes(['ec:1.1.1.1','ec:1.2.1.1'], ['eco'])
++ パスウェイ間の関係
 
 --- get_linked_pathways(pathway_id)
 
-指定したパスウェイ番号のパスウェイからリンクされているパスウェイのリス
-トを返します。
+指定したパスウェイ番号のパスウェイからリンクされているパスウェイの
+リストを返します。
 
 戻値：
   ArrayOfstring
@@ -826,165 +1004,130 @@ pathway_id に含まれる keggorg で指定します。
   # パスウェイ path:eco00620 からリンクされているパスウェイのリスト
   get_linked_pathways('path:eco00620')
 
---- mark_all_pathways_by_genes(keggorg, genes_id_list)
 
-指定した生物種で、与えられた遺伝子を全て含むパスウェイを検索し、遺伝子に
-対応する枠に色をつけた画像を生成、画像の URL のリストを返します。
++ 遺伝子と酵素番号の関係
 
-genes_id から生物種が分かるため keggorg を指定するのは冗長ですが、以下の
-by_enzymes, by_compounds メソッドとの対称性のためです。
+--- get_genes_by_enzyme(enzyme_id, org)
 
-戻値：
-  ArrayOfstring
-
-例：
-  # 大腸菌の遺伝子 b0002 を含むパスウェイを検索し、b0002 に対応する
-  # ボックスを赤く着色した画像の URL のリスト
-  mark_all_pathways_by_genes('eco',['eco:b0002'])
-
---- mark_all_pathways_by_enzymes(keggorg, enzyme_id_list)
-
-指定した生物種で、与えられた酵素番号を全て含むパスウェイを検索し、酵素番号に
-対応する枠に色をつけた画像を生成、画像の URL のリストを返します。
+対象生物種において、指定した酵素番号を持つ遺伝子のリストを返します。
 
 戻値：
   ArrayOfstring
 
 例：
-  # 酵素番号 1.2.3.1 と 4.3.1.5 を含むインフルエンザ菌のパスウェイを検索して
-  # これらのボックスを赤く着色した画像の URL のリスト
-  mark_all_pathways_by_enzymes('hin',['ec:1.2.3.1', 'ec:4.3.1.5'])
+  # 酵素番号 1.1.1.1 を持つ大腸菌の遺伝子のリスト
+  get_genes_by_enzyme('ec:1.1.1.1', 'eco')
 
---- mark_all_pathways_by_compounds(keggorg, compound_id_list)
+--- get_enzymes_by_gene(genes_id)
 
-指定した生物種で、与えられた化合物番号を全て含むパスウェイを検索し、化合物に
-対応する枠に色をつけた画像を生成、画像の URL のリストを返します。
+指定した遺伝子に対応する酵素番号のリストを返します。
 
 戻値：
   ArrayOfstring
 
 例：
-  # 化合物番号 C00011 と C00209 を含む枯草菌のパスウェイを検索して
-  # これらの枠を赤く着色した画像の URL のリスト
-  mark_all_pathways_by_compounds('bsu',['cpd:C00011', 'cpd:C00209'])
+  # 大腸菌遺伝子 'eco:b0002' の酵素番号のリスト
+  get_enzymes_by_gene(eco:b0002)
 
---- mark_pathway_by_genes(pathway_id, genes_id_list)
 
-指定したパスウェイに対し、与えられた遺伝子に対応する枠に色をつけた画像を生成、
-画像の URL を返します。
++ 酵素、化合物、リアクションの関係
 
-戻値：
-  ArrayOfstring
+--- get_enzymes_by_compound(compound_id)
 
-例：
-  # パスウェイ path:eco00252 上に載っている大腸菌の遺伝子 eco:b0600 と
-  # eco:b1190 を赤く着色した画像の URL。
-  mark_pathway_by_genes('path:eco00252', ['eco:b0600','eco:b1190'])
-
---- mark_pathway_by_enzymes(pathway_id, enzyme_id_list)
-
-指定したパスウェイに対し、与えられた酵素に対応する枠に色をつけた画像を生成、
-画像の URL を返します。
+指定した化合物番号に対応する酵素番号のリストを返します。
 
 戻値：
   ArrayOfstring
 
 例：
-  # パスウェイ path:eco00660 上に載っている酵素 4.1.1.5 を赤く着色した
-  # 画像の URL。
-  mark_pathway_by_enzymes('path:eco00660', ['ec:4.1.1.5'])
+  # 化合物 'cpd:C00345' の代謝に関わる酵素のリスト
+  get_enzymes_by_compound('cpd:C00345')
 
---- mark_pathway_by_compounds(pathway_id, compound_id_list)
+--- get_enzymes_by_reaction(reaction_id)
 
-指定したパスウェイに対し、与えられた化合物に対応する枠に色をつけた画像を生成、
-画像の URL を返します。
+指定したリアクション番号に対応する酵素番号のリストを返します。
 
 戻値：
   ArrayOfstring
 
 例：
-  # パスウェイ path:eco00620 上に載っている化合物 C000022, C05993, C00083 を
-  # 赤く着色した画像の URL。
-  mark_pathway_by_compounds('path:eco00620', ['cpd:C00022','cpd:C05993','cpd:C00083'])
+  # リアクション番号 R00100 を持つ酵素のリスト
+  get_enzymes_by_reaction('rn:R00100')
 
---- color_pathway_by_genes(pathway_id, genes_id_list, color_list)
+--- get_compounds_by_enzyme(enzyme_id)
 
-指定したパスウェイに対し、与えられた遺伝子に対応する枠に指定した色をつけた
-画像を生成、画像の URL を返します。
+指定した酵素番号に対応する化合物のリストを返します。
 
 戻値：
   ArrayOfstring
 
 例：
-  # パスウェイ path:eco00053 上に載っている大腸菌の遺伝子 eco:b0207 と
-  # eco:b1300 をそれぞれ緑と青で着色した画像の URL。
-  color_pathway_by_genes('path:eco00053', ['eco:b0207','eco:b1300'], ['#00ff00','blue'])
+  # 酵素番号 'ec:2.7.1.12' の代謝に関わる化合物のリスト
+  get_compounds_by_enzyme('ec:2.7.1.12')
 
---- color_pathway_by_enzymes(pathway_id, enzyme_id_list, color_list)
+--- get_compounds_by_reaction(reaction_id)
 
-指定したパスウェイに対し、与えられた酵素に対応する枠に指定した色をつけた
-画像を生成、画像の URL を返します。
+指定したリアクションに対応する化合物のリストを返します。
 
 戻値：
   ArrayOfstring
 
 例：
-  # パスウェイ path:eco00620 上に載っている酵素 3.1.2.1 と 6.4.1.1 を
-  # それぞれ黄色と緑で着色した画像の URL。
-  color_pathway_by_enzymes('path:eco00620', ['ec:3.1.2.1','ec:6.4.1.1'], ['yellow','green'])
+  # リアクション番号 'rn:R00100' の反応に関わる化合物のリスト
+  get_compounds_by_reaction('rn:R00100')
 
---- color_pathway_by_compounds(pathway_id, compound_id_list, color_list)
+--- get_reactions_by_enzyme(enzyme_id)
 
-指定したパスウェイに対し、与えられた化合物に対応する枠に指定した色をつけた
-画像を生成、画像の URL を返します。
+指定した酵素番号に対応するリアクションのリストを返します。
 
 戻値：
   ArrayOfstring
 
 例：
-  # パスウェイ path:eco00660 上に載っている化合物 C06010, C01011, C00651 を
-  # それぞれピンクと緑と青で着色した画像の URL。
-  color_pathway_by_compounds('path:eco00660', ['cpd:C06010','cpd:C01011','cpd:C00651'], ['pink','green','blue'])
+  # 酵素番号 'ec:2.7.1.12' の反応に関わるリアクション番号のリスト
+  get_reactions_by_enzyme('ec:2.7.1.12')
+
+--- get_reactions_by_compound(compound_id)
+
+指定した化合物に対応するリアクションのリストを返します。
+
+戻値：
+  ArrayOfstring
+
+例：
+  # 化合物 'cpd:C00199' の触媒反応に関わるリアクション番号のリスト
+  get_reactions_by_compound('cpd:C00199')
+
 
 ==== GENES
 
 GENES データベースに対するメソッドの一覧です。GENES データベースについて
 詳しくは以下のページを参照してください。
 
-  * ((<URL:http://www.genome.ad.jp/kegg/kegg2.html#genes>))
+  * ((<URL:http://www.genome.jp/kegg/kegg2.html#genes>))
 
---- get_aaseqs(genes_id_list)
+--- get_genes_by_organism(org, start, max_results)
 
-指定した GENES エントリのアミノ酸配列を FASTA フォーマットで取得します。
-
-戻値：
-  string
-
-例：
-  get_aaseqs(['eco:b0002','bsu:BG10065'])
-
---- get_ntseqs(genes_id_list)
-
-指定した GENES エントリの塩基配列を FASTA フォーマットで取得します。
-
-戻値：
-  string
-
-例：
-  get_ntseqs(['eco:b0002','bsu:BG10065'])
-
---- get_all_genes_by_organism(keggorg)
-
-指定した生物種の全 GENES エントリの ID を取得します。
+指定した生物種の全 GENES エントリのうち、start 番目から max_results 分の
+結果を返します。
 
 戻値：
   ArrayOfstring
 
 例：
-  # インフルエンザ菌の全遺伝子の entry_id のリスト
-  get_all_genes_by_organism('hin')
+  # インフルエンザ菌の遺伝子リストを 100 個ずつ得る
+  get_genes_by_organism('hin', 1, 100)
+  get_genes_by_organism('hin', 101, 100)
 
---- get_num_genes_by_organism(keggorg)
+
+==== GENOME
+
+GENOMES データベースに対するメソッドの一覧です。GENOME データベースについて
+詳しくは以下のページを参照してください。
+
+  * ((<URL:http://www.genome.jp/kegg/kegg2.html#genome>))
+
+--- get_number_of_genes_by_organism(org)
 
 指定した生物種が持つ遺伝子数を返します。
 
@@ -993,7 +1136,7 @@ GENES データベースに対するメソッドの一覧です。GENES データベースについて
 
 例：
   # 大腸菌が持つ遺伝子の数
-  get_num_genes_by_organism('eco')
+  get_number_of_genes_by_organism('eco')
 
 =end
 
