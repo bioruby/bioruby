@@ -17,10 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: expression.rb,v 1.2 2001/11/08 07:06:04 katayama Exp $
+#  $Id: expression.rb,v 1.3 2001/11/08 09:55:37 shuichi Exp $
 #
 
 require "bio/db"
+include Math
 
 module Bio
 
@@ -45,6 +46,26 @@ module Bio
         end
       end
       attr_reader :orf2val
+
+      def up_regulate(num=20)
+        hash = logy_minus_logx
+        ary = hash.to_a.sort{|a, b| b[1] <=> a[1]}
+        ary[0..num]
+      end
+
+      def down_regulate(num=20)
+        hash = logy_minus_logx
+        ary = hash.to_a.sort{|a, b| a[1] <=> b[1]}
+        ary[0..num]
+      end
+
+      def logy_minus_logx
+        hash = Hash.new('')
+        orf2val.each do |k, v|
+          hash[k] = log10(v[2] - v[3]) - log10(v[0] - v[1])
+        end
+        hash
+      end
 
       # private
     end
