@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby  
+#!/usr/bin/env ruby
 # 
 # bioflat - OBDA flat file indexer (executable)
 # 
@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 # 
-#  $Id: br_bioflat.rb,v 1.8 2002/09/16 08:14:04 ng Exp $ 
+#  $Id: br_bioflat.rb,v 1.9 2002/12/03 18:54:43 k Exp $ 
 # 
 
 require 'bio'

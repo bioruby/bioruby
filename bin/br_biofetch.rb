@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby 
+#!/usr/bin/env ruby
 #
 # biofetch - BioFetch client
 #
@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#  $Id: br_biofetch.rb,v 1.1 2002/03/04 07:33:05 katayama Exp $
+#  $Id: br_biofetch.rb,v 1.2 2002/12/03 18:54:43 k Exp $
 #
 
 require 'bio/io/fetch'
