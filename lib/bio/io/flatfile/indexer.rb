@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.7 2003/02/28 10:29:40 ng Exp $ 
+#  $Id: indexer.rb,v 1.8 2003/02/28 15:01:47 ng Exp $ 
 # 
 
 module Bio
@@ -260,12 +260,13 @@ module Bio
 
 	DEBUG.print "reading files...\n"
 
-	addindex_bdb(db, BDBdefault::flag_write, 0, parser, options, *files)
+	addindex_bdb(db, BDBdefault::flag_write, (0...(files.size)),
+		     parser, options)
 	db.close
 	true
       end #def
 
-      def self.addindex_bdb(db, flag, fileids_base, parser, options, *files)
+      def self.addindex_bdb(db, flag, need_update, parser, options)
 	DEBUG.print "reading files...\n"
 
 	pn = db.primary
@@ -279,8 +280,8 @@ module Bio
 	  x.file.close
 	end
 
-	fileid = fileids_base
-	files.each do |filename|
+	need_update.each do |fileid|
+	  filename = db.fileids[fileid].filename
 	  parser.open_flatfile(fileid, filename)
 	  parser.each do |pos, len|
 	    p = parser.parse_primary
@@ -293,7 +294,6 @@ module Bio
 	    end
 	  end
 	  parser.close_flatfile
-	  fileid += 1
 	end
 	true
       end #def
@@ -306,19 +306,20 @@ module Bio
 	db.fileids.add(*files)
 	db.primary = parser.primary.name
 	db.secondary = parser.secondary.names
-
 	db.fileids.recalc
 	DEBUG.print "writing DabaBank...\n"
 	db.write('wb')
 
-	addindex_flat(db, :new, 0, parser, options, *files)
+	addindex_flat(db, :new, (0...(files.size)), parser, options)
 	db.close
 	true
       end #def
 
-      def self.addindex_flat(db, mode, fileids_base, parser, options, *files)
+      def self.addindex_flat(db, mode, need_update, parser, options)
 	require 'tempfile'
 	prog = options['sort_program']
+
+	return false if need_update.size == 0
 
 	DEBUG.print "prepare temporary files...\n"
 	tempbase = "bioflat#{rand(10000)}-"
@@ -331,8 +332,8 @@ module Bio
 	end
 
 	DEBUG.print "reading files...\n"
-	fileid = fileids_base
-	files.each do |filename|
+	need_update.each do |fileid|
+	  filename = db.fileids[fileid].filename
 	  parser.open_flatfile(fileid, filename)
 	  parser.each do |pos, len|
 	    p = parser.parse_primary
@@ -392,17 +393,24 @@ module Bio
 	sort_proc
       end
 
-      def self.addindex(name, parser, options, *files)
+      def self.update_index(name, parser, options, *files)
 	db = DataBank.open(name)
-	raise 'Index is not up to date' unless db.fileids.check_all
 
 	if parser then
 	  raise 'file format mismatch' if db.format != parser.format
 	else
-	  dbclass_orig =
-	    Bio::FlatFile.autodetect_file(db.fileids[0].filename)
-	  dbclass_new =
-	    Bio::FlatFile.autodetect_file(files[0])
+
+	  begin
+	    dbclass_orig =
+	      Bio::FlatFile.autodetect_file(db.fileids[0].filename)
+	  rescue TypeError, Errno::ENOENT
+	  end
+	  begin
+	    dbclass_new =
+	      Bio::FlatFile.autodetect_file(files[0])
+	  rescue TypeError, Errno::ENOENT
+	  end
+
 	  case db.format
 	  when 'swiss', 'embl'
 	    parser = Parser.new(db.format)
@@ -429,19 +437,51 @@ module Bio
 	parser.set_primary_namespace(db.primary.name)
 	parser.add_secondary_namespaces(*db.secondary.names)
 
-	fileids_base = db.fileids.size
-	db.fileids.add(*files)
+	if options['renew'] then
+	  newfiles = db.fileids.filenames
+	  newfiles.concat(files)
+	  newfiles2 = newfiles.sort
+	  newfiles2.uniq!
+	  newfiles3 = []
+	  newfiles.each do |x|
+	    newfiles3 << x if newfiles2.delete(x)
+	  end
+	  t = db.index_type
+	  db.close
+	  case t
+	  when MAGIC_BDB
+	    Indexer::makeindexBDB(name, parser, options, *newfiles3)
+	  when MAGIC_FLAT
+	    Indexer::makeindexFlat(name, parser, options, *newfiles3)
+	  else
+	    raise 'Unsupported index type'
+	  end
+	  return true
+	end
 
+	need_update = []
+	newfiles = files.dup
+	db.fileids.cache_all
+	db.fileids.each_with_index do |f, i|
+	  need_update << i unless f.check
+	  newfiles.delete(f.filename)
+	end
+
+	b = db.fileids.size
+	db.fileids.add(*newfiles)
 	db.fileids.recalc
+
+	need_update.concat((b...(b + newfiles.size)).to_a)
+
 	DEBUG.print "writing DabaBank...\n"
 	db.write('wb', BDBdefault::flag_append)
 
 	case db.index_type
 	when MAGIC_BDB
 	  addindex_bdb(db, BDBdefault::flag_append,
-		       fileids_base, parser, options, *files)
+		       need_update, parser, options)
 	when MAGIC_FLAT
-	  addindex_flat(db, :add, fileids_base, parser, options, *files)
+	  addindex_flat(db, :add, need_update, parser, options)
 	else
 	  raise 'Unsupported index type'
 	end
@@ -503,7 +543,7 @@ module Bio
       else
 	parser = nil
       end
-      Indexer::addindex(dbname, parser, options, *files)
+      Indexer::update_index(dbname, parser, options, *files)
     end #def update_index
 
   end #class FlatFileIndex

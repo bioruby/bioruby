@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: index.rb,v 1.6 2003/02/28 10:29:40 ng Exp $ 
+#  $Id: index.rb,v 1.7 2003/02/28 15:01:47 ng Exp $ 
 # 
 
 
@@ -391,6 +391,24 @@ module Bio
 	  yield(x, i) if x
 	end
 	self
+      end
+
+      def keys
+	self.cache_all
+	a = []
+	(0...self.size).each do |i|
+	  a << i if self[i]
+	end
+	a
+      end
+
+      def filenames
+	self.cache_all
+	a = []
+	self.each do |x|
+	  a << x.filename
+	end
+	a
       end
 
       def check_all

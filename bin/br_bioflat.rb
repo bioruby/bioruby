@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 # 
-#  $Id: br_bioflat.rb,v 1.11 2003/02/28 10:29:40 ng Exp $ 
+#  $Id: br_bioflat.rb,v 1.12 2003/02/28 15:01:47 ng Exp $ 
 # 
 
 require 'bio'
@@ -45,6 +45,9 @@ Create index options:
 Options only valid for --create (or --update) --type flat:
   --sort=/path/to/sort   use external sort program (e.g. /usr/bin/sort)
   --sort=BUILTIN         use builtin sort routine
+
+Options only valid for --update:
+  --renew                re-read all flatfiles and update whole index
 
 Backward compatibility:
   --makeindex DIR/DBNAME
@@ -127,6 +130,9 @@ def do_index(mode = :create)
 	options['secondary_namespaces'] = []
       end
       options['secondary_namespaces'] << $1 if $1.length > 0
+
+    when /^\-\-?renew/
+      options['renew'] = true
 
     else
       STDERR.print "Warning: ignoring invalid option #{x.inspect}\n"
