@@ -17,10 +17,9 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.11 2002/06/25 08:12:26 n Exp $
+#  $Id: sptr.rb,v 1.12 2002/06/25 11:56:14 k Exp $
 #
 
-#require 'bio/db'
 require 'bio/db/embl'
 
 module Bio
@@ -53,6 +52,8 @@ module Bio
   # ---- ---------------------------  --------------------------------
 
   class SPTR < EMBLDB
+
+    include EMBL_COMMON
     
     DELIMITER	= RS = "\n//\n"
     TAGSIZE	= 5

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: embl.rb,v 1.11 2002/06/25 08:10:25 n Exp $
+#  $Id: embl.rb,v 1.12 2002/06/25 11:56:14 k Exp $
 #
 
 
@@ -50,7 +50,7 @@ require 'bio/db'
 
 module Bio
 
-  class  EMBLDB
+  module  EMBL_COMMON
 
     # Shared methods in Bio::EMBL and Bio::SPTR
 
@@ -243,7 +243,7 @@ module Bio
       end
     end
 
-  end # End of class EMBLDB
+  end
 
 end # End of module Bio
 
@@ -252,6 +252,8 @@ end # End of module Bio
 module Bio
 
   class EMBL < EMBLDB
+
+    include EMBL_COMMON
     
     DELIMITER	= RS = "\n//\n"
     TAGSIZE	= 5
