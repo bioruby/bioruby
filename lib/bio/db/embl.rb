@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: embl.rb,v 1.17 2003/03/16 13:31:49 n Exp $
+#  $Id: embl.rb,v 1.18 2003/03/16 18:01:39 n Exp $
 #
 
 require 'bio/db'
@@ -95,9 +95,9 @@ module Bio
       unless @data['OS']
 	os = Array.new
 	fetch('OS').split(/, and|, /).each do |tmp|
-	  if tmp =~ /([A-Z][a-z]+ *[\w\d \:\'\+\-]+[\w\d])/
+	  if tmp =~ /([A-Z][a-z]* *[\w\d \:\'\+\-]+[\w\d])/
 	    org = $1
-	    tmp =~ /(\(.+)\)/ 
+	    tmp =~ /(\(.+\))/ 
 	    os.push({'name' => $1, 'os' => org})
 	  else
 	    raise "Error: OS Line. #{$!}\n#{fetch('OS')}\n"

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.15 2003/02/19 03:40:41 n Exp $
+#  $Id: sptr.rb,v 1.16 2003/03/16 18:01:39 n Exp $
 #
 
 require 'bio/db/embl'
@@ -374,34 +374,44 @@ module Bio
     #                                 'Description'=>String},...]
     def ft(feature_name = nil)
       unless @data['FT']
-	table        = Hash.new
+	table        = Hash.new()
 	last_feature = nil
 
 	begin
-	  get('FT').split("\n").each do |line|
+	  get('FT').split("\n").each {|line|
 	    feature = line[5..12].strip
 
-	    if feature == ''
-	      table[last_feature].last['Description'] << \
-	      line[34..74].sub('\.$','').strip if line[34..74]
+	    if feature == '' and line[34..74]
+	      tmp = ' ' + line[34..74].strip 
+	      table[last_feature].last['Description'] << tmp
+
 	    else
-	      from        = line[14..19].strip
-	      to          = line[21..26].strip
-	      description = line[34..74].sub('\.$','').strip if line[34..74]
-	      table[feature] = Array.new unless table[feature]
+	      from = line[14..19].strip
+	      to   = line[21..26].strip
+	      desc = line[34..74].strip mbox.kyoto-inet.or.jpif line[34..74]
 
-	      table[feature].push({'From' => from, 'To' => to, \
-  			           'Description' => description})
-
+	      table[feature] = [] unless table[feature]
+	      table[feature] << {'From' => from, 'To' => to, 'Description' => desc}
 	      last_feature = feature
 	    end
-	  end
+	  }
 	rescue
-	  raise "Invalid FT Lines:, \n'#{self.get('FT')}'\n"
+	  raise "Invalid FT Lines(#{$!}):, \n'#{self.get('FT')}'\n"
 	end
 
+	table.each_key {|k|
+	  table[k].each {|e|
+	    if / -> / =~ e['Description']
+	      e['Description'].sub!(/([A-Z][A-Z ]+[A-Z]) -> ([A-Z][A-Z ]+[A-Z])/){ 
+		a = $1
+		b = $2
+		a.gsub(' ','') + " -> " + b.gsub(' ','') 
+	      }
+	    end
+	  }
+	}
+
 	@data['FT'] = table
-      else
       end
 
       if feature_name
