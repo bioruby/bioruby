@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.19 2002/03/04 07:41:33 katayama Exp $
+#  $Id: sequence.rb,v 0.20 2002/05/16 05:22:30 k Exp $
 #
 
 require 'bio/data/na'
@@ -312,6 +312,9 @@ module Bio
 
   end
 
+  # alias for short
+  class Seq < Sequence; end
+
 end
 
 
@@ -459,6 +462,8 @@ end
 =begin
 
 = Bio::Sequence
+
+You can use Bio::Seq instead of Bio::Sequence for short.
 
 --- Bio::Sequence#subseq(start = 1, end = self.length)
 
