@@ -13,18 +13,15 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: medline.rb,v 1.1 2001/09/17 22:33:24 katayama Exp $
+#  $Id: medline.rb,v 1.2 2001/09/18 05:57:37 katayama Exp $
 #
 
 require 'bio/db'
+require 'bio/reference'
 
 class MEDLINE < NCBIDB
 
   def initialize(entry)
-
-    entry = entry.tr("\r", "\n").squeeze("\n")
-    entry = entry.sub(/.*<pre>/, '').sub(/<\/pre>.*/, '')
-
     @pubmed = Hash.new('')
 
     tag = ''
@@ -37,7 +34,7 @@ class MEDLINE < NCBIDB
   end
 
 
-  # for Reference class
+  # Reference object
   def reference
     hash = Hash.new('')
 
@@ -48,10 +45,10 @@ class MEDLINE < NCBIDB
     hash['issue']         = issue
     hash['pages']         = pages
     hash['year']          = year
-    hash['pubmed']        = pubmed
-    hash['medline']       = medline
+    hash['pubmed']        = pmid
+    hash['medline']       = ui
 
-    return hash
+    return Reference.new(hash)
   end
 
 
@@ -62,14 +59,12 @@ class MEDLINE < NCBIDB
   def pmid
     @pubmed['PMID'].strip
   end
-  alias pubmed pmid
 
   # UI   - MEDLINE Unique Identifier
   #   Unique number assigned to each MEDLINE citation.
   def ui
     @pubmed['UI'].strip
   end
-  alias medline ui
 
   # TA   - Journal Title Abbreviation
   #   Standard journal title abbreviation.
