@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.10 2001/11/08 12:45:29 katayama Exp $
+#  $Id: bio.rb,v 1.11 2001/11/08 13:54:22 shuichi Exp $
 #
 
 module Bio
@@ -82,6 +82,7 @@ require 'bio/db/kegg/brite'
 require 'bio/db/kegg/cell'
 require 'bio/db/kegg/compound'
 require 'bio/db/kegg/enzyme'
+require 'bio/db/kegg/microarray'
 
 ## AAindex
 
