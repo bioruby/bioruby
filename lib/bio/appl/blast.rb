@@ -17,138 +17,134 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.7 2001/11/22 06:09:22 nakao Exp $
+#  $Id: blast.rb,v 1.8 2002/01/07 08:51:27 nakao Exp $
 #
 
-#require 'net/http'
+require 'net/http'
+require 'cgi-lib'
 begin
   require 'xmlparser'
 rescue LoadError
 end
 
 module Bio
+  class Blast
+    class BlastExecError < StandardError;    end
+    class BlastOptionsError < ArgumentError; end
+    class Options;                           end
+    class Report
+      class XMLRetry < Exception; end
+      class Iteration;            end
+      class Hit;                  end
+      class Hsp;                  end
+    end
+  end
+end
+
+
+
+module Bio
 
   class Blast
 
-    class BlastExecError < StandardError; end
-    class BlastOptionsError < ArgumentError; end
-
-    ##
+    ## Bio::Blast.new 
+    # Constructor is called by Blast.remote or Blast.local class method. 
+    #
     # ARGUMENTS:
-    # server = { 'host'=>'localhost','port'=>8080, 'cgi'=>'/blast.cgi',
-    #            'proxy'=>'proxy', 'proxy_port'=>8000 }
+    # server = { 'host'       => 'localhost',
+    #            'port'       => 8080, 
+    #            'path'       => '/blast.cgi',
+    #            'proxy'      => 'proxy', 
+    #            'proxy_port' => 8000 }
     # opts   = {'-m' => 7, '-e' => 0.0001 , ...}
-    def initialize (server = nil, blastall = nil, \
-		    program = nil, db = nil, opts = nil)
+    #
+    def initialize(server = nil, blastall = nil, \
+		   program = nil, db = nil, opts = nil)
       @server   = server
       @blastall = blastall
       @program  = program
       @db       = db
-      @opts     = opts
+      if opts.is_a? Options
+	@opts = opts
+      else
+	@opts = Options.new(opts)
+      end
       @io       = nil
     end
     attr_accessor :server, :program, :db, :opts
+
     # Blast#server['pryxy'] = 'proxy'
     # Blast#server['pryxy_port'] = 8000
+    #
+
     ##
-    # constructor for local blastall
+    # Constructor for local blastall
     # blastall: /path/to/blastall
     # program:  (blastp|blastn|tblastx|blasty|...)
     # db:       /path/to/db
     # opts:     {'-e' => 0.1, ... } 
-    def Blast.local (blastall, program, db, opts = nil)
+    def Blast.local(blastall, program, db, opts = nil)
       self.new(nil, blastall, program, db, opts)
     end
 
     ##
-    # constructor for remote blast server
-    def Blast.remote (server, program, db, opts = nil)
-      self.new(server, nil, program, db, opts)
-    end
+    # Constructor for remote blast server
     #
-    # constructor for remote blast server on NCBI
-    def Blast.ncbi (program, db, opts = nil)
-      server = {'server'=>'NCBI',
-	'host'=>'www.ncbi.nlm.nih.gov','cgi'=>'/blast/blast.cgi'}
-      self.new(server, nil, program, db, opts)
-    end
+    # opts = Bio::Blast::Options.new(opts)
+    # opts.set(blast_opt_code, cgi_post_key, default_value)
+    # opts.set_value(blast_opt_code, value)
     #
-    # constructor for remote blast server on GenomeNet
-    def Blast.genomenet (program, db, opts = nil)
-      server = {'server'=>'GenomeNet',
-	'host'=>'blast.genome.ad.jp','cgi'=>'/sit-bin/nph-blast'}
+    # server['server']
+    # server['host']
+    # server['path']
+    def Blast.remote(server, program, db, opts)
       self.new(server, nil, program, db, opts)
     end
-    
+
     ##
     # query in (multi) fasta format file in String
     def query(query) 
       if @server
 	return remote_blast(query)
-      elsif @blastall
+      else
 	return local_blast(query)
       end
     end
     alias exec query
 
+    
     ##
     # execute blastall in remote server
     def remote_blast(query)
-      raise NotImplementError, "Not yet implimented"
-#
-#      http = New::HTTP.new(@server['host'],@server['port'])
-#      data = set_post_data(opts,query) 
-#      result = http.post2(@server['cgi'], data)
-#      reports = preparse(result.body)
-#
-#	return reports.read.split("\n<\\?xml").collect { |entry|	
-#	  unless entry =~ /^<.xml/
-#	    Report.new('<?xml'+entry)
-#	  else
-#	    Report.new(entry)
-#	  end
-#	}
-#
+      @opts.set_value('-i', CGI.escape(query))
+      @opts.set_value('-d', CGI.escape(@db))
+      @opts.set_value('-p', CGI.escape(@program))
+
+      http = Net::HTTP.new(@server['host'])
+      response, result = http.post(@server['path'], @opts.post_data)
+
+      result.sub!(@server['post_proc'],'')
+      
+      reports = result.split("\n<\\?xml").collect { |entry|	
+	if entry =~ /^<.xml/
+	  Report.new(entry)
+	else
+	  if entry =~ /DOCTYPE BlastOutput PUBLIC/
+	    Report.new('<?xml'+entry)
+	  end
+	end
+      }
+      reports.delete(nil)
+      return reports
     end
     private :remote_blast
-    #
-    def set_post_data
-      raise NotImplementError, "Not yet implimented"
-#----------------------------#{$id(%13x)}
-#Content-Disposition: form-data; name="#{name}"
-#
-#----------------------------#{$id(%13x)}
-#Content-Disposition: form-data; name="upload_file"; filename="#{filename}"
-#Content-Type: application/octet-stream
-#
-#
-#----------------------------#{$id(%13x)}--
-# data = "
-    end
-    private :set_post_data
-    #
-    def preparse(data)
-      raise NotImplementError, "Not yet implimented"
-    end
-    private :preparse
-
-
-
+    
+    
     ##
     # execute blastall in local machine
     def local_blast(query)
       cmd = "#{@blastall} -p #{@program} -d #{@db} -m 7"
-
-      # Check blastall options 
-      if @opts.type == Hash
-	@opts.each do |k,v|
-	  if k =~ /^-[eFGEXIqrvbfgQDaOJMWzkPYSTlUyZRnLA]$/
-	    cmd += " #{k} #{v} "
-	  else
-	    raise BlastOptionsError, "Error: Invalid option #{k} #{v}"
-	  end
-	end
-      end
+      cmd += @opts.checkout
 
       begin 
 	@io = IO.popen(cmd, "w+")
@@ -164,14 +160,15 @@ module Bio
 	    Report.new(entry)
 	  end
 	}
-	@io.close
       rescue BlastExecError
 	raise "Error: #{$!}: #{cmd} \n"
       ensure
 	@io.close
       end
+
     end
     private :local_blast
+
 
     ## ``blastall'' and ``db'' check methods
     #
@@ -186,6 +183,66 @@ module Bio
     end
 
 
+    ##
+    # Bio::Blast::Options 
+    # Contains blast_opts_name, cgi_name, cgi_value and cgi_default for each 
+    # options for specific remote blast server.
+    #
+    class Options
+      @codes = 'eFGEXIqrvbfgQDaOJMWzkPYSTlUyZRnLA'
+      def initialize(options)
+	# blastall 2.2.1
+	@opts = options
+	@name = Hash.new
+	@value = Hash.new
+	@default = Hash.new
+      end
+      attr_reader :codes, :opts
+
+      def Options.codes
+	Regexp.new("^-[#{@codes}]$")
+      end
+      
+      # checkout options
+      def checkout
+	cmd = ''
+	@opts.each do |k,v|
+	  if k =~ Options.codes
+	    cmd += " #{k} #{v} "
+	  else
+	    raise BlastOptionsError, "Error: Invalid option #{k} #{v}"
+	  end
+	end
+	return cmd
+      end
+
+      def set(opt_code, name, default = nil)
+	@name[opt_code] = name
+	@default[opt_code] = default unless default == nil
+      end
+
+      def set_value(opt_code, value)
+	@value[opt_code] = value
+      end
+
+      def get(opt_code = nil, value = nil)
+	if opt_code
+	  if value == nil
+	    value = @default[opt_code]
+	  end
+	  return "#{@name[opt_code]}=#{value}"
+	else
+	  list = @name.keys.collect { |opt_code|
+	    self.get(opt_code, @value[opt_code])
+	  }
+	  return list.join('&')
+	end
+      end                 
+      alias post_data get
+
+    end                  # class Bio::Blast::Options
+
+
 
     ##
     # Blast (-m 7) XML Report Parser Class
@@ -193,8 +250,6 @@ module Bio
     # This class is tested blastn -m 7 report only.
     class Report
 
-      class XMLRetry < Exception; end
-	
       def initialize (xml)
 	@program   = ''
 	@version   = ''
@@ -215,7 +270,7 @@ module Bio
       alias itrs iteration
 
 
-      def parse (xml)
+      def parse(xml)
 	parser = XMLParser.new
 	def parser.default; end
 	
@@ -373,7 +428,7 @@ module Bio
 	when 'BlastOutput_reference'
 	  @reference = entry
 	when 'BlastOutput_db'
-	  @db = entry[tag]
+	  @db = entry[tag].strip
 	when 'BlastOutput_query-ID'
 	  @query_ID = entry[tag]
 	when 'BlastOutput_query-def'
@@ -450,15 +505,13 @@ module Bio
       end
 
       def parse_statistics(hash)
-	labels = {
-	  'db-num'     => 'Statistics_db-num',
-	  'db-len'     => 'Statistics_db-len',
-	  'hsp-len'    => 'Statistics_hsp-len',
-	  'eff-space'  => 'Statistics_eff-space',
-	  'kappa'      => 'Statistics_kappa',
-	  'lambda'     => 'Statistics_lambda',
-	  'entropy'    => 'Statistics_entropy'
-	}
+	labels = { 'db-num'     => 'Statistics_db-num',
+	           'db-len'     => 'Statistics_db-len',
+	           'hsp-len'    => 'Statistics_hsp-len',
+	           'eff-space'  => 'Statistics_eff-space',
+	           'kappa'      => 'Statistics_kappa',
+	           'lambda'     => 'Statistics_lambda',
+	           'entropy'    => 'Statistics_entropy'	}
 	labels.each do |k,v|
 	  if k == 'dn-num' or k == 'db-len' or k == 'hsp-len'
 	    @statistics[k] = hash[v].to_i
@@ -475,66 +528,151 @@ module Bio
 end				# modlue Bio
 
 
+#
+# set specific remote blast servers
+# 
+#
+module Bio
+  class Blast
+
+    #
+    # Constructor for remote blast server on NCBI
+    #
+    def Blast.ncbi(program, db, options = nil)
+      #
+      # See also http://www.ncbi.nlm.nih.gov/BLAST/
+      #
+      opts = Options.new(options)
+      #Blast_opts_code, cgi_post_tag, default_value
+      opts.set('-i', '')
+      opts.set('-p', '')
+      opts.set('-d', 'database',         'nr')
+      opts.set('-e', 'expect',           '10')
+      opts.set('-m', 'alignment_view',   '7')
+      opts.set('-F', 'filter',           'F')
+      opts.set('-v', 'descriptions',     '500')
+      opts.set('-b', 'alignments',       '500')
+      opts.set('-M', 'matrix',           'BLOSUM62')
+      opts.set('-Q', 'queryGeneticCode', '1')
+      opts.set('-G', 'advancedOptionG',  '11') 
+      opts.set('-E', 'advancedOptionE',  '1')
+      opts.set('-q', 'advancedOptionQ',  '-3')
+      opts.set('-r', 'advancedOptionR',  '1') 
+      opts.set('-W', 'advancedOptionW',  '11')
+      opts.set('Protocol', 'resultReturnProtocol', 'www')  # or 'email'
+      opts.set('minLen',   'minimumLength',        '30')
+      opts.set('minLenP',  'minimumLengthProtein', '10')
+      opts.set('maxLen',   'maximumLength',        '100000')
+      opts.set('maxLenP',  'maximumLengthProtein', '50000')
+
+      server = {'server' => 'NCBI',
+        	'host'   => 'www.ncbi.nlm.nih.gov',
+   	        'path'   => '/blast/blast.cgi',
+                'post_proc' => '' }
+
+      self.new(server, nil, program, db, opts)
+    end
+
+    #
+    # constructor for remote blast server on GenomeNet
+    #
+    def Blast.genomenet(program, db, options = nil)
+      #
+      # See also http://blast.genome.ad.jp/
+      # 
+      opts = Options.new(options)
+      # sequence: sequence 
+      opts.set('-i',    'sequence')
+      # prog    : blastn,blastp,tblastn,blastx
+      opts.set('-p',    'prog')
+      # dbname  : nr-aa,genes,vgenes,swissprot,swissprot-upd,pir,prf,pdbstr,
+      #           nr-nt,genbank-nonst,gbnonst-upd,dbest,dbgss,htgs,dbsts,
+      #           embl-nonst,embnonst-upd,epd,genes-nt,genome,vgenes-nt,vgenome
+      opts.set('-d',    'dbname')
+      # alignment_view : 7 (-m)
+      opts.set('-m',    'alignment_view', '7')
+      # * Set the maximum number of database sequences to be reported
+      opts.set('-v',    'V_value',        '500')
+      # * Set the maximum number of alignments to be displayed
+      opts.set('-b',    'B_value',        '250')
+      # addr    : e-mail address
+      opts.set('addr',  'addr')
+      # matrix  : blosum62,blosum80,pam30,pam70,pam250
+      opts.set('-M',    'matrix',         'blosum62')
+      # * If necessary, select the filter to mask your query sequence
+      opts.set('-F',    'filter',         'F')
+      opts.set('other', 'other_param')
+      opts.set_value('other', CGI.escape(opts.opts.to_a.flatten.join(' ')))
+
+      server = {'server'    => 'GenomeNet',
+	        'host'      => 'blast.genome.ad.jp',
+	        'path'      => '/sit-bin/nph-blast',
+	        'post_proc' => "\n</PRE>\n\n</BODY>\n\n</HTML>\n\n" }
+
+      self.new(server, nil, program, db, opts)
+    end
+
+  end       # class Blast
+end         # module Bio
+
+
 
 # Testing code
 
 if __FILE__ == $0
 
-  fna="> hoge
-cagcatgtacgtgatcgtacgtagctagtcagtcgtatctatggcgcgcgcgcgcatctgactgtacga
-cggcgtatcgctatctgctctcttttagcttatcgggcgctatcttcgatcttagcttcgcgcattg
-ccccccccggggggtgatcgctgcgggctcggcgctcggctcgcgtggggcgggcgggcgcgcggcg
-> fuga
-aaaaaccaacccaccccccccccccacacatcgtatagccacgggcgcggcgtatggctagagatcgga
-acgatagctaggcgcgcgcgcgtatatattatttttttttttatatatttatatattattatatattat
-atatttattatatttaaaaaaaaaaaattatatatatatatttattttatagatgctcagctacggcatc
-> hoge2
-cagcatgtacgtgatcgtacgtagctagtcagtcgtatctatggcgcgcgcgcgcatctgactgtacga
-cggcgtatcgctatctgctctcttttagcttatcgggcgctatcttcgatcttagcttcgcgcattg
-ccccccccggggggtgatcgctgcgggctcggcgctcggctcgcgtggggcgggcgggcgcgcggcg
-"
-  
-  puts "= = Bio::Blast.local = ="
-  opts = {'-e' => 1.0}
+  require 'bio/io/dbget'
+  fna = Bio::DBGET.bget('-f -n 1 eco:b0002')
 
-  blastall = '/bio/bin/blastall'     # option
-  db = '/bio/db/blast/genome/mtu'    # option
+  opts = {'-e' => '10e-10', '-a' => '3', '-F' => 'T'}
+  print "\tp opts\t#=> "
+  p opts
 
-  bls = Bio::Blast.local(blastall, 'blastn', db, opts)
+#  puts "= = Bio::Blast.local = ="
+#
+#  blastall = '/bio/bin/blastall'     # option
+#  db = '/bio/db/blast/genome/mtu'    # option
+#
+#  bls = Bio::Blast.local(blastall, 'blastn', db, opts)
+
+  bls = Bio::Blast.genomenet('blastp', 'genes', opts)
+  print "\tp bls\t#=> "
   p bls
 
-  puts "\n = Bio::Blast.blastall? =="
-  p bls.blastall?
+  puts "\n = Bio::Blast.query(fna) ="
+  bs = bls.query(fna)
 
-  puts "\n = Bio::Blast.db? ="
-  p bls.db?
+#  puts "\n = Bio::Blast.blastall? =="
+#  p bls.blastall?
+#  puts "\n = Bio::Blast.db? ="
+#  p bls.db?
 
 
   puts "\n = p fna ="
   puts fna
 
   puts "\n = Bio::Blast.query(fna) ="
-  bs = bls.query(fna)
+  reports = bls.query(fna)
 
-  puts "\n = bs.size ="
-  p bs.size
+  print "\treports.size\t#=> "
+  p reports.size
 
-
-  bs.each do |b|
+  puts "\n= = reports.each do |b| "
+  reports.each do |b|
     puts "\n= = Bio::Tools::Blast::Report = ="
-    puts "   = = Report#program = ="
+    print "\tb.program    #=> "
     p b.program
-    puts "   = = Report#version = ="
+    print "\tb.version    #=> "
     p b.version
-    puts "   = = Report#reference = ="
+    print "\tb.reference  #=> "
     p b.reference
-    puts "   = = Report#db = ="
+    print "\tb.db         #=> "
     p b.db
-    puts "   = = Report#query_ID = ="
+    print "\tb.query_ID   #=> "
     p b.query_ID
-    puts "   = = Report#query_def = ="
+    print "\tb.query_def  #=> "
     p b.query_def
-    puts "   = = Report#query_len = ="
+    print "\tb.query_len  #=> "
     p b.query_len
     
     puts "\n= = Parameters = ="
@@ -544,38 +682,87 @@ ccccccccggggggtgatcgctgcgggctcggcgctcggctcgcgtggggcgggcgggcgcgcggcg
     p b.statistics
 
   
+    puts "\n= = b.itreration.each do |itr| "
     b.iteration.each do |itr|
       puts "\n= = Bio::Blast::Report::Iteration = ="
       
-      puts "   = = Iteration#num = ="
+      print "\titr.num        #=> "
       p itr.num
 
+      print "\titr.hits.size  #=> "
+      p itr.hits.size
+
+      puts "\n= = itr.hits.each do |hit| "
       itr.hits.each do |hit|
 	puts "\n = = Bio::Blast::Report::Hit = ="
-	puts "   = = Hit#num = ="
+	print "\thit.num       #=> "
 	p hit.num
-	puts "   = = Hit#_id = ="
+	print "\thit._id       #=> "
 	p hit._id
-	puts "   = = Hit#_def = ="
+	print "\thit._def      #=> "
 	p hit._def
-	puts "   = = Hit#accession = ="
+	print "\thit.accession #=> "
 	p hit.accession
-	puts "   = = Hit#len = ="
+	print "\thit.len       #=> "
 	p hit.len
+
+	print "\thit.hsps.size #=> "
+	p hit.hsps.size
+
 	
 	hit.hsps.each do |hsp|
 	  puts "\n  = = Bio::Blast::Report::Hsp = ="
-	  p hsp
+	  print "\thsp.num          #=> "
+	  p hsp.num
+	  print "\thsp.bit_score    #=> "
+	  p hsp.bit_score 
+	  print "\thsp.score        #=> "
+	  p hsp.score
+	  print "\thsp.evalue       #=> "
+	  p hsp.evalue
+	  print "\thsp.identity     #=> "
+	  p hsp.identity
+	  print "\thsp.gaps         #=> "
+	  p hsp.gaps
+	  print "\thsp.positive     #=> "
+	  p hsp.positive
+	  print "\thsp.align_len    #=> "
+	  p hsp.align_len
+	  print "\thsp.density      #=> "
+	  p hsp.density
+
+	  print "\thsp.query_frame  #=> "
+	  p hsp.query_frame
+	  print "\thsp.query_from   #=> "
+	  p hsp.query_from
+	  print "\thsp.query_to     #=> "
+	  p hsp.query_to
+	  print "\thsp.hit_frame    #=> "
+	  p hsp.hit_frame
+	  print "\thsp.hit_from     #=> "
+	  p hsp.hit_from
+	  print "\thsp.hit_to       #=> "
+	  p hsp.hit_to
+	  print "\thsp.pattern_from #=> "
+	  p hsp.pattern_from
+	  print "\thsp.pattern_to   #=> "
+	  p hsp.pattern_to
+	  print "\thsp.query_from   #=> "
+	  p hsp.query_from
+
 	  p
+	  puts "#{hsp.query_from} .. #{hsp.query_to}"
 	  puts "query: #{hsp.qseq}"
 	  puts "       #{hsp.midline}"
 	  puts "hit:   #{hsp.hseq}"
+	  puts "#{hsp.hit_from} .. #{hsp.hit_to}"
 	end
       end
     end
   end
 
 end	    
+
 
 
 =begin
@@ -585,19 +772,23 @@ end
 --- Bio::Blast#local(blastall, program, db, opts)
 
       An intialize method for local blast search
-      opts = {'-e' => 0.0, ... }
+      opts = {'-e' => '10e-3', ... }
 
 --- Bio::Blast#remote(uri, program, db, opts)
 
       An intialize method for remote blast search
+      opts.is_a Options
 
 --- Bio::Blast#ncbi(program, db, opts)
 
       An intialize method for remote blast search on NCBI
+      opts = {'-e' => '10e-3', ... }
+      _Not yet implimented_.
 
 --- Bio::Blast#genomenet(program, db, opts)
 
       An intialize method for remote blast search on GenomeNet
+      opts = {'-e' => '10e-3', ... }
 
 
 --- Bio::Blast#query(fna)
@@ -617,12 +808,41 @@ end
 
       Check true if @db redable
 
+= Bio::Blast::Options
+--- Bio::Blast::Options.new(opts)
+
+      Constructor. 
+      opts = {'-e' => '10e-3', ... }
+
+--- Bio::Blast::Options.codes
+
+      An Regexp instance for checking arguments for blastall.
+
+--- Bio::Blast::Options#checkout
+
+      Checkout options. Returns arguments String for blastall.
+
+--- Bio::Blast::Options#set(opt_code, post_tag, default = nil)
+
+      Set an cgi posting configuration (blast option code, cgi tag and
+      default value).
+
+--- Bio::Blast::Options#set_value(opt_code, value)
+
+      Set value to opt_code.
+
+--- Bio::Blast::Options#get(opt_code)
+
+      Returns values by blast opt_code.
+
+--- Bio::Blast::Options#post_data
+   
+      Returns String for remote blast CGI POST data.
 
 = Bio::Blast::Report
 
 --- Bio::Blast::Report#new(xml)
 
-      Constructor method
       xml as blastall -m 7 report
 
 --- Bio::Blast::Report#program
@@ -632,6 +852,7 @@ end
 --- Bio::Blast::Report#query_ID
 --- Bio::Blast::Report#query_def
 --- Bio::Blast::Report#query_len
+
 --- Bio::Blast::Report#prameters -> hsh
 
       Keys: expect, include, sc-match, sc-mismatch, gap-open, gap-extend
@@ -641,7 +862,10 @@ end
 
       Keys: db-num, db-len, hsp-len, eff-space, kappa, db, db-num
 
---- Bio::Blast::Report#iteration -> hsh
+--- Bio::Blast::Report#iterations -> ary
+
+      Returns an Array(Bio::Blast::Iteration).
+      alias Bio::Blast::Report#iteration, Bio::Blast::Report#itrs
 
 
 = Bio::Blast::Iteration
@@ -649,6 +873,7 @@ end
 --- Bio::Blast::Iteration#add_hit(Bio::Blast::Hit)
 --- Bio::Blast::Iteration#hits -> ary
 
+      Returns an Array(Bio::Blast::Hit).
 
 = Bio::Blast::Hit
 --- Bio::Blast::Hit#num
@@ -658,6 +883,8 @@ end
 --- Bio::Blast::Hit#len
 --- Bio::Blast::Hit#add_hsp(Bio::Blsat::Hsp)
 --- Bio::Blast::Hit#hsps -> ary
+
+      Returns an Array(Bio::Blast::Hsp).
 
 = Bio::Blast::Hsp
 --- Bio::Blast::Hsp#num
@@ -685,75 +912,49 @@ end
 
 = EXAMPLE
 
-require 'bio/appl/blast'
+* blast on localhost
+
+  require 'bio/appl/blast'
+
+  blastall = '/bio/bin/blastall'
+  db = '/bio/db/blast/genome/bsu'
+  opts = {'-e' => '10e-3', '-F' => 'F'}
+  bla = Bio::Blast.local(blastall, 'blastn', db, opts)
+  bla.query(fna).each { |report| ... }
 
 
-blastall = '/bio/bin/blastall'
-db = '/bio/db/blast/genome/bsu'
-opts = {'-e' => 0.0, '-F' => 'F'}
-bls = Bio::Blast.local(blastall, 'blastn', db, opts)
+* blast via remote host
+  * blast via GenomeNet server
 
-res = bla.query(fna)
+    require 'bio/appl/blast'
+    opts = {'-e' => '10e-3', '-F' => 'F'}
+    bla = Bio::Blast.genomnet('blastp', 'genes', opts)
+    bla.query(faa).each {|report| ... }
 
-# res = Bio::Blast::Report.new(xml)
-# Bio::Blast::Report
-res.program #=> blastn                        <BlastOutput_program>
-res.version #=> blastn 2.2.1 [Jul-12-2001]    <BlastOutput_version>
-res.reference #=> Reference. ..               <BlastOutput_reference>
-res.db #=> /bio/db/blast/genome/bsu           <BlastOutput_db>
-res.query_ID #=> lcl|QUERY                    <BlastOutput_query-ID>
-res.query_ID #=> lcl|QUERY                    <BlastOutput_query-ID>
-res.query_def #=>                             <BlastOutput_query-def>
-res.query_len #=>                             <BlastOutput_query-len>
-res.param #-> Array ?                         <BlastOutput_param>
-res.parameters['expect'] #=> 10         <Parameters_expect>
-res.parameters['include'] #=> 0         <Parameters_include>  
-res.parameters['sc-match'] #=> 1        <Parameters_so-match>
-res.parameters['sc-mismatch'] #=> -3    <Parameters_so-mismatch>
-res.parameters['gap-open'] #=> 5        <Parameters_gap-open>
-res.parameters['gap-extend'] #=> 2      <Parameters_gap-extend>
-res.parameters['filter'] #=> D          <Parameters_filter>
-res.iteration #-> Array                       <BlastOutput_iterations>
+  * blast via NCBI server
 
-it = res.iteration[0]
-# Bio::Blast::Report::Iteration
-it.num #=> 1                             <Iteration_iter-num>
-it.hits #-> Array
+    require 'bio/appl/blast'
+    opts = {'-e' => '10e-3', '-F' => 'F'}
+    bla = Bio::Blast.ncbi('blastp', 'genes', opts)
+    bla.query(faa).each {|report| ... }
 
-hit = it.hits[0]
-# Bio::Blast::Report::Hit              # on db
-hit.num #=> 1                                 <Hit_num>
-hit.id #=> gn|BL_ORD_ID|0                     <Hit_id>
-hit.def #=> gn:bsu [AL...                     <Hit_def>
-hit.accession #=> 0                           <Hit_accession>
-hit.len #=> 4214814                           <Hit_len>
-hit.hsps #-> Array
+  * blast via a remote server as you like
 
-hsp = hit.hsps[0]
-# Bio::Blast::Report::Hsp
-hsp.num #=> 1                                 <Hsp_num>
-hsp.bit_score #=> 36.1753                     <Hsp_bit-score>
-hsp.score #=> 18                              <Hsp_score>
-hsp.evalue #=> 0.432948                       <Hsp_evalue>
-hsp.query_from #=> 781                        <Hsp_query-from>
-hsp.query_to #=> 764                          <Hsp_query-to>
-hsp.hit_from #=> 3683654                      <Hsp_hit-from>
-phsp.hit_to #=> 3683671                        <Hsp_hit-to>
-hsp.pattern_from #=> 0                        <Hsp_pattern-from>
-hsp.pattern_to #=> 0                          <Hsp_pattern-to>
-hsp.query_frame #=> 1                         <Hsp_query-frame>
-hsp.hit_frame #=> -1                          <Hsp_hit-frame>
-hsp.identity #=> 18                           <Hsp_identity>
-hsp.positive #=> 18                           <Hsp_positive>
-hsp.gaps #=> 0                                <Hsp_gaps>
+    require 'bio/appl/blast'
+    options = {'-e' => '10e-3', '-F' => 'F'}
+    opts = Bio::Blast::Options.new(options)
+    opts.set('-i', 'sequence') 
+    opts.set('-m', 'alignment', '7')
+    ...
+    server = {'server' => 'MyBlastServer',
+              'host'   => 'www.mydomain.hoge',
+              'path'   => '/cgi-bin/blast.cgi',
+              'post_proc' => '' }
+    bla = Bio::Blast.remote(server, 'blastp', 'genes', opts)
+    bla.query(faa).each {|report| ... }
 
-it.statistics['db-num'] #=> 1                 <Statistics_db-num>
-it.statistics['db-len'] #=> 4214814           <Statistics_db-len>
-it.statistics['hsp-len'] #=> 0                <Statistics_hsp-len>
-it.statistics['eff-space'] #=> 3.35e+10       <Statistics_eff-space>
-it.statistics['kappa'] #=> 0.710605           <Statistics_kappa>
-it.statistics['db'] #=> 1                     <Statistics_db-num>
-it.statistics['db-num'] #=> 1                 <Statistics_db-num>
+
+
 
 = DTD files
 
