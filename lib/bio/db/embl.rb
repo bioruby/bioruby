@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: embl.rb,v 1.18 2003/03/16 18:01:39 n Exp $
+#  $Id: embl.rb,v 1.19 2003/07/16 05:24:20 n Exp $
 #
 
 require 'bio/db'
@@ -42,8 +42,8 @@ module Bio
     # 1       2     3          4          5          6
     # [O,P,Q] [0-9] [A-Z, 0-9] [A-Z, 0-9] [A-Z, 0-9] [0-9]
     #
-    # Bio::SPTR#ac  -> Array
-    #          #accessions  -> Array
+    # Bio::EMBL_COMMON#ac  -> Array
+    #                 #accessions  -> Array
     def ac
       unless @data['AC']
 	tmp = Array.new
@@ -55,7 +55,7 @@ module Bio
       @data['AC']
     end
     alias accessions ac
-    # Bio::SPTR#accession  -> String
+    # Bio::EMBL_COMMON#accession  -> String
     def accession
       ac[0]
     end
@@ -108,14 +108,14 @@ module Bio
       if num
 	# EX. "Trifolium repens (white clover)"
 	"#{@data['OS'][num]['os']} {#data['OS'][num]['name']"
-      else
-	@data['OS']
       end
+      @data['OS']
     end
+
 
     # OG Line; organella (0 or 1/entry)
     #
-    # Bio::EMBLDB#og  -> Array
+    # Bio::EMBL_COMMON#og  -> Array
     def og
       unless @data['OG']
 	og = Array.new
@@ -123,9 +123,8 @@ module Bio
 	  og.push(tmp.strip)
 	end
 	@data['OG'] = og
-      else
-	@data['OG']
       end
+      @data['OG']
     end
 
 
@@ -133,7 +132,7 @@ module Bio
     # OC   Eukaryota; Alveolata; Apicomplexa; Piroplasmida; Theileriidae;
     # OC   Theileria.
     #
-    # Bio::EMBLDB#oc  -> Array
+    # Bio::EMBL_COMMON#oc  -> Array
     def oc
       unless @data['OC']
 	begin
@@ -143,39 +142,37 @@ module Bio
 	rescue NameError
 	  nil
 	end
-      else
-	@data['OC']
       end
+      @data['OC']
     end
 
 
     # KW Line; keyword (>=1)
     # KW   [Keyword;]+
-    # Bio::EMBLDB#kw  -> Array
-    #            #keywords  -> Array
+    # Bio::EMBL_COMMON#kw  -> Array
+    #                 #keywords  -> Array
     def kw
       unless @data['KW']
 	tmp = fetch('KW').sub(/.$/,'')
 	@data['KW'] = tmp.split(';').collect{|e| e.strip }	
-      else
-	@data['KW']
       end
+      @data['KW']
     end
     alias keywords kw
 
+
     # R Lines
     # RN RC RP RX RA RT RL
-    # Bio::EMBLDB#ref -> Array
-    # to be used Bio::Reference, but not yet implemented.
+    # Bio::EMBL_COMMON#ref -> Array
     def ref
       unless @data['R']
 	ary = Array.new
 	get('R').split(/\nRN   /).each do |str|
 	  raw = {'RN' => '', 'RC' => '', 'RP' => '', 'RX' => '', 
 	    'RA' => '', 'RT' => '', 'RL' => ''}
-	  str = 'RN   ' + str unless str =~ /^RN   /
+	  str = 'RN   ' + str unless /^RN   / =~ str
 	  str.split("\n").each do |line|
-	    if line =~ /^(R[NPXARLCT])   (.+)/
+	    if /^(R[NPXARLCT])   (.+)/ =~ line
 	      raw[$1] += $2 + ' '
 	    else
 	      raise "Invalid format in R lines, \n[#{line}]\n"
@@ -187,35 +184,55 @@ module Bio
 	    v.sub!(/;$/,'')
 	    v.sub!(/"$/,'')
 	  }
-
-#	  hash = {'authors' => '',  'title' => '',	    'journal' => '',
-#	    'volume' => '',	    'issue' => '',	    'pages' => '',
-#	    'year' => '',	    'medline' => '',	    'pubmed' => '' }
-#	  raw.each do |k,v|
-#	    case k
-#	    when 'RA'
-#	      hash['authors'] = v
-#	    when 'RT'
-#	      hash['title'] = v
-#	    when 'RL'
-#	     journal,volume,issue,pages,year
-#	    when 
-#	  end
-
-#	  ary.push(Reference.new(hash))
 	  ary.push(raw)
 	end
-#	@data['R'] = References.new(ary)
 	@data['R'] = ary
-      else
-	@data['R']
       end
+      @data['R']
     end
+
+    # Bio::EMBL_COMMON#references -> Bio::References
+    def references
+      unless @data['references']
+	ary = self.ref.map {|ent|
+	  hash = Hash.new('')
+	  ent.each {|key, value|
+	    case key
+	    when 'RA'
+	      hash['authors'] = value.split(', ')
+	    when 'RT'
+	      hash['title'] = value
+	    when 'RL'
+	      if value =~ /(.*) (\d+) \((\d+)\), (\d+-\d+) \((\d+)\)$/
+		hash['journal'] = $1
+		hash['volume']  = $2
+		hash['issue']   = $3
+		hash['pages']   = $4
+		hash['year']    = $5
+	      else
+		hash['journal'] = value
+	      end
+	    when 'RX'  # PUBMED, MEDLINE
+	      value.split('.').each {|item|
+		tag, xref = item.split('; ').map {|i| i.strip }
+		hash[ tag.downcase ]  = xref
+	      }
+	    end
+	  }
+	  Reference.new(hash)
+	}
+	@data['references'] = References.new(ary)
+      end
+      @data['references']
+    end
+
+
 
     # DR Line; defabases cross-reference (>=0)
     # a cross_ref pre one line
     # "DR  database_identifier; primary_identifier; secondary_identifier."
-    # Bio::EMBLDB#dr  -> Hash w/in Array
+    # Bio::EMBL_COMMON#dr  -> Hash w/in Array
+    # Bio::EMBL_COMMON#dr {|k,v| } 
     def dr
       unless @data['DR']
 	tmp = Hash.new
@@ -236,9 +253,9 @@ module Bio
       end
     end
 
-  end
+  end # class EMBL_COMMON
 
-end
+end # module Bio
 
 
 #     ID - identification             (begins each entry; 1 per entry)
@@ -271,9 +288,47 @@ end
 
 = Bio::EMBL_COMMON
 
-This module defines a common framework among EMBL, SwissProt, TrEMBL.
+This module defines a common framework among EMBL, SWISS-PROT, TrEMBL.
 For more details, see the documentations in each embl/*.rb libraries.
 
+
+--- Bio::EMBL_COMMON::DELIMITER
+--- Bio::EMBL_COMMON::RS
+--- Bio::EMBL_COMMON::TAGSIZE
+
+
+--- Bio::EMBL_COMMON#ac
+                    #accessions
+
+--- Bio::EMBL_COMMON#accession
+
+
+--- Bio::EMBL_COMMON#de
+                    #description
+                    #definition
+
+
+--- Bio::EMBL_COMMON#os
+
+
+--- Bio::EMBL_COMMON#og
+
+
+--- Bio::EMBL_COMMON#oc
+
+
+--- Bio::EMBL_COMMON#kw
+                    #keywords
+
+
+--- Bio::EMBL_COMMON#ref
+        Reterns R* lines in hsh w/in ary.
+
+--- Bio::EMBL_COMMON#references
+        Retruns Bio::References.
+
+
+--- Bio::EMBL_COMMON#dr
 
 =end
 
