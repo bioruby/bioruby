@@ -13,12 +13,14 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: enzyme.rb,v 0.2 2001/10/17 14:43:11 katayama Exp $
+#  $Id: enzyme.rb,v 0.3 2001/10/24 02:45:32 katayama Exp $
 #
 
 module Bio
 
 require 'bio/db'
+
+class KEGG
 
 class ENZYME < KEGGDB
 
@@ -46,6 +48,8 @@ class ENZYME < KEGGDB
   # DBLINKS
 
 end
+
+end				# class KEGG
 
 end				# module Bio
 

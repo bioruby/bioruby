@@ -13,12 +13,14 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: genes.rb,v 0.8 2001/10/17 14:43:12 katayama Exp $
+#  $Id: genes.rb,v 0.9 2001/10/24 02:45:32 katayama Exp $
 #
 
 module Bio
 
 require 'bio/db'
+
+class KEGG
 
 class GENES < KEGGDB
 
@@ -152,6 +154,8 @@ class GENES < KEGGDB
   alias nalen ntlen
 
 end
+
+end				# class KEGG
 
 end				# module Bio
 

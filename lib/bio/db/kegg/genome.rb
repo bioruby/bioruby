@@ -13,12 +13,14 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: genome.rb,v 0.4 2001/10/17 14:43:12 katayama Exp $
+#  $Id: genome.rb,v 0.5 2001/10/24 02:45:32 katayama Exp $
 #
 
 module Bio
 
 require 'bio/db'
+
+class KEGG
 
 class GENOME < KEGGDB
 
@@ -144,6 +146,8 @@ class GENOME < KEGGDB
   end
 
 end
+
+end				# class KEGG
 
 end				# module Bio
 
