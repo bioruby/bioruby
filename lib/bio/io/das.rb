@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: das.rb,v 1.6 2004/08/24 00:03:22 k Exp $
+#  $Id: das.rb,v 1.7 2004/08/26 10:25:35 k Exp $
 #
 
 begin
@@ -238,7 +238,7 @@ module Bio
 		feature.method = e.text
 	      when 'START'
 		feature.start = e.text
-	      when 'STOP'
+	      when 'STOP', 'END'
 		feature.stop = e.text
 	      when 'SCORE'
 		feature.score = e.text
