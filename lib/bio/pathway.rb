@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.18 2001/11/14 10:27:49 katayama Exp $
+#  $Id: pathway.rb,v 1.19 2001/11/15 09:17:20 katayama Exp $
 #
 
 require 'bio/matrix'
@@ -96,6 +96,14 @@ module Bio
       Matrix[*matrix]
     end
 
+    # pretty printer of the adjacency matrix (format depends on Matrix#dump)
+    def matrix_dump(*arg)
+      matrix = self.to_matrix(*arg)
+      sorted = @index.sort {|a,b| a[1] <=> b[1]}
+      index  = "# " + sorted.collect{|x| x[0]}.join(", ")
+      matrix.dump(index)
+    end
+
 
     # Select labeled nodes and generate subgraph
     def subgraph(list = nil)
@@ -148,13 +156,14 @@ module Bio
     end
 
 
-    # Breadth first search solves steps and path to the each node
+    # Breadth first search solves steps and path to the each node and forms
+    # a tree contains all reachable vertices from the root node.
     def breadth_first_search(root)
-      seen = {}
+      visited = {}
       distance = {}
       predecessor = {}
 
-      seen[root] = true
+      visited[root] = true
       distance[root] = 0
       predecessor[root] = nil
 
@@ -162,8 +171,8 @@ module Bio
 
       while from = queue.shift
 	@graph[from].keys.each do |to|
-	  unless seen[to]
-	    seen[to] = true
+	  unless visited[to]
+	    visited[to] = true
 	    distance[to] = distance[from] + 1
 	    predecessor[to] = from
 	    queue.push(to)
@@ -189,7 +198,37 @@ module Bio
     end
 
 
-    # Dijkstra method to solve sortest path for weighted graph
+    # Depth first search yields much information about the structure of a graph
+    # and the predecessor subgraph form a forest of trees.
+    def depth_first_search
+      visited = {}
+      distance = {}
+      predecessor = {}
+      count = 0
+
+      dfs_visit = Proc.new { |from|
+	visited[from] = true
+	distance[from] = [count += 1]
+	@graph[from].keys.each do |to|
+	  unless visited[to]
+	    predecessor[to] = from
+	    dfs_visit.call(to)
+	  end
+	end
+	distance[from].push(count += 1)
+      }
+
+      @graph.keys.each do |node|
+	unless visited[node]
+	  dfs_visit.call(node)
+	end
+      end
+      return distance, predecessor
+    end
+    alias dfs depth_first_search
+
+
+    # Dijkstra method to solve the sortest path problem in the weighted graph.
     def dijkstra(root)
       distance, predecessor = initialize_single_source(root)
       @graph[root].each do |k, v|
@@ -200,8 +239,8 @@ module Bio
       queue.delete(root)
 
       while queue.size != 0
-	sorted = queue.to_a.sort{|a, b| a[1] <=> b[1]}
-	u = sorted[0][0]	# extranct a node having minimal distance
+	min = queue.min {|a, b| a[1] <=> b[1]}
+	u = min[0]		# extranct a node having minimal distance
         @graph[u].each do |k, v|
 	  # relaxing procedure of root -> 'u' -> 'k'
           if distance[k] > distance[u] + v
@@ -243,7 +282,7 @@ module Bio
 
 
     # Floyd-Wardshall alogrithm for solving the all-pairs shortest-paths
-    # problem on a directed graph G = (V, E)
+    # problem on a directed graph G = (V, E).
     def floyd_warshall
       inf = 1 / 0.0
 
@@ -371,9 +410,11 @@ if __FILE__ == $0
   graph = Bio::Pathway.new(ary)
   p graph
 
-
   puts "--- Test to_matrix method"
   p graph.to_matrix
+
+  puts "--- Test matrix_dump method"
+  puts graph.matrix_dump(0)
 
   puts "--- Labeling some nodes"
   list = { 'q' => "L1", 's' => "L2", 'v' => "L3", 'w' => "L4" }
@@ -397,19 +438,24 @@ if __FILE__ == $0
   p graph.small_world
 
   puts "--- Test breadth_first_search method"
-  dist, pred = graph.breadth_first_search('q')
-  p dist
-  p pred
+  distance, predecessor = graph.breadth_first_search('q')
+  p distance
+  p predecessor
 
   puts "--- Test bfs_shortest_path method"
   step, path = graph.bfs_shortest_path('y', 'w')
   p step
   p path
 
+  puts "--- Test depth_first_search method"
+  distance, predecessor = graph.depth_first_search
+  p distance
+  p predecessor
+
   puts "--- Test dijkstra method"
-  dist, pred = graph.dijkstra('q')
-  p dist
-  p pred
+  distance, predecessor = graph.dijkstra('q')
+  p distance
+  p predecessor
 
   puts "--- Test dijkstra method by weighted graph"
   #
@@ -458,7 +504,8 @@ end
 --- Bio::Pathway#append(rel)
 --- Bio::Pathway#nodes
 --- Bio::Pathway#edges
---- Bio::Pathway#to_matrix
+--- Bio::Pathway#to_matrix(default_value = nil, diagonal_value = nil)
+--- Bio::Pathway#matrix_dump(default_value = nil, diagonal_value = nil)
 --- Bio::Pathway#subgraph(list = nil)
 --- Bio::Pathway#common_subgraph(graph)
 --- Bio::Pathway#clique
@@ -467,12 +514,14 @@ end
 --- Bio::Pathway#breadth_first_search(root)
 --- Bio::Pathway#bfs(root)
 --- Bio::Pathway#bfs_shortest_path(node1, node2)
+--- Bio::Pathway#depth_first_search(root)
+--- Bio::Pathway#dfs(root)
 --- Bio::Pathway#dijkstra(root)
 --- Bio::Pathway#bellman_ford(root)
 --- Bio::Pathway#floyd_warshall
 --- Bio::Pathway#floyd
 
-=::Relation
+= Bio::Relation
 
 --- Bio::Relation#new(node1, node2, edge)
 
