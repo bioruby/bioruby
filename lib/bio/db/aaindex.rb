@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: aaindex.rb,v 1.3 2001/09/26 18:49:25 katayama Exp $
+#  $Id: aaindex.rb,v 1.4 2001/09/26 19:13:38 katayama Exp $
 #
 
 require "bio/db"
@@ -81,33 +81,34 @@ class AAindex2 < AAindex
 
   def initialize(entry)
     super(entry)
-    @aa = {}
+    @aa = {}		# used to determine row/column of the aa
   end
   attr_reader :aa
 
   def matrix
+    field = field_fetch('I')
 
-    org_field = field_fetch('I')
-    if /Data ordered by .+ where I,J = ARNDCQEGHILKMFPSTWYV (.+)/ =~ org_field
-      ma = Array.new(20, [])
-      i = 0
-      %w( A R N D C Q E G H I L K M F P S T W Y V ).each do |aa|
-	@aa[aa] = i
-	i += 1
+    case field
+    when / (ARNDCQEGHILKMFPSTWYV)\s+(.*)/	# 20x19/2 matrix
+      aalist = $1
+      values = $2.split(/\s+/)
+
+      0.upto(aalist.length - 1) do |i|
+        @aa[aalist[i].chr] = i
       end
-      org_ary = $1.split(/\s+/)
+
+      ma = Array.new(20, [])		# 2D array of 20x(20)
       for i in 0 .. 19 do
         for j in i .. 19 do
-          c = i + 1
-          r = j + 1
-          ma[i][j] = org_ary[c+r*(r-1)/2 - 1].to_f
+          ma[i][j] = values[i + j*(j+1)/2].to_f
           ma[j][i] = ma[i][j]
         end
       end
       BioMatrix[*ma]
-    elsif /Data ordered by = -ARNDCQEGHILKMFPSTWYV/ =~ org_field
+
+    when / -ARNDCQEGHILKMFPSTWYV /	# 21x20/2 matrix (with gap)
       raise NotImplementedError
-    elsif /Row data ordered by = ACDEFGHIKLMNPQRSTVWYJ-/ =~ org_field
+    when / ACDEFGHIKLMNPQRSTVWYJ- /	# 21x21 matrix (with gap)
       raise NotImplementedError
     end
   end
