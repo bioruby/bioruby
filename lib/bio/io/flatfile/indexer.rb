@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.9 2003/03/25 08:25:26 ng Exp $ 
+#  $Id: indexer.rb,v 1.10 2003/03/28 02:36:41 ng Exp $ 
 # 
 
 module Bio
@@ -167,7 +167,7 @@ module Bio
 
 	class GenBankParser < TemplateParser
 	  NAMESTYLE = NameSpaces.new(
-	     NameSpace.new( 'VERSION', Proc.new { |x| x.version } ),
+	     NameSpace.new( 'VERSION', Proc.new { |x| x.acc_version } ),
 	     NameSpace.new( 'LOCUS', Proc.new { |x| x.entry_id } ),
 	     NameSpace.new( 'ACCESSION',
 			   Proc.new { |x| x.accessions } ),
