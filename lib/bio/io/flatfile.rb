@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.7 2002/09/04 13:04:08 ng Exp $
+#  $Id: flatfile.rb,v 1.8 2002/09/05 11:32:15 ng Exp $
 #
 
 module Bio
@@ -188,11 +188,15 @@ module Bio
       when /^ENTRY       [a-z]+$/
 	Bio::KEGG::GENOME
 	
-      when /^>.+$\s^[0-9\s]+/
-	Bio::FastaNumericFormat
       when /^>.+$/
-	Bio::FastaFormat
-	
+	if text =~ /^>.+$\s^\s*[-a-zA-Z_\.\[\]\(\)\*\+\$]+/ then
+	  Bio::FastaFormat
+	elsif text =~ /^>.+$\s^\s*[0-9]+/ then
+	  Bio::FastaNumericFormat
+	else
+	  false #fail to determine
+	end
+
       else
 	nil #not found
       end
