@@ -32,12 +32,10 @@ class PROSITE
       oldtag = tag
       tag = tag_get(line)
       if tag != oldtag
-	@orig[tag] = '' unless @orig[tag]	# String
+        @orig[tag] = '' unless @orig[tag]	# String
       end
       @orig[tag] << line
     end
-
-    return @orig
   end
 
 
@@ -52,7 +50,7 @@ class PROSITE
     if get(tag)
       str = ''
       get(tag).each_line do |line|
-	str << tag_cut(line)
+        str << tag_cut(line)
       end
       return truncate(str)
     else
@@ -101,7 +99,7 @@ class PROSITE
   #
   def pa2re(pattern)
     pattern.gsub!(/\s+/, '')	# remove white spaces
-    pattern.sub!(/\.$/, '')	# (1) remove tailing '.'
+    pattern.sub!(/\.$/, '')	# (1) remove trailing '.'
     pattern.sub!(/^</, '^')	# (2) restricted to the N-terminal : `<'
     pattern.sub!(/>$/, '$')	# (2) restricted to the C-terminal : `>'
     pattern.gsub!(/\{(\w+)\}/) { |m|
@@ -125,9 +123,24 @@ class PROSITE
 
 
   # ID  Identification                     (Begins each entry; 1 per entry)
-  def id
-    @data['ID'] = fetch('ID') unless @data['ID']
-    @data['ID']
+  def id(key = nil)
+    unless @data['ID']
+      hash = {}			# temporal hash
+      if fetch('ID')
+        hash['name'], hash['type'] = fetch('ID').gsub(/(\s+|\.)/,'').split(';')
+      end
+      @data['ID'] = hash
+    end
+
+    if key
+      @data['ID'][key]
+    elsif block_given?
+      @data['ID'].each do |k, v|
+        yield(k,v)
+      end
+    else
+      @data['ID']
+    end
   end
 
   # AC  Accession number                   (1 per entry)
@@ -174,26 +187,24 @@ class PROSITE
     unless @data['NR']
       hash = {}			# temporal hash
       if fetch('NR')
-	fetch('NR').scan(%r{/(\S+)=([^;]+);}).each do |k, v|
-	  if v =~ /^(\d+)\((\d+)\)$/
-	    v = [$1, $2]
-	  end
-	  hash[k] = v
-	end
+        fetch('NR').scan(%r{/(\S+)=([^;]+);}).each do |k, v|
+          if v =~ /^(\d+)\((\d+)\)$/
+            v = [$1, $2]
+          end
+          hash[k] = v
+        end
       end
       @data['NR'] = hash
     end
 
     if key
       @data['NR'][key]
-    else
-      if block_given?
-	@data['NR'].each do |k, v|
-	  yield(k, v)
-	end
-      else
-	@data['NR']
+    elsif block_given?
+      @data['NR'].each do |k, v|
+        yield(k, v)
       end
+    else
+      @data['NR']
     end
   end
 
@@ -202,36 +213,34 @@ class PROSITE
     unless @data['CC']
       hash = {}			# temporal hash
       if fetch('CC')
-	fetch('CC').scan(%r{/(\S+)=([^;]+);}).each do |k, v|
-	  if k =~ /TAXO-RANGE/ and expand_range
-	    v.gsub!(/\?/, '')
-	    v.each_byte do |x|
-	      case x.chr
-	      when 'A'; v.sub!('A', 'archaebacteria, ') ;
-	      when 'B'; v.sub!('B', 'bacteriophages, ') ;
-	      when 'E'; v.sub!('E', 'eukaryotes, ') ;
-	      when 'P'; v.sub!('P', 'prokaryotes, ') ;
-	      when 'V'; v.sub!('V', 'eukaryotic viruses, ') ;
-	      end
-	    end
-	    v.sub!(/, $/, '')
-	  end
-	  hash[k] = v
-	end
+        fetch('CC').scan(%r{/(\S+)=([^;]+);}).each do |k, v|
+          if k =~ /TAXO-RANGE/ and expand_range
+            v.gsub!(/\?/, '')
+            v.each_byte do |x|
+              case x.chr
+              when 'A'; v.sub!('A', 'archaebacteria, ') ;
+              when 'B'; v.sub!('B', 'bacteriophages, ') ;
+              when 'E'; v.sub!('E', 'eukaryotes, ') ;
+              when 'P'; v.sub!('P', 'prokaryotes, ') ;
+              when 'V'; v.sub!('V', 'eukaryotic viruses, ') ;
+              end
+            end
+            v.sub!(/, $/, '')
+          end
+          hash[k] = v
+        end
       end
       @data['CC'] = hash
     end
 
     if key
       @data['CC'][key]
-    else
-      if block_given?
-	@data['CC'].each do |k, v|
-	  yield(k, v)
-	end
-      else
-	@data['CC']
+    elsif block_given?
+      @data['CC'].each do |k, v|
+        yield(k, v)
       end
+    else
+      @data['CC']
     end
   end
 
@@ -240,32 +249,31 @@ class PROSITE
     unless @data['DR']
       hash = {}			# temporal hash
       if fetch('DR')
-	fetch('DR').scan(%r{(\w+)\s*, (\w+)\s+, (.);}).each do |a, e, c|
-	  hash[a] = [e, c]	# SWISS-PROT : Accession, Entry, True/False
-	end
+        fetch('DR').scan(%r{(\w+)\s*, (\w+)\s+, (.);}).each do |a, e, c|
+          hash[a] = [e, c]	# SWISS-PROT : Accession, Entry, True/False
+        end
       end
       @data['DR'] = hash
     end
 
     if key
       @data['DR'][key]
-    else
-      if block_given?
-	@data['DR'].each do |k, v|
-	  yield(k, v)
-	end
-      else
-	@data['DR']
+    elsif block_given?
+      @data['DR'].each do |k, v|
+        yield(k, v)
       end
+    else
+      @data['DR']
     end
   end
+  alias sp dr
 
   # 3D  Cross-references to PDB            (>=0 per entry)
   def pdb
     unless @data['3D']
       array = []		# temporal array
       if fetch('3D')
-	array = fetch('3D').split(/; /)
+        array = fetch('3D').split(/; /)
       end
       @data['3D'] = array
     end
