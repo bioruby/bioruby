@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: location.rb,v 0.15 2002/06/29 09:58:18 k Exp $
+#  $Id: location.rb,v 0.16 2002/07/02 17:31:33 k Exp $
 #
 
 module Bio
@@ -91,6 +91,10 @@ module Bio
       self					# return Location object
     end
 
+    def range
+      @from..@to
+    end
+
   end
 
 
@@ -112,10 +116,19 @@ module Bio
       end
     end
 
+    def [](n)
+      @locations[n]
+    end
+
     def span
       span_min = @locations.min { |a,b| a.from <=> b.from }
       span_max = @locations.max { |a,b| a.to   <=> b.to   }
       return span_min.from, span_max.to
+    end
+
+    def range
+      min, max = span
+      min..max
     end
 
     def length
@@ -131,69 +144,32 @@ module Bio
     end
     alias :size :length
 
-    def rel2abs(n) 
-      return nil unless n > 0			# out of range 
- 
-      cursor = 0 
-      @locations.each do |x|      
-        if x.sequence 
-          len = x.sequence.size 
-        else 
-          len = x.to - x.from + 1 
-        end  
-        if n > cursor + len 
-          cursor += len 
-        else 
-          if x.strand < 0 
-            return x.to - (n - cursor - 1) 
-          else 
-            return x.from + (n - cursor - 1) 
-          end 
-        end                             
-      end 
-      return nil				# out of range 
-    end
-
-    def rel2abs_aa(n)
-      n = (n - 1) * 3 + 1
-      rel2abs(n)
-    end
-
-    def abs2rel(n)
-      return nil unless n > 0			# out of range
-
-      cursor = 0
-      @locations.each do |x|
-	if x.sequence
-	  len = x.sequence.size
+    def relative(n, type = nil)
+      case type
+      when :location
+	;
+      when :aa
+	if n = abs2rel(n)
+	  (n - 1) / 3 + 1
 	else
-	  len = x.to - x.from + 1
+	  nil
 	end
-	if n < x.from or n > x.to then
-	  cursor += len
-	else
-	  if x.strand < 0 then
-	    return x.to - (n - cursor - 1)
-	  else
-	    return n + cursor + 1 - x.from
-	  end
-	end
-      end
-      return nil				# out of range
-    end
-
-    def abs2rel_aa(n)
-      n = abs2rel(n)
-      if n then
-	(n - 1) / 3 + 1
       else
-	nil
+	abs2rel(n)
       end
     end
-    alias :absolute :rel2abs
-    alias :absolute_aa :rel2abs_aa
-    alias :relative :abs2rel
-    alias :relative_aa :abs2rel_aa
+
+    def absolute(n, type = nil)
+      case type
+      when :location
+	;
+      when :aa
+	n = (n - 1) * 3 + 1
+	rel2abs(n)
+      else
+	rel2abs(n)
+      end
+    end
 
 
     private
@@ -290,6 +266,53 @@ module Bio
       return ary.flatten
     end
 
+
+    def rel2abs(n) 
+      return nil unless n > 0			# out of range 
+ 
+      cursor = 0 
+      @locations.each do |x|      
+        if x.sequence 
+          len = x.sequence.size 
+        else 
+          len = x.to - x.from + 1 
+        end  
+        if n > cursor + len 
+          cursor += len 
+        else 
+          if x.strand < 0 
+            return x.to - (n - cursor - 1) 
+          else 
+            return x.from + (n - cursor - 1) 
+          end 
+        end                             
+      end 
+      return nil				# out of range 
+    end
+
+    def abs2rel(n)
+      return nil unless n > 0			# out of range
+
+      cursor = 0
+      @locations.each do |x|
+	if x.sequence
+	  len = x.sequence.size
+	else
+	  len = x.to - x.from + 1
+	end
+	if n < x.from or n > x.to then
+	  cursor += len
+	else
+	  if x.strand < 0 then
+	    return x.to - (n - cursor - 1)
+	  else
+	    return n + cursor + 1 - x.from
+	  end
+	end
+      end
+      return nil				# out of range
+    end
+
   end
 
 end
@@ -325,6 +348,7 @@ if __FILE__ == $0
   ].each do |pos|
     p pos
     p Bio::Locations.new(pos).span
+    p Bio::Locations.new(pos).range
     p Bio::Locations.new(pos)
   end
 
@@ -340,12 +364,18 @@ if __FILE__ == $0
     p pos
 #   p loc
     (1..21).each do |x|
-      print "absolute, rel2abs(#{x}) : ", y = loc.rel2abs(x), "\n"
-      print "relative, abs2rel(#{y}) : ", y ? loc.abs2rel(y) : y, "\n"
-      print "absolute_aa, rel2abs_aa(#{x}) : ", y = loc.rel2abs_aa(x), "\n"
-      print "relative_aa, abs2rel_aa(#{y}) : ", y ? loc.abs2rel_aa(y) : y, "\n"
+      print "absolute(#{x}) #=> ", y = loc.absolute(x), "\n"
+      print "relative(#{y}) #=> ", y ? loc.relative(y) : y, "\n"
+      print "absolute(#{x}, :aa) #=> ", y = loc.absolute(x, :aa), "\n"
+      print "relative(#{y}, :aa) #=> ", y ? loc.relative(y, :aa) : y, "\n"
     end
   end
+
+  pos = 'join(complement(6..10),complement(16..30))'
+  loc = Bio::Locations.new(pos)
+  print "pos         : "; p pos
+  print "`- loc[1]   : "; p loc[1]
+  print "   `- range : "; p loc[1].range
 end
 
 
@@ -356,7 +386,6 @@ end
 --- Bio::Location.new(location)
 
 --- Bio::Location#from
-
 --- Bio::Location#to
 --- Bio::Location#strand
 --- Bio::Location#sequence
@@ -367,38 +396,56 @@ end
 --- Bio::Location#complement
 --- Bio::Location#replace(sequence)
 
+--- Bio::Location#range
+
+      Returns a Range object of the from..to
+
 = Bio::Locations
 
 --- Bio::Locations.new(position)
 
+      Parse a GenBank style position string and returns a Locations object,
+      which contains a list of Location objects.
+
 --- Bio::Locations#each { |l| ... }
+
+      Iterates on each Location object.
+
+--- Bio::Locations#[](n)
+
+      Returns nth Location object.
+
 --- Bio::Locations#span
 
---- Bio::Locations#abs2rel(number)
---- Bio::Locations#relative(number)
+      Returns an Array containing overall min and max position [min, max]
+      of this Locations object.
 
-      absolute position in DNA (na) -> relative position in RNA (na)
+--- Bio::Locations#range
 
---- Bio::Locations#rel2abs(number)
---- Bio::Locations#absolute(number)
+      Similar to span, but returns a Range object min..max
 
-      relative position in RNA (na) -> absolute position in DNA (na)
+--- Bio::Locations#relative(number, type = nil)
 
---- Bio::Locations#abs2rel_aa(na_number)
---- Bio::Locations#relative_aa(na_number)
+      default
+        absolute position in DNA (na) -> relative position in RNA (na)
 
-      absolute position in DNA (na) -> relative position in Protein (aa)
+      if type == :aa
+        absolute position in DNA (na) -> relative position in Protein (aa)
 
---- Bio::Locations#rel2abs_aa(aa_number)
---- Bio::Locations#absolute_aa(aa_number)
+--- Bio::Locations#absolute(number, type = nil)
 
-      relative position in Protein (aa) -> absolute position in DNA (na)
+      default
+        relative position in RNA (na) -> absolute position in DNA (na)
 
-      loc = Bio::Locations.new('complement(12838..13533)')
-      loc.absolute(10)        #=> 13524 (rel2abs)
-      loc.relative(13524)     #=> 10    (abs2rel)
-      loc.absolute_aa(10)     #=> 13506 (rel2abs_aa)
-      loc.relative_aa(13506)  #=> 10    (abs2rel_aa)
+      if type == :aa
+        relative position in Protein (aa) -> absolute position in DNA (na)
+
+      example
+        loc = Bio::Locations.new('complement(12838..13533)')
+        loc.absolute(10)          #=> 13524 (rel2abs)
+        loc.relative(13524)       #=> 10    (abs2rel)
+        loc.absolute(10, :aa)     #=> 13506 (rel2abs)
+        loc.relative(13506, :aa)  #=> 10    (abs2rel)
 
 == Appendix : GenBank location descriptor classification
 
