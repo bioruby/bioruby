@@ -1,8 +1,8 @@
 #
 # bio/sequence.rb - biological sequence class
 #
-#   Copyright (C) 2000, 2001 KATAYAMA Toshiaki <k@bioruby.org>
-#   Copyright (C) 2001  Yoshinori K. Okuji <o@bioruby.org>
+#   Copyright (C) 2000-2002 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001 Yoshinori K. Okuji <o@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.18 2001/12/19 01:17:19 katayama Exp $
+#  $Id: sequence.rb,v 0.19 2002/03/04 07:41:33 katayama Exp $
 #
 
 require 'bio/data/na'
@@ -36,7 +36,7 @@ module Bio
     # some methods (e.g. []), so use our own hack at the moment. Maybe
     # a Ruby's bug.
     def method_missing(name, *args, &block)
-      s = @str.__send__(name, *args, &block)
+      s = @str.send(name, *args, &block)
       if not s.kind_of? String
 	s
       else
@@ -245,14 +245,13 @@ module Bio
 	return Regexp.new(re)
       end
 
-      def to_a
+      def names
 	array = []
 	self.each_byte do |x|
 	  array.push(NucleicAcid[x.chr.upcase])
 	end
 	return array
       end
-      alias to_ary to_a
 
       def pikachu
 	self.tr("atgc", "pika")		# joke, of cource :-)
@@ -280,7 +279,7 @@ module Bio
       end
 
       # AminoAcid is defined in bio/data/aa.rb
-      def to_a
+      def codes
 	array = []
 	self.each_byte do |x|
 	  array.push(AminoAcid[x.chr])
@@ -288,8 +287,8 @@ module Bio
 	return array
       end
 
-      def to_ary
-	self.to_a.map do |x|
+      def names
+	self.codes.map do |x|
 	  AminoAcid[x]
 	end
       end
@@ -402,8 +401,8 @@ if __FILE__ == $0
   p Bio::Sequence::NA.new('augcrymkdhvbswn')
   p Bio::Sequence::NA.new('augcrymkdhvbswn').to_re
 
-  puts "\n== Test Bio::Sequence::NA#to_a"
-  p na.to_a
+  puts "\n== Test Bio::Sequence::NA#names"
+  p na.names
 
   puts "\n== Test Bio::Sequence::NA#pikachu"
   p na.pikachu
@@ -428,13 +427,13 @@ if __FILE__ == $0
   print "Rand  : "; p Bio::Sequence::NA.randomize(counts)
   print "Block : "; Bio::Sequence::NA.randomize(counts) {|x| print x}; puts
 
-  puts "\n== Test Bio::Sequence::AA#to_a"
+  puts "\n== Test Bio::Sequence::AA#codes"
   p aa
-  p aa.to_a
+  p aa.codes
 
-  puts "\n== Test Bio::Sequence::AA#to_ary"
+  puts "\n== Test Bio::Sequence::AA#names"
   p aa
-  p aa.to_ary
+  p aa.names
 
   puts "\n== Test Bio::Sequence::AA#molecular_weight"
   p aa.subseq(1,20)
@@ -543,8 +542,7 @@ end
 
       Convert the universal code string into the regular expression.
 
---- Bio::Sequence::NA#to_a
---- Bio::Sequence::NA#to_ary
+--- Bio::Sequence::NA#names
 
       Convert the self string into the list of the names of the each base.
 
@@ -567,14 +565,14 @@ end
 
       Generate a amino acid sequence object from a string.
 
---- Bio::Sequence::AA#to_a
+--- Bio::Sequence::AA#codes
 
       Generate the list of the names of the each residue along with the
       sequence (3 letters code).
 
---- Bio::Sequence::NA#to_ary
+--- Bio::Sequence::NA#names
 
-      Similar to to_a but returns long names.
+      Similar to codes but returns long names.
 
 --- Bio::Sequence::AA#molecular_weight(hash)
 
