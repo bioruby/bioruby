@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.15 2002/06/25 14:57:35 k Exp $
+#  $Id: blast.rb,v 1.16 2003/01/27 19:46:34 k Exp $
 #
 
 require 'net/http'
@@ -67,7 +67,7 @@ module Bio
     end
 
     def query(query)
-      return self.send("exec_#{@server}", query)
+      return self.send("exec_#{@server}", query.to_s)
     end
 
 
@@ -94,7 +94,7 @@ module Bio
       cmd = "#{@blastall} -p #{@program} -d #{@db} #{@option}"
       cmd += " -M #{@matrix}" if @matrix
       cmd += " -F #{@filter}" if @filter
-      
+
       report = nil
 
       begin
@@ -108,8 +108,8 @@ module Bio
 	raise "[Error] command execution failed : #{cmd}"
       ensure
 	io.close
-      end          
-      
+      end 
+
       return report
     end
 
@@ -142,21 +142,10 @@ module Bio
       report = nil
 
       begin
-	response, result = Net::HTTP.new(host).post(path, data.join('&'))
-	result_path = nil
-
-	result.each do |line|
-	  if %r|href="http://#{host}(.*?)".*Show all result|i.match(line)
-	    result_path = $1
-	    break
-	  end
-	end
-	if result_path
-	  response, result = Net::HTTP.new(host).get(result_path)
-	  if %r|<pre>.*?</pre>.*<pre>\s*(.*)</pre>|mi.match(result)
-	    @output = $1
-	    report = parse_result(@output)
-	  end
+	result, = Net::HTTP.new(host).post(path, data.join('&'))
+	if %r|<pre>.*?</pre>.*<pre>\s*(.*)</pre>|mi.match(result.body)
+	  @output = $1
+	  report = parse_result(@output)
 	end
       end
 
