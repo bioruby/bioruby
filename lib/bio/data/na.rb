@@ -13,37 +13,43 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
+#  $Id: na.rb,v 0.2 2001/06/21 05:49:27 katayama Exp $
+#
 
 module NucleicAcids
 
   NA = {
-    # IUPAC code : Faisst and Meyer (Nucleic Acids Res. 20:3-26, 1992)
 
-    'w'=>"[at]",
-    'r'=>"[ag]",
-    'm'=>"[ac]",
-    'k'=>"[tg]",
-    'y'=>"[tc]",
-    's'=>"[gc]",
+    # IUPAC code
+    # * Faisst and Meyer (Nucleic Acids Res. 20:3-26, 1992)
+    # * http://www.ncbi.nlm.nih.gov/collab/FT/
 
-    'd'=>"[atg]",
-    'h'=>"[atc]",
-    'v'=>"[agc]",
-    'b'=>"[tgc]",
+    'w'	=> '[at]',
+    'r'	=> '[ag]',
+    'm'	=> '[ac]',
+    'k'	=> '[tg]',
+    'y'	=> '[tc]',
+    's'	=> '[gc]',
 
-    'n'=>"[atgc]",
+    'd'	=> '[atg]',
+    'h'	=> '[atc]',
+    'v'	=> '[agc]',
+    'b'	=> '[tgc]',
 
-    'a'=>'a',
-    't'=>'t',
-    'g'=>'g',
-    'c'=>'c',
-    'u'=>'u',
+    'n' => '[atgc]',
 
-    'A'=>'adenine',
-    'T'=>'thymine',
-    'G'=>'guanine',
-    'C'=>'cytosine',
-    'U'=>'uracil',
+    'a'	=> 'a',
+    't'	=> 't',
+    'g'	=> 'g',
+    'c'	=> 'c',
+    'u'	=> 'u',
+
+    'A'	=> 'adenine',
+    'T'	=> 'thymine',
+    'G'	=> 'guanine',
+    'C'	=> 'cytosine',
+    'U'	=> 'uracil',
+
   }
 
   def na(base)
