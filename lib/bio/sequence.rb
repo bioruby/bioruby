@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.27 2003/03/20 08:16:55 k Exp $
+#  $Id: sequence.rb,v 0.28 2003/03/31 10:24:52 k Exp $
 #
 
 require 'bio/data/na'
@@ -88,7 +88,7 @@ module Bio
     end
 
     def total(hash)
-      hash.default = 0.0
+      hash.default = 0.0 unless hash.default
       sum = 0.0
       self.each_byte do |x|
 	begin
