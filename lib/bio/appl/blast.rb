@@ -2,7 +2,7 @@
 # bio/appl/blast.rb - BLAST wrapper
 # 
 #   Copyright (C) 2001 Mitsuteru S. Nakao <n@bioruby.org>
-#   Copyright (C) 2002 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2002,2003 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -18,19 +18,23 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.17 2003/02/03 14:28:19 k Exp $
+#  $Id: blast.rb,v 1.18 2003/02/05 03:28:25 k Exp $
 #
 
 require 'net/http'
 require 'cgi' unless defined?(CGI)
+require 'bio/appl/blast/report'
 
 module Bio
 
   class Blast
 
     def initialize(program, db, option = '', server = 'local')
-      @format	= 8
-      @parser	= 'rexml'
+      if defined?(XMLParser) or defined?(REXML)
+	@format = 7
+      else
+	@format	= 8
+      end
 
       @program	= program
       @db	= db
@@ -42,21 +46,11 @@ module Bio
       @filter	= nil
 
       @output	= ''
+      @parser	= nil
     end
     attr_accessor :program, :db, :option, :server, :blastall, :matrix, :filter
-    attr_reader :output
-
-    def format=(num)
-      @format = num.to_i
-      @option.gsub!(/\s*-m\s+\d+/, '')
-      @option += " -m #{num} "
-    end
-    attr_reader :format
-    attr_accessor :parser
-
-    def self.parser(parser)
-      require "bio/appl/blast/#{parser}"
-    end
+    attr_reader :output, :format
+    attr_writer :parser		# to change :xmlparser, :rexml, :tab
 
     def self.local(program, db, option = '')
       self.new(program, db, option, 'local')
@@ -75,18 +69,7 @@ module Bio
 
 
     def parse_result(data)
-      case @format
-      when 7
-	case @parser
-	when 'rexml'
-	  require 'bio/appl/blast/rexml'
-	when 'xmlparser'
-	  require 'bio/appl/blast/xmlparser'
-	end
-      when 8
-	require 'bio/appl/blast/format8'
-      end
-      Report.new(data)
+      Report.new(data, @parser)
     end
 
 
@@ -167,24 +150,11 @@ if __FILE__ == $0
   rescue
   end
 
-  query = ARGF.read
-
 # serv = Bio::Blast.local('blastn', 'hoge.nuc')
 # serv = Bio::Blast.local('blastp', 'hoge.pep')
   serv = Bio::Blast.remote('blastp', 'genes')
 
-  puts "Parse by -m 8 (tab-delimited)"
-# serv.format = 8		# default
-  p serv.query(query)
-
-  puts "Parse by -m 7 (XML by REXML)"
-  serv.format = 7
-# serv.parser = 'rexml'		# default
-  p serv.query(query)
-
-  puts "Parse by -m 7 (XML by XMLParser)"
-  serv.format = 7
-  serv.parser = 'xmlparser'
+  query = ARGF.read
   p serv.query(query)
 end
 
@@ -218,24 +188,6 @@ end
 --- Bio::Blast#filter
 
       Accessors for the factory parameters.
-
---- Bio::Blast#format
---- Bio::Blast#format=(number)
-
-      Accessors for the -m option.
-
---- Bio::Blast#parser
---- Bio::Blast#parser=(parser)
-
-      Accessors to select which parser will be used by the factory.
-
---- Bio::Blast.parser(parser)
-
-      Import Bio::Blast::Report class by requiring directed parser.
-
-      This class method will be useful when you already have blast
-      output files and want to use appropriate Report class for parsing.
-
 
 == Available databases for Blast.remote(@program, @db, option, 'genomenet')
 
