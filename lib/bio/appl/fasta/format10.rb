@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format10.rb,v 1.2 2002/11/04 16:32:41 k Exp $
+#  $Id: format10.rb,v 1.3 2003/02/03 14:29:47 k Exp $
 #
 
 module Bio
@@ -216,9 +216,7 @@ module Bio
 
 	class Query
 	  def initialize(data)
-	    definition, *data = data.split(/\n/)
-
-	    @definition = definition.sub(/ .*/, '')
+	    @definition, *data = data.split(/\n/)
 	    @data = {}
 	    @sequence = ''
 
