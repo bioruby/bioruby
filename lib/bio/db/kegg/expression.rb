@@ -17,16 +17,21 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: expression.rb,v 1.1 2001/11/08 06:52:28 shuichi Exp $
+#  $Id: expression.rb,v 1.2 2001/11/08 07:06:04 katayama Exp $
 #
 
-#module Bio
+require "bio/db"
 
-#require "bio/db"
+module Bio
 
-#  class KEGG
+  class KEGG
 
-class Microarray
+    class Microarrays
+      def initialize(ary)	# ary = [ Microarray, Microarray, ... ]
+      end
+    end
+
+    class Microarray
 
       def initialize(entry)
         @orf2val = Hash.new('')
@@ -41,11 +46,10 @@ class Microarray
       end
       attr_reader :orf2val
 
-#      private
+      # private
+    end
+
+  end
 
 end
-
-#  end                           # class KEGG
-
-#end                             # module Bio
 
