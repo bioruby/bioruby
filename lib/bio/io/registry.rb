@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: registry.rb,v 1.11 2003/02/21 12:45:31 k Exp $
+#  $Id: registry.rb,v 1.12 2004/02/15 01:44:02 k Exp $
 #
 
 require 'uri'
@@ -95,7 +95,7 @@ module Bio
     end
 
     def read_remote(url)
-      schema, user, host, port, path, = URI.parse(url).to_a
+      schema, user, host, port, reg, path, = URI.split(url)
       Net::HTTP.start(host, port) do |http|
 	response, = http.get(path)
 	parse_stanza(response.body)

@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: das.rb,v 1.4 2003/02/21 09:44:21 k Exp $
+#  $Id: das.rb,v 1.5 2004/02/15 01:44:02 k Exp $
 #
 
 begin
@@ -34,7 +34,7 @@ module Bio
   class DAS
 
     def initialize(url = 'http://www.wormbase.org:80/db/')
-      schema, user, host, port, path, = URI.parse(url).to_a
+      schema, user, host, port, reg, path, = URI.split(url)
       @server = Net::HTTP.new(host, port)
       @prefix = path ? path.chomp('/') : ''
     end
