@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: index.rb,v 1.2 2002/08/21 18:05:02 ng Exp $ 
+#  $Id: index.rb,v 1.3 2002/08/22 09:41:20 ng Exp $ 
 # 
 
 
@@ -140,7 +140,7 @@ module Bio
       end
 
       def *(a)
-	raise 'argument must be class' unless a.is_a?(self.class)
+	raise 'argument must be Results class' unless a.is_a?(self.class)
 	res = self.class.new
 	a.each_key { |x| res.store(x, a[x]) if self[x] }
 	res
@@ -170,7 +170,7 @@ module Bio
       def self.print(*arg)
 	@@out.print(*arg) if @@out
       end
-    end #class DEBUG
+    end #module DEBUG
 
     module IOroutines
       def file2hash(fileobj)
@@ -322,8 +322,7 @@ module Bio
 	if data.is_a?(FileID) then
 	  super(n, data)
 	elsif data then
-	  a = data.split("\t", 2)
-	  super(n, FileID.new(a[0], a[1].to_i))
+	  super(n, FileID.new_from_string(data))
 	else
 	  # data is nil
 	  super(n, nil)
@@ -672,6 +671,7 @@ module Bio
 
       def initialize(name, idx_type = nil, hash = {})
 	@dbname = name.dup
+	@dbname.freeze
 	@bdb = nil
 
 	@always_check = true
@@ -697,7 +697,7 @@ module Bio
 	when MAGIC_BDB
 	  @index_type = MAGIC_BDB
 	  @bdb = true
-	  unless defined?(Bio::FlatFileIndex::BDB_1)
+	  unless defined?(BDB)
 	    raise RuntimeError, "Berkeley DB support not found"
 	  end
 	when MAGIC_FLAT, '', nil, false
