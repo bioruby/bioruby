@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genes.rb,v 0.14 2002/11/22 22:57:38 k Exp $
+#  $Id: genes.rb,v 0.15 2002/12/03 06:13:46 k Exp $
 #
 
 require 'bio/db'
@@ -78,8 +78,20 @@ module Bio
 	field_fetch('DEFINITION')
       end
 
+      def eclinks
+	definition.scan(/\[EC:(.*?)\]/).flatten
+      end
+
+      def splinks
+	definition.scan(/\[SP:(.*?)\]/).flatten
+      end
+
       def keggclass
 	field_fetch('CLASS')
+      end
+
+      def pathways
+	keggclass.scan(/\[PATH:(.*?)\]/).flatten
       end
 
       def position
@@ -87,6 +99,18 @@ module Bio
 	  @data['POSITION'] = fetch('POSITION').gsub(/\s/, '')
 	end
 	@data['POSITION']
+      end
+
+      def gbposition
+	position.sub(/.*?:/, '')
+      end
+
+      def chromosome
+	if position =~ /:/
+	  position.sub(/:.*/, '')
+	else
+	  nil
+	end
       end
 
       def dblinks
