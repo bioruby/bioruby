@@ -18,13 +18,14 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#  $Id: biofetch.rb,v 1.7 2002/04/18 08:04:27 k Exp $
+#  $Id: biofetch.rb,v 1.8 2002/04/26 06:46:00 k Exp $
 #
 
 require 'cgi'
 require 'bio/io/dbget'
 
 MAX_ID_NUM = 50
+BIOFETCH_URL = 'http://bioruby.org/cgi-bin/biofetch.rb'
 
 def print_query_page(cgi)
   cgi.out do
@@ -87,7 +88,7 @@ def print_query_page(cgi)
           "Direct access"
         } +
 	cgi.p {
-          "http://bioruby.org/cgi-bin/biofetch.rb?format=(default|fasta|...);style=(html|raw);db=(embl|genbank|...);id=ID[,ID,ID,...]"
+          "#{BIOFETCH_URL}?format=(default|fasta|...);style=(html|raw);db=(embl|genbank|...);id=ID[,ID,ID,...]"
         } +
 	cgi.p {
           "(NOTE: the option separator ';' can be '&')"
@@ -105,30 +106,41 @@ def print_query_page(cgi)
 	cgi.p {
           "See the " + cgi.a('href'=>'http://obda.open-bio.org') { "BioFetch specification" } + " for more details."
         } +
+	cgi.h2 {
+          "Server informations"
+	} +
+	cgi.dl {
+	  cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?info=dbs") { "What are the databases available?" } +
+	  cgi.dd + "#{BIOFETCH_URL}?info=dbs" +
+	  cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?info=formats;db=embl") { "What are the formats this database X has?" } +
+	  cgi.dd + "#{BIOFETCH_URL}?info=formats;db=embl" +
+	  cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?info=maxids") { "How many entries can be retrieved simultaneously?" } +
+	  cgi.dd + "#{BIOFETCH_URL}?info=maxids"
+	} +
         cgi.h2 {
           "Examples"
         } +
         cgi.dl {
-          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq;id=NC_000844') { "rs:NC_000844" } + " (default/raw)" +
-          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq;id=NC_000844" +
-          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=refseq;id=NC_000844') { "rs:NC_000844" } + " (fasta/raw)" +
-          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=refseq;id=NC_000844" +
-          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=html;db=refseq;id=NC_000844') { "rs:NC_000844" } + " (default/html)" +
-          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=html;db=refseq;id=NC_000844" +
-          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq;id=NC_000844,NC_000846') { "rs:NC_000844,NC_000846" } + " (default/raw, multiple)" +
-          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq;id=NC_000844,NC_000846" +
-          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=embl-today;id=BUM') { "embl:BUM" } + " (default/raw)" +
-          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=embl-today;id=BUM" +
-          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=swissprot-today;id=CYC_BOVIN') { "sp:CYC_BOVIN" } + " (default/raw)" +
-          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=swissprot-today;id=CYC_BOVIN" +
-          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=swissprot-today;id=CYC_BOVIN') { "sp:CYC_BOVIN" } + " (fasta/raw)" +
-          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=swissprot-today;id=CYC_BOVIN" +
-          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=genes;id=b0015') { "genes:b0015" } + " (default/raw)" +
-          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=genes;id=b0015" +
-          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=prosite;id=PS00028') { "ps:PS00028" } + " (default/raw)" +
-          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=prosite;id=PS00028"
-#         cgi.dt + cgi.a('href'=>'') { "" } +
-#         cgi.dd + ""
+          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=default;style=raw;db=refseq;id=NC_000844") { "rs:NC_000844" } + " (default/raw)" +
+	  cgi.dd + "#{BIOFETCH_URL}?format=default;style=raw;db=refseq;id=NC_000844" +
+          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=fasta;style=raw;db=refseq;id=NC_000844") { "rs:NC_000844" } + " (fasta/raw)" +
+          cgi.dd + "#{BIOFETCH_URL}?format=fasta;style=raw;db=refseq;id=NC_000844" +
+          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=default;style=html;db=refseq;id=NC_000844") { "rs:NC_000844" } + " (default/html)" +
+          cgi.dd + "#{BIOFETCH_URL}?format=default;style=html;db=refseq;id=NC_000844" +
+          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=default;style=raw;db=refseq;id=NC_000844,NC_000846") { "rs:NC_000844,NC_000846" } + " (default/raw, multiple)" +
+          cgi.dd + "#{BIOFETCH_URL}?format=default;style=raw;db=refseq;id=NC_000844,NC_000846" +
+          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=default;style=raw;db=embl-today;id=BUM") { "embl:BUM" } + " (default/raw)" +
+          cgi.dd + "#{BIOFETCH_URL}?format=default;style=raw;db=embl-today;id=BUM" +
+          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=default;style=raw;db=swissprot-today;id=CYC_BOVIN") { "sp:CYC_BOVIN" } + " (default/raw)" +
+          cgi.dd + "#{BIOFETCH_URL}?format=default;style=raw;db=swissprot-today;id=CYC_BOVIN" +
+          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=fasta;style=raw;db=swissprot-today;id=CYC_BOVIN") { "sp:CYC_BOVIN" } + " (fasta/raw)" +
+          cgi.dd + "#{BIOFETCH_URL}?format=fasta;style=raw;db=swissprot-today;id=CYC_BOVIN" +
+          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=default;style=raw;db=genes;id=b0015") { "genes:b0015" } + " (default/raw)" +
+          cgi.dd + "#{BIOFETCH_URL}?format=default;style=raw;db=genes;id=b0015" +
+          cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}?format=default;style=raw;db=prosite;id=PS00028") { "ps:PS00028" } + " (default/raw)" +
+          cgi.dd + "#{BIOFETCH_URL}?format=default;style=raw;db=prosite;id=PS00028"
+#         cgi.dt + cgi.a('href'=>"#{BIOFETCH_URL}") { "" } +
+#         cgi.dd + "#{BIOFETCH_URL}"
         } +
         cgi.h2 {
           "Other BioFetch implementations"
@@ -147,6 +159,43 @@ def print_query_page(cgi)
   end
 end
 
+
+
+def print_error_page(str)
+  print "Content-type: text/plain; charset=UTF-8\n\n"
+  puts str
+  exit
+end
+
+def error_1(db)
+  str = "ERROR 1 Unknown database [#{db}]."
+  print_error_page(str)
+end
+
+def error_2(style)
+  str = "ERROR 2 Unknown style [#{style}]."
+  print_error_page(str)
+end
+
+def error_3(format, db)
+  str = "ERROR 3 Format [#{format}] not known for database [#{db}]."
+  print_error_page(str)
+end
+
+def error_4(id, db)
+  str = "ERROR 4 ID [#{id}] not found in database [#{db}]."
+  print_error_page(str)
+end
+
+def error_5(count)
+  str = "ERROR 5 Too many IDs [#{count}]. Max [#{MAX_ID_NUM}] allowed."
+  print_error_page(str)
+end
+
+def error_6(info)
+  str = "ERROR 6 Illegal information request [#{info}]."
+  print_error_page(str)
+end
 
 
 def print_result_page(cgi)
@@ -209,46 +258,40 @@ def print_result_page(cgi)
 end
 
 
-
-def print_error_page(str)
-  print "Content-type: text/plain; charset=UTF-8\n\n"
-  puts str
-  exit
-end
-
-def error_1(db)
-  str = "ERROR 1 Unknown database [#{db}]."
-  print_error_page(str)
-end
-
-def error_2(style)
-  str = "ERROR 2 Unknown style [#{style}]."
-  print_error_page(str)
-end
-
-def error_3(format, db)
-  str = "ERROR 3 Format [#{format}] not known for database [#{db}]."
-  print_error_page(str)
-end
-
-def error_4(id, db)
-  str = "ERROR 4 ID [#{id}] not found in database [#{db}]."
-  print_error_page(str)
-end
-
-def error_5(count)
-  str = "ERROR 5 Too many IDs [#{count}]. Max [#{MAX_ID_NUM}] allowed."
-  print_error_page(str)
+def print_info_page(cgi)
+  info = cgi['info'].first
+  case info
+  when /db/i
+    result = Bio::DBGET.binfo('dbget')
+    db_list = Array.new
+    result.each do |line|
+      db_list.push(line.split[1])
+    end
+    str = db_list[3..-1].sort.join(' ')
+    print_error_page(str)
+  when /format/i
+    str = "default fasta"
+    print_error_page(str)
+  when /maxid/i
+    str = MAX_ID_NUM.to_s
+    print_error_page(str)
+  else
+    error_6(info)
+  end
 end
 
 
 
 begin
   cgi = CGI.new('html3')
-  if cgi['id'].empty?
-    print_query_page(cgi)
+  if cgi['info'].empty?
+    if cgi['id'].empty?
+      print_query_page(cgi)
+    else
+      print_result_page(cgi)
+    end
   else
-    print_result_page(cgi)
+    print_info_page(cgi)
   end
 end
 
