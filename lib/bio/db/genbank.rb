@@ -69,14 +69,12 @@ class GenBank
     parse_LOCUS unless @data['LOCUS']
     if key			# returns the LOCUS value of the key
       @data['LOCUS'][key]
-    else
-      if block_given?		# acts as each_locus()
-	@data['LOCUS'].each do |k, v|
-	  yield(k, v)
-	end
-      else			# returns the whole LOCUS as Hash
-	@data['LOCUS']
+    elsif block_given?		# acts as each_locus()
+      @data['LOCUS'].each do |k, v|
+	yield(k, v)
       end
+    else			# returns the whole LOCUS as Hash
+      @data['LOCUS']
     end
   end
   alias l locus
@@ -139,14 +137,12 @@ class GenBank
     parse_SOURCE unless @data['SOURCE']
     if key			# returns the SOURCE value of the key
       @data['SOURCE'][key]
-    else
-      if block_given?		# acts as each_source()
-	@data['SOURCE'].each do |k, v|
-	  yield(k, v)
-	end
-      else			# returns the whole SOURCE as Hash
-	@data['SOURCE']
+    elsif block_given?		# acts as each_source()
+      @data['SOURCE'].each do |k, v|
+	yield(k, v)
       end
+    else			# returns the whole SOURCE as Hash
+      @data['SOURCE']
     end
   end
   alias s source
@@ -158,16 +154,14 @@ class GenBank
   def reference(num = 0, key = 'REFERENCE')
     parse_REFERENCE unless @data['REFERENCE']
     num -= 1
-    if num < 0
-      if block_given?		# acts as each_reference()
-	@data['REFERENCE'].each do |r|
-	  yield(r)
-	end
-      else			# returns the whole REFERENCE Hash as Array
-	@data['REFERENCE']
-      end
-    else			# returns one value of the REFERENCE Hash
+    if num >= 0			# returns one value of the REFERENCE Hash
       @data['REFERENCE'][num][key] if @data['REFERENCE'][num]
+    elsif block_given?		# acts as each_reference()
+      @data['REFERENCE'].each do |r|
+	yield(r)
+      end
+    else			# returns the whole REFERENCE Hash as Array
+      @data['REFERENCE']
     end
   end
   alias r reference
@@ -187,16 +181,14 @@ class GenBank
   def features(num = 0, key = 'position')
     parse_FEATURES unless @data['FEATURES']
     num -= 1
-    if num < 0
-      if block_given?		# acts as each_feature()
-	@data['FEATURES'].each do |f|
-	  yield(f)
-	end
-      else			# returns the whole FEATURES Hash as Array
-	@data['FEATURES']
-      end
-    else			# returns one value of the FEATURES Hash
+    if num >= 0			# returns one value of the FEATURES Hash
       @data['FEATURES'][num][key] if @data['FEATURES'][num]
+    elsif block_given?		# acts as each_feature()
+      @data['FEATURES'].each do |f|
+	yield(f)
+      end
+    else			# returns the whole FEATURES Hash as Array
+      @data['FEATURES']
     end
   end
   alias f features
@@ -228,14 +220,12 @@ class GenBank
     if base			# returns the BASE COUNT of the given base
       base.downcase!
       @data['BASE COUNT'][base]
-    else
-      if block_given?		# acts as each_basecount()
-	%w{ a t g c o }.each do |b|
-	  yield(b, @data['BASE COUNT'][b]) if @data['BASE COUNT'][b]
-	end
-      else			# returns the whole BASE COUNT Hash
-	@data['BASE COUNT']
+    elsif block_given?		# acts as each_basecount()
+      %w{ a t g c o }.each do |b|
+	yield(b, @data['BASE COUNT'][b]) if @data['BASE COUNT'][b]
       end
+    else			# returns the whole BASE COUNT Hash
+      @data['BASE COUNT']
     end
   end
   alias bc basecount
