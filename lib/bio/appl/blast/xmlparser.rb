@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: xmlparser.rb,v 1.1 2002/05/28 14:49:06 k Exp $
+#  $Id: xmlparser.rb,v 1.2 2002/06/22 03:17:21 k Exp $
 #
 
 begin
@@ -314,7 +314,8 @@ end				# modlue Bio
 
 if __FILE__ == $0
 
-  reports = Report.new(ARGF.read)
+  reports = []
+  reports << Bio::Blast::Report.new(ARGF.read)
 
   print "\treports.size\t#=> "
   p reports.size
@@ -345,7 +346,7 @@ if __FILE__ == $0
 
   
     puts "\n= = b.itreration.each do |itr| "
-    b.iteration.each do |itr|
+    b.iterations.each do |itr|
       puts "\n= = Bio::Blast::Report::Iteration = ="
       
       print "\titr.num        #=> "
@@ -437,79 +438,6 @@ end
 
 =begin
 
-= Bio::Blast
-
---- Bio::Blast.local(blastall, program, db, opts)
-
-      An intialize method for local blast search
-      opts = {'-e' => '10e-3', ... }
-
---- Bio::Blast.remote(uri, program, db, opts)
-
-      An intialize method for remote blast search.
-      opts.is_a Options
-
---- Bio::Blast.ncbi(program, db, opts)
-
-      An intialize method for remote blast search on NCBI.
-      opts = {'-e' => '10e-3', ... }
-      _Not yet implimented_.
-
---- Bio::Blast.genomenet(program, db, opts)
-
-      An intialize method for remote blast search on GenomeNet.
-      opts = {'-e' => '10e-3', ... }
-
-
---- Bio::Blast#query(fna)
-
-      Execute blast search.
-      Returns Bio::Blast::Report Object
-
---- Bio::Blast#exec(fna)
-
-      Alias for Bio::Blast#query
-
---- Bio::Blast#blastall?
-
-      Check true if @blastall excutable
-
---- Bio::Blast#db?
-
-      Check true if @db redable
-
-= Bio::Blast::Options
-
---- Bio::Blast::Options.new(opts)
-
-      Constructor. 
-      opts = {'-e' => '10e-3', ... }
-
---- Bio::Blast::Options.codes
-
-      An Regexp instance for checking arguments for blastall (2.2.1).
-
---- Bio::Blast::Options#checkout
-
-      Checkout options. Returns arguments String for blastall.
-
---- Bio::Blast::Options#set(opt_code, post_tag, default = nil)
-
-      Set an cgi posting configuration (blast option code, cgi tag and
-      default value).
-
---- Bio::Blast::Options#set_value(opt_code, value)
-
-      Set value to opt_code.
-
---- Bio::Blast::Options#get(opt_code)
-
-      Returns values by blast opt_code.
-
---- Bio::Blast::Options#post_data
-   
-      Returns String for remote blast CGI POST data.
-
 = Bio::Blast::Report
 
 --- Bio::Blast::Report#new(xml)
@@ -583,64 +511,11 @@ end
 --- Bio::Blast::Hsp#midline
 
 
-
-= EXAMPLE
-
-* blast on localhost
-
-    require 'bio/appl/blast'
-    blastall = '/bio/bin/blastall'
-    db = '/bio/db/blast/genome/bsu'
-    opts = {'-e' => '10e-3', '-F' => 'F'}
-    bla = Bio::Blast.local(blastall, 'blastn', db, opts)
-    bla.query(fna).each { |report| ... }
-
-
-* blast via remote host
-  * blast via GenomeNet server
-
-      require 'bio/appl/blast'
-      opts = {'-e' => '10e-3', '-F' => 'F'}
-      bla = Bio::Blast.genomnet('blastp', 'genes', opts)
-      bla.query(faa).each {|report| ... }
-      
-
-  * blast via NCBI server
-
-      require 'bio/appl/blast'
-      opts = {'-e' => '10e-3', '-F' => 'F'}
-      bla = Bio::Blast.ncbi('blastp', 'genes', opts)
-      bla.query(faa).each {|report| ... }
-      
-
-  * blast via a remote server as you like
-
-      require 'bio/appl/blast'
-      options = {'-e' => '10e-3', '-F' => 'F'}
-      opts = Bio::Blast::Options.new(options)
-      opts.set('-i', 'sequence') 
-      opts.set('-m', 'alignment', '7')
-      ...
-      server = {'server' => 'MyBlastServer',
-              'host'   => 'www.mydomain.hoge',
-              'path'   => '/cgi-bin/blast.cgi',
-              'post_proc' => '' }
-      bla = Bio::Blast.remote(server, 'blastp', 'genes', opts)
-      bla.query(faa).each {|report| ... }
-      
-
-
-
-
 = DTD files
 
 * http://www.ncbi.nlm.nih.gov/dtd/NCBI_BlastOutput.dtd
 * http://www.ncbi.nlm.nih.gov/dtd/NCBI_BlastOutput.mod
 * http://www.ncbi.nlm.nih.gov/dtd/NCBI_Entity.mod
-
-= See also
-
-blastall
 
 =end
 
