@@ -1,3 +1,42 @@
+2004-12-13  KATAYAMA Toshiaki <k@bioruby.org>
+
+	* BioRuby 0.6.2 released.
+
+	* test/all_tests.rb
+
+	  Unit tests for some classes are newly incorporated by
+	  Moses Hohman.  You can try it by 'ruby install.rb test'
+
+	* lib/bio/appl/spidey/report.rb
+
+	  Newly added Spidey result parser class.
+
+	* lib/bio/appl/blat/report.rb
+
+	  Newly added BLAT result parser class.
+
+	* lib/bio/db/kegg/glycan.rb, lib/bio/db/kegg/reaction.rb
+
+	  Newly added KEGG GLYCAN, KEGG REACTION parser classes.
+
+	* fixes and improvements:
+	  * lib/bio/appl/blast/blast/format0.rb
+	    * minor fix for the Blast default format parser
+	  * lib/bio/alignment.rb
+	    * Alignment class
+	  * lib/bio/db/prosite.rb
+	    * bug reported by Rolv Seehuus is fixed
+	    * some methods are added
+	  * lib/bio/db/kegg/compound.rb
+	    * some methods are added
+
+2004-10-25  KATAYAMA Toshiaki <k@bioruby.org>
+
+	* lib/bio/db/{compound.rb,reaction.rb,glycan.rb}:
+
+	  Newly added parser for KEGG REACTION and KEGG GLYCAN database
+	  entries, fix for KEGG COMPOUND parser to support the new format.
+
 2004-10-09  GOTO Naohisa <ng@bioruby.org>
 
 	* lib/bio/appl/sim4.rb
