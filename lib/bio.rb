@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.40 2004/12/13 04:53:12 k Exp $
+#  $Id: bio.rb,v 1.41 2004/12/13 05:17:48 k Exp $
 #
 
 module Bio
@@ -142,7 +142,7 @@ require 'bio/appl/clustalw'
 require 'bio/appl/clustalw/report'
 require 'bio/appl/mafft'
 require 'bio/appl/mafft/report'
-require 'bio/appl/sim4
+require 'bio/appl/sim4'
 require 'bio/appl/sim4/report'
 require 'bio/appl/spidey/report'
 require 'bio/appl/blat/report'
