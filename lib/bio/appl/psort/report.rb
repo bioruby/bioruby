@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.6 2003/09/08 05:46:25 n Exp $
+#  $Id: report.rb,v 1.7 2004/06/13 09:26:11 nakao Exp $
 #
 
 require 'bio/sequence'
@@ -27,6 +27,61 @@ module Bio
 
   class PSORT
 
+    class PSORT1
+
+      class Report
+
+	def self.parser(str)
+	  self.default_parser(str)
+	end
+
+	
+	def self.default_parser(str)
+	  rpt = self.new
+	  rpt.raw = str
+	  query_info = str.scan(/^Query Information\n\n(.+?)\n\n/m)[0][0].split(/\n/)
+	  result_info = str.scan(/^Result Information\n\n(.+?)\n\n\*/m)[0][0]
+	  step1 = str.scan(/^\*\*\* Reasoning Step: 1\n\n(.+?)\n\n/m)[0][0]
+	  step2 = str.scan(/^\*\*\* Reasoning Step: 2\n\n(.+?)\n\n/m)[0][0]
+	  final_result = str.scan(/\n\n----- Final Results -----\n\n(.+?)\n\n\n/m)[0][0]
+
+	  rpt.entry_id = query_info[2].scan(/^>(\S+) */).to_s
+	  rpt.origin   = query_info[0].scan(/ORIGIN (\w+)/).to_s
+	  rpt.sequence = Bio::Sequence::AA.new(query_info[3..query_info.size].to_s)
+	  # rpt.reasoning
+
+	  rpt.final_result = final_result.split(/\n/).map {|x|
+	    x = x.strip.split(/---/).map {|y| y.strip }
+	    { 'prediction' => x[0], 
+	      'certainty'  => x[1].scan(/Certainty= (\d\.\d{3})/).to_s,
+	      'comment'    => x[1].scan(/\((\w+)\)/).to_s
+	    }
+	  }
+	  return rpt
+	end
+
+	# new
+	def initialize(entry_id = '', origin = '', title = '', sequence = '',
+		       result_info = '', reasoning = {}, final_result = [])
+	  @entry_id = entry_id
+	  @origin = origin
+	  @title = title
+	  @sequence = sequence
+	  @result_info = result_info
+	  @reasoning = reasoning
+	  @final_result = final_result
+	  @raw = ''
+	end
+	attr_accessor :entry_id, :origin, :title, :sequence, 
+	  :result_info, :reasoning,:final_result, :raw
+
+
+      end # class Report
+
+    end # class PSORT1
+
+
+    # Bio::PSORT::PSORT2
     class PSORT2
 
       SclNames = { 
@@ -119,14 +174,14 @@ module Bio
 	'len' => 'AA'       # length of input sequence
       }
 
-
+      # Bio::PSORT::PSORT2::Report
       class Report
 
 	BOUNDARY  = '-' * 75
 	RS = DELIMITER = "\)\n\n#{BOUNDARY}"
 
-	def initialize(entry_id = nil, scl = nil, definition = nil, seq = nil, 
-		       k = nil, features = {}, prob = {}, pred = nil)
+	def initialize(raw = '', entry_id = nil, scl = nil, definition = nil, 
+		       seq = nil, k = nil, features = {}, prob = {}, pred = nil)
 	  @entry_id   = entry_id
 	  @scl        = scl
 	  @definition = definition
@@ -135,22 +190,23 @@ module Bio
 	  @prob       = prob
 	  @pred       = pred
 	  @k          = k
+	  @raw        = raw
 	end
 	attr_accessor :entry_id, :scl, :definition, :seq, 
-	  :k, :features, :prob, :pred
+	  :k, :features, :prob, :pred, :raw
 
 	
-	# report format auto detection
-	def self.parser(str)
+	# report format to be auto detection
+	def self.parser(str, entry_id)
 	  case str
 	  when /^ psg:/   # default report
-	    self.default_parser(str)
+	    self.default_parser(str, entry_id)
 	  when /^PSG:/    # -v report
-	    self.v_parser(str)
+	    self.v_parser(str, entry_id)
 	  when /: too short length /
-	    self.too_short_parser(str)
+	    self.too_short_parser(str, entry_id)
 	  when /PSORT II server/
-	    tmp = self.new('QUERY')
+	    tmp = self.new(ent, entry_id)
 	  else
 	    raise ArgumentError, "invalid format\n[#{str}]"
 	  end
@@ -158,10 +214,11 @@ module Bio
 
 
 	# $id: too short length ($leng), skipped\n";
-	def self.too_short_parser(ent)
-	  report = self.new
+	def self.too_short_parser(ent, entry_id = nil)
+	  report = self.new(ent)
+	  report.entry_id = entry_id
 	  if ent =~ /^(.+)?: too short length/
-	    report.entry_id = $1
+	    report.entry_id = $1 unless report.entry_id
 	    report.scl = '---'
 	  end
 	  report
@@ -170,8 +227,8 @@ module Bio
 
 	# default report
 	# ``psort test.faa'' output
-	def self.default_parser(ent)
-	  report = self.new
+	def self.default_parser(ent, entry_id = nil)
+	  report = self.new(ent, entry_id)
 	  ent = ent.split(/\n\n/).map {|e| e.chomp }
 
 	  report.set_header_line(ent[0])
@@ -192,16 +249,17 @@ module Bio
 	def set_header_line(str)
 	  str.sub!(/^-+\n/,'')
 	  tmp = str.split(/\t| /)
-	  self.entry_id   = tmp.shift.sub(/^-+/,'').strip
+	  @entry_id = tmp.shift.sub(/^-+/,'').strip unless @entry_id
+
 	  case tmp.join(' ').chomp
 	  when /\(\d+ aa\) (.+)$/
-	    self.definition = $1
+	    @definition = $1
 	  else
-	    self.definition = tmp.join(' ').chomp
+	    @definition = tmp.join(' ').chomp
 	  end
-	  scl = self.definition.split(' ')[0]
+	  scl = @definition.split(' ')[0]
 
-	  self.scl = scl if SclNames.keys.index(scl)
+	  @scl = scl if SclNames.keys.index(scl)
 	end
 
 
@@ -215,14 +273,14 @@ module Bio
 	    key = Bio::PSORT::PSORT2::SclNames.index(scl)
 	    prob[key] = val.to_f
 	  }
-	  prob
+	  return prob
 	end
 
 
 	def set_prediction(str)
 	  case str
 	  when /prediction for (\S+?) is (\w{3}) \(k=(\d+)\)/
-	    @entry_id ||= $1
+	    @entry_id ||= $1 unless @entry_id
 	    @pred = $2
 	    @k    = $3
 	  else
@@ -234,8 +292,8 @@ module Bio
 
 
 	# ``psort -v report'' and WWW server output
-	def self.v_parser(ent)
-	  report = Bio::PSORT::PSORT2::Report.new
+	def self.v_parser(ent, entry_id = nil)
+	  report = Bio::PSORT::PSORT2::Report.new(ent, entry_id)
 
 	  ent = ent.split(/\n\n/).map {|e| e.chomp }
 	  ent.each_with_index {|e, i|
@@ -265,12 +323,12 @@ module Bio
 	  report.set_header_line(ent.shift)	  
 	  report.seq = Bio::Sequence::AA.new(ent.shift)
 
-	  fent,pent = self.divent(ent)
+	  fent, pent = self.divent(ent)
 	  report.set_features(fent)	          
 	  report.prob = self.set_kNN_prob(pent[0].strip)	  
 	  report.set_prediction(pent[1].strip)	
 
-	  report
+	  return report
 	end
 
 
@@ -282,7 +340,7 @@ module Bio
 	      break
 	    end
 	  }
-	  j
+	  return j
 	end
 	private_class_method :search_j
 
@@ -297,7 +355,6 @@ module Bio
 	def set_features(fary)
 	  fary.each {|fent|
 	    key = fent.split(/\:( |\n)/)[0].strip
-	    
 	    self.features[key] = fent # unless /^\>/ =~ key
 	  }
 	  self.features['AA'] = self.seq.length
@@ -362,6 +419,22 @@ end
 
 =begin
 
+= Bio::PSORT::PSORT1
+
+= Bio::PSORT::PSORT1::Report
+
+--- Bio::PSORT::PSORT1::Report.parser
+--- Bio::PSORT::PSORT1::Report#entry_id
+--- Bio::PSORT::PSORT1::Report#origin
+--- Bio::PSORT::PSORT1::Report#title
+--- Bio::PSORT::PSORT1::Report#sequence
+--- Bio::PSORT::PSORT1::Report#result_info
+--- Bio::PSORT::PSORT1::Report#reasoning
+--- Bio::PSORT::PSORT1::Report#final_result
+--- Bio::PSORT::PSORT1::Report#raw
+
+
+
 
 
 = Bio::PSORT::PSORT2
@@ -379,17 +452,15 @@ output format.
 --- Bio::PSORT::PSORT2::Report#entry_id
 
       
-
 --- Bio::PSORT::PSORT2::Report#scl
-
-      
-
 --- Bio::PSORT::PSORT2::Report#definition
 --- Bio::PSORT::PSORT2::Report#seq
 --- Bio::PSORT::PSORT2::Report#features
 --- Bio::PSORT::PSORT2::Report#prob
 --- Bio::PSORT::PSORT2::Report#pred
 --- Bio::PSORT::PSORT2::Report#k
+--- Bio::PSORT::PSORT2::Report#raw
+
 
 --- Bio::PSORT::PSORT2::Report.parser(report)
 
