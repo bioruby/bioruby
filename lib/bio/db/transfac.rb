@@ -13,8 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
+#  $Id: transfac.rb,v 1.2 2001/08/21 10:54:16 katayama Exp $
+#
 
-require "bio/biomatrix"
+require "bio/matrix"
 require "bio/db"
 
 class TRANSFAC < EMBLDB
@@ -90,23 +92,24 @@ class TRANSFAC < EMBLDB
 
 end
 
+
 class TFMATRIX < TRANSFAC
 
   def initialize(entry)
     super(entry)
   end
 
-#NA      Name of the binding factor
+  # NA      Name of the binding factor
   def na
     field_fetch('NA')
   end
 
-#DE      Short factor description
+  # DE      Short factor description
   def de
     field_fetch('DE')
   end
 
-#BF      List of linked factor entries
+  # BF      List of linked factor entries
   def bf
     field_fetch('bf')
   end
@@ -137,12 +140,13 @@ class TFMATRIX < TRANSFAC
     @m = BioMatrix[*@ma_ary]
   end
 
-#BA      Statistical basis
+  # BA      Statistical basis
   def ba
     field_fetch('BA')
   end
 
 end
+
 
 class TFSITE < TRANSFAC
 
@@ -201,105 +205,107 @@ class TFSITE < TRANSFAC
 
 end
 
+
 class TFFACTOR < TRANSFAC
 
   def initialize(entry)
     super(entry)
   end
 
-#FA      Factor name
+  # FA      Factor name
   def fa
     field_fetch('FA')
   end
 
-#SY      Synonyms
+  # SY      Synonyms
   def sy
     field_fetch('SY')
   end
 
-# DR  Cross-references to other databases     (>=0 per entry)
+  # DR  Cross-references to other databases     (>=0 per entry)
   def dr
     field_fetch('DR')
   end
 
-#HO      Homologs (suggested)
+  # HO      Homologs (suggested)
   def ho
     field_fetch('HO')
   end
 
-#CL      Classification (class accession no.; class identifier; decimal 
-#CL      classification number.)
+  # CL      Classification (class accession no.; class identifier; decimal 
+  # CL      classification number.)
   def cl
     field_fetch('CL')
   end
 
-#SZ      Size (length (number of amino acids); calculated molecular mass 
-#SZ      in kDa; experimental molecular mass (or range) in kDa 
-#SZ      (experimental method) [Ref]
+  # SZ      Size (length (number of amino acids); calculated molecular mass 
+  # SZ      in kDa; experimental molecular mass (or range) in kDa 
+  # SZ      (experimental method) [Ref]
   def sz
     field_fetch('SZ')
   end
 
-#SQ      Sequence
+  # SQ      Sequence
   def sq
     field_fetch('SQ')
   end
 
-#SC      Sequence comment, i. e. source of the protein sequence
+  # SC      Sequence comment, i. e. source of the protein sequence
   def sc
     field_fetch('SC')
   end
 
-#FT      Feature table (1st position     last position    feature)
+  # FT      Feature table (1st position     last position    feature)
   def ft
     field_fetch('FT')
   end
 
-#SF      Structural features
+  # SF      Structural features
   def sf
     field_fetch('SF')
   end
 
-#CP      Cell specificity (positive)
+  # CP      Cell specificity (positive)
   def cp
     field_fetch('CP')
   end
 
-#CN      Cell specificity (negative)
+  # CN      Cell specificity (negative)
   def cn
     field_fetch('CN')
   end
 
-#FF      Functional features
+  # FF      Functional features
   def ff
     field_fetch('FF')
   end
 
-#IN      Interacting factors (factor accession no.; factor name; 
-#IN      biological species.)
+  # IN      Interacting factors (factor accession no.; factor name; 
+  # IN      biological species.)
   def in
     field_fetch('IN')
   end
 
-#MX      Matrix (matrix accession no.; matrix identifier)
+  # MX      Matrix (matrix accession no.; matrix identifier)
   def mx
     field_fetch('MX')
   end
 
-#BS      Bound sites (site accession no.; site ID; quality: N; biological
-#BS      species)
+  # BS      Bound sites (site accession no.; site ID; quality: N; biological
+  # BS      species)
   def bs
     field_fetch('BS')
   end
 
-#DR      External databases (EMBL/GenBank accession no.; EMBL identifier
-#DR      (_g_ene/_r_na); SwissProt accession no.; identifier; PIR number;
-#DR      code; FlyBase accession;gene name; PDB IDcode)
+  # DR      External databases (EMBL/GenBank accession no.; EMBL identifier
+  # DR      (_g_ene/_r_na); SwissProt accession no.; identifier; PIR number;
+  # DR      code; FlyBase accession;gene name; PDB IDcode)
   def dr
     field_fetch('DR')
   end
 
 end
+
 
 class TFCELL < TRANSFAC
 
@@ -314,33 +320,35 @@ class TFCELL < TRANSFAC
 
 end
 
+
 class TFCLASS < TRANSFAC
 
   def initialize(entry)
     super(entry)
   end
 
-#CL      Class
+  # CL      Class
   def cl
     field_fetch('CL')
   end
 
-#SD      Structure description
+  # SD      Structure description
   def sd
     field_fetch('SD')
   end
 
-#BF      Factors belonging to this class
+  # BF      Factors belonging to this class
   def bf
     field_fetch('BF')
   end
 
-#DR      PROSITE accession numbers
+  # DR      PROSITE accession numbers
   def dr
     field_fetch('DR')
   end
 
 end
+
 
 class TFGENE < TRANSFAC
 
@@ -348,32 +356,32 @@ class TFGENE < TRANSFAC
     super(entry)
   end
 
-#SD      Short description/name of the gene
+  # SD      Short description/name of the gene
   def sd
     field_fetch('SD')
   end
 
-#DE      
+  # DE
   def de
     field_fetch('DE')
   end
 
-#BC      Bucher promoter
+  # BC      Bucher promoter
   def bc
     field_fetch('BC')
   end
 
-#BS      TRANSFAC SITE positions and accession numbers
+  # BS      TRANSFAC SITE positions and accession numbers
   def bs
     field_fetch('BS')
   end
 
-#CO      COMPEL accession number
+  # CO      COMPEL accession number
   def co
     field_fetch('CO')
   end
 
-#TR      TRRD accession number
+  # TR      TRRD accession number
   def tr
     field_fetch('TR')
   end
