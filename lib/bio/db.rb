@@ -13,14 +13,14 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: db.rb,v 0.4 2001/08/21 12:40:46 katayama Exp $
+#  $Id: db.rb,v 0.5 2001/08/21 18:10:50 katayama Exp $
 #
 
 require 'bio/sequence'
 #require 'bio/id'
 #require 'bio/taxonomy'
 
-class DB
+class BIODB
 
   ### sub classes should define the following constants if appropriate
 
@@ -222,7 +222,7 @@ class DB
 end
 
 
-class NCBIDB < DB
+class NCBIDB < BIODB
 
   def initialize(entry, tagsize)
     @tagsize = tagsize
@@ -250,7 +250,7 @@ class KEGGDB < NCBIDB
 end
 
 
-class EMBLDB < DB
+class EMBLDB < BIODB
 
   def initialize(entry, tagsize)
     @tagsize = tagsize
