@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: xmlparser.rb,v 1.4 2002/06/25 07:51:36 k Exp $
+#  $Id: xmlparser.rb,v 1.5 2002/06/25 10:42:39 n Exp $
 #
 
 begin
@@ -48,9 +48,8 @@ module Bio
 	@query_def = ''
 	@query_len = 0
 	@parameters = Hash.new
-	@statistics = Hash.new
 	@iterations = Array.new
-	  
+
 	parser = XMLParser.new
 	def parser.default; end
 	
@@ -140,16 +139,28 @@ module Bio
 	end
       end
       alias :each :each_hit
+      alias :hits :each_hit
+
+      def statistics
+	@iterations.last.statistics
+      end
+
+      def message
+	@iterations.last.message
+      end
+
 
       ##
       # Bio::Blast::Report::Iteration
       class Iteration
 
 	def initialize(num = nil)
+	  @message = nil
 	  @num = num
 	  @hits = Array.new
+	  @statistics = Hash.new
 	end
-	attr_accessor :num, :hits
+	attr_accessor :num, :hits, :statistics, :message
 
 	def each
 	  @hits.each do |x|
@@ -292,6 +303,8 @@ module Bio
 	case tag
 	when 'Iteration_iter-num'
 	  @iterations.last.num = entry[tag].to_i
+	when 'Iteration_message'
+	  @iterations.last.message = entry[tag].to_s
 	end
       end
 
@@ -344,10 +357,11 @@ module Bio
 	           'lambda'     => 'Statistics_lambda',
 	           'entropy'    => 'Statistics_entropy'	}
 	labels.each do |k,v|
-	  if k == 'dn-num' or k == 'db-len' or k == 'hsp-len'
-	    @statistics[k] = hash[v].to_i
+	  case k
+	  when 'dn-num','db-len','hsp-len'
+	    @iterations.last.statistics[k] = hash[v].to_i
 	  else
-	    @statistics[k] = hash[v].to_f
+	    @iterations.last.statistics[k] = hash[v].to_f
 	  end
 	end
       end
@@ -480,7 +494,7 @@ end
 
 = Bio::Blast::Report
 
---- Bio::Blast::Report#new(xml)
+--- Bio::Blast::Report.new(xml)
 
       xml as blastall -m 7 report
 
@@ -499,18 +513,24 @@ end
 
 --- Bio::Blast::Report#statistics -> hsh
 
-      Keys: db-num, db-len, hsp-len, eff-space, kappa, db, db-num
+      Returns a Hash containing execution statistics of the last iteration.
+      Valid keys are:
+        'db-len', 'db-num', 'eff-space', 'entropy', 'hsp-len',
+        'kappa', 'lambda'
+
+--- Bio::Blast::Report#message
 
 --- Bio::Blast::Report#iterations -> ary
 
       Returns an Array(Bio::Blast::Report::Iteration).
 
---- Bio::Blast::Report#each_iterations
+--- Bio::Blast::Report#each_iteration
 
       Iterates on Bio::Blast::Report::Iteration.
 
---- Bio::Blast::Report#each_hits
+--- Bio::Blast::Report#each_hit
 --- Bio::Blast::Report#each
+--- Bio::Blast::Report#hits
 
       Iterates on Bio::Blast::Report::Hit of the last Iteration.
 
@@ -519,6 +539,8 @@ end
 
 --- Bio::Blast::Report::Iteration#num
 --- Bio::Blast::Report::Iteration#each
+--- Bio::Blast::Report::Iteration#message
+--- Bio::Blast::Report::Iteration#statistics
 --- Bio::Blast::Report::Iteration#hits -> ary
 
       Returns an Array(Bio::Blast::Report::Hit).
