@@ -17,149 +17,177 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genes.rb,v 0.10 2001/11/06 16:58:52 okuji Exp $
+#  $Id: genes.rb,v 0.11 2001/12/15 02:48:31 katayama Exp $
 #
-
-module Bio
 
 require 'bio/db'
 
-class KEGG
+module Bio
 
-class GENES < KEGGDB
+  class KEGG
 
-  DELIMITER	= RS = "\n///\n"
-  TAGSIZE	= 12
+    class GENES < KEGGDB
 
-  def initialize(entry)
-    super(entry, TAGSIZE)
-  end
+      DELIMITER	= RS = "\n///\n"
+      TAGSIZE	= 12
 
-  def entry(key = nil)
-    unless @data['ENTRY']
-      hash = {}
-      if @orig['ENTRY'].length > 30
-	hash['id']       = @orig['ENTRY'][12..29].strip
-	hash['division'] = @orig['ENTRY'][30..39].strip
-	hash['organism'] = @orig['ENTRY'][40..80].strip
+      def initialize(entry)
+	super(entry, TAGSIZE)
       end
-      @data['ENTRY'] = hash
-    end
 
-    if block_given?
-      @data['ENTRY'].each do |k, v|
-        yield(k, v)			# each contents of ENTRY
+      def entry
+	unless @data['ENTRY']
+	  hash = {}
+	  if @orig['ENTRY'].length > 30
+	    hash['id']       = @orig['ENTRY'][12..29].strip
+	    hash['division'] = @orig['ENTRY'][30..39].strip
+	    hash['organism'] = @orig['ENTRY'][40..80].strip
+	  end
+	  @data['ENTRY'] = hash
+	end
+	@data['ENTRY']
       end
-    elsif key
-      @data['ENTRY'][key]		# contents of key's ENTRY
-    else
-      @data['ENTRY']			# Hash of ENTRY
-    end
-  end
-  def id
-    entry('id')				# ENTRY ID
-  end
-  def division
-    entry('division')			# CDS, tRNA etc.
-  end
-  def organism
-    entry('organism')			# H.sapiens etc.
-  end
 
-  def name
-    field_fetch('NAME')
-  end
-  def gene
-    name.split(', ')
-  end
-
-  def definition
-    field_fetch('DEFINITION')
-  end
-
-  def keggclass
-    field_fetch('CLASS')
-  end
-
-  def position
-    unless @data['POSITION']
-      @data['POSITION'] = field_fetch('POSITION').gsub(/\s/, '')
-    end
-    @data['POSITION']
-  end
-
-  def dblinks(db = nil)
-    unless @data['DBLINKS']
-      hash = {}
-      @orig['DBLINKS'].scan(/(\S+):\s*(\S+)\n/).each do |k, v|
-	hash[k] = v
+      def entry_id
+	entry['id']
       end
-      @data['DBLINKS'] = hash
-    end
 
-    if block_given?
-      @data['DBLINKS'].each do |k, v|
-        yield(k, v)			# each DB:ID pair in DBLINKS
+      def division
+	entry['division']			# CDS, tRNA etc.
       end
-    elsif db
-      @data['DBLINKS'][db]		# ID of the DB
-    else
-      @data['DBLINKS']			# Hash of DB:ID in DBLINKS (default)
-    end
-  end
 
-  def codon_usage(codon = nil)
-    unless @data['CODON_USAGE']
-      ary = []
-      @orig['CODON_USAGE'].sub(/.*/,'').each_line do |line|	# cut 1st line
-        line.scan(/\d+/).each do |cu|
-          ary.push(cu.to_i)
-        end
+      def organism
+	entry['organism']			# H.sapiens etc.
       end
-      @data['CODON_USAGE'] = ary
-    end
 
-    if block_given?
-      @data['CODON_USAGE'].each do |cu|
-        yield(cu)			# each CODON_USAGE
+      def name
+	field_fetch('NAME')
       end
-    elsif codon
-      h = { 't' => 0, 'c' => 1, 'a' => 2, 'g' => 3 }
-      x, y, z = codon.downcase.scan(/\w/)
-      codon_num = h[x] * 16 + h[y] * 4 + h[z]
-      @data['CODON_USAGE'][codon_num]	# CODON_USAGE of the codon
-    else
-      return @data['CODON_USAGE']	# Array of CODON_USAGE (default)
+
+      def gene
+	name.split(', ')
+      end
+
+      def definition
+	field_fetch('DEFINITION')
+      end
+
+      def keggclass
+	field_fetch('CLASS')
+      end
+
+      def position
+	unless @data['POSITION']
+	  @data['POSITION'] = field_fetch('POSITION').gsub(/\s/, '')
+	end
+	@data['POSITION']
+      end
+
+      def dblinks
+	unless @data['DBLINKS']
+	  hash = {}
+	  @orig['DBLINKS'].scan(/(\S+):\s*(\S+)\n/).each do |k, v|
+	    hash[k] = v
+	  end
+	  @data['DBLINKS'] = hash
+	end
+	@data['DBLINKS']		# Hash of DB:ID in DBLINKS
+      end
+
+      def codon_usage(codon = nil)
+	unless @data['CODON_USAGE']
+	  ary = []
+	  @orig['CODON_USAGE'].sub(/.*/,'').each_line do |line|	# cut 1st line
+	    line.scan(/\d+/).each do |cu|
+	      ary.push(cu.to_i)
+	    end
+	  end
+	  @data['CODON_USAGE'] = ary
+	end
+
+	if codon
+	  h = { 't' => 0, 'c' => 1, 'a' => 2, 'g' => 3 }
+	  x, y, z = codon.downcase.scan(/\w/)
+	  codon_num = h[x] * 16 + h[y] * 4 + h[z]
+	  @data['CODON_USAGE'][codon_num]	# CODON_USAGE of the codon
+	else
+	  return @data['CODON_USAGE']	# Array of CODON_USAGE (default)
+	end
+      end
+
+      def aaseq
+	unless @data['AASEQ']
+	  @data['AASEQ'] = Sequence::AA.new(field_fetch('AASEQ').gsub(/[\s\d\/]+/, ''))
+	end
+	@data['AASEQ']
+      end
+
+      def aalen
+	@data['AALEN'] = aaseq.length
+      end
+
+      def ntseq
+	unless @data['NTSEQ']
+	  @data['NTSEQ'] = Sequence::NA.new(field_fetch('NTSEQ').gsub(/[\s\d\/]+/, ''))
+	end
+	@data['NTSEQ']
+      end
+      alias naseq ntseq
+
+      def ntlen
+	@data['NTLEN'] = ntseq.length
+      end
+      alias nalen ntlen
+
     end
-  end
 
-  def aaseq
-    unless @data['AASEQ']
-      @data['AASEQ'] = Sequence::AA.new(field_fetch('AASEQ').gsub(/[\s\d\/]+/, ''))
-    end
-    @data['AASEQ']
   end
-
-  def aalen
-    @data['AALEN'] = aaseq.length
-  end
-
-  def ntseq
-    unless @data['NTSEQ']
-      @data['NTSEQ'] = Sequence::NA.new(field_fetch('NTSEQ').gsub(/[\s\d\/]+/, ''))
-    end
-    @data['NTSEQ']
-  end
-  alias naseq ntseq
-
-  def ntlen
-    @data['NTLEN'] = ntseq.length
-  end
-  alias nalen ntlen
 
 end
 
-end				# class KEGG
+if __FILE__ == $0
+  require 'bio/io/dbget'
 
-end				# module Bio
+  e = Bio::DBGET.bget('eco b0010')
+  g = Bio::KEGG::GENES.new(e)
 
+  p g.entry
+  p g.entry_id
+  p g.division
+  p g.name
+  p g.gene
+  p g.definition
+  p g.keggclass
+  p g.position
+  p g.dblinks
+  p g.codon_usage
+  p g.aaseq
+  p g.aalen
+  p g.naseq
+  p g.nalen
+end
+
+
+=begin
+
+= Bio::KEGG::GENES
+
+--- Bio::KEGG::GENES.new
+--- Bio::KEGG::GENES#entry
+--- Bio::KEGG::GENES#entry_id
+--- Bio::KEGG::GENES#division
+--- Bio::KEGG::GENES#name
+--- Bio::KEGG::GENES#gene
+--- Bio::KEGG::GENES#definition
+--- Bio::KEGG::GENES#keggclass
+--- Bio::KEGG::GENES#position
+--- Bio::KEGG::GENES#dblinks
+--- Bio::KEGG::GENES#codon_usage
+--- Bio::KEGG::GENES#aaseq
+--- Bio::KEGG::GENES#aalen
+--- Bio::KEGG::GENES#ntseq
+--- Bio::KEGG::GENES#ntlen
+--- Bio::KEGG::GENES#naseq
+--- Bio::KEGG::GENES#nalen
+
+=end
