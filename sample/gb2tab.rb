@@ -18,7 +18,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: gb2tab.rb,v 0.8 2002/03/27 20:54:50 katayama Exp $
+#  $Id: gb2tab.rb,v 0.9 2002/04/15 03:08:18 k Exp $
 #
 
 require 'bio'
@@ -167,7 +167,7 @@ CREATE TABLE IF NOT EXISTS %HOGE% (
 	natype		varchar(5),
 	circular	varchar(10),
 	division	varchar(5),
-	date		varchar(10),
+	date		varchar(12),
 	definition	varchar(255),
 	accession	varchar(30),
 	versions	varchar(30),
