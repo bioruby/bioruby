@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fantom.rb,v 1.5 2003/05/07 14:17:53 ng Exp $
+#  $Id: fantom.rb,v 1.6 2003/05/08 14:59:10 ng Exp $
 #
 
 begin
@@ -186,6 +186,23 @@ module Bio
 	    to_a[*arg]
 	  end
 	end
+
+	def cloneids
+	  unless defined?(@cloneids)
+	    @cloneids = to_a.collect { |x| x.cloneid }
+	  end
+	  @cloneids
+	end
+
+	def id_strings
+	  unless defined?(@id_strings)
+	    @id_strings = to_a.collect { |x| x.id_strings }
+	    @id_strings.flatten!
+	    @id_strings.sort!
+	    @id_strings.uniq!
+	  end
+	  @id_strings
+	end
       end #class MaXML::Sequences
 
       class Sequence < MaXML
@@ -210,7 +227,11 @@ module Bio
 	end
 
 	def id_strings
-	  altid.values
+	  altid.values.sort.uniq
+	end
+
+	def library_id
+	  entry_id[0,2]
 	end
 
 	def annotations
@@ -369,7 +390,7 @@ end #module Bio
 --- Bio::FANTOM.query(idstr, http_proxy=nil)
 
  Get MaXML sequence data corresponding to given ID through the internet
- (from http://fantom.gsc.riken.go.jp/db/maxml/).
+ from ((<URL:http://fantom.gsc.riken.go.jp/db/maxml/)).
  Returns Bio::FANTOM::MaXML::Sequence object.
 
 --- Bio::FANTOM.get_by_id(idstr, http_proxy=nil)
@@ -440,6 +461,16 @@ end #module Bio
  Shows a sequence information of given id.
  Returns Bio::FANTOM::MaXML::Sequence object or nil.
 
+--- Bio::FANTOM::MaXML::Sequences#cloneids
+
+ Shows clone ID list.
+ Returns an array of strings.
+
+--- Bio::FANTOM::MaXML::Sequences#id_strings
+
+ Shows ID list.
+ Returns an array of strings.
+
 
 = Bio::FANTOM::MaXML::Sequence
 
@@ -469,6 +500,13 @@ end #module Bio
 
  Gets lists of ID. (same as altid.values)
  Returns an array of strings.
+
+--- Bio::FANTOM::MaXML::Sequence#library_id
+
+ Shows library ID. (same as cloneid[0,2])
+ Library IDs are listed at:
+   ((<URL:http://fantom2.gsc.riken.go.jp/fantom2/SI/sup01_est_3r_libraryinfo.pdf))
+   ((<URL:http://fantom2.gsc.riken.go.jp/fantom2/SI/sup01_est_5f_libraryinfo.pdf))
 
 --- Bio::FANTOM::MaXML::Sequence#seqid
 
