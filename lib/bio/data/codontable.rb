@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: codontable.rb,v 0.7 2004/06/22 19:36:08 k Exp $
+#  $Id: codontable.rb,v 0.8 2004/06/23 01:37:19 k Exp $
 #
 
 module Bio
@@ -26,17 +26,19 @@ class CodonTable
 
   def self.[](i)
     hash = Tables[i]
-    name = Names[i]
-    @starts = Starts[i]
-    @stops = Stops[i]
-    self.new(hash, name)
+    definition = Definitions[i]
+    start = Starts[i]
+    stop = Stops[i]
+    self.new(hash, name, start, stop)
   end
 
-  def initialize(hash, name = nil)
+  def initialize(hash, definition = nil, start_re = nil, stop_re = nil)
     @table = hash
-    @name = name
+    @definition = definition
+    @start = start_re
+    @stop = stop_re
   end
-  attr_accessor :table, :name
+  attr_accessor :table, :definition, :start, :stop
 
   def [](codon)
     @table[codon]
@@ -54,19 +56,15 @@ class CodonTable
   end
 
   def start_codon?(codon)
-    @starts.match(codon)
+    @start.match(codon) ? true : false
   end
 
   def stop_codon?(codon)
-    @stops.match(codon)
+    @stop.match(codon) ? true : false
   end
 
-  #
-  # Converted from
-  #   http://www.ncbi.nlm.nih.gov/htbin-post/Taxonomy/wprintgc?mode=t
-  #
 
-  Names = {
+  Definitions = {
 
     1	=> "Standard (Eukaryote)",
     2	=> "Vertebrate Mitochondrial",
@@ -534,3 +532,73 @@ end # module Bio
 
 
 
+=begin
+
+= Bio::CodonTable
+
+Data in this class is converted from the NCBI's genetic codes page.
+
+  * ((<URL:http://www.ncbi.nlm.nih.gov/htbin-post/Taxonomy/wprintgc?mode=t>))
+
+--- Bio::CodonTable[num]
+
+Select a codon table by number.  You can use this class method to
+obtain hard coded codon table as a Bio::CodonTable object.
+
+  table = Bio::CodonTable[1]
+
+--- Bio::CodonTable.new(hash, definition = nil, start_re = nil, stop_re = nil)
+
+Create your own codon table by passing a Hash table of codons and relevant
+amino acids.  You can give table's name as a definition.
+
+  hash = { 'ttt' => 'F', 'ttc' => 'ttc', ... }
+  table = Bio::CodonTable.new(hash, "my codon table")
+
+Two Regexps 'start_re' and 'stop_re' can be specified which is used by
+'start_codon?' and 'stop_codon?' methods.
+
+--- Bio::CodonTable#[codon]
+
+Translate a codon into a relevant amino acid.  This method is used for
+translating a DNA sequence into amino acid sequence.
+
+  table = Bio::CodonTable[1]
+  table['ttt']  # => F
+
+--- Bio::CodonTable#table
+--- Bio::CodonTable#table=(hash)
+
+Accessor methods for a Hash of the currently selected codon table.
+
+--- Bio::CodonTable#definition
+--- Bio::CodonTable#definition=(string)
+
+Accessor methods for the name of the currently selected table.
+
+--- Bio::CodonTable#start
+--- Bio::CodonTable#start=(regexp)
+--- Bio::CodonTable#stop
+--- Bio::CodonTable#stop=(regexp)
+
+Accessor methods for a Regexp which will match start codon or
+stop codon respectively.
+
+--- Bio::CodonTable#revtrans(aa)
+
+Reverse translation of a amino acid into a list of relevant codons.
+
+  table = Bio::CodonTable[1]
+  table.revtrans("A")	# => ["gcg", "gct", "gca", "gcc"]
+
+--- Bio::CodonTable#start_codon?(codon)
+
+Returns true if the codon is a start codon in the currently selected
+codon table, otherwise false.
+
+--- Bio::CodonTable#stop_codon?(codon)
+
+Returns true if the codon is a stop codon in the currently selected
+codon table, otherwise false.
+
+=end
