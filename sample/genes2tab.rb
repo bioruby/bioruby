@@ -18,7 +18,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: genes2tab.rb,v 0.1 2001/06/21 08:25:05 katayama Exp $
+#  $Id: genes2tab.rb,v 0.2 2001/09/11 05:27:50 katayama Exp $
 #
 
 require 'bio/db/kegg/genes'
@@ -29,7 +29,7 @@ while entry = gets(GENES::DELIMITER)
 
   db = genes.dblinks.inspect
 
-  if codon_usage.length == 64
+  if genes.codon_usage.length == 64
     cu = genes.codon_usage.join(' ')
   else
     cu = '\N'
