@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.12 2002/05/29 08:39:45 k Exp $
+#  $Id: blast.rb,v 1.13 2002/06/25 03:23:03 k Exp $
 #
 
 require 'net/http'
@@ -37,11 +37,13 @@ module Bio
       @option	= "-m #{@format} #{option}"
       @server	= server
 
+      @output	= ''
       @blastall = 'blastall'
       @matrix	= nil
       @filter	= nil
     end
-    attr_accessor :program, :db, :option, :server, :blastall, :matrix, :filter
+    attr_accessor :program, :db, :option, :server, :output, :blastall,
+      :matrix, :filter
 
     def format=(num)
       @format = num
@@ -92,7 +94,8 @@ module Bio
 	io.sync = true
 	io.puts(query)
 	io.close_write
-	report = parse_result(io.read)
+	@output = io.read
+	report = parse_result(@output)
       rescue
 	raise "[Error] command execution failed : #{cmd}"
       ensure
@@ -143,7 +146,8 @@ module Bio
 	if result_path
 	  response, result = Net::HTTP.new(host).get(result_path)
 	  if %r|<pre>.*?</pre>.*<pre>(.*)</pre>|mi.match(result)
-	    report = parse_result($1)
+	    @output = $1
+	    report = parse_result(@output)
 	  end
 	end
       end
@@ -197,14 +201,18 @@ end
 --- Bio::Blast.local(program, db, option = '')
 --- Bio::Blast.remote(program, db, option = '', server = 'genomenet')
 
-      Returns a Blast factory object (Bio::Blast).
+      Returns a blast factory object (Bio::Blast).
 
       For the develpper, you can add server 'hoge' by adding
-      Bio::Blast#exec_hoge(query) method.
+      exec_hoge(query) method.
 
 --- Bio::Blast#query(query)
 
-      Execute fasta search and returns Report object (Bio::Blast::Report).
+      Execute blast search and returns Report object (Bio::Blast::Report).
+
+--- Bio::Blast#output
+
+      Returns a String containing blast execution output in as is format.
 
 --- Bio::Blast#program
 --- Bio::Blast#db
@@ -215,18 +223,19 @@ end
 
       Accessors for the factory parameters.
 
+
 == Available databases for Blast.remote(@program, @db, option, 'genomenet')
 
   # ----------+-------+---------------------------------------------------
   #  @program | query | @db (supported in GenomeNet)
   # ----------+-------+---------------------------------------------------
   #  blastp   | AA    | nr-aa, genes, vgenes.pep, swissprot, swissprot-upd,
-  # ----------+-------+ pir, prf, pdbstr + KEGG
+  # ----------+-------+ pir, prf, pdbstr
   #  blastx   | NA    | 
   # ----------+-------+---------------------------------------------------
   #  blastn   | NA    | nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss,
   # ----------+-------+ htgs, dbsts, embl-nonst, embnonst-upd, epd,
-  #  tblastn  | AA    | genes-nt, genome, vgenes.nuc + KEGG
+  #  tblastn  | AA    | genes-nt, genome, vgenes.nuc
   # ----------+-------+---------------------------------------------------
 
 See http://blast.genome.ad.jp/ideas/ideas.html#blast for more details.
