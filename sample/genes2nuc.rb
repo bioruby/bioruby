@@ -14,7 +14,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: genes2nuc.rb,v 0.2 2001/10/17 14:43:10 katayama Exp $
+#  $Id: genes2nuc.rb,v 0.3 2001/10/24 02:53:03 katayama Exp $
 #
 
 require 'bio/db/kegg/genes'
@@ -22,8 +22,8 @@ require 'bio/util/fold'
 
 include Bio
 
-while gets(GENES::DELIMITER)
-  genes = GENES.new($_)
+while gets(KEGG::GENES::DELIMITER)
+  genes = KEGG::GENES.new($_)
 
   next if genes.nalen == 0
 

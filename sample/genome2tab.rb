@@ -18,16 +18,16 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: genome2tab.rb,v 0.3 2001/10/17 14:43:10 katayama Exp $
+#  $Id: genome2tab.rb,v 0.4 2001/10/24 02:53:03 katayama Exp $
 #
 
 require 'bio/db/kegg/genome'
 
 include Bio
 
-while entry = gets(GENOME::DELIMITER)
+while entry = gets(KEGG::GENOME::DELIMITER)
 
-  genome = GENOME.new(entry)
+  genome = KEGG::GENOME.new(entry)
 
   ref = genome.reference.inspect
   chr = genome.chromosome.inspect
