@@ -1,7 +1,5 @@
 #
-# bio/db/sptr.rb - SwissProt and TrEMBL protein sequence database parsing
-# 
-# BioRuby class for Bio::SPTR
+# bio/db/sptr.rb - SwissProt and TrEMBL protein sequence database parser class
 # 
 #   Copyright (C) 2001 Mitsuteru S. Nakao <n@bioruby.org>
 #
@@ -19,72 +17,65 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.5 2001/11/12 08:30:49 okuji Exp $
+#  $Id: sptr.rb,v 1.6 2001/11/12 20:54:43 katayama Exp $
 #
 
-
-#Line code Content                      Occurrence in an entry
-#--------- ---------------------------  --------------------------------
-#     ID - identification               (begins each entry; 1 per entry)
-#     AC - accession number(s)          (>=1 per entry)
-#     DT - date                         (3 per entry)
-#     DE - description                  (>=1 per entry)
-#     GN - gene name(s)                 (>=0 per entry; optional)
-#     OS - organism species             (>=1 per entry)
-#     OG - organelle                    (0 or 1 per entry; optional)
-#     OC - organism classification      (>=1 per entry)
-#     RN - reference number             (>=1 per entry)
-#     RP - reference positions          (>=1 per entry)
-#     RC - reference comment(s)         (>=0 per entry; optional)
-#     RX - reference cross-reference(s) (>=0 per entry; optional)
-#     RA - reference author(s)          (>=1 per entry)
-#     RT - reference title              (>=0 per entry; optional)
-#     RL - reference location           (>=1 per entry)
-#     CC - comments or notes            (>=0 per entry; optional)
-#     DR - database cross-references    (>=0 per entry; optional)
-#     KW - keywords                     (>=1 per entry)
-#     FT - feature table data           (>=0 per entry; optional)
-#     SQ - sequence header              (1 per entry)
-#     bb - (blanks) The sequence data   (>=1 per entry)
-#     // - termination line             (ends each entry; 1 per entry)
-#--------- ---------------------------  --------------------------------
+require 'bio/db'
+require 'bio/sequence'
 
 module Bio
 
-  require 'bio/db'
-  require 'bio/sequence'
+  #      Content                      Occurrence in an entry
+  # ---- ---------------------------  --------------------------------
+  # ID - identification               (begins each entry; 1 per entry)
+  # AC - accession number(s)          (>=1 per entry)
+  # DT - date                         (3 per entry)
+  # DE - description                  (>=1 per entry)
+  # GN - gene name(s)                 (>=0 per entry; optional)
+  # OS - organism species             (>=1 per entry)
+  # OG - organelle                    (0 or 1 per entry; optional)
+  # OC - organism classification      (>=1 per entry)
+  # RN - reference number             (>=1 per entry)
+  # RP - reference positions          (>=1 per entry)
+  # RC - reference comment(s)         (>=0 per entry; optional)
+  # RX - reference cross-reference(s) (>=0 per entry; optional)
+  # RA - reference author(s)          (>=1 per entry)
+  # RT - reference title              (>=0 per entry; optional)
+  # RL - reference location           (>=1 per entry)
+  # CC - comments or notes            (>=0 per entry; optional)
+  # DR - database cross-references    (>=0 per entry; optional)
+  # KW - keywords                     (>=1 per entry)
+  # FT - feature table data           (>=0 per entry; optional)
+  # SQ - sequence header              (1 per entry)
+  #    - (blanks) The sequence data   (>=1 per entry)
+  # // - termination line             (ends each entry; 1 per entry)
+  # ---- ---------------------------  --------------------------------
 
   class SPTR < EMBLDB
     
     DELIMITER	= RS = "\n//\n"
     TAGSIZE	= 5
     
-    ##
-    #
     def initialize(entry)
       super(entry, TAGSIZE)
     end
 
-    ##
     # ID Line
+    #
     # "ID  #{ENTRY_NAME} #{DATA_CLASS}; #{MOLECULE_TYPE}; #{SEQUENCE_LENGTH}."
     #
-    # ENTRY_NAME = "#{X}_#{Y}"
-    # X =~ /[A-Z0-9]{1,4}/ # The protein name.
-    # Y =~ /[A-Z0-9]{1,5}/ # The biological source of the protein.
+    #   ENTRY_NAME = "#{X}_#{Y}"
+    #     X =~ /[A-Z0-9]{1,4}/ # The protein name.
+    #     Y =~ /[A-Z0-9]{1,5}/ # The biological source of the protein.
+    #   MOLECULE_TYPE = 'PRT' =~ /\w{3}/ 
+    #   SEQUENCE_LENGTH =~ /\d+ AA/
+    #
     # See also the SWISS-PROT dicument file SPECLIST.TXT.
-    ENTRY_REGREXP=/[A-Z0-9]{1,4}_[A-Z0-9]{1,5}/
-    # 
+    #
+
+    ENTRY_REGREXP = /[A-Z0-9]{1,4}_[A-Z0-9]{1,5}/
     DATA_CLASS = ["STANDARD", "PRELIMINARY"]
-    #
-    # MOLECULE_TYPE = 'PRT' =~ /\w{3}/ 
-    #
-    # SEQUENCE_LENGTH =~ /\d+ AA/
-    #
-    # Bio::SPTR#id_line -> Hash
-    # Bio::SPTR#id_line(key) -> String/Int
-    # Bio::SPTR#id_line {} -> {|key,val }
-    #
+
     def id_line(key = nil)
       unless @data['ID']
 	tmp = Hash.new
@@ -100,52 +91,43 @@ module Bio
 	  yield(k,v)
 	end
       elsif key
-	@data['ID'][key]
+	@data['ID'][key]	# String/Int
       else
-	@data['ID']
+	@data['ID']		# Hash
       end
     end
-    ##
-    # Bio::SPTR#entry -> String
-    #          #entry_name -> String
-    #
+
     def entry
       id_line('ENTRY_NAME')
     end
     alias entry_name entry
-    ##
-    # Bio::SPTR#molecule_type -> String
-    #
+
     def molecule
       id_line('MOLECULE_TYPE')
     end
     alias molecule_type molecule
-    ##
-    # Bio::SPTR#sequence_length -> Int
-    #          #sequencelegth -> Int
-    #          #seqlen -> Int
-    #          #aalen -> Int
-    #
+
     def sequence_length
       id_line('SEQUENCE_LENGTH')
     end
-    alias sequencelength sequence_length
-    alias seqlen sequence_length
     alias aalen sequence_length
 
 
-    ##
     # AC Line
-    # "AC   A12345; B23456;"
-    # AC [AC1;]+
     #
-    # Accession numbers format:
-    # 1       2     3          4          5          6
-    # [O,P,Q] [0-9] [A-Z, 0-9] [A-Z, 0-9] [A-Z, 0-9] [0-9]
+    # "AC   A12345; B23456;"
+    #
+    #   AC [AC1;]+
+    #
+    #   Accession numbers format:
+    #   1       2     3          4          5          6
+    #   [O,P,Q] [0-9] [A-Z, 0-9] [A-Z, 0-9] [A-Z, 0-9] [0-9]
     #
     # Bio::SPTR#ac  -> Array
     #          #accessions  -> Array
+
     AC_REGREXP=/[OPQ][0-9][A-Z0-9]{3}[0-9]/
+
     # DT Line; date (3/entry)
     # DT DD-MMM-YYY (rel. NN, Created)
     # DT DD-MMM-YYY (rel. NN, Last sequence update)
@@ -174,7 +156,7 @@ module Bio
       end
     end
 
-    ##
+
     # DE Line; description (>=1)
     # "DE #{OFFICIAL_NAME} (#{SYNONYM})"
     # "DE #{OFFICIAL_NAME} (#{SYNONYM}) [CONTEINS: #1; #2]."
@@ -186,7 +168,6 @@ module Bio
       fetch('DE')
     end
 
-    ##
     # GN Line: Gene name(s) (>=0, optional)
     # GN   HNS OR DRDX OR OSMZ OR BGLY.
     # GN   CECA1 AND CECA2.
@@ -203,14 +184,13 @@ module Bio
       @data['GN']
     end
     alias gene_names gn
-    ##
+
     # Bio::SPTR#gene_name -> String
     #
     def gene_name
       @data['GN'][0]
     end
 
-    ##
     # OS Line; organism species (>=1)
     # "OS   Trifolium repens (white clover)"
     #
@@ -230,7 +210,6 @@ module Bio
     # Bio::SPTR#os(num) -> String
     
 
-    ##
     # OG Line; organella (0 or 1/entry)
     # ["MITOCHONDRION", "CHLOROPLAST", "Cyanelle", "Plasmid"]
     #  or a plasmid name (e.g. "Plasmid pBR322").  
@@ -238,18 +217,15 @@ module Bio
     # Bio::SPTR#og  -> Array
 
 
-    ##
     # OC Line; organism classification (>=1)
     # OC   Eukaryota; Alveolata; Apicomplexa; Piroplasmida; Theileriidae;
     # OC   Theileria.
     #
     # Bio::SPTR#oc  -> Array
 
-    ##
     # R Lines
     # RN RC RP RX RA RT RL
 
-    ##
     # CC lines (>=0, optional)
     # CC   -!- TISSUE SPECIFICITY: HIGHEST LEVELS FOUND IN TESTIS. ALSO PRESENT
     # CC       IN LIVER, KIDNEY, LUNG AND BRAIN.
@@ -257,12 +233,13 @@ module Bio
     # CC   -!- TOPIC: FIRST LINE OF A COMMENT BLOCK;
     # CC       SECOND AND SUBSEQUENT LINES OF A COMMENT BLOCK.
     #
+
     CC_TOPICS = ['ALTERNATIVE PRODUCTS','CATALYTIC ACTIVITY','CAUTION',
       'COFACTOR','DATABASE','DEVELOPMENTAL STAGE','DISEASE','DOMAIN',
       'ENZYME REGULATION','FUNCTION','INDUCTION','MASS SPECTROMETRY',
       'MISCELLANEOUS','PATHWAY','PHARMACEUTICAL','POLYMORPHISM','PTM',
       'SIMILARITY','SUBCELLULAR LOCATION','SUBUNIT','TISSUE SPECIFICITY']
-    # 
+
     # DATABASE: NAME=Text[; NOTE=Text][; WWW="Address"][; FTP="Address"].
     # MASS SPECTROMETRY: MW=XXX[; MW_ERR=XX][; METHOD=XX][;RANGE=XX-XX].
     #
@@ -340,26 +317,25 @@ module Bio
       end
     end
 
-    ##
+
     # DR Line; defabases cross-reference (>=0)
     # a cross_ref pre one line
     # "DR  database_identifier; primary_identifier; secondary_identifier."
+
     DR_DATABASE_IDENTIFIER=['EMBL','CARBBANK','DICTYDB','ECO2DBASE','ECOGENE',
       'FLYBASE','GCRDB','HIV','HSC-2DPAGE','HSSP','INTERPRO','MAIZEDB',
       'MAIZE-2DPAGE','MENDEL','MGD''MIM','PDB','PFAM','PIR','PRINTS',
       'PROSITE','REBASE','AARHUS/GHENT-2DPAGE','SGD','STYGENE','SUBTILIST',
       'SWISS-2DPAGE','TIGR','TRANSFAC','TUBERCULIST','WORMPEP','YEPD','ZFIN']
-    #
+
     # Bio::SPTR#dr  -> Hash w/in Array
 
 
-    ##
     # KW Line; keyword (>=1)
     # KW   [Keyword;]+
     # Bio::SPTR#kw  -> Array
     #          #keywords  -> Array
 
-    ##
     # FT Line; feature table data (>=0, optional)
     #
     # Col     Data item
@@ -398,7 +374,6 @@ module Bio
     # ft('SIGNAL').each do {|s| signal=seq[s['From'].to_i..s['To'].to_i] }
     #
 
-    ##
     # SQ Line; sequence header (1/entry)
     # SQ   SEQUENCE   233 AA;  25630 MW;  146A1B48A1475C86 CRC64;
     # SQ   SEQUENCE  \d+ AA; \d+ MW;  [0-9A-Z]+ CRC64;
@@ -429,9 +404,8 @@ module Bio
 	@data['SQ']
       end
     end
-    ##
     # @orig[''] as sequence
-    # bb Line; (blanks) sequence data (>=1)
+    # blank Line; sequence data (>=1)
     # Bio::SPTR#seq  -> Bio::Sequence::AA
     #
     def seq
@@ -442,13 +416,7 @@ module Bio
 
   end
 
-  class SwissProt < SPTR
-  end
-
-  class TrEMBL < SPTR
-  end
-
-end # module Bio
+end
 
 
 # testing codes
@@ -457,17 +425,15 @@ end
 
 
 =begin
+
 = NAME
 
   sptr.rb - A parser object class for SWISS-PROT/TrEMBL entry
 
-
 == Usage:
 
   require 'bio/db/sptr'
-  emb=Bio::SPTR.new(data)
-
-
+  emb = Bio::SPTR.new(data)
 
 == Author
 
@@ -481,9 +447,11 @@ end
 == Methods
 
 * Initialize
+
 --- Bio::SPTR#new(a_sp_entry)
 
 * ID Line (Identification)
+
 --- Bio::SPTR#id_line -> Hash
 --- Bio::SPTR#id_line(key) -> String
        key = (ENTRY_NAME|MOLECULE_TYPE|DATA_CLASS|SEQUENCE_LENGTH)
@@ -494,47 +462,57 @@ end
 --- Bio::SPTR#sequencelength -> Int
     
 * AC Lines (Accession number)
+
 --- Bio::SPTR#ac -> Array
 --- Bio::SPTR#accession -> String
  
 * GN Line (Gene name(s))
+
 --- Bio::SPTR#gn -> Array
 
 * DT Lines (Date) 
+
 --- Bio::SPTR#dt -> Hash
 --- Bio::SPTR#dt(key) -> String
       key = (created|annotation|sequence)
 --- Bio::SPTR.dt['updated']
 
 * DE Lines (Description)
+
 --- Bio::SPTR#de -> String
 
 * KW Lines (Keyword)
+
 --- Bio::SPTR#kw -> Array
 
 * OS Lines (Organism species)
+
 --- Bio::SPTR#os -> Array
 
 * OC Lines (organism classification)
+
 --- Bio::SPTR#oc -> Array
 
 * OG Line (Organella)
+
 --- Bio::SPTR#og -> String
 
-* R Lines (Reference) 
-      RN RC RP RX RA RT RL
+* RN RC RP RX RA RT RL Lines (Reference)  
+
 --- Bio::SPTR#ref -> String 
 
 * DR Lines (Database cross-reference)
+
 --- Bio::SPTR#dr -> Hash
 --- Bio::SPTR#dr(dbname) -> Array
 
 * FT Lines (Feature table data)
+
 --- Bio::SPTR#ft -> Hash
 --- Bio::SPTR#ft(key) -> Array
 
 * SQ Lines (Sequence header and data)
-      SQ bb
+
 --- Bio::SPTR#sq -> Hash
 --- Bio::EMBL#seq -> Bio::Sequece::AA
 

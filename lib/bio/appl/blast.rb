@@ -1,10 +1,24 @@
 #
-# blast_output.rb  - NCBI_BlastOutput.dtd XML Blast Report Parser
+# bio/appl/blast.rb - NCBI_BlastOutput.dtd XML Blast Report Parser
 # 
-# Mitsuteru Nakao, <n@bioruby.org>
+#   Copyright (C) 2001 Mitsuteru S. Nakao <n@bioruby.org>
 #
-# $Id: blast.rb,v 1.1 2001/11/12 18:21:27 nakao Exp $
-# 
+#  This library is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public
+#  License as published by the Free Software Foundation; either
+#  version 2 of the License, or (at your option) any later version.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#
+#  $Id: blast.rb,v 1.2 2001/11/12 20:53:50 katayama Exp $
+#
 
 require 'xmlparser'
 require 'bio'
@@ -14,6 +28,7 @@ module Bio
   class Blast
 
     class Report
+
       class XMLRetry < Exception; end
 	
       def initialize (xml)
@@ -211,7 +226,6 @@ module Bio
 
       protected
 
-      ##
       def parse_parameters(hash)
 	labels = { 
 	  'expect' => 'Parameters_expect',
@@ -226,7 +240,7 @@ module Bio
 	  @parameters[k] = hash[v]
 	end
       end
-      ##
+
       def parse_statistics(hash)
 	labels = {
 	  'db-num' => 'Statistics_db-num',
@@ -241,7 +255,7 @@ module Bio
 	  @statistics[k] = hash[v]
 	end
       end
-      ##
+
       def parse_hsp(h)
 	@iteration.last.hit.last.hsp.last.num = h['Hsp_num']
 	@iteration.last.hit.last.hsp.last.bit_score = h['Hsp_bit-score']
@@ -265,10 +279,11 @@ module Bio
 	@iteration.last.hit.last.hsp.last.midline = h['Hsp_midline']
       end
 	
-    end # class Report
-  end # class Blast
-end # modlue Bio
+    end				# class Report
 
+  end				# class Blast
+
+end				# modlue Bio
 
 
 # Testing codes
@@ -330,17 +345,16 @@ if __FILE__ == $0
 end	    
 
 
-
-
-
-
 =begin
+
 == NAME
+
 blast_report.rb  - NCBI_BlastOutput.dtd XML Parser
 
 Copyright (C) 2001 Mitsuteru S. Nakao <n@bioruby.org>
 
 == EXAMPLE
+
 require 'bio/appl/blast'
 
 xml = $<.read
@@ -410,8 +424,6 @@ it.statistics['db-num'] #=> 1                 <Statistics_db-num>
 * http://www.ncbi.nlm.nih.gov/dtd/NCBI_BlastOutput.dtd
 * http://www.ncbi.nlm.nih.gov/dtd/NCBI_BlastOutput.mod
 * http://www.ncbi.nlm.nih.gov/dtd/NCBI_Entity.mod
-
-
 
 =end
 
