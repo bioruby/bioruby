@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.19 2001/11/15 09:17:20 katayama Exp $
+#  $Id: pathway.rb,v 1.20 2001/11/15 10:51:39 shuichi Exp $
 #
 
 require 'bio/matrix'
@@ -122,6 +122,65 @@ module Bio
 	end
       end
       return sub_graph
+    end
+
+    def to_relation
+      rel = []
+      @graph.each_key do |from|
+        @graph[from].each do |to, w|
+          rel << Relation.new(from, to, w)
+        end
+      end
+      return rel
+    end
+ 
+    # Kruskal method for finding minimam spaninng trees
+    def kruskal
+      # initialize
+      rel = self.to_relation.sort{|a, b| a <=> b}
+      index = []
+      for i in 0 .. (rel.size - 1) do
+        for j in (i + 1) .. (rel.size - 1) do
+          if rel[i] == rel[j]
+            index << j
+          end
+        end
+      end
+      index.sort{|x, y| y<=>x}.each do |i|
+        rel[i, 1] = []
+      end
+      mst = []
+      seen = Hash.new()
+      @graph.each_key do |x|
+        seen[x] = nil
+      end
+      i = 1
+      # initialize end
+
+      rel.each do |r|
+        if seen[r.node[0]] == nil
+          seen[r.node[0]] = 0
+        end
+        if seen[r.node[1]] == nil
+          seen[r.node[1]] = 0
+        end
+        if seen[r.node[0]] == seen[r.node[1]] && seen[r.node[0]] == 0
+          mst << r
+          seen[r.node[0]] = i
+          seen[r.node[1]] = i
+        elsif seen[r.node[0]] != seen[r.node[1]]
+          mst << r
+          v1 = seen[r.node[0]].dup
+          v2 = seen[r.node[1]].dup
+          seen.each do |k, v|
+            if v == v1 || v == v2
+              seen[k] = i
+            end
+          end
+        end
+        i += 1
+      end
+      return Pathway.new(mst)
     end
 
 
@@ -343,13 +402,23 @@ module Bio
       @edge
     end
 
-    def ===(rel)
+    def ==(rel)
       if self.edge == rel.edge and
 	 self.node[0] == rel.node[1] and
 	 self.node[1] == rel.node[0]
 	return true
       else
 	return false
+      end
+    end
+
+    def <=>(rel)
+      if self.edge > rel.edge
+        return 1
+      elsif self.edge < rel.edge
+        return -1
+      elsif self.edge == rel.edge
+        return 1
       end
     end
 
