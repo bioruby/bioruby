@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.19 2003/07/29 09:22:18 ng Exp $
+#  $Id: flatfile.rb,v 1.20 2003/08/05 11:46:30 ng Exp $
 #
 
 module Bio
@@ -134,8 +134,13 @@ module Bio
 	  r = @prefetch + @io.gets(nil).to_s
 	  @prefetch = ''
 	else
-	  sp_rs = io_rs
-	  sp_rs = "\n\n" if io_rs == ''
+	  if io_rs == '' then
+	    sp_rs = /\n\n/n
+	    sp_rs_orig = "\n\n"
+	  else
+	    sp_rs = Regexp.new(Regexp.escape(io_rs, 'n'), 0, 'n')
+	    sp_rs_orig = io_rs
+	  end
 	  a = @prefetch.split(sp_rs, 2)
 	  if a.size > 1 then
 	    r = a[0] + sp_rs
@@ -144,7 +149,7 @@ module Bio
 	    @prefetch << @io.gets(io_rs).to_s
 	    a = @prefetch.split(sp_rs, 2)
 	    if a.size > 1 then
-	      r = a[0] + sp_rs
+	      r = a[0] + sp_rs_orig
 	      @prefetch = a[1].to_s
 	    else
 	      r = @prefetch
