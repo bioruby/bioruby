@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.18 2004/03/04 16:16:42 ngoto Exp $
+#  $Id: fasta.rb,v 1.19 2004/04/15 16:04:39 ngoto Exp $
 #
 
 require 'bio/db'
@@ -215,7 +215,7 @@ module Bio
 
     def add_defline(str)
       case str
-      when /^\>?((?:[^\|\s]*\|)+[^\s]+)\s*(.*)$/
+      when /^\>?\s*((?:[^\|\s]*\|)+[^\s]+)\s*(.*)$/
 	# NSIDs
 	# examples:
 	# >gi|9910844|sp|Q9UWG2|RL3_METVA 50S ribosomal protein L3P
@@ -240,7 +240,7 @@ module Bio
 	  end
 	end
 
-      when /^\>?([a-zA-Z0-9]+\:[^\s]+)\s*(.*)$/
+      when /^\>?\s*([a-zA-Z0-9]+\:[^\s]+)\s*(.*)$/
 	# examples:
 	# >sce:YBR160W  CDC28, SRM5; cyclin-dependent protein kinase catalytic subunit [EC:2.7.1.-] [SP:CC28_YEAST]
 	# >emb:CACDC28 [X80034] C.albicans CDC28 gene 
@@ -258,12 +258,12 @@ module Bio
 	  end
 	end
 
-      when /^\>?([^\s.]+)(?:\s+(.+))?$/
+      when /^\>?\s*(\S+)(?:\s+(.+))?$/
 	# examples:
 	# >ABC12345 this is test
 	i = $1
 	d = $2.to_s
-	@list_ids << [ i ]
+	@list_ids << [ i.chomp('.') ]
 	this_line = [  '', [ i ], d ]
 	match_EC(d)
       else
