@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: location.rb,v 0.16 2002/07/02 17:31:33 k Exp $
+#  $Id: location.rb,v 0.17 2003/01/27 19:52:55 k Exp $
 #
 
 module Bio
@@ -340,6 +340,7 @@ if __FILE__ == $0
     '8050..one-of(10731,10758,10905,11242)',
     'one-of(623,627,632)..one-of(628,633,637)',
     'one-of(845,953,963,1078,1104)..1354',
+    'join(2035..2050,complement(1775..1818),13..345,414..992,1232..1253,1024..1157)',
     'join(complement(1..61),complement(AP000007.1:252907..253505))',
     'complement(join(71606..71829,75327..75446,76039..76203))',
     'order(3..26,complement(964..987))',
