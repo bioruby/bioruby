@@ -19,7 +19,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-PROG_VER  = '$Id: br_pmfetch.rb,v 1.2 2004/02/05 13:24:00 k Exp $'
+PROG_VER  = '$Id: br_pmfetch.rb,v 1.3 2004/07/27 07:44:42 k Exp $'
 PROG_NAME = File.basename($0)
 
 
@@ -143,9 +143,11 @@ Usage: #{PROG_NAME} [options...] "query string"
 
 Options:
  -q  --query "genome AND virus"  Query string for PubMed search
+ -t  --title "mobile elements"   Title of the article to search
  -j  --journal "genome res"      Journal title to search
  -v  --volume #                  Journal volume to search
  -i  --issue #                   Journal issue to search
+ -p  --page #                    First page number of the article to search
  -a  --author "Altschul SF"      Author name to search
  -m  --mesh "SARS virus"         MeSH term to search
  -f  --format bibtex             Summary output format
@@ -195,9 +197,11 @@ See the following pages for the PubMed search options:
 
     @parser.set_options(
 	[ '--query',	'-q',	GetoptLong::REQUIRED_ARGUMENT ],
+	[ '--title',	'-t',	GetoptLong::REQUIRED_ARGUMENT ],
 	[ '--journal',	'-j',	GetoptLong::REQUIRED_ARGUMENT ],
 	[ '--volume',	'-v',	GetoptLong::REQUIRED_ARGUMENT ],
 	[ '--issue',	'-i',	GetoptLong::REQUIRED_ARGUMENT ],
+	[ '--page',	'-p',	GetoptLong::REQUIRED_ARGUMENT ],
 	[ '--author',	'-a',	GetoptLong::REQUIRED_ARGUMENT ],
 	[ '--mesh',	'-m',	GetoptLong::REQUIRED_ARGUMENT ],
 	[ '--format',	'-f',	GetoptLong::REQUIRED_ARGUMENT ],
@@ -219,12 +223,16 @@ See the following pages for the PubMed search options:
       case optname
       when /--query/
         @query = optarg
+      when /--title/
+        @query_opts << "#{optarg}[ti]"
       when /--journal/
         @query_opts << "#{optarg}[ta]"
       when /--volume/
         @query_opts << "#{optarg}[vi]"
       when /--issue/
         @query_opts << "#{optarg}[ip]"
+      when /--page/
+        @query_opts << "#{optarg}[pg]"
       when /--author/
         @query_opts << "#{optarg}[au]"
       when /--mesh/
