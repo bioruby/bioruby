@@ -1,6 +1,6 @@
 =begin
 
-  $Id: TODO.rd.ja,v 1.4 2001/12/08 09:28:41 katayama Exp $
+  $Id: TODO.rd.ja,v 1.5 2001/12/15 02:08:19 katayama Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -11,17 +11,39 @@
 * cvs pserver のアカウント
 * bioruby.org 別マシン化ひつよう？
 * RWiki 教えて偉い人コーナー
+* RWiki のページ分割
 
 == 0.4 (stable branch)
+
+* ChangeLog ファイル作る
 
 * ドキュメント
   * リファレンス
     * 全クラスに doc template 埋め込む
 
-* Sequence::RNA
-  * NA を継承？
-    * gsub('NA', 'DNA') も？
-  * または DNA, RNA コンテナ？
+* DB 系全クラス
+  * id -> entry_id
+  * 複数のオブジェクト (String 含む) が返る場合複数形、一つだけオブジェクトが
+    返る場合複数形のメソッド名にする。
+    * Bio::GenBank#references で Reference オブジェクトの Array が返る
+    * Bio::GenBank#reference は存在し無い
+    * Bio::MEDLINE#references は存在し無い
+    * Bio::MEDLINE#reference は Reference オブジェクトを返す
+
+* db.rb
+  * デザイン見直し
+    * いちおう、現行のままあまりいじらずに、@data に別 IO からの
+      アクセサみたいなのでいいんじゃないかと（名前空間 etc)
+  * private メソッドの整理
+    * \001 の gsub/split にコメント
+
+* Bio::GenBank::Features クラス → EMBL にも
+
+* matrix.rb 廃止
+ * そんな汎用的でないので aaindex.rb, microarray.rb, prosite.rb などで
+   それぞれ実装
+
+* sample/ のライセンス文変更は？ ていうか sample/ 消す
 
 * FASTA/BLAST/HMMER など → Design.rd.ja (lib/bio/appl/ に)
   * アライメントオブジェクト
@@ -32,18 +54,28 @@
   * Pjotr さんの BLAST はどうなった？
   * BLAST は -m 7 (xml) 固定でいく？
 
-* COMPOUND, ENZYME 仕上げる
+* Sequence::RNA
+  * NA を継承？
+    * gsub('NA', 'DNA') も？
+  * または DNA, RNA コンテナ？
+  * → とくに意見も出ないのでいらないのかな
 
-* db.rb
-  * デザイン見直し
-  * private メソッドの整理
-    * \001 の gsub/split にコメント
-
-* DB 系全クラス id -> entry_id
-
-* sample/ のライセンス文変更は？
+* 遅くとも 12 月中に出す
 
 == 0.5 (devel branch)
+
+* PDB パーザ
+  * challange CASP?
+
+* COMPOUND, ENZYME 仕上げる
+
+* オントロジー (GO etc.) 処理系
+
+* モチーフ系 InterPro (incl. Pfam etc.) 処理系
+
+* Bio::ID or Bio::Link 系 dbxref, entry_id etc.
+
+* パラレル
 
 * ext/ のマージ
 
@@ -56,8 +88,10 @@
     * 外部ファイル、ネットワークがいる場合どうするか
   * インストール時に make check みたいなことができないか
 
+* インストール時に dbget → bget, bfind などへのリンク？
+
 * 例外処理
-  * せっかく Ruby なのでちゃんと Exception を投げるようにする
+  * せっかく Ruby なのでちゃんと Exception を投げるようにする？
 
 * スレッド
   * 今のところあまり使う場面はないかも知れないけど… GUI とかで？
@@ -67,15 +101,6 @@
   * Korea
   * Russia
   * French
-
-* パラレル
-
-* PDB パーザ
-  * challange CASP?
-
-* オントロジー (GO etc.) 処理系
-
-* モチーフ系 InterPro (incl. Pfam etc.) 処理系
 
 == 1.0
 
