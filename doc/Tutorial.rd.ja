@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.14 2003/08/22 01:04:23 k Exp $
+  $Id: Tutorial.rd.ja,v 1.15 2004/08/24 00:19:15 k Exp $
 
   Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -40,8 +40,7 @@
 
 塩基配列は Bio::Sequence::NA クラスの、アミノ酸配列は Bio::Sequence::AA
 クラスのオブジェクトになります。それぞれ Bio::Sequence クラスを継承し
-ているため、多くのメソッドは共通です。良く使うわりには名前が長いので 
-Bio::Seq::NA や Bio::Seq::AA という別名も使うことができます。
+ているため、多くのメソッドは共通です。
 
 Bio::Sequence クラスは Ruby の String クラスを継承しているので String
 クラスが持つメソッドも使う事ができます。例えば部分配列を切り出すには
@@ -438,7 +437,7 @@ Bio::Fasta#query メソッドなどの返り値は Bio::Fasta::Report オブジェクト
 
 === リモートの場合
 
-今のところ GenomeNet (fasta.genome.ad.jp) での検索をサポートしています。
+今のところ GenomeNet (fasta.genome.jp) での検索をサポートしています。
 リモートの場合は使用可能な検索対象データベースが決まっていますが、それ以
 外の点については Bio::Fasta.remote と Bio::Fasta.local は同じように使う
 ことができます。
@@ -475,7 +474,7 @@ GenomeNet の検索対象データベース：
 
 == BLAST による相同性検索を行う（Bio::Blast クラス）
 
-BLAST もローカルと GenomeNet (blast.genome.ad.jp) での検索をサポートして
+BLAST もローカルと GenomeNet (blast.genome.jp) での検索をサポートして
 います。できるだけ Bio::Fasta と API を共通にしていますので、上記の例を 
 Bio::Blast と読み替えれば基本的には大丈夫です。
 
@@ -966,7 +965,7 @@ to be written...
 
 別ファイルの KEGG_API.rd.ja や
 
-  * ((<URL:http://www.genome.ad.jp/kegg/soap/>))
+  * ((<URL:http://www.genome.jp/kegg/soap/>))
 
 を参照してください。
 
