@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.22 2002/06/18 19:42:38 k Exp $
+#  $Id: sequence.rb,v 0.23 2002/06/23 19:59:24 k Exp $
 #
 
 require 'bio/data/na'
@@ -37,9 +37,15 @@ module Bio
     end
     alias :to_str :to_s
 
-    def to_seq
+    def seq
       self.class.new(self)
     end
+
+    def normalize!
+      initialize(self)
+      self
+    end
+    alias :seq! :normalize!
 
     def <<(*arg)
       super(self.class.new(*arg))
@@ -198,7 +204,7 @@ module Bio
 	gc = format("%.1f", gc.to_f / (at + gc) * 100)
 	return gc.to_f
       end
-      alias gc gc_percent
+      alias :gc :gc_percent
 
       def illegal_bases
 	self.scan(/[^atgcu]/).sort.uniq
@@ -329,10 +335,6 @@ if __FILE__ == $0
   p na.to_s
   p aa.to_s
 
-  puts "\n== Test Bio::Sequence#to_str"
-  p na.to_str
-  p aa.to_str
-
   puts "\n== Test Bio::Sequence#subseq(2,6)"
   p na
   p na.subseq(2,6)
@@ -461,9 +463,15 @@ end
 
 You can use Bio::Seq instead of Bio::Sequence for short.
 
---- Bio::Sequence#to_seq
+--- Bio::Sequence#seq
 
-      Force self to reformat for clean up.
+      Force self to re-initialize for clean up (remove white spaces,
+      case unification).
+
+--- Bio::Sequence#seq!
+--- Bio::Sequence#normalize!
+
+      Similar to the 'seq' method, but changes the self object destructively.
 
 --- Bio::Sequence#subseq(start = 1, end = self.length)
 
