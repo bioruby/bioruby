@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: bio.rb,v 1.7 2001/11/01 11:57:41 katayama Exp $
+#  $Id: bio.rb,v 1.8 2001/11/05 01:19:25 katayama Exp $
 #
 
 module Bio
@@ -42,6 +42,7 @@ require 'bio/pathway'
 
 ### IO interface modules
 
+require 'bio/io/flatfile'
 require 'bio/io/dbget'
 require 'bio/io/pubmed'
 
