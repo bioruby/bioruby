@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: orthology.rb,v 1.2 2003/08/21 05:01:45 k Exp $
+#  $Id: orthology.rb,v 1.3 2004/05/14 03:04:38 k Exp $
 #
 
 require 'bio/db'
@@ -89,7 +89,7 @@ module Bio
 	    end
 	    line[0, 5] = ''
 	    line.gsub(/\(\S+/, '').each(' ') do |u|
-	      hash[k] << u
+	      hash[k] << u.strip
 	    end
 	  end
 	  @data['GENES'] = hash
