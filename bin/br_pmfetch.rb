@@ -19,7 +19,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-PROG_VER  = '$Id: br_pmfetch.rb,v 1.1 2004/02/05 13:06:34 k Exp $'
+PROG_VER  = '$Id: br_pmfetch.rb,v 1.2 2004/02/05 13:24:00 k Exp $'
 PROG_NAME = File.basename($0)
 
 
@@ -89,7 +89,7 @@ class PMFetch
   ### default options
 
   def initialize
-    @format = 'general'
+    @format = 'abstract'
     @search_opts = {
       'retmax' => 20,
     }
@@ -161,7 +161,7 @@ Options:
      --version                   Output version number, then exit
 
 Formats:
- endnote, bibitem, bibtex, report, abstract, medline,
+ endnote, medline, bibitem, bibtex, report, abstract
  nature, science, genome_res, genome_biol, nar, current, trends, cell
 
 Sort:
@@ -378,9 +378,14 @@ Search articles indexed in PubMed during the period of 2001/04/01 to 2001/08/31
 
 Output format can be changed by --format option.
 
+  % PMFetch -q "transcription factor" -j development -v 131 -i 3 -f report
+  % PMFetch -q "transcription factor" -j development -v 131 -i 3 -f abstract
+  % PMFetch -q "transcription factor" -j development -v 131 -i 3 -f endnote
   % PMFetch -q "transcription factor" -j development -v 131 -i 3 -f medline
+  % PMFetch -q "transcription factor" -j development -v 131 -i 3 -f bibitem
   % PMFetch -q "transcription factor" -j development -v 131 -i 3 -f bibtex
   % PMFetch -q "transcription factor" -j development -v 131 -i 3 -f nature
+  % PMFetch -q "transcription factor" -j development -v 131 -i 3 -f science
 
 
 Generate title listings for the journal report meeting (don't forget
