@@ -18,10 +18,21 @@
 #  along with this program; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 # 
-#  $Id: br_biogetseq.rb,v 1.1 2003/02/19 04:31:57 k Exp $
+#  $Id: br_biogetseq.rb,v 1.2 2003/02/21 02:44:22 k Exp $
 # 
 
 require 'bio'
+
+def usage
+  print <<END
+  #{$0} --dbname <dbname> [--namespace <namespace>] entry_id [entry_id]
+END
+  exit 1
+end
+
+if ARGV.size < 3
+  usage
+end
 
 while ARGV.first =~ /^-/
   case ARGV.shift
@@ -36,10 +47,11 @@ while ARGV.first =~ /^-/
 end
 
 reg = Bio::Registry.new
-db = reg.get_databasse(dbname)
+db = reg.get_database(dbname)
 if namespace
   db['namespace'] = namespace
 end
 ARGV.each do |entry|
   puts db.get_by_id(entry)
 end
+
