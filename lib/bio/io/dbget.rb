@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: dbget.rb,v 1.6 2001/12/15 01:47:48 katayama Exp $
+#  $Id: dbget.rb,v 1.7 2002/05/15 06:33:37 k Exp $
 #
 
 require 'socket'
@@ -45,19 +45,17 @@ module Bio
       end
 
       query = "#{com} #{arg}\n"		# DBGET query string
-      result = ''			# DBGET result
 
       sock = TCPSocket.open("#{serv}", "#{port}")
 
       sock.write(query)			# submit query
       sock.flush			# buffer flush
 
-      while sock.gets
-	next if /^\+/
-	next if /^\#/
-	next if /^\*Request-IDent/
-	result << $_
-      end
+      sock.gets				# skip "+Helo DBgetServ ..."
+      sock.gets				# skip "#If you see this message, ..."
+      sock.gets				# skip "*Request-IDent"
+
+      result = sock.read		# DBGET result
 
       sock.close
 
