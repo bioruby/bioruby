@@ -1,7 +1,7 @@
 =begin
-
-  $Id: KEGG_API.rd.ja,v 1.2 2004/01/29 01:45:41 k Exp $
-
+ 
+  $Id: KEGG_API.rd.ja,v 1.3 2004/03/03 11:51:07 k Exp $
+   
     Copyright (C) 2004 KATAYAMA Toshiaki <k@bioruby.org>
 
 = KEGG API
@@ -251,6 +251,10 @@ URL にあります。
     DnaJ を指します。'pf' の他、'ps' で PROSITE, 'bl' で BLOCS, 'pr' で
     PRINTS, 'pd' で PRODOM を指します。
 
+  * ko_id は KO (KEGG Orthology) データベースのエントリ番号で、ko:K02598
+    は KO 番号 K02598 の nitrite transporter NirC のオーソロガスな遺伝子
+    グループを指します。
+
   * threshold は SSDB データベースを検索する際の Smith-Waterman スコアの
     閾値で、低い値でのヒットが必要でないときは高く設定すると検索が速く
     なります（100 より低いデータは SSDB に登録されていないため、100 以下の
@@ -353,7 +357,7 @@ KEGG を提供しているゲノムネットで現在利用できるデータベースの一覧を返します。
 現在 KEGG に含まれているパスウェイのリストを返します。
 
 戻値：
-  string
+  ArrayOfstring
 
 --- dbinfo(db_name)
 
@@ -368,17 +372,48 @@ KEGG を提供しているゲノムネットで現在利用できるデータベースの一覧を返します。
 
 ==== DBGET/LinkDB
 
+DBGET/LinkDB システムに対するメソッドの一覧です。DBGET/LinkDB について
+詳しくは以下のページを参照してください。
+
+  * ((<URL:http://www.genome.ad.jp/dbget/dbget_manual.html>))
+
 --- get_entries(entry_id_list)
 
 指定した entry_id のエントリを返します。GENES の遺伝子エントリをはじめ、
 ゲノムネットの DBGET システムで提供されている様々なデータベース
 (list_databases を参照) のエントリを全て取得できます。
 
+注：このメソッドは近いうちに bget メソッドに変更になる予定です。
+
 戻値：
   string
 
 例：
   get_entries(['eco:b0002', 'bsu:BG10065', 'cpd:C00209'])
+
+--- bfind(target_db, keyword)
+
+DBGET の bfind コマンドへのラッパーです。キーワードによりエントリを検
+索することができます。
+
+戻値：
+  GENESResultArray
+
+例：
+  # デフィニションに E-cadherin を持つ GenBank のエントリを検索
+  bfind('gb', 'E-cadherin')
+
+--- btit(entry_id_list)
+
+DBGET の btit コマンドへのラッパーです。指定したエントリの ID に対応す
+るデフィニションを返します。
+
+戻値：
+  GENESResultArray
+
+例：
+  # これら４つの遺伝子のデフィニションを検索
+  btit(["hsa:1798", "mmu:13478", "dme:CG5287-PA", "cel:Y60A3A.14"])
 
 --- get_linkdb_by_entry(genes_id, target_db)
 
@@ -470,21 +505,6 @@ SSDB データベースについて詳しくは以下のページを参照してください。
   # 大腸菌の遺伝子 b0002 とパラログの関係にある遺伝子
   get_paralogs_by_gene('eco:b0002', 500)
 
---- get_best_homologs_by_genes(keggorg, genes_id_list)
-
-指定した遺伝子のそれぞれにベストヒットする遺伝子を対象生物の中で検索して
-リストを返します。対象生物種を１つに限定した get_best_neighbors_by_gene を
-クエリの数だけ実行する場合に相当します。オペロンの各遺伝子に対応する
-ベストヒットの遺伝子を対象生物種の中で検索する、といった場合に使えます。
-
-戻値：
-  SSDBResultArray
-
-例：
-  # 大腸菌の遺伝子群に対応する遺伝子をインフルエンザ菌の中で検索
-  list = ['eco:b0002', 'eco:b0003', 'eco:b0004', 'eco:b0005', 'eco:b0006']
-  get_best_homologs_by_genes('hin', list)
-
 --- get_best_best_homologs_by_genes(keggorg, genes_id_list)
 
 get_best_homologs_by_genes と同様な検索を best-best の関係のあるものに
@@ -547,6 +567,53 @@ get_best_homologs_by_genes と同様な検索を best-best の関係のあるものに
   list = ['pf:DnaJ', 'ps:DNAJ_2']
   get_genes_by_motifs(list)
 
+--- get_ko_by_gene(genes_id)
+
+指定した遺伝子にアサインされている KO のエントリ番号を全て返します。
+
+戻値：
+  ArrayOfstring
+
+例：
+  # eco:b0002 遺伝子にアサインされている KO のリスト
+  get_ko_by_gene('eco:b0002')
+
+--- get_ko_members(ko_id)
+
+指定した ko_id の KO エントリに含まれる遺伝子のリストを返します。
+
+戻値：
+  ArrayOfstring
+
+例：
+  # KO 番号 K02208 のアサインされている遺伝子のリスト
+  get_ko_by_gene('ko:K02208')
+
+--- get_oc_members_by_gene(genes_id)
+
+指定した遺伝子と同じ OC (KEGG Ortholog Cluster) に属する遺伝子のリスト
+を返します。
+
+戻値：
+  ArrayOfstring
+
+例：
+  # eco:b0002 遺伝子と同じオーソログクラスターに含まれる遺伝子のリスト
+  get_oc_members_by_gene('eco:b0002')
+
+--- get_pc_members_by_gene(genes_id)
+
+指定した遺伝子と同じ PC (KEGG Paralog Cluster) に属する遺伝子のリスト
+を返します。
+
+戻値：
+  ArrayOfstring
+
+例：
+  # eco:b0002 遺伝子と同じパラログクラスターに含まれる遺伝子のリスト
+  get_pc_members_by_gene('eco:b0002')
+
+
 ==== PATHWAY
 
 PATHWAY データベースに対するメソッドの一覧です。PATHWAY データベースに
@@ -599,7 +666,7 @@ pathway_id に含まれる keggorg で指定します。
   # 大腸菌の遺伝子 b0077 と b0078 が両方載っているパスウェイのリスト
   get_pathways_by_genes(['eco:b0077' , 'eco:b0078'])
 
---- get_pathways_by_enzymes(enzymelist)
+--- get_pathways_by_enzymes(enzyme_id_list)
 
 指定した酵素番号が全て載っているパスウェイのリストを返します。
 
@@ -610,7 +677,7 @@ pathway_id に含まれる keggorg で指定します。
   # 酵素番号 1.3.99.1 の酵素が載っているパスウェイのリスト
   get_pathways_by_enzymes(['ec:1.3.99.1'])
 
---- get_pathways_by_compounds(cpdlist)
+--- get_pathways_by_compounds(compound_id_list)
 
 指定した化合物が全て載っているパスウェイのリストを返します。
 
@@ -656,7 +723,7 @@ pathway_id に含まれる keggorg で指定します。
   # リアクション番号 R00100 を含む酵素番号のリスト
   get_enzymes_by_reactions(['rn:R00100'])
 
---- get_genes_by_enzymes(enzyme_id_list, keggorg)
+--- get_genes_by_enzymes(enzyme_id_list, keggorg_list)
 
 対象生物種において、指定した酵素番号を持つ遺伝子のリストを返します。
 
@@ -665,7 +732,7 @@ pathway_id に含まれる keggorg で指定します。
 
 例：
   # 酵素番号 1.1.1.1 と 1.2.1.1 を持つ大腸菌の遺伝子のリスト
-  get_genes_by_enzymes(['ec:1.1.1.1','ec:1.2.1.1'],'eco')
+  get_genes_by_enzymes(['ec:1.1.1.1','ec:1.2.1.1'], ['eco'])
 
 --- get_linked_pathways(pathway_id)
 
@@ -734,7 +801,7 @@ by_enzymes, by_compounds メソッドとの対称性のためです。
   # eco:b1190 を赤く着色した画像の URL。
   mark_pathway_by_genes('path:eco00252', ['eco:b0600','eco:b1190'])
 
---- mark_pathway_by_enzymes(pathway_id, ec_list)
+--- mark_pathway_by_enzymes(pathway_id, enzyme_id_list)
 
 指定したパスウェイに対し、与えられた酵素に対応する枠に色をつけた画像を生成、
 画像の URL を返します。
@@ -773,7 +840,7 @@ by_enzymes, by_compounds メソッドとの対称性のためです。
   # eco:b1300 をそれぞれ緑と青で着色した画像の URL。
   color_pathway_by_genes('path:eco00053', ['eco:b0207','eco:b1300'], ['#00ff00','blue'])
 
---- color_pathway_by_enzymes(pathway_id, ec_list, color_list)
+--- color_pathway_by_enzymes(pathway_id, enzyme_id_list, color_list)
 
 指定したパスウェイに対し、与えられた酵素に対応する枠に指定した色をつけた
 画像を生成、画像の URL を返します。
@@ -786,7 +853,7 @@ by_enzymes, by_compounds メソッドとの対称性のためです。
   # それぞれ黄色と緑で着色した画像の URL。
   color_pathway_by_enzymes('path:eco00620', ['ec:3.1.2.1','ec:6.4.1.1'], ['yellow','green'])
 
---- color_pathway_by_compounds(pathway_id, cpd_list, color_list)
+--- color_pathway_by_compounds(pathway_id, compound_id_list, color_list)
 
 指定したパスウェイに対し、与えられた化合物に対応する枠に指定した色をつけた
 画像を生成、画像の URL を返します。
@@ -842,7 +909,7 @@ GENES データベースに対するメソッドの一覧です。GENES データベースについて
 指定した生物種が持つ遺伝子数を返します。
 
 戻値：
-  string (int に変更される予定)
+  int
 
 例：
   # 大腸菌が持つ遺伝子の数
