@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: rexml.rb,v 1.8 2003/02/05 03:28:26 k Exp $
+#  $Id: rexml.rb,v 1.9 2003/09/29 10:03:59 ng Exp $
 #
 
 begin
@@ -76,7 +76,7 @@ module Bio
 	  when 'Iteration_message'
 	    iteration.message = i.text
 	  when 'Iteration_stat'
-	    i.elements["*//Statistics"].each_element_with_text do |s|
+	    i.elements["Statistics"].each_element_with_text do |s|
 	      k = s.name.sub(/Statistics_/, '')
 	      v = s.text =~ /\D/ ? s.text.to_f : s.text.to_i
 	      iteration.statistics[k] = v
