@@ -19,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.4 2001/11/06 16:58:52 okuji Exp $
+#  $Id: sptr.rb,v 1.5 2001/11/12 08:30:49 okuji Exp $
 #
 
 
@@ -440,6 +440,12 @@ module Bio
 
     # // Line; termination line (end; 1/entry)
 
+  end
+
+  class SwissProt < SPTR
+  end
+
+  class TrEMBL < SPTR
   end
 
 end # module Bio
