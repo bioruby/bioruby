@@ -1,7 +1,7 @@
 #
 # bio/db/kegg/compound.rb - KEGG/COMPOUND database class
 #
-#   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001, 2002, 2004 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: compound.rb,v 0.8 2004/02/04 14:00:24 k Exp $
+#  $Id: compound.rb,v 0.9 2004/10/22 10:00:39 k Exp $
 #
 
 require 'bio/db'
@@ -53,12 +53,25 @@ module Bio
 	field_fetch('FORMULA')
       end
 
+      # MASS
+      def mass
+	field_fetch('MASS').to_f
+      end
+
       # REACTION
       def reactions
 	unless @data['REACTION']
 	  @data['REACTION'] = fetch('REACTION').split(/\s+/)
 	end
 	@data['REACTION']
+      end
+
+      # RPAIR
+      def rpairs
+	unless @data['RPAIR']
+	  @data['RPAIR'] = fetch('RPAIR').split(/\s+/)
+	end
+	@data['RPAIR']
       end
 
       # PATHWAY
@@ -69,7 +82,12 @@ module Bio
       # ENZYME
       def enzymes
 	unless @data['ENZYME']
-	  @data['ENZYME'] = fetch('ENZYME').scan(/\S+ \(\S+\)/)
+	  field = fetch('ENZYME')
+	  if /\(/.match(field)	# old version
+	    @data['ENZYME'] = field.scan(/\S+ \(\S+\)/)
+	  else
+	    @data['ENZYME'] = field.scan(/\S+/)
+	  end
 	end
 	@data['ENZYME']
       end
@@ -79,9 +97,31 @@ module Bio
         lines_fetch('DBLINKS')
       end
 
+      # ATOM, BOND
+      def kcf
+        return "#{get('ATOM')}#{get('BOND')}"
+      end
+
     end
 
   end
 
+end
+
+
+if __FILE__ == $0
+  entry = ARGF.read
+  cpd = Bio::KEGG::COMPOUND.new(entry)
+  p cpd.entry_id
+  p cpd.names
+  p cpd.name
+  p cpd.formula
+  p cpd.mass
+  p cpd.reactions
+  p cpd.rpairs
+  p cpd.pathways
+  p cpd.enzymes
+  p cpd.dblinks
+  p cpd.kcf
 end
 
