@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.23 2004/03/04 16:16:42 ngoto Exp $
+#  $Id: flatfile.rb,v 1.24 2004/03/16 04:13:09 ngoto Exp $
 #
 
 module Bio
@@ -143,7 +143,7 @@ module Bio
 	  end
 	  a = @prefetch.split(sp_rs, 2)
 	  if a.size > 1 then
-	    r = a[0] + sp_rs
+	    r = a[0] + sp_rs_orig
 	    @prefetch = a[1]
 	  else
 	    @prefetch << @io.gets(io_rs).to_s
