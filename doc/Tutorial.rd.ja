@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.5 2001/12/19 12:21:08 katayama Exp $
+  $Id: Tutorial.rd.ja,v 1.6 2002/06/18 06:27:30 k Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -13,8 +13,8 @@
 てみます。アミノ酸への翻訳では、必要に応じて何塩基目から翻訳を開始するか
 フレームを指定したり、codontable.rb で定義されているコドンテーブルの中か
 ら使用するものの番号を指定したりする事ができます。また、Sequence オブジェ
-クトは Ruby の String オブジェクトを継承しているので String のメソッドを
-全て使う事ができます。
+クトは Ruby の String オブジェクトを継承しているので String のメソッドも
+使う事ができます。
 
     #!/usr/bin/env ruby
     
@@ -46,11 +46,10 @@
     #!/usr/bin/env ruby
     
     require 'bio'
-    include Bio                 # include Bio とすると、以下 Bio:: が省略できる
     
     input_seq = ARGF.read       # 引数で与えられたファイルの全行を読み込む
     
-    my_naseq = Sequence::NA.new(input_seq)
+    my_naseq = Bio::Sequence::NA.new(input_seq)
     my_aaseq = my_naseq.translate
     
     puts my_aaseq
@@ -100,26 +99,28 @@ GenBank 形式のファイル（元の ftp://ftp.ncbi.nih.gov/genbank/ の .seq ファ
 
     #!/usr/bin/env ruby
     
-    require 'bio'; include Bio
+    require 'bio'
     
-    while entry = gets(GenBank::RS)
+    while entry = gets(Bio::GenBank::RS)
       # GenBank の１エントリごとに
-      gb = GenBank::new(entry)
+      gb = Bio::GenBank::new(entry)
 
       # ACCESSION 番号と生物種名を表示
       puts "==> #{gb.accession} - #{gb.organism}"
     
-      gb.features do |f|                # FEATURES の要素を一つずつ処理
+      gb.features do |feature|          # FEATURES の要素を一つずつ処理
+        position = feature.position
+        hash = feature.assoc		# レガシーだが簡単のためハッシュに直す
         # /translation= がなければスキップ
-        next unless f['translation'].length > 0
+        next unless hash['translation']
         # 遺伝子名などの情報
-        puts [ f['gene'], f['product'], f['note'], f['function'] ].join(' ')
+        puts [hash['gene'], hash['product'], hash['note']].compact.join(', ')
         # 塩基配列
-        puts gb.naseq.splicing(f['position'])
+        puts gb.naseq.splicing(position)
         # アミノ酸配列（塩基配列から翻訳）
-        puts gb.naseq.splicing(f['position']).translate
+        puts gb.naseq.splicing(position).translate
         # アミノ酸配列（/translation= のもの）
-        puts f['translation']
+        puts hash['translation']
       end
     end
 
@@ -164,20 +165,19 @@ GenBank 形式のファイル（元の ftp://ftp.ncbi.nih.gov/genbank/ の .seq ファ
 
 === ローカルの場合
 
-FASTA がインストールされていることを確認して（コマンド名が fasta33 でパ
+FASTA がインストールされていることを確認して（コマンド名が fasta34 でパ
 スが通っている場合の例で説明します）、検索対象とする FASTA 形式のデータ
 ベースファイル target.pep を準備し、
 
     #!/usr/bin/env ruby
     
     require 'bio'
-    include Bio
 
     # FASTA を実行する環境オブジェクトを作る（ssearch などでも良い）
-    factory = Fasta.local('fasta33', ARGV.pop)
+    factory = Bio::Fasta.local('fasta34', ARGV.pop)
 
     # フラットファイルを読み込み、FastaFormat オブジェクトのリストにする
-    ff = FlatFile.new(FastaFormat, ARGF)
+    ff = Bio::FlatFile.new(Bio::FastaFormat, ARGF)
 
     # １エントリずつの FastaFormat オブジェクトに対し
     ff.each do |entry|
@@ -185,43 +185,44 @@ FASTA がインストールされていることを確認して（コマンド名が fasta33 でパ
       puts entry.definition
 
       # FASTA による相同性検索を実行、結果は Fasta::Report オブジェクト
-      fasta_result = entry.fasta(factry)
+      fasta_result = factory.query(entry)
 
       # ヒットしたものの中で、オーバーラップ領域が 150 残基以上のものに対し
-      fasta_res.lap_over(150).each do |r|
+      fasta_result.lap_over(150).each do |r|
 
         # FASTA の evalue と、名前、オーバーラップ領域を表示
-        print "evalue #{r.evalue} : #{r.q_id} => #{r.t_id} at "
+        print "evalue #{r.evalue} : #{r.query_id} => #{r.target_id} at "
         p r.lap_at
       end
     end
 
 ここで factory は繰り返し FASTA を実行するために、あらかじめ作っておく実
-行環境です。この例では FastaFormat オブジェクトの fasta メソッドを使って
-検索していますが、問い合わせ配列が１つだけの時は
+行環境です。上の例では Fasta オブジェクトの query メソッドを使って検索
+していますが、問い合わせ配列に対して
 
     seq = ">test seq\nYQVLEEIGRGSFGSVRKVIHIPTKKLLVRKDIKYGHMNSKE"
-    factory.query(seq)
+    seq.fasta(factory)
 
-のように factory に対して直接 query メソッドを呼ぶ手軽な方法もあります。
+のように factory を渡す fasta メソッドを呼ぶ方法もあります。
 
-FASTA のオプションを与えたい場合、３番目の引数に hash で渡しますが、ktup 
-だけはシンボル :ktup をキーにして渡して下さい。引数を取らないオプション
-を渡したい場合は '-B' => '' など空文字列となる値を入れておいて下さい。
+FASTA のオプションを与えたい場合、３番目の引数に FASTA のコマンドライン
+オプションを書いて渡します。ktup 値をデフォルトから変更する場合はアクセ
+サで指定します。
 
 例えば ktup 値を 1 にして、ベスト 10 位以内のヒットを得る場合のオプショ
 ンは、以下のようになります。
 
-    hash = { :ktup => 1, '-b' => 10 }
-    factory = Fasta.local('fasta33', 'target.pep', hash)
+    factory = Bio::Fasta.local('fasta33', 'target.pep', '-b 10')
+    factory.ktup = 1
 
-FastaFormat#fasta や Fasta#query メソッドの返り値は Bio::Fasta::Report
+Fasta#query や FastaFormat#fasta メソッドの返り値は Bio::Fasta::Report
 オブジェクトです。様々なメソッドで FASTA の出力結果のほぼ全てを自由に取
-り出せるようになっています。
+り出せるようになっています。例えば identity, overlap などのスコアや、
+query_len, target_len で配列の長さなどを取り出すことができます。
 
-上記のスクリプトを f_search.rb という名前で作ったとすると、
+さて、上記のスクリプトを f_search.rb という名前で作ったとすると、
 
-    % ./f_search.rb query.pep
+    % ./f_search.rb query.pep target.pep
 
 とすれば検索できます。先の例では、オーバーラップしている領域の長さで選択
 する lap_over メソッドを使って結果を絞り込んでみましたが、検索結果から様々
@@ -231,10 +232,11 @@ FastaFormat#fasta や Fasta#query メソッドの返り値は Bio::Fasta::Report
 
 今のところ GenomeNet (fasta.genome.ad.jp) での検索をサポートしています。
 factory の作り方と使用可能な検索対象データベースが決まっていること以外は
-ほぼ同じ使い方ができます。
+同じ使い方ができます。
 
     program = 'fasta'
     database = 'genes'
+
     factory = Bio::Fasta.remote(program, database)
 
 問い合わせがアミノ酸配列のとき：
@@ -242,23 +244,41 @@ factory の作り方と使用可能な検索対象データベースが決まっていること以外は
   * 対象データベースが以下のアミノ酸配列データベースのいずれかの場合
     program は 'fasta' にします。
 
-    * nr-aa, genes, vgenes, swissprot, swissprot-upd, pir, prf, pdbstr
+    * nr-aa, genes, vgenes.pep, swissprot, swissprot-upd, pir, prf, pdbstr
 
   * 対象データベースが以下の核酸配列データベースのいずれかの場合
     program は 'tfasta' にします。
 
-    * nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss,
-      htgs, dbsts, embl-nonst, embnonst-upd, genes-nt,
-      vgenes-nt, vgenome
+    * nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss, htgs, dbsts,
+      embl-nonst, embnonst-upd, genes-nt, genome, vgenes.nuc
 
 問い合わせ配列が核酸配列のとき：
 
   * 対象データベースは以下の核酸配列データベースのいずれかで、
     program は 'fasta' にします。
 
-    * nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss,
-      htgs, dbsts, embl-nonst, embnonst-upd, genes-nt,
-      vgenes-nt, vgenome, epd
+    * nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss, htgs, dbsts,
+      embl-nonst, embnonst-upd, genes-nt, genome, vgenes.nuc
+
+== BLAST による相同性検索を行う（Bio::Blast クラス）
+
+プログラムが異なるため Bio::Blast::Report オブジェクトからデータを取り出す
+メソッドが多少違いますが、最小限の API は共通にしてありますので、上記の例
+で Bio::Fasta を Bio::Blast と置き換えて実行すれば基本的にはＯＫです。
+BLAST もローカルと GenomeNet (blast.genome.ad.jp) での検索をサポートしてい
+ます。
+
+デフォルトでは -m 7 の Tab 切りの出力形式を扱うので得られるデータが少ない
+ですが、REXML か XMLParser をインストールすれば -m 8 の XML 形式の出力を
+使って BLAST の全出力から結果を取り出すことができます。
+
+    factory = Bio::Blast.local(program, database, option)
+    factory.format = 8			# XML 形式での出力を指定
+    factory.parser = 'xmlparser'	# デフォルトは 'rexml'
+
+    blast_result = factory.query(seq)	# Bio::Blast::Report オブジェクト
+
+これは Bio::Blast.remote の場合も同じです。
 
 == DBGET システム (Bio::DBGET クラス)
 
@@ -286,7 +306,6 @@ Bio::DBGET.bfind メソッドには、検索対象のデータベース名と検索キーワード
     #!/usr/bin/env ruby
     
     require 'bio'
-    include Bio
     
     entry = Bio::DBGET.bget("gb:AB010087")
     gb = Bio::GenBank.new(entry)
@@ -329,13 +348,13 @@ DBGET で検索、取得できるデータベースは多数あるので、詳細は DBGET のウェ
 
     #!/usr/bin/env ruby
     
-    require 'bio'; include Bio
+    require 'bio'
     
-    entry = DBGET.bget('hal:VNG1467G')
-    aaseq = KEGG::GENES.new(entry).aaseq
+    entry = Bio::DBGET.bget('hal:VNG1467G')
+    aaseq = Bio::KEGG::GENES.new(entry).aaseq
     
-    entry = DBGET.bget('aax1:BURA740101')
-    helix = AAindex1.new(entry).index
+    entry = Bio::DBGET.bget('aax1:BURA740101')
+    helix = Bio::AAindex1.new(entry).index
     
     position = 1
     win_size = 15
@@ -380,6 +399,20 @@ DBGET で検索、取得できるデータベースは多数あるので、詳細は DBGET のウェ
     ary.each do |x|
       puts Bio::MEDLINE.new(x).reference.format("Nature"), "\n"
     end'
+
+== BioSQL
+
+to be written...
+
+== BioFetch
+
+to be written...
+
+== サンプルプログラムの使い方
+
+=== パースしたデータベースエントリを MySQL につっこむ
+
+to be written...
 
 =end
 
