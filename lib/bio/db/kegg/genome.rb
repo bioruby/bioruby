@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genome.rb,v 0.10 2002/03/04 08:13:25 katayama Exp $
+#  $Id: genome.rb,v 0.11 2003/09/20 08:17:36 k Exp $
 #
 
 require 'bio/db'
@@ -56,9 +56,11 @@ module Bio
       def taxonomy
 	unless @data['TAXONOMY']
 	  taxid, lineage = subtag2array(get('TAXONOMY'))
+	  taxid   = taxid   ? truncate(tag_cut(taxid))   : ''
+	  lineage = lineage ? truncate(tag_cut(lineage)) : ''
 	  @data['TAXONOMY'] = {
-	    'taxid'	=> truncate(tag_cut(taxid)),
-	    'lineage'	=> truncate(tag_cut(lineage))
+	    'taxid'	=> taxid,
+	    'lineage'	=> lineage,
 	  }
 	  @data['TAXONOMY'].default = ''
 	end
@@ -165,13 +167,13 @@ module Bio
 	  hash = Hash.new(0.0)
 	  get('STATISTICS').each_line do |line|
 	    case line
-	    when /nucleotides.*(\d+)/
+	    when /nucleotides:\s+(\d+)/
 	      hash['nalen'] = $1.to_i
-	    when /protein genes.*(\d+)/
+	    when /protein genes:\s+(\d+)/
 	      hash['num_gene'] = $1.to_i
-	    when /RNA genes.*(\d+)/
+	    when /RNA genes:\s+(\d+)/
 	      hash['num_rna'] = $1.to_i
-	    when /G\+C content.*(\d+.\d+)/
+	    when /G\+C content:\s+(\d+.\d+)/
 	      hash['gc'] = $1.to_f
 	    end
 	  end
