@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.9 2001/11/13 10:16:20 katayama Exp $
+#  $Id: pathway.rb,v 1.10 2001/11/13 11:02:40 katayama Exp $
 #
 
 require 'bio/matrix'
@@ -29,15 +29,15 @@ module Bio
     # Graph (adjacency list) generation from the list of Relation
     def initialize(list, undirected = nil)
       @undirected = undirected
-      @index = {}
-      @label = {}
       @graph = {}
+      @index = {}		# numbering each node in matrix
+      @label = {}		# additional information on each node
       list.each do |rel|
 	append(rel)
       end
     end
-    attr_accessor :label
     attr_reader :graph, :index
+    attr_accessor :label
 
     def append(rel)
       if @graph[rel.from].nil?
@@ -62,13 +62,14 @@ module Bio
       edges
     end
 
+
     # Convert adjacency list to adjacency matrix
     def to_matrix
       @graph.keys.each_with_index do |k, i|
 	@index[k] = i
       end
 
-      # note : following code only makes reference to the same []
+      # note : following code only makes references to the same []
       #
       #   matrix = Array.new(nodes, Array.new(nodes))
       #
@@ -89,6 +90,7 @@ module Bio
       Matrix[*matrix]
     end
 
+
     # Select labeled nodes and generate subgraph
     def subgraph
       sub_graph = Pathway.new([], @undirected)
@@ -102,15 +104,18 @@ module Bio
       return sub_graph
     end
 
+
     def common_subgraph(graph)
       raise NotImplementedError
     end
+
 
     def clique
       raise NotImplementedError
     end
 
-    # returns frequency of the nodes having same number of edges as hash
+
+    # Returns frequency of the nodes having same number of edges as hash
     def small_world
       freq = Hash.new(0)
       @graph.each_value do |v|
@@ -119,43 +124,16 @@ module Bio
       return freq
     end
 
-    # breadth first search implementation from the textbook
-    def breadth_first_search(root)
-      white = -1; gray = 0; black = 1
 
-      color = Hash.new(white)
+    # Breadth first search implementation from the textbook
+    def breadth_first_search(root)
+      seen = {}
       distance = {}
       predecessor = {}
 
-      color[root] = gray
-      distance[root] = 0
-      predecessor[root] = nil
-
-      queue = [ root ]
-
-      while from = queue.shift
-	@graph[from].keys.each do |to|
-	  if color[to] == white
-	    color[to] = gray
-	    distance[to] = distance[from] + 1
-	    predecessor[to] = from
-	    queue.push(to)
-	  end
-	end
-	color[from] = black
-      end
-
-      return distance, predecessor
-    end
-    alias bfs breadth_first_search
-
-    # simplified version of bfs (not use colors, not return predecessor)
-    def bfs_distance(root)
-      seen = {}
-      distance = {}
-
       seen[root] = true
       distance[root] = 0
+      predecessor[root] = nil
 
       queue = [ root ]
 
@@ -164,15 +142,18 @@ module Bio
 	  unless seen[to]
 	    seen[to] = true
 	    distance[to] = distance[from] + 1
+	    predecessor[to] = from
 	    queue.push(to)
 	  end
 	end
       end
-      return distance
+      return distance, predecessor
     end
+    alias bfs breadth_first_search
+
 
     # simple application of bfs
-    def shortest_path(node1, node2)
+    def bfs_shortest_path(node1, node2)
       distance, route = breadth_first_search(node1)
       step = distance[node2]
       node = node2
@@ -184,6 +165,8 @@ module Bio
       return step, path
     end
 
+
+    # Dijkstra method
     def dijkstra(root)
       distance, predecessor = initialize_single_source(root)
       @graph[root].each do |k, v|
@@ -208,6 +191,8 @@ module Bio
       return distance, predecessor
     end
 
+
+    # Floyd method
     def floyd
       raise NotImplementedError
     end
@@ -215,8 +200,8 @@ module Bio
 
     private
 
-    def initialize_single_source(root)
 
+    def initialize_single_source(root)
       # inf.infinite? => true
       inf = 1 / 0.0
 
@@ -259,7 +244,20 @@ module Bio
 end
 
 
+
 if __FILE__ == $0
+
+  # Sample Graph :
+  #                  +----------------+
+  #                  |                |
+  #                  v                |
+  #       +---------(q)-->(t)------->(y)<----(r)
+  #       |          |     |          ^       |
+  #       v          |     v          |       |
+  #   +--(s)<--+     |    (x)<---+   (u)<-----+
+  #   |        |     |     |     |
+  #   v        |     |     v     |
+  #  (v)----->(w)<---+    (z)----+
 
   data = [
     [ 'q', 's', 1, ],
@@ -280,23 +278,46 @@ if __FILE__ == $0
 
   ary = []
 
+  puts "--- List of relations"
   data.each do |x|
     ary << Bio::Relation.new(*x)
   end
-
   p ary
 
+  puts "--- Generate graph from list of relations"
   graph = Bio::Pathway.new(ary)
-
   p graph
 
-  # test to_matrix method
+
+  puts "--- Labeling some nodes"
+  list = { 'q' => "L1", 's' => "L2", 'v' => "L3", 'w' => "L4" }
+  graph.label = list
+  p graph
+
+  puts "--- Extract subgraph by label"
+  p graph.subgraph
+
+  puts "--- Test to_matrix method"
   p graph.to_matrix
 
-  # test dijkstra method
+  puts "--- Test breadth_first_search method"
+  dist, pred = graph.breadth_first_search('q')
+  p dist
+  p pred
+
+  puts "--- Test bfs_shortest_path method"
+  step, path = graph.bfs_shortest_path('y', 'w')
+  p step
+  p path
+
+  puts "--- Test dijkstra method"
   dist, pred = graph.dijkstra('q')
   p dist
   p pred
+
+  puts "--- Test small_world histgram"
+  p graph.small_world
+
 end
 
 =begin
@@ -320,8 +341,7 @@ end
 --- Bio::Pathway#small_world
 --- Bio::Pathway#breadth_first_search(root)
 --- Bio::Pathway#bfs(root)
---- Bio::Pathway#bfs_distance(root)
---- Bio::Pathway#shortest_path(node1, node2)
+--- Bio::Pathway#bfs_shortest_path(node1, node2)
 --- Bio::Pathway#dijkstra
 --- Bio::Pathway#floyd
 
