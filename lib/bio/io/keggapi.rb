@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggapi.rb,v 1.6 2004/06/23 14:34:32 k Exp $
+#  $Id: keggapi.rb,v 1.7 2004/08/24 00:07:28 k Exp $
 #
 
 require 'bio/io/soapwsdl'
@@ -640,16 +640,16 @@ Returns URL of the current WSDL file.
 
 --- Bio::KEGG::API#wsdl=(url)
 
-Change the URL for WSDL file of the KEGG API.  To use old KEGG API, try
+Change the URL for WSDL file of the KEGG API if needed for some reason:
 
-  serv = Bio::KEGG::API.new("http://soap.genome.ad.jp/KEGG.wsdl")
+  serv = Bio::KEGG::API.new("http://133.103.100.186/KEGG.wsdl")
 
 or
 
   serv = Bio::KEGG::API.new
-  serv.wsdl = "http://soap.genome.ad.jp/KEGG.wsdl"
+  serv.wsdl = "http://133.103.100.186/KEGG.wsdl"
 
-note that later is inefficient in reading two different WSDL files.
+note that both can't read two or more different WSDL files.
 
 --- Bio::KEGG::API#log
 
