@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.2 2003/02/25 15:44:18 k Exp $
+#  $Id: report.rb,v 1.3 2003/02/26 01:54:03 k Exp $
 #
 
 module Bio
@@ -40,9 +40,7 @@ module Bio
 
       attr_reader :version, :query_sequences, 
 	:cleavage_site_prediction, :networks,
-	:query_len, :prediction, 
-	:cutoff,
-	:loc, :rc
+	:prediction, :cutoff
 
       alias :pred   :prediction
 
