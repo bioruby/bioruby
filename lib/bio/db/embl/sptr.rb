@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.17 2003/03/17 09:09:01 n Exp $
+#  $Id: sptr.rb,v 1.18 2003/03/28 03:06:31 n Exp $
 #
 
 require 'bio/db/embl'
@@ -267,7 +267,7 @@ module Bio
 	  fetch('CC').split(cmt)[0].sub(dlm,'').split(dlm).each do |tmp|
 	    if tmp =~ /(^[A-Z ]+[A-Z]): (.+)[\.!]/
 	      key  = $1
-	      body = $2.gsub('- ','-')
+	      body = $2.gsub('- (?!AND)','-')
 	      unless cc[key]
 		cc[key] = [body]
 	      else
@@ -413,7 +413,14 @@ module Bio
 	      }
 	    end
 	    if /- [\w\d]/ =~ e['Description']
-	      e['Description'].gsub!(/([\w\d]- [\w\d])/) { $1.sub(' ','') }
+	      e['Description'].gsub!(/([\w\d]- [\w\d]+)/) { 
+		a = $1
+		if /- AND/ =~ a
+		  a
+		else
+		  a.sub(' ','') 
+		end
+	      }
 	    end
 	  }
 	}
