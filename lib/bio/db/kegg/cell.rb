@@ -17,73 +17,72 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: cell.rb,v 1.5 2001/11/06 16:58:52 okuji Exp $
+#  $Id: cell.rb,v 1.6 2001/12/15 02:55:07 katayama Exp $
 #
-
-module Bio
 
 require "bio/db"
 
-class KEGG
+module Bio
 
-class CELL < KEGGDB
+  class KEGG
 
-  DELIMITER     = RS = "\n///\n"
-  TAGSIZE       = 12
+    class CELL < KEGGDB
 
-  def initialize(entry)
-    super(entry, TAGSIZE)
-  end
+      DELIMITER	= RS = "\n///\n"
+      TAGSIZE	= 12
 
-  def ent
-    field_fetch('ENTRY')
-  end
-  alias entry ent
+      def initialize(entry)
+	super(entry, TAGSIZE)
+      end
 
-  def definition
-    field_fetch('DEFINITION')
-  end
-  alias def definition
+      def entry_id
+	field_fetch('ENTRY')
+      end
 
-  def org
-    field_fetch('ORGANISM')
-  end
-  alias organism org 
-  def mother
-    field_fetch('MOTHER')
-  end
+      def definition
+	field_fetch('DEFINITION')
+      end
 
-  def daughter
-    field_fetch('DAUGHTER').gsub(/ /, '').split(/,/)
-  end
+      def org
+	field_fetch('ORGANISM')
+      end
+      alias organism org
 
-  def sister
-    field_fetch('SISTER')
-  end
+      def mother
+	field_fetch('MOTHER')
+      end
 
-  def fate
-    field_fetch('CELL_FATE').gsub(/ /, '').split(/,/)
-  end
+      def daughter
+	field_fetch('DAUGHTER').gsub(/ /, '').split(/,/)
+      end
 
-  def contact
-    field_fetch('CONTACT').gsub(/ /, '').split(/,/)
-  end
+      def sister
+	field_fetch('SISTER')
+      end
 
-  def expression
-    field_fetch('EXPRESSION')
-  end
+      def fate
+	field_fetch('CELL_FATE').gsub(/ /, '').split(/,/)
+      end
 
-  def fig
-    field_fetch('FIGURE')
-  end
+      def contact
+	field_fetch('CONTACT').gsub(/ /, '').split(/,/)
+      end
 
-  def ref
-    field_fetch('REFERENCE')
+      def expression
+	field_fetch('EXPRESSION')
+      end
+
+      def fig
+	field_fetch('FIGURE')
+      end
+
+      def ref
+	field_fetch('REFERENCE')
+      end
+
+    end
+
   end
 
 end
-
-end				# class KEGG
-
-end				# module Bio
 
