@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: db.rb,v 0.22 2002/12/03 06:13:04 k Exp $
+#  $Id: db.rb,v 0.23 2003/07/16 03:36:56 ng Exp $
 #
 
 require 'bio/sequence'
@@ -104,7 +104,7 @@ module Bio
 
     def subtag2array(str)
       sep = "\001"
-      str.gsub(/\n(\s{1,#{@tagsize}}\S)/, "\n#{sep}\\1").split(sep)
+      str.gsub(/\n(\s{1,#{@tagsize-1}}\S)/, "\n#{sep}\\1").split(sep)
     end
 
     def entry2hash(entry)
