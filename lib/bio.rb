@@ -1,7 +1,7 @@
 #
 # bio.rb - Loading all BioRuby modules
 #
-#   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.16 2001/12/19 12:22:37 katayama Exp $
+#  $Id: bio.rb,v 1.17 2002/03/04 08:02:07 katayama Exp $
 #
 
 module Bio
@@ -26,15 +26,19 @@ end
 
 ### ID
 
-require 'bio/id'		# required by bio/db.rb
+#require 'bio/id'
 
 ### Sequence
 
 require 'bio/sequence'		# required by bio/db.rb
 
-### Locations
+### Locations/Location
 
 require 'bio/location'		# required by bio/sequence.rb
+
+### Features/Feature
+
+require 'bio/feature'		# required by bio/db.rb
 
 ### Reference
 
@@ -42,7 +46,7 @@ require 'bio/reference'		# required by bio/db.rb
 
 ### Matrix/Vector
 
-require 'bio/matrix'		# required by bio/pathway.rb
+require 'bio/matrix'		# will be removed (required by bio/pathway.rb)
 
 ### Pathway/Relation
 
@@ -50,17 +54,20 @@ require 'bio/pathway'
 
 ### IO interface modules
 
+require 'bio/io/registry'
 require 'bio/io/flatfile'
 require 'bio/io/dbget'
 require 'bio/io/pubmed'
-require 'bio/io/brdb'
+require 'bio/io/sql'
+require 'bio/io/fetch'
+#require 'bio/io/brdb'
 
 ### Constants
 
 require 'bio/data/na'		# required by bio/sequence.rb
 require 'bio/data/aa'		# required by bio/sequence.rb
 require 'bio/data/codontable'	# required by bio/sequence.rb
-require 'bio/data/keggorg'	# required by bio/db.rb
+require 'bio/data/keggorg'
 
 ### DB parsers
 
@@ -81,14 +88,14 @@ require 'bio/db/swissprot'
 
 ## KEGG
 
-require 'bio/db/kegg/keggtab'
 require 'bio/db/kegg/genome'
 require 'bio/db/kegg/genes'
-require 'bio/db/kegg/brite'
-require 'bio/db/kegg/cell'
 require 'bio/db/kegg/compound'
 require 'bio/db/kegg/enzyme'
+require 'bio/db/kegg/brite'
+require 'bio/db/kegg/cell'
 require 'bio/db/kegg/microarray'
+require 'bio/db/kegg/keggtab'
 
 ## AAindex
 
@@ -116,21 +123,12 @@ require 'bio/db/fasta'
 
 ### Applications
 
-#require 'bio/appl/hmmer'
 require 'bio/appl/fasta'
 require 'bio/appl/blast'
+#require 'bio/appl/hmmer'
 
 ### misc utils
 
-#require 'bio/util/hoge'
 require 'bio/util/fold'
 
-#
-# If you wish to shorten the class names in your script,
-# use "include Bio" after require this library as follows:
-#
-#   #!/usr/bin/env ruby
-#   require 'bio'
-#   include Bio
-#
 
