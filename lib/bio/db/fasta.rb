@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.10 2003/02/25 14:48:55 k Exp $
+#  $Id: fasta.rb,v 1.11 2003/03/27 11:35:20 k Exp $
 #
 
 require 'bio/db'
@@ -53,7 +53,7 @@ module Bio
     alias :blast :query
 
     def seq
-      unless @seq
+      unless defined?(@seq)
         @seq = @data.tr(" \t\r\n0-9", '') 	# lazy clean up
       end
       @seq
