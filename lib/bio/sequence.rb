@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.29 2003/05/20 13:03:28 ng Exp $
+#  $Id: sequence.rb,v 0.30 2003/06/16 14:01:22 ng Exp $
 #
 
 require 'bio/data/na'
@@ -137,6 +137,27 @@ module Bio
       self.new('').randomize(*arg, &block)
     end
 
+    # This method depends on Locations class, see bio/location.rb
+    def splicing(position)
+      unless position.is_a?(Locations) then
+	position = Locations.new(position)
+      end
+      s = ''
+      position.each do |location|
+	if location.sequence
+	  s << location.sequence
+	else
+	  exon = self.subseq(location.from, location.to)
+	  begin
+	    exon.complement! if location.strand < 0
+	  rescue NameError
+	  end
+	  s << exon
+	end
+      end
+      return self.class.new(s)
+    end
+
 
     # Nucleic Acid sequence
 
@@ -150,28 +171,30 @@ module Bio
 
       # This method depends on Locations class, see bio/location.rb
       def splicing(position)
-	mRNA = ''
-	Locations.new(position).each do |location|
-	  if location.sequence
-	    mRNA += location.sequence
-	  else
-	    exon = self.subseq(location.from,location.to)
-	    exon = exon.complement if location.strand < 0
-	    mRNA += exon
-	  end
-	end
+	mRNA = super
 	if mRNA.index('u')
 	  mRNA.tr!('t', 'u')
+	else
+	  mRNA.tr!('u', 't')
 	end
-	return NA.new(mRNA)
+	mRNA
       end
 
       def complement
+	s = self.class.new(self)
+	s.complement!
+	s
+      end
+
+      def complement!
 	if self.index('u')
-	  self.reverse.tr('augcrymkdhvbswn', 'uacgyrkmhdbvswn')
+	  self.reverse!
+	  self.tr!('augcrymkdhvbswn', 'uacgyrkmhdbvswn')
 	else
-	  self.reverse.tr('atgcrymkdhvbswn', 'tacgyrkmhdbvswn')
+	  self.reverse!
+	  self.tr!('atgcrymkdhvbswn', 'tacgyrkmhdbvswn')
 	end
+	self
       end
 
       # CodonTable is defined in bio/data/codontable.rb
@@ -184,9 +207,20 @@ module Bio
       end
 
       def translate(frame = 1, table = 1)
-	frame -= 1
 	ct    = self.codon_table(table)
 	naseq = self.tr('u', 't')
+	case frame
+	when 1, 2, 3
+	  frame -= 1
+	when 4, 5, 6
+	  frame -= 4
+	  naseq.complement!
+	when -1, -2, -3
+	  frame = -1 - frame
+	  naseq.complement!
+	else
+	  frame = 0
+	end
 	aaseq = ''
 	frame.step(naseq.length - 3, 3) do |i|
 	  codon = naseq[i,3].to_s
