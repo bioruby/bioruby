@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: alignment.rb,v 1.5 2003/10/20 14:15:49 ng Exp $
+#  $Id: alignment.rb,v 1.6 2004/03/30 13:12:24 ngoto Exp $
 #
 
 require 'bio/sequence'
@@ -517,11 +517,11 @@ module Bio
     def each_site
       #(original)
       (0...(self.seq_length)).each do |i|
-	yield self.collect do |s|
+	yield(self.collect do |s|
 	  c = s[i..i]
 	  c = seqclass.new(gap_char) if c.to_s.empty?
 	  c
-	end
+	end)
       end
     end
 
