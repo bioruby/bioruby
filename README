@@ -73,6 +73,17 @@ You can try
 for more details.
 
 
+If you want to use the OBDA (Open Bio Database Access) to obtain database
+entries, copy a sample config file
+  etc/bioinfomatics/seqdatabase.ini
+to
+  /etc/bioinfomatics/seqdatabase.ini	(system wide configuration)
+or
+  ~/.bioinformatics/seqdatabase.ini	(personal configuration)
+and chage the contens according to your preference.  For more
+informations on the OBDA, see ((<URL:http://obda.open-bio.org/>)).
+
+
 == USAGE
 
 You can load all BioRuby classes just by require 'bio' and all the
