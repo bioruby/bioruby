@@ -18,7 +18,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: genome2tab.rb,v 0.1 2001/06/21 08:25:20 katayama Exp $
+#  $Id: genome2tab.rb,v 0.2 2001/06/26 00:19:31 katayama Exp $
 #
 
 require 'bio/db/kegg/genome'
@@ -39,6 +39,7 @@ while entry = gets(GENOME::DELIMITER)
     genome.morphology,
     genome.physiology,
     genome.environment,
+    genome.comment,
     ref,
     chr,
     genome.nalen,
@@ -65,6 +66,7 @@ CREATE TABLE IF NOT EXISTS db_name.genome (
 	morphology	varchar(255),
 	physiology	varchar(255),
 	environment	varchar(255),
+	comment		varchar(255),
 	reference	text,
 	chromosome	text,
 	nalen		integer,
