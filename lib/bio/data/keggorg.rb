@@ -12,7 +12,9 @@
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of 
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
 #  Library General Public License for more details. 
-# 
+#
+#  $Id: keggorg.rb,v 0.2 2001/06/21 03:54:50 katayama Exp $
+#
 
 module KEGGORG
 
@@ -90,7 +92,7 @@ module KEGGORG
 
   def species2keggorg(species)
     KO.each do |korg, sp|
-      if sp[1] =~ /species/
+      if sp[1] =~ /#{species}/
 	return korg
       end
     end
