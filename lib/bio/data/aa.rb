@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aa.rb,v 0.6 2002/11/22 23:11:31 k Exp $
+#  $Id: aa.rb,v 0.7 2004/05/14 03:03:40 k Exp $
 #
 
 module Bio
@@ -100,8 +100,9 @@ module Bio
       'R' => 174.20,
       'S' => 105.09,
       'T' => 119.12,
+      'U' => 168.06,
       'V' => 117.15,
-      'W' => 204.24,
+      'W' => 204.23,
       'Y' => 181.19,
     }
 
