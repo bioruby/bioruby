@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#  $Id: biofetch.rb,v 1.10 2004/01/29 01:41:29 k Exp $
+#  $Id: biofetch.rb,v 1.11 2004/02/20 14:22:25 k Exp $
 #
 
 require 'cgi'
@@ -86,10 +86,42 @@ class BioFetch
     end
 
     entries = KeggAPI.bget(db, id_list, format)
+
+    if /fasta/.match(format)
+      entries = convert_to_fasta_format(entries, db)
+    end
+
     print_text_page(entries)
   end
 
   private
+
+  def convert_to_fasta_format(str, db)
+    require 'bio'
+    require 'stringio'
+
+    fasta = Array.new
+
+    entries = StringIO.new(str)
+    Bio::FlatFile.auto(entries) do |ff|
+      ff.each do |entry|
+        seq = nil
+        if entry.respond_to?(:seq)
+          seq = entry.seq
+        elsif entry.respond_to?(:aaseq)
+          seq = entry.naseq
+        elsif entry.respond_to?(:naseq)
+          seq = entry.naseq
+        end
+        if seq
+          entry_id   = entry.respond_to?(:entry_id)   ? entry.entry_id   : ''
+          definition = entry.respond_to?(:definition) ? entry.definition : ''
+          fasta << seq.to_fasta("#{db}:#{entry_id} #{definition}", 60)
+        end
+      end
+    end
+    return fasta.join
+  end
 
   def goto_html_style_page(db, id_list, format)
     url = "http://www.genome.ad.jp/dbget-bin/www_bget"
@@ -165,6 +197,8 @@ end
 
 class KeggAPI
 
+  include BioFetchError
+
   def self.dbinfo
     serv = Bio::KEGG::API.new
     serv.list_databases
@@ -182,9 +216,7 @@ class KeggAPI
 
   def self.bget(db, id_list, format)
     serv = Bio::KEGG::API.new
-
     results = Array.new
-
     id_list.each do |query_id|
       entry_id = "#{db}:#{query_id}"
       if result = serv.get_entries(entry_id)
@@ -193,43 +225,7 @@ class KeggAPI
         error4(query_id, db)
       end
     end
-
-    if /fasta/.match(format)
-      entries = convert_to_fasta_format(results.join, db)
-    else
-      entries = results.join
-    end
-
-    return entries
-  end
-
-  private
-
-  def convert_to_fasta_format(str, db)
-    require 'bio'
-    require 'stringio'
-
-    fasta = Array.new
-
-    entries = StringIO.new(str)
-    Bio::FlatFile.auto(entries) do |ff|
-      ff.each do |entry|
-        seq = nil
-        if entry.respond_to?(:seq)
-          seq = entry.seq
-        elsif entry.respond_to?(:aaseq)
-          seq = entry.naseq
-        elsif entry.respond_to?(:naseq)
-          seq = entry.naseq
-        end
-        if seq
-          entry_id   = entry.respond_to?(:entry_id)   ? entry.entry_id   : ''
-          definition = entry.respond_to?(:definition) ? entry.definition : ''
-          fasta << seq.to_fasta("#{db}:#{entry_id} #{definition}", 60)
-        end
-      end
-    end
-    return fasta.join
+    return results.join
   end
 
 end
