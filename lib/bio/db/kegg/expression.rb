@@ -1,7 +1,7 @@
 #
 # bio/db/kegg/microarray.rb - KEGG/Microarray database class
 #
-#   Copyright (C) 2001 KAWASHIMA Shuichi <s@bioruby.org>
+#   Copyright (C) 2001-2003 KAWASHIMA Shuichi <s@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: expression.rb,v 1.7 2001/11/19 14:19:07 shuichi Exp $
+#  $Id: expression.rb,v 1.8 2003/06/25 04:26:24 k Exp $
 #
 
 require "bio/db"
@@ -47,7 +47,10 @@ module Bio
     class Microarray
 
       def initialize(entry)
-        @orf2val = Hash.new('')
+        @orf2val   = Hash.new('')
+        @orf2rgb   = Hash.new('')
+        @orf2ratio = Hash.new('')
+        @max_intensity = 10000
         entry.split("\n").each do |line|
           unless /^#/ =~ line
             ary = line.split("\t")
@@ -58,10 +61,13 @@ module Bio
         end
       end
       attr_reader :orf2val
+      attr_reader :orf2rgb
+      attr_reader :orf2ratio
+      attr_reader :max_intensity
 
       def control_avg
         sum = 0.0
-        orf2val.values.each do |v|
+        @orf2val.values.each do |v|
           sum += v[0] - v[1]
         end
         sum/orf2val.size
@@ -69,7 +75,7 @@ module Bio
 
       def target_avg
         sum = 0.0
-        orf2val.values.each do |v|
+        @orf2val.values.each do |v|
           sum += v[2] - v[3]
         end
         sum/orf2val.size
@@ -78,7 +84,7 @@ module Bio
       def control_var
         sum = 0.0
         avg = self.control_avg
-        orf2val.values.each do |v|
+        @orf2val.values.each do |v|
           tmp = v[0] - v[1]
           sum += (tmp - avg)*(tmp - avg)
         end
@@ -88,7 +94,7 @@ module Bio
       def target_var
         sum = 0.0
         avg = self.target_avg
-        orf2val.values.each do |v|
+        @orf2val.values.each do |v|
           tmp = v[2] - v[3]
           sum += (tmp - avg)*(tmp - avg)
         end
@@ -105,9 +111,9 @@ module Bio
         Math.sqrt(var)
       end
 
-      def up_regulate(num=20, threshold=nil)
-        hash = logy_minus_logx
-        ary = hash.to_a.sort{|a, b| b[1] <=> a[1]}
+      def up_regulated(num=20, threshold=nil)
+        logy_minus_logx
+        ary = @orf2ratio.to_a.sort{|a, b| b[1] <=> a[1]}
         if threshold != nil
           i = 0
           while ary[i][1] > threshold
@@ -119,9 +125,9 @@ module Bio
         end
       end
 
-      def down_regulate(num=20, threshold=nil)
-        hash = logy_minus_logx
-        ary = hash.to_a.sort{|a, b| a[1] <=> b[1]}
+      def down_regulated(num=20, threshold=nil)
+        logy_minus_logx
+        ary = @orf2ratio.to_a.sort{|a, b| a[1] <=> b[1]}
         if threshold != nil
           i = 0
           while ary[i][1] < threshold
@@ -133,15 +139,46 @@ module Bio
         end
       end
 
-      def logy_minus_logx
-        hash = Hash.new('')
-        orf2val.each do |k, v|
-          hash[k] = Math.log10(v[2] - v[3]) - Math.log10(v[0] - v[1])
+      def regulated(num=20, threshold=nil)
+        logy_minus_logx
+        ary = @orf2ratio.to_a.sort{|a, b| b[1].abs <=> a[1].abs}
+        if threshold != nil
+          i = 0
+          while ary[i][1].abs > threshold
+            i += 1
+          end
+          return ary[0..i]
+        else
+          return ary[0..num-1]
         end
-        hash
       end
 
-      # private
+      def logy_minus_logx
+        @orf2val.each do |k, v|
+          @orf2ratio[k] = (1.0/Math.log10(2))*(Math.log10(v[2]-v[3]) - Math.log10(v[0]-v[1]))
+        end
+      end
+
+      def val2rgb
+        col_unit = @max_intensity/255
+        @orf2val.each do |k, v|
+          tmp_val = ((v[0] - v[1])/col_unit).to_i
+          if tmp_val > 255
+            g = "ff" 
+          else
+            g = format("%02x", tmp_val)
+          end
+          tmp_val = ((v[2] - v[3])/col_unit).to_i
+          if tmp_val > 255
+            r = "ff" 
+          else
+            r = format("%02x", tmp_val)
+          end
+          @orf2rgb[k] = r + g + "00"
+        end
+      
+      end
+
     end
 
   end
