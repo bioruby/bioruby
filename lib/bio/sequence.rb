@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: sequence.rb,v 0.8 2001/10/17 14:43:11 katayama Exp $
+#  $Id: sequence.rb,v 0.9 2001/10/31 22:44:12 okuji Exp $
 #
 
 module Bio
@@ -49,6 +49,15 @@ class Sequence < String
       end
     end
     return sum
+  end
+
+  def to_fasta(header = '', width = nil)
+    ">#{header}\n" +
+      if width
+        self.gsub(Regexp.new(".{1,#{width}}"), "\\0\n")
+      else
+        self + "\n"
+      end
   end
 
 
