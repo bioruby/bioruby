@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.10 2003/03/28 02:36:41 ng Exp $ 
+#  $Id: indexer.rb,v 1.11 2003/04/21 06:40:02 ng Exp $ 
 # 
 
 module Bio
@@ -64,6 +64,8 @@ module Bio
 	    GenBankParser.new(*arg)
 	  when 'Bio::GenPept'
 	    GenPeptParser.new(*arg)
+	  when 'fasta', 'Bio::FastaFormat'
+	    FastaFormatParser.new(*arg)
 	  else
 	    raise 'unknown or unsupported format'
 	  end #case dbclass.to_s
@@ -190,9 +192,10 @@ module Bio
 	  end
 	  def open_flatfile(fileid, file)
 	    super
+	    @flatfile.pos = 0
 	    begin
 	      pos = @flatfile.pos
-	      line = @flatfile.io.gets
+	      line = @flatfile.gets
 	    end until (!line or line =~ /^LOCUS /)
 	    @flatfile.pos = pos
 	  end
@@ -239,6 +242,41 @@ module Bio
 	    self.dbclass = Bio::SPTR
 	  end
 	end #class SPTRParser
+
+	class FastaFormatParser < TemplateParser
+	  NAMESTYLE = NameSpaces.new(
+	     NameSpace.new( 'UNIQUE', Proc.new { |x| x.entry_id } ),
+	     NameSpace.new( 'accession', Proc.new { |x| x.accessions } ),
+	     NameSpace.new( 'id', Proc.new { |x| 
+			     x.identifiers.id_strings
+			   }),
+	     NameSpace.new( 'word', Proc.new { |x|
+			     x.identifiers.words
+			   })
+				     )
+	  PRIMARY = 'UNIQUE'
+	  SECONDARY = [ 'accession', 'id', 'word' ]
+				     
+	  def initialize(pri_name = nil, sec_names = nil)
+	    super()
+	    self.format = 'fasta'
+	    self.dbclass = Bio::FastaFormat
+	    self.set_primary_namespace((pri_name or PRIMARY))
+	    unless sec_names then
+	      sec_names = self.class::SECONDARY
+	    end
+	    self.add_secondary_namespaces(*sec_names)
+	  end
+	  def open_flatfile(fileid, file)
+	    super
+	    @flatfile.pos = 0
+	    begin
+	      pos = @flatfile.pos
+	      line = @flatfile.gets
+	    end until (!line or line =~ /^\>/)
+	    @flatfile.pos = pos
+	  end
+	end #class FastaFormatParser
       end #module Parser
 
       def self.makeindexBDB(name, parser, options, *files)
@@ -502,6 +540,8 @@ module Bio
 	dbclass = Bio::EMBL
       when /sptr/i
 	dbclass = Bio::SPTR
+      when /fasta/i
+	dbclass = Bio::FastaFormat
       else
 	raise "Unsupported format : #{format}"
       end

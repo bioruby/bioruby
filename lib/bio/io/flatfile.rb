@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.10 2003/02/17 02:05:25 ng Exp $
+#  $Id: flatfile.rb,v 1.11 2003/04/21 06:40:02 ng Exp $
 #
 
 module Bio
@@ -42,23 +42,22 @@ module Bio
     attr_reader :io
 
     def next_entry
-      if @prefetch.size > 0 then
-	if @rs and (a = @prefetch.split(@rs, 2)).size > 1 then
-	  @entry_raw = a.shift + @rs
-	  @prefetch = a.join(@rs)
-	else
-	  @entry_raw = @prefetch + (@io.gets(@rs) or '')
-	  @prefetch = ''
-	end
-      else
-	@entry_raw = @io.gets(@rs)
-      end
-
+      @entry_raw = gets(@rs)
       return nil unless @entry_raw
       if raw then
 	@entry_raw
       else
-	@dbclass.new(@entry_raw)
+	e =@dbclass.new(@entry_raw)
+	begin
+	  s = e.entry_overrun
+	rescue NameError
+	  s = nil
+	end
+	if s then
+	  @entry_raw[-(s.length), s.length] = ''
+	  ungets(s)
+	end
+	e
       end
     end
     attr_reader :entry_raw
@@ -104,6 +103,55 @@ module Bio
       else
 	@io.eof?
       end
+    end
+
+    def gets(io_rs = $/)
+      if @prefetch.size > 0
+	if io_rs == nil then
+	  r = @prefetch + @io.gets(nil).to_s
+	  @prefetch = ''
+	else
+	  sp_rs = io_rs
+	  sp_rs = "\n\n" if io_rs == ''
+	  a = @prefetch.split(sp_rs, 2)
+	  if a.size > 1 then
+	    r = a[0] + sp_rs
+	    @prefetch = a[1]
+	  else
+	    @prefetch << @io.gets(io_rs).to_s
+	    a = @prefetch.split(sp_rs, 2)
+	    if a.size > 1 then
+	      r = a[0] + sp_rs
+	      @prefetch = a[1].to_s
+	    else
+	      r = @prefetch
+	      @prefetch = ''
+	    end
+	  end
+	end
+	r
+      else
+	@io.gets(io_rs)
+      end
+    end
+
+    def ungets(str)
+      @prefetch << str
+      nil
+    end
+
+    def getc
+      if @prefetch.size > 0 then
+	r = @prefetch[0]
+	@prefetch = @prefetch[1..-1]
+      else
+	r = @io.getc
+      end
+      r
+    end
+
+    def ungetc(c)
+      @prefetch << sprintf("%c", c)
     end
 
     def raw=(bool)
