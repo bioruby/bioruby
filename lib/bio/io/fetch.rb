@@ -17,9 +17,10 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fetch.rb,v 1.1 2002/03/04 07:44:07 katayama Exp $
+#  $Id: fetch.rb,v 1.2 2004/02/21 19:40:34 k Exp $
 #
 
+require 'uri'
 require 'net/http'
 
 module Bio
@@ -27,10 +28,7 @@ module Bio
   class Fetch
 
     def initialize(url = 'http://bioruby.org/cgi-bin/biofetch.rb')
-      url =~ %r{(http://)?([^/:]+)(:\d+)?(.*)}
-      schema, @host, port, @path = $1, $2, $3, $4
-      @port = port ? port.sub(':','').to_i : 80
-      @database
+      schema, user, @host, @port, reg, @path, = URI.split(url)
     end
     attr_accessor :database
 
@@ -67,7 +65,9 @@ if __FILE__ == $0
   puts bfserv.fetch('embl', 'J00231', 'html')
 
   puts "# test 3"
-  puts Bio::Fetch.query('embl', 'J00231')
+  puts Bio::Fetch.query('genbank', 'J00231')
+  puts "# test 4"
+  puts Bio::Fetch.query('genbank', 'J00231', 'raw', 'fasta')
 
 end
 
