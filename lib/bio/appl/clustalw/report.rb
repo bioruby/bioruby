@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.2 2003/07/25 17:14:27 ng Exp $
+#  $Id: report.rb,v 1.3 2004/03/30 14:05:08 ngoto Exp $
 #
 
 require 'bio/sequence'
@@ -77,30 +77,32 @@ module Bio
       private
       def do_parse
 	return nil if @align
-	a = @raw.split("\n\n")
+	a = @raw.split(/\r?\n\r?\n/)
 	@header = a.shift.to_s
-	@align = Bio::Alignment.new
+	xalign = Bio::Alignment.new
 	@match_line = ''
 	if a.size > 0 then
-	  a[0].gsub!(/\A\n+/, '')
-	  a.collect! { |x| x.split("\n") }
+	  a[0].gsub!(/\A(\r?\n)+/, '')
+	  a.collect! { |x| x.split(/\r?\n/) }
+          a.each { |x|
+            x.each { |y| y.sub!(/ +\d+\s*$/, '') }} #for -SEQNOS=on option
 	  @tagsize = ( a[0][0].rindex(/\s/) or -1 ) + 1
 	  a.each do |x|
 	    @match_line << x.pop.to_s[@tagsize..-1]
 	  end
 	  a[0].each do |y|
-	    @align.store(y[0, @tagsize].sub(/\s+\z/, ''), '')
+	    xalign.store(y[0, @tagsize].sub(/\s+\z/, ''), '')
 	  end
 	  a.each do |x|
 	    x.each do |y|
 	      name = y[0, @tagsize].sub(/\s+\z/, '')
 	      seq = y[@tagsize..-1]
-	      seq.sub!(/\s+\d+\z/, '') #for -SEQNOS=on option
-	      @align[name] << seq
+	      xalign[name] << seq
 	    end
 	  end
-	  @align.collect! { |x| @seqclass.new(x) }
+	  xalign.collect! { |x| @seqclass.new(x) }
 	end
+        @align = xalign
 	nil
       end
 
