@@ -17,15 +17,15 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: trembl.rb,v 1.2 2002/08/16 17:34:52 k Exp $
+#  $Id: trembl.rb,v 1.3 2004/08/23 23:40:35 k Exp $
 #
 
 require 'bio/db/embl/sptr'
 
 module Bio
 
-  class TrEMBL < SPTR
-    # Nothing to do (TrEMBL format is abstracted in SPTR)
-  end
+class TrEMBL < SPTR
+  # Nothing to do (TrEMBL format is abstracted in SPTR)
+end
 
 end
