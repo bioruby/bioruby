@@ -26,8 +26,11 @@ class GENES
     @data = {}					# Hash of the parsed entry
 
     tag = ''					# temporal key
+    @orig[tag] = ''
 
     entry.each_line do |line|
+      next if line =~ /^$/
+
       if line =~ /^\w/
 	tag = tag_get(line)
 	@orig[tag] = '' unless @orig[tag]	# String
