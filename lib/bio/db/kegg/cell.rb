@@ -1,5 +1,5 @@
 #
-# bio/db/cell.rb - KEGG/CELL database class
+# bio/db/kegg/cell.rb - KEGG/CELL database class
 #
 #   Copyright (C) 2001 KAWASHIMA Shuichi <s@bioruby.org>
 #
@@ -13,6 +13,9 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
+#  $Id: cell.rb,v 1.2 2001/09/14 13:26:54 shuichi Exp $
+#
+
 require "bio/db"
 
 class CELL < KEGGDB
@@ -43,8 +46,7 @@ class CELL < KEGGDB
   end
 
   def daughter
-    d = field_fetch('DAUGHTER').gsub(/ /, '').split(/,/)
-    d
+    field_fetch('DAUGHTER').gsub(/ /, '').split(/,/)
   end
 
   def sister
@@ -52,13 +54,11 @@ class CELL < KEGGDB
   end
 
   def fate
-    d = field_fetch('CELL_FATE').gsub(/ /, '').split(/,/)
-    d
+    field_fetch('CELL_FATE').gsub(/ /, '').split(/,/)
   end
 
   def contact
-    d = field_fetch('CONTACT').gsub(/ /, '').split(/,/)
-    d
+    field_fetch('CONTACT').gsub(/ /, '').split(/,/)
   end
 
   def expression
