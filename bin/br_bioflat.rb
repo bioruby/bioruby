@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 # 
-#  $Id: br_bioflat.rb,v 1.3 2002/08/26 06:08:20 k Exp $ 
+#  $Id: br_bioflat.rb,v 1.4 2002/08/28 12:32:25 ng Exp $ 
 # 
 
 require 'bio'
@@ -86,6 +86,7 @@ end
 if ARGV.size > 1
   case ARGV[0]
   when /--make/
+    Bio::FlatFileIndex::DEBUG.out = true
     do_index
   when /--search/
     do_search

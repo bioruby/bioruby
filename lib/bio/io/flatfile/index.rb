@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: index.rb,v 1.3 2002/08/22 09:41:20 ng Exp $ 
+#  $Id: index.rb,v 1.4 2002/08/28 12:32:24 ng Exp $ 
 # 
 
 
@@ -161,14 +161,24 @@ module Bio
 
     module DEBUG
       @@out = STDERR
+      @@flag = nil
       def self.out=(io)
-	@@out = io
+	if io then
+	  @@out = io
+	  @@out = STDERR if io == true
+	  @@flag = true
+	else
+	  @@out = nil
+	  @@flag = nil
+	end
+	@@out
       end
       def self.out
 	@@out
       end
       def self.print(*arg)
-	@@out.print(*arg) if @@out
+	@@flag = true if $DEBUG or $VERBOSE
+	@@out.print(*arg) if @@out and @@flag
       end
     end #module DEBUG
 
