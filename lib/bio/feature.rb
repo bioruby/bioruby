@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: feature.rb,v 1.4 2002/06/18 04:56:23 k Exp $
+#  $Id: feature.rb,v 1.5 2003/02/25 12:22:00 k Exp $
 #
 
 require 'bio/location'
@@ -79,8 +79,9 @@ module Bio
       return self
     end
 
-    def each
+    def each(arg = nil)
       @features.each do |x|
+	next if arg and x.feature != arg
 	yield x
       end
     end
