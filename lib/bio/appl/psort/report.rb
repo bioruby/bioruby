@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.4 2003/08/13 11:04:13 n Exp $
+#  $Id: report.rb,v 1.5 2003/08/13 12:20:38 n Exp $
 #
 
 require 'bio/sequence'
@@ -238,12 +238,12 @@ module Bio
 	  ent = ent.split(/\n\n/).map {|e| e.chomp }
 	  ent.each_with_index {|e, i|
 	    unless /^(\w|-|\>|\t)/ =~ e
-	      j = search_j(i, ent)
+	      j = self.__send__(:search_j, i, ent)
 	      ent[i - j] += e
 	      ent[i] = nil
 	    end
 	    if /^none/ =~ e    # for psort output bug
-	      j = search_j(i, ent)
+	      j = self.__send__(:search_j, i, ent)
 	      ent[i - j] += e
 	      ent[i] = nil
 	    end
@@ -272,7 +272,7 @@ module Bio
 	end
 
 
-	def search_j(i, ent)
+	def self.search_j(i, ent)
 	  j = 1
 	  1.upto(ent.size) {|x|
 	    if ent[i - x]
@@ -282,7 +282,7 @@ module Bio
 	  }
 	  j
 	end
-	private :search_j
+	private_class_method :search_j
 
 
 	# divide entry body
