@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.6 2001/11/20 11:32:36 nakao Exp $
+#  $Id: blast.rb,v 1.7 2001/11/22 06:09:22 nakao Exp $
 #
 
 #require 'net/http'
@@ -34,9 +34,10 @@ module Bio
     class BlastOptionsError < ArgumentError; end
 
     ##
+    # ARGUMENTS:
     # server = { 'host'=>'localhost','port'=>8080, 'cgi'=>'/blast.cgi',
     #            'proxy'=>'proxy', 'proxy_port'=>8000 }
-    # opts = {'-m' => 7, '-e' => 0.0 , ...}
+    # opts   = {'-m' => 7, '-e' => 0.0001 , ...}
     def initialize (server = nil, blastall = nil, \
 		    program = nil, db = nil, opts = nil)
       @server   = server
@@ -138,13 +139,16 @@ module Bio
     def local_blast(query)
       cmd = "#{@blastall} -p #{@program} -d #{@db} -m 7"
 
-      @opts.each { |k,v|
-	if k =~ /^-[eFGEXIqrvbfgQDaOJMWzkPYSTlUyZRnLA]$/
-	  cmd += " #{k} #{v} "
-	else
-	  raise BlastError, "Error: Invalid option #{k} #{v}"
+      # Check blastall options 
+      if @opts.type == Hash
+	@opts.each do |k,v|
+	  if k =~ /^-[eFGEXIqrvbfgQDaOJMWzkPYSTlUyZRnLA]$/
+	    cmd += " #{k} #{v} "
+	  else
+	    raise BlastOptionsError, "Error: Invalid option #{k} #{v}"
+	  end
 	end
-      } if @opts.type == Hash
+      end
 
       begin 
 	@io = IO.popen(cmd, "w+")
@@ -160,9 +164,9 @@ module Bio
 	    Report.new(entry)
 	  end
 	}
-
+	@io.close
       rescue BlastExecError
-	raise "Error: #{$!} #{cmd} \n"
+	raise "Error: #{$!}: #{cmd} \n"
       ensure
 	@io.close
       end
@@ -192,22 +196,25 @@ module Bio
       class XMLRetry < Exception; end
 	
       def initialize (xml)
-	@program = ''
-	@version = ''
+	@program   = ''
+	@version   = ''
 	@reference = ''
-	@db = ''
-	@query_ID = ''
+	@db        = ''
+	@query_ID  = ''
 	@query_def = ''
 	@query_len = 0
 	@parameters = Hash.new
 	@statistics = Hash.new
-	@iteration = Array.new
+	@iteration  = Array.new
 	  
 	self.parse(xml)
       end
       attr_accessor :program, :version, :reference, :db, :query_ID, 
 	:query_def, :query_len, :parameters, :statistics, :iteration
-	
+      alias iterations iteration
+      alias itrs iteration
+
+
       def parse (xml)
 	parser = XMLParser.new
 	def parser.default; end
@@ -237,64 +244,24 @@ module Bio
 	      end
 
 	    when XMLParser::END_ELEM
-	      case tag_stack.last
-	      when 'BlastOutput_program'
-		@program = entry[tag_stack.last]
+	      if tag_stack.last =~ /^BlastOutput/
+		self.parse_blastoutput(tag_stack.last, entry)
 		entry = Hash.new
-	      when 'BlastOutput_version'
-		@version = entry[tag_stack.last]
+	      elsif tag_stack.last =~ /^Parameters$/
+		self.parse_parameters(entry)
 		entry = Hash.new
-	      when 'BlastOutput_reference'
-		@reference = entry
-		entry = Hash.new  
-	      when 'BlastOutput_db'
-		@db = entry[tag_stack.last]
-		entry = Hash.new  
-	      when 'BlastOutput_query-ID'
-		@query_ID = entry[tag_stack.last]
-		entry = Hash.new  
-	      when 'BlastOutput_query-def'
-		@query_def = entry[tag_stack.last]
-		entry = Hash.new  
-	      when 'BlastOutput_query-len'
-		@query_len = entry[tag_stack.last].to_i
-		entry = Hash.new  
-
-	      when 'Parameters'
-		parse_parameters(entry)
+	      elsif tag_stack.last =~ /^Iteration/
+		self.parse_iteration(tag_stack.last, entry)
 		entry = Hash.new
-		  
-	      when 'Iteration_iter-num'
-		@iteration.last.num = entry[tag_stack.last].clone.to_i
+	      elsif tag_stack.last =~ /^Hit/
+		self.parse_hit(tag_stack.last, entry)
 		entry = Hash.new
-		
-	      when 'Hit_num'
-		@iteration.last.hit.last.num \
-                                           = entry[tag_stack.last].clone.to_i
+	      elsif tag_stack.last =~ /^Hsp$/
+		self.parse_hsp(entry)
 		entry = Hash.new
-	      when 'Hit_id'
-		@iteration.last.hit.last._id = entry[tag_stack.last].clone
+	      elsif tag_stack.last =~ /^Statistics$/
+		self.parse_statistics(entry)
 		entry = Hash.new
-	      when 'Hit_def'
-		@iteration.last.hit.last._def = entry[tag_stack.last].clone
-		entry = Hash.new
-	      when 'Hit_accession'
-		@iteration.last.hit.last.accession \
-                                           = entry[tag_stack.last].clone
-		entry = Hash.new
-	      when 'Hit_len'
-		@iteration.last.hit.last.len \
-                                           = entry[tag_stack.last].clone.to_i
-		entry = Hash.new
-
-	      when 'Hsp'
-		parse_hsp(entry)
-		entry = Hash.new
-
-	      when 'Statistics'
-		parse_statistics(entry)
-		entry = Hash.new
-
 	      end
 
 	      tag_stack.pop
@@ -323,71 +290,98 @@ module Bio
 	end
       end
       
+      ##
       # Bio::Blast::Report::Iteration
       class Iteration
+
 	def initialize(num = nil)
 	  @num = num
-	  @hit = Array.new
+	  @hits = Array.new
 	end
-	attr_accessor :num, :hit
+	attr_accessor :num, :hits
+	alias hit hits
+
 	def add_hit(hit)
-	  @hit.push(hit)
+	  @hits.push(hit)
 	end
-	def hits
-	  hit
-	end
+
       end                       # class Iteration
 
+      #
       # Bio::Blast::Report::Hit
       class Hit
+
 	def initialize(num=nil, id=nil, def_=nil,accession=nil, len=nil)
 	  @num       = num
 	  @_id       = id
 	  @_def      = def_
 	  @accession = accession
 	  @len       = len
-	  @hsp       = Array.new
+	  @hsps      = Array.new
 	end
-	attr_accessor :num, :_id, :_def, :accession, :len, :hsp
+	attr_accessor :num, :_id, :_def, :accession, :len, :hsps
+	alias hsp hsps
+
 	def add_hsp(hsp)
-	  @hsp.push(hsp)
+	  @hsps.push(hsp)
 	end
-	def hsps
-	  hsp
-	end
+
       end                       # class Hit
 
+      #
       # Bio::Blast::Report::Hsp
       class Hsp
+
 	def initialize(num = nil)
-	  @num = num
-	  @bit_score = 0.0
-	  @score = 0
-	  @evalue = 0.0
-	  @query_from = 0
-	  @query_to = 0
-	  @hit_from = 0
-	  @hit_to = 0
+	  @num          = num
+	  @bit_score    = 0.0
+	  @score        = 0
+	  @evalue       = 0.0
+	  @query_from   = 0
+	  @query_to     = 0
+	  @hit_from     = 0
+	  @hit_to       = 0
 	  @pattern_from = 0
-	  @pattern_to = 0
-	  @query_frame = 0
-	  @hit_frame = 0
-	  @identity = 0
-	  @positive = 0
-	  @gaps = 0
-	  @align_len = 0
-	  @density = 0
-	  @qseq = ''
-	  @hseq = ''
-	  @midline = ''
+	  @pattern_to   = 0
+	  @query_frame  = 0
+	  @hit_frame    = 0
+	  @identity     = 0
+	  @positive     = 0
+	  @gaps         = 0
+	  @align_len    = 0
+	  @density      = 0
+	  @qseq         = ''
+	  @hseq         = ''
+	  @midline      = ''
 	end
 	attr_accessor :num, :bit_score, :score, :evalue, :query_from, 
 	  :query_to, :hit_from, :hit_to, :pattern_from, :pattern_to, 
 	  :query_frame, :hit_frame, :identity, :positive, :gaps, :align_len, 
 	  :density, :qseq, :hseq, :midline
+
       end                       # class Hsp
 
+
       protected
+
+      def parse_blastoutput(tag, entry)
+	case tag
+	when 'BlastOutput_program'
+	  @program = entry[tag]
+	when 'BlastOutput_version'
+	  @version = entry[tag]
+	when 'BlastOutput_reference'
+	  @reference = entry
+	when 'BlastOutput_db'
+	  @db = entry[tag]
+	when 'BlastOutput_query-ID'
+	  @query_ID = entry[tag]
+	when 'BlastOutput_query-def'
+	  @query_def = entry[tag]
+	when 'BlastOutput_query-len'
+	  @query_len = entry[tag].to_i
+	end
+      end
 
       def parse_parameters(hash)
 	labels = { 
@@ -400,8 +394,59 @@ module Bio
 	  'filter'      => 'Parameters_filter'
 	}
 	labels.each do |k,v|
-	  @parameters[k] = hash[v].to_i unless k == 'filter'
+	  if k == 'filter'
+	    @parameters[k] = hash[v].to_s
+	  else
+	    @parameters[k] = hash[v].to_i
+	  end
 	end
+      end
+
+      def parse_iteration(tag, entry)
+	case tag
+	when 'Iteration_iter-num'
+	  @iteration.last.num = entry[tag].to_i
+	end
+      end
+
+      def parse_hit(tag, entry)
+	hit = @iteration.last.hit.last
+	case tag
+	when 'Hit_num'
+	  hit.num = entry[tag].to_i
+	when 'Hit_id'
+	  hit._id = entry[tag].clone
+	when 'Hit_def'
+	  hit._def = entry[tag].clone
+	when 'Hit_accession'
+	  hit.accession = entry[tag].clone
+	when 'Hit_len'
+	  hit.len = entry[tag].clone.to_i
+	end
+      end
+
+      def parse_hsp(hash)
+	hsp = @iteration.last.hit.last.hsp.last
+	hsp.num          = hash['Hsp_num'].to_i
+	hsp.bit_score    = hash['Hsp_bit-score'].to_f
+	hsp.score        = hash['Hsp_score'].to_i
+	hsp.evalue       = hash['Hsp_evalue'].to_f
+	hsp.query_from   = hash['Hsp_query-from'].to_i
+	hsp.query_to     = hash['Hsp_query-to'].to_i
+	hsp.hit_from     = hash['Hsp_hit-from'].to_i
+	hsp.hit_to       = hash['Hsp_hit-to'].to_i
+	hsp.pattern_from = hash['Hsp_pattern-from'].to_i
+	hsp.pattern_to   = hash['Hsp_pattern-to'].to_i
+   	hsp.query_frame  = hash['Hsp_query-frame'].to_i
+	hsp.hit_frame    = hash['Hsp_hit-frame'].to_i
+	hsp.identity     = hash['Hsp_identity'].to_i
+	hsp.positive     = hash['Hsp_positive'].to_i
+	hsp.gaps         = hash['Hsp_gaps'].to_i
+	hsp.align_len    = hash['Hsp_align-len'].to_i
+	hsp.density      = hash['Hsp_density'].to_i
+	hsp.qseq         = hash['Hsp_qseq']  # to_seq ?
+	hsp.hseq         = hash['Hsp_hseq']  # to_seq ?
+	hsp.midline      = hash['Hsp_midline']
       end
 
       def parse_statistics(hash)
@@ -422,33 +467,6 @@ module Bio
 	  end
 	end
       end
-
-      def parse_hsp(h)
-	@iteration.last.hit.last.hsp.last.num = h['Hsp_num'].to_i
-	@iteration.last.hit.last.hsp.last.bit_score = h['Hsp_bit-score'].to_f
-	@iteration.last.hit.last.hsp.last.score = h['Hsp_score'].to_i
-	@iteration.last.hit.last.hsp.last.evalue = h['Hsp_evalue'].to_f
-	@iteration.last.hit.last.hsp.last.query_from \
-                                        = h['Hsp_query-from'].to_i
-	@iteration.last.hit.last.hsp.last.query_to = h['Hsp_query-to'].to_i
-	@iteration.last.hit.last.hsp.last.hit_from = h['Hsp_hit-from'].to_i
-	@iteration.last.hit.last.hsp.last.hit_to = h['Hsp_hit-to'].to_i
-	@iteration.last.hit.last.hsp.last.pattern_from \
-                                       	= h['Hsp_pattern-from'].to_i
-	@iteration.last.hit.last.hsp.last.pattern_to \
-                                	= h['Hsp_pattern-to'].to_i
-   	@iteration.last.hit.last.hsp.last.query_frame \
-	                                = h['Hsp_query-frame'].to_i
-	@iteration.last.hit.last.hsp.last.hit_frame = h['Hsp_hit-frame'].to_i
-	@iteration.last.hit.last.hsp.last.identity = h['Hsp_identity'].to_i
-	@iteration.last.hit.last.hsp.last.positive = h['Hsp_positive'].to_i
-	@iteration.last.hit.last.hsp.last.gaps = h['Hsp_gaps'].to_i
-	@iteration.last.hit.last.hsp.last.align_len = h['Hsp_align-len'].to_i
-	@iteration.last.hit.last.hsp.last.density = h['Hsp_density'].to_i
-	@iteration.last.hit.last.hsp.last.qseq = h['Hsp_qseq']  # to_seq ?
-	@iteration.last.hit.last.hsp.last.hseq = h['Hsp_hseq']  # to_seq ?
-	@iteration.last.hit.last.hsp.last.midline = h['Hsp_midline']
-      end
 	
     end				# class Report
 
@@ -458,7 +476,7 @@ end				# modlue Bio
 
 
 
-# Testing codes
+# Testing code
 
 if __FILE__ == $0
 
@@ -629,7 +647,6 @@ end
 = Bio::Blast::Iteration
 --- Bio::Blast::Iteration#num
 --- Bio::Blast::Iteration#add_hit(Bio::Blast::Hit)
---- Bio::Blast::Iteration#hit -> ary
 --- Bio::Blast::Iteration#hits -> ary
 
 
@@ -640,7 +657,6 @@ end
 --- Bio::Blast::Hit#accession
 --- Bio::Blast::Hit#len
 --- Bio::Blast::Hit#add_hsp(Bio::Blsat::Hsp)
---- Bio::Blast::Hit#hsp -> ary
 --- Bio::Blast::Hit#hsps -> ary
 
 = Bio::Blast::Hsp
