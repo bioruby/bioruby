@@ -14,34 +14,34 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: gt2fasta.rb,v 0.2 2001/10/17 14:43:10 katayama Exp $
+#  $Id: gt2fasta.rb,v 0.3 2002/04/15 03:06:17 k Exp $
 #
 
+require 'bio/io/flatfile'
+require 'bio/feature'
 require 'bio/db/genbank'
-require 'bio/util/fold'
 
 include Bio
 
-while gets(GenBank::DELIMITER)
-  gb = GenBank.new($_)
+ff = FlatFile.new(GenBank, ARGF)
+
+while gb = ff.next_entry
 
   orf = 0
-  gb.features do |f|
-    aaseq = f['translation']
-    if aaseq.length > 0
+  gb.features.each do |f|
+    f = f.assoc
+    if aaseq = f['translation']
       orf += 1
-      definition = ">gp:#{gb.id}_#{orf} "
-      ary = [ f['gene'], f['product'], f['note'], f['function'] ]
-      ary.each do |d|
-	if d.length > 0
-	  definition += "#{d}, "
-	end
-      end
-      definition += "[#{gb.organism}]"
-
-      puts definition
-      puts aaseq.fold(70)
+      gene = [
+        f['gene'],
+        f['product'],
+        f['note'],
+        f['function']
+      ].compact.join(', ')
+      definition = "gp:#{gb.entry_id}_#{orf} #{gene} [#{gb.organism}]"
+      print aaseq.to_fasta(definition, 70)
     end
   end
 
 end
+

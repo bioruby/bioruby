@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: feature.rb,v 1.2 2002/03/27 08:32:05 katayama Exp $
+#  $Id: feature.rb,v 1.3 2002/04/15 03:06:17 k Exp $
 #
 
 require 'bio/location'
@@ -44,6 +44,14 @@ module Bio
       @qualifiers.each do |x|
 	yield x
       end
+    end
+
+    def assoc
+      hash = Hash.new
+      @qualifiers.each do |x|
+        hash[x.qualifier] = x.value
+      end
+      return hash
     end
 
 

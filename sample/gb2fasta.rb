@@ -15,17 +15,17 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: gb2fasta.rb,v 0.3 2002/03/25 19:53:09 okuji Exp $
+#  $Id: gb2fasta.rb,v 0.4 2002/04/15 03:06:17 k Exp $
 #
 
+require 'bio/io/flatfile'
 require 'bio/db/genbank'
-require 'bio/util/fold'
 
 include Bio
 
-while gets(GenBank::DELIMITER)
-  gb = GenBank.new($_)
+ff = FlatFile.new(GenBank, ARGF)
 
+while gb = ff.next_entry
   print gb.naseq.to_fasta("gb:#{gb.entry_id} #{gb.definition}", 70)
 end
 
