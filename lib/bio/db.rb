@@ -1,7 +1,7 @@
 #
 # bio/db.rb - DataBase parser general API
 #
-#   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>,
 #   Copyright (C) 2001 NAKAO Mitsuteru <n@bioruby.org> (EMBL part)
 #
 #  This library is free software; you can redistribute it and/or
@@ -18,122 +18,22 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: db.rb,v 0.11 2001/11/12 21:14:06 katayama Exp $
+#  $Id: db.rb,v 0.12 2001/12/19 12:30:54 katayama Exp $
 #
 
+require 'bio/id'
 require 'bio/sequence'
 require 'bio/reference'
-#require 'bio/id'
-#require 'bio/taxonomy'
 require 'bio/data/keggorg'
 
 module Bio
 
   class DB
 
-    ### sub classes should define the following constants if appropriate
-
-    DELIMITER	= RS = ""
-    TAGSIZE	= 0
-
-
-    ### sub classes should define the following methods if appropriate
-
-    # returns ENTRY ID as String
-    def id
+    # returns the entry identifier
+    def entry_id
       raise NotImplementedError
     end
-
-    # returns DB division (gb -> VRL, ps -> PATTERN etc.) as String
-    def division
-      raise NotImplementedError
-    end
-
-    # returns date of the ENTRY as String
-    def date
-      raise NotImplementedError
-    end
-
-    # returns Array of gene names of the ENTRY as String
-    def gene
-      raise NotImplementedError
-    end
-
-    # returns DEFINITION as String
-    def definition
-      raise NotImplementedError
-    end
-
-    # returns REFERENCE as Reference : bio/reference.rb
-    def reference
-      raise NotImplementedError
-    end
-
-    # returns links to other DBs as Array of String or DBlinks? : id.rb
-    def dblinks
-      raise NotImplementedError
-    end
-
-    # returns organism as String
-    def organism
-      raise NotImplementedError
-    end
-
-    # returns KEGG organism code (3 letters) as String
-    def keggorg
-      raise NotImplementedError
-    end
-
-    # returns taxonomy as String or Taxonomy? : taxonomy.rb
-    def taxonomy
-      raise NotImplementedError
-    end
-
-    # returns Sequence position in the ENTRY or in the GENOME as String
-    def position
-      raise NotImplementedError
-    end
-
-    # returns Gene Ontology or KEGG map or classification of the ENTRY as ?
-    def ontology
-      raise NotImplementedError
-    end
-
-    # returns DNA/RNA sequence as Sequence::NA
-    def naseq
-      raise NotImplementedError
-    end
-
-    # returns DNA/RNA sequence length as integer
-    def nalen
-      raise NotImplementedError
-    end
-
-    # returns Amino Acid sequence as Sequence::AA
-    def aaseq
-      raise NotImplementedError
-    end
-
-    # returns Amino Acid sequence length as integer
-    def aalen
-      raise NotImplementedError
-    end
-
-    # returns Pattern or Profile?
-    def pattern
-      raise NotImplementedError
-    end
-    def profile
-      raise NotImplementedError
-    end
-
-    # returns 3D coordinates of the Amino Acid? or Array of the coordinates?
-    def coordinates
-      raise NotImplementedError
-    end
-
-
-    ### common methods
 
     # returns tag list of the entry
     def tags
@@ -154,13 +54,13 @@ module Bio
     def fetch(tag)
       str = ''
       get(tag).each_line do |line|
-	str += tag_cut(line)
+	str += tag_cut(line)	# IS THIS SLOW TOO?
       end
       return truncate(str)
     end
 
 
-    ### private/protected methods
+    ### common private/protected methods
 
     protected
 
@@ -180,13 +80,59 @@ module Bio
       return str
     end
 
-    # (1) returns contents of the field as String
+    # returns contents of the field as String
     def field_fetch(tag)
       unless @data[tag]
 	@data[tag] = fetch(tag)
       end
       return @data[tag]
     end
+
+  end
+
+
+  class NCBIDB < DB
+
+    def initialize(entry, tagsize)
+      @tagsize = tagsize
+      @orig = entry2hash(entry)		# Hash of the original entry
+      @data = {}			# Hash of the parsed entry
+    end
+    attr_accessor :data
+
+    private
+
+    # returns hash of the NCBI style fields (GenBank, KEGG etc.)
+    def entry2hash(entry)
+      hash = Hash.new('')
+
+# this routine originally was
+#
+#     tag = ''
+#     entry.each_line do |line|
+#       next if line =~ /^$/
+#	if line =~ /^\w/
+#	  tag = tag_get(line)
+#	end
+#	hash[tag] += line
+#     end
+#
+# however, this method was very slow because of the storm of malloc calls.
+
+      separator = "\001"
+      fields = entry.gsub(/\n(\w)/, "\n#{separator}\\1").split(separator)
+
+      fields.each do |field|
+	tag = tag_get(field)
+	hash[tag] += field
+      end
+      return hash
+    end
+
+    ## DO NOT USE FOLLOWING METHODS                               ##
+    ## I will clean up (remove?) following methods in next update ##
+
+    ## used in db.rb only
 
     # split fields into Array of the field by the same tag name
     def toptag_array(field)
@@ -224,6 +170,8 @@ module Bio
       return @data[tag]
     end
 
+    ## used in genome.rb
+
     # (3) returns Hash of String of the subtag (SOURCE etc.)
     def field_sub(tag)
       unless @data[tag]
@@ -232,6 +180,8 @@ module Bio
       end
       return @data[tag]
     end
+
+    ## used in genome.rb, genbank.rb
 
     # (2)+(3)returns Array of Hash of String of the multiple fields with subtag
     def field_multi_sub(tag)
@@ -247,47 +197,6 @@ module Bio
       return @data[tag]
     end
 
-  end
-
-
-  class NCBIDB < DB
-
-    def initialize(entry, tagsize)
-      @tagsize = tagsize
-      @orig = entry2hash(entry)			# Hash of the original entry
-      @data = {}				# Hash of the parsed entry
-    end
-
-    private
-
-    # returns hash of the NCBI style fields (GenBank, KEGG etc.)
-    def entry2hash(entry)
-      hash = Hash.new('')
-
-# this routine originally was
-#
-#     tag = ''
-#     entry.each_line do |line|
-#       next if line =~ /^$/
-#	if line =~ /^\w/
-#	  tag = tag_get(line)
-#	end
-#	hash[tag] += line
-#     end
-#
-# however, this method was very slow because of the storm of malloc calls.
-
-      entry.gsub(/\n(\w)/, "\n\n\001\\1").split("\n\001").each do |field|
-
-# next time, try this ... (and make it more readable)
-#
-#     entry.gsub(/\n(\w)/, "\n\001\\1").split("\001").each do |field|
-#
-	tag = tag_get(field)
-	hash[tag] += field
-      end
-      return hash
-    end
 
   end
 
@@ -486,12 +395,168 @@ module Bio
 
 end
 
+
 =begin
 
-== TODO
+= Bio::DB
 
-* independent from @orig, @data
-* clear the structure of toptag_array, subtag_hash, field_sub, field_multi_sub
-* rename id to entry_id or something
+* 'On-demand parsing' and the 'Parsed-data cache'
+
+The flatfile parsers of the Bio::DB sub classes split the original entry
+into a Hash and store the hash in the @orig instance variable.  Further
+parsing is delayed until the method is called which uses the value of the
+@orig hash.  The parsed data is cached in another hash @data separately.
+
+== Class methods
+
+--- Bio::DB.new(entry)
+
+This class method accepts the String of one entire entry and parse it to
+return the parsed database object.
+
+--- Bio::DB.brdb(entry_id)
+
+This class method accepts the ID string of the entry and access to the
+BioRuby-DB to fetch the parsed database object.	     
+
+== Object methods
+
+--- Bio::DB#tags
+--- Bio::DB#exists?(tag)
+--- Bio::DB#get(tag)
+--- Bio::DB#fetch(tag)
+
+== Private/Protected methods
+
+--- Bio::DB#truncate(str)
+--- Bio::DB#tag_get(str)
+--- Bio::DB#tag_cut(str)
+--- Bio::DB#field_fetch(tag)
+
+== For the sub class developpers
+
+Each sub class should define the following constants if appropriate:
+
+  * DELIMITER (RS)
+    * entry separator of the flatfile of the database.
+    * RS (= record separator) is a alias for the DELIMITER in short.
+  * TAGSIZE
+    * the length of the tag field in FORTRAN like format of the flatfile.
+
+        |-- tag field --||-- data field                       -----|
+        ENTRY_ID         A12345
+        DEFINITION       Hoge gene of the Pokemonia pikachuae
+
+Sub classes also should register the abbreviated database name and the class
+name (itself) to the Bio::ID by Bio::ID.register('hoge', Bio::Hoge) method.
+
+== Template of the sub class
+
+  module Bio
+
+    class Hoge < DB
+
+      DELIMITER	= RS = "\n//\n"
+      TAGSIZE	= 12		# You can omit this line if not needed
+
+      Bio::ID.register('hoge', Bio::Hoge)
+
+      def initialize(entry)
+      end
+
+      def entry_id
+      end
+
+    end
+
+  end
+
+== Recommended method names for sub classes
+
+In general, the method name should be in the singular form when returns
+a Object (including the case when the Object is a String), and should be
+the plural form when returns same Objects in Array.  It depends on the
+database classes that which form of the method name can be use.
+
+For example, GenBank has several REFERENCE lines in one entry, so define
+Bio::GenBank#references and this method should return an Array of the
+Reference objects.  On the other hand, MEDLINE has one REFERENCE information
+per one entry, so define Bio::MEDLINE#reference method and this should
+return a Reference object.
+
+The method name in sub classes should be one of the following if appropriate:
+
+--- entry_id	-> String
+
+The entry identifier.
+
+--- definition	-> String
+
+The description of the entry.
+
+--- reference	-> Bio::Reference
+--- references	-> Array of Bio::Reference
+
+The reference field(s) of the entry.
+
+--- dblink	-> Bio::ID
+--- dblinks	-> Array of Bio::ID
+
+The link(s) to the other database entry.
+
+--- naseq	-> Bio::Sequence::NA
+
+The DNA/RNA sequence of the entry.
+
+--- nalen	-> Integer
+
+The length of the DNA/RNA sequence of the entry.
+
+--- aaseq	-> Bio::Sequence::AA
+
+The amino acid sequence of the entry.
+
+--- aalen	-> Integer
+
+The length of the amino acid sequence of the entry.
+
+--- position	-> String
+
+The position of the sequence in the entry or in the genome (depends on the
+database).  Should we return Bio::Locations(position) here (or define
+locations method for this purpose)?
+
+--- division	-> String
+
+The sub division name of the database.
+
+Example:
+  * EST, VRL etc. for GenBank
+  * PATTERN, RULE etc. for PROSITE
+
+--- date	-> String
+
+The date of the entry.  Should we use Date (by ParseDate) instead of String?
+
+--- gene	-> String
+--- genes	-> Array of String
+
+The name(s) of the gene.  To define gene as genes[0] is a idea.
+
+--- organism	-> String
+
+The name of the organism.
+
+--- keggorg	-> String
+
+The ((<KEGG|URL:http://www.genome.ad.jp/kegg/>)) organism code in 3 letters.
+
+--- taxonomy	-> String
+
+Should we define Bio::Taxonomy class? (bio/taxonomy.rb)
+
+= Bio::NCBIDB
+= Bio::KEGGDB
+= Bio::EMBLDB
 
 =end
