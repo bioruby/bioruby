@@ -13,12 +13,13 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: sequence.rb,v 0.5 2001/06/21 06:07:27 katayama Exp $
+#  $Id: sequence.rb,v 0.6 2001/08/06 19:26:49 katayama Exp $
 #
 
 require 'bio/data/na'
 require 'bio/data/aa'
 require 'bio/data/codontable'
+require 'bio/location'
 
 # Nucleic/Amino Acid sequence
 
@@ -46,6 +47,20 @@ class NAseq < Sequence
       super.downcase!
       super.tr!('u', 't')
     end
+  end
+
+  def splicing(position)	# see Locations class
+    mRNA = NAseq.new('')
+    Locations.new(position).each do |location|
+      if location.sequence
+	mRNA << location.sequence
+      else
+	exon = subseq(location.from,location.to)
+	exon = exon.complement if location.strand < 0
+	mRNA << exon
+      end
+    end
+    mRNA
   end
 
   def subseq(s = 1, e = self.length)
