@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.3 2003/06/27 02:16:56 n Exp $
+#  $Id: report.rb,v 1.4 2003/08/13 11:04:13 n Exp $
 #
 
 require 'bio/sequence'
@@ -123,7 +123,7 @@ module Bio
       class Report
 
 	BOUNDARY  = '-' * 75
-	DELIMITER = "\)\n\n#{BOUNDARY}"
+	RS = DELIMITER = "\)\n\n#{BOUNDARY}"
 
 	def initialize(entry_id = nil, scl = nil, definition = nil, seq = nil, 
 		       k = nil, features = {}, prob = {}, pred = nil)
@@ -238,11 +238,13 @@ module Bio
 	  ent = ent.split(/\n\n/).map {|e| e.chomp }
 	  ent.each_with_index {|e, i|
 	    unless /^(\w|-|\>|\t)/ =~ e
-	      ent[i - 1] += e
+	      j = search_j(i, ent)
+	      ent[i - j] += e
 	      ent[i] = nil
 	    end
 	    if /^none/ =~ e    # for psort output bug
-	      ent[i - 1] += e
+	      j = search_j(i, ent)
+	      ent[i - j] += e
 	      ent[i] = nil
 	    end
 	  }
@@ -270,13 +272,26 @@ module Bio
 	end
 
 
+	def search_j(i, ent)
+	  j = 1
+	  1.upto(ent.size) {|x|
+	    if ent[i - x]
+	      j = x
+	      break
+	    end
+	  }
+	  j
+	end
+	private :search_j
+
+
 	# divide entry body
 	def self.divent(ent)
 	  boundary = ent.index(BOUNDARY)
 	  return ent[0..(boundary - 1)], ent[(boundary + 2)..ent.length]
 	end
 
-	#
+
 	def set_features(fary)
 	  fary.each {|fent|
 	    key = fent.split(":( |\n)")[0].strip
@@ -358,7 +373,13 @@ output format.
 
 --- Bio::PSORT::PSORT2::Report.new
 --- Bio::PSORT::PSORT2::Report#entry_id
+
+      
+
 --- Bio::PSORT::PSORT2::Report#scl
+
+      
+
 --- Bio::PSORT::PSORT2::Report#definition
 --- Bio::PSORT::PSORT2::Report#seq
 --- Bio::PSORT::PSORT2::Report#features
