@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: db.rb,v 0.3 2001/08/21 10:59:31 katayama Exp $
+#  $Id: db.rb,v 0.4 2001/08/21 12:40:46 katayama Exp $
 #
 
 require 'bio/sequence'
@@ -235,13 +235,9 @@ class NCBIDB < DB
   # returns hash of the NCBI style fields (GenBank, KEGG etc.)
   def entry2hash(entry)
     hash = Hash.new('')
-    tag = ''
-    entry.each_line do |line|
-      next if line =~ /^$/			# work around for gb:AARPOB2
-      if line =~ /^\w/
-	tag = tag_get(line)
-      end
-      hash[tag] += line
+    entry.gsub(/\n(\w)/, "\n\n\001\\1").split("\n\001").each do |field|
+      tag = tag_get(field)
+      hash[tag] += field
     end
     return hash
   end
