@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: registry.rb,v 1.1 2002/03/04 07:44:50 katayama Exp $
+#  $Id: registry.rb,v 1.2 2002/03/04 08:17:27 katayama Exp $
 #
 
 require 'net/http'
@@ -33,7 +33,8 @@ module Bio
   class Registry
 
     def initialize(file = nil)
-      @registry = Array.new
+      @registry = Hash.new
+#     @registry = Array.new
 
       read_local(file) if file
       read_local("#{ENV['HOME']}/.bioinformatics/seqdatabase.ini")
@@ -42,31 +43,25 @@ module Bio
       read_remote if @registry.empty?
     end
 
-    def get_database(dbname)
-      @registry.each do |db|
-	if db.database == dbname
-	  case db.protocol
-	  when 'biofetch'
-	    return serv_biofetch(db)
-	  when 'biosql'
-	    return serv_biosql(db)
-	  when 'bsane-corba'
-	  when 'index-berkeleydb'
-	  when 'index-flat'
-	  when 'xembl'
-	  end
+    def get_database(db)
+    end
+
+    def query(db, tag)
+      self.new unless @registry
+      if @registry.is_a? Hash
+	if @registry[db].is_a? Hash
+	  @registry[db][tag]
 	end
       end
     end
-    alias db get_database
 
-    def query(dbname)
-      @registry.each do |db|
-	return db if db.database == dbname
-      end
+    def protocol(db)
+      @registry[db]['protocol']
     end
 
-    private
+    def location(db)
+      @registry[db]['location']
+    end
 
     def read_local(file)
       if File.readable?(file)
@@ -82,59 +77,23 @@ module Bio
       end
     end
 
+    private
+
     def parse(stanza)
+      db = ''
       stanza.each_line do |line|
 	case line
 	when /^\[(.*)\]/
-	  db = Bio::Registry::DB.new($1)
-	  @registry.push(db)
+	  db = $1
+	  @registry[db] = Hash.new unless @registry[db]
 	when /=/
 	  tag, value = line.chomp.split(/\s*=\s*/)
-	  @registry.last[tag] = value
+	  @registry[db][tag] = value unless @registry[db][tag]
 	end
       end
     end
 
-    def serv_biofetch(db)
-      serv = Bio::Fetch.new(db.location)
-      serv.database = db.biodbname
-      return serv
-    end
-
-    def serv_biosql(db)
-      case db.driver
-      when /mysql/i
-	driver = 'Mysql'
-      when /pg|postgres/i
-	driver = 'Pg'
-      end
-
-      dbi = [ "dbi", driver, db.dbname, db.location ].compact.join(':')
-      dbi += ';port=' + db.port if db.port
-      serv = Bio::SQL.new(dbi, db.user, db.pass)
-
-#     db.biodbname
-
-      return serv
-    end
-
-
     class DB
-
-      def initialize(dbname)
-	@database = dbname
-	@property = Hash.new
-      end
-      attr_reader :database
-
-      def method_missing(meth_id)
-	@property[meth_id.id2name]
-      end
-
-      def []=(tag, value)
-	@property[tag] = value
-      end
-
     end
 
   end
@@ -147,24 +106,15 @@ if __FILE__ == $0
 
   require 'pp'
 
-  if ARGV[0]
-    reg = Bio::Registry.new(ARGV[0])	# Usually, you don't need to pass ARGV.
-  else
-    reg = Bio::Registry.new
-  end
-
+  reg = Bio::Registry.new(ARGV[0])	# Usually, you don't need to pass ARGV.
   pp reg
 
-  pp reg.query('embl_biosql')
+  pp reg.protocol('embl_biosql')
+  pp reg.location('embl_biosql')
 
-  serv = reg.get_database('embl_biosql')
-  puts serv.get_by_id('AB000098')
-
-#  serv = reg.get_database('embl_postgres')
-#  puts serv.get_by_id('AB000098')
-
-  serv = reg.get_database('swissprot_biofetch')
-  puts serv.get_by_id('CYC_BOVIN')
+  pp reg.query('embl_biosql', 'biodbname')
+  pp reg.query('embl_biosql', 'biodbname_')	# nil
+  pp reg.query('embl_biosql_', 'biodbname_')	# nil
 
 end
 
@@ -175,25 +125,14 @@ end
 
 --- Bio::Registry.new(file = nil)
 
---- Bio::Registry#get_database(dbname), db(dbname)
+--- Bio::Registry#query
+--- Bio::Registry#db, get_database
 
-      Returns dababase handle (i.e. Bio::SQL, Bio::Fetch etc.) and they should
-      have get_by_id method.
-
---- Bio::Registry#query(dbname)
-
-      Returns a Registry::DB object corresponding to the first dbname entry
-      in the registry records.
 
 == Bio::Registry::DB
 
---- Bio::Registry::DB.new(dbname)
-
---- Bio::Registry::DB#database
-
-== SEE ALSO
-
-  http://www.open-bio.org/registry/seqdatabase.ini
+--- Bio::Registry#protocol(db)
+--- Bio::Registry#location(db)
 
 =end
 
