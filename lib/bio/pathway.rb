@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.22 2001/11/17 06:55:24 katayama Exp $
+#  $Id: pathway.rb,v 1.23 2001/11/18 13:41:18 katayama Exp $
 #
 
 require 'bio/matrix'
@@ -97,6 +97,14 @@ module Bio
       @graph[rel.to][rel.from] = rel.relation if @undirected
     end
 
+    def delete(rel)
+      @relations.delete_if do |x|
+	x === rel
+      end
+      @graph[rel.from].delete(rel.to)
+      @graph[rel.to].delete(rel.from) if @undirected
+    end
+
     def nodes
       @graph.keys.length
     end
@@ -157,7 +165,7 @@ module Bio
 
 
     # pretty printer of the adjacency matrix (format depends on Matrix#dump)
-    def matrix_dump(*arg)
+    def dump_matrix(*arg)
       matrix = self.to_matrix(*arg)
       sorted = @index.sort {|a,b| a[1] <=> b[1]}
       index  = "# " + sorted.collect{|x| x[0]}.join(", ")
@@ -165,7 +173,7 @@ module Bio
     end
 
     # pretty printer of the adjacency list
-    def list_dump
+    def dump_list
       list = ""
       @graph.each do |from, hash|
 	list << "#{from} => "
@@ -473,10 +481,14 @@ module Bio
     end
 
     def ===(rel)
-      if self.edge == rel.edge and
-	 self.node[0] == rel.node[1] and
-	 self.node[1] == rel.node[0]
-	return true
+      if self.edge == rel.edge
+	if self.node[0] == rel.node[0] and self.node[1] == rel.node[1]
+	  return true
+	elsif self.node[0] == rel.node[1] and self.node[1] == rel.node[0]
+	  return true
+	else
+	  return false
+	end
       else
 	return false
       end
@@ -484,7 +496,7 @@ module Bio
 
     def <=>(rel)
       unless self.edge.kind_of? Comparable
-	raise "[Error] edge is not comparable"
+	raise "[Error] edges are not comparable"
       end
       if self.edge > rel.edge
         return 1
@@ -507,8 +519,10 @@ if __FILE__ == $0
   r1 = Bio::Relation.new('a', 'b', 1)
   r2 = Bio::Relation.new('b', 'a', 1)
   r3 = Bio::Relation.new('b', 'a', 2)
+  r4 = Bio::Relation.new('a', 'b', 1)
   p r1 === r2
   p r1 === r3
+  p r1 === r4
 # p [ r1, r2, r3 ].uniq
 
   # Sample Graph :
@@ -555,15 +569,15 @@ if __FILE__ == $0
   puts "--- Test to_matrix method"
   p graph.to_matrix
 
-  puts "--- Test matrix_dump method"
-  puts graph.matrix_dump(0)
+  puts "--- Test dump_matrix method"
+  puts graph.dump_matrix(0)
 
-  puts "--- Test list_dump method"
-  puts graph.list_dump
+  puts "--- Test dump_list method"
+  puts graph.dump_list
 
   puts "--- Labeling some nodes"
-  list = { 'q' => "L1", 's' => "L2", 'v' => "L3", 'w' => "L4" }
-  graph.label = list
+  hash = { 'q' => "L1", 's' => "L2", 'v' => "L3", 'w' => "L4" }
+  graph.label = hash
   p graph
 
   puts "--- Extract subgraph by label"
@@ -635,71 +649,246 @@ if __FILE__ == $0
 
 end
 
+
 =begin
 
 = Bio::Pathway
 
+Bio::Pathway is a general graph object initially constructed by the list of
+the ((<Bio::Relation>)) objects.  The basic concept of the Bio::Pathway object
+is to store the graph as an adjacency list (in the instance variable @graph),
+and converting the list into the adjacency matrix by calling to_matrix method
+on demand.  However, in some cases, it is convenient to have the original list
+of the ((<Bio::Relation>))s, Bio::Pathway object also stores the list (as the
+instance variable @relations) redundantly.
+
+Note: you can clear the @relations list by calling clear_relations! method to
+reduce the memory usage, and the content of the @relations can be re-generated
+from the @graph by to_relations method.
+
 --- Bio::Pathway#new(list, undirected = nil)
 
+      Generate Bio::Pathway object from the list of Bio::Relation objects.
+      If the second argument is assigned, undirected graph is generated.
+
+        r1 = Bio::Relation.new('a', 'b', 1)
+        r2 = Bio::Relation.new('a', 'c', 5)
+        r3 = Bio::Relation.new('b', 'c', 3)
+        list = [ r1, r2, r3 ]
+        g = Bio::Pathway.new(list, 'undirected')
+
 --- Bio::Pathway#relations
+
+      Read-only accesser for the internal list of the Bio::Relation objects
+      '@relations'.
+
 --- Bio::Pathway#graph
+
+      Read-only accesser for the adjacency list of the graph.
+
 --- Bio::Pathway#index
 
+      Read-only accesser for the row/column index (@index) of the adjacency
+      matrix.  Contents of the hash @index is created by calling to_matrix
+      method.
+
 --- Bio::Pathway#label
---- Bio::Pathway#label=(hash)
+
+      Accesser for the hash of the label assigned to the each node.  You can
+      label some of the nodes in the graph by passing a hash to the label
+      and select subgraphs which contain labeled nodes only by subgraph method.
+
+        hash = { 1 => 'red', 2 => 'green', 5 => 'black' }
+        g.label = hash
+        g.label
+        g.subgraph	# => new graph consists of the node 1, 2, 5 only
 
 --- Bio::Pathway#directed?
 --- Bio::Pathway#undirected?
+
+        Returns true or false respond to the internal state of the graph.
+
 --- Bio::Pathway#directed
 --- Bio::Pathway#undirected
+
+        Changes the internal state of the graph between 'directed' and
+        'undirected' and re-generate adjacency list.  The undirected graph
+        can be converted to directed graph, however, the edge between two
+        nodes will be simply doubled to both ends.
+        Note that these method can not be used without the list of the
+        Bio::Relation objects (internally stored in @relations variable).
+        Thus if you already called clear_relations! method, call
+        to_relations first.
 
 --- Bio::Pathway#clear_relations!
 --- Bio::Pathway#to_relations
 
+        Clear @relations array and re-generate @relations from @graph.
+        Useful when you want to reduce the memory usage of the object.
+
 --- Bio::Pathway#to_list
+
+        Generate the adjcancecy list @graph from @relations (called by
+        initialize and in some other cases when @relations has been changed).
+
 --- Bio::Pathway#append(rel, add_rel = true)
+
+        Add an Bio::Relation object to the @graph and @relations.
+
+--- Bio::Pathway#delete(rel)
+
+        Remove an Bio::Relation from the @graph and @relations.
+
 --- Bio::Pathway#nodes
 --- Bio::Pathway#edges
 
+        Returns the number of the nodes or edges in the graph.
+
 --- Bio::Pathway#to_matrix(default_value = nil, diagonal_value = nil)
 
---- Bio::Pathway#matrix_dump(default_value = nil, diagonal_value = nil)
---- Bio::Pathway#list_dump
+        Returns adjacency list expression of the graph as the Matrix object.
+        If one argument was assigned, matrix will be filled with the value.
+        If two arguments were assigned, the diagonal constituent of the
+        matrix will be filled with the second value besides the above.
+
+--- Bio::Pathway#dump_matrix(default_value = nil, diagonal_value = nil)
+--- Bio::Pathway#dump_list
+
+        These are pretty printer of the graph.  The dump_matrix method
+        accepts the same arguments as to_matrix.  Useful when you want to
+        check the internal state of the adjacency list or the matrix (for
+        the debug etc.) easily.
 
 --- Bio::Pathway#subgraph(list = nil)
+
+        This method select some nodes and returns new Bio::Pathway object
+        consists of selected nodes only.
+        If the list of the nodes (as Array) is assigned as the argument,
+        use the list to select the nodes from the graph.  If no argument
+        is assigned, internal property of the graph @label is used to select
+        the nodes.
+
+           hash = { 'a' => 'secret', 'b' => 'important', 'c' => 'important' }
+           g.label = hash
+           g.subgraph
+
+           list = [ 'a', 'b', 'c' ]
+           g.subrraph(list)
+
 --- Bio::Pathway#common_subgraph(graph)
+
+      Not implemented yet.
+
 --- Bio::Pathway#clique
+
+      Not implemented yet.
+
 --- Bio::Pathway#cliquishness(node)
+
+      Calculates the value of cliquishness around the 'node'.  This value
+      indicates completeness of the edge density among the surrounded nodes.
+
 --- Bio::Pathway#small_world
 
+      Calculates the frequency of the nodes having the same number of edges
+      and returns the value as Hash.
+
 --- Bio::Pathway#breadth_first_search(root)
+
+      Breadth first search solves steps and path to the each node and forms
+      a tree contains all reachable vertices from the root node.
+      The weight of the edges are not considered by this method.
+
 --- Bio::Pathway#bfs(root)
+
+      Alias for breadth_first_search.
+
 --- Bio::Pathway#bfs_shortest_path(node1, node2)
+
+      Calculates the shortest path between two nodes by using
+      breadth_first_search method and returns steps and the path as Array.
+
 --- Bio::Pathway#depth_first_search
+
+      Depth first search yields much information about the structure of a graph
+      and the predecessor subgraph form a forest of trees.
+      The weight of the edges are not considered by this method.
+
 --- Bio::Pathway#dfs
 
+      Alias for depth_first_search.
+
 --- Bio::Pathway#dijkstra(root)
+
+      Dijkstra method solves the sortest path problem in the weighted graph.
+
 --- Bio::Pathway#bellman_ford(root)
+
+      Bellman-Ford method solves the single-source shortest-paths problem
+      in the graph in which the edge weights can be negative.
+
 --- Bio::Pathway#floyd_warshall
+
+      Floyd-Wardshall alogrithm solves the all-pairs shortest-paths problem
+      on a directed graph G = (V, E).
+
 --- Bio::Pathway#floyd
+
+      Alias for floyd_warshall.
+
 --- Bio::Pathway#kruskal
 
+      Kruskal method calculates the minimam spaninng trees.
 
 --- Bio::Pathway#initialize_single_source(root)
 
+      Private method used to initialize the distance by 'Infinity' and the
+      path to the parent node by 'nil'.
+
+
 = Bio::Relation
+
+Bio::Relation is a simple object storing two nodes and the relation of them.
+The nodes and the edge (relation) can be any Ruby object.  You can also
+compare Bio::Relation objects if the edges have Comparable property.
 
 --- Bio::Relation#new(node1, node2, edge)
 
+      Create new binary relation object consists of the two object 'node1'
+      and 'node2' with the 'edge' object as the relation of them.
+
 --- Bio::Relation#node
+
+      Accesser for the @node.
+
 --- Bio::Relation#edge
 
+      Accesser for the @edge.
+
 --- Bio::Relation#from
+
+      Returns one node.
+
 --- Bio::Relation#to
+
+      Returns another node.
+
 --- Bio::Relation#relation
 
+      Returns the edge.
+
 --- Bio::Relation#===(rel)
+
+      Compare with another Bio::Relation object whether havind same edges
+      and same nodes.  The == method compares Bio::Relation object's id,
+      however this case equality === method compares the internal property
+      of the Bio::Relation object.
+
 --- Bio::Relation#<=>(rel)
+
+      Used by the each method to compare with another Bio::Relation object.
+      This method is only usable when the edge objects have the property of
+      the module Comparable.
 
 =end
 
