@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.16 2003/01/27 19:46:34 k Exp $
+#  $Id: blast.rb,v 1.17 2003/02/03 14:28:19 k Exp $
 #
 
 require 'net/http'
@@ -122,6 +122,7 @@ module Bio
       filter = @filter ? @filter : 'T'
 
       form = {
+	'style'		=> 'raw',
 	'prog'		=> @program,
 	'dbname'	=> @db,
 	'sequence'	=> CGI.escape(query),
@@ -143,10 +144,8 @@ module Bio
 
       begin
 	result, = Net::HTTP.new(host).post(path, data.join('&'))
-	if %r|<pre>.*?</pre>.*<pre>\s*(.*)</pre>|mi.match(result.body)
-	  @output = $1
-	  report = parse_result(@output)
-	end
+	@output = result.body
+	report = parse_result(@output)
       end
 
       return report

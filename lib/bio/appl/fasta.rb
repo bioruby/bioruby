@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.13 2003/01/27 19:55:34 k Exp $
+#  $Id: fasta.rb,v 1.14 2003/02/03 14:28:19 k Exp $
 #
 
 require 'net/http'
@@ -108,6 +108,7 @@ module Bio
       path = "/sit-bin/nph-fasta"
 
       form = {
+	'style'		=> 'raw',
 	'prog'		=> @program,
 	'dbname'	=> @db,
 	'sequence'	=> CGI.escape(query),
@@ -125,21 +126,9 @@ module Bio
       report = nil
 
       begin
-	response, result = Net::HTTP.new(host).post(path, data.join('&'))
-	result_path = nil
-	result.each do |line|
-	  if %r|href="http://#{host}(.*?)".*Show all result|i.match(line)
-	    result_path = $1
-	    break
-	  end
-	end
-	if result_path
-	  response, result = Net::HTTP.new(host).get(result_path)
-	  if %r|<pre>.*?</pre>.*<pre>\s*(.*)</pre>|mi.match(result)
-	    @output = $1
-	    report = parse_result(@output)
-	  end
-	end
+	result, = Net::HTTP.new(host).post(path, data.join('&'))
+	@output = result.body
+	report = parse_result(@output)
       end
 
       return report
