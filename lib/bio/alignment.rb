@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: alignment.rb,v 1.2 2003/07/25 18:15:40 ng Exp $
+#  $Id: alignment.rb,v 1.3 2003/07/28 10:53:14 ng Exp $
 #
 
 require 'bio/sequence'
@@ -80,6 +80,17 @@ module Bio
     ### initializing methods
     #
 
+    def self.readfiles(*files)
+      require 'bio/io/flatfile'
+      aln = self.new
+      files.each do |fn|
+	Bio::FlatFile.open(nil, fn) do |ff|
+	  aln.add_sequences(ff)
+	end
+      end
+      aln
+    end
+
     def self.new2(*arg)
       self.new(arg)
     end
@@ -87,6 +98,10 @@ module Bio
     def initialize(seqs = [])
       @seqs = {}
       @keys = []
+      self.add_sequences(seqs)
+    end
+
+    def add_sequences(seqs)
       if block_given? then
 	seqs.each do |x|
 	  s, key = yield x
@@ -110,7 +125,7 @@ module Bio
 	  end
 	end
       end
-      true
+      self
     end
 
     #
@@ -134,8 +149,10 @@ module Bio
 
     def __store__(key, seq)
       #(Hash-like)
-      @keys << key
-      @seqs[key] = seq
+      h = { key => seq }
+      @keys << h.keys[0]
+      @seqs.update(h)
+      seq
     end
 
     def store(key, seq)
@@ -157,6 +174,18 @@ module Bio
       end
       self.__store__(key, seq)
       key
+    end
+
+    def rehash
+      @seqs.rehash
+      oldkeys = @keys
+      tmpkeys = @seqs.keys
+      @keys.collect! do |k|
+	tmpkeys.delete(k)
+      end
+      @keys.compact!
+      @keys.concat(tmpkeys)
+      self
     end
 
     def unshift(key, seq)
@@ -482,11 +511,30 @@ module Bio
       end
     end
 
-    def consensus_string(threshold = 1, mchar = self.missing_char)
+    def consensus_string(threshold = 1, opt = {})
       #(BioPerl) AlignI::consensus_string
       # 0 <= threshold <= 1
+      mchar = (opt[:missing_char] or self.missing_char)
+      gap_mode = opt[:gap_mode]
+      ### gap_mode : 0(default) --- gaps are regarded as normal characters
+      ###            1          --- a site within gaps is regarded as a gap
+      ###           -1          --- gaps are ignored
+      ###                           (eliminated from threshold caliculation)
       cseq = ''
       self.each_site do |a|
+	case gap_mode
+	when 1
+	  if gap_regexp =~ a.join('') then
+	    cseq << gap_char
+	    next
+	  end
+	when -1
+	  a = a.join('').gsub(gap_regexp, '').split('')
+	  if a.size == 0 then
+	    cseq << gap_char
+	    next
+	  end
+	end
 	h = Hash.new(0)
 	a.each do |x|
 	  h[x] += 1
@@ -506,6 +554,54 @@ module Bio
       cseq
     end
     alias :consensus :consensus_string
+
+    IUPAC_NUC = [
+      %w( t           u ),
+      %w( m   a c       ),
+      %w( r   a   g     ),
+      %w( w   a     t u ),
+      %w( s     c g     ),
+      %w( y     c   t u ),
+      %w( k       g t u ),
+      %w( v   a c g     m r   s     ),
+      %w( h   a c   t u m   w   y   ),
+      %w( d   a   g t u   r w     k ),
+      %w( b     c g t u       s y k ),
+      %w( n   a c g t u m r w s y k v h d b )
+    ]
+
+    def consensus_iupac(opt = {})
+      #(BioPerl) AlignI::consensus_iupac like method
+      mchar = (opt[:missing_char] or self.missing_char)
+      gap_mode = opt[:gap_mode]
+      ### gap_mode : 0(default) --- gaps are regarded as normal characters
+      ###            1          --- a site within gaps is regarded as a gap
+      ###           -1          --- gaps are ignored
+      cstr = ''
+      self.each_site do |a|
+	a2 = a.collect { |c| c.downcase }.sort.uniq
+	if a2.size == 1 then
+	  cstr << a[0]
+	  next
+	end
+	a3 = a2.join('')
+	if gap_regexp =~ a3 then
+	  case gap_mode
+	  when 1
+	    cstr << gap_char
+	    next
+	  when -1
+	    a2 = a3.gsub(gap_regexp, '').split('')
+	  end
+	end
+	if r = subsetof?(IUPAC_NUC, a2) then
+	  cstr << r[0]
+	else
+	  cstr << mchar
+	end
+      end
+      cstr
+    end
 
     def convert_match(match_char = '.')
       #(BioPerl) AlignI::match like method
@@ -558,6 +654,22 @@ module Bio
     Weak_Conservation_Groups = %w(CSA ATV SAG STNK STPA SGND SNDEQK
       NDEQHK NEQHRK FVLIM HFY).collect { |x| x.split('').sort }
 
+    def subsetof?(aryary, ary2)
+      flag = nil
+      aryary.each do |x|
+	ary2.each do |c|
+	  flag = x.include?(c)
+	  break unless flag
+	end
+	if flag then
+	  flag = x
+	  break
+	end
+      end
+      flag
+    end
+    private :subsetof?
+
     def match_line(hash = {})
       #(BioPerl) AlignI::match_line like method
       #
@@ -586,45 +698,28 @@ module Bio
       mstr = ''
       if amino then
 	self.each_site do |a|
-	  a2 = a.sort.uniq
+	  a2 = a.sort.uniq.collect { |c| c.upcase }
 	  a3 = a2.join('')
 	  mstr <<
-	    (if a2.size == 1 and !(gap_regexp =~ a3)
-	       mlc
-	     elsif gap_regexp =~ a3
+	    (if gap_regexp =~ a3 then
 	       mmc
+	     elsif a2.size == 1 then
+	       mlc
+	     elsif subsetof?(Strong_Conservation_Groups, a2) then
+	       smc
+	     elsif subsetof?(Weak_Conservation_Groups, a2) then
+	       wmc
 	     else
-	       flag = nil
-	       Strong_Conservation_Groups.each do |x|
-		 a2.each do |c|
-		   flag = x.include?(c)
-		   break unless flag
-		 end
-		 break if flag
-	       end
-	       if flag then
-		 smc
-	       else
-		 Weak_Conservation_Groups.each do |x|
-		   a2.each do |c|
-		     flag = x.include?(c)
-		     break unless flag
-		   end
-		   break if flag
-		 end
-		 if flag then
-		   wmc
-		 else
-		   mmc
-		 end
-	       end
+	       mmc
 	     end)
 	end
       else
 	self.each_site do |a|
-	  a2 = a.sort.uniq
+	  a2 = a.sort.uniq.collect { |c| c.upcase }
 	  mstr <<
-	    (if a2.size == 1 and !(gap_regexp =~ a2.join('')) then
+	    (if gap_regexp =~ a2.join('') then
+	       mmc
+	     elsif a2.size == 1 then
 	       mlc
 	     else
 	       mmc
@@ -973,9 +1068,97 @@ end #module Bio
 
 = Bio::Alignment
 
-  Bio::Alignment
+  Bio::Alignment is a multiple alignment container class.
 
--- Bio::Alignment.new()
+-- Bio::Alignment.new(seqs)
+-- Bio::Alignment.new2(seq, ...)
+-- Bio::Alignment.readfiles(filename, ...)
+
+- Hash-like action
+
+-- Bio::Alignment#==(x)
+-- Bio::Alignment#[](*arg)
+-- Bio::Alignment#to_hash
+-- Bio::Alignment#rehash
+-- Bio::Alignment#store(key, seq)
+-- Bio::Alignment#keys
+-- Bio::Alignment#values
+-- Bio::Alignment#shift
+-- Bio::Alignment#delete(key)
+-- Bio::Alignment#size
+-- Bio::Alignment#has_key?(key)
+-- Bio::Alignment#each_pair
+-- Bio::Alignment#merge
+-- Bio::Alignment#merge!
+
+-- Bio::Alignment#unshift(key, seq)
+
+- Array-like action
+
+-- Bio::Alignment#<<(seq)
+-- Bio::Alignment#each
+-- Bio::Alignment#collect!
+-- Bio::Alignment#index(seq)
+-- Bio::Alignment#select { |x| ...  }
+
+-- Bio::Alignment#collect
+-- Bio::Alignment#to_a
+
+- BioPerl-oriented methods
+
+-- Bio::Alignment#gap_char
+-- Bio::Alignment#missing_char
+-- Bio::Alignment#add_seq(seq[, key])
+-- Bio::Alignment#remove_seq(seq)
+-- Bio::Alignment#purge(*arg)
+-- Bio::Alignment#select(*arg)
+-- Bio::Alignment#slice(*arg)
+-- Bio::Alignment#consensus_string(threshold = 1, options...)
+-- Bio::Alignment#consensus(threshold = 1, options...)
+-- Bio::Alignment#consensus_iupac(options...)
+-- Bio::Alignment#convert_match(match_char = '.')
+-- Bio::Alignment#convert_unmatch(match_char = '.')
+-- Bio::Alignment#match_line(options...)
+
+- String-oriented methods
+
+-- Bio::Alignment#rstrip!
+-- Bio::Alignment#rstrip
+-- Bio::Alignment#lstrip!
+-- Bio::Alignment#lstrip
+-- Bio::Alignment#strip!
+-- Bio::Alignment#strip
+
+-- Bio::Alignment#remove_gap!
+-- Bio::Alignment#remove_gap
+-- Bio::Alignment#seq_length
+-- Bio::Alignment#normalize
+
+- Original methods
+
+-- Bio::Alignment#add_sequences(seqs)
+-- Bio::Alignment#seqclass
+-- Bio::Alignment#gap_regexp
+-- Bio::Alignment#order(n)
+-- Bio::Alignment#isolate(*arg)
+-- Bio::Alignment#collect_align
+-- Bio::Alignment#window(*arg)
+-- Bio::Alignment#each_site
+-- Bio::Alignment#each_window(window_size, step = 1)
+-- Bio::Alignment#concatinate(aln)
+
+- Perform multiple alignment
+
+-- Bio::Alignment#do_align(factory)
+
+- Data format conversion
+
+-- Bio::Alignment#to_fasta_array(*arg)
+-- Bio::Alignment#to_fastaformat_array(*arg)
+-- Bio::Alignment#to_fasta(width, flag_avoid_same_name = nil)
+-- Bio::Alignment#to_clustal(match_line = nil, options...)
+
+
 
 -- Bio::Alignment#add_seq(seq[, key])
 
