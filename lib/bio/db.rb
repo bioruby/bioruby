@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: db.rb,v 0.20 2002/08/19 01:46:30 k Exp $
+#  $Id: db.rb,v 0.21 2002/08/19 02:16:43 k Exp $
 #
 
 require 'bio/sequence'
@@ -71,6 +71,13 @@ module Bio
       end
       return @data[tag]
     end
+
+    def lines_fetch(tag) 
+      unless @data[tag]  
+        @data[tag] = get(tag).split("\n").map{ |l| tag_cut(l) }  
+      end  
+      @data[tag]  
+    end 
 
   end
 
@@ -204,8 +211,13 @@ another hash, @data, separately.
 
 --- Bio::DB#field_fetch(tag)
 
-      Returns the content of the field as String like the fetch method.
+      Returns the content of the field as a String like the fetch method.
       Furthermore, field_fetch stores the result in the @data hash.
+
+--- Bio::DB#lines_fetch(tag)
+
+      Returns an Array containing each line of the field without a tag.
+      lines_fetch also stores the result in the @data hash.
 
 == For the sub class developpers
 
