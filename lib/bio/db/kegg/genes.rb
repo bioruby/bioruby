@@ -86,7 +86,7 @@ class GENES
 
   def position
     @data['POSITION'] = fetch('POSITION') unless @data['POSITION']
-    @data['POSITION']
+    @data['POSITION'].gsub(/\s+/, '')
   end
 
   def dblinks(key = nil)
