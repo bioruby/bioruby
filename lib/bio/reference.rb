@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: reference.rb,v 1.9 2002/03/04 07:39:11 katayama Exp $
+#  $Id: reference.rb,v 1.10 2002/07/03 08:50:08 k Exp $
 #
 
 module Bio
@@ -66,7 +66,7 @@ module Bio
     end
 
     def bibitem(item = nil)
-      item  = "PMID#{@pubmed}" unless item
+      item  = "PMID:#{@pubmed}" unless item
       pages = @pages.sub('-', '--')
       return <<-"END".collect {|line| line.strip}.join("\n")
 	\\bibitem{#{item}}
@@ -81,7 +81,7 @@ module Bio
       authors = authors_join(' and ')
       pages   = @pages.sub('-', '--')
       return <<-END
-	@#{section}{PMID#{@pubmed},
+	@#{section}{PMID:#{@pubmed},
 	  author  = {#{authors}},
 	  title   = {#{@title}},
 	  journal = {#{@journal}},
