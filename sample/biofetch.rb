@@ -1,7 +1,6 @@
 #!/usr/local/bin/ruby
 #
-# biofetch.rb : BioFetch interface to GenomeNet/DBGET
-#               (created during BioHackathon, AZ :)
+# biofetch.rb : BioFetch server (interface to GenomeNet/DBGET)
 #
 #   Copyright (C) 2002 KATAYAMA Toshiaki <k@bioruby.org>
 #
@@ -15,7 +14,11 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: biofetch.rb,v 1.5 2002/02/05 20:23:04 katayama Exp $
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#  $Id: biofetch.rb,v 1.6 2002/03/04 08:07:36 katayama Exp $
 #
 
 require 'cgi'
@@ -176,7 +179,7 @@ def print_result_page(cgi)
   when nil
     ;
   else
-    error_3(format,db)
+    error_3(format, db)
   end
 
 
@@ -186,7 +189,11 @@ def print_result_page(cgi)
     begin
       result = Bio::DBGET.bget("#{db} #{query_id} #{format}")
     rescue
-      error_4(query_id,db)
+      error_4(query_id, db)
+    end
+
+    if result =~ /No such entry/
+      error_4(query_id, db)
     end
 
     if result =~ /No such database name in DBTAB/
@@ -219,7 +226,7 @@ def error_2(style)
   print_error_page(str)
 end
 
-def error_3(format,db)
+def error_3(format, db)
   str = "ERROR 3 Format [#{format}] not known for database [#{db}]."
   print_error_page(str)
 end
@@ -244,5 +251,17 @@ begin
     print_result_page(cgi)
   end
 end
+
+
+=begin
+
+This program is created during BioHackathon 2002, Tucson and updated
+in Cape Town :)
+
+You can not run this CGI program without having internally accessible
+DBGET server.
+
+=end
+
 
 
