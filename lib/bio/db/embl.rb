@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: embl.rb,v 1.2 2001/10/29 16:34:56 nakao Exp $
+#  $Id: embl.rb,v 1.3 2001/10/29 17:04:35 nakao Exp $
 #
 #     ID - identification             (begins each entry; 1 per entry)
 #     AC - accession number           (>=1 per entry)
@@ -103,16 +103,16 @@ class EMBL < EMBLDB
     end
   end
   def entry
-    id('entryname')
+    idline('entryname')
   end
   def molecule
-    id('molecule')
+    idline('molecule')
   end
   def division
-    id('division')
+    idline('division')
   end
   def sequencelength
-    id('sequencelength')
+    idline('sequencelength')
   end
 
   
