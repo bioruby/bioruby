@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aaindex.rb,v 1.7 2001/12/15 03:03:53 katayama Exp $
+#  $Id: aaindex.rb,v 1.8 2002/07/25 22:38:03 k Exp $
 #
 
 require "bio/db"
@@ -58,6 +58,10 @@ module Bio
       field_fetch('J')
     end
 
+    def comment
+      get('*')
+    end
+
   end
 
 
@@ -71,12 +75,48 @@ module Bio
       field_fetch('C')
     end
 
-    def index
-      hash = {}; i = 0
-      aa   = %w( A R N D C Q E G H I L K M F P S T W Y V )
-      field_fetch('I').scan(/[\d\.]+/).each do |value|
-	hash[aa[i]] = value.to_f
-	i += 1
+    def index(type = :float)
+      aa = %w( A R N D C Q E G H I L K M F P S T W Y V )
+      values = field_fetch('I', 1).split(' ')
+
+      if values.size != 20
+	raise "Invalid format in #{entry_id} : #{values.inspect}"
+      end
+
+      if type == :zscore and values.size > 0
+        sum = 0.0
+        values.each do |a|
+          sum += a.to_f
+        end
+        mean = sum / values.size	# / 20
+        var = 0.0
+        values.each do |a|
+          var += (a.to_f - mean) ** 2
+        end
+        sd = Math.sqrt(var)
+p [ 'var', var, 'sd', sd ]
+      end
+
+      if type == :integer
+        figure = 0
+        values.each do |a|
+          figure = [ figure, a[/\..*/].length - 1 ].max
+        end
+      end
+
+      hash = {}
+
+      aa.each_with_index do |a, i|
+	case type
+	when :string
+	  hash[a] = values[i]
+	when :float
+	  hash[a] = values[i].to_f
+	when :zscore
+	  hash[a] = (values[i].to_f - mean) / sd
+	when :integer
+	  hash[a] = (values[i].to_f * 10 ** figure).to_i
+	end
       end
       return hash
     end
@@ -165,6 +205,7 @@ end
 --- Bio::AAindex#author
 --- Bio::AAindex#title
 --- Bio::AAindex#journal
+--- Bio::AAindex#comment
 
 = Bio::AAindex1
 
