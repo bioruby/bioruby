@@ -17,13 +17,13 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.4 2001/11/20 04:15:40 nakao Exp $
+#  $Id: blast.rb,v 1.5 2001/11/20 04:27:11 nakao Exp $
 #
 
 #require 'net/http'
 begin
   require 'xmlparser'
-ensure LoadError
+rescue LoadError
 end
 
 module Bio
@@ -92,7 +92,7 @@ module Bio
 
     ##
     # execute blastall in remote server
-    def remote_blast(query)
+p    def remote_blast(query)
       raise NotImplementError, "Not yet implimented"
 #
 #      http = New::HTTP.new(@server['host'],@server['port'])
