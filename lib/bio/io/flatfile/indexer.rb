@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.16 2003/06/12 16:45:52 ng Exp $ 
+#  $Id: indexer.rb,v 1.17 2003/08/27 17:25:21 ng Exp $ 
 # 
 
 module Bio
@@ -70,6 +70,14 @@ module Bio
 	    MaXMLSequenceParser.new(*arg)
 	  when 'Bio::FANTOM::MaXML::Cluster'
 	    MaXMLClusterParser.new(*arg)
+	  when 'Bio::Blast::Default::Report'
+	    BlastDefaultParser.new(Bio::Blast::Default::Report, *arg)
+	  when 'Bio::Blast::Default::Report_TBlast'
+	    BlastDefaultParser.new(Bio::Blast::Default::Report_TBlast, *arg)
+	  when 'Bio::Blast::WU::Report'
+	    BlastDefaultParser.new(Bio::Blast::WU::Report, *arg)
+	  when 'Bio::Blast::WU::Report_TBlast'
+	    BlastDefaultParser.new(Bio::Blast::WU::Report_TBlast, *arg)
 	  else
 	    raise 'unknown or unsupported format'
 	  end #case dbclass.to_s
@@ -378,6 +386,55 @@ module Bio
 	  end
 	end #class MaXMLSequenceParser
 
+	class BlastDefaultParser < TemplateParser
+	  NAMESTYLE = NameSpaces.new(
+	     NameSpace.new( 'QUERY', Proc.new { |x| x.query_def } ),
+	     NameSpace.new( 'query_id', Proc.new { |x| 
+			     a = Bio::FastaDefline.new(x.query_def.to_s).id_strings
+			     a << x.query_def.to_s.split(/\s+/,2)[0]
+			     a
+			   } ),
+	     NameSpace.new( 'hit', Proc.new { |x|
+			     a = x.hits.collect { |y|
+			       b = Bio::FastaDefline.new(y.definition.to_s).id_strings
+			       b << y.definition
+			       b << y.definition.to_s.split(/\s+/,2)[0]
+			       b
+			     }
+			     a.flatten!
+			     a
+			   } )
+			     )
+	  PRIMARY = 'QUERY'
+	  SECONDARY = [ 'query_id', 'hit' ]
+	  def initialize(klass, pri_name = nil, sec_names = nil)
+	    super()
+	    self.format = 'raw'
+	    self.dbclass = klass
+	    self.set_primary_namespace((pri_name or PRIMARY))
+	    unless sec_names then
+	      sec_names = []
+	      @namestyle.each_value do |x|
+		sec_names << x.name if x.name != self.primary.name
+	      end
+	    end
+	    self.add_secondary_namespaces(*sec_names)
+	  end
+	  def open_flatfile(fileid, file)
+	    super
+	    @flatfile.rewind
+	    @flatfile.dbclass = nil
+	    @flatfile.autodetect
+	    @flatfile.dbclass = self.dbclass unless @flatfile.dbclass
+	    @flatfile.rewind
+	    begin
+	      pos = @flatfile.pos
+	      line = @flatfile.gets
+	    end until (!line or line =~ /^T?BLAST/)
+	    @flatfile.pos = pos
+	  end
+	end #class BlastDefaultReportParser
+
       end #module Parser
 
       def self.makeindexBDB(name, parser, options, *files)
@@ -458,7 +515,7 @@ module Bio
 	require 'tempfile'
 	prog = options['sort_program']
 
-	return false if need_update.size == 0
+	return false if need_update.to_a.size == 0
 
 	DEBUG.print "prepare temporary files...\n"
 	tempbase = "bioflat#{rand(10000)}-"

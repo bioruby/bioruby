@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: index.rb,v 1.8 2003/06/12 16:45:52 ng Exp $ 
+#  $Id: index.rb,v 1.9 2003/08/27 17:25:21 ng Exp $ 
 # 
 
 
@@ -839,7 +839,7 @@ module Bio
 	r = []
 	names.each do |x|
 	  ns = self[x]
-	  raise "undefined namespace #{x}" unless ns
+	  raise "undefined namespace #{x.inspect}" unless ns
 	  r.concat ns.search(key)
 	end
 	r
