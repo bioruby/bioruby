@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: embl.rb,v 1.12 2002/06/25 11:56:14 k Exp $
+#  $Id: embl.rb,v 1.13 2002/07/09 08:35:48 n Exp $
 #
 
 
@@ -102,7 +102,7 @@ module Bio
       unless @data['OS']
 	os = Array.new
 	fetch('OS').split(',').each do |tmp|
-	  if tmp =~ /([A-Z][a-z]+ [a-zA-Z0-9]+)/
+	  if tmp =~ /([A-Z][a-z]+ *[a-zA-Z0-9]+)/
 	    org = $1
 	    tmp =~ /\((.+)\)/ 
 	    os.push({'name' => $1, 'os' => org})
