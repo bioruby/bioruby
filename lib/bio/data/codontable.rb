@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: codontable.rb,v 0.11 2004/06/28 04:30:56 k Exp $
+#  $Id: codontable.rb,v 0.12 2004/08/23 23:51:29 k Exp $
 #
 
 module Bio
@@ -112,7 +112,7 @@ class CodonTable
 
 
   Starts = {
-    1	=> %w(ttg ctg atg),     # %w(ttg ctg atg gtg)? cf. NCBI #SG1 document
+    1	=> %w(ttg ctg atg gtg),		# gtg added (cf. NCBI #SG1 document)
     2	=> %w(att atc ata atg gtg),
     3	=> %w(ata atg),
     4	=> %w(tta ttg ctg att atc ata atg gtg),
@@ -779,7 +779,7 @@ end
 
 Data in this class is converted from the NCBI's genetic codes page.
 
-  * ((<URL:http://www.ncbi.nlm.nih.gov/htbin-post/Taxonomy/wprintgc?mode=t>))
+  * ((<URL:http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi?mode=t>))
 
 --- Bio::CodonTable[num]
 
