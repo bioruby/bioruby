@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: tdiary.rb,v 1.1 2003/03/10 17:29:33 k Exp $
+#  $Id: tdiary.rb,v 1.2 2003/03/10 18:10:41 n Exp $
 #
 
 =begin
@@ -32,7 +32,7 @@ tDiary is an extensible web diary application written in Ruby.
 
 == How to install
 
-Just copy this file under the tDiary's plugin directory.
+Just copy this file under the tDiary's plugin directory as bio.rb.
 
 == Usage
 
@@ -40,11 +40,11 @@ Just copy this file under the tDiary's plugin directory.
 
 Create a link to NCBI Entrez reference database by using PubMed ID.
 See ((<URL:http://www.ncbi.nlm.nih.gov/entrez/query.fcgi>)) for more
-informations.
+information.
 
   * tDiary style
      * <%=pubmed 12345%>
-     * <%=pubmed 12345, hogehoge%>
+     * <%=pubmed 12345, 'hogehoge' %>
   * RD style
      * ((%pubmed 12345%))
      * ((%pubmed 12345, 'hogehoge'%))
@@ -52,12 +52,25 @@ informations.
 --- biofetch
 
 Create a link to the BioFetch detabase entry retrieval system.
-See ((<URL:http://biofetch.bioruby.org/>)) for more informations.
+See ((<URL:http://biofetch.bioruby.org/>)) for more information.
 
   * tDiary style
-    * <%=biofetch genbank, AA2CG%>
+    * <%=biofetch 'genbank', 'AA2CG' %>
   * RD style
     * ((%biofetch 'genbank', 'AA2CG'%))
+
+--- amigo
+
+Create a link to the AmiGO GO term browser by using GO ID.
+See ((<URL:http://www.godatabase.org/cgi-bin/go.cgi>)) for more 
+information.
+
+  * tDiary style
+    * <%=amigo '0003673' %>
+    * <%=amigo '0003673', 'The root of GO' %>
+  * RD style
+    * ((%amigo '0003673' %))
+    * ((%amigo '0003673', 'Hoge' %))
 
 =end
 
@@ -78,5 +91,10 @@ def biofetch(db, entry_id)
   %Q[<a href="#{url}?db=#{db};id=#{entry_id};style=raw">#{db}:#{entry_id}</a>] 
 end
 
-
+def amigo(go_id = '0003673', comment = nil)
+  go_id = go_id.to_s.strip
+  url = "http://www.godatabase.org/cgi-bin/go.cgi?query=#{go_id};view=query;action=query;search_constraint=terms"
+  comment = "AmiGO:#{go_id}" unless comment
+  %Q[<a href="#{url}">#{comment}</a>]
+end
 
