@@ -13,11 +13,11 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: aaindex.rb,v 1.2 2001/08/21 10:49:33 katayama Exp $
+#  $Id: aaindex.rb,v 1.3 2001/09/26 18:49:25 katayama Exp $
 #
 
-require "bio/matrix"
 require "bio/db"
+require "bio/matrix"
 
 class AAindex < NCBIDB
 
@@ -28,43 +28,29 @@ class AAindex < NCBIDB
     super(entry, TAGSIZE)
   end
 
-  # H  entry identifier        (1 per entry)
-  #
-  #H BEGF750101
-  #
-  def h
+  def id
     field_fetch('H')
   end
-  alias id h
 
-  # D  definition of the entry (1 per entry)
-  #
-  #D Conformational parameter of inner helix (Beghin-Dirkx, 1975)
-  #
-  def d
+  def definition
     field_fetch('D')
   end
-  alias def d
 
-  def r
+  def dblinks
     field_fetch('R')
   end
-  alias cross_ref r
 
-  def a
+  def author
     field_fetch('A')
   end
-  alias author a
 
-  def t
+  def title
     field_fetch('T')
   end
-  alias title t
 
-  def j
+  def journal
     field_fetch('J')
   end
-  alias journal j
 
 end
 
@@ -74,53 +60,56 @@ class AAindex1 < AAindex
     super(entry)
   end
 
-#C      Correlate coefficient
-  def c
+  def correlation_coefficient
     field_fetch('C')
   end
 
-#I      index
-  def i
-    index = []
-    org_field = field_fetch('I')
-    /A\/L R\/K N\/M D\/F C\/P Q\/S E\/T G\/W H\/Y I\/V (.+)/ =~ org_field
-    org_index = $1.split(/\s+/)
-    org_index.each do |x|
-      index << x.to_f
+  def index
+    hash = {}; i = 0
+    aa   = %w( A R N D C Q E G H I L K M F P S T W Y V )
+    field_fetch('I').scan(/[\d\.]+/).each do |value|
+      hash[aa[i]] = value.to_f
+      i += 1
     end
-    index
+    return hash
   end
-  alias index i
 
 end
 
 class AAindex2 < AAindex
 
+
   def initialize(entry)
     super(entry)
+    @aa = {}
   end
+  attr_reader :aa
 
   def matrix
-    @ma = []
-    (0 .. 19).each do |i|
-      @ma << []
-      (0 .. 19).each do |j|
-        @ma[i] << nil
-      end
-    end
+
     org_field = field_fetch('I')
     if /Data ordered by .+ where I,J = ARNDCQEGHILKMFPSTWYV (.+)/ =~ org_field
+      ma = Array.new(20, [])
+      i = 0
+      %w( A R N D C Q E G H I L K M F P S T W Y V ).each do |aa|
+	@aa[aa] = i
+	i += 1
+      end
       org_ary = $1.split(/\s+/)
       for i in 0 .. 19 do
         for j in i .. 19 do
           c = i + 1
           r = j + 1
-          @ma[i][j] = org_ary[c+r*(r-1)/2 - 1].to_f
-          @ma[j][i] = @ma[i][j]
+          ma[i][j] = org_ary[c+r*(r-1)/2 - 1].to_f
+          ma[j][i] = ma[i][j]
         end
       end
-      @m = BioMatrix[*@ma]
+      BioMatrix[*ma]
+    elsif /Data ordered by = -ARNDCQEGHILKMFPSTWYV/ =~ org_field
+      raise NotImplementedError
+    elsif /Row data ordered by = ACDEFGHIKLMNPQRSTVWYJ-/ =~ org_field
+      raise NotImplementedError
     end
-    @m
   end
+
 end
