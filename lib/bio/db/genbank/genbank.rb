@@ -13,11 +13,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: genbank.rb,v 0.15 2001/07/05 05:24:07 katayama Exp $
+#  $Id: genbank.rb,v 0.16 2001/08/06 19:25:36 katayama Exp $
 #
 
 require 'bio/db'
-require 'bio/db/gblocation'
 
 class GenBank < NCBIDB
 
@@ -330,8 +329,12 @@ class GenBank < NCBIDB
       if org[/\S+;/]
 	organism = $`
 	taxonomy = $& + $'
+      elsif org[/\S+\./]	# NC_001741 etc.
+	organism = $`
+	taxonomy = $& + $'
       else
-	organism = taxonomy = ''
+	organism = org
+	taxonomy = ''
       end
       @data['SOURCE'] = {
 	'common_name'	=> truncate(tag_cut(name)),
