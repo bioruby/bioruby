@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: xmlparser.rb,v 1.5 2002/06/25 10:42:39 n Exp $
+#  $Id: xmlparser.rb,v 1.6 2002/06/25 11:26:05 k Exp $
 #
 
 begin
@@ -37,7 +37,7 @@ module Bio
       class XMLRetry < Exception; end
 
       attr_accessor :program, :version, :reference, :db, :query_id, 
-	:query_def, :query_len, :parameters, :statistics, :iterations
+	:query_def, :query_len, :parameters, :iterations
 
       def initialize (xml)
 	@program   = ''
@@ -139,7 +139,10 @@ module Bio
 	end
       end
       alias :each :each_hit
-      alias :hits :each_hit
+
+      def hits
+	@iterations.last.hits
+      end
 
       def statistics
 	@iterations.last.statistics
@@ -396,9 +399,14 @@ if __FILE__ == $0
   print "  rep.parameters        #=> "; p rep.parameters
   puts
 
-  print "# === Statistics\n"
+  print "# === Statistics (last iteration's)\n"
   puts
   print "  rep.statistics        #=> "; p rep.statistics
+  puts
+
+  print "# === Message (last iteration's)\n"
+  puts
+  print "  rep.message           #=> "; p rep.message
   puts
 
   print "# === Iterations\n"
@@ -412,6 +420,8 @@ if __FILE__ == $0
   puts
 
   print "    itr.num             #=> "; p itr.num
+  print "    itr.statistics      #=> "; p itr.statistics
+  print "    itr.message         #=> "; p itr.message
   print "    itr.hits.size       #=> "; p itr.hits.size
   puts
 
@@ -511,15 +521,6 @@ end
       Keys: expect, include, sc-match, sc-mismatch, gap-open, gap-extend
             filter
 
---- Bio::Blast::Report#statistics -> hsh
-
-      Returns a Hash containing execution statistics of the last iteration.
-      Valid keys are:
-        'db-len', 'db-num', 'eff-space', 'entropy', 'hsp-len',
-        'kappa', 'lambda'
-
---- Bio::Blast::Report#message
-
 --- Bio::Blast::Report#iterations -> ary
 
       Returns an Array(Bio::Blast::Report::Iteration).
@@ -530,9 +531,24 @@ end
 
 --- Bio::Blast::Report#each_hit
 --- Bio::Blast::Report#each
---- Bio::Blast::Report#hits
 
       Iterates on Bio::Blast::Report::Hit of the last Iteration.
+
+--- Bio::Blast::Report#statistics -> hsh
+
+      Returns a Hash containing execution statistics of the last iteration.
+      Valid keys are:
+        'db-len', 'db-num', 'eff-space', 'entropy', 'hsp-len',
+        'kappa', 'lambda'
+
+--- Bio::Blast::Report#message
+
+      Returns a String (or nil) containing execution message of the last
+      iteration (typically "CONVERGED").
+
+--- Bio::Blast::Report#hits
+
+      Returns a Array of Bio::Blast::Report::Hits of the last iteration.
 
 
 = Bio::Blast::Report::Iteration
@@ -558,9 +574,9 @@ end
 --- Bio::Blast::Report::Hit#each
 --- Bio::Blast::Report::Hit#hsps -> ary
 
-      Returns an Array(Bio::Blast::Hsp).
+      Returns an Array(Bio::Blast::Report::Hsp).
 
---- Bio::Blast::Report::Hit#add_hsp(Bio::Blsat::Report::Hsp)
+--- Bio::Blast::Report::Hit#add_hsp(Bio::Blast::Report::Hsp)
 
 
 = Bio::Blast::Report::Hsp
