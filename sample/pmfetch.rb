@@ -18,13 +18,25 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#  $Id: pmfetch.rb,v 1.1 2002/06/25 19:30:00 k Exp $
+#  $Id: pmfetch.rb,v 1.2 2002/07/23 04:52:03 k Exp $
 #
 
 require 'bio' 
 
+if ARGV[0] =~ /-f/
+  ARGV.shift
+  form = ARGV.shift
+else
+  form = 'bibtex'
+end
+
 ARGV.each do |id| 
   entry = Bio::PubMed.query(id) 
-  puts Bio::MEDLINE.new(entry).reference.bibtex
+  case form
+  when 'medline'
+    puts entry
+  else
+    puts Bio::MEDLINE.new(entry).reference.send(form)
+  end
 end 
 
