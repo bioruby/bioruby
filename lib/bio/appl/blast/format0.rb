@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format0.rb,v 1.1 2003/08/06 10:22:23 ng Exp $
+#  $Id: format0.rb,v 1.2 2003/08/07 10:35:15 ng Exp $
 #
 
 begin
@@ -606,10 +606,12 @@ module Bio
 		    @query_frame = 1
 		    @hit_frame = 1
 		  else # Plus/Minus
-		    # complement sequence against xml(-m 8)
+		    # complement sequence against xml(-m 7)
 		    # In xml(-m 8), -1=>Plus, 1=>Minus ???
-		    @query_frame = -1
-		    @hit_frame = 1
+		    #@query_frame = -1
+		    #@hit_frame = 1
+		    @query_frame = 1
+		    @hit_frame = -1
 		  end
 		elsif sc.skip(/Frame *\= *([\-\+]\d+)( *\/ *([\-\+]\d+))?/) then
 		  @query_frame = sc[1].to_i
@@ -688,7 +690,7 @@ module Bio
 		  else
 		    raise ScanError
 		  end
-		end #unless
+		end #while
 	      end #each
 	      #p qseq, sseq, mseq
 	      @qseq = qseq.join('')
@@ -699,7 +701,7 @@ module Bio
 	      @hit_from = spos1
 	      @hit_to   = spos2
 	      @parse_alignment = true
-	    end
+	    end #unless
 	  end #def
 	  private :parse_alignment
 
