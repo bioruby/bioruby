@@ -1,211 +1,126 @@
-#!/usr/bin/ruby
-# test program
-# Mitsuteru S. Nakao, <nakao@kuicr.kyoto-u.ac.jp>
-# 20 Nov 2000
+#
+# dbget: DBGET client library
+#
+#        - interface to GenomeNet DBGET system -
+# 
+#   Copyright (C) 2000 Mitsuteru Nakao, KATAYAMA Toshiaki
+#
+#   ChangeLog:
+#     2000/11/20 Mitsuteru S. Nakao, <n@bioruby.org>
+#     2000/11/24 KATAYAMA Toshiaki, <k@bioruby.org>
 #
 
-
-
-
-=begin
-== NAME
-
-DBGET.rb - Yet another DBGET client class
-
-Version 0.1
-
-Copyright (C) 2000 Mitsuteru Nakao, <nakao@kuicr.kyoto-u.ac.jp>
-
-== EXAMPLE
-
-=== bget genes b0001
-
-  require "DBGET"
-  d = DNGET.new
-  print d.bget("genes b0001")
-
-=end
-
-# load "TCPSocket" class
 require "socket"
 
-#module DBGET
 class DBGET
 
-  # Global variables
-  DBGET_SERVER = {
-    "addr" => 'dbgetserv.genome.ad.jp',   ## Address of DBGetServ
-    "port" => '3266'                      ## Port num of DBGetServ
-  }
-
-=begin
-== METHODS
-=end
-
-=begin
-=== bget - get entry by accession form database
-  bget ("<options> [<dbname>:][<id> ..]")
-
-  options:
-    -f      FastA format
-    -S      Stanford format
-     -n 1     in AA sequence
-     -n 2     in NT sequence
-    -h      help print
-    -V      version print
-
-  <dbname>, see also btab 
-  
-=end
-
-  def bget (cmd) 
-    cmd = "bget " + cmd
-    return DBGET (cmd)
+  def initialize(addr="dbgetserv.genome.ad.jp", port="3266")
+    if ENV["DBGET"] =~ /:/
+      addr, port = ENV["DBGET"].split(':')
+    end
+    @addr = addr			# DBGET server address
+    @port = port			# DBGET port number
   end
 
-=begin
-=== btit - get entry definition
-  btit ("db entry ..")
-=end
+  def DBGET(arg) 
+    query = arg + "\n";			# Query string
+    result = Array.new			# Result
 
-  def btit (cmd) 
-    cmd = "btit " + cmd
-    return DBGET (cmd)
-  end
+    sock = TCPSocket.open("#{@addr}", "#{@port}")
 
-=begin
-=== bref - get reference(s) and author(s)
-  bref ("db entry")
-=end 
+    sock.write(query);			# Submit query
+    sock.flush;				# Buffer flush
 
-  def bref (cmd) 
-    cmd = "bref " + cmd
-    return DBGET (cmd)
-  end
-
-=begin
-=== bacc - get accession(s)
-  bacc ("db entry")
-=end 
-
-  def bacc (cmd) 
-    cmd = "bacc " + cmd
-    return DBGET (cmd)
-  end
-
-=begin
-=== bent - get entry name
-  bent ("db entry")
-=end 
-
-  def bent (cmd) 
-    cmd = "bent " + cmd
-    return DBGET (cmd)
-  end
-
-=begin
-=== bfind - search entris by keyword
-  bfind ("db keyword")
-=end
-
-  def bfind (cmd) 
-    cmd = "bfind " + cmd
-    return DBGET (cmd)
-  end
-
-=begin
-=== binfo - get database information
-  binfo ("db")
-=end
-
-  def binfo (cmd) 
-    cmd = "binfo " + cmd
-    return DBGET (cmd)
-  end
-
-=begin
-=== blink - print lint relations
-  blink ("db entry")
-=end 
-
-  def blink (cmd) 
-    cmd = "blink " + cmd
-    return DBGET (cmd)
-  end
-
-=begin
-=== alink - print relations
-  alink ("db entry")
-=end 
-
-  def alink (cmd) 
-    cmd = "alink " + cmd
-    return DBGET (cmd)
-  end
-
-=begin
-=== bman
-  bman ("db entry")
-=end 
-
-  def bman (cmd) 
-    cmd = "bman " + cmd
-    return DBGET (cmd)
-  end
-
-=begin
-=== btab
-  btab ("db entry")
-=end 
-
-  def btab (cmd) 
-    cmd = "btab " + cmd
-    return DBGET (cmd)
-  end
-
-=begin
-=== lmarge
-  lmarge ("db entry")
-=end 
-
-  def lmarge (cmd) 
-    cmd = "lmarge " + cmd
-    return DBGET (cmd)
-  end
-
-=begin
-== DBGET (cmd)
-=end
-
-  def DBGET (cmd) 
-    query = cmd + "\n";      ## Query string
-    result = Array.new(0);   ## Array for returns
-
-    ## Connect and open the server
-    soc = TCPSocket.open(DBGET_SERVER["addr"], DBGET_SERVER["port"])
-
-    soc.write(query);   # Submit query
-    soc.flush;          # Buffer flush
-
-    while soc.gets      ## output 
-      if (/^\#/) 
-        next
-      elsif (/^\*Request-IDent/) 
-        while soc.gets  ## 
-          result.push($_);
-          soc.flush;
-        end
-      end
+    while sock.gets
+      next if /^\+/
+      next if /^\#/
+      next if /^\*Request-IDent/
+      result.push($_)
     end
 
-    soc.close;          ## Close TCP connection
+    sock.close;				# Close TCP connection
 
     return result
   end
+
+  # bget("<options> [<dbname>:][<id> ..]") - get entry by ID 
+  #
+  # options:
+  #   -f      in FASTA format
+  #     -n 1  return Amino Acid sequence
+  #     -n 2  return Nucleic Acid sequence
+  #   -h      print help message
+  #   -V      print version
+  #
+  def bget(arg) 
+    arg = "bget " + arg
+    return DBGET(arg)
+  end
+
+  # btit("db entry ..")	- get entry definition
+  def btit(arg) 
+    arg = "btit " + arg
+    return DBGET(arg)
+  end
+
+  # bref("db entry")	- get reference(s) and author(s)
+  def bref(arg) 
+    arg = "bref " + arg
+    return DBGET(arg)
+  end
+
+  # bacc("db entry")	- get accession(s)
+  def bacc(arg) 
+    arg = "bacc " + arg
+    return DBGET(arg)
+  end
+
+  # bent("db entry")	- get entry name
+  def bent(arg) 
+    arg = "bent " + arg
+    return DBGET(arg)
+  end
+
+  # bfind("db keyword")	- search entris by keyword
+  def bfind(arg) 
+    arg = "bfind " + arg
+    return DBGET(arg)
+  end
+
+  # binfo("db")		- get database information
+  def binfo(arg) 
+    arg = "binfo " + arg
+    return DBGET(arg)
+  end
+
+  # blink("db entry")	- print link informations
+  def blink(arg) 
+    arg = "blink " + arg
+    return DBGET(arg)
+  end
+
+  # alink("db entry")	- print relations
+  def alink(arg) 
+    arg = "alink " + arg
+    return DBGET(arg)
+  end
+
+  # bman ("db entry")	- print manual page
+  def bman(arg) 
+    arg = "bman " + arg
+    return DBGET(arg)
+  end
+
+  # btab ("db entry")
+  def btab(arg) 
+    arg = "btab " + arg
+    return DBGET(arg)
+  end
+
+  # lmarge ("db entry")
+  def lmarge(arg) 
+    arg = "lmarge " + arg
+    return DBGET(arg)
+  end
+
 end	
-
-
-
-0;
-#
-
