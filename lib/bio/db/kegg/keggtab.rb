@@ -1,382 +1,414 @@
 #
-# bio/db/kegg/keggtab.rb - KEGG/GENES keggtab class
+# bio/db/kegg/keggtab.rb - KEGG keggtab class
 #
 #   Copyright (C) 2001 Mitsuteru S. Nakao <n@bioruby.org>
+#   Copyright (C) 2003 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Library General Public
+#  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
 #  version 2 of the License, or (at your option) any later version.
 #
 #  This library is distributed in the hope that it will be useful,
 #  but WITHOUT ANY WARRANTY; without even the implied warranty of
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Library General Public License for more details.
+#  Lesser General Public License for more details.
 #
-#  $Id: keggtab.rb,v 1.1 2001/11/12 17:53:29 nakao Exp $
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-
-
-# name            type            directory                     abreviation
-# 
-# enzyme          enzyme          $BIOROOT/db/ideas/ligand                ec
-# ec              alias           enzyme
-#
-# Taxonomy
-#
-# taxso   alias (korg|taxso)[+(korg|taxso)]
+#  $Id: keggtab.rb,v 1.2 2003/03/20 08:32:54 k Exp $
 #
 
 module Bio
   class KEGG
 
-    ##
-    # class Bio::KEGG::DBname 
-    # 
-    # Bio::KEGG::DBname#type -> type
-    # Bio::KEGG::DBname#path -> File
-    # Bio::KEGG::DBname#abrev -> String
-    # Bio::KEGG::DBname#aliases -> Array
-    class DBname
-      def initialize(db_name, db_type, db_path, db_abrev)
-	@name = db_name
-	@type = db_type
-	@path = db_path
-	@abrev = db_abrev
-	@aliases = Array.new
-      end
-      attr_reader :name
-      attr_reader :type
-      attr_reader :path
-      attr_reader :abrev
-      attr_reader :aliases
-      ##
-      # Bio::KEGG::DBname#add_alias(name)
-      def add_alias(name)
-	@aliases.push(name)
-      end
-      # Bio::KEGG::DBname#korg
-      alias korg abrev
-    end
-
-
-    ##
-    #
-    #
     class Keggtab
-      ##
-      # path = keggtab file path
-      # bio_root = $BIOROOT
-      #
-      def initialize(path, bio_root = nil)
-	@keggtab_file = path
-	@bio_root = bio_root
+
+      def initialize(file_path, bioroot = nil)
+	@bioroot = ENV['BIOROOT'] || bioroot
 	@db_names = Hash.new
+	@database = Hash.new
 	@taxonomy = Hash.new
-	@taxo_tmp = Array.new
-	begin
-	  keggtab = File.open(@keggtab_file, 'r').read
-	rescue
-	  raise IOError, " #{$!}"
+	parse_keggtab(File.open(file_path).read)
+      end
+      attr_reader :bioroot, :db_names
+
+
+      # Bio::KEGG::Keggtab::DB
+
+      class DB
+	def initialize(db_name, db_type, db_path, db_abbrev)
+	  @name = db_name
+	  @type = db_type
+	  @path = db_path
+	  @abbrev = db_abbrev
+	  @aliases = Array.new
 	end
+	attr_reader :name, :type, :path, :abbrev, :aliases
+	alias :korg :abbrev
+	alias :keggorg :abbrev
+      end
 
-	taxo = nil
-	keggtab.each do |line|
-	  if line =~ /^\#|^ / 
-	    taxo = 1 if line =~ /^# Taxonomy/
-	    next
 
-	  elsif line =~ /(^\w\S+)\s+(\w+)\s+(\$\S+)\s+(\w+)/
-	    # db
-	    db_name = $1
-	    db_type = $2
-	    db_path = $3
-	    db_abrev = $4
-	    @db_names[db_name] = Bio::KEGG::DBname.new(db_name, db_type, 
-						      db_path, db_abrev)
+      # DB section
 
-	  elsif line =~ /(^\w\S+)\s+alias\s+(\w.+\w)/
-	    # alias
-	    db_alias = $1
-	    db_name = $2#.downcase
+      def database(db_abbrev = nil)
+	if db_abbrev
+	  @database[db_abbrev]
+	else
+	  @database
+	end
+      end
 
-	    if taxo
-	      @taxonomy.update({db_alias=>db_name.split('+')})
-	    else
-	      if @db_names[db_name]
-		@db_names[db_name].add_alias(db_alias)
-	      end
-	    end
+      def aliases(db_abbrev)
+	if @database[db_abbrev]
+	  @database[db_abbrev].aliases
+	end
+      end
+
+      def name(db_abbrev)
+	if @database[db_abbrev]
+	  @database[db_abbrev].name
+	end
+      end
+
+      def path(db_abbrev)
+	if @database[db_abbrev]
+	  file = @database[db_abbrev].name
+	  if @bioroot
+	    "#{@database[db_abbrev].path.sub(/\$BIOROOT/,@bioroot)}/#{file}"
+	  else
+	    "#{@database[db_abbrev].path}/#{file}"
 	  end
 	end
       end
-      # Bio::KEGG::keggtab#db_names -> Hash
-      attr_reader :db_names
-      # Bio::KEGG::keggtab#taxonomy -> Hash
-      attr_reader :taxonomy
 
-      ## Methods for Taxonomy for GENES
-      
-      ##
-      # Bio::KEGG::Keggtab#taxa_list -> anArray
-      # Taxonomy ordered list
+
+      def alias_list(db_name)
+	if @db_names[db_name]
+	  @db_names[db_name].aliases
+	end
+      end
+
+      def db_path(db_name)
+	if @bioroot
+	  "#{@db_names[db_name].path.sub(/\$BIOROOT/,@bioroot)}/#{db_name}"
+	else
+	  "#{@db_names[db_name].path}/#{db_name}"
+	end
+      end
+
+      def db_by_abbrev(db_abbrev)
+	@db_names.each do |k, db|
+	  return db if db.abbrev == db_abbrev
+	end
+	return nil
+      end
+
+      def name_by_abbrev(db_abbrev)
+	db_by_abbrev(db_abbrev).name
+      end
+
+      def db_path_by_abbrev(db_abbrev)
+	db_name = name_by_abbrev(db_abbrev)
+	db_path(db_name)
+      end
+
+
+      # Taxonomy section
+
+      def taxonomy(node = nil)
+	if node
+	  @taxonomy[node]
+	else
+	  @taxonomy
+	end
+      end
+
       def taxa_list
-	@taxo_tmp = Array.new
-	_taxa_list('genes')
-	@taxo_tmp
+	@taxonomy.keys.sort
       end
-      def _taxa_list(taxa)
-	unless  taxa =~ /^[a-z]{3}$/ or taxa == nil
-	  @taxo_tmp.push(taxa)
-	  tmp = taxonomy[taxa]
-	  tmp.each do |o|
-	    _taxa_list(o)
-	  end
-	else
-	end
-      end
-      private :_taxa_list
 
-      ##
-      # Bio::KEGG::Keggtab#taxo2keggorgs(taxo_name) -> Array
-      #    keggorg is a 3-letters notation of an organism, 'eco, hsa'
-      def taxo2korgs(taxo)
-	orgs = @taxonomy[taxo]
-	if orgs[0].length == 3 or taxo == 'genes'
-	  orgs
+      def child_nodes(node = 'genes')
+	return @taxonomy[node]
+      end
+
+      def taxo2korgs(node = 'genes')
+	if node.length == 3
+	  return node
 	else
-	  orgs.each do |t|
-	    @taxo_tmp.push(taxo2korgs(t))
+	  tmp = Array.new
+	  @taxonomy[node].each do |x|
+	    tmp.push(taxo2korgs(x))
 	  end
-	  tmp = @taxo_tmp
-	  @taxo_tmp = Array.new
-	  #	  tmp.flatten
 	  return tmp
 	end
       end
-      alias taxo2keggorg taxo2korgs
+      alias :taxo2keggorgs  :taxo2korgs
+      alias :taxon2korgs    :taxo2korgs
+      alias :taxon2keggorgs :taxo2korgs
 
-      ##
-      # Bio::KEGG::Keggtab#keggorg2taxo(keggorg) -> Array
-      #    keggorg is a 3-letters notation of an organism, 'eco, hsa'
-      # eco -> ['proteogamma','proteobacteria','eubacteria','genes']
-      # 
       def korg2taxo(keggorg)
-	@taxo_tmp = Array.new
-	taxo_by_korg(keggorg)
-      end
-      alias keggorg2taxo korg2taxo
-      def taxo_by_korg(keggorg)
 	tmp = Array.new
-	taxonomy.each do |k,v|
-	  if v.include?(keggorg)
-	    @taxo_tmp.push(k) 
-	    taxo_by_korg(k)
-	    tmp = @taxo_tmp
-	    return tmp
+	traverse = Proc.new {|keggorg|
+	  @taxonomy.each do |k,v|
+	    if v.include?(keggorg)
+	      tmp.push(k)
+	      traverse.call(k)
+	      break
+	    end
 	  end
-	end
+	}
+	traverse.call(keggorg)
+	return tmp
       end
-      private :taxo_by_korg
+      alias :keggorg2taxo     :korg2taxo
+      alias :korg2taxonomy    :korg2taxo
+      alias :keggorg2taxonomy :korg2taxo
 
-      ## Methods for DB
 
-      ##
-      # Bio::KEGG::Keggtab#alias_list(db_name) -> Array
-      #
-      def alias_list(db_name)
-	@db_names[db_name].aliases
-      end
-      
+      private
 
-      ##
-      # Bio::KEGG::Keggtab#db_by_abrev(db_abrev) -> Bio::KEGG::DBname
-      #
-      def db_by_abrev(db_abrev)
-	tmp = nil
-	@db_names.each do |k,db|
-	  case db
-	  when Bio::KEGG::DBname
-	    if db.abrev == db_abrev
-	      tmp = db
+      def parse_keggtab(keggtab)
+	in_taxonomy = nil
+	keggtab.each do |line|
+	  case line
+	  when /^# Taxonomy/		# beginning of the taxonomy section
+	    in_taxonomy = true
+	  when /^#|^$/
+	    next
+	  when /(^\w\S+)\s+(\w+)\s+(\$\S+)\s+(\w+)/	# db
+	    db_name = $1
+	    db_type = $2
+	    db_path = $3
+	    db_abbrev = $4
+	    @db_names[db_name] =
+	      Bio::KEGG::Keggtab::DB.new(db_name, db_type, db_path, db_abbrev)
+	  when /(^\w\S+)\s+alias\s+(\w.+\w)/		# alias
+	    db_alias = $1
+	    db_name = $2#.downcase
+	    if in_taxonomy
+	      @taxonomy.update(db_alias => db_name.split('+'))
+	    elsif @db_names[db_name]
+	      @db_names[db_name].aliases.push(db_alias)
 	    end
 	  end
 	end
-	return tmp
-      end
-
-      ##
-      # Bio::KEGG::Keggtab#name_by_abrev(db_abrev) -> db_name
-      #
-      def name_by_abrev(db_abrev)
-	db_by_abrev(db_abrev).name
-      end
-
-      ##
-      # Bio::KEGG::Keggtab#db_path(db_name) -> db_path
-      #
-      def db_path(db_name)
-	if @bio_root
-	  "#{@db_names[db_name].path.sub(/\$BIOROOT/,@bio_root)}/#{db_name}"
-	else
-	  raise ArgumentError, "@bio_root = #{@bio_root.inspect}"
+	# convert keys-by-names hash @db_names to keys-by-abbrev hash @database
+	@db_names.each do |k,v|
+	  @database[v.abbrev] = v
 	end
       end
-      ##
-      # Bio::KEGG::Keggtab#db_path_by_keggorg(db_name) -> db_path
-      #
-      def db_path_by_keggorg(korg)
-	db_name = name_by_abrev(korg)
-	db_path(db_name)
-      end
-      alias db_path_by_korg db_path_by_keggorg
 
+    end
 
-    end # end of class Keggtab
-
-  end # class KEGG
-end # module Bio
-
-
+  end
+end
 
 
 
 if __FILE__ == $0
 
-  keggtab = '/bio/org/genes/keggtab'
-  
-  kg = Bio::KEGG::Keggtab.new(keggtab, '/bio/org/genes')
-  puts "== Initialize: kg = Bio::KEGG::Keggtab.new(keggtab) "
-
-
-  puts "\n==> Methods for DBs <=="
-
-  puts "\n == kg.db_names.each {|k,v| --}"
-  kg.db_names.each do |k,v|
-    p k
-    p v
-    puts
+  begin
+    require 'pp'
+    alias :p :pp
+  rescue LoadError
   end
-  puts "\n == kg.db_names.keys "
-  p  kg.db_names.keys 
+
+  if ARGV.empty?
+    prefix =  ENV['BIOROOT'] || '/bio'
+    keggtab_file = "#{prefix}/etc/keggtab"
+  else
+    keggtab_file = ARGV.shift
+  end
+
+  puts "= Initialize: keggtab = Bio::KEGG::Keggtab.new(file)"
+  keggtab = Bio::KEGG::Keggtab.new(keggtab_file)
 
 
-  puts "\n==> Methods for DB <=="
-
-  puts "\n == Bio::KEGG::Keggtab#db_path(db_name) -> String"
-  puts "\n == kg.db_path('e.coli')"
-  p kg.db_path('e.coli')
-
-  puts "\n == kg.db_path_by_korg('hsa')"
-  p kg.db_path_by_korg('hsa')
-
-  puts "\n == Bio::KEGG::Keggtab.db_by_abrev('korg')"
-  puts "\n == p db_by_abrev('eco') "
-  p kg.db_by_abrev('eco')
-  p kg.db_names['e.coli']
-
-  puts "\n == Bio::KEGG::Keggtab.alias_list"
-  korg='e.coli'
-  p  kg.alias_list(korg)
-  p kg.db_names[korg]
+  puts "\n--- Bio::KEGG::Keggtab#bioroot # -> String"
+  p keggtab.bioroot
 
 
-  puts "\n==> Methods for GENES Taxonomy <=="
-  puts "\n == Bio::KEGG::Keggtab#taxonomy -> Hash"
-  puts "\n  == kg.taxonomy.type"
-  p kg.taxonomy.type
+  puts "\n== Methods for DB section"
+
+  puts "\n--- Bio::KEGG::Keggtab#database # -> Hash"
+  p keggtab.database
+
+  puts "\n--- Bio::KEGG::Keggtab#database('eco') # -> Keggtab::DB"
+  p keggtab.database('eco')
+
+  puts "\n--- Bio::KEGG::Keggtab#name('eco') # -> String"
+  p keggtab.name('eco')
+
+  puts "\n--- Bio::KEGG::Keggtab#path('eco') # -> String"
+  p keggtab.path('eco')
+
+  puts "\n--- Bio::KEGG::Keggtab#aliases(abbrev) # -> Array"
+  puts "\n++ keggtab.aliases('eco')"
+  p keggtab.aliases('eco')
+  puts "\n++ keggtab.aliases('vg')"
+  p keggtab.aliases('vg')
 
 
-  puts "\n == Bio::KEGG::Keggtab#taxo2korgs(taso_name) -> Array"
-  puts "\n  == kg.taxo2korgs('lowgc')"
-  p kg.taxo2korgs('lowgc')
-  puts "\n  == kg.korgs('eubacteria')"
-  p kg.taxo2korgs('eubacteria')
-  puts "\n  == kg.korgs('archaea')"
-  p kg.taxo2korgs('archaea')
-  puts "\n  == kg.korgs('eukaryotes')"
-  p kg.taxo2korgs('eukaryotes')
+  puts "\n== Methods for Taxonomy section"
 
+  puts "\n--- Bio::KEGG::Keggtab#taxonomy # -> Hash"
+  p keggtab.taxonomy
 
-  puts "\n == Bio::KEGG::Keggtab#korg2t(korg) -> Array"
-  puts "\n  == kg.korg2t('eco') ->"
-  p kg.korg2taxo('eco')
+  puts "\n--- Bio::KEGG::Keggtab#taxonomy('archaea') # -> Hash"
+  p keggtab.taxonomy('archaea')
 
-  puts "\n  == kg.korg2t('plants') ->"
-  p kg.korg2taxo('plants')
+  puts "\n--- Bio::KEGG::Keggtab#taxa_list # -> Array"
+  p keggtab.taxa_list
 
-  puts "\n  == taxa_list"
-  p kg.taxa_list
+  puts "\n--- Bio::KEGG::Keggtab#taxo2korgs(node) # -> Array"
+  puts "\n++ keggtab.taxo2korgs('proteobeta')"
+  p keggtab.taxo2korgs('proteobeta')
+  puts "\n++ keggtab.taxo2korgs('eubacteria')"
+  p keggtab.taxo2korgs('eubacteria')
+  puts "\n++ keggtab.taxo2korgs('archaea')"
+  p keggtab.taxo2korgs('archaea')
+  puts "\n++ keggtab.taxo2korgs('eukaryotes')"
+  p keggtab.taxo2korgs('eukaryotes')
+
+  puts "\n--- Bio::KEGG::Keggtab#korg2taxo(keggorg) # -> Array"
+  puts "\n++ keggtab.korg2taxo('eco')"
+  p keggtab.korg2taxo('eco')
+  puts "\n++ keggtab.korg2taxo('plants')"
+  p keggtab.korg2taxo('plants')
+
 end
 
 
 
 =begin
-== NAME
 
-  bio/db/kegg/keggtab.rb - keggtab class
+The keggtab file is included in
 
-== Usage:
+  * ((URL:ftp://ftp.genome.ad.jp/pub/kegg/tarfiles/genes.weekly.last.tar.Z>))
 
-  tab = Bio::KEGG::Keggtab.new('genes/keggtab')
+File format is something like
 
-== Author
-  Mitsuteru S. Nakao <n@BioRuby.org>,
-  The BioRuby Project (http://BioRuby.org/)
+  # KEGGTAB
+  #
+  # name            type            directory                     abbreviation
+  #
+  enzyme            enzyme          $BIOROOT/db/ideas/ligand      ec
+  ec                alias           enzyme
+  (snip)
+  # Human
+  h.sapiens         genes           $BIOROOT/db/kegg/genes        hsa
+  H.sapiens         alias           h.sapiens
+  hsa               alias           h.sapiens
+  (snip)
+  #
+  # Taxonomy
+  #
+  (snip)
+  animals           alias           hsa+mmu+rno+dre+dme+cel
+  eukaryotes        alias           animals+plants+protists+fungi
+  genes             alias           eubacteria+archaea+eukaryotes
 
-== Class
+= Bio::KEGG::Keggtab
 
-  class Bio::KEGG::DBname
-  class Bio::KEGG::Keggtab
+--- Bio::KEGG::Keggtab.new(file_path, bioroot = nil)
 
-== Methods
+      Path for keggtab file and optionally set bioroot top directory.
+      Environmental variable BIOROOT overrides bioroot.
 
-=== Bio::KEGG::DBname
+--- Bio::KEGG::Keggtab#database -> Hash
 
-* Initialize 
---- Bio::KEGG::DBname#new(name, type, path, abrev)
+      Returns a hash containing DB definition section of the keggtab file.
 
-* Adding an alias name of db name
---- Bio::KEGG::DBname#add_alias(alias)
+--- Bio::KEGG::Keggtab#database(db_abbrev) -> Keggtab::DB
 
-* Attributes accessor
---- Bio::KEGG::DBname#name -> str
---- Bio::KEGG::DBname#type -> str
---- Bio::KEGG::DBname#path -> str
---- Bio::KEGG::DBname#abrev -> str
---- Bio::KEGG::DBname#aliases -> anArray
---- Bio::KEGG::DBname#korg -> str
+      Returns a Keggtab::DB object.
+
+--- Bio::KEGG::Keggtab#taxonomy -> Hash
+
+      Returns a hash containing Taxonomy section of the keggtab file.
+
+--- Bio::KEGG::Keggtab#taxonomy(node) -> Array
+
+      Returns a List of all child nodes belongs to the label node.
+      (e.g. "eukaryotes" -> ["animals", "plants", "protists", "fungi"], ...)
+
+--- Bio::KEGG::Keggtab#bioroot -> String
+
+      Returns a string of the BIOROOT path prefix.
+
+--- Bio::KEGG::Keggtab#name(db_abbrev) -> String
+
+      Returns a canonical database name for the abbreviation.
+      (e.g. 'ec' -> 'enzyme',  'hsa' -> 'h.sapies', ...)
+
+--- Bio::KEGG::Keggtab#aliases(db_abbrev) -> Array
+
+      Returns an Array containing all alias names for the database.
+      (e.g. 'hsa' -> ["H.sapiens", "hsa"], 'hpj' -> ["H.pylori_J99", "hpj"])
+
+--- Bio::KEGG::Keggtab#path(db_abbrev) -> String
+
+      Returns an absolute path for the flat file database.
+      (e.g. '/bio/db/kegg/genes', ...)
+
+--- Bio::KEGG::Keggtab#taxa_list -> Array
+
+      List of all node labels from Taxonomy section.
+      (e.g. ["actinobacteria", "animals", "archaea", "bacillales", ...)
+
+--- Bio::KEGG::Keggtab#taxo2korgs(taxon) -> Array
+
+      Returns an array of organism names included in the specified taxon
+      label. (e.g. 'proteobeta' -> ["nme", "nma", "rso"])
+      This method has taxo2keggorgs, taxon2korgs, and taxon2keggorgs aliases.
+
+--- Bio::KEGG::Keggtab#korg2taxo(keggorg) -> Array
+
+      Returns an array of taxonomy names the organism belongs.
+      (e.g. 'eco' -> ['proteogamma','proteobacteria','eubacteria','genes'])
+      This method has aliases as keggorg2taxo, korg2taxonomy, keggorg2taxonomy.
+
+* following methods are deprecated
+
+--- Bio::KEGG::Keggtab#db_names[db_name] -> Keggtab::DB
+--- Bio::KEGG::Keggtab#db_by_abbrev(db_abbrev) -> Keggtab::DB
+--- Bio::KEGG::Keggtab#alias_list(db_name) -> Array
+--- Bio::KEGG::Keggtab#name_by_abbrev(db_abbrev) -> String
+--- Bio::KEGG::Keggtab#db_path(db_name) -> String
+--- Bio::KEGG::Keggtab#db_path_by_abbrev(keggorg) -> String
 
 
-=== Bio::KEGG::Keggtab
+== Bio::KEGG::Keggtab::DB
 
-* Initialize
---- Bio::KEGG::Keggtab#new(file_path, bio_root = nil)
+--- Bio::KEGG::Keggtab::DB.new(db_name, db_type, db_path, db_abbrev)
 
-* Attributes accessor
---- Bio::KEGG::Keggtab#db_names -> aHash
---- Bio::KEGG::Keggtab#taxonomy -> aHash
+      Create a container object for database definitions.
 
-* Methods for KEGG/GENES Taxonomy
---- Bio::KEGG::Keggtab#taxa_list -> anArray
+--- Bio::KEGG::Keggtab::DB#name -> String
 
---- Bio::KEGG::Keggtab#taxo2keggorgs(taxo) -> anArray
-    
-Return an array of organism names included a taxa (taxo).
+      Database name. (e.g. 'enzyme', 'h.sapies', 'e.coli', ...)
 
---- Bio::KEGG::Keggtab#keggorg2taxo(korg) -> anArray
+--- Bio::KEGG::Keggtab::DB#type -> String
 
-Return an array of taxa names includeing a organism name (keggorg). 
+      Definition type. (e.g. 'enzyme', 'alias', 'genes', ...)
 
+--- Bio::KEGG::Keggtab::DB#path -> String
 
-* Methods for KEGG::DBname
---- Bio::KEGG::Keggtab#db_names[db_name] -> Bio::KEGG::DBname
---- Bio::KEGG::Keggtab#db_by_abrev(db_abrev) -> Bio::KEGG::DBname
---- Bio::KEGG::Keggtab#alias_list(db_name) -> anArray
---- Bio::KEGG::Keggtab#name_by_abrev(db_abrev) -> str
---- Bio::KEGG::Keggtab#db_path(db_name) -> str
---- Bio::KEGG::Keggtab#db_path_by_keggorg(keggorg) -> str
+      Database flat file path. (e.g. '$BIOROOT/db/kegg/genes', ...)
 
+--- Bio::KEGG::Keggtab::DB#abbrev -> String
 
+      Short name for the database. (e.g. 'ec', 'hsa', 'eco', ...)
+      korg and keggorg are alias for abbrev method.
+
+--- Bio::KEGG::Keggtab::DB#aliases -> Array
+
+      Array containing all alias names for the database.
+      (e.g. ["H.sapiens", "hsa"], ["E.coli", "eco"], ...)
 
 =end
+
