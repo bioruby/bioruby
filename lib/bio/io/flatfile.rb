@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.9 2002/09/11 11:41:28 ng Exp $
+#  $Id: flatfile.rb,v 1.10 2003/02/17 02:05:25 ng Exp $
 #
 
 module Bio
@@ -174,7 +174,7 @@ module Bio
 	Bio::TRANSFAC
 
       when /^H [-A-Z0-9_\.]+$/
-	if text =~ /^I Data/ then
+	if text =~ /^M [rc]/ then
 	  Bio::AAindex2
 	elsif text =~ /^I    A\/L/ then
 	  Bio::AAindex1
