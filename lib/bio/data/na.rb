@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: na.rb,v 0.5 2001/11/06 16:58:52 okuji Exp $
+#  $Id: na.rb,v 0.6 2001/12/15 01:48:50 katayama Exp $
 #
 
 module Bio
@@ -28,17 +28,17 @@ module Bio
     # * Faisst and Meyer (Nucleic Acids Res. 20:3-26, 1992)
     # * http://www.ncbi.nlm.nih.gov/collab/FT/
 
-    'w'	=> '[at]',
-    'r'	=> '[ag]',
-    'm'	=> '[ac]',
-    'k'	=> '[tg]',
-    'y'	=> '[tc]',
-    's'	=> '[gc]',
+    'y'	=> '[tc]',	# pYrimidine
+    'r'	=> '[ag]',	# puRine
+    'w'	=> '[at]',	# Weak
+    's'	=> '[gc]',	# Strong
+    'k'	=> '[tg]',	# Keto
+    'm'	=> '[ac]',	# aMino
 
-    'd'	=> '[atg]',
-    'h'	=> '[atc]',
-    'v'	=> '[agc]',
-    'b'	=> '[tgc]',
+    'b'	=> '[tgc]',	# not A
+    'd'	=> '[atg]',	# not C
+    'h'	=> '[atc]',	# not G
+    'v'	=> '[agc]',	# not T
 
     'n' => '[atgc]',
 
@@ -59,6 +59,7 @@ module Bio
   NucleicAcid_weight = {
 
     # Calculated by BioPerl's SeqStats.pm :-)
+    #  -- should be more accurate as BioPerl
 
     'A' => 313.245,
     'T' => 304.225,
@@ -66,5 +67,5 @@ module Bio
     'C' => 289.215,
   }
 
-end				# module Bio
+end
 
