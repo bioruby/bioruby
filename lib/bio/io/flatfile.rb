@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.14 2003/07/15 03:17:53 ng Exp $
+#  $Id: flatfile.rb,v 1.15 2003/07/16 08:57:25 ng Exp $
 #
 
 module Bio
@@ -26,9 +26,13 @@ module Bio
 
     include Enumerable
 
-    def self.open(dbclass, filename, *mode)
-      ios = File.open(filename, *mode)
-      self.new(dbclass, ios)
+    def self.open(dbclass, f, *mode)
+      f = File.open(f, *mode) unless f.respond_to?(:gets)
+      self.new(dbclass, f)
+    end
+
+    def self.auto(f, *mode)
+      self.open(nil, f, *mode)
     end
 
     def initialize(dbclass, stream, raw = false)
@@ -49,7 +53,7 @@ module Bio
       if raw then
 	@entry_raw
       else
-	e =@dbclass.new(@entry_raw)
+	e = @dbclass.new(@entry_raw)
 	begin
 	  s = e.entry_overrun
 	rescue NameError
