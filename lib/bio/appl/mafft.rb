@@ -17,18 +17,19 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: mafft.rb,v 1.3 2003/07/29 09:25:24 ng Exp $
+#  $Id: mafft.rb,v 1.4 2005/03/04 04:48:41 k Exp $
 #
 
 require 'bio/db/fasta'
 require 'bio/io/flatfile'
-require 'bio/appl/alignfactory'
+require 'bio/appl/mafft/report'
+#require 'bio/appl/factory'
 
 # We use Open3.popen3, because MAFFT on win32 requires Cygwin.
 require 'open3'
 
 module Bio
-  class MAFFT < AlignFactory
+  class MAFFT
 
     def self.fftns(n = nil)
       opt = []
@@ -72,10 +73,47 @@ module Bio
       self.new(prog, opt)
     end
 
+    def initialize(program, option)
+      @program = program
+      @option = option
+      @command = nil
+      @output = nil
+      @report = nil
+      @log = nil
+    end
+    attr_accessor :program, :option
+    attr_reader :command, :log
+    attr_reader :output, :report
+    
+    def query(seqs)
+      if seqs then
+	query_align(seqs)
+      else
+	exec_local(@option)
+      end
+    end
+
+    def query_align(seqs, *arg)
+      # seqs should be Bio::Alignment or Array of sequences or nil
+      unless seqs.is_a?(Bio::Alignment)
+	seqs = Bio::Alignment.new(seqs, *arg)
+      end
+      query_string(seqs.to_fasta(70))
+    end
+
+    def query_string(str, *arg)
+      begin
+	tf_in = Tempfile.open('align')
+	tf_in.print str
+      ensure
+	tf_in.close(false)
+      end
+      r = query_by_filename(tf_in.path, *arg)
+      tf_in.close(true)
+      r
+    end
+
     def query_by_filename(fn, seqtype = nil)
-
-      require 'bio/appl/mafft/report'
-
       opt = @option + [ fn ]
       exec_local(opt)
       @report = Report.new(@output, seqtype)

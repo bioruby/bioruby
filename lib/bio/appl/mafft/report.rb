@@ -17,16 +17,15 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.2 2003/07/25 17:14:27 ng Exp $
+#  $Id: report.rb,v 1.3 2005/03/04 04:48:41 k Exp $
 #
 
 require 'bio/db/fasta'
 require 'bio/io/flatfile'
-require 'bio/appl/alignfactory'
 require 'bio/appl/mafft'
 
 module Bio
-  class MAFFT < AlignFactory
+  class MAFFT
     class Report
 
       def initialize(ary, seqclass = nil)

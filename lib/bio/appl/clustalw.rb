@@ -17,21 +17,37 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: clustalw.rb,v 1.4 2003/10/20 14:17:55 ng Exp $
+#  $Id: clustalw.rb,v 1.5 2005/03/04 04:48:41 k Exp $
 #
 
 require 'tempfile'
 require 'bio/sequence'
 require 'bio/alignment'
-require 'bio/appl/alignfactory'
+#require 'bio/appl/factory'
 
 require 'open3'
 
 module Bio
-  class ClustalW < AlignFactory
+  class ClustalW
 
     def initialize(program = 'clustalw', option = [])
-      super
+      @program = program
+      @option = option
+      @command = nil
+      @output = nil
+      @report = nil
+      @log = nil
+    end
+    attr_accessor :program, :option
+    attr_reader :command, :log
+    attr_reader :output, :report
+
+    def query(seqs)
+      if seqs then
+	query_align(seqs)
+      else
+	exec_local(@option)
+      end
     end
 
     def query_align(seqs)
@@ -49,6 +65,18 @@ module Bio
 	break if seqtype
       end
       query_string(seqs.to_fasta(70, :avoid_same_name => true), seqtype)
+    end
+
+    def query_string(str, *arg)
+      begin
+	tf_in = Tempfile.open('align')
+	tf_in.print str
+      ensure
+	tf_in.close(false)
+      end
+      r = query_by_filename(tf_in.path, *arg)
+      tf_in.close(true)
+      r
     end
 
     def query_by_filename(path, seqtype = nil)
