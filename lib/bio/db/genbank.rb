@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.31 2003/09/08 07:26:54 n Exp $
+#  $Id: genbank.rb,v 0.32 2004/03/02 17:56:47 k Exp $
 #
 
 require 'bio/db'
@@ -33,13 +33,7 @@ module Bio
       super(entry, TAGSIZE)
     end
 
-    # LOCUS  -- locus is redefined in child classes
-    def entry_id;	locus.entry_id		end
-    def seq_len;	locus.seq_len		end
-    def circular;	locus.circular		end
-    def division;	locus.division		end
-    def date;		locus.date		end
-
+    # LOCUS  -- Locus class must be defined in child classes
 
     # DEFINITION
     def definition
@@ -55,10 +49,7 @@ module Bio
 
     # VERSION
     def versions
-      unless @data['VERSION']
-        @data['VERSION'] = fetch('VERSION').split(/\s+/)
-      end
-      @data['VERSION']
+      @data['VERSION'] ||= fetch('VERSION').split(/\s+/)
     end
 
     def acc_version
@@ -86,19 +77,13 @@ module Bio
 
     # KEYWORDS
     def keywords
-      unless @data['KEYWORDS']
-        @data['KEYWORDS'] = fetch('KEYWORDS').chomp('.').split(/; /)
-      end
-      @data['KEYWORDS']
+      @data['KEYWORDS'] ||= fetch('KEYWORDS').chomp('.').split(/; /)
     end
 
 
     # SEGMENT
     def segment
-      unless @data['SEGMENT']
-        @data['SEGMENT'] = fetch('SEGMENT').scan(/\d+/).join("/")
-      end
-      @data['SEGMENT']
+      @data['SEGMENT'] ||= fetch('SEGMENT').scan(/\d+/).join("/")
     end
 
 
@@ -248,12 +233,13 @@ module Bio
 
 
     # ORIGIN
-    def origin; end
-    def seq
-      unless @data['SEQUENCE']
-        origin
+    def origin
+      unless @data['ORIGIN']
+	ori, seqstr = get('ORIGIN').split("\n", 2)
+        @data['ORIGIN'] = truncate(tag_cut(ori))
+        @data['SEQUENCE'] = seqstr.tr("0-9 \t\n\r\/", '')
       end
-      @data['SEQUENCE']
+      @data['ORIGIN']
     end
 
 

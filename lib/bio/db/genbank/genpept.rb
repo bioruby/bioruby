@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genpept.rb,v 1.4 2003/03/31 10:22:20 k Exp $
+#  $Id: genpept.rb,v 1.5 2004/03/02 17:56:47 k Exp $
 #
 
 require 'bio/db/genbank'
@@ -27,10 +27,6 @@ module Bio
   class GenPept < NCBIDB
 
     include GENBANK_COMMON
-
-    alias :aalen :seq_len
-    alias :aaseq :seq
-
 
     # LOCUS
     class Locus
@@ -42,23 +38,25 @@ module Bio
 	@date     = locus_line[68..78].strip
       end
     end
-
     def locus
-      @data['LOCUS'] = Locus.new(get('LOCUS')) unless @data['LOCUS']
-      @data['LOCUS']
+      @data['LOCUS'] ||= Locus.new(get('LOCUS'))
     end
+    def entry_id;       locus.entry_id          end
+    def seq_len;        locus.seq_len           end
+    def circular;       locus.circular          end
+    def division;       locus.division          end
+    def date;           locus.date              end
 
 
     # ORIGIN
-    def origin
-      unless @data['ORIGIN']
-        ori = get('ORIGIN')[/.*/]			# 1st line
-        seq = get('ORIGIN').sub(/.*/, '')		# sequence lines
-        @data['ORIGIN']   = truncate(tag_cut(ori))
-        @data['SEQUENCE'] = Sequence::AA.new(seq.gsub(/\s|\d/, ''))
+    def seq
+      unless @data['SEQUENCE']
+        origin
       end
-      @data['ORIGIN']
+      Bio::Sequence::AA.new(@data['SEQUENCE'])
     end
+    alias :aaseq :seq
+    alias :aalen :seq_len
 
 
     # DBSOURCE
@@ -69,3 +67,4 @@ module Bio
   end
 
 end
+

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.30 2003/03/31 10:22:20 k Exp $
+#  $Id: genbank.rb,v 0.31 2004/03/02 17:56:47 k Exp $
 #
 
 require 'bio/db/genbank'
@@ -27,10 +27,6 @@ module Bio
   class GenBank < NCBIDB
 
     include GENBANK_COMMON
-
-    alias :nalen :seq_len
-    alias :naseq :seq
-
 
     # LOCUS
     class Locus
@@ -56,16 +52,31 @@ module Bio
       attr_accessor :entry_id, :seq_len, :strand, :natype, :circular,
 	:division, :date
     end
-
     def locus
-      @data['LOCUS'] = Locus.new(get('LOCUS')) unless @data['LOCUS']
-      @data['LOCUS']
+      @data['LOCUS'] ||= Locus.new(get('LOCUS'))
     end
+    def entry_id;       locus.entry_id          end
+    def seq_len;        locus.seq_len           end
+    def circular;       locus.circular          end
+    def division;       locus.division          end
+    def date;           locus.date              end
 
     def strand;		locus.strand		end
     def natype;		locus.natype		end
 
 
+    # ORIGIN
+    def seq
+      unless @data['SEQUENCE']
+        origin
+      end
+      Bio::Sequence::NA.new(@data['SEQUENCE'])
+    end
+    alias :naseq :seq
+    alias :nalen :seq_len
+
+
+    # FEATURES
     def each_cds
       features.each do |feature|
         if feature.feature == 'CDS'
@@ -83,7 +94,7 @@ module Bio
     end
 
 
-    # BASE COUNT
+    # BASE COUNT : obsoleted after GenBank release 138.0
     def basecount(base = nil)
       unless @data['BASE COUNT']
         hash = Hash.new(0)
@@ -107,18 +118,6 @@ module Bio
       return format("%.1f", num_gc * 100.0 / (num_at + num_gc)).to_f
     end
 
-
-    # ORIGIN
-    def origin
-      unless @data['ORIGIN']
-        ori = get('ORIGIN')[/.*/]			# 1st line
-        seq = get('ORIGIN').sub(/.*/, '')		# sequence lines
-        @data['ORIGIN']   = truncate(tag_cut(ori))
-        @data['SEQUENCE'] = Sequence::NA.new(seq.gsub(/\s|\d/, ''))
-      end
-      @data['ORIGIN']
-    end
-
   end
 
 end
@@ -133,13 +132,12 @@ if __FILE__ == $0
   rescue LoadError
   end
 
-  require 'bio/io/fetch'
-
   puts "### GenBank"
   if ARGV.size > 0
     gb = Bio::GenBank.new(ARGF.read)
   else
-    gb = Bio::GenBank.new(Bio::Fetch.query('gb', 'LPATOVGNS'))
+    require 'bio/io/fetch'
+    gb = Bio::GenBank.new(Bio::Fetch.query('genbank', 'LPATOVGNS'))
   end
 
   puts "## LOCUS"
