@@ -1,6 +1,6 @@
 =begin
 
-  $Id: BioRuby.rd.ja,v 1.1 2001/10/30 04:18:11 katayama Exp $
+  $Id: BioRuby.rd.ja,v 1.2 2001/11/08 10:11:23 katayama Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -75,60 +75,113 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
 
 === クラス階層
 
-  クラス階層                            ファイル                実装レベル
+  class Object				ファイル		実装レベル
   |- class String
-  |  `- class Bio::Sequence             bio/sequence.rb         stable
-  |     |- class Bio::Sequence::AA      bio/sequence.rb         stable
-  |     `- class Bio::Sequence::NA      bio/sequence.rb         stable
-  |- class Bio::Locations               bio/location.rb         stable
-  |- class Bio::Location                bio/location.rb         stable
-  |- class Bio::Reference               bio/reference.rb        beta
-  |- class Bio::Pathway                 bio/pathway.rb          beta
-  |- class Bio::Relation                bio/pathway.rb          beta
-  |- class Bio::DB                      bio/db.rb               beta
-  |  |- class Bio::NCBIDB               bio/db.rb               beta
-  |  |  |- class Bio::GenBank           bio/db/genbank.rb       stable
-  |  |  |  |- class Bio::RefSeq         bio/db/refseq.rb        stable
-  |  |  |  `- class Bio::DDBJ           bio/db/ddbj.rb          stable
-  |  |  |- class Bio::MEDLINE           bio/db/medline.rb       stable
-  |  |  |- class Bio::LITDB             bio/db/litdb.rb         stable
-  |  |  `- class Bio::KEGGDB            bio/db.rb               beta
-  |  |     |- class Bio::AAindex        bio/db/aaindex.rb       beta
-  |  |     |  |- class Bio::AAindex1    bio/db/aaindex.rb
-  |  |     |  `- class Bio::AAindex2    bio/db/aaindex.rb
-  |  |     |- class Bio::KEGG::GENES    bio/db/kegg/genes.rb    stable
-  |  |     |- class Bio::KEGG::GENOME   bio/db/kegg/genome.rb   stable
-  |  |     |- class Bio::KEGG::BRITE    bio/db/kegg/brite.rb    alpha
-  |  |     |- class Bio::KEGG::CELL     bio/db/kegg/cell.rb     beta
-  |  |     |- class Bio::KEGG::ENZYME   bio/db/kegg/enzyme.rb   alpha
-  |  |     `- class Bio::KEGG::COMPOUND bio/db/kegg/compound.rb alpha
-  |  `- class Bio::EMBLDB               bio/db.rb               alpha
-  |     |- class Bio::PROSITE           bio/db/prosite.rb       beta
-  |     `- class Bio::TRANSFAC          bio/db/transfac.rb      beta
-  |         |- class Bio::TFMATRIX      bio/db/transfac.rb
-  |         |- class Bio::TFSITE        bio/db/transfac.rb
-  |         |- class Bio::TFFACTOR      bio/db/transfac.rb
-  |         |- class Bio::TFCELL        bio/db/transfac.rb
-  |         |- class Bio::TFCLASS       bio/db/transfac.rb
-  |         `- class Bio::TFGENE        bio/db/transfac.rb
-  |- class Bio::DBGET                   bio/io/dbget.rb         stable
-  `- class Bio::PubMed                  bio/io/pubmed.rb        stable
+  |  `- class Bio::Sequence		bio/sequence.rb		stable
+  |	|- class Bio::Sequence::AA	bio/sequence.rb		stable
+  |	`- class Bio::Sequence::NA	bio/sequence.rb		stable
+  |- class Bio::Locations		bio/location.rb		stable
+  |- class Bio::Location		bio/location.rb		stable
+  |- class Bio::Reference		bio/reference.rb	beta
+  |- class Bio::Pathway			bio/pathway.rb		beta
+  |- class Bio::Relation		bio/pathway.rb		beta
+  |- class Bio::DB			bio/db.rb		beta
+  |  |- class Bio::FastaFormat		bio/db/fasta.rb		stable
+  |  |- class Bio::NCBIDB		bio/db.rb		beta
+  |  |	|- class Bio::GenBank		bio/db/genbank.rb	stable
+  |  |	|  |- class Bio::RefSeq		bio/db/refseq.rb	stable
+  |  |	|  `- class Bio::DDBJ		bio/db/ddbj.rb		stable
+  |  |	|- class Bio::MEDLINE		bio/db/medline.rb	stable
+  |  |	|- class Bio::LITDB		bio/db/litdb.rb		stable
+  |  |	`- class Bio::KEGGDB		bio/db.rb		beta
+  |  |	   |- class Bio::AAindex	bio/db/aaindex.rb	beta
+  |  |	   |  |- class Bio::AAindex1	bio/db/aaindex.rb
+  |  |	   |  `- class Bio::AAindex2	bio/db/aaindex.rb
+  |  |	   |- class Bio::KEGG::GENES	bio/db/kegg/genes.rb	stable
+  |  |	   |- class Bio::KEGG::GENOME	bio/db/kegg/genome.rb	stable
+  |  |	   |- class Bio::KEGG::BRITE	bio/db/kegg/brite.rb	alpha
+  |  |	   |- class Bio::KEGG::CELL	bio/db/kegg/cell.rb	beta
+  |  |	   |- class Bio::KEGG::ENZYME	bio/db/kegg/enzyme.rb	alpha
+  |  |	   `- class Bio::KEGG::COMPOUND bio/db/kegg/compound.rb alpha
+  |  `- class Bio::EMBLDB		bio/db.rb		alpha
+  |     |- class Bio::EMBL		bio/db/embl.rb
+  |     |- class Bio::SPTR		bio/db/sptr.rb
+  |	|- class Bio::PROSITE		bio/db/prosite.rb	beta
+  |	`- class Bio::TRANSFAC		bio/db/transfac.rb	beta
+  |	    |- class Bio::TFMATRIX	bio/db/transfac.rb
+  |	    |- class Bio::TFSITE	bio/db/transfac.rb
+  |	    |- class Bio::TFFACTOR	bio/db/transfac.rb
+  |	    |- class Bio::TFCELL	bio/db/transfac.rb
+  |	    |- class Bio::TFCLASS	bio/db/transfac.rb
+  |	    `- class Bio::TFGENE	bio/db/transfac.rb
+  |- class Bio::KEGG::Microarray	bio/db/kegg/microarray.rb	alpha
+  |- class Bio::KEGG::Microarrays	bio/db/kegg/microarray.rb	alpha
+  |- class Bio::FlatFile		bio/io/flatfile.rb	stable
+  |- class Bio::DBGET			bio/io/dbget.rb		stable
+  `- class Bio::PubMed			bio/io/pubmed.rb	stable
 
-=== メソッド追加
+=== 標準クラスへのメソッド追加
 
-  Matrix                                bio/matrix.rb           alpha
-  Vector                                bio/matrix.rb           alpha
-  String                                bio/util/fold.rb        stable
+  class Matrix				bio/matrix.rb		alpha
+  class Vector				bio/matrix.rb		alpha
+  class String				bio/util/fold.rb	stable
 
-=== 定数
+=== 定数と名前空間の階層
 
-  Bio::BIORUBY_VERSION                  bio.rb
-  Bio::AminoAcid                        bio/data/aa.rb
-  Bio::AminoAcid_weight                 bio/data/aa.rb
-  Bio::NucleicAcid                      bio/data/na.rb
-  Bio::NucleicAcid_weight               bio/data/na.rb
-  Bio::CodonTable                       bio/data/codontable.rb
-  Bio::KEGGORG                          bio/data/keggorg.rb
+  module Bio				ファイル		タイプ
+  |- AAindex				bio/db/aaindex.rb	class
+  |- AAindex1				bio/db/aaindex.rb	class
+  |- AAindex2				bio/db/aaindex.rb	class
+  |- AminoAcid				bio/data/aa.rb		constant
+  |- AminoAcid_weight			bio/data/aa.rb		constant
+  |- BIORUBY_VERSION			bio.rb			constant
+  |- CodonTable				bio/data/codontable.rb	constant
+  |- DB					bio/db.rb		class
+  |- DBGET				bio/io/dbget.rb		class
+  |- DDBJ				bio/db/ddbj.rb		class
+  |- EMBL				bio/db/embl.rb		class
+  |- EMBLDB				bio/db.rb		class
+  |- FlatFile				bio/io/flatfile.rb	class
+  |- GenBank				bio/db/genbank.rb	class
+  |- KEGG				bio/db/kegg/		class
+  |  |- BRITE				bio/db/kegg/brite.rb	class
+  |  |- CELL				bio/db/kegg/cell.rb	class
+  |  |- COMPOUND			bio/db/kegg/compound.rb	class
+  |  |- ENZYME				bio/db/kegg/enzyme.rb	class
+  |  |- GENES				bio/db/kegg/genes.rb	class
+  |  |- GENOME				bio/db/kegg/genome.rb	class
+  |  |- Microarray			bio/db/kegg/microarray.rb	class
+  |  `- Microarrays			bio/db/kegg/microarray.rb	class
+  |- KEGGDB				bio/db.rb		class
+  |- KEGGORG				bio/data/keggorg.rb	constant
+  |- LITDB				bio/db/litdb.rb		class
+  |- Location				bio/location.rb		class
+  |- Locations				bio/location.rb		class
+  |- MEDLINE				bio/db/medline.rb	class
+  |- NCBIDB				bio/db.rb		class
+  |- NucleicAcid			bio/data/na.rb		constant
+  |- NucleicAcid_weight			bio/data/na.rb		constant
+  |- PROSITE				bio/db/prosite.rb	class
+  |- Pathway				bio/pathway.rb		class
+  |- PubMed				bio/io/pubmed.rb	class
+  |- Reference				bio/reference.rb	class
+  |- RefSeq				bio/db/refseq.rb	class
+  |- Relation				bio/pathway.rb		class
+  |- SPTR				bio/db/sptr.rb		class
+  |- Sequence				bio/sequence.rb		class
+  |  |- NA				bio/sequence.rb		class
+  |  `- NA				bio/sequence.rb		class
+  |- TRANSFAC				bio/db/transfac.rb	class
+  |- TFMATRIX				bio/db/transfac.rb	class
+  |- TFSITE				bio/db/transfac.rb	class
+  |- TFFACTOR				bio/db/transfac.rb	class
+  |- TFCELL				bio/db/transfac.rb	class
+  |- TFCLASS				bio/db/transfac.rb	class
+  `- TFGENE				bio/db/transfac.rb	class
+
+=== ファイル階層
+
+BioRuby のファイル構成については Design.rd.ja を参照してください。
 
 =end
 
