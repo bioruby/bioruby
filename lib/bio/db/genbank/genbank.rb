@@ -13,282 +13,19 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
+#  $Id: genbank.rb,v 0.14 2001/06/21 02:34:45 katayama Exp $
+#
 
-require 'bio/sequence'
+require 'bio/db'
 require 'bio/db/gblocation'
 
-class GenBank
+class GenBank < NCBIDB
 
-  DELIMITER = "\n//\n"
-  TAGSIZE = 12
+  DELIMITER	= RS = "\n//\n"
+  TAGSIZE	= 12
 
   def initialize(entry)
-    @orig = {}					# Hash of the original entry
-    @data = {}					# Hash of the parsed entry
-
-    tag = ''					# temporal key
-    @orig[tag] = ''
-
-    entry.each_line do |line|
-      # to avoid null line (especially at the 1st line - gb:AARPOB2)
-      next if line =~ /^$/
-
-      if line =~ /^\w/
-        tag = tag_get(line)
-        @orig[tag] = '' unless @orig[tag]	# String
-      end
-      @orig[tag] << line
-    end
-  end
-
-
-  ### general method to return block of the tag and contens as is
-  def get(tag)
-    @orig[tag]			# returns nil when not found
-  end
-
-
-  ### general method to return contens without tag and extra white spaces
-  def fetch(tag)
-    if get(tag)
-      str = ''
-      get(tag).each_line do |line|
-        str << tag_cut(line)
-      end
-      return truncate(str)
-    else
-      return nil		# compatible with get()
-    end
-  end
-
-
-  # locus - returns pieces of the LOCUS record as Hash of String or Fixnum
-  #   (key : name, length, strand, natype, circular, gbdiv, date)
-  def locus(key = nil)
-    parse_LOCUS unless @data['LOCUS']
-    if key			# returns the LOCUS value of the key
-      @data['LOCUS'][key]
-    elsif block_given?		# acts as each_locus()
-      @data['LOCUS'].each do |k, v|
-        yield(k, v)
-      end
-    else			# returns the whole LOCUS as Hash
-      @data['LOCUS']
-    end
-  end
-  alias l locus
-  alias each_locus locus
-
-  def id
-    locus('name')
-  end
-
-
-  # definition - returns contents of the DEFINITION record as String
-  def definition
-    parse_DEFINITION unless @data['DEFINITION']
-    @data['DEFINITION']
-  end
-  alias d definition
-
-
-  # accession - returns contents of the ACCESSION record as String
-  def accession
-    parse_ACCESSION unless @data['ACCESSION']
-    @data['ACCESSION']
-  end
-  alias a accession
-
-
-  # version - returns contents of the VERSION record as Array of String
-  def version(gi_only = nil)
-    parse_VERSION unless @data['VERSION']
-    if gi_only
-      @data['VERSION'][1]		# returns GI: as String
-    else
-      @data['VERSION']			# returns A.V and GI: as Array
-    end
-  end
-  alias v version
-
-
-  # keywords - returns contents of the KEYWORDS record as Array of String
-  def keywords
-    parse_KEYWORDS unless @data['KEYWORDS']
-    if block_given?		# acts as each_keyword()
-      @data['KEYWORDS'].each do |k|
-        yield(k)
-      end
-    else			# returns the whole KEYWORDS as Array
-      @data['KEYWORDS']
-    end
-  end
-  alias k keywords
-  alias each_keyword keywords
-
-
-  # segment - returns contents of the SEGMENT record as Array of Fixnum
-  def segment
-    parse_SEGMENT unless @data['SEGMENT']
-    @data['SEGMENT']
-  end
-
-
-  # source - returns contents of the SOURCE record as Hash of String
-  #   (key : name, organism, taxonomy)
-  def source(key = nil)
-    parse_SOURCE unless @data['SOURCE']
-    if key			# returns the SOURCE value of the key
-      @data['SOURCE'][key]
-    elsif block_given?		# acts as each_source()
-      @data['SOURCE'].each do |k, v|
-        yield(k, v)
-      end
-    else			# returns the whole SOURCE as Hash
-      @data['SOURCE']
-    end
-  end
-  alias s source
-  alias each_source source
-
-
-  # reference - returns contents of the REFERENCE record as Array of Hash
-  #   (key : AUTHORS, TITLE, JOURNAL, MEDLINE, PUBMED, REMARK)
-  def reference(num = 0, key = 'REFERENCE')
-    parse_REFERENCE unless @data['REFERENCE']
-    num -= 1
-    if num >= 0			# returns one value of the REFERENCE Hash
-      @data['REFERENCE'][num][key] if @data['REFERENCE'][num]
-    elsif block_given?		# acts as each_reference()
-      @data['REFERENCE'].each do |r|
-        yield(r)
-      end
-    else			# returns the whole REFERENCE Hash as Array
-      @data['REFERENCE']
-    end
-  end
-  alias r reference
-  alias each_ref reference
-  alias each_reference reference
-
-
-  # comment - returns contents of the COMMENT record as String
-  def comment
-    parse_COMMENT unless @data['COMMENT']
-    @data['COMMENT']
-  end
-
-
-  # features - returns contents of the FEATURES record as Array of Hash
-  #   (key : feature, position, ...)
-  def features(num = 0, key = 'position')
-    parse_FEATURES unless @data['FEATURES']
-    num -= 1
-    if num >= 0			# returns one value of the FEATURES Hash
-      @data['FEATURES'][num][key] if @data['FEATURES'][num]
-    elsif block_given?		# acts as each_feature()
-      @data['FEATURES'].each do |f|
-        yield(f)
-      end
-    else			# returns the whole FEATURES Hash as Array
-      @data['FEATURES']
-    end
-  end
-  alias f features
-  alias each_feature features
-
-  def each_cds
-    parse_FEATURES unless @data['FEATURES']
-    @data['FEATURES'].each do |f|
-      if f['feature'] == 'CDS'
-        yield(f)		# iterate only for the 'CDS' features
-      end
-    end
-  end
-
-  def each_gene
-    parse_FEATURES unless @data['FEATURES']
-    @data['FEATURES'].each do |f|
-      if f['feature'] == 'gene'
-        yield(f)		# iterate only for the 'gene' features
-      end
-    end
-  end
-
-
-  # basecount - returns the BASE COUNT of the base as Fixnum
-  #   (base : a, t, g, c and o for others)
-  def basecount(base = nil)
-    parse_BASE_COUNT unless @data['BASE COUNT']
-    if base			# returns the BASE COUNT of the given base
-      base.downcase!
-      @data['BASE COUNT'][base]
-    elsif block_given?		# acts as each_basecount()
-      %w{ a t g c o }.each do |b|
-        yield(b, @data['BASE COUNT'][b]) if @data['BASE COUNT'][b]
-      end
-    else			# returns the whole BASE COUNT Hash
-      @data['BASE COUNT']
-    end
-  end
-  alias bc basecount
-  alias each_bc basecount
-  alias each_basecount basecount
-
-
-  # origin - returns contents of the ORIGIN record as String
-  def origin
-    parse_ORIGIN unless @data['ORIGIN']
-    @data['ORIGIN']
-  end
-
-
-  # naseq - returns DNA sequence in the ORIGIN record as NAseq object
-  def naseq
-    parse_ORIGIN unless @data['SEQUENCE']
-    @data['SEQUENCE']
-  end
-  alias na naseq
-
-
-  ### change the default to private method below the line
-  private
-
-  # remove extra white spaces
-  def truncate(str)
-    return str.gsub(/\s+/, ' ').strip
-  end
-
-  def truncate!(str)
-    # do not chain these lines to avoid performing on nil
-    str.gsub!(/\s+/, ' ')
-    str.strip!
-    return str
-  end
-
-
-  # remove tag field from the line
-  def tag_cut(str)
-    if str.length > TAGSIZE
-      return str[TAGSIZE..str.length]
-    else
-      return ''			# to avoid returning nil
-    end
-  end
-
-  def tag_cut!(str)
-    str[0,tag_size] = ''
-    return str
-  end
-
-
-  # get tag field of the line
-  def tag_get(str)
-    if str.length > TAGSIZE
-      return str[0,TAGSIZE].strip
-    else
-      return ''			# to avoid returning nil
-    end
+    super(entry, TAGSIZE)
   end
 
 
@@ -300,36 +37,103 @@ class GenBank
   #
   # The detailed format for the LOCUS record is as follows:
   #
-  # Positions       Contents
+  # Positions  Contents
+  # ---------  --------
+  # 01-05      LOCUS
+  # 06-12      spaces
+  # 13-21      Locus name
+  # 22-22      space
+  # 23-29      Length of sequence, right-justified
+  # 31-32      bp
+  # 34-36      Blank, ss- (single-stranded), ds- (double-stranded), or
+  #            ms- (mixed-stranded)
+  # 37-42      Blank, DNA, RNA, tRNA (transfer RNA), rRNA (ribosomal RNA),
+  #            mRNA (messenger RNA), uRNA (small nuclear RNA), snRNA
+  # 43-52      Blank (implies linear) or circular
+  # 53-55      The division code (see Section 3.3)
+  # 63-73      Date, in the form dd-MMM-yyyy (e.g., 15-MAR-1991)
+  # 
+  # The format change in GenBank 126.0 as follows:
   #
-  # 1-12    LOCUS
-  # 13-22   Locus name
-  # 23-29   Length of sequence, right-justified
-  # 31-32   bp
-  # 34-36   Blank, ss- (single-stranded), ds- (double-stranded), or
-  #         ms- (mixed-stranded)
-  # 37-40   Blank, DNA, RNA, tRNA (transfer RNA), rRNA (ribosomal RNA), 
-  #         mRNA (messenger RNA), or uRNA (small nuclear RNA)
-  # 43-52   Blank (implies linear) or circular
-  # 53-55   The division code (see Section 3.3)
-  # 63-73   Date, in the form dd-MMM-yyyy (e.g., 15-MAR-1991)
+  # Positions  Contents
+  # ---------  --------
+  # 01-05      LOCUS
+  # 06-12      spaces
+  # 13-30      Locus name
+  # 31-31      space
+  # 32-42      Length of sequence, right-justified
+  # 43-43      space
+  # 44-45      bp
+  # 46-46      space
+  # 47-49      Blank, ss- (single-stranded), ds- (double-stranded), or
+  #            ms- (mixed-stranded)
+  # 50-54      Blank, DNA, RNA, tRNA (transfer RNA), rRNA (ribosomal RNA),
+  #            mRNA (messenger RNA), uRNA (small nuclear RNA), snRNA
+  # 55-55      space
+  # 56-63      Blank (implies linear) or circular
+  # 64-64      space
+  # 65-67      The division code (see Section 3.3)
+  # 68-68      space
+  # 69-79      Date, in the form dd-MMM-yyyy (e.g., 15-MAR-1991)
   #
-  def parse_LOCUS
-    @data['LOCUS'] = {}
-
-    if @orig['LOCUS']
-      @data['LOCUS']['name']     = @orig['LOCUS'][12..21].strip
-      @data['LOCUS']['length']   = @orig['LOCUS'][22..28].to_i
-      @data['LOCUS']['strand']   = @orig['LOCUS'][33..35].strip
-      @data['LOCUS']['natype']   = @orig['LOCUS'][36..39].strip
-      @data['LOCUS']['circular'] = @orig['LOCUS'][42..51].strip
-      @data['LOCUS']['gbdiv']    = @orig['LOCUS'][52..54].strip
-      @data['LOCUS']['date']     = @orig['LOCUS'][62..72].strip
+  # locus - returns pieces of the LOCUS record as Hash of String or Fixnum
+  #   (key : name, length, strand, natype, circular, gbdiv, date)
+  #
+  # len > 61 => unpack('@12 A10 @22 A7 @33 A3 @36 A3 @42 A10 @52 A3 @62 A11')
+  #
+  def locus(key = nil)
+    unless @data['LOCUS']
+      hash = Hash.new('')
+      if @orig['LOCUS'].length > 75
+	hash['name']     = @orig['LOCUS'][12..30].strip
+	hash['length']   = @orig['LOCUS'][31..41].to_i
+	hash['strand']   = @orig['LOCUS'][46..48].strip
+	hash['natype']   = @orig['LOCUS'][49..54].strip
+	hash['circular'] = @orig['LOCUS'][55..63].strip
+	hash['gbdiv']    = @orig['LOCUS'][64..67].strip
+	hash['date']     = @orig['LOCUS'][68..78].strip
+      else
+	hash['name']     = @orig['LOCUS'][12..21].strip
+	hash['length']   = @orig['LOCUS'][22..28].to_i
+	hash['strand']   = @orig['LOCUS'][33..35].strip
+	hash['natype']   = @orig['LOCUS'][36..39].strip
+	hash['circular'] = @orig['LOCUS'][42..51].strip
+	hash['gbdiv']    = @orig['LOCUS'][52..54].strip
+	hash['date']     = @orig['LOCUS'][62..72].strip
+      end
+      @data['LOCUS'] = hash
     end
 
-    # len > 61 => unpack('@12 A10 @22 A7 @33 A3 @36 A3 @42 A10 @52 A3 @62 A11')
-
-    return @data['LOCUS']
+    if block_given?
+      @data['LOCUS'].each do |k, v|
+        yield(k, v)		# each contents of LOCUS
+      end
+    elsif key
+      @data['LOCUS'][key]	# contents of key's LOCUS
+    else
+      @data['LOCUS']		# Hash of whole LOCUS field
+    end
+  end
+  def id
+    locus('name')
+  end
+  def nalen
+    locus('length')
+  end
+  def strand
+    locus('strand')
+  end
+  def natype
+    locus('natype')
+  end
+  def circular
+    locus('circular')
+  end
+  def division
+    locus('gbdiv')
+  end
+  def date
+    locus('date')
   end
 
 
@@ -359,9 +163,10 @@ class GenBank
   # specified, whereas mRNA and peptide molecules are assumed to be
   # complete unless "Partial" is noted.
   #
-  def parse_DEFINITION
-    @data['DEFINITION'] = fetch('DEFINITION')
-    return @data['DEFINITION']
+  # definition - returns contents of the DEFINITION record as String
+  #
+  def definition
+    field_fetch('DEFINITION')
   end
 
 
@@ -380,9 +185,10 @@ class GenBank
   # single space. In some cases, multiple lines of secondary accession
   # numbers might be present, starting at position 13.
   #
-  def parse_ACCESSION
-    @data['ACCESSION'] = fetch('ACCESSION')
-    return @data['ACCESSION']
+  # accession - returns contents of the ACCESSION record as String
+  #
+  def accession
+    field_fetch('ACCESSION')
   end
 
 
@@ -415,14 +221,23 @@ class GenBank
   # 7345003 . And after the second sequence change, perhaps the GI
   # would become 10456892.
   #
-  def parse_VERSION
-    @data['VERSION'] = []
-
-    if @orig['VERSION']
-      @data['VERSION'] = fetch('VERSION').split(/\s+/)
+  # version - returns contents of the VERSION record as Array of String
+  #
+  def version(num = nil)
+    unless @data['VERSION']
+      @data['VERSION'] = field_fetch('VERSION').split(/\s+/)
     end
-
-    return @data['VERSION']
+    if num
+      @data['VERSION'][num]
+    else
+      @data['VERSION']
+    end
+  end
+  def acc_version
+    version(0)
+  end
+  def gi
+    version(1)
   end
 
 
@@ -432,7 +247,8 @@ class GenBank
   #
   # In maintaining GenBank, NCBI generates a new gi if a sequence has changed.
   #
-  def parse_NID
+  def nid
+    field_fetch('NID')
   end
 
 
@@ -448,14 +264,20 @@ class GenBank
   # are included in the entry, the KEYWORDS record contains only a
   # period.
   #
-  def parse_KEYWORDS
-    @data['KEYWORDS'] = []
-
-    if @orig['KEYWORDS']
-      @data['KEYWORDS'] = fetch('KEYWORDS').sub(/\.$/, '').split("; ")
+  # keywords - returns contents of the KEYWORDS record as Array of String
+  #
+  def keywords
+    unless @data['KEYWORDS']
+      @data['KEYWORDS'] = field_fetch('KEYWORDS').chomp('.').split('; ')
     end
 
-    return @data['KEYWORDS']
+    if block_given?
+      @data['KEYWORDS'].each do |k|
+        yield(k)
+      end
+    else			# returns the whole KEYWORDS as Array
+      @data['KEYWORDS']
+    end
   end
 
 
@@ -469,14 +291,13 @@ class GenBank
   # segment number of the current entry and `m' is the total number of
   # segments.
   #
-  def parse_SEGMENT
-    @data['SEGMENT'] = []
-
-    if @orig['SEGMENT']    
-      @data['SEGMENT'] = fetch('SEGMENT').scan(/\d+/)
+  # segment - returns contents of the SEGMENT record as String (m/n)
+  #
+  def segment
+    unless @data['SEGMENT']
+      @data['SEGMENT'] = field_fetch('SEGMENT').scan(/\d+/).join("/")
     end
-
-    return @data['SEGMENT']
+    @data['SEGMENT']
   end
 
 
@@ -500,19 +321,38 @@ class GenBank
   # line list the taxonomic classification levels, separated by
   # semicolons and ending with a period.
   #
-  def parse_SOURCE
-    @data['SOURCE'] = {}
-
-    if @orig['SOURCE']
-      name, organism = @orig['SOURCE'].split("ORGANISM")
-      organism = '' unless organism	# to avoid nil
-
-      @data['SOURCE']['name']     = truncate(tag_cut(name))
-      @data['SOURCE']['organism'] = truncate(organism.slice!(/.*/))
-      @data['SOURCE']['taxonomy'] = truncate(organism)
+  # source - returns contents of the SOURCE record as Hash of String
+  #   (key : name, organism, taxonomy)
+  #
+  def source(key = nil)
+    unless @data['SOURCE']
+      name, organism = get('SOURCE').split('ORGANISM')
+      @data['SOURCE'] = {
+	'common_name'	=> truncate(tag_cut(name)),
+	'organism'	=> truncate(organism.slice!(/.*/)),
+	'taxonomy'	=> truncate(organism),
+      }
     end
 
-    return @data['SOURCE']
+    if block_given?
+      @data['SOURCE'].each do |k, v|
+        yield(k, v)		# each contents of SOURCE
+      end
+    elsif key
+      @data['SOURCE'][key]	# contents of key's SOURCE
+    else
+      @data['SOURCE']		# Hash of whole SOURCE field
+    end
+  end
+  def common_name
+    source('common_name')
+  end
+  alias varnacular_name common_name
+  def organism
+    source('organism')
+  end
+  def taxonomy
+    source('taxonomy')
   end
 
 
@@ -542,33 +382,25 @@ class GenBank
   # and the subkeywords AUTHORS, TITLE (optional), JOURNAL, MEDLINE
   # (optional), PUBMED (optional), and REMARK (optional).
   #
-  def parse_REFERENCE
-    @data['REFERENCE'] = []
+  # reference - returns contents of the REFERENCE record as Array of Hash
+  #   (key : AUTHORS, TITLE, JOURNAL, MEDLINE, PUBMED, REMARK)
+  #
+  def reference(num = nil, key = nil)
+    field_multi_sub('REFERENCE')
 
-    return @data['REFERENCE'] unless @orig['REFERENCE']
-
-    hash = {}			# temporal hash
-    key = ''			# temporal key
-
-    @orig['REFERENCE'].each_line do |line|
-      tag = tag_get(line)
-      line.chomp!
-
-      case tag
-      when /REFERENCE/
-        @data['REFERENCE'].push(hash) unless hash.empty?
-        key = tag
-        hash = { key => tag_cut(line) }
-      when /\w+/
-        key = tag
-        hash[key] = tag_cut(line)
-      else
-        hash[key] << " " + tag_cut(line)
-      end
-    end
-    @data['REFERENCE'].push(hash)
-
-    return @data['REFERENCE']
+    if block_given?
+      @data['REFERENCE'].each do |ref|
+	yield(ref)			# Hash of each REFERENCE
+      end				#   obj.reference do |r| r['TITLE'] end
+    elsif num
+      if key
+	@data['REFERENCE'][num-1][key]	# key contents of num'th REFERENCE
+      else				#   obj.reference(1, 'JOURNAL') -> 1st
+	@data['REFERENCE'][num-1]	# Hash of num'th REFERENCE
+      end				#   obj.reference(2) -> 2nd REFERENCE
+    else
+      @data['REFERENCE']		# Array of Hash of REFERENCE (default)
+    end					#   obj.reference
   end
 
 
@@ -577,9 +409,10 @@ class GenBank
   #  remarks.  Optional keyword/one or more records/may include blank
   #  records.
   #
-  def parse_COMMENT
-    @data['COMMENT'] = fetch('COMMENT')
-    return @data['COMMENT']
+  # comment - returns contents of the COMMENT record as String
+  #
+  def comment
+    field_fetch('COMMENT')
   end
 
 
@@ -596,75 +429,91 @@ class GenBank
   #
   #   http://www.ncbi.nlm.nih.gov/collab/FT/index.html
   #
-  def parse_FEATURES
-    @data['FEATURES'] = []
-
-    return @data['FEATURES'] unless @orig['FEATURES']
-
-    head = ''			# temporal feature key (source, CDS, ...)
-    body = ''			# temporal feature contents (pos, /qualifier=)
-
-    @orig['FEATURES'].each_line do |line|
-      if line =~ /^ {5}(\S+)\s+(.*)/
-        @data['FEATURES'].push(parse_qualifiers(head, body)) unless head.empty?
-        head, body = $1, $2
-      else
-        body << line
+  # features - returns contents of the FEATURES record as Array of Hash
+  #   (key : feature, position, ...)
+  #
+  def features(num = nil, key = nil)
+    unless @data['FEATURES']
+      @data['FEATURES'] = []
+      ary = []
+      @orig['FEATURES'].each_line do |line|
+	next if line =~ /^FEATURES/
+	head = line[0,20].strip		# feature key (source, CDS, ...)
+	body = line[20,60].chomp	# feature value (position, /qualifier=)
+	if line =~ /^ {5}\S/
+	  ary.push([ head, body ])	# [ feature, position, /q="data", ... ]
+	elsif body =~ /^ \//
+	  ary.last.push(body)		# /q="data..., /q=data, /q
+	else
+	  ary.last.last << body		# ...data..., ...data..."
+	end
+      end
+      ary.each do |feature|		# feature is Array
+	@data['FEATURES'].push(parse_qualifiers(feature))
       end
     end
-    @data['FEATURES'].push(parse_qualifiers(head, body))
 
-    return @data['FEATURES']
+    if block_given?
+      @data['FEATURES'].each do |feature|
+	yield(feature)			# Hash of each FEATURES
+      end				#   obj.features do |f| f['gene'] end
+    elsif num				#     f.has_key?('virion'), p f, ...
+      if key
+	@data['FEATURES'][num-1][key]	# key contents of num'th FEATURES
+      else				#   obj.features(3, 'feature') -> 3rd
+	@data['FEATURES'][num-1]	# Hash of num'th FEATURES
+      end				#   obj.features(2) -> 2nd FEATURES
+    else
+      @data['FEATURES']			# Array of Hash of FEATURES (default)
+    end					#   obj.features
   end
-
-
-  def parse_qualifiers(head, body)
-    hash = { 'feature' => head }
-
-    body.sub(%r{^[^/]+}) do |pos|
-      hash['position'] = pos.gsub(/\s+/, '')	# before the 1st '/' without \s
-    end
-
-    body.scan(%r{ /(\S+)=("[^"]+"|\S+)}).each do |key, value|
-      value.tr!('"', '')
-      if key == 'translation'
-        value.gsub!(/\s+/, '')
-        hash[key] = AAseq.new(value)		# Amino Acid sequence object
-      elsif key == 'db_xref'
-        unless hash[key]
-          hash[key] = []
-        end
-        hash[key].push(value)
-      elsif key == 'codon_start'
-        hash[key] = value.to_i
-      else
-        hash[key] = value
+  def each_cds
+    features do |feature|
+      if feature['feature'] == 'CDS'
+        yield(feature)			# iterate only for the 'CDS' FEATURES
       end
     end
-
-    body.scan(%r{ /([^=]+) }).each do |key|	# for /virion etc.
-      hash[key] = true
+  end
+  def each_gene
+    features.each do |feature|
+      if feature['feature'] == 'gene'
+        yield(feature)			# iterate only for the 'gene' FEATURES
+      end
     end
-
-    return hash
   end
 
 
   # BASE COUNT  - Summary of the number of occurrences of each base
   #  code in the sequence. Mandatory keyword/exactly one record.
   #
-  def parse_BASE_COUNT
-    # set the default value of the hash to 0
-    # because others ('o') is not always existing
-    @data['BASE COUNT'] = Hash.new(0)
-
-    if @orig['BASE COUNT']
-      @orig['BASE COUNT'].scan(/(\d+) (\w)/).each do |n, b|
-        @data['BASE COUNT'][b] = n.to_i
+  # basecount - returns the BASE COUNT of the base as Fixnum
+  #   (base : a, t, g, c and o for others)
+  #
+  def basecount(base = nil)
+    unless @data['BASE COUNT']
+      # defaults to 0 because others ('o') is not always existing
+      hash = Hash.new(0)
+      @orig['BASE COUNT'].scan(/(\d+) (\w)/).each do |c, b|
+	hash[b] = c.to_i
       end
+      @data['BASE COUNT'] = hash
     end
 
-    return @data['BASE COUNT']
+    if block_given?
+      @data['BASE COUNT'].each do |base, count|
+        yield(base, count)	# each base count pair
+      end
+    elsif base
+      base.downcase!
+      @data['BASE COUNT'][base]	# counts of the given base
+    else
+      @data['BASE COUNT']	# Hash of BASE COUNT
+    end
+  end
+  def gc
+    num_gc = basecount('g') + basecount('c')
+    num_at = basecount('a') + basecount('t')
+    return format("%.1f", num_gc * 100.0 / (num_at + num_gc)).to_f
   end
 
 
@@ -675,19 +524,63 @@ class GenBank
   #
   #  - The ORIGIN line is followed by sequence data (multiple records).
   #
-  def parse_ORIGIN
-    @data['ORIGIN'] = ''
+  # origin - returns contents of the ORIGIN record as String
+  # naseq - returns DNA sequence in the ORIGIN record as NAseq object
+  #
+  def origin
+    unless @data['ORIGIN']
+      ori = @orig['ORIGIN'][/.*/]			# 1st line
+      seq = @orig['ORIGIN'].sub(/.*/, '')		# sequence lines
+      @data['ORIGIN']   = truncate(tag_cut(ori))
+      @data['SEQUENCE'] = NAseq.new(seq.tr('^a-z', ''))	# without [\s\d\/]+
+    end
+    @data['ORIGIN']
+  end
+  def naseq
+    unless @data['SEQUENCE']
+      origin
+    end
+    @data['SEQUENCE']
+  end
 
-    seqence = ''		# temporal sequence String
 
-    if @orig['ORIGIN']
-      @data['ORIGIN'] = tag_cut(@orig['ORIGIN'][/.*/]) # before the 1st "\n"
-      seqence = @orig['ORIGIN'].sub(/.*/, '').gsub(/[\s\d\/]+/, '')
+  ### private methods
+
+  private
+
+  def parse_qualifiers(feature)
+    hash = Hash.new('')
+
+    hash['feature'] = feature.shift
+    hash['position'] = feature.shift.gsub(/\s/, '')
+
+    feature.each do |f|
+      if f =~ %r{/([^=]+)=?"?([^"]*)"?}
+	qualifier, data = $1, $2
+#	qualifier, data = $1, truncate($2)
+
+	if data.empty?
+	  data = qualifier
+	end
+
+	case qualifier
+	when 'translation'
+	  hash[qualifier] = AAseq.new(data.gsub(/\s/, ''))
+#	  hash[qualifier] = AAseq.new(data.tr('^A-Z', ''))
+	when 'db_xref'
+	  if hash[qualifier].empty?
+	    hash[qualifier] = []
+	  end
+	  hash[qualifier].push(data)
+	when 'codon_start'
+	  hash[qualifier] = data.to_i
+	else
+	  hash[qualifier] = data
+	end
+      end
     end
 
-    @data['SEQUENCE'] = NAseq.new(seqence)
-
-    return @data['ORIGIN']
+    return hash
   end
 
 end
