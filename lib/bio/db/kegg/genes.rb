@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genes.rb,v 0.17 2004/02/21 19:42:07 k Exp $
+#  $Id: genes.rb,v 0.18 2005/02/09 08:31:02 k Exp $
 #
 
 require 'bio/db'
@@ -155,6 +155,20 @@ module Bio
 	end
       end
 
+      def cu
+        hash = Hash.new
+        list = codon_usage
+        base = %w(t c a g)
+        base.each_with_index do |x, i|
+          base.each_with_index do |y, j|
+            base.each_with_index do |z, k|
+              hash["#{x}#{y}#{z}"] = list[i*16 + j*4 * k]
+            end
+          end
+        end
+        return hash
+      end
+
       def aaseq
 	unless @data['AASEQ']
 	  @data['AASEQ'] = Sequence::AA.new(fetch('AASEQ').gsub(/[\s\d\/]+/, ''))
@@ -204,6 +218,7 @@ if __FILE__ == $0
   p g.position
   p g.dblinks
   p g.codon_usage
+  p g.cu
   p g.aaseq
   p g.aalen
   p g.naseq
@@ -258,6 +273,7 @@ end
 === CODON_USAGE
 
 --- Bio::KEGG::GENES#codon_usage(codon = nil) -> Array or Fixnum
+--- Bio::KEGG::GENES#cu -> Hash
 
 === AASEQ
 
