@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: reference.rb,v 1.10 2002/07/03 08:50:08 k Exp $
+#  $Id: reference.rb,v 1.11 2002/07/23 04:50:07 k Exp $
 #
 
 module Bio
@@ -80,7 +80,7 @@ module Bio
       section = "article" unless section
       authors = authors_join(' and ')
       pages   = @pages.sub('-', '--')
-      return <<-END
+      return <<-"END".gsub(/\t/, '')
 	@#{section}{PMID:#{@pubmed},
 	  author  = {#{authors}},
 	  title   = {#{@title}},
