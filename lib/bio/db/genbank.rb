@@ -561,7 +561,8 @@ class GenBank
       case tag
       when /REFERENCE/
 	@data['REFERENCE'].push(hash) unless hash.empty?
-	hash = { tag => tag_cut(line) }
+	key = tag
+	hash = { key => tag_cut(line) }
       when /\w+/
 	key = tag
 	hash[key] = tag_cut(line)
