@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pubmed.rb,v 1.10 2004/01/29 01:33:14 k Exp $
+#  $Id: pubmed.rb,v 1.11 2004/02/05 12:58:57 k Exp $
 #
 
 require 'net/http'
@@ -88,6 +88,8 @@ module Bio
     end
 
     def self.efetch(*ids)
+      return [] if ids.empty?
+
       host = "eutils.ncbi.nlm.nih.gov"
       path = "/entrez/eutils/efetch.fcgi?tool=bioruby&db=pubmed&retmode=text&rettype=medline&id="
 
