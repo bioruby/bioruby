@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.16 2003/07/28 08:32:10 ng Exp $
+#  $Id: fasta.rb,v 1.17 2004/02/04 12:12:36 k Exp $
 #
 
 require 'bio/db'
@@ -112,8 +112,6 @@ module Bio
 
   class FastaNumericFormat < FastaFormat
 
-    undef query, blast, fasta, seq, naseq, nalen, aaseq, aalen
-
     def data
       unless @list
 	@list = @data.strip.split(/\s+/).map {|x| x.to_i}
@@ -134,6 +132,8 @@ module Bio
     def [](n)
       data[n]
     end
+
+    undef query, blast, fasta, seq, naseq, nalen, aaseq, aalen
 
   end #class FastaNumericFormat
 
