@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: transfac.rb,v 1.6 2002/05/28 14:44:20 k Exp $
+#  $Id: transfac.rb,v 1.7 2002/06/24 04:50:34 k Exp $
 #
 
 require "bio/db"
@@ -49,7 +49,7 @@ module Bio
       end
       @data['AC']
     end
-    alias id ac
+    alias entry_id ac
 
     # DT  Date                               (1 per entry)
     #

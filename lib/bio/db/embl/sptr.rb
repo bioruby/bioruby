@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.9 2002/06/18 20:18:15 k Exp $
+#  $Id: sptr.rb,v 1.10 2002/06/24 04:50:34 k Exp $
 #
 
 require 'bio/db'
@@ -102,6 +102,7 @@ module Bio
       id_line('ENTRY_NAME')
     end
     alias entry_name entry
+    alias entry_id entry
 
     def molecule
       id_line('MOLECULE_TYPE')
