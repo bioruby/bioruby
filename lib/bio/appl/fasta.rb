@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.3 2001/12/08 08:57:25 katayama Exp $
+#  $Id: fasta.rb,v 1.4 2001/12/10 10:25:54 katayama Exp $
 #
 
 require 'bio/sequence'
@@ -87,11 +87,10 @@ module Bio
 
     def remote_fasta(query)
       host = "fasta.genome.ad.jp"
-#     path = "/sit-bin/nph-fasta"
-      path = "/sit-bin/nph-fasta.ktym"		# GenomeNet nph- bug work around
+      path = "/sit-bin/nph-fasta"
 
       # ----------+-------+---------------------------------------------------
-      #  @program | query | dbname (supported in GenomeNet)
+      #  @program | query | @db (supported in GenomeNet)
       # ----------+-------+---------------------------------------------------
       #  fasta    | AA    | nr-aa, genes, vgenes, swissprot, swissprot-upd,
       #           |       | pir, prf, pdbstr
