@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.4 2001/12/10 10:25:54 katayama Exp $
+#  $Id: fasta.rb,v 1.5 2001/12/15 01:51:00 katayama Exp $
 #
 
 require 'bio/sequence'
@@ -55,7 +55,7 @@ module Bio
     def local_fasta(query)
       raise "[Error] can't open #{@db}" unless test(?R, @db)
 
-      cmd = "#{@program} -Q -H -m 10"
+      cmd = "#{@program} -Q -H -a -m 10"
 
       @option.each do |opt, value|
 	next if opt.kind_of?(Symbol)
@@ -107,7 +107,7 @@ module Bio
       max_hits  = @option[:hits]   ? @option[:hits]   : 200
       max_align = @option[:align]  ? @option[:align]  : 50
 
-      other_param = "-m 10"
+      other_param = "-a -m 10"
       @option.each do |opt, value|
 	next if opt.kind_of?(Symbol)
 	if opt =~ /^-/
@@ -140,9 +140,13 @@ module Bio
         end
 
 	# header lines - brief list of the hits
-        data.sub!(/.*\nThe best scores are/m, '')
-	data.sub!(/(.*)\n\n>>>/m, '')
-	@list = "The best scores are" + $1
+        if data.sub!(/.*\nThe best scores are/m, '')
+	  data.sub!(/(.*)\n\n>>>/m, '')
+	  @list = "The best scores are" + $1
+	else
+	  data.sub!(/.*\n!!\s+/m, '')
+	  data.sub!(/.*/) { |x| @list = x; '' }
+	end
 
 	# body lines - fasta execution result
 	program, *hits = data.split(/\n>>/)
