@@ -46,23 +46,36 @@ and DBGET etc.
     [RAA:postgres], [RAA:oracle] to use with BioSQL.
   * [RAA:bdb] for faster flat file indexing.
   * [RAA:pp] for pretty print in debug.
+  * [RAA:soap4r] (version >= 1.4.8.1) for KEGG API. Note that libraries
+    which SOAP4R depends such as [RAA:date2], [RAA:devel-logger],
+    [RAA:http-access] (version >= j) with one of [RAA:xmlscan], [RAA:rexml],
+    [RAA:rexml-stable], [RAA:xmlparser], [RAA:nqxml] are also needed.
+    * If you are using Ruby (version >= 1.8), xmlscan, rexml and date2 are
+      already included in the Ruby installation.
 
 * External applications can be used if installed
 
-  * Blast 2.2.5 or better for local blast execution
-  * FASTA for local fasta, ssearch execution
-  * HMMER for local hmmsearch, hmmpfam execution
+  * Blast (version >= 2.2.5) for blast execution on local computer
+  * FASTA for fasta, ssearch execution on local computer
+  * HMMER for hmmsearch, hmmpfam execution on local computer
 
 
 == INSTALL
 
 In the bioruby source directory (such as bioruby-x.x.x/),
 
+  % ruby extconf.rb
+  % su
+  # make site-install 
+
+or
+
   % ruby install.rb config
   % ruby install.rb setup
+  % su
   # ruby install.rb install
 
-If you are using Mac OS X, last line can be
+If you are using Mac OS X, the last two lines would be
 
   % sudo ruby install.rb install
 
@@ -75,11 +88,17 @@ for more details.
 
 If you want to use the OBDA (Open Bio Database Access) to obtain database
 entries, copy a sample config file
+
   etc/bioinfomatics/seqdatabase.ini
+
 to
+
   /etc/bioinfomatics/seqdatabase.ini	(system wide configuration)
+
 or
+
   ~/.bioinformatics/seqdatabase.ini	(personal configuration)
+
 and chage the contens according to your preference.  For more
 informations on the OBDA, see ((<URL:http://obda.open-bio.org/>)).
 
@@ -102,11 +121,11 @@ included in the BioRuby package comes from [RAA:setup] by Minero Aoki.
 
 == AUTHORS
 
-* KATAYAMA Toshiaki <k@bioruby.org>, Project leader
+* KATAYAMA Toshiaki <k@bioruby.org>, project leader
 * Yoshinori K. Okuji <okuji@enbug.org>
-* Mitsuteru S. Nakao <n@bioruby.org>
+* Mitsuteru C. Nakao <n@bioruby.org>
 * KAWASHIMA Shuichi <s@bioruby.org>
 * GOTO Naohisa <ng@bioruby.org>
 
-  * and some others on the Internet...
+  * and many others on the Internet...
 
