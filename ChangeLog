@@ -1,7 +1,35 @@
+2002-06-26  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* BioRuby version 0.3.8 released.
+	* lib/bio/sequence.rb:
+	  * normalize! method added for clean up the object itself.
+	  * 'to_seq' method was renamed to 'seq' (!)
+	    * to_xxxx should be used when the class of the object changes.
+	* lib/bio/appl/blast/xmparser.rb:
+	  * each_iteration, each_hit, each, hits, statistics, message methods
+	    are added in Report class.
+	  * statistics, message methods are added in Iteration class.
+	  * methods compatible with Fasta::Report::Hit are added in Hit class.
+	* lib/bio/appl/blast/rexml.rb:
+	  * many APIs were changed to follow the xmlparser.rb's. (!)
+	* lib/bio/appl/{blast.rb,fasta.rb]:
+	  * class method parser() is added for loading specified Report class.
+	* etc/bioinformatics/seqdatabase.ini: added for OBDA (!)
+	  * sample setup for BioRegistry - Open Bio Sequence Database Access.
+	* lib/bio/extend.rb: added (!)
+	  * This module adds some functionarity to the existing classes and
+	    not loaded by default. User should require specifically if needed.
+	* lib/bio/util/*: removed and merged into lib/bio/extend.rb (!)
+	* lib/bio/id.rb: removed (!)
+	* lib/bio/db/{embl.rb,sptr.rb,transfac.rb}: added entry_id
+	* lib/bio/data/keggorg.rb: updated
+	* sample/genes2* sample/genome2*: updated
+	* doc/Tutrial.rd.ja: updated
+
 2002-06-19  KATAYAMA Toshiaki  <k@bioruby.org>
 
 	* BioRuby version 0.3.7 released.
-	* lib/bio/sequence.rb: Sequence inherits String again (!!!)
+	* lib/bio/sequence.rb: Sequence inherits String again (!)
 	* lib/bio/db.rb, db/embl.rb, db/sptr.rb: moved EMBL specific methods
 
 2002-06-18  KATAYAMA Toshiaki  <k@bioruby.org>
@@ -11,10 +39,10 @@
 
 2002-05-28  KATAYAMA Toshiaki  <k@bioruby.org>
 
-	* lib/bio/appl/fasta.rb: parser separated, API renewal (!!!)
+	* lib/bio/appl/fasta.rb: parser separated, API renewal (!)
 	  * lib/bio/appl/fasta/format10.rb: moved from fasta.rb
 
-	* lib/bio/appl/blast.rb: parser separated, API renewal (!!!)
+	* lib/bio/appl/blast.rb: parser separated, API renewal (!)
 	  * lib/bio/appl/blast/format8.rb: newly added
 	  * lib/bio/appl/blast/rexml.rb: newly added
 	  * lib/bio/appl/blast/xmlparser.rb: moved from blast.rb
