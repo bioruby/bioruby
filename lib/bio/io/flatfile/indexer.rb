@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.11 2003/04/21 06:40:02 ng Exp $ 
+#  $Id: indexer.rb,v 1.12 2003/04/21 15:40:57 ng Exp $ 
 # 
 
 module Bio
@@ -245,7 +245,8 @@ module Bio
 
 	class FastaFormatParser < TemplateParser
 	  NAMESTYLE = NameSpaces.new(
-	     NameSpace.new( 'UNIQUE', Proc.new { |x| x.entry_id } ),
+	     NameSpace.new( 'UNIQUE', nil ),
+	     NameSpace.new( 'primary_id', Proc.new { |x| x.entry_id } ),
 	     NameSpace.new( 'accession', Proc.new { |x| x.accessions } ),
 	     NameSpace.new( 'id', Proc.new { |x| 
 			     x.identifiers.id_strings
@@ -256,6 +257,25 @@ module Bio
 				     )
 	  PRIMARY = 'UNIQUE'
 	  SECONDARY = [ 'accession', 'id', 'word' ]
+
+	  def unique_namespace
+	    r = "#{@flatfilename_base}:#{@count}"
+	    @count += 1
+	    r
+	  end
+
+	  def parse_primary
+	    if p = self.primary.proc then
+	      r = p.call(@entry)
+	      unless r.is_a?(String) and r.length > 0
+		@fatal = true
+		raise 'primary id must be a non-void string'
+	      end
+	      r
+	    else
+	      unique_namespace
+	    end
+	  end
 				     
 	  def initialize(pri_name = nil, sec_names = nil)
 	    super()
@@ -269,6 +289,8 @@ module Bio
 	  end
 	  def open_flatfile(fileid, file)
 	    super
+	    @count = 1
+	    @flatfilename_base = File.basename(@flatfilename)
 	    @flatfile.pos = 0
 	    begin
 	      pos = @flatfile.pos
