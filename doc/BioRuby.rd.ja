@@ -1,6 +1,6 @@
 =begin
 
-  $Id: BioRuby.rd.ja,v 1.5 2001/12/15 03:24:10 katayama Exp $
+  $Id: BioRuby.rd.ja,v 1.6 2001/12/19 12:21:08 katayama Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -62,6 +62,7 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
 
 * アミノ酸配列や塩基配列の、翻訳やウィンドウサーチなどを含む操作、
   スプライシングなどを表す GenBank 形式の location フォーマットの処理
+* BLAST/FASTA などを用いた相同性検索
 * ゲノムネット ((<URL:http://www.genome.ad.jp>)) の検索とデータ取得
 * GenBank や KEGG など様々なデータベースの細かいパース
 * PubMed/MEDLINE などの引用文献データの取得と整形
@@ -70,8 +71,8 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
 などです。詳しい使用方法については、個々のクラスに関するドキュメントや、
 チュートリアルを参照して下さい。
 
-他に、まだ未統合ですが、クラスタリングや Smith-Waterman アルゴリズムの実
-装なども行なわれています。
+他に、まだ未統合ですが C 言語による、クラスタリングや Smith-Waterman ア
+ルゴリズムの実装なども行なわれています。
 
 === クラス階層
 
@@ -85,6 +86,7 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |- class Bio::Reference		bio/reference.rb	stable
   |- class Bio::Pathway			bio/pathway.rb		stable
   |- class Bio::Relation		bio/pathway.rb		stable
+  |- class Bio::ID			bio/id.rb		beta
   |- class Bio::DB			bio/db.rb		beta
   |  |- class Bio::FastaFormat		bio/db/fasta.rb		stable
   |  |- class Bio::NCBIDB		bio/db.rb		beta
@@ -121,6 +123,7 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |- class Bio::KEGG::Microarray	bio/db/kegg/microarray.rb	alpha
   |- class Bio::KEGG::Microarrays	bio/db/kegg/microarray.rb	alpha
   |- class Bio::FlatFile		bio/io/flatfile.rb	stable
+  |- class Bio::BRDB			bio/io/brdb.rb		alpha
   |- class Bio::DBGET			bio/io/dbget.rb		stable
   |- class Bio::PubMed			bio/io/pubmed.rb	stable
   |- class Bio::Fasta			bio/appl/fasta.rb	stable
@@ -158,6 +161,7 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |     |-Iteration			bio/appl/blast.rb	class
   |     |-Hit				bio/appl/blast.rb	class
   |     `-Hsp				bio/appl/blast.rb	class
+  |- BRDB				bio/io/brdb.rb		class
   |- CodonTable				bio/data/codontable.rb	constant
   |- DB					bio/db.rb		class
   |- DBGET				bio/io/dbget.rb		class
@@ -174,6 +178,7 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |- FastaNumericFormat			bio/db/fasta.rb		class
   |- FlatFile				bio/io/flatfile.rb	class
   |- GenBank				bio/db/genbank.rb	class
+  |- ID					bio/id.rb		class
   |- KEGG				bio/db/kegg/		class
   |  |- BRITE				bio/db/kegg/brite.rb	class
   |  |- CELL				bio/db/kegg/cell.rb	class

@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.4 2001/12/08 09:05:49 katayama Exp $
+  $Id: Tutorial.rd.ja,v 1.5 2001/12/19 12:21:08 katayama Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -22,21 +22,23 @@
     
     seq = Bio::Sequence::NA.new("atgcatgcaaaa")
     
-    p seq                               # 元の配列
-    p seq.complement                    # 相補配列
-    p seq.subseq(3,8)                   # 3 塩基目から 8 塩基目まで
+    puts seq				# 元の配列
+    puts seq.complement			# 相補配列 (Sequence::NA オブジェクト)
+    puts seq.subseq(3,8)		# 3 塩基目から 8 塩基目まで
     
-    p seq.gc_percent                    # GC 塩基の割合
-    p seq.base_composition              # 全塩基組成
+    p seq.gc_percent			# GC 塩基の割合 (Float)
+    p seq.composition			# 全塩基組成 (Hash)
     
-    p seq.translate                     # 翻訳配列 (Sequence::AA オブジェクト)
-    p seq.translate(2)                  # ２文字目から翻訳（普通は１から）
-    p seq.translate(2,11)               # 11番目のコドンテーブルを使用
-    p seq.translate.to_a                # アミノ酸の名前で表示
-    p seq.translate.to_a(true)          # 短い３文字コードで表示
-    p seq.translate.molecular_weight    # 分子量を計算
+    puts seq.translate			# 翻訳配列 (Sequence::AA オブジェクト)
+    puts seq.translate(2)		# ２文字目から翻訳（普通は１から）
+    puts seq.translate(1,11)		# 11番目のコドンテーブルを使用
     
-    p seq.complement.translate          # 相補配列の翻訳
+    p seq.translate.to_a		# アミノ酸を３文字コードで表示 (Array)
+    p seq.translate.to_ary		# アミノ酸を名前で表示 (Array)
+    p seq.translate.composition		# アミノ酸組成 (Hash)
+    p seq.translate.molecular_weight	# 分子量を計算 (Float)
+    
+    puts seq.complement.translate	# 相補配列の翻訳
 
 実際には Sequence::NA オブジェクトはファイルから読み込んだ文字列から生成
 したり、データベースから取得したものを使ったりします。たとえば、
@@ -50,7 +52,7 @@
     
     my_naseq = Sequence::NA.new(input_seq)
     my_aaseq = my_naseq.translate
-  
+    
     puts my_aaseq
 
 このプログラムを na2aa.rb として、以下の塩基配列
@@ -157,8 +159,8 @@ GenBank 形式のファイル（元の ftp://ftp.ncbi.nih.gov/genbank/ の .seq ファ
 
 == FASTA による相同性検索を行う（Bio::Fasta クラス）
 
-前節の続きで、問い合わせ配列が FASTA 形式で入った query.pep がある時、ロー
-カルとリモートで FASTA 検索を行うには以下のようにします。
+問い合わせ配列が FASTA 形式で入った query.pep がある時、ローカルとリモー
+トで FASTA 検索を行うには、それぞれ以下のようにします。
 
 === ローカルの場合
 
@@ -201,10 +203,11 @@ FASTA がインストールされていることを確認して（コマンド名が fasta33 でパ
     seq = ">test seq\nYQVLEEIGRGSFGSVRKVIHIPTKKLLVRKDIKYGHMNSKE"
     factory.query(seq)
 
-のように factory に対して直接 query メソッドを呼ぶ方が手軽でしょう。
+のように factory に対して直接 query メソッドを呼ぶ手軽な方法もあります。
 
 FASTA のオプションを与えたい場合、３番目の引数に hash で渡しますが、ktup 
-だけはシンボル :ktup をキーにして渡して下さい。
+だけはシンボル :ktup をキーにして渡して下さい。引数を取らないオプション
+を渡したい場合は '-B' => '' など空文字列となる値を入れておいて下さい。
 
 例えば ktup 値を 1 にして、ベスト 10 位以内のヒットを得る場合のオプショ
 ンは、以下のようになります。

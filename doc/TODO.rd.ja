@@ -1,6 +1,6 @@
 =begin
 
-  $Id: TODO.rd.ja,v 1.5 2001/12/15 02:08:19 katayama Exp $
+  $Id: TODO.rd.ja,v 1.6 2001/12/19 12:21:08 katayama Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -20,6 +20,12 @@
 * ドキュメント
   * リファレンス
     * 全クラスに doc template 埋め込む
+
+* BioRuby-DB を作る
+  * bio/io/brdb.rb と各 bio/db/**/*.rb
+  * 作成スクリプト sample (support?) へ
+
+* sample/ のライセンス文変更は？ ていうか sample/ 消す
 
 * DB 系全クラス
   * id -> entry_id
@@ -43,8 +49,6 @@
  * そんな汎用的でないので aaindex.rb, microarray.rb, prosite.rb などで
    それぞれ実装
 
-* sample/ のライセンス文変更は？ ていうか sample/ 消す
-
 * FASTA/BLAST/HMMER など → Design.rd.ja (lib/bio/appl/ に)
   * アライメントオブジェクト
     * class Bio::Alignment
@@ -53,12 +57,6 @@
     * アライメントビューアもほしい
   * Pjotr さんの BLAST はどうなった？
   * BLAST は -m 7 (xml) 固定でいく？
-
-* Sequence::RNA
-  * NA を継承？
-    * gsub('NA', 'DNA') も？
-  * または DNA, RNA コンテナ？
-  * → とくに意見も出ないのでいらないのかな
 
 * 遅くとも 12 月中に出す
 
@@ -73,14 +71,12 @@
 
 * モチーフ系 InterPro (incl. Pfam etc.) 処理系
 
-* Bio::ID or Bio::Link 系 dbxref, entry_id etc.
-
 * パラレル
 
 * ext/ のマージ
 
 * インターフェイス → Design.rd.ja
-  * MySQL bio/io/[my]sql.rb → bioruby-db ?
+  * MySQL bio/io/brdb.rb → bioruby-db
   * HTTP bio/io/{ncbi,embl,genomenet}.rb → GenomeNet/NCBI/EMBL etc.
 
 * テスト環境の整備
