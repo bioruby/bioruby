@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: pathway.rb,v 1.2 2001/10/17 14:43:11 katayama Exp $
+#  $Id: pathway.rb,v 1.3 2001/10/31 03:44:17 katayama Exp $
 #
 
 module Bio
@@ -76,7 +76,7 @@ class Pathway
       hash.each do |to, relation|
 	x = @index[from]
 	y = @index[to]
-	matrix[x][y] = relation		# Bug: matrix[x][y] == matrix[x+1][y] !
+	matrix[x][y] = relation
       end
     end
     Matrix[*matrix]
@@ -96,9 +96,11 @@ class Pathway
   end
 
   def common_subgraph(graph)
+    raise NotImplementedError
   end
 
   def clique
+    raise NotImplementedError
   end
 
   def small_world
@@ -172,9 +174,11 @@ class Pathway
   end
 
   def dijkstra
+    raise NotImplementedError
   end
 
   def floyd
+    raise NotImplementedError
   end
 
 end
