@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.6 2001/11/12 20:54:43 katayama Exp $
+#  $Id: sptr.rb,v 1.7 2002/05/28 07:53:38 n Exp $
 #
 
 require 'bio/db'
@@ -233,6 +233,8 @@ module Bio
     # CC   -!- TOPIC: FIRST LINE OF A COMMENT BLOCK;
     # CC       SECOND AND SUBSEQUENT LINES OF A COMMENT BLOCK.
     #
+    # CC   -!- CAUTION: HOGE HOGE IS FUGA FUGA!
+    #
 
     CC_TOPICS = ['ALTERNATIVE PRODUCTS','CATALYTIC ACTIVITY','CAUTION',
       'COFACTOR','DATABASE','DEVELOPMENTAL STAGE','DISEASE','DOMAIN',
@@ -260,7 +262,7 @@ module Bio
    '--------------------------------------------------------------------------'
 	dlm = /-!- /
 	fetch('CC').split(cmt)[0].sub(dlm,'').split(dlm).each do |tmp|
-	  if tmp =~ /(^[A-Z ]+): (.+)\./
+	  if tmp =~ /(^[A-Z ]+): (.+)[\.!]/
 	    unless cc['$1']
 	      cc[$1] = [$2]
 	    else
