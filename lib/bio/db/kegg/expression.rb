@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: expression.rb,v 1.6 2001/11/15 13:42:41 shuichi Exp $
+#  $Id: expression.rb,v 1.7 2001/11/19 14:19:07 shuichi Exp $
 #
 
 require "bio/db"
@@ -115,9 +115,8 @@ module Bio
           end
           return ary[0..i]
         else
-          return ary[0..num]
+          return ary[0..num-1]
         end
-        ary[0..num]
       end
 
       def down_regulate(num=20, threshold=nil)
@@ -130,7 +129,7 @@ module Bio
           end
           return ary[0..i]
         else
-          return ary[0..num]
+          return ary[0..num-1]
         end
       end
 
