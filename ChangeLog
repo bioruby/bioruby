@@ -1,7 +1,13 @@
+2002/04/08
+	* version 0.3.6 released -k
+	* fixed inconsistency among db.rb, genbank.rb, genome.rb
+	* genbank.rb : serious bug fixed in locus method
+	* feature.rb : method name 'type' has changed
+
 2002/03/26
 	* sample/gb2tab.rb use ruby instead of perl in the example -o
 	* sample/gb2fasta.rb updated -o
-	
+
 2002/03/11
 	* version 0.3.5 released -k
 
@@ -21,7 +27,7 @@
 	* changed to use 'cgi' instead of 'cgi-lib' -n,k
 
 2002/01/31
-        * version 0.3.4 released -k
+	* version 0.3.4 released -k
 	* lib/bio/db/genbank.rb -k
 	  * fix for multiple 'allele' in the feature key. (thanx Lixin)
 
@@ -39,10 +45,10 @@
 	  * detailed docuement added
 	* lib/bio/sequence.rb -k
 	  * to_fasta, complement, translate fixed (due to the changes made
-            in 0.3.3)
+	    in 0.3.3)
 	  * Sequence::NA#initialize doesn't replace 'u' with 't' any longer
-            * gc_percent, complement, translate, to_re, molecular_weight
-              methods are adapted to this change
+	    * gc_percent, complement, translate, to_re, molecular_weight
+	      methods are adapted to this change
 	  * molecular_weight changed to calculate more precisely
 	  * test code added 
 	* lib/bio.rb -k
