@@ -17,11 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.21 2002/07/30 10:14:32 k Exp $
+#  $Id: bio.rb,v 1.22 2002/08/19 10:58:57 k Exp $
 #
 
 module Bio
-  BIORUBY_VERSION = [0, 3, 9].extend(Comparable)
+  BIORUBY_VERSION = [0, 4, 0].extend(Comparable)
 end
 
 ### Sequence
@@ -52,6 +52,8 @@ require 'bio/pathway'
 
 require 'bio/io/registry'
 require 'bio/io/flatfile'
+require 'bio/io/flatfile/index'
+require 'bio/io/flatfile/bdb'
 require 'bio/io/dbget'
 require 'bio/io/pubmed'
 require 'bio/io/sql'
@@ -71,17 +73,19 @@ require 'bio/db'		# required by bio/db/*.rb
 
 ## GenBank/RefSeq/DDBJ
 
-require 'bio/db/genbank'
-require 'bio/db/genpept'
-require 'bio/db/refseq'
-require 'bio/db/ddbj'
+require 'bio/db/genbank'	# required by bio/db/genbank/*.rb
+require 'bio/db/genbank/genbank'
+require 'bio/db/genbank/genpept'
+require 'bio/db/genbank/refseq'
+require 'bio/db/genbank/ddbj'
 
 ## EMBL/TrEMBL/Swiss-Prot/SPTR
 
-require 'bio/db/embl'
-require 'bio/db/sptr'
-require 'bio/db/trembl'
-require 'bio/db/swissprot'
+require 'bio/db/embl'		# required by bio/db/embl/*.rb
+require 'bio/db/embl/embl'
+require 'bio/db/embl/sptr'
+require 'bio/db/embl/trembl'
+require 'bio/db/embl/swissprot'
 
 ## KEGG
 
@@ -123,5 +127,5 @@ require 'bio/db/fasta'
 require 'bio/appl/fasta'
 require 'bio/appl/blast'
 #require 'bio/appl/hmmer'
-
+require 'bio/appl/emboss'
 
