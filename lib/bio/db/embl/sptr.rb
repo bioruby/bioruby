@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.13 2002/08/16 17:34:52 k Exp $
+#  $Id: sptr.rb,v 1.14 2002/09/10 08:31:16 n Exp $
 #
 
 require 'bio/db/embl'
@@ -42,8 +42,8 @@ module Bio
     # See also the SWISS-PROT dicument file SPECLIST.TXT.
     #
 
-    ENTRY_REGREXP = /[A-Z0-9]{1,4}_[A-Z0-9]{1,5}/
-    DATA_CLASS = ["STANDARD", "PRELIMINARY"]
+    @@entry_regrexp = /[A-Z0-9]{1,4}_[A-Z0-9]{1,5}/
+    @@data_class = ["STANDARD", "PRELIMINARY"]
 
     def id_line(key = nil)
       unless @data['ID']
@@ -97,7 +97,7 @@ module Bio
     # Bio::SPTR#ac  -> Array
     #          #accessions  -> Array
 
-    AC_REGREXP=/[OPQ][0-9][A-Z0-9]{3}[0-9]/
+    @@ac_regrexp = /[OPQ][0-9][A-Z0-9]{3}[0-9]/
 
     # DT Line; date (3/entry)
     # DT DD-MMM-YYY (rel. NN, Created)
@@ -138,6 +138,7 @@ module Bio
     def de 
       fetch('DE')
     end
+    alias definition de 	
 
     # GN Line: Gene name(s) (>=0, optional)
     # GN   HNS OR DRDX OR OSMZ OR BGLY.
@@ -241,7 +242,7 @@ module Bio
     # CC   -!- CAUTION: HOGE HOGE IS FUGA FUGA!
     #
 
-    CC_TOPICS = ['ALTERNATIVE PRODUCTS','CATALYTIC ACTIVITY','CAUTION',
+    @@cc_topics = ['ALTERNATIVE PRODUCTS','CATALYTIC ACTIVITY','CAUTION',
       'COFACTOR','DATABASE','DEVELOPMENTAL STAGE','DISEASE','DOMAIN',
       'ENZYME REGULATION','FUNCTION','INDUCTION','MASS SPECTROMETRY',
       'MISCELLANEOUS','PATHWAY','PHARMACEUTICAL','POLYMORPHISM','PTM',
@@ -278,7 +279,11 @@ module Bio
 	    end
 	  end
 	rescue NameError
-	  raise "Invalid CC Lines, \n'#{self.get('CC')}'\n"
+	  if fetch('CC') == ''
+            return {}
+          else
+	    raise "Invalid CC Lines, \n'#{self.get('CC').inspect}'\n"
+          end
 	end
 
 	@data['CC'] = cc
@@ -328,8 +333,10 @@ module Bio
 	end
 	return tmp
 
+      when nil
+	return @data['CC']	
       else
-	return @data['CC']
+	return @data['CC'][num]
       end
     end
 
@@ -339,7 +346,7 @@ module Bio
     # "DR  database_identifier; primary_identifier; secondary_identifier."
     # Bio::EMBLDB#dr  -> Hash w/in Array
 
-    DR_DATABASE_IDENTIFIER=['EMBL','CARBBANK','DICTYDB','ECO2DBASE','ECOGENE',
+    @@dr_database_identifier = ['EMBL','CARBBANK','DICTYDB','ECO2DBASE','ECOGENE',
       'FLYBASE','GCRDB','HIV','HSC-2DPAGE','HSSP','INTERPRO','MAIZEDB',
       'MAIZE-2DPAGE','MENDEL','MGD''MIM','PDB','PFAM','PIR','PRINTS',
       'PROSITE','REBASE','AARHUS/GHENT-2DPAGE','SGD','STYGENE','SUBTILIST',
@@ -454,6 +461,7 @@ module Bio
 	@data['']
       end
     end
+    alias aaseq seq
 
   end
 
@@ -507,6 +515,7 @@ end
 === DE lines (Description)
 
 --- Bio::SPTR#de -> String
+             #definition -> String
 
 === KW lines (Keyword)
 
@@ -546,6 +555,7 @@ end
 
 --- Bio::SPTR#sq -> Hash
 --- Bio::EMBL#seq -> Bio::Sequece::AA
+             #aaseq -> Bio::Sequece::AA
 
 =end
 
