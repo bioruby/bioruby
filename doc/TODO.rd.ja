@@ -1,6 +1,6 @@
 =begin
 
-  $Id: TODO.rd.ja,v 1.3 2001/11/15 04:09:12 katayama Exp $
+  $Id: TODO.rd.ja,v 1.4 2001/12/08 09:28:41 katayama Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -9,10 +9,8 @@
 == 当面の課題
 
 * cvs pserver のアカウント
-* cvs@bioruby.org のアナウンス
 * bioruby.org 別マシン化ひつよう？
 * RWiki 教えて偉い人コーナー
-* 宴会
 
 == 0.4 (stable branch)
 
@@ -25,27 +23,23 @@
     * gsub('NA', 'DNA') も？
   * または DNA, RNA コンテナ？
 
-* FastaFormat で quality な数値データどうする？
-
-* FASTA/BLAST/HMMER など → Design.rd.ja (lib/bio/appl/ に?)
+* FASTA/BLAST/HMMER など → Design.rd.ja (lib/bio/appl/ に)
   * アライメントオブジェクト
     * class Bio::Alignment
       * class Bio::Alignment::Pairwise  or class Bio::PairwiseAlignment
       * class Bio::Alignment::Multiple  or class Bio::MultipleAlignment
     * アライメントビューアもほしい
-  * FastaFormat オブジェクトに .fasta などのメソッド？
   * Pjotr さんの BLAST はどうなった？
-  * BLAST は -m 7 (xml) 固定、FASTA -m 10 固定でいく？
-  * ネットワークごし（サーバ）とローカルの実行のインターフェイス
+  * BLAST は -m 7 (xml) 固定でいく？
 
-* Pathway, COMPOUND, ENZYME 仕上げる
+* COMPOUND, ENZYME 仕上げる
 
 * db.rb
   * デザイン見直し
   * private メソッドの整理
     * \001 の gsub/split にコメント
 
-* DB 系全クラス id -> entry_id, bio_id ?
+* DB 系全クラス id -> entry_id
 
 * sample/ のライセンス文変更は？
 
@@ -73,8 +67,6 @@
   * Korea
   * Russia
   * French
-
-* 可変引数は hash 渡し、simbol などの利用も考える？
 
 * パラレル
 
