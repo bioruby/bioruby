@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: embl.rb,v 1.7 2001/11/06 16:58:52 okuji Exp $
+#  $Id: embl.rb,v 1.8 2002/01/31 08:11:46 nakao Exp $
 #
 
 
@@ -209,7 +209,7 @@ module Bio
     # OS   Genus species (name)
     # "OS   Trifolium repens (white clover)"
     #
-    # Bio::EMBL#DBos  -> Array
+    # Bio::EMBLDB#os  -> Array
 
 
     ##
@@ -287,6 +287,7 @@ module Bio
       end                               #   obj.ft
     end
     alias features ft
+
     ##
     # Bio::EMBL#each_cds -> Hash
     #
@@ -297,6 +298,7 @@ module Bio
 	end
       end
     end
+
     ##
     # Bio::EMBL#each_gene -> Hash
     #
@@ -393,8 +395,7 @@ module Bio
 	  case qualifier
 	  when 'translation'
 	    hash[qualifier] = Sequence::AA.new(data.gsub(/\s/, ''))
-	    #	  hash[qualifier] = Sequence::AA.new(data.tr('^A-Z', ''))
-	  when 'db_xref'
+	  when 'db_xref', 'allele'
 	    if hash[qualifier].empty?
 	      hash[qualifier] = []
 	    end
@@ -423,28 +424,8 @@ end
 
 
 =begin
-= NAME
 
-  embl.rb - A parser object for EMBL entry
-
-
-== Usage:
-
-  emb=Bio::EMBL.new(data)
-
-  include Bio
-  emb=EMBL.new(data)
-
-
-== Author
-  Mitsuteru S. Nakao <n@BioRuby.org>
-  The BioRuby Project (http://BioRuby.org/)
-
-== Class
-
-  class  Bio::EMBL
-
-== Methods
+= Bio::EMBL
 
 * Initialize
 --- Bio::EMBL#new(an_embl_entry)
