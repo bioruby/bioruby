@@ -1,3 +1,16 @@
+2003-07-16  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* lib/bio/sequence.rb: some methods (using 'rna?' internally) were
+	  temporally unusable by the changes in 0.5.0 is fixed.
+
+	* lib/bio/io/flatfile.rb: autodetection failure of the fasta entry
+	  without sequence is fixed.  FlatFile.auto method is added.
+
+	* lib/bio/db.rb: sugtag2array fixed.  DB.open now accepts IO/ARGF.
+
+	* lib/bio/db/embl.rb: references method is added.
+
+
 2003-06-25  KATAYAMA Toshiaki  <k@bioruby.org>
 
 	* BioRuby version 0.5.0 released.
