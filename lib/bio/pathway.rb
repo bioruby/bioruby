@@ -17,10 +17,10 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.25 2001/12/08 07:45:33 katayama Exp $
+#  $Id: pathway.rb,v 1.26 2002/08/30 06:31:47 o Exp $
 #
 
-require 'bio/matrix'
+require 'matrix'
 
 module Bio
 
@@ -164,12 +164,12 @@ module Bio
     end
 
 
-    # pretty printer of the adjacency matrix (format depends on Matrix#dump)
+    # pretty printer of the adjacency matrix
     def dump_matrix(*arg)
       matrix = self.to_matrix(*arg)
       sorted = @index.sort {|a,b| a[1] <=> b[1]}
-      index  = "# " + sorted.collect{|x| x[0]}.join(", ")
-      matrix.dump(index)
+      "[# " + sorted.collect{|x| x[0]}.join(", ") + "\n" +
+	matrix.to_a.collect{|row| ' ' + row.inspect}.join(",\n") + "\n]"
     end
 
     # pretty printer of the adjacency list
@@ -986,4 +986,3 @@ compare Bio::Relation objects if the edges have Comparable property.
       the module Comparable.
 
 =end
-

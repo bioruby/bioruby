@@ -17,11 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: transfac.rb,v 1.7 2002/06/24 04:50:34 k Exp $
+#  $Id: transfac.rb,v 1.8 2002/08/30 06:31:47 o Exp $
 #
 
 require "bio/db"
-require "bio/matrix"
+require "matrix"
 
 module Bio
 

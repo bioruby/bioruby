@@ -17,11 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aaindex.rb,v 1.9 2002/07/25 22:42:08 k Exp $
+#  $Id: aaindex.rb,v 1.10 2002/08/30 06:31:47 o Exp $
 #
 
 require "bio/db"
-require "bio/matrix"
+require "matrix"
 
 module Bio
 
@@ -189,7 +189,7 @@ if __FILE__ == $0
   p aax2.author
   p aax2.title
   p aax2.journal
-  puts aax2.matrix.dump
+  p aax2.matrix
   p aax2.aa
 end
 

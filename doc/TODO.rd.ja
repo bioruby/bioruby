@@ -1,6 +1,6 @@
 =begin
 
-  $Id: TODO.rd.ja,v 1.11 2002/07/30 10:22:45 k Exp $
+  $Id: TODO.rd.ja,v 1.12 2002/08/30 06:31:46 o Exp $
 
   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -28,10 +28,6 @@
 * bio/io/flatfile.rb OBDA dbm インデクシング -ng
   * Berkley DB は bio/io/bdb.rb か何か別ファイルで。
   * FlatFile.new|open → エントリそのものを得るためのメソッド
-
-* matrix.rb 廃止
- * そんな汎用的でないので aaindex.rb, microarray.rb, prosite.rb などで
-   それぞれ実装
 
 * lib/bio/db/kegg/keggtab.rb と lib/bio/data/keggorg.rb の統合？
 
