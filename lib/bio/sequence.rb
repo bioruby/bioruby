@@ -19,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.31 2003/06/16 17:55:34 k Exp $
+#  $Id: sequence.rb,v 0.32 2003/06/16 18:39:26 k Exp $
 #
 
 require 'bio/data/na'
@@ -314,9 +314,10 @@ module Bio
       def rna?
 	self.index('u')
       end
+      private :rna?
 
       def pikachu
-	self.tr("atgc", "pika")		# joke, of course :-)
+	self.dna.tr("atgc", "pika")	# joke, of course :-)
       end
 
     end
