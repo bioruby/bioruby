@@ -1,16 +1,31 @@
 #
-# dbget: Interface to GenomeNet DBGET system - http://www.genome.ad.jp/dbget/
+# bio/dbget.rb - DBGET client module
+#
+#  Interface to GenomeNet DBGET system - http://www.genome.ad.jp/dbget/
 #
 #   Copyright (C) 2000 Mitsuteru S. Nakao <n@bioruby.org>
 #   Copyright (C) 2000, 2001 KATAYAMA Toshiaki <k@bioruby.org>
 #
-#   ChangeLog:
-#     2000/11/20 v0.1 (n) initial version
-#     2000/11/24 v0.2 (k) clean up rewrite
-#     2001/01/29 v1.0 (k) change class to module
+#  This library is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Library General Public
+#  License as published by the Free Software Foundation; either
+#  version 2 of the License, or (at your option) any later version.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Library General Public License for more details.
+#
+#  $Id: dbget.rb,v 1.1 2001/08/21 13:48:33 katayama Exp $
+#
+#  ChangeLog:
+#    2000/11/20 v0.1 (n) initial version
+#    2000/11/24 v0.2 (k) clean up rewrite
+#    2001/01/29 v1.0 (k) change class to module
+#    2001/02/20 v1.1 (k) LGPL
 #
 
-require "socket"
+require 'socket'
 
 module DBGET
 
@@ -116,3 +131,4 @@ module DBGET
   # lmarge ("db entry")
 
 end
+
