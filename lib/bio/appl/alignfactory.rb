@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: alignfactory.rb,v 1.1 2003/07/25 07:48:51 ng Exp $
+#  $Id: alignfactory.rb,v 1.2 2003/07/25 17:14:27 ng Exp $
 #
 
 require 'tempfile'
@@ -79,3 +79,56 @@ module Bio
   end #class AlignFactory
 end #module Bio
 
+=begin
+
+= Bio::AlignFactory
+
+ Bio::AlignFactory is a template class of multiple alignment software.
+ Each wrapper class of alignment software shall inherit this class.
+
+--- Bio::AlignFactory.new(program, option)
+
+      Creates new alignment factory.
+
+--- Bio::AlignFactory#program
+--- Bio::AlignFactory#option
+
+      Access to the variables specified in initialize.
+
+--- Bio::AlignFactory#query(seqs)
+
+      Executes the program(clustalw).
+      If 'seqs' is not nil, perform alignment for seqs.
+      If 'seqs' is nil, simply executes the program.
+
+--- Bio::AlignFactory#query_align(seqs)
+
+      Performs alignment for seqs.
+
+--- Bio::AlignFactory#query_string(str)
+
+      Performs alignment for str.
+      Str should be a string that can be recognized by the program.
+
+--- Bio::AlignFactory#query_by_filename(filename)
+
+      Performs alignment of sequences in the file named filename.
+
+--- Bio::AlignFactory#command
+
+      Shows latest command-line executed by this factory.
+
+--- Bio::AlignFactory#log
+
+      Shows latest messages of program execution.
+
+--- Bio::AlignFactory#report
+
+      Shows latest alignment result (instance of Report class)
+      performed by this factory.
+
+--- Bio::AlignFactory#output
+
+      Shows latest raw alignment result.
+
+=end

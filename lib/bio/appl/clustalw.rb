@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: clustalw.rb,v 1.1 2003/07/25 07:51:08 ng Exp $
+#  $Id: clustalw.rb,v 1.2 2003/07/25 17:14:27 ng Exp $
 #
 
 require 'tempfile'
@@ -95,3 +95,70 @@ module Bio
   end #class ClustalW
 
 end #module Bio
+
+=begin
+
+= Bio::ClustalW
+
+--- Bio::ClustalW.new(path_to_clustalw = 'clustalw', option = '')
+
+      Creates new alignment factory.
+      !!!CAUTION!!!
+      Both arguments 'path_to_clustalw' and 'option' are directly
+      passed to the UNIX-shell (by using IO.popen).
+      This is a potential security hole.
+      You should escape special characters if you need.
+
+--- Bio::ClustalW#program
+--- Bio::ClustalW#option
+
+      Access to the variables specified in Bio::ClustalW.new.
+
+--- Bio::ClustalW#query(seqs)
+
+      Executes the program(clustalw).
+      If 'seqs' is not nil, perform alignment for seqs.
+      If 'seqs' is nil, simply executes CLUSTAL W.
+
+--- Bio::ClustalW#query_align(seqs)
+
+      Performs alignment for seqs.
+
+--- Bio::ClustalW#query_string(str)
+
+      Performs alignment for str.
+      Str should be a string that can be recognized by CLUSTAL W.
+
+--- Bio::ClustalW#query_by_filename(filename)
+
+      Performs alignment of sequences in the file named filename.
+      !!!CAUTION!!!
+      Argument 'filename' is directly passed to the UNIX-shell
+      (by using IO.popen).
+      This is a potential security hole.
+      You should escape special characters if you need.
+
+--- Bio::ClustalW#command
+
+      Shows latest command-line executed by this factory.
+      Note that filenames described in the command-line may already
+      be removed because they are temporary files.
+
+--- Bio::ClustalW#log
+
+      Shows latest messages of CLUSTAL W execution.
+
+--- Bio::ClustalW#report
+
+      Shows latest alignment result (instance of Bio::ClustalW::Report)
+      performed by this factory.
+
+--- Bio::ClustalW#output
+
+      Shows latest raw alignment result (String).
+
+--- Bio::ClustalW#output_dnd
+
+      Shows latest alignment guild-tree (filename.dnd).
+
+=end
