@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: db.rb,v 0.7 2001/10/17 14:43:10 katayama Exp $
+#  $Id: db.rb,v 0.8 2001/10/29 14:38:32 nakao Exp $
 #
 
 module Bio
@@ -306,6 +306,8 @@ class EMBLDB < DB
     entry.each_line do |line|
       next if line =~ /^$/
       tag = tag_get(line)
+      tag = 'R' if tag =~ /^R[NCPXATL]/ # to keep References order
+      next if tag == 'XX'               # Avoid XX lines to store
       if tag != oldtag
 	oldtag = tag
       end
