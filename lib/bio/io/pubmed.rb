@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pubmed.rb,v 1.8 2002/07/23 04:50:43 k Exp $
+#  $Id: pubmed.rb,v 1.9 2003/06/02 10:19:31 k Exp $
 #
 
 require 'net/http'
@@ -69,9 +69,16 @@ module Bio
       return result
     end
 
-    def self.esearch(str, max=100)
-      host = "www.ncbi.nlm.nih.gov"
-      path = "/entrez/eutils/esearch.fcgi?tool=bioruby&db=pubmed&retmax=#{max}&term="
+    def self.esearch(str, hash = {})
+      hash['retmax'] = 100 unless hash['retmax']
+
+      opts = []
+      hash.each do |k, v|
+        opts << "#{k}=#{v}"
+      end
+
+      host = "eutils.ncbi.nlm.nih.gov"
+      path = "/entrez/eutils/esearch.fcgi?tool=bioruby&db=pubmed&#{opts.join('&')}&term="
 
       http = Net::HTTP.new(host)
       response, = http.get(path + CGI.escape(str))
@@ -81,7 +88,7 @@ module Bio
     end
 
     def self.efetch(*ids)
-      host = "www.ncbi.nlm.nih.gov"
+      host = "eutils.ncbi.nlm.nih.gov"
       path = "/entrez/eutils/efetch.fcgi?tool=bioruby&db=pubmed&retmode=text&rettype=medline&id="
 
       ids = ids.join(",")
@@ -89,7 +96,7 @@ module Bio
       http = Net::HTTP.new(host)
       response, = http.get(path + ids)
       result = response.body
-      result = result.split("\n\n+") if ids.size > 1
+      result = result.split("\n\n+")
       return result
     end
 
@@ -121,32 +128,40 @@ end
 
 These class methods access NCBI/PubMed database via HTTP.
 
---- Bio::PubMed.query(id)
+--- Bio::PubMed.esearch(str, options)
+
+      Search keywords in PubMed by E-Utils and returns an array of PubMed IDs.
+      Options can be a hash containing keys include 'field', 'reldate',
+      'mindate', 'maxdate', 'datetype', 'retstart', 'retmax', 'retmode',
+      and 'rettype' as specified in the following URL:
+
+        ((<URL:http://eutils.ncbi.nlm.nih.gov/entrez/query/static/esearch_help.html#PubMed>))
+
+     Default 'retmax' is 100.
+
+--- Bio::PubMed.efetch(pmids)
+
+      Returns an array of MEDLINE records.  A list of PubMed IDs can be
+      supplied as following:
+
+        Bio::PubMed.efetch(123)
+        Bio::PubMed.efetch(123,456,789)
+        Bio::PubMed.efetch([123,456,789])
+
+--- Bio::PubMed.query(pmid)
 
       Retrieve PubMed entry by PMID and returns MEDLINE format string (can
       be parsed by the Bio::MEDLINE and can be converted into Bio::Reference
       object).
 
---- Bio::PubMed.pmfetch(id)
+--- Bio::PubMed.pmfetch(pmid)
 
       Just another query method (by pmfetch).
-
---- Bio::PubMed.efetch(ids)
-
-      Just another query method (by E-Utilities).
-      If multiple IDs given, this method will return multiple MEDLINE
-      record in an Array, otherwise, same as query or pmfetch methods.
 
 --- Bio::PubMed.search(str)
 
       Search the PubMed database by given keywords and returns the list of
       matched records in MEDLINE format.
-
---- Bio::PubMed.esearch(str, max = 100)
-
-      Another search method but returns a list of matched PubMed IDs instead
-      of MEDLINE records (by E-Utilities).
-      If the second argument 'max' is given, up to max IDs will be returned.
 
 
 = For more informations
@@ -164,7 +179,7 @@ These class methods access NCBI/PubMed database via HTTP.
 * PmFetch CGI help
   * ((<URL:http://www.ncbi.nlm.nih.gov/entrez/utils/pmfetch_help.html>))
 * E-Utilities CGI help
-  * ((<URL:http://www.ncbi.nlm.nih.gov/entrez/query/static/eutils_help.html>))
+  * ((<URL:http://eutils.ncbi.nlm.nih.gov/entrez/query/static/eutils_help.html>))
 
 =end
 
