@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: location.rb,v 0.12 2002/03/04 07:37:12 katayama Exp $
+#  $Id: location.rb,v 0.13 2002/05/15 06:44:44 k Exp $
 #
 
 module Bio
@@ -44,17 +44,19 @@ module Bio
       case location
       when /^[<>]?(\d+)$/				# (A, I) n
 	s = e = $1.to_i
-      when /^<?(\d+)\.\.>?(\d+)$/			# (B, I) n..m
+      when /^[<>]?(\d+)\.\.[<>]?(\d+)$/			# (B, I) n..m
 	s = $1.to_i
 	e = $2.to_i
 	if e - s < 0
-	  raise "[Error] invalid range : #{location}"
+#	  raise "[Error] invalid range : #{location}"
+	  $stderr.puts "[Warning] invalid range : #{location}" if $DEBUG
 	end
-      when /^<?(\d+)\^>?(\d+)$/				# (C, I) n^m
+      when /^[<>]?(\d+)\^[<>]?(\d+)$/			# (C, I) n^m
 	s = $1.to_i
 	e = $2.to_i
 	if e - s != 1
-	  raise "[Error] invalid range : #{location}"
+#	  raise "[Error] invalid range : #{location}"
+	  $stderr.puts "[Warning] invalid range : #{location}" if $DEBUG
 	end
       when /^"?([ATGCatgc]+)"?$/			# (H) literal sequence
 	sequence = $1.downcase
@@ -115,6 +117,30 @@ module Bio
       span_max = @locations.max { |a,b| a.to   <=> b.to   }
       return span_min.from, span_max.to
     end
+
+    def offset(n) 
+      return nil unless n > 0			# out of range 
+ 
+      cursor = 0 
+      @locations.each do |x|      
+        if x.sequence 
+          len = x.sequence.size 
+        else 
+          len = x.to - x.from + 1 
+        end  
+        if n > cursor + len 
+          cursor = cursor + len 
+        else 
+          if x.strand < 0 
+            return x.to - (n - cursor - 1) 
+          else 
+            return x.from + (n - cursor - 1) 
+          end 
+        end                             
+      end 
+    
+      return nil				# out of range 
+    end 
 
 
     private
@@ -217,6 +243,7 @@ end
 
 
 if __FILE__ == $0
+  puts "Test new & span methods"
   [
     '754^755',
     'complement(53^54)',
@@ -238,13 +265,31 @@ if __FILE__ == $0
     'one-of(623,627,632)..one-of(628,633,637)',
     'one-of(845,953,963,1078,1104)..1354',
     'join(complement(1..61),complement(AP000007.1:252907..253505))',
+    'complement(join(71606..71829,75327..75446,76039..76203))',
     'order(3..26,complement(964..987))',
     'order(L44135.1:(454.445)..>538,<1..181)',
-  ].each do |x|
-    p x
-    p Bio::Locations.new(x).span
-    p Bio::Locations.new(x)
+    '<200001..<318389',
+  ].each do |pos|
+    p pos
+    p Bio::Locations.new(pos).span
+    p Bio::Locations.new(pos)
   end
+
+  puts "Test offset method"
+  [  
+    '6..15', 
+    'join(6..10,16..30)', 
+    'complement(join(6..10,16..30))', 
+    'join(complement(6..10),complement(16..30))', 
+    'join(6..10,complement(16..30))', 
+  ].each do |pos| 
+    loc = Bio::Locations.new(pos) 
+    p pos
+#   p loc 
+    (1..21).each do |x| 
+      print "offsets(#{x}) : ", loc.offset(x), "\n" 
+    end 
+  end 
 end
 
 
@@ -272,6 +317,7 @@ end
 
 --- Bio::Locations#each { |l| ... }
 --- Bio::Locations#span
+--- Bio::Locations#offset(number)
 
 
 == Appendix : GenBank location descriptor classification
