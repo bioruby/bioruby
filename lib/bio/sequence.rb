@@ -2,6 +2,7 @@
 # bio/sequence.rb - biological sequence class
 #
 #   Copyright (C) 2000, 2001 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001  Yoshinori K. Okuji <o@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.15 2001/12/15 01:49:37 katayama Exp $
+#  $Id: sequence.rb,v 0.16 2001/12/15 03:29:07 okuji Exp $
 #
 
 require 'bio/data/na'
@@ -29,8 +30,25 @@ module Bio
 
   # Nucleic/Amino Acid sequence
 
-  class Sequence < String
+  class Sequence
 
+    # Should use the Forwardable module, but it doesn't work well with
+    # some methods (e.g. []), so use our own hack at the moment. Maybe
+    # a Ruby's bug.
+    STRING_METHODS = [:to_str]
+    def method_missing(name, *args, &block)
+      s = @str.__send__(name, *args, &block)
+      if not s.kind_of? String or STRING_METHODS.include? name
+	s
+      else
+	type.new s
+      end
+    end
+
+    def initialize(str)
+      @str = str
+    end
+    
     def subseq(s = 1, e = self.length)
       s -= 1
       e -= 1
@@ -114,11 +132,6 @@ module Bio
 	self.downcase!
 	self.tr!('u', 't')
 	self.tr!(" \t\n\r",'')
-      end
-
-      def [](*arg)
-	a = super(*arg)
-	a.is_a?(String) ? NA.new(a) : a
       end
 
       # This method depends on Locations class, see bio/location.rb
@@ -231,11 +244,6 @@ module Bio
 	super
 	self.upcase!
 	self.tr!(" \t\n\r",'')
-      end
-
-      def [](*arg)
-	a = super(*arg)
-	a.is_a?(String) ? AA.new(a) : a
       end
 
       def to_a(short = nil)
