@@ -2,6 +2,7 @@
 # bio/io/das.rb - BioDAS access module
 #
 #   Copyright (C) 2003 KAWASHIMA Shuichi <s@bioruby.org>
+#   Copyright (C) 2003 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: das.rb,v 1.3 2003/02/21 09:15:45 k Exp $
+#  $Id: das.rb,v 1.4 2003/02/21 09:44:21 k Exp $
 #
 
 begin
@@ -70,7 +71,7 @@ module Bio
       doc.elements.each('/descendant::ENTRY_POINTS') do |e|
 	entry_point.href = e.attributes['href']
 	entry_point.version = e.attributes['version']
-	e.elements.each('/descendant::SEGMENT') do |e|
+	e.elements.each do |e|
 	  segment = SEGMENT.new
 	  segment.entry_id = e.attributes['id']
 	  segment.start = e.attributes['start']
@@ -104,7 +105,7 @@ module Bio
 	sequence.start = e.attributes['start']
 	sequence.stop = e.attributes['stop']
 	sequence.version = e.attributes['version']
-	e.elements.each('/descendant::DNA') do |e|
+	e.elements.each do |e|
 	  sequence.sequence = Bio::Sequence::NA.new(e.text)
 	  sequence.length = e.attributes['length'].to_i
 	end
@@ -164,19 +165,19 @@ module Bio
       doc.elements.each('/descendant::GFF') do |e|
 	types.version = e.attributes['version']
 	types.href = e.attributes['href']
-	e.elements.each('/descendant::SEGMENT') do |e|
+	e.elements.each do |e|
 	  segment = SEGMENT.new
 	  segment.entry_id = e.attributes['id']
 	  segment.start = e.attributes['start']
 	  segment.stop = e.attributes['stop']
 	  segment.version = e.attributes['version']
 	  segment.label = e.attributes['label']
-	  e.elements.each('/descendant::TYPE') do |i|
+	  e.elements.each do |e|
 	    t = TYPE.new
-	    t.entry_id = i.attributes['id']
-	    t.method = i.attributes['method']
-	    t.category = i.attributes['category']
-	    t.count = i.text.to_i
+	    t.entry_id = e.attributes['id']
+	    t.method = e.attributes['method']
+	    t.category = e.attributes['category']
+	    t.count = e.text.to_i
 	    segment.types << t
 	  end
 	  types.segments << segment
@@ -219,7 +220,7 @@ module Bio
 	  segment.stop = e.attributes['stop']
 	  segment.version = e.attributes['version']
 	  segment.label = e.attributes['label']
-	  e.elements.each('FEATURE') do |e|
+	  e.elements.each do |e|
 	    feature = FEATURE.new
 	    feature.entry_id = e.attributes['id']
 	    feature.label = e.attributes['label']
@@ -415,8 +416,34 @@ end
 
 = Bio::DAS
 
---- Bio::DAS.new
+--- Bio::DAS.new(url)
+--- Bio::DAS#get_dsn				# -> Array of Bio::DAS::DSN
+--- Bio::DAS#get_entry_point(dsn)		# -> Bio::DAS::ENTRY_POINT
+      dsn can be String or Bio::DAS::DSN
+--- Bio::DAS#get_dna(dsn, segments)		# -> Array of Bio::DAS::DNA
+      segments can be Bio::DAS::SEGMENT or Array of Bio::DAS::SEGMENT
+--- Bio::DAS#get_sequence(dsn, segments)	# -> Array of Bio::DAS::SEQUENCE
+--- Bio::DAS#get_types(dsn, segments = [])	# -> Bio::DAS::TYPES
+      segments is option
+--- Bio::DAS#get_features(dsn, segments = [], categorize = false, feature_ids = [], group_ids = [])
+      # -> Bio::DAS::GFF
 
---- Bio::DAS.close
+== Bio::DAS::DSN
+== Bio::DAS::ENTRY_POINT
+== Bio::DAS::SEGMENT
+== Bio::DAS::DNA
+== Bio::DAS::SEQUENCE
+== Bio::DAS::TYPES
+== Bio::DAS::TYPE
+== Bio::DAS::GFF
+== Bio::DAS::FEATURE
+== Bio::DAS::LINK
+== Bio::DAS::TARGET
+== Bio::DAS::GROUP
+
+
+== TODO
+
+  link, stylesheet
 
 =end
