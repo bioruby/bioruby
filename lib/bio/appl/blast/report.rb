@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.1 2003/02/05 03:28:26 k Exp $
+#  $Id: report.rb,v 1.2 2003/02/25 12:24:24 k Exp $
 #
 
 require 'bio/appl/blast/xmlparser'
@@ -26,6 +26,22 @@ require 'bio/appl/blast/format8'
 
 module Bio
   class Blast
+
+    def self.reports(input, parser = nil)
+      if block_given?
+	input.each("</BlastOutput>\n") do |xml|
+	  yield Report.new(xml, parser)
+	end
+      else
+	ary = []
+	input.each("</BlastOutput>\n") do |xml|
+	  ary << Report.new(xml, parser)
+	end
+	return ary
+      end
+    end
+
+
     class Report
 
       def self.xmlparser(data)
@@ -200,16 +216,42 @@ end
 
 if __FILE__ == $0
 
-#  begin
-#    require 'pp'
-#    alias :p :pp
-#  rescue
-#  end
+=begin
 
-#  rep = Bio::Blast::Report.xmlparser(ARGF.read)
-#  rep = Bio::Blast::Report.rexml(ARGF.read)
-#  rep = Bio::Blast::Report.tab(ARGF.read)
+  begin			# p is suitable than pp for the following test script
+    require 'pp'
+    alias :p :pp
+  rescue
+  end
+
+  # for multiple xml reports (iterates on each Blast::Report)
+  Bio::Blast.reports(ARGF) do |rep|
+    rep.iterations.each do |itr|
+      itr.hits.each do |hit|
+        hit.hsps.each do |hsp|
+        end
+      end
+    end
+  end
+
+  # for multiple xml reports (returns Array of Blast::Report)
+  reps = Bio::Blast.reports(ARGF.read)
+
+  # for a single report (xml or tab) format auto detect, parser auto selected
   rep = Bio::Blast::Report.new(ARGF.read)
+
+  # to use xmlparser explicitly for a report
+  rep = Bio::Blast::Report.xmlparser(ARGF.read)
+
+  # to use resml explicitly for a report
+  rep = Bio::Blast::Report.rexml(ARGF.read)
+
+  # to use a tab delimited report
+  rep = Bio::Blast::Report.tab(ARGF.read)
+
+=end
+
+  Bio::Blast.reports(ARGF) do |rep|	# for multiple xml reports
 
   print "# === Bio::Tools::Blast::Report\n"
   puts
@@ -352,6 +394,7 @@ if __FILE__ == $0
   end
   end
   end
+  end					# for multiple xml reports
 
 end
 
