@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genes.rb,v 0.12 2002/03/04 08:10:55 katayama Exp $
+#  $Id: genes.rb,v 0.13 2002/08/29 19:17:51 k Exp $
 #
 
 require 'bio/db'
@@ -104,7 +104,7 @@ module Bio
 	unless @data['CODON_USAGE']
 	  ary = []
 	  get('CODON_USAGE').sub(/.*/,'').each_line do |line|	# cut 1st line
-	    line.scan(/\d+/).each do |cu|
+	    line.chomp.sub(/^.{11}/, '').scan(/..../) do |cu|
 	      ary.push(cu.to_i)
 	    end
 	  end
