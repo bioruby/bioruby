@@ -1,8 +1,57 @@
+2002-06-19  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* BioRuby version 0.3.7 released.
+	* lib/bio/sequence.rb: Sequence inherits String again (!!!)
+	* lib/bio/db.rb, db/embl.rb, db/sptr.rb: moved EMBL specific methods
+
+2002-06-18  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* lib/bio/feature.rb: Bio::Feature#[] method added
+	* doc/Tutrial.rd.ja: changed to use Feature class
+
+2002-05-28  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* lib/bio/appl/fasta.rb: parser separated, API renewal (!!!)
+	  * lib/bio/appl/fasta/format10.rb: moved from fasta.rb
+
+	* lib/bio/appl/blast.rb: parser separated, API renewal (!!!)
+	  * lib/bio/appl/blast/format8.rb: newly added
+	  * lib/bio/appl/blast/rexml.rb: newly added
+	  * lib/bio/appl/blast/xmlparser.rb: moved from blast.rb
+
+2002-05-16  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* lib/bio/sequence.rb: added alias 'Seq' for class Sequence
+	* lib/bio/db/fasta.rb: entry method added
+
+2002-05-15  KATAYAMA Toshiaki  <k@bioruby.org>
+	
+	* lib/bio/io/dbget.rb: bug fixed for pfam (was wrongly skip # lines)
+	* lib/bio/location.rb: offset method added, eased range check
+
+2002-04-26  KATAYAMA Toshiaki  <k@bioruby.org>
+	
+	* sample/biofetch.rb: new 'info=' option added
+
+2002-04-22  KATAYAMA Toshiaki  <k@bioruby.org>
+	
+	* lib/bio/appl/fasta.rb: follow changes made at fasta.genome.ad.jp
+	* sample/gb2tab.rb: fixed to use authors.inspect for reference
+
+2002-04-15  KATAYAMA Toshiaki  <k@bioruby.org>
+	
+	* sample/gb2fasta.rb: changed to follow new genbank.rb spec.
+	* sample/gt2fasta.rb: changed to follow new genbank.rb spec.
+	* sample/gbtab2mysql.rb: added for loading tab delimited data.
+
 2002/04/08
 	* version 0.3.6 released -k
-	* fixed inconsistency among db.rb, genbank.rb, genome.rb
-	* genbank.rb : serious bug fixed in locus method
-	* feature.rb : method name 'type' has changed
+	  * fixed inconsistency among db.rb, genbank.rb, genome.rb -k
+	  * lib/bio/db/genbank.rb : serious bug fixed in locus method -k
+	  * lib/bio/feature.rb : method name 'type' has changed -k
+
+2002/03/27
+	* sample/gb2tab.rb changed to follow new genbank.rb w/ new schema -k
 
 2002/03/26
 	* sample/gb2tab.rb use ruby instead of perl in the example -o
@@ -17,8 +66,8 @@
 	* bin/biofetch added for BioFetch client -k
 	* lib/bio/io/fetch.rb added for BioFetch library -k
 	* lib/bio/io/sql.rb added for BioSQL -k
-	* lib/bio/io/registry.rb added for BioDirectory Registry -k
-	* lib/bio/feature.rb added for BioSQL, GenBank etc. -k
+	* lib/bio/io/registry.rb added for BioDirectory/Registry -k
+	* lib/bio/feature.rb added for BioSQL, GenBank, EMBL etc. -k
 	* lib/bio/db/genbank.rb rewrited to use Features, References -k
 	* lib/bio/db/{genes,genome}.rb clean up -k
 	* lib/bio/reference.rb added class References -k
@@ -28,8 +77,8 @@
 
 2002/01/31
 	* version 0.3.4 released -k
-	* lib/bio/db/genbank.rb -k
-	  * fix for multiple 'allele' in the feature key. (thanx Lixin)
+	  * lib/bio/db/genbank.rb -k
+	    * fix for multiple 'allele' in the feature key. (thanx Lixin)
 
 2002/01/07
 	* lib/bio/appl/blast.rb -n
