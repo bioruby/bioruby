@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: prosite.rb,v 0.7 2003/03/19 08:04:39 k Exp $
+#  $Id: prosite.rb,v 0.8 2004/12/09 13:26:48 k Exp $
 #
 
 require 'bio/db'
@@ -145,8 +145,8 @@ module Bio
 	    hits = $1.to_i		# the number of hits
 	    seqs = $2.to_i		# the number of sequences
 	    v = [hits, seqs]
-	  elsif v =~ /(\d+),(\d+)/
-	    sprel = $1.to_i		# the number of SWISS-PROT release
+	  elsif v =~ /([\d\.]+),(\d+)/
+	    sprel = $1			# the number of SWISS-PROT release
 	    spseq = $2.to_i		# the number of SWISS-PROT sequences
 	    v = [sprel, spseq]
 	  else
@@ -164,25 +164,66 @@ module Bio
       statistics['RELEASE']
     end
 
+    def swissprot_release_number
+      release.first
+    end
+
+    def swissprot_release_sequences
+      release.last
+    end
+
     def total
       statistics['TOTAL']
+    end
+
+    def total_hits
+      total.first
+    end
+
+    def total_sequences
+      total.last
     end
 
     def positive
       statistics['POSITIVE']
     end
 
+    def positive_hits
+      positive.first
+    end
+
+    def positive_sequences
+      positive.last
+    end
+
     def unknown
       statistics['UNKNOWN']
+    end
+
+    def unknown_hits
+      unknown.first
+    end
+
+    def unknown_sequences
+      unknown.last
     end
 
     def false_pos
       statistics['FALSE_POS']
     end
 
+    def false_positive_hits
+      false_pos.first
+    end
+
+    def false_positive_sequences
+      false_pos.last
+    end
+
     def false_neg
       statistics['FALSE_NEG']
     end
+    alias false_negative_hits false_neg
 
     def partial
       statistics['PARTIAL']
@@ -286,7 +327,7 @@ module Bio
 
     def list_xref(flag, by_name = nil)
       ary = []
-      sp_xref do |sp_acc, value|
+      sp_xref.each do |sp_acc, value|
 	if value[1] == flag
 	  if by_name
 	    sp_name = value[0]
