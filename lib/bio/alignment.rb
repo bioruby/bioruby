@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: alignment.rb,v 1.1 2003/07/25 07:47:33 ng Exp $
+#  $Id: alignment.rb,v 1.2 2003/07/25 18:15:40 ng Exp $
 #
 
 require 'bio/sequence'
@@ -554,9 +554,9 @@ module Bio
     ## Gonnet Pam250 matrix. The strong and weak groups are 
     ## defined as strong score >0.5 and weak score =<0.5 respectively.
     Strong_Conservation_Groups = %w(STA NEQK NHQK NDEQ QHRK MILV MILF
-      HY FYW).collect { |x| x.split('').sort.join('') }
+      HY FYW).collect { |x| x.split('').sort }
     Weak_Conservation_Groups = %w(CSA ATV SAG STNK STPA SGND SNDEQK
-      NDEQHK NEQHRK FVLIM HFY).collect { |x| x.split('').sort.join('') }
+      NDEQHK NEQHRK FVLIM HFY).collect { |x| x.split('').sort }
 
     def match_line(hash = {})
       #(BioPerl) AlignI::match_line like method
@@ -593,12 +593,31 @@ module Bio
 	       mlc
 	     elsif gap_regexp =~ a3
 	       mmc
-	     elsif Strong_Conservation_Groups.find { |x| x.index(a3) }
-	       smc
-	     elsif Weak_Conservation_Groups.find { |x| x.index(a3) }
-	       wmc
 	     else
-	       mmc
+	       flag = nil
+	       Strong_Conservation_Groups.each do |x|
+		 a2.each do |c|
+		   flag = x.include?(c)
+		   break unless flag
+		 end
+		 break if flag
+	       end
+	       if flag then
+		 smc
+	       else
+		 Weak_Conservation_Groups.each do |x|
+		   a2.each do |c|
+		     flag = x.include?(c)
+		     break unless flag
+		   end
+		   break if flag
+		 end
+		 if flag then
+		   wmc
+		 else
+		   mmc
+		 end
+	       end
 	     end)
 	end
       else
@@ -722,13 +741,13 @@ module Bio
       self
     end
 
-    # perform multiple alignment
+    # perform multiple alignment by using external program
     def do_align(factory)
       #(original)
       a0 = self.class.new
       (0...self.size).each { |i| a0.store(i, self.order(i)) }
       r = factory.query(a0)
-      a1 = r.align
+      a1 = r.alignment
       a0.keys.each do |k|
 	unless a1[k.to_s] then
 	  raise 'alignment result is inconsistent with input data'
