@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format0.rb,v 1.6 2004/07/21 07:01:47 ngoto Exp $
+#  $Id: format0.rb,v 1.7 2004/10/30 14:28:33 ngoto Exp $
 #
 
 begin
@@ -26,6 +26,7 @@ rescue LoadError
 end
 
 require 'bio/db'
+require 'bio/io/flatfile'
 
 module Bio
   class Blast
@@ -133,8 +134,10 @@ module Bio
 
 	def db
 	  unless defined?(@db)
-	    if /Database *\: *(.*)/ =~ @f0database then
-	      @db = $1.gsub(/\s\z/, '')
+	    if /Database *\: *(.*)/m =~ @f0database then
+              a = $1.split(/^/)
+              a.pop if a.size > 1
+              @db = a.collect { |x| x.sub(/\s+\z/, '') }.join(' ')
 	    end
 	  end #unless
 	  @db
@@ -208,21 +211,6 @@ module Bio
 	  attr_reader :f0dbstat
 	  attr_accessor :f0params
 
-	  def parse_colon_separated(hash, str)
-	    sc = StringScanner.new(str)
-	    sc.skip(/\s*/)
-	    while sc.rest?
-	      if sc.skip(/([\#\-\,\.\'\(\)\w ]+)\: *(.*)/) then
-		hash[sc[1]] = sc[2]
-	      else
-		#p sc.peek(20)
-		raise ScanError
-	      end
-	      sc.skip(/\s*/)
-	    end #while
-	  end #def
-	  private :parse_colon_separated
-
 	  def parse_colon_separated_params(hash, ary)
 	    ary.each do |str|
 	      sc = StringScanner.new(str)
@@ -285,23 +273,44 @@ module Bio
 	    :num_hits
 
 	  def parse_dbstat
-	    unless defined?(@parse_dbstat)
-	      parse_colon_separated(@hash, @f0dbstat[0].to_s)
-	      @database = @hash['Database']
-	      @posted_date = @hash['Posted date']
-	      if val = @hash['Number of letters in database'] then
-		@db_len =  val.tr(',', '').to_i
-	      end
-	      if val = @hash['Number of sequences in database'] then
-		@db_num = val.tr(',', '').to_i
-	      end
-	      @parse_dbstat = true
-	    end #unless
+            a = @f0dbstat[0].to_s.split(/^/)
+            d = []
+            i = 3
+            while i > 0 and line = a.pop
+              case line
+              when /^\s+Posted date\:\s*(.*)$/
+                unless defined?(@posted_date)
+                  @posted_date = $1.strip
+                  i -= 1; d.clear
+                end
+              when /^\s+Number of letters in database\:\s*(.*)$/
+                unless defined?(@db_len)
+                  @db_len =  $1.tr(',', '').to_i
+                  i -= 1; d.clear
+                end
+              when /^\s+Number of sequences in database\:\s*(.*)$/
+                unless defined?(@db_num)
+                  @db_num = $1.tr(',', '').to_i
+                  i -= 1; d.clear
+                end
+              else
+                d.unshift(line)
+              end
+            end #while
+            a.concat(d)
+            while line = a.shift
+              if /^\s+Database\:\s*(.*)$/ =~ line
+                a.unshift($1)
+                a.each { |x| x.strip! }
+                @database = a.join(' ')
+                break #while
+              end
+            end
 	  end #def
 	  private :parse_dbstat
 	  def self.method_after_parse_dbstat(*names)
 	    names.each do |x|
-	      module_eval("def #{x}; parse_dbstat; @#{x}; end")
+	      module_eval("def #{x}; unless defined?(@#{x}); parse_dbstat; end; @#{x}; end")
 	    end
 	  end
 	  private_class_method :method_after_parse_dbstat
