@@ -1,8 +1,9 @@
 #
 # bio/sequence.rb - biological sequence class
 #
-#   Copyright (C) 2000-2002 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2000-2003 KATAYAMA Toshiaki <k@bioruby.org>
 #   Copyright (C) 2001 Yoshinori K. Okuji <o@bioruby.org>
+#   Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -18,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.30 2003/06/16 14:01:22 ng Exp $
+#  $Id: sequence.rb,v 0.31 2003/06/16 17:55:34 k Exp $
 #
 
 require 'bio/data/na'
@@ -57,8 +58,8 @@ module Bio
     end
 
 
-
     def subseq(s = 1, e = self.length)
+      return nil if s < 1 or e < 1
       s -= 1
       e -= 1
       self[s..e]
@@ -81,10 +82,12 @@ module Bio
       factory.query(self.to_fasta(header))
     end
 
-    def window_search(window_size)
-      0.upto(self.length - window_size) do |i|
-	yield self[i, window_size]
-      end
+    def window_search(window_size, step_size = 1)
+      i = nil                                     
+      0.step(self.length - window_size, step_size) do |i| 
+        yield self[i, window_size]                        
+      end                          
+      return self[i + window_size .. -1] 
     end
 
     def total(hash)
@@ -172,7 +175,7 @@ module Bio
       # This method depends on Locations class, see bio/location.rb
       def splicing(position)
 	mRNA = super
-	if mRNA.index('u')
+	if mRNA.rna?
 	  mRNA.tr!('t', 'u')
 	else
 	  mRNA.tr!('u', 't')
@@ -187,7 +190,7 @@ module Bio
       end
 
       def complement!
-	if self.index('u')
+	if self.rna?
 	  self.reverse!
 	  self.tr!('augcrymkdhvbswn', 'uacgyrkmhdbvswn')
 	else
@@ -249,7 +252,7 @@ module Bio
       # NucleicAcid is defined in bio/data/na.rb
       def molecular_weight(hash = nil)
 	nw = NucleicAcid.weight
-	if self.index('u')
+	if self.rna?
 	  hash = {
 	    'g' => nw[:guanine]  + nw[:ribose_phosphate] - nw[:water],
 	    'c' => nw[:cytosine] + nw[:ribose_phosphate] - nw[:water],
@@ -270,7 +273,7 @@ module Bio
       # NucleicAcid is defined in bio/data/na.rb
       def to_re
 	hash = NucleicAcid.names
-	if self.index('u')
+	if self.rna?
 	  NucleicAcid.names.each {|k,v| hash[k] = v.tr('t', 'u')}
 	end
 	re = ''
@@ -290,6 +293,26 @@ module Bio
 	  array.push(NucleicAcid.names[x.chr.upcase])
 	end
 	return array
+      end
+
+      def dna
+        self.tr('u', 't')
+      end
+
+      def dna!
+        self.tr!('u', 't')
+      end
+
+      def rna
+        self.tr('t', 'u')
+      end
+
+      def rna!
+        self.tr!('t', 'u')
+      end
+
+      def rna?
+	self.index('u')
       end
 
       def pikachu
@@ -513,10 +536,35 @@ You can use Bio::Seq instead of Bio::Sequence for short.
       Execute blast by the factory (Bio::Blast object) and returns
       Bio::Blast::Report object.  See Bio::Blast for more details.
 
---- Bio::Sequence#window_search(window_size)
+--- Bio::Sequence#splicing(position)
 
-      This method yields a window search along with the self sequence with
-      the size 'window_size' window.
+      Receive a GenBank style position string and convert it to the Locations
+      objects to splice the sequence itself.  See also: bio/location.rb
+
+--- Bio::Sequence#window_search(window_size, step_size = 1)
+
+      This method iterates on sub string with specified length 'window_size'.
+      By specifing 'step_size', codon sized shifting or spliting genome
+      sequence with ovelapping each end can easily be yielded.
+
+      The remainder sequence at the terminal end will be returned.
+
+      Example:
+        # prints average GC% on each 100bp
+        seq.window_search(100) do |subseq|
+          puts subseq.gc
+        end
+        # prints every translated peptide (length 5aa) in the same frame
+        seq.window_search(15, 3) do |subseq|
+          puts subseq.translate
+        end
+        # split genome sequence by 10000bp with 1000bp overlap in fasta format
+        i = 1
+        remainder = seq.window_search(10000, 9000) do |subseq|
+          puts subseq.to_fasta("segment #{i}", 60)
+          i += 1
+        end
+        puts remainder.to_fasta("segment #{i}", 60)
 
 --- Bio::Sequence#total(hash)
 
@@ -548,12 +596,8 @@ You can use Bio::Seq instead of Bio::Sequence for short.
 
       Generate a nucleic acid sequence object from a string.
 
---- Bio::Sequence::NA#splicing(position)
-
-      Receive a GenBank style position string and convert it to the Location
-      objects to splice the self sequence.  See bio/location.rb, too.
-
 --- Bio::Sequence::NA#complement
+--- Bio::Sequence::NA#complement!
 
       Returns a reverse complement sequence (including the universal codes).
 
@@ -565,6 +609,9 @@ You can use Bio::Seq instead of Bio::Sequence for short.
 
       Translate into the amino acid sequence from the given frame and the
       selected codon table.
+
+      Frame can be 1, 2 or 3 for the forward strand and -1, -2 or -3
+      (4, 5 or 6 is also accepted) for the reverse strand.
 
 --- Bio::Sequence::NA#gc_percent
 --- Bio::Sequence::NA#gc
@@ -587,9 +634,15 @@ You can use Bio::Seq instead of Bio::Sequence for short.
 
       Convert the self string into the list of the names of the each base.
 
---- Bio::Sequence::NA#rna
+--- Bio::Sequence::NA#dna
+--- Bio::Sequence::NA#dna!
 
-      Output a RNA character string simply by the substitution of 't' to 'u'.
+      Output a DNA string by substituting 'u' to 't'.
+
+--- Bio::Sequence::NA#rna
+--- Bio::Sequence::NA#rna!
+
+      Output a RNA string by substituting 't' to 'u'.
 
 
 == Bio::Sequence::AA
