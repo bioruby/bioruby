@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: registry.rb,v 1.3 2002/03/04 08:20:16 katayama Exp $
+#  $Id: registry.rb,v 1.4 2002/06/26 00:07:07 k Exp $
 #
 
 require 'net/http'
@@ -25,8 +25,8 @@ require 'bio/io/sql'
 require 'bio/io/fetch'
 #require 'bio/io/flatfile'
 #require 'bio/io/bdb'
-#require 'bio/io/xembl'
 #require 'bio/io/corba'
+#require 'bio/io/xembl'
 
 module Bio
 
@@ -50,15 +50,20 @@ module Bio
 	    return serv_biofetch(db)
 	  when 'biosql'
 	    return serv_biosql(db)
-	  when 'bsane-corba'
-	  when 'index-berkeleydb'
 	  when 'index-flat'
+	    raize NotImplementedError
+	  when 'index-berkeleydb'
+	    raize NotImplementedError
+	  when 'bsane-corba' || 'biocorba'
+	    raize NotImplementedError
 	  when 'xembl'
+	    raize NotImplementedError
 	  end
 	end
       end
+      return nil
     end
-    alias db get_database
+    alias :db :get_database
 
     def query(dbname)
       @registry.each do |db|
@@ -145,28 +150,29 @@ end
 
 
 if __FILE__ == $0
-
-  require 'pp'
-
-  if ARGV[0]
-    reg = Bio::Registry.new(ARGV[0])	# Usually, you don't need to pass ARGV.
-  else
-    reg = Bio::Registry.new
+  begin
+    require 'pp'
+    alias :p :pp
+  rescue
   end
 
-  pp reg
+  # Usually, you don't need to pass ARGV.
+  reg = Bio::Registry.new(ARGV[0])
 
-  pp reg.query('embl_biosql')
+  p reg
+  p reg.query('genbank_biosql')
 
-  serv = reg.get_database('embl_biosql')
-  puts serv.get_by_id('AB000098')
+  serv = reg.get_database('genbank_biofetch')
+  puts serv.get_by_id('AA2CG')
 
-#  serv = reg.get_database('embl_postgres')
-#  puts serv.get_by_id('AB000098')
+  serv = reg.get_database('genbank_biosql')
+  puts serv.get_by_id('AA2CG')
 
   serv = reg.get_database('swissprot_biofetch')
   puts serv.get_by_id('CYC_BOVIN')
 
+  serv = reg.get_database('swissprot_biosql')
+  puts serv.get_by_id('CYC_BOVIN')
 end
 
 
@@ -176,10 +182,11 @@ end
 
 --- Bio::Registry.new(file = nil)
 
---- Bio::Registry#get_database(dbname), db(dbname)
+--- Bio::Registry#get_database(dbname)
+--- Bio::Registry#db(dbname)
 
-      Returns dababase handle (i.e. Bio::SQL, Bio::Fetch etc.) and they should
-      have get_by_id method.
+      Returns dababase handle (i.e. Bio::SQL, Bio::Fetch etc.) or nil
+      if not found.  The handles should have get_by_id method.
 
 --- Bio::Registry#query(dbname)
 
@@ -194,7 +201,9 @@ end
 
 == SEE ALSO
 
-  http://www.open-bio.org/registry/seqdatabase.ini
+* ((<URL:http://obda.open-bio.org/>))
+* ((<URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/obda-specs/?cvsroot=obf-common>))
+* ((<URL:http://www.open-bio.org/registry/seqdatabase.ini>))
 
 =end
 
