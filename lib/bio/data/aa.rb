@@ -17,92 +17,107 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aa.rb,v 0.5 2001/11/06 16:58:52 okuji Exp $
+#  $Id: aa.rb,v 0.6 2002/11/22 23:11:31 k Exp $
 #
 
 module Bio
 
-  AminoAcid = {
+  class AminoAcid
 
     # IUPAC code
     # * http://www.iupac.org/
     # * http://www.chem.qmw.ac.uk/iubmb/newsletter/1999/item3.html
 
-    'A' => 'Ala',
-    'C' => 'Cys',
-    'D' => 'Asp',
-    'E' => 'Glu',
-    'F' => 'Phe',
-    'G' => 'Gly',
-    'H' => 'His',
-    'I' => 'Ile',
-    'K' => 'Lys',
-    'L' => 'Leu',
-    'M' => 'Met',
-    'N' => 'Asn',
-    'P' => 'Pro',
-    'Q' => 'Gln',
-    'R' => 'Arg',
-    'S' => 'Ser',
-    'T' => 'Thr',
-    'V' => 'Val',
-    'W' => 'Trp',
-    'Y' => 'Tyr',
-    'U' => 'Sec',
+    Names= {
 
-    'Ala' => 'alanine',
-    'Cys' => 'cysteine',
-    'Asp' => 'aspartic acid',
-    'Glu' => 'glutamic acid',
-    'Phe' => 'phenylalanine',
-    'Gly' => 'glycine',
-    'His' => 'histidine',
-    'Ile' => 'isoleucine',
-    'Lys' => 'lysine',
-    'Leu' => 'leucine',
-    'Met' => 'methionine',
-    'Asn' => 'asparagine',
-    'Pro' => 'proline',
-    'Gln' => 'glutamine',
-    'Arg' => 'arginine',
-    'Ser' => 'serine',
-    'Thr' => 'threonine',
-    'Val' => 'valine',
-    'Trp' => 'tryptophan',
-    'Tyr' => 'tyrosine',
-    'Sec' => 'selenocysteine',
+      'A' => 'Ala',
+      'C' => 'Cys',
+      'D' => 'Asp',
+      'E' => 'Glu',
+      'F' => 'Phe',
+      'G' => 'Gly',
+      'H' => 'His',
+      'I' => 'Ile',
+      'K' => 'Lys',
+      'L' => 'Leu',
+      'M' => 'Met',
+      'N' => 'Asn',
+      'P' => 'Pro',
+      'Q' => 'Gln',
+      'R' => 'Arg',
+      'S' => 'Ser',
+      'T' => 'Thr',
+      'V' => 'Val',
+      'W' => 'Trp',
+      'Y' => 'Tyr',
+      'U' => 'Sec',
 
-  }
+      'Ala' => 'alanine',
+      'Cys' => 'cysteine',
+      'Asp' => 'aspartic acid',
+      'Glu' => 'glutamic acid',
+      'Phe' => 'phenylalanine',
+      'Gly' => 'glycine',
+      'His' => 'histidine',
+      'Ile' => 'isoleucine',
+      'Lys' => 'lysine',
+      'Leu' => 'leucine',
+      'Met' => 'methionine',
+      'Asn' => 'asparagine',
+      'Pro' => 'proline',
+      'Gln' => 'glutamine',
+      'Arg' => 'arginine',
+      'Ser' => 'serine',
+      'Thr' => 'threonine',
+      'Val' => 'valine',
+      'Trp' => 'tryptophan',
+      'Tyr' => 'tyrosine',
+      'Sec' => 'selenocysteine',
 
-  AminoAcid_weight = {
+    }
 
-    # AAindex FASG760101
-    # * Molecular weight (Fasman, 1976)
-    #   Fasman, G.D., ed.
-    #   Handbook of Biochemistry and Molecular Biology", 3rd ed., Proteins -
-    #   Volume 1, CRC Press, Cleveland (1976)
+    Weight = {
 
-    'A' => 89.09,
-    'C' => 121.15,
-    'D' => 133.10,
-    'E' => 147.13,
-    'F' => 165.19,
-    'G' => 75.07,
-    'H' => 155.16,
-    'I' => 131.17,
-    'K' => 146.19,
-    'L' => 131.17,
-    'M' => 149.21,
-    'N' => 132.12,
-    'P' => 115.13,
-    'Q' => 146.15,
-    'R' => 174.20,
-    'S' => 105.09,
-    'T' => 119.12,
-    'V' => 117.15,
-    'W' => 204.24,
-    'Y' => 181.19,
-  }
+      # AAindex FASG760101 - Molecular weight (Fasman, 1976)
+      #   Fasman, G.D., ed.
+      #   Handbook of Biochemistry and Molecular Biology", 3rd ed.,
+      #   Proteins - Volume 1, CRC Press, Cleveland (1976)
 
-end				# module Bio
+      'A' => 89.09,
+      'C' => 121.15,
+      'D' => 133.10,
+      'E' => 147.13,
+      'F' => 165.19,
+      'G' => 75.07,
+      'H' => 155.16,
+      'I' => 131.17,
+      'K' => 146.19,
+      'L' => 131.17,
+      'M' => 149.21,
+      'N' => 132.12,
+      'P' => 115.13,
+      'Q' => 146.15,
+      'R' => 174.20,
+      'S' => 105.09,
+      'T' => 119.12,
+      'V' => 117.15,
+      'W' => 204.24,
+      'Y' => 181.19,
+    }
+
+    def aa
+      Names
+    end
+
+    def self.names
+      Names
+    end
+
+    def self.weight
+      Weight
+    end
+
+  end
+
+end
 
