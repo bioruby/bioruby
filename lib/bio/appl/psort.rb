@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: psort.rb,v 1.3 2004/06/13 09:26:11 nakao Exp $
+#  $Id: psort.rb,v 1.4 2004/07/21 03:12:02 nakao Exp $
 #
 
 
@@ -61,7 +61,7 @@ module Bio
       attr_reader :report
 
 
-      # Bio::PSORT::CGIDriver#exec(query) -> aReport
+      # CGIDriver#exec(query) -> aReport
       def exec(query)
 	data = make_args(query)  
 
@@ -85,16 +85,18 @@ module Bio
 	# The routin should be provided in the inherited class	
       end
 
+      # tools
+
       def erase_html_tags(str)
 	return str.gsub(/<\S.*?>/,'')	
       end
 
-      def args_join(hash)
+      def args_join(hash, delim = '&')
 	tmp = []
 	hash.each do |key, val|
 	  tmp << CGI.escape(key.to_s) + '=' + CGI.escape(val.to_s)
 	end
-	return tmp.join('&')  # not ';' but '&' in psort's cgi
+	return tmp.join(delim)  # not ';' but '&' in psort's cgi
       end
 
     end # class CGIDriver
