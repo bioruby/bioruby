@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#  $Id: biofetch.rb,v 1.9 2004/01/29 01:37:22 k Exp $
+#  $Id: biofetch.rb,v 1.10 2004/01/29 01:41:29 k Exp $
 #
 
 require 'cgi'
@@ -27,197 +27,281 @@ require 'bio/io/keggapi'
 
 MAX_ID_NUM = 50
 
-def print_text_page(str)
-  print "Content-type: text/plain; charset=UTF-8\n\n"
-  puts str
-  exit
+
+module BioFetchError
+
+  def print_text_page(str)
+    print "Content-type: text/plain; charset=UTF-8\n\n"
+    puts str
+    exit
+  end
+
+  def error1(db)
+    str = "ERROR 1 Unknown database [#{db}]."
+    print_text_page(str)
+  end
+
+  def error2(style)
+    str = "ERROR 2 Unknown style [#{style}]."
+    print_text_page(str)
+  end
+
+  def error3(format, db)
+    str = "ERROR 3 Format [#{format}] not known for database [#{db}]."
+    print_text_page(str)
+  end
+
+  def error4(entry_id, db)
+    str = "ERROR 4 ID [#{entry_id}] not found in database [#{db}]."
+    print_text_page(str)
+  end
+
+  def error5(count)
+    str = "ERROR 5 Too many IDs [#{count}]. Max [#{MAX_ID_NUM}] allowed."
+    print_text_page(str)
+  end
+
+  def error6(info)
+    str = "ERROR 6 Illegal information request [#{info}]."
+    print_text_page(str)
+  end
+
 end
 
-def error_1(db)
-  str = "ERROR 1 Unknown database [#{db}]."
-  print_text_page(str)
+
+
+
+class BioFetch
+
+  include BioFetchError
+
+  def initialize(db, id_list, style, format)
+    check_style(style)
+    check_format(format, db)
+    check_number_of_id(id_list.length)
+    check_dbname(db)
+
+    if /html/.match(style)
+      goto_html_style_page(db, id_list, format)
+    end
+
+    entries = KeggAPI.bget(db, id_list, format)
+    print_text_page(entries)
+  end
+
+  private
+
+  def goto_html_style_page(db, id_list, format)
+    url = "http://www.genome.ad.jp/dbget-bin/www_bget"
+    opt = '-f+' if /fasta/.match(format)
+    ids = id_list.join('%2B')
+    print "Location: #{url}?#{opt}#{db}+#{ids}\n\n"
+    exit
+  end
+
+  def check_style(style)
+    error2(style) unless /html|raw/.match(style)
+  end
+
+  def check_format(format, db)
+    error3(format, db) if format && ! /fasta|default/.match(format)
+  end
+
+  def check_number_of_id(num)
+    error5(num) if num > MAX_ID_NUM
+  end
+
+  def check_dbname(db)
+    error1(db) unless KeggAPI.list_databases.include?(db)
+  end
+
 end
 
-def error_2(style)
-  str = "ERROR 2 Unknown style [#{style}]."
-  print_text_page(str)
-end
-
-def error_3(format, db)
-  str = "ERROR 3 Format [#{format}] not known for database [#{db}]."
-  print_text_page(str)
-end
-
-def error_4(entry_id, db)
-  str = "ERROR 4 ID [#{entry_id}] not found in database [#{db}]."
-  print_text_page(str)
-end
-
-def error_5(count)
-  str = "ERROR 5 Too many IDs [#{count}]. Max [#{MAX_ID_NUM}] allowed."
-  print_text_page(str)
-end
-
-def error_6(info)
-  str = "ERROR 6 Illegal information request [#{info}]."
-  print_text_page(str)
-end
 
 
-def keggapi_dbinfo
-  serv = Bio::KEGG::API.new
-  serv.list_databases
-end
+class BioFetchInfo
 
-def list_databases
-  ary = []
-  if dbinfo = keggapi_dbinfo
-    dbinfo.each do |line|
-      ary.push(line.split[1])
+  include BioFetchError
+
+  def initialize(info, db)
+    @db = db
+    begin
+      send(info)
+    rescue
+      error6(info)
     end
   end
-  return ary[3..-1]
-end
 
-def check_fasta_ok(db)
-  # sequence databases supported by Bio::FlatFile.auto
-  /genes|gb|genbank|genpept|rs|refseq|emb|sp|swiss|pir/.match(db)
-end
+  private
 
-def show_info_page(info, db)
-  case info
-  when /db/
-    if db_list = list_databases
+  def dbs
+    if db_list = KeggAPI.list_databases
       str = db_list.sort.join(' ')
     else
       str = "Error: list_databases"
     end
     print_text_page(str)
-  when /format/
-    fasta = " fasta" if check_fasta_ok(db)
+  end
+
+  def formats
+    fasta = " fasta" if check_fasta_ok
     str = "default#{fasta}"
     print_text_page(str)
-  when /maxid/
+  end
+
+  def maxids
     str = MAX_ID_NUM.to_s
     print_text_page(str)
-  else
-    error_6(info)
   end
+
+  def check_fasta_ok
+    # sequence databases supported by Bio::FlatFile.auto
+    /genes|gb|genbank|genpept|rs|refseq|emb|sp|swiss|pir/.match(@db)
+  end
+
 end
 
-def check_dbname(db)
-  error_1(db) unless list_databases.include?(db)
-end
 
-def check_style(style)
-  error_2(style) unless /html|raw/.match(style)
-end
 
-def check_format(format, db)
-  error_3(format, db) if format && ! /fasta|default/.match(format)
-end
+class KeggAPI
 
-def check_number_of_id(num)
-  error_5(num) if num > MAX_ID_NUM
-end
+  def self.dbinfo
+    serv = Bio::KEGG::API.new
+    serv.list_databases
+  end
 
-def goto_html_style_page(db, id_list, format)
-  url = "http://www.genome.ad.jp/dbget-bin/www_bget"
-  opt = '-f+' if /fasta/.match(format)
-  ids = id_list.join('%2B')
-  print "Location: #{url}?#{opt}#{db}+#{ids}\n\n"
-  exit
-end
-
-def convert_to_fasta_format(str, db)
-  require 'bio'
-  require 'stringio'
-
-  fasta = Array.new
-
-  entries = StringIO.new(str)
-  Bio::FlatFile.auto(entries) do |ff|
-    ff.each do |entry|
-      seq = nil
-      if entry.respond_to?(:seq)
-        seq = entry.seq
-      elsif entry.respond_to?(:aaseq)
-        seq = entry.naseq
-      elsif entry.respond_to?(:naseq)
-        seq = entry.naseq
-      end
-      if seq
-        entry_id   = entry.respond_to?(:entry_id)   ? entry.entry_id   : ''
-        definition = entry.respond_to?(:definition) ? entry.definition : ''
-        fasta << seq.to_fasta("#{db}:#{entry_id} #{definition}", 60)
+  def self.list_databases
+    ary = []
+    if list = self.dbinfo
+      list.each do |line|
+        ary.push(line.split[1])
       end
     end
+    return ary[3..-1]
   end
 
-  return fasta.join
-end
+  def self.bget(db, id_list, format)
+    serv = Bio::KEGG::API.new
 
-def keggapi_bget(db, id_list, format)
-  serv = Bio::KEGG::API.new
+    results = Array.new
 
-  results = Array.new
+    id_list.each do |query_id|
+      entry_id = "#{db}:#{query_id}"
+      if result = serv.get_entries(entry_id)
+        results << result
+      else
+        error4(query_id, db)
+      end
+    end
 
-  id_list.each do |query_id|
-    entry_id = "#{db}:#{query_id}"
-    if result = serv.get_entries(entry_id)
-      results << result
+    if /fasta/.match(format)
+      entries = convert_to_fasta_format(results.join, db)
     else
-      error_4(query_id, db)
+      entries = results.join
     end
+
+    return entries
   end
 
-  if /fasta/.match(format)
-    entries = convert_to_fasta_format(results.join, db)
-  else
-    entries = results.join
+  private
+
+  def convert_to_fasta_format(str, db)
+    require 'bio'
+    require 'stringio'
+
+    fasta = Array.new
+
+    entries = StringIO.new(str)
+    Bio::FlatFile.auto(entries) do |ff|
+      ff.each do |entry|
+        seq = nil
+        if entry.respond_to?(:seq)
+          seq = entry.seq
+        elsif entry.respond_to?(:aaseq)
+          seq = entry.naseq
+        elsif entry.respond_to?(:naseq)
+          seq = entry.naseq
+        end
+        if seq
+          entry_id   = entry.respond_to?(:entry_id)   ? entry.entry_id   : ''
+          definition = entry.respond_to?(:definition) ? entry.definition : ''
+          fasta << seq.to_fasta("#{db}:#{entry_id} #{definition}", 60)
+        end
+      end
+    end
+    return fasta.join
   end
 
-  return entries
 end
 
-def show_result_page(db, id_list, style, format)
-  check_style(style)
-  check_format(format, db)
-  check_number_of_id(id_list.length)
-  check_dbname(db)
 
-  if /html/.match(style)
-    goto_html_style_page(db, id_list, format)
+
+class BioFetchCGI
+
+  def initialize(cgi)
+    @cgi = cgi
+    show_page
   end
 
-  entries = keggapi_bget(db, id_list, format)
-  print_text_page(entries)
-end
+  private
 
-begin
-  cgi = CGI.new
-
-  if cgi['info'].empty?
-    if cgi['id'].empty?
-      html = HTML::Template.new
-      html.set_html(DATA.read)
-      html.param('max_id_num' => MAX_ID_NUM)
-      cgi.out do
-        html.output
+  def show_page
+    if info.empty?
+      if id_list.empty?
+        show_query_page
+      else
+        show_result_page(db, id_list, style, format)
       end
     else
-      db = cgi['db'].downcase
-      id_list = cgi['id'].split(/\W/)		# not only ','
-      style = cgi['style'].downcase
-      format = cgi['format'].downcase
-      show_result_page(db, id_list, style, format)
+      show_info_page(info, db)
     end
-  else
-    db = cgi['db'].downcase
-    info = cgi['info'].downcase
-    show_info_page(info, db)
   end
+
+  def show_query_page
+    html = HTML::Template.new
+    html.set_html(DATA.read)
+    html.param('max_id_num' => MAX_ID_NUM)
+    @cgi.out do
+      html.output
+    end
+  end
+
+  def show_result_page(db, id_list, style, format)
+    BioFetch.new(db, id_list, style, format)
+  end
+
+  def show_info_page(info, db)
+    BioFetchInfo.new(info, db)
+  end
+
+  def info
+    @cgi['info'].downcase
+  end
+
+  def db
+    @cgi['db'].downcase
+  end
+
+  def id_list
+    @cgi['id'].split(/\W/)		# not only ','
+  end
+
+  def style
+    s = @cgi['style'].downcase
+    return s.empty? ? "html" : s
+  end
+
+  def format
+    f = @cgi['format'].downcase
+    return f.empty? ? "default" : f
+  end
+
 end
+
+
+
+BioFetchCGI.new(CGI.new)
+
 
 
 =begin
@@ -236,9 +320,9 @@ __END__
 
 <HTML>
 <HEAD>
-  <TITLE>BioFetch interface to GenomeNet/DBGET</TITLE>
   <LINK href="http://bioruby.org/img/favicon.png" rel="icon" type="image/png">
   <LINK href="http://bioruby.org/css/bioruby.css" rel="stylesheet" type="text/css">
+  <TITLE>BioFetch interface to GenomeNet/DBGET</TITLE>
 </HEAD>
 
 <BODY bgcolor="#ffffff">
