@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: genbank.rb,v 0.14 2001/06/21 02:34:45 katayama Exp $
+#  $Id: genbank.rb,v 0.15 2001/07/05 05:24:07 katayama Exp $
 #
 
 require 'bio/db'
@@ -326,11 +326,17 @@ class GenBank < NCBIDB
   #
   def source(key = nil)
     unless @data['SOURCE']
-      name, organism = get('SOURCE').split('ORGANISM')
+      name, org = get('SOURCE').split('ORGANISM')
+      if org[/\S+;/]
+	organism = $`
+	taxonomy = $& + $'
+      else
+	organism = taxonomy = ''
+      end
       @data['SOURCE'] = {
 	'common_name'	=> truncate(tag_cut(name)),
-	'organism'	=> truncate(organism.slice!(/.*/)),
-	'taxonomy'	=> truncate(organism),
+	'organism'	=> truncate(organism),
+	'taxonomy'	=> truncate(taxonomy),
       }
     end
 
