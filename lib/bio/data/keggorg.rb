@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggorg.rb,v 0.5 2001/11/13 02:20:49 katayama Exp $
+#  $Id: keggorg.rb,v 0.6 2001/12/12 04:51:30 katayama Exp $
 #
 
 module Bio
@@ -33,10 +33,10 @@ module Bio
   #   }
   #
   # genome           KEGG Genome Database
-  #                  Release 01-02-11+/11-11, Nov 01
+  #                  Release 01-02-11+/12-02, Dec 01
   #                  Institute for Chemical Research, Kyoto University
-  #                  64 entries
-  #                  Last update:  01/11/11
+  #                  76 entries
+  #                  Last update:  01/12/02
   #                  <dbget> 
   #
   KEGGORG = {
@@ -57,7 +57,7 @@ module Bio
     'cmu' => [ 'C.muridarum', 'Chlamydia muridarum (Chlamydia trachomatis MoPn)' ],
     'cpa' => [ 'C.pneumoniae_AR39', 'Chlamydophila pneumoniae AR39' ],
     'cpj' => [ 'C.pneumoniae_J138', 'Chlamydophila pneumoniae J138' ],
-    'cpn' => [ 'C.pneumoniae', 'Chlamydia pneumoniae CWL029' ],
+    'cpn' => [ 'C.pneumoniae', 'Chlamydophila pneumoniae CWL029' ],
     'ctr' => [ 'C.trachomatis', 'Chlamydia trachomatis serovar D' ],
     'ddi' => [ 'D.discoideum', 'Dictyostelium discoideum' ],
     'dme' => [ 'D.melanogaster', 'Drosophila melanogaster' ],
@@ -93,6 +93,7 @@ module Bio
     'pho' => [ 'P.horikoshii', 'Pyrococcus horikoshii OT3' ],
     'pmu' => [ 'P.multocida', 'Pasteurella multocida PM70' ],
     'rco' => [ 'R.conorii', 'Rickettsia conorii Malish 7' ],
+    'rno' => [ 'R.norvegicus', 'Rattus norvegicus' ],
     'rpr' => [ 'R.prowazekii', 'Rickettsia prowazekii Madrid E' ],
     'sau' => [ 'S.aureus_N315', 'Staphylococcus aureus N315, meticillin-resistant (MRSA)' ],
     'sav' => [ 'S.aureus_Mu50', 'Staphylococcus aureus strain Mu50, MRSA strain with vancomycin resistance (VRSA)' ],
@@ -103,7 +104,7 @@ module Bio
     'spr' => [ 'S.pneumoniae_R6', 'Streptococcus pneumoniae R6' ],
     'spy' => [ 'S.pyogenes', 'Streptococcus pyogenes M1, class I strain' ],
     'sso' => [ 'S.solfataricus', 'Sulfolobus solfataricus' ],
-    'stm' => [ 'S.typhimurium_LT2', 'Salmonella typhimurium LT2' ],
+    'stm' => [ 'S.typhimurium', 'Salmonella typhimurium LT2' ],
     'sto' => [ 'S.tokodaii', 'Sulfolobus tokodaii strain7' ],
     'sty' => [ 'S.typhi', 'Salmonella typhi' ],
     'syn' => [ 'Synechocystis', 'Synechocystis PCC6803' ],
@@ -117,5 +118,5 @@ module Bio
     'ype' => [ 'Y.pestis', 'Yersinia pestis strain CO92' ],
   }
 
-end				# module Bio
+end
 
