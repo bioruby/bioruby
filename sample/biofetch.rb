@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#  $Id: biofetch.rb,v 1.13 2004/03/24 01:04:39 k Exp $
+#  $Id: biofetch.rb,v 1.14 2004/07/06 13:28:17 k Exp $
 #
 
 require 'cgi'
@@ -77,29 +77,21 @@ module KeggAPI
   def list_databases
     serv = Bio::KEGG::API.new
     results = serv.list_databases
-    info_dbs(results) || []
-  end
-
-  def info_dbs(list = '')
-    ary = []
-    list.each do |line|
-      ary.push(line.split[1])
-    end
-    return ary[3..-1]
+    results.collect {|x| x.entry_id}
   end
 
   def bget(db, id_list, format)
     serv = Bio::KEGG::API.new
-    results = Array.new
+    results = ''
     id_list.each do |query_id|
       entry_id = "#{db}:#{query_id}"
-      if result = serv.get_entries(entry_id)
+      if result = serv.get_entries([entry_id])
         results << result
       else
         error4(query_id, db)
       end
     end
-    return results.join
+    return results
   end
 
 end
@@ -326,7 +318,7 @@ BioFetch interface to
 <A href="http://www.genome.ad.jp/dbget/">GenomeNet/DBGET</A>
 </H1>
 
-<P>This page allows you to retrieve up to <!var:max_id_num> entries at the time from various up-to-date biological databases.</P>
+<P>This page allows you to retrieve up to <!var:max_id_num> entries at a time from various up-to-date biological databases.</P>
 
 <HR>
 
