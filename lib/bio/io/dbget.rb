@@ -16,8 +16,70 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: dbget.rb,v 1.3 2001/10/17 14:43:12 katayama Exp $
+#  $Id: dbget.rb,v 1.4 2001/10/30 05:10:40 katayama Exp $
 #
+
+=begin
+
+= Bio::DBGET
+
+--- Bio::DBGET.dbget(com, arg, serv = nil, port = nil)
+
+      Main class method to access DBGET server.  Optionally, this method
+      can be called with the alternative DBGET server address and the
+      TCP/IP port number.
+
+      'com' should be one of the following DBGET commands :
+
+      * alink, bfind, bget, binfo, blink, bman, bref, btab, btit      
+
+      'arg' should be one of the following formats :
+
+      * [options] db
+        * specify the database name only for binfo, bman etc.
+      * [options] db:entry
+        * specify the database name and the entry name to retrieve.
+      * [options] db entry1 entry2 ...
+        * specify the database name and the list of entries to retrieve.
+
+      Note that options in the above example can be omitted.  If 'arg' is
+      empty, the help message with a list of options for 'com' will be
+      shown by default.  Supported database names will be found at the
+      GenomeNet DBGET web page ((<URL:http://www.genome.ad.jp/dbget/>)).
+
+--- BIO::DBGET.alink(arg)
+--- Bio::DBGET.bfind(arg)
+--- Bio::DBGET.bget(arg)
+--- Bio::DBGET.binfo(arg)
+--- Bio::DBGET.blink(arg)
+--- Bio::DBGET.bman(arg)
+--- Bio::DBGET.bref(arg)
+--- Bio::DBGET.btab(arg)
+--- Bio::DBGET.btit(arg)
+
+      These class methods are shortcut for the dbget commands.  Actually,
+      Bio::DBGET.((|com|))(arg) internally calls Bio::DBGET.dbget(com, arg).
+      Most of these methods accept the argument "-h" for help.
+
+--- Bio::DBGET.version
+
+      Show the version information of the DBGET server.
+
+--- Bio::DBGET.seq(arg)
+
+      Shortcut to retrieve the sequence of the entry in FASTA format.
+      This method is equivalent to Bio::DBGET.bget("-f -n 1 #{arg}") and
+      'arg' should be the "db:entry" or "db entry1 entry2 ..." format.
+
+--- Bio::DBGET.seq2(arg)
+
+      Shortcut to retrieve the second sequence of the entry in FASTA format.
+      This method is equivalent to Bio::DBGET.bget("-f -n 2 #{arg}").
+      Only useful when treating the KEGG/GENES database entries which have
+      both AASEQ and NTSEQ fields.
+
+=end
+
 
 module Bio
 
@@ -37,6 +99,10 @@ class DBGET
     end
     serv = serv ? serv : SERV
     port = port ? port : PORT
+
+    if arg.empty?
+      arg = "-h"			# DBGET help message
+    end
 
     query = "#{com} #{arg}\n"		# DBGET query string
     result = ''				# DBGET result
@@ -58,6 +124,10 @@ class DBGET
     return result
   end
 
+  def DBGET.version
+    dbget("bget", "-V")
+  end
+
 
   ### Individual DBGET functions (in alphabetical order)
 
@@ -66,26 +136,24 @@ class DBGET
     dbget("alink", arg)
   end
 
-  # bacc("db entry")	- get accession(s)
+  # bacc("db entry")	- not supported : get accession(s)
 
-  # bent("db entry")	- get entry name
+  # bent("db entry")	- not supported : get entry name
 
   # bfind("db keyword")	- search entries by keyword
   def DBGET.bfind(arg)
     dbget("bfind", arg)
   end
 
-  # bget("<options> [<dbname>:][<id> ..]") - get entry by ID 
-  #
-  # options:
-  #   -f      in FASTA format
-  #     -n 1  return Amino Acid sequence
-  #     -n 2  return Nucleic Acid sequence
-  #   -h      print help message
-  #   -V      print version
-  #
+  # bget("db entry")	- get entry by the entry name
   def DBGET.bget(arg)
     dbget("bget", arg)
+  end
+  def DBGET.seq(arg)
+    dbget("bget", "-f -n 1 #{arg}")
+  end
+  def DBGET.seq2(arg)
+    dbget("bget", "-f -n 2 #{arg}")
   end
 
   # binfo("db")		- get database information
@@ -118,7 +186,7 @@ class DBGET
     dbget("btit", arg)
   end
 
-  # lmarge ("db entry")
+  # lmarge("db entry")	- not supported
 
 end
 
