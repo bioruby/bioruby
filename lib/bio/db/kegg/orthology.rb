@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: orthology.rb,v 1.3 2004/05/14 03:04:38 k Exp $
+#  $Id: orthology.rb,v 1.4 2004/08/23 23:53:23 k Exp $
 #
 
 require 'bio/db'
@@ -131,8 +131,8 @@ end
 
 KO (KEGG Orthology) entry parser.
 
-* ((<URL:http://www.genome.ad.jp/dbget-bin/get_htext?KO>))
-* ((<URL:ftp://ftp.genome.ad.jp/pub/kegg/tarfiles/ko>))
+* ((<URL:http://www.genome.jp/dbget-bin/get_htext?KO>))
+* ((<URL:ftp://ftp.genome.jp/pub/kegg/tarfiles/ko>))
 
 --- Bio::KEGG::KO.new(entry)
 

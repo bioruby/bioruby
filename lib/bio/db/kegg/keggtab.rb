@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggtab.rb,v 1.4 2003/06/14 01:11:07 k Exp $
+#  $Id: keggtab.rb,v 1.5 2004/08/23 23:53:23 k Exp $
 #
 
 module Bio
@@ -292,7 +292,7 @@ end
 
 The keggtab file is included in
 
-  * ((URL:ftp://ftp.genome.ad.jp/pub/kegg/tarfiles/genes.weekly.last.tar.Z>))
+  * ((URL:ftp://ftp.genome.jp/pub/kegg/tarfiles/genes.weekly.last.tar.Z>))
 
 File format is something like
 

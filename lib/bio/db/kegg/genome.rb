@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genome.rb,v 0.12 2004/02/04 14:02:41 k Exp $
+#  $Id: genome.rb,v 0.13 2004/08/23 23:53:23 k Exp $
 #
 
 require 'bio/db'
@@ -357,6 +357,6 @@ end
 
 == SEE ALSO
 
-  ftp://ftp.genome.ad.jp/pub/kegg/genomes/genome
+  ftp://ftp.genome.jp/pub/kegg/genomes/genome
 
 =end
