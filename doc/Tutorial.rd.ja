@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.13 2003/07/16 08:49:36 k Exp $
+  $Id: Tutorial.rd.ja,v 1.14 2003/08/22 01:04:23 k Exp $
 
   Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -964,7 +964,11 @@ to be written...
 
 = KEGG API
 
-to be written...
+別ファイルの KEGG_API.rd.ja や
+
+  * ((<URL:http://www.genome.ad.jp/kegg/soap/>))
+
+を参照してください。
 
 
 = APPENDIX
