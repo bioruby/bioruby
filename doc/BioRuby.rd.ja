@@ -1,6 +1,6 @@
 =begin
 
-  $Id: BioRuby.rd.ja,v 1.9 2002/08/16 17:44:06 k Exp $
+  $Id: BioRuby.rd.ja,v 1.10 2004/08/23 23:41:29 k Exp $
 
   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -63,7 +63,7 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
 * アミノ酸配列や塩基配列の、翻訳やウィンドウサーチなどを含む操作、
   スプライシングなどを表す GenBank 形式の location フォーマットの処理
 * BLAST/FASTA などを用いた相同性検索
-* ゲノムネット ((<URL:http://www.genome.ad.jp>)) の検索とデータ取得
+* ゲノムネット ((<URL:http://www.genome.jp>)) の検索とデータ取得
 * GenBank や KEGG など様々なデータベースの細かいパース
 * PubMed/MEDLINE などの引用文献データの取得と整形
 * パスウェイ解析に必要なグラフと２項関係の操作
