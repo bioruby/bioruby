@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.8 2002/06/26 00:05:10 k Exp $
+  $Id: Tutorial.rd.ja,v 1.9 2002/06/27 02:18:57 k Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -33,8 +33,8 @@
     puts seq.translate(2)               # ２文字目から翻訳（普通は１から）
     puts seq.translate(1,11)            # 11番目のコドンテーブルを使用
     
-    p seq.translate.to_a                # アミノ酸を３文字コードで表示 (Array)
-    p seq.translate.to_ary              # アミノ酸を名前で表示 (Array)
+    p seq.translate.codes               # アミノ酸を３文字コードで表示 (Array)
+    p seq.translate.names               # アミノ酸を名前で表示 (Array)
     p seq.translate.composition         # アミノ酸組成 (Hash)
     p seq.translate.molecular_weight    # 分子量を計算 (Float)
     
@@ -107,20 +107,30 @@ GenBank 形式のファイル（元の ftp://ftp.ncbi.nih.gov/genbank/ の .seq ファ
       gb = Bio::GenBank.new(entry)
 
       # ACCESSION 番号と生物種名を表示
-      puts "==> #{gb.accession} - #{gb.organism}"
+      puts "# #{gb.accession} - #{gb.organism}"
     
-      gb.features do |feature|          # FEATURES の要素を一つずつ処理
+      gb.features.each do |feature|     # FEATURES の要素を一つずつ処理
         position = feature.position
         hash = feature.assoc            # レガシーだが簡単のためハッシュに直す
+
         # /translation= がなければスキップ
         next unless hash['translation']
-        # 遺伝子名などの情報
-        puts [hash['gene'], hash['product'], hash['note']].compact.join(', ')
+
+        # 遺伝子名などの情報を集める
+        gene_info = [
+          hash['gene'], hash['product'], hash['note'], hash['function']
+        ].compact.join(', ')
+
         # 塩基配列
+        puts ">NA splicing('#{position}') : #{gene_info}"
         puts gb.naseq.splicing(position)
+
         # アミノ酸配列（塩基配列から翻訳）
+        puts ">AA translated by splicing('#{position}').translate"
         puts gb.naseq.splicing(position).translate
+
         # アミノ酸配列（/translation= のもの）
+        puts ">AA original translation"
         puts hash['translation']
       end
     end
@@ -155,10 +165,10 @@ GenBank 形式のファイル（元の ftp://ftp.ncbi.nih.gov/genbank/ の .seq ファ
     require 'bio'
     
     ff = Bio::FlatFile.new(Bio::FastaFormat, ARGF)
-    ff.each_entry do |x|
-      puts x.definition
-      puts x.nalen
-      puts x.naseq
+    ff.each_entry do |f|
+      puts "definition : " + f.definition
+      puts "nalen      : " + f.nalen.to_s
+      puts "naseq      : " + f.naseq
     end
 
 などとすることができます。
@@ -190,8 +200,8 @@ BioRuby では、GenBank 以外のデータベースについても基本的なやり方は同じで、
   * seq や naseq や aaseq メソッド → 対応する配列オブジェクトが返る
 
 などのように共通化しようとしていますが、全てのメソッドが実装されているわ
-けではありません（bio/db.rb 参照）。また、細かい部分は各データベースパー
-ザ毎に異なるので、それぞれのドキュメントに従います。
+けではありません（共通化の指針は bio/db.rb 参照）。また、細かい部分は各
+データベースパーザ毎に異なるので、それぞれのドキュメントに従います。
 
 原則として、メソッド名が複数形の場合は、オブジェクトが配列として返ります。
 たとえば references メソッドを持つクラスは複数の Bio::Reference オブジェ
