@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: reference.rb,v 1.1 2001/09/17 22:39:27 katayama Exp $
+#  $Id: reference.rb,v 1.2 2001/09/18 05:59:29 katayama Exp $
 #
 
 class Reference
@@ -31,26 +31,26 @@ class Reference
   end
   attr_reader :authors, :title, :journal, :volume, :issue, :pages, :year, :pubmed, :medline
 
-  def format(style = nil)
+  def format(style = nil, option = nil)
     case style
-    when 'nature'
-      return nature
-    when 'nature-short'
-      return nature('short')
-    when 'science'
+    when /^nature$/i
+      return nature(option)
+    when /^science$/i
       return science
-    when 'genomebiology'
+    when /^genome\s*biology$/i
       return genomebiology
-    when 'genomeres'
+    when /^genome\s*res/i
       return genomeres
-    when 'nar'
+    when /^nar$/i
       return nar
-    when 'current'
+    when /^current/i
       return current
-    when 'trends'
+    when /^trends/i
       return trends
-    when 'cell'
+    when /^cell$/i
       return cell
+    when 'bibitem'
+      return bibitem(option)
     else
       return general
     end
@@ -60,6 +60,16 @@ class Reference
     authors = @authors.collect {|name| strip_dots(name)}.join(', ')
     journal = strip_dots(@journal)
     "#{authors} \"#{@title}\", #{journal} #{@volume}:#{@pages} (#{@year})"
+  end
+
+  def bibitem(item = nil)
+    item = "PMID@pubmed" unless item
+    return <<-"END".collect {|line| line.strip}.join("\n")
+	\\bibitem{#{item}}
+	#{@authors.join(', ')}
+	#{@title},
+	{\\em #{@journal}}, #{@volume}(#{@issue}):#{@pages}, #{@year}.
+    END
   end
 
   def nature(short = nil)
