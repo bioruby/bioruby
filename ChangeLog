@@ -15,10 +15,6 @@
 
 	  Newly added BLAT result parser class.
 
-	* lib/bio/db/kegg/glycan.rb, lib/bio/db/kegg/reaction.rb
-
-	  Newly added KEGG GLYCAN, KEGG REACTION parser classes.
-
 	* fixes and improvements:
 	  * lib/bio/appl/blast/blast/format0.rb
 	    * minor fix for the Blast default format parser
@@ -26,8 +22,6 @@
 	    * Alignment class
 	  * lib/bio/db/prosite.rb
 	    * bug reported by Rolv Seehuus is fixed
-	    * some methods are added
-	  * lib/bio/db/kegg/compound.rb
 	    * some methods are added
 
 2004-10-25  KATAYAMA Toshiaki <k@bioruby.org>
