@@ -1,7 +1,7 @@
 # 
 # bio/data/keggorg.rb - KEGG organism code module
 # 
-#   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org> 
+#   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org> 
 # 
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggorg.rb,v 0.6 2001/12/12 04:51:30 katayama Exp $
+#  $Id: keggorg.rb,v 0.7 2002/03/04 07:50:17 katayama Exp $
 #
 
 module Bio
@@ -28,26 +28,28 @@ module Bio
   #
   #   require 'bio'
   #
-  #   Bio::FlatFile.new(Bio::KEGG::GENOME,ARGF).each { |x|
-  #     puts "    '#{x.id}' => [ '#{x.name}', '#{x.definition}' ],"
-  #   }
+  #   Bio::FlatFile.new(Bio::KEGG::GENOME,ARGF).each do |x|
+  #     puts "    '#{x.entry_id}' => [ '#{x.name}', '#{x.definition}' ],"
+  #   end
   #
   # genome           KEGG Genome Database
-  #                  Release 01-02-11+/12-02, Dec 01
+  #                  Release 01-02-11+/02-01, Feb 02
   #                  Institute for Chemical Research, Kyoto University
-  #                  76 entries
-  #                  Last update:  01/12/02
-  #                  <dbget> 
+  #                  81 entries
+  #                  Last update:  02/02/01
+  #                  <dbget>
   #
   KEGGORG = {
     'aae' => [ 'A.aeolicus', 'Aquifex aeolicus VF5' ],
     'afu' => [ 'A.fulgidus', 'Archaeoglobus fulgidus VC-16' ],
-    'ana' => [ 'Anabaena', 'Anabaena sp. PCC7120' ],
+    'ana' => [ 'Anabaena', 'Anabaena sp. PCC7120 (Nostoc sp. PCC7120)' ],
     'ape' => [ 'A.pernix', 'Aeropyrum pernix K1' ],
+    'atc' => [ 'A.tumefaciens_C', 'Agrobacterium tumefaciens strain C58 (Cereon)' ],
     'ath' => [ 'A.thaliana', 'Arabidopsis thaliana' ],
-    'atu' => [ 'A.tumefaciens', 'Agrobacterium tumefaciens strain C58' ],
+    'atu' => [ 'A.tumefaciens', 'Agrobacterium tumefaciens C58 (U.Washington/Dupont)' ],
     'bbu' => [ 'B.burgdorferi', 'Borrelia burgdorferi B31' ],
     'bha' => [ 'B.halodurans', 'Bacillus halodurans C-125' ],
+    'bme' => [ 'B.melitensis', 'Brucella melitensis strain 16M' ],
     'bsu' => [ 'B.subtilis', 'Bacillus subtilis 168' ],
     'buc' => [ 'Buchnera', 'Buchnera sp. APS' ],
     'cac' => [ 'C.acetobutylicum', 'Clostridium acetobutylicum ATCC824' ],
@@ -56,6 +58,7 @@ module Bio
     'cje' => [ 'C.jejuni', 'Campylobacter jejuni NCTC11168' ],
     'cmu' => [ 'C.muridarum', 'Chlamydia muridarum (Chlamydia trachomatis MoPn)' ],
     'cpa' => [ 'C.pneumoniae_AR39', 'Chlamydophila pneumoniae AR39' ],
+    'cpe' => [ 'C.perfringens', 'Clostridium perfringens 13' ],
     'cpj' => [ 'C.pneumoniae_J138', 'Chlamydophila pneumoniae J138' ],
     'cpn' => [ 'C.pneumoniae', 'Chlamydophila pneumoniae CWL029' ],
     'ctr' => [ 'C.trachomatis', 'Chlamydia trachomatis serovar D' ],
@@ -89,12 +92,14 @@ module Bio
     'osa' => [ 'O.sativa', 'Oryza sativa' ],
     'pab' => [ 'P.abyssi', 'Pyrococcus abyssi GE5' ],
     'pae' => [ 'P.aeruginosa', 'Pseudomonas aeruginosa PA01' ],
+    'pai' => [ 'P.aerophilum', 'Pyrobaculum aerophilum strain IM2' ],
     'pfa' => [ 'P.falciparum', 'Plasmodium falciparum 3D7' ],
     'pho' => [ 'P.horikoshii', 'Pyrococcus horikoshii OT3' ],
     'pmu' => [ 'P.multocida', 'Pasteurella multocida PM70' ],
     'rco' => [ 'R.conorii', 'Rickettsia conorii Malish 7' ],
     'rno' => [ 'R.norvegicus', 'Rattus norvegicus' ],
     'rpr' => [ 'R.prowazekii', 'Rickettsia prowazekii Madrid E' ],
+    'rso' => [ 'R.solanacearum', 'Ralstonia solanacearum GMI1000' ],
     'sau' => [ 'S.aureus_N315', 'Staphylococcus aureus N315, meticillin-resistant (MRSA)' ],
     'sav' => [ 'S.aureus_Mu50', 'Staphylococcus aureus strain Mu50, MRSA strain with vancomycin resistance (VRSA)' ],
     'sce' => [ 'S.cerevisiae', 'Saccharomyces cerevisiae S288C' ],
@@ -119,4 +124,5 @@ module Bio
   }
 
 end
+
 
