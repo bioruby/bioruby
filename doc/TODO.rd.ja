@@ -1,6 +1,6 @@
 =begin
 
-  $Id: TODO.rd.ja,v 1.7 2002/06/18 20:48:58 k Exp $
+  $Id: TODO.rd.ja,v 1.8 2002/06/25 07:58:59 k Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -9,7 +9,6 @@
 == 0.4 (stable branch)
 
 * DB 系全クラス
-  * id -> entry_id
   * 複数のオブジェクト (String 含む) が返る場合複数形、一つだけオブジェクトが
     返る場合複数形のメソッド名にする。
     * Bio::GenBank#references で Reference オブジェクトの Array が返る
@@ -29,11 +28,21 @@
     * class Bio::Alignment::Multiple  or class Bio::MultipleAlignment
     * アライメントビューアもほしい
 
-* HMMER など
+* Blast の API 整備
+  * xmlparser.rb
+    * change Blast::Report#statistics -> Blast::Report::Iteration#statistics
+      * Blast::Report#statistics should return last iteration's statistics
+    * add Blast::Report::Iteration#message
+      * add Blast::Report#message to return last iteration's message
+
+* HMMER, EMBOSS など
 
 * BioSQL 最新スペック
 
+* BioRegistry サーバ、ini ファイルセットアップ
+
 * sample/ 整理
+
 
 == 0.5 (devel branch)
 
