@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.1 2003/02/21 09:40:49 n Exp $
+#  $Id: report.rb,v 1.2 2003/02/21 10:50:24 n Exp $
 #
 
 
@@ -36,7 +36,7 @@ module Bio
 	@prediction = entry[1].strip
 	@tmh        = []
 	@tmhs       = 0
-	parse_tmh(entry) if /MEMBRANE/ =~ @pred
+	parse_tmh(entry) if /MEMBRANE/ =~ @prediction
       end
 
       attr_reader :entry_id, :prediction, :tmhs, :tmh
@@ -100,7 +100,6 @@ HOGE
     p [:prediction, sosui.prediction]
     p [:tmhs, sosui.tmhs]
     pp [:tmh, sosui.tmh]
-    p [:loc, sosui.loc]
   end
 
   sample.split(Bio::SOSUI::Report::DELIMITER).each {|ent|
