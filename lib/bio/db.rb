@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: db.rb,v 0.2 2001/06/21 08:15:53 katayama Exp $
+#  $Id: db.rb,v 0.3 2001/08/21 10:59:31 katayama Exp $
 #
 
 require 'bio/sequence'
@@ -106,6 +106,16 @@ class DB
 
 
   ### common methods
+
+  # returns tag list of the entry
+  def tags
+    @orig.keys
+  end
+
+  # returns true or faluse - wether the entry contains the field of the tag
+  def exists?(tag)
+    @orig.include?(tag)
+  end
 
   # returns the field of the tag as is
   def get(tag)
