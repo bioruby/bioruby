@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: db.rb,v 0.8 2001/10/29 14:38:32 nakao Exp $
+#  $Id: db.rb,v 0.9 2001/11/01 22:03:48 nakao Exp $
 #
 
 module Bio
@@ -289,34 +289,178 @@ class KEGGDB < NCBIDB
 end
 
 
-class EMBLDB < DB
-
-  def initialize(entry, tagsize)
-    @tagsize = tagsize
-    @orig = entry2hash(entry)			# Hash of the original entry
-    @data = {}					# Hash of the parsed entry
-  end
-
-  private
-
-  # returns hash of the EMBL style fields (EMBL, Swiss-Prot etc.)
-  def entry2hash(entry)
-    hash = Hash.new('')
-    tag = oldtag = ''
-    entry.each_line do |line|
-      next if line =~ /^$/
-      tag = tag_get(line)
-      tag = 'R' if tag =~ /^R[NCPXATL]/ # to keep References order
-      next if tag == 'XX'               # Avoid XX lines to store
-      if tag != oldtag
-	oldtag = tag
-      end
-      hash[tag] += line
+  class EMBLDB < DB
+    
+    def initialize(entry, tagsize)
+      @tagsize = tagsize
+      @orig = entry2hash(entry)			# Hash of the original entry
+      @data = {}				# Hash of the parsed entry
     end
-    return hash
-  end
 
-end
+    # Shared methods in Bio::EMBL and Bio::SPTR
+
+    # AC Line
+    # "AC   A12345; B23456;"
+    # AC [AC1;]+
+    #
+    # Accession numbers format:
+    # 1       2     3          4          5          6
+    # [O,P,Q] [0-9] [A-Z, 0-9] [A-Z, 0-9] [A-Z, 0-9] [0-9]
+    #
+    # Bio::SPTR#ac  -> Array
+    #          #accessions  -> Array
+    def ac
+      unless @data['AC']
+	tmp=Array.new
+	a=field_fetch('AC').split(' ')
+	a.each do |e|
+	  tmp.push(e.sub(/;/,''))
+	end
+	@data['AC']=tmp
+      end
+      @data['AC']
+    end
+    alias accessions ac
+    # Bio::SPTR#accession  -> String
+    def accession
+      @data['AC'][0]
+    end
+
+
+    # OS Line; organism species (>=1)
+    # "OS   Trifolium repens (white clover)"
+    #
+    # OS   Genus species (name).
+    # OS   Genus species (name0) (name1).
+    # OS   Genus species (name0) (name1).
+    # OS   Genus species (name0), G s0 (name0), and G s (name1).
+    #
+    # Bio::EMBL#os  -> Array w/in Hash
+    # [{'name'=>'Human', 'os'=>'Homo sapiens'}, 
+    #  {'name'=>'Rat', 'os'=>'Rattus norveticus'}]
+    # Bio::STPR#os[0]['name'] => "Human"
+    # Bio::STPR#os[0] => {'name'=>"Human", 'os'=>'Homo sapiens'}
+    # Bio::STPR#os(0) => "Homo sapiens (Human)"
+    #
+    # Bio::SPTR#os -> Array w/in Hash
+    # Bio::SPTR#os(num) -> String
+    def os(num=nil)
+      unless @data['OS']
+	os=Array.new
+	fetch('OS').split(',').each do |tmp|
+	  if tmp =~ /([A-Z][a-z]+ [a-z]+)/
+	    org=$1
+	    tmp =~ /\((.+)\)/ 
+	    os.push({'name'=>$1, 'os'=>org})
+	  else
+	    raise "Error: OS Line \n#{fetch('OS')}\n"
+	  end
+	end
+	@data['OS']=os
+      end
+      if num
+	# EX. "Trifolium repens (white clover)"
+	"#{@data['OS'][num]['os']} ({#data['OS'][num]['name'])"
+      else
+	@data['OS']
+      end
+    end
+
+    # OG Line; organella (0 or 1/entry)
+    #
+    # Bio::SPTR#og  -> Array
+    def og
+      unless @data['OG']
+	og=Array.new
+	fetch('OG').sub(/.$/,'').sub(/ and/,'').split(',').each do |tmp|
+	  og.push(tmp.strip)
+	end
+	@data['OG']=og
+      end
+      @data['OG']
+    end
+
+
+    # OC Line; organism classification (>=1)
+    # OC   Eukaryota; Alveolata; Apicomplexa; Piroplasmida; Theileriidae;
+    # OC   Theileria.
+    #
+    # Bio::SPTR#oc  -> Array
+    def oc
+      fetch('OC').sub(/.$/,'').split(';').collect {|e| e.strip }
+    end
+
+
+    # KW Line; keyword (>=1)
+    # KW   [Keyword;]+
+    # Bio::SPTR#kw  -> Array
+    #          #keywords  -> Array
+    def kw
+      tmp=fetch('KW').sub(/.$/,'')
+      if block_given?
+	tmp.split(';').each do |k|
+	  yield k.strip
+	end
+      else
+	tmp.split(';').collect{|e| e.strip }
+      end      
+    end
+    alias keywords kw
+
+    # R Lines
+    # RN RC RP RX RA RT RL
+    # same as Bio::EMBL#ref 
+    def ref
+      get('R')
+    end
+
+    # DR Line; defabases cross-reference (>=0)
+    # a cross_ref pre one line
+    # "DR  database_identifier; primary_identifier; secondary_identifier."
+    # Bio::SPTR#dr  -> Hash w/in Array
+    def dr
+      unless @data['DR']
+	tmp=Hash.new
+	self.get('DR').split("\n").each do |db|
+	  a=db.sub(/^DR   /,'').sub(/.$/,'').strip.split(";[ ]")
+	  dbname=a.shift
+	  tmp[dbname]=Array.new unless tmp[dbname]
+	  tmp[dbname].push(a)
+	end
+	@data['DR']=tmp
+      end
+      if block_given?
+	@data['DR'].each do |k,v|
+	  yield(k,v)
+	end
+      else
+	@data['DR']
+      end
+    end
+
+
+
+    
+    private
+
+    # returns hash of the EMBL style fields (EMBL, Swiss-Prot etc.)
+    def entry2hash(entry)
+      hash = Hash.new('')
+      tag = oldtag = ''
+      entry.each_line do |line|
+	next if line =~ /^$/
+	tag = tag_get(line)
+	tag = 'R' if tag =~ /^R[NCPXATL]/ # to keep References order
+	next if tag == 'XX'               # Avoid XX lines to store
+	if tag != oldtag
+	  oldtag = tag
+	end
+	hash[tag] += line
+      end
+      return hash
+    end
+
+  end
 
 end				# module Bio
 
