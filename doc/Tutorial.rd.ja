@@ -1,0 +1,243 @@
+=begin
+
+  $Id: Tutorial.rd.ja,v 1.1 2001/10/30 05:56:26 katayama Exp $
+
+  Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+
+= BioRuby の使い方
+
+== 塩基・アミノ酸配列を処理する (Bio::Sequence クラス)
+
+簡単な例として、短い塩基配列 atgcatgcaaaa を使って、相補配列への変換、部
+分配列の切り出し、塩基組成の計算、アミノ酸への翻訳、分子量計算などを行なっ
+てみます。アミノ酸への翻訳では、必要に応じて何塩基目から翻訳を開始するか
+フレームを指定したり、codontable.rb で定義されているコドンテーブルの中か
+ら使用するものの番号を指定したりする事ができます。また、Sequence オブジェ
+クトは Ruby の String オブジェクトを継承しているので String のメソッドを
+全て使う事ができます。
+
+    #!/usr/bin/env ruby
+    
+    reqire 'bio'
+    
+    seq = Bio::Sequence::NA.new("atgcatgcaaaa")
+    
+    p seq                               # 元の配列
+    p seq.complement                    # 相補配列
+    p seq.subseq(3,8)                   # 3 塩基目から 8 塩基目まで
+    
+    p seq.gc_percent                    # GC 塩基の割合
+    p seq.base_composition              # 全塩基組成
+    
+    p seq.translate                     # 翻訳配列 (Sequence::AA オブジェクト)
+    p seq.translate(2)                  # ２文字目から翻訳（普通は１から）
+    p seq.translate(2,11)               # 11番目のコドンテーブルを使用
+    p seq.translate.to_a                # アミノ酸の名前で表示
+    p seq.translate.to_a(true)          # 短い３文字コードで表示
+    p seq.translate.molecular_weight    # 分子量を計算
+    
+    p seq.complement.translate          # 相補配列の翻訳
+
+実際には Sequence::NA オブジェクトはファイルから読み込んだ文字列から生成
+したり、データベースから取得したものを使ったりします。たとえば、
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+    include Bio                 # include Bio とすると、以下 Bio:: が省略できる
+    
+    input_seq = readlines.join  # 引数で与えられたファイルの全行を読み込む
+    
+    my_naseq = Sequence::NA.new(input_seq)
+    my_aaseq = my_naseq.translate
+  
+    puts my_aaseq
+
+このプログラムを na2aa.rb として、以下の塩基配列
+
+      gtggcgatctttccgaaagcgatgactggagcgaagaaccaaagcagtgacatttgtctg
+      atgccgcacgtaggcctgataagacgcggacagcgtcgcatcaggcatcttgtgcaaatg
+      tcggatgcggcgtga
+
+を書いたファイル my_naseq.txt を読み込んで翻訳すると
+
+    % ./na2aa.rb my_naseq.txt
+    VAIFPKAMTGAKNQSSDICLMPHVGLIRRGQRRIRHLVQMSDAA*
+
+のようになります。ちなみに、このくらいの例なら短くすると１行で書けます。
+
+    % ruby -r bio -e 'p Bio::Sequence::NA.new(readlines.join).translate' my_naseq.txt
+
+しかし、いちいちファイルを作るのも面倒なので、次はデータベースから必要な
+情報を取得してみます。
+
+== GenBank のパース (Bio::GenBank クラス)
+
+GenBank 形式のファイル（元の ftp://ftp.ncbi.nih.gov/genbank/ の .seq ファ
+イルでも、サブセットでもよい）が手元にあるとして、gb2fasta コマンドの真
+似をして、各エントリから ID と説明文、配列を取り出して FASTA 形式に変換
+してみます。ちなみに gets で使われている DELIMITER は GenBank クラスで定
+義されている定数で、データベースごとに異なるエントリの区切り文字（たとえ
+ば GenBank の場合は //）を覚えていなくても良いようになっています。
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+    
+    while entry = gets(Bio::GenBank::DELIMITER)
+      gb = Bio::GenBank.new(entry)      # GenBank オブジェクト
+    
+      print ">#{gb.accession} "         # ACCESSION 番号
+      puts gb.definition                # DEFINITION 行
+      puts gb.naseq                     # 塩基配列（Sequence::NA オブジェクト）
+    end
+
+次に、GenBank の複雑な FEATURES の中もパースして、遺伝子ごとの塩基配列と
+アミノ酸配列を取り出してみます。Bio::GenBank::RS は DELIMITER というが長
+いので付けてある別名です (RS は record separator の略) 。
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'; include Bio
+    
+    while entry = gets(GenBank::RS)
+      # GenBank の１エントリごとに
+      gb = GenBank::new(entry)
+
+      # ACCESSION 番号と生物種名を表示
+      puts "==> #{gb.accession} - #{gb.organism}"
+    
+      gb.features do |f|                # FEATURES の要素を一つずつ処理
+        # /translation= がなければスキップ
+        next unless f['translation'].length > 0
+        # 遺伝子名などの情報
+        puts [ f['gene'], f['product'], f['note'], f['function'] ].join(' ')
+        # 塩基配列
+        puts gb.naseq.splicing(f['position'])
+        # アミノ酸配列（塩基配列から翻訳）
+        puts gb.naseq.splicing(f['position']).translate
+        # アミノ酸配列（/translation= のもの）
+        puts f['translation']
+      end
+    end
+
+ここで、splicing は GenBank フォーマットの位置表記（location.rb 参照）を
+元に、塩基配列から exon 部分を切り出したりする強力なメソッドです。もし遺
+伝子の切り出しやアミノ酸への翻訳に BioRuby のバグがあれば、最後の２行で
+表示されるアミノ酸配列が異なる事になります。
+
+== DBGET システム (Bio::DBGET クラス)
+
+次は、ゲノムネットから DBGET を使って特定のデータベースエントリを取得す
+る例です。DBGET では bfind によるエントリの検索と bget によるエントリの
+取得ができます。
+
+Bio::DBGET.bfind メソッドには、検索対象のデータベース名と検索キーワード
+を与えます。例えば GenBank データベースで cyclin と kinase をキーワード
+に持つエントリを検索するには、以下のようにします。
+
+    % ruby -r bio -e 'puts Bio::DBGET.bfind("genbank cyclin kinase")'
+    gb:AB010087 [AB010087] Pseudomonas aeruginosa rpsB, tsf, pyrH, f...
+    gb:AF016224 [AF016224] Caenorhabditis elegans WD-40 repeat prote...
+         :
+
+結果のうち、左端に表示されているのが「データベース名:エントリ名」の表記
+で、Bio::DBGET.bget メソッドを使って実際にこのエントリを取ってくることが
+できます。
+
+    % ruby -r bio -e 'puts Bio::DBGET.bget("gb:AB010087")'
+
+これを利用して先の GenBank オブジェクトを作るには、
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+    include Bio
+    
+    entry = Bio::DBGET.bget("gb:AB010087")
+    gb = Bio::GenBank.new(entry)
+
+のようにスクリプトを書くことになります。簡単な処理なら、
+
+    % ruby -r bio -e 'include Bio
+    > gb = GenBank.new(DBGET.bget("gb:AB010087"))
+    > p gb.naseq'
+
+などとコマンドラインで実行しても良いでしょう。
+
+=== dbget コマンド
+
+また、BioRuby をインストールすると、上記の例と同じことを実行するプログラ
+ムである dbget コマンドも（/usr/bin/dbget などに）インストールされている
+はずです。この dbget コマンドを使えば、ゲノムネットの検索、データ取得を
+以下のようにコマンドラインで実行することができます。さらに、dbget に対し
+以下の例のようにメソッド名でリンクを張れば、メソッド名の動作をするプログ
+ラムになります。
+
+    % dbget bget gb:AB010087
+
+    # cd /usr/bin               ← dbget コマンドのインストール先
+    # ln -s dbget bfind
+    # ln -s dbget bget
+    
+    % bfind genbank cyclin kinase
+    % bget gb:AB010087
+
+DBGET で検索、取得できるデータベースは多数あるので、詳細は DBGET のウェ
+ブページ ((<URL:http://www.genome.ad.jp/dbget/>)) を参照してください。
+
+== KEGG::GENES のパース (Bio::KEGG::GENES, Bio::AAindex1 クラス)
+
+次は、DBGET で KEGG の GENES データベースから古細菌 Halobacterium のバク
+テリアロドプシン遺伝子 (VNG1467G) を取ってきて、アミノ酸指標データベース
+である AAindex から取り出したαヘリックスの指標 (BURA740101) を使って、
+幅 15 残基のウィンドウサーチをする例です。
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'; include Bio
+    
+    entry = DBGET.bget('hal:VNG1467G')
+    aaseq = KEGG::GENES.new(entry).aaseq
+    
+    entry = DBGET.bget('aax1:BURA740101')
+    helix = AAindex1.new(entry).index
+    
+    position = 1
+    win_size = 15
+    
+    aaseq.window_search(win_size) do |subseq|
+      score = subseq.total(helix)
+      puts [ position, score ].join("\t")
+      position += 1
+    end
+
+== PubMed を引いて引用文献リストを作る (Bio::PubMed クラス)
+
+最後は、NCBI の文献データベース PubMed を検索して引用文献リストを作成す
+る例です。
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+    
+    ARGV.each do |id|
+      entry = Bio::PubMed.query(id)
+      ref = Bio::MEDLINE.new(entry).reference
+      puts ref.bibtex
+    end
+
+このスクリプトを pm2bibtex.rb など好きな名前で保存し、
+
+    % ./pm2bibtex.rb 11024183 10592278 10592173
+
+など引用したい論文の PubMed ID (PMID) を引数に並べると NCBI にアクセスし
+て MEDLINE フォーマットをパースし BibTeX フォーマットに変換して出力して
+くれるはずです。
+
+ここでは bibtex メソッドで BibTeX フォーマットに変換していますが、（強調
+など文字の修飾はできませんが）Nature や NAR などいくつかの雑誌のフォーマッ
+トにも対応しています。
+
+=end
+
