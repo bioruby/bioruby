@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.26 2003/01/27 19:53:26 k Exp $
+#  $Id: sequence.rb,v 0.27 2003/03/20 08:16:55 k Exp $
 #
 
 require 'bio/data/na'
@@ -88,12 +88,11 @@ module Bio
     end
 
     def total(hash)
+      hash.default = 0.0
       sum = 0.0
       self.each_byte do |x|
 	begin
 	  sum += hash[x.chr]
-	rescue
-	  raise "[Error] illegal character : #{x.chr}"
 	end
       end
       return sum
