@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.17 2003/07/18 14:55:52 ng Exp $
+#  $Id: flatfile.rb,v 1.18 2003/07/28 08:28:59 ng Exp $
 #
 
 module Bio
@@ -35,12 +35,22 @@ module Bio
       if x.is_a?(Hash) then
 	raw = x[:raw]
       end
-      f = File.open(f, *openmode) unless f.respond_to?(:gets)
-      self.new(dbclass, f, raw)
+      unless f.respond_to?(:gets)
+	f = File.open(f, *openmode)
+	op = true
+      end
+      ff = self.new(dbclass, f, raw)
+      if block_given? then
+	r = yield ff
+	f.close if op
+	r
+      else
+	ff
+      end
     end
 
-    def self.auto(f, *mode)
-      self.open(nil, f, *mode)
+    def self.auto(f, *mode, &block)
+      self.open(nil, f, *mode, &block)
     end
 
     def self.to_a(f, *mode)
