@@ -17,14 +17,13 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.13 2001/11/15 14:28:38 nakao Exp $
+#  $Id: sequence.rb,v 0.14 2001/11/23 02:28:31 katayama Exp $
 #
 
 require 'bio/data/na'
 require 'bio/data/aa'
 require 'bio/data/codontable'
 require 'bio/location'
-#require 'mt'
 
 module Bio
 
@@ -65,71 +64,40 @@ module Bio
 	end
     end
 
-    # Sequence Randomize method
-    #
-    # Bio::Sequence#random -> str
-    # Bio::Sequence#random {|i| }
-    def random(_count = nil)
-      if _count
-	count = _count.clone     # .clone trap (--;
-      else
-	count = self.counts
+    def composition
+      count = Hash.new(0)
+      self.scan(/./) do |x|
+	count[x] += 1
       end
-
-      length = 0
-      labels = count.keys
-      labels.each do |l| # sum of lc
-	length += count[l]
-      end
-      tmp = Hash.new
-#      r = Math::RNG::MT19937.new(4637)
-      if block_given?
-	length.times do 
-	  labels.each do |l|
-	    tmp[l] = count[l]  * rand           # N * [0..1)
-#	    tmp[l] = count[l]  * r.rando        # N * [0..1)
-	  end
-	  lmax = tmp.sort{|a,b| a[1] <=> b[1]}  # comparison
-	  count[lmax.last[0]] -= 1
-
-	  yield lmax.last[0]
-	end
-      else
-	
-	rseq = ''
-	length.times do 
-	  labels.each do |l|
-	    tmp[l] = count[l]  * rand           # N * [0..1)
-#	    tmp[l] = count[l]  * r.rando        # N * [0..1)
-	  end
-	  lmax = tmp.sort{|a,b| a[1] <=> b[1]}  # comparison
-	  count[lmax.last[0]] -= 1
-
-	  rseq += lmax.last[0]
-	end
-	return rseq
-      end
+      return count
     end
 
-    # randomize, class method version
-    def Sequence.random(count, labels = nil)
-      # labels check
-      if labels        
-	count.keys.each do |c|
-	  unless labels.index(c)
-	    raise "\nInvalid counts, #{count.inspect} \n #{labels.inspect}"
-	  end
-	end
-      end
-      # little /ad hoc/ solution (--;
-      # Sequence#new(str = nil) ?
-      if block_given?
-	Sequence.new('').random(count) do |i|
-	  yield i
-	end
+
+    def randomize(hash = nil)
+      length = self.length
+      if hash
+	count = hash.clone
+	count.each_value {|x| length += x}
       else
-	return  Sequence.new('').random(count)
+	count = self.composition
       end
+
+      seq = ''
+      tmp = {}
+      length.times do 
+	count.each do |k, v|
+	  tmp[k] = v * rand
+	end
+	max = tmp.max {|a, b| a[1] <=> b[1]}
+	count[max.first] -= 1
+
+	if block_given?
+	  yield max.first
+	else
+	  seq += max.first
+	end
+      end
+      return seq
     end
 
 
@@ -149,8 +117,8 @@ module Bio
 	a.is_a?(String) ? NA.new(a) : a
       end
 
-      # bio/location.rb
-      def splicing(position)	# see Locations class
+      # This method depends on Locations class, see bio/location.rb
+      def splicing(position)
 	mRNA = NA.new('')
 	Locations.new(position).each do |location|
 	  if location.sequence
@@ -166,11 +134,11 @@ module Bio
 
       def complement
 	str = self.reverse
-	str.tr!('atgc', 'tacg')
+	str.tr!('atgcrymkdhvbswn', 'tacgyrkmhdbvswn')
 	NA.new(str)
       end
 
-      # bio/data/codontable.rb
+      # CodonTable is defined in bio/data/codontable.rb
       def codon_table(table = 1, codon = nil)
 	if codon
 	  CodonTable[table][codon]
@@ -180,7 +148,7 @@ module Bio
       end
 
       def translate(frame = 1, table = 1)
-	ct = codon_table(table)
+	ct = self.codon_table(table)
 	frame -= 1
 	aaseq = AA.new('')
 	frame.step(self.length - 3, 3) do |i|
@@ -194,18 +162,8 @@ module Bio
 	return aaseq
       end
 
-      # Counts bases 
-      def base_composition
-	count = Hash.new(0)
-	self.scan(/./) do |base|
-	  count[base] += 1
-	end
-	return count
-      end
-      alias counts base_composition
-
       def gc_percent
-	count = base_composition
+	count = self.composition
 	at = count['a'] + count['t']
 	gc = count['g'] + count['c']
 	gc = format("%.1f", gc.to_f / (at + gc) * 100)
@@ -250,28 +208,14 @@ module Bio
 	self.tr("atgc", "pika")	# joke, of cource :-)
       end
 
-      def randomize
-	if block_given?
-	  Sequence.random(self.counts, NucleicAcid.keys) do |i|
-	    yield i
-	  end
-	else
-	  return NA.new( Sequence.random(self.counts, NucleicAcid.keys) )
-	end
+      def randomize(*arg, &block)
+	NA.new(super(*arg, &block))
       end
 
-      # class method version of Sequence::NA#randomize
-      # count is Hash like {'a'=>2345, 'c'=>2321, 'g'=>1234, 't'=>1234} format
-      def NA.randomize(count)
-	if block_given?
-	  Sequence.random(count, NucleicAcid.keys) do |i|
-	    yield i
-	  end
-	else
-	  return NA.new( Sequence.random(count, NucleicAcid.keys) )
-	end
-
+      def NA.randomize(*arg, &block)
+	NA.new('').randomize(*arg, &block)
       end
+
     end
 
 
@@ -307,39 +251,12 @@ module Bio
 	total(hash)
       end
 
-      # Counts residues
-      def counts
-	count = Hash.new(0)
-	self.scan(/./) do |aa|
-	  count[aa] += 1
-	end
-	return count
-      end
-      alias aa_composition counts
-      alias residue_composition counts
-
-      # Sequence#randomize
-      # [Q] Should it return 'M' at the first residue ?
-      def randomize
-	if block_given?
-	  Sequence.random(self.counts, AminoAcid.keys) do |i|
-	    yield i
-	  end
-	else
-	  return AA.new(Sequence.random(self.counts, AminoAcid.keys))
-	end
+      def randomize(*arg, &block)
+	AA.new(super(*arg, &block))
       end
 
-      # class method version of Sequence#randomize
-      # [Q] Should it return 'M' at the first residue ?
-      def AA.randomize(count)
-	if block_given?
-	  Sequence.random(count, AminoAcid.keys) do |i|
-	    yield i
-	  end
-	else
-	  return AA.new(Sequence.random(count, AminoAcid.keys))
-	end
+      def AA.randomize(*arg, &block)
+	AA.new('').randomize(*arg, &block)
       end
 
     end
@@ -349,19 +266,33 @@ module Bio
 end
 
 
-# Testing code
 if __FILE__ == $0
+
+  puts "== Test Bio::Sequence::NA.new"
+  p Bio::Sequence::NA.new('')
+  p na = Bio::Sequence::NA.new('aaaatttggccggtttaaaa')
+
+  puts "== Test Bio::Sequence::NA#[]"
+  p na[0,5]
+
+  puts "== Test Bio::Sequence::NA#splicing"
+  p na.splicing("complement(join(1..5,16..20))")
+
+  puts "== Test Bio::Sequence::NA#complement"
+  p Bio::Sequence::NA.new('tacgyrkmhdbvswn').complement
+
+
 
   puts "\n == Test: Bio::Sequence.random(counts) =="
   counts = {'a'=>30,'c'=>24,'g'=>40,'t'=>30}
-  s = Bio::Sequence.random(counts)
+  s = Bio::Sequence::NA.randomize(counts)
   p s
   p s.type
 
   puts "\n == Test: Bio::Sequence::NA#randomize ==" 
   seq = 'gtcgcacatgactgcttgctaatcgtatcagtgatcgatgatcacgatgaacgctagctag'
   s = Bio::Sequence::NA.new(seq)
-  puts "Counts: #{s.counts.inspect}"
+  puts "Counts: #{s.composition.inspect}"
   print "Orginal:    "
   puts s
   print "Randomized: "
@@ -383,6 +314,7 @@ if __FILE__ == $0
     print i
   end
   puts
+  p counts
   rd = Bio::Sequence::NA.randomize(counts) 
   puts rd
   p rd.type
@@ -401,7 +333,7 @@ if __FILE__ == $0
   p s.type
 
 
-  counts = s.counts
+  counts = s.composition
   puts "\n == Test: Bio::Sequence::AA.randomize(counts) =="
   print "counts: "
   p counts
@@ -415,8 +347,6 @@ if __FILE__ == $0
   ra = Bio::Sequence::AA.randomize(counts)
   p ra.type
 
-
-
 end
 
 
@@ -424,67 +354,123 @@ end
 
 = Bio::Sequence
 
---- Bio::Sequence#subseq(start = 1, end = length)
+--- Bio::Sequence#subseq(start = 1, end = self.length)
+
+      Returns the subsequence of the self string.
+
 --- Bio::Sequence#window_search(window_size)
+
+      This method yields a window search along with the self sequence with
+      the size 'window_size' window.
+
 --- Bio::Sequence#total(hash)
---- Bio::Sequence#random
 
-      Returns a randomized sequence of keeping the base/residue counts. 
-      In the block from, a base/residue is passed as in a parameter upto
-      the length.
+      This method receive a hash of residues/bases to the particular values,
+      and sum up the value along with the self sequence.  Especially useful
+      to use with the window_search method and amino acid indices etc.
 
---- Bio::Sequence.random(counts, labels = nil)
+--- Bio::Sequence#to_fasta(header = '', width = nil)
 
-      Returns a randomized sequence (String) in given base/residue 
-      counts. 
-      In the block from, a base/residue is passed as in a parameter upto
-      the sum of the counts.
-      This method allows any keys in the counts Hash.
+      Output the FASTA format string of the sequence.  The 1st argument is
+      used as the comment string.  If the 2nd option is given, the output
+      sequence will be folded.
 
+--- Bio::Sequence#composition
 
+      Returns a hash of the occurrence counts for each residue or base.
 
-= Bio::Sequence::NA
+--- Bio::Sequence#randomize(count = nil)
 
---- Bio::Sequence::NA#new(str)
+      Returns a randomized sequence keeping its composition by default.
+      The argument is required when generating a random sequence from the empty
+      sequence (used by the class methods NA.randomize, AA.randomize).
+      If the block is given, yields for each random residue/base.
+
+== Bio::Sequence::NA
+
+--- Bio::Sequence::NA.new(str)
+
+      Generate a nucleic acid sequence object from a string.
+
+--- Bio::Sequence::NA#[](*arg)
+
+      Replacement for the String#[].
 
 --- Bio::Sequence::NA#splicing(position)
+
+      Receive a GenBank style position string and convert it to the Location
+      objects to splice the self sequence.  See bio/location.rb, too.
+
 --- Bio::Sequence::NA#complement
+
+      Returns a reverse complement sequence (including the universal codes).
+
 --- Bio::Sequence::NA#codon_table(table = 1, codon = nil)
+
+      Look up the codon table or select a codon table from the list.
+
 --- Bio::Sequence::NA#translate(frame = 1, table = 1)
---- Bio::Sequence::NA#base_composition
+
+      Translate into the amino acid sequence from the given frame and the
+      selected codon table.
+
 --- Bio::Sequence::NA#gc_percent
+--- Bio::Sequence::NA#gc
+
+      Calculate the ratio of GC / ATGC bases in percent.
+
 --- Bio::Sequence::NA#illegal_bases
+
+      Show abnormal bases other than 'atgcu'.
+
 --- Bio::Sequence::NA#molecular_weight(hash)
+
+      Estimate the weight of this biological string molecule.
+
 --- Bio::Sequence::NA#to_re
+
+      Convert the universal code string into the regular expression.
+
 --- Bio::Sequence::NA#to_a
+
+      Convert the self string into the list of the names of the each base.
+
 --- Bio::Sequence::NA#rna
---- Bio::Sequence::NA#pikachu
+
+      Output a RNA character string simply by the substitution of 't' to 'u'.
 
 --- Bio::Sequence::NA#randomize
 
-      NA version of Bio::Sequence.randomize.
+      Randomize the nucleotide sequence.
 
---- Bio::Sequence::NA.randomize(counts)
+--- Bio::Sequence::NA.randomize(composition)
 
-      Class method version of NA#randomize.
+      Generate a new random sequence with the given frequency of the bases.
+      The sequence length is determined by the sum of each base occurences.
 
-= Bio::Sequence::AA
+== Bio::Sequence::AA
 
---- Bio::Sequence::AA#new(str)
+--- Bio::Sequence::AA.new(str)
+
+      Generate a amino acid sequence object from a string.
 
 --- Bio::Sequence::AA#to_a(short)
---- Bio::Sequence::AA#molecular_weight(hash)
---- Bio::Sequence::AA#counts
 
-      Returns a Hash of the count for each residue,
-      cf) "{'A' => 20, ... }".
+      Generate the list of the names of the each residue along with the
+      sequence.  If the argument is given (and true), returns short names.
+
+--- Bio::Sequence::AA#molecular_weight(hash)
+
+      Estimate the weight of this protein.
 
 --- Bio::Sequence::AA#randomize
 
-      AA version of Bio::Sequence.randomize.
+      Randomize the amino acid sequence.
 
---- Bio::Sequence::AA.randomize(counts)
+--- Bio::Sequence::AA.randomize(composition)
 
-      Class method version of AA#randomize.
+      Generate a new random sequence with the given frequency of the residues.
+      The sequence length is determined by the sum of each residue occurences.
+
 =end
 
