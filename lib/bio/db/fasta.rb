@@ -1,8 +1,8 @@
 #
 # bio/db/fasta.rb - FASTA format class
 #
-#   Copyright (C) 2001 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>,
-#                      KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+#   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.5 2002/02/05 08:00:44 katayama Exp $
+#  $Id: fasta.rb,v 1.6 2002/05/16 06:14:41 k Exp $
 #
 
 require 'bio/db'
@@ -31,28 +31,36 @@ module Bio
     DELIMITER	= RS = "\n>"
 
     def initialize(str)
-      # 1st definition (comment) line 
-      @definition = str[/.*/].sub(/^>/, '').strip
-
-      # rests are the sequence lines
-      @seq = str.sub(/.*/, '')
-      @seq.sub!(/^>.*/m, '')		# clean up
-      @seq.tr!(" \t\r\n0-9", '')
+      @entry = '>' + str.sub(/^>/, '').sub(/^>.*/m, '')
     end
-    attr_accessor :definition, :seq
-    alias entry_id definition
+    attr_reader :entry
+    alias to_s :entry
 
     def fasta(factory)
-      factory.query(">#{definition}\n#{seq}")
+      factory.query(@entry)
+    end
+
+    def definition
+      unless @definition
+        @definition = @entry[/.*/].sub(/^>/, '').strip		# 1st line
+      end
+      @definition
+    end
+    alias entry_id definition
+
+    def seq
+      unless @seq
+        @seq = @entry.sub(/.*/, '').tr(" \t\r\n0-9", '')	# the rest
+      end
+      @seq
     end
 
     def length
-      @seq.length
+      seq.length
     end
 
     def naseq
-      @naseq = Sequence::NA.new(@seq) unless @naseq
-      @naseq
+      Sequence::NA.new(seq)
     end
 
     def nalen
@@ -60,8 +68,7 @@ module Bio
     end
 
     def aaseq
-      @aaseq = Sequence::AA.new(@seq) unless @aaseq
-      @aaseq
+      Sequence::AA.new(seq)
     end
 
     def aalen
@@ -70,29 +77,29 @@ module Bio
 
   end
 
-  class FastaNumericFormat < DB
+  class FastaNumericFormat < FastaFormat
 
-    DELIMITER	= RS = "\n>"
+    undef fasta, seq, naseq, nalen, aaseq, aalen
 
-    def initialize(str)
-      @definition = str[/.*/].sub(/^>/, '').strip
-      @data = str.sub(/.*/, '').strip.split(/\s+/).map {|x| x.to_i}
+    def data
+      unless @data
+	@data = @entry.sub(/.*/, '').strip.split(/\s+/).map {|x| x.to_i}
+      end
+      @data
     end
-    attr_accessor :definition, :data
-    alias entry_id definition
 
     def length
-      @data.length
+      data.length
     end
 
     def each
-      @data.each do |x|
+      data.each do |x|
         yield x
       end
     end
 
     def [](n)
-      @data[n]
+      data[n]
     end
 
   end
@@ -124,8 +131,8 @@ KTGDPLEWRRLFKKISTICRDIILIPN
 END
 
   f = Bio::FastaFormat.new(f_str)
+  p f.entry
   p f.definition
-  p f.definition += " hogehoge"
   p f.entry_id
   p f.seq
   p f.seq.type
@@ -171,27 +178,26 @@ automatically.
 
 --- Bio::FastaFormat.new(entry)
 
-      Store the comment and sequence information from one entry of the
+      Stores the comment and sequence information from one entry of the
       FASTA format string.  If the argument contains more than one
       entry, only the first entry is used.
 
+--- Bio::FastaFormat#entry
+
+      Returns the stored one entry as a FASTA format. (same as to_s)
+
 --- Bio::FastaFormat#definition
---- Bio::FastaFormat#definition=
 --- Bio::FastaFormat#entry_id
 
-      The comment line of the FASTA format data.  You can change the contents
-      by the accessor method (definition = "new comment").
-
-      * 'entry_id' is an alias of 'definition' method
+      Returns the comment line of the FASTA formatted data.
 
 --- Bio::FastaFormat#seq
---- Bio::FastaFormat#seq=
 
-      Returns joined sequence lines as a String.
+      Returns a joined sequence line as a String.
 
 --- Bio::FastaFormat#fasta(factory)
 
-      Execute FASTA search by Bio::Fasta factory object.
+      Executes FASTA search by using a Bio::Fasta factory object.
 
         #!/usr/bin/env ruby
 
@@ -202,9 +208,9 @@ automatically.
         ff.each do |entry|
           p entry.definition
           fasta_res = entry.fasta(factory)
-          fasta_res.threshold(0.001).each do |r|
-            print "evalue #{r.evalue} : #{r.q_id} => #{r.t_id} at "
-            p r.lap_at
+          fasta_res.threshold(0.001).each do |hit|
+            print "evalue #{hit.evalue} : #{hit.q_id} => #{hit.t_id} at "
+            p hit.lap_at
           end
         end
 
@@ -225,7 +231,7 @@ automatically.
 
 = Bio::FastaNumericFormat
 
-Treats a FASTA formatted entry, such as:
+Treats a FASTA formatted numerical entry, such as:
 
   >id and/or some comments                    <== comment line
   24 15 23 29 20 13 20 21 21 23 22 25 13      <== numerical data
@@ -236,26 +242,21 @@ automatically.
 
 --- Bio::FastaNumericFormat.new(entry)
 
-      Store the comment and the list of the numerical data.
+      Stores the comment and the list of the numerical data.
 
 --- Bio::FastaNumericFormat#definition
---- Bio::FastaNumericFormat#definition=
 --- Bio::FastaNumericFormat#entry_id
 
-      The comment line of the FASTA format data.  You can change the contents
-      by the accessor method (definition = "new comment").
-
-      * 'entry_id' is an alias of 'definition' method
+      The comment line of the FASTA formatted data.
 
 --- Bio::FastaNumericFormat#data
---- Bio::FastaNumericFormat#data=
 
-      Returns the list of numerical data (typically the quality score of the
-      corresponding sequence) as an Array.
+      Returns the list of the numerical data (typically the quality score
+      of its corresponding sequence) as an Array.
 
 --- Bio::FastaNumericFormat#length
 
-      Returns the number of the elements in numerical data.
+      Returns the number of elements in the numerical data.
 
 --- Bio::FastaNumericFormat#each
 
