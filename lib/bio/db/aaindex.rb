@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aaindex.rb,v 1.8 2002/07/25 22:38:03 k Exp $
+#  $Id: aaindex.rb,v 1.9 2002/07/25 22:42:08 k Exp $
 #
 
 require "bio/db"
@@ -94,7 +94,6 @@ module Bio
           var += (a.to_f - mean) ** 2
         end
         sd = Math.sqrt(var)
-p [ 'var', var, 'sd', sd ]
       end
 
       if type == :integer
