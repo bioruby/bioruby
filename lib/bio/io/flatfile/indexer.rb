@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.15 2003/05/14 13:09:24 ng Exp $ 
+#  $Id: indexer.rb,v 1.16 2003/06/12 16:45:52 ng Exp $ 
 # 
 
 module Bio
@@ -577,7 +577,9 @@ module Bio
 	parser.add_secondary_namespaces(*db.secondary.names)
 
 	if options['renew'] then
-	  newfiles = db.fileids.filenames
+	  newfiles = db.fileids.filenames.find_all do |x|
+	    FileTest.exist?(x)
+	  end
 	  newfiles.concat(files)
 	  newfiles2 = newfiles.sort
 	  newfiles2.uniq!
@@ -607,6 +609,18 @@ module Bio
 	end
 
 	b = db.fileids.size
+	begin
+	  db.fileids.recalc
+	rescue Errno::ENOENT => evar
+	  DEBUG.print "Error: #{evar}\n"
+	  DEBUG.print "assumed --renew option\n"
+	  db.close
+	  options = options.dup
+	  options['renew'] = true
+	  update_index(name, parser, options, *files)
+	  return true
+	end
+	# add new files
 	db.fileids.add(*newfiles)
 	db.fileids.recalc
 

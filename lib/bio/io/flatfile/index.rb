@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: index.rb,v 1.7 2003/02/28 15:01:47 ng Exp $ 
+#  $Id: index.rb,v 1.8 2003/06/12 16:45:52 ng Exp $ 
 # 
 
 
@@ -268,8 +268,16 @@ module Bio
       attr_reader :filename, :filesize
 
       def check
-	r =  (File.size(@filename) == @filesize)
-	DEBUG.print "FileID: File.size(#{@filename.inspect})", (r ? '==' : '!=') , "#{@filesize} ", (r ? ': good!' : ': bad!'), "\n"
+	begin
+	  fsize = File.size(@filename)
+	  r = ( fsize == @filesize)
+	rescue Errno::ENOENT
+	  fsize = -1
+	  r = nil
+	end
+	DEBUG.print "FileID: File.size(#{@filename.inspect}) = ",
+	  fsize, (r ? ' == ' : ' != ') , @filesize,
+	  (r ? '' : ' bad!'), "\n"
 	r
       end
 
