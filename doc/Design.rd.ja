@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Design.rd.ja,v 1.1 2001/10/30 04:25:51 katayama Exp $
+  $Id: Design.rd.ja,v 1.2 2001/11/08 13:02:20 katayama Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -10,16 +10,22 @@
 適切に commit します。メーリングリストなどで contribute されたコードは
 本人に committer になってもらうか、スタッフが commit します。
 
-  bioruby/bin/          アプリケーション
-         /lib/bio/      Ruby で書かれたライブラリ
-                 /appl/   外部アプリの処理 (？)
-                 /data/   生物学的な定数などデータそのもの
-                 /db/     データベースパーザ
-                 /io/     データの入出力
-                 /util/   その他
-         /doc/          ドキュメント
-         /ext/          C で書かれたライブラリ
-         /sample/       サンプルコード
+  bioruby/
+  |-- README            はじめに
+  |-- install.rb        インストーラ
+  |-- COPYING
+  |-- COPYING.LIB
+  |-- bin/              アプリケーション
+  |-- lib/              Ruby で書かれたライブラリ
+  |   `-- bio/            配列など基本的なクラス
+  |       |-- data/         生物学的な定数などデータそのもの
+  |       |-- db/           各種データベースパーザ
+  |       |-- io/           データの入出力
+  |       |-- appl/         外部アプリの処理 (？)
+  |       `-- util/         その他
+  |-- doc/              ドキュメント
+  |-- ext/              C で書かれたライブラリ
+  `-- sample/           サンプルコード
 
 == Ruby 部分についてのデザイン（bioruby/lib/bio/ 以下）
 
@@ -121,16 +127,24 @@ lib/bio/io/ 以下には、ゲノムネットによるデータ取得を行なう DBGET クラス
 
 他には、フラットファイル形式のラッパーとなる flatfile.rb や、MySQL に対
 して入出力を行なう mysql.rb（bioruby-db？）、NCBI（FASTA, BLAST も含めて）
-など Web ベースのアクセスを行なうもの、などの実装も必要でしょう。
+など Web ベースのアクセスを行なうもの、などの実装をしていく予定です。
 
-* flatfile.rb のアイデア
+* flatfile.rb （実装済）
 
-    # ローカルのファイルを GenBank フォーマットとして処理
-    flatfile = Bio::FlatFile.new('GenBank', 'data/gbvrl1.seq')
+    # ローカルのファイルを GenBank フォーマットとして開く
+    flatfile = Bio::FlatFile.open(Bio::GenBank, "genbank/gbest40.seq")
+
+    # またはファイルは引数で与える
+    Bio::FlatFile.new(Bio::GenBank, ARGF)
+
+    # または IO で与える
+    Bio::FlatFile.new(Bio::GenBank, IO.popen("gzip -dc nc1101.flat.gz"))
+
+    # 最初のエントリを GenBank オブジェクトに
+    gb = flatfile.next_entry
 
     # エントリごとに Bio::GenBank オブジェクトを生成
-    gb = flatfile.next_entry
-    flatfile.each_entry do |gb|
+    flatfile.each do |gb|
       puts gb.definition
     end
 
@@ -202,7 +216,8 @@ FASTA(SSEARCH), [PSI-]BLAST, HMMER, CLUSTALW などの外部アプリを使った処
 
 === ヘッダ部
 
-ヘッダ部には、ファイル名、概要、著作権者、ライセンス、CVS の ID を書きます。
+ヘッダ部には、ファイル名、概要、著作権者、ライセンス、CVS の ID を書きます
+（下の例では ID の＄を展開されないように全角にしていますが、実際は $ です）。
 
     #
     # bio/sequence.rb - biological sequence class
@@ -210,16 +225,20 @@ FASTA(SSEARCH), [PSI-]BLAST, HMMER, CLUSTALW などの外部アプリを使った処
     #   Copyright (C) 2000, 2001 KATAYAMA Toshiaki <k@bioruby.org>
     #
     #  This library is free software; you can redistribute it and/or
-    #  modify it under the terms of the GNU Library General Public
+    #  modify it under the terms of the GNU Lesser General Public
     #  License as published by the Free Software Foundation; either
     #  version 2 of the License, or (at your option) any later version.
     #
     #  This library is distributed in the hope that it will be useful,
     #  but WITHOUT ANY WARRANTY; without even the implied warranty of
     #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    #  Library General Public License for more details.
+    #  Lesser General Public License for more details.
     #
-    #  $Id: Design.rd.ja,v 1.1 2001/10/30 04:25:51 katayama Exp $
+    #  You should have received a copy of the GNU Lesser General Public
+    #  License along with this library; if not, write to the Free Software
+    #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+    #
+    #  ＄Id:＄
     #
 
 アプリケーションやサンプルコードを書く場合は、ruby のパスに依存しないよ
@@ -228,24 +247,6 @@ FASTA(SSEARCH), [PSI-]BLAST, HMMER, CLUSTALW などの外部アプリを使った処
     #!/usr/bin/env ruby
 
 のように始めるのも良いでしょう。
-
-
-=== ドキュメント部
-
-これまで、各クラスについては、あまりドキュメント化されていませんでしたが、
-今後はヘッダ部と、以下の本体の間に RD でメソッドなどのドキュメントを追加
-することにしていきます。
-
-ただし、
-
-* ソースの中には ASCII 以外の文字を入れない方針のため、日本語のドキュメ
-  ントは、この部分ではなく別ファイルに記述し、doc/ ディレクトリ以下に置
-  くなどします。この際、拡張子に .ja を付けて、ファイル名からも日本語と
-  分かるようにします。
-
-* このドキュメント部で RD を許す代わりに、以下のソースコード本体内では
-  RD によるドキュメントは禁止します。理由は純粋にコードが良みづらくなる
-  からですが、コメントを # を使って追加する事は歓迎します。
 
 === 本体
 
@@ -268,14 +269,82 @@ Bio 内はまだインデントされていませんが、追加モジュールはインデントしても
     
     end # module Bio      end
 
-=== 例外処理
+本体内では # を使ってコメントをつけ、RD を使ったコメントはファイルの最後
+のドキュメント部までは出てこないようにします。
 
-今後は、Ruby の例外処理をもう少し生かしたコードにしていく必要があります。
+    require 'hogehoge'
 
-=== 動作テスト
+    modlue Bio
 
-動作確認のための仕組みはまだ整っていません。今後、テスト用のスクリプトや 
-Unit テストの採用などを検討していきます。
+      class Hoge
+
+        # this method do hogehoge
+        def hoge
+          fuga = Array.new		# storing fugafuga data
+        end
+
+        def gege
+        end
+
+      end
+
+    end
+
+=== テストコード部
+
+テストコードはクラス定義など本体部分のあとにをつけることにします。テスト
+コードの書き方はこれから検討していく必要がありますが、とりあえず以下のよ
+うな構文でテストコードを囲みます。
+
+    if __FILE__ == $0
+      # test code here
+    end
+
+このおまじないのような構文は、ファイル hoge.rb がコマンドラインから
+
+    % ruby hoge.rb
+
+などとスクリプトとして起動された場合に実行されますが、ライブラリとして
+
+    require 'hoge'
+
+のようにロードされた場合には実行されないようにするための常套句です。
+
+テストの方法は、Test::Unit が ruby の標準ライブラリとして添付されるよう
+になれば採用してもいいと思いますが、それまでは色々試したいと思います。テ
+ストに外部ファイルやネットワークなどが必要な場合どうするかとか、インストー
+ル前に動作確認としてテストを実行する方法なども検討する必要があります。
+
+=== ドキュメント部
+
+これまで、各クラスについては、あまりドキュメント化されていませんでしたが、
+今後はテストコードのあと、ファイルの最後尾に RD でメソッドなどのドキュメ
+ントを追加することにしていきます。
+
+    =begin
+
+    = Bio::Sequence
+
+    --- Bio::Sequence#subseq(start = 1, end = length)
+
+          Returns subsequence of ...
+
+    --- Bio::Sequence#window_search(window_size)
+
+          This method ...
+
+    =end
+
+ただし、
+
+* ソースの中には ASCII 以外の文字を入れない方針のため、日本語のドキュメ
+  ントは、この部分ではなく別ファイルに記述し、doc/ ディレクトリ以下に置
+  くなどします。この際、拡張子に .ja を付けて、ファイル名からも日本語と
+  分かるようにします。
+
+* 前述のように、ソースコード本体内では RD によるドキュメントは禁止します。
+  理由は純粋にコードが良みづらくなるからです。もちろんソース中に # を使っ
+  てコメントを追加する事は歓迎します。
 
 == 開発に参加するには
 
