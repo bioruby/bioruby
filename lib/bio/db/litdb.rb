@@ -17,61 +17,114 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: litdb.rb,v 0.3 2001/11/06 16:58:52 okuji Exp $
+#  $Id: litdb.rb,v 0.4 2001/12/15 03:02:03 katayama Exp $
 #
-
-module Bio
 
 require 'bio/db'
 
-class LITDB < NCBIDB
+module Bio
 
-  DELIMITER	= RS = "\nEND\n"
-  TAGSIZE	= 12
+  class LITDB < NCBIDB
 
-  def initialize(entry)
-    super(entry, TAGSIZE)
-  end
+    DELIMITER	= RS = "\nEND\n"
+    TAGSIZE	= 12
 
-  # CODE
-  def id
-    field_fetch('CODE')
-  end
-
-  # TITLE
-  def title
-    field_fetch('TITLE')
-  end
-
-  # FIELD
-  def field
-    field_fetch('FIELD')
-  end
-
-  # JOURNAL
-  def journal
-    field_fetch('JOURNAL')
-  end
-
-  # VOLUME
-  def journal
-    field_fetch('VOLUME')
-  end
-
-  # KEYWORD ';;'
-  def journal
-    unless @data['KEYWORD']
-      @data['KEYWORD'] = fetch('KEYWORD').split(/;;\s*/)
+    def initialize(entry)
+      super(entry, TAGSIZE)
     end
-    @data['KEYWORD']
-  end
 
-  # AUTHOR
-  def journal
-    field_fetch('AUTHOR')
+    def reference
+      hash = Hash.new('') 
+
+      hash['authors']	= author.split(/;/).map {|x| x.sub(/,/, ', ')}
+      hash['title']	= title 
+      hash['journal']	= journal.gsub(/\./, '. ').strip
+
+      vol = volume.split(/,\s+/)
+      if vol.size > 1
+        hash['volume']	= vol.shift.sub(/Vol\./, '')
+        hash['pages'],
+        hash['year']	= vol.pop.split(' ')
+        hash['issue']	= vol.shift.sub(/No\./, '') unless vol.empty?
+      end
+
+      return Reference.new(hash) 
+    end
+
+    # CODE
+    def entry_id
+      field_fetch('CODE')
+    end
+
+    # TITLE
+    def title
+      field_fetch('TITLE')
+    end
+
+    # FIELD
+    def field
+      field_fetch('FIELD')
+    end
+
+    # JOURNAL
+    def journal
+      field_fetch('JOURNAL')
+    end
+
+    # VOLUME
+    def volume
+      field_fetch('VOLUME')
+    end
+
+    # KEYWORD ';;'
+    def keyword
+      unless @data['KEYWORD']
+        @data['KEYWORD'] = fetch('KEYWORD').split(/;;\s*/)
+      end
+      @data['KEYWORD']
+    end
+
+    # AUTHOR
+    def author
+      field_fetch('AUTHOR')
+    end
+
   end
 
 end
 
-end				# module Bio
+
+if __FILE__ == $0
+  require 'bio/io/dbget'
+
+  entry = Bio::DBGET.bget('litdb 0308004') 
+  puts entry
+  p Bio::LITDB.new(entry).reference
+
+  entry = Bio::DBGET.bget('litdb 0309094')
+  puts entry
+  p Bio::LITDB.new(entry).reference
+
+  entry = Bio::DBGET.bget('litdb 0309093')
+  puts entry
+  p Bio::LITDB.new(entry).reference
+end
+
+
+=begin
+
+= Bio::LITDB
+
+--- Bio::LITDB.new(entry)
+--- Bio::LITDB#reference
+--- Bio::LITDB#entry_id
+--- Bio::LITDB#title
+--- Bio::LITDB#field
+--- Bio::LITDB#journal
+--- Bio::LITDB#volume
+--- Bio::LITDB#keyword
+--- Bio::LITDB#author
+
+=end
+
 
