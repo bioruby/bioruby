@@ -1,3 +1,6 @@
+2002/03/26
+	* sample/gb2tab.rb use ruby instead of perl in the example -o
+	
 2002/03/11
 	* version 0.3.5 released -k
 
