@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.4 2002/08/16 17:17:51 k Exp $
+#  $Id: flatfile.rb,v 1.5 2002/08/21 09:53:06 ng Exp $
 #
 
 module Bio
@@ -155,6 +155,15 @@ end
 --- Bio::FlatFile#entry_raw
 
       Returns the current entry as a text.
+
+--- Bio::FlatFile#io
+
+      Returns input stream (IO object).
+
+--- Bio::FlatFile#dbclass
+
+      Returns database class given in FlatFile#initialize
+      (FlatFile.new or FlatFile.open).
 
 =end
 
