@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.24 2001/11/22 10:59:27 katayama Exp $
+#  $Id: pathway.rb,v 1.25 2001/12/08 07:45:33 katayama Exp $
 #
 
 require 'bio/matrix'
@@ -129,7 +129,7 @@ module Bio
       # so create a new Array object for each row as follows:
 
       matrix = Array.new
-      nodes.times do |i|
+      nodes.times do
 	matrix.push(Array.new(nodes, default_value))
       end
 
@@ -507,6 +507,10 @@ module Bio
       @edge
     end
 
+    def hash
+      @node.sort.push(@edge).hash
+    end
+
     def ===(rel)
       if self.edge == rel.edge
 	if self.node[0] == rel.node[0] and self.node[1] == rel.node[1]
@@ -520,6 +524,7 @@ module Bio
 	return false
       end
     end
+    alias eql? ===
 
     def <=>(rel)
       unless self.edge.kind_of? Comparable
@@ -550,7 +555,9 @@ if __FILE__ == $0
   p r1 === r2
   p r1 === r3
   p r1 === r4
-# p [ r1, r2, r3 ].uniq
+  p [ r1, r2, r3, r4 ].uniq
+  p r1.eql?(r2)
+  p r3.eql?(r2)
 
   # Sample Graph :
   #                  +----------------+
@@ -724,7 +731,7 @@ Note: you can clear the @relations list by calling clear_relations! method to
 reduce the memory usage, and the content of the @relations can be re-generated
 from the @graph by to_relations method.
 
---- Bio::Pathway#new(list, undirected = false)
+--- Bio::Pathway.new(list, undirected = false)
 
       Generate Bio::Pathway object from the list of Bio::Relation objects.
       If the second argument is true, undirected graph is generated.
@@ -929,7 +936,7 @@ Bio::Relation is a simple object storing two nodes and the relation of them.
 The nodes and the edge (relation) can be any Ruby object.  You can also
 compare Bio::Relation objects if the edges have Comparable property.
 
---- Bio::Relation#new(node1, node2, edge)
+--- Bio::Relation.new(node1, node2, edge)
 
       Create new binary relation object consists of the two object 'node1'
       and 'node2' with the 'edge' object as the relation of them.
@@ -960,6 +967,17 @@ compare Bio::Relation objects if the edges have Comparable property.
       and same nodes.  The == method compares Bio::Relation object's id,
       however this case equality === method compares the internal property
       of the Bio::Relation object.
+
+--- Bio::Relation#eql?(rel)
+--- Bio::Relation#hash
+
+      Method eql? is an alias of the === method and is used with hash method
+      to make uniq arry of the Bio::Relation objects.
+
+        a1 = Bio::Relation.new('a', 'b', 1)
+        a2 = Bio::Relation.new('b', 'a', 1)
+        a3 = Bio::Relation.new('b', 'c', 1)
+        p [ a1, a2, a3 ].uniq
 
 --- Bio::Relation#<=>(rel)
 
