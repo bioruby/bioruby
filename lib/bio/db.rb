@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: db.rb,v 0.19 2002/07/30 09:50:22 k Exp $
+#  $Id: db.rb,v 0.20 2002/08/19 01:46:30 k Exp $
 #
 
 require 'bio/sequence'
@@ -61,7 +61,7 @@ module Bio
     end
 
     def tag_cut(str)
-      str[0,@tagsize-1] = ''
+      str[0,@tagsize] = ''
       return str
     end
 
@@ -93,7 +93,7 @@ module Bio
 
     def subtag2array(str)
       sep = "\001"
-      str.gsub(/\n(\s{1,#{@tagsize-1}}\S)/, "\n#{sep}\\1").split(sep)
+      str.gsub(/\n(\s{1,#{@tagsize}}\S)/, "\n#{sep}\\1").split(sep)
     end
 
     def entry2hash(entry)
