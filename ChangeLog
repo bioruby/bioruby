@@ -1,3 +1,66 @@
+2004-08-24  KATAYAMA Toshiaki <k@bioruby.org>
+
+	* BioRuby 0.6.0 released.
+	  * many fixes for Ruby 1.8
+	  * updated for genome.ad.jp -> genome.jp transition
+
+	* lib/bio/db/pdb.rb
+
+	  Newly added parser for PDB contributed by Alex Gutteridge (EBI).
+
+	* lib/bio/data/codontable.rb
+
+	  Bio::CodonTable is rewrited to be a class instead of static variable.
+	  Now it can hold table definition, start codons, stop codons and
+	  added methods to detect start/stop codons and reverse translation.
+
+	  Also includes sample code to show codon table in ANSI colored
+	  ascii art, have fun.
+
+	* lib/bio/sequence.rb
+
+	  Bio::Sequence::NA#translate is rewrited to accept an user defined
+	  codon table as a Bio::CodonTable object and any character can be
+	  specified for the unknown codon.  This method runs about 30% faster
+	  than ever before.
+
+	  Bio::Sequence::AA#to_re method is added for the symmetry.
+
+	  Bio::Seq will be changed to hold generic rich sequence features.
+	  This means Bio::Seq is no longer an alias of Bio::Sequence but
+	  is a sequence object model, something like contents of a GenBank
+	  entry, common in BioPerl, BioJava etc.
+
+	* lib/bio/io/soapwsdl.rb
+
+	  Newly added common interface for SOAP/WSDL in BioRuby
+	  used by keggapi.rb, ddbjxml.rb.
+
+	* lib/bio/io/keggapi.rb
+
+	  Completely rewrited to support KEGG API v3.0
+
+	* lib/bio/io/esoap.rb
+
+	  Newly added client library for Entrez Utilities SOAP interface.
+
+	* lib/bio/db/genbank, lib/bio/db/embl
+
+	  Refactored to use common.rb as a common module.
+
+	* bin/pmfetch.rb
+
+	  Newly added command to search PubMed.
+
+	* bin/biofetch.rb, flatfile.rb, biogetseq.rb
+
+	  Renamed to have .rb suffix.
+
+	* sample/biofetch.rb
+
+	  Rewrited to use KEGG API instead of DBGET
+
+
 2003-10-13  KATAYAMA Toshiaki <k@bioruby.org>
 
 	* BioRuby 0.5.3 released.
@@ -26,7 +89,7 @@
 
 	  Fixed to be loaded in Ruby 1.8.0 without warnings.
 
-	* doc/KEGG_API.rd.ja:
+	* doc/KEGG_API.rd.ja
 
 	  Newly added a Japanese document on the KEGG API.
 
