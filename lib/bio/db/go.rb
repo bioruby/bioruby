@@ -17,201 +17,213 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: go.rb,v 1.4 2004/06/11 08:21:07 nakao Exp $
+#  $Id: go.rb,v 1.5 2004/11/05 08:10:33 nakao Exp $
 #
 
 require 'bio/pathway'
 
 module Bio
 
-  class GO
+# Bio::GO
+class GO
 
-    class Ontology < Bio::Pathway
+  # Bio::GO::Ontology - Class for a DAG Edit format of Gene Ontology.
+  class Ontology < Bio::Pathway
 
-      # Parsing GOID line in the DAGEdit format  
-      # GO:ID[ ; GO:ID...]
-      def self.parse_goids(line)
-	goids = []
-	loop {
-	  if /^ *[$%<]\S.+?;/ =~ line
-	    endpoint = line.index(';') + 1
-	    line = line[endpoint..line.size]
-	  elsif /^,* GO:(\d{7}),*/ =~ line
-	    goids << $1.clone
-	    endpoint = line.index(goids.last) + goids.last.size
-	    line = line[endpoint..line.size]
-	  else
-	    break
-	  end
-	}
-	return goids
-      end
+    # Bio::GO::Ontology.parse_ogids(line)
+    # Parsing GOID line in the DAGEdit format  
+    # GO:ID[ ; GO:ID...]
+    def self.parse_goids(line)
+      goids = []
+      loop {
+        if /^ *[$%<]\S.+?;/ =~ line
+          endpoint = line.index(';') + 1
+          line = line[endpoint..line.size]
+        elsif /^,* GO:(\d{7}),*/ =~ line
+          goids << $1.clone
+          endpoint = line.index(goids.last) + goids.last.size
+          line = line[endpoint..line.size]
+        else
+          break
+        end
+      }
+      return goids
+    end
 
 
-      def initialize(str)
-	@id2term      = {}
-	@header_lines = {}
-	@id2id        = {}
- 	adj_list = dag_edit_format_parser(str)
-	super(adj_list)
-      end
-      attr_reader :header_lines, :id2term, :id2id
+    attr_reader :header_lines
+    attr_reader :id2term
+    attr_reader :id2id
+
+
+    # Bio::GO::Ontology.new(str)
+    def initialize(str)
+      @id2term      = {}
+      @header_lines = {}
+      @id2id        = {}
+      adj_list = dag_edit_format_parser(str)
+      super(adj_list)
+    end
+
 	
-      #
-      def goid2term(goid)
-	term = id2term[goid]
-	term = id2term[id2id[goid]] if term == nil
-	return term
-      end
-
-
-
+    # Bio::GO::Ontology.goid2term(goid)
+    def goid2term(goid)
+      term = id2term[goid]
+      term = id2term[id2id[goid]] if term == nil
+      return term
+    end
 
       private
 
-      # constructing adjaency list for the given ontology
-      def dag_edit_format_parser(str)
-	stack    = []
-	adj_list = []
+    # constructing adjaency list for the given ontology
+    def dag_edit_format_parser(str)
+      stack    = []
+      adj_list = []
+      
+      str.each {|line|
+        if /^!(.+?):\s+(\S.+)$/ =~ line  # Parsing head lines
+          tag   = $1
+          value = $2
+          tag.gsub!(/-/,'_')
+          next if tag == 'type'
+          instance_eval("@header_lines['#{tag}'] = '#{value}'")
+          next
+        end
+        
+        case line
+        when /^( *)([$<%])(.+?) ; GO:(\d{7})(\n*)/ # GO Term ; GO:ID
+          depth = $1.length.to_i
+          rel   = $2
+          term  = $3
+          goid1 = goid = $4
+          en    = $5
+          goids = parse_goids(line)   # GO:ID[ ; GO:ID...]
+          synonyms = parse_synonyms(line)  # synonym:Term[ ; synonym:Term...]
+          stack[depth]   = goids.first
+          @id2term[goid] = term
+          
+          next if depth == 0
 
-	str.each {|line|
-	  if /^!(.+?):\s+(\S.+)$/ =~ line  # Parsing head lines
-	    tag   = $1
-	    value = $2
-	    tag.gsub!(/-/,'_')
-	    next if tag == 'type'
-	    instance_eval("@header_lines['#{tag}'] = '#{value}'")
-
-	    next
-	  end
-  
-	  case line
-	  when /^( *)([$<%])(.+?) ; GO:(\d{7})(\n*)/ # GO Term ; GO:ID
-	    depth = $1.length.to_i
-	    rel   = $2
-	    term  = $3
-	    goid1 = goid = $4
-	    en    = $5
-	    goids = parse_goids(line)   # GO:ID[ ; GO:ID...]
-	    synonyms = parse_synonyms(line)  # synonym:Term[ ; synonym:Term...]
-	    stack[depth]   = goids.first
-	    @id2term[goid] = term
-
-	    next if depth == 0
-
-	    goids.each {|goid|
-	      @id2term[goid] = term
-	      @id2id[goid]   = goids.first
-	      adj_list << Bio::Relation.new(stack[depth - 1], goid, rel)
-	    }
+          goids.each {|goid|
+            @id2term[goid] = term
+            @id2id[goid]   = goids.first
+            adj_list << Bio::Relation.new(stack[depth - 1], goid, rel)
+          }
 	    
-	    if en == ""
-	      loop {
-		case line
-		when /^\n$/
-		  break
-		when /^ *([<%]) (.+?) ; GO:(\d{7})/ # <%GO Term ; GO:ID
-		  rel1  = $1
-		  term1 = $2
-		  goid1 = $3
-		  goids1 = parse_goids(line)
-		  synonyms1 = parse_synonyms(line)
+          if en == ""
+            loop {
+              case line
+              when /^\n$/
+                break
+              when /^ *([<%]) (.+?) ; GO:(\d{7})/ # <%GO Term ; GO:ID
+                rel1  = $1
+                term1 = $2
+                goid1 = $3
+                goids1 = parse_goids(line)
+                synonyms1 = parse_synonyms(line)
+                
+                @id2term[goid1] = term1
+                goids.each {|goid|
+                  adj_list << Bio::Relation.new(goid1, goid, rel1)
+                }
+              else
+                break
+              end
+            }
+          end
+        end
+      }
+      return adj_list
+    end
 
-		  @id2term[goid1] = term1
-		  goids.each {|goid|
-		    adj_list << Bio::Relation.new(goid1, goid, rel1)
-		  }
-		else
-		  break
-		end
-	      }
-	    end
-	  end
-	}
-	return adj_list
+
+    # Bio::GO::Ontology#parse_goids(line)
+    def parse_goids(line)
+      Ontology.parse_goids(line)
+    end
+
+    # Bio::GO::Ontology#parse_synonyms(line)
+    def parse_synonyms(line)
+      synonyms = []
+      loop {
+        if / ; synonym:(\S.+?) *[;<%\n]/ =~ line
+          synonyms << $1.clone
+          endpoint = line.index(synonyms.last) + synonyms.last.size
+          line = line[endpoint..line.size]
+        else
+          break
+        end
+      }
+      return synonyms
+    end
+
+  end # class Ontology
+
+
+  # Bio::GO::GeneAssociation
+  # $CVSROOT/go/gene-associations/gene_association.*
+  class GeneAssociation # < Bio::DB
+
+    DELIMITER = RS = "\n"
+
+    # Bio::GO::GeneAssociation.parser(str)
+    # gene_association.* file parser
+    def self.parser(str)
+      if block_given?
+        str.each(DELIMITER) {|line|
+          next if /^!/ =~ line
+          yield GeneAssociation.new(line)
+        }
+      else
+        galist = []
+        str.each(DELIMITER) {|line|
+          next if /^!/ =~ line
+          galist << GeneAssociation.new(line)
+        }
+        return galist
       end
+    end
 
 
-      def parse_goids(line)
-	Ontology.parse_goids(line)
+    attr_reader :db, :db_object_id, :db_object_symbol,
+       :qualifier, :db_reference, :evidence, :with, :aspect, 
+       :db_object_name, :db_object_synonym, :db_object_type, 
+       :taxon, :date, :assigned_by 
+    alias :entry_id :db_object_id
+
+
+    # Bio::GO::GeneAssociation.new(entry)
+    def initialize(entry) 
+      tmp = entry.chomp.split(/\t/)
+      @db                = tmp[0] 
+      @db_object_id      = tmp[1]
+      @db_object_symbol  = tmp[2]
+      @qualifier         = tmp[3]  # 
+      @goid              = tmp[4]
+      @db_reference      = tmp[5]
+      @evidence          = tmp[6]
+      @with              = tmp[7]  # 
+      @aspect            = tmp[8]
+      @db_object_name    = tmp[9]  #
+      @db_object_synonym = tmp[10] #
+      @db_object_type    = tmp[11]
+      @taxon             = tmp[12] # taxon:4932
+      @date              = tmp[13] # 20010118
+      @assigned_by       = tmp[14] 
+    end
+
+    # Bio::GO::GeneAssociation.goid
+    def goid(org = nil)
+      if org
+        @goid
+      else
+        @goid.sub('GO:','')
       end
+    end
 
-
-      def parse_synonyms(line)
-	synonyms = []
-	loop {
-	  if / ; synonym:(\S.+?) *[;<%\n]/ =~ line
-	    synonyms << $1.clone
-	    endpoint = line.index(synonyms.last) + synonyms.last.size
-	    line = line[endpoint..line.size]
-	  else
-	    break
-	  end
-	}
-	return synonyms
-      end
-
-    end # class Ontology
-
-
-
-    # $CVSROOT/go/gene-associations/gene_association.*
-    class GeneAssociation# < Bio::DB
-
-      DELIMITER = RS = "\n"
-
-      # gene_association.* file parser
-      def self.parser(str)
-	if block_given?
-	  str.each(DELIMITER) {|line|
-	    next if /^!/ =~ line
-	    yield GeneAssociation.new(line)
-	  }
-	else
-	  galist = []
-	  str.each(DELIMITER) {|line|
-	    next if /^!/ =~ line
-	    galist << GeneAssociation.new(line)
-	  }
-	  return galist
-	end
-      end
-
-
-      def initialize(entry) 
-        tmp = entry.chomp.split(/\t/)
-        @db                = tmp[0]
-        @db_object_id      = tmp[1]
-        @db_object_symbol  = tmp[2]
-        @goid              = tmp[4]
-        @db_reference      = tmp[5]
-        @evidence          = tmp[6]
-        @with              = tmp[7]
-        @aspect            = tmp[8]
-        @db_object_name    = tmp[9]
-        @db_object_synonym = tmp[10]
-        @db_object_type    = tmp[11]
-        @taxon             = tmp[12]
-        @date              = tmp[13]
-      end
-      attr_reader :db, :db_object_id, :db_object_symbol,
-	:db_reference, :evidence, :with, :aspect, 
-	:db_object_name, :db_object_synonym, :db_object_type, 
-	:taxon, :date 
-      alias :entry_id :db_object_id
-
-
-      def goid(org = nil)
-	if org
-	  @goid
-	else
-	  @goid.sub('GO:','')
-	end
-      end
-
-    end # class GeneAssociation   
-
-  end # class GO
+  end # class GeneAssociation   
+  
+end # class GO
 
 end # module Bio
 
