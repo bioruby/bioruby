@@ -75,14 +75,12 @@ class GENES
 
     if key
       @data['ENTRY'][key]
-    else
-      if block_given?
-	@data['ENTRY'].each do |k, v|
-	  yield(k, v)
-	end
-      else
-	@data['ENTRY']
+    elsif block_given?
+      @data['ENTRY'].each do |k, v|
+	yield(k, v)
       end
+    else
+      @data['ENTRY']
     end
   end
   alias each_entry entry
@@ -120,20 +118,42 @@ class GENES
 
     if key
       @data['DBLINKS'][key]
-    else
-      if block_given?
-	@data['DBLINKS'].each do |k, v|
-	  yield(k, v)
-	end
-      else
-	@data['DBLINKS']
+    elsif block_given?
+      @data['DBLINKS'].each do |k, v|
+	yield(k, v)
       end
+    else
+      @data['DBLINKS']
     end
   end
   alias each_link dblinks
 
-  def codon_usage
-    # not implemented yet.
+  def codon_usage(codon = nil)
+    unless @data['CODON_USAGE']
+      return @data['CODON_USAGE'] unless @orig['CODON_USAGE']	# nil
+
+      @data['CODON_USAGE'] = []					# data in Array
+
+      @orig['CODON_USAGE'].sub(/.*/,'').each_line do |l|	# cut 1st line
+	l.chomp.sub(/^.{11}/, '').scan(/.{4}/) do |x|
+          @data['CODON_USAGE'].push(x.to_i)
+	end
+      end
+    end
+
+    h = { 't' => 0, 'c' => 1, 'a' => 2, 'g' => 3 }
+
+    if codon
+      codon.downcase!
+      key = h[codon[0].chr] * 16 + h[codon[1].chr] * 4 + h[codon[2].chr]
+      @data['CODON_USAGE'][key]
+    elsif block_given?
+      @data['CODON_USAGE'].each do |x|
+	yield(x)
+      end
+    else
+      return @data['CODON_USAGE']
+    end
   end
   alias cu codon_usage
 
