@@ -1,13 +1,44 @@
+2003-01-28  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* BioRuby version 0.4.0 released.
+	* bin/bioflat:
+	  * newly added for the BioFlat indexing
+	* lib/bio/io/flatfile.rb, flatfile/{indexer.rb,index.rb,bdb.rb}:
+	  * flatfile indexing is supported by N. Goto
+	* lib/bio/db/genbank.rb: changed to contain common methods only
+	  * lib/bio/db/genbank/genbank.rb
+	  * lib/bio/db/genbank/genpept.rb
+	  * lib/bio/db/genbank/refseq.rb
+	  * lib/bio/db/genbank/ddbj.rb
+	* lib/bio/db/embl.rb: changed to contain common methods only
+	  * lib/bio/db/embl/embl.rb
+	  * lib/bio/db/embl/sptr.rb
+	  * lib/bio/db/embl/swissprot.rb
+	  * lib/bio/db/embl/trembl.rb
+	* lib/bio/appl/emboss.rb:
+	  * added - just a generic wrapper, no specific parsers yet.
+	* lib/bio/appl/hmmer.rb:
+	  * added - execution wrapper
+	* lib/bio/appl/hmmer/report.rb:
+	  * added - parsers for hmmsearch, hmmpfam contributed by H. Suga
+	* lib/bio/db.rb: open method added for easy use of flatfile.
+	* lib/bio/db/kegg/genes.rb:
+	  * fixed bug in codon_usage method in the case of long sequence >999
+	  * eclinks, splinks, pathways, gbposition, chromosome methods added
+	* lib/bio/db/aaindex.rb:
+	  * adapted for the new AAindex2 format (release >= 6.0).
+	* lib/bio/db/fasta.rb: entry_id is changed to return first word	only
+	* lib/bio/data/na.rb, aa.rb, keggorg.rb:
+	  * moved under class NucleicAcid, AminoAcid, KEGG (!)
+	* in the test codes, DBGET is replaced by BioFetch
+
 2002-08-30  Yoshinori K. Okuji  <okuji@enbug.org>
 
 	* lib/bio/matrix.rb: Removed.
-	
 	* lib/bio/db/aaindex.rb: Require matrix instead of bio/matrix.
-	
 	* lib/bio/db/transfac.rb: Likewise.
-	
 	* lib/bio/pathway.rb: Likewise.
-	(Pathway#dump_matrix): Don't use Matrix#dump.
+	  (Pathway#dump_matrix): Don't use Matrix#dump.
 
 2002-07-30  KATAYAMA Toshiaki  <k@bioruby.org>
 
