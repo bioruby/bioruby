@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.22 2002/08/19 10:58:57 k Exp $
+#  $Id: bio.rb,v 1.23 2002/08/26 06:08:20 k Exp $
 #
 
 module Bio
@@ -52,6 +52,7 @@ require 'bio/pathway'
 
 require 'bio/io/registry'
 require 'bio/io/flatfile'
+require 'bio/io/flatfile/indexer'
 require 'bio/io/flatfile/index'
 require 'bio/io/flatfile/bdb'
 require 'bio/io/dbget'
