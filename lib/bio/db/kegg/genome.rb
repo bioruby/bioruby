@@ -1,7 +1,7 @@
 #
 # bio/db/kegg/genome.rb - KEGG/GENOME database class
 #
-#   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,13 +17,12 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genome.rb,v 0.9 2001/12/15 02:52:54 katayama Exp $
+#  $Id: genome.rb,v 0.10 2002/03/04 08:13:25 katayama Exp $
 #
 
+require 'bio/db'
 
 module Bio
-
-  require 'bio/db'
 
   class KEGG
 
@@ -36,265 +35,173 @@ module Bio
 	super(entry, TAGSIZE)
       end
 
-      # ENTRY (1 per entry)
+
+      # ENTRY
       def entry_id
 	field_fetch('ENTRY')
       end
       
-      # NAME (1 per entry)
+      # NAME
       def name
 	field_fetch('NAME')
       end
 
-      # DEFINITION (1 per entry)
+      # DEFINITION
       def definition
 	field_fetch('DEFINITION')
       end
       alias organism definition
 
-      # TAXONOMY(1 per entry)
+      # TAXONOMY
+      def taxonomy
+	unless @data['TAXONOMY']
+	  taxid, lineage = subtag2array(get('TAXONOMY'))
+	  @data['TAXONOMY'] = {
+	    'taxid'	=> truncate(tag_cut(taxid)),
+	    'lineage'	=> truncate(tag_cut(lineage))
+	  }
+	  @data['TAXONOMY'].default = ''
+	end
+	@data['TAXONOMY']
+      end
+
       def taxid
-	field_sub('TAXONOMY')
-	return @data['TAXONOMY']['TAXONOMY']
+	taxonomy['taxid']
       end
-      
-      # TAXONOMY/LINEAGE (1 per entry)
+
       def lineage
-	field_sub('TAXONOMY')
-	return @data['TAXONOMY']['LINEAGE']
-      end
-      alias taxonomy lineage
-
-      # MORPHOLOGY (1 per entry)
-      def morphology
-	field_fetch('MORPHOLOGY')
-      end
-      
-      # PHYSIOLOGY (0 or 1 per entry)
-      def physiology
-	field_fetch('PHYSIOLOGY')
-      end
-      
-      # ENVIRONMENT (0 or 1 per entry)
-      def environment
-	field_fetch('ENVIRONMENT')
+	taxonomy['lineage']
       end
 
-      # COMMENT (0 or 1 per entry)
+      # COMMENT
       def comment
 	field_fetch('COMMENT')
       end
       
-      # REFERENCE (1 per entry)
-      # REFERENCE/AUTHOR (>=1 per entry)
-      def reference(num = nil, tag = nil)
-	field_multi_sub('REFERENCE')
-
-	if block_given?
-	  @data['REFERENCE'].each do |ref|
-	    yield(ref)			# Hash of each REFERENCE
-	  end				#   obj.reference do |r| r['TITLE'] end
-	elsif num
-	  if tag
-	    @data['REFERENCE'][num-1][tag]# tag contents of num'th REFERENCE
-	  else				#   obj.reference(1, 'JOURNAL') -> 1st
-	    @data['REFERENCE'][num-1]	# Hash of num'th REFERENCE
-	  end				#   obj.reference(2) -> 2nd REFERENCE
-	else
-	  @data['REFERENCE']		# Array of Hash of REFERENCE (default)
-	end				#   obj.reference
+      # REFERENCE
+      def references
+	unless @data['REFERENCE']
+	  ary = []
+	  toptag2array(get('REFERENCE')).each do |ref|
+	    hash = Hash.new('')
+	    subtag2array(ref).each do |field|
+	      case tag_get(field)
+	      when /AUTHORS/
+		authors = truncate(tag_cut(field))
+		authors = authors.split(', ')
+		authors[-1] = authors[-1].split('\s+and\s+')
+		authors = authors.flatten.map { |a| a.sub(',', ', ') }
+		hash['authors']	= authors
+	      when /TITLE/
+		hash['title']	= truncate(tag_cut(field))
+	      when /JOURNAL/
+		journal = truncate(tag_cut(field))
+		if journal =~ /(.*) (\d+):(\d+)-(\d+) \((\d+)\) \[UI:(\d+)\]$/
+		  hash['journal']	= $1
+		  hash['volume']	= $2
+		  hash['pages']		= $3
+		  hash['year']		= $5
+		  hash['medline']	= $6
+		else
+		  hash['journal'] = journal
+		end
+	      end
+	    end
+	    ary.push(Reference.new(hash))
+	  end
+	  @data['REFERENCE'] = References.new(ary)
+	end
+	@data['REFERENCE']
       end
 
-      # CHROMOSOME (>=1 pre entry)
-      # CHROMOSOME 
-      #   SEQUENCE
-      #   LEGNTH
-      def chromosome(num = nil, tag = nil)
+      # CHROMOSOME
+      def chromosomes
 	unless @data['CHROMOSOME']
-	  field_multi_sub('CHROMOSOME')
-	  @data['CHROMOSOME'] += field_multi_sub('MITOCHON')
-	  @data['CHROMOSOME'] += field_multi_sub('PLASMID')
+	  @data['CHROMOSOME'] = []
+	  toptag2array(get('CHROMOSOME')).each do |chr|
+	    hash = Hash.new('')
+	    subtag2array(chr).each do |field|
+	      hash[tag_get(field)] = truncate(tag_cut(field))
+	    end
+	    @data['CHROMOSOME'].push(hash)
+	  end
 	end
-  
-	if block_given?
-	  @data['CHROMOSOME'].each do |chr|
-	    yield(chr)			    # Hash of each CHROMOSOME
-	  end				    #   obj.chromosome do |c| p c end
-	elsif num
-	  if tag  # ::= (LENGTH|SEQUENCE)
-	    @data['CHROMOSOME'][num-1][tag] # tag contents of num'th CHROMOSOME
-	  else				#   obj.chromosome(2, 'LENGTH') -> 2nd
-	    @data['CHROMOSOME'][num-1]	# Hash of num'th CHROMOSOME
-	  end				#   obj.chromosome(3) -> 3rd CHROMOSOME
-	else
-	  @data['CHROMOSOME']		# Array of Hash of CHROMOSOME (default)
-	end				#   obj.chromosome
+	@data['CHROMOSOME']
       end
 
-
-      # CHROMOSOME (>=1 pre entry)
-      # MITOCHON (>=0 per entry)
-      # PLASMID (>=0 per entry)
-      #
-      # * Backward compativility
-      #   old GENOME#chromosome
-      #    == GENOME#chromosome + GENOME#plasmid + GENOME#mitochon
-      #   old GENOME#chromosome(num)
-      #    == GENOME#chromosome(num)
-      #   old GENOME#chromosome(tag)
-      #    == GENOME#chromosome(tag)
-      #   old GENOME#chromosome {}
-      #    == (GENOME#chromosome + GENOME#plasmid + GENOME#mitochon).each {}
-      # 
-      def chromosomes(type = nil, num = nil, tag = nil)
-	unless @data['CHROMOSOMES']
-	  @data['CHROMOSOMES'] = Hash.new
-	  @data['CHROMOSOMES']['CHROMOSOME'] = field_multi_sub('CHROMOSOME')
-	  @data['CHROMOSOMES']['MITOCHON'] = field_multi_sub('MITOCHON')
-	  @data['CHROMOSOMES']['PLASMID'] = field_multi_sub('PLASMID')
+      # PLASMID
+      def plasmids
+	unless @data['PLASMID']
+	  @data['PLASMID'] = []
+	  toptag2array(get('PLASMID')).each do |chr|
+	    hash = Hash.new('')
+	    subtag2array(chr).each do |field|
+	      hash[tag_get(field)] = truncate(tag_cut(field))
+	    end
+	    @data['PLASMID'].push(hash)
+	  end
 	end
-	if block_given?
-	  @data['CHROMOSOMES'].each do |type,chr|
-	    yield(type,chr)		    # Type=>Hash of each CHROMOSOME
-	  end
-	elsif num and type
-	  if tag  # ::= (LENGTH|SEQUENCE|#{type})
-	    @data['CHROMOSOMES'][type][num-1][tag] # tag contents of 
-	                                           # num'th CHROMOSOME
-	  else
-	    @data['CHROMOSOMES'][type][num-1]	# Hash of num'th CHROMOSOMES
-	  end
-	elsif type
-	  @data['CHROMOSOMES'][type]    # Array of Hash 
-	else
-	  @data['CHROMOSOMES']          # Array of Hash of CHROMOSOMES(default)
-	end				
-      end
-      protected :chromosomes
-      
-      # CHROMOSOME (>=1 pre entry)
-      #   SEQUENCE
-      #   LEGNTH
-      #
-      def chromosome(num = nil, tag = nil)
-	if block_given?
-	  chromnosomes('CHROMOSOME').each do |chr|
-	    yield(chr)		         # Hash of each CHROMOSOME
-	  end
-	elsif num
-	  if tag # ::= (LENGTH|SEQUENCE|CHROMOSOME)
-	    chromosomes('CHROMOSOME', num, tag)
-	  else
-	    chromosomes('CHROMOSOME', num)
-	  end
-	else
-	  #[{'LENGTH'=>str, 'SEQUENCE'=>str, 'CHROMOSOME'=>str}]
-	  chromosomes('CHROMOSOME') 
-	end
+	@data['PLASMID']
       end
 
-      # PLASMID (>=0 per entry)
-      #   SEQUENCE
-      #   LEGNTH
-      # 
-      def plasmid(num = nil, tag = nil)
-	if block_given?
-	  chromnosomes('PLASMID').each do |chr|
-	    yield(chr)		         # Hash of each PLASMID
+      # SCAFFOLD
+      def scaffolds
+	unless @data['SCAFFOLD']
+	  @data['SCAFFOLD'] = []
+	  toptag2array(get('SCAFFOLD')).each do |chr|
+	    hash = Hash.new('')
+	    subtag2array(chr).each do |field|
+	      hash[tag_get(field)] = truncate(tag_cut(field))
+	    end
+	    @data['SCAFFOLD'].push(hash)
 	  end
-	pppelsif num
-	  if tag # ::= (LENGTH|SEQUENCE|PLASMID)
-	    chromosomes('PLASMID', num, tag)
-	  else
-	    chromosomes('PLASMID', num)
-	  end
-	else
-	  #[{'LENGTH'=>str, 'SEQUENCE'=>str, 'PLASMID'=>str}]
-	  chromosomes('PLASMID')
 	end
+	@data['SCAFFOLD']
       end
 
-      # MITOCHON (>=0 per entry)
-      #   SEQUENCE
-      #   LEGNTH
-      #
-      def mitochon(num = nil, tag = nil)
-	if block_given?
-	  chromnosomes('MITOCHON').each do |chr|
-	    yield(chr)		         # Hash of each MITOCHON
-	  end
-	elsif num
-	  if tag # ::= (LENGTH|SEQUENCE|MITOCHON)
-	    chromosomes('MITOCHON', num, tag)
-	  else
-	    chromosomes('MITOCHON', num)
-	  end
-	else
-	  #[{'LENGTH'=>str, 'SEQUENCE'=>str, 'MITOCHON'=>str}]
-	  chromosomes('MITOCHON')
-	end
-      end
-      alias mitochondorion mitochon
-
-
-      # STATISTICS (0 or 1 per entry)
-      # STATISTICS  Number of nucleotides:             N
-      #     Number of protein genes:           N
-      #     Number of RNA genes:               N
-      #     G+C content:                    NN.N%
-      #
-      def statistics(num = nil)
+      # STATISTICS
+      def statistics
 	unless @data['STATISTICS']
-	  # Array of num of nucleotides, num of protein genes, num of RNAs, GC%
-	  @data['STATISTICS'] = fetch('STATISTICS').scan(/[\d\.]+/)
+	  hash = Hash.new(0.0)
+	  get('STATISTICS').each_line do |line|
+	    case line
+	    when /nucleotides.*(\d+)/
+	      hash['nalen'] = $1.to_i
+	    when /protein genes.*(\d+)/
+	      hash['num_gene'] = $1.to_i
+	    when /RNA genes.*(\d+)/
+	      hash['num_rna'] = $1.to_i
+	    when /G\+C content.*(\d+.\d+)/
+	      hash['gc'] = $1.to_f
+	    end
+	  end
+	  @data['STATISTICS'] = hash
 	end
-
-	if num
-	  @data['STATISTICS'][num]
-	else
-	  @data['STATISTICS']
-	end
+	@data['STATISTICS']
       end
+
       def nalen
-	if statistics(0)
-	  statistics(0).to_i 
-	else
-	  nil
-	end
+	statistics['nalen']
       end
       alias length nalen
+
       def num_gene
-	if statistics(1)
-	  statistics(1).to_i
-	else
-	  nil
-	end
-      end
-      def num_rna
-	if statistics(2)
-	  statistics(2).to_i
-	else
-	  nil
-	end
-      end
-      def gc
-	if statistics(3)
-	  statistics(3).to_f
-	else
-	  nil
-	end
+	statistics['num_gene']
       end
 
-      # GENOMEMAP (1 per entry)
+      def num_rna
+	statistics['num_rna']
+      end
+
+      def gc
+	statistics['gc']
+      end
+
+      # GENOMEMAP
       def genomemap
 	field_fetch('GENOMEMAP')
       end
 
-      # GENECATALOG (1 per entry)
-      def genecatalog
-	field_fetch('GENECATALOG')
-      end
-      
     end
     
   end
@@ -305,106 +212,41 @@ end
 
 if __FILE__ == $0
 
-  genomes = 'genome'
-  
+  begin
+    require 'pp'
+    def p(arg); pp(arg); end
+  rescue LoadError
+  end
 
-  def puts_eval(code)
-    if code =~ /^(p\w*) (.+)$/
-      opt = $1
-      script = $2
-      case opt
-      when 'p'
-	print "\n  == p #{script}\n   #==> "
-	p eval script
- 
-     when 'puts'
-	print "\n  == p #{script}\n   #==> \n"
-	puts eval script
+  require 'bio/io/flatfile'
+
+  ff = Bio::FlatFile.new(Bio::KEGG::GENOME, ARGF)
+
+  ff.each do |genome|
+
+    puts "### Tags"
+    p genome.tags
+
+    [
+      %w( ENTRY entry_id ),
+      %w( NAME name ),
+      %w( DEFINITION definition ),
+      %w( TAXONOMY taxonomy taxid lineage ),
+      %w( REFERENCE references ),
+      %w( CHROMOSOME chromosomes ),
+      %w( PLASMID plasmids ),
+      %w( SCAFFOLD plasmids ),
+      %w( STATISTICS statistics nalen num_gene num_rna gc ),
+      %w( GENOMEMAP genomemap ),
+    ].each do |x|
+      puts "### " + x.shift
+      x.each do |m|
+	p genome.send(m)
       end
     end
+
   end
 
-  begin 
-    fio = File.open(genomes)
-  rescue
-    raise "
-Error: No such file: 'genome' in the current directory.
-
-
-Pseudo-test code for bio/db/kegg/genome.rb
-
-Usage:
- $  cd /some/where/genome
- $ ruby /some/where/bio/db/kegg/genome/rb
-
-File:
- genome  - KEGG/GENOME database flatfile 
-           (ftp://ftp.genome.ad.jp/pub/kegg/genomes/genome)
-
-"
-  end
-
-  while entry = fio.gets(Bio::KEGG::GENOME::DELIMITER)
-
-    puts "\n\n== start entry =="
-    $genome = nil
-    $genome = Bio::KEGG::GENOME.new(entry)
-
-    test_codes = [
-      "puts $genome.get('ENTRY')",
-      'p $genome.entry',
-      "puts $genome.get('NAME')",
-      'p $genome.name',
-      "puts $genome.get('DEFINITION')",
-      'p $genome.definition',
-      "puts $genome.get('TAXONOMY')",
-      'p $genome.taxid',
-      'p $genome.lineage',
-
-      "puts $genome.get('PHYSIOLOGY')",
-      'p $genome.physiology',
-      "puts $genome.get('MORPHOLOGY')",
-      'p $genome.morphology',
-      "puts $genome.get('ENVIRONMENT')",
-      'p $genome.environment',
-      
-      "puts $genome.get('REFERENCE')",
-      'p $genome.reference',
-
-      "puts $genome.get('CHROMOSOME')",
-#      'p $genome.chromosomes',
-      'p $genome.chromosome',
-      "puts $genome.get('PLASMID')",
-      'p $genome.plasmid',
-      "puts $genome.get('MITOCHON')",
-      'p $genome.mitochon',
-
-      "puts $genome.get('STATISTICS')",
-      'p $genome.statistics',
-      'p $genome.nalen',
-      'p $genome.num_gene',
-      'p $genome.num_rna',
-      'p $genome.gc',
-      
-      "puts $genome.get('GENOMEMAP')",
-      'p $genome.genomemap',
-      "puts $genome.get('GENECATALOG')",
-      'p $genome.genecatalog'
-
-
-    ]
-
-    test_codes.each do |code|
-      puts_eval(code)
-    end
-
-    puts "\n== end entry ==\n"
-  end
-
-  fio.close
-
-
-  puts "\n==  ==\n"
 end
 
 
@@ -412,36 +254,107 @@ end
 
 = Bio::KEGG::GENOME
 
+=== Initialize
+
 --- Bio::KEGG::GENOME.new(entry)
 
---- Bio::KEGG::GENOME#entry
---- Bio::KEGG::GENOME#name
---- Bio::KEGG::GENOME#definition
---- Bio::KEGG::GENOME#organism
---- Bio::KEGG::GENOME#taxid
---- Bio::KEGG::GENOME#lineage
---- Bio::KEGG::GENOME#taxonomy
---- Bio::KEGG::GENOME#morphology
---- Bio::KEGG::GENOME#physiology
---- Bio::KEGG::GENOME#environment
---- Bio::KEGG::GENOME#comment
+=== ENTRY
 
---- Bio::KEGG::GENOME#chromosome(num = nil, tag = nil)
---- Bio::KEGG::GENOME#plasmid(num = nil, tag = nil)
---- Bio::KEGG::GENOME#mitochon(num = nil, tag = nil)
+--- Bio::KEGG::GENOME#entry_id -> String
 
+      Returns contents of the ENTRY record as a String.
 
---- Bio::KEGG::GENOME#statistics(num = nil)
---- Bio::KEGG::GENOME#nalen
---- Bio::KEGG::GENOME#num_gene
---- Bio::KEGG::GENOME#num_rna
---- Bio::KEGG::GENOME#gc
---- Bio::KEGG::GENOME#genomemap
---- Bio::KEGG::GENOME#genecatalog
+=== NAME
 
+--- Bio::KEGG::GENOME#name -> String
 
-= See also.
+      Returns contents of the NAME record as a String.
 
-((<URL:ftp://ftp.genome.ad.jp/pub/kegg/genomes/genome>))
+=== DEFINITION
+
+--- Bio::KEGG::GENOME#definition -> String
+
+      Returns contents of the DEFINITION record as a String.
+
+--- Bio::KEGG::GENOME#organism -> String
+
+      Alias for the 'definition' method.
+
+=== TAXONOMY
+
+--- Bio::KEGG::GENOME#taxonomy -> Hash
+
+      Returns contents of the TAXONOMY record as a Hash.
+
+--- Bio::KEGG::GENOME#taxid -> String
+
+      Returns NCBI taxonomy ID from the TAXONOMY record as a String.
+
+--- Bio::KEGG::GENOME#lineage -> String
+
+      Returns contents of the TAXONOMY/LINEAGE record as a String.
+
+=== COMMENT
+
+--- Bio::KEGG::GENOME#comment -> String
+
+      Returns contents of the COMMENT record as a String.
+
+=== REFERENCE
+
+--- Bio::GenBank#references -> Array
+
+      Returns contents of the REFERENCE records as an Array of Bio::Reference
+      objects.
+
+=== CHROMOSOME
+
+--- Bio::KEGG::GENOME#chromosomes -> Array
+
+      Returns contents of the CHROMOSOME records as an Array of Hash.
+
+=== PLASMID
+
+--- Bio::KEGG::GENOME#plasmids -> Array
+
+      Returns contents of the PLASMID records as an Array of Hash.
+
+=== SCAFFOLD
+
+--- Bio::KEGG::GENOME#scaffolds -> Array
+
+      Returns contents of the SCAFFOLD records as an Array of Hash.
+
+=== STATISTICS
+
+--- Bio::KEGG::GENOME#statistics -> Hash
+
+      Returns contents of the STATISTICS record as a Hash.
+
+--- Bio::KEGG::GENOME#nalen -> Fixnum
+
+      Returns number of nucleotides from the STATISTICS record as a Fixnum.
+
+--- Bio::KEGG::GENOME#num_gene -> Fixnum
+
+      Returns number of protein genes from the STATISTICS record as a Fixnum.
+
+--- Bio::KEGG::GENOME#num_rna -> Fixnum
+
+      Returns number of rna from the STATISTICS record as a Fixnum.
+
+--- Bio::KEGG::GENOME#gc -> Float
+
+      Returns G+C content from the STATISTICS record as a Float.
+
+=== GENOMEMAP
+
+--- Bio::KEGG::GENOME#genomemap -> String
+
+      Returns contents of the GENOMEMAP record as a String.
+
+== SEE ALSO
+
+  ftp://ftp.genome.ad.jp/pub/kegg/genomes/genome
 
 =end
