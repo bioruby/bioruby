@@ -1,6 +1,6 @@
 =begin
 
-  $Id: TODO.rd.ja,v 1.12 2002/08/30 06:31:46 o Exp $
+  $Id: TODO.rd.ja,v 1.13 2002/11/22 23:19:07 k Exp $
 
   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -10,8 +10,17 @@
 
 * install.rb env 問題
 
+* sptr 系 definition などメソッドがないい！！ API そろえる
+
+* ORF のリストを返す
+  * http://bioperl.org/pipermail/bioperl-l/2002-July/008672.html
+
+* hmmer、Ana ゲノムに saruposon サーチしたときカラムがずれてパースしくる
+
 * GenBank, EMBL, SPTR, BioSQL の統合、フォーマット変換、やっぱやっとこう
+  * genbank/ @moltype
   * bio/db/seqentry.rb か bio/seqentry.rb あたりにコンテナ SeqEntry を作る
+    * InternalSeq とかでも？
   * lib/bio/db/genbank/, embl/ リファクタリング
     * Bio::SQL::Sequence も含めた内部構造
     * genpept, refseq(NP_)
@@ -21,21 +30,23 @@
 
 * bio/appl/blast/report.rb, bio/appl/fasta/report.rb コンテナ括り出し
   * hmmer もさっさと書こう
-  * emboss はとりあえずこの前ので。できれば各アプリのパーズ。
   * lib/bio/appl/blast/xmlparser.rb  " problem
   * lib/bio/appl/megablast.rb ?
 
-* bio/io/flatfile.rb OBDA dbm インデクシング -ng
-  * Berkley DB は bio/io/bdb.rb か何か別ファイルで。
+* Blast HSP tiling [bioperl-l 8/13,4,5 ?]
+
+    Bio::Blast::Report::Hit#total_alignment_length
+    Bio::Blast::Report::Hit#total_identical_residues
+    Bio::Blast::Report::Hit#total_convserved_residues
+
+* bio/io/flatfile.rb OBDA BioFlat  -ng
+  * 置き場所どうしよう？
   * FlatFile.new|open → エントリそのものを得るためのメソッド
 
-* lib/bio/db/kegg/keggtab.rb と lib/bio/data/keggorg.rb の統合？
+* OBDA spec へのリンク集
+  * flat file http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/obda-specs/flatfile/indexing.txt?rev=1.3&cvsroot=obf-common
 
-* アライメントオブジェクト (未)
-  * class Bio::Alignment ?
-    * class Bio::Alignment::Pairwise  or class Bio::PairwiseAlignment
-    * class Bio::Alignment::Multiple  or class Bio::MultipleAlignment
-    * アライメントビューアもほしい
+* lib/bio/db/kegg/keggtab.rb と lib/bio/data/keggorg.rb の統合？
 
 * sample/README.rd[.ja]
 * sample/genome2tab
@@ -46,45 +57,52 @@
 
 === IO
 
-* Flat DBM, BDB 対応
-
-* BioCORBA
-  * http://corba.ebi.ac.uk/
+* eutils in biofetch
+  * http://www.ncbi.nlm.nih.gov/entrez/query/static/eutils_help.html
 
 * SOAP/DAS (Brian, Lincoln), Biblio (Martin), XEMBL - SOAP
 
 * 遺伝研の SOAP サーバ
   * http://xml.nig.ac.jp/ SRS, FASTA, BLAST, CLUSTALW, Taxonomy
 
-* eutils in biofetch
-  * http://www.ncbi.nlm.nih.gov/entrez/query/static/eutils_help.html
+* XEMBL
 
-* GFF, XEMBL フォーマット対応
-  * ブラウザは GMOD があるので genome plotter としてかなー？
-  * あらゆる Ming で攻めてみる？ flash 系はまだ海外でナサゲだし。
+* BioCORBA
+  * http://corba.ebi.ac.uk/
 
 === APPL
 
-* HMMER, EMBOSS など
+* HMMER, EMBOSS (MEME, PHYLIP)
+
+* MAFFT, T-Coffee, CLUSTALW → アラインメント
+  * アライメントオブジェクト
+    * class Bio::Alignment ?
+    * class Bio::Alignment::Pairwise or class Bio::PairwiseAlignment ?
+    * class Bio::Alignment::Multiple or class Bio::MultipleAlignment ?
+    * アライメントビューアもほしい
 
 === DB
-
-* PDB パーザ
-  * challange CASP?
-
-* COMPOUND, ENZYME 仕上げる
-
-* SSDB
 
 * オントロジー (GO etc.) 処理系
 
 * モチーフ系 InterPro (incl. Pfam etc.) 処理系
 
+* SSDB
+
+* COG
+
+* PDB or PDBj パーザ
+  * challange CASP? :)
+
 === 全般
 
-* パラレル化
+* 1.7 stringIO
+
+* 一部の遅いメソッド C 化 ?
 
 * ext/ のマージ
+
+* パラレル化
 
 * テスト環境の整備
   * Test::Unit 使う？
@@ -103,12 +121,23 @@
   * Russia
   * French
 
-
 == 1.0
 
-* R, SVM, COG?
+* q--p
+  * RSS 化 ← RSS::Channel ってバグってない？
+
+* aaseqplot 設置
+
+* brgb GFF フォーマット対応 - GMOD と連携
+  * コマンドライン/CGI
+  * ブラウザは GMOD があるので genome plotter としてかなー？
+  * もしくは Ming で攻めてみる？
+
+* R, SVM/RVM, グラフ ?
 
 * Ruby/Gtk による GUI なファクトリー
+  * gsequence
+  * biograph
   * GO の xml と GtkTree → メモリ足りぬ…
 
 * キラーアプリの開発 :-)
