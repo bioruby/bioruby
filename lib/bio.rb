@@ -17,11 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.33 2003/08/21 11:50:26 ng Exp $
+#  $Id: bio.rb,v 1.34 2003/08/22 00:47:21 k Exp $
 #
 
 module Bio
-  BIORUBY_VERSION = [0, 5, 1].extend(Comparable)
+  BIORUBY_VERSION = [0, 5, 2].extend(Comparable)
 end
 
 
@@ -126,8 +126,13 @@ require 'bio/io/ddbjxml'
 ### Applications
 
 require 'bio/appl/fasta'
+require 'bio/appl/fasta/format10'
 require 'bio/appl/blast'
+require 'bio/appl/blast/report'
+require 'bio/appl/blast/format0'
+require 'bio/appl/blast/wublast'
 require 'bio/appl/hmmer'
+require 'bio/appl/hmmer/report'
 require 'bio/appl/emboss'
 require 'bio/appl/psort'
 require 'bio/appl/tmhmm/report'
@@ -139,5 +144,3 @@ require 'bio/appl/clustalw/report'
 require 'bio/appl/mafft'
 require 'bio/appl/mafft/report'
 
-require 'bio/appl/blast/format0'
-require 'bio/appl/blast/wublast'
