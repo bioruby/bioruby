@@ -17,63 +17,8 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.2 2001/11/06 16:58:53 okuji Exp $
+#  $Id: flatfile.rb,v 1.3 2001/12/15 01:47:01 katayama Exp $
 #
-
-=begin
-
-= Bio::FlatFile
-
---- Bio::FlatFile.open(dbclass, filename)
-
-      Opens a local file 'filename' which conteins 'dbclass' format data.
-      'dbclass' shoud be a class. e.g. Bio::GenBank, Bio::FastaFormat
-
-      * Example
-        Bio::FlatFile.open(Bio::GenBank, "genbank/gbest40.seq")
-
---- Bio::FlatFile.new(dbclass, stream)
-
-      Same as FlatFile.open, except that 'stream' should be a opened
-      stream object (IO, File, ..., who have the 'gets' method).
-
-      * Example 1
-        Bio::FlatFile.new(Bio::GenBank, $<)
-      * Example 2
-        Bio::FlatFile.new(Bio::GenBank, IO.popen("gzip -dc nc1101.flat.gz"))
-
---- next_entry
-
-      Get next entry.
-
---- each_entry { |entry| ... }
---- each { |entry| ... }
-
-      Iterates over each entry in the flatfile.
-
-      * Example
-        include Bio
-        ff = FlatFile.open(GenBank, "genbank/gbhtg14.seq")
-        ff.each_entry do |x|
-          print x.definition, "\n"
-        end
-
---- to_a
-
-      Creates an array that contains all entries in the flatfile.
-
---- rewind
-
-      Resets file pointer to the start of the flatfile.
-      (Same as IO#rewind)
-
---- close
-
-      Closes input stream.
-      (Same as IO#close)
-
-=end
-
 
 module Bio
 
@@ -124,4 +69,68 @@ module Bio
   end
 
 end
+
+
+if __FILE__ == $0
+  if ARGV.size == 2
+    require 'bio'
+    p Bio::FlatFile.open(eval(ARGV.shift), ARGV.shift).next_entry
+  end
+end
+
+
+=begin
+
+= Bio::FlatFile
+
+--- Bio::FlatFile.open(dbclass, filename)
+
+      Opens a local file 'filename' which conteins 'dbclass' format data.
+      'dbclass' shoud be a class. e.g. Bio::GenBank, Bio::FastaFormat
+
+      * Example
+          Bio::FlatFile.open(Bio::GenBank, "genbank/gbest40.seq")
+
+--- Bio::FlatFile.new(dbclass, stream)
+
+      Same as FlatFile.open, except that 'stream' should be a opened
+      stream object (IO, File, ..., who have the 'gets' method).
+
+      * Example 1
+          Bio::FlatFile.new(Bio::GenBank, ARGF)
+      * Example 2
+          Bio::FlatFile.new(Bio::GenBank, IO.popen("gzip -dc nc1101.flat.gz"))
+
+--- Bio::FlatFile#next_entry
+
+      Get next entry.
+
+--- Bio::FlatFile#each_entry { |entry| ... }
+--- Bio::FlatFile#each { |entry| ... }
+
+      Iterates over each entry in the flatfile.
+
+      * Example
+          include Bio
+          ff = FlatFile.open(GenBank, "genbank/gbhtg14.seq")
+          ff.each_entry do |x|
+            puts x.definition
+          end
+
+--- Bio::FlatFile#to_a
+
+      Creates an array that contains all entries in the flatfile.
+
+--- Bio::FlatFile#rewind
+
+      Resets file pointer to the start of the flatfile.
+      (Same as IO#rewind)
+
+--- Bio::FlatFile#close
+
+      Closes input stream.
+      (Same as IO#close)
+
+=end
+
 
