@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: embl.rb,v 1.1 2001/10/29 14:38:32 nakao Exp $
+#  $Id: embl.rb,v 1.2 2001/10/29 16:34:56 nakao Exp $
 #
 #     ID - identification             (begins each entry; 1 per entry)
 #     AC - accession number           (>=1 per entry)
@@ -81,7 +81,7 @@ class EMBL < EMBLDB
   #  UNC (Unclassified)
   #  VRL (Viruses)
   #
-  def id(key=nil)
+  def idline(key=nil)
     unless @data['ID']
       tmp=Hash.new
       a=@orig['ID'].split(/ +/)         
@@ -120,13 +120,22 @@ class EMBL < EMBLDB
   # AC Line
   # "AC   A12345; B23456;"
   # Bio::DB::EMBL#ac  -> Array
+  #              #accessions  -> Array
   def ac
-    tmp=Array.new
-    a=field_fetch('AC').split(' ')
-    a.each do |e|
-      tmp.push(e.sub(/;/,''))
+    unless @data['AC']
+      tmp=Array.new
+      a=field_fetch('AC').split(' ')
+      a.each do |e|
+	tmp.push(e.sub(/;/,''))
+      end
+      @data['AC']=tmp
     end
-    tmp
+    @data['AC']
+  end
+  alias accessions ac
+  # Bio::DB::EMBL#accession  -> String
+  def accession
+    @data['AC'][0]
   end
 
   # SV Line; sequence version (1/entry)
@@ -167,6 +176,7 @@ class EMBL < EMBLDB
   # KW Line; keyword (>=1)
   # KW   [Keyword;]+
   # Bio::DB::EMBL#kw  -> Array
+  #              #keywords  -> Array
   def kw
     tmp=fetch('KW').sub(/.$/,'')
     if block_given?
@@ -211,10 +221,10 @@ class EMBL < EMBLDB
 
   # R Lines
   # RN RC RP RX RA RT RL
-
   def ref
     get('R')
   end
+
 
   # DR Line; defabases cross-regerence (>=0)
   # "DR  database_identifier; primary_identifier; secondary_identifier."
@@ -240,8 +250,7 @@ class EMBL < EMBLDB
 
   # FH Line; feature table header (0 or 2)
   # FT Line; feature table data (>=0)
-
-  def features(num = nil, key = nil)
+  def features(num = nil, key = nil) 
     unless @data['FEATURES']
       @data['FEATURES'] = []
       ary = []
@@ -304,6 +313,7 @@ class EMBL < EMBLDB
   # XX Line; spacer line (many)
 #  def xx
 #  end
+
 
   # SQ Line; sequence header (1/entry)
   # "SQ   Sequence 1859 BP; 609 A; 314 C; 355 G; 581 T; 0 other;"
@@ -388,7 +398,8 @@ class EMBL < EMBLDB
 
 end
 
-end				# module Bio
+
+end # module Bio
 
 
 =begin
@@ -416,8 +427,8 @@ end				# module Bio
     Bio::DB::EMBL#new(an_embl_entry)
 
 * ID Line (Identification)
-    Bio::DB::EMBL#id -> Hash
-    Bio::DB::EMBL#id(key) -> String
+    Bio::DB::EMBL#idline -> Hash
+    Bio::DB::EMBL#idline(key) -> String
       key = (entryname|molecule|division|sequencelength)
     Bio::DB::EMBL#entry -> String
     Bio::DB::EMBL#molecule -> String
