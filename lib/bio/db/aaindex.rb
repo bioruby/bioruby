@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aaindex.rb,v 1.11 2002/11/22 23:02:56 k Exp $
+#  $Id: aaindex.rb,v 1.12 2004/02/21 19:43:50 k Exp $
 #
 
 require "bio/db"
@@ -208,7 +208,7 @@ if __FILE__ == $0
   require 'bio/io/fetch'
 
   puts "### AAindex1 (PRAM900102)"
-  aax1 = Bio::AAindex1.new(Bio::Fetch.query('aaindex1', 'PRAM900102', 'raw'))
+  aax1 = Bio::AAindex1.new(Bio::Fetch.query('aaindex', 'PRAM900102', 'raw'))
   p aax1.entry_id
   p aax1.definition
   p aax1.dblinks
@@ -218,7 +218,7 @@ if __FILE__ == $0
   p aax1.correlation_coefficient
   p aax1.index
   puts "### AAindex2 (HENS920102)"
-  aax2 = Bio::AAindex2.new(Bio::Fetch.query('aaindex2', 'HENS920102', 'raw'))
+  aax2 = Bio::AAindex2.new(Bio::Fetch.query('aaindex', 'HENS920102', 'raw'))
   p aax2.entry_id
   p aax2.definition
   p aax2.dblinks

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genes.rb,v 0.16 2003/03/20 08:11:54 k Exp $
+#  $Id: genes.rb,v 0.17 2004/02/21 19:42:07 k Exp $
 #
 
 require 'bio/db'
@@ -79,11 +79,21 @@ module Bio
       end
 
       def eclinks
-	definition.scan(/\[EC:(.*?)\]/).flatten.first
+#       definition.scan(/\[EC:(.*?)\]/).flatten
+	if /\[EC:(.*?)\]/.match(definition)
+          $1.split(/\s+/)
+        else
+          []
+        end
       end
 
       def splinks
-	definition.scan(/\[SP:(.*?)\]/).flatten.first
+#       definition.scan(/\[SP:(.*?)\]/).flatten
+	if /\[SP:(.*?)\]/.match(definition)
+          $1.split(/\s+/)
+        else
+          []
+        end
       end
 
       def keggclass
@@ -91,7 +101,7 @@ module Bio
       end
 
       def pathways
-	keggclass.scan(/\[PATH:(.*?)\]/).flatten
+        keggclass.scan(/\[PATH:(.*?)\]/).flatten
       end
 
       def position
@@ -181,7 +191,7 @@ if __FILE__ == $0
 
   require 'bio/io/fetch'
 
-  e = Bio::Fetch.query('eco', 'b0010')
+  e = Bio::Fetch.query('genes', 'b0002')
   g = Bio::KEGG::GENES.new(e)
 
   p g.entry
@@ -198,6 +208,9 @@ if __FILE__ == $0
   p g.aalen
   p g.naseq
   p g.nalen
+  p g.eclinks
+  p g.splinks
+  p g.pathways
 
 end
 
@@ -226,12 +239,13 @@ end
 === DEFINITION
 
 --- Bio::KEGG::GENES#definition -> String
---- Bio::KEGG::GENES#eclinks -> String or nil
---- Bio::KEGG::GENES#splinks -> String or nil
+--- Bio::KEGG::GENES#eclinks -> Array
+--- Bio::KEGG::GENES#splinks -> Array
 
 === CLASS
 
 --- Bio::KEGG::GENES#keggclass -> String
+--- Bio::KEGG::GENES#pathways -> Array
 
 === POSITION
 
