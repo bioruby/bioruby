@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.2 2002/08/22 09:38:31 ng Exp $ 
+#  $Id: indexer.rb,v 1.3 2002/09/04 11:23:23 ng Exp $ 
 # 
 
 module Bio
@@ -31,99 +31,63 @@ module Bio
 	  @proc = method
 	end
 	attr_reader :name, :proc
-
-	EMBL_STYLE = {
-	  'ID' => self.new( 'ID', Proc.new { |x| x.entry_id } ),
-	  'AC' => self.new( 'AC', Proc.new { |x| x.accessions } ),
-	  'SV' => self.new( 'SV', Proc.new { |x| x.sv } ),
-	  'DR' => self.new( 'DR', Proc.new { |x|
-			     y = []
-			     x.dr.each_value { |z| y << z }
-			     y.flatten!
-			     y.find_all { |z| z.length > 1 } }
-			   )
-	}
-
-	NCBI_STYLE = {
-	  'VERSION'   => self.new( 'VERSION', Proc.new { |x| x.version } ),
-	  'LOCUS'     => self.new( 'LOCUS', Proc.new { |x| x.entry_id } ),
-	  'ACCESSION' => self.new( 'ACCESSION',
-				  Proc.new { |x| x.accession.split } ),
-	  'GI'        => self.new( 'GI', Proc.new { |x|
-				    x.gi.to_s.gsub(/\AGI\:/, '') } )
-	}
       end #class NameSpace
 
-      class NameSpaces < Array
-	def names
-	  self.collect { |x| x.name }
+      class NameSpaces < Hash
+	def initialize(*arg)
+	  super()
+	  arg.each do |x|
+	    self.store(x.name, x)
+	  end
 	end
+	def names
+	  self.keys
+	end
+	def <<(x)
+	  self.store(x.name, x)
+	end
+	def add(x)
+	  self.store(x.name, x)
+	end
+	#alias :each_orig :each
+	alias :each :each_value
       end
 
-      class Parser
-	# parsing data
-
-	def initialize(dbclass, pri = nil, secs = nil)
-	  @primary = nil
-	  @secondary = NameSpaces.new
-	  @format = nil
-	  @dbclass = nil
-	  @namestyle = nil
-
-	  case dbclass.to_s
+      module Parser
+	def self.new(format, *arg)
+	  case format.to_s
 	  when 'embl', 'Bio::EMBL'
-	    @format = 'embl'
-	    @dbclass = Bio::EMBL
-	    @namestyle = NameSpace::EMBL_STYLE
-	    pri = 'ID' unless pri
-	    unless secs then
-	      secs = [ 'AC', 'SV' ]
-	    end
-
+	    EMBLParser.new(*arg)
 	  when 'swiss', 'Bio::SPTR', 'Bio::TrEMBL', 'Bio::SwissProt'
-	    @format = 'swiss'
-	    @dbclass = Bio::SPTR
-	    @namestyle = NameSpace::EMBL_STYLE
-	    pri = 'ID' unless pri
-	    unless secs then
-	      secs = [ 'AC' ]
-	    end
-
+	    SPTRParser.new(*arg)
 	  when 'genbank', 'Bio::GenBank', 'Bio::RefSeq', 'Bio::DDBJ'
-	    @format = 'genbank'
-	    @dbclass = Bio::GenBank
-	    #pri = 'GI' unless pri
-	    @namestyle = NameSpace::NCBI_STYLE
-	    pri = 'VERSION' unless pri
-	    unless secs then
-	      secs = []
-	      @namestyle.each_value { |x|
-		secs << x.name if x.name != pri
-	      }
-	    end
-
+	    GenBankParser.new(*arg)
 	  when 'Bio::GenPept'
-	    @format = 'genbank'
-	    @dbclass = Bio::GenPept
-	    @namestyle = NameSpace::NCBI_STYLE
-	    pri = 'VERSION' unless pri
-	    unless secs then
-	      secs = []
-	      @namestyle.each_value { |x|
-		secs << x.name if x.name != pri
-	      }
-	    end
-
+	    GenPeptParser.new(*arg)
 	  else
 	    raise 'unknown or unsupported format'
 	  end #case dbclass.to_s
-
-	  @primary = @namestyle[pri] unless pri.is_a?(NameSpace)
-	  raise 'unknown primary namespace' unless @primary
-	  add_secondary_namespaces(*secs)
+	end
+      end #module Parser
+	
+      class TemplateParser
+	NAMESTYLE = NameSpaces.new
+	def initialize
+	  @namestyle = self.class::NAMESTYLE
+	  @secondary = NameSpaces.new
 	end
 	attr_reader :primary, :secondary, :format, :dbclass
-
+	
+	def set_primary_namespace(name)
+	  if name.is_a?(NameSpace) then
+	    @primary = name
+	  else
+	    @primary = @namestyle[name] 
+	  end
+	  raise 'unknown primary namespace' unless @primary
+	  @primary
+	end
+	
 	def add_secondary_namespaces(*names)
 	  DEBUG.print "add_secondary_namespaces: #{names.inspect}\n"
 	  names.each do |x|
@@ -135,29 +99,126 @@ module Bio
 	  end
 	  true
 	end
-      end #class Parser
 
-      def self.makeindexBDB(name, format, pri, sec,
-			    add_sec_ns, *files)
+	def open_flatfile(file)
+	  @flatfile = Bio::FlatFile.open(@dbclass, file, 'rb')
+	  @flatfile.raw = nil
+	  @entry = nil
+	end
+
+	def each
+	  pos = @flatfile.pos
+	  @flatfile.each do |x|
+	    @entry = x
+	    len = @flatfile.entry_raw.length
+	    yield pos, len
+	    pos = @flatfile.pos
+	  end
+	end
+
+	def parse_primary
+	  self.primary.proc.call(@entry)
+	end
+
+	def parse_secondary
+	  self.secondary.each do |x|
+	    p = x.proc.call(@entry)
+	    p.each do |y|
+	      yield x.name, y
+	    end
+	  end
+	end
+
+	def close_flatfile
+	  @flatfile.close
+	end
+
+	protected
+	attr_writer :format, :dbclass
+      end #class TemplateParser
+
+      class GenBankParser < TemplateParser
+	NAMESTYLE = NameSpaces.new(
+	   NameSpace.new( 'VERSION', Proc.new { |x| x.version } ),
+	   NameSpace.new( 'LOCUS', Proc.new { |x| x.entry_id } ),
+	   NameSpace.new( 'ACCESSION',
+			 Proc.new { |x| x.accession.split } ),
+	   NameSpace.new( 'GI', Proc.new { |x|
+			   x.gi.to_s.gsub(/\AGI\:/, '') } )
+				   )
+	PRIMARY = 'VERSION'
+	def initialize(pri_name = nil, sec_names = nil)
+	  super()
+	  self.format = 'genbank'
+	  self.dbclass = Bio::GenBank
+	  self.set_primary_namespace((pri_name or PRIMARY))
+	  unless sec_names then
+	    sec_names = []
+	    @namestyle.each_value do |x|
+	      sec_names << x.name if x.name != self.primary.name
+	    end
+	  end
+	  self.add_secondary_namespaces(*sec_names)
+	end
+      end #class GenBankParser
+
+      class GenPeptParser < GenBankParser
+	def initialize(*arg)
+	  super(*arg)
+	  self.dbclass = Bio::GenPept
+	end
+      end #class GenPeptParser
+
+      class EMBLParser < TemplateParser
+	NAMESTYLE = NameSpaces.new(
+	   NameSpace.new( 'ID', Proc.new { |x| x.entry_id } ),
+	   NameSpace.new( 'AC', Proc.new { |x| x.accessions } ),
+	   NameSpace.new( 'SV', Proc.new { |x| x.sv } ),
+	   NameSpace.new( 'DR', Proc.new { |x|
+			   y = []
+			   x.dr.each_value { |z| y << z }
+			   y.flatten!
+			   y.find_all { |z| z.length > 1 } }
+			 )
+				   )
+	PRIMARY = 'ID'
+	SECONDARY = [ 'AC', 'SV' ]
+	def initialize(pri_name = nil, sec_names = nil)
+	  super()
+	  self.format = 'embl'
+	  self.dbclass = Bio::EMBL
+	  self.set_primary_namespace((pri_name or PRIMARY))
+	  unless sec_names then
+	    sec_names = self.class::SECONDARY
+	  end
+	  self.add_secondary_namespaces(*sec_names)
+	end
+      end #class EMBLParser
+
+      class SPTRParser < EMBLParser
+	SECONDARY = [ 'AC' ]
+	def initialize(*arg)
+	  super(*arg)
+	  self.format = 'swiss'
+	  self.dbclass = Bio::SPTR
+	end
+      end #class SPTRParser
+
+      def self.makeindexBDB(name, parser, *files)
 	unless defined?(BDB)
 	  raise RuntimeError, "Berkeley DB support not found"
 	end
 	DEBUG.print "makeing BDB DataBank...\n"
-	fmt = Parser.new(format, pri, sec)
-	fmt.add_secondary_namespaces(*add_sec_ns)
-
 	db = DataBank.new(name, MAGIC_BDB)
-	db.format = fmt.format
+	db.format = parser.format
 	db.fileids.add(*files)
 	db.fileids.recalc
 
-	db.primary = fmt.primary.name
-	db.secondary = fmt.secondary.names
+	db.primary = parser.primary.name
+	db.secondary = parser.secondary.names
 
 	DEBUG.print "writing config.dat, config, fileids ...\n"
 	db.write('wb', BDBdefault::flag_write)
-
-	dbclass = fmt.dbclass
 
 	DEBUG.print "reading files...\n"
 
@@ -174,47 +235,33 @@ module Bio
 	  filename = fobj.filename
 	  DEBUG.print fileid, " ", filename, "\n"
 
-	  ff = Bio::FlatFile.open(dbclass, filename)
-	  ff.raw = true
-	  pos = ff.io.pos
-	  ff.each do |txt|
-	    len = txt.length
-	    obj = dbclass.new(txt)
-	    p = fmt.primary.proc.call(obj)
+	  parser.open_flatfile(filename)
+	  parser.each do |pos, len|
+	    p = parser.parse_primary
 	    pn.file.add_exclusive(p, [ fileid, pos, len ])
 	    DEBUG.print "#{p} #{fileid} #{pos} #{len}\n"
-	    fmt.secondary.each_index do |i|
-	      sn = fmt.secondary[i].name
-	      s = fmt.secondary[i].proc.call(obj)
-	      s.each { |x|
-		db.secondary[sn].file.add_nr(x, p)
-		DEBUG.print "#{x} #{p}\n"
-	      }
+	    parser.parse_secondary do |sn, sp|
+	      db.secondary[sn].file.add_nr(sp, p)
+	      DEBUG.print "#{sp} #{p}\n"
 	    end
-	    pos = ff.io.pos
 	  end
-	  ff.close
+	  parser.close_flatfile
 	end
 	db.close
 	true
       end
 
-      def self.makeindexFlat(name, format, pri, sec,
-			 add_sec_ns, *files)
+      def self.makeindexFlat(name, parser, *files)
 	DEBUG.print "makeing flat/1 DataBank...\n"
-	fmt = Parser.new(format, pri, sec)
-	fmt.add_secondary_namespaces(*add_sec_ns)
-
 	db = DataBank.new(name, nil)
-	db.format = fmt.format
+	db.format = parser.format
 	db.fileids.add(*files)
-	db.primary = fmt.primary.name
-	db.secondary = fmt.secondary.names
+	db.primary = parser.primary.name
+	db.secondary = parser.secondary.names
 
-	dbclass = fmt.dbclass
 	pdata = []
-	sdata = Array.new(fmt.secondary.names.size)
-	sdata.collect! { |x| [] }
+	sdata = {}
+	parser.secondary.names.each { |x| sdata[x] = [] }
 
 	db.fileids.recalc
 	DEBUG.print "writing DabaBank...\n"
@@ -224,25 +271,17 @@ module Bio
 	files.each_with_index do |filename, fileid|
 	  DEBUG.print fileid, " ", filename, "\n"
 
-	  ff = Bio::FlatFile.open(dbclass, filename)
-	  ff.raw = true
-	  pos = ff.io.pos
-	  ff.each do |txt|
-	    len = txt.length
-	    obj = dbclass.new(txt)
-	    p = fmt.primary.proc.call(obj)
+	  parser.open_flatfile(filename)
+	  parser.each do |pos, len|
+	    p = parser.parse_primary
 	    pdata << [ p, [ fileid, pos, len ] ]
 	    DEBUG.print "#{p} #{fileid} #{pos} #{len}\n"
-	    fmt.secondary.each_index do |i|
-	      s = fmt.secondary[i].proc.call(obj)
-	      s.each { |x|
-		sdata[i] << [ x, p ]
-		DEBUG.print "#{x} #{p}\n"
-	      }
+	    parser.parse_secondary do |sn, sp|
+	      sdata[sn] << [ sp, p ]
+	      DEBUG.print "#{sp} #{p}\n"
 	    end
-	    pos = ff.io.pos
 	  end
-	  ff.close
+	  parser.close_flatfile
 	end
 
 	DEBUG.print "sorting primary...\n"
@@ -255,16 +294,17 @@ module Bio
 	end
 
 	DEBUG.print "sorting secondary...\n"
-	sdata.each { |a| a.sort! { |x, y| x[0] <=> y[0] } }
+	sdata.each_value { |a| a.sort! { |x, y| x[0] <=> y[0] } }
 	  
-	DEBUG.print "get record size...\n"
-	psize = get_record_size(pdata)
-	ssize = sdata.collect { |x| get_record_size(x) }
+	ssize = sdata.collect { |x|  }
 
 	DEBUG.print "writing...\n"
+	DEBUG.print "get record size of primary...\n"
+	psize = get_record_size(pdata)
 	write_mapfile(pdata, psize, db.primary.file)
-	sdata.each_with_index do |x, i|
-	  write_mapfile(x, ssize[i], db.secondary[fmt.secondary.names[i]].file)
+	sdata.each do |i, x|
+	  ssize = get_record_size(x)
+	  write_mapfile(x, ssize, db.secondary[parser.secondary[i].name].file)
 	end
 
 	db.close
@@ -292,6 +332,41 @@ module Bio
 	mapfile.mode = 'rb'
 	true
       end
+
+      def self.makeindex(is_bdb, dbname, format, *files)
+	if format then
+	  case format
+	  when /genbank/i
+	    dbclass = Bio::GenBank
+	    add_secondary = nil
+	  when /genpept/i
+	    dbclass = Bio::GenPept
+	  when /embl/i
+	    dbclass = Bio::EMBL
+	  when /sptr/i
+	    dbclass = Bio::SPTR
+	  else
+	    raise "Unsupported format : #{format}"
+	  end
+	else
+	  dbclass = Bio::FlatFile.autodetect_file(files[0])
+	  raise "Cannot determine format" unless dbclass
+	  DEBUG.print "file format is #{dbclass}\n"
+	end
+
+	parser = Parser.new(dbclass)
+	if /(EMBL|SPTR)/ =~ dbclass.to_s then
+	  a = [ 'DR' ]
+	  parser.add_secondary_namespaces(*a)
+	end
+
+	if is_bdb then
+	  makeindexBDB(dbname, parser, *files)
+	else
+	  makeindexFlat(dbname, parser, *files)
+	end
+      end #def
+
     end #module Indexer
 
   end #class FlatFileIndex

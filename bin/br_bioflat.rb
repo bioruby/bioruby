@@ -18,43 +18,24 @@
 #  along with this program; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 # 
-#  $Id: br_bioflat.rb,v 1.4 2002/08/28 12:32:25 ng Exp $ 
+#  $Id: br_bioflat.rb,v 1.5 2002/09/04 11:23:23 ng Exp $ 
 # 
 
 require 'bio'
-
-def create_index(is_bdb, dbname, format, *files)
-  case format
-  when /genbank/i
-    dbclass = Bio::GenBank
-    add_secondary = nil
-  when /genpept/i
-    dbclass = Bio::GenPept
-    add_secondary = nil
-  when /embl/i
-    dbclass = Bio::EMBL
-    add_secondary = [ 'DR' ]
-  when /sptr/i
-    dbclass = Bio::SPTR
-    add_secondary = [ 'DR' ]
-  else
-    raise "Unsupported format : #{format}"
-  end
-  if is_bdb then
-    Bio::FlatFileIndex::Indexer::makeindexBDB(dbname, dbclass, nil, nil, add_secondary, *files)
-  else
-    Bio::FlatFileIndex::Indexer::makeindexFlat(dbname, dbclass, nil, nil, add_secondary, *files)
-  end
-end
 
 
 def do_index
   is_bdb = (/bdb/i).match(ARGV[0]) ? Bio::FlatFileIndex::MAGIC_BDB : nil
   dbname = ARGV[1]
-  format = ARGV[3]
-  files  = ARGV[4..-1]
+  if ARGV[2] =~ /\-\-?format/
+    format = ARGV[3]
+    files  = ARGV[4..-1]
+  else
+    format = nil
+    files  = ARGV[2..-1]
+  end
   files.shift if files[0] == '--files'
-  create_index(is_bdb, dbname, format, *files)
+  Bio::FlatFileIndex::Indexer::makeindex(is_bdb, dbname, format, *files)
 end
 
 
@@ -76,8 +57,8 @@ end
 
 def usage
   print "Create index: \n"
-  print "#{$0} --makeindex DBNAME --format CLASS [--files] FILENAME...\n"
-  print "#{$0} --makeindexBDB DBNAME --format CLASS [--files] FILENAME...\n"
+  print "#{$0} --makeindex DBNAME [--format CLASS] [--files] FILENAME...\n"
+  print "#{$0} --makeindexBDB DBNAME [--format CLASS] [--files] FILENAME...\n"
   print "Search: \n"
   print "#{$0} [--search] DBNAME KEYWORD...\n"
 end
