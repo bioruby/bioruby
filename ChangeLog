@@ -1,3 +1,29 @@
+2003-07-25  GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+
+	* lib/bio/alignment.rb:
+
+	  Newly added multiple sequence alignment class.
+
+	* lib/bio/appl/alignfactory.rb:
+
+	  Newly added template class for multiple alignment software.
+
+	* lib/bio/appl/clustalw.rb:
+
+	  Newly added CLUSTAL W wrapper.
+	  <http://www.ebk.ac.uk/clustalw/>
+	  <ftp://ftp.ebk.ac.uk/pub/software/unix/clustalw/>
+
+	* lib/bio/appl/clustalw/report.rb:
+
+	  Newly added CLUSTAL W result data (*.aln file) parser.
+
+	* lib/bio/appl/mafft.rb, lib/bio/appl/mafft/report.rb:
+
+	  Newly added MAFFT wrapper and report parser.
+	  (MAFFT is a multiple sequence alignment program based on FFT.)
+	  <http://www.biophys.kyoto-u.ac.jp/~katoh/programs/align/mafft/>
+
 2003-07-16  KATAYAMA Toshiaki  <k@bioruby.org>
 
 	* BioRuby version 0.5.1 released.
