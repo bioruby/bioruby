@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.19 2003/06/14 01:11:06 k Exp $
+#  $Id: blast.rb,v 1.20 2004/08/23 23:48:02 k Exp $
 #
 
 require 'net/http'
@@ -98,7 +98,7 @@ module Bio
 
 
     def exec_genomenet(query)
-      host = "blast.genome.ad.jp"
+      host = "blast.genome.jp"
       path = "/sit-bin/nph-blast"
 
       matrix = @matrix ? @matrix : 'blosum62'
@@ -203,7 +203,7 @@ end
   #  tblastn  | AA    | genes-nt, genome, vgenes.nuc
   # ----------+-------+---------------------------------------------------
 
-See http://blast.genome.ad.jp/ideas/ideas.html#blast for more details.
+See http://blast.genome.jp/ideas/ideas.html#blast for more details.
 
 =end
 

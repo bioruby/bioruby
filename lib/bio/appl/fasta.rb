@@ -17,11 +17,12 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.14 2003/02/03 14:28:19 k Exp $
+#  $Id: fasta.rb,v 1.15 2004/08/23 23:48:02 k Exp $
 #
 
 require 'net/http'
 require 'cgi' unless defined?(CGI)
+require 'bio/appl/fasta/report'
 
 module Bio
 
@@ -104,7 +105,7 @@ module Bio
 
 
     def exec_genomenet(query)
-      host = "fasta.genome.ad.jp"
+      host = "fasta.genome.jp"
       path = "/sit-bin/nph-fasta"
 
       form = {
@@ -213,7 +214,7 @@ end
   #           |       | genes-nt, genome, vgenes.nuc
   # ----------+-------+---------------------------------------------------
 
-See http://fasta.genome.ad.jp/ideas/ideas.html#fasta for more details.
+See http://fasta.genome.jp/ideas/ideas.html#fasta for more details.
 
 =end
 
