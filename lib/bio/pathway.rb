@@ -13,8 +13,48 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: pathway.rb,v 1.3 2001/10/31 03:44:17 katayama Exp $
+#  $Id: pathway.rb,v 1.4 2001/11/02 10:35:51 katayama Exp $
 #
+
+=begin
+
+= Bio::Pathway
+
+--- Bio::Pathway#new(list, undirected = nil)
+
+--- Bio::Pathway#label
+--- Bio::Pathway#label=(hash)
+--- Bio::Pathway#graph
+--- Bio::Pathway#index
+
+--- Bio::Pathway#append(rel)
+--- Bio::Pathway#nodes
+--- Bio::Pathway#edges
+--- Bio::Pathway#to_matrix
+--- Bio::Pathway#subgraph
+--- Bio::Pathway#common_subgraph(graph)
+--- Bio::Pathway#clique
+--- Bio::Pathway#small_world
+--- Bio::Pathway#breadth_first_search(root)
+--- Bio::Pathway#bfs(root)
+--- Bio::Pathway#bfs_distance(root)
+--- Bio::Pathway#shortest_path(node1, node2)
+--- Bio::Pathway#dijkstra
+--- Bio::Pathway#floyd
+
+= Bio::Relation
+
+--- Bio::Relation#new(node1, node2, edge)
+
+--- Bio::Relation#node
+--- Bio::Relation#edge
+
+--- Bio::Relation#from
+--- Bio::Relation#to
+--- Bio::Relation#relation
+
+=end
+
 
 module Bio
 

@@ -13,8 +13,36 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: location.rb,v 0.7 2001/10/17 14:43:10 katayama Exp $
+#  $Id: location.rb,v 0.8 2001/11/02 10:35:51 katayama Exp $
 #
+
+=begin
+
+= Bio::Location
+
+--- Bio::Location#new(location) # -> Location
+
+--- Bio::Location#from # -> Fixnum
+
+--- Bio::Location#to
+--- Bio::Location#strand
+--- Bio::Location#sequence
+--- Bio::Location#lt
+--- Bio::Location#gt
+--- Bio::Location#xref_id
+
+--- Bio::Location#complement
+--- Bio::Location#replace(sequence)
+
+= Bio::Locations
+
+--- Bio::Locations#new(position)
+
+--- Bio::Locations#each { |l| ... }
+--- Bio::Locations#span
+
+=end
+
 
 module Bio
 

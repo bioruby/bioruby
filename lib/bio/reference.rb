@@ -13,8 +13,40 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: reference.rb,v 1.4 2001/10/17 14:43:11 katayama Exp $
+#  $Id: reference.rb,v 1.5 2001/11/02 10:35:51 katayama Exp $
 #
+
+=begin
+
+= Bio::Reference
+
+--- Bio::Reference#new(hash)
+
+--- Bio::Reference#authors
+--- Bio::Reference#title
+--- Bio::Reference#journal
+--- Bio::Reference#volume
+--- Bio::Reference#issue
+--- Bio::Reference#pages
+--- Bio::Reference#year
+--- Bio::Reference#pubmed
+--- Bio::Reference#medline
+
+--- Bio::Reference#format(style, option)
+
+--- Bio::Reference#bibitem
+--- Bio::Reference#bibtex
+--- Bio::Reference#nature(short)
+--- Bio::Reference#science
+--- Bio::Reference#genomebiology
+--- Bio::Reference#genomeres
+--- Bio::Reference#nar
+--- Bio::Reference#cell
+--- Bio::Reference#trends
+--- Bio::Reference#general
+
+=end
+
 
 module Bio
 
@@ -58,12 +90,6 @@ class Reference
     else
       return general
     end
-  end
-
-  def general
-    authors = @authors.collect {|name| strip_dots(name)}.join(', ')
-    journal = strip_dots(@journal)
-    "#{authors} \"#{@title}\", #{journal} #{@volume}:#{@pages} (#{@year})"
   end
 
   def bibitem(item = nil)
@@ -151,6 +177,12 @@ class Reference
       authors = authors_join(' and ')
     end
     "#{authors} (#{@year}) #{@title} #{@journal} #{@volume}, #{@pages}"
+  end
+
+  def general
+    authors = @authors.collect {|name| strip_dots(name)}.join(', ')
+    journal = strip_dots(@journal)
+    "#{authors} \"#{@title}\", #{journal} #{@volume}:#{@pages} (#{@year})"
   end
 
 

@@ -13,8 +13,43 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: sequence.rb,v 0.9 2001/10/31 22:44:12 okuji Exp $
+#  $Id: sequence.rb,v 0.10 2001/11/02 10:35:51 katayama Exp $
 #
+
+=begin
+
+= Bio::Sequence
+
+--- Bio::Sequence#subseq(start = 1, end = length)
+--- Bio::Sequence#window_search(window_size)
+--- Bio::Sequence#total(hash)
+
+= Bio::Sequence::NA
+
+--- Bio::Sequence::NA#new(str)
+
+--- Bio::Sequence::NA#splicing(position)
+--- Bio::Sequence::NA#complement
+--- Bio::Sequence::NA#codon_table(table = 1, codon = nil)
+--- Bio::Sequence::NA#translate(frame = 1, table = 1)
+--- Bio::Sequence::NA#base_composition
+--- Bio::Sequence::NA#gc_percent
+--- Bio::Sequence::NA#illegal_bases
+--- Bio::Sequence::NA#molecular_weight(hash)
+--- Bio::Sequence::NA#to_re
+--- Bio::Sequence::NA#to_a
+--- Bio::Sequence::NA#rna
+--- Bio::Sequence::NA#pikachu
+
+= Bio::Sequence::AA
+
+--- Bio::Sequence::AA#new(str)
+
+--- Bio::Sequence::AA#to_a(short)
+--- Bio::Sequence::AA#molecular_weight(hash)
+
+=end
+
 
 module Bio
 
