@@ -18,11 +18,14 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggorg.rb,v 0.12 2003/06/02 05:53:02 m Exp $
+#  $Id: keggorg.rb,v 0.13 2003/06/02 06:12:16 m Exp $
 #
 
 module Bio
-  KEGGORG = {
+
+  class KEGG
+
+     ORG = {
     'aae' => [ 'A.aeolicus', 'Aquifex aeolicus' ],
     'afu' => [ 'A.fulgidus', 'Archaeoglobus fulgidus' ],
     'ana' => [ 'Anabaena', 'Anabaena sp.' ],
@@ -159,5 +162,8 @@ module Bio
     'xft' => [ 'X.fastidiosa_T', 'Xylella fastidiosa Temecula1' ],
     'ype' => [ 'Y.pestis', 'Yersinia pestis' ],
     'ypk' => [ 'Y.pestis_KIM', 'Yersinia pestis KIM' ],
-}
+     }
+
+   end
+
 end
