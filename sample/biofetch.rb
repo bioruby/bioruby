@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#  $Id: biofetch.rb,v 1.11 2004/02/20 14:22:25 k Exp $
+#  $Id: biofetch.rb,v 1.12 2004/02/21 19:25:05 k Exp $
 #
 
 require 'cgi'
@@ -70,10 +70,47 @@ end
 
 
 
+module KeggAPI
+
+  include BioFetchError
+
+  def list_databases
+    serv = Bio::KEGG::API.new
+    results = serv.list_databases
+    info_dbs(results) || []
+  end
+
+  def info_dbs(list = '')
+    ary = []
+    list.each do |line|
+      ary.push(line.split[1])
+    end
+    return ary[3..-1]
+  end
+
+  def bget(db, id_list, format)
+    serv = Bio::KEGG::API.new
+    results = Array.new
+    id_list.each do |query_id|
+      entry_id = "#{db}:#{query_id}"
+      if result = serv.get_entries(entry_id)
+        results << result
+      else
+        error4(query_id, db)
+      end
+    end
+    return results.join
+  end
+
+end
+
+
+
 
 class BioFetch
 
   include BioFetchError
+  include KeggAPI
 
   def initialize(db, id_list, style, format)
     check_style(style)
@@ -85,9 +122,9 @@ class BioFetch
       goto_html_style_page(db, id_list, format)
     end
 
-    entries = KeggAPI.bget(db, id_list, format)
+    entries = bget(db, id_list, format)
 
-    if /fasta/.match(format)
+    if /fasta/.match(format) and entries
       entries = convert_to_fasta_format(entries, db)
     end
 
@@ -144,7 +181,7 @@ class BioFetch
   end
 
   def check_dbname(db)
-    error1(db) unless KeggAPI.list_databases.include?(db)
+    error1(db) unless list_databases.include?(db)
   end
 
 end
@@ -154,6 +191,7 @@ end
 class BioFetchInfo
 
   include BioFetchError
+  include KeggAPI
 
   def initialize(info, db)
     @db = db
@@ -167,11 +205,7 @@ class BioFetchInfo
   private
 
   def dbs
-    if db_list = KeggAPI.list_databases
-      str = db_list.sort.join(' ')
-    else
-      str = "Error: list_databases"
-    end
+    str = list_databases.sort.join(' ')
     print_text_page(str)
   end
 
@@ -189,43 +223,6 @@ class BioFetchInfo
   def check_fasta_ok
     # sequence databases supported by Bio::FlatFile.auto
     /genes|gb|genbank|genpept|rs|refseq|emb|sp|swiss|pir/.match(@db)
-  end
-
-end
-
-
-
-class KeggAPI
-
-  include BioFetchError
-
-  def self.dbinfo
-    serv = Bio::KEGG::API.new
-    serv.list_databases
-  end
-
-  def self.list_databases
-    ary = []
-    if list = self.dbinfo
-      list.each do |line|
-        ary.push(line.split[1])
-      end
-    end
-    return ary[3..-1]
-  end
-
-  def self.bget(db, id_list, format)
-    serv = Bio::KEGG::API.new
-    results = Array.new
-    id_list.each do |query_id|
-      entry_id = "#{db}:#{query_id}"
-      if result = serv.get_entries(entry_id)
-        results << result
-      else
-        error4(query_id, db)
-      end
-    end
-    return results.join
   end
 
 end
@@ -414,17 +411,17 @@ BioFetch interface to
 <H2>Examples</H2>
 
 <DL>
-  <DT> <A href="?format=default;style=raw;db=refseq;id=NC_000844">rs:NC_000844</A> (default/raw)
-  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq;id=NC_000844
+  <DT> <A href="?format=default;style=raw;db=genbank;id=AJ617376">gb:AJ617376</A> (default/raw)
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=genbank;id=AJ617376
 
-  <DT> <A href="?format=fasta;style=raw;db=refseq;id=NC_000844">rs:NC_000844</A> (fasta/raw)
-  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=refseq;id=NC_000844
+  <DT> <A href="?format=fasta;style=raw;db=genbank;id=AJ617376">gb:AJ617376</A> (fasta/raw)
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=genbank;id=AJ617376
 
-  <DT> <A href="?format=default;style=html;db=refseq;id=NC_000844">rs:NC_000844</A> (default/html)
-  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=html;db=refseq;id=NC_000844
+  <DT> <A href="?format=default;style=html;db=genbank;id=AJ617376">gb:AJ617376</A> (default/html)
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=html;db=genbank;id=AJ617376
 
-  <DT> <A href="?format=default;style=raw;db=refseq;id=NC_000844,NC_000846">rs:NC_000844,NC_000846</A> (default/raw, multiple)
-  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq;id=NC_000844,NC_000846
+  <DT> <A href="?format=default;style=raw;db=genbank;id=AJ617376,AJ617377">gb:AJ617376,AJ617377</A> (default/raw, multiple)
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=genbank;id=AJ617376,AJ617377
 
   <DT> <A href="?format=default;style=raw;db=embl;id=BUM">embl:BUM</A> (default/raw)
   <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=embl;id=BUM
@@ -440,6 +437,28 @@ BioFetch interface to
 
   <DT> <A href="?format=default;style=raw;db=prosite;id=PS00028">ps:PS00028</A> (default/raw)
   <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=prosite;id=PS00028
+</DL>
+
+<H2>Errors</H2>
+
+<DL>
+  <DT> <A href="?format=default;style=raw;db=nonexistent;id=AJ617376">Error1</A> sample : DB not found
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=nonexistent;id=AJ617376"
+
+  <DT> <A href="?format=default;style=nonexistent;db=genbank;id=AJ617376">Error2</A> sample : unknown style
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=nonexistent;db=genbank;id=AJ617376"
+
+  <DT> <A href="?format=nonexistent;style=raw;db=genbank;id=AJ617376">Error3</A> sample : unknown format
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=nonexistent;style=raw;db=genbank;id=AJ617376"
+
+  <DT> <A href="?format=default;style=raw;db=genbank;id=nonexistent">Error4</A> sample : ID not found
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=genbank;id=nonexistent"
+
+  <DT> <A href="?style=raw;db=genes;id=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51">Error5</A> sample : too many IDs
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?style=raw;db=genes;id=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51
+
+  <DT> <A href="?info=nonexistent">Error6</A> sample : unknown info
+  <DD> http://bioruby.org/cgi-bin/biofetch.rb?info=nonexistent"
 </DL>
 
 <H2>Other BioFetch implementations</H2>
