@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.12 2003/04/21 09:08:54 k Exp $
+#  $Id: flatfile.rb,v 1.13 2003/04/24 15:47:02 ng Exp $
 #
 
 module Bio
@@ -237,7 +237,16 @@ module Bio
 	Bio::KEGG::COMPOUND
       when /^ENTRY       [a-z]+$/
 	Bio::KEGG::GENOME
-	
+
+      when /\<\!DOCTYPE\s+maxml\-(sequences|clusters)\s+SYSTEM/
+	if $1 == 'clusters'
+	  Bio::FANTOM::MaXML::Cluster
+	elsif $1 == 'sequences'
+	  Bio::FANTOM::MaXML::Sequence
+	else
+	  nil #unknown
+	end
+
       when /^>.+$/
 	if text =~ /^>.+$\s^\s*[-a-zA-Z_\.\[\]\(\)\*\+\$]+/ then
 	  Bio::FastaFormat
