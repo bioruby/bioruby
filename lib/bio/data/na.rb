@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: na.rb,v 0.6 2001/12/15 01:48:50 katayama Exp $
+#  $Id: na.rb,v 0.7 2001/12/19 02:17:48 katayama Exp $
 #
 
 module Bio
@@ -58,13 +58,19 @@ module Bio
 
   NucleicAcid_weight = {
 
-    # Calculated by BioPerl's SeqStats.pm :-)
-    #  -- should be more accurate as BioPerl
+    # Calculated by BioPerl's Bio::Tools::SeqStats.pm :-)
 
-    'A' => 313.245,
-    'T' => 304.225,
-    'G' => 329.245,
-    'C' => 289.215,
+    'adenine'	=> 135.15,
+    'thymine'	=> 126.13,
+    'guanine'	=> 151.15,
+    'cytosine'	=> 111.12,
+    'uracil'	=> 112.10,
+
+    'deoxyribose_phosphate'	=> 196.11,
+    'ribose_phosphate'		=> 212.11,
+
+    'water'	=> 18.015,
+
   }
 
 end
