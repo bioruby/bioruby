@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggtab.rb,v 1.2 2003/03/20 08:32:54 k Exp $
+#  $Id: keggtab.rb,v 1.3 2003/04/15 12:45:16 k Exp $
 #
 
 module Bio
@@ -139,11 +139,15 @@ module Bio
 	if node.length == 3
 	  return node
 	else
-	  tmp = Array.new
-	  @taxonomy[node].each do |x|
-	    tmp.push(taxo2korgs(x))
+	  if @taxonomy[node]
+	    tmp = Array.new
+	    @taxonomy[node].each do |x|
+	      tmp.push(taxo2korgs(x))
+	    end
+	    return tmp
+	  else
+	    return nil
 	  end
-	  return tmp
 	end
       end
       alias :taxo2keggorgs  :taxo2korgs
