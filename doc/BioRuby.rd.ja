@@ -1,6 +1,6 @@
 =begin
 
-  $Id: BioRuby.rd.ja,v 1.6 2001/12/19 12:21:08 katayama Exp $
+  $Id: BioRuby.rd.ja,v 1.7 2002/07/02 01:40:24 k Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -81,15 +81,28 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |  `- class Bio::Sequence		bio/sequence.rb		stable
   |	|- class Bio::Sequence::AA	bio/sequence.rb		stable
   |	`- class Bio::Sequence::NA	bio/sequence.rb		stable
-  |- class Bio::Locations		bio/location.rb		stable
   |- class Bio::Location		bio/location.rb		stable
+  |- class Bio::Locations		bio/location.rb		stable
+  |- class Bio::Feature			bio/feature.rb		stable
+  |- class Bio::Features		bio/feature.rb		stable
   |- class Bio::Reference		bio/reference.rb	stable
+  |- class Bio::References		bio/reference.rb	stable
   |- class Bio::Pathway			bio/pathway.rb		stable
   |- class Bio::Relation		bio/pathway.rb		stable
-  |- class Bio::ID			bio/id.rb		beta
-  |- class Bio::DB			bio/db.rb		beta
+  |- class Bio::FlatFile		bio/io/flatfile.rb	stable
+  |- class Bio::Registry		bio/io/registry.rb	beta
+  |- class Bio::Fetch			bio/io/fetch.rb		stable
+  |- class Bio::SQL			bio/io/sql.rb		beta
+  |- class Bio::DBGET			bio/io/dbget.rb		stable
+  |- class Bio::PubMed			bio/io/pubmed.rb	stable
+  |- class Bio::BRDB			bio/io/brdb.rb		alpha
+  |- class Bio::Fasta			bio/appl/fasta.rb	stable
+  |- class Bio::Fasta::Report::*	bio/appl/fasta/*.rb	stable
+  |- class Bio::Blast			bio/appl/blast.rb	stable
+  |- class Bio::Blast::Report::*	bio/appl/blast/*.rb	stable
+  |- class Bio::DB			bio/db.rb		stable
   |  |- class Bio::FastaFormat		bio/db/fasta.rb		stable
-  |  |- class Bio::NCBIDB		bio/db.rb		beta
+  |  |- class Bio::NCBIDB		bio/db.rb		stable
   |  |	|- class Bio::GenBank		bio/db/genbank.rb	stable
   |  |	|  |- class Bio::RefSeq		bio/db/refseq.rb	stable
   |  |	|  `- class Bio::DDBJ		bio/db/ddbj.rb		stable
@@ -100,12 +113,12 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |  |	   |  |- class Bio::AAindex1	bio/db/aaindex.rb	beta
   |  |	   |  `- class Bio::AAindex2	bio/db/aaindex.rb	beta
   |  |	   |- class Bio::KEGG::GENES	bio/db/kegg/genes.rb	stable
-  |  |	   |- class Bio::KEGG::GENOME	bio/db/kegg/genome.rb	beta
+  |  |	   |- class Bio::KEGG::GENOME	bio/db/kegg/genome.rb	stable
   |  |	   |- class Bio::KEGG::BRITE	bio/db/kegg/brite.rb	alpha
   |  |	   |- class Bio::KEGG::CELL	bio/db/kegg/cell.rb	beta
   |  |	   |- class Bio::KEGG::ENZYME	bio/db/kegg/enzyme.rb	alpha
   |  |	   `- class Bio::KEGG::COMPOUND bio/db/kegg/compound.rb alpha
-  |  `- class Bio::EMBLDB		bio/db.rb		alpha
+  |  `- class Bio::EMBLDB		bio/db.rb		stable
   |     |- class Bio::EMBL		bio/db/embl.rb		beta
   |     |- class Bio::SPTR		bio/db/sptr.rb		beta
   |     |  |- class Bio::SwissProt	bio/db/swissprot.rb	beta
@@ -121,30 +134,14 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |- class Bio::KEGG::DBname		bio/db/kegg/keggtab.rb	beta
   |- class Bio::KEGG::Keggtab		bio/db/kegg/keggtab.rb	beta
   |- class Bio::KEGG::Microarray	bio/db/kegg/microarray.rb	alpha
-  |- class Bio::KEGG::Microarrays	bio/db/kegg/microarray.rb	alpha
-  |- class Bio::FlatFile		bio/io/flatfile.rb	stable
-  |- class Bio::BRDB			bio/io/brdb.rb		alpha
-  |- class Bio::DBGET			bio/io/dbget.rb		stable
-  |- class Bio::PubMed			bio/io/pubmed.rb	stable
-  |- class Bio::Fasta			bio/appl/fasta.rb	stable
-  |- class Bio::Fasta::Report		bio/appl/fasta.rb	stable
-  |- class Bio::Fasta::Report::Program	bio/appl/fasta.rb	stable
-  |- class Bio::Fasta::Report::Hit	bio/appl/fasta.rb	stable
-  |- class Bio::Fasta::Report::Hit::Query	bio/appl/fasta.rb	stable
-  |  `- class Bio::Fasta::Report::Hit::Target	bio/appl/fasta.rb	stable
-  |- class Bio::Blast			bio/appl/blast.rb	alpha
-  |- class Bio::Blast::Report		bio/appl/blast.rb	alpha
-  |- class Exception
-  |  `- class Bio::Blast::Report::XMLRetry	bio/appl/blast.rb	alpha
-  |- class Bio::Blast::Report::Iteration	bio/appl/blast.rb	alpha
-  |- class Bio::Blast::Report::Hit	bio/appl/blast.rb	alpha
-  `- class Bio::Blast::Report::Hsp	bio/appl/blast.rb	alpha
+  `- class Bio::KEGG::Microarrays	bio/db/kegg/microarray.rb	alpha
 
 === 標準クラスへのメソッド追加
 
   class Matrix				bio/matrix.rb		alpha
   class Vector				bio/matrix.rb		alpha
-  class String				bio/util/fold.rb	stable
+  class String				bio/extend.rb		beta
+  class Array				bio/extend.rb		beta
 
 === 定数と名前空間の階層
 
@@ -156,11 +153,7 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |- AminoAcid_weight			bio/data/aa.rb		constant
   |- BIORUBY_VERSION			bio.rb			constant
   |- Blast				bio/appl/blast.rb	class
-  |  `- Report				bio/appl/blast.rb	class
-  |     |-XMLRetry			bio/appl/blast.rb	class
-  |     |-Iteration			bio/appl/blast.rb	class
-  |     |-Hit				bio/appl/blast.rb	class
-  |     `-Hsp				bio/appl/blast.rb	class
+  |  `- Report::*			bio/appl/blast/*.rb	class
   |- BRDB				bio/io/brdb.rb		class
   |- CodonTable				bio/data/codontable.rb	constant
   |- DB					bio/db.rb		class
@@ -169,16 +162,12 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |- EMBL				bio/db/embl.rb		class
   |- EMBLDB				bio/db.rb		class
   |- Fasta				bio/appl/fasta.rb	class
-  |  `- Report				bio/appl/fasta.rb	class
-  |     |- Program			bio/appl/fasta.rb	class
-  |     `- Hit				bio/appl/fasta.rb	class
-  |        |- Query			bio/appl/fasta.rb	class
-  |        `- Target			bio/appl/fasta.rb	class
+  |  `- Report::*			bio/appl/fasta/*.rb	class
   |- FastaFormat			bio/db/fasta.rb		class
   |- FastaNumericFormat			bio/db/fasta.rb		class
+  |- Fetch				bio/io/fetch.rb		class
   |- FlatFile				bio/io/flatfile.rb	class
   |- GenBank				bio/db/genbank.rb	class
-  |- ID					bio/id.rb		class
   |- KEGG				bio/db/kegg/		class
   |  |- BRITE				bio/db/kegg/brite.rb	class
   |  |- CELL				bio/db/kegg/cell.rb	class
@@ -204,12 +193,14 @@ bio.rb を require すると、以下のクラスや定数などが使えるようになります。
   |- PubMed				bio/io/pubmed.rb	class
   |- Reference				bio/reference.rb	class
   |- RefSeq				bio/db/refseq.rb	class
+  |- Registry				bio/db/registry.rb	class
   |- Relation				bio/pathway.rb		class
   |- Sequence				bio/sequence.rb		class
   |  |- AA				bio/sequence.rb		class
   |  `- NA				bio/sequence.rb		class
   |- SwissProt				bio/db/swissprot.rb	class
   |- SPTR				bio/db/sptr.rb		class
+  |- SQL				bio/io/sql.rb		class
   |- TFCELL				bio/db/transfac.rb	class
   |- TFCLASS				bio/db/transfac.rb	class
   |- TFFACTOR				bio/db/transfac.rb	class

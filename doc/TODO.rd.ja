@@ -1,6 +1,6 @@
 =begin
 
-  $Id: TODO.rd.ja,v 1.9 2002/06/26 00:08:17 k Exp $
+  $Id: TODO.rd.ja,v 1.10 2002/07/02 01:40:24 k Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -9,6 +9,10 @@
 == 0.4 (stable branch)
 
 * Bio::Reference クラス → EMBL にも?
+
+* xmlparser  " problem
+
+* abs2rel, rel2abs -> relative(n, type = nil) :aa, :location ?
 
 * matrix.rb 廃止
  * そんな汎用的でないので aaindex.rb, microarray.rb, prosite.rb などで
@@ -22,24 +26,42 @@
 
 * BioSQL 最新スペック
 
+* BRDB どうする？
+
+* bio/db/kegg/keggtab.rb と data/keggorg.rb の統合？
+
+* install.rb env
 
 == 0.5 (devel branch)
 
-* Flat, BDB 対応
+=== IO
+
+* Flat DBM, BDB 対応
 * BioCORBA
-* DAS, Biblio, XEMBL - SOAP
+* DAS (Brian), Biblio(Martin), XEMBL - SOAP
 * 遺伝研の SOAP サーバ
+  * http://xml.nig.ac.jp/ SRS, FASTA, BLAST, CLUSTALW, Taxonomy
+* eutils in biofetch
+  * http://www.ncbi.nlm.nih.gov/entrez/query/static/eutils_help.html
+
+=== APPL
 
 * HMMER, EMBOSS など
+
+=== DB
 
 * PDB パーザ
   * challange CASP?
 
 * COMPOUND, ENZYME 仕上げる
 
+* SSDB
+
 * オントロジー (GO etc.) 処理系
 
 * モチーフ系 InterPro (incl. Pfam etc.) 処理系
+
+=== 全般
 
 * パラレル化
 
@@ -61,6 +83,7 @@
   * Korea
   * Russia
   * French
+
 
 == 1.0
 

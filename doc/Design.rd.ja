@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Design.rd.ja,v 1.6 2002/06/18 06:36:53 k Exp $
+  $Id: Design.rd.ja,v 1.7 2002/07/02 01:40:24 k Exp $
 
   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -21,8 +21,7 @@
   |       |-- data/         生物学的な定数などデータそのもの
   |       |-- db/           各種データベースパーザ
   |       |-- io/           データの入出力
-  |       |-- appl/         外部アプリの処理 (？)
-  |       `-- util/         その他
+  |       `-- appl/         外部アプリの処理
   |-- doc/              ドキュメント
   |-- ext/              C で書かれたライブラリ
   `-- sample/           サンプルコード
@@ -37,9 +36,9 @@ BioRuby の全クラスは module Bio で囲むことで、名前空間を切り分ける事にし
 
 === lib/bio/ データ構造系
 
-塩基やアミノ酸の配列、文献情報、データベースとエントリを一意に表す ID、グ
-ラフなどの抽象データ構造を扱うクラスは lib/bio/ 直下に配置しています。こ
-れらは各データベース・パーザなどからも直接呼ばれます。
+塩基やアミノ酸の配列、文献情報、遺伝子の location や feature、グラフなど
+の抽象データ構造を扱うクラスは lib/bio/ 直下に配置しています。これらは各
+データベース・パーザなどからも直接呼ばれます。
 
 他に、アライメントクラスなどの実装が必要かも知れません。また、生物種の系
 統分類を表す Taxonomy クラスや GeneOntology などのクラスもあると便利かも
@@ -64,14 +63,23 @@ BioRuby の全クラスは module Bio で囲むことで、名前空間を切り分ける事にし
 BioRuby のデータベース・パーザは、１エントリ分の文字列を .new に渡す事で
 パースした結果を保持するインスタンスを返すデザインになっています。各デー
 タベースからエントリ単位のデータを得る方法は、手元のフラットファイルを使
-う場合、ネット越しに DBGET した場合、NCBI から取ってきた場合、など使い方
-によって様々ですが、どこからエントリを得たか (io) に関わらず、パーザはエ
-ントリをパースする処理に専念できます。
+う場合、ネット越しに DBGET や BioFetch した場合、NCBI から取ってきた場合、
+など使い方によって様々ですが、どこからエントリを得たか (io) に関わらず、
+パーザはエントリをパースする処理に専念できます。
 
 最終的には全てのデータはあらかじめパースして tab 切りのデータに切り刻み、
 MySQL などに突っ込んでしまってパースの必要がないような世界にしたいです。
 BioPerl の BioPerl-DB に似ていると思いますが、BioRuby 標準の DataBase と
-いうことで BioRuby-DB (class BRDB) として開発を進めています。
+いうことで BioRuby-DB (class BRDB) として開発を進めています。BioRuby プ
+ロジェクトも BioHackathon や BOSC に参加して OBDA の BioSQL などに準拠す
+るようになりましたので、今後は独自データベースが必要な部分は減っていくか
+もしれません。
+
+  * OBDA : Open Bio Sequence Database Access
+    * ((<URL:http://obda.open-bio.org/>))
+    * ((<URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/?cvsroot=obf-common>))
+  * BOSC : Bioinformatics Open Source Conference
+    * ((<URL:http://bosc.open-bio.org/>))
 
 + データベース構造の抽象化
 
@@ -119,15 +127,10 @@ lib/bio/data/ 以下に、いくつかのデータ（アミノ酸の名前、KEGG での生物種
 
 === lib/bio/io/ インターフェイス、IO 系
 
-lib/bio/io/ 以下には、ゲノムネットによるデータ取得を行なう DBGET クラス
-と NCBI の PubMed による MEDLINE データ取得を行なう PubMed クラスがあり
-ます。各メソッドはクラスメソッドとして定義されているので、あらかじめイン
-スタンスを作らなくても Bio::DBGET.bget("eco:b0001") などと直接実行できま
-す。
-
-他には、フラットファイル形式のラッパーとなる flatfile.rb や、BioRuby-DB
-を扱う MySQL に対して入出力を行なう brdb.rb、NCBI などへの Web ベースの
-アクセスを行なうもの、などを実装していく予定です。
+lib/bio/io/ 以下には、フラットファイル形式をエントリ単位で読み込むクラス、
+ゲノムネットからデータ取得を行なう DBGET クラスと NCBI の PubMed による 
+MEDLINE データ取得を行なう PubMed クラス、OBDA に準拠した BioRegistry,
+BioFetch, BioSQL などによるデータ取得を行うクラスなどがあります。
 
 * flatfile.rb （実装済）
 
@@ -148,28 +151,11 @@ lib/bio/io/ 以下には、ゲノムネットによるデータ取得を行なう DBGET クラス
       puts gb.definition
     end
 
-* bioruby-db (brdb.rb) のアイデア
-
-    db = Bio::BRDB.new('server')
-    gb = db.get('gb', entry_id)
-
-* ncbi.rb のアイデア（PubMed もここに？）
-
-    gb = Bio::NCBI.new('GenBank', id)
-    fa = Bio::NCBI::BLAST.new(query, target)
-
-* genomenet.rb のアイデア（DBGET もここに？）
-  * ncbi.rb と同様の BLAST と FASTA, CLASTALW などのサービス
-  * SSDB の統合
-
-あと、gb = Bio::Genbank.new() として箱だけ作っておいてデータをあとで渡す
-gb.data(hash) のようなメソッドがあってもいいかも知れません。
-
 === lib/bio/appl/ ツール系
 
 FASTA(SSEARCH), [PSI-]BLAST, HMMER, CLUSTALW などの外部アプリを使った処
 理を行います。ローカルな実行、http などによるリモート実行、結果のフォー
-マットなどを意識せずに、結果がパースされ格納された FASTA オブジェクトな
+マットなどを意識せずに、結果がパースされ格納された Report オブジェクトな
 どが返るような感じにしていきます。
 
 * query となるオブジェクトに、アプリを実行するメソッドを実装（必要な引数
@@ -178,9 +164,6 @@ FASTA(SSEARCH), [PSI-]BLAST, HMMER, CLUSTALW などの外部アプリを使った処
     factory = Bio::Fasta.remote('fasta', 'genes')
     fa_res = f.fasta(factory)   # f は Bio::FastaFormat オブジェクト
     fa_res = seq.fasta(factory) # seq は Bio::Sequence::AA オブジェクトなど
-    # 以下は実装されてない
-    puts fa_res.top(10, with_id, by_optscore)
-    puts fa_res.best.alignment
 
 * 新しく生成したファクトリに、サーバ、query、target などを設定して、アプ
   リを実行するメソッドを呼ぶ
@@ -188,8 +171,8 @@ FASTA(SSEARCH), [PSI-]BLAST, HMMER, CLUSTALW などの外部アプリを使った処
     factory = Bio::Fasta.local(prog, target, opt)
     fa_res = factory.query(seq)
 
-などいくつかの実装方法が考えられます（Bio::Fasta では両系統インプリして
-います）。
+などいくつかの実装方法が考えられます（Bio::Fasta, Bio::Blast では両系統
+インプリしています）。
 
 ファクトリやメソッドへのオプションの渡し方は、複雑な物はシンボルをキーに
 した hash にした方が良いかもしれません。もしくは名前つき引数待ち？
@@ -201,10 +184,10 @@ FASTA(SSEARCH), [PSI-]BLAST, HMMER, CLUSTALW などの外部アプリを使った処
 
 == コーディングスタイル
 
-クラス設計、メソッド定義など全般において、KISS が基本です。ただし、なん
-でもかんでも class に分解してしまえば良いわけではないでしょう。概念とし
-て一つのまとまりだと思えるものまで分解すればよく、特に使い回しのきかない
-オブジェクトを生成する必要はないと思います。
+クラス設計、メソッド定義など全般において、KISS (keep it simple stupid) が
+基本です。ただし、なんでもかんでも class に分解してしまえば良いわけでは
+ないでしょう。概念として一つのまとまりだと思えるものまで分解すればよく、
+特に使い回しのきかないオブジェクトを生成する必要はないと思います。
 
 技術的な事については、常に改善の余地があると思います。書き換える事により
 シンプルで分かりやすくなる場合、今後の開発がスムーズになると思われる場合
