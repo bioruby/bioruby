@@ -13,6 +13,8 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
+#  $Id: sequence.rb,v 0.5 2001/06/21 06:07:27 katayama Exp $
+#
 
 require 'bio/data/na'
 require 'bio/data/aa'
@@ -27,17 +29,9 @@ class Sequence < String
   include CodonTable
 
   def subseq(s, e)
-    s -= 1;	s = 1 if s < 0
-    e -= 1;	s = e if s > e
+    s -= 1
+    e -= 1
     self[s..e]
-  end
-
-  def count(char)
-    num = 0
-    self.each_byte do |x|
-      num += 1 if x == char
-    end
-    num
   end
 
 end
@@ -51,17 +45,11 @@ class NAseq < Sequence
     if str
       super.downcase!
       super.tr!('u', 't')
-    else
-      ""
     end
   end
 
   def subseq(s = 1, e = self.length)
     NAseq.new(super)
-  end
-
-  def count(base)
-    super(base.downcase[0])
   end
 
   def complement
@@ -113,14 +101,13 @@ class NAseq < Sequence
     /#{re}/
   end
 
-  def to_list_long
+  def to_list
     array = []
     self.each_byte do |x|
       array.push(na(x.chr.upcase))
     end
     array
   end
-  alias to_list to_list_long
 
   def pikachu
     self.tr("atgc", "pika")	# joke, of cource :-)
@@ -136,8 +123,6 @@ class AAseq < Sequence
   def initialize(str)
     if str
       super.upcase!
-    else
-      ""
     end
   end
 
@@ -145,11 +130,7 @@ class AAseq < Sequence
     AAseq.new(super)
   end
 
-  def count(amino)
-    super(amino.upcase[0])
-  end
-
-  def to_list
+  def to_3
     array = []
     self.each_byte do |x|
       array.push(aa(x.chr))
@@ -157,9 +138,8 @@ class AAseq < Sequence
     array
   end
 
-  def to_list_long
-    array = to_list
-    array.collect do |a|
+  def to_list
+    to_3.collect do |a|
       a = aa(a)
     end
   end
