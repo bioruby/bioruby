@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: medline.rb,v 1.8 2001/12/15 02:58:17 katayama Exp $
+#  $Id: medline.rb,v 1.9 2004/02/05 13:03:24 k Exp $
 #
 
 require 'bio/db'
@@ -41,7 +41,7 @@ module Bio
 
     # Reference object
     def reference
-      hash = Hash.new('')
+      hash = Hash.new
 
       hash['authors']	= authors
       hash['title']	= title
@@ -52,6 +52,9 @@ module Bio
       hash['year']	= year
       hash['pubmed']	= pmid
       hash['medline']	= ui
+      hash['abstract']  = abstract
+
+      hash.delete_if { |k, v| v.nil? or v.empty? }
 
       return Reference.new(hash)
     end
