@@ -17,16 +17,16 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: ddbj.rb,v 1.3 2001/11/06 16:58:52 okuji Exp $
+#  $Id: ddbj.rb,v 1.4 2001/12/15 02:58:28 katayama Exp $
 #
-
-module Bio
 
 require 'bio/db/genbank'
 
-class DDBJ < GenBank
-  # Nothing to do (DDBJ database format is completely same as GenBank)
-end
+module Bio
 
-end				# module Bio
+  class DDBJ < GenBank
+    # Nothing to do (DDBJ database format is completely same as GenBank)
+  end
+
+end
 

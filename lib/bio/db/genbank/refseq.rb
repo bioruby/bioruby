@@ -17,16 +17,16 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: refseq.rb,v 1.3 2001/11/06 16:58:52 okuji Exp $
+#  $Id: refseq.rb,v 1.4 2001/12/15 02:59:23 katayama Exp $
 #
-
-module Bio
 
 require 'bio/db/genbank'
 
-class RefSeq < GenBank
-  # Nothing to do (RefSeq database format is completely same as GenBank)
-end
+module Bio
 
-end				# module Bio
+  class RefSeq < GenBank
+    # Nothing to do (RefSeq database format is completely same as GenBank)
+  end
+
+end
 
