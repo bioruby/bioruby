@@ -21,6 +21,7 @@ require 'bio/data/codontable'
 # Nucleic/Amino Acid sequence
 
 class Sequence < String
+
   include NucleicAcids
   include AminoAcids
   include CodonTable
@@ -106,7 +107,7 @@ class NAseq < Sequence
       if na(x.chr)
 	re << na(x.chr)
       else
-	re << 'X'
+	re << '.'
       end
     end
     /#{re}/
