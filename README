@@ -1,0 +1,27 @@
+
+= BioRuby
+
+BioRuby project aims to implement integrated environment for Bioinformatics.
+
+== INSTALL
+
+  % ruby install.rb config
+  % ruby install.rb setup
+  # ruby install.rb install
+
+  ("ruby install.rb --help" for more details)
+
+== USAGE
+
+  #!/usr/bin/env ruby
+  require 'bio'
+
+== LICENCE
+
+* GPL for applications, LGPL for libraries.
+* install.rb comes from ((<URL:http://www.loveruby.net/en/setup.html>))
+
+== AUTHOR
+
+((<BioRuby project|URL:http://bioruby.org/>))
+
