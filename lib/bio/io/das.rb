@@ -1,8 +1,8 @@
 #
 # bio/io/das.rb - BioDAS access module
 #
+#   Copyright (C) 2003, 2004 KATAYAMA Toshiaki <k@bioruby.org>
 #   Copyright (C) 2003 KAWASHIMA Shuichi <s@bioruby.org>
-#   Copyright (C) 2003 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: das.rb,v 1.5 2004/02/15 01:44:02 k Exp $
+#  $Id: das.rb,v 1.6 2004/08/24 00:03:22 k Exp $
 #
 
 begin
@@ -306,6 +306,12 @@ module Bio
       end
       attr_reader :segments
       attr_accessor :href, :version
+
+      def each
+        @segments.each do |x|
+          yield x
+        end
+      end
     end
 
     class SEGMENT
@@ -387,27 +393,43 @@ end
 
 if __FILE__ == $0
 
-  begin
-    require 'pp'
-    alias :p :pp
-  rescue LoadError
-  end
+# begin
+#   require 'pp'
+#   alias :p :pp
+# rescue LoadError
+# end
 
+  puts "### WormBase"
   wormbase = Bio::DAS.new('http://www.wormbase.org/db/')
 
-  puts "### test get_dsn"
+  puts ">>> test get_dsn"
   p wormbase.get_dsn
 
-  puts "### create segment obj"
-  seg = Bio::DAS::SEGMENT.region('I', 0, 1000)
+  puts ">>> create segment obj Bio::DAS::SEGMENT.region('I', 1, 1000)"
+  seg = Bio::DAS::SEGMENT.region('I', 1, 1000)
   p seg
 
-  puts "### test get_dna"
+  puts ">>> test get_dna"
   p wormbase.get_dna('elegans', seg)
 
   puts "### test get_features"
-  gff = wormbase.get_features('elegans', seg)
-  p gff
+  p wormbase.get_features('elegans', seg)
+
+  puts "### KEGG DAS"
+  kegg_das = Bio::DAS.new("http://das.hgc.jp/cgi-bin/")
+
+  dsn_list = kegg_das.get_dsn
+  org_list = dsn_list.collect {|x| x.source}
+
+  puts ">>> dsn : entry_points"
+  org_list.each do |org|
+    print "#{org} : "
+    list = kegg_das.get_entry_point(org)
+    list.segments.each do |seg|
+      print " #{seg.entry_id}"
+    end
+    puts
+  end
 
 end
 
@@ -425,8 +447,7 @@ end
 --- Bio::DAS#get_sequence(dsn, segments)	# -> Array of Bio::DAS::SEQUENCE
 --- Bio::DAS#get_types(dsn, segments = [])	# -> Bio::DAS::TYPES
       segments is option
---- Bio::DAS#get_features(dsn, segments = [], categorize = false, feature_ids = [], group_ids = [])
-      # -> Bio::DAS::GFF
+--- Bio::DAS#get_features(dsn, segments = [], categorize = false, feature_ids = [], group_ids = [])      # -> Bio::DAS::GFF
 
 == Bio::DAS::DSN
 == Bio::DAS::ENTRY_POINT
