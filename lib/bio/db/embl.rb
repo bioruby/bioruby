@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: embl.rb,v 1.10 2002/06/24 04:50:34 k Exp $
+#  $Id: embl.rb,v 1.11 2002/06/25 08:10:25 n Exp $
 #
 
 
@@ -46,30 +46,11 @@
 #     bb - (blanks) sequence data     (>=1 per entry)
 #     // - termination line           (ends each entry; 1 per entry)
 
+require 'bio/db'
+
 module Bio
 
-  require 'bio/db'
-  require 'bio/sequence'
-
-  class EMBL < EMBLDB
-    
-    DELIMITER	= RS = "\n//\n"
-    TAGSIZE	= 5
-
-    ##
-    #
-    def initialize(entry)
-      super(entry, TAGSIZE)
-    end
-
-
-    ###
-    ### followings are moved from db.rb, these should be here.
-    ### * please do merge & clean-up.
-    ### * please use feature.rb and possibly reference.rb.
-    ### * please follow the method name conventions described in db.rb's doc.
-    ###
-
+  class  EMBLDB
 
     # Shared methods in Bio::EMBL and Bio::SPTR
 
@@ -85,12 +66,11 @@ module Bio
     #          #accessions  -> Array
     def ac
       unless @data['AC']
-	tmp=Array.new
-	a=field_fetch('AC').split(' ')
-	a.each do |e|
+	tmp = Array.new
+	field_fetch('AC').split(' ').each do |e|
 	  tmp.push(e.sub(/;/,''))
 	end
-	@data['AC']=tmp
+	@data['AC'] = tmp
       end
       @data['AC']
     end
@@ -118,19 +98,19 @@ module Bio
     #
     # Bio::SPTR#os -> Array w/in Hash
     # Bio::SPTR#os(num) -> String
-    def os(num=nil)
+    def os(num = nil)
       unless @data['OS']
-	os=Array.new
+	os = Array.new
 	fetch('OS').split(',').each do |tmp|
 	  if tmp =~ /([A-Z][a-z]+ [a-zA-Z0-9]+)/
-	    org=$1
+	    org = $1
 	    tmp =~ /\((.+)\)/ 
-	    os.push({'name'=>$1, 'os'=>org})
+	    os.push({'name' => $1, 'os' => org})
 	  else
 	    raise "Error: OS Line. #{$!}\n#{fetch('OS')}\n"
 	  end
 	end
-	@data['OS']=os
+	@data['OS'] = os
       end
       if num
 	# EX. "Trifolium repens (white clover)"
@@ -142,16 +122,17 @@ module Bio
 
     # OG Line; organella (0 or 1/entry)
     #
-    # Bio::SPTR#og  -> Array
+    # Bio::EMBLDB#og  -> Array
     def og
       unless @data['OG']
-	og=Array.new
+	og = Array.new
 	fetch('OG').sub(/.$/,'').sub(/ and/,'').split(',').each do |tmp|
 	  og.push(tmp.strip)
 	end
-	@data['OG']=og
+	@data['OG'] = og
+      else
+	@data['OG']
       end
-      @data['OG']
     end
 
 
@@ -159,53 +140,99 @@ module Bio
     # OC   Eukaryota; Alveolata; Apicomplexa; Piroplasmida; Theileriidae;
     # OC   Theileria.
     #
-    # Bio::SPTR#oc  -> Array
+    # Bio::EMBLDB#oc  -> Array
     def oc
-      begin
-	fetch('OC').sub(/.$/,'').split(';').collect {|e| e.strip }
-      rescue NameError
-	nil
+      unless @data['OC']
+	begin
+	  @data['OC'] = fetch('OC').sub(/.$/,'').split(';').collect {|e|
+	    e.strip 
+	  }
+	rescue NameError
+	  nil
+	end
+      else
+	@data['OC']
       end
     end
 
 
     # KW Line; keyword (>=1)
     # KW   [Keyword;]+
-    # Bio::SPTR#kw  -> Array
-    #          #keywords  -> Array
+    # Bio::EMBLDB#kw  -> Array
+    #            #keywords  -> Array
     def kw
-      tmp=fetch('KW').sub(/.$/,'')
-      if block_given?
-	tmp.split(';').each do |k|
-	  yield k.strip
-	end
+      unless @data['KW']
+	tmp = fetch('KW').sub(/.$/,'')
+	@data['KW'] = tmp.split(';').collect{|e| e.strip }	
       else
-	tmp.split(';').collect{|e| e.strip }
-      end      
+	@data['KW']
+      end
     end
     alias keywords kw
 
     # R Lines
     # RN RC RP RX RA RT RL
-    # same as Bio::EMBL#ref 
+    # Bio::EMBLDB#ref -> Array
+    # to be used Bio::Reference, but not yet implemented.
     def ref
-      get('R')
+      unless @data['R']
+	ary = Array.new
+	get('R').split(/\nRN   /).each do |str|
+	  raw = {'RN' => '', 'RC' => '', 'RP' => '', 'RX' => '', 
+	    'RA' => '', 'RT' => '', 'RL' => ''}
+	  str = 'RN   ' + str unless str =~ /^RN   /
+	  str.split("\n").each do |line|
+	    if line =~ /^(R[NPXARLCT])   (.+)/
+	      raw[$1] += $2 + ' '
+	    else
+	      raise "Invalid format in R lines, \n[#{line}]\n"
+	    end
+	  end
+	  raw.each_value {|v| 
+	    v.strip! 
+	    v.sub!(/^"/,'')
+	    v.sub!(/;$/,'')
+	    v.sub!(/"$/,'')
+	  }
+
+#	  hash = {'authors' => '',  'title' => '',	    'journal' => '',
+#	    'volume' => '',	    'issue' => '',	    'pages' => '',
+#	    'year' => '',	    'medline' => '',	    'pubmed' => '' }
+#	  raw.each do |k,v|
+#	    case k
+#	    when 'RA'
+#	      hash['authors'] = v
+#	    when 'RT'
+#	      hash['title'] = v
+#	    when 'RL'
+#	     journal,volume,issue,pages,year
+#	    when 
+#	  end
+
+#	  ary.push(Reference.new(hash))
+	  ary.push(raw)
+	end
+#	@data['R'] = References.new(ary)
+	@data['R'] = ary
+      else
+	@data['R']
+      end
     end
 
     # DR Line; defabases cross-reference (>=0)
     # a cross_ref pre one line
     # "DR  database_identifier; primary_identifier; secondary_identifier."
-    # Bio::SPTR#dr  -> Hash w/in Array
+    # Bio::EMBLDB#dr  -> Hash w/in Array
     def dr
       unless @data['DR']
-	tmp=Hash.new
+	tmp = Hash.new
 	self.get('DR').split("\n").each do |db|
-	  a=db.sub(/^DR   /,'').sub(/.$/,'').strip.split(";[ ]")
-	  dbname=a.shift
-	  tmp[dbname]=Array.new unless tmp[dbname]
+	  a = db.sub(/^DR   /,'').sub(/.$/,'').strip.split(";[ ]")
+	  dbname = a.shift
+	  tmp[dbname] = Array.new unless tmp[dbname]
 	  tmp[dbname].push(a)
 	end
-	@data['DR']=tmp
+	@data['DR'] = tmp
       end
       if block_given?
 	@data['DR'].each do |k,v|
@@ -216,9 +243,35 @@ module Bio
       end
     end
 
+  end # End of class EMBLDB
+
+end # End of module Bio
 
 
 
+module Bio
+
+  class EMBL < EMBLDB
+    
+    DELIMITER	= RS = "\n//\n"
+    TAGSIZE	= 5
+
+    def initialize(entry)
+      super(entry, TAGSIZE)
+    end
+
+
+    ###
+    ### followings are moved from db.rb, these should be here.
+    ### * please do merge & clean-up.
+    ### * please use feature.rb and possibly reference.rb.
+    ### * please follow the method name conventions described in db.rb's doc.
+    ###
+
+
+
+
+    # Methods for EMBL 
 
     ##
     # ID Line
@@ -269,14 +322,16 @@ module Bio
 	@data['ID']
       end
     end
+
     ##
     # Bio::EMBL#entry -> String
-    #          #entryname -> String
+    #          #entry_name -> String
     def entry
       id_line('ENTRY_NAME')
     end
     alias entry_name entry
     alias entry_id entry
+
     ##
     # Bio::EMBL#molecule -> String
     # 
@@ -284,12 +339,14 @@ module Bio
       id_line('MOLECULE_TYPE')
     end
     alias molecule_type molecule
+
     ##
     # Bio::EMBL#division -> String
     # 
     def division
       id_line('DIVISION')
     end
+
     ##
     # Bio::EMBL#sequencelength -> String
     # 
@@ -410,40 +467,42 @@ module Bio
     def fh
       get('FH')
     end
+    # same as features method in bio/db/genbank.rb 
     def ft(num = nil)
-      get('FT')
       unless @data['FT']
 	@data['FT'] = Array.new
 	ary = Array.new
+	in_quote = false
 	@orig['FT'].each_line do |line|
+	  next if line =~ /^FEATURES/
+
 	  head = line[0,20].strip	# feature key (source, CDS, ...)
 	  body = line[20,60].chomp	# feature value (position, /qualifier=)
 	  if line =~ /^FT {3}(\S+)/
 	    ary.push([ $1, body ])	# [ feature, position, /q="data", ... ]
-	  elsif body =~ /^ \//
+	  elsif body =~ /^ \// and not in_quote
 	    ary.last.push(body)		# /q="data..., /q=data, /q
+
+	    if body =~ /=" / and body !~ /"$/
+	      in_quote = true
+	    end
+
 	  else
 	    ary.last.last << body	# ...data..., ...data..."
+
+	    if body =~ /"$/
+	      in_quote = false
+	    end
 	  end
 	end
-	ary.each do |feature|		# feature is Array
-	  @data['FT'].push(parse_qualifiers(feature))
-	end
-      end
 
-      if block_given?
-	@data['FT'].each do |feature|
-	  yield(feature)		# Hash of each FT
-	end				#   obj.ft do |f| f['gene'] end
-      elsif num				#     f.has_key?('virion'), p f, ...
-	if key
-	  @data['FT'][num-1][key]	# key contents of num'th FT
-	else				#   obj.ft(3, 'feature') -> 3rd
-	  @data['FT'][num-1]            # Hash of num'th FT
-	end				#   obj.ft(2) -> 2nd FT
-      else
-	@data['FT']                     # Array of Hash of FT (default)
-      end                               #   obj.ft
+        ary.collect! do |subary|
+	  parse_qualifiers(subary)
+        end
+
+	@data['FT'] = Features.new(ary)
+      end
+      @data['FT']
     end
     alias features ft
 
@@ -452,8 +511,8 @@ module Bio
     #
     def each_cds
       ft.each do |feature|
-	if feature['feature'] == 'CDS'
-	  yield(feature)		# iterate only for the 'CDS' FT
+	if feature.type == 'CDS'
+	  yield feature		# iterate only for the 'CDS' FT
 	end
       end
     end
@@ -463,8 +522,8 @@ module Bio
     #
     def each_gene
       ft.each do |feature|
-	if feature['feature'] == 'gene'
-	  yield(feature)		# iterate only for the 'gene' FT
+	if feature.type == 'gene'
+	  yield feature		# iterate only for the 'gene' FT
 	end
       end
     end
@@ -491,12 +550,14 @@ module Bio
     # Bio::EMBL#sq(base)  -> Int
     #          #sq[base]  -> Int
     #
-    def sq(base=nil)
+    def sq(base = nil)
       unless @data['SQ']
 	fetch('SQ') =~ \
                /(\d+) BP\; (\d+) A; (\d+) C; (\d+) G; (\d+) T; (\d+) other;/
 	@data['SQ']={'ntlen'=>$1.to_i, 'other'=>$6.to_i,
 	             'a'=>$2.to_i,'c'=>$3.to_i,'g'=>$4.to_i,'t'=>$5.to_i}
+      else
+	@data['SQ']
       end
       if block_given?
 	@data['SQ'].each do |k,v|
@@ -535,42 +596,35 @@ module Bio
 
     ##
     # same as Bio::GenBank#parse_qualifiers(feature)
-    #
-    def parse_qualifiers(feature)
-      hash = Hash.new('')
+    def parse_qualifiers(ary)
+      feature = Feature.new
 
-      hash['feature'] = feature.shift
-      hash['position'] = feature.shift.gsub(/\s/, '')
+      feature.feature = ary.shift
+      feature.position = ary.shift.gsub(/\s/, '')
 
-      feature.each do |f|
+      ary.each do |f|
 	if f =~ %r{/([^=]+)=?"?([^"]*)"?}
-	  qualifier, data = $1, $2
-	  #	qualifier, data = $1, truncate($2)
+	  qualifier, value = $1, $2
 	  
-	  if data.empty?
-	    data = qualifier
+	  if value.empty?
+	    value = true
 	  end
 
 	  case qualifier
 	  when 'translation'
-	    hash[qualifier] = Sequence::AA.new(data.gsub(/\s/, ''))
-	  when 'db_xref', 'allele'
-	    if hash[qualifier].empty?
-	      hash[qualifier] = []
-	    end
-	    hash[qualifier].push(data)
+	    value = Sequence::AA.new(value.gsub(/\s/, ''))
 	  when 'codon_start'
-	    hash[qualifier] = data.to_i
-	  else
-	    hash[qualifier] = data
+	    value = value.to_i
 	  end
+
+	  feature.append(Feature::Qualifier.new(qualifier, value))
 	end
       end
 
-      return hash
+      return feature
     end
 
-  end
+  end # class EMBL
 
 end # module Bio
 
