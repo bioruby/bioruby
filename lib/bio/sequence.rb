@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.28 2003/03/31 10:24:52 k Exp $
+#  $Id: sequence.rb,v 0.29 2003/05/20 13:03:28 ng Exp $
 #
 
 require 'bio/data/na'
@@ -177,8 +177,7 @@ module Bio
       # CodonTable is defined in bio/data/codontable.rb
       def codon_table(table = 1, codon = nil)
 	if codon
-	  codon.tr!('u', 't')
-	  CodonTable[table][codon]
+	  CodonTable[table][codon.downcase.tr('u', 't')]
 	else
 	  CodonTable[table]
 	end
