@@ -22,17 +22,28 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: goslim.rb,v 1.1 2003/05/08 03:44:30 n Exp $
+#  $Id: goslim.rb,v 1.2 2003/05/13 10:29:35 n Exp $
 #
 
 
 
-SCRIPT_VERSION = '$Id: goslim.rb,v 1.1 2003/05/08 03:44:30 n Exp $'
+SCRIPT_VERSION = '$Id: goslim.rb,v 1.2 2003/05/13 10:29:35 n Exp $'
 
 USAGE = "${__FILE__} - GO slim
 Usage:
-  #{__FILE__} -p process.ontology -f function.ontology \\
-     -c component.ontolgy -g gene_association.mgi -s goslim_goa.2002
+  #{__FILE__} -p process.ontology -f function.ontology \
+     -c component.ontolgy -g gene_association.mgi -s goslim_goa.2002 \
+     -o goslim.uniqued.out -r
+
+  #{__FILE__} -p process.ontology -f function.ontology \
+     -c component.ontolgy -l gene_association.list -s goslim_goa.2002 \
+     -o mgi.out -r
+
+  #{__FILE__} -p process.ontology -f function.ontology \
+     -c component.ontolgy -g gene_association.mgi -s goslim_goa.2002 >\
+     go_goslit.paired.list
+
+
 
 Options;
  -p,--process <go/ontology/process.ontology>
@@ -116,7 +127,7 @@ dev.off()
 end
 
 
-# 
+# build GOslim uniqued list
 def slim(ontology, slim_ids, tmp, ga, aspect)
   tmp[aspect] = Hash.new(0)
   slim_ids.each {|slim_id|
@@ -140,6 +151,35 @@ def slim(ontology, slim_ids, tmp, ga, aspect)
   }
 end
 
+
+# build GO-GOslim uniqued list
+def slim2(ontology, slim_ids, tmp, ga, aspect)
+  tmp[aspect] = Hash.new
+  slim_ids.each {|slim_id|
+    term = ontology.goid2term(slim_id)
+    if term
+      begin
+	unless tmp[aspect][term]['GOslim'].index(slim_id)
+	  tmp[aspect][term]['GOslim'] << slim_id
+	end
+      rescue NameError
+	tmp[aspect][term] = {'GOslim'=>[slim_id], 'GO'=>[]}
+      end
+    else
+      next
+    end
+
+    ga.each {|gaid|
+      begin 
+	res = ontology.bfs_shortest_path(slim_id, gaid)
+	tmp[aspect][term]['GO'] << gaid if res[0]
+      rescue NameError
+
+	break
+      end
+    }
+  }
+end
 
 
 
@@ -221,27 +261,47 @@ elsif $OPT_GALIST
       ga_ids << goid
     end
   end
+else
+  puts "Error: -l or -g options"
+  exit
 end
 
 
 # count number
 
 count = Hash.new(0)
+
 aspects.each {|aspect|
-  slim(ontology[aspect], slim_ids[aspect], count, ga_ids, aspect)
+  slim2(ontology[aspect], slim_ids[aspect], count, ga_ids, aspect)
 }
+
+
 
 
 # output
 
-tmp = [['aspect', 'count', 'GO Term'].join("\t")]
+if $OPT_R_SCRIPT and $OPT_OUTPUT
+  tmp = [['aspect', 'count', 'GO Term'].join("\t")]
+else
+  tmp = [['aspect', 'GO ID', 'GOslim Term', 'GOslim ID'].join("\t")]
+end
+
 ['component','function','process'].each {|aspect|
-  count[aspect].sort {|a,b| b[0] <=> a[0] }.each {|term, value|
+  count[aspect].sort {|a, b| b[1]['GO'].size <=> a[1]['GO'].size }.each {|term, value|
     next if term == ""
-    tmp << [aspect, value, term].join("\t") 
+
+    if $OPT_R_SCRIPT and $OPT_OUTPUT
+      tmp << [aspect, value['GO'].size, term].join("\t") 
+    else
+      value['GO'].each {|goid|
+	tmp << [aspect, "GO:#{goid}", term, 
+	  value['GOslim'].map {|e| "GO:#{e}" }.join(' ')].join("\t") 
+      }
+    end
   }
 }
 ios['output'].puts tmp.join("\n")
+
 
 if $OPT_R_SCRIPT and $OPT_OUTPUT
   ios['r_script'].puts slim2r($OPT_OUTPUT)
@@ -249,4 +309,3 @@ end
 
 
 #
-ios.each {|name, io| io.close }
