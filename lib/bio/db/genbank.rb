@@ -3,10 +3,23 @@
 #
 #   Copyright (C) 2000, 2001 KATAYAMA Toshiaki <k@bioruby.org>
 #
+#  This library is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Library General Public
+#  License as published by the Free Software Foundation; either
+#  version 2 of the License, or (at your option) any later version.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Library General Public License for more details.
+#
 
 require 'bio/sequence'
 
 class GenBank
+
+  DELIMITER = "\n//\n"
+  TAGSIZE = 12
 
   def initialize(entry)
     @orig = {}					# Hash of the original entry
@@ -22,7 +35,7 @@ class GenBank
       @orig[tag] << line
     end
 
-    return
+    return @orig
   end
 
 
@@ -34,9 +47,9 @@ class GenBank
 
   ### general method to return contens without tag and extra white spaces
   def fetch(tag)
-    if @orig[tag]
+    if get(tag)
       str = ''
-      @orig[tag].each_line do |line|
+      get(tag).each_line do |line|
 	str << tag_cut(line)
       end
       return truncate(str)
@@ -150,7 +163,7 @@ class GenBank
 	@data['REFERENCE']
       end
     else			# returns one value of the REFERENCE Hash
-      @data['REFERENCE'][num][key]
+      @data['REFERENCE'][num][key] if @data['REFERENCE'][num]
     end
   end
   alias r reference
@@ -179,7 +192,7 @@ class GenBank
 	@data['FEATURES']
       end
     else			# returns one value of the FEATURES Hash
-      @data['FEATURES'][num][key]
+      @data['FEATURES'][num][key] if @data['FEATURES'][num]
     end
   end
   alias f features
@@ -243,7 +256,6 @@ class GenBank
   ### change the default to private method below the line
   private
 
-
   # remove extra white spaces
   def truncate(str)
     return str.gsub(/\s+/, ' ').strip
@@ -259,23 +271,23 @@ class GenBank
 
   # remove tag field from the line
   def tag_cut(str)
-    if str.length > 12		# tag field length of the GenBank is 12
-      return str[12..str.length]
+    if str.length > TAGSIZE
+      return str[TAGSIZE..str.length]
     else
       return ''			# to avoid returning nil
     end
   end
 
   def tag_cut!(str)
-    str[0,12] = ''
+    str[0,tag_size] = ''
     return str
   end
 
 
   # get tag field of the line
   def tag_get(str)
-    if str.length > 12		# tag field length of the GenBank is 12
-      return str[0,12].strip
+    if str.length > TAGSIZE
+      return str[0,TAGSIZE].strip
     else
       return ''			# to avoid returning nil
     end
