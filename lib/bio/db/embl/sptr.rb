@@ -17,10 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.10 2002/06/24 04:50:34 k Exp $
+#  $Id: sptr.rb,v 1.11 2002/06/25 08:12:26 n Exp $
 #
 
-require 'bio/db'
+#require 'bio/db'
+require 'bio/db/embl'
 
 module Bio
 
@@ -51,7 +52,7 @@ module Bio
   # // - termination line             (ends each entry; 1 per entry)
   # ---- ---------------------------  --------------------------------
 
-  class SPTR < EMBL
+  class SPTR < EMBLDB
     
     DELIMITER	= RS = "\n//\n"
     TAGSIZE	= 5
@@ -89,7 +90,7 @@ module Bio
 
       if block_given?
 	@data['ID'].each do |k,v|
-	  yield(k,v)
+	  yield k,v
 	end
       elsif key
 	@data['ID'][key]	# String/Int
@@ -140,16 +141,16 @@ module Bio
     # key = (created|sequence|annotation)
     def dt(key = nil)
       unless @data['DT']
-	tmp=Hash.new
-	a=self.get('DT').split("\n")
-	tmp['created']=a[0].sub(/\w{2}   /,'').strip
-	tmp['sequence']=a[1].sub(/\w{2}   /,'').strip
-	tmp['annotation']=a[2].sub(/\w{2}   /,'').strip
-	@data['DT']=tmp
+	tmp = Hash.new
+	a = self.get('DT').split("\n")
+	tmp['created']    = a[0].sub(/\w{2}   /,'').strip
+	tmp['sequence']   = a[1].sub(/\w{2}   /,'').strip
+	tmp['annotation'] = a[2].sub(/\w{2}   /,'').strip
+	@data['DT'] = tmp
       end
       if block_given?
 	@data['DT'].each do |k,v|
-	  yield(k,v)
+	  yield k,v
 	end
       elsif key
 	@data['DT'][key]
@@ -215,12 +216,12 @@ module Bio
     # OS   Genus species (name0) (name1).
     # OS   Genus species (name0), G s0 (name0), and G s (name1).
     #
-    # Bio::EMBL#os  -> Array w/in Hash
+    # Bio::EMBLDB#os  -> Array w/in Hash
     # [{'name'=>'Human', 'os'=>'Homo sapiens'}, 
     #  {'name'=>'Rat', 'os'=>'Rattus norveticus'}]
-    # Bio::STPR#os[0]['name'] => "Human"
-    # Bio::STPR#os[0] => {'name'=>"Human", 'os'=>'Homo sapiens'}
-    # Bio::STPR#os(0) => "Homo sapiens (Human)"
+    # Bio::EMBLDB#os[0]['name'] => "Human"
+    # Bio::EMBLDB#os[0] => {'name'=>"Human", 'os'=>'Homo sapiens'}
+    # Bio::EMBLDB#os(0) => "Homo sapiens (Human)"
     #
     # Bio::SPTR#os -> Array w/in Hash
     # Bio::SPTR#os(num) -> String
@@ -237,7 +238,7 @@ module Bio
     # OC   Eukaryota; Alveolata; Apicomplexa; Piroplasmida; Theileriidae;
     # OC   Theileria.
     #
-    # Bio::SPTR#oc  -> Array
+    # Bio::EMBLDB#oc  -> Array
 
     # OX Line; organism taxonomy cross-reference (>=1 per entry)
     # OX   NCBI_TaxID=1234;
@@ -254,12 +255,13 @@ module Bio
 	end
 	@data['OX'] = hsh
       else
-	@data['CC']
+	@data['OX']
       end
     end
 
     # R Lines
     # RN RC RP RX RA RT RL
+    # Bio::EMBLDB#ref -> Array
 
     # CC lines (>=0, optional)
     # CC   -!- TISSUE SPECIFICITY: HIGHEST LEVELS FOUND IN TESTIS. ALSO PRESENT
@@ -308,12 +310,15 @@ module Bio
 	    end
 	  end
 	rescue NameError
+	  raise "Invalid CC Lines, \n'#{self.get('CC')}'\n"
 	end
 
 	@data['CC'] = cc
+      else
       end
 
-      if num == 'DATABASE'
+      case num
+      when 'DATABASE'
 	# DATABASE: NAME=Text[; NOTE=Text][; WWW="Address"][; FTP="Address"].
 	tmp = Array.new
 	@data['CC']['DATABASE'].each do |e|
@@ -334,7 +339,7 @@ module Bio
 	end
 	return tmp
 
-      elsif num == 'MASS SPECTOROMETRY'
+      when 'MASS SPECTOROMETRY'
 	# MASS SPECTROMETRY: MW=XXX[; MW_ERR=XX][; METHOD=XX][;RANGE=XX-XX].
 	tmp = Array.new
 	@data['CC']['MASS SPECTOROMETRY'].each do |m|
@@ -354,8 +359,9 @@ module Bio
 	  tmp.push(mass)
 	end
 	return tmp
+
       else
-	@data['CC']
+	return @data['CC']
       end
     end
 
@@ -363,6 +369,7 @@ module Bio
     # DR Line; defabases cross-reference (>=0)
     # a cross_ref pre one line
     # "DR  database_identifier; primary_identifier; secondary_identifier."
+    # Bio::EMBLDB#dr  -> Hash w/in Array
 
     DR_DATABASE_IDENTIFIER=['EMBL','CARBBANK','DICTYDB','ECO2DBASE','ECOGENE',
       'FLYBASE','GCRDB','HIV','HSC-2DPAGE','HSSP','INTERPRO','MAIZEDB',
@@ -370,13 +377,13 @@ module Bio
       'PROSITE','REBASE','AARHUS/GHENT-2DPAGE','SGD','STYGENE','SUBTILIST',
       'SWISS-2DPAGE','TIGR','TRANSFAC','TUBERCULIST','WORMPEP','YEPD','ZFIN']
 
-    # Bio::SPTR#dr  -> Hash w/in Array
+
 
 
     # KW Line; keyword (>=1)
     # KW   [Keyword;]+
-    # Bio::SPTR#kw  -> Array
-    #          #keywords  -> Array
+    # Bio::EMBLDB#kw  -> Array
+    #            #keywords  -> Array
 
     # FT Line; feature table data (>=0, optional)
     #
@@ -390,13 +397,12 @@ module Bio
     # -----   -----------------
     #
     # Bio::SPTR#ft -> {'feature_name'=>[{'From'=>String,'To'=>String,
-    #                  'Description'=>String}],}
+    #                                    'Description'=>String}],}
     # Bio::SPTR#ft(feature_name) -> [{'From'=>String,'To'=>String,
-    #                                 'Description'=>String}]
-    #
-    def ft(feature = nil)
+    #                                 'Description'=>String},...]
+    def ft(feature_name = nil)
       unless @data['FT']
-	table = Hash.new
+	table        = Hash.new
 	last_feature = nil
 
 	begin
@@ -413,17 +419,21 @@ module Bio
 	      table[feature] = Array.new unless table[feature]
 
 	      table[feature].push({'From' => from, 'To' => to, \
-			   'Description' => description})
+  			           'Description' => description})
+
 	      last_feature = feature
 	    end
 	  end
+	rescue
+	  raise "Invalid FT Lines:, \n'#{self.get('FT')}'\n"
 	end
 
 	@data['FT'] = table
+      else
       end
 
-      if feature
-	@data['FT'][feature]
+      if feature_name
+	@data['FT'][feature_name]
       else
 	@data['FT']
       end
@@ -453,9 +463,10 @@ module Bio
 	  yield(k,v)
 	end
       elsif key
-	if key =~ /mw/ or /molecular/ or /weight/
+	case key
+	when /mw/,/molecular/,/weight/
 	  @data['SQ']['MW']
-	elsif key =~ /len/ or /length/ or /AA/
+	when /len/,/length/,/AA/
 	  @data['SQ']['aalen']
 	else
 	  @data['SQ'][key]
@@ -479,14 +490,15 @@ module Bio
 
     # // Line; termination line (end; 1/entry)
 
-  end
+  end # class SPTR
 
-end
+end # module Bio
 
 
 # testing codes
 if __FILE__ == $0
 end
+
 
 
 =begin
@@ -513,7 +525,7 @@ end
 
 * Initialize
 
---- Bio::SPTR#new(a_sp_entry)
+--- Bio::SPTR.new(a_sp_entry)
 
 * ID Line (Identification)
 
@@ -569,7 +581,7 @@ end
 
 * RN RC RP RX RA RT RL Lines (Reference)  
 
---- Bio::SPTR#ref -> String 
+--- Bio::SPTR#ref -> Array
 
 * DR Lines (Database cross-reference)
 
@@ -579,7 +591,7 @@ end
 * FT Lines (Feature table data)
 
 --- Bio::SPTR#ft -> Hash
---- Bio::SPTR#ft(feature) -> Array
+--- Bio::SPTR#ft(feature_name) -> Array
 
 * SQ Lines (Sequence header and data)
 
