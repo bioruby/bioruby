@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.15 2003/07/16 08:57:25 ng Exp $
+#  $Id: flatfile.rb,v 1.16 2003/07/16 09:19:16 ng Exp $
 #
 
 module Bio
@@ -283,10 +283,27 @@ end
 
 = Bio::FlatFile
 
---- Bio::FlatFile.open(dbclass, filename)
+--- Bio::FlatFile.auto(filename_or_stream, *mode)
 
-      Opens a local file 'filename' which contains 'dbclass' format data.
-      'dbclass' shoud be a class. e.g. Bio::GenBank, Bio::FastaFormat
+      Same as Bio::FlatFile.open(nil, filename_or_stream, *mode).
+
+      * Example 1
+          Bio::FlatFile.auto(ARGF)
+      * Example 2
+          Bio::FlatFile.auto("embl/est_hum17.dat")
+      * Example 3
+          Bio::FlatFile.auto(IO.popen("gzip -dc nc1101.flat.gz"))
+
+--- Bio::FlatFile.open(dbclass, filename_or_stream, *mode)
+
+      Prepare to read a file or a stream 'filename_or_stream'
+      which contains 'dbclass'-style formatted data.
+
+      If 'filename_or_stream' is a filename (which doesn't have gets method),
+      the method opens a local file named 'filename_or_stream'
+      with mode '*mode'.
+
+      'dbclass' shoud be a class. e.g. Bio::GenBank, Bio::FastaFormat.
 
       When nil is given to dbclass, trying to determine database class
       (file format) automatically. If fails to determine, dbclass is
@@ -298,7 +315,8 @@ end
           Bio::FlatFile.open(Bio::GenBank, "genbank/gbest40.seq")
       * Example 2
           Bio::FlatFile.open(nil, "embl/est_hum17.dat")
-
+      * Example 3
+          Bio::FlatFile.open(Bio::GenBank, STDIN)
 
 --- Bio::FlatFile.new(dbclass, stream)
 
