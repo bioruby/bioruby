@@ -1,8 +1,10 @@
 #
 # tDiary : plugin/bio.rb
 #
-#   Copyright (C) 2003 KATAYAMA Toshiaki <k@bioruby.org>,
+#   Copyright (C) 2003 KATAYAMA Toshiaki <k@bioruby.org>
 #                      Mitsuteru C. Nakao <n@bioruby.org>
+#                      Itoshi NIKAIDO  <itoshi@gsc.riken.go.jp>
+#                      Takeya KASUKAWA <kasukawa@gsc.riken.go.jp>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -18,7 +20,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: tdiary.rb,v 1.2 2003/03/10 18:10:41 n Exp $
+#  $Id: tdiary.rb,v 1.3 2003/03/17 04:24:47 k Exp $
 #
 
 =begin
@@ -36,44 +38,79 @@ Just copy this file under the tDiary's plugin directory as bio.rb.
 
 == Usage
 
---- pubmed
+--- pubmed(pmid, comment = nil)
 
 Create a link to NCBI Entrez reference database by using PubMed ID.
 See ((<URL:http://www.ncbi.nlm.nih.gov/entrez/query.fcgi>)) for more
 information.
 
   * tDiary style
-     * <%=pubmed 12345%>
-     * <%=pubmed 12345, 'hogehoge' %>
+     * <%= pubmed 12345 %>
+     * <%= pubmed 12345, 'hogehoge' %>
   * RD style
-     * ((%pubmed 12345%))
-     * ((%pubmed 12345, 'hogehoge'%))
+     * ((% pubmed 12345 %))
+     * ((% pubmed 12345, 'hogehoge' %))
 
---- biofetch
+--- biofetch(db, entry_id)
 
 Create a link to the BioFetch detabase entry retrieval system.
 See ((<URL:http://biofetch.bioruby.org/>)) for more information.
 
   * tDiary style
-    * <%=biofetch 'genbank', 'AA2CG' %>
+    * <%= biofetch 'genbank', 'AA2CG' %>
   * RD style
-    * ((%biofetch 'genbank', 'AA2CG'%))
+    * ((% biofetch 'genbank', 'AA2CG' %))
 
---- amigo
+--- amigo(go_id, comment = nil)
 
 Create a link to the AmiGO GO term browser by using GO ID.
 See ((<URL:http://www.godatabase.org/cgi-bin/go.cgi>)) for more 
 information.
 
   * tDiary style
-    * <%=amigo '0003673' %>
-    * <%=amigo '0003673', 'The root of GO' %>
+    * <%= amigo '0003673' %>
+    * <%= amigo '0003673', 'The root of GO' %>
   * RD style
-    * ((%amigo '0003673' %))
-    * ((%amigo '0003673', 'Hoge' %))
+    * ((% amigo 0003673 %))
+    * ((% amigo 0003673, 'The root of GO' %))
+
+--- fantom(id, comment = nil)
+
+Create a link to FANTOM database by using Clone ID.
+You can use RIKEN clone ID, Rearray ID, Seq ID and Accession Number.
+See ((<URL:http://fantom2.gsc.riken.go.jp/db/>)) for more information.
+
+  * tDiary style
+     * <%= fantom 12345 %>
+     * <%= fantom 12345, 'hogehoge' %>
+  * RD style
+    * ((% fantom 12345 %))
+    * ((% fantom 12345, 'hogehoge' %))
+
+--- rtps(id, comment = nil)
+
+Create a link to FANTOM RTPS database by using Clone ID. 
+You can use only RTPS ID.
+See ((<URL:http://fantom2.gsc.riken.go.jp/RTPS/>)) for more information.
+
+  * tDiary style
+     * <%= rtps 12345 %>
+     * <%= rtps 12345, 'hogehoge' %>
+  * RD style
+    * ((% rtps 12345 %))
+    * ((% rtps 12345, 'hogehoge' %))
+
+== References
+
+* Analysis of the mouse transcriptome based on functional annotation of
+  60,770 full-length cDNAs, The FANTOM Consortium and the RIKEN Genome
+  Exploration Research Group Phase I & II Team, Nature 420:563-573, 2002
+
+* Functional annotation of a full-length mouse cDNA collection,
+  The RIKEN Genome Exploration Research Group Phase II Team and 
+  the FANTOM Consortium, Nature 409:685-690, 2001
 
 =end
-
 
 def pubmed(pmid, comment = nil)
   pmid = pmid.to_s.strip
@@ -98,3 +135,24 @@ def amigo(go_id = '0003673', comment = nil)
   %Q[<a href="#{url}">#{comment}</a>]
 end
 
+def fantom(id, comment = nil)
+  id = id.to_s.strip
+  url = "http://fantom2.gsc.riken.go.jp/db/link/id.cgi"
+  url << "?id=#{id}"
+  if comment
+    %Q[<a href="#{url}">#{comment.to_s.strip}</a>]
+  else
+    %Q[<a href="#{url}">FANTOM DB:#{id}</a>]
+  end
+end
+
+def rtps(id, comment = nil)
+  id = id.to_s.strip
+  url = "http://fantom2.gsc.riken.go.jp/RTPS/link/id.cgi"
+  url << "?id=#{id}"
+  if comment
+    %Q[<a href="#{url}">#{comment.to_s.strip}</a>]
+  else
+    %Q[<a href="#{url}">FANTOM RTPS DB:#{id}</a>]
+  end
+end
