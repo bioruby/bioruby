@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.13 2001/11/14 04:33:09 katayama Exp $
+#  $Id: pathway.rb,v 1.14 2001/11/14 08:09:10 katayama Exp $
 #
 
 require 'bio/matrix'
@@ -64,7 +64,7 @@ module Bio
 
 
     # Convert adjacency list to adjacency matrix
-    def to_matrix(default_value = nil)
+    def to_matrix(default_value = nil, diagonal_value = nil)
       @graph.keys.each_with_index do |k, i|
 	@index[k] = i
       end
@@ -78,6 +78,12 @@ module Bio
       matrix = Array.new
       nodes.times do |i|
 	matrix.push(Array.new(nodes, default_value))
+      end
+
+      if diagonal_value
+	nodes.times do |i|
+	  matrix[i][i] = diagonal_value
+	end
       end
 
       @graph.each do |from, hash|
@@ -172,19 +178,19 @@ module Bio
     end
 
 
-    # Dijkstra method
+    # Dijkstra method to solve sortest path for weighted graph
     def dijkstra(root)
       distance, predecessor = initialize_single_source(root)
       @graph[root].each do |k, v|
         distance[k] = v
         predecessor[k] = root
       end
+      queue = distance.dup
+      queue.delete(root)
 
-      # extranct a node having minimal distance
-      queue = distance.to_a.sort{|a, b| a[1] <=> b[1]}
-
-      queue.each do |u|
-	u = u[0]
+      while queue.size != 0
+	sorted = queue.to_a.sort{|a, b| a[1] <=> b[1]}
+	u = sorted[0][0]	# extranct a node having minimal distance
         @graph[u].each do |k, v|
 	  # relaxing procedure of root -> 'u' -> 'k'
           if distance[k] > distance[u] + v
@@ -192,6 +198,7 @@ module Bio
             predecessor[k] = u
           end
         end
+	queue.delete(u)
       end
       return distance, predecessor
     end
@@ -211,6 +218,7 @@ module Bio
           end
         end
       end
+      # negative cyclic loop check
       @graph.each_key do |u|
         @graph[u].each do |v, w|
           if distance[v] > distance[u] + w
@@ -286,6 +294,7 @@ end
 
 if __FILE__ == $0
 
+  puts "--- Test === method true/false"
   r1 = Bio::Relation.new('a', 'b', 1)
   r2 = Bio::Relation.new('b', 'a', 1)
   r3 = Bio::Relation.new('b', 'a', 2)
@@ -335,6 +344,9 @@ if __FILE__ == $0
   p graph
 
 
+  puts "--- Test to_matrix method"
+  p graph.to_matrix
+
   puts "--- Labeling some nodes"
   list = { 'q' => "L1", 's' => "L2", 'v' => "L3", 'w' => "L4" }
   graph.label = list
@@ -346,8 +358,8 @@ if __FILE__ == $0
   puts "--- Extract subgraph by list"
   p graph.subgraph(['q', 't', 'x', 'y', 'z'])
 
-  puts "--- Test to_matrix method"
-  p graph.to_matrix
+  puts "--- Test small_world histgram"
+  p graph.small_world
 
   puts "--- Test breadth_first_search method"
   dist, pred = graph.breadth_first_search('q')
@@ -364,8 +376,36 @@ if __FILE__ == $0
   p dist
   p pred
 
-  puts "--- Test small_world histgram"
-  p graph.small_world
+  puts "--- Test dijkstra method by weighted graph"
+  #
+  # 'a' --> 'b'
+  #  |   1   | 3
+  #  |5      v
+  #  `----> 'c'
+  #
+  r1 = Bio::Relation.new('a', 'b', 1)
+  r2 = Bio::Relation.new('a', 'c', 5)
+  r3 = Bio::Relation.new('b', 'c', 3)
+  w_graph = Bio::Pathway.new([r1, r2, r3])
+  p w_graph
+  p w_graph.dijkstra('a')
+
+  puts "--- Test bellman_ford method by negative weighted graph"
+  #
+  # ,-- 'a' --> 'b'
+  # |    |   1   | 3
+  # |    |5      v
+  # |    `----> 'c'
+  # |            ^
+  # |2           | -5
+  # `--> 'd' ----'
+  #
+  r4 = Bio::Relation.new('a', 'd', 2)
+  r5 = Bio::Relation.new('d', 'c', -5)
+  w_graph.append(r4)
+  w_graph.append(r5)
+  p w_graph.bellman_ford('a')
+  p graph.bellman_ford('q')
 
 end
 
@@ -384,14 +424,15 @@ end
 --- Bio::Pathway#nodes
 --- Bio::Pathway#edges
 --- Bio::Pathway#to_matrix
---- Bio::Pathway#subgraph
+--- Bio::Pathway#subgraph(list = nil)
 --- Bio::Pathway#common_subgraph(graph)
 --- Bio::Pathway#clique
 --- Bio::Pathway#small_world
 --- Bio::Pathway#breadth_first_search(root)
 --- Bio::Pathway#bfs(root)
 --- Bio::Pathway#bfs_shortest_path(node1, node2)
---- Bio::Pathway#dijkstra
+--- Bio::Pathway#dijkstra(root)
+--- Bio::Pathway#bellman_ford(root)
 --- Bio::Pathway#floyd
 
 = Bio::Relation
@@ -404,6 +445,8 @@ end
 --- Bio::Relation#from
 --- Bio::Relation#to
 --- Bio::Relation#relation
+
+--- Bio::Relation#===(rel)
 
 =end
 
