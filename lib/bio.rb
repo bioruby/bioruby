@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.30 2003/07/16 09:01:25 k Exp $
+#  $Id: bio.rb,v 1.31 2003/07/30 14:14:19 ng Exp $
 #
 
 module Bio
@@ -46,6 +46,10 @@ require 'bio/reference'
 ## Pathway/Relation
 
 require 'bio/pathway'
+
+## Alignment
+
+require 'bio/alignment'
 
 
 ### Constants
@@ -128,5 +132,9 @@ require 'bio/appl/psort'
 require 'bio/appl/tmhmm/report'
 require 'bio/appl/targetp/report'
 require 'bio/appl/sosui/report'
+require 'bio/appl/clustalw'
+require 'bio/appl/clustalw/report'
+require 'bio/appl/mafft'
+require 'bio/appl/mafft/report'
 
 
