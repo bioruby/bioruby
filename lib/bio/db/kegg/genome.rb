@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: genome.rb,v 0.1 2001/06/20 18:57:01 katayama Exp $
+#  $Id: genome.rb,v 0.2 2001/06/21 03:11:24 katayama Exp $
 #
 
 require 'bio/db'
@@ -117,16 +117,16 @@ class GENOME < KEGGDB
     end
   end
   def nalen
-    statistics(0)
+    statistics(0).to_i
   end
   def num_gene
-    statistics(1)
+    statistics(1).to_i
   end
   def num_rna
-    statistics(2)
+    statistics(2).to_i
   end
   def gc
-    statistics(3)
+    statistics(3).to_f
   end
 
   def genomemap
