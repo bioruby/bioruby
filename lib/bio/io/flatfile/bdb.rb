@@ -17,12 +17,12 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: bdb.rb,v 1.3 2002/09/13 14:47:47 ng Exp $ 
+#  $Id: bdb.rb,v 1.4 2002/11/25 14:14:08 ng Exp $ 
 # 
  
 begin 
   require 'bdb' 
-rescue LoadError 
+rescue LoadError,NotImplementedError
 end 
 
 module Bio
