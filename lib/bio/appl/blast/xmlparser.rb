@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: xmlparser.rb,v 1.7 2002/06/25 16:56:37 k Exp $
+#  $Id: xmlparser.rb,v 1.8 2002/07/02 01:41:50 k Exp $
 #
 
 begin
@@ -591,6 +591,35 @@ end
       Returns an Array(Bio::Blast::Report::Hsp).
 
 --- Bio::Blast::Report::Hit#add_hsp(Bio::Blast::Report::Hsp)
+
+
+--- Bio::Blast::Report::Hit#query_id
+--- Bio::Blast::Report::Hit#query_def
+--- Bio::Blast::Report::Hit#query_len
+--- Bio::Blast::Report::Hit#target_id
+--- Bio::Blast::Report::Hit#target_def
+--- Bio::Blast::Report::Hit#target_len
+
+      Compatible methods with Bio::Fasta::Report::Hit class.
+
+--- Bio::Blast::Report::Hit#evalue
+--- Bio::Blast::Report::Hit#bit_score
+--- Bio::Blast::Report::Hit#identity
+--- Bio::Blast::Report::Hit#overlap
+
+--- Bio::Blast::Report::Hit#query_seq
+--- Bio::Blast::Report::Hit#midline
+--- Bio::Blast::Report::Hit#target_seq
+
+--- Bio::Blast::Report::Hit#query_start
+--- Bio::Blast::Report::Hit#query_end
+--- Bio::Blast::Report::Hit#target_start
+--- Bio::Blast::Report::Hit#target_end
+--- Bio::Blast::Report::Hit#direction
+--- Bio::Blast::Report::Hit#lap_at
+
+      Shortcut methods for the best Hsp, some are also compatible with
+      Bio::Fasta::Report::Hit class.
 
 
 = Bio::Blast::Report::Hsp
