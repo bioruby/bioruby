@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.17 2001/11/14 09:34:22 shuichi Exp $
+#  $Id: pathway.rb,v 1.18 2001/11/14 10:27:49 katayama Exp $
 #
 
 require 'bio/matrix'
@@ -127,6 +127,17 @@ module Bio
     end
 
 
+    # Returns completeness of the edge density among the surrounded nodes
+    def cliquishness(node)
+      a = @graph[node].keys
+      sg = subgraph(a)
+      edges = sg.edges / 2.0
+      nodes = sg.nodes
+      complete = (nodes * (nodes - 1)) / 2.0
+      return edges/complete
+    end
+
+
     # Returns frequency of the nodes having same number of edges as hash
     def small_world
       freq = Hash.new(0)
@@ -203,6 +214,7 @@ module Bio
       return distance, predecessor
     end
 
+
     # Bellman-Ford method for solving the single-source shortest-paths
     # problem in the graph in which edge weights can be negative.
     def bellman_ford(root)
@@ -251,19 +263,6 @@ module Bio
     end
     alias floyd floyd_warshall
 
-    def cliquishness(node)
-      a = @graph[node].keys
-      sg = subgraph(a)
-      sum = 0
-      sg.graph.each do |k, v|
-        sum += v.size
-      end
-      edges = sum / 2
-      nodes = sg.nodes
-      complete = (nodes * (nodes - 1)) / 2
-      return nodes.to_f/complete.to_f
-    end
- 
 
     private
 
@@ -387,6 +386,13 @@ if __FILE__ == $0
   puts "--- Extract subgraph by list"
   p graph.subgraph(['q', 't', 'x', 'y', 'z'])
 
+  puts "--- Test cliquishness of the node 'q'"
+  p graph.cliquishness('q')
+
+  puts "--- Test cliquishness of the node 'q' (undirected)"
+  u_graph = Bio::Pathway.new(ary, 'undirected')
+  p u_graph.cliquishness('q')
+
   puts "--- Test small_world histgram"
   p graph.small_world
 
@@ -457,13 +463,14 @@ end
 --- Bio::Pathway#common_subgraph(graph)
 --- Bio::Pathway#clique
 --- Bio::Pathway#small_world
+--- Bio::Pathway#cliquishness(node)
 --- Bio::Pathway#breadth_first_search(root)
 --- Bio::Pathway#bfs(root)
 --- Bio::Pathway#bfs_shortest_path(node1, node2)
 --- Bio::Pathway#dijkstra(root)
 --- Bio::Pathway#bellman_ford(root)
 --- Bio::Pathway#floyd_warshall
---- Bio::Pathway#cliquishness(node)
+--- Bio::Pathway#floyd
 
 =::Relation
 
