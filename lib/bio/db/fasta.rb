@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.6 2002/05/16 06:14:41 k Exp $
+#  $Id: fasta.rb,v 1.7 2002/06/25 13:26:42 k Exp $
 #
 
 require 'bio/db'
@@ -34,11 +34,12 @@ module Bio
       @entry = '>' + str.sub(/^>/, '').sub(/^>.*/m, '')
     end
     attr_reader :entry
-    alias to_s :entry
+    alias :to_s :entry
 
     def fasta(factory)
       factory.query(@entry)
     end
+    alias :blast :fasta
 
     def definition
       unless @definition
@@ -46,7 +47,7 @@ module Bio
       end
       @definition
     end
-    alias entry_id definition
+    alias :entry_id :definition
 
     def seq
       unless @seq
@@ -196,20 +197,22 @@ automatically.
       Returns a joined sequence line as a String.
 
 --- Bio::FastaFormat#fasta(factory)
+--- Bio::FastaFormat#blast(factory)
 
-      Executes FASTA search by using a Bio::Fasta factory object.
+      Executes FASTA/BLAST search by using a Bio::Fasta or a Bio::Blast
+      factory object.
 
         #!/usr/bin/env ruby
 
-        require 'bio'; include Bio
+        require 'bio'
 
-        factory = Fasta.local('fasta33', 'db/swissprot.f')
-        ff = FlatFile.open(FastaFormat, 'query.f')
-        ff.each do |entry|
+        factory = Bio::Fasta.local('fasta34', 'db/swissprot.f')
+        flatfile = Bio::FlatFile.open(Bio::FastaFormat, 'queries.f')
+        flatfile.each do |entry|
           p entry.definition
-          fasta_res = entry.fasta(factory)
-          fasta_res.threshold(0.001).each do |hit|
-            print "evalue #{hit.evalue} : #{hit.q_id} => #{hit.t_id} at "
+          result = entry.fasta(factory)
+          result.each do |hit|
+            print "#{hit.query_id} : #{hit.evalue}\t#{hit.target_id} at "
             p hit.lap_at
           end
         end
