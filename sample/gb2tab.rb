@@ -18,7 +18,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: gb2tab.rb,v 0.9 2002/04/15 03:08:18 k Exp $
+#  $Id: gb2tab.rb,v 0.10 2002/04/18 08:03:27 k Exp $
 #
 
 require 'bio'
@@ -230,14 +230,14 @@ LOAD DATA LOCAL INFILE '%HOGE%.seq.seq.tab' INTO TABLE %HOGE%seq;
 
 gbmerge.sql sample:
 
-CREATE TABLE IF NOT EXISTS gb (
+CREATE TABLE IF NOT EXISTS ent (
 	id		varchar(16)	NOT NULL PRIMARY KEY,
 	nalen		integer,
 	strand		varchar(5),
 	natype		varchar(5),
 	circular	varchar(10),
 	division	varchar(5),
-	date		varchar(10),
+	date		varchar(12),
 	definition	varchar(255),
 	accession	varchar(30),
 	versions	varchar(30),
@@ -261,7 +261,7 @@ CREATE TABLE IF NOT EXISTS gb (
 	gbvrt
 );
 
-CREATE TABLE IF NOT EXISTS gbft (
+CREATE TABLE IF NOT EXISTS ft (
 	id		varchar(16)	NOT NULL,
 	num		integer,
 	feature		varchar(30),
@@ -283,7 +283,7 @@ CREATE TABLE IF NOT EXISTS gbft (
 	gbvrtft
 );
 
-CREATE TABLE IF NOT EXISTS gbref (
+CREATE TABLE IF NOT EXISTS ref (
 	id		varchar(16)	NOT NULL,
 	num		integer,
 	authors		text,
@@ -301,7 +301,7 @@ CREATE TABLE IF NOT EXISTS gbref (
 	gbvrtref
 );
 
-CREATE TABLE IF NOT EXISTS gbseq (
+CREATE TABLE IF NOT EXISTS seq (
 	id		varchar(16)	NOT NULL,
 	num		integer,
 	naseq		mediumtext,
