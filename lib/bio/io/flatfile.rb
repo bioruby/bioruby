@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.30 2004/06/21 08:45:16 ngoto Exp $
+#  $Id: flatfile.rb,v 1.31 2005/03/10 13:05:26 ngoto Exp $
 #
 
 module Bio
@@ -276,12 +276,18 @@ module Bio
       when /^Entry           [A-Z0-9]+/
 	Bio::KEGG::BRITE
 	
+      when /^ENTRY       .+ KO\s*$/
+	Bio::KEGG::KO
+      when /^ENTRY       .+ Glycan\s*$/
+        Bio::KEGG::GLYCAN
       when /^ENTRY       .+ (CDS|gene|.*RNA) /
 	Bio::KEGG::GENES
       when /^ENTRY       EC [0-9\.]+$/
 	Bio::KEGG::ENZYME
-      when /^ENTRY       [A-Z0-9\._]+$/
+      when /^ENTRY       C[A-Za-z0-9\._]+$/
 	Bio::KEGG::COMPOUND
+      when /^ENTRY       R[A-Za-z0-9\._]+$/
+	Bio::KEGG::REACTION
       when /^ENTRY       [a-z]+$/
 	Bio::KEGG::GENOME
 
@@ -309,6 +315,12 @@ module Bio
 	Bio::Blast::Default::Report
       when /^TBLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/
 	Bio::Blast::Default::Report_TBlast
+
+      when /^psLayout version \d+\s*$/
+        Bio::Blat::Report
+
+      when /^seq1 \= .*\, \d+ bp(\r|\r?\n)seq2 \= .*\, \d+ bp(\r|\r?\n)/
+        Bio::Sim4::Report
 
       when /^>.+$/
 	if text =~ /^>([PF]1|[DR][LC]|N[13]|XX)\;.+/ then
