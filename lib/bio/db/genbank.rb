@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.28 2003/01/27 19:51:07 k Exp $
+#  $Id: genbank.rb,v 0.29 2003/03/27 12:10:41 k Exp $
 #
 
 require 'bio/db'
@@ -48,12 +48,11 @@ module Bio
 
 
     # ACCESSION
-    def accession
-      field_fetch('ACCESSION')
-    end
-
     def accessions
       accession.split(/\s+/)
+    end
+    def accession
+      accessions.first
     end
 
 
@@ -65,12 +64,16 @@ module Bio
       @data['VERSION']
     end
 
+    def acc_version
+      versions.first
+    end
+
     def version
-      versions[0]
+      acc_version.split('.').last
     end
 
     def gi
-      versions[1]
+      versions.last
     end
 
 
