@@ -1,13 +1,27 @@
 #!/usr/local/bin/ruby
-
-# Copyright 2002 (c) Katayama Toshiaki <k@bioruby.org> during BioHackathon :)
-
-# TODO:
-#   Error codes
+#
+# biofetch.rb : BioFetch interface to GenomeNet/DBGET
+#               (created during BioHackathon, AZ :)
+#
+#   Copyright (C) 2002 KATAYAMA Toshiaki <k@bioruby.org>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  $Id: biofetch.rb,v 1.2 2002/02/04 11:19:00 katayama Exp $
+#
 
 require 'bio'
 require 'cgi-lib'
 
+MAX_ID_NUM = 50
 
 def print_query_page
   CGI::print {
@@ -27,7 +41,7 @@ def print_query_page
           }
         } +
 	CGI::tag('p') {
-          "This page allows you to retrieve up to 50 entries at the time from various up-to-date biological databases."
+          "This page allows you to retrieve up to #{MAX_ID_NUM} entries at the time from various up-to-date biological databases."
 	} +
         CGI::tag('hr') +
         CGI::tag('form', {'action'=>'biofetch.rb', 'method'=>'GET'}) {
@@ -132,54 +146,97 @@ def print_query_page
 end
 
 
-def print_not_found(query_id)
-  CGI::print {
-    "#{query_id} not found"
-  }
-end
-
-def print_too_many(num)
-  CGI::print {
-    "You wants too many at once (#{num} > 50)"
-  }
-end
-
 
 def print_result_page(query)
 
   db = query['db'].downcase
-# id = query['id'].split(',')
-  id = query['id'].split(/\W/)
+  id = query['id'].split(/\W/)		# not only ','
 
-  if id.length > 50
-    print_too_many(id.length)
-    return
+  if id.length > MAX_ID_NUM
+    error_6(id.length)
   end
 
-  if query['style'] =~ /html/
+  case query['style']
+  when /html/i
     id = id.join('%2B')
     print "Location: http://genome.jp/dbget-bin/www_bget?#{db}+#{id}\n\n"
-    return
+    exit
+  when /raw/i
+    ;
+  else
+    error_2(query['style'])
   end
 
-  format = /fasta/i.match(query['format']) ? "-f" : ""
+  case query['format']
+  when /fasta/i
+    format = '-f'
+  when /default/i
+    format = ''
+  else
+    error_3(query['format'],db)
+  end
 
-  entry = ""
+
+  entry = ''
 
   id.each do |query_id|
     begin
       result = Bio::DBGET.bget("#{db} #{query_id} #{format}")
     rescue
-      print_not_found(query_id)
-      return
+      error_5(query_id,db)
     end
-    entry += result
+
+    if result =~ /No such database name in DBTAB/
+      error_1(db)
+    else
+      entry += result
+    end
   end
 
   print "Content-type: text/plain; charset=UTF-8\n\n"
   puts entry
 
 end
+
+
+
+def print_error_page(str)
+  CGI::print {
+    str
+  }
+  exit
+end
+
+def error_1(db)
+  str = "ERROR 1 Unknown database [#{db}]."
+  print_error_page(str)
+end
+
+def error_2(style)
+  str = "ERROR 2 Unknown style [#{style}]."
+  print_error_page(str)
+end
+
+def error_3(format,db)
+  str = "ERROR 3 Format [#{format}] not known for database [#{db}]."
+  print_error_page(str)
+end
+
+def error_4(db)
+  str = "ERROR 4 Unknown database [#{db}]."
+  print_error_page(str)
+end
+
+def error_5(id, db)
+  str = "ERROR 5 ID [#{id}] not found in database [#{db}]."
+  print_error_page(str)
+end
+
+def error_6(count)
+  str = "ERROR 6 Too many IDs [#{count}]. Max [#{MAX_ID_NUM}] allowed."
+  print_error_page(str)
+end
+
 
 
 begin
