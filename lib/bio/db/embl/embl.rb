@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: embl.rb,v 1.13 2002/07/09 08:35:48 n Exp $
+#  $Id: embl.rb,v 1.14 2002/07/26 10:47:27 n Exp $
 #
 
 
@@ -77,7 +77,7 @@ module Bio
     alias accessions ac
     # Bio::SPTR#accession  -> String
     def accession
-      @data['AC'][0]
+      ac[0]
     end
 
 
