@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format0.rb,v 1.2 2003/08/07 10:35:15 ng Exp $
+#  $Id: format0.rb,v 1.3 2003/08/07 14:11:47 ng Exp $
 #
 
 begin
@@ -93,6 +93,11 @@ module Bio
 
 	def query_len; format0_parse_query; @query_len; end
 	def query_def; format0_parse_query; @query_def; end
+
+	def pattern; @iterations.first.pattern; end
+	def pattern_positions
+	  @iterations.first.pattern_positions
+	end
 
 	# <for blastpgp>
 	def each_iteration
@@ -311,6 +316,12 @@ module Bio
 	      ''
 	    }
 	    r = data.shift
+	    while /^Number of occurrences of pattern in the database is +(\d+)/ =~ r
+	      # PHI-BLAST
+	      @pattern_in_database = $1.to_i
+	      @f0message << r
+	      r = data.shift
+	    end
 	    if /^Results from round (\d+)/ =~ r then
 	      @num = $1.to_i
 	      @f0message << r
@@ -324,8 +335,22 @@ module Bio
 	      if r and /^CONVERGED\!/ =~ r then
 		r.sub!(/(.*\n)*^CONVERGED\!.*\n/) { |x| @f0hitlist << x; '' }
 	      end
-	      while r = data[0] and /^\>/ =~ r
-		@hits << Hit.new(data)
+	      if defined?(@pattern_in_database) and r = data.first then
+		#PHI-BLAST
+		while /^\>/ =~ r
+		  @hits << Hit.new(data)
+		  r = data.first
+		  break unless r
+		  if /^Significant alignments for pattern/ =~ r
+		    data.shift
+		    r = data.first
+		  end
+		end
+	      else
+		#not PHI-BLAST
+		while r = data[0] and /^\>/ =~ r
+		  @hits << Hit.new(data)
+		end
 	      end
 	    end
 	    if /^CONVERGED\!\s*$/ =~ @f0hitlist[-1].to_s then
@@ -335,6 +360,7 @@ module Bio
 	  end
 	  attr_reader :num
 	  attr_reader :message
+	  attr_reader :pattern_in_database
 	  attr_reader :f0message, :f0hitlist
 	  attr_accessor :f0stat, :f0dbstat
 
@@ -353,6 +379,29 @@ module Bio
 	    @flag_converged
 	  end
 
+	  def pattern
+	    #PHI-BLAST
+	    if !defined?(@pattern) and defined?(@pattern_in_database) then
+	      @pattern = nil
+	      @pattern_positions = []
+	      @f0message.each do |r|
+		sc = StringScanner.new(r)
+		if sc.skip_until(/^ *pattern +(.+)$/) then
+		  @pattern = sc[1] unless @pattern
+		  sc.skip_until(/^ at position +(\d+)/)
+		  @pattern_positions << sc[1].to_i
+		end
+	      end
+	    end
+	    @pattern
+	  end
+
+	  def pattern_positions
+	    #PHI-BLAST
+	    pattern
+	    @pattern_positions
+	  end
+
 	  def hits_found_again
 	    parse_hitlist
 	    @hits_found_again
@@ -361,6 +410,11 @@ module Bio
 	  def hits_newly_found
 	    parse_hitlist
 	    @hits_newly_found
+	  end
+
+	  def hits_for_pattern
+	    parse_hitlist
+	    @hits_for_pattern
 	  end
 
 	  def parse_hitlist
@@ -385,8 +439,19 @@ module Bio
 		  a = @hits_newly_found
 		  next
 		elsif sc.skip(/^Sequences.+\:\s*$/) then
-		  #possibly a bug?
+		  #possibly a bug or unknown format?
 		  a = @hits_unknown_state
+		  next
+		elsif sc.skip(/^Significant (matches|alignments) for pattern/) then
+		  # PHI-BLAST
+		  # do nothing when 'alignments'
+		  if sc[1] == 'matches' then
+		    unless defined?(@hits_for_pattern)
+		      @hits_for_pattern = []
+		    end
+		    a = []
+		    @hits_for_pattern << a
+		  end
 		  next
 		end
 		b = x.split(/^/)
@@ -687,6 +752,10 @@ module Bio
 		    mseq << r[pos_st, len_seq]
 		    sc.skip(/\n/)
 		    nextline = :s
+		  elsif r = sc.skip(/pattern +\d+.+/) then
+		    # PHI-BLAST
+		    # do nothing
+		    sc.skip(/\n/)
 		  else
 		    raise ScanError
 		  end
@@ -753,8 +822,10 @@ if __FILE__ == $0
   print "  rep.gap_open          #=> "; p rep.gap_open
   print "  rep.gap_extend        #=> "; p rep.gap_extend
   #print "  rep.filter            #=> "; p rep.filter
-  #print "  rep.pattern           #=> "; p rep.pattern
+  print "  rep.pattern           #=> "; p rep.pattern
   #print "  rep.entrez_query      #=> "; p rep.entrez_query
+  #puts
+  print "  rep.pattern_positions  #=> "; p rep.pattern_positions
   puts
 
   print "# === Statistics (last iteration's)\n"
@@ -800,6 +871,11 @@ if __FILE__ == $0
   #puts
   print "    itr.hits_newly_found.size    #=> "; p itr.hits_newly_found.size;
   print "    itr.hits_found_again.size    #=> "; p itr.hits_found_again.size;
+  if itr.hits_for_pattern then
+  itr.hits_for_pattern.each_with_index do |hp, hpi|
+  print "    itr.hits_for_pattern[#{hpi}].size #=> "; p hp.size;
+  end
+  end
   print "    itr.converged?      #=> "; p itr.converged?
   puts
 
