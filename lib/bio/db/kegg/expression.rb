@@ -17,11 +17,10 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: expression.rb,v 1.3 2001/11/08 09:55:37 shuichi Exp $
+#  $Id: expression.rb,v 1.4 2001/11/08 13:50:59 shuichi Exp $
 #
 
 require "bio/db"
-include Math
 
 module Bio
 
@@ -47,6 +46,52 @@ module Bio
       end
       attr_reader :orf2val
 
+      def control_avg
+        sum = 0.0
+        orf2val.values.each do |v|
+          sum += v[0] - v[1]
+        end
+        sum/orf2val.size
+      end
+
+      def target_avg
+        sum = 0.0
+        orf2val.values.each do |v|
+          sum += v[2] - v[3]
+        end
+        sum/orf2val.size
+      end
+
+      def control_var
+        sum = 0.0
+        avg = self.control_avg
+        orf2val.values.each do |v|
+          tmp = v[0] - v[1]
+          sum += (tmp - avg)*(tmp - avg)
+        end
+        sum/orf2val.size
+      end
+
+      def target_var
+        sum = 0.0
+        avg = self.target_avg
+        orf2val.values.each do |v|
+          tmp = v[2] - v[3]
+          sum += (tmp - avg)*(tmp - avg)
+        end
+        sum/orf2val.size
+      end
+
+      def control_sd
+        var = self.control_var
+        Math.sqrt(var)
+      end
+
+      def target_sd
+        var = self.target_var
+        Math.sqrt(var)
+      end
+
       def up_regulate(num=20)
         hash = logy_minus_logx
         ary = hash.to_a.sort{|a, b| b[1] <=> a[1]}
@@ -62,7 +107,7 @@ module Bio
       def logy_minus_logx
         hash = Hash.new('')
         orf2val.each do |k, v|
-          hash[k] = log10(v[2] - v[3]) - log10(v[0] - v[1])
+          hash[k] = Math.log10(v[2] - v[3]) - Math.log10(v[0] - v[1])
         end
         hash
       end
