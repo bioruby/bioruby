@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: embl.rb,v 1.3 2001/10/29 17:04:35 nakao Exp $
+#  $Id: embl.rb,v 1.4 2001/10/29 17:32:01 nakao Exp $
 #
 #     ID - identification             (begins each entry; 1 per entry)
 #     AC - accession number           (>=1 per entry)
@@ -44,6 +44,7 @@
 module Bio
 
   require 'bio/db'
+  require 'bio/sequence'
 
 class EMBL < EMBLDB
     
@@ -105,6 +106,7 @@ class EMBL < EMBLDB
   def entry
     idline('entryname')
   end
+  alias entryname entry
   def molecule
     idline('molecule')
   end
@@ -119,7 +121,7 @@ class EMBL < EMBLDB
 
   # AC Line
   # "AC   A12345; B23456;"
-  # Bio::DB::EMBL#ac  -> Array
+  # Bio::EMBL#ac  -> Array
   #              #accessions  -> Array
   def ac
     unless @data['AC']
@@ -133,7 +135,7 @@ class EMBL < EMBLDB
     @data['AC']
   end
   alias accessions ac
-  # Bio::DB::EMBL#accession  -> String
+  # Bio::EMBL#accession  -> String
   def accession
     @data['AC'][0]
   end
@@ -143,11 +145,14 @@ class EMBL < EMBLDB
   def sv
     field_fetch('SV').sub(/;/,'')
   end
+  def version
+    sv.split(".")[1]
+  end
 
 
   # DT Line; date (2/entry)
-  # Bio::DB::EMBL#dt  -> Hash
-  # Bio::DB::EMBL#dt(key)  -> String
+  # Bio::EMBL#dt  -> Hash
+  # Bio::EMBL#dt(key)  -> String
   # key = (created|updated)
   def dt(key=nil)
     unless @data['DT']
@@ -175,7 +180,7 @@ class EMBL < EMBLDB
 
   # KW Line; keyword (>=1)
   # KW   [Keyword;]+
-  # Bio::DB::EMBL#kw  -> Array
+  # Bio::EMBL#kw  -> Array
   #              #keywords  -> Array
   def kw
     tmp=fetch('KW').sub(/.$/,'')
@@ -192,7 +197,7 @@ class EMBL < EMBLDB
   # OS Line; organism species (>=1)
   # OS   Genus species (name)
   # "OS   Trifolium repens (white clover)"
-  # Bio::DB::EMBL#os  -> Array
+  # Bio::EMBL#os  -> Array
   def os
     tmp=fetch('OS')
     os=Array.new
@@ -205,7 +210,7 @@ class EMBL < EMBLDB
   end
 
   # OC Line; organism classification (>=1)
-  # Bio::DB::EMBL#oc  -> Array
+  # Bio::EMBL#oc  -> Array
   def oc
     tmp=fetch('OC').sub(/.$/,'')
     tmp.split(';')
@@ -214,7 +219,7 @@ class EMBL < EMBLDB
   # OG Line; organella (0 or 1/entry)
   # ["Mitochondrion", "Chloroplast","Kinetoplast", "Cyanelle", "Plastid"]
   #  or a plasmid name (e.g. "Plasmid pBR322").  
-  # Bio::DB::EMBL#kw  -> String
+  # Bio::EMBL#kw  -> String
   def og
     fetch('OG')
   end
@@ -228,7 +233,7 @@ class EMBL < EMBLDB
 
   # DR Line; defabases cross-regerence (>=0)
   # "DR  database_identifier; primary_identifier; secondary_identifier."
-  # Bio::DB::EMBL#dr  -> Array
+  # Bio::EMBL#dr  -> Array
   def dr
     unless @data['DR']
       tmp=Array.new
@@ -317,9 +322,9 @@ class EMBL < EMBLDB
 
   # SQ Line; sequence header (1/entry)
   # "SQ   Sequence 1859 BP; 609 A; 314 C; 355 G; 581 T; 0 other;"
-  # Bio::DB::EMBL#sq  -> Hash
-  # Bio::DB::EMBL#sq(base)  -> Int
-  # Bio::DB::EMBL#sq[base]  -> Int
+  # Bio::EMBL#sq  -> Hash
+  # Bio::EMBL#sq(base)  -> Int
+  #              #sq[base]  -> Int
   def sq(base=nil)
     unless @data['SQ']
       fetch('SQ') \
@@ -338,14 +343,14 @@ class EMBL < EMBLDB
       @data['SQ']
     end
   end
-  # Bio::DB::EMBL#gc  -> Float
+  # Bio::EMBL#gc  -> Float
   def gc
    ( sq('g') + sq('c') ) / sq('ntlen').to_f * 100
   end
 
   # @orig[''] as sequence
   # bb Line; (blanks) sequence data (>=1)
-  # Bio::DB::EMBL#seq  -> Bio::Sequence::NA
+  # Bio::EMBL#seq  -> Bio::Sequence::NA
   def seq
     Sequence::NA.new( fetch('').gsub(/ /,'').gsub(/\d+/,'') )
   end
@@ -410,7 +415,10 @@ end # module Bio
 
 == Usage:
 
-  emb=Bio::DB:EMBL.new(data)
+  emb=Bio::EMBL.new(data)
+
+  include Bio
+  emb=EMBL.new(data)
 
 
 == Author
@@ -419,70 +427,71 @@ end # module Bio
 
 == Class
 
-  class  Bio::DB::EMBL
+  class  Bio::EMBL
 
 == Methods
 
 * Initialize
-    Bio::DB::EMBL#new(an_embl_entry)
+    Bio::EMBL#new(an_embl_entry)
 
 * ID Line (Identification)
-    Bio::DB::EMBL#idline -> Hash
-    Bio::DB::EMBL#idline(key) -> String
+    Bio::EMBL#idline -> Hash
+    Bio::EMBL#idline(key) -> String
       key = (entryname|molecule|division|sequencelength)
-    Bio::DB::EMBL#entry -> String
-    Bio::DB::EMBL#molecule -> String
-    Bio::DB::EMBL#division -> String
-    Bio::DB::EMBL#sequencelength -> Int
+    Bio::EMBL#entry -> String
+                 #entryname -> String
+    Bio::EMBL#molecule -> String
+    Bio::EMBL#division -> String
+    Bio::EMBL#sequencelength -> Int
     
 
 * AC Lines (Accession number)
-    Bio::DB::EMBL#ac -> Array
+    Bio::EMBL#ac -> Array
  
 * SV Line (Sequence version)
-    Bio::DB::EMBL#sv -> String
+    Bio::EMBL#sv -> String
 
 * DT Lines (Date) 
-    Bio::DB::EMBL#dt -> Hash
-    Bio::DB::EMBL#dt(key) -> String
+    Bio::EMBL#dt -> Hash
+    Bio::EMBL#dt(key) -> String
       key = (created|updated)
-    Bio::DB::EMBL.dt['updated']
+    Bio::EMBL.dt['updated']
 
 * DE Lines (Description)
-    Bio::DB::EMBL#de -> String
+    Bio::EMBL#de -> String
 
 * KW Lines (Keyword)
-    Bio::DB::EMBL#kw -> Array
+    Bio::EMBL#kw -> Array
 
 * OS Lines (Organism species)
-    Bio::DB::EMBL#os -> Hash
+    Bio::EMBL#os -> Hash
 
 * OC Lines (organism classification)
-    Bio::DB::EMBL#oc -> Array
+    Bio::EMBL#oc -> Array
 
 * OG Line (Organella)
-    Bio::DB::EMBL#og -> String
+    Bio::EMBL#og -> String
 
 * R Lines (Reference) 
       RN RC RP RX RA RT RL
-    Bio::DB::EMBL#ref -> String 
+    Bio::EMBL#ref -> String 
 
 * DR Lines (Database cross-reference)
-    Bio::DB::EMBL#dr -> Array
+    Bio::EMBL#dr -> Array
 
 * FH Lines (Feature table header and data)
       FH FT
-    Bio::DB::EMBL#ft
-    Bio::DB::EMBL#each_cds
-    Bio::DB::EMBL#each_gene
+    Bio::EMBL#ft -> 
+    Bio::EMBL#each_cds -> Array
+    Bio::EMBL#each_gene -> Array
 
 
 * SQ Lines (Sequence header and data)
       SQ bb
-    Bio::DB::EMBL#sq -> Hash
-    Bio::DB::EMBL#sq(base) -> Int
+    Bio::EMBL#sq -> Hash
+    Bio::EMBL#sq(base) -> Int
       base = (a|c|g|t|u|other)
-    Bio::DB::EMBL#gc -> Float
-    Bio::DB::EMBL#seq -> Bio::Sequece::NA
+    Bio::EMBL#gc -> Float
+    Bio::EMBL#seq -> Bio::Sequece::NA
 
 =end
