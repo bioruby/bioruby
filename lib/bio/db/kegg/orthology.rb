@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: orthology.rb,v 1.1 2003/06/25 06:01:06 m Exp $
+#  $Id: orthology.rb,v 1.2 2003/08/21 05:01:45 k Exp $
 #
 
 require 'bio/db'
@@ -58,7 +58,7 @@ module Bio
       end
 
       def keggclasses
-	keggclass.gsub(/ \[[^\]]+/, '').split(/] ?/)
+	keggclass.gsub(/ \[[^\]]+/, '').split(/\] ?/)
       end
       
       def pathways
