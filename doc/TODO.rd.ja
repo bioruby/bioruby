@@ -1,22 +1,39 @@
 =begin
 
-  $Id: TODO.rd.ja,v 1.10 2002/07/02 01:40:24 k Exp $
+  $Id: TODO.rd.ja,v 1.11 2002/07/30 10:22:45 k Exp $
 
-  Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+  Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
 
 = TODO
 
 == 0.4 (stable branch)
 
-* Bio::Reference クラス → EMBL にも?
+* install.rb env 問題
 
-* xmlparser  " problem
+* GenBank, EMBL, SPTR, BioSQL の統合、フォーマット変換、やっぱやっとこう
+  * bio/db/seqentry.rb か bio/seqentry.rb あたりにコンテナ SeqEntry を作る
+  * lib/bio/db/genbank/, embl/ リファクタリング
+    * Bio::SQL::Sequence も含めた内部構造
+    * genpept, refseq(NP_)
+    * Bio::Reference クラス → EMBL にも?
+  * BioSQL 最新スペック
+  * BRDB どうする？
 
-* abs2rel, rel2abs -> relative(n, type = nil) :aa, :location ?
+* bio/appl/blast/report.rb, bio/appl/fasta/report.rb コンテナ括り出し
+  * hmmer もさっさと書こう
+  * emboss はとりあえずこの前ので。できれば各アプリのパーズ。
+  * lib/bio/appl/blast/xmlparser.rb  " problem
+  * lib/bio/appl/megablast.rb ?
+
+* bio/io/flatfile.rb OBDA dbm インデクシング -ng
+  * Berkley DB は bio/io/bdb.rb か何か別ファイルで。
+  * FlatFile.new|open → エントリそのものを得るためのメソッド
 
 * matrix.rb 廃止
  * そんな汎用的でないので aaindex.rb, microarray.rb, prosite.rb などで
    それぞれ実装
+
+* lib/bio/db/kegg/keggtab.rb と lib/bio/data/keggorg.rb の統合？
 
 * アライメントオブジェクト (未)
   * class Bio::Alignment ?
@@ -24,25 +41,31 @@
     * class Bio::Alignment::Multiple  or class Bio::MultipleAlignment
     * アライメントビューアもほしい
 
-* BioSQL 最新スペック
+* sample/README.rd[.ja]
+* sample/genome2tab
+* sample/genes2tab
 
-* BRDB どうする？
-
-* bio/db/kegg/keggtab.rb と data/keggorg.rb の統合？
-
-* install.rb env
 
 == 0.5 (devel branch)
 
 === IO
 
 * Flat DBM, BDB 対応
+
 * BioCORBA
-* DAS (Brian), Biblio(Martin), XEMBL - SOAP
+  * http://corba.ebi.ac.uk/
+
+* SOAP/DAS (Brian, Lincoln), Biblio (Martin), XEMBL - SOAP
+
 * 遺伝研の SOAP サーバ
   * http://xml.nig.ac.jp/ SRS, FASTA, BLAST, CLUSTALW, Taxonomy
+
 * eutils in biofetch
   * http://www.ncbi.nlm.nih.gov/entrez/query/static/eutils_help.html
+
+* GFF, XEMBL フォーマット対応
+  * ブラウザは GMOD があるので genome plotter としてかなー？
+  * あらゆる Ming で攻めてみる？ flash 系はまだ海外でナサゲだし。
 
 === APPL
 
