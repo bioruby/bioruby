@@ -17,11 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.39 2004/08/25 07:21:01 k Exp $
+#  $Id: bio.rb,v 1.40 2004/12/13 04:53:12 k Exp $
 #
 
 module Bio
-  BIORUBY_VERSION = [0, 6, 1].extend(Comparable)
+  BIORUBY_VERSION = [0, 6, 2].extend(Comparable)
 end
 
 
@@ -75,8 +75,10 @@ require 'bio/db/embl'
 
 require 'bio/db/kegg/genome'
 require 'bio/db/kegg/genes'
-require 'bio/db/kegg/compound'
 require 'bio/db/kegg/enzyme'
+require 'bio/db/kegg/compound'
+require 'bio/db/kegg/glycan'
+require 'bio/db/kegg/reaction'
 require 'bio/db/kegg/brite'
 require 'bio/db/kegg/cell'
 require 'bio/db/kegg/microarray'
@@ -140,4 +142,8 @@ require 'bio/appl/clustalw'
 require 'bio/appl/clustalw/report'
 require 'bio/appl/mafft'
 require 'bio/appl/mafft/report'
+require 'bio/appl/sim4
+require 'bio/appl/sim4/report'
+require 'bio/appl/spidey/report'
+require 'bio/appl/blat/report'
 
