@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: pubmed.rb,v 1.1 2001/09/12 07:27:58 katayama Exp $
+#  $Id: pubmed.rb,v 1.2 2001/09/13 08:00:27 katayama Exp $
 #
 #  For more informations :
 #    http://www.ncbi.nlm.nih.gov/entrez/query/static/overview.html
@@ -47,11 +47,11 @@ class PubMed
       result.sub!(/<\/pre>.*/, '')
       tag = ''
       result.each_line do |line|
-	line.chomp!		# some entry have \r or \r\n
         if line =~ /^\w/
           tag = line[0,4].strip
         end
-        @pubmed[tag] += line[6..-1] if line.length > 6
+	# some entry have \r or \r\n, so strip and add "\n"
+        @pubmed[tag] += "#{line[6..-1].strip}\n" if line.length > 6
       end
     end
   end
