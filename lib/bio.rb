@@ -17,11 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.17 2002/03/04 08:02:07 katayama Exp $
+#  $Id: bio.rb,v 1.18 2002/04/15 03:09:40 k Exp $
 #
 
 module Bio
-  BIORUBY_VERSION = 0.3
+  BIORUBY_VERSION = [0, 3, 7].extend(Comparable)
 end
 
 ### ID
