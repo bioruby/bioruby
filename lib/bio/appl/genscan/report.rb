@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.1 2003/05/30 09:42:16 n Exp $
+#  $Id: report.rb,v 1.2 2003/09/08 05:46:25 n Exp $
 #
 
 require 'bio/db/fasta'
@@ -61,7 +61,7 @@ module Bio
 	genes_region = report[i...j]
 	genes_region.each("\n") {|line|
 	  if /Init|Intr|Term|PlyA|Prom|Sngl/ =~ line
-	    gn, en = line.strip.split(" +")[0].split('.').map {|i| i.to_i }
+	    gn, en = line.strip.split(" +")[0].split(/\./).map {|i| i.to_i }
 	    add_exon(gn, en, line)
 	  end
 	}
@@ -86,7 +86,7 @@ module Bio
 
 
       def headline_parse(line)
-	tmp = line.chomp.split("\t")
+	tmp = line.chomp.split(/\t/)
 	@genscan_version = tmp[0].split(' ')[1]
 	@date_run        = tmp[1].split(': ')[1]
 	@time            = tmp[2].split(': ')[1]
@@ -201,7 +201,7 @@ module Bio
       class Exon
 
 	def self.parser(line)
-	  e = line.strip.split(" +")
+	  e = line.strip.split(/ +/)
 	  case line
 	  when /PlyA/, /Prom/
 	    e[12] = e[6].clone

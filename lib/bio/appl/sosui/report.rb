@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.3 2003/02/25 15:44:18 k Exp $
+#  $Id: report.rb,v 1.4 2003/09/08 05:46:25 n Exp $
 #
 
 
@@ -30,9 +30,9 @@ module Bio
       DELIMITER = "\n>"
 
       def initialize(entry)
-	entry       = entry.split("\n")
+	entry       = entry.split(/\n/)
 
-	@entry_id   = entry[0].strip.sub("^>",'')
+	@entry_id   = entry[0].strip.sub(/^>/,'')
 	@prediction = entry[1].strip
 	@tmh        = []
 	@tmhs       = 0
@@ -102,7 +102,7 @@ HOGE
     pp [:tmh, sosui.tmh]
   end
 
-  sample.split(Bio::SOSUI::Report::DELIMITER).each {|ent|
+  sample.split(/#{Bio::SOSUI::Report::DELIMITER}/).each {|ent|
     hoge(ent)
   }
 

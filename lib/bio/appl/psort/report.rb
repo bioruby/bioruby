@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.5 2003/08/13 12:20:38 n Exp $
+#  $Id: report.rb,v 1.6 2003/09/08 05:46:25 n Exp $
 #
 
 require 'bio/sequence'
@@ -138,13 +138,14 @@ module Bio
 	end
 	attr_accessor :entry_id, :scl, :definition, :seq, 
 	  :k, :features, :prob, :pred
+
 	
-	# format auto detection
+	# report format auto detection
 	def self.parser(str)
 	  case str
-	  when /^ psg:/ 
+	  when /^ psg:/   # default report
 	    self.default_parser(str)
-	  when /^PSG:/
+	  when /^PSG:/    # -v report
 	    self.v_parser(str)
 	  when /: too short length /
 	    self.too_short_parser(str)
@@ -171,13 +172,13 @@ module Bio
 	# ``psort test.faa'' output
 	def self.default_parser(ent)
 	  report = self.new
-	  ent = ent.split("\n\n").map {|e| e.chomp }
+	  ent = ent.split(/\n\n/).map {|e| e.chomp }
 
 	  report.set_header_line(ent[0])
 
 	  # feature matrix
-	  ent[1].gsub(/\n/,' ').strip.split('  ').map {|fe|
-	    pair = fe.split(': ')
+	  ent[1].gsub(/\n/,' ').strip.split(/  /).map {|fe|
+	    pair = fe.split(/: /)
 	    report.features[pair[0].strip] = pair[1].strip.to_f
 	  }
 
@@ -209,8 +210,8 @@ module Bio
 	  Bio::PSORT::PSORT2::SclNames.keys.each {|a| 
 	    prob.update( {a => 0.0} )
 	  }
-	  str.gsub("\t",'').split("\n").each {|a|
-	    val,scl = a.strip.split(' %: ')
+	  str.gsub(/\t/,'').split(/\n/).each {|a|
+	    val,scl = a.strip.split(/ %: /)
 	    key = Bio::PSORT::PSORT2::SclNames.index(scl)
 	    prob[key] = val.to_f
 	  }
@@ -229,6 +230,7 @@ module Bio
 	      "Invalid format at(#{self.entry_id}):\n[#{str}]\n"
 	  end
 	end
+
 
 
 	# ``psort -v report'' and WWW server output
@@ -268,7 +270,7 @@ module Bio
 	  report.prob = self.set_kNN_prob(pent[0].strip)	  
 	  report.set_prediction(pent[1].strip)	
 
-	  return report
+	  report
 	end
 
 
@@ -294,7 +296,7 @@ module Bio
 
 	def set_features(fary)
 	  fary.each {|fent|
-	    key = fent.split(":( |\n)")[0].strip
+	    key = fent.split(/\:( |\n)/)[0].strip
 	    
 	    self.features[key] = fent # unless /^\>/ =~ key
 	  }
@@ -344,8 +346,10 @@ if __FILE__ == $0
     puts "\n ==> a.features.keys.sort "
     p a.features.keys.sort
 
-    puts "\n ==> a.features['checking 63 PROSITE DNA binding motifs'] "
-    puts a.features['checking 63 PROSITE DNA binding motifs']
+    a.features.keys.sort.each do |key|
+      puts "\n ==> a.features['#{key}'] "
+      puts a.features[key]
+    end
 
     
   end

@@ -17,12 +17,13 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: psort.rb,v 1.1 2003/04/10 06:25:25 n Exp $
+#  $Id: psort.rb,v 1.2 2003/09/08 05:46:25 n Exp $
 #
 
 
 
 require 'bio/sequence'
+#require 'psort/report'
 require 'bio/appl/psort/report'
 require 'net/http'
 require 'cgi'
@@ -87,7 +88,7 @@ module Bio
 
 	begin
 	  result, = Net::HTTP.new(@host).post(@path, data.join('&'))
-	  @output = result.body.gsub(/\n<hr>/i, Report::BOUNDARY).gsub('<.+?>','')
+	  @output = result.body.gsub(/\n<hr>/i, Report::BOUNDARY).gsub(/<.+?>/,'')
 	end
 	
 	Bio::PSORT::PSORT2::Report.parser(@output)
