@@ -15,7 +15,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: gb2fasta.rb,v 0.4 2002/04/15 03:06:17 k Exp $
+#  $Id: gb2fasta.rb,v 0.5 2002/07/23 04:51:24 k Exp $
 #
 
 require 'bio/io/flatfile'
@@ -26,6 +26,6 @@ include Bio
 ff = FlatFile.new(GenBank, ARGF)
 
 while gb = ff.next_entry
-  print gb.naseq.to_fasta("gb:#{gb.entry_id} #{gb.definition}", 70)
+  print gb.seq.to_fasta("gb:#{gb.entry_id} #{gb.definition}", 70)
 end
 
