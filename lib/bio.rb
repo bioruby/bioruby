@@ -13,7 +13,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 #  Library General Public License for more details.
 #
-#  $Id: bio.rb,v 1.6 2001/10/29 16:58:13 nakao Exp $
+#  $Id: bio.rb,v 1.7 2001/11/01 11:57:41 katayama Exp $
 #
 
 module Bio
@@ -98,11 +98,15 @@ require 'bio/db/litdb'
 
 require 'bio/db/medline'
 
-### Bioinformatics tools
+## FASTA
 
-#require 'bio/tool/fasta'
-#require 'bio/tool/blast'
-#require 'bio/tool/hmmer'
+require 'bio/db/fasta'
+
+### External Applications
+
+#require 'bio/appl/fasta'
+#require 'bio/appl/blast'
+#require 'bio/appl/hmmer'
 
 ### misc utils
 
