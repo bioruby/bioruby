@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sql.rb,v 1.1 2002/03/04 07:43:14 katayama Exp $
+#  $Id: sql.rb,v 1.2 2003/02/25 15:47:47 k Exp $
 #
 
 begin
@@ -69,9 +69,9 @@ module Bio
 
 
       def to_fasta
-	query = "select * from biosequence where bioentry_id = ?"
-	row = @dbh.execute(query, @bioentry_id).fetch
-	return ">#{@accession}\n#{row['biosequence_str']}\n" if row
+	if seq = seq
+	  return seq.to_fasta(@accession)
+	end
       end
 
       def seq
@@ -320,7 +320,11 @@ end
 
 
 if __FILE__ == $0
-  require 'pp'
+  begin
+    require 'pp'
+    alias :p :pp
+  rescue LoadError
+  end
 
   db = ARGV.empty? ? 'dbi:Mysql:database=biosql;host=localhost' : ARGV.shift
   serv = Bio::SQL.new(db, 'root')
