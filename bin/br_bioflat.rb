@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
 # 
-#  $Id: br_bioflat.rb,v 1.7 2002/09/13 14:47:46 ng Exp $ 
+#  $Id: br_bioflat.rb,v 1.8 2002/09/16 08:14:04 ng Exp $ 
 # 
 
 require 'bio'
@@ -43,12 +43,7 @@ def do_index
       format = files.shift
 
     when /^\-\-?sort\=(.*)/i
-      files.shift
-      y = $1
-      y = true if y.length <= 0
-      options['external_sort_program'] = y
-    when /^\-\-?sort\-internal/i
-      options['external_sort_program'] = nil
+      options['sort_program'] = $1
       options['onmemory'] = nil
     when /^\-\-?no\-?te?mp/i
       options['onmemory'] = true
@@ -111,8 +106,10 @@ Create index options:
   --add-secondary=KEY    add secondary namespaces to default specification.
                            You can use this option many times.
 Options only valid for --makeindex:
-  --sort-internal        using internal sort routine (default)
-  --sort=PROGRAM         set external sort program (e.g. /usr/bin/sort)
+  --sort=BUILTIN         use builtin sort routine (default)
+  --sort=HS              (same as --sort=BUILTIN)
+  --sort=LM              builtin sort routine, slow but memory efficient
+  --sort=/path/to/sort   use external sort program (e.g. /usr/bin/sort)
   --no-temporary-files   do everything on memory
 
 EOM

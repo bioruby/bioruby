@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.5 2002/09/13 14:47:47 ng Exp $ 
+#  $Id: indexer.rb,v 1.6 2002/09/16 08:14:05 ng Exp $ 
 # 
 
 module Bio
@@ -376,7 +376,7 @@ module Bio
       def self.makeindexFlat_tempfile(name, parser, options, *files)
 	DEBUG.print "makeing flat/1 DataBank using temporary files...\n"
 	require 'tempfile'
-	ext = options['external_sort_program']
+	prog = options['sort_program']
 
 	db = DataBank.new(name, nil)
 	db.format = parser.format
@@ -416,7 +416,7 @@ module Bio
 	DEBUG.print "sorting primary (#{parser.primary.name})...\n"
 	pfile2 = Tempfile.open(tempbase + 'primary2-')
 	DEBUG.print "open temporary file #{pfile2.path.inspect}\n"
-	file_sort_write(pfile, pfile2, db.primary.file, ext, true)
+	file_sort_write(pfile, pfile2, db.primary.file, prog, true)
 	DEBUG.print "close temporary file #{pfile.path.inspect}\n"
 	pfile.close
 	DEBUG.print "close temporary file #{pfile2.path.inspect}\n"
@@ -426,7 +426,7 @@ module Bio
 	  DEBUG.print "sorting secondary (#{x})...\n"
 	  tmpfile = Tempfile.open(tempbase + 'secondary2-')
 	  DEBUG.print "open temporary file #{tmpfile.path.inspect}\n"
-	  file_sort_write(sfiles[x], tmpfile, db.secondary[x].file, ext)
+	  file_sort_write(sfiles[x], tmpfile, db.secondary[x].file, prog)
 	  DEBUG.print "close temporary file #{sfiles[x].path.inspect}\n"
 	  sfiles[x].close
 	  DEBUG.print "close temporary file #{tmpfile.path.inspect}\n"
@@ -474,10 +474,13 @@ module Bio
       def self.file_sort_write(file, tmpfile, mapfile, prog, primary = nil)
 	file.flush
 	file.pos = 0
-	if prog then
-	  filesort_external(file.path, tmpfile, prog)
+	case prog
+	when /^builtin$/i, /^hs$/i, nil
+	  filesort_internal_highspeed(file, tmpfile)
+	when /^lm$/i
+	  filesort_internal_lowmemory(file, tmpfile)
 	else
-	  filesort_internal(file, tmpfile)
+	  filesort_external(file.path, tmpfile, prog)
 	end
 	tmpfile.flush
 	tmpfile.pos = 0
@@ -493,20 +496,42 @@ module Bio
 	Open3.popen3(prog, filename) do |i, o, e|
 	  o.each { |line| out << line }
 	end
+	DEBUG.print "end: sort\n"
       end
-      def self.filesort_internal(file, out)
+
+      def self.filesort_internal_highspeed(file, out)
+	DEBUG.print "begin sort=HS\n"
+	a = []
+	file.each do |line|
+	  a << line
+	end
+	a.sort!
+	a.each do |line|
+	  out << line
+	end
+	DEBUG.print "end: sort\n"
+      end
+
+      def self.filesort_internal_lowmemory(file, out)
+	DEBUG.print "begin sort=LM\n"
 	p = file.pos
 	a = []
 	file.each do |line|
-	  a << line.split("\t", 2)[0] + "\t" + p.to_s
+	  a << p
 	  p = file.pos
 	end
-	a.sort!
+	a.sort! do |x, y|
+	  file.pos = x
+	  xdata = file.gets
+	  file.pos = y
+	  ydata = file.gets
+	  xdata <=> ydata
+	end
 	a.each do |x|
-	  b = x.split("\t")
-	  file.pos = b[1].to_i
+	  file.pos = x
 	  out << file.gets
 	end
+	DEBUG.print "end: sort\n"
       end
 
     end #module Indexer
