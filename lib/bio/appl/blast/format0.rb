@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format0.rb,v 1.5 2003/08/12 08:35:15 ng Exp $
+#  $Id: format0.rb,v 1.6 2004/07/21 07:01:47 ngoto Exp $
 #
 
 begin
@@ -648,7 +648,7 @@ module Bio
 	      sc = StringScanner.new(@f0score)
 	      while sc.rest?
 		sc.skip(/\s*/)
-		if sc.skip(/Expect *\= *([e\-\.\d]+)/) then
+		if sc.skip(/Expect(?:\(\d\))? *\= *([e\-\.\d]+)/) then
 		  @evalue = sc[1]
 		  #@evalue = '1' + @evalue if @evalue[0] == ?e
 		elsif sc.skip(/Score *\= *([e\-\.\d]+) *bits *\( *([e\-\.\d]+) *\)/) then
