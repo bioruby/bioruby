@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#  $Id: biofetch.rb,v 1.6 2002/03/04 08:07:36 katayama Exp $
+#  $Id: biofetch.rb,v 1.7 2002/04/18 08:04:27 k Exp $
 #
 
 require 'cgi'
@@ -51,7 +51,7 @@ def print_query_page(cgi)
           cgi.select('name'=>'db') {
             cgi.option('value'=>'embl-today') { "EMBL" } +
             cgi.option('value'=>'genbank-today') { "GenBank" } +
-            cgi.option('value'=>'refseq-today') { "RefSeq" } +
+            cgi.option('value'=>'refseq') { "RefSeq" } +
             cgi.option('value'=>'swissprot-today') { "Swiss-Prot" } +
             cgi.option('value'=>'pir') { "PIR" } +
             cgi.option('value'=>'prf') { "PRF" } +
@@ -98,25 +98,25 @@ def print_query_page(cgi)
 	  cgi.dt + cgi.u { "style" } + " (required)" +
           cgi.dd + "html|raw" +
 	  cgi.dt + cgi.u { "db" } + " (required)" +
-          cgi.dd + "embl-today|embl|genbank-today|genbank|refseq-today|refseq|swissprot-today|swissprot|pir|prf|pdb-today|pdb|pdbstr-today|pdbstr|epd|transfac|prosite|pmd|litdb|omim|ligand|pathway|brite|genes|genome|linkdb|aaindex|..." +
+          cgi.dd + "embl-today|embl|genbank-today|genbank|refseq|swissprot-today|swissprot|pir|prf|pdb-today|pdb|pdbstr-today|pdbstr|epd|transfac|prosite|pmd|litdb|omim|ligand|pathway|brite|genes|genome|linkdb|aaindex|..." +
 	  cgi.dt + cgi.u { "id" } + " (required)" +
           cgi.dd + "comma separated list of IDs"
         } +
 	cgi.p {
-          "See the BioFetch specification for more details. "
+          "See the " + cgi.a('href'=>'http://obda.open-bio.org') { "BioFetch specification" } + " for more details."
         } +
         cgi.h2 {
           "Examples"
         } +
         cgi.dl {
-          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq-today;id=NC_000844') { "rs:NC_000844" } + " (default/raw)" +
-          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq-today;id=NC_000844" +
-          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=refseq-today;id=NC_000844') { "rs:NC_000844" } + " (fasta/raw)" +
-          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=refseq-today;id=NC_000844" +
-          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=html;db=refseq-today;id=NC_000844') { "rs:NC_000844" } + " (default/html)" +
-          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=html;db=refseq-today;id=NC_000844" +
-          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq-today;id=NC_000844,NC_000846') { "rs:NC_000844,NC_000846" } + " (default/raw, multiple)" +
-          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq-today;id=NC_000844,NC_000846" +
+          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq;id=NC_000844') { "rs:NC_000844" } + " (default/raw)" +
+          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq;id=NC_000844" +
+          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=refseq;id=NC_000844') { "rs:NC_000844" } + " (fasta/raw)" +
+          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=fasta;style=raw;db=refseq;id=NC_000844" +
+          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=html;db=refseq;id=NC_000844') { "rs:NC_000844" } + " (default/html)" +
+          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=html;db=refseq;id=NC_000844" +
+          cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq;id=NC_000844,NC_000846') { "rs:NC_000844,NC_000846" } + " (default/raw, multiple)" +
+          cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=refseq;id=NC_000844,NC_000846" +
           cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=embl-today;id=BUM') { "embl:BUM" } + " (default/raw)" +
           cgi.dd + "http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=embl-today;id=BUM" +
           cgi.dt + cgi.a('href'=>'http://bioruby.org/cgi-bin/biofetch.rb?format=default;style=raw;db=swissprot-today;id=CYC_BOVIN') { "sp:CYC_BOVIN" } + " (default/raw)" +
