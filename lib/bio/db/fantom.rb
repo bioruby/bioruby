@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fantom.rb,v 1.1 2003/04/24 14:04:55 ng Exp $
+#  $Id: fantom.rb,v 1.2 2003/04/24 15:25:13 ng Exp $
 #
 
 begin
@@ -102,14 +102,54 @@ module Bio
 
 	def sequences
 	  unless defined?(@sequences)
+	    @sequences = MaXML::Sequences.new(@elem)
+	  end
+	  @sequences
+	end
+
+	def sequence(idstr)
+	  sequences[idstr]
+	end
+
+	define_element_text_method(%w(fantomid))
+      end #class MaXML::Cluster
+
+      class Sequences < MaXML
+	Data_XPath = 'maxml-sequences'
+
+	include Enumerable
+	def each
+	  to_a.each { |x| yield x }
+	end
+
+	def to_a
+	  unless defined?(@sequences)
 	    @sequences = @elem.get_elements('sequence')
 	    @sequences.collect! { |e| MaXML::Sequence.new(e) }
 	  end
 	  @sequences
 	end
 
-	define_element_text_method(%w(fantomid))
-      end #class MaXML::Cluster
+	def get(idstr)
+	  unless defined?(@hash)
+	    @hash = {}
+	  end
+	  unless @hash.member?(idstr) then
+	    @hash[idstr] = self.find do |x|
+	      x.altid.values.index(idstr)
+	    end
+	  end
+	  @hash[idstr]
+	end
+
+	def [](*arg)
+	  if arg[0].is_a?(String) and arg.size == 1 then
+	    get(arg[0])
+	  else
+	    to_a[*arg]
+	  end
+	end
+      end #class MaXML::Sequences
 
       class Sequence < MaXML
 	# (MaXML sequence)
@@ -189,7 +229,18 @@ end #module Bio
  ((<URL:ftp://fantom2.gsc.riken.go.jp/fantom/2.1/allclust.sep.xml.gz>)).
  Not that this class is not suitable for 'allclust.xml'.
 
---- Bio::FANTOM::MaXML.new(str)
+--- Bio::FANTOM::MaXML::Cluster.new(str)
+
+= Bio::FANTOM::MaXML::Sequences
+
+ The instances of this class are automatically created
+ by Bio::FANTOM::MaXML::Cluster class.
+
+ This class can also be used for 'allseq.sep.xml' and 'repseq.sep.xml',
+ but you'd better using Bio::FANTOM::MaXML::Sequence class.
+
+ In addition, this class can be used for 'allseq.xml' and 'repseq.xml',
+ but you'd better not to use them, becase of the speed is very slow.
 
 = Bio::FANTOM::MaXML::Sequence
 
@@ -199,7 +250,7 @@ end #module Bio
  Not that this class is not suitable for 'allseq.xml' and 'repseq.xml'.
 
  In addition, the instances of this class are automatically created
- by Bio::FANTOM::MaXML::Cluster class.
+ by Bio::FANTOM::MaXML::Sequences class.
 
 = Bio::FANTOM::MaXML::Annotation
 
