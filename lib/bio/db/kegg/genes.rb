@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genes.rb,v 0.15 2002/12/03 06:13:46 k Exp $
+#  $Id: genes.rb,v 0.16 2003/03/20 08:11:54 k Exp $
 #
 
 require 'bio/db'
@@ -79,11 +79,11 @@ module Bio
       end
 
       def eclinks
-	definition.scan(/\[EC:(.*?)\]/).flatten
+	definition.scan(/\[EC:(.*?)\]/).flatten.first
       end
 
       def splinks
-	definition.scan(/\[SP:(.*?)\]/).flatten
+	definition.scan(/\[SP:(.*?)\]/).flatten.first
       end
 
       def keggclass
@@ -226,6 +226,8 @@ end
 === DEFINITION
 
 --- Bio::KEGG::GENES#definition -> String
+--- Bio::KEGG::GENES#eclinks -> String or nil
+--- Bio::KEGG::GENES#splinks -> String or nil
 
 === CLASS
 
