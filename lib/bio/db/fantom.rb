@@ -17,20 +17,44 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fantom.rb,v 1.4 2003/04/25 14:11:10 ng Exp $
+#  $Id: fantom.rb,v 1.5 2003/05/07 14:17:53 ng Exp $
 #
 
 begin
   require 'rexml/document'
   rescue LoadError
 end
+require 'uri'
+require 'net/http'
 
 require 'bio/db'
-require 'bio/sequence'
+#require 'bio/sequence'
 
 module Bio
 
   module FANTOM
+
+    def query(idstr, http_proxy = nil)
+      xml = get_by_id(idstr, http_proxy)
+      seqs = MaXML::Sequences.new(xml.to_s)
+      seqs[0]
+    end
+    module_function :query
+
+    def get_by_id(idstr, http_proxy = nil)
+      addr = 'fantom.gsc.riken.go.jp'
+      port = 80
+      path = "/db/maxml/maxmlseq.cgi?masterid=#{URI.escape(idstr.to_s)}&style=xml"
+      proxy = URI.parse(http_proxy.to_s)
+      xml = ''
+      Net::HTTP.start(addr, port, proxy.host, proxy.port) do |http|
+	response, = http.get(path)
+	xml = response.body
+      end
+      xml
+    end
+    module_function :get_by_id
+
 
     class MaXML < DB
       # DTD of MaXML(Mouse annotation XML)
@@ -55,8 +79,11 @@ module Bio
 	  @elem = REXML::Document.new('') unless @elem
 	end
       end
-
       attr_reader :elem
+
+      def to_s
+	@elem.to_s
+      end
 
       def gsub_entities(str)
 	# workaround for bug?
@@ -182,6 +209,10 @@ module Bio
 	  end
 	end
 
+	def id_strings
+	  altid.values
+	end
+
 	def annotations
 	  unless defined?(@annotations)
 	    @annotations =
@@ -190,7 +221,24 @@ module Bio
 	  @annotations
 	end
 
-	define_element_text_method(%w(seqid fantomid cloneid rearrayid accession annotator version modified_time comment))
+	define_element_text_method(%w(annotator version modified_time comment))
+
+	def self.define_id_method(array)
+	  array.each do |tagstr|
+	    module_eval ("
+	      def #{tagstr}
+	        unless defined?(@#{tagstr})
+		  @#{tagstr} = gsub_entities(@elem.text('#{tagstr}'))
+		  @#{tagstr} = altid('#{tagstr}') unless @#{tagstr}
+	        end
+	        @#{tagstr}
+	      end
+	    ")
+	  end
+        end
+        private_class_method :define_id_method
+
+	define_id_method(%w(seqid fantomid cloneid rearrayid accession))
       end #class MaXML::Sequence
 
       class Annotations < MaXML
@@ -311,8 +359,24 @@ end #module Bio
 
 =begin
 
- Bio::FANTOM are database classes treating RIKEN FANTOM2 data.
+ Bio::FANTOM are database classes (and modules) treating RIKEN FANTOM2 data.
  FANTOM2 is available at ((<URL:http://fantom2.gsc.riken.go.jp/>)).
+
+= Bio::FANTOM
+
+ This module contains useful methods to access databases.
+
+--- Bio::FANTOM.query(idstr, http_proxy=nil)
+
+ Get MaXML sequence data corresponding to given ID through the internet
+ (from http://fantom.gsc.riken.go.jp/db/maxml/).
+ Returns Bio::FANTOM::MaXML::Sequence object.
+
+--- Bio::FANTOM.get_by_id(idstr, http_proxy=nil)
+
+ Same as FANTOM.query, but returns XML document as a string.
+ (Reference: bio/io/registry.rb)
+
 
 = Bio::FANTOM::MaXML::Cluster
 
@@ -337,6 +401,16 @@ end #module Bio
 
  Shows a sequence information of given id.
  Returns Bio::FANTOM::MaXML::Sequence object or nil.
+
+--- Bio::FANTOM::MaXML::Cluster#representataive_sequence
+
+ Shows a sequence of repesentative_seqid.
+ Returns Bio::FANTOM::MaXML::Sequence object (or nil).
+
+-- Bio::FANTOM::MaXML::Cluster#representative_annotations
+
+ Shows annotations of repesentative_seqid.
+ Returns Bio::FANTOM::MaXML::Annotations object (or nil).
 
 
 = Bio::FANTOM::MaXML::Sequences
@@ -388,8 +462,13 @@ end #module Bio
 
 --- Bio::FANTOM::MaXML::Sequence#annotations
 
- Get lists of annotation data.
- Returns an Array of Bio::FANTOM::MaXML::Annotation objects.
+ Gets lists of annotation data.
+ Returns a Bio::FANTOM::MaXML::Annotations object.
+
+--- Bio::FANTOM::MaXML::Sequence#id_strings
+
+ Gets lists of ID. (same as altid.values)
+ Returns an array of strings.
 
 --- Bio::FANTOM::MaXML::Sequence#seqid
 
@@ -409,10 +488,38 @@ end #module Bio
 
 --- Bio::FANTOM::MaXML::Sequence#comment
 
-= Bio::FANTOM::MaXML::Annotation
+
+= Bio::FANTOM::MaXML::Annotations
 
  The instances of this class are automatically created
  by Bio::FANTOM::MaXML::Sequence class.
+
+--- Bio::FANTOM::MaXML::Annotations#to_a
+
+ Returns an Array of Bio::FANTOM::MaXML::Annotations objects.
+
+--- Bio::FANTOM::MaXML::Annotations#each
+
+--- Bio::FANTOM::MaXML::Annotations#get_all_by_qualifier(qstr)
+
+--- Bio::FANTOM::MaXML::Annotations#get_by_qualifier(qstr)
+
+--- Bio::FANTOM::MaXML::Annotations#[](x)
+
+ Same as to_a[x] when x is a integer.
+ Same as get_by_qualifier[x] when x is a string.
+
+--- Bio::FANTOM::MaXML::Annotations#cds_start
+--- Bio::FANTOM::MaXML::Annotations#cds_stop
+--- Bio::FANTOM::MaXML::Annotations#gene_name
+--- Bio::FANTOM::MaXML::Annotations#data_source
+--- Bio::FANTOM::MaXML::Annotations#evidence
+
+
+= Bio::FANTOM::MaXML::Annotation
+
+ The instances of this class are automatically created
+ by Bio::FANTOM::MaXML::Annotations class.
 
 --- Bio::FANTOM::MaXML::Annotation#datasrc
 
