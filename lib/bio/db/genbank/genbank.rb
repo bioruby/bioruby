@@ -9,7 +9,7 @@ require 'bio/sequence'
 class GenBank
 
   def initialize(entry)
-    @orig = Hash.new('')			# Hash of the original entry
+    @orig = {}					# Hash of the original entry
     @data = {}					# Hash of the parsed entry
 
     tag = ''					# temporal key
@@ -17,10 +17,11 @@ class GenBank
     entry.each_line do |line|
       if line =~ /^\w/
 	tag = tag_get(line)
-	@orig[tag] = '' unless @orig[tag].empty?
+	@orig[tag] = '' unless @orig[tag]	# String
       end
       @orig[tag] << line
     end
+
     return
   end
 
@@ -33,11 +34,15 @@ class GenBank
 
   ### general method to return contens without tag and extra white spaces
   def fetch(tag)
-    str = ''
-    @orig[tag].each_line do |line|
-      str << tag_cut(line)
+    if @orig[tag]
+      str = ''
+      @orig[tag].each_line do |line|
+	str << tag_cut(line)
+      end
+      return truncate(str)
+    else
+      return nil		# compatible with get()
     end
-    return truncate(str)
   end
 
 
@@ -272,7 +277,7 @@ class GenBank
     if str.length > 12		# tag field length of the GenBank is 12
       return str[0,12].strip
     else
-      return ''
+      return ''			# to avoid returning nil
     end
   end
 
@@ -300,21 +305,19 @@ class GenBank
   # 63-73   Date, in the form dd-MMM-yyyy (e.g., 15-MAR-1991)
   #
   def parse_LOCUS
-    @data['LOCUS'] = Hash.new('')
+    @data['LOCUS'] = {}
 
-    @data['LOCUS']['name']     = @orig['LOCUS'][12..21].strip
-    @data['LOCUS']['length']   = @orig['LOCUS'][22..28].to_i
-    @data['LOCUS']['strand']   = @orig['LOCUS'][33..35].strip
-    @data['LOCUS']['natype']   = @orig['LOCUS'][36..39].strip
-    @data['LOCUS']['circular'] = @orig['LOCUS'][42..51].strip
-    @data['LOCUS']['gbdiv']    = @orig['LOCUS'][52..54].strip
-    @data['LOCUS']['date']     = @orig['LOCUS'][62..72].strip
-
-    @data['LOCUS'].each do |k, v|
-      @data['LOCUS'][k] = '' unless v
+    if @orig['LOCUS']
+      @data['LOCUS']['name']     = @orig['LOCUS'][12..21].strip
+      @data['LOCUS']['length']   = @orig['LOCUS'][22..28].to_i
+      @data['LOCUS']['strand']   = @orig['LOCUS'][33..35].strip
+      @data['LOCUS']['natype']   = @orig['LOCUS'][36..39].strip
+      @data['LOCUS']['circular'] = @orig['LOCUS'][42..51].strip
+      @data['LOCUS']['gbdiv']    = @orig['LOCUS'][52..54].strip
+      @data['LOCUS']['date']     = @orig['LOCUS'][62..72].strip
     end
 
-    return @data['LOCUS']	# Hash
+    return @data['LOCUS']
   end
 
 
@@ -346,7 +349,7 @@ class GenBank
   #
   def parse_DEFINITION
     @data['DEFINITION'] = fetch('DEFINITION')
-    return @data['DEFINITION']	# String
+    return @data['DEFINITION']
   end
 
 
@@ -367,7 +370,7 @@ class GenBank
   #
   def parse_ACCESSION
     @data['ACCESSION'] = fetch('ACCESSION')
-    return @data['ACCESSION']	# String
+    return @data['ACCESSION']
   end
 
 
@@ -401,8 +404,13 @@ class GenBank
   # would become 10456892.
   #
   def parse_VERSION
-    @data['VERSION'] = fetch('VERSION').split(/\s+/)
-    return @data['VERSION']	# Array
+    @data['VERSION'] = []
+
+    if @orig['VERSION']
+      @data['VERSION'] = fetch('VERSION').split(/\s+/)
+    end
+
+    return @data['VERSION']
   end
 
 
@@ -429,8 +437,13 @@ class GenBank
   # period.
   #
   def parse_KEYWORDS
-    @data['KEYWORDS'] = fetch('KEYWORDS').sub(/\.$/, '').split("; ")
-    return @data['KEYWORDS']	# Array
+    @data['KEYWORDS'] = []
+
+    if @orig['KEYWORDS']
+      @data['KEYWORDS'] = fetch('KEYWORDS').sub(/\.$/, '').split("; ")
+    end
+
+    return @data['KEYWORDS']
   end
 
 
@@ -445,8 +458,13 @@ class GenBank
   # segments.
   #
   def parse_SEGMENT
-    @data['SEGMENT'] = fetch('SEGMENT').scan(/\d+/)
-    return @data['SEGMENT']	# Array
+    @data['SEGMENT'] = []
+
+    if @orig['SEGMENT']    
+      @data['SEGMENT'] = fetch('SEGMENT').scan(/\d+/)
+    end
+
+    return @data['SEGMENT']
   end
 
 
@@ -471,16 +489,18 @@ class GenBank
   # semicolons and ending with a period.
   #
   def parse_SOURCE
-    @data['SOURCE'] = Hash.new('')
+    @data['SOURCE'] = {}
 
-    name, organism = @orig['SOURCE'].split("ORGANISM")
-    organism = '' unless organism	# to avoid nil
+    if @orig['SOURCE']
+      name, organism = @orig['SOURCE'].split("ORGANISM")
+      organism = '' unless organism	# to avoid nil
 
-    @data['SOURCE']['name']     = truncate(tag_cut(name))
-    @data['SOURCE']['organism'] = truncate(organism.slice!(/.*/))
-    @data['SOURCE']['taxonomy'] = truncate(organism)
+      @data['SOURCE']['name']     = truncate(tag_cut(name))
+      @data['SOURCE']['organism'] = truncate(organism.slice!(/.*/))
+      @data['SOURCE']['taxonomy'] = truncate(organism)
+    end
 
-    return @data['SOURCE']	# Hash
+    return @data['SOURCE']
   end
 
 
@@ -513,9 +533,9 @@ class GenBank
   def parse_REFERENCE
     @data['REFERENCE'] = []
 
-    return @data['REFERENCE'] if @orig['REFERENCE'].empty?
+    return @data['REFERENCE'] unless @orig['REFERENCE']
 
-    hash = Hash.new('')		# temporal hash
+    hash = {}			# temporal hash
     key = ''			# temporal key
 
     @orig['REFERENCE'].each_line do |line|
@@ -535,7 +555,7 @@ class GenBank
     end
     @data['REFERENCE'].push(hash)
 
-    return @data['REFERENCE']	# Array
+    return @data['REFERENCE']
   end
 
 
@@ -546,7 +566,7 @@ class GenBank
   #
   def parse_COMMENT
     @data['COMMENT'] = fetch('COMMENT')
-    return @data['COMMENT']	# String
+    return @data['COMMENT']
   end
 
 
@@ -566,7 +586,7 @@ class GenBank
   def parse_FEATURES
     @data['FEATURES'] = []
 
-    return @data['FEATURES'] if @orig['FEATURES'].empty?
+    return @data['FEATURES'] unless @orig['FEATURES']
 
     head = ''			# temporal feature key (source, CDS, ...)
     body = ''			# temporal feature contents (pos, /qualifier=)
@@ -581,14 +601,12 @@ class GenBank
     end
     @data['FEATURES'].push(parse_qualifiers(head, body))
 
-    return @data['FEATURES']	# Array
+    return @data['FEATURES']
   end
 
 
   def parse_qualifiers(head, body)
-    hash = Hash.new('')
-
-    hash['feature'] = head
+    hash = { 'feature' => head }
 
     body.sub(%r{^[^/]+}) do |pos|
       hash['position'] = pos.gsub(/\s+/, '')	# before the 1st '/' without \s
@@ -604,7 +622,7 @@ class GenBank
       end
     end
 
-    return hash			# Hash
+    return hash
   end
 
 
@@ -612,13 +630,17 @@ class GenBank
   #  code in the sequence. Mandatory keyword/exactly one record.
   #
   def parse_BASE_COUNT
-    @data['BASE COUNT'] = Hash.new(0) # others ('o') is not always existing
+    # set the default value of the hash to 0
+    # because others ('o') is not always existing
+    @data['BASE COUNT'] = Hash.new(0)
 
-    @orig['BASE COUNT'].scan(/(\d+) (\w)/).each do |n, b|
-      @data['BASE COUNT'][b] = n.to_i
+    if @orig['BASE COUNT']
+      @orig['BASE COUNT'].scan(/(\d+) (\w)/).each do |n, b|
+	@data['BASE COUNT'][b] = n.to_i
+      end
     end
 
-    return @data['BASE COUNT']	# Hash
+    return @data['BASE COUNT']
   end
 
 
@@ -630,12 +652,18 @@ class GenBank
   #  - The ORIGIN line is followed by sequence data (multiple records).
   #
   def parse_ORIGIN
-    @data['ORIGIN'] = tag_cut(@orig['ORIGIN'][/.*/]) # before the 1st "\n"
-    seqence = @orig['ORIGIN'].sub(/.*/, '').gsub(/[\s\d\/]+/, '')
+    @data['ORIGIN'] = ''
+
+    seqence = ''		# temporal sequence String
+
+    if @orig['ORIGIN']
+      @data['ORIGIN'] = tag_cut(@orig['ORIGIN'][/.*/]) # before the 1st "\n"
+      seqence = @orig['ORIGIN'].sub(/.*/, '').gsub(/[\s\d\/]+/, '')
+    end
 
     @data['SEQUENCE'] = NAseq.new(seqence)
 
-    return @data['ORIGIN']	# String
+    return @data['ORIGIN']
   end
 
 end
