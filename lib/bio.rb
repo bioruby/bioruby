@@ -17,20 +17,28 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.24 2002/08/30 06:31:47 o Exp $
+#  $Id: bio.rb,v 1.25 2002/09/01 16:24:27 o Exp $
 #
 
 module Bio
   BIORUBY_VERSION = [0, 4, 0].extend(Comparable)
-
-  autoload :Sequence, 'bio/sequence'
-  autoload :Location, 'bio/location'
-  autoload :Feature, 'bio/feature'
-  autoload :Features, 'bio/feature'
-  autoload :Reference, 'bio/reference'
-  autoload :References, 'bio/reference'
-  
 end
+
+### Sequence
+
+require 'bio/sequence'		# required by bio/db.rb
+
+### Locations/Location
+
+require 'bio/location'		# required by bio/sequence.rb
+
+### Features/Feature
+
+require 'bio/feature'		# required by bio/db.rb
+
+### Reference
+
+require 'bio/reference'		# required by bio/db.rb
 
 ### Pathway/Relation
 
