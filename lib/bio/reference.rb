@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: reference.rb,v 1.11 2002/07/23 04:50:07 k Exp $
+#  $Id: reference.rb,v 1.12 2004/02/05 13:05:42 k Exp $
 #
 
 module Bio
@@ -25,6 +25,7 @@ module Bio
   class Reference
 
     def initialize(hash)
+      hash.default = nil
       @authors	= hash['authors']	# [ "Hoge, J.P.", "Fuga, F.B." ]
       @title	= hash['title']		# "Title of the study."
       @journal	= hash['journal']	# "Theor. J. Hoge"
@@ -34,20 +35,30 @@ module Bio
       @year	= hash['year']		# 2001
       @pubmed	= hash['pubmed']	# 12345678
       @medline	= hash['medline']	# 98765432
+      @abstract = hash['abstract']
+      @url      = hash['url']
     end
     attr_reader :authors, :title, :journal, :volume, :issue, :pages, :year,
-      :pubmed, :medline
+      :pubmed, :medline, :abstract, :url
 
     def format(style = nil, option = nil)
       case style
+      when 'endnote'
+        return endnote
+      when 'bibitem'
+	return bibitem(option)
+      when 'bibtex'
+	return bibtex(option)
+      when 'abstract'
+	return abstract(option)
       when /^nature$/i
 	return nature(option)
       when /^science$/i
 	return science
-      when /^genome\s*biology$/i
-	return genomebiology
-      when /^genome\s*res/i
-	return genomeres
+      when /^genome\s*_*biol/i
+	return genome_biol
+      when /^genome\s*_*res/i
+	return genome_res
       when /^nar$/i
 	return nar
       when /^current/i
@@ -56,13 +67,27 @@ module Bio
 	return trends
       when /^cell$/i
 	return cell
-      when 'bibitem'
-	return bibitem(option)
-      when 'bibtex'
-	return bibtex(option)
       else
 	return general
       end
+    end
+
+    def endnote
+      lines = []
+      lines << "%0 Journal Article"
+      @authors.each do |author|
+        lines << "%A #{author}"
+      end
+      lines << "%D #{@year}" if @year
+      lines << "%T #{@title}" if @title
+      lines << "%J #{@journal}" if @journal
+      lines << "%V #{@volume}" if @volume
+      lines << "%N #{@issue}" if @issue
+      lines << "%P #{@pages}" if @pages
+      lines << "%M #{@pubmed}" if @pubmed
+      lines << "%U #{@url}" if @url
+      lines << "%X #{@abstract}" if @abstract
+      return lines.join("\n")
     end
 
     def bibitem(item = nil)
@@ -93,6 +118,21 @@ module Bio
       END
     end
 
+    def general
+      authors = @authors.join(', ')
+      "#{authors} (#{@year}). \"#{@title}\" #{@journal} #{@volume}:#{@pages}."
+    end
+
+    def abstract(str = nil)
+      @abstract ||= str
+      lines = []
+      lines << "== " + @title
+      lines << "* " + authors_join(' and ')
+      lines << "* #{@journal} #{@year} #{@volume}:#{@pages} [PMID:#{@pubmed}]"
+      lines << @abstract
+      return lines.join("\n\n")
+    end
+
     def nature(short = false)
       if short
 	if @authors.size > 4
@@ -119,14 +159,14 @@ module Bio
       "#{authors}, #{@journal} #{@volume} #{page_from} (#{@year})."
     end
 
-    def genomebiology
+    def genome_biol
       authors = @authors.collect {|name| strip_dots(name)}.join(', ')
       journal = strip_dots(@journal)
       "#{authors}: #{@title} #{journal} #{@year}, #{@volume}:#{@pages}."
     end
-    alias current genomebiology
+    alias current genome_biol
 
-    def genomeres
+    def genome_res
       authors = authors_join(' and ')
       "#{authors} #{@year}.\n  #{@title} #{@journal} #{@volume}: #{@pages}."
     end
@@ -150,12 +190,6 @@ module Bio
 	authors = authors_join(' and ')
       end
       "#{authors} (#{@year}) #{@title} #{@journal} #{@volume}, #{@pages}"
-    end
-
-    def general
-      authors = @authors.collect {|name| strip_dots(name)}.join(', ')
-      journal = strip_dots(@journal)
-      "#{authors} \"#{@title}\", #{journal} #{@volume}:#{@pages} (#{@year})"
     end
 
 
@@ -225,15 +259,19 @@ end
 --- Bio::Reference#year -> Fixnum
 --- Bio::Reference#pubmed -> Fixnum
 --- Bio::Reference#medline -> Fixnum
+--- Bio::Reference#abstract -> String
+--- Bio::Reference#url -> String
 
 --- Bio::Reference#format(style = nil, option = nil) -> String
 
+--- Bio::Reference#endnote
 --- Bio::Reference#bibitem(item = nil) -> String
 --- Bio::Reference#bibtex(section = nil) -> String
+--- Bio::Reference#abstract(str = nil) -> String
 --- Bio::Reference#nature(short = false) -> String
 --- Bio::Reference#science -> String
---- Bio::Reference#genomebiology -> String
---- Bio::Reference#genomeres -> String
+--- Bio::Reference#genome_biol -> String
+--- Bio::Reference#genome_res -> String
 --- Bio::Reference#nar -> String
 --- Bio::Reference#cell -> String
 --- Bio::Reference#trends -> String
