@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: go.rb,v 1.5 2004/11/05 08:10:33 nakao Exp $
+#  $Id: go.rb,v 1.6 2005/04/04 11:06:47 nakao Exp $
 #
 
 require 'bio/pathway'
@@ -73,7 +73,7 @@ class GO
       return term
     end
 
-      private
+    private
 
     # constructing adjaency list for the given ontology
     def dag_edit_format_parser(str)
@@ -160,8 +160,10 @@ class GO
   end # class Ontology
 
 
+
   # Bio::GO::GeneAssociation
   # $CVSROOT/go/gene-associations/gene_association.*
+  #
   class GeneAssociation # < Bio::DB
 
     DELIMITER = RS = "\n"
@@ -184,11 +186,20 @@ class GO
       end
     end
 
-
-    attr_reader :db, :db_object_id, :db_object_symbol,
-       :qualifier, :db_reference, :evidence, :with, :aspect, 
-       :db_object_name, :db_object_synonym, :db_object_type, 
-       :taxon, :date, :assigned_by 
+    attr_reader :db                # -> aStr
+    attr_reader :db_object_id      # -> aStr
+    attr_reader :db_object_symbol
+    attr_reader :qualifier
+    attr_reader :db_reference      # -> []
+    attr_reader :evidence
+    attr_reader :with              # -> []
+    attr_reader :aspect
+    attr_reader :db_object_name
+    attr_reader :db_object_synonym # -> []
+    attr_reader :db_object_type
+    attr_reader :taxon
+    attr_reader :date
+    attr_reader :assigned_by 
     alias :entry_id :db_object_id
 
 
@@ -200,19 +211,23 @@ class GO
       @db_object_symbol  = tmp[2]
       @qualifier         = tmp[3]  # 
       @goid              = tmp[4]
-      @db_reference      = tmp[5]
+      @db_reference      = tmp[5].split(/\|/)  #
       @evidence          = tmp[6]
-      @with              = tmp[7]  # 
+      @with              = tmp[7].split(/\|/)  # 
       @aspect            = tmp[8]
       @db_object_name    = tmp[9]  #
-      @db_object_synonym = tmp[10] #
+      @db_object_synonym = tmp[10].split(/\|/) #
       @db_object_type    = tmp[11]
       @taxon             = tmp[12] # taxon:4932
       @date              = tmp[13] # 20010118
       @assigned_by       = tmp[14] 
     end
 
-    # Bio::GO::GeneAssociation.goid
+
+    # Bio::GO::GeneAssociation#goid(org = nil) -> GO ID
+    #
+    # Bio::GO::GeneAssociation#goid -> "001234"
+    # Bio::GO::GeneAssociation#goid(true) -> "GO:001234"
     def goid(org = nil)
       if org
         @goid
@@ -221,11 +236,106 @@ class GO
       end
     end
 
+    # Bio::GO::GeneAssociation#to_str -> a line of gene_association file.
+    def to_str
+      return [@db, @db_object_id, @db_object_symbol, @quialifier, @goid, 
+              @qualifier.join("|"), @evidence, @with.join("|"), @aspect,
+              @db_object_name, @db_object_synonym.join("|"), @db_object_type,
+              @taxon, @date, @assigned_by].join("\t")
+    end
+
   end # class GeneAssociation   
+
+
+
+  # Container class for files in geneontology.org/go/external2go/*2go.
+  #
+  # The line syntax is: 
+  #
+  # database:<identifier> > GO:<term> ; GO:<GO_id>
+  #
+  # == SAMPLE
+  # !date: 2005/02/08 18:02:54
+  # !Mapping of SWISS-PROT KEYWORDS to GO terms.
+  # !Evelyn Camon, SWISS-PROT.
+  # !
+  # SP_KW:ATP synthesis > GO:ATP biosynthesis ; GO:0006754
+  # ...
+  #
+  class External2go < Array
+    attr_reader :header
+
+    # Bio::GO::External2go.parser(str)
+    # Constructor
+    def self.parser(str)
+      e2g = self.new
+      str.each_line do |line|
+        line.chomp!
+        if line =~ /^\!date: (.+)/
+          e2g.header[:date] = $1
+        elsif line =~ /^\!(.*)/
+          e2g.header[:desc] << $1
+        elsif ary = line.scan(/^(.+?):(.+) > GO:(.+) ; (GO:\d{7})/).first
+          e2g << {:db_id => ary[1], :db => ary[0], :go_term => ary[2], :go_id => ary[3]}
+        else
+          raise("Invalid Format Line: \n #{line.inspect}\n")
+        end
+      end
+      return e2g
+    end
+
+    # Bio::GO::External2go.new
+    def initialize
+      @header = {:date => '', :desc => []}
+      super
+    end
+
+    # Bio::GO::External2go#set_date(value)
+    def set_date(value)
+      @header[:date] = value
+    end
+
+    # Bio::GO::External2go#set_desc(ary)
+    def set_desc(ary)
+      @header[:desc] = ary
+    end
+
+    # Bio::GO::External2go#to_str
+    def to_str
+      ["!date: #{@header[:date]}",
+       @header[:desc].map {|e| "!#{e}" },
+        self.map { |e| [e[:db], ':', e[:db_id], ' > GO:', e[:go_term], ' ; ', e[:go_id]].join }
+      ].join("\n")
+    end
+    
+
+    # Bio::GO::External2go#db
+    def dbs
+      self.map {|rel| rel[:db] }.uniq
+    end
+
+    # Bio::GO::External2go#db_ids
+    def db_ids
+      self.map {|rel| rel[:db_id] }.uniq
+    end
+
+    # Bio::GO::External2go#go_terms
+    def go_terms
+      self.map {|rel| rel[:go_term] }.uniq
+    end
+
+    # Bio::GO::External2go#go_ids
+    def go_ids
+      self.map {|rel| rel[:go_id] }.uniq
+    end
+
+  end # class External2go
   
 end # class GO
 
 end # module Bio
+
+
 
 
 
@@ -241,14 +351,14 @@ if __FILE__ == $0
       raise ArgumentError, "Invalid URL\n#{url}"
     end
 
-    result, = Net::HTTP.new(host).get(path)
-    result.body
+    result = Net::HTTP.new(host).get(path).body
   end
 
 
 
   go_c_url = 'http://www.geneontology.org/ontology/component.ontology'
-  ga_url = 'http://www.geneontology.org/gene-associations/gene_association.sgd'
+  ga_url = 'http://www.geneontology.org/gene-associations/gene_association.sgd.gz'
+  e2g_url = 'http://www.geneontology.org/external2go/spkw2go'
 
 
 
@@ -267,9 +377,23 @@ if __FILE__ == $0
     p comp.bfs_shortest_path(pair[0], pair[1])
   }
 
+
+  puts "\n #==> Bio::GO::External2go"
+  p e2g_url
+  spkw2go = Bio::GO::External2go.new(wget(e2g_url))
+
+  puts "\n #==> spkw2go.db"
+  p spkw2go.db
+
+  puts "\n #==> spkw2go[1]"
+  p spkw2go[1]
+
+
+
+  require 'zlib'
   puts "\n #==> Bio::GO::GeenAssociation"
   p ga_url
-  ga = wget(ga_url)
+  ga = Zlib::Inflate.inflate(wget(ga_url))
   ga = Bio::GO::GeneAssociation.parser(ga)
 
   puts "\n #==> ga.size"
@@ -277,6 +401,9 @@ if __FILE__ == $0
 
   puts "\n #==> ga[100]"
   p ga[100]
+
+
+
 
   
 end
@@ -319,7 +446,7 @@ end
       format.
 
 
-= Bio::GO::GeneAssociation < Bio::DB
+= Bio::GO::GeneAssociation
 
 * Data parser for the gene_association go annotation.
   See also ((<the file format|URL:http://www.geneontology.org/doc/GO.annotation.html#file>)).
@@ -399,5 +526,54 @@ or
       Date variable.
 
 
+
+= Bio::GO::External2go < Array
+
+Class for files in geneontology.org/go/external2go/
+
+
+  spkw2go = Bio::GO::External2go.new(File.read("spkw2go"))
+  spkw2go.size
+  spkw2go.each do |relation|
+    relation # -> {:db => "", :db_id => "", :go_term => "", :go_id => ""}
+  end
+  spkw2go.dbs
+
+--- Bio::GO::External2go.parser(str)
+
+      Constructor from parsing external2go file.
+
+--- Bio::GO::External2go.new
+
+      Constructor.
+      relation := {:db => aStr, :db_id => aStr, :go_term => aStr, :go_id => aStr}
+
+--- Bio::GO::External2go#[index] -> relation
+
+      Index accessing to a list of external2go relations.
+
+--- Bio::GO::External2go#header -> {:date => "", :desc => ""}
+
+      Hash of the header information.
+
+--- Bio::GO::External2go#dbs -> ary
+
+      List of databases.
+ 
+--- Bio::GO::External2go#db_ids -> ary
+
+      List of database IDs.
+
+--- Bio::GO::External2go#go_terms -> ary
+
+      List of GO Terms.
+
+--- Bio::GO::External2go#go_ids -> ary
+
+      List of GO IDs.
+
+--- Bio::GO::External2go#to_str -> str
+
+      Formats the content in the external2go format.
 
 =end
