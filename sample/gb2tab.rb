@@ -18,7 +18,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: gb2tab.rb,v 0.2 2001/08/21 13:15:19 katayama Exp $
+#  $Id: gb2tab.rb,v 0.3 2001/08/23 01:57:57 katayama Exp $
 #
 
 require 'bio/db/genbank'
@@ -66,6 +66,30 @@ ARGV.each do |seqfile|
   
     body.puts ary.join("\t")
   
+    ### FEATURES
+  
+    num = 0
+  
+    gb.features do |f|
+      num += 1
+  
+      f.each do |qualifier, value|
+
+	if qualifier == 'db_xref'
+	  value = f['db_xref'].inspect
+	end
+  
+	ary = [
+	  gb.id,
+	  num,
+	  qualifier,
+	  value,
+	]
+	ft.puts ary.join("\t")
+      end
+  
+    end
+
     ### REFERENCE
   
     gb.reference do |r|
@@ -82,33 +106,6 @@ ARGV.each do |seqfile|
       ]
   
       ref.puts ary.join("\t")
-    end
-  
-    ### FEATURES
-  
-    num = 0
-  
-    gb.features do |f|
-      num += 1
-  
-      f.each do |qualifier, value|
-	next if qualifier =~ /(feature|position)/
-  
-	if qualifier == 'db_xref'
-	  value = f['db_xref'].inspect
-	end
-  
-	ary = [
-	  gb.id,
-	  num,
-	  f['feature'],
-	  f['position'],
-	  qualifier,
-	  value,
-	]
-	ft.puts ary.join("\t")
-      end
-  
     end
   
   end
@@ -162,8 +159,6 @@ LOAD DATA LOCAL INFILE '_HOGE_.seq.tab' INTO TABLE genbank._HOGE_;
 CREATE TABLE IF NOT EXISTS genbank._HOGE_ft (
 	id		varchar(15)	NOT NULL,
 	num		integer,
-	feature		varchar(30),
-	position	text,
 	qualifier	varchar(30),
 	value		text,
 	INDEX idx (id)
@@ -217,8 +212,6 @@ CREATE TABLE IF NOT EXISTS genbank.gb (
 CREATE TABLE IF NOT EXISTS genbank.gbft (
 	id		varchar(15)	NOT NULL,
 	num		integer,
-	feature		varchar(30),
-	position	text,
 	qualifier	varchar(30),
 	value		text,
 	INDEX idx (id)
