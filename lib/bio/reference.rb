@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: reference.rb,v 1.15 2005/01/06 12:28:16 k Exp $
+#  $Id: reference.rb,v 1.16 2005/05/26 13:16:23 k Exp $
 #
 
 module Bio
@@ -117,7 +117,7 @@ module Bio
 
     def bibtex(section = nil)
       section = "article" unless section
-      authors = authors_join(' and ')
+      authors = authors_join(' and ', ' and ')
       pages   = @pages.sub('-', '--')
       return <<-"END".gsub(/\t/, '')
 	@#{section}{PMID:#{@pubmed},
