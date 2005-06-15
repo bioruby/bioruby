@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: common.rb,v 1.1 2004/08/23 23:40:35 k Exp $
+#  $Id: common.rb,v 1.2 2005/06/15 10:09:22 k Exp $
 #
 
 module Bio
@@ -261,7 +261,7 @@ module Common
 
         case qualifier
         when 'translation'
-          value = Sequence::AA.new(value.gsub(/\s/, ''))
+          value = Sequence::AA.new(value.to_s.gsub(/\s/, ''))
         when 'codon_start'
           value = value.to_i
         end
