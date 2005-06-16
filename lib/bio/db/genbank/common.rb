@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: common.rb,v 1.2 2005/06/15 10:09:22 k Exp $
+#  $Id: common.rb,v 1.3 2005/06/16 16:43:11 k Exp $
 #
 
 module Bio
@@ -255,15 +255,13 @@ module Common
       if f =~ %r{/([^=]+)=?"?([^"]*)"?}
         qualifier, value = $1, $2
 
-        if value.empty?
-          value = true
-        end
-
         case qualifier
         when 'translation'
-          value = Sequence::AA.new(value.to_s.gsub(/\s/, ''))
+          value = Sequence::AA.new(value)
         when 'codon_start'
           value = value.to_i
+        else
+          value = true if value.empty?
         end
 
         feature.append(Feature::Qualifier.new(qualifier, value))
