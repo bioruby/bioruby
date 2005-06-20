@@ -1,7 +1,7 @@
 #
 # bio/appl/blast/report.rb - BLAST Report class
 # 
-#   Copyright (C) 2003,2004 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2003 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,97 +17,69 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.4 2005/06/17 07:32:30 k Exp $
+#  $Id: report.rb,v 1.5 2005/06/20 18:05:49 k Exp $
 #
 
-require 'bio/db'
+require 'bio/appl/blast/xmlparser'
+require 'bio/appl/blast/rexml'
+require 'bio/appl/blast/format8'
 
 module Bio
   class Blast
 
-    # use of this class method will be obsoleted, try Bio::FlatFile.auto instead
     def self.reports(input, parser = nil)
       ary = []
       input.each("</BlastOutput>\n") do |xml|
-	xml.sub!(/[^<]*(<?)/, '\1')		# skip before the <?xml> tag
+	xml.sub!(/[^<]*(<?)/, '\1')		# skip before <?xml> tag
 	next if xml.empty?			# skip trailing no hits
 	if block_given?
-	  yield Bio::Blast::XML::Report.new(xml, parser)
+	  yield Report.new(xml, parser)
 	else
-	  ary << Bio::Blast::XML::Report.new(xml, parser)
+	  ary << Report.new(xml, parser)
 	end
       end
       return ary
     end
 
-=begin
-    def self.new_reports(input, parser = nil)
-      first_line = input[/.*/]
-      parser = Report.select_parser unless parser
-      Bio::FlatFile.open(parser_class, input)
-
-      or
-
-      require 'bio/io/flatfile'
-      case parser
-      when :xmlparser
-        Bio::FlatFile.open(parser_class, input)
-      else
-        Bio::FlatFile.auto(input)
-      end
-    end
-=end
-
 
     class Report
 
-      def self.open(filename, *mode)
-        Bio::FlatFile.open(self, filename, *mode)
-      end
-
       def self.xmlparser(data)
-	Bio::Blast::XML::Report.new(data, :xmlparser)
+	self.new(data, :xmlparser)
       end
       def self.rexml(data)
-	Bio::Blast::XML::Report.new(data, :rexml)
+	self.new(data, :rexml)
       end
       def self.tab(data)
-	Bio::Blast::Tab::Report.new(data)
+	self.new(data, :tab)
       end
 
-      def select_parser(data, parser = nil)
-	case parser
-	when :xmlparser		# format 7
-	  Bio::Blast::XML::Report.new(data, :xmlparser)
-	when :rexml		# format 7
-	  Bio::Blast::XML::Report.new(data, :rexml)
-	when :tab		# format 8
-	  Bio::Blast::Tab::Report.new(data)
+      def auto_parse(data)
+	if /<?xml/.match(data[/.*/])
+	  if defined?(XMLParser)
+	    xmlparser_parse(data)
+	  else
+	    rexml_parse(data)
+	  end
 	else
-          first_line = data[/.*/]
-          if /<?xml/.match(first_line)
-            Bio::Blast::XML::Report.new(data)
-          elsif /^BLAST.*WashU/.match(first_line)
-            Bio::Blast::WU::Report.new(data)
-          elsif /^TBLAST.*WashU/.match(first_line)
-            Bio::Blast::WU::Report_TBlast.new(data)
-          elsif /^BLAST/.match(first_line)
-            Bio::Blast::Default::Report.new(data)
-          elsif /^TBLAST/.match(first_line)
-            Bio::Blast::Default::Report_TBlast.new(data)
-          else
-            Bio::Blast::Tab::Report.new(data)
-          end
-        end
+	  tab_parse(data)
+	end
       end
-      private :select_parser
+      private :auto_parse
 
-      def initialize(str, parser = nil)
+      def initialize(data, parser = nil)
 	@iterations = []
 	@parameters = {}
-        unless defined?(@parser)
-          select_parser(str, parser)
-        end
+	case parser
+	when :xmlparser		# format 7
+	  xmlparser_parse(data)
+	when :rexml		# format 7
+	  rexml_parse(data)
+	when :tab		# format 8
+	  tab_parse(data)
+	else
+	  auto_parse(data)
+	end
       end
       attr_reader :iterations, :parameters,
 	:program, :version, :reference,	:db, :query_id, :query_def, :query_len
@@ -280,15 +252,7 @@ if __FILE__ == $0
 
 =end
 
-  require 'bio/appl/blast/format0'
-  require 'bio/appl/blast/wublast'
-  require 'bio/appl/blast/format7'
-  require 'bio/appl/blast/rexml'
-  require 'bio/appl/blast/xmlparser'
-  require 'bio/appl/blast/format8'
-
-# Bio::Blast.reports(ARGF) do |rep|	# for multiple xml reports
-  rep = Bio::Blast::Report.new(ARGF.read)
+  Bio::Blast.reports(ARGF) do |rep|	# for multiple xml reports
 
   print "# === Bio::Tools::Blast::Report\n"
   puts
@@ -431,7 +395,7 @@ if __FILE__ == $0
   end
   end
   end
-# end					# for multiple xml reports
+  end					# for multiple xml reports
 
 end
 
