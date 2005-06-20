@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.32 2005/03/12 06:29:37 ngoto Exp $
+#  $Id: flatfile.rb,v 1.33 2005/06/20 16:46:27 ngoto Exp $
 #
 
 module Bio
@@ -305,6 +305,9 @@ module Bio
 
       when /^CLUSTAL .*\(.*\).*sequence +alignment/
 	Bio::ClustalW::Report
+
+      when /\<\!DOCTYPE BlastOutput PUBLIC /
+        Bio::Blast::Report
 
       when /^BLAST.? +[\-\.\w]+\-WashU +\[[\-\.\w ]+\]/
 	Bio::Blast::WU::Report
