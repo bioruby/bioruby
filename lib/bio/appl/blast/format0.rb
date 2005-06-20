@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format0.rb,v 1.7 2004/10/30 14:28:33 ngoto Exp $
+#  $Id: format0.rb,v 1.8 2005/06/20 11:35:30 ngoto Exp $
 #
 
 begin
@@ -43,6 +43,7 @@ module Bio
 	  str = str.sub(/\A\s+/, '')
 	  str.sub!(/\n(T?BLAST.*)/m, "\n") # remove trailing entries for sure
 	  @entry_overrun = $1
+	  @entry = str
 	  data = str.split(/(?:^[ \t]*\n)+/)
 
 	  format0_split_headers(data)
@@ -53,6 +54,8 @@ module Bio
 
 	attr_reader :f0header, :f0reference, :f0query, :f0database, :f0dbstat
 	attr_reader :iterations
+
+	def to_s; @entry; end
 
 	# prevent using StringScanner_R (in old version of strscan)
 	if !defined?(StringScanner) then
