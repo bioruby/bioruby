@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.5 2005/06/20 18:05:49 k Exp $
+#  $Id: report.rb,v 1.6 2005/06/21 07:03:28 ngoto Exp $
 #
 
 require 'bio/appl/blast/xmlparser'
@@ -43,6 +43,9 @@ module Bio
 
 
     class Report
+
+      # for Bio::FlatFile support (only for XML data)
+      DELIMITER = RS = "</BlastOutput>\n"
 
       def self.xmlparser(data)
 	self.new(data, :xmlparser)
