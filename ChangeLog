@@ -1,3 +1,7 @@
+2005-06-28  Toshiaki Katayama <k@bioruby.org>
+
+	* gemspec.rb: newly added RubyGems spec file.
+
 2005-04-04  Mitsuteru Nakao <n@bioruby.org>
 
         * lib/bio/db/go.rb
