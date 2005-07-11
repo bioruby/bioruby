@@ -1,3 +1,12 @@
+2005-07-11  Toshiaki Katayama <k@bioruby.org>
+
+	* bin/br_pmfetch.rb
+	  * added sort by page option (--sort page)
+
+	* lib/io/higet.rb
+
+	  Newly added Bio::HGC::HiGet class for HiGet SOAP service.
+
 2005-06-28  Toshiaki Katayama <k@bioruby.org>
 
 	* gemspec.rb: newly added RubyGems spec file.
@@ -8,6 +17,13 @@
 
           Newly added Bio::GO::External2go class for parsing 
           external2go file.
+
+2005-02-09  KATAYAMA Toshiaki <k@bioruby.org>
+
+	* lib/bio/db/kegg/genes.rb
+
+	  Added cu method which returns codon usage in Hash for the
+	  convenience (codon_usage method returns in Array or Fixnum).
 
 2004-12-13  KATAYAMA Toshiaki <k@bioruby.org>
 
