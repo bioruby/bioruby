@@ -19,7 +19,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-PROG_VER  = '$Id: br_pmfetch.rb,v 1.4 2005/01/06 12:28:16 k Exp $'
+PROG_VER  = '$Id: br_pmfetch.rb,v 1.5 2005/07/11 09:31:32 k Exp $'
 PROG_NAME = File.basename($0)
 
 
@@ -167,7 +167,7 @@ Formats:
  nature, science, genome_res, genome_biol, nar, current, trends, cell
 
 Sort:
- author, journal, pub+date
+ author, journal, pub+date, page
 
 See the following pages for the PubMed search options:
  http://www.ncbi.nlm.nih.gov/entrez/query/static/help/pmhelp.html
@@ -247,6 +247,9 @@ See the following pages for the PubMed search options:
         raise PMFetch::Usage
       when /--version/
         raise PMFetch::Version
+      when /--sort/
+        @sort = optarg
+        @search_opts["sort"] = @sort unless @sort == "page"
       else
         optname.delete!('-')
         @search_opts[optname] = optarg
@@ -284,8 +287,10 @@ See the following pages for the PubMed search options:
       medline_format(entries)
     else
       entries = parse_entries(entries)
-      if @format == 'report'
+      if @sort == 'page'
         entries = sort_entries(entries)
+      end
+      if @format == 'report'
         report_format(entries)
       else
         other_format(entries)
@@ -310,11 +315,11 @@ See the following pages for the PubMed search options:
   def sort_entries(entries)
     if RUBY_VERSION > "1.8.0"
        entries.sort_by { |x|
-         [ x.journal, x.volume, x.issue, x.pages.to_i ]
+         [ x.journal, x.volume.to_i, x.issue.to_i, x.pages.to_i ]
        }
     else
       entries.map { |x|
-        [ x.journal, x.volume, x.issue, x.pages.to_i, x ]
+        [ x.journal, x.volume.to_i, x.issue.to_i, x.pages.to_i, x ]
       }.sort { |a, b|
         a[0..3] <=> b[0..3]
       }.map { |y|
@@ -347,7 +352,7 @@ __END__
 
 = Examples : PubMed search
 
-These for lines will do the same job.
+These four lines will do the same job.
 
   % PMFetch transcription factor
   % PMFetch "transcription factor"
