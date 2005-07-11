@@ -1,7 +1,7 @@
 #
 # bio.rb - Loading all BioRuby modules
 #
-#   Copyright (C) 2001-2004 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001-2005 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,11 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.41 2004/12/13 05:17:48 k Exp $
+#  $Id: bio.rb,v 1.42 2005/07/11 09:40:02 k Exp $
 #
 
 module Bio
-  BIORUBY_VERSION = [0, 6, 2].extend(Comparable)
+  BIORUBY_VERSION = [0, 6, 3].extend(Comparable)
 end
 
 
@@ -115,6 +115,7 @@ require 'bio/io/keggapi'
 require 'bio/io/pubmed'
 require 'bio/io/das'
 require 'bio/io/ddbjxml'
+require 'bio/io/higet'
 #require 'bio/io/esoap'
 #require 'bio/io/brdb'
 
