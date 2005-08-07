@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aa.rb,v 0.9 2005/08/07 09:58:21 k Exp $
+#  $Id: aa.rb,v 0.10 2005/08/07 23:28:14 k Exp $
 #
 
 module Bio
@@ -135,6 +135,12 @@ module Bio
         Names[x]
       end
 
+      # backward compatibility
+      def names
+        Names
+      end
+      alias :aa :names
+
       def name(x)
         str = Names[x]
         if str and str.length == 3
@@ -211,7 +217,17 @@ module Bio
         reverse[x.downcase]
       end
 
+      def to_re(seq)
+        str = seq.to_s.upcase
+        str.gsub!(/[^BZACDEFGHIKLMNPQRSTVWYU]/, ".")
+        str.gsub!("B", "[DN]")
+        str.gsub!("Z", "[EQ]")
+        Regexp.new(str)
+      end
+
+
       private
+
 
       def reverse
         hash = Hash.new
@@ -235,16 +251,11 @@ module Bio
     Names = Data::Names
     Weight = Data::Weight
 
-    def aa
-      Names
-    end
-
-    def self.names
-      Names
-    end
 
     private
 
+
+    # override when used as an instance method to improve performance
     alias :orig_reverse :reverse
     def reverse
       unless @reverse
@@ -299,7 +310,6 @@ if __FILE__ == $0
   puts "# aa.to_3('A')"
   p aa.to_3('A')
 
-
   puts "# Bio::AminoAcid.one2three('A')"
   p Bio::AminoAcid.one2three('A')
   puts "# aa.one2three('A')"
@@ -329,6 +339,9 @@ if __FILE__ == $0
   p Bio::AminoAcid.name2three('alanine')
   puts "# aa.name2three('alanine')"
   p aa.name2three('alanine')
+
+  puts "# Bio::AminoAcid.to_re('BZACDEFGHIKLMNPQRSTVWYU')"
+  p Bio::AminoAcid.to_re('BZACDEFGHIKLMNPQRSTVWYU')
 
 end
 

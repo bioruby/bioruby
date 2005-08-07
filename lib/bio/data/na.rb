@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: na.rb,v 0.10 2005/08/07 09:58:21 k Exp $
+#  $Id: na.rb,v 0.11 2005/08/07 23:28:14 k Exp $
 #
 
 module Bio
@@ -113,6 +113,12 @@ module Bio
         Names[x]
       end
 
+      # backward compatibility
+      def names
+        Names
+      end
+      alias :na :names
+
       def name(x)
         Names[x.to_s.upcase]
       end
@@ -143,13 +149,6 @@ module Bio
     Names = Data::Names
     Weight = Data::Weight
 
-    def na
-      Names
-    end
-
-    def self.names
-      Names
-    end
 
   end
 
