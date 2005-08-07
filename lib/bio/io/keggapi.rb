@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggapi.rb,v 1.7 2004/08/24 00:07:28 k Exp $
+#  $Id: keggapi.rb,v 1.8 2005/08/07 09:49:22 k Exp $
 #
 
 require 'bio/io/soapwsdl'
@@ -41,7 +41,11 @@ class API < Bio::SOAPWSDL
   attr_accessor :start, :max_results
 
   def method_missing(*arg)
-    results = @driver.send(*arg)
+    begin
+      results = @driver.send(*arg)
+    rescue Timeout::Error
+      retry
+    end
     results = add_filter(results)
     return results
   end
@@ -105,7 +109,9 @@ class API < Bio::SOAPWSDL
     step = [@max_results, 50].min
     0.step(ary.length, step) do |i|
       str = ary[i, step].join(" ")
-      result << @driver.send(:bget, str)
+      if entry = @driver.send(:bget, str)
+        result << entry.to_s
+      end
     end
     return result
   end
@@ -115,7 +121,9 @@ class API < Bio::SOAPWSDL
     step = [@max_results, 50].min
     0.step(ary.length, step) do |i|
       str = "-f -n a " + ary[i, step].join(" ")
-      result << @driver.send(:bget, str)
+      if entry = @driver.send(:bget, str)
+        result << entry.to_s
+      end
     end
     return result
   end
@@ -125,7 +133,9 @@ class API < Bio::SOAPWSDL
     step = [@max_results, 50].min
     0.step(ary.length, step) do |i|
       str = "-f -n n " + ary[i, step].join(" ")
-      result << @driver.send(:bget, str)
+      if entry = @driver.send(:bget, str)
+        result << entry.to_s
+      end
     end
     return result
   end
@@ -135,7 +145,9 @@ class API < Bio::SOAPWSDL
     step = [@max_results, 50].min
     0.step(ary.length, step) do |i|
       str = ary[i, step].join(" ")
-      result << @driver.send(:btit, str)
+      if entry = @driver.send(:bget, str)
+        result << entry.to_s
+      end
     end
     return result
   end
