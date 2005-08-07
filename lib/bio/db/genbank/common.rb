@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: common.rb,v 1.3 2005/06/16 16:43:11 k Exp $
+#  $Id: common.rb,v 1.4 2005/08/07 05:28:10 ngoto Exp $
 #
 
 module Bio
@@ -185,10 +185,10 @@ module Common
         next if line =~ /^FEATURES/
 
         # feature type  (source, CDS, ...)
-        head = line[0,20].strip
+        head = line[0,20].to_s.strip
 
         # feature value (position or /qualifier=)
-        body = line[20,60].chomp
+        body = line[20,60].to_s.chomp
 
         # sub-array [ feature type, position, /q="data", ... ]
         if line =~ /^ {5}\S/
