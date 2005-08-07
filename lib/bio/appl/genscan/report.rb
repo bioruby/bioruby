@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.3 2004/11/05 06:41:06 nakao Exp $
+#  $Id: report.rb,v 1.4 2005/08/07 05:35:18 nakao Exp $
 #
 
 require 'bio/db/fasta'
@@ -28,14 +28,18 @@ module Bio
 # Bio::Genscan
 class Genscan
 
-  # Bio::Genscan::Report
+  # Bio::Genscan::Report - Class for Genscan report output.
   class Report
 
-    attr_reader :genscan_version, :date_run, :time
+    attr_reader :genscan_version
+    attr_reader :date_run
+    attr_reader :time
     attr_reader :query_name
     alias_method :sequence_name, :query_name
     alias_method :name,          :query_name
-    attr_reader :length, :gccontent, :isochore
+    attr_reader :length
+    attr_reader :gccontent
+    attr_reader :isochore
     attr_reader :matrix
     attr_reader :predictions
     alias_method :prediction, :predictions
@@ -43,18 +47,20 @@ class Genscan
 
 
     # Bio::Genscan::Report.new(str)
+    #
+    # Parse a Genscan report output string.
     def initialize(report)
       @predictions = []
       @genscan_version = nil
-      @date_run        = nil
-      @time            = nil
+      @date_run   = nil
+      @time       = nil
       @query_name = nil
       @length     = nil
       @gccontent  = nil
       @isochore   = nil
       @matrix     = nil
 
-      report.each("\n") {|line|
+      report.each("\n") do |line|
         case line
         when /^GENSCAN/
           parse_headline(line)
@@ -65,7 +71,7 @@ class Genscan
         when /^Predicted genes/
           break
         end
-      }
+      end
 
       # rests
       i = report.index(/^Predicted gene/)
@@ -84,9 +90,9 @@ class Genscan
       sequence_region = report[j...report.size]
       sequence_region.gsub!(/^Predicted .+?:/, '')
       sequence_region.gsub!(/^\s*$/, '')
-      sequence_region.split(Bio::FastaFormat::RS).each {|ff|
+      sequence_region.split(Bio::FastaFormat::RS).each do |ff|
         add_seq(Bio::FastaFormat.new(ff))
-      }
+      end
     end
 
 
@@ -98,6 +104,7 @@ class Genscan
       @time            = tmp[2].split(': ')[1]
     end
     private :parse_headline
+
 
     # Bio::Genscan::Report#parse_sequence
     def parse_sequence(line)
@@ -181,7 +188,12 @@ class Genscan
         @exons    = []
         @polyA    = nil
       end
-      attr_reader :number, :aaseq, :naseq, :exons, :promoter, :polyA
+      attr_reader :number
+      attr_reader :aaseq
+      attr_reader :naseq
+      attr_reader :exons
+      attr_reader :promoter
+      attr_reader :polyA
 
 
       # Bio::Genescan::Report::Gene#seq_aaseq
@@ -237,7 +249,9 @@ class Genscan
       }
 
 
-      # Bio::Genescan::Report::Exon.new(gene_number, exon_type, strand, first, end, length, frame, phase, acceptor_score, donor_score, score, p_value, t_score)
+      # Bio::Genescan::Report::Exon.new(gene_number, exon_type, strand, first, 
+      # end, length, frame, phase, acceptor_score, donor_score, score, p_value, 
+      # t_score)
       def initialize(gnex, t, s, b, e, len, fr, ph, iac, dot, cr, prob, ts)
         @gene_number, @number = gnex.split(".").map {|n| n.to_i }
         @exon_type = t
@@ -253,8 +267,17 @@ class Genscan
         @p_value   = prob.to_f
         @t_score   = ts.to_f
       end
-      attr_reader :gene_number, :number, :exon_type, :strand,
-         :first, :last, :frame, :phase, :score, :p_value, :t_score
+      attr_reader :gene_number
+      attr_reader :number
+      attr_reader :exon_type
+      attr_reader :strand
+      attr_reader :first
+      attr_reader :last
+      attr_reader :frame
+      attr_reader :phase
+      attr_reader :score
+      attr_reader :p_value
+      attr_reader :t_score
       alias_method :coding_region_score, :score 
 
 
@@ -307,81 +330,83 @@ if __FILE__ == $0
 
 
   puts "= class Bio::Genscan::Report "
-  rpt = Bio::Genscan::Report.new(report)
+  report = Bio::Genscan::Report.new(report)
 
 
-  puts "==> rpt.genscan_version "
-  p rpt.genscan_version
-  puts "==> rpt.date_run "
-  p rpt.date_run
-  puts "==> rpt.time "
-  p rpt.time
+  print " report.genscan_version #=> "
+  p report.genscan_version
+  print " report.date_run #=> "
+  p report.date_run
+  print " report.time #=> "
+  p report.time
 
-  puts "==> rpt.query_name "
-  p rpt.query_name
-  puts "==> rpt.length "
-  p rpt.length
-  puts "==> rpt.gccontent "
-  p rpt.gccontent
-  puts "==> rpt.isochore "
-  p rpt.isochore
+  print " report.query_name #=> "
+  p report.query_name
+  print " report.length #=> "
+  p report.length
+  print " report.gccontent #=> "
+  p report.gccontent
+  print " report.isochore #=> "
+  p report.isochore
 
-  puts "==> rpt.matrix " 
-  p rpt.matrix
+  print " report.matrix #=> " 
+  p report.matrix
 
-  puts "==> rpt.predictions (Array of Bio::Genscan::Report::Gene)  " 
-  puts "==> rpt.predictions.size "
-  p rpt.predictions.size
+  puts " report.predictions (Array of Bio::Genscan::Report::Gene)  " 
+  print " report.predictions.size #=> "
+  p report.predictions.size
 
-  puts "\n== class Bio::Genscan::Report::Gene "
-  rpt.predictions.each {|gene|
-    puts " ==> gene.number " 
+
+  report.predictions.each {|gene|
+    puts "\n== class Bio::Genscan::Report::Gene "
+    print " gene.number #=> " 
     p gene.number
-    puts " ==> gene.aaseq (Bio::FastaFormat)" 
+    print " gene.aaseq (Bio::FastaFormat) #=> " 
     p gene.aaseq
-    puts " ==> gene.naseq (Bio::FastaFormat) " 
+    print " gene.naseq (Bio::FastaFormat) #=> " 
     p gene.naseq
-    puts " ==> gene.promoter (Bio::Genscan::Report::Exon)" 
+    print " ene.promoter (Bio::Genscan::Report::Exon) #=> " 
     p gene.promoter
-    puts " ==> gene.polyA (Bio::Genscan::Report::Exon) " 
+    print " gene.polyA (Bio::Genscan::Report::Exon) #=> " 
     p gene.polyA
-    puts " ==> gene.exons (Array of Bio::Genscan::Report::Exon) " 
-    puts " ==> gene.exons.size " 
+    puts " gene.exons (Array of Bio::Genscan::Report::Exon) " 
+    print " gene.exons.size #=> " 
     p gene.exons.size
 
-    puts "\n== class Bio::Genscan::Report::Exon "
+
     gene.exons.each {|exon|
-      puts " ==> exon.number "
+      puts "\n== class Bio::Genscan::Report::Exon "
+      print " exon.number #=> "
       p exon.number
-      puts " ==> exon.exon_type "
+      print " exon.exon_type #=> "
       p exon.exon_type
-      puts " ==> exon.exon_type_long "
+      print " exon.exon_type_long #=> "
       p exon.exon_type_long
-      puts " ==> exon.strand "
+      print " exon.strand #=> "
       p exon.strand
-      puts " ==> exon.first "
+      print " exon.first #=> "
       p exon.first
-      puts " ==> exon.last"
+      print " exon.last #=> "
       p exon.last
-      puts " ==> exon.range (Range)"
+      print " exon.range (Range) #=> "
       p exon.range
-      puts " ==> exon.frame"
+      print " exon.frame #=> "
       p exon.frame
-      puts " ==> exon.phase"
+      print " exon.phase #=> "
       p exon.phase
-      puts " ==> exon.acceptor_score"
+      print " exon.acceptor_score #=> "
       p exon.acceptor_score
-      puts " ==> exon.donor_score"
+      print " exon.donor_score #=> "
       p exon.donor_score
-      puts " ==> exon.initiation_score"
+      print " exon.initiation_score #=> "
       p exon.initiation_score
-      puts " ==> exon.termination_score"
+      print " exon.termination_score #=> "
       p exon.termination_score
-      puts " ==> exon.score"
+      print " exon.score #=> "
       p exon.score
-      puts " ==> exon.p_value"
+      print " exon.p_value #=> "
       p exon.p_value
-      puts " ==> exon.t_score"
+      print " exon.t_score #=> "
       p exon.t_score
       puts
     }
