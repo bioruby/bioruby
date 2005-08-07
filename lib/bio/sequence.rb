@@ -19,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.36 2004/08/23 23:46:57 k Exp $
+#  $Id: sequence.rb,v 0.37 2005/08/07 08:19:28 k Exp $
 #
 
 require 'bio/data/na'
@@ -238,41 +238,21 @@ module Bio
       end
 
       # NucleicAcid is defined in bio/data/na.rb
-      def molecular_weight(hash = nil)
-	nw = NucleicAcid.weight
-	if self.rna?
-	  hash = {
-	    'g' => nw[:guanine]  + nw[:ribose_phosphate] - nw[:water],
-	    'c' => nw[:cytosine] + nw[:ribose_phosphate] - nw[:water],
-	    'a' => nw[:adenine]  + nw[:ribose_phosphate] - nw[:water],
-	    'u' => nw[:uracil]   + nw[:ribose_phosphate] - nw[:water],
-	  }
-	else
-	  hash = {
-	    'g' => nw[:guanine]  + nw[:deoxyribose_phosphate] - nw[:water],
-	    'c' => nw[:cytosine] + nw[:deoxyribose_phosphate] - nw[:water],
-	    'a' => nw[:adenine]  + nw[:deoxyribose_phosphate] - nw[:water],
-	    't' => nw[:thymine]  + nw[:deoxyribose_phosphate] - nw[:water],
-	  }
-	end unless hash
-	total(hash) + nw[:water]
+      def molecular_weight
+        if self.rna?
+          NucleicAcid.weight(self, true)
+        else
+          NucleicAcid.weight(self)
+        end
       end
 
       # NucleicAcid is defined in bio/data/na.rb
       def to_re
-	hash = NucleicAcid.names
 	if self.rna?
-	  NucleicAcid.names.each {|k,v| hash[k] = v.tr('t', 'u')}
-	end
-	re = ''
-	self.each_byte do |x|
-	  if hash[x.chr]
-	    re += hash[x.chr]
-	  else
-	    re += '.'
-	  end
-	end
-	return Regexp.new(re)
+          NucleicAcid.to_re(self.dna)
+        else
+          NucleicAcid.to_re(self)
+        end
       end
 
       def names
