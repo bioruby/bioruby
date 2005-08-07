@@ -11,12 +11,46 @@
 
 	* gemspec.rb: newly added RubyGems spec file.
 
+2005-06-21  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/report.rb
+
+	  Newly added support for reading BLAST -m 7 result files
+	  through Bio::FlatFile by adding
+	  DELIMITER = "</BlastOutput>\n" to Bio::Blast::Report class.
+	  (Note that tab-delimited format (-m 8 and -m 9) are not yet
+	  supported by Bio::FlatFile)
+
+	* lib/bio/io/flatfile.rb
+
+	  Added file format autodetection of BLAST XML format.
+
+2005-06-20  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb: added 'to_s' to store original entry
+
 2005-04-04  Mitsuteru Nakao <n@bioruby.org>
 
         * lib/bio/db/go.rb
 
           Newly added Bio::GO::External2go class for parsing 
           external2go file.
+
+2005-03-10  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/io/flatfile.rb
+
+	  Added file format autodetection of Spidey (Bio::Spidey::Report).
+
+2005-03-10  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/io/flatfile.rb
+	  * Added file format autodetection for Bio::KEGG::KO,
+	    Bio::KEGG::GLYCAN, Bio::KEGG::REACTION, Bio::Blat::Report
+	    and Bio::Sim4::Report.
+	  * In order to distinguish Bio::KEGG::REACTION and 
+	    Bio::KEGG::COMPOUND, autodetection regexp. of
+	    Bio::KEGG::COMPOUND were modified.
 
 2005-02-09  KATAYAMA Toshiaki <k@bioruby.org>
 
