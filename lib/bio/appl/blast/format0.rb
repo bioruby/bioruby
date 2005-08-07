@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format0.rb,v 1.8 2005/06/20 11:35:30 ngoto Exp $
+#  $Id: format0.rb,v 1.9 2005/08/07 16:42:28 ngoto Exp $
 #
 
 begin
@@ -186,7 +186,7 @@ module Bio
 	  while r = data.first and /^ *Database\:/ =~ r
 	    dbs << data.shift
 	  end
-	  @f0dbstat = F0dbstat.new(dbs)
+	  @f0dbstat = self.class::F0dbstat.new(dbs)
 	  i = -1
 	  while r = data[0] and /^Lambda/ =~ r
 	    #i -= 1 unless /^Gapped/ =~ r
