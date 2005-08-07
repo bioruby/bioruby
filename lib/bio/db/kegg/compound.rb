@@ -1,5 +1,5 @@
 #
-# bio/db/kegg/compound.rb - KEGG/COMPOUND database class
+# bio/db/kegg/compound.rb - KEGG COMPOUND database class
 #
 #   Copyright (C) 2001, 2002, 2004 KATAYAMA Toshiaki <k@bioruby.org>
 #
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: compound.rb,v 0.9 2004/10/22 10:00:39 k Exp $
+#  $Id: compound.rb,v 0.10 2005/08/07 08:23:37 k Exp $
 #
 
 require 'bio/db'
@@ -37,7 +37,10 @@ module Bio
 
       # ENTRY
       def entry_id
-	field_fetch('ENTRY')
+        unless @data['ENTRY']
+          @data['ENTRY'] = fetch('ENTRY').split(/\s+/).first
+        end
+        @data['ENTRY']
       end
 
       # NAME
