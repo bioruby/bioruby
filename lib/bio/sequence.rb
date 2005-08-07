@@ -1,7 +1,7 @@
 #
 # bio/sequence.rb - biological sequence class
 #
-#   Copyright (C) 2000-2004 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2000-2005 KATAYAMA Toshiaki <k@bioruby.org>
 #   Copyright (C) 2001 Yoshinori K. Okuji <o@bioruby.org>
 #   Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
 #
@@ -19,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.37 2005/08/07 08:19:28 k Exp $
+#  $Id: sequence.rb,v 0.38 2005/08/07 09:58:22 k Exp $
 #
 
 require 'bio/data/na'
@@ -321,9 +321,8 @@ module Bio
       end
 
       # AminoAcid is defined in bio/data/aa.rb
-      def molecular_weight(hash = nil)
-	hash = AminoAcid.weight unless hash
-	total(hash) - NucleicAcid.weight[:water] * (self.length - 1)
+      def molecular_weight
+        AminoAcid.weight(self)
       end
 
     end
@@ -592,7 +591,7 @@ You can use Bio::Seq instead of Bio::Sequence for short.
 
       Show abnormal bases other than 'atgcu'.
 
---- Bio::Sequence::NA#molecular_weight(hash)
+--- Bio::Sequence::NA#molecular_weight
 
       Estimate the weight of this biological string molecule.
 
@@ -630,7 +629,7 @@ You can use Bio::Seq instead of Bio::Sequence for short.
 
       Similar to codes but returns long names.
 
---- Bio::Sequence::AA#molecular_weight(hash)
+--- Bio::Sequence::AA#molecular_weight
 
       Estimate the weight of this protein.
 

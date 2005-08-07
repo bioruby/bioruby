@@ -1,7 +1,7 @@
 #
 # bio/data/na.rb - Nucleic Acids
 #
-#   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001, 2005 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: na.rb,v 0.9 2005/08/07 08:19:28 k Exp $
+#  $Id: na.rb,v 0.10 2005/08/07 09:58:21 k Exp $
 #
 
 module Bio

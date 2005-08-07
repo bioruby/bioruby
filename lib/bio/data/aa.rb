@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aa.rb,v 0.8 2005/08/07 08:19:28 k Exp $
+#  $Id: aa.rb,v 0.9 2005/08/07 09:58:21 k Exp $
 #
 
 module Bio
@@ -116,7 +116,16 @@ module Bio
 
       def weight(x = nil)
         if x
-          Weight[x]
+          if x.length > 1
+            total = 0.0
+            x.each_byte do |byte|
+              aa = byte.chr.upcase
+              total += Weight[aa]
+            end
+            total -= NucleicAcid.weight[:water] * (x.length - 1)
+          else
+            Weight[x]
+          end
         else
           Weight
         end
