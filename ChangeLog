@@ -1,3 +1,10 @@
+2005-08-08  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/bl2seq/report.rb:
+	  Newly added bl2seq (BLAST 2 sequences) output parser.
+	* lib/bio/appl/blast/format0.rb:
+	  Added `self.class::` before F0dbstat.new for bl2seq/report.rb
+
 2005-08-07  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/db/genbank/common.rb
