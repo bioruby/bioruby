@@ -18,7 +18,7 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#  $Id: biofetch.rb,v 1.15 2004/08/24 00:08:54 k Exp $
+#  $Id: biofetch.rb,v 1.16 2005/08/07 10:02:41 k Exp $
 #
 
 require 'cgi'
@@ -85,10 +85,11 @@ module KeggAPI
     results = ''
     id_list.each do |query_id|
       entry_id = "#{db}:#{query_id}"
-      if result = serv.get_entries([entry_id])
-        results << result
-      else
+      result = serv.get_entries([entry_id])
+      if result.empty?
         error4(query_id, db)
+      else
+        results << result
       end
     end
     return results
