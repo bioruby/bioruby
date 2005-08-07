@@ -1,3 +1,11 @@
+2005-08-07  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/genbank/common.rb
+	Avoid NoMethodError (private method `chomp` called for nil:NilClass)
+	when parsing features of
+	    ftp://ftp.ncbi.nih.gov/genbank/genomes/Bacteria/
+	    Salmonella_typhimurium_LT2/AE006468.gbk
+
 2005-07-11  Toshiaki Katayama <k@bioruby.org>
 
 	* bin/br_pmfetch.rb
