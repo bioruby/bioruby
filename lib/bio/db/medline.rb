@@ -1,7 +1,7 @@
 #
 # bio/db/medline.rb - NCBI PubMed/MEDLINE database class
 #
-#   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2001, 2005 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: medline.rb,v 1.10 2004/02/08 00:30:54 k Exp $
+#  $Id: medline.rb,v 1.11 2005/08/07 08:13:42 k Exp $
 #
 
 require 'bio/db'
@@ -261,6 +261,10 @@ module Bio
 
     # PT   - Publication Type
     #   The type of material the article represents.
+    def pt
+      @pubmed['PT'].strip.split(/\n/)   
+    end
+    alias publication_type pt
 
     # RF   - Number of References
     #   Number of bibliographic references for Review articles.
