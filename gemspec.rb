@@ -3,7 +3,7 @@ require 'rubygems'
 
 spec = Gem::Specification.new do |s|
   s.name = 'bioruby'
-  s.version = "0.6.2"
+  s.version = "0.6.3"
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
   s.homepage = "http://bioruby.org/"
