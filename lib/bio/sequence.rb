@@ -19,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.38 2005/08/07 09:58:22 k Exp $
+#  $Id: sequence.rb,v 0.39 2005/08/08 00:44:55 k Exp $
 #
 
 require 'bio/data/na'
@@ -246,7 +246,6 @@ module Bio
         end
       end
 
-      # NucleicAcid is defined in bio/data/na.rb
       def to_re
 	if self.rna?
           NucleicAcid.to_re(self.dna)
@@ -301,11 +300,15 @@ module Bio
 	self.tr!(" \t\n\r",'')
       end
 
-      def to_re
-	return Regexp.new(self)
+      # AminoAcid is defined in bio/data/aa.rb
+      def molecular_weight
+        AminoAcid.weight(self)
       end
 
-      # AminoAcid is defined in bio/data/aa.rb
+      def to_re
+	AminoAcid.to_re(self)
+      end
+
       def codes
 	array = []
 	self.each_byte do |x|
@@ -318,11 +321,6 @@ module Bio
 	self.codes.map do |x|
 	  AminoAcid.names[x]
 	end
-      end
-
-      # AminoAcid is defined in bio/data/aa.rb
-      def molecular_weight
-        AminoAcid.weight(self)
       end
 
     end
