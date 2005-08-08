@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.23 2004/08/25 16:57:12 k Exp $
+#  $Id: sptr.rb,v 1.24 2005/08/08 06:41:13 nakao Exp $
 #
 
 require 'bio/db'
@@ -66,17 +66,20 @@ class SPTR < EMBLDB
     end
   end
 
+  #
   def entry
     id_line('ENTRY_NAME')
   end
   alias entry_name entry
   alias entry_id entry
 
+  #
   def molecule
     id_line('MOLECULE_TYPE')
   end
   alias molecule_type molecule
 
+  #
   def sequence_length
     id_line('SEQUENCE_LENGTH')
   end
@@ -97,7 +100,8 @@ class SPTR < EMBLDB
   #          #accessions  -> ary
   #          #accession  -> accessions.first
 
-  @@ac_regrexp = /[OPQ][0-9][A-Z0-9]{3}[0-9]/
+  @@ac_regrexp = /[OPQ][0-9][A-Z0-9]{3}[0-9]/ 
+
 
   # DT Line; date (3/entry)
   # DT DD-MMM-YYY (rel. NN, Created)
@@ -132,7 +136,43 @@ class SPTR < EMBLDB
   # SYNONYM        >=0
   # CONTEINS       >=0
   #
+  # Returns the proposed official name of the protein
+  def protein_name
+    name = ""
+    if de_line = fetch('DE') then
+      str = de_line[/^[^\[]*/] # everything preceding the first [ (the "contains" part)
+      name = str[/^[^(]*/].strip
+      name << ' (Fragment)' if str =~ /fragment/i
+    end
+    return name
+  end
+  # synonyms are each placed in () following the official name on the DE line
+  # Returns an array of synonyms (unofficial names)
+  def synonyms
+    ary = Array.new
+    if de_line = fetch('DE') then
+      line = de_line.sub(/\[.*\]/,'') # ignore stuff between [ and ].  That's the "contains" part
+      line.scan(/\([^)]+/) do |synonym| 
+        unless synonym =~ /fragment/i then 
+          ary << synonym[1..-1].strip # index to remove the leading (  
+        end
+      end
+    end
+    return ary
+  end
 
+
+  # GN Line: Gene name(s) (>=0, optional)
+  def gn
+    return @data['GN'] if @data['GN']
+
+    case fetch('GN')
+    when /Name=/ then
+      return gn_uniprot_parser
+    else
+      return gn_old_parser
+    end
+  end
 
   # GN Line: Gene name(s) (>=0, optional)
   # GN   HNS OR DRDX OR OSMZ OR BGLY.
@@ -145,49 +185,115 @@ class SPTR < EMBLDB
   #          #gn[0] -> Array   # OR
   #          #gene_names -> Array
   #
-  def gn 
-    unless @data['GN']
-      if get('GN').size > 0
-        names = fetch('GN').sub(/\.$/,'').split(/ AND /)
-        names.map! {|synonyms|
-          synonyms = synonyms.gsub(/\(|\)/,'').split(/ OR /).map {|e|
-            e.strip 
-          }
+  def gn_old_parser
+    names = Array.new
+    if get('GN').size > 0
+      names = fetch('GN').sub(/\.$/,'').split(/ AND /)
+      names.map! { |synonyms|
+        synonyms = synonyms.gsub(/\(|\)/,'').split(/ OR /).map { |e|
+          e.strip 
         }
+      }
+    end
+    return @data['GN'] = names
+  end
+  private :gn_old_parser
+
+
+  # The new format of the GN line is:
+  # GN   Name=; Synonyms=[, ...]; OrderedLocusNames=[, ...];
+  # GN   ORFNames=[, ...];
+  # 
+  # GN   and
+  #
+  # Bio::SPTR#gn -> [ <gene record>* ]
+  #   where <gene record> is:
+  #                    { :name => '...', 
+  #                      :synonyms => [ 's1', 's2', ... ],
+  #                      :loci   => [ 'l1', 'l2', ... ],
+  #                      :orfs     => [ 'o1', 'o2', ... ] 
+  #                    }
+  def gn_uniprot_parser
+    @data['GN'] = Array.new
+    gn_line = fetch('GN').strip
+    records = gn_line.split(/\s*and\s*/)
+    records.each do |record|
+      gene_hash = {:name => '', :synonyms => [], :loci => [], :orfs => []}
+      record.each(';') do |element|
+        case element
+        when /Name=/ then
+          gene_hash[:name] = $'[0..-2]
+        when /Synonyms=/ then
+          gene_hash[:synonyms] = $'[0..-2].split(/\s*,\s*/)
+        when /OrderedLocusNames=/ then
+          gene_hash[:loci] = $'[0..-2].split(/\s*,\s*/)
+        when /ORFNames=/ then
+          gene_hash[:orfs] = $'[0..-2].split(/\s*,\s*/)
+        end
       end
-      @data['GN'] = names
+      @data['GN'] << gene_hash
     end
     return @data['GN']
   end
-  alias gene_names gn
+  private :gn_uniprot_parser
+
+
+  # Bio::SPTR#gene_names -> [String]
+  def gene_names
+    gn # set @data['GN'] if it hasn't been already done
+    if @data['GN'].first.class == Hash then
+      @data['GN'].collect { |element| element[:name] }
+    else
+      @data['GN'].first
+    end
+  end
+
 
   # Bio::SPTR#gene_name -> String
   #
   def gene_name
-    begin
-      @data['GN'][0][0]
-    rescue NameError
-      nil
-    end
+    gene_names.first
   end
 
+
   # OS Line; organism species (>=1)
-  # "OS   Trifolium repens (white clover)"
+  # "OS   Genus species (name)."
+  # "OS   Genus species (name0) (name1)."
+  # "OS   Genus species (name0) (name1)."
+  # "OS   Genus species (name0), G s0 (name0), and G s (name0) (name1)."
+  # "OS   Homo sapiens (Human), and Rarrus norveticus (Rat)"
   #
-  # OS   Genus species (name).
-  # OS   Genus species (name0) (name1).
-  # OS   Genus species (name0) (name1).
-  # OS   Genus species (name0), G s0 (name0), and G s (name1).
-  #
-  # Bio::EMBLDB#os  -> Array w/in Hash
+  # Bio::EMBLDB#os  -> Array of Hash
   # [{'name'=>'(Human)', 'os'=>'Homo sapiens'}, 
   #  {'name'=>'(Rat)', 'os'=>'Rattus norveticus'}]
-  # Bio::EMBLDB#os[0]['name'] => "(Human)"
-  # Bio::EMBLDB#os[0] => {'name'=>"(Human)", 'os'=>'Homo sapiens'}
-  # Bio::EMBLDB#os(0) => "Homo sapiens (Human)"
+  # Bio::SPTR#os[0]['name'] => "(Human)"
+  # Bio::EPTR#os[0] => {'name'=>"(Human)", 'os'=>'Homo sapiens'}
+  # Bio::EPTR#os(0) => "Homo sapiens (Human)"
   #
-  # Bio::SPTR#os -> Array w/in Hash
+  # Bio::SPTR#os -> Array of Hash
   # Bio::SPTR#os(num) -> String
+  def os(num = nil)
+    unless @data['OS']
+      os = Array.new
+      fetch('OS').split(/, and|, /).each do |tmp|
+        if tmp =~ /([A-Z][a-z]* *[\w\d \:\'\+\-]+[\w\d])/
+          org = $1
+          tmp =~ /(\(.+\))/ 
+          os.push({'name' => $1, 'os' => org})
+        else
+          raise "Error: OS Line. #{$!}\n#{fetch('OS')}\n"
+        end
+      end
+      @data['OS'] = os
+    end
+
+    if num
+      # EX. "Trifolium repens (white clover)"
+      return "#{@data['OS'][num]['os']} #{@data['OS'][num]['name']}"
+    else
+      return @data['OS']
+    end
+  end
   
 
   # OG Line; organella (0 or 1/entry)
@@ -210,12 +316,12 @@ class SPTR < EMBLDB
   # Bio::SPTR#ox -> {'NCBI_TaxID' => ['1234','2345','3456','4567']}
   def ox
     unless @data['OX']
-      tmp = fetch('OX').sub(/\.$/,'').split(/;/).map {|e| e.strip }
+      tmp = fetch('OX').sub(/\.$/,'').split(/;/).map { |e| e.strip }
       hsh = Hash.new
-      tmp.each {|e|
+      tmp.each do |e|
         db,refs = e.split(/=/)
         hsh[db] = refs.split(/, */)
-      }
+      end
       @data['OX'] = hsh
     end
     return @data['OX']
@@ -271,7 +377,7 @@ class SPTR < EMBLDB
       return cc if get('CC').size == 0 # 12KD_MYCSM has no CC lines.
 
       begin
-        fetch('CC').split(/#{cmt}/)[0].sub(dlm,'').split(dlm).each {|tmp|
+        fetch('CC').split(/#{cmt}/)[0].sub(dlm,'').split(dlm).each do |tmp|
           if /(^[A-Z ]+[A-Z]): (.+)/ =~ tmp
             key  = $1
             body = $2.gsub(/- (?!AND)/,'-')
@@ -281,17 +387,16 @@ class SPTR < EMBLDB
               cc[key].push(body)
             end
           else
-            raise ["Error: #{entry_id}: CC Lines", '',
+            raise ["Error: [#{entry_id}]: CC Lines", '',
                    tmp, '', '', fetch('CC'),''].join("\n")
           end
-        }
+        end
       rescue NameError
         if fetch('CC') == ''
           return {}
         else
-          raise "Error: Invalid CC Lines: #{entry_id}: " + 
-                        "\n'#{self.get('CC')}'\n" +
-                        "(#{$!})"
+          raise ["Error: Invalid CC Lines: [#{entry_id}]: ",
+                 "\n'#{self.get('CC')}'\n", "(#{$!})"].join
         end
       rescue NoMethodError
       end
@@ -313,8 +418,7 @@ class SPTR < EMBLDB
       # CC         IsoId=P15529-1; Sequence=Displayed;
 
       # Event, Named isoforms, Comment, [Name, Synonyms, IsoId, Sequnce]+
-      tmp = {'Event'=>nil, 'Named isoforms'=>nil, 'Comment'=>nil,
-             'Variants' => []}
+      tmp = {'Event' => nil, 'Named isoforms' => nil, 'Comment' => nil, 'Variants'  => []}
 
       if /Event=(.+?);/ =~ ap
         tmp['Event'] = $1
@@ -325,9 +429,9 @@ class SPTR < EMBLDB
       if /Comment=(.+?);/m =~ ap
         tmp['Comment'] = $1
       end
-      ap.scan(/Name=.+?Sequence=.+?;/).each {|ent|
+      ap.scan(/Name=.+?Sequence=.+?;/).each do |ent|
         tmp['Variants'] << cc_ap_variants_parse(ent)
-      }
+      end
       return tmp
 
 
@@ -337,9 +441,9 @@ class SPTR < EMBLDB
       db = @data['CC']['DATABASE']
       return db unless db
 
-      db.each {|e|
-        db = {'NAME'=>nil,'NOTE'=>nil,'WWW'=>nil,'FTP'=>nil}
-        e.sub(/.$/,'').split(/;/).each {|line|
+      db.each do |e|
+        db = {'NAME' => nil, 'NOTE' => nil, 'WWW' => nil, 'FTP' => nil}
+        e.sub(/.$/,'').split(/;/).each do |line|
           case line
           when /NAME=(.+)/
             db['NAME'] = $1
@@ -350,9 +454,9 @@ class SPTR < EMBLDB
           when /FTP="(.+)"/
             db['FTP'] = $1
           end 
-        }
+        end
         tmp.push(db)
-      }
+      end
       return tmp
 
     when 'MASS SPECTOROMETRY'
@@ -361,9 +465,9 @@ class SPTR < EMBLDB
       ms = @data['CC']['MASS SPECTOROMETRY']
       return ms unless ms
 
-      ms.each {|m|
+      ms.each do |m|
         mass = {'MW'=>nil,'MW_ERR'=>nil,'METHOD'=>nil,'RANGE'=>nil}
-        m.sub(/.$/,'').split(/;/).each {|line|
+        m.sub(/.$/,'').split(/;/).each do |line|
           case line
           when /MW=(.+)/
             mass['MW'] = $1.to_f
@@ -374,9 +478,9 @@ class SPTR < EMBLDB
           when /RANGE="(\d+-\d+)"/ 
             mass['RANGE'] = $1          # RANGE class ? 
           end 
-        }
+        end
         tmp.push(mass)
-      }
+      end
       return tmp
 
     when nil
@@ -389,19 +493,17 @@ class SPTR < EMBLDB
 
 
   def cc_ap_variants_parse(ent)
-    tmp = {}
-    ent.split(/; /).map {|e| e.split(/=/) }.each {|e|
+    hsh = {}
+    ent.split(/; /).map {|e| e.split(/=/) }.each do |e|
       case e[0]
       when 'Sequence'
         e[1] = e[1].sub(/;/,'').split(/, /)
       end
-      tmp[e[0]] = e[1]
-    }
-    tmp
+      hsh[e[0]] = e[1]
+    end
+    return hsh
   end
   private :cc_ap_variants_parse
-
-
 
 
 
@@ -416,7 +518,6 @@ class SPTR < EMBLDB
     'MAIZE-2DPAGE','MENDEL','MGD''MIM','PDB','PFAM','PIR','PRINTS',
     'PROSITE','REBASE','AARHUS/GHENT-2DPAGE','SGD','STYGENE','SUBTILIST',
     'SWISS-2DPAGE','TIGR','TRANSFAC','TUBERCULIST','WORMPEP','YEPD','ZFIN']
-
 
 
   # KW Line; keyword (>=1)
@@ -470,7 +571,6 @@ class SPTR < EMBLDB
             next
           end
 
-
           case last_feature
           when 'VARSPLIC', 'VARIANT', 'CONFLICT'
             if /FTId=(.+?)\./ =~ line   # version 41 >
@@ -501,8 +601,8 @@ class SPTR < EMBLDB
                   "'#{self.get('FT')}'\n"
       end
 
-      table.each_key {|k|
-        table[k].each {|e|
+      table.each_key do |k|
+        table[k].each do |e|
           if / -> / =~ e['Description']
             pattern = /([A-Z][A-Z ]*[A-Z]*) -> ([A-Z][A-Z ]*[A-Z]*)/
             e['Description'].sub!(pattern) {  
@@ -521,9 +621,8 @@ class SPTR < EMBLDB
               end
             }
           end
-        }
-      }
-
+        end
+      end
       @data['FT'] = table
     end
 
@@ -548,7 +647,7 @@ class SPTR < EMBLDB
   def sq(key = nil)
     unless @data['SQ']
       if fetch('SQ') =~ /(\d+) AA\; (\d+) MW; (.+) CRC64;/
-        @data['SQ'] = { 'aalen'=>$1.to_i, 'MW'=>$2.to_i, 'CRC64'=>$3 }
+        @data['SQ'] = { 'aalen' => $1.to_i, 'MW' => $2.to_i, 'CRC64' => $3 }
       else
         raise "Invalid SQ Line: \n'#{fetch('SQ')}'"
       end
@@ -623,6 +722,7 @@ if __FILE__ == $0
 
     cmd "Bio::SPTR.new($ent).gn", 'GN'
     cmd "Bio::SPTR.new($ent).gene_name"
+    cmd "Bio::SPTR.new($ent).gene_names"
 
     cmd "Bio::SPTR.new($ent).dt", "DT"
     ['created','annotation','sequence'].each do |key|
@@ -631,6 +731,8 @@ if __FILE__ == $0
 
     cmd "Bio::SPTR.new($ent).de", 'DE'
     cmd "Bio::SPTR.new($ent).definition"
+    cmd "Bio::SPTR.new($ent).protein_name"
+    cmd "Bio::SPTR.new($ent).synonyms"
 
     cmd "Bio::SPTR.new($ent).kw", 'KW'
 
@@ -683,9 +785,7 @@ Class for a entry in the SWISS-PROT/TrEMBL database.
        key = (ENTRY_NAME|MOLECULE_TYPE|DATA_CLASS|SEQUENCE_LENGTH)
 
 --- Bio::SPTR#entry_id -> str
-
 --- Bio::SPTR#molecule -> str
-
 --- Bio::SPTR#sequence_length -> int
     
 
@@ -694,11 +794,14 @@ Class for a entry in the SWISS-PROT/TrEMBL database.
 --- Bio::SPTR#ac -> ary
 --- Bio::SPTR#accessions -> ary
 --- Bio::SPTR#accession -> accessions.first
+
  
 === GN line (Gene name(s))
 
---- Bio::SPTR#gn -> [ary, ...]
---- Bio::SPTR#gene_name -> gn[0][0]
+--- Bio::SPTR#gn -> [ary, ...] or [{:name => str, :synonyms => [], :loci => [], :orfs => []}]
+--- Bio::SPTR#gene_name -> str
+--- Bio::SPTR#gene_names -> [str] or [str]
+
 
 === DT lines (Date) 
 
@@ -707,10 +810,20 @@ Class for a entry in the SWISS-PROT/TrEMBL database.
 
       key := (created|annotation|sequence)
 
+
 === DE lines (Description)
 
 --- Bio::SPTR#de -> str
              #definition -> str
+
+--- Bio::SPTR#protein_name
+
+      Returns the proposed official name of the protein
+
+
+--- Bio::SPTR#synonyms
+
+      Returns an array of synonyms (unofficial names)
 
 === KW lines (Keyword)
 
