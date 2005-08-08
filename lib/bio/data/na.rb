@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: na.rb,v 0.11 2005/08/07 23:28:14 k Exp $
+#  $Id: na.rb,v 0.12 2005/08/08 12:57:24 k Exp $
 #
 
 module Bio
@@ -79,7 +79,7 @@ module Bio
         :deoxyribose_phosphate	=> 196.11,
         :ribose_phosphate	=> 212.11,
 
-        :hydrogen	=> 1.00,
+        :hydrogen	=> 1.00794,
         :water		=> 18.015,
 
       }
