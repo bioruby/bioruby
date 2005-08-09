@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-# $Id: sirna.rb,v 1.2 2005/08/09 05:39:26 k Exp $
+# $Id: sirna.rb,v 1.3 2005/08/09 05:40:44 k Exp $
 #
 
 require 'bio/sequence'
@@ -39,7 +39,6 @@ module Bio
       return false unless /^.{2}[GC]/i =~ target
       return false unless /[AU].{2}$/i =~ target
       return false if     /[GC]{9}/i   =~ target
-      return false if     /[GC]{9}/i   =~ target.complement.rna # same as above?
 
       one_third  = target.size * 1 / 3
       start_pos  = @target_size - one_third - 1
@@ -52,7 +51,6 @@ module Bio
 
     def reynolds?(target)
       return false if /[GC]{9}/i =~ target
-      return false if /[GC]{9}/i =~ target.complement.rna # means same as above?
       return false unless /^.{4}A.{6}U.{2}[AUC].{5}[AU].{2}$/i =~ target
       return true
     end
