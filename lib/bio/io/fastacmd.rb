@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fastacmd.rb,v 1.3 2005/08/09 09:40:27 ngoto Exp $
+#  $Id: fastacmd.rb,v 1.4 2005/08/09 09:46:39 ngoto Exp $
 #
 
 require 'bio/db/fasta'
@@ -71,6 +71,7 @@ module Bio
         end
         t.join
       end
+      self
     end
     alias :each :each_entry
 
