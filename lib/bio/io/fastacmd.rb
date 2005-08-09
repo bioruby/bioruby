@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fastacmd.rb,v 1.2 2005/08/09 08:55:40 k Exp $
+#  $Id: fastacmd.rb,v 1.3 2005/08/09 09:40:27 ngoto Exp $
 #
 
 require 'bio/db/fasta'
@@ -50,26 +50,26 @@ module Bio
         entry_id = list
       end
 
-      cmd = "#{@fastacmd} -d #{@database} -s #{entry_id}"
-      begin
-        inn, out, err = Open3.popen3(cmd)
+      cmd = [ @fastacmd, '-d', @database, '-s', entry_id ]
+      Open3.popen3(cmd) do |inn, out, err|
+        inn.close
+        t = Thread.start { err.read }
         results = Bio::FlatFile.new(Bio::FastaFormat, out).to_a
-        err_msg = err.read
-        return results
-      rescue
-        raise "[Error] command execution failed : #{cmd}\n#{err_msg}"
-      ensure
-        inn.close; out.close; err.close
+        t.join
+        results
       end
     end
 
     def each_entry
-      cmd = "#{@fastacmd} -d #{@database} -D T"
-      IO.popen(cmd) do |io|
-        f = Bio::FlatFile.new(Bio::FastaFormat, io)
+      cmd = [ @fastacmd, '-d', @database, '-D', 'T' ]
+      Open3.popen3(*cmd) do |inn, out, err|
+        inn.close
+        t = Thread.start { err.read }
+        f = Bio::FlatFile.new(Bio::FastaFormat, out)
         f.each_entry do |e|
           yield e
         end
+        t.join
       end
     end
     alias :each :each_entry
