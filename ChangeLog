@@ -1,15 +1,48 @@
+2005-08-09  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/util/sirna.rb:
+
+	  Newly added method for desing of siRNA, contributed by
+	  Itoshi Nikaido.  The lib/bio/util/ directory if reserved
+	  for bioinfomatics algorithms implemented by pure Ruby.
+
+	* lib/bio/io/fastacmd.rb:
+
+	  Newly added wrapper for NCBI fastacmd program, contributed by
+	  Shinji Shigenobu.
+
 2005-08-08  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/bl2seq/report.rb:
+
 	  Newly added bl2seq (BLAST 2 sequences) output parser.
+
 	* lib/bio/appl/blast/format0.rb:
+
 	  Added `self.class::` before F0dbstat.new for bl2seq/report.rb
+
+2005-08-07  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/sequence.rb, lib/bio/data/na.rb, lib/bio/data/aa.rb:
+
+	  Bio::NucleicAcid, Bio::AminoAcid classes are refactored to have
+	  Data module, and this module is included and extended to make
+	  all methods as both of instance methods and extend methods.
+
+	  Bio::Sequence::NA class is rewrited (molecular_weight, to_re methods)
+	  to use Bio::NucleicAcid.
+
+	  Bio::Sequence::NA#molecular_weight method is fixed to subtract
+	  two hydrogens for each base.
+
+	* lib/bio/db/medline.rb: publication_type (pt) method added.
 
 2005-08-07  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/db/genbank/common.rb
-	Avoid NoMethodError (private method `chomp` called for nil:NilClass)
-	when parsing features of
+
+	  Avoid NoMethodError (private method `chomp` called for nil:NilClass)
+	  when parsing features of
 	    ftp://ftp.ncbi.nih.gov/genbank/genomes/Bacteria/
 	    Salmonella_typhimurium_LT2/AE006468.gbk
 
@@ -48,8 +81,7 @@
 
         * lib/bio/db/go.rb
 
-          Newly added Bio::GO::External2go class for parsing 
-          external2go file.
+          Newly added Bio::GO::External2go class for parsing external2go file.
 
 2005-03-10  Naohisa Goto <ng@bioruby.org>
 
@@ -60,12 +92,14 @@
 2005-03-10  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/io/flatfile.rb
-	  * Added file format autodetection for Bio::KEGG::KO,
-	    Bio::KEGG::GLYCAN, Bio::KEGG::REACTION, Bio::Blat::Report
-	    and Bio::Sim4::Report.
-	  * In order to distinguish Bio::KEGG::REACTION and 
-	    Bio::KEGG::COMPOUND, autodetection regexp. of
-	    Bio::KEGG::COMPOUND were modified.
+
+	  Added file format autodetection for Bio::KEGG::KO,
+	  Bio::KEGG::GLYCAN, Bio::KEGG::REACTION, Bio::Blat::Report
+	  and Bio::Sim4::Report.
+
+	  In order to distinguish Bio::KEGG::REACTION and 
+	  Bio::KEGG::COMPOUND, autodetection regexp. of
+	  Bio::KEGG::COMPOUND were modified.
 
 2005-02-09  KATAYAMA Toshiaki <k@bioruby.org>
 
