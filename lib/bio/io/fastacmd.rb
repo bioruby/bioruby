@@ -2,6 +2,7 @@
 # bio/io/fastacmd.rb - NCBI fastacmd wrapper class
 #
 #   Copyright (C) 2005 Shuji SHIGENOBU <shige@nibb.ac.jp>
+#   Copyright (C) 2005 Toshiaki Katayama <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fastacmd.rb,v 1.1 2005/08/09 07:52:45 k Exp $
+#  $Id: fastacmd.rb,v 1.2 2005/08/09 08:55:40 k Exp $
 #
 
 require 'bio/db/fasta'
@@ -26,38 +27,35 @@ require 'open3'
 
 module Bio
 
-  class BlastDB
+  class Fastacmd
 
     include Enumerable
 
-    FASTACMD = 'fastacmd'
-
     def initialize(db)
       @database = db
+      @fastacmd = 'fastacmd'
+    end
+    attr_accessor :database, :fastacmd
+
+    # get an entry_id and returns a Bio::FastaFormat object
+    def get_by_id(entry_id)
+      fetch(entry_id).shift
     end
 
-    def get_by_id(id)
-      cmd = "#{FASTACMD} -d #{@database} -s #{id}"
-      begin
-        inn, out, err = Open3.popen3(cmd)
-        result = out.read
-        err_msg = err.read
-        fas = Bio::FastaFormat.new(result)
-        return fas
-      rescue
-        raise "[Error] command execution failed : #{cmd}\n#{err_msg}"
-      ensure
-        inn.close; out.close; err.close
+    # get one or more entry_id and returns an Array of Bio::FastaFormat objects
+    def fetch(list)
+      if list.respond_to?(:join)
+        entry_id = list.join(",")
+      else
+        entry_id = list
       end
-    end
 
-    def get_by_ids(ids) # ids: Array object
-      cmd = "#{FASTACMD} -d #{@database} -s #{ids.join(',')}"
+      cmd = "#{@fastacmd} -d #{@database} -s #{entry_id}"
       begin
         inn, out, err = Open3.popen3(cmd)
+        results = Bio::FlatFile.new(Bio::FastaFormat, out).to_a
         err_msg = err.read
-        fas_set = Bio::FlatFile.new(Bio::FastaFormat, out).to_a
-        return fas_set
+        return results
       rescue
         raise "[Error] command execution failed : #{cmd}\n#{err_msg}"
       ensure
@@ -66,15 +64,14 @@ module Bio
     end
 
     def each_entry
-      cmd = "#{FASTACMD} -d #{@database} -D T"
-      io = IO.popen(cmd)
-      f = Bio::FlatFile.new(Bio::FastaFormat, io)
-      f.each_entry do |e|
-        yield e
+      cmd = "#{@fastacmd} -d #{@database} -D T"
+      IO.popen(cmd) do |io|
+        f = Bio::FlatFile.new(Bio::FastaFormat, io)
+        f.each_entry do |e|
+          yield e
+        end
       end
-      io.close
     end
-
     alias :each :each_entry
 
   end
@@ -84,21 +81,42 @@ end
 
 if __FILE__ == $0
 
-  # test code
+  database = ARGV.shift || "/db/myblastdb"
+  entry_id = ARGV.shift || "sp:128U_DROME"
+  ent_list = ["sp:1433_SPIOL", "sp:1432_MAIZE"]
 
-  bdb = Bio::BlastDB.new("/db/myblastdb")
+  fastacmd = Bio::Fastacmd.new(database)
 
-  # Retrieve one sequence
-  puts bdb.get_by_id("P25724")
+  ### Retrieve one sequence
+  entry = fastacmd.get_by_id(entry_id)
 
-  # Retrieve one more sequences
-  bdb.get_by_ids(["P25724", "AAB59189", "AAA28715"]).each do |fas|
-    puts fas
+  # Bio::Fastacmd#get_by_id(entry_id) returns a Bio::FastaFormat object.
+  p entry
+
+  # Bio::FastaFormat becomes a fasta format string when printed by puts.
+  puts entry
+
+  # Bio::Fastacmd#fetch(entry_id) returns an Array of a Bio::FastaFormat
+  # object even when the result is a single entry.
+  p fastacmd.fetch(entry_id)
+
+  ### Retrieve more sequences
+
+  # Bio::Fastacmd#fetch method also accepts a list of entry_id and returns
+  # an Array of Bio::FastaFormat objects.
+  p fastacmd.fetch(ent_list)
+
+  # So, you can iterate on the results.
+  fastacmd.fetch(ent_list).each do |fasta|
+    puts fasta
   end
 
-  # Iterate all sequences
-  bdb.each do |fas|
-    p [fas.definition[0..30], fas.seq.size]
+
+  ### Iterates on all entries
+
+  # You can also iterate on all sequences in the database!
+  fastacmd.each do |fasta|
+    p [ fasta.definition[0..30], fasta.seq.size ]
   end
 
 end
