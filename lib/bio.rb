@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.42 2005/07/11 09:40:02 k Exp $
+#  $Id: bio.rb,v 1.43 2005/08/09 11:57:53 k Exp $
 #
 
 module Bio
@@ -107,6 +107,7 @@ require 'bio/io/flatfile'
 require 'bio/io/flatfile/indexer'
 require 'bio/io/flatfile/index'
 require 'bio/io/flatfile/bdb'
+require 'bio/io/fastacmd'
 require 'bio/io/fetch'
 require 'bio/io/sql'
 
@@ -147,4 +148,8 @@ require 'bio/appl/sim4'
 require 'bio/appl/sim4/report'
 require 'bio/appl/spidey/report'
 require 'bio/appl/blat/report'
+
+### Utilities
+
+require 'bio/util/sirna'
 
