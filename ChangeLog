@@ -1,5 +1,10 @@
 2005-08-09  Toshiaki Katayama <k@bioruby.org>
 
+	* BioRuby 0.6.3 is released.
+
+	  This version would be the final release to support Ruby 1.6 series
+	  (as long as no serious bug is found:).
+
 	* lib/bio/util/sirna.rb:
 
 	  Newly added method for desing of siRNA, contributed by
@@ -10,6 +15,11 @@
 
 	  Newly added wrapper for NCBI fastacmd program, contributed by
 	  Shinji Shigenobu.
+
+	* lib/bio/appl/hmmer/report.rb:
+
+	  Bug fixed by Masashi Fujita when the position of sequence
+	  rarely becomes '-' instead of digits.
 
 2005-08-08  Mitsuteru Nakao <n@bioruby.org>
 
@@ -37,31 +47,33 @@
 
 	  Bio::NucleicAcid, Bio::AminoAcid classes are refactored to have
 	  Data module, and this module is included and extended to make
-	  all methods as both of instance methods and extend methods.
+	  all methods as both of instance methods and class methods.
 
-	  Bio::Sequence::NA class is rewrited (molecular_weight, to_re methods)
-	  to use Bio::NucleicAcid.
+	  Bio::Sequence::NA and AA classes are rewrited (molecular_weight,
+	  to_re methods) to use Bio::NucleicAcid.
 
 	  Bio::Sequence::NA#molecular_weight method is fixed to subtract
-	  two hydrogens for each base.
+	  two hydrogens per each base.
 
-	* lib/bio/db/medline.rb: publication_type (pt) method added.
+	* lib/bio/db/medline.rb: publication_type (pt) method is added.
 
 2005-08-07  Naohisa Goto <ng@bioruby.org>
 
-	* lib/bio/db/genbank/common.rb
+	* lib/bio/db/genbank/common.rb:
 
 	  Avoid NoMethodError (private method `chomp` called for nil:NilClass)
 	  when parsing features of
+
 	    ftp://ftp.ncbi.nih.gov/genbank/genomes/Bacteria/
-	    Salmonella_typhimurium_LT2/AE006468.gbk
+            Salmonella_typhimurium_LT2/AE006468.gbk
 
 2005-07-11  Toshiaki Katayama <k@bioruby.org>
 
-	* bin/br_pmfetch.rb
-	  * added sort by page option (--sort page)
+	* bin/br_pmfetch.rb:
 
-	* lib/io/higet.rb
+	  Added sort by page option (--sort page)
+
+	* lib/io/higet.rb:
 
 	  Newly added Bio::HGC::HiGet class for HiGet SOAP service.
 
@@ -71,7 +83,7 @@
 
 2005-06-21  Naohisa Goto <ng@bioruby.org>
 
-	* lib/bio/appl/blast/report.rb
+	* lib/bio/appl/blast/report.rb:
 
 	  Newly added support for reading BLAST -m 7 result files
 	  through Bio::FlatFile by adding
@@ -79,7 +91,7 @@
 	  (Note that tab-delimited format (-m 8 and -m 9) are not yet
 	  supported by Bio::FlatFile)
 
-	* lib/bio/io/flatfile.rb
+	* lib/bio/io/flatfile.rb:
 
 	  Added file format autodetection of BLAST XML format.
 
@@ -89,19 +101,19 @@
 
 2005-04-04  Mitsuteru Nakao <n@bioruby.org>
 
-        * lib/bio/db/go.rb
+        * lib/bio/db/go.rb:
 
           Newly added Bio::GO::External2go class for parsing external2go file.
 
 2005-03-10  Naohisa Goto <ng@bioruby.org>
 
-	* lib/bio/io/flatfile.rb
+	* lib/bio/io/flatfile.rb:
 
 	  Added file format autodetection of Spidey (Bio::Spidey::Report).
 
 2005-03-10  Naohisa Goto <ng@bioruby.org>
 
-	* lib/bio/io/flatfile.rb
+	* lib/bio/io/flatfile.rb:
 
 	  Added file format autodetection for Bio::KEGG::KO,
 	  Bio::KEGG::GLYCAN, Bio::KEGG::REACTION, Bio::Blat::Report
@@ -113,7 +125,7 @@
 
 2005-02-09  KATAYAMA Toshiaki <k@bioruby.org>
 
-	* lib/bio/db/kegg/genes.rb
+	* lib/bio/db/kegg/genes.rb:
 
 	  Added cu method which returns codon usage in Hash for the
 	  convenience (codon_usage method returns in Array or Fixnum).
@@ -122,16 +134,16 @@
 
 	* BioRuby 0.6.2 released.
 
-	* test/all_tests.rb
+	* test/all_tests.rb:
 
 	  Unit tests for some classes are newly incorporated by
 	  Moses Hohman.  You can try it by 'ruby install.rb test'
 
-	* lib/bio/appl/spidey/report.rb
+	* lib/bio/appl/spidey/report.rb:
 
 	  Newly added Spidey result parser class.
 
-	* lib/bio/appl/blat/report.rb
+	* lib/bio/appl/blat/report.rb:
 
 	  Newly added BLAT result parser class.
 
