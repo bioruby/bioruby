@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.4 2003/02/26 02:58:23 k Exp $
+#  $Id: report.rb,v 1.5 2005/08/09 09:58:19 k Exp $
 #
 
 module Bio
@@ -61,7 +61,7 @@ module Bio
         end
         $1.split(/^\S+.*?\n/).slice(1..-1).each_with_index do |al,k|
           al2 = al.gsub(/\n\n/,"\n").to_s.collect { |l|
-	    l.sub(/^.{19}/,'').sub(/\s\d+\s*$/,'')
+	    l.sub(/^.{19}/,'').sub(/\s(\d+|-)\s*$/,'')
 	  }
           align = ['', '', '']
           al2.each_with_index { |s,i| align[i%3] += s.chomp }
@@ -120,7 +120,7 @@ module Bio
       class Hsp
         def initialize(data, is_hmmsearch)
           @is_hmmsearch = is_hmmsearch
-         
+
 	  @accession, @domain, seq_f, seq_t, @seq_ft, hmm_f, hmm_t, @hmm_ft,
 	    score, evalue = data.split(' ')
           @seq_f = seq_f.to_i
