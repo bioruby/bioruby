@@ -11,6 +11,16 @@
 	  Newly added wrapper for NCBI fastacmd program, contributed by
 	  Shinji Shigenobu.
 
+2005-08-08  Mitsuteru Nakao <n@bioruby.org>
+
+        * lib/bio/db/embl/sptr.rb:
+
+          Added Bio::SPTR#protein_name and Bio::SPTR#synoyms methods. 
+          contributed by Luca Pireddu.
+
+          Changed Bio::SPTR#gn, Bio::SPTR#gene_name and 
+          Bio::SPTR#gene_names methods. contributed by Luca Pireddu.
+
 2005-08-08  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/bl2seq/report.rb:
