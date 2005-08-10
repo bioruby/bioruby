@@ -1,7 +1,7 @@
 #
 # bio/io/flatfile.rb - flatfile access wrapper class
 #
-#   Copyright (C) 2001, 2002 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+#   Copyright (C) 2001-2005 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.33 2005/06/20 16:46:27 ngoto Exp $
+#  $Id: flatfile.rb,v 1.34 2005/08/10 12:51:15 k Exp $
 #
 
 module Bio
@@ -26,63 +26,82 @@ module Bio
 
     include Enumerable
 
-    def self.open(dbclass, file, *arg)
-      # 3rd and 4th arg: mode, perm (passed to File.open)
-      openmode = []
-      while x = arg[0] and !x.is_a?(Hash)
-	openmode << arg.shift
-      end
-      # rest of arg: passed to FlatFile.new
-      # create a flatfile object
-      unless file.respond_to?(:gets)
-        # 'file' is a filename
-        if block_given? then
-          File.open(file, *openmode) do |fobj|
-            ff = self.new(dbclass, fobj, *arg)
-            yield ff
-          end
-        else
-          fobj = File.open(file, *openmode)
-          self.new(dbclass, fobj, *arg)
-        end
-      else
-        # 'file' is a IO object
-        ff = self.new(dbclass, file, *arg)
-        block_given? ? (yield ff) : ff
-      end
-    end
-
-    def self.auto(*arg, &block)
-      self.open(nil, *arg, &block)
-    end
-
-    def self.to_a(*arg)
-      self.auto(*arg) do |ff|
+    def self.to_a(*args)
+      self.auto(*args) do |ff|
         raise 'cannot determine file format' unless ff.dbclass
         ff.to_a
       end
     end
 
-    def initialize(dbclass, stream, options = nil)
-      # 2nd arg: IO object
-      @io = stream
-      # 3rd arg: options (nil or a Hash)
-      self.raw = false
-      if options.is_a?(Hash) then
-        self.raw = options[:raw] if options.has_key?(:raw)
+    # Bio::FlatFile.auto(filename/io[, [mode, parm,] opts]) [{block}]
+    def self.auto(*args, &block)
+      self.open(nil, *args, &block)
+    end
+
+    # Bio::FlatFile.open(filename/io, dbclass[, [mode, parm,] opts]) [{block}]
+    #  or
+    # Bio::FlatFile.open(dbclass, filename/io[, [mode, parm,] opts]) [{block}]
+    def self.open(*args)
+      ff = self.new(*args)
+      if block_given?
+        yield ff
+        ff.close
       else
-        self.raw = options
+        ff
       end
-      # initialize prefetch buffer
-      @prefetch = ''
-      # 1st arg: database class (or file format autodetection)
-      if dbclass then
+    end
+
+    # Bio::FlatFile.new(filename/io, dbclass[, [mode, parm,] opts])
+    #  or
+    # Bio::FlatFile.new(dbclass, filename/io[, [mode, parm,] opts])
+    def initialize(file, dbclass, *args)
+      if file.nil? or file.kind_of?(Module)
+        # swap first two arguments if needed for the backward compatibility
+        dbclass, file = file, dbclass
+      end
+      openmode = parse_opts(args)	# args is always an Array
+
+      if file.respond_to?(:gets)	# 'file' is already an IO object
+        @io = file
+      else				# 'file' is a filename
+        @io = File.open(file, *openmode)
+      end
+
+      @prefetch = ''			# initialize prefetch buffer
+      if dbclass
 	self.dbclass = dbclass
       else
-	autodetect
+	autodetect			# file format autodetection
       end
     end
     attr_reader :io
+
+    # 1. if the 1st element is not a Hash or true, assume it as a "mode"
+    #    for File.open
+    # 2. if the 2nd element is not a Hash or true, assume it as a "parm"
+    #    for File.open
+    # 3. if the 3rd element is a Hash and have a key ':raw', use its value
+    #    to specify the raw mode (other keys are not in the FlatFile spec yet).
+    # 4. elsif the 3rd element is true, treat it as 'raw = true' is specified
+    #    for the backward compatibility
+    def parse_opts(args)
+      # openmode = args.reject {|x| x.is_a?(Hash) or x.is_a?(TrueClass)}
+      mode = args.shift unless args[0].is_a?(Hash) or args[0].is_a?(TrueClass)
+      perm = args.shift unless args[0].is_a?(Hash) or args[0].is_a?(TrueClass)
+      opts = args.shift
+      openmode = [mode, perm].compact
+
+      self.raw = false
+      if opts.is_a?(Hash) and opts.has_key?(:raw)
+        self.raw = opts[:raw]
+      else
+        self.raw = opts			# true or nil 
+      end
+
+      return openmode
+    end
+    private :parse_opts
+
 
     def next_entry
       @entry_raw = gets(@rs)
@@ -360,70 +379,96 @@ end
 
 = Bio::FlatFile
 
---- Bio::FlatFile.auto(filename_or_stream[, mode, perm, options])
+--- Bio::FlatFile.new(filename_or_stream, dbclass[, [mode, parm,] options])
+--- Bio::FlatFile.new(dbclass, filename_or_stream[, [mode, parm,] options])
 
-      Same as Bio::FlatFile.open(nil, filename_or_stream, mode, perm, options).
+      Prepare to read a file or a IO stream specified in 'filename_or_stream'.
+      If the 'filename_or_stream' is a filename, this method opens the local
+      file as File.open(filename, mode, perm).  See the documentations on
+      Ruby's Kernel#open method for the 'mode' and 'parm' options.
+
+      The 'dbclass' must be a one of the BioRuby's database class name
+      (e.g. Bio::GenBank, Bio::FastaFormat).
+      If nil is given to the 'dbclass', try to determine database class
+      (file format) automatically.  It is recommended to set 'dbclass'
+      using FlatFile#dbclass= method if the automatic determination failed.
+      Otherwise, 'dbclass' is set to nil and FlatFile#next_entry can act same
+      as the IO#gets method only when the raw mode is on (raw = true).
+
+      The last argument 'options' is a Hash (or nil to omit) containing
+      flags to determine the behavior of the Bio::FlatFile instance.
+      Currently, only the ':raw' flag is recognized as the key.
+      If the value of options[:raw] is true, "raw mode" is on (defalut is off).
+      You can also change this flag by Bio::FlatFile#raw = true afterwards.
+
+      Backward compatibility:
+      The order of the first two arguments is automatically recognized.
 
       * Example 1
-          Bio::FlatFile.auto(ARGF)
+          Bio::FlatFile.new(ARGF, Bio::GenBank)
+          Bio::FlatFile.new(Bio::GenBank, ARGF)
+      * Example 2
+          Bio::FlatFile.new(IO.popen("gzip -dc nc1101.flat.gz"), Bio::GenBank)
+      * Example 3
+          Bio::FlatFile.new($stdin, nil, :raw => true)
+          # following notation was also used in the old BioRuby to specify
+          # the raw mode (deprecated).
+          Bio::FlatFile.new($stdin, nil, true)
+
+--- Bio::FlatFile.open(filename_or_stream, dbclass[, [mode, perm,] options])
+--- Bio::FlatFile.open(dbclass, filename_or_stream[, [mode, perm,] options])
+
+      Open a file as a flat file database in the specified 'dbclass' format.
+      Similar to Bio::FlatFile.new but also accepts block.
+
+      Refer to the document of Bio::FlatFile.new for the other options.
+
+      Backward compatibilities:
+      It is not recommended because the name of this method is resemble to
+      the Ruby's File.open, but the 'filename_or_stream' can be an already
+      opened IO stream.  It is also not recommended but if nil is specified
+      to the 'dbclass', this method acts as the Bio::FlatFile.auto method.
+
+      * Example 1
+          ff = Bio::FlatFile.open("genbank/gbest40.seq", Bio::GenBank)
+      * Example 2
+          ff = Bio::FlatFile.open("embl/est_hum17.dat", nil)
+      * Example 3
+          ff = Bio::FlatFile.open($stdin, Bio::GenBank)
+
+      If it is called with block, the block is passed to the newly opened
+      Bio::FlatFile instance and the file will be automatically closed
+      when leaving the block.
+
+      * Example 4
+          Bio::FlatFile.open('test4.fst', Bio::FastaFormat) do |ff|
+            ff.each { |e| puts e.definition }
+          end
+
+--- Bio::FlatFile.auto(filename_or_stream[, [mode, perm,] options])
+
+      Open a file or an IO stream by auto detection of the database format.
+      Similar to Bio::FlatFile.open but no need to specify the 'dbclass'. 
+      This method would be most useful one among the 'new', 'open' and 'auto'.
+      Refer to the document of Bio::FlatFile.new for other options.
+
+      * Example 1
+          flatfile = Bio::FlatFile.auto(ARGF)
+          flatfile.each do |entry|
+            # do something on entry
+            puts entry.entry_id
+          end
       * Example 2
           Bio::FlatFile.auto("embl/est_hum17.dat")
       * Example 3
           Bio::FlatFile.auto(IO.popen("gzip -dc nc1101.flat.gz"))
-
---- Bio::FlatFile.open(dbclass, filename_or_stream[, mode, perm, options])
-
-      Prepare to read a file or a stream 'filename_or_stream'
-      which contains 'dbclass'-style formatted data.
-
-      'dbclass' shoud be a class (or module) or nil.
-      e.g. Bio::GenBank, Bio::FastaFormat.
-
-      If 'filename_or_stream' is a filename (which doesn't have gets method),
-      the method opens a local file named 'filename_or_stream'
-      with 'File.open(filename, mode, perm)'.
-
-      When nil is given to dbclass, trying to determine database class
-      (file format) automatically. If fails to determine, dbclass is
-      set to nil and FlatFile#next_entry works same as IO#gets when
-      raw = true. It is recommended to set dbclass using
-      FlatFile#dbclass= method if fails to determine automatically.
-
-      * Example 1
-          Bio::FlatFile.open(Bio::GenBank, "genbank/gbest40.seq")
-      * Example 2
-          Bio::FlatFile.open(nil, "embl/est_hum17.dat")
-      * Example 3
-          Bio::FlatFile.open(Bio::GenBank, $stdin)
-
-      If it is called with block, the block will be executed with
-      a newly opened Bio::FlatFile instance object. If filename
-      is given, the file is automatically closed when leaving the block.
-
       * Example 4
-          Bio::FlatFile.open(nil, 'test4.fst') do |ff|
-              ff.each { |e| print e.definition, "\n" }
+          Bio::FlatFile.auto(ARGF) do |flatfile|
+            flatfile.each do |entry|
+              # do something on entry
+              puts entry.entry_id
+            end
           end
-
---- Bio::FlatFile.new(dbclass, stream, options = nil)
-
-      Same as FlatFile.open, except that 'stream' should be a opened
-      stream object (IO, File, ..., who have the 'gets' method).
-
-      * Example 1
-          Bio::FlatFile.new(Bio::GenBank, ARGF)
-      * Example 2
-          Bio::FlatFile.new(Bio::GenBank, IO.popen("gzip -dc nc1101.flat.gz"))
-
-      'options' needs to be a hash (or nil).
-      Current options are below:
-         :raw --> if true, "raw mode" (same as #raw=true).
-                  default: false (not "raw mode").
-
-      * Example 3
-          Bio::FlatFile.new(nil, $stdin, :raw=>true)
-      * Example 3 in old style (deprecated)
-          Bio::FlatFile.new(nil, $stdin, true)
 
 --- Bio::FlatFile.to_a(filename_or_stream, *arg)
 
