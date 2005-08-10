@@ -19,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.39 2005/08/08 00:44:55 k Exp $
+#  $Id: sequence.rb,v 0.40 2005/08/10 12:53:02 k Exp $
 #
 
 require 'bio/data/na'
@@ -248,7 +248,7 @@ module Bio
 
       def to_re
 	if self.rna?
-          NucleicAcid.to_re(self.dna)
+          NucleicAcid.to_re(self.dna, true)
         else
           NucleicAcid.to_re(self)
         end

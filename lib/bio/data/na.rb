@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: na.rb,v 0.12 2005/08/08 12:57:24 k Exp $
+#  $Id: na.rb,v 0.13 2005/08/10 12:53:02 k Exp $
 #
 
 module Bio
@@ -123,7 +123,7 @@ module Bio
         Names[x.to_s.upcase]
       end
 
-      def to_re(seq)
+      def to_re(seq, rna = false)
         str = ""
         seq.to_s.downcase.each_byte do |base|
           if re = Names[base.chr]
@@ -131,6 +131,9 @@ module Bio
           else
             str += "."
           end
+        end
+        if rna
+          str.tr!("t", "u")
         end
         Regexp.new(str)
       end
