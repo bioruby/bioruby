@@ -1,3 +1,13 @@
+2005-08-10  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby 0.6.4 is released.
+
+	  * Sequence#to_re method to have compatibility with 0.6.2 for RNA
+	  * Fixed Bio::Fastacmd#fetch to work
+	  * Bio::Fastacmd and Bio::Bl2seq classes (introduced in 0.6.3) are
+	    renamed to Bio::Blast::Fastacmd, Bio::Blast::Bl2seq respectively.
+	  * new and open method of the Bio::FlatFile are refactored.
+
 2005-08-09  Toshiaki Katayama <k@bioruby.org>
 
 	* BioRuby 0.6.3 is released.
