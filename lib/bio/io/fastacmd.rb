@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fastacmd.rb,v 1.5 2005/08/10 05:41:31 ngoto Exp $
+#  $Id: fastacmd.rb,v 1.6 2005/08/10 12:55:06 k Exp $
 #
 
 require 'bio/db/fasta'
@@ -26,57 +26,80 @@ require 'bio/io/flatfile'
 require 'open3'
 
 module Bio
+class Blast
 
-  class Fastacmd
+class Fastacmd
 
-    include Enumerable
+  include Enumerable
 
-    def initialize(db)
-      @database = db
-      @fastacmd = 'fastacmd'
+  def initialize(db)
+    @database = db
+    @fastacmd = 'fastacmd'
+  end
+  attr_accessor :database, :fastacmd, :errorlog
+
+  # get an entry_id and returns a Bio::FastaFormat object
+  def get_by_id(entry_id)
+    fetch(entry_id).shift
+  end
+
+  # get one or more entry_id and returns an Array of Bio::FastaFormat objects
+  def fetch(list)
+    if list.respond_to?(:join)
+      entry_id = list.join(",")
+    else
+      entry_id = list
     end
-    attr_accessor :database, :fastacmd
 
-    # get an entry_id and returns a Bio::FastaFormat object
-    def get_by_id(entry_id)
-      fetch(entry_id).shift
-    end
-
-    # get one or more entry_id and returns an Array of Bio::FastaFormat objects
-    def fetch(list)
-      if list.respond_to?(:join)
-        entry_id = list.join(",")
-      else
-        entry_id = list
+    if RUBY_PLATFORM[/mswin32|bccwin32/]	 # replace with appl/factory.rb
+      cmd = "#{@fastacmd} -d #{@database} -s #{entry_id}"
+      IO.popen(cmd, "r") do |io|
+        io.sync = true
+        results = Bio::FlatFile.new(Bio::FastaFormat, io).to_a
       end
-
+    else
       cmd = [ @fastacmd, '-d', @database, '-s', entry_id ]
       Open3.popen3(*cmd) do |inn, out, err|
         inn.close
-        t = Thread.start { err.read }
+        t = Thread.start { @errorlog = err.read }
         results = Bio::FlatFile.new(Bio::FastaFormat, out).to_a
         t.join
         results
       end
     end
+  end
 
-    def each_entry
+  def each_entry
+    if RUBY_PLATFORM[/mswin32|bccwin32/]	 # replace with appl/factory.rb
+      cmd = "#{@fastacmd} -d #{@database} -D T"
+      IO.popen(cmd, "r") do |io|
+        io.sync = true
+        Bio::FlatFile.open(Bio::FastaFormat, io) do |f|
+          f.each_entry do |e|
+            yield e
+          end
+        end
+      end
+    else
       cmd = [ @fastacmd, '-d', @database, '-D', 'T' ]
       Open3.popen3(*cmd) do |inn, out, err|
         inn.close
-        t = Thread.start { err.read }
-        f = Bio::FlatFile.new(Bio::FastaFormat, out)
-        f.each_entry do |e|
-          yield e
+        t = Thread.start { @errorlog = err.read }
+        Bio::FlatFile.open(Bio::FastaFormat, out) do |f|
+          f.each_entry do |e|
+            yield e
+          end
         end
         t.join
       end
-      self
     end
-    alias :each :each_entry
-
+    self
   end
+  alias :each :each_entry
 
+end
+
+end
 end
 
 
@@ -86,24 +109,24 @@ if __FILE__ == $0
   entry_id = ARGV.shift || "sp:128U_DROME"
   ent_list = ["sp:1433_SPIOL", "sp:1432_MAIZE"]
 
-  fastacmd = Bio::Fastacmd.new(database)
+  fastacmd = Bio::Blast::Fastacmd.new(database)
 
   ### Retrieve one sequence
   entry = fastacmd.get_by_id(entry_id)
 
-  # Bio::Fastacmd#get_by_id(entry_id) returns a Bio::FastaFormat object.
+  # Fastacmd#get_by_id(entry_id) returns a Bio::FastaFormat object.
   p entry
 
   # Bio::FastaFormat becomes a fasta format string when printed by puts.
   puts entry
 
-  # Bio::Fastacmd#fetch(entry_id) returns an Array of a Bio::FastaFormat
+  # Fastacmd#fetch(entry_id) returns an Array of a Bio::FastaFormat
   # object even when the result is a single entry.
   p fastacmd.fetch(entry_id)
 
   ### Retrieve more sequences
 
-  # Bio::Fastacmd#fetch method also accepts a list of entry_id and returns
+  # Fastacmd#fetch method also accepts a list of entry_id and returns
   # an Array of Bio::FastaFormat objects.
   p fastacmd.fetch(ent_list)
 
