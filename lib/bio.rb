@@ -17,11 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.43 2005/08/09 11:57:53 k Exp $
+#  $Id: bio.rb,v 1.44 2005/08/10 12:56:37 k Exp $
 #
 
 module Bio
-  BIORUBY_VERSION = [0, 6, 3].extend(Comparable)
+  BIORUBY_VERSION = [0, 6, 4].extend(Comparable)
 end
 
 
@@ -132,6 +132,7 @@ require 'bio/appl/blast/wublast'
 require 'bio/appl/blast/rexml'
 require 'bio/appl/blast/xmlparser'
 require 'bio/appl/blast/format8'
+require 'bio/appl/bl2seq/report'
 require 'bio/appl/hmmer'
 require 'bio/appl/hmmer/report'
 require 'bio/appl/emboss'
