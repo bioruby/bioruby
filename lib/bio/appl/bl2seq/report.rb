@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.1 2005/08/07 16:42:28 ngoto Exp $
+#  $Id: report.rb,v 1.2 2005/08/10 12:55:41 k Exp $
 #
 #  Acknowledgements:
 #    Thanks to Tomoaki NISHIYAMA <tomoakin@kenroku.kanazawa-u.ac.jp> 
@@ -28,6 +28,8 @@
 require 'bio/appl/blast/format0'
 
 module Bio
+class Blast
+
   class Bl2seq
     class Report < Bio::Blast::Default::Report
       DELIMITER = RS = nil
@@ -96,16 +98,18 @@ module Bio
 
     end #class Report
   end #class Bl2seq
+
+end #class Blast
 end #module Bio
 
 ######################################################################
 
 if __FILE__ == $0
 
-  Bio::FlatFile.open(Bio::Bl2seq::Report, ARGF) do |ff|
+  Bio::FlatFile.open(Bio::Blast::Bl2seq::Report, ARGF) do |ff|
   ff.each do |rep|
 
-  print "# === Bio::Bl2seq::Report\n"
+  print "# === Bio::Blast::Bl2seq::Report\n"
   puts
   #@#print "  rep.program           #=> "; p rep.program
   #@#print "  rep.version           #=> "; p rep.version
@@ -170,7 +174,7 @@ if __FILE__ == $0
 
   rep.iterations.each do |itr|
       
-  print "# --- Bio::Bl2seq::Report::Iteration\n"
+  print "# --- Bio::Blast::Bl2seq::Report::Iteration\n"
   puts
 
   print "    itr.num             #=> "; p itr.num
@@ -193,7 +197,7 @@ if __FILE__ == $0
 
   itr.hits.each_with_index do |hit, i|
 
-  print "# --- Bio::Bl2seq::Default::Report::Hit"
+  print "# --- Bio::Blast::Bl2seq::Default::Report::Hit"
   print " ([#{i}])\n"
   puts
 
@@ -244,7 +248,7 @@ if __FILE__ == $0
 
   hit.hsps.each_with_index do |hsp, j|
 
-  print "# --- Bio::Blast::Default::Report::HSP (Bio::Bl2seq::Report::HSP)"
+  print "# --- Bio::Blast::Default::Report::HSP (Bio::Blast::Bl2seq::Report::HSP)"
   print " ([#{j}])\n"
   puts
   #print "        hsp.num         #=> "; p hsp.num
@@ -294,7 +298,7 @@ end #if __FILE__ == $0
 
 =begin
 
-= Bio::Bl2seq::Default::Report
+= Bio::Blast::Bl2seq::Report
 
     NCBI bl2seq (BLAST 2 sequences) output parser
 
