@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fastacmd.rb,v 1.4 2005/08/09 09:46:39 ngoto Exp $
+#  $Id: fastacmd.rb,v 1.5 2005/08/10 05:41:31 ngoto Exp $
 #
 
 require 'bio/db/fasta'
@@ -51,7 +51,7 @@ module Bio
       end
 
       cmd = [ @fastacmd, '-d', @database, '-s', entry_id ]
-      Open3.popen3(cmd) do |inn, out, err|
+      Open3.popen3(*cmd) do |inn, out, err|
         inn.close
         t = Thread.start { err.read }
         results = Bio::FlatFile.new(Bio::FastaFormat, out).to_a
