@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_sequence.rb,v 1.1 2004/11/12 02:27:08 k Exp $
+#  $Id: test_sequence.rb,v 1.2 2005/08/10 12:53:53 k Exp $
 #
 
 require 'pathname'
@@ -30,9 +30,9 @@ require 'bio/sequence'
 module Bio
 	class TestSequence < Test::Unit::TestCase
 		def setup
-		@na = Sequence::NA.new('atgcatgcatgcatgcaaaa')
+		@na  = Sequence::NA.new('atgcatgcatgcatgcaaaa')
 		@rna = Sequence::NA.new('augcaugcaugcaugcaaaa')
-		@aa = Sequence::AA.new('ACDEFGHIKLMNPQRSTVWYU')
+		@aa  = Sequence::AA.new('ACDEFGHIKLMNPQRSTVWYU')
 		end
 
 		def test_to_s_returns_self_as_string
@@ -239,11 +239,11 @@ module Bio
 		# Test Sequence::NA#molecular_weight
 
 		def test_dna_molecular_weight
-		assert_equal(6214.715, @na.molecular_weight)
+		assert_in_delta(6174.3974, @na.molecular_weight, 1e-5)
 		end
 		
 		def test_rna_molecular_weight
-		assert_equal(6478.595, @rna.molecular_weight)
+		assert_in_delta(6438.2774, @rna.molecular_weight, 1e-5)
 		end
 
 		# Test Sequence::NA#to_re
