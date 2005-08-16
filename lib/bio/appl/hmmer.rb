@@ -17,40 +17,53 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: hmmer.rb,v 1.1 2002/11/22 23:17:55 k Exp $
+#  $Id: hmmer.rb,v 1.2 2005/08/16 09:38:34 ngoto Exp $
 #
 
 require 'bio/appl/hmmer/report'
+require 'bio/command'
+require 'shellwords'
 
 module Bio
 
   class HMMER
 
-    def initialize(program, hmmfile, seqfile, option = '')
+    include Bio::Command::Tools
+
+    def initialize(program, hmmfile, seqfile, opt = [])
       @program	= program
       @hmmfile	= hmmfile
       @seqfile	= seqfile
-      @option	= option
       @output	= ''
+
+      begin
+        @options = opt.to_ary
+      rescue NameError #NoMethodError
+        # backward compatibility
+        @options = Shellwords.shellwords(opt)
+      end
     end
-    attr_accessor :program, :hmmfile, :seqfile, :option
+    attr_accessor :program, :hmmfile, :seqfile, :options
     attr_reader :output
 
+    def option
+      # backward compatibility
+      make_command_line(@options)
+    end
+
+    def option=(str)
+      # backward compatibility
+      @options = Shellwords.shellwords(str)
+    end
+
     def query
-      cmd = "#{@program} #{@option} #{@hmmfile} #{@seqfile}"
+      cmd = [ @program, *@options ]
+      cmd.concat([ @hmmfile, @seqfile ])
       
       report = nil
 
-      begin
-	io = IO.popen(cmd, 'r')
-	io.sync = true
-	@output = io.read
-	report = parse_result(@output)
-      rescue
-	raise "[Error] command execution failed : #{cmd}"
-      ensure
-	io.close
-      end 
+      @output = call_command_local(cmd, nil)
+      report = parse_result(@output)
       
       return report
     end
@@ -93,9 +106,14 @@ end
 --- Bio::HMMER#program
 --- Bio::HMMER#hmmfile
 --- Bio::HMMER#seqfile
---- Bio::HMMER#option
+--- Bio::HMMER#options
 
       Accessors for the factory.
+
+--- Bio::HMMER#option
+--- Bio::HMMER#option=(str)
+
+      Get/set options by string.
 
 --- Bio::HMMER#query
 

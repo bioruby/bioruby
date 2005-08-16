@@ -17,36 +17,60 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.16 2004/08/25 06:29:10 k Exp $
+#  $Id: fasta.rb,v 1.17 2005/08/16 09:38:34 ngoto Exp $
 #
 
 require 'net/http'
 require 'cgi' unless defined?(CGI)
+require 'bio/command'
+require 'shellwords'
 
 module Bio
 
   class Fasta
 
-    def initialize(program, db, option = '', server = 'local')
+    include Bio::Command::Tools
+
+    def initialize(program, db, opt = [], server = 'local')
       @format	= 10
 
       @program	= program
       @db	= db
-      @option	= "-Q -H -m #{@format} #{option}"	# need -a ?
       @server	= server
 
       @ktup	= nil
       @matrix	= nil
 
       @output	= ''
+
+      begin
+        a = opt.to_ary
+      rescue NameError #NoMethodError
+        # backward compatibility
+        a = Shellwords.shellwords(opt)
+      end
+      @options	= [ '-Q', '-H', '-m', @format.to_s, *a ] # need -a ?
     end
-    attr_accessor :program, :db, :option, :server, :ktup, :matrix
+    attr_accessor :program, :db, :options, :server, :ktup, :matrix
     attr_reader :output
+
+    def option
+      # backward compatibility
+      make_command_line(@options)
+    end
+
+    def option=(str)
+      # backward compatibility
+      @options = Shellwords.shellwords(str)
+    end
 
     def format=(num)
       @format = num.to_i
-      @option.gsub!(/\s*-m\s+\d+/, '')
-      @option += " -m #{num} "
+      if i = @options.index('-m') then
+        @options[i+1, 1] = @format.to_s
+      else
+        @options << '-m' << @format.to_s
+      end
     end
     attr_reader :format
 
@@ -82,22 +106,13 @@ module Bio
 
 
     def exec_local(query)
-      cmd = "#{@program} #{@option} @ #{@db} #{@ktup}"
+      cmd = [ @program, *@options ]
+      cmd.concat([ '@', @db, @ktup ])
 
       report = nil
 
-      begin
-	io = IO.popen(cmd, "w+")
-	io.sync = true
-	io.puts(query)
-	io.close_write
-	@output = io.read
-	report = parse_result(@output)
-      rescue
-	raise "[Error] command execution failed : #{cmd}"
-      ensure
-	io.close
-      end
+      @output = call_command_local(cmd, query)
+      report = parse_result(@output)
 
       return report
     end
@@ -105,14 +120,15 @@ module Bio
 
     def exec_genomenet(query)
       host = "fasta.genome.jp"
-      path = "/sit-bin/nph-fasta"
+      #path = "/sit-bin/nph-fasta"
+      path = "/sit-bin/fasta" #2005.08.12
 
       form = {
 	'style'		=> 'raw',
 	'prog'		=> @program,
 	'dbname'	=> @db,
 	'sequence'	=> CGI.escape(query),
-	'other_param'	=> CGI.escape(@option),
+	'other_param'	=> CGI.escape(make_command_line_unix(@options)),
 	'ktup_value'	=> @ktup,
 	'matrix'	=> @matrix,
       }
@@ -126,9 +142,28 @@ module Bio
       report = nil
 
       begin
-	result, = Net::HTTP.new(host).post(path, data.join('&'))
-	@output = result.body
-	report = parse_result(@output)
+        http = Net::HTTP.new(host)
+        http.open_timeout = 300
+        http.read_timeout = 600
+	result, = http.post(path, data.join('&'))
+        @output = result.body
+        # workaround 2005.08.12
+        if /\<A +HREF=\"(http\:\/\/fasta\.genome\.jp(\/tmp\/[^\"]+))\"\>Show all result\<\/A\>/i =~ @output.to_s then
+          result, = http.get($2)
+          @output = result.body
+          txt = @output.to_s.split(/\<pre\>/)[1]
+          raise 'cannot understand response' unless txt
+          txt.sub!(/\<\/pre\>.*\z/m, '')
+          txt.sub!(/.*^((T?FASTA|SSEARCH) (searches|compares))/m, '\1')
+          txt.sub!(/^\<form method\=\"POST\" name\=\"clust_check\"\>.*\n/, '')
+          txt.gsub!(/\<input[^\>]+value\=\"[^\"]*\"[^\>]*\>/i, '')
+          txt.gsub!(/\<(a|form|select|input|option|img)\s+[^\>]+\>/i, '')
+          txt.gsub!(/\<\/(a|form|select|input|option|img)\>/i, '')
+          @output = txt.gsub(/\&lt\;/, '<')
+          report = parse_result(@output.dup)
+        else
+          raise 'cannot understand response'
+        end
       end
 
       return report
@@ -177,11 +212,16 @@ end
 
 --- Bio::Fasta#program
 --- Bio::Fasta#db
---- Bio::Fasta#option
+--- Bio::Fasta#options
 --- Bio::Fasta#server
 --- Bio::Fasta#ktup
 
       Accessors for the factory parameters.
+
+--- Bio::Fasta#option
+--- Bio::Fasta#option=(str)
+
+      Get/set options by string.
 
 --- Bio::Fasta#format
 --- Bio::Fasta#format=(number)

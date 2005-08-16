@@ -18,18 +18,22 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.20 2004/08/23 23:48:02 k Exp $
+#  $Id: blast.rb,v 1.21 2005/08/16 09:38:34 ngoto Exp $
 #
 
 require 'net/http'
 require 'cgi' unless defined?(CGI)
 require 'bio/appl/blast/report'
+require 'bio/command'
+require 'shellwords'
 
 module Bio
 
   class Blast
 
-    def initialize(program, db, option = '', server = 'local')
+    include Bio::Command::Tools
+
+    def initialize(program, db, opt = [], server = 'local')
       if defined?(XMLParser) or defined?(REXML)
 	@format = 7
       else
@@ -38,7 +42,6 @@ module Bio
 
       @program	= program
       @db	= db
-      @option	= "-m #{@format} #{option}"
       @server	= server
 
       @blastall = 'blastall'
@@ -47,8 +50,16 @@ module Bio
 
       @output	= ''
       @parser	= nil
+
+      begin
+        a = opt.to_ary
+      rescue NameError #NoMethodError
+        # backward compatibility
+        a = Shellwords.shellwords(opt)
+      end
+      @options	= [ "-m",  @format,  *a ]
     end
-    attr_accessor :program, :db, :option, :server, :blastall, :matrix, :filter
+    attr_accessor :program, :db, :options, :server, :blastall, :matrix, :filter
     attr_reader :output, :format
     attr_writer :parser		# to change :xmlparser, :rexml, :tab
 
@@ -64,6 +75,16 @@ module Bio
       return self.send("exec_#{@server}", query.to_s)
     end
 
+    def option
+      # backward compatibility
+      make_command_line(@options)
+    end
+
+    def option=(str)
+      # backward compatibility
+      @options = Shellwords.shellwords(str)
+    end
+
 
     private
 
@@ -74,24 +95,14 @@ module Bio
 
 
     def exec_local(query)
-      cmd = "#{@blastall} -p #{@program} -d #{@db} #{@option}"
-      cmd += " -M #{@matrix}" if @matrix
-      cmd += " -F #{@filter}" if @filter
+      cmd = [ @blastall, '-p', @program, '-d', @db, *@options ]
+      cmd.concat([ '-M', @matrix ]) if @matrix
+      cmd.concat([ '-F', @filter ]) if @filter
 
       report = nil
 
-      begin
-	io = IO.popen(cmd, "w+")
-	io.sync = true
-	io.puts(query)
-	io.close_write
-	@output = io.read
-	report = parse_result(@output)
-      rescue
-	raise "[Error] command execution failed : #{cmd}"
-      ensure
-	io.close
-      end 
+      @output = call_command_local(cmd, query)
+      report = parse_result(@output)
 
       return report
     end
@@ -99,7 +110,8 @@ module Bio
 
     def exec_genomenet(query)
       host = "blast.genome.jp"
-      path = "/sit-bin/nph-blast"
+      #path = "/sit-bin/nph-blast"
+      path = "/sit-bin/blast" #2005.08.12
 
       matrix = @matrix ? @matrix : 'blosum62'
       filter = @filter ? @filter : 'T'
@@ -109,7 +121,7 @@ module Bio
 	'prog'		=> @program,
 	'dbname'	=> @db,
 	'sequence'	=> CGI.escape(query),
-	'other_param'	=> CGI.escape(@option),
+	'other_param'	=> CGI.escape(make_command_line_unix(@options)),
 	'matrix'	=> matrix,
 	'filter'	=> filter,
 	'V_value'	=> 500,		# default value for GenomeNet
@@ -126,9 +138,24 @@ module Bio
       report = nil
 
       begin
-	result, = Net::HTTP.new(host).post(path, data.join('&'))
-	@output = result.body
-	report = parse_result(@output)
+        http = Net::HTTP.new(host)
+        http.open_timeout = 300
+        http.read_timeout = 600
+	result, = http.post(path, data.join('&'))
+        @output = result.body
+        # workaround 2005.08.12
+        if /\<A +HREF=\"(http\:\/\/blast\.genome\.jp(\/tmp\/[^\"]+))\"\>Show all result\<\/A\>/i =~ @output.to_s then
+          result, = http.get($2)
+          @output = result.body
+          txt = @output.to_s.split(/\<pre\>/)[1]
+          raise 'cannot understand response' unless txt
+          txt.sub!(/\<\/pre\>.*\z/m, '')
+          txt.sub!(/.*^ \-{20,}\s*/m, '')
+          @output = txt.gsub(/\&lt\;/, '<')
+          report = parse_result(@output)
+        else
+          raise 'cannot understand response'
+        end
       end
 
       return report
@@ -182,12 +209,17 @@ end
 
 --- Bio::Blast#program
 --- Bio::Blast#db
---- Bio::Blast#option
+--- Bio::Blast#options
 --- Bio::Blast#server
 --- Bio::Blast#blastall
 --- Bio::Blast#filter
 
       Accessors for the factory parameters.
+
+--- Bio::Blast#option
+--- Bio::Blast#option=(str)
+
+      Get/set options by string.
 
 == Available databases for Blast.remote(@program, @db, option, 'genomenet')
 

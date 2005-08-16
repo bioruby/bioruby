@@ -1,3 +1,26 @@
+2005-08-16  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/command.rb
+
+	  Newly added Bio::Command::Tools module.
+	  Bio::Command::Tools is a collection of useful methods
+	  for execution of external commands.
+
+	* lib/bio/appl/blast.rb, lib/bio/appl/fasta.rb,
+	  lib/bio/appl/hmmer.rb, lib/bio/io/fastacmd.rb
+
+	  For security reason, shell special characters are escaped.
+
+	* lib/bio/appl/blast.rb, lib/bio/appl/fasta.rb, lib/bio/appl/hmmer.rb
+
+	  Options are stored with an array (@options).
+	  #options and #opions= methods are added.
+
+	* lib/bio/appl/blast.rb, lib/bio/appl/fasta.rb
+
+	  Bio::Blast.remote and Bio::Fasta.remote did not work
+	  due to the change of the GenomeNet.
+
 2005-08-11  Toshiaki Katayama <k@bioruby.org>
 
 	* BioRuby 0.6.4 is released.
