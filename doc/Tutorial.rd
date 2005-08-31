@@ -1,8 +1,11 @@
 =begin
 
-  $Id: Tutorial.rd,v 1.1 2005/08/31 12:35:41 ngoto Exp $
+  $Id: Tutorial.rd,v 1.2 2005/08/31 13:16:03 ngoto Exp $
 
   Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>
+
+  Translated into English: Naohisa Goto <ng@bioruby.org>
+                           (to be written...)
 
 = How to use BioRuby
 
@@ -261,7 +264,7 @@ to get nucleic and amino acid sequences of genes.
 
 Bio::Sequence#splicing splices subsequence from nucleic acid sequence
 according to location information used in GenBank, EMBL and DDBJ.
-(TRANSLATOR'S NOTE: added EMBL and GenBank.) When translation
+(TRANSLATOR'S NOTE: EMBL and DDBJ should be added in Japanese document.) When translation
 table is different from 0(universal), or first codon is not "atg" or
 the protein contain selenocysteine, the two amino acid sequences will
 differ. Of cource, if there were a bug in BioRuby, the two sequences
@@ -314,11 +317,8 @@ database class. You can simply write as follows.
     
     ff = Bio::FlatFile.auto(ARGF)
     ff.each_entry do |entry|
-      p entry.entry_id          # エントリの ID
       p entry.entry_id          # identifier of the entry
-      p entry.definition        # エントリの説明文
       p entry.definition        # definition of the entry
-      p entry.seq               # 配列データベースの場合
       p entry.seq               # sequence data of the entry
     end
 
@@ -760,7 +760,7 @@ and \end{thebibliography} as follows:
 
     \documentclass{jarticle}
     \begin{document}
-    foo bar KEGG database~\cite{PMID:10592173} baz hoge fuga。
+    foo bar KEGG database~\cite{PMID:10592173} baz hoge fuga.
 
     \begin{thebibliography}{00}
 
@@ -1011,7 +1011,7 @@ Please refer to KEGG_API.rd.ja (TRANSLATOR'S NOTE: English version: ((<URL:http:
 
 to be written...
 
-(TRANSLATOR'S NOTE: No additional libraries are needed with Ruby 1.8.1 and later.)
+(TRANSLATOR'S NOTE: No additional libraries are needed with Ruby 1.8.1 or later.)
 
 =end
 
