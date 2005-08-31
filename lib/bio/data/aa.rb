@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aa.rb,v 0.10 2005/08/07 23:28:14 k Exp $
+#  $Id: aa.rb,v 0.11 2005/08/31 07:22:53 k Exp $
 #
 
 module Bio
@@ -160,6 +160,7 @@ module Bio
           name2one(x)
         end
       end
+      alias :one :to_1
 
       def to_3(x)
         case x.to_s.length
@@ -171,6 +172,7 @@ module Bio
           name2three(x)
         end
       end
+      alias :three :to_3
 
       def one2three(x)
         if x and x.length != 1
@@ -192,14 +194,14 @@ module Bio
         if x and x.length != 1
           raise ArgumentError
         else
-          Names[x]
+          three2name(Names[x])
         end
       end
 
       def name2one(x)
         str = reverse[x.to_s.downcase]
         if str and str.length == 3
-          reverse[str]
+          three2one(str)
         else
           str
         end
@@ -279,36 +281,36 @@ if __FILE__ == $0
   puts "# aa['A']"
   p aa['A']
 
-  puts "# Bio::AminoAcid.name('A')"
-  p Bio::AminoAcid.name('A')
-  puts "# aa.name('A')"
-  p aa.name('A')
+  puts "# Bio::AminoAcid.name('A'), Bio::AminoAcid.name('Ala')"
+  p Bio::AminoAcid.name('A'), Bio::AminoAcid.name('Ala')
+  puts "# aa.name('A'), aa.name('Ala')"
+  p aa.name('A'), aa.name('Ala')
 
-  puts "# Bio::AminoAcid.to_1('alanine')"
-  p Bio::AminoAcid.to_1('alanine')
-  puts "# aa.to_1('alanine')"
-  p aa.to_1('alanine')
-  puts "# Bio::AminoAcid.to_1('Ala')"
-  p Bio::AminoAcid.to_1('Ala')
-  puts "# aa.to_1('Ala')"
-  p aa.to_1('Ala')
-  puts "# Bio::AminoAcid.to_1('A')"
-  p Bio::AminoAcid.to_1('A')
-  puts "# aa.to_1('A')"
-  p aa.to_1('A')
+  puts "# Bio::AminoAcid.to_1('alanine'), Bio::AminoAcid.one('alanine')"
+  p Bio::AminoAcid.to_1('alanine'), Bio::AminoAcid.one('alanine')
+  puts "# aa.to_1('alanine'), aa.one('alanine')"
+  p aa.to_1('alanine'), aa.one('alanine')
+  puts "# Bio::AminoAcid.to_1('Ala'), Bio::AminoAcid.one('Ala')"
+  p Bio::AminoAcid.to_1('Ala'), Bio::AminoAcid.one('Ala')
+  puts "# aa.to_1('Ala'), aa.one('Ala')"
+  p aa.to_1('Ala'), aa.one('Ala')
+  puts "# Bio::AminoAcid.to_1('A'), Bio::AminoAcid.one('A')"
+  p Bio::AminoAcid.to_1('A'), Bio::AminoAcid.one('A')
+  puts "# aa.to_1('A'), aa.one('A')"
+  p aa.to_1('A'), aa.one('A')
 
-  puts "# Bio::AminoAcid.to_3('alanine')"
-  p Bio::AminoAcid.to_3('alanine')
-  puts "# aa.to_3('alanine')"
-  p aa.to_3('alanine')
-  puts "# Bio::AminoAcid.to_3('Ala')"
-  p Bio::AminoAcid.to_3('Ala')
-  puts "# aa.to_3('Ala')"
-  p aa.to_3('Ala')
-  puts "# Bio::AminoAcid.to_3('A')"
-  p Bio::AminoAcid.to_3('A')
-  puts "# aa.to_3('A')"
-  p aa.to_3('A')
+  puts "# Bio::AminoAcid.to_3('alanine'), Bio::AminoAcid.three('alanine')"
+  p Bio::AminoAcid.to_3('alanine'), Bio::AminoAcid.three('alanine')
+  puts "# aa.to_3('alanine'), aa.three('alanine')"
+  p aa.to_3('alanine'), aa.three('alanine')
+  puts "# Bio::AminoAcid.to_3('Ala'), Bio::AminoAcid.three('Ala')"
+  p Bio::AminoAcid.to_3('Ala'), Bio::AminoAcid.three('Ala')
+  puts "# aa.to_3('Ala'), aa.three('Ala')"
+  p aa.to_3('Ala'), aa.three('Ala')
+  puts "# Bio::AminoAcid.to_3('A'), Bio::AminoAcid.three('A')"
+  p Bio::AminoAcid.to_3('A'), Bio::AminoAcid.three('A')
+  puts "# aa.to_3('A'), aa.three('A')"
+  p aa.to_3('A'), aa.three('A')
 
   puts "# Bio::AminoAcid.one2three('A')"
   p Bio::AminoAcid.one2three('A')
