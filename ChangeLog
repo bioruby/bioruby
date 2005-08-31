@@ -2,6 +2,15 @@
 
 	* BioRuby 0.6.4 is released.
 
+	* doc/KEGG_API.rd
+
+	  Newly added English version of the KEGG API manual.
+
+	* lib/bio/aa.rb
+
+	  the 'one2name' method introduced in 0.6.3 is fixed and added 'one'
+	  and 'three' methods as aliases for 'to_1' and 'to_3' methods.
+
 2005-08-31  Naohisa Goto <ng@bioruby.org>
 
 	* removed unused file lib/bio/appl/factory.rb
