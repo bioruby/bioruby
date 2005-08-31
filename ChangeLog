@@ -1,7 +1,15 @@
+2005-08-31  Toshiaki Katayama <k@bioryby.org>
+
+	* BioRuby 0.6.4 is released.
+
 2005-08-31  Naohisa Goto <ng@bioruby.org>
 
 	* removed unused file lib/bio/appl/factory.rb
-	  (some functions had been moved to lib/bio/command.rb)
+	  (the functionality had been integrated into lib/bio/command.rb)
+
+	* doc/Tutorial.rd
+
+	  Newly added an English translation of the Japanese tutorial.
 
 2005-08-16  Naohisa Goto <ng@bioruby.org>
 
@@ -23,17 +31,17 @@
 
 	* lib/bio/appl/blast.rb, lib/bio/appl/fasta.rb
 
-	  Bio::Blast.remote and Bio::Fasta.remote did not work
-	  due to the change of the GenomeNet.
+	  Bio::Blast.remote and Bio::Fasta.remote is fixed to work
+	  with the recent change of the GenomeNet.
 
 2005-08-11  Toshiaki Katayama <k@bioruby.org>
 
-	* BioRuby 0.6.4 is released.
+	* Sequence#to_re method to have compatibility with 0.6.2 for RNA
 
-	  * Sequence#to_re method to have compatibility with 0.6.2 for RNA
-	  * Fixed Bio::Fastacmd#fetch to work
-	  * Bio::Fastacmd and Bio::Bl2seq classes (introduced in 0.6.3) are
-	    renamed to Bio::Blast::Fastacmd, Bio::Blast::Bl2seq respectively.
+	* Fixed Bio::Fastacmd#fetch to work
+
+	* Bio::Fastacmd and Bio::Bl2seq classes (introduced in 0.6.3) are
+	  renamed to Bio::Blast::Fastacmd, Bio::Blast::Bl2seq respectively.
 
 2005-08-09  Toshiaki Katayama <k@bioruby.org>
 
