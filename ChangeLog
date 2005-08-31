@@ -1,3 +1,8 @@
+2005-08-31  Naohisa Goto <ng@bioruby.org>
+
+	* removed unused file lib/bio/appl/factory.rb
+	  (some functions had been moved to lib/bio/command.rb)
+
 2005-08-16  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/command.rb
