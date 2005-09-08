@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd,v 1.3 2005/09/08 05:36:26 pjotr Exp $
+  $Id: Tutorial.rd,v 1.4 2005/09/08 05:43:10 pjotr Exp $
 
   Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -8,10 +8,12 @@
   Edited by:               PjotrPrins
                            (to be written...)
 
-  IMPORTANT NOTICE: This page is maintained in the BioRuby
-  CVS repository. Please edit the file there, otherwise
-  changes may get lost. See ((<BioRuby Developer Information>))
-  for CVS and mailing list access.
+NOTE: This page is a work in progress at this point
+
+IMPORTANT NOTICE: This page is maintained in the BioRuby
+CVS repository. Please edit the file there, otherwise
+changes may get lost. See ((<BioRuby Developer Information>))
+for CVS and mailing list access.
 
 = How to use BioRuby
 
