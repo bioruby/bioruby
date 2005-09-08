@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.3 2005/03/04 04:48:41 k Exp $
+#  $Id: report.rb,v 1.4 2005/09/08 01:22:10 k Exp $
 #
 
 require 'bio/db/fasta'
@@ -29,45 +29,45 @@ module Bio
     class Report
 
       def initialize(ary, seqclass = nil)
-	@data = ary
-	@align = nil
-	case seqclass
-	when /PROTEIN/i
-	  @seqclass = Bio::Sequence::AA
-	when /[DR]NA/i
-	  @seqclass = Bio::Sequence::NA
-	else
-	  if seqclass.is_a?(Module) then
-	    @seqclass = seqclass
-	  else
-	    @seqclass = Bio::Sequence
-	  end
-	end
+        @data = ary
+        @align = nil
+        case seqclass
+        when /PROTEIN/i
+          @seqclass = Bio::Sequence::AA
+        when /[DR]NA/i
+          @seqclass = Bio::Sequence::NA
+        else
+          if seqclass.is_a?(Module) then
+            @seqclass = seqclass
+          else
+            @seqclass = Bio::Sequence
+          end
+        end
       end
       attr_reader :data
       attr_reader :seqclass
 
       def align
-	do_parse() unless @align
-	@align
+        do_parse() unless @align
+        @align
       end
       alias :alignment :align
 
       def to_fasta(*arg)
-	align.to_fasta(*arg)
+        align.to_fasta(*arg)
       end
 
       def to_a
-	@data
+        @data
       end
 
       private
       def do_parse
-	return nil if @align
-	@align = Bio::Alignment.new(@data) do |x|
-	  [ @seqclass.new(x.seq), x.definition ]
-	end
-	nil
+        return nil if @align
+        @align = Bio::Alignment.new(@data) do |x|
+          [ @seqclass.new(x.seq), x.definition ]
+        end
+        nil
       end
 
     end #class Report

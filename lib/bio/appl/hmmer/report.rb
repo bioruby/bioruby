@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.5 2005/08/09 09:58:19 k Exp $
+#  $Id: report.rb,v 1.6 2005/09/08 01:22:09 k Exp $
 #
 
 module Bio
@@ -32,12 +32,12 @@ module Bio
         @parameter = parse_parameter($2)
         @query_info =parse_query_info($3)
 
-	case @program['name']
-	when /hmmsearch/
-	  is_hmmsearch = true
-	else
-	  is_hmmsearch = false		# hmmpfam
-	end
+        case @program['name']
+        when /hmmsearch/
+          is_hmmsearch = true
+        else
+          is_hmmsearch = false		# hmmpfam
+        end
 
         # Scores for complete sequences. (parsed to Hit objects)
         data.sub!(/.+-$\n(.+?)\n\nParsed/m, '')
@@ -61,8 +61,8 @@ module Bio
         end
         $1.split(/^\S+.*?\n/).slice(1..-1).each_with_index do |al,k|
           al2 = al.gsub(/\n\n/,"\n").to_s.collect { |l|
-	    l.sub(/^.{19}/,'').sub(/\s(\d+|-)\s*$/,'')
-	  }
+            l.sub(/^.{19}/,'').sub(/\s(\d+|-)\s*$/,'')
+          }
           align = ['', '', '']
           al2.each_with_index { |s,i| align[i%3] += s.chomp }
           align.each { |a| a.sub!(/^.{3}(.*).{3}$/, '\1') }
@@ -107,13 +107,13 @@ module Bio
         end
       end
       attr_reader :program, :parameter, :query_info, :hits,
-	:histogram, :statistical_detail, :total_seq_searched,
-	:whole_seq_top_hits, :domain_top_hits 
+        :histogram, :statistical_detail, :total_seq_searched,
+        :whole_seq_top_hits, :domain_top_hits 
 
       def each
-	@hits.each do |x|
-	  yield x
-	end
+        @hits.each do |x|
+          yield x
+        end
       end
 
 
@@ -121,8 +121,8 @@ module Bio
         def initialize(data, is_hmmsearch)
           @is_hmmsearch = is_hmmsearch
 
-	  @accession, @domain, seq_f, seq_t, @seq_ft, hmm_f, hmm_t, @hmm_ft,
-	    score, evalue = data.split(' ')
+          @accession, @domain, seq_f, seq_t, @seq_ft, hmm_f, hmm_t, @hmm_ft,
+            score, evalue = data.split(' ')
           @seq_f = seq_f.to_i
           @seq_t = seq_t.to_i
           @hmm_f = hmm_f.to_i
@@ -136,8 +136,8 @@ module Bio
           @target_frame = 1
         end
         attr_accessor :accession, :domain, :seq_f, :seq_t, :seq_ft,
-	  :hmm_f, :hmm_t, :hmm_ft, :score, :evalue, :midline, :hmmseq,
-	  :flatseq, :query_frame, :target_frame
+          :hmm_f, :hmm_t, :hmm_ft, :score, :evalue, :midline, :hmmseq,
+          :flatseq, :query_frame, :target_frame
 
         def query_seq
           if @is_hmmsearch; @hmmseq else; @flatseq end
@@ -173,7 +173,7 @@ module Bio
           @hsps = Array.new
           if /^(\S+)\s+(.*)\s+(\S+)\s+(\S+)\s+(\S+)$/ =~ data
             @accession, @description, @score, @evalue, @num = 
-	      [$1, $2, $3.to_f, $4.to_f, $5.to_i]
+              [$1, $2, $3.to_f, $4.to_f, $5.to_i]
           end
         end
         attr_accessor :hsps, :accession, :description, :score, :evalue, :num
@@ -205,7 +205,7 @@ module Bio
       def parse_program(data)
         hash = {}
         hash['name'], hash['version'], hash['copyright'], hash['license'] =
-	  data.split(/\n/)
+          data.split(/\n/)
         hash
       end
 

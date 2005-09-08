@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: cell.rb,v 1.6 2001/12/15 02:55:07 katayama Exp $
+#  $Id: cell.rb,v 1.7 2005/09/08 01:22:11 k Exp $
 #
 
 require "bio/db"
@@ -32,52 +32,52 @@ module Bio
       TAGSIZE	= 12
 
       def initialize(entry)
-	super(entry, TAGSIZE)
+        super(entry, TAGSIZE)
       end
 
       def entry_id
-	field_fetch('ENTRY')
+        field_fetch('ENTRY')
       end
 
       def definition
-	field_fetch('DEFINITION')
+        field_fetch('DEFINITION')
       end
 
       def org
-	field_fetch('ORGANISM')
+        field_fetch('ORGANISM')
       end
       alias organism org
 
       def mother
-	field_fetch('MOTHER')
+        field_fetch('MOTHER')
       end
 
       def daughter
-	field_fetch('DAUGHTER').gsub(/ /, '').split(/,/)
+        field_fetch('DAUGHTER').gsub(/ /, '').split(/,/)
       end
 
       def sister
-	field_fetch('SISTER')
+        field_fetch('SISTER')
       end
 
       def fate
-	field_fetch('CELL_FATE').gsub(/ /, '').split(/,/)
+        field_fetch('CELL_FATE').gsub(/ /, '').split(/,/)
       end
 
       def contact
-	field_fetch('CONTACT').gsub(/ /, '').split(/,/)
+        field_fetch('CONTACT').gsub(/ /, '').split(/,/)
       end
 
       def expression
-	field_fetch('EXPRESSION')
+        field_fetch('EXPRESSION')
       end
 
       def fig
-	field_fetch('FIGURE')
+        field_fetch('FIGURE')
       end
 
       def ref
-	field_fetch('REFERENCE')
+        field_fetch('REFERENCE')
       end
 
     end

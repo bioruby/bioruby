@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: medline.rb,v 1.11 2005/08/07 08:13:42 k Exp $
+#  $Id: medline.rb,v 1.12 2005/09/08 01:22:11 k Exp $
 #
 
 require 'bio/db'
@@ -31,10 +31,10 @@ module Bio
 
       tag = ''
       entry.each_line do |line|
-	if line =~ /^\w/
-	  tag = line[0,4].strip
-	end
-	@pubmed[tag] += line[6..-1] if line.length > 6
+        if line =~ /^\w/
+          tag = line[0,4].strip
+        end
+        @pubmed[tag] += line[6..-1] if line.length > 6
       end
     end
 
@@ -108,11 +108,11 @@ module Bio
     def pages
       pages = pg
       if pages =~ /-/
-	from, to = pages.split('-')
-	if (len = from.length - to.length) > 0
-	  to = from[0,len] + to
-	end
-	pages = "#{from}-#{to}"
+        from, to = pages.split('-')
+        if (len = from.length - to.length) > 0
+          to = from[0,len] + to
+        end
+        pages = "#{from}-#{to}"
       end
       return pages
     end
@@ -151,16 +151,16 @@ module Bio
     def authors
       authors = []
       au.split(/\n/).each do |author|
-	if author =~ / /
-	  name = author.split(/\s+/)
-	  suffix = name[-2] =~ /^[A-Z]+$/ ? name.pop : nil	# Jr etc.
-	  initial = name.pop.split(//).join('. ')
-	  author = "#{name.join(' ')}, #{initial}."
-	end
-	if suffix
-	  author << " " + suffix
-	end
-	authors.push(author)
+        if author =~ / /
+          name = author.split(/\s+/)
+          suffix = name[-2] =~ /^[A-Z]+$/ ? name.pop : nil	# Jr etc.
+          initial = name.pop.split(//).join('. ')
+          author = "#{name.join(' ')}, #{initial}."
+        end
+        if suffix
+          author << " " + suffix
+        end
+        authors.push(author)
       end
       return authors
     end

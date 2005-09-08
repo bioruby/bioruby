@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.3 2003/02/26 01:54:03 k Exp $
+#  $Id: report.rb,v 1.4 2005/09/08 01:22:10 k Exp $
 #
 
 module Bio
@@ -29,93 +29,93 @@ module Bio
       DELIMITER = "\n \n"
 
       def initialize(str)
-	@version                  = nil
-	@query_sequences          = nil
-	@cleavage_site_prediction = nil
-	@networks                 = nil
-	@prediction               = {}
-	@cutoff                   = {}
-	parse_entry(str)
+        @version                  = nil
+        @query_sequences          = nil
+        @cleavage_site_prediction = nil
+        @networks                 = nil
+        @prediction               = {}
+        @cutoff                   = {}
+        parse_entry(str)
       end
 
       attr_reader :version, :query_sequences, 
-	:cleavage_site_prediction, :networks,
-	:prediction, :cutoff
+        :cleavage_site_prediction, :networks,
+        :prediction, :cutoff
 
       alias :pred   :prediction
 
       def name
-	@prediction['Name']
+        @prediction['Name']
       end
       alias :entry_id :name 
 
       def query_len
-	if @prediction['Len']
-	  @prediction['Len']
-	else
-	  @prediction['Length']
-	end
+        if @prediction['Len']
+          @prediction['Len']
+        else
+          @prediction['Length']
+        end
       end
       alias :length :query_len
 
       def loc
-	if @prediction['Loc'] 
-	  @prediction['Loc']   # version 1.0
-	else
-	  @prediction['Loc.']  # version 1.1
-	end
+        if @prediction['Loc'] 
+          @prediction['Loc']   # version 1.0
+        else
+          @prediction['Loc.']  # version 1.1
+        end
       end
 
       def rc
-	@prediction['RC']
+        @prediction['RC']
       end
       
       private
 
       def parse_entry(str)
-	labels = []
-	cutoff = []
-	values = []
+        labels = []
+        cutoff = []
+        values = []
 
-	str.split("\n").each {|line|
-	  case line
-	  when /targetp v(\d+.\d+)/,/T A R G E T P\s+(\d+.\d+)/
-	    @version = $1
+        str.split("\n").each {|line|
+          case line
+          when /targetp v(\d+.\d+)/,/T A R G E T P\s+(\d+.\d+)/
+            @version = $1
 
-	  when /Number of (query|input) sequences:\s+(\d+)/
-	    @query_sequences = $1.to_i
+          when /Number of (query|input) sequences:\s+(\d+)/
+            @query_sequences = $1.to_i
 
-	  when /Cleavage site predictions (\w.+)\./ 
-	    @cleavage_site_prediction = $1
+          when /Cleavage site predictions (\w.+)\./ 
+            @cleavage_site_prediction = $1
 
-	  when /Using (\w+.+) networks/
-	    @networks = $1
-	  when /Name +Len/
-	    labels = line.sub(/^\#\s*/,'').split(/\s+/)
+          when /Using (\w+.+) networks/
+            @networks = $1
+          when /Name +Len/
+            labels = line.sub(/^\#\s*/,'').split(/\s+/)
 
-	  when /cutoff/
-	    cutoff = line.split(/\s+/)
-	    cutoff.shift
-	    labels[2, 4].each_with_index {|loc, i|
-	      next if loc =~ /Loc/
-	      @cutoff[loc] = cutoff[i].to_f
-	    }
-	  when /-----$/
-	  when /^ +$/, ''
-	  else
-	    values = line.sub(/^\s*/,'').split(/\s+/)
-	    values.each_with_index {|val, i|
-	      label = labels[i]
-	      case label
-	      when 'RC', /Len/ 
-		val = val.to_i
-	      when 'SP','mTP','cTP','other'
-		val = val.to_f
-	      end
-	      @prediction[label] = val
-	    }
-	  end
-	}
+          when /cutoff/
+            cutoff = line.split(/\s+/)
+            cutoff.shift
+            labels[2, 4].each_with_index {|loc, i|
+              next if loc =~ /Loc/
+              @cutoff[loc] = cutoff[i].to_f
+            }
+          when /-----$/
+          when /^ +$/, ''
+          else
+            values = line.sub(/^\s*/,'').split(/\s+/)
+            values.each_with_index {|val, i|
+              label = labels[i]
+              case label
+              when 'RC', /Len/ 
+                val = val.to_i
+              when 'SP','mTP','cTP','other'
+                val = val.to_f
+              end
+              @prediction[label] = val
+            }
+          end
+        }
       end
 
     end # class Report

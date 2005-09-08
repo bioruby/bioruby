@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: feature.rb,v 1.5 2003/02/25 12:22:00 k Exp $
+#  $Id: feature.rb,v 1.6 2005/09/08 01:22:08 k Exp $
 #
 
 require 'bio/location'
@@ -42,7 +42,7 @@ module Bio
 
     def each
       @qualifiers.each do |x|
-	yield x
+        yield x
       end
     end
 
@@ -58,7 +58,7 @@ module Bio
     class Qualifier
 
       def initialize(key, value)
-	@qualifier, @value = key, value
+        @qualifier, @value = key, value
       end
       attr_reader :qualifier, :value
 
@@ -81,8 +81,8 @@ module Bio
 
     def each(arg = nil)
       @features.each do |x|
-	next if arg and x.feature != arg
-	yield x
+        next if arg and x.feature != arg
+        yield x
       end
     end
 

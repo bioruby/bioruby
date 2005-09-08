@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: brite.rb,v 0.5 2001/12/15 02:50:35 katayama Exp $
+#  $Id: brite.rb,v 0.6 2005/09/08 01:22:11 k Exp $
 #
 
 require 'bio/db'
@@ -32,7 +32,7 @@ module Bio
       TAGSIZE	= 12
 
       def initialize(entry)
-	super(entry, TAGSIZE)
+        super(entry, TAGSIZE)
       end
 
       # ENTRY

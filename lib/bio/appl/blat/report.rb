@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.1 2004/10/13 16:52:26 ngoto Exp $
+#  $Id: report.rb,v 1.2 2005/09/08 01:22:09 k Exp $
 #
 
 require 'bio'
@@ -43,45 +43,45 @@ module Bio
             end
           end
         end
-	@columns = parse_header(head)
+        @columns = parse_header(head)
       end
       attr_reader :hits, :columns
 
       def parse_header(ary)
-	ary.shift # first line is removed
-	a0 = ary.collect { |x| x.split(/\t/) }
-	k = []
-	a0.each do |x|
-	  x.each_index do |i|
-	    y = x[i].strip
-	    k[i] = k[i].to_s + (y.sub!(/\-\z/, '') ? y : y + ' ')
-	  end
-	end
-	k.each { |x| x.strip! }
-	k
+        ary.shift # first line is removed
+        a0 = ary.collect { |x| x.split(/\t/) }
+        k = []
+        a0.each do |x|
+          x.each_index do |i|
+            y = x[i].strip
+            k[i] = k[i].to_s + (y.sub!(/\-\z/, '') ? y : y + ' ')
+          end
+        end
+        k.each { |x| x.strip! }
+        k
       end
       private :parse_header
 
       class SeqDesc
-	def initialize(gap_count, gap_bases, name, size,
-		       st, ed, starts, seqs)
-	  @gap_count = gap_count.to_i
-	  @gap_bases = gap_bases.to_i
-	  @name = name
-	  @size = size.to_i
-	  @start = st.to_i
-	  @end = ed.to_i
-	  @starts = starts.collect { |x| x.to_i }
-	  @seqs = seqs
-	end
-	attr_reader :gap_count, :gap_bases,
-	  :name, :size, :start, :end, :starts, :seqs
+        def initialize(gap_count, gap_bases, name, size,
+                       st, ed, starts, seqs)
+          @gap_count = gap_count.to_i
+          @gap_bases = gap_bases.to_i
+          @name = name
+          @size = size.to_i
+          @start = st.to_i
+          @end = ed.to_i
+          @starts = starts.collect { |x| x.to_i }
+          @seqs = seqs
+        end
+        attr_reader :gap_count, :gap_bases,
+          :name, :size, :start, :end, :starts, :seqs
       end #class SeqDesc
 
       class SegmentPair
-	def initialize(query_len, strand,
+        def initialize(query_len, strand,
                        blksize, qstart, tstart, qseq, tseq)
-	  @blocksize  = blksize
+          @blocksize  = blksize
           @qseq       = qseq
           @hseq       = hseq
           @hit_strand   = 'plus'
@@ -105,8 +105,8 @@ module Bio
             @hit_from   = tstart + 1
             @hit_to     = tstart + blksize # - 1 + 1
           end
-	end
-	attr_reader :query_from, :query_to, :qseq, :query_strand
+        end
+        attr_reader :query_from, :query_to, :qseq, :query_strand
         attr_reader :hit_from,   :hit_to,   :hseq, :hit_strand
         attr_reader :blocksize
 
@@ -156,7 +156,7 @@ module Bio
           unless defined?(@block_sizes) then
             @block_sizes = split_comma(@data[18]).collect { |x| x.to_i }
           end
-	  @block_sizes
+          @block_sizes
         end
 
         def blocks

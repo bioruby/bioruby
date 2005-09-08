@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: reference.rb,v 1.16 2005/05/26 13:16:23 k Exp $
+#  $Id: reference.rb,v 1.17 2005/09/08 01:22:08 k Exp $
 #
 
 module Bio
@@ -51,29 +51,29 @@ module Bio
       when 'endnote'
         return endnote
       when 'bibitem'
-	return bibitem(option)
+        return bibitem(option)
       when 'bibtex'
-	return bibtex(option)
+        return bibtex(option)
       when 'rd'
-	return rd(option)
+        return rd(option)
       when /^nature$/i
-	return nature(option)
+        return nature(option)
       when /^science$/i
-	return science
+        return science
       when /^genome\s*_*biol/i
-	return genome_biol
+        return genome_biol
       when /^genome\s*_*res/i
-	return genome_res
+        return genome_res
       when /^nar$/i
-	return nar
+        return nar
       when /^current/i
-	return current
+        return current
       when /^trends/i
-	return trends
+        return trends
       when /^cell$/i
-	return cell
+        return cell
       else
-	return general
+        return general
       end
     end
 
@@ -108,10 +108,10 @@ module Bio
       item  = "PMID:#{@pubmed}" unless item
       pages = @pages.sub('-', '--')
       return <<-"END".collect {|line| line.strip}.join("\n")
-	\\bibitem{#{item}}
-	#{@authors.join(', ')}
-	#{@title},
-	{\\em #{@journal}}, #{@volume}(#{@issue}):#{pages}, #{@year}.
+        \\bibitem{#{item}}
+        #{@authors.join(', ')}
+        #{@title},
+        {\\em #{@journal}}, #{@volume}(#{@issue}):#{pages}, #{@year}.
       END
     end
 
@@ -120,15 +120,15 @@ module Bio
       authors = authors_join(' and ', ' and ')
       pages   = @pages.sub('-', '--')
       return <<-"END".gsub(/\t/, '')
-	@#{section}{PMID:#{@pubmed},
-	  author  = {#{authors}},
-	  title   = {#{@title}},
-	  journal = {#{@journal}},
-	  year    = {#{@year}},
-	  volume  = {#{@volume}},
-	  number  = {#{@issue}},
-	  pages   = {#{pages}},
-	}
+        @#{section}{PMID:#{@pubmed},
+          author  = {#{authors}},
+          title   = {#{@title}},
+          journal = {#{@journal}},
+          year    = {#{@year}},
+          volume  = {#{@volume}},
+          number  = {#{@issue}},
+          pages   = {#{pages}},
+        }
       END
     end
 
@@ -149,25 +149,25 @@ module Bio
 
     def nature(short = false)
       if short
-	if @authors.size > 4
-	  authors = "#{@authors[0]} et al."
-	elsif @authors.size == 1
-	  authors = "#{@authors[0]}"
-	else
-	  authors = authors_join(' & ')
-	end
-	"#{authors} #{@journal} #{@volume}, #{@pages} (#{@year})."
+        if @authors.size > 4
+          authors = "#{@authors[0]} et al."
+        elsif @authors.size == 1
+          authors = "#{@authors[0]}"
+        else
+          authors = authors_join(' & ')
+        end
+        "#{authors} #{@journal} #{@volume}, #{@pages} (#{@year})."
       else
-	authors = authors_join(' & ')
-	"#{authors} #{@title} #{@journal} #{@volume}, #{@pages} (#{@year})."
+        authors = authors_join(' & ')
+        "#{authors} #{@title} #{@journal} #{@volume}, #{@pages} (#{@year})."
       end
     end
 
     def science
       if @authors.size > 4
-	authors = rev_name(@authors[0]) + " et al."
+        authors = rev_name(@authors[0]) + " et al."
       else
-	authors = @authors.collect {|name| rev_name(name)}.join(', ')
+        authors = @authors.collect {|name| rev_name(name)}.join(', ')
       end
       page_from, = @pages.split('-')
       "#{authors}, #{@journal} #{@volume} #{page_from} (#{@year})."
@@ -197,11 +197,11 @@ module Bio
 
     def trends
       if @authors.size > 2
-	authors = "#{@authors[0]} et al."
+        authors = "#{@authors[0]} et al."
       elsif @authors.size == 1
-	authors = "#{@authors[0]}"
+        authors = "#{@authors[0]}"
       else
-	authors = authors_join(' and ')
+        authors = authors_join(' and ')
       end
       "#{authors} (#{@year}) #{@title} #{@journal} #{@volume}, #{@pages}"
     end
@@ -216,19 +216,19 @@ module Bio
     def authors_join(amp, sep = ', ')
       authors = @authors.clone
       if authors.length > 1
-	last = authors.pop
-	authors = authors.join(sep) + "#{amp}" + last
+        last = authors.pop
+        authors = authors.join(sep) + "#{amp}" + last
       elsif authors.length == 1
-	authors = authors.pop
+        authors = authors.pop
       else
-	authors = ""
+        authors = ""
       end
     end
 
     def rev_name(name)
       if name =~ /,/
-	name, initial = name.split(/,\s+/)
-	name = "#{initial} #{name}"
+        name, initial = name.split(/,\s+/)
+        name = "#{initial} #{name}"
       end
       return name
     end
@@ -250,7 +250,7 @@ module Bio
 
     def each
       @references.each do |x|
-	yield x
+        yield x
       end
     end
 

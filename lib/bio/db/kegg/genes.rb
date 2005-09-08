@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genes.rb,v 0.19 2005/02/09 08:41:38 k Exp $
+#  $Id: genes.rb,v 0.20 2005/09/08 01:22:11 k Exp $
 #
 
 require 'bio/db'
@@ -32,55 +32,55 @@ module Bio
       TAGSIZE	= 12
 
       def initialize(entry)
-	super(entry, TAGSIZE)
+        super(entry, TAGSIZE)
       end
 
 
       def entry
-	unless @data['ENTRY']
-	  hash = Hash.new('')
-	  if get('ENTRY').length > 30
-	    e = get('ENTRY')
-	    hash['id']       = e[12..29].strip
-	    hash['division'] = e[30..39].strip
-	    hash['organism'] = e[40..80].strip
-	  end
-	  @data['ENTRY'] = hash
-	end
-	@data['ENTRY']
+        unless @data['ENTRY']
+          hash = Hash.new('')
+          if get('ENTRY').length > 30
+            e = get('ENTRY')
+            hash['id']       = e[12..29].strip
+            hash['division'] = e[30..39].strip
+            hash['organism'] = e[40..80].strip
+          end
+          @data['ENTRY'] = hash
+        end
+        @data['ENTRY']
       end
 
       def entry_id
-	entry['id']
+        entry['id']
       end
 
       def division
-	entry['division']			# CDS, tRNA etc.
+        entry['division']			# CDS, tRNA etc.
       end
 
       def organism
-	entry['organism']			# H.sapiens etc.
+        entry['organism']			# H.sapiens etc.
       end
 
       def name
-	field_fetch('NAME')
+        field_fetch('NAME')
       end
 
       def genes
-	name.split(', ')
+        name.split(', ')
       end
 
       def gene
-	genes.first
+        genes.first
       end
 
       def definition
-	field_fetch('DEFINITION')
+        field_fetch('DEFINITION')
       end
 
       def eclinks
 #       definition.scan(/\[EC:(.*?)\]/).flatten
-	if /\[EC:(.*?)\]/.match(definition)
+        if /\[EC:(.*?)\]/.match(definition)
           $1.split(/\s+/)
         else
           []
@@ -89,7 +89,7 @@ module Bio
 
       def splinks
 #       definition.scan(/\[SP:(.*?)\]/).flatten
-	if /\[SP:(.*?)\]/.match(definition)
+        if /\[SP:(.*?)\]/.match(definition)
           $1.split(/\s+/)
         else
           []
@@ -97,7 +97,7 @@ module Bio
       end
 
       def keggclass
-	field_fetch('CLASS')
+        field_fetch('CLASS')
       end
 
       def pathways
@@ -105,54 +105,54 @@ module Bio
       end
 
       def position
-	unless @data['POSITION']
-	  @data['POSITION'] = fetch('POSITION').gsub(/\s/, '')
-	end
-	@data['POSITION']
+        unless @data['POSITION']
+          @data['POSITION'] = fetch('POSITION').gsub(/\s/, '')
+        end
+        @data['POSITION']
       end
 
       def gbposition
-	position.sub(/.*?:/, '')
+        position.sub(/.*?:/, '')
       end
 
       def chromosome
-	if position =~ /:/
-	  position.sub(/:.*/, '')
-	else
-	  nil
-	end
+        if position =~ /:/
+          position.sub(/:.*/, '')
+        else
+          nil
+        end
       end
 
       def dblinks
-	unless @data['DBLINKS']
-	  hash = {}
-	  get('DBLINKS').scan(/(\S+):\s*(\S+)\n/).each do |k, v|
-	    hash[k] = v
-	  end
-	  @data['DBLINKS'] = hash
-	end
-	@data['DBLINKS']		# Hash of DB:ID in DBLINKS
+        unless @data['DBLINKS']
+          hash = {}
+          get('DBLINKS').scan(/(\S+):\s*(\S+)\n/).each do |k, v|
+            hash[k] = v
+          end
+          @data['DBLINKS'] = hash
+        end
+        @data['DBLINKS']		# Hash of DB:ID in DBLINKS
       end
 
       def codon_usage(codon = nil)
-	unless @data['CODON_USAGE']
-	  ary = []
-	  get('CODON_USAGE').sub(/.*/,'').each_line do |line|	# cut 1st line
-	    line.chomp.sub(/^.{11}/, '').scan(/..../) do |cu|
-	      ary.push(cu.to_i)
-	    end
-	  end
-	  @data['CODON_USAGE'] = ary
-	end
+        unless @data['CODON_USAGE']
+          ary = []
+          get('CODON_USAGE').sub(/.*/,'').each_line do |line|	# cut 1st line
+            line.chomp.sub(/^.{11}/, '').scan(/..../) do |cu|
+              ary.push(cu.to_i)
+            end
+          end
+          @data['CODON_USAGE'] = ary
+        end
 
-	if codon
-	  h = { 't' => 0, 'c' => 1, 'a' => 2, 'g' => 3 }
-	  x, y, z = codon.downcase.scan(/\w/)
-	  codon_num = h[x] * 16 + h[y] * 4 + h[z]
-	  @data['CODON_USAGE'][codon_num]	# CODON_USAGE of the codon
-	else
-	  return @data['CODON_USAGE']	# Array of CODON_USAGE (default)
-	end
+        if codon
+          h = { 't' => 0, 'c' => 1, 'a' => 2, 'g' => 3 }
+          x, y, z = codon.downcase.scan(/\w/)
+          codon_num = h[x] * 16 + h[y] * 4 + h[z]
+          @data['CODON_USAGE'][codon_num]	# CODON_USAGE of the codon
+        else
+          return @data['CODON_USAGE']	# Array of CODON_USAGE (default)
+        end
       end
 
       def cu
@@ -170,26 +170,26 @@ module Bio
       end
 
       def aaseq
-	unless @data['AASEQ']
-	  @data['AASEQ'] = Sequence::AA.new(fetch('AASEQ').gsub(/[\s\d\/]+/, ''))
-	end
-	@data['AASEQ']
+        unless @data['AASEQ']
+          @data['AASEQ'] = Sequence::AA.new(fetch('AASEQ').gsub(/[\s\d\/]+/, ''))
+        end
+        @data['AASEQ']
       end
 
       def aalen
-	@data['AALEN'] = aaseq.length
+        @data['AALEN'] = aaseq.length
       end
 
       def ntseq
-	unless @data['NTSEQ']
-	  @data['NTSEQ'] = Sequence::NA.new(fetch('NTSEQ').gsub(/[\s\d\/]+/, ''))
-	end
-	@data['NTSEQ']
+        unless @data['NTSEQ']
+          @data['NTSEQ'] = Sequence::NA.new(fetch('NTSEQ').gsub(/[\s\d\/]+/, ''))
+        end
+        @data['NTSEQ']
       end
       alias naseq ntseq
 
       def ntlen
-	@data['NTLEN'] = ntseq.length
+        @data['NTLEN'] = ntseq.length
       end
       alias nalen ntlen
 

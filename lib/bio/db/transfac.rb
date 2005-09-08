@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: transfac.rb,v 1.8 2002/08/30 06:31:47 o Exp $
+#  $Id: transfac.rb,v 1.9 2005/09/08 01:22:11 k Exp $
 #
 
 require "bio/db"
@@ -45,7 +45,7 @@ module Bio
     #
     def ac
       unless @data['AC']
-	@data['AC'] = fetch('AC')
+        @data['AC'] = fetch('AC')
       end
       @data['AC']
     end
@@ -126,18 +126,18 @@ module Bio
       ma_ary = []
       key = ''
       @orig.each do |k, v|
-	if k =~ /^0*(\d+)/
-	  key = $1.to_i
-	  ma_dat[key] = fetch(k) unless ma_dat[key]
-	end
+        if k =~ /^0*(\d+)/
+          key = $1.to_i
+          ma_dat[key] = fetch(k) unless ma_dat[key]
+        end
       end
       ma_dat.keys.sort.each_with_index do |k, i|
-	rep_nt = ma_dat[k].slice!(-1, 1)
-	ma_dat[k].slice!(-1, 1)
-	ma_ary[i] = ma_dat[k].split(/\s+/)
-	ma_ary[i].each_with_index do |x, j|
-	  ma_ary[i][j] = x.to_i
-	end
+        rep_nt = ma_dat[k].slice!(-1, 1)
+        ma_dat[k].slice!(-1, 1)
+        ma_ary[i] = ma_dat[k].split(/\s+/)
+        ma_ary[i].each_with_index do |x, j|
+          ma_ary[i][j] = x.to_i
+        end
       end
       Matrix[*ma_ary]
     end

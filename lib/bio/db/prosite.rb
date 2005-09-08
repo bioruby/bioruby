@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: prosite.rb,v 0.9 2004/12/11 03:44:37 k Exp $
+#  $Id: prosite.rb,v 0.10 2005/09/08 01:22:11 k Exp $
 #
 
 require 'bio/db'
@@ -40,13 +40,13 @@ module Bio
     #
     def name
       unless @data['ID']
-	@data['ID'], @data['TYPE'] = fetch('ID').chomp('.').split('; ')
+        @data['ID'], @data['TYPE'] = fetch('ID').chomp('.').split('; ')
       end
       @data['ID']
     end
     def division
       unless @data['TYPE']
-	name
+        name
       end
       @data['TYPE']
     end
@@ -58,7 +58,7 @@ module Bio
     #
     def ac
       unless @data['AC']
-	@data['AC'] = fetch('AC').chomp(';')
+        @data['AC'] = fetch('AC').chomp(';')
       end
       @data['AC']
     end
@@ -139,22 +139,22 @@ module Bio
     #
     def nr
       unless @data['NR']
-	hash = {}			# temporal hash
-	fetch('NR').scan(%r{/(\S+)=([^;]+);}).each do |k, v|
-	  if v =~ /^(\d+)\((\d+)\)$/
-	    hits = $1.to_i		# the number of hits
-	    seqs = $2.to_i		# the number of sequences
-	    v = [hits, seqs]
-	  elsif v =~ /([\d\.]+),(\d+)/
-	    sprel = $1			# the number of SWISS-PROT release
-	    spseq = $2.to_i		# the number of SWISS-PROT sequences
-	    v = [sprel, spseq]
-	  else
-	    v = v.to_i
-	  end
-	  hash[k] = v
-	end
-	@data['NR'] = hash
+        hash = {}			# temporal hash
+        fetch('NR').scan(%r{/(\S+)=([^;]+);}).each do |k, v|
+          if v =~ /^(\d+)\((\d+)\)$/
+            hits = $1.to_i		# the number of hits
+            seqs = $2.to_i		# the number of sequences
+            v = [hits, seqs]
+          elsif v =~ /([\d\.]+),(\d+)/
+            sprel = $1			# the number of SWISS-PROT release
+            spseq = $2.to_i		# the number of SWISS-PROT sequences
+            v = [sprel, spseq]
+          else
+            v = v.to_i
+          end
+          hash[k] = v
+        end
+        @data['NR'] = hash
       end
       @data['NR']
     end
@@ -243,11 +243,11 @@ module Bio
     #
     def cc
       unless @data['CC']
-	hash = {}			# temporal hash
-	fetch('CC').scan(%r{/(\S+)=([^;]+);}).each do |k, v|
-	  hash[k] = v
-	end
-	@data['CC'] = hash
+        hash = {}			# temporal hash
+        fetch('CC').scan(%r{/(\S+)=([^;]+);}).each do |k, v|
+          hash[k] = v
+        end
+        @data['CC'] = hash
       end
       @data['CC']
     end
@@ -256,17 +256,17 @@ module Bio
     def taxon_range(expand = nil)
       range = comment['TAXO-RANGE']
       if range and expand
-	expand = []
-	range.scan(/./) do |x|
-	  case x
-	  when 'A'; expand.push('archaebacteria')
-	  when 'B'; expand.push('bacteriophages')
-	  when 'E'; expand.push('eukaryotes')
-	  when 'P'; expand.push('prokaryotes')
-	  when 'V'; expand.push('eukaryotic viruses')
-	  end
-	end
-	range = expand
+        expand = []
+        range.scan(/./) do |x|
+          case x
+          when 'A'; expand.push('archaebacteria')
+          when 'B'; expand.push('bacteriophages')
+          when 'E'; expand.push('eukaryotes')
+          when 'P'; expand.push('prokaryotes')
+          when 'V'; expand.push('eukaryotic viruses')
+          end
+        end
+        range = expand
       end
       return range
     end
@@ -277,14 +277,14 @@ module Bio
 
     def site
       if comment['SITE']
-	num, desc = comment['SITE'].split(',')
+        num, desc = comment['SITE'].split(',')
       end
       return [num.to_i, desc]
     end
 
     def skip_flag
       if comment['SKIP-FLAG'] == 'TRUE'
-	return true
+        return true
       end
     end
 
@@ -313,13 +313,13 @@ module Bio
     #
     def dr
       unless @data['DR']
-	hash = {}			# temporal hash
-	if fetch('DR')
-	  fetch('DR').scan(/(\w+)\s*, (\w+)\s*, (.);/).each do |a, e, c|
-	    hash[a] = [e, c]	# SWISS-PROT : accession, entry, true/false
-	  end
-	end
-	@data['DR'] = hash
+        hash = {}			# temporal hash
+        if fetch('DR')
+          fetch('DR').scan(/(\w+)\s*, (\w+)\s*, (.);/).each do |a, e, c|
+            hash[a] = [e, c]	# SWISS-PROT : accession, entry, true/false
+          end
+        end
+        @data['DR'] = hash
       end
       @data['DR']
     end
@@ -328,14 +328,14 @@ module Bio
     def list_xref(flag, by_name = nil)
       ary = []
       sp_xref.each do |sp_acc, value|
-	if value[1] == flag
-	  if by_name
-	    sp_name = value[0]
-	    ary.push(sp_name)
-	  else
-	    ary.push(sp_acc)
-	  end
-	end
+        if value[1] == flag
+          if by_name
+            sp_name = value[0]
+            ary.push(sp_name)
+          else
+            ary.push(sp_acc)
+          end
+        end
       end
       return ary
     end
@@ -367,7 +367,7 @@ module Bio
     #
     def pdb_xref
       unless @data['3D']
-	@data['3D'] = fetch('3D').split(/; /)
+        @data['3D'] = fetch('3D').split(/; /)
       end
       @data['3D']
     end
@@ -426,10 +426,10 @@ module Bio
       pattern.sub!(/^</, '^')	# (2) restricted to the N-terminal : `<'
       pattern.sub!(/>$/, '$')	# (2) restricted to the C-terminal : `>'
       pattern.gsub!(/\{(\w+)\}/) { |m|
-	'[^' + $1 + ']'		# (3) not accepted at a given position : '{}'
+        '[^' + $1 + ']'		# (3) not accepted at a given position : '{}'
       }
       pattern.gsub!(/\(([\d,]+)\)/) { |m|
-	'{' + $1 + '}'		# (4) repetition of an element : (n), (n,m)
+        '{' + $1 + '}'		# (4) repetition of an element : (n), (n,m)
       }
       pattern.tr!('x', '.')	# (5) any amino acid is accepted : 'x'
       pattern.tr!('-', '')	# (6) each element is separated by a '-'

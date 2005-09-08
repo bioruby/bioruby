@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: db.rb,v 0.27 2005/08/07 08:26:38 k Exp $
+#  $Id: db.rb,v 0.28 2005/09/08 01:22:08 k Exp $
 #
 
 require 'bio/sequence'
@@ -71,7 +71,7 @@ module Bio
 
     def field_fetch(tag, skip = 0)
       unless @data[tag]
-	@data[tag] = fetch(tag, skip)
+        @data[tag] = fetch(tag, skip)
       end
       return @data[tag]
     end
@@ -113,8 +113,8 @@ module Bio
       fields = toptag2array(entry)
 
       fields.each do |field|
-	tag = tag_get(field)
-	hash[tag] += field
+        tag = tag_get(field)
+        hash[tag] += field
       end
       return hash
     end
@@ -140,10 +140,10 @@ module Bio
     def entry2hash(entry)
       hash = Hash.new('')
       entry.each_line do |line|
-	tag = tag_get(line)
-	next if tag == 'XX'
-	tag = 'R' if tag =~ /^R./	# Reference lines
-	hash[tag] += line
+        tag = tag_get(line)
+        next if tag == 'XX'
+        tag = 'R' if tag =~ /^R./	# Reference lines
+        hash[tag] += line
       end
       return hash
     end

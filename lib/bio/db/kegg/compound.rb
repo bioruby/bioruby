@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: compound.rb,v 0.10 2005/08/07 08:23:37 k Exp $
+#  $Id: compound.rb,v 0.11 2005/09/08 01:22:11 k Exp $
 #
 
 require 'bio/db'
@@ -32,7 +32,7 @@ module Bio
       TAGSIZE	= 12
 
       def initialize(entry)
-	super(entry, TAGSIZE)
+        super(entry, TAGSIZE)
       end
 
       # ENTRY
@@ -48,33 +48,33 @@ module Bio
         lines_fetch('NAME') 
       end
       def name
-	names[0]
+        names[0]
       end
 
       # FORMULA
       def formula
-	field_fetch('FORMULA')
+        field_fetch('FORMULA')
       end
 
       # MASS
       def mass
-	field_fetch('MASS').to_f
+        field_fetch('MASS').to_f
       end
 
       # REACTION
       def reactions
-	unless @data['REACTION']
-	  @data['REACTION'] = fetch('REACTION').split(/\s+/)
-	end
-	@data['REACTION']
+        unless @data['REACTION']
+          @data['REACTION'] = fetch('REACTION').split(/\s+/)
+        end
+        @data['REACTION']
       end
 
       # RPAIR
       def rpairs
-	unless @data['RPAIR']
-	  @data['RPAIR'] = fetch('RPAIR').split(/\s+/)
-	end
-	@data['RPAIR']
+        unless @data['RPAIR']
+          @data['RPAIR'] = fetch('RPAIR').split(/\s+/)
+        end
+        @data['RPAIR']
       end
 
       # PATHWAY
@@ -84,15 +84,15 @@ module Bio
 
       # ENZYME
       def enzymes
-	unless @data['ENZYME']
-	  field = fetch('ENZYME')
-	  if /\(/.match(field)	# old version
-	    @data['ENZYME'] = field.scan(/\S+ \(\S+\)/)
-	  else
-	    @data['ENZYME'] = field.scan(/\S+/)
-	  end
-	end
-	@data['ENZYME']
+        unless @data['ENZYME']
+          field = fetch('ENZYME')
+          if /\(/.match(field)	# old version
+            @data['ENZYME'] = field.scan(/\S+ \(\S+\)/)
+          else
+            @data['ENZYME'] = field.scan(/\S+/)
+          end
+        end
+        @data['ENZYME']
       end
 
       # DBLINKS

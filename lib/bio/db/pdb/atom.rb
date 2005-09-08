@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: atom.rb,v 1.1 2004/03/08 07:30:40 ngoto Exp $
+#  $Id: atom.rb,v 1.2 2005/09/08 01:22:11 k Exp $
 
 require 'matrix'
 require 'bio/db/pdb'
@@ -62,7 +62,7 @@ module Bio
       include Comparable
 
       attr_accessor :serial, :element, :alt_loc, :x, :y, :z,
-	:occ, :bfac, :residue
+        :occ, :bfac, :residue
 
       def initialize(serial, element, alt_loc, x, y, z,
                      occ, bfac, residue = nil)
@@ -70,9 +70,9 @@ module Bio
         @serial  = serial
         @element = element
         @alt_loc = alt_loc
-	@x       = x
-	@y       = y
-	@z       = z
+        @x       = x
+        @y       = y
+        @z       = z
         @occ     = occ
         @bfac    = bfac
         
@@ -87,7 +87,7 @@ module Bio
 
       #Returns an array of the xyz positions
       def to_a
-	[@x,@y,@z]
+        [@x,@y,@z]
       end
       
       #Sorts based on serial numbers

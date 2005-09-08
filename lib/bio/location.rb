@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: location.rb,v 0.18 2004/05/14 03:07:26 k Exp $
+#  $Id: location.rb,v 0.19 2005/09/08 01:22:08 k Exp $
 #
 
 module Bio
@@ -29,48 +29,48 @@ module Bio
     def initialize(location = nil)
 
       if location
-	if location =~ /:/				# (G) ID:location
-	  xref_id, location = location.split(':')
-	end
-	if location =~ /</				# (I) <,>
-	  lt = true
-	end
-	if location =~ />/
-	  gt = true
-	end
+        if location =~ /:/				# (G) ID:location
+          xref_id, location = location.split(':')
+        end
+        if location =~ /</				# (I) <,>
+          lt = true
+        end
+        if location =~ />/
+          gt = true
+        end
       end
 
       # s : start base, e : end base => from, to
       case location
       when /^[<>]?(\d+)$/				# (A, I) n
-	s = e = $1.to_i
+        s = e = $1.to_i
       when /^[<>]?(\d+)\.\.[<>]?(\d+)$/			# (B, I) n..m
-	s = $1.to_i
-	e = $2.to_i
-	if e - s < 0
+        s = $1.to_i
+        e = $2.to_i
+        if e - s < 0
 #	  raise "[Error] invalid range : #{location}"
-	  $stderr.puts "[Warning] invalid range : #{location}" if $DEBUG
-	end
+          $stderr.puts "[Warning] invalid range : #{location}" if $DEBUG
+        end
       when /^[<>]?(\d+)\^[<>]?(\d+)$/			# (C, I) n^m
-	s = $1.to_i
-	e = $2.to_i
-	if e - s != 1
+        s = $1.to_i
+        e = $2.to_i
+        if e - s != 1
 #	  raise "[Error] invalid range : #{location}"
-	  $stderr.puts "[Warning] invalid range : #{location}" if $DEBUG
-	end
+          $stderr.puts "[Warning] invalid range : #{location}" if $DEBUG
+        end
       when /^"?([ATGCatgc]+)"?$/			# (H) literal sequence
-	sequence = $1.downcase
-	s = e = nil
+        sequence = $1.downcase
+        s = e = nil
       when nil
-	;
+        ;
       else
-	raise "[Error] unknown location format : #{location}"
+        raise "[Error] unknown location format : #{location}"
       end
 
       @from	= s		# start position of the location
       @to	= e		# end position of the location
       @strand	= 1		# strand direction of the location
-				#   forward => 1 or complement => -1
+                                #   forward => 1 or complement => -1
       @sequence	= sequence	# literal sequence of the location
       @lt	= lt		# true if the position contains '<'
       @gt	= gt		# true if the position contains '>'
@@ -104,17 +104,17 @@ module Bio
 
     def initialize(position)
       if position.is_a? Array
-	@locations = position
+        @locations = position
       else
-	position   = gbl_cleanup(position)	# preprocessing
-	@locations = gbl_pos2loc(position)	# create an Array of Location
+        position   = gbl_cleanup(position)	# preprocessing
+        @locations = gbl_pos2loc(position)	# create an Array of Location
       end
     end
     attr_accessor :locations
 
     def each
       @locations.each do |x|
-	yield(x)
+        yield(x)
       end
     end
 
@@ -144,11 +144,11 @@ module Bio
     def length
       len = 0
       @locations.each do |x|
-	if x.sequence
-	  len += x.sequence.size
-	else
-	  len += (x.to - x.from + 1)
-	end
+        if x.sequence
+          len += x.sequence.size
+        else
+          len += (x.to - x.from + 1)
+        end
       end
       len
     end
@@ -157,27 +157,27 @@ module Bio
     def relative(n, type = nil)
       case type
       when :location
-	;
+        ;
       when :aa
-	if n = abs2rel(n)
-	  (n - 1) / 3 + 1
-	else
-	  nil
-	end
+        if n = abs2rel(n)
+          (n - 1) / 3 + 1
+        else
+          nil
+        end
       else
-	abs2rel(n)
+        abs2rel(n)
       end
     end
 
     def absolute(n, type = nil)
       case type
       when :location
-	;
+        ;
       when :aa
-	n = (n - 1) * 3 + 1
-	rel2abs(n)
+        n = (n - 1) * 3 + 1
+        rel2abs(n)
       else
-	rel2abs(n)
+        rel2abs(n)
       end
     end
 
@@ -194,21 +194,21 @@ module Bio
       #               ..         n          m           :
       #     <match>   $1       ( $2         $3       not   )
       position.gsub!(/(\.{2})?\(?([<>\d]+)\.([<>\d]+)(?!:)\)?/) do |match|
-	if $1
-	  $1 + $3			# ..(n.m)  => ..m
-	else
-	  $2				# (?n.m)?  => n
-	end
+        if $1
+          $1 + $3			# ..(n.m)  => ..m
+        else
+          $2				# (?n.m)?  => n
+        end
       end
 
       # select the 1st location				# (E) one-of()
       #     <match>   ..      one-of ($2     ,$3      )
       position.gsub!(/(\.{2})?one-of\(([^,]+),([^)]+)\)/) do |match|
-	if $1
-	  $1 + $3.gsub(/.*,(.*)/, '\1')	# ..one-of(n,m)  => ..m
-	else
-	  $2				# one-of(n,m)    => n
-	end
+        if $1
+          $1 + $3.gsub(/.*,(.*)/, '\1')	# ..one-of(n,m)  => ..m
+        else
+          $2				# one-of(n,m)    => n
+        end
       end
 
       # substitute order(), group() by join()		# (F) group(), order()
@@ -225,51 +225,51 @@ module Bio
       case position
 
       when /^join\((.*)\)$/				# (F) join()
-	position = $1
+        position = $1
 
-	join_list = []		# sub positions to join
-	bracket   = []		# position with bracket
-	s_count   = 0		# stack counter
+        join_list = []		# sub positions to join
+        bracket   = []		# position with bracket
+        s_count   = 0		# stack counter
 
-	position.split(',').each do |sub_pos|
-	  case sub_pos
-	  when /\(.*\)/
-	    join_list << sub_pos
-	  when /\(/
-	    s_count += 1
-	    bracket << sub_pos
-	  when /\)/
-	    s_count -= 1
-	    bracket << sub_pos
-	    if s_count == 0
-	      join_list << bracket.join(',')
-	    end
-	  else
-	    if s_count == 0
-	      join_list << sub_pos
-	    else
-	      bracket << sub_pos
-	    end
-	  end
-	end
+        position.split(',').each do |sub_pos|
+          case sub_pos
+          when /\(.*\)/
+            join_list << sub_pos
+          when /\(/
+            s_count += 1
+            bracket << sub_pos
+          when /\)/
+            s_count -= 1
+            bracket << sub_pos
+            if s_count == 0
+              join_list << bracket.join(',')
+            end
+          else
+            if s_count == 0
+              join_list << sub_pos
+            else
+              bracket << sub_pos
+            end
+          end
+        end
 
-	join_list.each do |position|
-	  ary << gbl_pos2loc(position)
-	end
+        join_list.each do |position|
+          ary << gbl_pos2loc(position)
+        end
 
       when /^complement\((.*)\)$/			# (J) complement()
-	position =       $1
-	gbl_pos2loc(position).reverse_each do |location|
-	  ary << location.complement
-	end
+        position =       $1
+        gbl_pos2loc(position).reverse_each do |location|
+          ary << location.complement
+        end
 
       when /^replace\(([^,]+),"?([^"]*)"?\)/		# (K) replace()
-	position =    $1
-	sequence =              $2
-	ary << gbl_pos2loc(position).first.replace(sequence)
+        position =    $1
+        sequence =              $2
+        ary << gbl_pos2loc(position).first.replace(sequence)
 
       else						# (A, B, C, G, H, I)
-	ary << Location.new(position)
+        ary << Location.new(position)
 
       end
 
@@ -305,20 +305,20 @@ module Bio
 
       cursor = 0
       @locations.each do |x|
-	if x.sequence
-	  len = x.sequence.size
-	else
-	  len = x.to - x.from + 1
-	end
-	if n < x.from or n > x.to then
-	  cursor += len
-	else
-	  if x.strand < 0 then
-	    return x.to - (n - cursor - 1)
-	  else
-	    return n + cursor + 1 - x.from
-	  end
-	end
+        if x.sequence
+          len = x.sequence.size
+        else
+          len = x.to - x.from + 1
+        end
+        if n < x.from or n > x.to then
+          cursor += len
+        else
+          if x.strand < 0 then
+            return x.to - (n - cursor - 1)
+          else
+            return n + cursor + 1 - x.from
+          end
+        end
       end
       return nil				# out of range
     end

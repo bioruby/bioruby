@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.2 2004/10/10 14:54:23 ngoto Exp $
+#  $Id: report.rb,v 1.3 2005/09/08 01:22:10 k Exp $
 #
 
 module Bio
@@ -57,7 +57,7 @@ module Bio
         attr_reader :entry_id, :definition, :len, :filename
 
         def self.parse(str, str2 = nil)
-	  /^seq[12] \= (.*)(?: \((.*)\))?\,\s*(\d+)\s*bp\s*$/ =~ str
+          /^seq[12] \= (.*)(?: \((.*)\))?\,\s*(\d+)\s*bp\s*$/ =~ str
           seqid = $2
           filename = $1
           len = $3.to_i
@@ -86,8 +86,8 @@ module Bio
         :percent_identity, :direction
 
         def self.parse(str, aln)
-	  /^(\d+)\-(\d+)\s*\((\d+)\-(\d+)\)\s*([\d\.]+)\%\s*([\-\<\>]*)/ =~ str
-	  self.new(Segment.new($1, $2, aln[0]),
+          /^(\d+)\-(\d+)\s*\((\d+)\-(\d+)\)\s*([\d\.]+)\%\s*([\-\<\>]*)/ =~ str
+          self.new(Segment.new($1, $2, aln[0]),
                    Segment.new($3, $4, aln[2]),
                    aln[1], $5, $6)
         end

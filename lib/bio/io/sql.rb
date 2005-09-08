@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sql.rb,v 1.2 2003/02/25 15:47:47 k Exp $
+#  $Id: sql.rb,v 1.3 2005/09/08 01:22:12 k Exp $
 #
 
 begin
@@ -57,260 +57,260 @@ module Bio
     class Sequence
 
       def initialize(dbh, entry)
-	@dbh = dbh
-	@bioentry_id = entry['bioentry_id']
-	@database_id = entry['biodatabase_id']
-	@entry_id = entry['display_id']
-	@accession = entry['accession']
-	@version = entry['entry_version']
-	@division = entry['division']
+        @dbh = dbh
+        @bioentry_id = entry['bioentry_id']
+        @database_id = entry['biodatabase_id']
+        @entry_id = entry['display_id']
+        @accession = entry['accession']
+        @version = entry['entry_version']
+        @division = entry['division']
       end
       attr_reader :accession, :division, :entry_id, :version
 
 
       def to_fasta
-	if seq = seq
-	  return seq.to_fasta(@accession)
-	end
+        if seq = seq
+          return seq.to_fasta(@accession)
+        end
       end
 
       def seq
-	query = "select * from biosequence where bioentry_id = ?"
-	row = @dbh.execute(query, @bioentry_id).fetch
-	return unless row
+        query = "select * from biosequence where bioentry_id = ?"
+        row = @dbh.execute(query, @bioentry_id).fetch
+        return unless row
 
-	mol = row['molecule']
-	seq = row['biosequence_str']
+        mol = row['molecule']
+        seq = row['biosequence_str']
 
-	case mol
-	when /.na/i			# 'dna' or 'rna'
-	  Bio::Sequence::NA.new(seq)
-	else				# 'protein'
-	  Bio::Sequence::AA.new(seq)
-	end
+        case mol
+        when /.na/i			# 'dna' or 'rna'
+          Bio::Sequence::NA.new(seq)
+        else				# 'protein'
+          Bio::Sequence::AA.new(seq)
+        end
       end
 
       def subseq(from, to)
-	length = to - from + 1
-	query = "select molecule, substring(biosequence_str, ?, ?) as subseq" +
-	        " from biosequence where bioentry_id = ?"
-	row = @dbh.execute(query, from, length, @bioentry_id).fetch
-	return unless row
+        length = to - from + 1
+        query = "select molecule, substring(biosequence_str, ?, ?) as subseq" +
+                " from biosequence where bioentry_id = ?"
+        row = @dbh.execute(query, from, length, @bioentry_id).fetch
+        return unless row
 
-	mol = row['molecule']
-	seq = row['subseq']
+        mol = row['molecule']
+        seq = row['subseq']
 
-	case mol
-	when /.na/i			# 'dna' or 'rna'
-	  Bio::Sequence::NA.new(seq)
-	else				# 'protein'
-	  Bio::Sequence::AA.new(seq)
-	end
+        case mol
+        when /.na/i			# 'dna' or 'rna'
+          Bio::Sequence::NA.new(seq)
+        else				# 'protein'
+          Bio::Sequence::AA.new(seq)
+        end
       end
 
 
       def features
-	array = []
-	query = "select * from seqfeature where bioentry_id = ?"
-	@dbh.execute(query, @bioentry_id).fetch_all.each do |row|
-	  next unless row
+        array = []
+        query = "select * from seqfeature where bioentry_id = ?"
+        @dbh.execute(query, @bioentry_id).fetch_all.each do |row|
+          next unless row
 
-	  f_id = row['seqfeature_id']
-	  k_id = row['seqfeature_key_id']
-	  s_id = row['seqfeature_source_id']
-	  rank = row['seqfeature_rank'].to_i - 1
+          f_id = row['seqfeature_id']
+          k_id = row['seqfeature_key_id']
+          s_id = row['seqfeature_source_id']
+          rank = row['seqfeature_rank'].to_i - 1
 
-	  # key : type (gene, CDS, ...)
-	  type = feature_key(k_id)
+          # key : type (gene, CDS, ...)
+          type = feature_key(k_id)
 
-	  # source : database (EMBL/GenBank/SwissProt)
-	  database = feature_source(s_id)
+          # source : database (EMBL/GenBank/SwissProt)
+          database = feature_source(s_id)
 
-	  # location : position
-	  locations = feature_locations(f_id)
+          # location : position
+          locations = feature_locations(f_id)
 
-	  # qualifier
-	  qualifiers = feature_qualifiers(f_id)
+          # qualifier
+          qualifiers = feature_qualifiers(f_id)
   
-	  # rank
-	  array[rank] = Bio::Feature.new(type, locations, qualifiers)
-	end
-	return Bio::Features.new(array)
+          # rank
+          array[rank] = Bio::Feature.new(type, locations, qualifiers)
+        end
+        return Bio::Features.new(array)
       end
 
 
       def references
-	array = []
-	query = <<-END
-	  select * from bioentry_reference, reference
-	  where bioentry_id = ? and
-	  bioentry_reference.reference_id = reference.reference_id
-	END
-	@dbh.execute(query, @bioentry_id).fetch_all.each do |row|
-	  next unless row
+        array = []
+        query = <<-END
+          select * from bioentry_reference, reference
+          where bioentry_id = ? and
+          bioentry_reference.reference_id = reference.reference_id
+        END
+        @dbh.execute(query, @bioentry_id).fetch_all.each do |row|
+          next unless row
 
-	  hash = {
-	    'start'	=> row['reference_start'],
-	    'end'	=> row['reference_end'],
-	    'journal'	=> row['reference_location'],
-	    'title'	=> row['reference_title'],
-	    'authors'	=> row['reference_authors'],
-	    'medline'	=> row['reference_medline']
-	  }
-	  hash.default = ''
+          hash = {
+            'start'	=> row['reference_start'],
+            'end'	=> row['reference_end'],
+            'journal'	=> row['reference_location'],
+            'title'	=> row['reference_title'],
+            'authors'	=> row['reference_authors'],
+            'medline'	=> row['reference_medline']
+          }
+          hash.default = ''
 
-	  rank = row['reference_rank'].to_i - 1
-	  array[rank] = hash
-	end
-	return array
+          rank = row['reference_rank'].to_i - 1
+          array[rank] = hash
+        end
+        return array
       end
 
 
       def comment
-	query = "select * from comment where bioentry_id = ?"
-	row = @dbh.execute(query, @bioentry_id).fetch
-	row ? row['comment_text'] : ''
+        query = "select * from comment where bioentry_id = ?"
+        row = @dbh.execute(query, @bioentry_id).fetch
+        row ? row['comment_text'] : ''
       end
 
       def comments
-	array = []
-	query = "select * from comment where bioentry_id = ?"
-	@dbh.execute(query, @bioentry_id).fetch_all.each do |row|
-	  next unless row
-	  rank = row['comment_rank'].to_i - 1
-	  array[rank] = row['comment_text']
-	end
-	return array
+        array = []
+        query = "select * from comment where bioentry_id = ?"
+        @dbh.execute(query, @bioentry_id).fetch_all.each do |row|
+          next unless row
+          rank = row['comment_rank'].to_i - 1
+          array[rank] = row['comment_text']
+        end
+        return array
       end
 
       def database
-	query = "select * from biodatabase where biodatabase_id = ?"
-	row = @dbh.execute(query, @database_id).fetch
-	row ? row['name'] : ''
+        query = "select * from biodatabase where biodatabase_id = ?"
+        row = @dbh.execute(query, @database_id).fetch
+        row ? row['name'] : ''
       end
 
       def date
-	query = "select * from bioentry_date where bioentry_id = ?"
-	row = @dbh.execute(query, @bioentry_id).fetch
-	row ? row['date'] : ''
+        query = "select * from bioentry_date where bioentry_id = ?"
+        row = @dbh.execute(query, @bioentry_id).fetch
+        row ? row['date'] : ''
       end
 
       def dblink
-	query = "select * from bioentry_direct_links where source_bioentry_id = ?"
-	row = @dbh.execute(query, @bioentry_id).fetch
-	row ? [row['dbname'], row['accession']] : []
+        query = "select * from bioentry_direct_links where source_bioentry_id = ?"
+        row = @dbh.execute(query, @bioentry_id).fetch
+        row ? [row['dbname'], row['accession']] : []
       end
 
       def definition
-	query = "select * from bioentry_description where bioentry_id = ?"
-	row = @dbh.execute(query, @bioentry_id).fetch
-	row ? row['description'] : ''
+        query = "select * from bioentry_description where bioentry_id = ?"
+        row = @dbh.execute(query, @bioentry_id).fetch
+        row ? row['description'] : ''
       end
 
       def keyword
-	query = "select * from bioentry_keywords where bioentry_id = ?"
-	row = @dbh.execute(query, @bioentry_id).fetch
-	row ? row['keywords'] : ''
+        query = "select * from bioentry_keywords where bioentry_id = ?"
+        row = @dbh.execute(query, @bioentry_id).fetch
+        row ? row['keywords'] : ''
       end
 
       def taxonomy
-	query = <<-END
-	  select full_lineage, common_name, ncbi_taxa_id
-	  from bioentry_taxa, taxa
-	  where bioentry_id = ? and bioentry_taxa.taxa_id = taxa.taxa_id
-	END
-	row = @dbh.execute(query, @bioentry_id).fetch
-	@lineage = row ? row['full_lineage'] : ''
-	@common_name = row ? row['common_name'] : ''
-	@ncbi_taxa_id = row ? row['ncbi_taxa_id'] : ''
-	row ? [@lineage, @common_name, @ncbi_taxa_id] : []
+        query = <<-END
+          select full_lineage, common_name, ncbi_taxa_id
+          from bioentry_taxa, taxa
+          where bioentry_id = ? and bioentry_taxa.taxa_id = taxa.taxa_id
+        END
+        row = @dbh.execute(query, @bioentry_id).fetch
+        @lineage = row ? row['full_lineage'] : ''
+        @common_name = row ? row['common_name'] : ''
+        @ncbi_taxa_id = row ? row['ncbi_taxa_id'] : ''
+        row ? [@lineage, @common_name, @ncbi_taxa_id] : []
       end
 
       def lineage
-	taxonomy unless @lineage
-	return @lineage
+        taxonomy unless @lineage
+        return @lineage
       end
 
       def common_name
-	taxonomy unless @common_name
-	return @common_name
+        taxonomy unless @common_name
+        return @common_name
       end
 
       def ncbi_taxa_id
-	taxonomy unless @ncbi_taxa_id
-	return @ncbi_taxa_id
+        taxonomy unless @ncbi_taxa_id
+        return @ncbi_taxa_id
       end
 
 
       private
 
       def feature_key(k_id)
-	query = "select * from seqfeature_key where seqfeature_key_id = ?"
-	row = @dbh.execute(query, k_id).fetch
-	row ? row['key_name'] : ''
+        query = "select * from seqfeature_key where seqfeature_key_id = ?"
+        row = @dbh.execute(query, k_id).fetch
+        row ? row['key_name'] : ''
       end
 
       def feature_source(s_id)
-	query = "select * from seqfeature_source where seqfeature_source_id = ?"
-	row = @dbh.execute(query, s_id).fetch
-	row ? row['source_name'] : ''
+        query = "select * from seqfeature_source where seqfeature_source_id = ?"
+        row = @dbh.execute(query, s_id).fetch
+        row ? row['source_name'] : ''
       end
 
       def feature_locations(f_id)
-	locations = []
-	query = "select * from seqfeature_location where seqfeature_id = ?"
-	@dbh.execute(query, f_id).fetch_all.each do |row|
-	  next unless row
+        locations = []
+        query = "select * from seqfeature_location where seqfeature_id = ?"
+        @dbh.execute(query, f_id).fetch_all.each do |row|
+          next unless row
 
-	  location = Bio::Location.new
-	  location.strand = row['seq_strand']
-	  location.from = row['seq_start']
-	  location.to = row['seq_end']
+          location = Bio::Location.new
+          location.strand = row['seq_strand']
+          location.from = row['seq_start']
+          location.to = row['seq_end']
 
-	  xref = feature_locations_remote(row['seqfeature_location_id'])
-	  location.xref_id = xref.shift unless xref.empty?
+          xref = feature_locations_remote(row['seqfeature_location_id'])
+          location.xref_id = xref.shift unless xref.empty?
 
-	  # just omit fuzzy location for now...
-	  #feature_locations_qv(row['seqfeature_location_id'])
+          # just omit fuzzy location for now...
+          #feature_locations_qv(row['seqfeature_location_id'])
 
-	  rank = row['location_rank'].to_i - 1
-	  locations[rank] = location
-	end
-	return Bio::Locations.new(locations)
+          rank = row['location_rank'].to_i - 1
+          locations[rank] = location
+        end
+        return Bio::Locations.new(locations)
       end
 
       def feature_locations_remote(l_id)
-	query = "select * from remote_seqfeature_name where seqfeature_location_id = ?"
-	row = @dbh.execute(query, l_id).fetch
-	row ? [row['accession'], row['version']] : []
+        query = "select * from remote_seqfeature_name where seqfeature_location_id = ?"
+        row = @dbh.execute(query, l_id).fetch
+        row ? [row['accession'], row['version']] : []
       end
 
       def feature_locations_qv(l_id)
-	query = "select * from location_qualifier_value where seqfeature_location_id = ?"
-	row = @dbh.execute(query, l_id).fetch
-	row ? [row['qualifier_value'], row['slot_value']] : []
+        query = "select * from location_qualifier_value where seqfeature_location_id = ?"
+        row = @dbh.execute(query, l_id).fetch
+        row ? [row['qualifier_value'], row['slot_value']] : []
       end
 
       def feature_qualifiers(f_id)
-	qualifiers = []
-	query = "select * from seqfeature_qualifier_value where seqfeature_id = ?"
-	@dbh.execute(query, f_id).fetch_all.each do |row|
-	  next unless row
+        qualifiers = []
+        query = "select * from seqfeature_qualifier_value where seqfeature_id = ?"
+        @dbh.execute(query, f_id).fetch_all.each do |row|
+          next unless row
 
-	  key = feature_qualifiers_key(row['seqfeature_qualifier_id'])
-	  value = row['qualifier_value']
-	  qualifier = Bio::Feature::Qualifier.new(key, value)
+          key = feature_qualifiers_key(row['seqfeature_qualifier_id'])
+          value = row['qualifier_value']
+          qualifier = Bio::Feature::Qualifier.new(key, value)
 
-	  rank = row['seqfeature_qualifier_rank'].to_i - 1
-	  qualifiers[rank] = qualifier
-	end
-	return qualifiers.compact	# .compact is nasty hack for a while
+          rank = row['seqfeature_qualifier_rank'].to_i - 1
+          qualifiers[rank] = qualifier
+        end
+        return qualifiers.compact	# .compact is nasty hack for a while
       end
 
       def feature_qualifiers_key(q_id)
-	query = "select * from seqfeature_qualifier where seqfeature_qualifier_id = ?"
-	row = @dbh.execute(query, q_id).fetch
-	row ? row['qualifier_name'] : ''
+        query = "select * from seqfeature_qualifier where seqfeature_qualifier_id = ?"
+        row = @dbh.execute(query, q_id).fetch
+        row ? row['qualifier_name'] : ''
       end
     end
 

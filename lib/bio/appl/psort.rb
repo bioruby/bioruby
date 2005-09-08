@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: psort.rb,v 1.4 2004/07/21 03:12:02 nakao Exp $
+#  $Id: psort.rb,v 1.5 2005/09/08 01:22:08 k Exp $
 #
 
 
@@ -39,10 +39,10 @@ module Bio
  	            'PSORT2' => '/cgi-bin/runpsort.pl'},
       'Okazaki' => {'host' => 'psort.nibb.ac.jp', 
  	            'PSORT1' => '/cgi-bin/okumura.pl',
-	            'PSORT2' => '/cgi-bin/runpsort.pl'},
+                    'PSORT2' => '/cgi-bin/runpsort.pl'},
       'Peking'  => {'host' => 'srs.pku.edu.en:8088', 
  	            'PSORT1' => '/cgi-bin/okumura.pl',
-	            'PSORT2' => '/cgi-bin/runpsort.pl'}
+                    'PSORT2' => '/cgi-bin/runpsort.pl'}
     }
 
 
@@ -52,10 +52,10 @@ module Bio
     # inherited claaes should have make_form_args and parse_html method.
     class CGIDriver
       def initialize(host = '', path = '') 
-	@host = host
-	@path = path
-	@args = {}
-	@report
+        @host = host
+        @path = path
+        @args = {}
+        @report
       end
       attr_accessor :args
       attr_reader :report
@@ -63,40 +63,40 @@ module Bio
 
       # CGIDriver#exec(query) -> aReport
       def exec(query)
-	data = make_args(query)  
+        data = make_args(query)  
 
-	begin
-	  result, = Net::HTTP.new(@host).post(@path, data)
-	  @report = result.body
-	  output = parse_report(@report)
-	end
+        begin
+          result, = Net::HTTP.new(@host).post(@path, data)
+          @report = result.body
+          output = parse_report(@report)
+        end
 
-	return output
+        return output
       end
 
 
       private
 
       def make_args(args_hash)
-	# The routin should be provided in the inherited class
+        # The routin should be provided in the inherited class
       end
 
       def parse_report(result_body)
-	# The routin should be provided in the inherited class	
+        # The routin should be provided in the inherited class	
       end
 
       # tools
 
       def erase_html_tags(str)
-	return str.gsub(/<\S.*?>/,'')	
+        return str.gsub(/<\S.*?>/,'')	
       end
 
       def args_join(hash, delim = '&')
-	tmp = []
-	hash.each do |key, val|
-	  tmp << CGI.escape(key.to_s) + '=' + CGI.escape(val.to_s)
-	end
-	return tmp.join(delim)  # not ';' but '&' in psort's cgi
+        tmp = []
+        hash.each do |key, val|
+          tmp << CGI.escape(key.to_s) + '=' + CGI.escape(val.to_s)
+        end
+        return tmp.join(delim)  # not ';' but '&' in psort's cgi
       end
 
     end # class CGIDriver
@@ -107,70 +107,70 @@ module Bio
     class PSORT1
 
       def self.imsut
-	self.new(Remote.new(WWWServer['IMSUT']['host'],
-			    WWWServer['IMSUT']['PSORT1']))
+        self.new(Remote.new(WWWServer['IMSUT']['host'],
+                            WWWServer['IMSUT']['PSORT1']))
       end
 
       def self.okazaki
-	self.new(Remote.new(WWWServer['Okazaki']['host'],
-			    WWWServer['Okazaki']['PSORT1']))
+        self.new(Remote.new(WWWServer['Okazaki']['host'],
+                            WWWServer['Okazaki']['PSORT1']))
       end
       
       def self.peking
-	self.new(Remote.new(WWWServer['Peking']['host'],
-			    WWWServer['Peking']['PSORT1']))
+        self.new(Remote.new(WWWServer['Peking']['host'],
+                            WWWServer['Peking']['PSORT1']))
       end
 
       #
       def initialize(serv)
-	@serv = serv
-	@origin   = 'yeast' # Gram-positive bacterium, Gram-negative bacterium,
-	                    # yeast, aminal, plant
-	@title    = 'MYSEQ'
-	@sequence = ''
+        @serv = serv
+        @origin   = 'yeast' # Gram-positive bacterium, Gram-negative bacterium,
+                            # yeast, aminal, plant
+        @title    = 'MYSEQ'
+        @sequence = ''
       end
       attr_accessor :origin, :sequence, :title
 
       # 
       def exec(faa, parsing = true)
-	if faa.class == Bio::FastaFormat
-	  @title        = faa.entry_id if @title == 'MYSEQ'
-	  @sequence     = faa.seq
-	  @serv.args    = {'title' => @title, 'origin' => @origin}
-	  @serv.parsing = parsing
-	  return @serv.exec(sequence)
-	else
-	  self.exec(Bio::FastaFormat.new(faa), parsing)
-	end
+        if faa.class == Bio::FastaFormat
+          @title        = faa.entry_id if @title == 'MYSEQ'
+          @sequence     = faa.seq
+          @serv.args    = {'title' => @title, 'origin' => @origin}
+          @serv.parsing = parsing
+          return @serv.exec(sequence)
+        else
+          self.exec(Bio::FastaFormat.new(faa), parsing)
+        end
       end
 
 
       # PSORT1 specific CGIDriver
       class Remote < CGIDriver
 
-	def initialize(host, path)
-	  @origin  = 'yeast' # Gram-positive bacterium, 
+        def initialize(host, path)
+          @origin  = 'yeast' # Gram-positive bacterium, 
   	                     # Gram-negative bacterium,
-	                     # yeast, aminal, plant
-	  @title   = 'MYSEQ'
-	  @parsing = true
-	  super(host, path)
-	end
-	attr_accessor :origin, :title, :parsing
+                             # yeast, aminal, plant
+          @title   = 'MYSEQ'
+          @parsing = true
+          super(host, path)
+        end
+        attr_accessor :origin, :title, :parsing
 
 
-	private
+        private
 
-	def make_args(query)
-	  @args.update({'sequence' => query})
-	  return args_join(@args)
-	end
+        def make_args(query)
+          @args.update({'sequence' => query})
+          return args_join(@args)
+        end
 
-	def parse_report(str)
-	  str = erase_html_tags(str)
-	  str = Bio::PSORT::PSORT1::Report.parser(str) if @parsing
-	  return str
-	end
+        def parse_report(str)
+          str = erase_html_tags(str)
+          str = Bio::PSORT::PSORT1::Report.parser(str) if @parsing
+          return str
+        end
 
       end # Class Remote
 
@@ -183,68 +183,68 @@ module Bio
 
       # remote
       def self.remote(host, path)
-	self.new(Remote.new(host, path))
+        self.new(Remote.new(host, path))
       end
 
       def self.imsut
-	self.remote(WWWServer['IMSUT']['host'],
-		    WWWServer['IMSUT']['PSORT2'])
+        self.remote(WWWServer['IMSUT']['host'],
+                    WWWServer['IMSUT']['PSORT2'])
       end
       
       def self.okazaki
-	self.remote(WWWServer['Okazaki']['host'],
-		    WWWServer['Okazaki']['PSORT2'])
+        self.remote(WWWServer['Okazaki']['host'],
+                    WWWServer['Okazaki']['PSORT2'])
       end
 
       def self.peking
-	self.remote(WWWServer['Peking']['host'],
-		    WWWServer['Peking']['PSORT2'])
+        self.remote(WWWServer['Peking']['host'],
+                    WWWServer['Peking']['PSORT2'])
       end
 
       # wrapper for ``psort'' command
       def initialize(serv, origin = 'yeast')
-	@serv   = serv
-	@origin = origin
-	@title  = nil
+        @serv   = serv
+        @origin = origin
+        @title  = nil
       end
       attr_accessor :origin, :title
 
       def exec(faa, parsing = true)
-	if faa.class == Bio::FastaFormat
-	  @title        = faa.entry_id if @title == nil
-	  @sequence     = faa.seq
-	  @serv.args    = {'origin' => @origin, 'title' => @title}
-	  @serv.parsing = parsing
-	  return @serv.exec(@sequence)
-	else
-	  self.exec(Bio::FastaFormat.new(faa), parsing)
-	end
+        if faa.class == Bio::FastaFormat
+          @title        = faa.entry_id if @title == nil
+          @sequence     = faa.seq
+          @serv.args    = {'origin' => @origin, 'title' => @title}
+          @serv.parsing = parsing
+          return @serv.exec(@sequence)
+        else
+          self.exec(Bio::FastaFormat.new(faa), parsing)
+        end
       end
 
 
       # PSORT2 specific CGIDriver
       class Remote < CGIDriver
-	def initialize(host, path)
-	  @origin = 'yeast'
-	  super(host, path)
-	  @parsing = true
-	end
-	attr_accessor :origin, :parsing
+        def initialize(host, path)
+          @origin = 'yeast'
+          super(host, path)
+          @parsing = true
+        end
+        attr_accessor :origin, :parsing
 
-	
-	private
-	
-	def make_args(query)
-	  @args.update({'sequence' => query})
-	  return args_join(@args)
-	end
+        
+        private
+        
+        def make_args(query)
+          @args.update({'sequence' => query})
+          return args_join(@args)
+        end
 
-	def parse_report(str)
-	  str = str.gsub(/\n<hr>/i, Report::BOUNDARY)
-	  str = erase_html_tags(str)
-	  str = Bio::PSORT::PSORT2::Report.parser(str, self.args['title']) if @parsing
-	  return str
-	end
+        def parse_report(str)
+          str = str.gsub(/\n<hr>/i, Report::BOUNDARY)
+          str = erase_html_tags(str)
+          str = Bio::PSORT::PSORT2::Report.parser(str, self.args['title']) if @parsing
+          return str
+        end
 
       end # class Remote
 

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aaindex.rb,v 1.12 2004/02/21 19:43:50 k Exp $
+#  $Id: aaindex.rb,v 1.13 2005/09/08 01:22:11 k Exp $
 #
 
 require "bio/db"
@@ -80,7 +80,7 @@ module Bio
       values = field_fetch('I', 1).split(' ')
 
       if values.size != 20
-	raise "Invalid format in #{entry_id} : #{values.inspect}"
+        raise "Invalid format in #{entry_id} : #{values.inspect}"
       end
 
       if type == :zscore and values.size > 0
@@ -106,16 +106,16 @@ module Bio
       hash = {}
 
       aa.each_with_index do |a, i|
-	case type
-	when :string
-	  hash[a] = values[i]
-	when :float
-	  hash[a] = values[i].to_f
-	when :zscore
-	  hash[a] = (values[i].to_f - mean) / sd
-	when :integer
-	  hash[a] = (values[i].to_f * 10 ** figure).to_i
-	end
+        case type
+        when :string
+          hash[a] = values[i]
+        when :float
+          hash[a] = values[i].to_f
+        when :zscore
+          hash[a] = (values[i].to_f - mean) / sd
+        when :integer
+          hash[a] = (values[i].to_f * 10 ** figure).to_i
+        end
       end
       return hash
     end
@@ -160,30 +160,30 @@ module Bio
 
       case field
       when / (ARNDCQEGHILKMFPSTWYV)\s+(.*)/	# 20x19/2 matrix
-	aalist = $1
-	values = $2.split(/\s+/)
+        aalist = $1
+        values = $2.split(/\s+/)
 
-	0.upto(aalist.length - 1) do |i|
-	  @aa[aalist[i].chr] = i
-	end
+        0.upto(aalist.length - 1) do |i|
+          @aa[aalist[i].chr] = i
+        end
 
-	ma = Array.new
-	20.times do
-	  ma.push(Array.new(20))		# 2D array of 20x(20)
-	end
+        ma = Array.new
+        20.times do
+          ma.push(Array.new(20))		# 2D array of 20x(20)
+        end
 
-	for i in 0 .. 19 do
-	  for j in i .. 19 do
-	    ma[i][j] = values[i + j*(j+1)/2].to_f
-	    ma[j][i] = ma[i][j]
-	  end
-	end
-	Matrix[*ma]
+        for i in 0 .. 19 do
+          for j in i .. 19 do
+            ma[i][j] = values[i + j*(j+1)/2].to_f
+            ma[j][i] = ma[i][j]
+          end
+        end
+        Matrix[*ma]
 
       when / -ARNDCQEGHILKMFPSTWYV /		# 21x20/2 matrix (with gap)
-	raise NotImplementedError
+        raise NotImplementedError
       when / ACDEFGHIKLMNPQRSTVWYJ- /		# 21x21 matrix (with gap)
-	raise NotImplementedError
+        raise NotImplementedError
       end
     end
 

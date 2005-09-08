@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.19 2004/04/15 16:04:39 ngoto Exp $
+#  $Id: fasta.rb,v 1.20 2005/09/08 01:22:11 k Exp $
 #
 
 require 'bio/db'
@@ -52,25 +52,25 @@ module Bio
 
     def seq
       unless defined?(@seq)
-	unless /\A\s*^\#/ =~ @data then
-	  @seq = Sequence.new(@data.tr(" \t\r\n0-9", '')) # lazy clean up
-	else
-	  a = @data.split(/(^\#.*$)/)
-	  i = 0
-	  cmnt = {}
-	  s = []
-	  a.each do |x|
+        unless /\A\s*^\#/ =~ @data then
+          @seq = Sequence.new(@data.tr(" \t\r\n0-9", '')) # lazy clean up
+        else
+          a = @data.split(/(^\#.*$)/)
+          i = 0
+          cmnt = {}
+          s = []
+          a.each do |x|
             if /^# ?(.*)$/ =~ x then
-	      cmnt[i] ? cmnt[i] << "\n" << $1 : cmnt[i] = $1
-	    else
-	      x.tr!(" \t\r\n0-9", '') # lazy clean up
-	      i += x.length
-	      s << x
-	    end
-	  end
-	  @comment = cmnt
-	  @seq = Bio::Sequence.new(s.join(''))
-	end
+              cmnt[i] ? cmnt[i] << "\n" << $1 : cmnt[i] = $1
+            else
+              x.tr!(" \t\r\n0-9", '') # lazy clean up
+              i += x.length
+              s << x
+            end
+          end
+          @comment = cmnt
+          @seq = Bio::Sequence.new(s.join(''))
+        end
       end
       @seq
     end
@@ -102,7 +102,7 @@ module Bio
 
     def identifiers
       unless defined?(@ids) then
-	@ids = FastaDefline.new(@definition)
+        @ids = FastaDefline.new(@definition)
       end
       @ids
     end
@@ -137,7 +137,7 @@ module Bio
 
     def data
       unless @list
-	@list = @data.strip.split(/\s+/).map {|x| x.to_i}
+        @list = @data.strip.split(/\s+/).map {|x| x.to_i}
       end
       @list
     end
@@ -206,7 +206,7 @@ module Bio
 
       lines = str.split("\x01")
       lines.each do |line|
-	add_defline(line)
+        add_defline(line)
       end
     end #def initialize
 
@@ -216,61 +216,61 @@ module Bio
     def add_defline(str)
       case str
       when /^\>?\s*((?:[^\|\s]*\|)+[^\s]+)\s*(.*)$/
-	# NSIDs
-	# examples:
-	# >gi|9910844|sp|Q9UWG2|RL3_METVA 50S ribosomal protein L3P
-	#
-	# note: regexp (:?) means grouping without backreferences
-	i = $1
-	d = $2
-	tks = i.split('|')
-	tks << '' if i[-1,1] == '|'
-	a = parse_NSIDs(tks)
-	i = a[0].join('|')
-	a.unshift('|')
-	d = tks.join('|') + ' ' + d unless tks.empty?
-	a << d
-	this_line = a
-	match_EC(d)
-	parse_square_brackets(d).each do |x|
-	  if !match_EC(x, false) and x =~ /\A[A-Z]/ then
-	    di = [  x ]
-	    @list_ids << di
-	    @info['organism'] = x unless @info['organism']
-	  end
-	end
+        # NSIDs
+        # examples:
+        # >gi|9910844|sp|Q9UWG2|RL3_METVA 50S ribosomal protein L3P
+        #
+        # note: regexp (:?) means grouping without backreferences
+        i = $1
+        d = $2
+        tks = i.split('|')
+        tks << '' if i[-1,1] == '|'
+        a = parse_NSIDs(tks)
+        i = a[0].join('|')
+        a.unshift('|')
+        d = tks.join('|') + ' ' + d unless tks.empty?
+        a << d
+        this_line = a
+        match_EC(d)
+        parse_square_brackets(d).each do |x|
+          if !match_EC(x, false) and x =~ /\A[A-Z]/ then
+            di = [  x ]
+            @list_ids << di
+            @info['organism'] = x unless @info['organism']
+          end
+        end
 
       when /^\>?\s*([a-zA-Z0-9]+\:[^\s]+)\s*(.*)$/
-	# examples:
-	# >sce:YBR160W  CDC28, SRM5; cyclin-dependent protein kinase catalytic subunit [EC:2.7.1.-] [SP:CC28_YEAST]
-	# >emb:CACDC28 [X80034] C.albicans CDC28 gene 
-	i = $1
-	d = $2
-	a = parse_ColonSepID(i)
-	i = a.join(':')
-	this_line = [ ':', a , d ]
-	match_EC(d)
-	parse_square_brackets(d).each do |x|
-	  if !match_EC(x, false) and x =~ /:/ then
-	    parse_ColonSepID(x)
-	  elsif x =~ /\A\s*([A-Z][A-Z0-9_\.]+)\s*\z/ then
-	    @list_ids << [ $1 ]
-	  end
-	end
+        # examples:
+        # >sce:YBR160W  CDC28, SRM5; cyclin-dependent protein kinase catalytic subunit [EC:2.7.1.-] [SP:CC28_YEAST]
+        # >emb:CACDC28 [X80034] C.albicans CDC28 gene 
+        i = $1
+        d = $2
+        a = parse_ColonSepID(i)
+        i = a.join(':')
+        this_line = [ ':', a , d ]
+        match_EC(d)
+        parse_square_brackets(d).each do |x|
+          if !match_EC(x, false) and x =~ /:/ then
+            parse_ColonSepID(x)
+          elsif x =~ /\A\s*([A-Z][A-Z0-9_\.]+)\s*\z/ then
+            @list_ids << [ $1 ]
+          end
+        end
 
       when /^\>?\s*(\S+)(?:\s+(.+))?$/
-	# examples:
-	# >ABC12345 this is test
-	i = $1
-	d = $2.to_s
-	@list_ids << [ i.chomp('.') ]
-	this_line = [  '', [ i ], d ]
-	match_EC(d)
+        # examples:
+        # >ABC12345 this is test
+        i = $1
+        d = $2.to_s
+        @list_ids << [ i.chomp('.') ]
+        this_line = [  '', [ i ], d ]
+        match_EC(d)
       else
-	i = str
-	d = ''
-	match_EC(i)
-	this_line = [ '', [ i ], d ]
+        i = str
+        d = ''
+        match_EC(i)
+        this_line = [ '', [ i ], d ]
       end
 
       @deflines << this_line
@@ -280,11 +280,11 @@ module Bio
     def match_EC(str, write_flag = true)
       di = nil
       str.scan(/EC\:((:?[\-\d]+\.){3}(:?[\-\d]+))/i) do |x|
-	di = [ 'EC', $1 ]
-	if write_flag then
-	  @info['ec'] = di[1] if (!@info['ec'] or @info['ec'].to_s =~ /\-/)
-	  @list_ids << di
-	end
+        di = [ 'EC', $1 ]
+        if write_flag then
+          @info['ec'] = di[1] if (!@info['ec'] or @info['ec'].to_s =~ /\-/)
+          @list_ids << di
+        end
       end
       di
     end
@@ -293,7 +293,7 @@ module Bio
     def parse_square_brackets(str)
       r = []
       str.scan(/\[([^\]]*)\]/) do |x|
-	r << x[0]
+        r << x[0]
       end
       r
     end
@@ -311,32 +311,32 @@ module Bio
       # this method destroys ary
       data = []
       while token = ary.shift
-	if labels = self.class::NSIDs[token] then
-	  di = [ token ]
-	  idtype = token
-	  labels.each do |x|
-	    token = ary.shift
-	    break unless token
-	    if self.class::NSIDs[token] then
-	      ary.unshift(token)
-	      break #each
-	    end
-	    if token.length > 0 then
-	      di << token
-	    else
-	      di << nil
-	    end
-	  end
-	  data << di
-	else
-	  if token.length > 0 then
-	    # UCID (uncontrolled identifiers)
-	    di = [ token ]
-	    data << di
-	    @info['ucid'] = token unless @info['ucid']
-	  end
-	  break #while
-	end
+        if labels = self.class::NSIDs[token] then
+          di = [ token ]
+          idtype = token
+          labels.each do |x|
+            token = ary.shift
+            break unless token
+            if self.class::NSIDs[token] then
+              ary.unshift(token)
+              break #each
+            end
+            if token.length > 0 then
+              di << token
+            else
+              di << nil
+            end
+          end
+          data << di
+        else
+          if token.length > 0 then
+            # UCID (uncontrolled identifiers)
+            di = [ token ]
+            data << di
+            @info['ucid'] = token unless @info['ucid']
+          end
+          break #while
+        end
       end #while
       @list_ids.concat data
       data
@@ -345,8 +345,8 @@ module Bio
 
     def to_s
       @deflines.collect { |a|
-	s = a[0]
-	(a[1..-2].collect { |x| x.join(s) }.join(s) + ' ' + a[-1]).strip
+        s = a[0]
+        (a[1..-2].collect { |x| x.join(s) }.join(s) + ' ' + a[-1]).strip
       }.join("\x01")
     end
 
@@ -356,25 +356,25 @@ module Bio
 
     def descriptions
       @deflines.collect do |a|
-	a[-1]
+        a[-1]
       end
     end
 
     def id_strings
       r = []
       @list_ids.each do |a|
-	if a.size >= 2 then
-	  r.concat a[1..-1].find_all { |x| x }
-	else
-	  if a[0].to_s.size > 0 and a[0] =~ /\A[A-Za-z0-9\.\-\_]+\z/
-	    r << a[0]
-	  end
-	end
+        if a.size >= 2 then
+          r.concat a[1..-1].find_all { |x| x }
+        else
+          if a[0].to_s.size > 0 and a[0] =~ /\A[A-Za-z0-9\.\-\_]+\z/
+            r << a[0]
+          end
+        end
       end
       r.concat( words(true, []).find_all do |x|
-		 x =~ /\A[A-Z][A-Za-z0-9\_]*[0-9]+[A-Za-z0-9\_]+\z/ or
-		   x =~ /\A[A-Z][A-Z0-9]*\_[A-Z0-9\_]+\z/
-	       end)
+                 x =~ /\A[A-Z][A-Za-z0-9\_]*[0-9]+[A-Za-z0-9\_]+\z/ or
+                   x =~ /\A[A-Z][A-Z0-9]*\_[A-Z0-9\_]+\z/
+               end)
       r
     end
 
@@ -402,22 +402,22 @@ module Bio
     ]
 
     def words(case_sensitive = nil, kill_regexp = self.class::KillRegexpArray,
-	      kwhash = self.class::KillWordsHash)
+              kwhash = self.class::KillWordsHash)
       a = descriptions.join(' ').split(/[\.\,\;\:\(\)\[\]\{\}\<\>\"\'\`\~\/\|\?\!\&\@\#\s\x00-\x1f\x7f]+/)
       a.collect! do |x|
-	x.sub!(/\A[\$\*\-\+]+/, '')
-	x.sub!(/[\$\*\-\=]+\z/, '')
-	if x.size <= 1 then
-	  nil
-	elsif kwhash[x.downcase] then
-	  nil
-	else
-	  if kill_regexp.find { |expr| expr =~ x } then
-	    nil
-	  else
-	    x
-	  end
-	end
+        x.sub!(/\A[\$\*\-\+]+/, '')
+        x.sub!(/[\$\*\-\=]+\z/, '')
+        if x.size <= 1 then
+          nil
+        elsif kwhash[x.downcase] then
+          nil
+        else
+          if kill_regexp.find { |expr| expr =~ x } then
+            nil
+          else
+            x
+          end
+        end
       end
       a.compact!
       a.collect! { |x| x.downcase } unless case_sensitive
@@ -430,32 +430,32 @@ module Bio
       db =db.to_s
       r = nil
       unless r = @info[db] then
-	di = @list_ids.find { |x| x[0] == db.to_s }
-	if di and di.size <= 2 then
-	  r = di[-1]
-	elsif di then
-	  labels = self.class::NSIDs[db]
-	  [ 'acc_version', 'entry_id',
-	    'locus', 'accession', 'number'].each do |x|
-	    if i = labels.index(x) then
-	      r = di[i+1]
-	      break if r
-	    end
-	  end
-	  r = di[1..-1].find { |x| x } unless r
-	end
-	@info[db] = r if r
+        di = @list_ids.find { |x| x[0] == db.to_s }
+        if di and di.size <= 2 then
+          r = di[-1]
+        elsif di then
+          labels = self.class::NSIDs[db]
+          [ 'acc_version', 'entry_id',
+            'locus', 'accession', 'number'].each do |x|
+            if i = labels.index(x) then
+              r = di[i+1]
+              break if r
+            end
+          end
+          r = di[1..-1].find { |x| x } unless r
+        end
+        @info[db] = r if r
       end
       r
     end
 
     def get_by_type(tstr)
       @list_ids.each do |x|
-	if labels = self.class::NSIDs[x[0]] then
-	  if i = labels.index(tstr) then
-	    return x[i+1]
-	  end
-	end
+        if labels = self.class::NSIDs[x[0]] then
+          if i = labels.index(tstr) then
+            return x[i+1]
+          end
+        end
       end
       nil
     end
@@ -463,53 +463,53 @@ module Bio
     def get_all_by_type(*tstrarg)
       d = []
       @list_ids.each do |x|
-	if labels = self.class::NSIDs[x[0]] then
-	  tstrarg.each do |y|
-	    if i = labels.index(y) then
-	      d << x[i+1] if x[i+1]
-	    end
-	  end
-	end
+        if labels = self.class::NSIDs[x[0]] then
+          tstrarg.each do |y|
+            if i = labels.index(y) then
+              d << x[i+1] if x[i+1]
+            end
+          end
+        end
       end
       d
     end
 
     def locus
       unless defined?(@locus)
-	@locus = get_by_type('locus')
+        @locus = get_by_type('locus')
       end
       @locus
     end
 
     def gi
       unless defined?(@gi) then
-	@gi = get_by_type('gi')
+        @gi = get_by_type('gi')
       end
       @gi
     end
 
     def acc_version
       unless defined?(@acc_version) then
-	@acc_version = get_by_type('acc_version')
+        @acc_version = get_by_type('acc_version')
       end
       @acc_version
     end
 
     def accessions
       unless defined?(@accessions) then
-	@accessions = get_all_by_type('accession', 'acc_version')
-	@accessions.collect! { |x| x.sub(/\..*\z/, '') }
+        @accessions = get_all_by_type('accession', 'acc_version')
+        @accessions.collect! { |x| x.sub(/\..*\z/, '') }
       end
       @accessions
     end
 
     def accession
       unless defined?(@accession) then
-	if acc_version then
-	  @accession = acc_version.split('.')[0]
-	else
-	  @accession = accessions[0]
-	end
+        if acc_version then
+          @accession = acc_version.split('.')[0]
+        else
+          @accession = accessions[0]
+        end
       end
       @accession
     end
@@ -519,7 +519,7 @@ module Bio
       # "wrong # of arguments(#{args.size} for 1)" if args.size >= 2
       r = get(name, *args)
       if !r and !(self.class::NSIDs[name.to_s]) then
-	raise "NameError: undefined method `#{name.inspect}'"
+        raise "NameError: undefined method `#{name.inspect}'"
       end
       r
     end

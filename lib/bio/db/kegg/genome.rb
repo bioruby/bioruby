@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genome.rb,v 0.13 2004/08/23 23:53:23 k Exp $
+#  $Id: genome.rb,v 0.14 2005/09/08 01:22:11 k Exp $
 #
 
 require 'bio/db'
@@ -32,176 +32,176 @@ module Bio
       TAGSIZE	= 12
 
       def initialize(entry)
-	super(entry, TAGSIZE)
+        super(entry, TAGSIZE)
       end
 
 
       # ENTRY
       def entry_id
-	field_fetch('ENTRY')
+        field_fetch('ENTRY')
       end
       
       # NAME
       def name
-	field_fetch('NAME')
+        field_fetch('NAME')
       end
 
       # DEFINITION
       def definition
-	field_fetch('DEFINITION')
+        field_fetch('DEFINITION')
       end
       alias organism definition
 
       # TAXONOMY
       def taxonomy
-	unless @data['TAXONOMY']
-	  taxid, lineage = subtag2array(get('TAXONOMY'))
-	  taxid   = taxid   ? truncate(tag_cut(taxid))   : ''
-	  lineage = lineage ? truncate(tag_cut(lineage)) : ''
-	  @data['TAXONOMY'] = {
-	    'taxid'	=> taxid,
-	    'lineage'	=> lineage,
-	  }
-	  @data['TAXONOMY'].default = ''
-	end
-	@data['TAXONOMY']
+        unless @data['TAXONOMY']
+          taxid, lineage = subtag2array(get('TAXONOMY'))
+          taxid   = taxid   ? truncate(tag_cut(taxid))   : ''
+          lineage = lineage ? truncate(tag_cut(lineage)) : ''
+          @data['TAXONOMY'] = {
+            'taxid'	=> taxid,
+            'lineage'	=> lineage,
+          }
+          @data['TAXONOMY'].default = ''
+        end
+        @data['TAXONOMY']
       end
 
       def taxid
-	taxonomy['taxid']
+        taxonomy['taxid']
       end
 
       def lineage
-	taxonomy['lineage']
+        taxonomy['lineage']
       end
 
       # COMMENT
       def comment
-	field_fetch('COMMENT')
+        field_fetch('COMMENT')
       end
       
       # REFERENCE
       def references
-	unless @data['REFERENCE']
-	  ary = []
-	  toptag2array(get('REFERENCE')).each do |ref|
-	    hash = Hash.new('')
-	    subtag2array(ref).each do |field|
-	      case tag_get(field)
-	      when /AUTHORS/
-		authors = truncate(tag_cut(field))
-		authors = authors.split(', ')
-		authors[-1] = authors[-1].split(/\s+and\s+/)
-		authors = authors.flatten.map { |a| a.sub(',', ', ') }
-		hash['authors']	= authors
-	      when /TITLE/
-		hash['title']	= truncate(tag_cut(field))
-	      when /JOURNAL/
-		journal = truncate(tag_cut(field))
-		if journal =~ /(.*) (\d+):(\d+)-(\d+) \((\d+)\) \[UI:(\d+)\]$/
-		  hash['journal']	= $1
-		  hash['volume']	= $2
-		  hash['pages']		= $3
-		  hash['year']		= $5
-		  hash['medline']	= $6
-		else
-		  hash['journal'] = journal
-		end
-	      end
-	    end
-	    ary.push(Reference.new(hash))
-	  end
-	  @data['REFERENCE'] = References.new(ary)
-	end
-	@data['REFERENCE']
+        unless @data['REFERENCE']
+          ary = []
+          toptag2array(get('REFERENCE')).each do |ref|
+            hash = Hash.new('')
+            subtag2array(ref).each do |field|
+              case tag_get(field)
+              when /AUTHORS/
+                authors = truncate(tag_cut(field))
+                authors = authors.split(', ')
+                authors[-1] = authors[-1].split(/\s+and\s+/)
+                authors = authors.flatten.map { |a| a.sub(',', ', ') }
+                hash['authors']	= authors
+              when /TITLE/
+                hash['title']	= truncate(tag_cut(field))
+              when /JOURNAL/
+                journal = truncate(tag_cut(field))
+                if journal =~ /(.*) (\d+):(\d+)-(\d+) \((\d+)\) \[UI:(\d+)\]$/
+                  hash['journal']	= $1
+                  hash['volume']	= $2
+                  hash['pages']		= $3
+                  hash['year']		= $5
+                  hash['medline']	= $6
+                else
+                  hash['journal'] = journal
+                end
+              end
+            end
+            ary.push(Reference.new(hash))
+          end
+          @data['REFERENCE'] = References.new(ary)
+        end
+        @data['REFERENCE']
       end
 
       # CHROMOSOME
       def chromosomes
-	unless @data['CHROMOSOME']
-	  @data['CHROMOSOME'] = []
-	  toptag2array(get('CHROMOSOME')).each do |chr|
-	    hash = Hash.new('')
-	    subtag2array(chr).each do |field|
-	      hash[tag_get(field)] = truncate(tag_cut(field))
-	    end
-	    @data['CHROMOSOME'].push(hash)
-	  end
-	end
-	@data['CHROMOSOME']
+        unless @data['CHROMOSOME']
+          @data['CHROMOSOME'] = []
+          toptag2array(get('CHROMOSOME')).each do |chr|
+            hash = Hash.new('')
+            subtag2array(chr).each do |field|
+              hash[tag_get(field)] = truncate(tag_cut(field))
+            end
+            @data['CHROMOSOME'].push(hash)
+          end
+        end
+        @data['CHROMOSOME']
       end
 
       # PLASMID
       def plasmids
-	unless @data['PLASMID']
-	  @data['PLASMID'] = []
-	  toptag2array(get('PLASMID')).each do |chr|
-	    hash = Hash.new('')
-	    subtag2array(chr).each do |field|
-	      hash[tag_get(field)] = truncate(tag_cut(field))
-	    end
-	    @data['PLASMID'].push(hash)
-	  end
-	end
-	@data['PLASMID']
+        unless @data['PLASMID']
+          @data['PLASMID'] = []
+          toptag2array(get('PLASMID')).each do |chr|
+            hash = Hash.new('')
+            subtag2array(chr).each do |field|
+              hash[tag_get(field)] = truncate(tag_cut(field))
+            end
+            @data['PLASMID'].push(hash)
+          end
+        end
+        @data['PLASMID']
       end
 
       # SCAFFOLD
       def scaffolds
-	unless @data['SCAFFOLD']
-	  @data['SCAFFOLD'] = []
-	  toptag2array(get('SCAFFOLD')).each do |chr|
-	    hash = Hash.new('')
-	    subtag2array(chr).each do |field|
-	      hash[tag_get(field)] = truncate(tag_cut(field))
-	    end
-	    @data['SCAFFOLD'].push(hash)
-	  end
-	end
-	@data['SCAFFOLD']
+        unless @data['SCAFFOLD']
+          @data['SCAFFOLD'] = []
+          toptag2array(get('SCAFFOLD')).each do |chr|
+            hash = Hash.new('')
+            subtag2array(chr).each do |field|
+              hash[tag_get(field)] = truncate(tag_cut(field))
+            end
+            @data['SCAFFOLD'].push(hash)
+          end
+        end
+        @data['SCAFFOLD']
       end
 
       # STATISTICS
       def statistics
-	unless @data['STATISTICS']
-	  hash = Hash.new(0.0)
-	  get('STATISTICS').each_line do |line|
-	    case line
-	    when /nucleotides:\s+(\d+)/
-	      hash['nalen'] = $1.to_i
-	    when /protein genes:\s+(\d+)/
-	      hash['num_gene'] = $1.to_i
-	    when /RNA genes:\s+(\d+)/
-	      hash['num_rna'] = $1.to_i
-	    when /G\+C content:\s+(\d+.\d+)/
-	      hash['gc'] = $1.to_f
-	    end
-	  end
-	  @data['STATISTICS'] = hash
-	end
-	@data['STATISTICS']
+        unless @data['STATISTICS']
+          hash = Hash.new(0.0)
+          get('STATISTICS').each_line do |line|
+            case line
+            when /nucleotides:\s+(\d+)/
+              hash['nalen'] = $1.to_i
+            when /protein genes:\s+(\d+)/
+              hash['num_gene'] = $1.to_i
+            when /RNA genes:\s+(\d+)/
+              hash['num_rna'] = $1.to_i
+            when /G\+C content:\s+(\d+.\d+)/
+              hash['gc'] = $1.to_f
+            end
+          end
+          @data['STATISTICS'] = hash
+        end
+        @data['STATISTICS']
       end
 
       def nalen
-	statistics['nalen']
+        statistics['nalen']
       end
       alias length nalen
 
       def num_gene
-	statistics['num_gene']
+        statistics['num_gene']
       end
 
       def num_rna
-	statistics['num_rna']
+        statistics['num_rna']
       end
 
       def gc
-	statistics['gc']
+        statistics['gc']
       end
 
       # GENOMEMAP
       def genomemap
-	field_fetch('GENOMEMAP')
+        field_fetch('GENOMEMAP')
       end
 
     end
@@ -243,7 +243,7 @@ if __FILE__ == $0
     ].each do |x|
       puts "### " + x.shift
       x.each do |m|
-	p genome.send(m)
+        p genome.send(m)
       end
     end
 

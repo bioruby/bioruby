@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: utils.rb,v 1.1 2004/03/08 07:30:40 ngoto Exp $
+#  $Id: utils.rb,v 1.2 2005/09/08 01:22:11 k Exp $
 
 require 'matrix'
 require 'bio/db/pdb'
@@ -35,10 +35,10 @@ module Bio; class PDB
       x = y = z = count = 0
       
       self.each_atom{ |atom|
-	x += atom.x
-	y += atom.y
-	z += atom.z
-	count += 1
+        x += atom.x
+        y += atom.y
+        z += atom.z
+        count += 1
       }
       
       x = x / count
@@ -68,12 +68,12 @@ module Bio; class PDB
       x = y = z = total = 0
       
       self.each_atom{ |atom|
-	element = atom.element[0,1]
-	mass    = ElementMass[element]
-	total += mass
-	x += atom.x * mass
-	y += atom.y * mass
-	z += atom.z * mass
+        element = atom.element[0,1]
+        mass    = ElementMass[element]
+        total += mass
+        x += atom.x * mass
+        y += atom.y * mass
+        z += atom.z * mass
       }
       
       x = x / total
@@ -195,7 +195,7 @@ module Bio; class PDB
     end
     def each_chain()
       self.each_model{ |model|
-	model.each{ |chain| yield chain }
+        model.each{ |chain| yield chain }
       }
     end
   end
@@ -210,7 +210,7 @@ module Bio; class PDB
     end
     def each_residue()
       self.each_chain{ |chain|
-	chain.each{ |residue| yield residue }
+        chain.each{ |residue| yield residue }
       }
     end
   end
@@ -225,7 +225,7 @@ module Bio; class PDB
     end
     def each_atom()
       self.each_residue{ |residue|
-	residue.each{ |atom| yield atom }
+        residue.each{ |atom| yield atom }
       }
     end
   end

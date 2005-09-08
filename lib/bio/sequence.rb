@@ -19,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.40 2005/08/10 12:53:02 k Exp $
+#  $Id: sequence.rb,v 0.41 2005/09/08 01:22:08 k Exp $
 #
 
 require 'bio/data/na'
@@ -68,9 +68,9 @@ module Bio
     def to_fasta(header = '', width = nil)
       ">#{header}\n" +
       if width
-	self.to_s.gsub(Regexp.new(".{1,#{width}}"), "\\0\n")
+        self.to_s.gsub(Regexp.new(".{1,#{width}}"), "\\0\n")
       else
-	self.to_s + "\n"
+        self.to_s + "\n"
       end
     end
 
@@ -94,9 +94,9 @@ module Bio
       hash.default = 0.0 unless hash.default
       sum = 0.0
       self.each_byte do |x|
-	begin
-	  sum += hash[x.chr]
-	end
+        begin
+          sum += hash[x.chr]
+        end
       end
       return sum
     end
@@ -104,7 +104,7 @@ module Bio
     def composition
       count = Hash.new(0)
       self.scan(/./) do |x|
-	count[x] += 1
+        count[x] += 1
       end
       return count
     end
@@ -112,26 +112,26 @@ module Bio
     def randomize(hash = nil)
       length = self.length
       if hash
-	count = hash.clone
-	count.each_value {|x| length += x}
+        count = hash.clone
+        count.each_value {|x| length += x}
       else
-	count = self.composition
+        count = self.composition
       end
 
       seq = ''
       tmp = {}
       length.times do 
-	count.each do |k, v|
-	  tmp[k] = v * rand
-	end
-	max = tmp.max {|a, b| a[1] <=> b[1]}
-	count[max.first] -= 1
+        count.each do |k, v|
+          tmp[k] = v * rand
+        end
+        max = tmp.max {|a, b| a[1] <=> b[1]}
+        count[max.first] -= 1
 
-	if block_given?
-	  yield max.first
-	else
-	  seq += max.first
-	end
+        if block_given?
+          yield max.first
+        else
+          seq += max.first
+        end
       end
       return self.class.new(seq)
     end
@@ -143,20 +143,20 @@ module Bio
     # This method depends on Locations class, see bio/location.rb
     def splicing(position)
       unless position.is_a?(Locations) then
-	position = Locations.new(position)
+        position = Locations.new(position)
       end
       s = ''
       position.each do |location|
-	if location.sequence
-	  s << location.sequence
-	else
-	  exon = self.subseq(location.from, location.to)
-	  begin
-	    exon.complement! if location.strand < 0
-	  rescue NameError
-	  end
-	  s << exon
-	end
+        if location.sequence
+          s << location.sequence
+        else
+          exon = self.subseq(location.from, location.to)
+          begin
+            exon.complement! if location.strand < 0
+          rescue NameError
+          end
+          s << exon
+        end
       end
       return self.class.new(s)
     end
@@ -167,74 +167,74 @@ module Bio
     class NA < Sequence
 
       def initialize(str)
-	super
-	self.downcase!
-	self.tr!(" \t\n\r",'')
+        super
+        self.downcase!
+        self.tr!(" \t\n\r",'')
       end
 
       # This method depends on Locations class, see bio/location.rb
       def splicing(position)
-	mRNA = super
-	if mRNA.rna?
-	  mRNA.tr!('t', 'u')
-	else
-	  mRNA.tr!('u', 't')
-	end
-	mRNA
+        mRNA = super
+        if mRNA.rna?
+          mRNA.tr!('t', 'u')
+        else
+          mRNA.tr!('u', 't')
+        end
+        mRNA
       end
 
       def complement
-	s = self.class.new(self)
-	s.complement!
-	s
+        s = self.class.new(self)
+        s.complement!
+        s
       end
 
       def complement!
-	if self.rna?
-	  self.reverse!
-	  self.tr!('augcrymkdhvbswn', 'uacgyrkmhdbvswn')
-	else
-	  self.reverse!
-	  self.tr!('atgcrymkdhvbswn', 'tacgyrkmhdbvswn')
-	end
-	self
+        if self.rna?
+          self.reverse!
+          self.tr!('augcrymkdhvbswn', 'uacgyrkmhdbvswn')
+        else
+          self.reverse!
+          self.tr!('atgcrymkdhvbswn', 'tacgyrkmhdbvswn')
+        end
+        self
       end
 
       def translate(frame = 1, table = 1, unknown = 'X')
         if table.is_a?(Bio::CodonTable)
-	  ct = table
+          ct = table
         else
           ct = Bio::CodonTable[table]
         end
-	naseq = self.dna
-	case frame
-	when 1, 2, 3
-	  frame -= 1
-	when 4, 5, 6
-	  frame -= 4
-	  naseq.complement!
-	when -1, -2, -3
-	  frame = -1 - frame
-	  naseq.complement!
-	else
-	  frame = 0
-	end
+        naseq = self.dna
+        case frame
+        when 1, 2, 3
+          frame -= 1
+        when 4, 5, 6
+          frame -= 4
+          naseq.complement!
+        when -1, -2, -3
+          frame = -1 - frame
+          naseq.complement!
+        else
+          frame = 0
+        end
         nalen = naseq.length - (naseq.length - frame) % 3
-	aaseq = naseq[frame, nalen].gsub(/.{3}/) {|codon| ct[codon] or unknown}
-	return Bio::Sequence::AA.new(aaseq)
+        aaseq = naseq[frame, nalen].gsub(/.{3}/) {|codon| ct[codon] or unknown}
+        return Bio::Sequence::AA.new(aaseq)
       end
 
       def gc_percent
-	count = self.composition
-	at = count['a'] + count['t'] + count['u']
-	gc = count['g'] + count['c']
-	gc = format("%.1f", gc.to_f / (at + gc) * 100)
-	return gc.to_f
+        count = self.composition
+        at = count['a'] + count['t'] + count['u']
+        gc = count['g'] + count['c']
+        gc = format("%.1f", gc.to_f / (at + gc) * 100)
+        return gc.to_f
       end
       alias :gc :gc_percent
 
       def illegal_bases
-	self.scan(/[^atgcu]/).sort.uniq
+        self.scan(/[^atgcu]/).sort.uniq
       end
 
       # NucleicAcid is defined in bio/data/na.rb
@@ -247,7 +247,7 @@ module Bio
       end
 
       def to_re
-	if self.rna?
+        if self.rna?
           NucleicAcid.to_re(self.dna, true)
         else
           NucleicAcid.to_re(self)
@@ -255,11 +255,11 @@ module Bio
       end
 
       def names
-	array = []
-	self.each_byte do |x|
-	  array.push(NucleicAcid.names[x.chr.upcase])
-	end
-	return array
+        array = []
+        self.each_byte do |x|
+          array.push(NucleicAcid.names[x.chr.upcase])
+        end
+        return array
       end
 
       def dna
@@ -279,12 +279,12 @@ module Bio
       end
 
       def rna?
-	self.index('u')
+        self.index('u')
       end
       protected :rna?
 
       def pikachu
-	self.dna.tr("atgc", "pika")	# joke, of course :-)
+        self.dna.tr("atgc", "pika")	# joke, of course :-)
       end
 
     end
@@ -295,9 +295,9 @@ module Bio
     class AA < Sequence
 
       def initialize(str)
-	super
-	self.upcase!
-	self.tr!(" \t\n\r",'')
+        super
+        self.upcase!
+        self.tr!(" \t\n\r",'')
       end
 
       # AminoAcid is defined in bio/data/aa.rb
@@ -306,21 +306,21 @@ module Bio
       end
 
       def to_re
-	AminoAcid.to_re(self)
+        AminoAcid.to_re(self)
       end
 
       def codes
-	array = []
-	self.each_byte do |x|
-	  array.push(AminoAcid.names[x.chr])
-	end
-	return array
+        array = []
+        self.each_byte do |x|
+          array.push(AminoAcid.names[x.chr])
+        end
+        return array
       end
 
       def names
-	self.codes.map do |x|
-	  AminoAcid.names[x]
-	end
+        self.codes.map do |x|
+          AminoAcid.names[x]
+        end
       end
 
     end

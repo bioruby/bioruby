@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.2 2005/08/10 12:55:41 k Exp $
+#  $Id: report.rb,v 1.3 2005/09/08 01:22:08 k Exp $
 #
 #  Acknowledgements:
 #    Thanks to Tomoaki NISHIYAMA <tomoakin@kenroku.kanazawa-u.ac.jp> 
@@ -36,57 +36,57 @@ class Blast
 
       undef format0_parse_header
       undef program, version, version_number, version_date,
-	message, converged?, reference, db
+        message, converged?, reference, db
 
       def format0_split_headers(data)
-	@f0query = data.shift
+        @f0query = data.shift
       end
 
       def format0_split_search(data)
-	iterations = []
-	while r = data[0] and /^\>/ =~ r
-	  iterations << Iteration.new(data)
-	end
-	if iterations.size <= 0 then
-	  iterations << Iteration.new(data)
-	end
-	iterations
+        iterations = []
+        while r = data[0] and /^\>/ =~ r
+          iterations << Iteration.new(data)
+        end
+        if iterations.size <= 0 then
+          iterations << Iteration.new(data)
+        end
+        iterations
       end
 
       class F0dbstat < Bio::Blast::Default::Report::F0dbstat
-	def db_num
-	  unless defined?(@db_num)
-	    parse_params
-	    @db_num = @hash['Number of Sequences'].to_i
-	  end
-	  @db_num
-	end
+        def db_num
+          unless defined?(@db_num)
+            parse_params
+            @db_num = @hash['Number of Sequences'].to_i
+          end
+          @db_num
+        end
 
-	def db_len
-	  unless defined?(@db_len)
-	    parse_params
-	    @db_len = @hash['length of database'].to_i
-	  end
-	  @db_len
-	end
+        def db_len
+          unless defined?(@db_len)
+            parse_params
+            @db_len = @hash['length of database'].to_i
+          end
+          @db_len
+        end
       end #class F0dbstat
 
       class Iteration < Bio::Blast::Default::Report::Iteration
-	def initialize(data)
-	  @f0stat = []
-	  @f0dbstat = nil
-	  @hits = []
-	  @num = 1
-	  while r = data[0] and /^\>/ =~ r
-	    @hits << Hit.new(data)
-	  end
-	end
+        def initialize(data)
+          @f0stat = []
+          @f0dbstat = nil
+          @hits = []
+          @num = 1
+          while r = data[0] and /^\>/ =~ r
+            @hits << Hit.new(data)
+          end
+        end
 
-	def hits; @hits; end
-	undef message, pattern_in_database, f0message, f0hitlist,
-	  pattern, pattern_positions, hits_found_again,
-	  hits_newly_found, hits_for_pattern, parse_hitlist,
-	  converged?
+        def hits; @hits; end
+        undef message, pattern_in_database, f0message, f0hitlist,
+          pattern, pattern_positions, hits_found_again,
+          hits_newly_found, hits_for_pattern, parse_hitlist,
+          converged?
       end #class Iteration
 
       class Hit < Bio::Blast::Default::Report::Hit

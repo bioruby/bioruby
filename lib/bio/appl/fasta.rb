@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.17 2005/08/16 09:38:34 ngoto Exp $
+#  $Id: fasta.rb,v 1.18 2005/09/08 01:22:08 k Exp $
 #
 
 require 'net/http'
@@ -97,9 +97,9 @@ module Bio
     def parse_result(data)
       case @format
       when 6
-	require 'bio/appl/fasta/format6'
+        require 'bio/appl/fasta/format6'
       when 10
-	require 'bio/appl/fasta/format10'
+        require 'bio/appl/fasta/format10'
       end
       Report.new(data)
     end
@@ -124,19 +124,19 @@ module Bio
       path = "/sit-bin/fasta" #2005.08.12
 
       form = {
-	'style'		=> 'raw',
-	'prog'		=> @program,
-	'dbname'	=> @db,
-	'sequence'	=> CGI.escape(query),
-	'other_param'	=> CGI.escape(make_command_line_unix(@options)),
-	'ktup_value'	=> @ktup,
-	'matrix'	=> @matrix,
+        'style'		=> 'raw',
+        'prog'		=> @program,
+        'dbname'	=> @db,
+        'sequence'	=> CGI.escape(query),
+        'other_param'	=> CGI.escape(make_command_line_unix(@options)),
+        'ktup_value'	=> @ktup,
+        'matrix'	=> @matrix,
       }
 
       data = []
 
       form.each do |k, v|
-	data.push("#{k}=#{v}") if v
+        data.push("#{k}=#{v}") if v
       end
 
       report = nil
@@ -145,7 +145,7 @@ module Bio
         http = Net::HTTP.new(host)
         http.open_timeout = 300
         http.read_timeout = 600
-	result, = http.post(path, data.join('&'))
+        result, = http.post(path, data.join('&'))
         @output = result.body
         # workaround 2005.08.12
         if /\<A +HREF=\"(http\:\/\/fasta\.genome\.jp(\/tmp\/[^\"]+))\"\>Show all result\<\/A\>/i =~ @output.to_s then

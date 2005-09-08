@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: alignment.rb,v 1.7 2004/11/13 15:41:10 ngoto Exp $
+#  $Id: alignment.rb,v 1.8 2005/09/08 01:22:08 k Exp $
 #
 
 require 'bio/sequence'
@@ -38,17 +38,17 @@ module Bio
     def self.extract_seq(s)
       seq = nil
       if seq.is_a?(Bio::Sequence) then
-	seq = s
+        seq = s
       else
-	for m in [ :seq, :naseq, :aaseq ]
-	  begin
-	    seq = s.send(m)
-	  rescue NameError, ArgumentError
-	    seq = nil
-	  end
-	  break if seq
-	end
-	seq = s unless seq
+        for m in [ :seq, :naseq, :aaseq ]
+          begin
+            seq = s.send(m)
+          rescue NameError, ArgumentError
+            seq = nil
+          end
+          break if seq
+        end
+        seq = s unless seq
       end
       seq
     end
@@ -61,12 +61,12 @@ module Bio
     def self.extract_key(s)
       sn = nil
       for m in [ :definition, :entry_id ]
-	begin
-	  sn = s.send(m)
-	rescue NameError, ArgumentError
-	  sn = nil
-	end
-	break if sn
+        begin
+          sn = s.send(m)
+        rescue NameError, ArgumentError
+          sn = nil
+        end
+        break if sn
       end
       sn
     end
@@ -84,9 +84,9 @@ module Bio
       require 'bio/io/flatfile'
       aln = self.new
       files.each do |fn|
-	Bio::FlatFile.open(nil, fn) do |ff|
-	  aln.add_sequences(ff)
-	end
+        Bio::FlatFile.open(nil, fn) do |ff|
+          aln.add_sequences(ff)
+        end
       end
       aln
     end
@@ -103,27 +103,27 @@ module Bio
 
     def add_sequences(seqs)
       if block_given? then
-	seqs.each do |x|
-	  s, key = yield x
-	  self.store(key, s)
-	end
+        seqs.each do |x|
+          s, key = yield x
+          self.store(key, s)
+        end
       else
-	if seqs.is_a?(self.class) then
-	  seqs.each_pair do |k, s|
-	    self.store(k, s)
-	  end
-	elsif seqs.respond_to?(:each_pair)
-	  seqs.each_pair do |k, x|
-	    s = extract_seq(x)
-	    self.store(k, s)
-	  end
-	else
-	  seqs.each do |x|
-	    s = extract_seq(x)
-	    k = extract_key(x)
-	    self.store(k, s)
-	  end
-	end
+        if seqs.is_a?(self.class) then
+          seqs.each_pair do |k, s|
+            self.store(k, s)
+          end
+        elsif seqs.respond_to?(:each_pair)
+          seqs.each_pair do |k, x|
+            s = extract_seq(x)
+            self.store(k, s)
+          end
+        else
+          seqs.each do |x|
+            s = extract_seq(x)
+            k = extract_key(x)
+            self.store(k, s)
+          end
+        end
       end
       self
     end
@@ -136,9 +136,9 @@ module Bio
     def ==(x)
       #(original)
       if x.is_a?(self.class)
-	self.to_hash == x.to_hash
+        self.to_hash == x.to_hash
       else
-	false
+        false
       end
     end
 
@@ -158,19 +158,19 @@ module Bio
     def store(key, seq)
       #(Hash-like) returns key instead of seq
       if @seqs.has_key?(key) then
-	# don't allow same key
-	# New key is discarded, while existing key is preserved.
-	key = nil
+        # don't allow same key
+        # New key is discarded, while existing key is preserved.
+        key = nil
       end
       unless key then
-	unless defined?(@serial)
-	  @serial = 0
-	end
-	@serial = @seqs.size if @seqs.size > @serial
-	while @seqs.has_key?(@serial)
-	  @serial += 1
-	end
-	key = @serial
+        unless defined?(@serial)
+          @serial = 0
+        end
+        @serial = @seqs.size if @seqs.size > @serial
+        while @seqs.has_key?(@serial)
+          @serial += 1
+        end
+        key = @serial
       end
       self.__store__(key, seq)
       key
@@ -181,7 +181,7 @@ module Bio
       oldkeys = @keys
       tmpkeys = @seqs.keys
       @keys.collect! do |k|
-	tmpkeys.delete(k)
+        tmpkeys.delete(k)
       end
       @keys.compact!
       @keys.concat(tmpkeys)
@@ -200,10 +200,10 @@ module Bio
       #(Hash-like)
       k = @keys.shift
       if k then
-	s = @seqs.delete(k)
-	[ k, s ]
+        s = @seqs.delete(k)
+        [ k, s ]
       else
-	nil
+        nil
       end
     end
 
@@ -247,7 +247,7 @@ module Bio
     def each
       #(Array-like)
       @keys.each do |k|
-	yield @seqs[k]
+        yield @seqs[k]
       end
     end
     alias :each_seq :each
@@ -255,14 +255,14 @@ module Bio
     def each_pair
       #(Hash-like)
       @keys.each do |k|
-	yield k, @seqs[k]
+        yield k, @seqs[k]
       end
     end
 
     def collect!
       #(Array-like)
       @keys.each do |k|
-	@seqs[k] = yield @seqs[k]
+        @seqs[k] = yield @seqs[k]
       end
     end
     #
@@ -272,7 +272,7 @@ module Bio
     def seqclass
       #(original)
       (defined?(@seqclass) ? @seqclass : nil) or
-	(@seqs[@keys[0]] ? @seqs[@keys[0]].class : String)
+        (@seqs[@keys[0]] ? @seqs[@keys[0]].class : String)
     end
     attr_writer :seqclass
 
@@ -282,7 +282,7 @@ module Bio
     def gap_char
       #(original)
       unless defined?(@gap_char)
-	@gap_char = String.new(GAP_CHAR)
+        @gap_char = String.new(GAP_CHAR)
       end
       @gap_char
     end
@@ -291,7 +291,7 @@ module Bio
     def gap_regexp
       #(original)
       unless defined?(@gap_regexp)
-	@gap_regexp = Regexp.new(GAP_REGEXP)
+        @gap_regexp = Regexp.new(GAP_REGEXP)
       end
       @gap_regexp
     end
@@ -301,7 +301,7 @@ module Bio
       #(original)
       # used in consensus methods
       unless defined?(@missing_char)
-	@missing_char = String.new(MISSING_CHAR)
+        @missing_char = String.new(MISSING_CHAR)
       end
       @missing_char
     end
@@ -313,16 +313,16 @@ module Bio
     def new(*arg)
       na = self.class.new(*arg)
       if defined?(@seqclass)
-	na.seqclass = @seqclass
+        na.seqclass = @seqclass
       end
       if defined?(@gap_char)
-	na.gap_char = @gap_char
+        na.gap_char = @gap_char
       end
       if defined?(@gap_regexp)
-	na.gap_regexp = @gap_regexp
+        na.gap_regexp = @gap_regexp
       end
       if defined?(@missing_char)
-	na.missing_char = @missing_char
+        na.missing_char = @missing_char
       end
       na
     end
@@ -346,23 +346,23 @@ module Bio
     def merge!(*other)
       #(Hash-like)
       if block_given? then
-	other.each do |aln|
-	  aln.each_pair do |k, s|
-	    if self.has_key?(k) then
-	      s = yield k, self[k], s
-	      self.to_hash.store(k, s)
-	    else
-	      self.store(k, s)
-	    end
-	  end
-	end
+        other.each do |aln|
+          aln.each_pair do |k, s|
+            if self.has_key?(k) then
+              s = yield k, self[k], s
+              self.to_hash.store(k, s)
+            else
+              self.store(k, s)
+            end
+          end
+        end
       else
-	other.each do |aln|
-	  aln.each_pair do |k, s|
-	    self.delete(k) if self.has_key?(k)
-	    self.store(k, s)
-	  end
-	end
+        other.each do |aln|
+          aln.each_pair do |k, s|
+            self.delete(k) if self.has_key?(k)
+            self.store(k, s)
+          end
+        end
       end
       self
     end
@@ -371,12 +371,12 @@ module Bio
       #(Hash-like)
       k = nil
       self.each_pair do |k, s|
-	if s.class == seq.class then
-	  r = (s == seq)
-	else
-	  r = (s.to_s == seq.to_s)
-	end
-	break if r
+        if s.class == seq.class then
+          r = (s == seq)
+        else
+          r = (s.to_s == seq.to_s)
+        end
+        break if r
       end
       k
     end
@@ -384,16 +384,16 @@ module Bio
     def isolate(*arg)
       #(original)
       if arg.size == 0 then
-	self.collect! do |s|
-	  seqclass.new(s)
-	end
+        self.collect! do |s|
+          seqclass.new(s)
+        end
       else
-	arg.each do |k|
-	  if self.has_key?(k) then
-	    s = self.delete(key)
-	    self.store(k, seqclass.new(s))
-	  end
-	end
+        arg.each do |k|
+          if self.has_key?(k) then
+            s = self.delete(key)
+            self.store(k, seqclass.new(s))
+          end
+        end
       end
       self
     end
@@ -402,7 +402,7 @@ module Bio
       #(original)
       na = self.new
       self.each_pair do |k, s|
-	na.store(k, yield(s))
+        na.store(k, yield(s))
       end
       na
     end
@@ -411,12 +411,12 @@ module Bio
       #(Array-like)
       d = []
       self.each_pair do |k, s|
-	if !s or s.empty?
-	  d << k
-	end
+        if !s or s.empty?
+          d << k
+        end
       end
       d.each do |k|
-	self.delete(d)
+        self.delete(d)
       end
       d.empty? ? nil : d
     end
@@ -431,9 +431,9 @@ module Bio
     def add_seq(seq, key = nil)
       #(BioPerl) AlignI::add_seq like method
       unless seq.is_a?(Bio::Sequence) then
-	s =   extract_seq(seq)
-	key = extract_key(seq) unless key
-	seq = s
+        s =   extract_seq(seq)
+        key = extract_key(seq) unless key
+        seq = s
       end
       self.store(key, seq)
     end
@@ -441,9 +441,9 @@ module Bio
     def remove_seq(seq)
       #(BioPerl) AlignI::remove_seq like method
       if k = self.index(seq) then
-	self.delete(k)
+        self.delete(k)
       else
-	nil
+        nil
       end
     end
 
@@ -451,9 +451,9 @@ module Bio
       #(BioPerl) AlignI::purge like method
       purged = self.new
       arg.each do |k|
-	if self[k] then
-	  purged.store(k, self.delete(k))
-	end
+        if self[k] then
+          purged.store(k, self.delete(k))
+        end
       end
       purged
     end
@@ -462,18 +462,18 @@ module Bio
       #(original)
       na = self.new
       if block_given? then
-	# 'arg' is ignored
-	# nearly same action as Array#select(Enumerable#select)
-	self.each_pair.each do |k, s|
-	  na.store(k, s) if yield(s)
-	end
+        # 'arg' is ignored
+        # nearly same action as Array#select(Enumerable#select)
+        self.each_pair.each do |k, s|
+          na.store(k, s) if yield(s)
+        end
       else
-	# BioPerl's AlignI::select like function
-	arg.each do |k|
-	  if s = self[k] then
-	    na.store(k, s)
-	  end
-	end
+        # BioPerl's AlignI::select like function
+        arg.each do |k|
+          if s = self[k] then
+            na.store(k, s)
+          end
+        end
       end
       na
     end
@@ -482,14 +482,14 @@ module Bio
       #(String-like)
       #(BioPerl) AlignI::slice like method
       self.collect_align do |s|
-	s.slice(*arg)
+        s.slice(*arg)
       end
     end
 
     def subseq(*arg)
       #(original)
       self.collect_align do |s|
-	s.subseq(*arg)
+        s.subseq(*arg)
       end
     end
 
@@ -497,9 +497,9 @@ module Bio
       #(original)
       a = []
       self.each do |s|
-	w = s[*arg]
-	w = seqclass.new('') unless w
-	a << w
+        w = s[*arg]
+        w = seqclass.new('') unless w
+        a << w
       end
       a
     end
@@ -508,8 +508,8 @@ module Bio
       #(original)
       maxlen = 0
       self.each do |s|
-	x = s.length
-	maxlen = x if x > maxlen
+        x = s.length
+        maxlen = x if x > maxlen
       end
       maxlen
     end
@@ -517,11 +517,11 @@ module Bio
     def each_site
       #(original)
       (0...(self.seq_length)).each do |i|
-	yield(self.collect do |s|
-	  c = s[i..i]
-	  c = seqclass.new(gap_char) if c.to_s.empty?
-	  c
-	end)
+        yield(self.collect do |s|
+          c = s[i..i]
+          c = seqclass.new(gap_char) if c.to_s.empty?
+          c
+        end)
       end
     end
 
@@ -529,18 +529,18 @@ module Bio
       #(original)
       return nil if window_size < 0
       if step >= 0 then
-	i = nil
-	0.step(self.seq_length - window_size, step) do |i|
-	  yield self.window(i, window_size)
-	end
-	self.window((i+window_size)..-1)
+        i = nil
+        0.step(self.seq_length - window_size, step) do |i|
+          yield self.window(i, window_size)
+        end
+        self.window((i+window_size)..-1)
       else
-	i = self.seq_length - window_size
-	while i >= 0
-	  yield self.window(i, window_size)
-	  i += step
-	end
-	self.window(0...(i-step))
+        i = self.seq_length - window_size
+        while i >= 0
+          yield self.window(i, window_size)
+          i += step
+        end
+        self.window(0...(i-step))
       end
     end
 
@@ -555,34 +555,34 @@ module Bio
       ###                           (eliminated from threshold caliculation)
       cseq = ''
       self.each_site do |a|
-	case gap_mode
-	when 1
-	  if gap_regexp =~ a.join('') then
-	    cseq << gap_char
-	    next
-	  end
-	when -1
-	  a = a.join('').gsub(gap_regexp, '').split('')
-	  if a.size == 0 then
-	    cseq << gap_char
-	    next
-	  end
-	end
-	h = Hash.new(0)
-	a.each do |x|
-	  h[x] += 1
-	end
-	total = a.size
-	a2 = h.to_a.sort do |x,y|
-	  z = (y[1] <=> x[1])
-	  z = (a.index(x[0]) <=> a.index(y[0])) if z == 0
-	  z
-	end
-	if total * threshold <= a2[0][1] then
-	  cseq << a2[0][0]
-	else
-	  cseq << mchar
-	end
+        case gap_mode
+        when 1
+          if gap_regexp =~ a.join('') then
+            cseq << gap_char
+            next
+          end
+        when -1
+          a = a.join('').gsub(gap_regexp, '').split('')
+          if a.size == 0 then
+            cseq << gap_char
+            next
+          end
+        end
+        h = Hash.new(0)
+        a.each do |x|
+          h[x] += 1
+        end
+        total = a.size
+        a2 = h.to_a.sort do |x,y|
+          z = (y[1] <=> x[1])
+          z = (a.index(x[0]) <=> a.index(y[0])) if z == 0
+          z
+        end
+        if total * threshold <= a2[0][1] then
+          cseq << a2[0][0]
+        else
+          cseq << mchar
+        end
       end
       cseq
     end
@@ -612,30 +612,30 @@ module Bio
       ###           -1          --- gaps are ignored
       cstr = ''
       self.each_site do |a|
-	a2 = a.collect { |c| c.downcase }.sort.uniq
-	if a2.size == 1 then
-	  cstr << a2[0]
-	  next
-	end
-	a3 = a2.join('')
-	if gap_regexp =~ a3 then
-	  case gap_mode
-	  when 1
-	    cstr << gap_char
-	    next
-	  when -1
-	    a2 = a3.gsub(gap_regexp, '').split('')
-	  end
-	end
-	if a2.size == 1 then
-	  cstr << a2[0]
-	  next
-	end
-	if r = subsetof?(IUPAC_NUC, a2) then
-	  cstr << r[0]
-	else
-	  cstr << mchar
-	end
+        a2 = a.collect { |c| c.downcase }.sort.uniq
+        if a2.size == 1 then
+          cstr << a2[0]
+          next
+        end
+        a3 = a2.join('')
+        if gap_regexp =~ a3 then
+          case gap_mode
+          when 1
+            cstr << gap_char
+            next
+          when -1
+            a2 = a3.gsub(gap_regexp, '').split('')
+          end
+        end
+        if a2.size == 1 then
+          cstr << a2[0]
+          next
+        end
+        if r = subsetof?(IUPAC_NUC, a2) then
+          cstr << r[0]
+        else
+          cstr << mchar
+        end
       end
       cstr
     end
@@ -643,19 +643,19 @@ module Bio
     def convert_match(match_char = '.')
       #(BioPerl) AlignI::match like method
       if self.size > 0 then
-	len = self.seq_length
-	firstseq = self.order(0)
-	flag = true
-	self.each do |s|
-	  if flag then
-	    flag = nil
-	    next
-	  end
-	  (0...len).each do |i|
-	    s[i..i] = match_char if s[i] and
-	      firstseq[i] == s[i] and !(gap_regexp =~ firstseq[i..i])
-	  end
-	end
+        len = self.seq_length
+        firstseq = self.order(0)
+        flag = true
+        self.each do |s|
+          if flag then
+            flag = nil
+            next
+          end
+          (0...len).each do |i|
+            s[i..i] = match_char if s[i] and
+              firstseq[i] == s[i] and !(gap_regexp =~ firstseq[i..i])
+          end
+        end
       end
       self
     end
@@ -663,20 +663,20 @@ module Bio
     def convert_unmatch(match_char = '.')
       #(BioPerl) AlignI::unmatch like method
       if self.size > 0 then
-	len = self.seq_length
-	firstseq = self.order(0)
-	flag = true
-	self.each do |s|
-	  if flag then
-	    flag = nil
-	    next
-	  end
-	  (0...len).each do |i|
-	    if s[i..i] == match_char then
-	      s[i..i] = (firstseq[i..i] or match_char)
-	    end
-	  end
-	end
+        len = self.seq_length
+        firstseq = self.order(0)
+        flag = true
+        self.each do |s|
+          if flag then
+            flag = nil
+            next
+          end
+          (0...len).each do |i|
+            if s[i..i] == match_char then
+              s[i..i] = (firstseq[i..i] or match_char)
+            end
+          end
+        end
       end
       self
     end
@@ -694,14 +694,14 @@ module Bio
     def subsetof?(aryary, ary2)
       flag = nil
       aryary.each do |x|
-	ary2.each do |c|
-	  flag = x.include?(c)
-	  break unless flag
-	end
-	if flag then
-	  flag = x
-	  break
-	end
+        ary2.each do |c|
+          flag = x.include?(c)
+          break unless flag
+        end
+        if flag then
+          flag = x
+          break
+        end
       end
       flag
     end
@@ -722,46 +722,46 @@ module Bio
       wmc = (hash[:weak_match_char]   or '.')
       mmc = (hash[:mismatch_char]     or ' ')
       if hash[:type] == :aa
-	amino = true
+        amino = true
       elsif hash[:type] == :na
-	amino = false
+        amino = false
       elsif self.order(0).class.is_a?(Bio::Sequence::AA) then
-	amino = true
+        amino = true
       elsif self.find { |x| /[EFILPQ]/i =~ x } then
-	amino = true
+        amino = true
       else
-	amino = nil
+        amino = nil
       end
       mstr = ''
       if amino then
-	self.each_site do |a|
-	  a2 = a.sort.uniq.collect { |c| c.upcase }
-	  a3 = a2.join('')
-	  mstr <<
-	    (if gap_regexp =~ a3 then
-	       mmc
-	     elsif a2.size == 1 then
-	       mlc
-	     elsif subsetof?(Strong_Conservation_Groups, a2) then
-	       smc
-	     elsif subsetof?(Weak_Conservation_Groups, a2) then
-	       wmc
-	     else
-	       mmc
-	     end)
-	end
+        self.each_site do |a|
+          a2 = a.sort.uniq.collect { |c| c.upcase }
+          a3 = a2.join('')
+          mstr <<
+            (if gap_regexp =~ a3 then
+               mmc
+             elsif a2.size == 1 then
+               mlc
+             elsif subsetof?(Strong_Conservation_Groups, a2) then
+               smc
+             elsif subsetof?(Weak_Conservation_Groups, a2) then
+               wmc
+             else
+               mmc
+             end)
+        end
       else
-	self.each_site do |a|
-	  a2 = a.sort.uniq.collect { |c| c.upcase }
-	  mstr <<
-	    (if gap_regexp =~ a2.join('') then
-	       mmc
-	     elsif a2.size == 1 then
-	       mlc
-	     else
-	       mmc
-	     end)
-	end
+        self.each_site do |a|
+          a2 = a.sort.uniq.collect { |c| c.upcase }
+          mstr <<
+            (if gap_regexp =~ a2.join('') then
+               mmc
+             elsif a2.size == 1 then
+               mlc
+             else
+               mmc
+             end)
+        end
       end
       mstr
     end
@@ -770,7 +770,7 @@ module Bio
       #(original)
       len = self.seq_length
       self.each do |s|
-	s << (gap_char * (len - s.length)) if s.length < len
+        s << (gap_char * (len - s.length)) if s.length < len
       end
       self
     end
@@ -786,15 +786,15 @@ module Bio
       #(String-like)
       len = self.seq_length
       self.each_window(1,-1) do |a|
-	b = a.sort.uniq.compact
-	if b.find_all { |x| gap_regexp =~ x } == b then
-	  len -= 1
-	else
-	  break
-	end
+        b = a.sort.uniq.compact
+        if b.find_all { |x| gap_regexp =~ x } == b then
+          len -= 1
+        else
+          break
+        end
       end
       self.each do |s|
-	s[len..-1] = '' if s.length > len
+        s[len..-1] = '' if s.length > len
       end
       self
     end
@@ -803,17 +803,17 @@ module Bio
       #(String-like)
       len = 0
       self.each_window(1,1) do |a|
-	b = a.sort.uniq.compact
-	if b.find_all { |x| gap_regexp =~ x } == b then
-	  len += 1
-	else
-	  break
-	end
+        b = a.sort.uniq.compact
+        if b.find_all { |x| gap_regexp =~ x } == b then
+          len += 1
+        else
+          break
+        end
       end
       if len > 0 then
-	self.each do |s|
-	  s[0, len] = ''
-	end
+        self.each do |s|
+          s[0, len] = ''
+        end
       end
       self
     end
@@ -852,7 +852,7 @@ module Bio
     def remove_gap!
       #(original)
       self.each do |s|
-	s.gsub!(gap_regexp, '')
+        s.gsub!(gap_regexp, '')
       end
       self
     end
@@ -868,19 +868,19 @@ module Bio
     def concat(aln)
       #(String-like)
       if aln.respond_to?(:to_str) then #aln.is_a?(String)
-	self.each do |s|
-	  s << aln
-	end
+        self.each do |s|
+          s << aln
+        end
       elsif aln.is_a?(self.class) then
-	aln.each_pair do |k, s|
-	  self[k] << s
-	end
+        aln.each_pair do |k, s|
+          self[k] << s
+        end
       else
-	i = 0
-	aln.each do |s|
-	  self.order(i) << s
-	  i += 1
-	end
+        i = 0
+        aln.each do |s|
+          self.order(i) << s
+          i += 1
+        end
       end
       self
     end
@@ -889,19 +889,19 @@ module Bio
       #(original)
       aln = arg.pop
       if aln.respond_to?(:to_str) then #aln.is_a?(String)
-	self.each do |s|
-	  s[*arg] = aln
-	end
+        self.each do |s|
+          s[*arg] = aln
+        end
       elsif aln.is_a?(self.class) then
-	aln.each_pair do |k, s|
-	  self[k][*arg] = s
-	end
+        aln.each_pair do |k, s|
+          self[k][*arg] = s
+        end
       else
-	i = 0
-	aln.each do |s|
-	  self.order(i)[*arg] = s
-	  i += 1
-	end
+        i = 0
+        aln.each do |s|
+          self.order(i)[*arg] = s
+          i += 1
+        end
       end
       self
     end
@@ -914,13 +914,13 @@ module Bio
       r = factory.query(a0)
       a1 = r.alignment
       a0.keys.each do |k|
-	unless a1[k.to_s] then
-	  raise 'alignment result is inconsistent with input data'
-	end
+        unless a1[k.to_s] then
+          raise 'alignment result is inconsistent with input data'
+        end
       end
       a2 = self.new
       a0.keys.each do |k|
-	a2.store(self.keys[k], a1[k.to_s])
+        a2.store(self.keys[k], a1[k.to_s])
       end
       a2
     end
@@ -928,29 +928,29 @@ module Bio
     # format conversion
     def self.have_same_name?(array, len = 30)
       na30 = array.collect do |k|
-	k.to_s.split(/[\x00\s]/)[0].to_s[0, len].gsub(/\:\;\,\(\)/, '_').to_s
+        k.to_s.split(/[\x00\s]/)[0].to_s[0, len].gsub(/\:\;\,\(\)/, '_').to_s
       end
       #p na30
       na30idx = (0...(na30.size)).to_a
       na30idx.sort! do |x,y|
-	na30[x] <=> na30[y]
+        na30[x] <=> na30[y]
       end
       #p na30idx
       y = nil
       dupidx = []
       na30idx.each do |x|
-	if y and na30[y] == na30[x] then
-	  dupidx << y
-	  dupidx << x
-	end
-	y = x
+        if y and na30[y] == na30[x] then
+          dupidx << y
+          dupidx << x
+        end
+        y = x
       end
       if dupidx.size > 0 then
-	dupidx.sort!
-	dupidx.uniq!
-	dupidx
+        dupidx.sort!
+        dupidx.uniq!
+        dupidx
       else
-	false
+        false
       end
     end
 
@@ -962,27 +962,27 @@ module Bio
     def self.avoid_same_name(array, len = 30)
       na = array.collect { |k| k.to_s.gsub(/[\r\n\x00]/, ' ') }
       if dupidx = have_same_name?(na, len)
-	procs = [
-	  Proc.new { |s, i|
-	    s[0, len].to_s.gsub(/\s/, '_') + s[len..-1].to_s
-	  },
-	  # Proc.new { |s, i|
-	  #   "#{i}_#{s}"
-	  # },
-	]
-	procs.each do |pr|
-	  dupidx.each do |i|
-	    s = array[i]
-	    na[i] = pr.call(s.to_s, i)
-	  end
-	  dupidx = have_same_name?(na, len)
-	  break unless dupidx
-	end
-	if dupidx then
-	  na.each_with_index do |s, i|
-	    na[i] = "#{i}_#{s}"
-	  end
-	end
+        procs = [
+          Proc.new { |s, i|
+            s[0, len].to_s.gsub(/\s/, '_') + s[len..-1].to_s
+          },
+          # Proc.new { |s, i|
+          #   "#{i}_#{s}"
+          # },
+        ]
+        procs.each do |pr|
+          dupidx.each do |i|
+            s = array[i]
+            na[i] = pr.call(s.to_s, i)
+          end
+          dupidx = have_same_name?(na, len)
+          break unless dupidx
+        end
+        if dupidx then
+          na.each_with_index do |s, i|
+            na[i] = "#{i}_#{s}"
+          end
+        end
       end
       na
     end
@@ -996,22 +996,22 @@ module Bio
       #(original)
       width = nil
       if arg[0].is_a?(Integer) then
-	width = arg.shift
+        width = arg.shift
       end
       options = (arg.shift or {})
       width = options[:width] unless width
       if options[:avoid_same_name] then
-	na = avoid_same_name(self.keys, 30)
+        na = avoid_same_name(self.keys, 30)
       else
-	na = self.keys.collect { |k| k.to_s.gsub(/[\r\n\x00]/, ' ') }
+        na = self.keys.collect { |k| k.to_s.gsub(/[\r\n\x00]/, ' ') }
       end
       a = self.collect do |s|
-	">#{na.shift}\n" +
-	  if width then
-	    s.to_s.gsub(Regexp.new(".{1,#{width}}"), "\\0\n")
-	  else
-	    s.to_s + "\n"
-	  end
+        ">#{na.shift}\n" +
+          if width then
+            s.to_s.gsub(Regexp.new(".{1,#{width}}"), "\\0\n")
+          else
+            s.to_s + "\n"
+          end
       end
       a
     end
@@ -1021,7 +1021,7 @@ module Bio
       require 'bio/db/fasta'
       a = self.to_fasta_array(*arg)
       a.collect! do |x|
-	Bio::FastaFormat.new(x)
+        Bio::FastaFormat.new(x)
       end
       a
     end
@@ -1037,28 +1037,28 @@ module Bio
       len = self.seq_length
 
       if !options.has_key?(:avoid_same_name) or options[:avoid_same_name]
-	sn = avoid_same_name(self.keys)
+        sn = avoid_same_name(self.keys)
       else
-	sn = self.keys.collect { |x| x.to_s.gsub(/[\r\n\x00]/, ' ') }
+        sn = self.keys.collect { |x| x.to_s.gsub(/[\r\n\x00]/, ' ') }
       end
       if options[:replace_space]
-	sn.collect! { |x| x.gsub(/\s/, '_') }
+        sn.collect! { |x| x.gsub(/\s/, '_') }
       end
       if !options.has_key?(:escape) or options[:escape]
-	sn.collect! { |x| x.gsub(/[\:\;\,\(\)]/, '_') }
+        sn.collect! { |x| x.gsub(/[\:\;\,\(\)]/, '_') }
       end
       if !options.has_key?(:split) or options[:split]
-	sn.collect! { |x| x.split(/\s/)[0].to_s }
+        sn.collect! { |x| x.split(/\s/)[0].to_s }
       end
 
       if sn.find { |x| x.length > 10 } then
-	seqwidth = 50
-	namewidth = 30
-	sep = ' ' * 6
+        seqwidth = 50
+        namewidth = 30
+        sep = ' ' * 6
       else
-	seqwidth = 60
-	namewidth = 10
-	sep = ' ' * 6
+        seqwidth = 60
+        namewidth = 10
+        sep = ' ' * 6
       end
       seqregexp = Regexp.new("(.{1,#{seqwidth}})")
       gchar = (options[:gap_char] or '-')
@@ -1066,43 +1066,43 @@ module Bio
       aseqs = self.collect { |s| s.to_s.gsub(self.gap_regexp, gchar) }
       case options[:case].to_s
       when /lower/i
-	aseqs.each { |s| s.downcase! }
+        aseqs.each { |s| s.downcase! }
       when /upper/i
-	aseqs.each { |s| s.upcase! }
+        aseqs.each { |s| s.upcase! }
       end
 
       case options[:type].to_s
       when /protein/i, /aa/i
-	mopt = { :type => :aa }
+        mopt = { :type => :aa }
       when /na/i
-	mopt = { :type => :na }
+        mopt = { :type => :na }
       else
-	mopt = {}
+        mopt = {}
       end
       mline = (options[:match_line] or self.match_line(mopt))
 
       aseqs << mline
       aseqs.collect! do |s|
-	snx = sn.shift
-	head = sprintf("%*s", -namewidth, snx.to_s)[0, namewidth] + sep
-	s << (gchar * (len - s.length))
-	s.gsub!(seqregexp, "\\1\n")
-	a = s.split(/^/)
-	if options[:seqnos] and snx then
-	  i = 0
-	  a.each do |x|
-	    x.chomp!
-	    l = x.tr(gchar, '').length
-	    i += l
-	    x.concat(l > 0 ? " #{i}\n" : "\n")
-	  end
-	end
-	a.collect { |x| head + x }
+        snx = sn.shift
+        head = sprintf("%*s", -namewidth, snx.to_s)[0, namewidth] + sep
+        s << (gchar * (len - s.length))
+        s.gsub!(seqregexp, "\\1\n")
+        a = s.split(/^/)
+        if options[:seqnos] and snx then
+          i = 0
+          a.each do |x|
+            x.chomp!
+            l = x.tr(gchar, '').length
+            i += l
+            x.concat(l > 0 ? " #{i}\n" : "\n")
+          end
+        end
+        a.collect { |x| head + x }
       end
       lines = (len + seqwidth - 1) / seqwidth
       lines.times do
-	aln << "\n"
-	aseqs.each { |a| aln << a.shift }
+        aln << "\n"
+        aseqs.each { |a| aln << a.shift }
       end
       aln.join('')
     end
@@ -1112,26 +1112,26 @@ module Bio
     #
     module GAP
       def ungapped_pos(seq, pos, gap_regexp)
-	p = seq[0..pos].gsub(gap_regexp, '').length
-	p -= 1 if p > 0
-	p
+        p = seq[0..pos].gsub(gap_regexp, '').length
+        p -= 1 if p > 0
+        p
       end
       module_function :ungapped_pos
 
       def gapped_pos(seq, pos, gap_regexp)
-	olen = seq.gsub(gap_regexp, '').length
-	pos = olen if pos >= olen
-	pos = olen + pos if pos < 0
-	
-	i = 0
-	l = pos + 1
-	while l > 0 and i < seq.length
-	  x = seq[i, l].gsub(gap_regexp, '').length
-	  i += l
-	  l -= x
-	end
-	i -= 1 if i > 0
-	i
+        olen = seq.gsub(gap_regexp, '').length
+        pos = olen if pos >= olen
+        pos = olen + pos if pos < 0
+        
+        i = 0
+        l = pos + 1
+        while l > 0 and i < seq.length
+          x = seq[i, l].gsub(gap_regexp, '').length
+          i += l
+          l -= x
+        end
+        i -= 1 if i > 0
+        i
       end
       module_function :gapped_pos
     end # module GAP

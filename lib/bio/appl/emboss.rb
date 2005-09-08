@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: emboss.rb,v 1.1 2002/08/19 02:49:29 k Exp $
+#  $Id: emboss.rb,v 1.2 2005/09/08 01:22:08 k Exp $
 #
 
 module Bio
@@ -30,11 +30,11 @@ module Bio
 
     def exec
       begin
-	@io = IO.popen(@cmd_line, "w+")
-	@result = @io.read
-	return @result
+        @io = IO.popen(@cmd_line, "w+")
+        @result = @io.read
+        return @result
       ensure
-	@io.close
+        @io.close
       end
     end
     attr_reader :io, :result

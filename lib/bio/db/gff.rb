@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: gff.rb,v 1.1 2003/02/21 04:11:58 k Exp $
+#  $Id: gff.rb,v 1.2 2005/09/08 01:22:11 k Exp $
 #
 
 module Bio
@@ -26,18 +26,18 @@ module Bio
     def initialize(str = '')
       @records = Array.new
       str.each_line do |line|
-	@records << Record.new(line)
+        @records << Record.new(line)
       end
     end
     attr_accessor :records
 
     class Record
       def initialize(str)
-	@comments = str.chomp[/#.*/]
-	return if /^#/.match(str)
-	@seqname, @source, @feature, @start, @end, @score, @strand, @frame,
-	  attributes, = str.chomp.split("\t")
-	@attributes = parse_attributes(attributes) if attributes
+        @comments = str.chomp[/#.*/]
+        return if /^#/.match(str)
+        @seqname, @source, @feature, @start, @end, @score, @strand, @frame,
+          attributes, = str.chomp.split("\t")
+        @attributes = parse_attributes(attributes) if attributes
       end
       attr_accessor :seqname, :source, :feature, :start, :end, :score,
         :strand, :frame, :attributes, :comments
@@ -45,11 +45,11 @@ module Bio
       private
 
       def parse_attributes(attributes)
-	hash = Hash.new
-	attributes.split(/[^\\];/).each do |atr|
-	  key, value = atr.split(' ', 2)
-	  hash[key] = value
-	end
+        hash = Hash.new
+        attributes.split(/[^\\];/).each do |atr|
+          key, value = atr.split(' ', 2)
+          hash[key] = value
+        end
         return hash
       end
     end

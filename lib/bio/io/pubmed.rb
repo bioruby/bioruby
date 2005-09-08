@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pubmed.rb,v 1.11 2004/02/05 12:58:57 k Exp $
+#  $Id: pubmed.rb,v 1.12 2005/09/08 01:22:12 k Exp $
 #
 
 require 'net/http'
@@ -35,10 +35,10 @@ module Bio
       response, = http.get(path + id.to_s)
       result = response.body
       if result =~ /#{id}\s+Error/
-	raise( result )
+        raise( result )
       else
-	result = result.gsub("\r", "\n").squeeze("\n").gsub(/<\/?pre>/, '')
-	return result
+        result = result.gsub("\r", "\n").squeeze("\n").gsub(/<\/?pre>/, '')
+        return result
       end
     end
 
@@ -50,10 +50,10 @@ module Bio
       response, = http.get(path + id.to_s)
       result = response.body
       if result =~ /#{id}\s+Error/
-	raise( result )
+        raise( result )
       else
-	result = result.gsub("\r", "\n").squeeze("\n").gsub(/<\/?pre>/, '')
-	return result
+        result = result.gsub("\r", "\n").squeeze("\n").gsub(/<\/?pre>/, '')
+        return result
       end
     end
 

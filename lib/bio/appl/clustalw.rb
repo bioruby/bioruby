@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: clustalw.rb,v 1.5 2005/03/04 04:48:41 k Exp $
+#  $Id: clustalw.rb,v 1.6 2005/09/08 01:22:08 k Exp $
 #
 
 require 'tempfile'
@@ -44,9 +44,9 @@ module Bio
 
     def query(seqs)
       if seqs then
-	query_align(seqs)
+        query_align(seqs)
       else
-	exec_local(@option)
+        exec_local(@option)
       end
     end
 
@@ -54,25 +54,25 @@ module Bio
       # seqs should be Bio::Alignment or Array of sequences or nil
       seqtype = nil
       unless seqs.is_a?(Bio::Alignment)
-	seqs = Bio::Alignment.new(seqs)
+        seqs = Bio::Alignment.new(seqs)
       end
       seqs.each do |s|
-	if    s.is_a?(Bio::Sequence::AA) then
-	  seqtype = 'PROTEIN'
-	elsif s.is_a?(Bio::Sequence::NA) then
-	  seqtype = 'DNA'
-	end
-	break if seqtype
+        if    s.is_a?(Bio::Sequence::AA) then
+          seqtype = 'PROTEIN'
+        elsif s.is_a?(Bio::Sequence::NA) then
+          seqtype = 'DNA'
+        end
+        break if seqtype
       end
       query_string(seqs.to_fasta(70, :avoid_same_name => true), seqtype)
     end
 
     def query_string(str, *arg)
       begin
-	tf_in = Tempfile.open('align')
-	tf_in.print str
+        tf_in = Tempfile.open('align')
+        tf_in.print str
       ensure
-	tf_in.close(false)
+        tf_in.close(false)
       end
       r = query_by_filename(tf_in.path, *arg)
       tf_in.close(true)
@@ -88,10 +88,10 @@ module Bio
       tf_dnd.close(false)
 
       opt = [ "-align",
-	"-infile=#{path}",
-	"-outfile=#{tf_out.path}",
-	"-newtree=#{tf_dnd.path}",
-	"-outorder=input"
+        "-infile=#{path}",
+        "-outfile=#{tf_out.path}",
+        "-newtree=#{tf_dnd.path}",
+        "-outorder=input"
       ]
       opt << "-type=#{seqtype}" if seqtype
       opt.concat(@option)
@@ -116,11 +116,11 @@ module Bio
 
       Open3.popen3(*@command) do |din, dout, derr|
         din.close
-	t = Thread.start do
-	  @errorlog = derr.read
-	end
-	@log = dout.read
-	t.join
+        t = Thread.start do
+          @errorlog = derr.read
+        end
+        @log = dout.read
+        t.join
       end
 #      @command_string = @command.join(" ")
 #      IO.popen(@command, "r") do |io|

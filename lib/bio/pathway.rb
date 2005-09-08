@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.29 2004/01/29 01:29:15 k Exp $
+#  $Id: pathway.rb,v 1.30 2005/09/08 01:22:08 k Exp $
 #
 
 require 'matrix'
@@ -49,15 +49,15 @@ module Bio
 
     def directed
       if undirected?
-	@undirected = false
-	self.to_list
+        @undirected = false
+        self.to_list
       end
     end
 
     def undirected
       if directed?
-	@undirected = true
-	self.to_list
+        @undirected = true
+        self.to_list
       end
     end
 
@@ -82,17 +82,17 @@ module Bio
     def to_list
       @graph.clear
       @relations.each do |rel|
-	append(rel, false)	# append to @graph without push to @relations
+        append(rel, false)	# append to @graph without push to @relations
       end
     end
 
     def append(rel, add_rel = true)
       @relations.push(rel) if add_rel
       if @graph[rel.from].nil?
-	@graph[rel.from] = {}
+        @graph[rel.from] = {}
       end
       if @graph[rel.to].nil?
-	@graph[rel.to] = {}
+        @graph[rel.to] = {}
       end
       @graph[rel.from][rel.to] = rel.relation
       @graph[rel.to][rel.from] = rel.relation if @undirected
@@ -100,7 +100,7 @@ module Bio
 
     def delete(rel)
       @relations.delete_if do |x|
-	x === rel
+        x === rel
       end
       @graph[rel.from].delete(rel.to)
       @graph[rel.to].delete(rel.from) if @undirected
@@ -113,7 +113,7 @@ module Bio
     def edges
       edges = 0
       @graph.each_value do |v|
-	edges += v.size
+        edges += v.size
       end
       edges
     end
@@ -131,35 +131,35 @@ module Bio
 
       matrix = Array.new
       nodes.times do
-	matrix.push(Array.new(nodes, default_value))
+        matrix.push(Array.new(nodes, default_value))
       end
 
       if diagonal_value
-	nodes.times do |i|
-	  matrix[i][i] = diagonal_value
-	end
+        nodes.times do |i|
+          matrix[i][i] = diagonal_value
+        end
       end
 
       # assign index number for each node
       @graph.keys.each_with_index do |k, i|
-	@index[k] = i
+        @index[k] = i
       end
 
       if @relations.empty?		# only used after clear_relations!
-	@graph.each do |from, hash|
-	  hash.each do |to, relation|
-	    x = @index[from]
-	    y = @index[to]
-	    matrix[x][y] = relation
-	  end
-	end
+        @graph.each do |from, hash|
+          hash.each do |to, relation|
+            x = @index[from]
+            y = @index[to]
+            matrix[x][y] = relation
+          end
+        end
       else
-	@relations.each do |rel|
-	  x = @index[rel.from]
-	  y = @index[rel.to]
-	  matrix[x][y] = rel.relation
-	  matrix[y][x] = rel.relation if @undirected
-	end
+        @relations.each do |rel|
+          x = @index[rel.from]
+          y = @index[rel.to]
+          matrix[x][y] = rel.relation
+          matrix[y][x] = rel.relation if @undirected
+        end
       end
       Matrix[*matrix]
     end
@@ -170,19 +170,19 @@ module Bio
       matrix = self.to_matrix(*arg)
       sorted = @index.sort {|a,b| a[1] <=> b[1]}
       "[# " + sorted.collect{|x| x[0]}.join(", ") + "\n" +
-	matrix.to_a.collect{|row| ' ' + row.inspect}.join(",\n") + "\n]"
+        matrix.to_a.collect{|row| ' ' + row.inspect}.join(",\n") + "\n]"
     end
 
     # pretty printer of the adjacency list
     def dump_list
       list = ""
       @graph.each do |from, hash|
-	list << "#{from} => "
-	a = []
-	hash.each do |to, relation|
-	  a.push("#{to} (#{relation})")
-	end
-	list << a.join(", ") + "\n"
+        list << "#{from} => "
+        a = []
+        hash.each do |to, relation|
+          a.push("#{to} (#{relation})")
+        end
+        list << a.join(", ") + "\n"
       end
       list
     end
@@ -191,18 +191,18 @@ module Bio
     # Select labeled nodes and generate subgraph
     def subgraph(list = nil)
       if list
-	@label.clear
-	list.each do |node|
-	  @label[node] = true
-	end
+        @label.clear
+        list.each do |node|
+          @label[node] = true
+        end
       end
       sub_graph = Pathway.new([], @undirected)
       @graph.each do |from, hash|
-	next unless @label[from]
-	hash.each do |to, relation|
-	  next unless @label[to]
-	  sub_graph.append(Relation.new(from, to, relation))
-	end
+        next unless @label[from]
+        hash.each do |to, relation|
+          next unless @label[to]
+          sub_graph.append(Relation.new(from, to, relation))
+        end
       end
       return sub_graph
     end
@@ -237,7 +237,7 @@ module Bio
     def small_world
       freq = Hash.new(0)
       @graph.each_value do |v|
-	freq[v.size] += 1
+        freq[v.size] += 1
       end
       return freq
     end
@@ -257,15 +257,15 @@ module Bio
       queue = [ root ]
 
       while from = queue.shift
-	next unless @graph[from]
-	@graph[from].each_key do |to|
-	  unless visited[to]
-	    visited[to] = true
-	    distance[to] = distance[from] + 1
-	    predecessor[to] = from
-	    queue.push(to)
-	  end
-	end
+        next unless @graph[from]
+        @graph[from].each_key do |to|
+          unless visited[to]
+            visited[to] = true
+            distance[to] = distance[from] + 1
+            predecessor[to] = from
+            queue.push(to)
+          end
+        end
       end
       return distance, predecessor
     end
@@ -278,8 +278,8 @@ module Bio
       node = node2
       path = [ node2 ]
       while node != node1 and route[node]
-	node = route[node]
-	path.unshift(node)
+        node = route[node]
+        path.unshift(node)
       end
       return step, path
     end
@@ -297,39 +297,39 @@ module Bio
       count = 0
 
       dfs_visit = Proc.new { |from|
-	visited[from] = true
-	timestamp[from] = [count += 1]
-	@graph[from].each_key do |to|
-	  if visited[to]
-	    if timestamp[to].size > 1
-	      if timestamp[from].first < timestamp[to].first
-		# forward edge (black)
-		p "#{from} -> #{to} : forward edge" if $DEBUG
-		forward_edges[from] = to
-	      else
-		# cross edge (black)
-		p "#{from} -> #{to} : cross edge" if $DEBUG
-		cross_edges[from] = to
-	      end
-	    else
-	      # back edge (gray)
-	      p "#{from} -> #{to} : back edge" if $DEBUG
-	      back_edges[from] = to
-	    end
-	  else
-	    # tree edge (white)
-	    p "#{from} -> #{to} : tree edge" if $DEBUG
-	    tree_edges[to] = from
-	    dfs_visit.call(to)
-	  end
-	end
-	timestamp[from].push(count += 1)
+        visited[from] = true
+        timestamp[from] = [count += 1]
+        @graph[from].each_key do |to|
+          if visited[to]
+            if timestamp[to].size > 1
+              if timestamp[from].first < timestamp[to].first
+                # forward edge (black)
+                p "#{from} -> #{to} : forward edge" if $DEBUG
+                forward_edges[from] = to
+              else
+                # cross edge (black)
+                p "#{from} -> #{to} : cross edge" if $DEBUG
+                cross_edges[from] = to
+              end
+            else
+              # back edge (gray)
+              p "#{from} -> #{to} : back edge" if $DEBUG
+              back_edges[from] = to
+            end
+          else
+            # tree edge (white)
+            p "#{from} -> #{to} : tree edge" if $DEBUG
+            tree_edges[to] = from
+            dfs_visit.call(to)
+          end
+        end
+        timestamp[from].push(count += 1)
       }
 
       @graph.each_key do |node|
-	unless visited[node]
-	  dfs_visit.call(node)
-	end
+        unless visited[node]
+          dfs_visit.call(node)
+        end
       end
       return timestamp, tree_edges, back_edges, cross_edges, forward_edges
     end
@@ -354,16 +354,16 @@ module Bio
       queue.delete(root)
 
       while queue.size != 0
-	min = queue.min {|a, b| a[1] <=> b[1]}
-	u = min[0]		# extranct a node having minimal distance
+        min = queue.min {|a, b| a[1] <=> b[1]}
+        u = min[0]		# extranct a node having minimal distance
         @graph[u].each do |k, v|
-	  # relaxing procedure of root -> 'u' -> 'k'
+          # relaxing procedure of root -> 'u' -> 'k'
           if distance[k] > distance[u] + v
             distance[k] = distance[u] + v
             predecessor[k] = u
           end
         end
-	queue.delete(u)
+        queue.delete(u)
       end
       return distance, predecessor
     end
@@ -376,7 +376,7 @@ module Bio
       for i in 1 ..(self.nodes - 1) do
         @graph.each_key do |u|
           @graph[u].each do |v, w|
-	    # relaxing procedure of root -> 'u' -> 'v'
+            # relaxing procedure of root -> 'u' -> 'v'
             if distance[v] > distance[u] + w
               distance[v] = distance[u] + w
               predecessor[v] = u
@@ -515,22 +515,22 @@ module Bio
 
     def ===(rel)
       if self.edge == rel.edge
-	if self.node[0] == rel.node[0] and self.node[1] == rel.node[1]
-	  return true
-	elsif self.node[0] == rel.node[1] and self.node[1] == rel.node[0]
-	  return true
-	else
-	  return false
-	end
+        if self.node[0] == rel.node[0] and self.node[1] == rel.node[1]
+          return true
+        elsif self.node[0] == rel.node[1] and self.node[1] == rel.node[0]
+          return true
+        else
+          return false
+        end
       else
-	return false
+        return false
       end
     end
     alias eql? ===
 
     def <=>(rel)
       unless self.edge.kind_of? Comparable
-	raise "[Error] edges are not comparable"
+        raise "[Error] edges are not comparable"
       end
       if self.edge > rel.edge
         return 1

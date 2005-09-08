@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: go.rb,v 1.6 2005/04/04 11:06:47 nakao Exp $
+#  $Id: go.rb,v 1.7 2005/09/08 01:22:11 k Exp $
 #
 
 require 'bio/pathway'
@@ -65,7 +65,7 @@ class GO
       super(adj_list)
     end
 
-	
+        
     # Bio::GO::Ontology.goid2term(goid)
     def goid2term(goid)
       term = id2term[goid]
@@ -109,7 +109,7 @@ class GO
             @id2id[goid]   = goids.first
             adj_list << Bio::Relation.new(stack[depth - 1], goid, rel)
           }
-	    
+            
           if en == ""
             loop {
               case line

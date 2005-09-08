@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: wublast.rb,v 1.1 2003/08/11 15:27:35 ng Exp $
+#  $Id: wublast.rb,v 1.2 2005/09/08 01:22:08 k Exp $
 #
 
 require 'bio/appl/blast/format0'
@@ -28,241 +28,241 @@ module Bio
 
       class Report < Default::Report
 
-	def parameters
-	  parse_parameters
-	  @parameters
-	end
+        def parameters
+          parse_parameters
+          @parameters
+        end
 
-	def parameter_matrix
-	  parse_parameters
-	  @parameter_matrix
-	end
+        def parameter_matrix
+          parse_parameters
+          @parameter_matrix
+        end
 
-	def expect; parse_parameters; @parameters['E']; end
+        def expect; parse_parameters; @parameters['E']; end
 
-	def warnings
-	  unless defined?(@warnings)
-	    @warnings = @f0warnings
-	    iterations.each { |x| @warnings.concat(x.warnings) }
-	  end
-	  @warnings
-	end
+        def warnings
+          unless defined?(@warnings)
+            @warnings = @f0warnings
+            iterations.each { |x| @warnings.concat(x.warnings) }
+          end
+          @warnings
+        end
 
-	def notice
-	  unless defined?(@notice)
-	    @notice = @f0notice.to_s.gsub(/\s+/, ' ').strip
-	  end #unless
-	  @notice
-	end
+        def notice
+          unless defined?(@notice)
+            @notice = @f0notice.to_s.gsub(/\s+/, ' ').strip
+          end #unless
+          @notice
+        end
 
-	private
-	def format0_split_headers(data)
-	  @f0header = data.shift
-	  while r = data.first
-	    case r
-	    when /^Reference\: /
-	      @f0reference = data.shift
-	    when /^Copyright /
-	      @f0copyright = data.shift
-	    when /^Notice\: /
-	      @f0notice = data.shift
-	    when /^Query\= /
-	      break
-	    else
-	      break
-	    end
-	  end
-	  @f0query = data.shift
-	  if r = data.first and !(/^Database\: / =~ r)
-	    @f0translate_info = data.shift
-	  end
-	  @f0database = data.shift
-	end
+        private
+        def format0_split_headers(data)
+          @f0header = data.shift
+          while r = data.first
+            case r
+            when /^Reference\: /
+              @f0reference = data.shift
+            when /^Copyright /
+              @f0copyright = data.shift
+            when /^Notice\: /
+              @f0notice = data.shift
+            when /^Query\= /
+              break
+            else
+              break
+            end
+          end
+          @f0query = data.shift
+          if r = data.first and !(/^Database\: / =~ r)
+            @f0translate_info = data.shift
+          end
+          @f0database = data.shift
+        end
 
-	def format0_split_search(data)
-	  [ Iteration.new(data) ]
-	end
+        def format0_split_search(data)
+          [ Iteration.new(data) ]
+        end
 
-	def format0_split_stat_params(data)
-	  @f0warnings = []
-	  if r = data.first and r =~ /^WARNING\: / then
-	    @f0warnings << data.shift
-	  end
-	  @f0wu_params = []
-	  @f0wu_stats = []
-	  while r = data.shift and !(r =~ /^Statistics\:/)
-	    @f0wu_params << r
-	  end
-	  @f0wu_stats << r if r
-	  while r = data.shift
-	    @f0wu_stats << r
-	  end
-	  @f0dbstat = F0dbstat.new(@f0wu_stats)
-	  itr = @iterations[0]
-	  itr.f0dbstat = @f0dbstat if itr
-	end
+        def format0_split_stat_params(data)
+          @f0warnings = []
+          if r = data.first and r =~ /^WARNING\: / then
+            @f0warnings << data.shift
+          end
+          @f0wu_params = []
+          @f0wu_stats = []
+          while r = data.shift and !(r =~ /^Statistics\:/)
+            @f0wu_params << r
+          end
+          @f0wu_stats << r if r
+          while r = data.shift
+            @f0wu_stats << r
+          end
+          @f0dbstat = F0dbstat.new(@f0wu_stats)
+          itr = @iterations[0]
+          itr.f0dbstat = @f0dbstat if itr
+        end
 
-	def parse_parameters
-	  unless defined?(@parse_parameters)
-	    @parameters = {}
-	    @parameter_matrix = []
-	    @f0wu_params.each do |x|
-	      if /^  Query/ =~ x then
-		@parameter_matrix << x
-	      else
-		x.split(/^/).each do |y|
-		  if /\A\s*(.+)\s*\=\s*(.*)\s*/ =~ y then
-		    @parameters[$1] = $2
-		  elsif /\AParameters\:/ =~ y then
-		    ; #ignore this
-		  elsif /\A\s*(.+)\s*$/ =~ y then
-		    @parameters[$1] = true
-		  end
-		end
-	      end
-	    end
-	    @parse_parameters = true
-	  end
-	end
+        def parse_parameters
+          unless defined?(@parse_parameters)
+            @parameters = {}
+            @parameter_matrix = []
+            @f0wu_params.each do |x|
+              if /^  Query/ =~ x then
+                @parameter_matrix << x
+              else
+                x.split(/^/).each do |y|
+                  if /\A\s*(.+)\s*\=\s*(.*)\s*/ =~ y then
+                    @parameters[$1] = $2
+                  elsif /\AParameters\:/ =~ y then
+                    ; #ignore this
+                  elsif /\A\s*(.+)\s*$/ =~ y then
+                    @parameters[$1] = true
+                  end
+                end
+              end
+            end
+            @parse_parameters = true
+          end
+        end
 
-	class F0dbstat < Default::Report::F0dbstat
-	  def initialize(ary)
-	    @f0stat = ary
-	    @hash = {}
-	  end
+        class F0dbstat < Default::Report::F0dbstat
+          def initialize(ary)
+            @f0stat = ary
+            @hash = {}
+          end
 
-	  #undef :f0params
-	  #undef :matrix, :gap_open, :gap_extend,
-	  #  :eff_space, :expect, :sc_match, :sc_mismatch,
-	  #  :num_hits
+          #undef :f0params
+          #undef :matrix, :gap_open, :gap_extend,
+          #  :eff_space, :expect, :sc_match, :sc_mismatch,
+          #  :num_hits
 
-	  def parse_dbstat
-	    unless defined?(@parse_dbstat)
-	      @f0stat.each do |x|
-		parse_colon_separated(@hash, x)
-	      end
-	      @database = @hash['Database']
-	      @posted_date = @hash['Posted']
-	      if val = @hash['# of letters in database'] then
-		@db_len =  val.tr(',', '').to_i
-	      end
-	      if val = @hash['# of sequences in database'] then
-		@db_num = val.tr(',', '').to_i
-	      end
-	      @parse_dbstat = true
-	    end #unless
-	  end #def
-	  private :parse_dbstat
+          def parse_dbstat
+            unless defined?(@parse_dbstat)
+              @f0stat.each do |x|
+                parse_colon_separated(@hash, x)
+              end
+              @database = @hash['Database']
+              @posted_date = @hash['Posted']
+              if val = @hash['# of letters in database'] then
+                @db_len =  val.tr(',', '').to_i
+              end
+              if val = @hash['# of sequences in database'] then
+                @db_num = val.tr(',', '').to_i
+              end
+              @parse_dbstat = true
+            end #unless
+          end #def
+          private :parse_dbstat
 
-	end #class F0dbstat
+        end #class F0dbstat
 
-	class Frame
-	end #class FrameParams
+        class Frame
+        end #class FrameParams
 
-	class Iteration < Default::Report::Iteration
-	  def initialize(data)
-	    @f0stat = []
-	    @f0dbstat = nil
-	    @f0hitlist = []
-	    @hits = []
-	    @num = 1
-	    @f0message = []
-	    @f0warnings = []
-	    return unless r = data.shift
-	    @f0hitlist << r
-	    return unless r = data.shift
-	    unless /\*{3} +NONE +\*{3}/ =~ r then
-	      @f0hitlist << r
-	      while r = data.first and /^WARNING\: / =~ r
-		@f0warnings << data.shift
-	      end
-	      while r = data.first and /^\>/ =~ r
-		@hits << Hit.new(data)
-	      end
-	    end #unless
-	  end
+        class Iteration < Default::Report::Iteration
+          def initialize(data)
+            @f0stat = []
+            @f0dbstat = nil
+            @f0hitlist = []
+            @hits = []
+            @num = 1
+            @f0message = []
+            @f0warnings = []
+            return unless r = data.shift
+            @f0hitlist << r
+            return unless r = data.shift
+            unless /\*{3} +NONE +\*{3}/ =~ r then
+              @f0hitlist << r
+              while r = data.first and /^WARNING\: / =~ r
+                @f0warnings << data.shift
+              end
+              while r = data.first and /^\>/ =~ r
+                @hits << Hit.new(data)
+              end
+            end #unless
+          end
 
-	  def warnings
-	    @f0warnings
-	  end
+          def warnings
+            @f0warnings
+          end
 
-	  private
-	  def parse_hitlist
-	    unless defined?(@parse_hitlist)
-	      r = @f0hitlist.shift.to_s
-	      if /Reading/ =~ r and /Frame/ =~ r then
-		flag_tblast = true 
-		spnum = 5
-	      else
-		flag_tblast = nil
-		spnum = 4
-	      end
-	      i = 0
-	      @f0hitlist.each do |x|
-		b = x.split(/^/)
-		b.collect! { |y| y.empty? ? nil : y }
-		b.compact!
-		b.each do |y|
-		  y.strip!
-		  y.reverse!
-		  z = y.split(/\s+/, spnum)
-		  z.each { |y| y.reverse! }
-		  dfl  = z.pop
-		  h = @hits[i] 
-		  unless h then
-		    h = Hit.new([ dfl.to_s.sub(/\.+\z/, '') ])
-		    @hits[i] = h
-		  end
-		  z.pop if flag_tblast #ignore Reading Frame
-		  scr = z.pop.to_s
-		  pval = z.pop.to_s
-		  nnum = z.pop.to_i
-		  #ev = '1' + ev if ev[0] == ?e
-		  h.instance_eval {
-		    @score = scr
-		    @pvalue = pval
-		    @n_number = nnum
-		  }
-		  i += 1
-		end
-	      end #each
-	      @parse_hitlist = true
-	    end #unless
-	  end
-	end #class Iteration
+          private
+          def parse_hitlist
+            unless defined?(@parse_hitlist)
+              r = @f0hitlist.shift.to_s
+              if /Reading/ =~ r and /Frame/ =~ r then
+                flag_tblast = true 
+                spnum = 5
+              else
+                flag_tblast = nil
+                spnum = 4
+              end
+              i = 0
+              @f0hitlist.each do |x|
+                b = x.split(/^/)
+                b.collect! { |y| y.empty? ? nil : y }
+                b.compact!
+                b.each do |y|
+                  y.strip!
+                  y.reverse!
+                  z = y.split(/\s+/, spnum)
+                  z.each { |y| y.reverse! }
+                  dfl  = z.pop
+                  h = @hits[i] 
+                  unless h then
+                    h = Hit.new([ dfl.to_s.sub(/\.+\z/, '') ])
+                    @hits[i] = h
+                  end
+                  z.pop if flag_tblast #ignore Reading Frame
+                  scr = z.pop.to_s
+                  pval = z.pop.to_s
+                  nnum = z.pop.to_i
+                  #ev = '1' + ev if ev[0] == ?e
+                  h.instance_eval {
+                    @score = scr
+                    @pvalue = pval
+                    @n_number = nnum
+                  }
+                  i += 1
+                end
+              end #each
+              @parse_hitlist = true
+            end #unless
+          end
+        end #class Iteration
 
-	class Hit < Default::Report::Hit
-	  def initialize(data)
-	    @f0hitname = data.shift
-	    @hsps = []
-	    while r = data.first
-	      if r =~ /^\s*(?:Plus|Minus) +Strand +HSPs\:/ then
-		data.shift
-		r = data.first
-	      end
-	      if /^\s+Score/ =~ r then
-		@hsps << HSP.new(data)
-	      else
-		break
-	      end
-	    end
-	    @again = false
-	  end
+        class Hit < Default::Report::Hit
+          def initialize(data)
+            @f0hitname = data.shift
+            @hsps = []
+            while r = data.first
+              if r =~ /^\s*(?:Plus|Minus) +Strand +HSPs\:/ then
+                data.shift
+                r = data.first
+              end
+              if /^\s+Score/ =~ r then
+                @hsps << HSP.new(data)
+              else
+                break
+              end
+            end
+            @again = false
+          end
 
-	  def score
-	    @score
-	  end
-	  attr_reader :pvalue, :n_number
-	end #class Hit
+          def score
+            @score
+          end
+          attr_reader :pvalue, :n_number
+        end #class Hit
 
-	class HSP < Default::Report::HSP
-	  method_after_parse_score :pvalue, :p_sum_n
-	end #class HSP
+        class HSP < Default::Report::HSP
+          method_after_parse_score :pvalue, :p_sum_n
+        end #class HSP
 
       end #class Report
 
       class Report_TBlast < Report
-	DELIMITER = RS = "\nTBLAST"
+        DELIMITER = RS = "\nTBLAST"
       end #class Report_TBlast
 
     end #module WU

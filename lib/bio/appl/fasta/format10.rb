@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format10.rb,v 1.3 2003/02/03 14:29:47 k Exp $
+#  $Id: format10.rb,v 1.4 2005/09/08 01:22:09 k Exp $
 #
 
 module Bio
@@ -26,235 +26,235 @@ module Bio
     class Report
 
       def initialize(data)
-	# header lines - brief list of the hits
+        # header lines - brief list of the hits
         if data.sub!(/.*\nThe best scores are/m, '')
-	  data.sub!(/(.*)\n\n>>>/m, '')
-	  @list = "The best scores are" + $1
-	else
-	  data.sub!(/.*\n!!\s+/m, '')
-	  data.sub!(/.*/) { |x| @list = x; '' }
-	end
+          data.sub!(/(.*)\n\n>>>/m, '')
+          @list = "The best scores are" + $1
+        else
+          data.sub!(/.*\n!!\s+/m, '')
+          data.sub!(/.*/) { |x| @list = x; '' }
+        end
 
-	# body lines - fasta execution result
-	program, *hits = data.split(/\n>>/)
+        # body lines - fasta execution result
+        program, *hits = data.split(/\n>>/)
 
-	# trailing lines - log messages of the execution
-	@log = hits.pop
+        # trailing lines - log messages of the execution
+        @log = hits.pop
         @log.sub!(/.*<\n/m, '')
         @log.strip!
 
-	# parse results
-	@program = Program.new(program)
-	@hits = []
+        # parse results
+        @program = Program.new(program)
+        @hits = []
 
-	hits.each do |x|
-	  @hits.push(Hit.new(x))
-	end
+        hits.each do |x|
+          @hits.push(Hit.new(x))
+        end
       end
       attr_reader :list, :log, :program, :hits
 
       def each
-	@hits.each do |x|
-	  yield x
-	end
+        @hits.each do |x|
+          yield x
+        end
       end
 
       def threshold(evalue_max = 0.1)
-	list = []
-	@hits.each do |x|
-	  list.push(x) if x.evalue < evalue_max
-	end
-	return list
+        list = []
+        @hits.each do |x|
+          list.push(x) if x.evalue < evalue_max
+        end
+        return list
       end
 
       def lap_over(length_min = 0)
-	list = []
-	@hits.each do |x|
-	  list.push(x) if x.overlap > length_min
-	end
-	return list
+        list = []
+        @hits.each do |x|
+          list.push(x) if x.overlap > length_min
+        end
+        return list
       end
 
 
       class Program
-	def initialize(data)
-	  @definition, *program = data.split(/\n/)
-	  @program = {}
+        def initialize(data)
+          @definition, *program = data.split(/\n/)
+          @program = {}
 
-	  pat = /;\s+([^:]+):\s+(.*)/
+          pat = /;\s+([^:]+):\s+(.*)/
 
-	  program.each do |x|
-	    if pat.match(x)
-	      @program[$1] = $2
-	    end
-	  end
-	end
-	attr_reader :definition, :program
+          program.each do |x|
+            if pat.match(x)
+              @program[$1] = $2
+            end
+          end
+        end
+        attr_reader :definition, :program
       end
 
 
       class Hit
-	def initialize(data)
-	  score, query, target = data.split(/\n>/)
+        def initialize(data)
+          score, query, target = data.split(/\n>/)
 
-	  @definition, *score = score.split(/\n/)
-	  @score = {}
+          @definition, *score = score.split(/\n/)
+          @score = {}
 
-	  pat = /;\s+([^:]+):\s+(.*)/
+          pat = /;\s+([^:]+):\s+(.*)/
 
-	  score.each do |x|
-	    if pat.match(x)
-	      @score[$1] = $2
-	    end
-	  end
+          score.each do |x|
+            if pat.match(x)
+              @score[$1] = $2
+            end
+          end
 
-	  @query = Query.new(query)
-	  @target = Target.new(target)
-	end
-	attr_reader :definition, :score, :query, :target
+          @query = Query.new(query)
+          @target = Target.new(target)
+        end
+        attr_reader :definition, :score, :query, :target
 
-	def evalue
-	  if @score['fa_expect']
-	    @score['fa_expect'].to_f
-	  elsif @score['sw_expect']
-	    @score['sw_expect'].to_f
-	  elsif @score['fx_expect']
-	    @score['fx_expect'].to_f
-	  elsif @score['tx_expect']
-	    @score['tx_expect'].to_f
-	  end
-	end
+        def evalue
+          if @score['fa_expect']
+            @score['fa_expect'].to_f
+          elsif @score['sw_expect']
+            @score['sw_expect'].to_f
+          elsif @score['fx_expect']
+            @score['fx_expect'].to_f
+          elsif @score['tx_expect']
+            @score['tx_expect'].to_f
+          end
+        end
 
-	def bit_score
-	  if @score['fa_bits']
-	    @score['fa_bits'].to_f
-	  elsif @score['sw_bits']
-	    @score['sw_bits'].to_f
-	  elsif @score['fx_bits']
-	    @score['fx_bits'].to_f
-	  elsif @score['tx_bits']
-	    @score['tx_bits'].to_f
-	  end
-	end
+        def bit_score
+          if @score['fa_bits']
+            @score['fa_bits'].to_f
+          elsif @score['sw_bits']
+            @score['sw_bits'].to_f
+          elsif @score['fx_bits']
+            @score['fx_bits'].to_f
+          elsif @score['tx_bits']
+            @score['tx_bits'].to_f
+          end
+        end
 
-	def direction
-	  @score['fa_frame'] || @score['sw_frame'] || @score['fx_frame'] || @score['tx_frame']
-	end
+        def direction
+          @score['fa_frame'] || @score['sw_frame'] || @score['fx_frame'] || @score['tx_frame']
+        end
 
-	def sw
-	  @score['sw_score'].to_i
-	end
+        def sw
+          @score['sw_score'].to_i
+        end
 
-	def identity
-	  @score['sw_ident'].to_f
-	end
+        def identity
+          @score['sw_ident'].to_f
+        end
 
-	def overlap
-	  @score['sw_overlap'].to_i
-	end
+        def overlap
+          @score['sw_overlap'].to_i
+        end
 
-	def query_id
-	  @query.entry_id
-	end
+        def query_id
+          @query.entry_id
+        end
 
-	def target_id
-	  @target.entry_id
-	end
+        def target_id
+          @target.entry_id
+        end
 
-	def query_def
-	  @query.definition
-	end
+        def query_def
+          @query.definition
+        end
 
-	def target_def
-	  @target.definition
-	end
+        def target_def
+          @target.definition
+        end
 
-	def query_len
-	  @query.length
-	end
+        def query_len
+          @query.length
+        end
 
-	def target_len
-	  @target.length
-	end
+        def target_len
+          @target.length
+        end
 
-	def query_seq
-	  @query.sequence
-	end
+        def query_seq
+          @query.sequence
+        end
 
-	def target_seq
-	  @target.sequence
-	end
+        def target_seq
+          @target.sequence
+        end
 
-	def query_type
-	  @query.moltype
-	end
+        def query_type
+          @query.moltype
+        end
 
-	def target_type
-	  @target.moltype
-	end
+        def target_type
+          @target.moltype
+        end
 
-	def query_start
-	  @query.start
-	end
+        def query_start
+          @query.start
+        end
 
-	def query_end
-	  @query.stop
-	end
+        def query_end
+          @query.stop
+        end
 
-	def target_start
-	  @target.start
-	end
+        def target_start
+          @target.start
+        end
 
-	def target_end
-	  @target.stop
-	end
+        def target_end
+          @target.stop
+        end
 
-	def lap_at
-	  [ query_start, query_end, target_start, target_end ]
-	end
+        def lap_at
+          [ query_start, query_end, target_start, target_end ]
+        end
 
 
-	class Query
-	  def initialize(data)
-	    @definition, *data = data.split(/\n/)
-	    @data = {}
-	    @sequence = ''
+        class Query
+          def initialize(data)
+            @definition, *data = data.split(/\n/)
+            @data = {}
+            @sequence = ''
 
-	    pat = /;\s+([^:]+):\s+(.*)/
+            pat = /;\s+([^:]+):\s+(.*)/
 
-	    data.each do |x|
-	      if pat.match(x)
-		@data[$1] = $2
-	      else
-		@sequence += x
-	      end
-	    end
-	  end
-	  attr_reader :definition, :data, :sequence
+            data.each do |x|
+              if pat.match(x)
+                @data[$1] = $2
+              else
+                @sequence += x
+              end
+            end
+          end
+          attr_reader :definition, :data, :sequence
 
-	  def entry_id
-	    @definition[/\S+/]
-	  end
+          def entry_id
+            @definition[/\S+/]
+          end
 
-	  def length
-	    @data['sq_len'].to_i
-	  end
+          def length
+            @data['sq_len'].to_i
+          end
 
-	  def moltype
-	    @data['sq_type']
-	  end
+          def moltype
+            @data['sq_type']
+          end
 
-	  def start
-	    @data['al_start'].to_i
-	  end
+          def start
+            @data['al_start'].to_i
+          end
 
-	  def stop
-	    @data['al_stop'].to_i
-	  end
+          def stop
+            @data['al_stop'].to_i
+          end
 
-	end
+        end
 
-	class Target < Query; end
+        class Target < Query; end
       end
 
     end

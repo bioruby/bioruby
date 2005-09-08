@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggtab.rb,v 1.5 2004/08/23 23:53:23 k Exp $
+#  $Id: keggtab.rb,v 1.6 2005/09/08 01:22:11 k Exp $
 #
 
 module Bio
@@ -27,11 +27,11 @@ module Bio
     class Keggtab
 
       def initialize(file_path, bioroot = nil)
-	@bioroot = ENV['BIOROOT'] || bioroot
-	@db_names = Hash.new
-	@database = Hash.new
-	@taxonomy = Hash.new
-	parse_keggtab(File.open(file_path).read)
+        @bioroot = ENV['BIOROOT'] || bioroot
+        @db_names = Hash.new
+        @database = Hash.new
+        @taxonomy = Hash.new
+        parse_keggtab(File.open(file_path).read)
       end
       attr_reader :bioroot, :db_names
 
@@ -39,134 +39,134 @@ module Bio
       # Bio::KEGG::Keggtab::DB
 
       class DB
-	def initialize(db_name, db_type, db_path, db_abbrev)
-	  @name = db_name
-	  @type = db_type
-	  @path = db_path
-	  @abbrev = db_abbrev
-	  @aliases = Array.new
-	end
-	attr_reader :name, :type, :path, :abbrev, :aliases
-	alias :korg :abbrev
-	alias :keggorg :abbrev
+        def initialize(db_name, db_type, db_path, db_abbrev)
+          @name = db_name
+          @type = db_type
+          @path = db_path
+          @abbrev = db_abbrev
+          @aliases = Array.new
+        end
+        attr_reader :name, :type, :path, :abbrev, :aliases
+        alias :korg :abbrev
+        alias :keggorg :abbrev
       end
 
 
       # DB section
 
       def database(db_abbrev = nil)
-	if db_abbrev
-	  @database[db_abbrev]
-	else
-	  @database
-	end
+        if db_abbrev
+          @database[db_abbrev]
+        else
+          @database
+        end
       end
 
       def aliases(db_abbrev)
-	if @database[db_abbrev]
-	  @database[db_abbrev].aliases
-	end
+        if @database[db_abbrev]
+          @database[db_abbrev].aliases
+        end
       end
 
       def name(db_abbrev)
-	if @database[db_abbrev]
-	  @database[db_abbrev].name
-	end
+        if @database[db_abbrev]
+          @database[db_abbrev].name
+        end
       end
 
       def path(db_abbrev)
-	if @database[db_abbrev]
-	  file = @database[db_abbrev].name
-	  if @bioroot
-	    "#{@database[db_abbrev].path.sub(/\$BIOROOT/,@bioroot)}/#{file}"
-	  else
-	    "#{@database[db_abbrev].path}/#{file}"
-	  end
-	end
+        if @database[db_abbrev]
+          file = @database[db_abbrev].name
+          if @bioroot
+            "#{@database[db_abbrev].path.sub(/\$BIOROOT/,@bioroot)}/#{file}"
+          else
+            "#{@database[db_abbrev].path}/#{file}"
+          end
+        end
       end
 
 
       def alias_list(db_name)
-	if @db_names[db_name]
-	  @db_names[db_name].aliases
-	end
+        if @db_names[db_name]
+          @db_names[db_name].aliases
+        end
       end
 
       def db_path(db_name)
-	if @bioroot
-	  "#{@db_names[db_name].path.sub(/\$BIOROOT/,@bioroot)}/#{db_name}"
-	else
-	  "#{@db_names[db_name].path}/#{db_name}"
-	end
+        if @bioroot
+          "#{@db_names[db_name].path.sub(/\$BIOROOT/,@bioroot)}/#{db_name}"
+        else
+          "#{@db_names[db_name].path}/#{db_name}"
+        end
       end
 
       def db_by_abbrev(db_abbrev)
-	@db_names.each do |k, db|
-	  return db if db.abbrev == db_abbrev
-	end
-	return nil
+        @db_names.each do |k, db|
+          return db if db.abbrev == db_abbrev
+        end
+        return nil
       end
 
       def name_by_abbrev(db_abbrev)
-	db_by_abbrev(db_abbrev).name
+        db_by_abbrev(db_abbrev).name
       end
 
       def db_path_by_abbrev(db_abbrev)
-	db_name = name_by_abbrev(db_abbrev)
-	db_path(db_name)
+        db_name = name_by_abbrev(db_abbrev)
+        db_path(db_name)
       end
 
 
       # Taxonomy section
 
       def taxonomy(node = nil)
-	if node
-	  @taxonomy[node]
-	else
-	  @taxonomy
-	end
+        if node
+          @taxonomy[node]
+        else
+          @taxonomy
+        end
       end
 
       def taxa_list
-	@taxonomy.keys.sort
+        @taxonomy.keys.sort
       end
 
       def child_nodes(node = 'genes')
-	return @taxonomy[node]
+        return @taxonomy[node]
       end
 
       def taxo2korgs(node = 'genes')
-	if node.length == 3
-	  return node
-	else
-	  if @taxonomy[node]
-	    tmp = Array.new
-	    @taxonomy[node].each do |x|
-	      tmp.push(taxo2korgs(x))
-	    end
-	    return tmp
-	  else
-	    return nil
-	  end
-	end
+        if node.length == 3
+          return node
+        else
+          if @taxonomy[node]
+            tmp = Array.new
+            @taxonomy[node].each do |x|
+              tmp.push(taxo2korgs(x))
+            end
+            return tmp
+          else
+            return nil
+          end
+        end
       end
       alias :taxo2keggorgs  :taxo2korgs
       alias :taxon2korgs    :taxo2korgs
       alias :taxon2keggorgs :taxo2korgs
 
       def korg2taxo(keggorg)
-	tmp = Array.new
-	traverse = Proc.new {|keggorg|
-	  @taxonomy.each do |k,v|
-	    if v.include?(keggorg)
-	      tmp.push(k)
-	      traverse.call(k)
-	      break
-	    end
-	  end
-	}
-	traverse.call(keggorg)
-	return tmp
+        tmp = Array.new
+        traverse = Proc.new {|keggorg|
+          @taxonomy.each do |k,v|
+            if v.include?(keggorg)
+              tmp.push(k)
+              traverse.call(k)
+              break
+            end
+          end
+        }
+        traverse.call(keggorg)
+        return tmp
       end
       alias :keggorg2taxo     :korg2taxo
       alias :korg2taxonomy    :korg2taxo
@@ -176,34 +176,34 @@ module Bio
       private
 
       def parse_keggtab(keggtab)
-	in_taxonomy = nil
-	keggtab.each do |line|
-	  case line
-	  when /^# Taxonomy/		# beginning of the taxonomy section
-	    in_taxonomy = true
-	  when /^#|^$/
-	    next
-	  when /(^\w\S+)\s+(\w+)\s+(\$\S+)\s+(\w+)/	# db
-	    db_name = $1
-	    db_type = $2
-	    db_path = $3
-	    db_abbrev = $4
-	    @db_names[db_name] =
-	      Bio::KEGG::Keggtab::DB.new(db_name, db_type, db_path, db_abbrev)
-	  when /(^\w\S+)\s+alias\s+(\w.+\w)/		# alias
-	    db_alias = $1
-	    db_name = $2#.downcase
-	    if in_taxonomy
-	      @taxonomy.update(db_alias => db_name.split('+'))
-	    elsif @db_names[db_name]
-	      @db_names[db_name].aliases.push(db_alias)
-	    end
-	  end
-	end
-	# convert keys-by-names hash @db_names to keys-by-abbrev hash @database
-	@db_names.each do |k,v|
-	  @database[v.abbrev] = v
-	end
+        in_taxonomy = nil
+        keggtab.each do |line|
+          case line
+          when /^# Taxonomy/		# beginning of the taxonomy section
+            in_taxonomy = true
+          when /^#|^$/
+            next
+          when /(^\w\S+)\s+(\w+)\s+(\$\S+)\s+(\w+)/	# db
+            db_name = $1
+            db_type = $2
+            db_path = $3
+            db_abbrev = $4
+            @db_names[db_name] =
+              Bio::KEGG::Keggtab::DB.new(db_name, db_type, db_path, db_abbrev)
+          when /(^\w\S+)\s+alias\s+(\w.+\w)/		# alias
+            db_alias = $1
+            db_name = $2#.downcase
+            if in_taxonomy
+              @taxonomy.update(db_alias => db_name.split('+'))
+            elsif @db_names[db_name]
+              @db_names[db_name].aliases.push(db_alias)
+            end
+          end
+        end
+        # convert keys-by-names hash @db_names to keys-by-abbrev hash @database
+        @db_names.each do |k,v|
+          @database[v.abbrev] = v
+        end
       end
 
     end

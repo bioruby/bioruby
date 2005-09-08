@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.21 2005/08/16 09:38:34 ngoto Exp $
+#  $Id: blast.rb,v 1.22 2005/09/08 01:22:08 k Exp $
 #
 
 require 'net/http'
@@ -35,9 +35,9 @@ module Bio
 
     def initialize(program, db, opt = [], server = 'local')
       if defined?(XMLParser) or defined?(REXML)
-	@format = 7
+        @format = 7
       else
-	@format	= 8
+        @format	= 8
       end
 
       @program	= program
@@ -117,22 +117,22 @@ module Bio
       filter = @filter ? @filter : 'T'
 
       form = {
-	'style'		=> 'raw',
-	'prog'		=> @program,
-	'dbname'	=> @db,
-	'sequence'	=> CGI.escape(query),
-	'other_param'	=> CGI.escape(make_command_line_unix(@options)),
-	'matrix'	=> matrix,
-	'filter'	=> filter,
-	'V_value'	=> 500,		# default value for GenomeNet
-	'B_value'	=> 250,		# default value for GenomeNet
+        'style'		=> 'raw',
+        'prog'		=> @program,
+        'dbname'	=> @db,
+        'sequence'	=> CGI.escape(query),
+        'other_param'	=> CGI.escape(make_command_line_unix(@options)),
+        'matrix'	=> matrix,
+        'filter'	=> filter,
+        'V_value'	=> 500,		# default value for GenomeNet
+        'B_value'	=> 250,		# default value for GenomeNet
         'alignment_view' => 0,
       }
 
       data = []
 
       form.each do |k, v|
-	data.push("#{k}=#{v}") if v
+        data.push("#{k}=#{v}") if v
       end
 
       report = nil
@@ -141,7 +141,7 @@ module Bio
         http = Net::HTTP.new(host)
         http.open_timeout = 300
         http.read_timeout = 600
-	result, = http.post(path, data.join('&'))
+        result, = http.post(path, data.join('&'))
         @output = result.body
         # workaround 2005.08.12
         if /\<A +HREF=\"(http\:\/\/blast\.genome\.jp(\/tmp\/[^\"]+))\"\>Show all result\<\/A\>/i =~ @output.to_s then

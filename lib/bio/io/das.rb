@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: das.rb,v 1.7 2004/08/26 10:25:35 k Exp $
+#  $Id: das.rb,v 1.8 2005/09/08 01:22:11 k Exp $
 #
 
 begin
@@ -46,8 +46,8 @@ module Bio
       doc.elements.each('/descendant::DSN') do |e|
         dsn = DSN.new
         e.elements.each do |e|
-	  case e.name
-	  when 'SOURCE'
+          case e.name
+          when 'SOURCE'
             dsn.source = e.text
             dsn.source_id = e.attributes['id']
             dsn.source_version = e.attributes['version']
@@ -69,18 +69,18 @@ module Bio
       result, = @server.get(@prefix + '/das/' + dsn + '/entry_points')
       doc = REXML::Document.new(result.body)
       doc.elements.each('/descendant::ENTRY_POINTS') do |e|
-	entry_point.href = e.attributes['href']
-	entry_point.version = e.attributes['version']
-	e.elements.each do |e|
-	  segment = SEGMENT.new
-	  segment.entry_id = e.attributes['id']
-	  segment.start = e.attributes['start']
-	  segment.stop = e.attributes['stop']
-	  segment.stop = e.attributes['orientation']
-	  segment.subparts = e.attributes['subparts']
-	  segment.description = e.text
-	  entry_point.segments << segment
-	end
+        entry_point.href = e.attributes['href']
+        entry_point.version = e.attributes['version']
+        e.elements.each do |e|
+          segment = SEGMENT.new
+          segment.entry_id = e.attributes['id']
+          segment.start = e.attributes['start']
+          segment.stop = e.attributes['stop']
+          segment.stop = e.attributes['orientation']
+          segment.subparts = e.attributes['subparts']
+          segment.description = e.text
+          entry_point.segments << segment
+        end
       end
       entry_point
     end
@@ -93,22 +93,22 @@ module Bio
 
       opts = []
       segments.each do |s|
-	opts << "segment=#{s.entry_id}:#{s.start},#{s.stop}"
+        opts << "segment=#{s.entry_id}:#{s.start},#{s.stop}"
       end
       query = opts.join(';')
 
       result, = @server.get(@prefix + '/das/' + dsn + '/dna?' + query)
       doc = REXML::Document.new(result.body)
       doc.elements.each('/descendant::SEQUENCE') do |e|
-	sequence = DNA.new
-	sequence.entry_id = e.attributes['id']
-	sequence.start = e.attributes['start']
-	sequence.stop = e.attributes['stop']
-	sequence.version = e.attributes['version']
-	e.elements.each do |e|
-	  sequence.sequence = Bio::Sequence::NA.new(e.text)
-	  sequence.length = e.attributes['length'].to_i
-	end
+        sequence = DNA.new
+        sequence.entry_id = e.attributes['id']
+        sequence.start = e.attributes['start']
+        sequence.stop = e.attributes['stop']
+        sequence.version = e.attributes['version']
+        e.elements.each do |e|
+          sequence.sequence = Bio::Sequence::NA.new(e.text)
+          sequence.length = e.attributes['length'].to_i
+        end
         ary << sequence
       end
       ary
@@ -122,27 +122,27 @@ module Bio
 
       opts = []
       segments.each do |s|
-	opts << "segment=#{s.entry_id}:#{s.start},#{s.stop}"
+        opts << "segment=#{s.entry_id}:#{s.start},#{s.stop}"
       end
       query = opts.join(';')
 
       result, = @server.get(@prefix + '/das/' + dsn + '/sequence?' + query)
       doc = REXML::Document.new(result.body)
       doc.elements.each('/descendant::SEQUENCE') do |e|
-	sequence = SEQUENCE.new
-	sequence.entry_id = e.attributes['id']
-	sequence.start = e.attributes['start']
-	sequence.stop = e.attributes['stop']
-	sequence.moltype = e.attributes['moltype']
-	sequence.version = e.attributes['version']
-	case sequence.moltype
-	when /dna|rna/i		# 'DNA', 'ssRNA', 'dsRNA'
-	  sequence.sequence = Bio::Sequence::NA.new(e.text)
-	when /protein/i		# 'Protein
-	  sequence.sequence = Bio::Sequence::AA.new(e.text)
-	else
-	  sequence.sequence = e.text
-	end
+        sequence = SEQUENCE.new
+        sequence.entry_id = e.attributes['id']
+        sequence.start = e.attributes['start']
+        sequence.stop = e.attributes['stop']
+        sequence.moltype = e.attributes['moltype']
+        sequence.version = e.attributes['version']
+        case sequence.moltype
+        when /dna|rna/i		# 'DNA', 'ssRNA', 'dsRNA'
+          sequence.sequence = Bio::Sequence::NA.new(e.text)
+        when /protein/i		# 'Protein
+          sequence.sequence = Bio::Sequence::AA.new(e.text)
+        else
+          sequence.sequence = e.text
+        end
         ary << sequence
       end
       ary
@@ -156,32 +156,32 @@ module Bio
 
       opts = []
       segments.each do |s|
-	opts << "segment=#{s.entry_id}:#{s.start},#{s.stop}"
+        opts << "segment=#{s.entry_id}:#{s.start},#{s.stop}"
       end
       query = opts.join(';')
 
       result, = @server.get(@prefix + '/das/' + dsn + '/types?' + query)
       doc = REXML::Document.new(result.body)
       doc.elements.each('/descendant::GFF') do |e|
-	types.version = e.attributes['version']
-	types.href = e.attributes['href']
-	e.elements.each do |e|
-	  segment = SEGMENT.new
-	  segment.entry_id = e.attributes['id']
-	  segment.start = e.attributes['start']
-	  segment.stop = e.attributes['stop']
-	  segment.version = e.attributes['version']
-	  segment.label = e.attributes['label']
-	  e.elements.each do |e|
-	    t = TYPE.new
-	    t.entry_id = e.attributes['id']
-	    t.method = e.attributes['method']
-	    t.category = e.attributes['category']
-	    t.count = e.text.to_i
-	    segment.types << t
-	  end
-	  types.segments << segment
-	end
+        types.version = e.attributes['version']
+        types.href = e.attributes['href']
+        e.elements.each do |e|
+          segment = SEGMENT.new
+          segment.entry_id = e.attributes['id']
+          segment.start = e.attributes['start']
+          segment.stop = e.attributes['stop']
+          segment.version = e.attributes['version']
+          segment.label = e.attributes['label']
+          e.elements.each do |e|
+            t = TYPE.new
+            t.entry_id = e.attributes['id']
+            t.method = e.attributes['method']
+            t.category = e.attributes['category']
+            t.count = e.text.to_i
+            segment.types << t
+          end
+          types.segments << segment
+        end
       end
       types
     end
@@ -195,16 +195,16 @@ module Bio
 
       opts = []
       segments.each do |s|
-	opts << "segment=#{s.entry_id}:#{s.start},#{s.stop}"
+        opts << "segment=#{s.entry_id}:#{s.start},#{s.stop}"
       end
       if categorize
-	opts << "categorize=yes"	# default is 'no'
+        opts << "categorize=yes"	# default is 'no'
       end
       feature_ids.each do |fid|
-	opts << "feature_id=#{fid}"
+        opts << "feature_id=#{fid}"
       end
       group_ids.each do |gid|
-	opts << "group_id=#{gid}"
+        opts << "group_id=#{gid}"
       end
       query = opts.join(';')
 
@@ -214,82 +214,82 @@ module Bio
         gff.version = e.attributes['version']
         gff.href = e.attributes['href']
         e.elements.each('SEGMENT') do |e|
-	  segment = SEGMENT.new
-	  segment.entry_id = e.attributes['id']
-	  segment.start = e.attributes['start']
-	  segment.stop = e.attributes['stop']
-	  segment.version = e.attributes['version']
-	  segment.label = e.attributes['label']
-	  e.elements.each do |e|
-	    feature = FEATURE.new
-	    feature.entry_id = e.attributes['id']
-	    feature.label = e.attributes['label']
-	    e.elements.each do |e|
-	      case e.name
-	      when 'TYPE'
-		type = TYPE.new
-		type.entry_id = e.attributes['id']
-		type.category = e.attributes['category']
-		type.reference = e.attributes['referrence']
-		type.label = e.text
-		feature.types << type
-	      when 'METHOD'
-		feature.method_id = e.attributes['id']
-		feature.method = e.text
-	      when 'START'
-		feature.start = e.text
-	      when 'STOP', 'END'
-		feature.stop = e.text
-	      when 'SCORE'
-		feature.score = e.text
-	      when 'ORIENTATION'
-		feature.orientation = e.text
-	      when 'PHASE'
-		feature.phase = e.text
-	      when 'NOTE'
-		feature.notes << e.text
-	      when 'LINK'
-		link = LINK.new
-		link.href = e.attributes['href']
-		link.text = e.text
-		feature.links << link
-	      when 'TARGET'
-		target = TARGET.new
-		target.entry_id = e.attributes['id']
-		target.start = e.attributes['start']
-		target.stop = e.attributes['stop']
-		target.name = e.text
-		feature.targets << target
-	      when 'GROUP'
-		group = GROUP.new
-		group.entry_id = e.attributes['id']
-		group.label = e.attributes['label']
-		group.type = e.attributes['type']
-		e.elements.each do |e|
-		  case e.name
-		  when 'NOTE'		# in GROUP
-		    group.notes << e.text
-		  when 'LINK'		# in GROUP
-		    link = LINK.new
-		    link.href = e.attributes['href']
-		    link.text = e.text
-		    group.links << link
-		  when 'TARGET'		# in GROUP
-		    target = TARGET.new
-		    target.entry_id = e.attributes['id']
-		    target.start = e.attributes['start']
-		    target.stop = e.attributes['stop']
-		    target.name = e.text
-		    group.targets << target
-		  end
-		end
-		feature.groups << group
-	      end
-	    end
-	    segment.features << feature
-	  end
-	  gff.segments << segment
-	end
+          segment = SEGMENT.new
+          segment.entry_id = e.attributes['id']
+          segment.start = e.attributes['start']
+          segment.stop = e.attributes['stop']
+          segment.version = e.attributes['version']
+          segment.label = e.attributes['label']
+          e.elements.each do |e|
+            feature = FEATURE.new
+            feature.entry_id = e.attributes['id']
+            feature.label = e.attributes['label']
+            e.elements.each do |e|
+              case e.name
+              when 'TYPE'
+                type = TYPE.new
+                type.entry_id = e.attributes['id']
+                type.category = e.attributes['category']
+                type.reference = e.attributes['referrence']
+                type.label = e.text
+                feature.types << type
+              when 'METHOD'
+                feature.method_id = e.attributes['id']
+                feature.method = e.text
+              when 'START'
+                feature.start = e.text
+              when 'STOP', 'END'
+                feature.stop = e.text
+              when 'SCORE'
+                feature.score = e.text
+              when 'ORIENTATION'
+                feature.orientation = e.text
+              when 'PHASE'
+                feature.phase = e.text
+              when 'NOTE'
+                feature.notes << e.text
+              when 'LINK'
+                link = LINK.new
+                link.href = e.attributes['href']
+                link.text = e.text
+                feature.links << link
+              when 'TARGET'
+                target = TARGET.new
+                target.entry_id = e.attributes['id']
+                target.start = e.attributes['start']
+                target.stop = e.attributes['stop']
+                target.name = e.text
+                feature.targets << target
+              when 'GROUP'
+                group = GROUP.new
+                group.entry_id = e.attributes['id']
+                group.label = e.attributes['label']
+                group.type = e.attributes['type']
+                e.elements.each do |e|
+                  case e.name
+                  when 'NOTE'		# in GROUP
+                    group.notes << e.text
+                  when 'LINK'		# in GROUP
+                    link = LINK.new
+                    link.href = e.attributes['href']
+                    link.text = e.text
+                    group.links << link
+                  when 'TARGET'		# in GROUP
+                    target = TARGET.new
+                    target.entry_id = e.attributes['id']
+                    target.start = e.attributes['start']
+                    target.stop = e.attributes['stop']
+                    target.name = e.text
+                    group.targets << target
+                  end
+                end
+                feature.groups << group
+              end
+            end
+            segment.features << feature
+          end
+          gff.segments << segment
+        end
       end
       gff
     end
@@ -297,12 +297,12 @@ module Bio
 
     class DSN
       attr_accessor :source, :source_id, :source_version,
-	:mapmaster, :description, :description_href
+        :mapmaster, :description, :description_href
     end
 
     class ENTRY_POINT
       def initialize
-	@segments = Array.new
+        @segments = Array.new
       end
       attr_reader :segments
       attr_accessor :href, :version
@@ -316,21 +316,21 @@ module Bio
 
     class SEGMENT
       def self.region(entry_id, start, stop)
-	segment = self.new
-	segment.entry_id = entry_id
-	segment.start = start
-	segment.stop = stop
-	return segment
+        segment = self.new
+        segment.entry_id = entry_id
+        segment.start = start
+        segment.stop = stop
+        return segment
       end
 
       def initialize
-	@features = Array.new		# for FEATURE
-	@types = Array.new		# for TYPE
+        @features = Array.new		# for FEATURE
+        @types = Array.new		# for TYPE
       end
       attr_accessor :entry_id, :start, :stop, :orientation, :description,
-	:subparts,			# optional
-	:features, :version, :label,	# for FEATURE
-	:types				# for TYPE
+        :subparts,			# optional
+        :features, :version, :label,	# for FEATURE
+        :types				# for TYPE
     end
 
     class DNA
@@ -345,12 +345,12 @@ module Bio
 
     class TYPE
       attr_accessor :entry_id, :method, :category, :count,
-	:reference, :label	# for FEATURE
+        :reference, :label	# for FEATURE
     end
 
     class GFF
       def initialize
-	@segments = Array.new
+        @segments = Array.new
       end
       attr_reader :segments
       attr_accessor :version, :href
@@ -358,14 +358,14 @@ module Bio
 
     class FEATURE
       def initialize
-	@notes = Array.new
-	@links = Array.new
-	@types = Array.new
-	@targets = Array.new
-	@groups = Array.new
+        @notes = Array.new
+        @links = Array.new
+        @types = Array.new
+        @targets = Array.new
+        @groups = Array.new
       end
       attr_accessor :entry_id, :label,
-	:method_id, :method, :start, :stop, :score, :orientation, :phase
+        :method_id, :method, :start, :stop, :score, :orientation, :phase
       attr_reader :notes, :links, :types, :targets, :groups
     end
 
@@ -379,9 +379,9 @@ module Bio
 
     class GROUP
       def initialize
-	@notes = Array.new
-	@links = Array.new
-	@targets = Array.new
+        @notes = Array.new
+        @links = Array.new
+        @targets = Array.new
       end
       attr_accessor :entry_id, :label, :type
       attr_reader :notes, :links, :targets

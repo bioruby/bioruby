@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fantom.rb,v 1.9 2003/07/28 08:32:10 ng Exp $
+#  $Id: fantom.rb,v 1.10 2005/09/08 01:22:11 k Exp $
 #
 
 begin
@@ -48,8 +48,8 @@ module Bio
       proxy = URI.parse(http_proxy.to_s)
       xml = ''
       Net::HTTP.start(addr, port, proxy.host, proxy.port) do |http|
-	response, = http.get(path)
-	xml = response.body
+        response, = http.get(path)
+        xml = response.body
       end
       xml
     end
@@ -67,320 +67,320 @@ module Bio
       Data_XPath = ''
 
       def initialize(x)
-	if x.is_a?(REXML::Element) then
-	  @elem = x
-	else
-	  if x.is_a?(String) then
-	    x = x.sub(/#{Regexp.escape(DELIMITER)}\z/om, "\n")
-	  end
-	  doc = REXML::Document.new(x)
-	  @elem = doc.elements[self.class::Data_XPath]
-	  #raise 'element is null' unless @elem
-	  @elem = REXML::Document.new('') unless @elem
-	end
+        if x.is_a?(REXML::Element) then
+          @elem = x
+        else
+          if x.is_a?(String) then
+            x = x.sub(/#{Regexp.escape(DELIMITER)}\z/om, "\n")
+          end
+          doc = REXML::Document.new(x)
+          @elem = doc.elements[self.class::Data_XPath]
+          #raise 'element is null' unless @elem
+          @elem = REXML::Document.new('') unless @elem
+        end
       end
       attr_reader :elem
 
       def to_s
-	@elem.to_s
+        @elem.to_s
       end
 
       def gsub_entities(str)
-	# workaround for bug?
-	if str then
-	  str.gsub(/\&\#(\d{1,3})\;/) { sprintf("%c", $1.to_i) }
-	else
-	  str
-	end
+        # workaround for bug?
+        if str then
+          str.gsub(/\&\#(\d{1,3})\;/) { sprintf("%c", $1.to_i) }
+        else
+          str
+        end
       end
 
       def entry_id
-	unless defined?(@entry_id)
-	  @entry_id = @elem.attributes['id']
-	end
-	@entry_id
+        unless defined?(@entry_id)
+          @entry_id = @elem.attributes['id']
+        end
+        @entry_id
       end
       def self.define_element_text_method(array)
-	array.each do |tagstr|
-	  module_eval("
-	    def #{tagstr}
-	      unless defined?(@#{tagstr})
-		@#{tagstr} = gsub_entities(@elem.text('#{tagstr}'))
-	      end
-	      @#{tagstr}
-	    end
-	  ")
-	end
+        array.each do |tagstr|
+          module_eval("
+            def #{tagstr}
+              unless defined?(@#{tagstr})
+                @#{tagstr} = gsub_entities(@elem.text('#{tagstr}'))
+              end
+              @#{tagstr}
+            end
+          ")
+        end
       end
       private_class_method :define_element_text_method
 
       class Cluster < MaXML
-	# (MaXML cluster)
-	# ftp://fantom2.gsc.riken.go.jp/fantom/2.1/allclust.sep.xml.gz
+        # (MaXML cluster)
+        # ftp://fantom2.gsc.riken.go.jp/fantom/2.1/allclust.sep.xml.gz
 
-	Data_XPath = 'maxml-clusters/cluster'
+        Data_XPath = 'maxml-clusters/cluster'
 
-	def representative_seqid
-	  unless defined?(@representative_seqid)
-	    @representative_seqid =
-	      gsub_entities(@elem.text('representative-seqid'))
-	  end
-	  @representative_seqid
-	end
+        def representative_seqid
+          unless defined?(@representative_seqid)
+            @representative_seqid =
+              gsub_entities(@elem.text('representative-seqid'))
+          end
+          @representative_seqid
+        end
 
-	def sequences
-	  unless defined?(@sequences)
-	    @sequences = MaXML::Sequences.new(@elem)
-	  end
-	  @sequences
-	end
+        def sequences
+          unless defined?(@sequences)
+            @sequences = MaXML::Sequences.new(@elem)
+          end
+          @sequences
+        end
 
-	def sequence(idstr = nil)
-	  idstr ? sequences[idstr] : representative_sequence
-	end
+        def sequence(idstr = nil)
+          idstr ? sequences[idstr] : representative_sequence
+        end
 
-	def representative_sequence
-	  unless defined?(@representative_sequence)
-	    rid = representative_seqid
+        def representative_sequence
+          unless defined?(@representative_sequence)
+            rid = representative_seqid
  	    @representative_sequence =
-	      rid ? sequences[representative_seqid] : nil
-	  end
-	  @representative_sequence
-	end
-	alias :representative_clone :representative_sequence
+              rid ? sequences[representative_seqid] : nil
+          end
+          @representative_sequence
+        end
+        alias :representative_clone :representative_sequence
 
-	def representative_annotations
-	  e = representative_sequence
-	  e ? e.annotations : nil
-	end
+        def representative_annotations
+          e = representative_sequence
+          e ? e.annotations : nil
+        end
 
-	def representative_cloneid
-	  e = representative_sequence
-	  e ? e.cloneid : nil
-	end
+        def representative_cloneid
+          e = representative_sequence
+          e ? e.cloneid : nil
+        end
 
-	define_element_text_method(%w(fantomid))
+        define_element_text_method(%w(fantomid))
       end #class MaXML::Cluster
 
       class Sequences < MaXML
-	Data_XPath = 'maxml-sequences'
+        Data_XPath = 'maxml-sequences'
 
-	include Enumerable
-	def each
-	  to_a.each { |x| yield x }
-	end
+        include Enumerable
+        def each
+          to_a.each { |x| yield x }
+        end
 
-	def to_a
-	  unless defined?(@sequences)
-	    @sequences = @elem.get_elements('sequence')
-	    @sequences.collect! { |e| MaXML::Sequence.new(e) }
-	  end
-	  @sequences
-	end
+        def to_a
+          unless defined?(@sequences)
+            @sequences = @elem.get_elements('sequence')
+            @sequences.collect! { |e| MaXML::Sequence.new(e) }
+          end
+          @sequences
+        end
 
-	def get(idstr)
-	  unless defined?(@hash)
-	    @hash = {}
-	  end
-	  unless @hash.member?(idstr) then
-	    @hash[idstr] = self.find do |x|
-	      x.altid.values.index(idstr)
-	    end
-	  end
-	  @hash[idstr]
-	end
+        def get(idstr)
+          unless defined?(@hash)
+            @hash = {}
+          end
+          unless @hash.member?(idstr) then
+            @hash[idstr] = self.find do |x|
+              x.altid.values.index(idstr)
+            end
+          end
+          @hash[idstr]
+        end
 
-	def [](*arg)
-	  if arg[0].is_a?(String) and arg.size == 1 then
-	    get(arg[0])
-	  else
-	    to_a[*arg]
-	  end
-	end
+        def [](*arg)
+          if arg[0].is_a?(String) and arg.size == 1 then
+            get(arg[0])
+          else
+            to_a[*arg]
+          end
+        end
 
-	def cloneids
-	  unless defined?(@cloneids)
-	    @cloneids = to_a.collect { |x| x.cloneid }
-	  end
-	  @cloneids
-	end
+        def cloneids
+          unless defined?(@cloneids)
+            @cloneids = to_a.collect { |x| x.cloneid }
+          end
+          @cloneids
+        end
 
-	def id_strings
-	  unless defined?(@id_strings)
-	    @id_strings = to_a.collect { |x| x.id_strings }
-	    @id_strings.flatten!
-	    @id_strings.sort!
-	    @id_strings.uniq!
-	  end
-	  @id_strings
-	end
+        def id_strings
+          unless defined?(@id_strings)
+            @id_strings = to_a.collect { |x| x.id_strings }
+            @id_strings.flatten!
+            @id_strings.sort!
+            @id_strings.uniq!
+          end
+          @id_strings
+        end
       end #class MaXML::Sequences
 
       class Sequence < MaXML
-	# (MaXML sequence)
-	# ftp://fantom2.gsc.riken.go.jp/fantom/2.1/allseq.sep.xml.gz
-	# ftp://fantom2.gsc.riken.go.jp/fantom/2.1/repseq.sep.xml.gz
-	
-	Data_XPath = 'maxml-sequences/sequence'
+        # (MaXML sequence)
+        # ftp://fantom2.gsc.riken.go.jp/fantom/2.1/allseq.sep.xml.gz
+        # ftp://fantom2.gsc.riken.go.jp/fantom/2.1/repseq.sep.xml.gz
+        
+        Data_XPath = 'maxml-sequences/sequence'
 
-	def altid(t = nil)
-	  unless defined?(@altid)
-	    @altid = {}
-	    @elem.each_element('altid') do |e|
-	      @altid[e.attributes['type']] = gsub_entities(e.text)
-	    end
-	  end
-	  if t then
-	    @altid[t]
-	  else
-	    @altid
-	  end
-	end
+        def altid(t = nil)
+          unless defined?(@altid)
+            @altid = {}
+            @elem.each_element('altid') do |e|
+              @altid[e.attributes['type']] = gsub_entities(e.text)
+            end
+          end
+          if t then
+            @altid[t]
+          else
+            @altid
+          end
+        end
 
-	def id_strings
-	  altid.values.sort.uniq
-	end
+        def id_strings
+          altid.values.sort.uniq
+        end
 
-	def library_id
-	  entry_id[0,2]
-	end
+        def library_id
+          entry_id[0,2]
+        end
 
-	def annotations
-	  unless defined?(@annotations)
-	    @annotations =
-	      MaXML::Annotations.new(@elem.elements['annotations'])
-	  end
-	  @annotations
-	end
+        def annotations
+          unless defined?(@annotations)
+            @annotations =
+              MaXML::Annotations.new(@elem.elements['annotations'])
+          end
+          @annotations
+        end
 
-	define_element_text_method(%w(annotator version modified_time comment))
+        define_element_text_method(%w(annotator version modified_time comment))
 
-	def self.define_id_method(array)
-	  array.each do |tagstr|
-	    module_eval("
-	      def #{tagstr}
-	        unless defined?(@#{tagstr})
-		  @#{tagstr} = gsub_entities(@elem.text('#{tagstr}'))
-		  @#{tagstr} = altid('#{tagstr}') unless @#{tagstr}
-	        end
-	        @#{tagstr}
-	      end
-	    ")
-	  end
+        def self.define_id_method(array)
+          array.each do |tagstr|
+            module_eval("
+              def #{tagstr}
+                unless defined?(@#{tagstr})
+                  @#{tagstr} = gsub_entities(@elem.text('#{tagstr}'))
+                  @#{tagstr} = altid('#{tagstr}') unless @#{tagstr}
+                end
+                @#{tagstr}
+              end
+            ")
+          end
         end
         private_class_method :define_id_method
 
-	define_id_method(%w(seqid fantomid cloneid rearrayid accession))
+        define_id_method(%w(seqid fantomid cloneid rearrayid accession))
       end #class MaXML::Sequence
 
       class Annotations < MaXML
-	Data_XPath = nil
+        Data_XPath = nil
 
-	include Enumerable
-	def each
-	  to_a.each { |x| yield x }
-	end
+        include Enumerable
+        def each
+          to_a.each { |x| yield x }
+        end
 
-	def to_a
-	  unless defined?(@a)
-	    @a = @elem.get_elements('annotation')
-	    @a.collect! { |e| MaXML::Annotation.new(e) }
-	  end
-	  @a
-	end
+        def to_a
+          unless defined?(@a)
+            @a = @elem.get_elements('annotation')
+            @a.collect! { |e| MaXML::Annotation.new(e) }
+          end
+          @a
+        end
 
-	def get_all_by_qualifier(qstr)
-	  unless defined?(@hash)
-	    @hash = {}
-	  end
-	  unless @hash.member?(qstr) then
-	    @hash[qstr] = self.find_all do |x|
-	      x.qualifier == qstr
-	    end
-	  end
-	  @hash[qstr]
-	end
+        def get_all_by_qualifier(qstr)
+          unless defined?(@hash)
+            @hash = {}
+          end
+          unless @hash.member?(qstr) then
+            @hash[qstr] = self.find_all do |x|
+              x.qualifier == qstr
+            end
+          end
+          @hash[qstr]
+        end
 
-	def get_by_qualifier(qstr)
-	  a = get_all_by_qualifier(qstr)
-	  a ? a[0] : nil
-	end
+        def get_by_qualifier(qstr)
+          a = get_all_by_qualifier(qstr)
+          a ? a[0] : nil
+        end
 
-	def [](*arg)
-	  if arg[0].is_a?(String) and arg.size == 1 then
-	    get_by_qualifier(arg[0])
-	  else
-	    to_a[*arg]
-	  end
-	end
+        def [](*arg)
+          if arg[0].is_a?(String) and arg.size == 1 then
+            get_by_qualifier(arg[0])
+          else
+            to_a[*arg]
+          end
+        end
 
-	def cds_start
-	  unless defined?(@cds_start)
-	    e = get_by_qualifier('cds_start')
-	    @cds_start = e ? e.anntext.to_i : nil
-	  end
-	  @cds_start
-	end
+        def cds_start
+          unless defined?(@cds_start)
+            e = get_by_qualifier('cds_start')
+            @cds_start = e ? e.anntext.to_i : nil
+          end
+          @cds_start
+        end
 
-	def cds_stop
-	  unless defined?(@cds_stop)
-	    e = get_by_qualifier('cds_stop')
-	    @cds_stop = e ? e.anntext.to_i : nil
-	  end
-	  @cds_stop
-	end
+        def cds_stop
+          unless defined?(@cds_stop)
+            e = get_by_qualifier('cds_stop')
+            @cds_stop = e ? e.anntext.to_i : nil
+          end
+          @cds_stop
+        end
 
-	def gene_name
-	  unless defined?(@gene_name)
-	    e = get_by_qualifier('gene_name')
-	    @gene_name = e ? e.anntext : nil
-	  end
-	  @gene_name
-	end
+        def gene_name
+          unless defined?(@gene_name)
+            e = get_by_qualifier('gene_name')
+            @gene_name = e ? e.anntext : nil
+          end
+          @gene_name
+        end
 
-	def data_source
-	  unless defined?(@data_source)
-	    e = get_by_qualifier('gene_name')
-	    @data_source = e ? e.datasrc[0] : nil
-	  end
-	  @data_source
-	end
+        def data_source
+          unless defined?(@data_source)
+            e = get_by_qualifier('gene_name')
+            @data_source = e ? e.datasrc[0] : nil
+          end
+          @data_source
+        end
 
-	def evidence
-	  unless defined?(@evidence)
-	    e = get_by_qualifier('gene_name')
-	    @evidence = e ? e.evidence : nil
-	  end
-	  @evidence
-	end
+        def evidence
+          unless defined?(@evidence)
+            e = get_by_qualifier('gene_name')
+            @evidence = e ? e.evidence : nil
+          end
+          @evidence
+        end
       end #class MaXML::Annotations
 
       class Annotation < MaXML
-	def entry_id
-	  nil
-	end
+        def entry_id
+          nil
+        end
 
-	class DataSrc < String
-	  def initialize(text, href)
-	    super(text)
-	    @href = href
-	  end
-	  attr_reader :href
-	end
+        class DataSrc < String
+          def initialize(text, href)
+            super(text)
+            @href = href
+          end
+          attr_reader :href
+        end
 
-	def datasrc
-	  unless defined?(@datasrc)
-	    @datasrc = []
-	    @elem.each_element('datasrc') do |e|
-	      text = e.text
-	      href = e.attributes['href']
-	      @datasrc << DataSrc.new(gsub_entities(text), gsub_entities(href))
-	    end
-	  end
-	  @datasrc
-	end
+        def datasrc
+          unless defined?(@datasrc)
+            @datasrc = []
+            @elem.each_element('datasrc') do |e|
+              text = e.text
+              href = e.attributes['href']
+              @datasrc << DataSrc.new(gsub_entities(text), gsub_entities(href))
+            end
+          end
+          @datasrc
+        end
 
-	define_element_text_method(%w(qualifier srckey anntext evidence))
+        define_element_text_method(%w(qualifier srckey anntext evidence))
       end #class MaXML::Annotation
 
     end #class MaXML

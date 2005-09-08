@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.6 2005/06/21 07:03:28 ngoto Exp $
+#  $Id: report.rb,v 1.7 2005/09/08 01:22:08 k Exp $
 #
 
 require 'bio/appl/blast/xmlparser'
@@ -30,13 +30,13 @@ module Bio
     def self.reports(input, parser = nil)
       ary = []
       input.each("</BlastOutput>\n") do |xml|
-	xml.sub!(/[^<]*(<?)/, '\1')		# skip before <?xml> tag
-	next if xml.empty?			# skip trailing no hits
-	if block_given?
-	  yield Report.new(xml, parser)
-	else
-	  ary << Report.new(xml, parser)
-	end
+        xml.sub!(/[^<]*(<?)/, '\1')		# skip before <?xml> tag
+        next if xml.empty?			# skip trailing no hits
+        if block_given?
+          yield Report.new(xml, parser)
+        else
+          ary << Report.new(xml, parser)
+        end
       end
       return ary
     end
@@ -48,44 +48,44 @@ module Bio
       DELIMITER = RS = "</BlastOutput>\n"
 
       def self.xmlparser(data)
-	self.new(data, :xmlparser)
+        self.new(data, :xmlparser)
       end
       def self.rexml(data)
-	self.new(data, :rexml)
+        self.new(data, :rexml)
       end
       def self.tab(data)
-	self.new(data, :tab)
+        self.new(data, :tab)
       end
 
       def auto_parse(data)
-	if /<?xml/.match(data[/.*/])
-	  if defined?(XMLParser)
-	    xmlparser_parse(data)
-	  else
-	    rexml_parse(data)
-	  end
-	else
-	  tab_parse(data)
-	end
+        if /<?xml/.match(data[/.*/])
+          if defined?(XMLParser)
+            xmlparser_parse(data)
+          else
+            rexml_parse(data)
+          end
+        else
+          tab_parse(data)
+        end
       end
       private :auto_parse
 
       def initialize(data, parser = nil)
-	@iterations = []
-	@parameters = {}
-	case parser
-	when :xmlparser		# format 7
-	  xmlparser_parse(data)
-	when :rexml		# format 7
-	  rexml_parse(data)
-	when :tab		# format 8
-	  tab_parse(data)
-	else
-	  auto_parse(data)
-	end
+        @iterations = []
+        @parameters = {}
+        case parser
+        when :xmlparser		# format 7
+          xmlparser_parse(data)
+        when :rexml		# format 7
+          rexml_parse(data)
+        when :tab		# format 8
+          tab_parse(data)
+        else
+          auto_parse(data)
+        end
       end
       attr_reader :iterations, :parameters,
-	:program, :version, :reference,	:db, :query_id, :query_def, :query_len
+        :program, :version, :reference,	:db, :query_id, :query_def, :query_len
 
       # shortcut for @parameters
       def matrix;	@parameters['matrix'];			end
@@ -101,27 +101,27 @@ module Bio
 
       # <for blastpgp>
       def each_iteration
-	@iterations.each do |x|
-	  yield x
-	end
+        @iterations.each do |x|
+          yield x
+        end
       end
 
       # <for blastall> shortcut for the last iteration's hits
       def each_hit
-	@iterations.last.each do |x|
-	  yield x
-	end
+        @iterations.last.each do |x|
+          yield x
+        end
       end
       alias :each :each_hit
 
       # shortcut for the last iteration's hits
       def hits
-	@iterations.last.hits
+        @iterations.last.hits
       end
 
       # shortcut for the last iteration's statistics
       def statistics
-	@iterations.last.statistics
+        @iterations.last.statistics
       end
       def db_num;	statistics['db-num'];			end
       def db_len;	statistics['db-len'];			end
@@ -133,84 +133,84 @@ module Bio
 
       # shortcut for the last iteration's message (for checking 'CONVERGED')
       def message
-	@iterations.last.message
+        @iterations.last.message
       end
 
 
       # Bio::Blast::Report::Iteration
       class Iteration
-	def initialize
-	  @message = nil
-	  @statistics = {}
-	  @num = 1
-	  @hits = []
-	end
-	attr_reader :hits, :statistics
-	attr_accessor :num, :message
+        def initialize
+          @message = nil
+          @statistics = {}
+          @num = 1
+          @hits = []
+        end
+        attr_reader :hits, :statistics
+        attr_accessor :num, :message
 
-	def each
-	  @hits.each do |x|
-	    yield x
-	  end
-	end
+        def each
+          @hits.each do |x|
+            yield x
+          end
+        end
       end
 
 
       # Bio::Blast::Report::Hit
       class Hit
-	def initialize
-	  @hsps = []
-	end
-	attr_reader :hsps
-	attr_accessor :query_id, :query_def, :query_len,
-	  :num, :hit_id, :len, :definition, :accession
+        def initialize
+          @hsps = []
+        end
+        attr_reader :hsps
+        attr_accessor :query_id, :query_def, :query_len,
+          :num, :hit_id, :len, :definition, :accession
 
-	def each
-	  @hsps.each do |x|
-	    yield x
-	  end
-	end
+        def each
+          @hsps.each do |x|
+            yield x
+          end
+        end
 
-	# Compatible with Bio::Fasta::Report::Hit
+        # Compatible with Bio::Fasta::Report::Hit
 
-	alias :target_id :accession
-	alias :target_def :definition
-	alias :target_len :len
+        alias :target_id :accession
+        alias :target_def :definition
+        alias :target_len :len
 
-	# Shortcut methods for the best Hsp
+        # Shortcut methods for the best Hsp
 
-	def evalue;		@hsps.first.evalue;		end
-	def bit_score;		@hsps.first.bit_score;		end
-	def identity;		@hsps.first.identity;		end
-	def percent_identity;	@hsps.first.percent_identity;	end
-	def overlap;		@hsps.first.align_len;		end
+        def evalue;		@hsps.first.evalue;		end
+        def bit_score;		@hsps.first.bit_score;		end
+        def identity;		@hsps.first.identity;		end
+        def percent_identity;	@hsps.first.percent_identity;	end
+        def overlap;		@hsps.first.align_len;		end
 
-	def query_seq;		@hsps.first.qseq;		end
-	def target_seq;		@hsps.first.hseq;		end
-	def midline;		@hsps.first.midline;		end
+        def query_seq;		@hsps.first.qseq;		end
+        def target_seq;		@hsps.first.hseq;		end
+        def midline;		@hsps.first.midline;		end
 
-	def query_start;	@hsps.first.query_from;		end
-	def query_end;		@hsps.first.query_to;		end
-	def target_start;	@hsps.first.hit_from;		end
-	def target_end;		@hsps.first.hit_to;		end
-	def lap_at
-	  [ query_start, query_end, target_start, target_end ]
-	end
+        def query_start;	@hsps.first.query_from;		end
+        def query_end;		@hsps.first.query_to;		end
+        def target_start;	@hsps.first.hit_from;		end
+        def target_end;		@hsps.first.hit_to;		end
+        def lap_at
+          [ query_start, query_end, target_start, target_end ]
+        end
       end
 
 
       # Bio::Blast::Report::Hsp
       class Hsp
-	def initialize
-	  @hsp = {}
-	end
-	attr_reader :hsp
-	attr_accessor :num, :bit_score, :score, :evalue,
-	  :query_from, :query_to, :hit_from, :hit_to,
-	  :pattern_from, :pattern_to, :query_frame, :hit_frame,
-	  :identity, :positive, :gaps, :align_len, :density,
-	  :qseq, :hseq, :midline,
-	  :percent_identity, :mismatch_count	 # only for '-m 8'
+        def initialize
+          @hsp = {}
+        end
+        attr_reader :hsp
+        attr_accessor :num, :bit_score, :score, :evalue,
+          :query_from, :query_to, :hit_from, :hit_to,
+          :pattern_from, :pattern_to, :query_frame, :hit_frame,
+          :identity, :positive, :gaps, :align_len, :density,
+          :qseq, :hseq, :midline,
+          :percent_identity, :mismatch_count	 # only for '-m 8'
       end
 
     end

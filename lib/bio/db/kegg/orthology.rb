@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: orthology.rb,v 1.4 2004/08/23 23:53:23 k Exp $
+#  $Id: orthology.rb,v 1.5 2005/09/08 01:22:11 k Exp $
 #
 
 require 'bio/db'
@@ -33,68 +33,68 @@ module Bio
       TAGSIZE	= 12
 
       def initialize(entry)
-	super(entry, TAGSIZE)
+        super(entry, TAGSIZE)
       end
       
       
       def entry_id
-	field_fetch('ENTRY')[/\S+/]
+        field_fetch('ENTRY')[/\S+/]
       end
       
       def name
-	field_fetch('NAME')
+        field_fetch('NAME')
       end
       
       def names
-	name.split(', ')
+        name.split(', ')
       end
       
       def definition
-	field_fetch('DEFINITION')
+        field_fetch('DEFINITION')
       end
       
       def keggclass
-	field_fetch('CLASS')
+        field_fetch('CLASS')
       end
 
       def keggclasses
-	keggclass.gsub(/ \[[^\]]+/, '').split(/\] ?/)
+        keggclass.gsub(/ \[[^\]]+/, '').split(/\] ?/)
       end
       
       def pathways
-	keggclass.scan(/\[PATH:(.*?)\]/).flatten
+        keggclass.scan(/\[PATH:(.*?)\]/).flatten
       end
       
       def dblinks
-	unless @data['DBLINKS']
-	  hash = {}
-	  get('DBLINKS').scan(/(\S+):\s*(.*)\n/).each do |k, v|
-	    hash[k] = v.split(/\s+/)
-	  end
-	  @data['DBLINKS'] = hash
-	end
-	@data['DBLINKS']		# Hash of DB:ID in DBLINKS
+        unless @data['DBLINKS']
+          hash = {}
+          get('DBLINKS').scan(/(\S+):\s*(.*)\n/).each do |k, v|
+            hash[k] = v.split(/\s+/)
+          end
+          @data['DBLINKS'] = hash
+        end
+        @data['DBLINKS']		# Hash of DB:ID in DBLINKS
       end
       
       def genes
-	unless @data['GENES']
-	  hash = {}
-	  k = ''
-	  get('GENES').each_line do |line|
-	    line.chomp!
-	    line[0, @tagsize] = '' 
-	    if line =~ /(\S+):/
-	      k = $1
-	      hash[k] = []
-	    end
-	    line[0, 5] = ''
-	    line.gsub(/\(\S+/, '').each(' ') do |u|
-	      hash[k] << u.strip
-	    end
-	  end
-	  @data['GENES'] = hash
+        unless @data['GENES']
+          hash = {}
+          k = ''
+          get('GENES').each_line do |line|
+            line.chomp!
+            line[0, @tagsize] = '' 
+            if line =~ /(\S+):/
+              k = $1
+              hash[k] = []
+            end
+            line[0, 5] = ''
+            line.gsub(/\(\S+/, '').each(' ') do |u|
+              hash[k] << u.strip
+            end
+          end
+          @data['GENES'] = hash
         end
-	@data['GENES']		# Hash of DB:ID in DBLINKS
+        @data['GENES']		# Hash of DB:ID in DBLINKS
       end
       
     end

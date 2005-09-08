@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.2 2004/10/13 16:53:03 ngoto Exp $
+#  $Id: report.rb,v 1.3 2005/09/08 01:22:10 k Exp $
 #
 
 require 'bio'
@@ -32,11 +32,11 @@ module Bio
       DELIMITER = RS = "\n--SPIDEY "
 
       def initialize(str)
-	str = str.sub(/\A\s+/, '')
-	str.sub!(/\n(^\-\-SPIDEY .*)/m, '')  # remove trailing entries for sure
-	@entry_overrun = $1
-	data = str.split(/\r?\n(?:\r?\n)+/)
-	d0 = data.shift.to_s.split(/\r?\n/)
+        str = str.sub(/\A\s+/, '')
+        str.sub!(/\n(^\-\-SPIDEY .*)/m, '')  # remove trailing entries for sure
+        @entry_overrun = $1
+        data = str.split(/\r?\n(?:\r?\n)+/)
+        d0 = data.shift.to_s.split(/\r?\n/)
         @hit = Hit.new(data, d0)
         @all_hits = [ @hit ]
         if d0.empty? or /\ANo alignment found\.\s*\z/ =~ d0[-1] then
@@ -57,13 +57,13 @@ module Bio
         end
         attr_reader :entry_id, :definition, :len
 
-	def self.parse(str)
-	  /^(Genomic|mRNA)\:\s*(([^\s]*) (.+))\, (\d+) bp\s*$/ =~ str.to_s
-	  seqid  = $3
+        def self.parse(str)
+          /^(Genomic|mRNA)\:\s*(([^\s]*) (.+))\, (\d+) bp\s*$/ =~ str.to_s
+          seqid  = $3
           seqdef = $2
-	  len    = ($5 ? $5.to_i : nil)
+          len    = ($5 ? $5.to_i : nil)
           self.new(seqid, seqdef, len)
-	end
+        end
       end #class SeqDesc
 
       class SegmentPair
@@ -88,14 +88,14 @@ module Bio
         def self.new_intron(from, to, strand, aln)
           genomic   = Segment.new(from, to, strand, aln[0])
           mrna      = Segment.new(nil, nil, nil,    aln[2])
-	  midline   = aln[1]
-	  aaseqline = aln[3]
+          midline   = aln[1]
+          aaseqline = aln[3]
           self.new(genomic, mrna, midline, aaseqline,
                    nil, nil, nil, nil, nil)
         end
         
         def self.parse(str, strand, complement, aln)
-	  /\AExon\s*\d+(\(\-\))?\:\s*(\d+)\-(\d+)\s*\(gen\)\s+(\d+)\-(\d+)\s*\(mRNA\)\s+id\s*([\d\.]+)\s*\%\s+mismatches\s+(\d+)\s+gaps\s+(\d+)\s+splice site\s*\(d +a\)\s*\:\s*(\d+)\s+(\d+)/ =~ str
+          /\AExon\s*\d+(\(\-\))?\:\s*(\d+)\-(\d+)\s*\(gen\)\s+(\d+)\-(\d+)\s*\(mRNA\)\s+id\s*([\d\.]+)\s*\%\s+mismatches\s+(\d+)\s+gaps\s+(\d+)\s+splice site\s*\(d +a\)\s*\:\s*(\d+)\s+(\d+)/ =~ str
           if strand == 'minus' then
             genomic = Segment.new($3, $2, strand, aln[0])
           else
@@ -106,19 +106,19 @@ module Bio
           else
             mrna    = Segment.new($4, $5, 'plus',  aln[2])
           end
-	  percent_identity = $6
-	  mismatches = ($7 ? $7.to_i : nil)
-	  gaps = ($8 ? $8.to_i : nil)
-	  splice_site = {
-	    :d => ($9  ? $9.to_i  : nil),
-	    :a => ($10 ? $10.to_i : nil)
-	  }
-	  midline   = aln[1]
-	  aaseqline = aln[3]
+          percent_identity = $6
+          mismatches = ($7 ? $7.to_i : nil)
+          gaps = ($8 ? $8.to_i : nil)
+          splice_site = {
+            :d => ($9  ? $9.to_i  : nil),
+            :a => ($10 ? $10.to_i : nil)
+          }
+          midline   = aln[1]
+          aaseqline = aln[3]
           self.new(genomic, mrna, midline, aaseqline,
                    percent_identity, mismatches, gaps, splice_site,
                    (midline ? midline.length : nil))
-	end
+        end
 
         # Bio::BLAST::*::Report::Hsp compatible methods
         #   Methods already defined: midline, percent_identity, 

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.4 2005/08/07 05:35:18 nakao Exp $
+#  $Id: report.rb,v 1.5 2005/09/08 01:22:09 k Exp $
 #
 
 require 'bio/db/fasta'
@@ -201,7 +201,7 @@ class Genscan
         @aaseq = seq
       end
 
-	
+        
       # Bio::Genescan::Report::Gene#seq_naseq
       def set_naseq(seq)
         @naseq = seq
@@ -286,7 +286,7 @@ class Genscan
         TYPES[exon_type]
       end
 
-	
+        
       # Bio::Genescan::Report::Exon#range
       def range 
         Range.new(@first, @last)

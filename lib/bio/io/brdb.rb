@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: brdb.rb,v 1.2 2002/06/26 00:12:29 k Exp $
+#  $Id: brdb.rb,v 1.3 2005/09/08 01:22:11 k Exp $
 #
 
 begin
@@ -35,28 +35,28 @@ module Bio
 
     def fetch(db_table, entry_id)
       DBI.connect(*@brdb) do |dbh|
-	query = "select * from #{db_table} where id = ?"
-	dbh.execute(query, entry_id).fetch_all
+        query = "select * from #{db_table} where id = ?"
+        dbh.execute(query, entry_id).fetch_all
       end
     end
 
     def insert(db_table, values)
       if values.is_a?(Array)
-	values = values.map{ |x| '"' + DBI.quote(x) + '"' }.join(",")
+        values = values.map{ |x| '"' + DBI.quote(x) + '"' }.join(",")
       end
       DBI.connect(*@brdb) do |dbh|
-	query = "insert into #{db_table} values (?);"
-	dbh.execute(query, values)
+        query = "insert into #{db_table} values (?);"
+        dbh.execute(query, values)
       end
     end
 
     def update(db_table, entry_id, values)
       if values.is_a?(Hash)
-	values = values.to_a.map{ |k, v| "#{k}='#{DBI.quote(v)}'" }.join(',')
+        values = values.to_a.map{ |k, v| "#{k}='#{DBI.quote(v)}'" }.join(',')
       end
       DBI.connect(*@brdb) do |dbh|
-	query = "update #{db_table} set ? where id = ?"
-	dbh.execute(query, values, entry_id)
+        query = "update #{db_table} set ? where id = ?"
+        dbh.execute(query, values, entry_id)
       end
     end
 

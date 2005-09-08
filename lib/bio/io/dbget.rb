@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: dbget.rb,v 1.9 2004/08/24 00:05:58 k Exp $
+#  $Id: dbget.rb,v 1.10 2005/09/08 01:22:11 k Exp $
 #
 
 require 'socket'
@@ -34,15 +34,15 @@ module Bio
     def DBGET.dbget(com, arg, serv = nil, port = nil)
 
       unless serv or port		# if both of serv and port are nil
-	if ENV["DBGET"] =~ /:/		# and ENV["DBGET"] exists
-	  serv, port = ENV["DBGET"].split(':')
-	end
+        if ENV["DBGET"] =~ /:/		# and ENV["DBGET"] exists
+          serv, port = ENV["DBGET"].split(':')
+        end
       end
       serv = serv ? serv : SERV
       port = port ? port : PORT
 
       if arg.empty?
-	arg = "-h"			# DBGET help message
+        arg = "-h"			# DBGET help message
       end
 
       query = "#{com} #{arg}\n"		# DBGET query string

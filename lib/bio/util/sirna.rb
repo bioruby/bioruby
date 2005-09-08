@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-# $Id: sirna.rb,v 1.3 2005/08/09 05:40:44 k Exp $
+# $Id: sirna.rb,v 1.4 2005/09/08 01:22:12 k Exp $
 #
 
 require 'bio/sequence'
@@ -74,10 +74,10 @@ module Bio
         target_start += 1
         target_stop  = target_start + @target_size
 
-	antisense_gc_percent = antisense.gc_percent
-	next if antisense_gc_percent > @max_gc_percent
-	next if antisense_gc_percent < @min_gc_percent
-	
+        antisense_gc_percent = antisense.gc_percent
+        next if antisense_gc_percent > @max_gc_percent
+        next if antisense_gc_percent < @min_gc_percent
+        
         case rule
         when 'uitei'
   	  next unless uitei?(target)
@@ -85,10 +85,10 @@ module Bio
     	  next unless reynolds?(target)
         else
           raise NotImplementedError
-	end
+        end
 
         pair = Bio::SiRNA::Pair.new(target, sense, antisense, target_start, target_stop, rule, antisense_gc_percent)
-	@pairs.push(pair)
+        @pairs.push(pair)
       end
       return @pairs
     end
@@ -97,26 +97,26 @@ module Bio
     class Pair
 
       def initialize(target, sense, antisense, start, stop, rule, gc_percent)
-	@target     = target
-	@sense      = sense
-	@antisense  = antisense
-	@start      = start
-	@stop       = stop
-	@rule       = rule
-	@gc_percent = gc_percent
+        @target     = target
+        @sense      = sense
+        @antisense  = antisense
+        @start      = start
+        @stop       = stop
+        @rule       = rule
+        @gc_percent = gc_percent
       end
       attr_accessor :target, :sense, :antisense, :start, :stop, :rule, :gc_percent
 
       # human readable report
       def report
-	report =  "### siRNA\n"
-	report << 'Start: ' + @start.to_s + "\n"
-	report << 'Stop:  ' + @stop.to_s  + "\n"
-	report << 'Rule:  ' + @rule.to_s  + "\n"
-	report << 'GC %:  ' + @gc_percent.to_s  + "\n"
-	report << 'Target:    '        + @target.upcase + "\n"
-	report << 'Sense:     ' + '  ' + @sense.upcase  + "\n"
-	report << 'Antisense: '        + @antisense.reverse.upcase + "\n"
+        report =  "### siRNA\n"
+        report << 'Start: ' + @start.to_s + "\n"
+        report << 'Stop:  ' + @stop.to_s  + "\n"
+        report << 'Rule:  ' + @rule.to_s  + "\n"
+        report << 'GC %:  ' + @gc_percent.to_s  + "\n"
+        report << 'Target:    '        + @target.upcase + "\n"
+        report << 'Sense:     ' + '  ' + @sense.upcase  + "\n"
+        report << 'Antisense: '        + @antisense.reverse.upcase + "\n"
       end
 
       # computer parsable report
@@ -137,8 +137,8 @@ module Bio
       def design(method = 'BLOCK-iT')
         case method
         when 'BLOCK-iT'
-	  block_it
-	else
+          block_it
+        else
           raise NotImplementedError
         end
       end
@@ -164,11 +164,11 @@ module Bio
 
         if /^G/i =~ fwd
   	  @top_strand    = top + fwd + loop_fwd + rev
-	  @bottom_strand = bot + fwd + loop_rev + rev
-	else
+          @bottom_strand = bot + fwd + loop_rev + rev
+        else
   	  @top_strand    = top + 'G' + fwd + loop_fwd + rev
-	  @bottom_strand = bot + fwd + loop_rev + rev + 'C'
-	end
+          @bottom_strand = bot + fwd + loop_rev + rev + 'C'
+        end
       end
       
       def report

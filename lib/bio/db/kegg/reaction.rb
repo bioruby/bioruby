@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: reaction.rb,v 1.2 2004/10/22 10:16:05 k Exp $
+#  $Id: reaction.rb,v 1.3 2005/09/08 01:22:11 k Exp $
 #
 
 require 'bio/db'
@@ -32,12 +32,12 @@ module Bio
       TAGSIZE	= 12
 
       def initialize(entry)
-	super(entry, TAGSIZE)
+        super(entry, TAGSIZE)
       end
 
       # ENTRY
       def entry_id
-	field_fetch('ENTRY')
+        field_fetch('ENTRY')
       end
 
       # NAME
@@ -47,20 +47,20 @@ module Bio
 
       # DEFINITION
       def definition
-	field_fetch('DEFINITION')
+        field_fetch('DEFINITION')
       end
 
       # EQUATION
       def equation
-	field_fetch('EQUATION')
+        field_fetch('EQUATION')
       end
 
       # RPAIR
       def rpairs
-	unless @data['RPAIR']
-	  @data['RPAIR'] = fetch('RPAIR').split(/\s+/)
-	end
-	@data['RPAIR']
+        unless @data['RPAIR']
+          @data['RPAIR'] = fetch('RPAIR').split(/\s+/)
+        end
+        @data['RPAIR']
       end
 
       # PATHWAY
@@ -70,10 +70,10 @@ module Bio
 
       # ENZYME
       def enzymes
-	unless @data['ENZYME']
+        unless @data['ENZYME']
           @data['ENZYME'] = fetch('ENZYME').scan(/\S+/)
-	end
-	@data['ENZYME']
+        end
+        @data['ENZYME']
       end
 
     end

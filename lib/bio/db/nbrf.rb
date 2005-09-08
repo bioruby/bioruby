@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: nbrf.rb,v 1.2 2003/10/10 11:49:43 ng Exp $
+#  $Id: nbrf.rb,v 1.3 2005/09/08 01:22:11 k Exp $
 #
 
 require 'bio/db'
@@ -42,8 +42,8 @@ module Bio
 
       @definition = line2.to_s.chomp
       if /^>?([A-Za-z0-9]{2})\;(.*)/ =~ line1.to_s then
-	@seq_type = $1
-	@entry_id = $2
+        @seq_type = $1
+        @entry_id = $2
       end
     end
     attr_accessor :seq_type, :entry_id, :definition, :data
@@ -59,19 +59,19 @@ module Bio
     def seq_class
       case @seq_type
       when /[PF]1/
-	# protein
-	Sequence::AA
+        # protein
+        Sequence::AA
       when /[DR][LC]/, /N[13]/
-	# nucleic
-	Sequence::NA
+        # nucleic
+        Sequence::NA
       else
-	Sequence
+        Sequence
       end
     end
 
     def seq
       unless defined?(@seq)
-	@seq = seq_class.new(@data.tr(" \t\r\n0-9", '')) # lazy clean up
+        @seq = seq_class.new(@data.tr(" \t\r\n0-9", '')) # lazy clean up
       end
       @seq
     end
@@ -82,11 +82,11 @@ module Bio
 
     def naseq
       if seq.is_a?(Bio::Sequence::AA) then
-	raise 'not nucleic but protein sequence'
+        raise 'not nucleic but protein sequence'
       elsif seq.is_a?(Bio::Sequence::NA) then
-	seq
+        seq
       else
-	Bio::Sequence::NA.new(seq)
+        Bio::Sequence::NA.new(seq)
       end
     end
       
@@ -96,11 +96,11 @@ module Bio
 
     def aaseq
       if seq.is_a?(Bio::Sequence::NA) then
-	raise 'not nucleic but protein sequence'
+        raise 'not nucleic but protein sequence'
       elsif seq.is_a?(Bio::Sequence::AA) then
-	seq
+        seq
       else
-	Bio::Sequence::AA.new(seq)
+        Bio::Sequence::AA.new(seq)
       end
     end
 
@@ -113,20 +113,20 @@ module Bio
       seq_type = hash[:seq_type]
       seq = hash[:seq]
       unless seq_type
-	if seq.is_a?(Bio::Sequence::AA) then
-	  seq_type = 'P1'
-	elsif seq.is_a?(Bio::Sequence::NA) then
-	  seq_type = /u/i =~ seq ? 'RL' : 'DL'
-	else
-	  seq_type = 'XX'
-	end
+        if seq.is_a?(Bio::Sequence::AA) then
+          seq_type = 'P1'
+        elsif seq.is_a?(Bio::Sequence::NA) then
+          seq_type = /u/i =~ seq ? 'RL' : 'DL'
+        else
+          seq_type = 'XX'
+        end
       end
       width = hash.has_key?(:width) ? hash[:width] : 70
       if width then
-	seq = seq.to_s + "*"
-	seq.gsub!(Regexp.new(".{1,#{width}}"), "\\0\n")
+        seq = seq.to_s + "*"
+        seq.gsub!(Regexp.new(".{1,#{width}}"), "\\0\n")
       else
-	seq = seq.to_s + "*\n"
+        seq = seq.to_s + "*\n"
       end
       ">#{seq_type};#{hash[:entry_id]}\n#{hash[:definition]}\n#{seq}"
     end

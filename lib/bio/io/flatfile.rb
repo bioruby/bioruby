@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.35 2005/08/10 17:15:23 k Exp $
+#  $Id: flatfile.rb,v 1.36 2005/09/08 01:22:11 k Exp $
 #
 
 module Bio
@@ -30,7 +30,7 @@ module Bio
       # 3rd and 4th arg: mode, perm (passed to File.open)
       openmode = []
       while x = arg[0] and !x.is_a?(Hash)
-	openmode << arg.shift
+        openmode << arg.shift
       end
       # rest of arg: passed to FlatFile.new
       # create a flatfile object
@@ -77,9 +77,9 @@ module Bio
       @prefetch = ''
       # 1st arg: database class (or file format autodetection)
       if dbclass then
-	self.dbclass = dbclass
+        self.dbclass = dbclass
       else
-	autodetect
+        autodetect
       end
     end
     attr_reader :io
@@ -88,26 +88,26 @@ module Bio
       @entry_raw = gets(@rs)
       return nil unless @entry_raw
       if raw then
-	@entry_raw
+        @entry_raw
       else
-	e = @dbclass.new(@entry_raw)
-	begin
-	  s = e.entry_overrun
-	rescue NameError
-	  s = nil
-	end
-	if s then
-	  @entry_raw[-(s.length), s.length] = ''
-	  ungets(s)
-	end
-	e
+        e = @dbclass.new(@entry_raw)
+        begin
+          s = e.entry_overrun
+        rescue NameError
+          s = nil
+        end
+        if s then
+          @entry_raw[-(s.length), s.length] = ''
+          ungets(s)
+        end
+        e
       end
     end
     attr_reader :entry_raw
 
     def each_entry
       while e = self.next_entry
-	yield e
+        yield e
       end
     end
     alias :each :each_entry
@@ -134,44 +134,44 @@ module Bio
 
     def eof?
       if @prefetch.size > 0
-	false
+        false
       else
-	@io.eof?
+        @io.eof?
       end
     end
 
     def gets(io_rs = $/)
       if @prefetch.size > 0
-	if io_rs == nil then
-	  r = @prefetch + @io.gets(nil).to_s
-	  @prefetch = ''
-	else
-	  if io_rs == '' then
-	    sp_rs = /\n\n/n
-	    sp_rs_orig = "\n\n"
-	  else
-	    sp_rs = Regexp.new(Regexp.escape(io_rs, 'n'), 0, 'n')
-	    sp_rs_orig = io_rs
-	  end
-	  a = @prefetch.split(sp_rs, 2)
-	  if a.size > 1 then
-	    r = a[0] + sp_rs_orig
-	    @prefetch = a[1]
-	  else
-	    @prefetch << @io.gets(io_rs).to_s
-	    a = @prefetch.split(sp_rs, 2)
-	    if a.size > 1 then
-	      r = a[0] + sp_rs_orig
-	      @prefetch = a[1].to_s
-	    else
-	      r = @prefetch
-	      @prefetch = ''
-	    end
-	  end
-	end
-	r
+        if io_rs == nil then
+          r = @prefetch + @io.gets(nil).to_s
+          @prefetch = ''
+        else
+          if io_rs == '' then
+            sp_rs = /\n\n/n
+            sp_rs_orig = "\n\n"
+          else
+            sp_rs = Regexp.new(Regexp.escape(io_rs, 'n'), 0, 'n')
+            sp_rs_orig = io_rs
+          end
+          a = @prefetch.split(sp_rs, 2)
+          if a.size > 1 then
+            r = a[0] + sp_rs_orig
+            @prefetch = a[1]
+          else
+            @prefetch << @io.gets(io_rs).to_s
+            a = @prefetch.split(sp_rs, 2)
+            if a.size > 1 then
+              r = a[0] + sp_rs_orig
+              @prefetch = a[1].to_s
+            else
+              r = @prefetch
+              @prefetch = ''
+            end
+          end
+        end
+        r
       else
-	@io.gets(io_rs)
+        @io.gets(io_rs)
       end
     end
 
@@ -182,10 +182,10 @@ module Bio
 
     def getc
       if @prefetch.size > 0 then
-	r = @prefetch[0]
-	@prefetch = @prefetch[1..-1]
+        r = @prefetch[0]
+        @prefetch = @prefetch[1..-1]
       else
-	r = @io.getc
+        r = @io.getc
       end
       r
     end
@@ -202,11 +202,11 @@ module Bio
 
     def dbclass=(k)
       if k then
-	@dbclass = k
-	@rs = @dbclass::DELIMITER
+        @dbclass = k
+        @rs = @dbclass::DELIMITER
       else
-	@dbclass = nil
-	@rs = $/
+        @dbclass = nil
+        @rs = $/
       end
     end
     attr_reader :dbclass
@@ -215,16 +215,16 @@ module Bio
     def autodetect(lines = 31)
       r = nil
       1.upto(lines) do |x|
-	if line = @io.gets then
-	  @prefetch << line
-	  if line and line.strip.size > 0 then
-	    r = self.class.autodetect(@prefetch)
-	    if r then
-	      self.dbclass = r
-	      return r
-	    end
-	  end
-	end
+        if line = @io.gets then
+          @prefetch << line
+          if line and line.strip.size > 0 then
+            r = self.class.autodetect(@prefetch)
+            if r then
+              self.dbclass = r
+              return r
+            end
+          end
+        end
       end
       self.dbclass = nil unless dbclass
       r
@@ -247,99 +247,99 @@ module Bio
       require 'bio'
       case text
       when /^LOCUS       .+ bp .*[a-z]*[DR]?NA/
-	Bio::GenBank
+        Bio::GenBank
       when /^LOCUS       .+ aa .+/
-	Bio::GenPept
+        Bio::GenPept
       when /^UI  \- [0-9]+$/
-	Bio::MEDLINE
-	
+        Bio::MEDLINE
+        
       when /^ID   .+\; *(DNA|RNA|XXX)\;/
-	Bio::EMBL
+        Bio::EMBL
       when /^ID   .+\; *PRT\;/
-	Bio::SPTR
+        Bio::SPTR
       when /^ID   [-A-Za-z0-9_\.]+\; (PATTERN|RULE|MATRIX)\.$/
-	Bio::PROSITE
+        Bio::PROSITE
       when /^AC  [-A-Za-z0-9_\.]+$/
-	Bio::TRANSFAC
+        Bio::TRANSFAC
 
       when /^H [-A-Z0-9_\.]+$/
-	if text =~ /^M [rc]/ then
-	  Bio::AAindex2
-	elsif text =~ /^I    A\/L/ then
-	  Bio::AAindex1
-	else
-	  false #fail to determine
-	end
+        if text =~ /^M [rc]/ then
+          Bio::AAindex2
+        elsif text =~ /^I    A\/L/ then
+          Bio::AAindex1
+        else
+          false #fail to determine
+        end
 
       when /^CODE        [0-9]+$/
-	Bio::LITDB
+        Bio::LITDB
       when /^Entry           [A-Z0-9]+/
-	Bio::KEGG::BRITE
-	
+        Bio::KEGG::BRITE
+        
       when /^ENTRY       .+ KO\s*$/
-	Bio::KEGG::KO
+        Bio::KEGG::KO
       when /^ENTRY       .+ Glycan\s*$/
         Bio::KEGG::GLYCAN
       when /^ENTRY       .+ (CDS|gene|.*RNA) /
-	Bio::KEGG::GENES
+        Bio::KEGG::GENES
       when /^ENTRY       EC [0-9\.]+$/
-	Bio::KEGG::ENZYME
+        Bio::KEGG::ENZYME
       when /^ENTRY       C[A-Za-z0-9\._]+$/
-	Bio::KEGG::COMPOUND
+        Bio::KEGG::COMPOUND
       when /^ENTRY       R[A-Za-z0-9\._]+$/
-	Bio::KEGG::REACTION
+        Bio::KEGG::REACTION
       when /^ENTRY       [a-z]+$/
-	Bio::KEGG::GENOME
+        Bio::KEGG::GENOME
 
       when /\<\!DOCTYPE\s+maxml\-(sequences|clusters)\s+SYSTEM/
-	if $1 == 'clusters'
-	  Bio::FANTOM::MaXML::Cluster
-	elsif $1 == 'sequences'
-	  Bio::FANTOM::MaXML::Sequence
-	else
-	  nil #unknown
-	end
+        if $1 == 'clusters'
+          Bio::FANTOM::MaXML::Cluster
+        elsif $1 == 'sequences'
+          Bio::FANTOM::MaXML::Sequence
+        else
+          nil #unknown
+        end
 
       when /^HEADER    .{40}\d\d\-[A-Z]{3}\-\d\d   [0-9A-Z]{4}/
-	Bio::PDB
+        Bio::PDB
 
       when /^CLUSTAL .*\(.*\).*sequence +alignment/
-	Bio::ClustalW::Report
+        Bio::ClustalW::Report
 
       when /\<\!DOCTYPE BlastOutput PUBLIC /
         Bio::Blast::Report
 
       when /^BLAST.? +[\-\.\w]+\-WashU +\[[\-\.\w ]+\]/
-	Bio::Blast::WU::Report
+        Bio::Blast::WU::Report
       when /^TBLAST.? +[\-\.\w]+\-WashU +\[[\-\.\w ]+\]/
-	Bio::Blast::WU::Report_TBlast
+        Bio::Blast::WU::Report_TBlast
 
       when /^BLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/
-	Bio::Blast::Default::Report
+        Bio::Blast::Default::Report
       when /^TBLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/
-	Bio::Blast::Default::Report_TBlast
+        Bio::Blast::Default::Report_TBlast
 
       when /^psLayout version \d+\s*$/
         Bio::Blat::Report
       when /^\-\-SPIDEY version .+\-\-$/
-	Bio::Spidey::Report
+        Bio::Spidey::Report
 
       when /^seq1 \= .*\, \d+ bp(\r|\r?\n)seq2 \= .*\, \d+ bp(\r|\r?\n)/
         Bio::Sim4::Report
 
       when /^>.+$/
-	if text =~ /^>([PF]1|[DR][LC]|N[13]|XX)\;.+/ then
-	  Bio::NBRF
-	elsif text =~ /^>.+$\s+(^\#.*$\s*)*^\s*\d*\s*[-a-zA-Z_\.\[\]\(\)\*\+\$]+/ then
-	  Bio::FastaFormat
-	elsif text =~ /^>.+$\s+^\s*\d+(\s+\d+)*\s*$/ then
-	  Bio::FastaNumericFormat
-	else
-	  false #fail to determine
-	end
+        if text =~ /^>([PF]1|[DR][LC]|N[13]|XX)\;.+/ then
+          Bio::NBRF
+        elsif text =~ /^>.+$\s+(^\#.*$\s*)*^\s*\d*\s*[-a-zA-Z_\.\[\]\(\)\*\+\$]+/ then
+          Bio::FastaFormat
+        elsif text =~ /^>.+$\s+^\s*\d+(\s+\d+)*\s*$/ then
+          Bio::FastaNumericFormat
+        else
+          false #fail to determine
+        end
 
       else
-	nil #not found
+        nil #not found
       end
     end
 

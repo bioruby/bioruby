@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: enzyme.rb,v 0.7 2004/02/04 14:00:58 k Exp $
+#  $Id: enzyme.rb,v 0.8 2005/09/08 01:22:11 k Exp $
 #
 
 require 'bio/db'
@@ -32,17 +32,17 @@ module Bio
       TAGSIZE	= 12
 
       def initialize(entry)
-	super(entry, TAGSIZE)
+        super(entry, TAGSIZE)
       end
 
       # ENTRY
       def entry_id
-	field_fetch('ENTRY')
+        field_fetch('ENTRY')
       end
 
       # NAME
       def names
-	lines_fetch('NAME')
+        lines_fetch('NAME')
       end
       def name
         names[0]
@@ -50,71 +50,71 @@ module Bio
 
       # CLASS
       def classes
-	lines_fetch('CLASS')
+        lines_fetch('CLASS')
       end
 
       # SYSNAME
       def sysname
-	field_fetch('SYSNAME')
+        field_fetch('SYSNAME')
       end
 
       # REACTION ';'
       def reaction
-	field_fetch('REACTION')
+        field_fetch('REACTION')
       end
       
       # SUBSTRATE
       def substrates
-	lines_fetch('SUBSTRATE')
+        lines_fetch('SUBSTRATE')
       end
 
       # PRODUCT
       def products
-	lines_fetch('PRODUCT')
+        lines_fetch('PRODUCT')
       end
 
       # COFACTOR
       def cofactors
-	lines_fetch('COFACTOR')
+        lines_fetch('COFACTOR')
       end
 
       # COMMENT
       def comment
-	field_fetch('COMMENT')
+        field_fetch('COMMENT')
       end
 
       # PATHWAY
       def pathways
-	lines_fetch('PATHWAY')
+        lines_fetch('PATHWAY')
       end
 
       # GENES
       def genes
-	lines_fetch('GENES')
+        lines_fetch('GENES')
       end
 
       # DISEASE
       def diseases
-	lines_fetch('DISEASE')
+        lines_fetch('DISEASE')
       end
 
       # MOTIF
       def motifs
-	lines_fetch('MOTIF')
+        lines_fetch('MOTIF')
       end
 
       # STRUCTURES
       def structures
-	unless @data['STRUCTURES']
-	  @data['STRUCTURES'] =
-	    fetch('STRUCTURES').sub(/(PDB: )*/,'').split(/\s+/)
-	end
-	@data['STRUCTURES']
+        unless @data['STRUCTURES']
+          @data['STRUCTURES'] =
+            fetch('STRUCTURES').sub(/(PDB: )*/,'').split(/\s+/)
+        end
+        @data['STRUCTURES']
       end
 
       # DBLINKS
       def dblinks
-	lines_fetch('DBLINKS')
+        lines_fetch('DBLINKS')
       end
 
     end

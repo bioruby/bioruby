@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: mafft.rb,v 1.4 2005/03/04 04:48:41 k Exp $
+#  $Id: mafft.rb,v 1.5 2005/09/08 01:22:08 k Exp $
 #
 
 require 'bio/db/fasta'
@@ -34,10 +34,10 @@ module Bio
     def self.fftns(n = nil)
       opt = []
       if n.to_s == 'i' then
-	self.new2(nil, 'fftnsi', *opt)
+        self.new2(nil, 'fftnsi', *opt)
       else
-	opt << n.to_s if n
-	self.new2(nil, 'fftns', *opt)
+        opt << n.to_s if n
+        self.new2(nil, 'fftns', *opt)
       end
     end
 
@@ -49,10 +49,10 @@ module Bio
       opt = []
       opt << '--all-positive' if ap
       if n.to_s == 'i' then
-	self.new2(nil, 'nwnsi', *opt)
+        self.new2(nil, 'nwnsi', *opt)
       else
-	opt << n.to_s if n
-	self.new2(nil, 'nwns', *opt)
+        opt << n.to_s if n
+        self.new2(nil, 'nwns', *opt)
       end
     end
 
@@ -68,7 +68,7 @@ module Bio
 
     def self.new2(dir, prog, *opt)
       if dir then
-	prog = File.join(dir, prog)
+        prog = File.join(dir, prog)
       end
       self.new(prog, opt)
     end
@@ -87,26 +87,26 @@ module Bio
     
     def query(seqs)
       if seqs then
-	query_align(seqs)
+        query_align(seqs)
       else
-	exec_local(@option)
+        exec_local(@option)
       end
     end
 
     def query_align(seqs, *arg)
       # seqs should be Bio::Alignment or Array of sequences or nil
       unless seqs.is_a?(Bio::Alignment)
-	seqs = Bio::Alignment.new(seqs, *arg)
+        seqs = Bio::Alignment.new(seqs, *arg)
       end
       query_string(seqs.to_fasta(70))
     end
 
     def query_string(str, *arg)
       begin
-	tf_in = Tempfile.open('align')
-	tf_in.print str
+        tf_in = Tempfile.open('align')
+        tf_in.print str
       ensure
-	tf_in.close(false)
+        tf_in.close(false)
       end
       r = query_by_filename(tf_in.path, *arg)
       tf_in.close(true)
@@ -127,14 +127,14 @@ module Bio
       @output = nil
       @log = nil
       Open3.popen3(*@command) do |din, dout, derr|
-	din.close
-	derr.sync = true
-	t = Thread.start do
-	  @log = derr.read
-	end
-	ff = Bio::FlatFile.new(Bio::FastaFormat, dout)
-	@output = ff.to_a
-	t.join
+        din.close
+        derr.sync = true
+        t = Thread.start do
+          @log = derr.read
+        end
+        ff = Bio::FlatFile.new(Bio::FastaFormat, dout)
+        @output = ff.to_a
+        t.join
       end
       @log
     end
