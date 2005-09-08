@@ -1,22 +1,29 @@
 =begin
 
-  $Id: Tutorial.rd,v 1.2 2005/08/31 13:16:03 ngoto Exp $
+  $Id: Tutorial.rd,v 1.3 2005/09/08 05:36:26 pjotr Exp $
 
   Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>
 
   Translated into English: Naohisa Goto <ng@bioruby.org>
+  Edited by:               PjotrPrins
                            (to be written...)
+
+  IMPORTANT NOTICE: This page is maintained in the BioRuby
+  CVS repository. Please edit the file there, otherwise
+  changes may get lost. See ((<BioRuby Developer Information>))
+  for CVS and mailing list access.
 
 = How to use BioRuby
 
 == Manipulating nucleic / amino acid sequences (Bio::Sequence class)
 
-For simple example, by using a short DNA seuquence "atgcatgcaaaa",
-we are now converting into complemental strand, splicing subsequence,
-calculating nucleic acid compositions, translating to amino acid sequence,
-calculating molecular weight, and so on. About translation to
-amino acid sequences, you can specify frame where you want to start
-translation from and condon table ID defined in codontable.rb.
+A simple example: take a DNA sequence "atgcatgcaaaa", and convert it
+into the complemental strand, splice it into a subsequence, calculate
+the nucleic acid composition, translate it into the amino acid
+sequence, calculate molecular weight, and so on. Translating into
+amino acid sequences the frame can be specified - where you want to
+start the translation from and which condon table to use (ID defined
+in codontable.rb).
 
 
     #!/usr/bin/env ruby
