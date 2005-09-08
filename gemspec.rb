@@ -2,8 +2,8 @@ $:.unshift '../lib'
 require 'rubygems'
 
 spec = Gem::Specification.new do |s|
-  s.name = 'bioruby'
-  s.version = "0.6.4"
+  s.name = 'bio'
+  s.version = "0.7.0"
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
   s.homepage = "http://bioruby.org/"
