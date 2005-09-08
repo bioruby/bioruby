@@ -17,140 +17,218 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.44 2005/08/10 12:56:37 k Exp $
+#  $Id: bio.rb,v 1.45 2005/09/08 01:15:52 k Exp $
 #
 
 module Bio
-  BIORUBY_VERSION = [0, 6, 4].extend(Comparable)
+
+  BIORUBY_VERSION = [0, 7, 0].extend(Comparable)
+
+  ### Basic data types
+
+  ## Sequence
+
+  autoload :Seq,            'bio/sequence'
+  autoload :Sequence,       'bio/sequence'
+
+  ## Locations/Location
+
+  autoload :Location,       'bio/location'
+  autoload :Locations,      'bio/location'
+
+  ## Features/Feature
+
+  autoload :Feature,        'bio/feature'
+  autoload :Features,       'bio/feature'       # to_gff
+
+  ## References/Reference
+
+  autoload :Reference,      'bio/reference'
+  autoload :References,     'bio/reference'
+
+  ## Pathway/Relation
+
+  autoload :Pathway,        'bio/pathway'
+  autoload :Relation,       'bio/pathway'
+
+  ## Alignment
+
+  autoload :Alignment,      'bio/alignment'
+
+
+  ### Constants
+
+  autoload :NucleicAcid,    'bio/data/na'
+  autoload :AminoAcid,      'bio/data/aa'
+  autoload :CodonTable,     'bio/data/codontable'
+
+
+  ### DB parsers
+
+  autoload :DB,             'bio/db'
+  autoload :NCBIDB,         'bio/db'
+  autoload :KEGGDB,         'bio/db'
+  autoload :EMBLDB,         'bio/db'
+
+  ## GenBank/RefSeq/DDBJ
+
+  # module Bio
+  #   autoload :NCBIDB, 'bio/db'
+  #   class GenBank < NCBIDB
+  #     autoload :Common, 'bio/db/genbank/common'
+  #     include Bio::GenBank::Common
+
+  # module Bio
+  #   autoload :NCBIDB, 'bio/db'
+  #  end
+  #  class Bio::GenBank < Bio::NCBIDB
+  #     autoload :Common, 'bio/db/genbank/common'
+  #     include Bio::GenBank::Common
+
+  autoload :GenBank,        'bio/db/genbank/genbank'
+  autoload :GenPept,        'bio/db/genbank/genpept'
+  autoload :RefSeq,         'bio/db/genbank/refseq'
+  autoload :DDBJ,           'bio/db/genbank/ddbj'
+
+  ## EMBL/TrEMBL/Swiss-Prot/SPTR
+
+  autoload :EMBL,           'bio/db/embl/embl'
+  autoload :SPTR,           'bio/db/embl/sptr'
+  autoload :TrEMBL,         'bio/db/embl/trembl'
+  autoload :UniProt,        'bio/db/embl/uniprot'
+  autoload :SwissProt,      'bio/db/embl/swissprot'
+
+
+  ## KEGG
+
+  class KEGG
+    autoload :GENOME,       'bio/db/kegg/genome'
+    autoload :GENES,        'bio/db/kegg/genes'
+    autoload :ENZYME,       'bio/db/kegg/enzyme'
+    autoload :COMPOUND,     'bio/db/kegg/compound'
+    autoload :GLYCAN,       'bio/db/kegg/glycan'
+    autoload :REACTION,     'bio/db/kegg/reaction'
+    autoload :BRITE,        'bio/db/kegg/brite'
+    autoload :CELL,         'bio/db/kegg/cell'
+    autoload :Microarray,   'bio/db/kegg/microarray'
+    autoload :Microarrays,  'bio/db/kegg/microarray'
+    autoload :Keggtab,      'bio/db/kegg/keggtab'
+    autoload :KO,           'bio/db/kegg/ko'
+  end
+
+  ## other formats
+
+  autoload :FastaFormat,    'bio/db/fasta'
+  autoload :FastaNumericFormat, 'bio/db/fasta' # change to FastaFormat::Numeric ?
+  autoload :FastaDefline,       'bio/db/fasta' # change to FastaFormat::Defline
+  autoload :GFF,            'bio/db/gff'
+  autoload :GFF2,           'bio/db/gff'       # change to GFF::GFF2, improve
+  autoload :GFF3,           'bio/db/gff'       # change to GFF::GFF3, improve
+  autoload :AAindex,        'bio/db/aaindex'
+  autoload :TRANSFAC,       'bio/db/transfac'
+  autoload :TFMATRIX,       'bio/db/transfac'  # change to TRANSFAC::MATRIX
+  autoload :TFSITE,         'bio/db/transfac'  # change to TRANSFAC::SITE
+  autoload :TFFACTOR,       'bio/db/transfac'  # change to TRANSFAC::FACTOR
+  autoload :TFCELL,         'bio/db/transfac'  # change to TRANSFAC::CELL
+  autoload :TFCLASS,        'bio/db/transfac'  # change to TRANSFAC::CLASS
+  autoload :TFGENE,         'bio/db/transfac'  # change to TRANSFAC::GENE
+  autoload :PROSITE,        'bio/db/prosite'
+  autoload :LITDB,          'bio/db/litdb'
+  autoload :MEDLINE,        'bio/db/medline'
+  autoload :FANTOM,         'bio/db/fantom'
+  autoload :GO,             'bio/db/go'
+  autoload :PDB,            'bio/db/pdb'
+  autoload :NBRF,           'bio/db/nbrf'
+
+
+  ### IO interface modules
+
+  autoload :Registry,       'bio/io/registry'
+  autoload :Fetch,          'bio/io/fetch'
+  autoload :SQL,            'bio/io/sql'
+  autoload :FlatFile,       'bio/io/flatfile'
+  autoload :FlatFileIndex,  'bio/io/flatfile/index'   # chage to FlatFile::Index ?
+  class FlatFileIndex
+    autoload :Indexer,      'bio/io/flatfile/indexer' # require 'flatfile/index'
+    autoload :BDBdefault,   'bio/io/flatfile/bdb'     # require 'flatfile/index'
+  end
+
+  autoload :PubMed,         'bio/io/pubmed'
+  autoload :DAS,            'bio/io/das'
+  autoload :DBGET,          'bio/io/dbget'
+
+  class Blast
+    autoload :Fastacmd,     'bio/io/fastacmd'
+  end
+
+  class KEGG
+    autoload :API,          'bio/io/keggapi'
+  end
+
+  class DDBJ
+    autoload :XML,          'bio/io/ddbjxml'
+  end
+
+  class HGC
+    autoload :HiGet,        'bio/io/higet'
+  end
+
+# autoload :ESOAP,          'bio/io/esoap'      # NCBI::ESOAP ?
+# autoload :BRDB,           'bio/io/brdb'       # remove
+
+
+  ### Applications
+
+  autoload :Fasta,          'bio/appl/fasta'
+  autoload :Report,         'bio/appl/fasta/format10' # improve format6
+
+  autoload :Blast,          'bio/appl/blast'
+  class Blast
+    autoload :Report,       'bio/appl/blast/report'
+    autoload :Default,      'bio/appl/blast/format0'
+    autoload :WU,           'bio/appl/blast/wublast'
+    autoload :Bl2seq,       'bio/appl/bl2seq/report'
+  end
+
+  autoload :HMMER,          'bio/appl/hmmer'
+  class HMMER
+    autoload :Report,       'bio/appl/hmmer/report'
+  end
+
+# autoload :EMBOSS,         'bio/appl/emboss'    # use bio/command, improve
+
+  autoload :PSORT,          'bio/appl/psort'
+  class PSORT
+    autoload :PSORT1,       'bio/appl/psort'
+    autoload :PSORT2,       'bio/appl/psort'
+  end
+
+  autoload :TMHMM,          'bio/appl/tmhmm/report'
+  autoload :TargetP,        'bio/appl/targetp/report'
+  autoload :SOSUI,          'bio/appl/sosui/report'
+  autoload :Genscan,        'bio/appl/genscan/report'
+
+  autoload :ClustalW,       'bio/appl/clustalw'
+  class ClustalW
+    autoload :Report,       'bio/appl/clustalw/report'
+  end
+
+  autoload :MAFFT,          'bio/appl/mafft'
+  class MAFFT
+    autoload :Report,       'bio/appl/mafft/report'
+  end
+
+  autoload :Sim4,           'bio/appl/sim4'
+  class Sim4
+    autoload :Report,       'bio/appl/sim4/report'
+  end
+  
+  autoload :Spidey,         'bio/appl/spidey/report'
+  autoload :Blat,           'bio/appl/blat/report'
+  
+
+  ### Utilities
+
+  autoload :SiRNA,          'bio/util/sirna'
+
 end
-
-
-### Basic data type modules
-
-## Sequence
-
-require 'bio/sequence'
-
-## Locations/Location
-
-require 'bio/location'
-
-## Features/Feature
-
-require 'bio/feature'
-
-## References/Reference
-
-require 'bio/reference'
-
-## Pathway/Relation
-
-require 'bio/pathway'
-
-## Alignment
-
-require 'bio/alignment'
-
-
-### Constants
-
-require 'bio/data/na'
-require 'bio/data/aa'
-require 'bio/data/codontable'
-
-
-### DB parsers
-
-require 'bio/db'
-
-## GenBank/RefSeq/DDBJ
-
-require 'bio/db/genbank'
-
-## EMBL/TrEMBL/Swiss-Prot/SPTR
-
-require 'bio/db/embl'
-
-## KEGG
-
-require 'bio/db/kegg/genome'
-require 'bio/db/kegg/genes'
-require 'bio/db/kegg/enzyme'
-require 'bio/db/kegg/compound'
-require 'bio/db/kegg/glycan'
-require 'bio/db/kegg/reaction'
-require 'bio/db/kegg/brite'
-require 'bio/db/kegg/cell'
-require 'bio/db/kegg/microarray'
-require 'bio/db/kegg/keggtab'
-require 'bio/db/kegg/ko'
-
-## other formats
-
-require 'bio/db/fasta'
-require 'bio/db/gff'
-require 'bio/db/aaindex'
-require 'bio/db/transfac'
-require 'bio/db/prosite'
-require 'bio/db/litdb'
-require 'bio/db/medline'
-require 'bio/db/fantom'
-require 'bio/db/go'
-require 'bio/db/pdb'
-require 'bio/db/nbrf'
-
-
-### IO interface modules
-
-require 'bio/io/registry'
-require 'bio/io/flatfile'
-require 'bio/io/flatfile/indexer'
-require 'bio/io/flatfile/index'
-require 'bio/io/flatfile/bdb'
-require 'bio/io/fastacmd'
-require 'bio/io/fetch'
-require 'bio/io/sql'
-
-require 'bio/io/dbget'
-require 'bio/io/keggapi'
-require 'bio/io/pubmed'
-require 'bio/io/das'
-require 'bio/io/ddbjxml'
-require 'bio/io/higet'
-#require 'bio/io/esoap'
-#require 'bio/io/brdb'
-
-
-### Applications
-
-require 'bio/appl/fasta'
-require 'bio/appl/fasta/format10'
-require 'bio/appl/blast'
-require 'bio/appl/blast/report'
-require 'bio/appl/blast/format0'
-require 'bio/appl/blast/wublast'
-require 'bio/appl/blast/rexml'
-require 'bio/appl/blast/xmlparser'
-require 'bio/appl/blast/format8'
-require 'bio/appl/bl2seq/report'
-require 'bio/appl/hmmer'
-require 'bio/appl/hmmer/report'
-require 'bio/appl/emboss'
-require 'bio/appl/psort'
-require 'bio/appl/tmhmm/report'
-require 'bio/appl/targetp/report'
-require 'bio/appl/sosui/report'
-require 'bio/appl/genscan/report'
-require 'bio/appl/clustalw'
-require 'bio/appl/clustalw/report'
-require 'bio/appl/mafft'
-require 'bio/appl/mafft/report'
-require 'bio/appl/sim4'
-require 'bio/appl/sim4/report'
-require 'bio/appl/spidey/report'
-require 'bio/appl/blat/report'
-
-### Utilities
-
-require 'bio/util/sirna'
-
