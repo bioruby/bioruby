@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.51 2005/09/09 15:48:17 ngoto Exp $
+#  $Id: bio.rb,v 1.52 2005/09/09 15:52:57 ngoto Exp $
 #
 
 module Bio
@@ -224,9 +224,10 @@ module Bio
   autoload :Genscan,        'bio/appl/genscan/report'
 
   autoload :ClustalW,       'bio/appl/clustalw'
-  class ClustalW
-    autoload :Report,       'bio/appl/clustalw/report'
-  end
+  ## below are described in bio/appl/clustalw.rb
+  #class ClustalW
+  #  autoload :Report,       'bio/appl/clustalw/report'
+  #end
 
   autoload :MAFFT,          'bio/appl/mafft'
   class MAFFT

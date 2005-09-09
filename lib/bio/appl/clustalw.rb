@@ -17,18 +17,19 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: clustalw.rb,v 1.6 2005/09/08 01:22:08 k Exp $
+#  $Id: clustalw.rb,v 1.7 2005/09/09 15:52:57 ngoto Exp $
 #
 
 require 'tempfile'
+require 'open3'
+
 require 'bio/sequence'
 require 'bio/alignment'
-#require 'bio/appl/factory'
-
-require 'open3'
 
 module Bio
   class ClustalW
+
+    autoload :Report, 'bio/appl/clustalw/report'
 
     def initialize(program = 'clustalw', option = [])
       @program = program
