@@ -17,8 +17,10 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.6 2005/09/08 01:22:09 k Exp $
+#  $Id: report.rb,v 1.7 2005/09/09 15:34:28 ngoto Exp $
 #
+
+require 'bio/appl/hmmer'
 
 module Bio
   class HMMER

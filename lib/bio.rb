@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.49 2005/09/09 15:09:37 ngoto Exp $
+#  $Id: bio.rb,v 1.50 2005/09/09 15:34:28 ngoto Exp $
 #
 
 module Bio
@@ -200,9 +200,10 @@ module Bio
   #end
 
   autoload :HMMER,          'bio/appl/hmmer'
-  class HMMER
-    autoload :Report,       'bio/appl/hmmer/report'
-  end
+  ## below are described in bio/appl/hmmer.rb
+  #class HMMER
+  #  autoload :Report,       'bio/appl/hmmer/report'
+  #end
 
 # autoload :EMBOSS,         'bio/appl/emboss'    # use bio/command, improve
 
