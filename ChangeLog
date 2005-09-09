@@ -1,3 +1,21 @@
+2005-09-10  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio.rb, lib/bio/appl/blast.rb, lib/bio/appl/blast/format0.rb,
+	  lib/bio/appl/blast/report.rb, lib/bio/appl/clustalw.rb,
+	  lib/bio/appl/fasta.rb, lib/bio/appl/fasta/format10.rb,
+	  lib/bio/appl/hmmer.rb, lib/bio/appl/hmmer/report.rb,
+	  lib/bio/appl/mafft.rb, lib/bio/appl/psort.rb,
+	  lib/bio/appl/psort/report.rb, lib/bio/appl/sim4.rb,
+	  lib/bio/db/genbank/ddbj.rb, lib/bio/io/flatfile/bdb.rb,
+	  lib/bio/io/flatfile/index.rb, lib/bio/io/flatfile/indexer.rb
+
+	  fixed autoload problem
+
+	* lib/bio/appl/blast.rb, lib/bio/appl/blast/report.rb
+
+	  Bio::Blast.reports method was moved from lib/bio/appl/blast/report.rb
+	  to lib/bio/appl/blast.rb for autoload.
+
 2005-08-31  Toshiaki Katayama <k@bioryby.org>
 
 	* BioRuby 0.6.4 is released.
