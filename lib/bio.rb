@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.45 2005/09/08 01:15:52 k Exp $
+#  $Id: bio.rb,v 1.46 2005/09/09 14:35:25 ngoto Exp $
 #
 
 module Bio
@@ -147,11 +147,13 @@ module Bio
   autoload :Fetch,          'bio/io/fetch'
   autoload :SQL,            'bio/io/sql'
   autoload :FlatFile,       'bio/io/flatfile'
-  autoload :FlatFileIndex,  'bio/io/flatfile/index'   # chage to FlatFile::Index ?
-  class FlatFileIndex
-    autoload :Indexer,      'bio/io/flatfile/indexer' # require 'flatfile/index'
-    autoload :BDBdefault,   'bio/io/flatfile/bdb'     # require 'flatfile/index'
-  end
+  autoload :FlatFileIndex,  'bio/io/flatfile/index' # chage to FlatFile::Index ?  ## below are described in bio/io/flatfile/index.rb
+  #class FlatFileIndex
+  #  autoload :Indexer,    'bio/io/flatfile/indexer'
+  #  autoload :BDBdefault, 'bio/io/flatfile/bdb'
+  #  autoload :BDBwrapper, 'bio/io/flatfile/bdb'
+  #  autoload :BDB_1,      'bio/io/flatfile/bdb'
+  #end
 
   autoload :PubMed,         'bio/io/pubmed'
   autoload :DAS,            'bio/io/das'

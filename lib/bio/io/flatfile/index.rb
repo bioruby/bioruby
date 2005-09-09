@@ -17,12 +17,17 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: index.rb,v 1.10 2005/09/08 01:22:12 k Exp $ 
+#  $Id: index.rb,v 1.11 2005/09/09 14:35:25 ngoto Exp $ 
 # 
-
 
 module Bio
   class FlatFileIndex
+
+    autoload :Indexer,    'bio/io/flatfile/indexer'
+    autoload :BDBdefault, 'bio/io/flatfile/bdb'
+    autoload :BDBwrapper, 'bio/io/flatfile/bdb'
+    autoload :BDB_1,      'bio/io/flatfile/bdb'
+
     MAGIC_FLAT = 'flat/1'
     MAGIC_BDB  = 'BerkeleyDB/1'
 

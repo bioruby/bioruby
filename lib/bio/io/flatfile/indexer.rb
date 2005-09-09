@@ -17,8 +17,10 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.18 2005/09/08 01:22:12 k Exp $ 
+#  $Id: indexer.rb,v 1.19 2005/09/09 14:35:25 ngoto Exp $ 
 # 
+
+require 'bio/io/flatfile/index'
 
 module Bio
   class FlatFileIndex
