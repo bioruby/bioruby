@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.47 2005/09/09 14:38:10 ngoto Exp $
+#  $Id: bio.rb,v 1.48 2005/09/09 14:59:52 ngoto Exp $
 #
 
 module Bio
@@ -160,9 +160,10 @@ module Bio
   autoload :DAS,            'bio/io/das'
   autoload :DBGET,          'bio/io/dbget'
 
-  class Blast
-    autoload :Fastacmd,     'bio/io/fastacmd'
-  end
+  ## below are described in bio/appl/blast.rb
+  #class Blast
+  #  autoload :Fastacmd,     'bio/io/fastacmd'
+  #end
 
   class KEGG
     autoload :API,          'bio/io/keggapi'
@@ -186,12 +187,14 @@ module Bio
   autoload :Report,         'bio/appl/fasta/format10' # improve format6
 
   autoload :Blast,          'bio/appl/blast'
-  class Blast
-    autoload :Report,       'bio/appl/blast/report'
-    autoload :Default,      'bio/appl/blast/format0'
-    autoload :WU,           'bio/appl/blast/wublast'
-    autoload :Bl2seq,       'bio/appl/bl2seq/report'
-  end
+  ## below are described in bio/appl/blast.rb
+  #class Blast
+  #  autoload :Fastacmd,     'bio/io/fastacmd'
+  #  autoload :Report,       'bio/appl/blast/report'
+  #  autoload :Default,      'bio/appl/blast/format0'
+  #  autoload :WU,           'bio/appl/blast/wublast'
+  #  autoload :Bl2seq,       'bio/appl/bl2seq/report'
+  #end
 
   autoload :HMMER,          'bio/appl/hmmer'
   class HMMER

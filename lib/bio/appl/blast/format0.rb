@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format0.rb,v 1.10 2005/09/08 01:22:08 k Exp $
+#  $Id: format0.rb,v 1.11 2005/09/09 14:59:53 ngoto Exp $
 #
 
 begin
@@ -25,7 +25,7 @@ begin
 rescue LoadError
 end
 
-require 'bio/db'
+#require 'bio/db'
 require 'bio/io/flatfile'
 
 module Bio
