@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.18 2005/09/08 01:22:08 k Exp $
+#  $Id: fasta.rb,v 1.19 2005/09/09 15:09:37 ngoto Exp $
 #
 
 require 'net/http'
@@ -28,6 +28,9 @@ require 'shellwords'
 module Bio
 
   class Fasta
+
+    autoload :Report, 'bio/appl/fasta/format10'
+    #autoload :?????,  'bio/appl/fasta/format6'
 
     include Bio::Command::Tools
 

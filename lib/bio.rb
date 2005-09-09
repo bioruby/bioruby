@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.48 2005/09/09 14:59:52 ngoto Exp $
+#  $Id: bio.rb,v 1.49 2005/09/09 15:09:37 ngoto Exp $
 #
 
 module Bio
@@ -184,7 +184,10 @@ module Bio
   ### Applications
 
   autoload :Fasta,          'bio/appl/fasta'
-  autoload :Report,         'bio/appl/fasta/format10' # improve format6
+  ## below are described in bio/appl/fasta.rb
+  #class Fasta
+  #  autoload :Report,       'bio/appl/fasta/format10'
+  #end
 
   autoload :Blast,          'bio/appl/blast'
   ## below are described in bio/appl/blast.rb
