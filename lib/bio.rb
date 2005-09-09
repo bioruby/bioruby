@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.52 2005/09/09 15:52:57 ngoto Exp $
+#  $Id: bio.rb,v 1.53 2005/09/09 15:56:20 ngoto Exp $
 #
 
 module Bio
@@ -230,9 +230,10 @@ module Bio
   #end
 
   autoload :MAFFT,          'bio/appl/mafft'
-  class MAFFT
-    autoload :Report,       'bio/appl/mafft/report'
-  end
+  ## below are described in bio/appl/mafft.rb
+  #class MAFFT
+  #  autoload :Report,       'bio/appl/mafft/report'
+  #end
 
   autoload :Sim4,           'bio/appl/sim4'
   class Sim4

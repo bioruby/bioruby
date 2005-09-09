@@ -17,19 +17,19 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: mafft.rb,v 1.5 2005/09/08 01:22:08 k Exp $
+#  $Id: mafft.rb,v 1.6 2005/09/09 15:56:20 ngoto Exp $
 #
 
 require 'bio/db/fasta'
 require 'bio/io/flatfile'
-require 'bio/appl/mafft/report'
-#require 'bio/appl/factory'
 
 # We use Open3.popen3, because MAFFT on win32 requires Cygwin.
 require 'open3'
 
 module Bio
   class MAFFT
+
+    autoload :Report,       'bio/appl/mafft/report'
 
     def self.fftns(n = nil)
       opt = []
