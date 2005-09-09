@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.50 2005/09/09 15:34:28 ngoto Exp $
+#  $Id: bio.rb,v 1.51 2005/09/09 15:48:17 ngoto Exp $
 #
 
 module Bio
@@ -208,10 +208,15 @@ module Bio
 # autoload :EMBOSS,         'bio/appl/emboss'    # use bio/command, improve
 
   autoload :PSORT,          'bio/appl/psort'
-  class PSORT
-    autoload :PSORT1,       'bio/appl/psort'
-    autoload :PSORT2,       'bio/appl/psort'
-  end
+  ## below are described in bio/appl/psort.rb
+  #class PSORT
+  #  class PSORT1
+  #    autoload :Report,       'bio/appl/psort/report'
+  #  end
+  #  class PSORT2
+  #    autoload :Report,       'bio/appl/psort/report'
+  #  end
+  #end
 
   autoload :TMHMM,          'bio/appl/tmhmm/report'
   autoload :TargetP,        'bio/appl/targetp/report'

@@ -17,14 +17,13 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: psort.rb,v 1.5 2005/09/08 01:22:08 k Exp $
+#  $Id: psort.rb,v 1.6 2005/09/09 15:48:17 ngoto Exp $
 #
 
 
 
 require 'bio/sequence'
 require 'bio/db/fasta'
-require 'bio/appl/psort/report'
 require 'net/http'
 require 'cgi'
 
@@ -106,6 +105,8 @@ module Bio
 
     class PSORT1
 
+      autoload :Report, 'bio/appl/psort/report'
+
       def self.imsut
         self.new(Remote.new(WWWServer['IMSUT']['host'],
                             WWWServer['IMSUT']['PSORT1']))
@@ -180,6 +181,8 @@ module Bio
 
     # Nakai and Horton 1999 TiBS
     class PSORT2
+
+      autoload :Report, 'bio/appl/psort/report'
 
       # remote
       def self.remote(host, path)
