@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: ddbj.rb,v 1.6 2004/08/23 23:40:35 k Exp $
+#  $Id: ddbj.rb,v 1.7 2005/09/09 16:02:04 ngoto Exp $
 #
 
 require 'bio/db/genbank/genbank'
@@ -25,6 +25,9 @@ require 'bio/db/genbank/genbank'
 module Bio
 
 class DDBJ < GenBank
+
+  autoload :XML,          'bio/io/ddbjxml'
+
   # Nothing to do (DDBJ database format is completely same as GenBank)
 end
 

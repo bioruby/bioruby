@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.54 2005/09/09 15:58:41 ngoto Exp $
+#  $Id: bio.rb,v 1.55 2005/09/09 16:02:04 ngoto Exp $
 #
 
 module Bio
@@ -89,6 +89,10 @@ module Bio
   autoload :GenPept,        'bio/db/genbank/genpept'
   autoload :RefSeq,         'bio/db/genbank/refseq'
   autoload :DDBJ,           'bio/db/genbank/ddbj'
+  ## below are described in bio/db/genbank/ddbj.rb
+  #class DDBJ
+  #  autoload :XML,          'bio/io/ddbjxml'
+  #end
 
   ## EMBL/TrEMBL/Swiss-Prot/SPTR
 
@@ -169,9 +173,10 @@ module Bio
     autoload :API,          'bio/io/keggapi'
   end
 
-  class DDBJ
-    autoload :XML,          'bio/io/ddbjxml'
-  end
+  ## below are described in bio/db/genbank/ddbj.rb
+  #class DDBJ
+  #  autoload :XML,          'bio/io/ddbjxml'
+  #end
 
   class HGC
     autoload :HiGet,        'bio/io/higet'
