@@ -17,15 +17,17 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sim4.rb,v 1.1 2004/10/08 17:41:08 ngoto Exp $
+#  $Id: sim4.rb,v 1.2 2005/09/09 15:58:42 ngoto Exp $
 #
 
-require 'bio/appl/sim4/report'
 require 'open3'
 require 'tempfile'
 
 module Bio
   class Sim4
+
+    autoload :Report,       'bio/appl/sim4/report'
+
     def initialize(program = 'sim4', database = nil, option = [])
       @program = program
       @option = option

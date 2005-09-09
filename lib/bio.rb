@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.53 2005/09/09 15:56:20 ngoto Exp $
+#  $Id: bio.rb,v 1.54 2005/09/09 15:58:41 ngoto Exp $
 #
 
 module Bio
@@ -236,9 +236,10 @@ module Bio
   #end
 
   autoload :Sim4,           'bio/appl/sim4'
-  class Sim4
-    autoload :Report,       'bio/appl/sim4/report'
-  end
+  ## below are described in bio/appl/sim4.rb
+  #class Sim4
+  #  autoload :Report,       'bio/appl/sim4/report'
+  #end
   
   autoload :Spidey,         'bio/appl/spidey/report'
   autoload :Blat,           'bio/appl/blat/report'
