@@ -17,30 +17,16 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.7 2005/09/08 01:22:08 k Exp $
+#  $Id: report.rb,v 1.8 2005/09/09 15:15:51 ngoto Exp $
 #
 
+require 'bio/appl/blast'
 require 'bio/appl/blast/xmlparser'
 require 'bio/appl/blast/rexml'
 require 'bio/appl/blast/format8'
 
 module Bio
   class Blast
-
-    def self.reports(input, parser = nil)
-      ary = []
-      input.each("</BlastOutput>\n") do |xml|
-        xml.sub!(/[^<]*(<?)/, '\1')		# skip before <?xml> tag
-        next if xml.empty?			# skip trailing no hits
-        if block_given?
-          yield Report.new(xml, parser)
-        else
-          ary << Report.new(xml, parser)
-        end
-      end
-      return ary
-    end
-
 
     class Report
 

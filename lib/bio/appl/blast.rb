@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.23 2005/09/09 14:59:53 ngoto Exp $
+#  $Id: blast.rb,v 1.24 2005/09/09 15:15:51 ngoto Exp $
 #
 
 require 'net/http'
@@ -26,15 +26,12 @@ require 'cgi' unless defined?(CGI)
 require 'bio/command'
 require 'shellwords'
 
-require 'bio/appl/blast/report' # for Bio::Blast.reports method
-
 module Bio
 
   class Blast
 
     autoload :Fastacmd,     'bio/io/fastacmd'
-    #autoload :Report,       'bio/appl/blast/report'
-    ## cannot autoload report.rb because of Bio::Blast.reports method
+    autoload :Report,       'bio/appl/blast/report'
     autoload :Default,      'bio/appl/blast/format0'
     autoload :WU,           'bio/appl/blast/wublast'
     autoload :Bl2seq,       'bio/appl/bl2seq/report'
@@ -91,6 +88,22 @@ module Bio
     def option=(str)
       # backward compatibility
       @options = Shellwords.shellwords(str)
+    end
+
+    # the method Bio::Blast.report is moved from bio/appl/blast/report.rb.
+    # only for xml format
+    def self.reports(input, parser = nil)
+      ary = []
+      input.each("</BlastOutput>\n") do |xml|
+        xml.sub!(/[^<]*(<?)/, '\1')		# skip before <?xml> tag
+        next if xml.empty?			# skip trailing no hits
+        if block_given?
+          yield Report.new(xml, parser)
+        else
+          ary << Report.new(xml, parser)
+        end
+      end
+      return ary
     end
 
 
