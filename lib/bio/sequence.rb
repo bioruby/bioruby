@@ -19,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.41 2005/09/08 01:22:08 k Exp $
+#  $Id: sequence.rb,v 0.42 2005/09/20 02:00:15 k Exp $
 #
 
 require 'bio/data/na'
@@ -34,7 +34,7 @@ module Bio
   class Sequence < String
 
     def to_s
-      "%s" % self
+      String.new(self)
     end
     alias :to_str :to_s
 
