@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.19 2005/09/09 14:35:25 ngoto Exp $ 
+#  $Id: indexer.rb,v 1.20 2005/09/23 15:03:02 ngoto Exp $ 
 # 
 
 require 'bio/io/flatfile/index'
@@ -260,9 +260,9 @@ module Bio
         class FastaFormatParser < TemplateParser
           NAMESTYLE = NameSpaces.new(
              NameSpace.new( 'UNIQUE', nil ),
-             NameSpace.new( 'primary_id', Proc.new { |x| x.entry_id } ),
+             NameSpace.new( 'entry_id', Proc.new { |x| x.entry_id } ),
              NameSpace.new( 'accession', Proc.new { |x| x.accessions } ),
-             NameSpace.new( 'id', Proc.new { |x| 
+             NameSpace.new( 'id_string', Proc.new { |x| 
                              x.identifiers.id_strings
                            }),
              NameSpace.new( 'word', Proc.new { |x|
@@ -270,10 +270,10 @@ module Bio
                            })
                                      )
           PRIMARY = 'UNIQUE'
-          SECONDARY = [ 'accession', 'id', 'word' ]
+          SECONDARY = [ 'entry_id', 'accession', 'id_string', 'word' ]
 
           def unique_primary_key
-            r = "#{@flatfilename_base}:#{@count}"
+            r = "#{@flatfilename}:#{@count}"
             @count += 1
             r
           end
