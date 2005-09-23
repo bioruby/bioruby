@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: seq.rb,v 1.1 2005/09/23 13:57:08 k Exp $
+#  $Id: seq.rb,v 1.2 2005/09/23 14:27:59 k Exp $
 #
 
 require 'bio/sequence'
@@ -57,10 +57,10 @@ module Bio::Shell
         end
       end
     else
-      case Bio::Seq.guess(str)
-      when :NA
+      moltype = Bio::Seq.guess(str)
+      if moltype == Bio::Sequence::NA
         display na_report(str)
-      when :AA
+      elsif moltype == Bio::Sequence::AA
         display aa_report(str)
       end
       return Bio::Seq.guess(str)
@@ -78,7 +78,7 @@ module Bio::Shell
     str << "translation -1     : #{seq.translate(-1)}\n"
     str << "translation -2     : #{seq.translate(-2)}\n"
     str << "translation -3     : #{seq.translate(-3)}\n"
-    str << "gc percent         : #{seq.gc} %\n"
+    str << "gc percent         : #{seq.gc_percent} %\n"
     str << "composition        : #{seq.composition.inspect}\n"
     str << "molecular weight   : #{seq.molecular_weight}\n"
     str << "complemnet weight  : #{seq.complement.molecular_weight}\n"

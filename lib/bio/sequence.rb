@@ -19,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.42 2005/09/20 02:00:15 k Exp $
+#  $Id: sequence.rb,v 0.43 2005/09/23 14:27:59 k Exp $
 #
 
 require 'bio/data/na'
@@ -107,6 +107,25 @@ module Bio
         count[x] += 1
       end
       return count
+    end
+
+    def guess(threshold = 0.9)
+      cmp = self.composition
+
+      bases = cmp['A'] + cmp['T'] + cmp['G'] + cmp['C'] + 
+              cmp['a'] + cmp['t'] + cmp['g'] + cmp['c']
+
+      total = self.length - cmp['N'] - cmp['n']
+
+      if bases.to_f / total > threshold
+        return NA
+      else
+        return AA
+      end
+    end 
+
+    def self.guess(str, *args)
+      self.new(str).guess(*args)
     end
 
     def randomize(hash = nil)
@@ -228,10 +247,9 @@ module Bio
         count = self.composition
         at = count['a'] + count['t'] + count['u']
         gc = count['g'] + count['c']
-        gc = format("%.1f", gc.to_f / (at + gc) * 100)
-        return gc.to_f
+        gc = 100 * gc / (at + gc)
+        return gc
       end
-      alias :gc :gc_percent
 
       def illegal_bases
         self.scan(/[^atgcu]/).sort.uniq
