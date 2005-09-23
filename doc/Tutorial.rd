@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd,v 1.5 2005/09/16 06:03:27 pjotr Exp $
+  $Id: Tutorial.rd,v 1.6 2005/09/23 07:43:20 pjotr Exp $
 
 Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -51,33 +51,33 @@ defined in codontable.rb).
 
 
     #!/usr/bin/env ruby
-    
+
     require 'bio'
-    
+
     seq = Bio::Sequence::NA.new("atgcatgcaaaa")
-    
+
     puts seq                            # original sequence
     puts seq.complement                 # complemental sequence (Bio::Sequence::NA object)
     puts seq.subseq(3,8)                # gets subsequence of positions 3 to 8
-    
+
     p seq.gc_percent                    # GC percent (Float)
     p seq.composition                   # nucleic acid compositions (Hash)
-    
+
     puts seq.translate                  # translation (Bio::Sequence::AA object)
     puts seq.translate(2)               # translation from frame 2 (default is frame 1)
     puts seq.translate(1,11)            # using codon table No.11 (see http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)
-    
+
     p seq.translate.codes               # shows three-letter codes (Array)
     p seq.translate.names               # shows amino acid names (Array)
     p seq.translate.composition         # amino acid compositions (Hash)
     p seq.translate.molecular_weight    # calculating molecular weight (Float)
-    
+
     puts seq.complement.translate       # translation of complemental strand
 
 The p, print and puts methods are standard Ruby ways of outputting to
 the screen. If you want to know more about standard Ruby commands you
-can use the 'ri' command on the command line (or the help command in 
-Windows). For example 
+can use the 'ri' command on the command line (or the help command in
+Windows). For example
 
   % ri p
 
@@ -96,15 +96,15 @@ has index 0, for example:
   print s[0]
 
   >a
- 
+
 So when using String methods, you should subtract 1 from positions
 conventionally used in biology.  (subseq method returns nil if you
 specify positions smaller than or equal to 0 for either one of the
-"from" or "to".)  
+"from" or "to".)
 
 (TRANSLATOR'S NOTE: the text in Japanese is something wrong?)
 (EDITOR'S NOTE: should 'subseq' not throw an exception instead?)
- 
+
 The window_search(window_size, step_size) method shows a typical Ruby
 way of writing conscise and clear code using 'closures'. Each sliding
 window creates a subsequence which is supplied to the enclosed block
@@ -162,14 +162,14 @@ Other examples
 
 In most cases, sequences are read from files or retrieved from databases.
 For example:
-    
+
     require 'bio'
-    
+
     input_seq = ARGF.read       # reads all files in arguments
-    
+
     my_naseq = Bio::Sequence::NA.new(input_seq)
     my_aaseq = my_naseq.translate
-    
+
     puts my_aaseq
 
 Save the program as na2aa.rb. Prepare a nucleic acid sequence
@@ -184,7 +184,7 @@ For example, translates my_naseq.txt:
 
     % ruby na2aa.rb my_naseq.txt
 
-Outputs 
+Outputs
 
     VAIFPKAMTGAKNQSSDICLMPHVGLIRRGQRRIRHLVQMSDAA*
 
@@ -208,13 +208,13 @@ A first attempt could be to use the Bio::GenBank class for reading in
 the data:
 
     #!/usr/bin/env ruby
-    
+
     require 'bio'
-    
-		# Read all lines from STDIN split by the GenBank delimiter 
+
+		# Read all lines from STDIN split by the GenBank delimiter
     while entry = gets(Bio::GenBank::DELIMITER)
       gb = Bio::GenBank.new(entry)      # creates GenBank object
-    
+
       print ">#{gb.accession} "         # Accession
       puts gb.definition                # Definition
       puts gb.naseq                     # Nucleic acid sequence (Bio::Sequence::NA object)
@@ -225,21 +225,21 @@ generic method is to use Bio::FlatFile which allows you to use different
 input formats:
 
     #!/usr/bin/env ruby
-    
+
     require 'bio'
-    
+
     ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
     ff.each_entry do |gb|
       definition = "#{gb.accession} #{gb.definition}"
-      puts gb.naseq.to_fasta(definition, 60)    
+      puts gb.naseq.to_fasta(definition, 60)
     end
 
 For example, in turn, reading FASTA format files:
 
     #!/usr/bin/env ruby
-    
+
     require 'bio'
-    
+
     ff = Bio::FlatFile.new(Bio::FastaFormat, ARGF)
     ff.each_entry do |f|
       puts "definition : " + f.definition
@@ -253,13 +253,13 @@ database classes of BioRuby. This is expanded on in a later section.
 Again another option is to use the Bio::DB.open class:
 
     #!/usr/bin/env ruby
-    
+
     require 'bio'
-    
+
     ff = Bio::GenBank.open("gbvrl1.seq")
     ff.each_entry do |gb|
       definition = "#{gb.accession} #{gb.definition}"
-      puts gb.naseq.to_fasta(definition, 60)    
+      puts gb.naseq.to_fasta(definition, 60)
     end
 
 (TRANSLATOR'S NOTE: Bio::DB.open have not been used so well.)
@@ -269,9 +269,9 @@ Next, we are going to parse the GenBank 'features', which is normally
 very complicated:
 
     #!/usr/bin/env ruby
-    
+
     require 'bio'
-    
+
     ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
 
     # iterates over each GenBank entry
@@ -279,11 +279,11 @@ very complicated:
 
       # shows accession and organism
       puts "# #{gb.accession} - #{gb.organism}"
-    
+
 			# iterates over each element in 'features'
-      gb.features.each do |feature|     
+      gb.features.each do |feature|
         position = feature.position
-        hash = feature.assoc            # put into Hash 
+        hash = feature.assoc            # put into Hash
 
         # skips the entry if "/translation=" is not found
         next unless hash['translation']
@@ -316,11 +316,11 @@ very complicated:
 
 Bio::Sequence#splicing splices subsequence from nucleic acid sequence
 according to location information used in GenBank, EMBL and DDBJ.
-(TRANSLATOR'S NOTE: EMBL and DDBJ should be added in Japanese document.) 
+(TRANSLATOR'S NOTE: EMBL and DDBJ should be added in Japanese document.)
 
 When the specified translation table is different from the default
 (universal), or when the first codon is not "atg" or the protein
-contains selenocysteine, the two amino acid sequences will differ. 
+contains selenocysteine, the two amino acid sequences will differ.
 
 (TRANSLATOR'S NOTE: Some cases are added when two amino acid sequences
 are different.)
@@ -348,6 +348,46 @@ You can also use the splicing method for amino acid sequences
 
 (EDITOR's NOTE: why use STRINGs here?)
 
+=== Alignments (Bio::Alignment)
+
+Bio::Alignment class in bio/alignment.rb is a container class like Ruby's Hash,
+Array and BioPerl's Bio::SimpleAlign.  A very simple example is:
+
+  require 'bio'
+
+  seqs = [ 'atgca', 'aagca', 'acgca', 'acgcg' ]
+  seqs = seqs.collect{ |x| Bio::Sequence::NA.new(x) }
+
+  # creates alignment object
+  a = Bio::Alignment.new(seqs)
+
+  # shows consensus sequence
+  p a.consensus             # ==> "a?gc?"
+
+  # shows IUPAC consensus
+  p a.consensus_iupac       # ==> "ahgcr"
+
+  # iterates over each seq
+  a.each { |x| p x }
+    # ==>
+    #    "atgca"
+    #    "aagca"
+    #    "acgca"
+    #    "acgcg"
+  # iterates over each site
+  a.each_site { |x| p x }
+    # ==>
+    #    ["a", "a", "a", "a"]
+    #    ["t", "a", "c", "c"]
+    #    ["g", "g", "g", "g"]
+    #    ["c", "c", "c", "c"]
+    #    ["a", "a", "a", "g"]
+
+  # doing alignment by using CLUSTAL W.
+  # clustalw command must be installed.
+  factory = Bio::ClustalW.new
+  a2 = a.do_align(factory)
+
 === More databases
 
 Databases in BioRuby are essentially accessed like that of GenBank
@@ -355,7 +395,7 @@ with classes like Bio::GenBank, Bio::KEGG::GENES,
 (EDITOR's NOTE: include complete list)
 
 In many cases the Bio::DatabaseClass acts as a factory pattern
-and recognises the database type automatically - returning a 
+and recognises the database type automatically - returning a
 parsed object. For example using Bio::FlatFile
 
 Bio::FlatFile class as described above. The first argument of the
@@ -365,12 +405,12 @@ Bio::KEGG::GENES and so on).
     ff = Bio::FlatFile.new(Bio::DatabaseClass, ARGF)
 
 Isn't it wonderful that Bio::FlatFile automagically recognizes each
-database class? 
+database class?
 
     #!/usr/bin/env ruby
-    
+
     require 'bio'
-    
+
     ff = Bio::FlatFile.auto(ARGF)
     ff.each_entry do |entry|
       p entry.entry_id          # identifier of the entry
@@ -415,24 +455,24 @@ ftp://ftp.virginia.edu/pub/fasta/. I think we should provide sample
 data to readers.)
 
     #!/usr/bin/env ruby
-    
+
     require 'bio'
-    
+
     # Creates FASTA factory object ("ssearch" instead of "fasta34" can also work)
     factory = Bio::Fasta.local('fasta34', ARGV.pop)
 		(EDITOR's NOTE: not consistent pop command)
-    
+
     # Reads FASTA-formatted files (TRANSLATOR'S NOTE: something wrong in Japanese text)
     ff = Bio::FlatFile.new(Bio::FastaFormat, ARGF)
-    
+
     # Iterates over each entry. the variable "entry" is a Bio::FastaFormat object.
     ff.each do |entry|
       # shows definition line (begins with '>') to the standard error output
       $stderr.puts "Searching ... " + entry.definition
-   
+
       # executes homology search. Returns Bio::Fasta::Report object.
       report = factory.query(entry)
-    
+
       # Iterates over each hit
       report.each do |hit|
         # If E-value is smaller than 0.0001
@@ -533,7 +573,7 @@ For example:
 
     program = 'fasta'
     database = 'genes'
-    
+
     factory = Bio::Fasta.remote(program, database)
 
 and try out the same commands as with the local search shown earlier.
@@ -547,7 +587,7 @@ replace above examples Bio::Fasta with Bio::Blast!
 For example the BLAST version of f_search.rb is:
 
     # create BLAST factory object
-    factory = Bio::Blast.local('blastp', ARGV.pop) 
+    factory = Bio::Blast.local('blastp', ARGV.pop)
 
 For remote execution of BLAST in GenomeNet, Bio::Blast.remote is used.
 The parameter "program" is different from FASTA - as you can expect:
@@ -580,7 +620,7 @@ midline.
       puts hit.query_seq        # query sequence (TRANSLATOR'S NOTE: sequence of homologous region of query sequence)
       puts hit.midline          # middle line string of alignment of homologous region (*)
       puts hit.target_seq       # hit sequence (TRANSLATOR'S NOTE: sequence of homologous region of query sequence)
-      
+
       puts hit.evalue           # E-value
       puts hit.identity         # % identity
       puts hit.overlap          # length of overlapping region
@@ -621,7 +661,7 @@ Bio::Blast factory object. For this purpose use Bio::Blast.reports,
 which supports the "-m 0" default and "-m 7" XML type output format.
 
     #!/usr/bin/env ruby
-    
+
     require 'bio'
 
     # Iterates over each XML result.
@@ -669,9 +709,9 @@ they may be included.
 Below script is an example which seaches PubMed and creates a reference list.
 
     #!/usr/bin/env ruby
-    
+
     require 'bio'
-    
+
     ARGV.each do |id|
       entry = Bio::PubMed.query(id)     # searches PubMed and get entry
       medline = Bio::MEDLINE.new(entry) # creates Bio::MEDLINE object from entry text
@@ -690,15 +730,15 @@ shows them.
 A keyword search is also available.
 
     #!/usr/bin/env ruby
-    
+
     require 'bio'
-    
+
     # Concatinates argument keyword list to a string
     keywords = ARGV.join(' ')
-    
+
     # PubMed keyword search
     entries = Bio::PubMed.search(keywords)
-    
+
     entries.each do |entry|
       medline = Bio::MEDLINE.new(entry) # creates Bio::MEDLINE object from text
       reference = medline.reference     # converts into Bio::Reference object
@@ -723,18 +763,18 @@ and Bio::PubMed.efetch instead of above methods.
 
 
     #!/usr/bin/env ruby
-    
+
     require 'bio'
-    
+
     keywords = ARGV.join(' ')
-    
+
     options = {
       'maxdate' => '2003/05/31',
       'retmax' => 1000,
     }
-    
+
     entries = Bio::PubMed.esearch(keywords, options)
-    
+
     Bio::PubMed.efetch(entries).each do |entry|
       medline = Bio::MEDLINE.new(entry)
       reference = medline.reference
@@ -760,7 +800,7 @@ BibTeX format bibliography data to a file named genoinfo.bib.
     % ./pmsearch.rb genome bioinformatics >> genoinfo.bib
 
 The BibTeX can be used with Tex or LaTeX to form bibliography
-information with your journal article. For more information 
+information with your journal article. For more information
 on BibTex see (EDITORS NOTE: insert URL). A quick example:
 
 Save this to hoge.tex:
@@ -781,7 +821,7 @@ Then,
 
 Now, you get hoge.dvi and hoge.ps - the latter you can view any
 Postscript viewer.
-    
+
 === Bio::Reference#bibitem
 
 When you don't want to create a bib file, you can use
@@ -853,8 +893,8 @@ locations through configuration files.  The priorities are
   * /etc/bioinformatics/seqdatabase.ini
   * http://www.open-bio.org/registry/seqdatabase.ini
 
-Note that the last locaation refers to www.open-bio.org and is only used 
-when all local configulation files are not available. 
+Note that the last locaation refers to www.open-bio.org and is only used
+when all local configulation files are not available.
 
 In the current BioRuby implementation all local configulation files
 are read. For databases with the same name settings encountered first
@@ -904,13 +944,13 @@ files:
 
     # connects to the database "genbank"
     serv = reg.get_database('genbank')
-    
+
     # gets entry of the ID
     entry = serv.get_by_id('AA2CG')
 
 
 The variable "serv" is a server object corresponding to the setting
-written in configuration files. The class of the object is one of 
+written in configuration files. The class of the object is one of
 Bio::SQL, Bio::Fetch, and so on. Note that Bio::Registry#get_database("name")
 returns nil if no database is found.
 
@@ -922,7 +962,7 @@ Please refer to below documents.
 BioFlat is a mechanism to create index files of flat files and to retrieve
 these entries fast. There are two index types. index-flat is a simple index
 performing binary search without using an external library of Ruby. index-berkeleydb
-uses Berkeley DB for indexing - but requires installing bdb on your computer, 
+uses Berkeley DB for indexing - but requires installing bdb on your computer,
 as well as the BDB Ruby package. For creating the index itself, you can use
 br_bioflat.rb command bundled with BioRuby.
 
@@ -1007,18 +1047,18 @@ matrices) database, and show the helix score for each 15-aa length
 overlapping window.
 
     #!/usr/bin/env ruby
-    
+
     require 'bio'
 
     entry = Bio::Fetch.query('hal', 'VNG1467G')
     aaseq = Bio::KEGG::GENES.new(entry).aaseq
-    
+
     entry = Bio::Fetch.query('aax1', 'BURA740101')
     helix = Bio::AAindex1.new(entry).index
-    
+
     position = 1
     win_size = 15
-    
+
     aaseq.window_search(win_size) do |subseq|
       score = subseq.total(helix)
       puts [ position, score ].join("\t")
@@ -1075,7 +1115,7 @@ this point you'll have to create some command line interface.
 == Installing required external library
 
 At this point for using BioRuby no additional libraries are needed.
-This may change, so keep an eye on the Bioruby website. Also when 
+This may change, so keep an eye on the Bioruby website. Also when
 a package is missing BioRuby should show an informative message.
 
 At this point installing third party Ruby packages can be a bit
