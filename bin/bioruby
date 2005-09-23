@@ -1,0 +1,91 @@
+#!/usr/bin/env ruby
+#
+#  BioRuby shell - command line interface for the BioRuby library
+#
+#   Copyright (C) 2005 KATAYAMA Toshiaki <k@bioruby.org>
+#
+#  This library is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public
+#  License as published by the Free Software Foundation; either
+#  version 2 of the License, or (at your option) any later version.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#
+#  $Id: bioruby,v 1.1 2005/09/23 13:57:07 k Exp $
+#
+
+require 'bio/shell'
+
+include Bio::Shell
+
+# loading configuration and plugins
+Bio::Shell.setup
+
+### IRB setup
+
+require 'irb'
+begin
+  require 'irb/completion'
+rescue LoadError
+  # readline is missing
+end
+
+IRB.setup(nil)
+
+# set application name
+IRB.conf[:AP_NAME] = 'bioruby'
+
+# change prompt for bioruby
+$_ = Bio::Shell::Core::ESC_SEQ
+IRB.conf[:PROMPT][:BIORUBY_COLOR] = {
+  :PROMPT_I => "bio#{$_[:ruby]}ruby#{$_[:none]}> ",
+  :PROMPT_S => "bio#{$_[:ruby]}ruby#{$_[:none]}%l ",
+  :PROMPT_C => "bio#{$_[:ruby]}ruby#{$_[:none]}+ ",
+  :RETURN   => "  ==> %s\n"
+}
+IRB.conf[:PROMPT][:BIORUBY] = {
+  :PROMPT_I => "bioruby> ",
+  :PROMPT_S => "bioruby%l ",
+  :PROMPT_C => "bioruby+ ",
+  :RETURN   => "  ==> %s\n"
+}
+if $bioruby_config[:COLOR]
+  IRB.conf[:PROMPT_MODE] = :BIORUBY_COLOR
+else
+  IRB.conf[:PROMPT_MODE] = :BIORUBY
+end
+IRB.conf[:ECHO] = $bioruby_config[:ECHO]
+
+# irb/input-method.rb >= v1.5 (not in 1.8.2)
+#IRB.conf[:SAVE_HISTORY] = 100000
+
+# not beautifully works
+#IRB.conf[:AUTO_INDENT] = true
+
+### IRB main loop
+
+irb = IRB::Irb.new
+
+# needed for method completion
+IRB.conf[:MAIN_CONTEXT] = irb.context
+
+# loading workspace and command history
+Bio::Shell.opening
+
+Signal.trap("SIGINT") do
+  irb.signal_handle
+end
+
+catch(:IRB_EXIT) do
+  irb.eval_input
+end
+
+# saving workspace, command history and configuration before exit
+Bio::Shell.closing
