@@ -17,11 +17,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_codontable.rb,v 1.1 2005/09/24 02:21:12 nakao Exp $
+#  $Id: test_codontable.rb,v 1.2 2005/09/24 03:12:56 nakao Exp $
 #
 
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3, 'lib')).cleanpath.to_s
+libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
 
 

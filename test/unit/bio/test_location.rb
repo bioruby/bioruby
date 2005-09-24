@@ -1,5 +1,5 @@
 #
-# test/bio/test_location.rb - Unit test for Bio::Location
+# test/unit/bio/test_location.rb - Unit test for Bio::Location
 #
 #   Copyright (C) 2004 Moses Hohman <mmhohman@northwestern.edu>
 #
@@ -17,35 +17,35 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_location.rb,v 1.1 2004/11/12 02:27:08 k Exp $
+#  $Id: test_location.rb,v 1.2 2005/09/24 03:12:55 nakao Exp $
 #
 
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), [".."]*2, "lib")).cleanpath.to_s
+libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 2, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'test/unit'
 require 'bio/location'
 
 module Bio
-	class TestLocation < Test::Unit::TestCase
-		def test_hat
-		loc = Locations.new('754^755')
-		assert_equal([754, 755], loc.span, "span wrong")
-		assert_equal(754..755, loc.range, "range wrong")
-		assert_equal(1, loc[0].strand, "strand wrong")
-		end
+  class TestLocation < Test::Unit::TestCase
+    def test_hat
+      loc = Locations.new('754^755')
+      assert_equal([754, 755], loc.span, "span wrong")
+      assert_equal(754..755, loc.range, "range wrong")
+      assert_equal(1, loc[0].strand, "strand wrong")
+    end
 
-		def test_complement
-		loc = Locations.new('complement(53^54)')
-		assert_equal([53, 54], loc.span, "span wrong")
-		assert_equal(53..54, loc.range, "range wrong")
-		assert_equal(-1, loc[0].strand, "strand wrong")
-		end
+    def test_complement
+      loc = Locations.new('complement(53^54)')
+      assert_equal([53, 54], loc.span, "span wrong")
+      assert_equal(53..54, loc.range, "range wrong")
+      assert_equal(-1, loc[0].strand, "strand wrong")
+    end
 
-		def test_replace_single_base
-		loc = Locations.new('replace(4792^4793,"a")')
-		assert_equal("a", loc[0].sequence)
-		end
-	end
+    def test_replace_single_base
+      loc = Locations.new('replace(4792^4793,"a")')
+      assert_equal("a", loc[0].sequence)
+    end
+  end
 end
