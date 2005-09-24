@@ -17,11 +17,13 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: common.rb,v 1.2 2004/08/25 16:59:24 k Exp $
+#  $Id: common.rb,v 1.3 2005/09/24 01:15:56 nakao Exp $
 #
 
+require 'bio/db'
+
 module Bio
-class EMBL
+class EMBL < EMBLDB
 module Common
 
   DELIMITER	= RS = "\n//\n"

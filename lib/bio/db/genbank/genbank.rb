@@ -17,15 +17,14 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.32 2004/08/23 23:40:35 k Exp $
+#  $Id: genbank.rb,v 0.33 2005/09/24 01:16:22 nakao Exp $
 #
 
 require 'bio/db'
+require 'bio/db/genbank/common'
 
 module Bio
-class GenBank < NCBIDB
-
-  require 'bio/db/genbank/common'
+class GenBank
   include Bio::GenBank::Common
 
   # LOCUS

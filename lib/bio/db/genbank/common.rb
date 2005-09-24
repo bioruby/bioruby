@@ -17,11 +17,13 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: common.rb,v 1.4 2005/08/07 05:28:10 ngoto Exp $
+#  $Id: common.rb,v 1.5 2005/09/24 01:16:22 nakao Exp $
 #
 
+require 'bio/db'
+
 module Bio
-class GenBank
+class GenBank < NCBIDB
 module Common
 
   DELIMITER	= RS = "\n//\n"
