@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: core.rb,v 1.1 2005/09/23 13:57:08 k Exp $
+#  $Id: core.rb,v 1.2 2005/09/24 03:25:49 k Exp $
 #
 
 module Bio::Shell::Core
@@ -236,8 +236,12 @@ module Bio::Shell::Core
         bind = IRB.conf[:MAIN_CONTEXT].workspace.binding
         hash = Marshal.load(File.read(file))
         hash.each do |k, v|
-          # p [k, v, v.class, Marshal.load(v)]
-          eval("#{k} = Marshal.load('#{v}')", bind)
+          begin
+            # p [k, v, v.class, Marshal.load(v)]
+            eval("#{k} = Marshal.load('#{v}')", bind)
+          rescue
+            puts "Warning: object '#{k}' couldn't be loaded : #{$!}"
+          end
         end
       rescue
         raise "Failed to load (#{file}) : #{$!}"
@@ -261,7 +265,10 @@ module Bio::Shell::Core
           list -= ["_"]
           hash = {}
           list.each do |elem|
-            hash[elem] = Marshal.dump(eval(elem, bind))
+            value = eval(elem, bind)
+            if value
+              hash[elem] = Marshal.dump(value)
+            end
           end
           Marshal.dump(hash, f)
           $bioruby_config[:MARSHAL] = MARSHAL
