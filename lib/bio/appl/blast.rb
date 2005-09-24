@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.24 2005/09/09 15:15:51 ngoto Exp $
+#  $Id: blast.rb,v 1.25 2005/09/24 16:01:32 ngoto Exp $
 #
 
 require 'net/http'
@@ -39,12 +39,6 @@ module Bio
     include Bio::Command::Tools
 
     def initialize(program, db, opt = [], server = 'local')
-      if defined?(XMLParser) or defined?(REXML)
-        @format = 7
-      else
-        @format	= 8
-      end
-
       @program	= program
       @db	= db
       @server	= server
@@ -62,7 +56,14 @@ module Bio
         # backward compatibility
         a = Shellwords.shellwords(opt)
       end
-      @options	= [ "-m",  @format,  *a ]
+      unless a.find { |x| /\A\-m/ =~ x.to_s } then
+        if defined?(XMLParser) or defined?(REXML)
+          @format = 7
+        else
+          @format = 8
+        end
+      end
+      @options	= [ *a ]
     end
     attr_accessor :program, :db, :options, :server, :blastall, :matrix, :filter
     attr_reader :output, :format
@@ -116,9 +117,11 @@ module Bio
 
 
     def exec_local(query)
-      cmd = [ @blastall, '-p', @program, '-d', @db, *@options ]
+      cmd = [ @blastall, '-p', @program, '-d', @db ]
       cmd.concat([ '-M', @matrix ]) if @matrix
       cmd.concat([ '-F', @filter ]) if @filter
+      cmd.concat([ '-m', @format.to_s ]) if @format
+      cmd.concat(@options) if @options
 
       report = nil
 
@@ -137,12 +140,16 @@ module Bio
       matrix = @matrix ? @matrix : 'blosum62'
       filter = @filter ? @filter : 'T'
 
+      opt = []
+      opt.concat([ '-m', @format.to_s ]) if @format
+      opt.concat(@options) if @options
+
       form = {
         'style'		=> 'raw',
         'prog'		=> @program,
         'dbname'	=> @db,
         'sequence'	=> CGI.escape(query),
-        'other_param'	=> CGI.escape(make_command_line_unix(@options)),
+        'other_param'	=> CGI.escape(make_command_line_unix(opt)),
         'matrix'	=> matrix,
         'filter'	=> filter,
         'V_value'	=> 500,		# default value for GenomeNet
