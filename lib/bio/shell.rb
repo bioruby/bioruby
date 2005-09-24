@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: shell.rb,v 1.1 2005/09/23 13:57:08 k Exp $
+#  $Id: shell.rb,v 1.2 2005/09/24 12:33:07 k Exp $
 #
 
 require 'bio'
@@ -25,6 +25,7 @@ require 'yaml'
 require 'pp'
 
 $bioruby_config = {}
+$bioruby_cache  = {}
 
 module Bio::Shell
 

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: core.rb,v 1.2 2005/09/24 03:25:49 k Exp $
+#  $Id: core.rb,v 1.3 2005/09/24 12:33:07 k Exp $
 #
 
 module Bio::Shell::Core
@@ -285,7 +285,7 @@ module Bio::Shell::Core
   ### history
 
   def load_history
-    load_history_file(SAVEDIR + HISTORY)
+    load_history_file(SAVEDIR + HISTORY) unless $bioruby_cache[:no_readline]
   end
 
   def load_history_file(file)
@@ -300,7 +300,7 @@ module Bio::Shell::Core
   
   def save_history
     create_save_dir
-    save_history_file(SAVEDIR + HISTORY)
+    save_history_file(SAVEDIR + HISTORY) unless $bioruby_cache[:no_readline]
   end
 
   def save_history_file(file)

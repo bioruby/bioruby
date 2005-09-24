@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bioruby,v 1.1 2005/09/23 13:57:07 k Exp $
+#  $Id: bioruby,v 1.2 2005/09/24 12:33:07 k Exp $
 #
 
 require 'bio/shell'
@@ -34,7 +34,7 @@ require 'irb'
 begin
   require 'irb/completion'
 rescue LoadError
-  # readline is missing
+  $bioruby_cache[:no_readline] = true
 end
 
 IRB.setup(nil)
@@ -61,7 +61,7 @@ if $bioruby_config[:COLOR]
 else
   IRB.conf[:PROMPT_MODE] = :BIORUBY
 end
-IRB.conf[:ECHO] = $bioruby_config[:ECHO]
+IRB.conf[:ECHO] = $bioruby_config[:ECHO] || false
 
 # irb/input-method.rb >= v1.5 (not in 1.8.2)
 #IRB.conf[:SAVE_HISTORY] = 100000
