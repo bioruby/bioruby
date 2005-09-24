@@ -1,0 +1,144 @@
+=begin
+
+  $Id: README.DEV,v 1.1 2005/09/24 15:06:54 k Exp $
+
+  Copyright (C) 2005 Toshiaki Katayama <k@bioruby.org>
+
+= How to contribute to the BioRuby project?
+
+There are many possible ways to contribute to the BioRuby project,
+such as
+
+* Join the discussion on the BioRuby mailing list
+* Send a bug report, write a bug fix patch
+* Add and correcting documentations
+* Development codes for new features etc.
+
+and all of these are welcome!
+
+However, here we describe on the last option -- how to contribute and
+include your codes to the BioRuby distribution.
+
+We would like to include your contribution as long as the scope of
+your module meets the field of bioinformatics.
+
+== Licence
+
+If you wish your module to be included in the BioRuby distribution,
+you need to agree that your module is licensed under the GNU's LGPL
+as the BioRuby chosen LGPL for its license.
+
+== Coding style
+
+You need to follow the typical coding styles of the BioRuby modules:
+
+=== Use the following naming conventions
+
+  * CamelCase for module and class names,
+  * '_'-separated lowercase names for method names,
+  * '_'-separated lowercase names for variable names, and
+  * all uppercase names for constants.
+
+=== Each file must start with the following text
+
+  #
+  # bio/foo/bar.rb - foo bar class
+  #
+  #   Copyright (C) 2005 Ruby B. Hacker <rbh@example.org>
+  #
+  #  This library is free software; you can redistribute it and/or
+  #  modify it under the terms of the GNU Lesser General Public
+  #  License as published by the Free Software Foundation; either
+  #  version 2 of the License, or (at your option) any later version.
+  #
+  #  This library is distributed in the hope that it will be useful,
+  #  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  #  Lesser General Public License for more details.
+  #
+  #  You should have received a copy of the GNU Lesser General Public
+  #  License along with this library; if not, write to the Free Software
+  #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+  #
+  #  $Id: README.DEV,v 1.1 2005/09/24 15:06:54 k Exp $
+  #
+
+=== Documentation should be written in the RDoc format in the source code
+
+The RDoc format is becoming de facto standard for the Ruby documentation.
+
+So, we are now in transition from the RD format to the RDoc format
+as we had been written the API documentations in the RD format and
+put them at the end of each file.
+
+Additional tutorial documents and some working examples are also
+welcome when you contribute your codes.
+
+=== Testing code should use 'test/unit'
+
+Unit test should come with your modules by which you can assure what
+you meant to do with each method.  The test code is also able to make
+your maintainance procedure easy and stable.
+
+=== Using autoload
+
+To make fast start up, we replaced most of 'require' to 'autoload'
+since the BioRuby version 0.7.  During this change, we have found
+some tips:
+
+You sholud not separate a same namespace into several files.
+
+* For example, if you have separated definitions of the Bio::Foo
+  class in two files (e.g. 'bio/foo.rb' and 'bio/bar.rb'), you
+  need to resolve the dependency of them (including the order of
+  loading these two files) by yourself.
+
+* It is not the case that you have a definition of Bio::Foo in
+  'bio/foo.rb' and a definition of Bio::Foo::Bar in 'bio/bar.rb'.
+  In this case, you just need to add following line in the
+  'bio/foo.rb' file.
+
+    autoload :Bar, 'bio/foo/bar'
+    
+You should not put several top level namespaces in one file.
+
+* For example, if you have Bio::A, Bio::B and Bio::C in the file
+  'bio/foo.rb', you need
+
+    autoload :A, 'bio/foo'
+    autoload :B, 'bio/foo'
+    autoload :C, 'bio/foo'
+
+  to load the module automatically (instead of require 'bio/foo').
+  In this case, you should put them under the new namespace like
+  Bio::Foo::A, Bio::Foo::B and Bio::Foo::C in the file 'bio/foo',
+  then use
+
+    autoload :Foo, 'bio/foo'
+
+  to make autoload can be written in 1 line.
+
+== Name space
+
+Your module should be located under the module Bio and put under
+the 'bioruby/lib/bio' directory.  The class/module names and the
+file names should be short and descriptive.
+
+There are already several sub directories in 'bioruby/lib':
+
+  bio/*.rb   -- general and widely used basic classes
+  bio/appl/  -- wrapper and parser for the external applications
+  bio/data/  -- basic biological data
+  bio/db/    -- flatfile database entry parsers
+  bio/io/    -- I/O interfaces for files, RDB, web services etc.
+  bio/util/  -- utilities and algorithms for bioinformatics
+
+If your module doesn't match to any of the above, please propose
+an appropriate directory name when you contribute.
+
+== Maintainance
+
+Finally, please keep maintain the code your contrubuted.  The BioRuby
+staff is willing to give you CVS privilege if needed.
+
+=end
