@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd,v 1.6 2005/09/23 07:43:20 pjotr Exp $
+  $Id: Tutorial.rd,v 1.7 2005/09/24 14:58:21 ngoto Exp $
 
 Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -60,7 +60,7 @@ defined in codontable.rb).
     puts seq.complement                 # complemental sequence (Bio::Sequence::NA object)
     puts seq.subseq(3,8)                # gets subsequence of positions 3 to 8
 
-    p seq.gc_percent                    # GC percent (Float)
+    p seq.gc_percent                    # GC percent (BioRuby 0.6.X: Float, BioRuby 0.7 or later: Integer)
     p seq.composition                   # nucleic acid compositions (Hash)
 
     puts seq.translate                  # translation (Bio::Sequence::AA object)
@@ -93,7 +93,7 @@ Please take note that the Ruby's string's are base 0 - i.e. the first letter
 has index 0, for example:
 
   s = 'abc'
-  print s[0]
+  puts s[0..0]
 
   >a
 
@@ -102,19 +102,18 @@ conventionally used in biology.  (subseq method returns nil if you
 specify positions smaller than or equal to 0 for either one of the
 "from" or "to".)
 
-(TRANSLATOR'S NOTE: the text in Japanese is something wrong?)
 (EDITOR'S NOTE: should 'subseq' not throw an exception instead?)
 
 The window_search(window_size, step_size) method shows a typical Ruby
-way of writing conscise and clear code using 'closures'. Each sliding
+way of writing concise and clear code using 'closures'. Each sliding
 window creates a subsequence which is supplied to the enclosed block
-through a variable named +subseq+.
+through a variable named +s+.
 
 * Shows average percentage of GC content for 100 bases (stepping
 the default one base at a time)
 
-    seq.window_search(100) do |subseq|
-      puts subseq.gc
+    seq.window_search(100) do |s|
+      puts s.gc_percent
     end
 
 Since the class of each subsequence is the same as original sequence
@@ -123,8 +122,8 @@ use all methods on the subsequence. For example,
 
 * Shows translation results for 15 bases shifting a codon at a time
 
-    seq.window_search(15, 3) do |subseq|
-      puts subseq.translate
+    seq.window_search(15, 3) do |s|
+      puts s.translate
     end
 
 Finally, the window_search method returns the last leftover
@@ -136,8 +135,8 @@ subsequence. This allows for example
   leftover subsequence shorter than 10000bp is also added
 
     i = 1
-    remainder = seq.window_search(10000, 9000) do |subseq|
-      puts subseq.to_fasta("segment #{i}", 60)
+    remainder = seq.window_search(10000, 9000) do |s|
+      puts s.to_fasta("segment #{i}", 60)
       i += 1
     end
     puts remainder.to_fasta("segment #{i}", 60)
@@ -150,14 +149,14 @@ Other examples
 * Count the codon usage
 
     codon_usage = Hash.new(0)
-    seq.window_search(3, 3) do |subseq|
-      codon_usage[subseq] += 1
+    seq.window_search(3, 3) do |s|
+      codon_usage[s] += 1
     end
 
 * Calculate molecular weight for each 10-aa peptide (or 10-nt nucleic acid)
 
-    seq.window_search(10, 10) do |subseq|
-      puts subseq.molecular_weight
+    seq.window_search(10, 10) do |s|
+      puts s.molecular_weight
     end
 
 In most cases, sequences are read from files or retrieved from databases.
@@ -310,20 +309,16 @@ very complicated:
 * Note: In this example Feature#assoc method makes a Hash from a
   feature object. It is useful because you can get data from the hash
   by using qualifiers as keys.
-	But there is a risk some information is lost when two or more
+  (But there is a risk some information is lost when two or more
   qualifiers are the same. Therefore an Array is returned by
   Feature#feature)
 
 Bio::Sequence#splicing splices subsequence from nucleic acid sequence
 according to location information used in GenBank, EMBL and DDBJ.
-(TRANSLATOR'S NOTE: EMBL and DDBJ should be added in Japanese document.)
 
 When the specified translation table is different from the default
 (universal), or when the first codon is not "atg" or the protein
 contains selenocysteine, the two amino acid sequences will differ.
-
-(TRANSLATOR'S NOTE: Some cases are added when two amino acid sequences
-are different.)
 
 The Bio::Sequence#splicing method takes not only DDBJ/EMBL/GenBank
 feature style location text but also Bio::Locations object. For more
@@ -347,46 +342,6 @@ You can also use the splicing method for amino acid sequences
     aaseq.splicing('21..119')
 
 (EDITOR's NOTE: why use STRINGs here?)
-
-=== Alignments (Bio::Alignment)
-
-Bio::Alignment class in bio/alignment.rb is a container class like Ruby's Hash,
-Array and BioPerl's Bio::SimpleAlign.  A very simple example is:
-
-  require 'bio'
-
-  seqs = [ 'atgca', 'aagca', 'acgca', 'acgcg' ]
-  seqs = seqs.collect{ |x| Bio::Sequence::NA.new(x) }
-
-  # creates alignment object
-  a = Bio::Alignment.new(seqs)
-
-  # shows consensus sequence
-  p a.consensus             # ==> "a?gc?"
-
-  # shows IUPAC consensus
-  p a.consensus_iupac       # ==> "ahgcr"
-
-  # iterates over each seq
-  a.each { |x| p x }
-    # ==>
-    #    "atgca"
-    #    "aagca"
-    #    "acgca"
-    #    "acgcg"
-  # iterates over each site
-  a.each_site { |x| p x }
-    # ==>
-    #    ["a", "a", "a", "a"]
-    #    ["t", "a", "c", "c"]
-    #    ["g", "g", "g", "g"]
-    #    ["c", "c", "c", "c"]
-    #    ["a", "a", "a", "g"]
-
-  # doing alignment by using CLUSTAL W.
-  # clustalw command must be installed.
-  factory = Bio::ClustalW.new
-  a2 = a.do_align(factory)
 
 === More databases
 
@@ -437,6 +392,47 @@ example, some classes have a "references" method which returns
 multiple Bio::Reference objects as an Array. And some classes have a
 "reference" method which returns a single Bio::Reference object.
 
+=== Alignments (Bio::Alignment)
+
+Bio::Alignment class in bio/alignment.rb is a container class like Ruby's Hash,
+Array and BioPerl's Bio::SimpleAlign.  A very simple example is:
+
+  require 'bio'
+
+  seqs = [ 'atgca', 'aagca', 'acgca', 'acgcg' ]
+  seqs = seqs.collect{ |x| Bio::Sequence::NA.new(x) }
+
+  # creates alignment object
+  a = Bio::Alignment.new(seqs)
+
+  # shows consensus sequence
+  p a.consensus             # ==> "a?gc?"
+
+  # shows IUPAC consensus
+  p a.consensus_iupac       # ==> "ahgcr"
+
+  # iterates over each seq
+  a.each { |x| p x }
+    # ==>
+    #    "atgca"
+    #    "aagca"
+    #    "acgca"
+    #    "acgcg"
+  # iterates over each site
+  a.each_site { |x| p x }
+    # ==>
+    #    ["a", "a", "a", "a"]
+    #    ["t", "a", "c", "c"]
+    #    ["g", "g", "g", "g"]
+    #    ["c", "c", "c", "c"]
+    #    ["a", "a", "a", "g"]
+
+  # doing alignment by using CLUSTAL W.
+  # clustalw command must be installed.
+  factory = Bio::ClustalW.new
+  a2 = a.do_align(factory)
+
+
 == Sequence homology search by using the FASTA program (Bio::Fasta)
 
 Let's start with a query.pep file which contains a sequence in FASTA
@@ -448,11 +444,10 @@ local machine.
 === using FASTA in local machine
 
 Install the fasta program on your machine (the command name looks like
-fasta34) First, you must prepare your FASTA-formatted database
-sequence file target.pep and FASTA-formatted query.pep.  (TRANSLATOR'S
-NOTE: FASTA can be downloaded from
-ftp://ftp.virginia.edu/pub/fasta/. I think we should provide sample
-data to readers.)
+fasta34. FASTA can be downloaded from ftp://ftp.virginia.edu/pub/fasta/).
+First, you must prepare your FASTA-formatted database sequence file
+target.pep and FASTA-formatted query.pep.  (TRANSLATOR'S NOTE: I think
+we should provide sample data to readers.)
 
     #!/usr/bin/env ruby
 
@@ -567,7 +562,7 @@ the type of query sequence and database.
 
   * When query is a nucleic acid sequence
     * When nucleic database, program is "fasta".
-    * (TRANSLATOR'S NOTE: When protein database, you would fail to search.)
+    * (When protein database, you would fail to search.)
 
 For example:
 
@@ -598,7 +593,8 @@ The parameter "program" is different from FASTA - as you can expect:
 
   * When query is a nucleic acid sequence
     * When protein database, program is "blastx"
-    * When nucleic database, program is "blastn". (TRANSLATOR'S NOTE: "tblastx" for six-frame search.)
+    * When nucleic database, program is "blastn".
+    * ("tblastx" for six-frame search.)
 
 Bio::BLAST uses "-m 7" XML output of BLAST by default when either
 XMLParser or REXML (both of them are XML parser libraries for Ruby -
@@ -903,9 +899,6 @@ database in system global configuration file
 (/etc/bioinformatics/seqdatabase.ini), you can easily override it by
 writing settings to ~/.bioinformatics/seqdatabase.ini.
 
-(TRANSLATOR'S NOTE: Order of sentenses are drastically changed for smooth translation.)
-(EDITORS NOTE: thanks!)
-
 The syntax of the configuration file is called a stanza format. For example
 
     [DatabaseName]
@@ -966,15 +959,11 @@ uses Berkeley DB for indexing - but requires installing bdb on your computer,
 as well as the BDB Ruby package. For creating the index itself, you can use
 br_bioflat.rb command bundled with BioRuby.
 
-(TRANSLATOR'S NOTE: should change command name in Japanese text.)
-
     % br_bioflat.rb --makeindex database_name [--format data_format] filename...
 
 The format can be omitted because BioRuby has autodetection.  If that
 does not work you can try specifying data format as a name of BioRuby
 database class.
-
-(TRANSLATOR'S NOTE: should fix errata in Japanese text.)
 
 Search and retrieve data from database:
 
