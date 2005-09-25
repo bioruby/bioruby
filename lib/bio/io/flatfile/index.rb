@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: index.rb,v 1.11 2005/09/09 14:35:25 ngoto Exp $ 
+#  $Id: index.rb,v 1.12 2005/09/25 05:21:13 ngoto Exp $ 
 # 
 
 module Bio
@@ -33,7 +33,17 @@ module Bio
 
     #########################################################
     def self.open(name)
-      self.new(name)
+      if block_given? then
+        begin
+          i = self.new(name)
+          r = yield i
+        ensure
+          i.close if i
+        end
+      else
+        r = self.new(name)
+      end
+      r
     end
 
     def initialize(name)
