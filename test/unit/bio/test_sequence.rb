@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_sequence.rb,v 1.3 2005/09/24 03:12:55 nakao Exp $
+#  $Id: test_sequence.rb,v 1.4 2005/09/25 05:17:53 nakao Exp $
 #
 
 require 'pathname'
@@ -208,12 +208,10 @@ module Bio
 
     def test_dna_gc_percent
       assert_equal(40, @na.gc_percent)
-      assert_equal(40, @na.gc)
     end
 
     def test_rna_gc_percent
       assert_equal(40, @rna.gc_percent)
-      assert_equal(40, @rna.gc)
     end
 
     # Test Sequence::NA#illegal_bases
