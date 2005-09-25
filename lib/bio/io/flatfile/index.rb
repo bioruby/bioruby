@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: index.rb,v 1.12 2005/09/25 05:21:13 ngoto Exp $ 
+#  $Id: index.rb,v 1.13 2005/09/25 05:30:21 ngoto Exp $ 
 # 
 
 module Bio
@@ -38,7 +38,12 @@ module Bio
           i = self.new(name)
           r = yield i
         ensure
-          i.close if i
+          if i then
+            begin
+              i.close
+            rescue IOError
+            end
+          end
         end
       else
         r = self.new(name)
