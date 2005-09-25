@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.1 2005/09/23 13:57:08 k Exp $
+#  $Id: flatfile.rb,v 1.2 2005/09/25 05:25:14 k Exp $
 #
 
 require 'bio/io/flatfile'
@@ -58,8 +58,7 @@ module Bio::Shell
 
   def bioflat_search(dbname, keyword)
     dir = Core::SAVEDIR + Core::BIOFLAT + dbname.to_s
-#   Bio::FlatFileIndex.open(dir) do |db|
-    db = Bio::FlatFileIndex.open(dir)
+    Bio::FlatFileIndex.open(dir) do |db|
       if results = db.include?(keyword)
         results.each do |entry_id|
           display db.search_primary(entry_id)
@@ -67,8 +66,7 @@ module Bio::Shell
       else
         display "No hits found"
       end
-#   end
-    db.close
+    end
   end
 
   def bioflat_namespaces(dbname)
