@@ -1,6 +1,6 @@
 =begin
 
-  $Id: README.DEV,v 1.1 2005/09/24 15:06:54 k Exp $
+  $Id: README.DEV,v 1.2 2005/09/26 02:07:02 k Exp $
 
   Copyright (C) 2005 Toshiaki Katayama <k@bioruby.org>
 
@@ -34,10 +34,20 @@ You need to follow the typical coding styles of the BioRuby modules:
 
 === Use the following naming conventions
 
-  * CamelCase for module and class names,
-  * '_'-separated lowercase names for method names,
-  * '_'-separated lowercase names for variable names, and
-  * all uppercase names for constants.
+* CamelCase for module and class names,
+* '_'-separated lowercase names for method names,
+* '_'-separated lowercase names for variable names, and
+* all uppercase names for constants.
+
+=== Indentation must not include tabs
+
+* Use 2 spaces for indentation.
+* Don't replace spaces at the line head to tabs.
+
+=== Comments
+
+Don't use =begin and =end block for comments.  If you need to add
+comments, include it in the RDoc documentation.
 
 === Each file must start with the following text
 
@@ -60,7 +70,7 @@ You need to follow the typical coding styles of the BioRuby modules:
   #  License along with this library; if not, write to the Free Software
   #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
   #
-  #  $Id: README.DEV,v 1.1 2005/09/24 15:06:54 k Exp $
+  #  $Id: README.DEV,v 1.2 2005/09/26 02:07:02 k Exp $
   #
 
 === Documentation should be written in the RDoc format in the source code
