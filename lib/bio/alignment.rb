@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: alignment.rb,v 1.8 2005/09/08 01:22:08 k Exp $
+#  $Id: alignment.rb,v 1.9 2005/09/26 13:00:04 k Exp $
 #
 
 require 'bio/sequence'
@@ -250,7 +250,7 @@ module Bio
         yield @seqs[k]
       end
     end
-    alias :each_seq :each
+    alias each_seq each
 
     def each_pair
       #(Hash-like)
@@ -586,7 +586,7 @@ module Bio
       end
       cseq
     end
-    alias :consensus :consensus_string
+    alias consensus consensus_string
 
     IUPAC_NUC = [
       %w( t           u ),

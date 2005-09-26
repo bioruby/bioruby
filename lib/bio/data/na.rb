@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: na.rb,v 0.13 2005/08/10 12:53:02 k Exp $
+#  $Id: na.rb,v 0.14 2005/09/26 13:00:06 k Exp $
 #
 
 module Bio
@@ -117,7 +117,7 @@ module Bio
       def names
         Names
       end
-      alias :na :names
+      alias na names
 
       def name(x)
         Names[x.to_s.upcase]

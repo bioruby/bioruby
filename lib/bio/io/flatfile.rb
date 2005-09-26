@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.36 2005/09/08 01:22:11 k Exp $
+#  $Id: flatfile.rb,v 1.37 2005/09/26 13:00:08 k Exp $
 #
 
 module Bio
@@ -110,7 +110,7 @@ module Bio
         yield e
       end
     end
-    alias :each :each_entry
+    alias each each_entry
 
     def rewind
       r = @io.rewind

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.33 2005/09/24 01:16:22 nakao Exp $
+#  $Id: genbank.rb,v 0.34 2005/09/26 13:00:07 k Exp $
 #
 
 require 'bio/db'
@@ -72,8 +72,8 @@ class GenBank
     end
     Bio::Sequence::NA.new(@data['SEQUENCE'])
   end
-  alias :naseq :seq
-  alias :nalen :seq_len
+  alias naseq seq
+  alias nalen seq_len
 
 
   # FEATURES
@@ -127,7 +127,7 @@ if __FILE__ == $0
 
   begin
     require 'pp'
-    alias :p :pp
+    alias p pp
   rescue LoadError
   end
 

@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggtab.rb,v 1.6 2005/09/08 01:22:11 k Exp $
+#  $Id: keggtab.rb,v 1.7 2005/09/26 13:00:07 k Exp $
 #
 
 module Bio
@@ -47,8 +47,8 @@ module Bio
           @aliases = Array.new
         end
         attr_reader :name, :type, :path, :abbrev, :aliases
-        alias :korg :abbrev
-        alias :keggorg :abbrev
+        alias korg abbrev
+        alias keggorg abbrev
       end
 
 
@@ -150,9 +150,9 @@ module Bio
           end
         end
       end
-      alias :taxo2keggorgs  :taxo2korgs
-      alias :taxon2korgs    :taxo2korgs
-      alias :taxon2keggorgs :taxo2korgs
+      alias taxo2keggorgs  taxo2korgs
+      alias taxon2korgs    taxo2korgs
+      alias taxon2keggorgs taxo2korgs
 
       def korg2taxo(keggorg)
         tmp = Array.new
@@ -168,9 +168,9 @@ module Bio
         traverse.call(keggorg)
         return tmp
       end
-      alias :keggorg2taxo     :korg2taxo
-      alias :korg2taxonomy    :korg2taxo
-      alias :keggorg2taxonomy :korg2taxo
+      alias keggorg2taxo     korg2taxo
+      alias korg2taxonomy    korg2taxo
+      alias keggorg2taxonomy korg2taxo
 
 
       private
@@ -217,7 +217,7 @@ if __FILE__ == $0
 
   begin
     require 'pp'
-    alias :p :pp
+    alias p pp
   rescue LoadError
   end
 

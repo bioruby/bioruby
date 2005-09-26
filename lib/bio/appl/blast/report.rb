@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.8 2005/09/09 15:15:51 ngoto Exp $
+#  $Id: report.rb,v 1.9 2005/09/26 13:00:04 k Exp $
 #
 
 require 'bio/appl/blast'
@@ -98,7 +98,7 @@ module Bio
           yield x
         end
       end
-      alias :each :each_hit
+      alias each each_hit
 
       # shortcut for the last iteration's hits
       def hits
@@ -159,9 +159,9 @@ module Bio
 
         # Compatible with Bio::Fasta::Report::Hit
 
-        alias :target_id :accession
-        alias :target_def :definition
-        alias :target_len :len
+        alias target_id accession
+        alias target_def definition
+        alias target_len len
 
         # Shortcut methods for the best Hsp
 
@@ -210,7 +210,7 @@ if __FILE__ == $0
 
   begin			# p is suitable than pp for the following test script
     require 'pp'
-    alias :p :pp
+    alias p pp
   rescue
   end
 

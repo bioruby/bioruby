@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.4 2005/09/08 01:22:10 k Exp $
+#  $Id: report.rb,v 1.5 2005/09/26 13:00:05 k Exp $
 #
 
 module Bio
@@ -42,12 +42,12 @@ module Bio
         :cleavage_site_prediction, :networks,
         :prediction, :cutoff
 
-      alias :pred   :prediction
+      alias pred prediction
 
       def name
         @prediction['Name']
       end
-      alias :entry_id :name 
+      alias entry_id name 
 
       def query_len
         if @prediction['Len']
@@ -56,7 +56,7 @@ module Bio
           @prediction['Length']
         end
       end
-      alias :length :query_len
+      alias length query_len
 
       def loc
         if @prediction['Loc'] 
@@ -130,7 +130,7 @@ if __FILE__ == $0
 
   begin
     require 'pp'
-    alias :p :pp 
+    alias p pp 
   rescue LoadError
   end
 

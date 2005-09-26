@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: common.rb,v 1.3 2005/09/24 01:15:56 nakao Exp $
+#  $Id: common.rb,v 1.4 2005/09/26 13:00:06 k Exp $
 #
 
 require 'bio/db'
@@ -69,9 +69,9 @@ module Common
     end
     @data['DE']
   end
-  alias :description :de	
+  alias description de	
   # API
-  alias :definition :de
+  alias definition de
   
 
 

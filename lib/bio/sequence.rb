@@ -19,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.43 2005/09/23 14:27:59 k Exp $
+#  $Id: sequence.rb,v 0.44 2005/09/26 13:00:04 k Exp $
 #
 
 require 'bio/data/na'
@@ -36,7 +36,7 @@ module Bio
     def to_s
       String.new(self)
     end
-    alias :to_str :to_s
+    alias to_str to_s
 
     def seq
       self.class.new(self)
@@ -46,12 +46,12 @@ module Bio
       initialize(self)
       self
     end
-    alias :seq! :normalize!
+    alias seq! normalize!
 
     def <<(*arg)
       super(self.class.new(*arg))
     end
-    alias :concat :<<
+    alias concat <<
 
     def +(*arg)
       self.class.new(super(*arg))

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: codontable.rb,v 0.12 2004/08/23 23:51:29 k Exp $
+#  $Id: codontable.rb,v 0.13 2005/09/26 13:00:06 k Exp $
 #
 
 module Bio
@@ -672,7 +672,7 @@ if __FILE__ == $0
 
     begin
       require 'pp'
-      alias :p :pp
+      alias p pp
     rescue LoadError
     end
 

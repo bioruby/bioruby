@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: index.rb,v 1.13 2005/09/25 05:30:21 ngoto Exp $ 
+#  $Id: index.rb,v 1.14 2005/09/26 13:00:08 k Exp $ 
 # 
 
 module Bio
@@ -198,10 +198,10 @@ module Bio
         self.values.join
       end
 
-      #alias :each_orig :each
-      alias :each :each_value
-      #alias :to_a_orig :to_a
-      alias :to_a :values
+      #alias each_orig each
+      alias each each_value
+      #alias to_a_orig to_a
+      alias to_a values
 
     end #class Results
 
@@ -448,7 +448,7 @@ module Bio
         end
         r
       end
-      alias :check :check_all
+      alias check check_all
 
       def close_all
         self.each do |x|
@@ -456,7 +456,7 @@ module Bio
         end
         nil
       end
-      alias :close :close_all
+      alias close close_all
 
       def recalc_all
         self.cache_all
@@ -465,7 +465,7 @@ module Bio
         end
         true
       end
-      alias :recalc :recalc_all
+      alias recalc recalc_all
 
     end #class FileIDs
 
@@ -569,7 +569,7 @@ module Bio
           end
           @records
         end
-        alias :size :records
+        alias size records
 
         # methods for writing file
         def write_record(str)
@@ -843,7 +843,7 @@ module Bio
       def close_all
         values.each { |x| x.file.close }
       end
-      alias :close :close_all
+      alias close close_all
 
       def search(key)
         r = []

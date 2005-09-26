@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format0.rb,v 1.11 2005/09/09 14:59:53 ngoto Exp $
+#  $Id: format0.rb,v 1.12 2005/09/26 13:00:04 k Exp $
 #
 
 begin
@@ -113,7 +113,7 @@ module Bio
             yield x
           end
         end
-        alias :each :each_hit
+        alias each each_hit
 
         # shortcut for the last iteration's hits
         def hits
@@ -619,9 +619,9 @@ module Bio
           def definition; parse_hitname; @definition; end
 
           # Compatible with Bio::Fasta::Report::Hit
-          #alias :target_id :accession
-          alias :target_def :definition
-          alias :target_len :len
+          #alias target_id accession
+          alias target_def definition
+          alias target_len len
 
           # Shortcut methods for the best Hsp
           def hsp_first(m)

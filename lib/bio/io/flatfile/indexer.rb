@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.20 2005/09/23 15:03:02 ngoto Exp $ 
+#  $Id: indexer.rb,v 1.21 2005/09/26 13:00:08 k Exp $ 
 # 
 
 require 'bio/io/flatfile/index'
@@ -51,8 +51,8 @@ module Bio
         def add(x)
           self.store(x.name, x)
         end
-        #alias :each_orig :each
-        alias :each :each_value
+        #alias each_orig each
+        alias each each_value
       end
 
       module Parser

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.3 2005/09/08 01:22:11 k Exp $
+#  $Id: report.rb,v 1.4 2005/09/26 13:00:06 k Exp $
 #
 
 module Bio
@@ -66,7 +66,7 @@ module Bio
       end
       attr_reader :tmhs, :entry_id, :query_len, :predicted_tmhs,
         :exp_aas_in_tmhs, :exp_first_60aa, :total_prob_of_N_in
-      alias :length :query_len
+      alias length query_len
 
       def helix
         @tmhs.map {|t| t if t.status == 'TMhelix' }.compact
@@ -135,7 +135,7 @@ module Bio
         @range    = range
       end
       attr_accessor :entry_id, :version, :status, :range
-      alias :pos :range
+      alias pos range
 
       def to_s
         [@entry_id, @version, @status, @range.first, @range.last].join("\t")
@@ -152,7 +152,7 @@ if __FILE__ == $0
 
   begin
     require 'pp'
-    alias pp p
+    alias p pp
   rescue LoadError
   end
 

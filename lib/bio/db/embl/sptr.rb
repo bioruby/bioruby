@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.24 2005/08/08 06:41:13 nakao Exp $
+#  $Id: sptr.rb,v 1.25 2005/09/26 13:00:06 k Exp $
 #
 
 require 'bio/db'
@@ -690,8 +690,8 @@ if __FILE__ == $0
 
   begin
     require 'pp'
-    alias p pp
-  rescue LoadErrmr
+    alias pp p
+  rescue LoadError
   end
 
   def cmd(cmd, tag = nil, ent = $ent)

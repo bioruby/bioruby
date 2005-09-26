@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: bdb.rb,v 1.7 2005/09/09 14:35:25 ngoto Exp $ 
+#  $Id: bdb.rb,v 1.8 2005/09/26 13:00:08 k Exp $ 
 # 
  
 begin 
@@ -152,7 +152,7 @@ module Bio
         def records
           @bdb.size
         end
-        alias :size :records
+        alias size records
 
         # methods for writing
         def add(key, val)

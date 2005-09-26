@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: chain.rb,v 1.1 2004/03/08 07:30:40 ngoto Exp $
+#  $Id: chain.rb,v 1.2 2005/09/26 13:00:08 k Exp $
 
 require 'bio/db/pdb'
 
@@ -76,7 +76,7 @@ module Bio
         @residues.each{ |residue| yield residue }
       end
       #Alias to override ResidueFinder#each_residue
-      alias :each_residue :each
+      alias each_residue each
       
       #Sort based on chain id
       def <=>(other)

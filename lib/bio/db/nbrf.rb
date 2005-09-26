@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: nbrf.rb,v 1.3 2005/09/08 01:22:11 k Exp $
+#  $Id: nbrf.rb,v 1.4 2005/09/26 13:00:06 k Exp $
 #
 
 require 'bio/db'
@@ -49,12 +49,12 @@ module Bio
     attr_accessor :seq_type, :entry_id, :definition, :data
     attr_reader :entry_overrun
 
-    alias :accession :entry_id
+    alias accession entry_id
 
     def entry
       @entry = ">#{@seq_type or 'XX'};#{@entry_id}\n#{definition}\n#{@data}*\n"
     end
-    alias :to_s :entry
+    alias to_s entry
 
     def seq_class
       case @seq_type

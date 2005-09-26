@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: residue.rb,v 1.1 2004/03/08 07:30:40 ngoto Exp $
+#  $Id: residue.rb,v 1.2 2005/09/26 13:00:08 k Exp $
 
 require 'bio/db/pdb'
 
@@ -97,7 +97,7 @@ module Bio
         @atoms.each{ |atom| yield atom }
       end
       #Alias to override AtomFinder#each_atom
-      alias :each_atom :each
+      alias each_atom each
       
       #Sorts based on resSeq and iCode if need be
       def <=>(other)

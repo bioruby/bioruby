@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: ddbjxml.rb,v 1.5 2004/06/23 14:35:26 k Exp $
+#  $Id: ddbjxml.rb,v 1.6 2005/09/26 13:00:08 k Exp $
 #
 
 require 'bio/io/soapwsdl'
@@ -112,7 +112,7 @@ if __FILE__ == $0
 
   begin
     require 'pp'
-    alias :p :pp
+    alias p pp
   rescue LoadError
   end
 

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggapi.rb,v 1.8 2005/08/07 09:49:22 k Exp $
+#  $Id: keggapi.rb,v 1.9 2005/09/26 13:00:08 k Exp $
 #
 
 require 'bio/io/soapwsdl'
@@ -192,7 +192,7 @@ if __FILE__ == $0
 
   begin
     require 'pp'
-    alias :p :pp
+    alias p pp
   rescue LoadError
   end
 

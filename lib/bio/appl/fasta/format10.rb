@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format10.rb,v 1.5 2005/09/09 15:09:37 ngoto Exp $
+#  $Id: format10.rb,v 1.6 2005/09/26 13:00:05 k Exp $
 #
 
 require 'bio/appl/fasta'
@@ -268,7 +268,7 @@ end
 if __FILE__ == $0
   begin
     require 'pp'
-    alias :p :pp
+    alias p pp
   rescue
   end
 

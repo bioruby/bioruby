@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: go.rb,v 1.7 2005/09/08 01:22:11 k Exp $
+#  $Id: go.rb,v 1.8 2005/09/26 13:00:06 k Exp $
 #
 
 require 'bio/pathway'
@@ -200,7 +200,7 @@ class GO
     attr_reader :taxon
     attr_reader :date
     attr_reader :assigned_by 
-    alias :entry_id :db_object_id
+    alias entry_id db_object_id
 
 
     # Bio::GO::GeneAssociation.new(entry)

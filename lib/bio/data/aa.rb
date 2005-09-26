@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aa.rb,v 0.11 2005/08/31 07:22:53 k Exp $
+#  $Id: aa.rb,v 0.12 2005/09/26 13:00:06 k Exp $
 #
 
 module Bio
@@ -139,7 +139,7 @@ module Bio
       def names
         Names
       end
-      alias :aa :names
+      alias aa names
 
       def name(x)
         str = Names[x]
@@ -160,7 +160,7 @@ module Bio
           name2one(x)
         end
       end
-      alias :one :to_1
+      alias one to_1
 
       def to_3(x)
         case x.to_s.length
@@ -172,7 +172,7 @@ module Bio
           name2three(x)
         end
       end
-      alias :three :to_3
+      alias three to_3
 
       def one2three(x)
         if x and x.length != 1
@@ -258,7 +258,7 @@ module Bio
 
 
     # override when used as an instance method to improve performance
-    alias :orig_reverse :reverse
+    alias orig_reverse reverse
     def reverse
       unless @reverse
         @reverse = orig_reverse

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genpept.rb,v 1.6 2004/08/23 23:40:35 k Exp $
+#  $Id: genpept.rb,v 1.7 2005/09/26 13:00:07 k Exp $
 #
 
 require 'bio/db/genbank/genbank'
@@ -56,8 +56,8 @@ class GenPept < NCBIDB
     end
     Bio::Sequence::AA.new(@data['SEQUENCE'])
   end
-  alias :aaseq :seq
-  alias :aalen :seq_len
+  alias aaseq seq
+  alias aalen seq_len
 
 
   # DBSOURCE

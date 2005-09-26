@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: location.rb,v 0.19 2005/09/08 01:22:08 k Exp $
+#  $Id: location.rb,v 0.20 2005/09/26 13:00:04 k Exp $
 #
 
 module Bio
@@ -152,7 +152,7 @@ module Bio
       end
       len
     end
-    alias :size :length
+    alias size length
 
     def relative(n, type = nil)
       case type

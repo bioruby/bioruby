@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.20 2005/09/08 01:22:11 k Exp $
+#  $Id: fasta.rb,v 1.21 2005/09/26 13:00:06 k Exp $
 #
 
 require 'bio/db'
@@ -42,13 +42,13 @@ module Bio
     def entry
       @entry = ">#{@definition}\n#{@data.strip}\n"
     end
-    alias :to_s :entry
+    alias to_s entry
 
     def query(factory)
       factory.query(@entry)
     end
-    alias :fasta :query
-    alias :blast :query
+    alias fasta query
+    alias blast query
 
     def seq
       unless defined?(@seq)

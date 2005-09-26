@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fantom.rb,v 1.10 2005/09/08 01:22:11 k Exp $
+#  $Id: fantom.rb,v 1.11 2005/09/26 13:00:06 k Exp $
 #
 
 begin
@@ -147,7 +147,7 @@ module Bio
           end
           @representative_sequence
         end
-        alias :representative_clone :representative_sequence
+        alias representative_clone representative_sequence
 
         def representative_annotations
           e = representative_sequence

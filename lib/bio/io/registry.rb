@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: registry.rb,v 1.13 2005/09/08 01:22:12 k Exp $
+#  $Id: registry.rb,v 1.14 2005/09/26 13:00:08 k Exp $
 #
 
 require 'uri'
@@ -67,7 +67,7 @@ module Bio
       end
       return nil
     end
-    alias :db :get_database
+    alias db get_database
 
     def query(dbname)
       @registry.each do |db|
@@ -191,7 +191,7 @@ end
 if __FILE__ == $0
   begin
     require 'pp'
-    alias :p :pp
+    alias p pp
   rescue
   end
 

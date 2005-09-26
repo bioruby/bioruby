@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pdb.rb,v 1.2 2005/09/08 01:22:11 k Exp $
+#  $Id: pdb.rb,v 1.3 2005/09/26 13:00:08 k Exp $
 #
 
 # *** CAUTION ***
@@ -1216,7 +1216,7 @@ module Bio
       @models.each{ |model| yield model }
     end
     #Alias needed for Bio::PDB::ModelFinder
-    alias :each_model :each
+    alias each_model each
     
     #Provides keyed access to the models based on serial number
     #returns nil if it's not there (should it raise an exception?)
