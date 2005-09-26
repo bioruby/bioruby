@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genpept.rb,v 1.7 2005/09/26 13:00:07 k Exp $
+#  $Id: genpept.rb,v 1.8 2005/09/26 13:13:23 k Exp $
 #
 
 require 'bio/db/genbank/genbank'
@@ -37,6 +37,7 @@ class GenPept < NCBIDB
       @division = locus_line[63..66].strip
       @date     = locus_line[68..78].strip
     end
+    attr_accessor :entry_id, :seq_len, :circular, :division, :date
   end
 
   def locus
