@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genpept.rb,v 1.8 2005/09/26 13:13:23 k Exp $
+#  $Id: genpept.rb,v 1.9 2005/09/26 13:24:25 k Exp $
 #
 
 require 'bio/db/genbank/genbank'
@@ -32,19 +32,19 @@ class GenPept < NCBIDB
   class Locus
     def initialize(locus_line)
       @entry_id = locus_line[12..27].strip
-      @seq_len  = locus_line[29..39].to_i
+      @length   = locus_line[29..39].to_i
       @circular = locus_line[55..62].strip	# always linear
       @division = locus_line[63..66].strip
       @date     = locus_line[68..78].strip
     end
-    attr_accessor :entry_id, :seq_len, :circular, :division, :date
+    attr_accessor :entry_id, :length, :circular, :division, :date
   end
 
   def locus
     @data['LOCUS'] ||= Locus.new(get('LOCUS'))
   end
   def entry_id;		locus.entry_id;		end
-  def seq_len;		locus.seq_len;		end
+  def length;		locus.length;		end
   def circular;		locus.circular;		end
   def division;		locus.division;		end
   def date;		locus.date;		end
@@ -58,8 +58,11 @@ class GenPept < NCBIDB
     Bio::Sequence::AA.new(@data['SEQUENCE'])
   end
   alias aaseq seq
-  alias aalen seq_len
+  alias aalen length
 
+  def seq_len
+    seq.length
+  end
 
   # DBSOURCE
   def dbsource

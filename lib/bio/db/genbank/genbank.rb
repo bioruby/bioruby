@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.34 2005/09/26 13:00:07 k Exp $
+#  $Id: genbank.rb,v 0.35 2005/09/26 13:24:25 k Exp $
 #
 
 require 'bio/db'
@@ -32,7 +32,7 @@ class GenBank
     def initialize(locus_line)
       if locus_line.length > 75 			# after Rel 126.0
         @entry_id = locus_line[12..27].strip
-        @seq_len  = locus_line[29..39].to_i
+        @length   = locus_line[29..39].to_i
         @strand   = locus_line[44..46].strip
         @natype   = locus_line[47..52].strip
         @circular = locus_line[55..62].strip
@@ -40,7 +40,7 @@ class GenBank
         @date     = locus_line[68..78].strip
       else
         @entry_id = locus_line[12..21].strip
-        @seq_len  = locus_line[22..29].to_i
+        @length   = locus_line[22..29].to_i
         @strand   = locus_line[33..35].strip
         @natype   = locus_line[36..39].strip
         @circular = locus_line[42..51].strip
@@ -48,7 +48,7 @@ class GenBank
         @date     = locus_line[62..72].strip
       end
     end
-    attr_accessor :entry_id, :seq_len, :strand, :natype, :circular,
+    attr_accessor :entry_id, :length, :strand, :natype, :circular,
       :division, :date
   end
 
@@ -56,7 +56,7 @@ class GenBank
     @data['LOCUS'] ||= Locus.new(get('LOCUS'))
   end
   def entry_id;		locus.entry_id;		end
-  def seq_len;		locus.seq_len;		end
+  def length;		locus.length;		end
   def circular;		locus.circular;		end
   def division;		locus.division;		end
   def date;		locus.date;		end
@@ -73,7 +73,11 @@ class GenBank
     Bio::Sequence::NA.new(@data['SEQUENCE'])
   end
   alias naseq seq
-  alias nalen seq_len
+  alias nalen length
+
+  def seq_len
+    seq.length
+  end
 
 
   # FEATURES
