@@ -1,3 +1,37 @@
+2005-09-25  Toshiaki Katayama <k@bioruby.org>
+
+	* README.DEV
+
+	  Newly added guideline document for the contributors.
+
+	* README
+
+	  Updated and added instructions on RubyGems.
+
+2005-09-23  Toshiaki Katayama <k@bioruby.org>
+
+	* bin/bioruby, lib/bio/shell.rb, lib/bio/shell/core.rb,
+	  lib/bio/shell/session.rb, lib/bio/shell/plugin/seq.rb,
+	  lib/bio/shell/flatfile.rb, lib/bio/shell/obda.rb
+
+	  Newly added BioRuby shell, the command line user interface.
+	  Try 'bioruby' command in your terminal.
+
+	* doc/Changes-0.7.rd
+
+	  Newly added document describing incompatible and important
+	  changes between the BioRuby 0.6 and 0.7 versions.
+
+	* lib/bio/sequence.rb
+
+	  Bio::Sequence.guess, Bio::Sequence#guess methods are added
+	  which guess the sequence type by following fomula (default
+	  value for the threshold is 0.9).
+
+	              number of ATGC
+	  --------------------------------------- > threshold
+	    number of other chars - number of N
+
 2005-09-10  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio.rb, lib/bio/appl/blast.rb, lib/bio/appl/blast/format0.rb,
