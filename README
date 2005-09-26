@@ -1,66 +1,93 @@
+=begin
+
+  $Id: README,v 1.10 2005/09/26 00:48:04 k Exp $
+
+  Copyright (C) 2001-2005 Toshiaki Katayama <k@bioruby.org>
 
 = BioRuby
 
-BioRuby project aims to implement integrated environment for Bioinformatics.
+BioRuby is an open source Ruby library for developing bioinformatics
+software.  Object oriented scripting language Ruby has many features
+suitable for bioinfomatics research, for example, clear syntax to
+express complex objects, regular expressions for text handling as
+powerful as Perl's, a wide variety of libraries including web service
+etc.  As the syntax of the Ruby language is simple and very clean, we
+believe that it is easy to learn for beginners, easy to use for
+biologists, and also powerful enough for the software developers.
 
-Object oriented scripting language Ruby has many good points suitable for
-bioinfomatics research.  Powerful regular expressions like Perl, purely
-object oriented, simple and very clean syntax -- easy to learn for beginners,
-easy to use for biologists, powerful enough for developers.
-
-In BioRuby, you can retrieve biological database entries from flat files,
-internet web servers and local relational databases.  These database entries
-can be parsed to extract any information you need.  Biological sequences are
-treated with Ruby's powerful string methods and regular expressions.  Daily
-tools like Blast, Fasta and Hmmer programs can be executed and the results
-are fully parsed to extract scores and/or alignments.  BioRuby also supports
-some databases and web services developed in Japan such as KEGG, AAindex,
-and DBGET etc.
+In BioRuby, you can retrieve biological database entries from flat
+files, internet web servers and local relational databases.  These
+database entries can be parsed to extract information you need.
+Biological sequences can be treated with the fulfilling methods of the
+Ruby's String class and with regular expressions.  Daily tools like
+Blast, Fasta, Hmmer and many other softwares for the biological
+analysis can be executed within the BioRuby script, and the results
+can be fully parsed to extract the portion you need.  BioRuby supports
+major biological database formats and provides many ways for accessing
+them through flatfile indexing, SQL, web services etc.  Various web
+services including KEGG API can be easily utilized by the BioRuby.
 
 
-== WHERE TO GET
+== FOR MORE INFORMATION
 
-* WWW -- ((<URL:http://bioruby.org/>))
+BioRuby's official website is at ((<URL:http://bioruby.org/>)).
+You will find links to the related resouces including downloads,
+mailing lists, Wiki documentations etc. in the top page.
 
-    http://bioruby.org/archive/
+  * ((<URL:http://bioruby.org/>))
 
-* CVS -- ((<URL:http://cvs.bioruby.org/>))
+
+== WHERE TO OBTAIN
+
+--- WWW
+
+The stable release is freely available from the BioRuby website.
+
+  * ((<URL:http://bioruby.org/archive/>))
+
+--- CVS
+
+If you need the latest development version, anonymous CVS is provided at
+
+  * ((<URL:http://cvs.bioruby.org/>))
+
+and can be obtained by the following procedure.
 
     % cvs -d :pserver:anonymous@cvs.bioruby.org:/export/cvs login
     CVS password: (no password is required, just push return)
     % cvs -d :pserver:anonymous@cvs.bioruby.org:/export/cvs co bioruby
 
+--- RubyGems
+
+((<RubyGems|URL:http://rubyforge.org/projects/rubygems/>)) version of
+the BioRuby package is also available for easy installation.
+
+  * ((<URL:http://rubyforge.org/projects/bioruby/>))
+
 
 == REQUIREMENTS
 
-* Ruby 1.6.6 or newer -- ((<URL:http://www.ruby-lang.org/>))
+* Ruby 1.8.2 or later -- ((<URL:http://www.ruby-lang.org/>))
 
 
 == OPTIONAL REQUIREMENTS
 
-* Ruby library -- ((<URL:http://raa.ruby-lang.org/>))
+Some optional libraries can be utilized to extend BioRuby's functionality.
+If your needs meets the following conditions, install them from the "Ruby
+Application Archive" at ((<URL:http://raa.ruby-lang.org/>)).
 
-  * [RAA:strscan] for parsing Blast default output.
-  * [RAA:rexml] for parsing Blast XML output and using DAS.
-  * [RAA:xmlparser] can be used for faster Blast XML parsing.
+For faster parsing of the BLAST XML output format:
+
+  * [RAA:xmlparser]
+
+Creating faster flatfile index using Berkley DB:
+
+  * [RAA:bdb]
+
+Accessing BioSQL database created by other Open Bio* libraries:
+
   * [RAA:ruby-dbi] and at least one driver from [RAA:mysql-ruby],
-    [RAA:postgres], [RAA:oracle] to use with BioSQL.
-  * [RAA:bdb] for faster flat file indexing.
-  * [RAA:pp] for pretty print in debug.
-  * [RAA:soap4r] (version >= 1.4.8.1) for KEGG API. Note that libraries
-    which SOAP4R depends such as [RAA:date2], [RAA:devel-logger],
-    [RAA:http-access] (version >= j) with one of [RAA:xmlscan], [RAA:rexml],
-    [RAA:rexml-stable], [RAA:xmlparser], [RAA:nqxml] are also needed.
-
-  Note that 'strscan', 'rexml', 'pp', 'date2' and 'xmlscan' are 
-  included in the Ruby 1.8.0 distibution (you don't need to install
-  them by yourself).
-
-* External applications can be used if installed
-
-  * Blast (version >= 2.2.5) for blast execution on local computer
-  * FASTA for fasta, ssearch execution on local computer
-  * HMMER for hmmsearch, hmmpfam execution on local computer
+    [RAA:postgres], [RAA:oracle]
 
 
 == INSTALL
@@ -73,23 +100,36 @@ as follows:
   % su
   # ruby install.rb install
 
-If you are using Mac OS X, you should use 'sudo' command instead of 'su'.
+If your operating system supports 'sudo' command (such as Mac OS X),
+try the following procedure instead of the above.
 
   % ruby install.rb config
   % ruby install.rb setup
   % sudo ruby install.rb install
 
-You can try
+You can run tests by
+
+  % ruby install.rb test
+
+and run
 
   % ruby install.rb --help
 
 for more details.
 
+--- RubyGems
+
+If you are using RubyGems, just type
+
+  % gems install bio
+
+
+== SETUP
 
 If you want to use the OBDA (Open Bio Database Access) to obtain database
-entries, copy a sample config file
+entries, copy a sample configtation file in the BioRuby distribution
 
-  etc/bioinformatics/seqdatabase.ini
+  bioruby-x.x.x/etc/bioinformatics/seqdatabase.ini
 
 to
 
@@ -105,27 +145,38 @@ informations on the OBDA, see ((<URL:http://obda.open-bio.org/>)).
 
 == USAGE
 
-You can load all BioRuby classes just by require 'bio' and all the
-BioRuby classes are defined under the module Bio for the name space.
-See the documentation for each class.
+You can load all BioRuby classes just by requiring 'bio.rb'.  All the
+BioRuby classes and modules are located under the module name 'Bio' to
+separate the name space.
 
   #!/usr/bin/env ruby
   require 'bio'
 
+Also read other documentations in the 'doc' directory.
+
+  bioruby-x.x.x/doc/
+
+--- RubyGems
+
+In RubyGems, you need to load 'rubygems' library before using 'bio'.
+
+  #!/usr/bin/env ruby
+  require 'rubygems'
+  require_gem 'bio'
 
 == LICENCE
 
-GPL for applications, LGPL for libraries.  Note that, install.rb
-included in the BioRuby package comes from [RAA:setup] by Minero Aoki.
+BioRuby can be freely distributed under the GNU LGPL licence.
+
+Note that, install.rb included in the BioRuby package comes from
+[RAA:setup] developed by Minero Aoki, and modified by Moses Hohman.
 
 
-== AUTHORS
+== CONTACT
 
-* KATAYAMA Toshiaki <k@bioruby.org>, project leader
-* Yoshinori K. Okuji <okuji@enbug.org>
-* Mitsuteru C. Nakao <n@bioruby.org>
-* KAWASHIMA Shuichi <s@bioruby.org>
-* GOTO Naohisa <ng@bioruby.org>
+Current staffs of the BioRuby project can be reached by sending e-mail
+to <staff@bioruby.org>.
 
-  * and many others on the Internet...
+
+=end
 
