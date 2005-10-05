@@ -17,12 +17,27 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.2 2005/09/25 05:25:14 k Exp $
+#  $Id: flatfile.rb,v 1.3 2005/10/05 08:56:14 k Exp $
 #
 
 require 'bio/io/flatfile'
 
 module Bio::Shell
+
+  def flatauto(filename)
+    if block_given?
+      Bio::FlatFile.auto(filename) do |flat|
+        flat.each do |entry|
+          yield entry
+        end
+      end
+    else
+      flat = Bio::FlatFile.auto(filename)
+      entry = flat.next_entry
+      flat.close
+      return entry
+    end
+  end
 
   def convert_to_fasta(fastafile, *flatfiles)
     puts "Saving fasta file (#{fastafile}) ... "
