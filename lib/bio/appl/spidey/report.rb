@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.3 2005/09/08 01:22:10 k Exp $
+#  $Id: report.rb,v 1.4 2005/10/11 15:18:21 ngoto Exp $
 #
 
 require 'bio'
@@ -342,13 +342,13 @@ module Bio
         private :parse_align
 
         # Bio::BLAST::*::Report::Hit compatible methods
-        def query_len;  @mrna.len;        end
-        def query_id;   @mrna.entry_id;   end
-        def query_def;  @mrna.definition; end
+        def query_len;  mrna.len;        end
+        def query_id;   mrna.entry_id;   end
+        def query_def;  mrna.definition; end
 
-        def target_len; @genomic.len;        end
-        def target_id;  @genomic.entry_id;   end
-        def target_def; @genomic.definition; end
+        def target_len; genomic.len;        end
+        def target_id;  genomic.entry_id;   end
+        def target_def; genomic.definition; end
 
         alias hit_id     target_id
         alias len        target_len
