@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.4 2005/10/11 15:18:21 ngoto Exp $
+#  $Id: report.rb,v 1.5 2005/10/11 15:30:01 ngoto Exp $
 #
 
 require 'bio'
@@ -240,7 +240,7 @@ module Bio
             d_to = -1; d_from = 1
           end
           @d0.each do |x|
-            p x
+            #p x
             if x =~ /^Exon\s*\d+(\(.*\))?\:/ then
               if a = aln.shift then
                 y = SegmentPair.parse(x, strand, cflag, a[1])
