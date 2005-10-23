@@ -17,16 +17,16 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genpept.rb,v 1.9 2005/09/26 13:24:25 k Exp $
+#  $Id: genpept.rb,v 1.10 2005/10/23 07:20:37 k Exp $
 #
 
+require 'bio/db/genbank/common'
 require 'bio/db/genbank/genbank'
 
 module Bio
 class GenPept < NCBIDB
 
-  require 'bio/db/genbank/common'
-  include Bio::GenBank::Common
+  include Bio::NCBIDB::Common
 
   # LOCUS
   class Locus
