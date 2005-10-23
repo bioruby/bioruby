@@ -1,7 +1,27 @@
 #
-# bio/db/embl/embl.rb - EMBL database class
+# = bio/db/embl/embl.rb - EMBL database class
 #
-#   Copyright (C) 2001, 2002 Mitsuteru C. Nakao <n@bioruby.org>
+# 
+# Author::      Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::   Copyright (C) 2001-2005 BioRuby Project
+# License::     LGPL
+#
+# $Id: embl.rb,v 1.22 2005/10/23 09:59:48 nakao Exp $
+#
+# == EMBL database entry
+#
+#
+#
+# == Example
+# 
+# emb = Bio::EMBL.new($<.read)
+# emb.entry_id
+# emb.each_cds do |cds|
+#   cds
+# end
+# emb.seq
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,19 +37,24 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: embl.rb,v 1.21 2005/09/24 01:15:56 nakao Exp $
+#++
 #
 
 require 'bio/db'
 require 'bio/db/embl/common'
 
 module Bio
-class EMBL
-  include Bio::EMBL::Common
+class EMBL < EMBLDB
+  include Bio::EMBLDB::Common
 
-  ##
+  # returns contents in the ID line.
+  # * Bio::EMBL#id_line -> <ID Hash>
+  # where <ID Hash> is:
+  #  {'ENTRY_NAME' => String, 'MOLECULE_TYPE' => String, 'DIVISION' => String,
+  #   'SEQUENCE_LENGTH' => Int}
+  #
   # ID Line
-  # "ID  ENTRY_NAME DATA_CLASS; MOLECULE_TYPE; DIVISION; SEQUENCE_LENGTH BP."
+  #  "ID  ENTRY_NAME DATA_CLASS; MOLECULE_TYPE; DIVISION; SEQUENCE_LENGTH BP."
   #
   # DATA_CLASS = ['standard']
   #
@@ -58,85 +83,77 @@ class EMBL
   def id_line(key=nil)
     unless @data['ID']
       tmp = Hash.new
-      idline = @orig['ID'].split(/ +/)         
-      tmp['ENTRY_NAME']      = idline[1]
-      tmp['DATA_CLASS']      = idline[2].sub(/;/,'')  
-      tmp['MOLECULE_TYPE']   = idline[3].sub(/;/,'')  # "cyclic DNA"
-      tmp['DVISION']         = idline[4].sub(/;/,'')
-      tmp['SEQUENCE_LENGTH'] = idline[5].to_i
+      idline = fetch('ID').split(/; +/)         
+      tmp['ENTRY_NAME'], tmp['DATA_CLASS'] = idline[0].split(/ +/)
+      tmp['MOLECULE_TYPE'] = idline[1]
+      tmp['DIVISION'] = idline[2]
+      tmp['SEQUENCE_LENGTH'] = idline[3].strip.split(' ').first.to_i
+
       @data['ID'] = tmp
     end
-    if block_given?
-      @data['ID'].each do |k,v|
-        yield(k,v)
-      end
-    elsif key
+    
+    if key
       @data['ID'][key]
     else
       @data['ID']
     end
   end
 
-  ##
-  # Bio::EMBL#entry -> String
-  #          #entry_name -> String
+  # returns ENTRY_NAME in the ID line.
+  # * Bio::EMBL#entry -> String
   def entry
     id_line('ENTRY_NAME')
   end
   alias entry_name entry
   alias entry_id entry
 
-  ##
-  # Bio::EMBL#molecule -> String
-  # 
+  # returns MOLECULE_TYPE in the ID line.
+  # * Bio::EMBL#molecule -> String
   def molecule
     id_line('MOLECULE_TYPE')
   end
   alias molecule_type molecule
 
-  ##
-  # Bio::EMBL#division -> String
-  # 
+  # returns DIVISION in the ID line.
+  # * Bio::EMBL#division -> String
   def division
     id_line('DIVISION')
   end
 
-  ##
-  # Bio::EMBL#sequencelength -> String
-  # 
+  # returns SEQUENCE_LENGTH in the ID line.
+  # * Bio::EMBL#sequencelength -> String
   def sequence_length
     id_line('SEQUENCE_LENGTH')
   end
   alias seqlen sequence_length
   
-  ##
+
   # AC Line
   # "AC   A12345; B23456;"
+
+
+  # returns the version information in the sequence version (SV) line.
+  # * Bio::EMBL#sv -> Accession.Version in String
+  # * Bio::EMBL#version -> accession in Int
   #
-  # Bio::EMBLDB#ac  -> Array
-  #            #accessions  -> Array
-
-
-  ##
   # SV Line; sequence version (1/entry)
-  # "SV    Accession.Version"
-  #
-  # Bio::EMBL#sv -> String
-  # Bio::EMBL#version -> Int
-  #
+  #  SV    Accession.Version
   def sv
     field_fetch('SV').sub(/;/,'')
   end
   def version
     sv.split(".")[1].to_i
   end
+
   
-  ##
-  # DT Line; date (2/entry)
-  # Bio::EMBL#dt  -> Hash
-  # Bio::EMBL#dt(key)  -> String
-  #   key = (created|updated)
+  # returns contents in the date (DT) line.
+  # * Bio::EMBL#dt  -> <DT Hash>
+  # where <DT Hash> is:
+  #  {}
+  # * Bio::EMBL#dt(key)  -> String
+  # keys: 'created' and 'updated'
   #
+  # DT Line; date (2/entry)
   def dt(key=nil)
     unless @data['DT']
       tmp = Hash.new
@@ -145,11 +162,7 @@ class EMBL
       tmp['updated'] = dt_line[1].sub(/\w{2}   /,'').strip
       @data['DT'] = tmp
     end
-    if block_given?
-      @data['DT'].each do |k,v|
-        yield(k,v)
-      end
-    elsif key
+    if key
       @data['DT'][key]
     else
       @data['DT']
@@ -207,18 +220,21 @@ class EMBL
   # Bio::EMBLDB#dr
 
 
-  ##
+  # returns feature table header (String) in the feature header (FH) line.
+  #
   # FH Line; feature table header (0 or 2)
-  # FT Line; feature table data (>=0)
-  #
-  # Bio::EMBL#ft -> Array
-  # Bio::EMBL#ft {} -> {|Hash| }
-  # Bio::EMBL#ft(Int) -> Hash
-  #
   def fh
-    get('FH')
+    fetch('FH')
   end
+
+  # returns contents in the feature table (FT) lines.
+  # * Bio::EMBL#ft -> [ <FT Hash>* ]
+  # * Bio::EMBL#ft {} -> {|<FT Hash>| }
+  # * Bio::EMBL#ft(Int) -> Hash
+  #
   # same as features method in bio/db/genbank.rb 
+  #
+  # FT Line; feature table data (>=0)
   def ft(num = nil)
     unless @data['FT']
       @data['FT'] = Array.new
@@ -254,8 +270,8 @@ class EMBL
       @data['FT'] = Features.new(ary)
     end
     if block_given?
-      @data['FT'].each do |f|
-        yield f
+      @data['FT'].each do |feature_table|
+        yield feature_table
       end
     else
       @data['FT']
@@ -263,26 +279,28 @@ class EMBL
   end
   alias features ft
 
+  # iterates on CDS features in the FT lines.
   def each_cds
-    ft.each do |feature|
-      if feature.feature == 'CDS'
-        yield feature
+    ft.each do |cds_feature|
+      if cds_feature.feature == 'CDS'
+        yield cds_feature
       end
     end
   end
 
+  # iterates on gene features in the FT lines.
   def each_gene
-    ft.each do |feature|
-      if feature.feature == 'gene'
-        yield feature
+    ft.each do |gene_feature|
+      if gene_feature.feature == 'gene'
+        yield gene_feature
       end
     end
   end
 
 
-  ##
-  # CC Line; comments of notes (>=0)
+  # returns comment text in the comments (CC) line.
   #
+  # CC Line; comments of notes (>=0)
   def cc
     get('CC')
   end
@@ -294,43 +312,39 @@ class EMBL
   #  end
 
 
-  ##
-  # SQ Line; sequence header (1/entry)
-  # "SQ   Sequence 1859 BP; 609 A; 314 C; 355 G; 581 T; 0 other;"
-  # Bio::EMBL#sq  -> Hash
-  # Bio::EMBL#sq(base)  -> Int
-  #          #sq[base]  -> Int
+  # returns sequence header information in the sequence header (SQ) line.
+  # * Bio::EMBL#sq  -> <SQ Hash>
+  # where <SQ Hash> is:
+  #     {'ntlen' => Int, 'other' => Int,
+  #      'a' => Int, 'c' => Int, 'g' => Int, 't' => Int}
+  # * Bio::EMBL#sq(base)  -> <base content in Int>
+  # * Bio::EMBL#sq[base]  -> <base content in Int>
   #
+  # SQ Line; sequence header (1/entry)
+  #  SQ   Sequence 1859 BP; 609 A; 314 C; 355 G; 581 T; 0 other;
   def sq(base = nil)
     unless @data['SQ']
       fetch('SQ') =~ \
              /(\d+) BP\; (\d+) A; (\d+) C; (\d+) G; (\d+) T; (\d+) other;/
-      @data['SQ']={'ntlen'=>$1.to_i, 'other'=>$6.to_i,
-                   'a'=>$2.to_i,'c'=>$3.to_i,'g'=>$4.to_i,'t'=>$5.to_i}
+      @data['SQ'] = {'ntlen' => $1.to_i, 'other' => $6.to_i,
+                     'a' => $2.to_i, 'c' => $3.to_i , 'g' => $4.to_i, 't' => $5.to_i}
     else
       @data['SQ']
     end
-    if block_given?
-      @data['SQ'].each do |k,v|
-        yield(k,v)
-      end
-    elsif base
+
+    if base
       @data['SQ'][base.downcase]
     else
       @data['SQ']
     end
   end
-  # Bio::EMBL#gc  -> Float
-  def gc
-    ( sq('g') + sq('c') ) / sq('ntlen').to_f * 100
-  end
   
 
-  ##
+  # returns the nucleotie sequence in this entry.
+  # * Bio::EMBL#seq  -> Bio::Sequence::NA
+  #
   # @orig[''] as sequence
   # bb Line; (blanks) sequence data (>=1)
-  # Bio::EMBL#seq  -> Bio::Sequence::NA
-  #
   def seq
     Sequence::NA.new( fetch('').gsub(/ /,'').gsub(/\d+/,'') )
   end
@@ -338,7 +352,6 @@ class EMBL
   alias ntseq seq
 
   # // Line; termination line (end; 1/entry)
-
 
 
   ### private methods
@@ -433,85 +446,3 @@ end
 
 
 
-=begin
-
-= Bio::EMBL
-
-=== Initialize
-
---- Bio::EMBL#new(an_embl_entry)
-
-=== ID line (Identification)
-
---- Bio::EMBL#id_line -> Hash
---- Bio::EMBL#id_line(key) -> String
-
-      key = (entryname|molecule|division|sequencelength)
-
---- Bio::EMBL#entry -> String
---- Bio::EMBL#entryname -> String
---- Bio::EMBL#molecule -> String
---- Bio::EMBL#division -> String
---- Bio::EMBL#sequencelength -> Int
-
-=== AC lines (Accession number)
-
---- Bio::EMBL#ac -> Array
- 
-=== SV line (Sequence version)
-
---- Bio::EMBL#sv -> String
-
-=== DT lines (Date) 
-
---- Bio::EMBL#dt -> Hash
---- Bio::EMBL#dt(key) -> String
-
-      key = (created|updated)
-
-=== DE lines (Description)
-
---- Bio::EMBL#de -> String
-
-=== KW lines (Keyword)
-
---- Bio::EMBL#kw -> Array
-
-=== OS lines (Organism species)
-
---- Bio::EMBL#os -> Hash
-
-=== OC lines (organism classification)
-
---- Bio::EMBL#oc -> Array
-
-=== OG line (Organella)
-
---- Bio::EMBL#og -> String
-
-=== RN RC RP RX RA RT RL lines (Reference)
-      
---- Bio::EMBL#ref -> String 
-
-=== DR lines (Database cross-reference)
-
---- Bio::EMBL#dr -> Array
-
-=== FH FT lines (Feature table header and data)
-
---- Bio::EMBL#ft -> Bio::Features
---- Bio::EMBL#each_cds -> Array
---- Bio::EMBL#each_gene -> Array
-
-
-=== SQ Lines (Sequence header and data)
-
---- Bio::EMBL#sq -> Hash
---- Bio::EMBL#sq(base) -> Int
-
-      base = (a|c|g|t|u|other)
-
---- Bio::EMBL#gc -> Float
---- Bio::EMBL#seq -> Bio::Sequece::NA
-
-=end
