@@ -17,10 +17,16 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.33 2004/08/23 23:40:35 k Exp $
+#  $Id: genbank.rb,v 0.34 2005/10/23 07:00:15 k Exp $
 #
 
-require 'bio/db/genbank/genbank'
-require 'bio/db/genbank/genpept'
-require 'bio/db/genbank/refseq'
-require 'bio/db/genbank/ddbj'
+module Bio
+  autoload :NCBIDB,   'bio/db'
+  class NCBIDB
+    autoload :Common, 'bio/db/genbank/common'
+  end
+  autoload :GenBank,  'bio/db/genbank/genbank'
+  autoload :GenPept,  'bio/db/genbank/genpept'
+  autoload :RefSeq,   'bio/db/genbank/refseq'
+  autoload :DDBJ,     'bio/db/genbank/ddbj'
+end
