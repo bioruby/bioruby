@@ -1,8 +1,8 @@
 #
-# bio/db.rb - DataBase parser general API
+#= bio/db.rb - DataBase parser general API
 #
 #   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
-#
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -16,8 +16,8 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#  $Id: db.rb,v 0.28 2005/09/08 01:22:08 k Exp $
+#--
+#  $Id: db.rb,v 0.29 2005/10/23 07:16:29 nakao Exp $
 #
 
 require 'bio/sequence'
@@ -25,7 +25,8 @@ require 'bio/reference'
 require 'bio/feature'
 
 module Bio
-
+  
+  # Bio::DB API
   class DB
 
     def self.open(filename, *mode, &block)
@@ -85,8 +86,9 @@ module Bio
 
   end
 
-
+  # Bio::NCBIDB
   class NCBIDB < DB
+    autoload :Common, 'bio/db/genbank/common'
 
     def initialize(entry, tagsize)
       @tagsize = tagsize
@@ -121,19 +123,19 @@ module Bio
 
   end
 
-
+  # Bio::KEGG
   class KEGGDB < NCBIDB
   end
 
-
+  # Bio::EMBLDB
   class EMBLDB < DB
-    
+    autoload :Common, 'bio/db/embl/common'
+
     def initialize(entry, tagsize)
       @tagsize = tagsize
       @orig = entry2hash(entry.strip)	# Hash of the original entry
       @data = {}			# Hash of the parsed entry
     end
-
 
     private
 
