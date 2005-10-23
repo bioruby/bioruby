@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bio.rb,v 1.55 2005/09/09 16:02:04 ngoto Exp $
+#  $Id: bio.rb,v 1.56 2005/10/23 15:34:30 nakao Exp $
 #
 
 module Bio
@@ -253,5 +253,6 @@ module Bio
   ### Utilities
 
   autoload :SiRNA,          'bio/util/sirna'
+  autoload :ColorScheme,    'bio/util/color_scheme'
 
 end
