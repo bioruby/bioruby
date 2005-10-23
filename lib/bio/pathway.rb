@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pathway.rb,v 1.30 2005/09/08 01:22:08 k Exp $
+#  $Id: pathway.rb,v 1.31 2005/10/23 09:11:27 k Exp $
 #
 
 require 'matrix'
@@ -26,6 +26,9 @@ require 'matrix'
 module Bio
 
   class Pathway
+
+    #require 'chem'
+    #include Chem::Graph
 
     # Initial graph (adjacency list) generation from the list of Relation
     def initialize(relations, undirected = false)
@@ -36,7 +39,7 @@ module Bio
       @label = {}		# additional information on each node
       self.to_list		# generate adjacency list
     end
-    attr_reader :relations, :graph, :index
+    attr_reader :graph, :index
     attr_accessor :label
 
     def directed?
@@ -59,22 +62,6 @@ module Bio
         @undirected = true
         self.to_list
       end
-    end
-
-    # clear @relations to reduce the memory usage
-    def clear_relations!
-      @relations.clear
-    end
-
-    # reconstruct @relations from the adjacency list @graph
-    def to_relations
-      @relations.clear
-      @graph.each_key do |from|
-        @graph[from].each do |to, w|
-          @relations << Relation.new(from, to, w)
-        end
-      end
-      return @relations
     end
 
 
@@ -107,15 +94,11 @@ module Bio
     end
 
     def nodes
-      @graph.keys.length
+      [ @graph.keys + @graph.values ].sort.uniq
     end
 
     def edges
-      edges = 0
-      @graph.each_value do |v|
-        edges += v.size
-      end
-      edges
+      @relations
     end
 
 
@@ -130,12 +113,12 @@ module Bio
       # so create a new Array object for each row as follows:
 
       matrix = Array.new
-      nodes.times do
-        matrix.push(Array.new(nodes, default_value))
+      nodes.length.times do
+        matrix.push(Array.new(nodes.length, default_value))
       end
 
       if diagonal_value
-        nodes.times do |i|
+        nodes.length.times do |i|
           matrix[i][i] = diagonal_value
         end
       end
@@ -223,9 +206,9 @@ module Bio
       neighbors = @graph[node].keys
       sg = subgraph(neighbors)
       if sg.graph.size != 0
-        edges = sg.edges / 2.0
-        nodes = sg.nodes
-        complete = (nodes * (nodes - 1)) / 2.0
+        edges = sg.edges.length / 2.0
+        nodes = sg.nodes.length
+        complete = (nodes.length * (nodes.length - 1)) / 2.0
         return edges/complete
       else
         return 0.0
@@ -373,7 +356,7 @@ module Bio
     # problem in the graph in which edge weights can be negative.
     def bellman_ford(root)
       distance, predecessor = initialize_single_source(root)
-      for i in 1 ..(self.nodes - 1) do
+      for i in 1 ..(self.nodes.length - 1) do
         @graph.each_key do |u|
           @graph[u].each do |v, w|
             # relaxing procedure of root -> 'u' -> 'v'
@@ -403,7 +386,7 @@ module Bio
 
       m = self.to_matrix(inf, 0)
       d = m.dup
-      n = self.nodes
+      n = self.nodes.length
       for k in 0 .. n - 1 do
         for i in 0 .. n - 1 do
           for j in 0 .. n - 1 do
@@ -496,6 +479,10 @@ module Bio
       @edge = edge
     end
     attr_accessor :node, :edge
+
+    def [](n)
+      [@node, @edge].flatten[n]
+    end
 
     def from
       @node[0]
@@ -729,9 +716,10 @@ on demand.  However, in some cases, it is convenient to have the original list
 of the ((<Bio::Relation>))s, Bio::Pathway object also stores the list (as the
 instance variable @relations) redundantly.
 
-Note: you can clear the @relations list by calling clear_relations! method to
-reduce the memory usage, and the content of the @relations can be re-generated
-from the @graph by to_relations method.
+# *** OBSOLETED ***
+#Note: you can clear the @relations list by calling clear_relations! method to
+#reduce the memory usage, and the content of the @relations can be re-generated
+#from the @graph by to_relations method.
 
 --- Bio::Pathway.new(list, undirected = false)
 
@@ -744,10 +732,11 @@ from the @graph by to_relations method.
         list = [ r1, r2, r3 ]
         g = Bio::Pathway.new(list, 'undirected')
 
---- Bio::Pathway#relations
-
-      Read-only accessor for the internal list of the Bio::Relation objects
-      '@relations'.
+# *** OBSOLETED ***
+#--- Bio::Pathway#relations
+#
+#      Read-only accessor for the internal list of the Bio::Relation objects
+#      '@relations'.
 
 --- Bio::Pathway#graph
 
@@ -787,11 +776,12 @@ from the @graph by to_relations method.
       Thus if you already called clear_relations! method, call
       to_relations first.
 
---- Bio::Pathway#clear_relations!
---- Bio::Pathway#to_relations
-
-      Clear @relations array and re-generate @relations from @graph.
-      Useful when you want to reduce the memory usage of the object.
+# *** OBSOLETED ***
+#--- Bio::Pathway#clear_relations!
+#--- Bio::Pathway#to_relations
+#
+#      Clear @relations array and re-generate @relations from @graph.
+#      Useful when you want to reduce the memory usage of the object.
 
 --- Bio::Pathway#to_list
 
@@ -812,7 +802,8 @@ from the @graph by to_relations method.
 --- Bio::Pathway#nodes
 --- Bio::Pathway#edges
 
-      Returns the number of the nodes or edges in the graph.
+      Returns the nodes or edges in the graph.  Use Bio::Pathway#nodes.length
+      and Bio::Pathway#edges.length to have numbers of nodes and edges.
 
 --- Bio::Pathway#to_matrix(default_value = nil, diagonal_value = nil)
 
