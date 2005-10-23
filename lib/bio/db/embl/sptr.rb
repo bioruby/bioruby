@@ -1,7 +1,19 @@
 #
-# bio/db/embl/sptr.rb - SwissProt and TrEMBL database class
+# = bio/db/embl/sptr.rb - UniProt/SwissProt and TrEMBL database class
 # 
-#   Copyright (C) 2001-2003 Mitsuteru C. Nakao <n@bioruby.org>
+# Author::      Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::   Copyright (C) 2001-2005 BioRuby Project
+# License::     LGPL
+#
+# $Id: sptr.rb,v 1.26 2005/10/23 08:59:43 nakao Exp $
+#
+# == UniProtKB/SwissProt and TrEMBL
+#
+# See the SWISS-PROT dicument file SPECLIST.TXT.
+#
+# == Example
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,37 +29,34 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sptr.rb,v 1.25 2005/09/26 13:00:06 k Exp $
+#++
 #
 
 require 'bio/db'
+require 'bio/db/embl/common'
 
 module Bio
 
+# Parser class for UniProtKB/SwissProt and TrEMBL database entry
 class SPTR < EMBLDB
-
-  require 'bio/db/embl/common'
-  include Bio::EMBL::Common
+  include Bio::EMBLDB::Common
     
-
-  # ID Line
-  #
-  # "ID  #{ENTRY_NAME} #{DATA_CLASS}; #{MOLECULE_TYPE}; #{SEQUENCE_LENGTH}."
-  #
-  #   ENTRY_NAME = "#{X}_#{Y}"
-  #     X =~ /[A-Z0-9]{1,4}/ # The protein name.
-  #     Y =~ /[A-Z0-9]{1,5}/ # The biological source of the protein.
-  #   MOLECULE_TYPE = 'PRT' =~ /\w{3}/ 
-  #   SEQUENCE_LENGTH =~ /\d+ AA/
-  #
-  # See also the SWISS-PROT dicument file SPECLIST.TXT.
-  #
-
   @@entry_regrexp = /[A-Z0-9]{1,4}_[A-Z0-9]{1,5}/
   @@data_class = ["STANDARD", "PRELIMINARY"]
 
-  # Bio::SPTR#id_line -> hsh
-  # Bio::SPTR#id_line(key) -> str or int
+  
+  # returns a Hash of the ID line.
+  # returns a content (Int or String) of the ID line by a given key.
+  # Hash keys: ['ENTRY_NAME', 'DATA_CLASS', 'MODECULE_TYPE', 'SEQUENCE_LENGTH']
+  #
+  # ID Line
+  # "ID  #{ENTRY_NAME} #{DATA_CLASS}; #{MOLECULE_TYPE}; #{SEQUENCE_LENGTH}."
+  #
+  #   ENTRY_NAME := "#{X}_#{Y}"
+  #     X =~ /[A-Z0-9]{1,5}/ # The protein name.
+  #     Y =~ /[A-Z0-9]{1,5}/ # The biological source of the protein.
+  #   MOLECULE_TYPE := 'PRT' =~ /\w{3}/ 
+  #   SEQUENCE_LENGTH =~ /\d+ AA/
   def id_line(key = nil)
     unless @data['ID']
       tmp = Hash.new
@@ -66,51 +75,55 @@ class SPTR < EMBLDB
     end
   end
 
+
+
+  # returns a ENTRY_NAME in the ID line. 
   #
-  def entry
+  # A short-cut for Bio::SPTR#id_line('ENTRY_NAME').
+  def entry_id
     id_line('ENTRY_NAME')
   end
-  alias entry_name entry
-  alias entry_id entry
+  alias entry_name entry_id
+  alias entry entry_id
 
+
+  # returns a MOLECULE_TYPE in the ID line.
   #
+  # A short-cut for Bio::SPTR#id_line('MOLECULE_TYPE').
   def molecule
     id_line('MOLECULE_TYPE')
   end
   alias molecule_type molecule
 
-  #
+
+  # returns a SEQUENCE_LENGTH in the ID line.
+  # 
+  # A short-cut for Bio::SPTR#id_line('SEQUENCE_LENGHT').
   def sequence_length
     id_line('SEQUENCE_LENGTH')
   end
   alias aalen sequence_length
 
 
-  # AC Line
-  #
-  # "AC   A12345; B23456;"
-  #
-  #   AC [AC1;]+
-  #
-  #   Accession numbers format:
-  #   1       2     3          4          5          6
-  #   [O,P,Q] [0-9] [A-Z, 0-9] [A-Z, 0-9] [A-Z, 0-9] [0-9]
-  #
-  # Bio::SPTR#ac  -> ary
-  #          #accessions  -> ary
-  #          #accession  -> accessions.first
-
+  # Bio::EMBL::Common#ac  -> ary
+  #                  #accessions  -> ary
+  #                  #accession  -> String (accessions.first)
   @@ac_regrexp = /[OPQ][0-9][A-Z0-9]{3}[0-9]/ 
 
 
-  # DT Line; date (3/entry)
-  # DT DD-MMM-YYY (rel. NN, Created)
-  # DT DD-MMM-YYY (rel. NN, Last sequence update)
-  # DT DD-MMM-YYY (rel. NN, Last annotation update)
+
+  # returns a Hash of information in the DT lines.
+  #  hash keys: 
+  #    ['created', 'sequence', 'annotation']
+  #  also Symbols acceptable (ASAP):
+  #    [:created, :sequence, :annotation]
   #
-  # Bio::SPTR#dt  -> Hash
-  # Bio::SPTR#dt(key)  -> String
-  # key = (created|sequence|annotation)
+  # returns a String of information in the DT lines by a given key..
+  #
+  # DT Line; date (3/entry)
+  #  DT DD-MMM-YYY (rel. NN, Created)
+  #  DT DD-MMM-YYY (rel. NN, Last sequence update)
+  #  DT DD-MMM-YYY (rel. NN, Last annotation update)
   def dt(key = nil)
     unless @data['DT']
       tmp = Hash.new
@@ -129,14 +142,14 @@ class SPTR < EMBLDB
   end
 
 
+  # returns the proposed official name of the protein.
+  # 
   # DE Line; description (>=1)
-  # "DE #{OFFICIAL_NAME} (#{SYNONYM})"
-  # "DE #{OFFICIAL_NAME} (#{SYNONYM}) [CONTEINS: #1; #2]."
-  # OFFICIAL_NAME  1/entry
-  # SYNONYM        >=0
-  # CONTEINS       >=0
-  #
-  # Returns the proposed official name of the protein
+  #  "DE #{OFFICIAL_NAME} (#{SYNONYM})"
+  #  "DE #{OFFICIAL_NAME} (#{SYNONYM}) [CONTEINS: #1; #2]."
+  #  OFFICIAL_NAME  1/entry
+  #  SYNONYM        >=0
+  #  CONTEINS       >=0
   def protein_name
     name = ""
     if de_line = fetch('DE') then
@@ -146,8 +159,11 @@ class SPTR < EMBLDB
     end
     return name
   end
-  # synonyms are each placed in () following the official name on the DE line
-  # Returns an array of synonyms (unofficial names)
+
+
+  # returns an array of synonyms (unofficial names).
+  #
+  # synonyms are each placed in () following the official name on the DE line.
   def synonyms
     ary = Array.new
     if de_line = fetch('DE') then
@@ -162,6 +178,21 @@ class SPTR < EMBLDB
   end
 
 
+  # returns gene names in the GN line.
+  #
+  # New UniProt/SwissProt format:
+  # * Bio::SPTR#gn -> [ <gene record>* ]
+  # where <gene record> is:
+  #                    { :name => '...', 
+  #                      :synonyms => [ 's1', 's2', ... ],
+  #                      :loci   => [ 'l1', 'l2', ... ],
+  #                      :orfs     => [ 'o1', 'o2', ... ] 
+  #                    }
+  #
+  # Old format:
+  # * Bio::SPTR#gn -> Array      # AND 
+  # * Bio::SPTR#gn[0] -> Array   # OR
+  #
   # GN Line: Gene name(s) (>=0, optional)
   def gn
     return @data['GN'] if @data['GN']
@@ -175,16 +206,15 @@ class SPTR < EMBLDB
   end
 
   # GN Line: Gene name(s) (>=0, optional)
-  # GN   HNS OR DRDX OR OSMZ OR BGLY.
-  # GN   CECA1 AND CECA2.
-  # GN   CECA1 AND (HOGE OR FUGA).
+  #  GN   HNS OR DRDX OR OSMZ OR BGLY.
+  #  GN   CECA1 AND CECA2.
+  #  GN   CECA1 AND (HOGE OR FUGA).
   #
-  # GN NAME1 [(AND|OR) NAME]+.
+  #  GN NAME1 [(AND|OR) NAME]+.
   #
   # Bio::SPTR#gn -> Array      # AND 
   #          #gn[0] -> Array   # OR
   #          #gene_names -> Array
-  #
   def gn_old_parser
     names = Array.new
     if get('GN').size > 0
@@ -201,13 +231,11 @@ class SPTR < EMBLDB
 
 
   # The new format of the GN line is:
-  # GN   Name=; Synonyms=[, ...]; OrderedLocusNames=[, ...];
-  # GN   ORFNames=[, ...];
-  # 
-  # GN   and
+  #  GN   Name=; Synonyms=[, ...]; OrderedLocusNames=[, ...];
+  #  GN   ORFNames=[, ...];
   #
-  # Bio::SPTR#gn -> [ <gene record>* ]
-  #   where <gene record> is:
+  # * Bio::SPTR#gn -> [ <gene record>* ]
+  # where <gene record> is:
   #                    { :name => '...', 
   #                      :synonyms => [ 's1', 's2', ... ],
   #                      :loci   => [ 'l1', 'l2', ... ],
@@ -238,7 +266,7 @@ class SPTR < EMBLDB
   private :gn_uniprot_parser
 
 
-  # Bio::SPTR#gene_names -> [String]
+  # returns a Array of gene names in the GN line.
   def gene_names
     gn # set @data['GN'] if it hasn't been already done
     if @data['GN'].first.class == Hash then
@@ -249,29 +277,27 @@ class SPTR < EMBLDB
   end
 
 
-  # Bio::SPTR#gene_name -> String
-  #
+  # returns a String of the first gene name in the GN line.
   def gene_name
     gene_names.first
   end
 
 
+  # returns a Array of Hashs or a String of the OS line when a key given.
+  # * Bio::EMBLDB#os  -> Array
+  #  [{'name' => '(Human)', 'os' => 'Homo sapiens'}, 
+  #   {'name' => '(Rat)', 'os' => 'Rattus norveticus'}]
+  # * Bio::EPTR#os[0] -> Hash 
+  #  {'name' => "(Human)", 'os' => 'Homo sapiens'}
+  # * Bio::SPTR#os[0]['name'] -> "(Human)"
+  # * Bio::EPTR#os(0) -> "Homo sapiens (Human)"
+  # 
   # OS Line; organism species (>=1)
-  # "OS   Genus species (name)."
-  # "OS   Genus species (name0) (name1)."
-  # "OS   Genus species (name0) (name1)."
-  # "OS   Genus species (name0), G s0 (name0), and G s (name0) (name1)."
-  # "OS   Homo sapiens (Human), and Rarrus norveticus (Rat)"
-  #
-  # Bio::EMBLDB#os  -> Array of Hash
-  # [{'name'=>'(Human)', 'os'=>'Homo sapiens'}, 
-  #  {'name'=>'(Rat)', 'os'=>'Rattus norveticus'}]
-  # Bio::SPTR#os[0]['name'] => "(Human)"
-  # Bio::EPTR#os[0] => {'name'=>"(Human)", 'os'=>'Homo sapiens'}
-  # Bio::EPTR#os(0) => "Homo sapiens (Human)"
-  #
-  # Bio::SPTR#os -> Array of Hash
-  # Bio::SPTR#os(num) -> String
+  #  OS   Genus species (name).
+  #  OS   Genus species (name0) (name1).
+  #  OS   Genus species (name0) (name1).
+  #  OS   Genus species (name0), G s0 (name0), and G s (name0) (name1).
+  #  OS   Homo sapiens (Human), and Rarrus norveticus (Rat)
   def os(num = nil)
     unless @data['OS']
       os = Array.new
@@ -296,24 +322,26 @@ class SPTR < EMBLDB
   end
   
 
+  # Bio::EMBL::Common#og -> Array
   # OG Line; organella (0 or 1/entry)
   # ["MITOCHONDRION", "CHLOROPLAST", "Cyanelle", "Plasmid"]
   #  or a plasmid name (e.g. "Plasmid pBR322").  
-  #
-  # Bio::SPTR#og  -> Array
 
 
+  # Bio::EMBL::Common#oc -> Array
   # OC Line; organism classification (>=1)
-  # OC   Eukaryota; Alveolata; Apicomplexa; Piroplasmida; Theileriidae;
-  # OC   Theileria.
-  #
-  # Bio::EMBLDB#oc  -> Array
+  # "OC   Eukaryota; Alveolata; Apicomplexa; Piroplasmida; Theileriidae;"
+  # "OC   Theileria."
 
-  # OX Line; organism taxonomy cross-reference (>=1 per entry)
-  # OX   NCBI_TaxID=1234;
-  # OX   NCBI_TaxID=1234, 2345, 3456, 4567;
+
+
+  # returns a Hash of oraganism taxonomy cross-references.
+  # * Bio::SPTR#ox -> Hash
+  #  {'NCBI_TaxID' => ['1234','2345','3456','4567'], ...}
   #
-  # Bio::SPTR#ox -> {'NCBI_TaxID' => ['1234','2345','3456','4567']}
+  # OX Line; organism taxonomy cross-reference (>=1 per entry)
+  #  OX   NCBI_TaxID=1234;
+  #  OX   NCBI_TaxID=1234, 2345, 3456, 4567;
   def ox
     unless @data['OX']
       tmp = fetch('OX').sub(/\.$/,'').split(/;/).map { |e| e.strip }
@@ -327,48 +355,57 @@ class SPTR < EMBLDB
     return @data['OX']
   end
 
-
+  
+  # Bio::EMBL::Common#ref -> Array
   # R Lines
   # RN RC RP RX RA RT RL
-  # Bio::EMBLDB#ref -> Array
 
-  # CC lines (>=0, optional)
-  # CC   -!- TISSUE SPECIFICITY: HIGHEST LEVELS FOUND IN TESTIS. ALSO PRESENT
-  # CC       IN LIVER, KIDNEY, LUNG AND BRAIN.
-  #
-  # CC   -!- TOPIC: FIRST LINE OF A COMMENT BLOCK;
-  # CC       SECOND AND SUBSEQUENT LINES OF A COMMENT BLOCK.
-  #
-  # CC   -!- CAUTION: HOGE HOGE IS FUGA FUGA!
-  #
 
   @@cc_topics = ['ALTERNATIVE PRODUCTS','CATALYTIC ACTIVITY','CAUTION',
     'COFACTOR','DATABASE','DEVELOPMENTAL STAGE','DISEASE','DOMAIN',
     'ENZYME REGULATION','FUNCTION','INDUCTION','MASS SPECTROMETRY',
     'MISCELLANEOUS','PATHWAY','PHARMACEUTICAL','POLYMORPHISM','PTM',
     'SIMILARITY','SUBCELLULAR LOCATION','SUBUNIT','TISSUE SPECIFICITY']
+  # returns contents in the CC lines.
+  # * Bio::SPTR#cc -> Hash
 
-  # DATABASE: NAME=Text[; NOTE=Text][; WWW="Address"][; FTP="Address"].
-  # MASS SPECTROMETRY: MW=XXX[; MW_ERR=XX][; METHOD=XX][;RANGE=XX-XX].
+  # * Bio::SPTR#cc(Int) -> String
+  # returns an Array of contents in the TOPIC string.
+  # * Bio::SPTR#cc(TOPIC) -> Array w/in Hash, Hash
   #
-  # Bio::SPTR#cc -> Hash w/in Array
-  # Bio::SPTR#cc(Int) -> String
-  # Bio::SPTR#cc(TOPIC) -> Array w/in Hash
-  # Bio::SPTR#cc('ALTERNATIVE PRODUCTS') -> {'Event'=>str, 
-  #                                          'Named isoforms'=>int,
-  #                                          'Comment'=>str,
-  #                                          'Variants'=>[{'Name'=>str,
-  #                                                        'Synonyms'=>str,
-  #                                                        'IsoId'=>str,
-  #                                                        'Sequence'=>[]}]}
-  # Bio::SPTR#cc('DATABASE') -> [{'NAME'=>str,'NOTE'=>str,
-  #                               'WWW'=>URI,'FTP'=>URI}]
-  # Bio::SPTR#cc('MASS SPECTROMETRY') -> [{'MW"=>float,'MW_ERR'=>float,
-  #                                        'METHOD'=>str,'RANGE'=>str}]
+  # returns contents of the "ALTERNATIVE PRODUCTS".
+  # * Bio::SPTR#cc('ALTERNATIVE PRODUCTS') -> Hash
+  #  {'Event' => str, 
+  #   'Named isoforms' => int,  
+  #   'Comment' => str,
+  #   'Variants'=>[{'Name' => str, 'Synonyms' => str, 'IsoId' => str, 'Sequence' => []}]}
+  # 
+  #  CC   -!- ALTERNATIVE PRODUCTS:
+  #  CC       Event=Alternative splicing; Named isoforms=15;
+  #  ...
+  #  CC         placentae isoforms. All tissues differentially splice exon 13;
+  #  CC       Name=A; Synonyms=no del;
+  #  CC         IsoId=P15529-1; Sequence=Displayed;
   #
+  # returns contents of the "DATABASE".
+  # * Bio::SPTR#cc('DATABASE') -> Array
+  #  [{'NAME'=>str,'NOTE'=>str, 'WWW'=>URI,'FTP'=>URI}, ...]
+  #
+  #  CC   -!- DATABASE: NAME=Text[; NOTE=Text][; WWW="Address"][; FTP="Address"].
+  #
+  # returns contents of the "MASS SPECTROMETRY".
+  # * Bio::SPTR#cc('MASS SPECTROMETRY') -> Array
+  #  [{'MW"=>float,'MW_ERR'=>float, 'METHOD'=>str,'RANGE'=>str}, ...]
+  #
+  #  MASS SPECTROMETRY: MW=XXX[; MW_ERR=XX][; METHOD=XX][;RANGE=XX-XX].
+  #
+  # CC lines (>=0, optional)
+  #  CC   -!- TISSUE SPECIFICITY: HIGHEST LEVELS FOUND IN TESTIS. ALSO PRESENT
+  #  CC       IN LIVER, KIDNEY, LUNG AND BRAIN.
+  #  
+  #  CC   -!- TOPIC: FIRST LINE OF A COMMENT BLOCK;
+  #  CC       SECOND AND SUBSEQUENT LINES OF A COMMENT BLOCK.
   def cc(tag = nil)
-
-    # @data['CC'] = {'DATABASE'=>['hoge','fuga'], ... }
     unless @data['CC']
       cc  = Hash.new
       cmt = '-' * (77 - 4 + 1)
@@ -404,18 +441,10 @@ class SPTR < EMBLDB
       @data['CC'] = cc
     end
 
-
     case tag
     when 'ALTERNATIVE PRODUCTS'
       ap = @data['CC']['ALTERNATIVE PRODUCTS'].to_s
       return ap unless ap
-
-      # CC   -!- ALTERNATIVE PRODUCTS:
-      # CC       Event=Alternative splicing; Named isoforms=15;
-      # ...
-      # CC         placentae isoforms. All tissues differentially splice exon 13;
-      # CC       Name=A; Synonyms=no del;
-      # CC         IsoId=P15529-1; Sequence=Displayed;
 
       # Event, Named isoforms, Comment, [Name, Synonyms, IsoId, Sequnce]+
       tmp = {'Event' => nil, 'Named isoforms' => nil, 'Comment' => nil, 'Variants'  => []}
@@ -507,11 +536,12 @@ class SPTR < EMBLDB
 
 
 
+  # returns databases cross-references in the DR lines.
+  # * Bio::EMBLDB#dr  -> Hash w/in Array
+  #
   # DR Line; defabases cross-reference (>=0)
   # a cross_ref pre one line
-  # "DR  database_identifier; primary_identifier; secondary_identifier."
-  # Bio::EMBLDB#dr  -> Hash w/in Array
-
+  #  DR  database_identifier; primary_identifier; secondary_identifier.
   @@dr_database_identifier = ['EMBL','CARBBANK','DICTYDB','ECO2DBASE',
     'ECOGENE',
     'FLYBASE','GCRDB','HIV','HSC-2DPAGE','HSSP','INTERPRO','MAIZEDB',
@@ -519,27 +549,32 @@ class SPTR < EMBLDB
     'PROSITE','REBASE','AARHUS/GHENT-2DPAGE','SGD','STYGENE','SUBTILIST',
     'SWISS-2DPAGE','TIGR','TRANSFAC','TUBERCULIST','WORMPEP','YEPD','ZFIN']
 
-
+  # Bio::EMBL::Common#kw - Array
+  #            #keywords  -> Array
+  #
   # KW Line; keyword (>=1)
   # KW   [Keyword;]+
-  # Bio::EMBLDB#kw  -> Array
-  #            #keywords  -> Array
 
+
+  # returns conteins in the feature table.
+  # * Bio::SPTR#ft -> Hash
+  #  {'feature_name' => [{'From' => str, 'To' => str,
+  #                       'Description' => str, 'FTId' => str}],...}
+  #
+  # returns an Array of the information about the feature_name in the feature table.
+  # * Bio::SPTR#ft(feature_name) -> Array of Hash
+  #  [{'From' => str, 'To' => str, 'Description' => str, 'FTId' => str},...]
+  #
   # FT Line; feature table data (>=0, optional)
   #
-  # Col     Data item
-  # -----   -----------------
-  #  1- 2   FT
-  #  6-13   Feature name 
-  # 15-20   `FROM' endpoint
-  # 22-27   `TO' endpoint
-  # 35-75   Description (>=0 per key)
-  # -----   -----------------
-  #
-  # Bio::SPTR#ft -> {'feature_name'=>[{'From'=>str,'To'=>str,
-  #                                    'Description'=>str, 'FTId'=>str}],}
-  # Bio::SPTR#ft(feature_name) -> [{'From'=>str,'To'=>str,
-  #                                 'Description'=>str, 'FTId'=>str},...]
+  #  Col     Data item
+  #  -----   -----------------
+  #   1- 2   FT
+  #   6-13   Feature name 
+  #  15-20   `FROM' endpoint
+  #  22-27   `TO' endpoint
+  #  35-75   Description (>=0 per key)
+  #  -----   -----------------
   def ft(feature_name = nil)
     unless @data['FT']
       table        = Hash.new()
@@ -634,16 +669,19 @@ class SPTR < EMBLDB
   end
 
 
+  # returns a Hash of conteins in the SQ lines.
+  # * Bio::SPTRL#sq  -> hsh
+  #
+  # returns a value of a key given in the SQ lines.
+  # * Bio::SPTRL#sq(key)  -> int or str
+  # * Keys: ['MW', 'mw', 'molecular', 'weight', 'aalen', 'len', 'length', 'CRC64']
+  #
   # SQ Line; sequence header (1/entry)
-  # SQ   SEQUENCE   233 AA;  25630 MW;  146A1B48A1475C86 CRC64;
-  # SQ   SEQUENCE  \d+ AA; \d+ MW;  [0-9A-Z]+ CRC64;
+  #  SQ   SEQUENCE   233 AA;  25630 MW;  146A1B48A1475C86 CRC64;
+  #  SQ   SEQUENCE  \d+ AA; \d+ MW;  [0-9A-Z]+ CRC64;
   #
-  # MW, Dalton unit
-  # CRC64 (64-bit Cyclic Redundancy Check, ISO 3309)
-  #
-  # Bio::SPTRL#sq  -> hsh
-  # Bio::SPTRL#sq(key)  -> int or str
-  #
+  # MW, Dalton unit.
+  # CRC64 (64-bit Cyclic Redundancy Check, ISO 3309).
   def sq(key = nil)
     unless @data['SQ']
       if fetch('SQ') =~ /(\d+) AA\; (\d+) MW; (.+) CRC64;/
@@ -667,10 +705,11 @@ class SPTR < EMBLDB
     end
   end
 
-  # @orig[''] as sequence
-  # blank Line; sequence data (>=1)
-  # Bio::SPTR#seq  -> Bio::Sequence::AA
+
+  # returns a Bio::Sequence::AA of the amino acid sequence.
+  # * Bio::SPTR#seq -> Bio::Sequence::AA
   #
+  # blank Line; sequence data (>=1)
   def seq
     unless @data['']
       @data[''] = Sequence::AA.new( fetch('').gsub(/ |\d+/,'') )
@@ -679,9 +718,9 @@ class SPTR < EMBLDB
   end
   alias aaseq seq
 
-end
+end # class SPTR
 
-end
+end # module Bio
 
 
 if __FILE__ == $0
