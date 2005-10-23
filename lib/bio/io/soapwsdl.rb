@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: soapwsdl.rb,v 1.1 2004/06/23 14:32:15 k Exp $
+#  $Id: soapwsdl.rb,v 1.2 2005/10/23 10:41:00 k Exp $
 #
 
 begin
@@ -37,7 +37,11 @@ class SOAPWSDL
   attr_reader :wsdl, :log
 
   def create_driver
-    @driver = SOAP::WSDLDriverFactory.new(@wsdl).create_driver
+    if RUBY_VERSION > "1.8.2"
+      @driver = SOAP::WSDLDriverFactory.new(@wsdl).create_rpc_driver
+    else
+      @driver = SOAP::WSDLDriverFactory.new(@wsdl).create_driver
+    end
     @driver.generate_explicit_type = true	# Ruby obj <-> SOAP obj
   end
 
@@ -58,4 +62,19 @@ class SOAPWSDL
 end # SOAP
 
 end # Bio
+
+=begin
+
+To use HTTP proxy, you need to set following two environmental variables
+(case might be insensitive) as required by SOAP4R.
+
+--- soap_use_proxy
+
+Set the value of this variable to 'on'.
+
+--- http_proxy
+
+Set the URL of your proxy server (http://myproxy.com:8080 etc.).
+
+=end
 
