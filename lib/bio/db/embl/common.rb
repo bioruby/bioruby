@@ -1,7 +1,55 @@
 #
-# bio/db/embl.rb - Common methods for EMBL style database classes
+# = bio/db/embl.rb - Common methods for EMBL style database classes
 #
-#   Copyright (C) 2001-2004 Mitsuteru C. Nakao <n@bioruby.org>
+# Author::      Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::   Copyright (C) 2001-2005 BioRuby Project
+# License::     LGPL
+#
+# $Id: common.rb,v 1.5 2005/10/23 09:25:16 nakao Exp $
+#
+# == EMBL style databases class
+#
+# This module defines a common framework among EMBL, SWISS-PROT, TrEMBL.
+# For more details, see the documentations in each embl/*.rb libraries.
+#
+# EMBL style format:
+#     ID - identification             (begins each entry; 1 per entry)
+#     AC - accession number           (>=1 per entry)
+#     SV - sequence version           (1 per entry)
+#     DT - date                       (2 per entry)
+#     DE - description                (>=1 per entry)
+#     KW - keyword                    (>=1 per entry)
+#     OS - organism species           (>=1 per entry)
+#     OC - organism classification    (>=1 per entry)
+#     OG - organelle                  (0 or 1 per entry)
+#     RN - reference number           (>=1 per entry)
+#     RC - reference comment          (>=0 per entry)
+#     RP - reference positions        (>=1 per entry)
+#     RX - reference cross-reference  (>=0 per entry)
+#     RA - reference author(s)        (>=1 per entry)
+#     RG - reference group            (>=0 per entry)
+#     RT - reference title            (>=1 per entry)
+#     RL - reference location         (>=1 per entry)
+#     DR - database cross-reference   (>=0 per entry)
+#     FH - feature table header       (0 or 2 per entry)
+#     FT - feature table data         (>=0 per entry)
+#     CC - comments or notes          (>=0 per entry)
+#     XX - spacer line                (many per entry)
+#     SQ - sequence header            (1 per entry)
+#     bb - (blanks) sequence data     (>=1 per entry)
+#     // - termination line           (ends each entry; 1 per entry)
+#
+#
+# == Example
+# 
+#  require 'bio/db/embl/common'
+#  module Bio
+#    class NEWDB < EMBLDB
+#      include Bio::EMBLDB::Common
+#    end
+#  end
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,13 +65,14 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: common.rb,v 1.4 2005/09/26 13:00:06 k Exp $
+#++
 #
 
 require 'bio/db'
+require 'bio/reference'
 
 module Bio
-class EMBL < EMBLDB
+class EMBLDB
 module Common
 
   DELIMITER	= RS = "\n//\n"
@@ -33,17 +82,15 @@ module Common
     super(entry, TAGSIZE)
   end
 
-
+  # returns a Array of accession numbers in the AC lines.
+  #
   # AC Line
-  # "AC   A12345; B23456;"
-  # AC [AC1;]+
+  #   "AC   A12345; B23456;"
+  #   AC [AC1;]+
   #
   # Accession numbers format:
-  # 1       2     3          4          5          6
-  # [O,P,Q] [0-9] [A-Z, 0-9] [A-Z, 0-9] [A-Z, 0-9] [0-9]
-  #
-  # Bio::EMBL::Common#ac  -> Array
-  #                 #accessions  -> Array
+  #   1       2     3          4          5          6
+  #   [O,P,Q] [0-9] [A-Z, 0-9] [A-Z, 0-9] [A-Z, 0-9] [0-9]
   def ac
     unless @data['AC']
       tmp = Array.new
@@ -56,13 +103,16 @@ module Common
   end
   alias accessions ac
 
-  # Bio::EMBL::Common#accession  -> String
+
+  # returns the first accession number in the AC lines
   def accession
     ac[0]
   end
 
 
-  # DE Line:
+  # returns a String int the DE line.
+  #
+  # DE Line
   def de
     unless @data['DE']
       @data['DE'] = fetch('DE')
@@ -70,28 +120,26 @@ module Common
     @data['DE']
   end
   alias description de	
-  # API
-  alias definition de
+  alias definition de   # API
   
 
 
+  # returns contents in the OS line.
+  # * Bio::EMBLDB#os  -> Array of <OS Hash>
+  # where <OS Hash> is:
+  #  [{'name'=>'Human', 'os'=>'Homo sapiens'}, 
+  #   {'name'=>'Rat', 'os'=>'Rattus norveticus'}]
+  # * Bio::SPTR#os[0]['name'] => "Human"
+  # * Bio::SPTR#os[0] => {'name'=>"Human", 'os'=>'Homo sapiens'}
+  # * Bio::STPR#os(0) => "Homo sapiens (Human)"
+  #
   # OS Line; organism species (>=1)
-  # "OS   Trifolium repens (white clover)"
+  #   "OS   Trifolium repens (white clover)"
   #
-  # OS   Genus species (name).
-  # OS   Genus species (name0) (name1).
-  # OS   Genus species (name0) (name1).
-  # OS   Genus species (name0), G s0 (name0), and G s (name1).
-  #
-  # Bio::EMBL#os  -> Array w/in Hash
-  # [{'name'=>'Human', 'os'=>'Homo sapiens'}, 
-  #  {'name'=>'Rat', 'os'=>'Rattus norveticus'}]
-  # Bio::STPR#os[0]['name'] => "Human"
-  # Bio::STPR#os[0] => {'name'=>"Human", 'os'=>'Homo sapiens'}
-  # Bio::STPR#os(0) => "Homo sapiens (Human)"
-  #
-  # Bio::SPTR#os -> Array w/in Hash
-  # Bio::SPTR#os(num) -> String
+  #   OS   Genus species (name).
+  #   OS   Genus species (name0) (name1).
+  #   OS   Genus species (name0) (name1).
+  #   OS   Genus species (name0), G s0 (name0), and G s (name1).
   def os(num = nil)
     unless @data['OS']
       os = Array.new
@@ -114,9 +162,10 @@ module Common
   end
 
 
-  # OG Line; organella (0 or 1/entry)
+  # returns contents in the OG line.
+  # * Bio::EMBLDB::Common#og  -> [ <ogranella String>* ]
   #
-  # Bio::EMBL::Common#og  -> Array
+  # OG Line; organella (0 or 1/entry)
   def og
     unless @data['OG']
       og = Array.new
@@ -129,13 +178,13 @@ module Common
     end
     @data['OG']
   end
+  
 
-
+  # returns contents in the OC line.
+  # * Bio::EMBLDB::Common#oc  -> [ <organism class String>* ]
   # OC Line; organism classification (>=1)
-  # OC   Eukaryota; Alveolata; Apicomplexa; Piroplasmida; Theileriidae;
-  # OC   Theileria.
-  #
-  # Bio::EMBL::Common#oc  -> Array
+  #  OC   Eukaryota; Alveolata; Apicomplexa; Piroplasmida; Theileriidae;
+  #  OC   Theileria.
   def oc
     unless @data['OC']
       begin
@@ -149,11 +198,10 @@ module Common
     @data['OC']
   end
 
-
+  # returns keywords in the KW line.
+  # * Bio::EMBLDB::Common#kw  -> [ <keyword>* ]
   # KW Line; keyword (>=1)
-  # KW   [Keyword;]+
-  # Bio::EMBL::Common#kw  -> Array
-  #                 #keywords  -> Array
+  #  KW   [Keyword;]+
   def kw
     unless @data['KW']
       if get('KW').size > 0
@@ -168,9 +216,14 @@ module Common
   alias keywords kw
 
 
+  # returns contents in the R lines.
+  # * Bio::EMBLDB::Common#ref -> [ <refernece information Hash>* ]
+  # where <reference information Hash> is:
+  #  {'RN' => '', 'RC' => '', 'RP' => '', 'RX' => '', 
+  #   'RA' => '', 'RT' => '', 'RL' => '', 'RG' => ''}
+  # 
   # R Lines
-  # RN RC RP RX RA RT RL RG
-  # Bio::EMBL::Common#ref -> Array
+  # * RN RC RP RX RA RT RL RG
   def ref
     unless @data['R']
       ary = Array.new
@@ -198,7 +251,8 @@ module Common
     @data['R']
   end
 
-  # Bio::EMBL::Common#references -> Bio::References
+  # returns Bio::Reference object from Bio::EMBLDB::Common#ref.
+  # * Bio::EMBLDB::Common#ref -> Bio::References
   def references
     unless @data['references']
       ary = self.ref.map {|ent|
@@ -234,12 +288,14 @@ module Common
   end
 
 
-
+  # returns contents in the DR line.
+  # * Bio::EMBLDB::Common#dr  -> [ <Database cross-reference Hash>* ]
+  # where <Database cross-reference Hash> is:
+  # * Bio::EMBLDB::Common#dr {|k,v| } 
+  # 
   # DR Line; defabases cross-reference (>=0)
   # a cross_ref pre one line
-  # "DR  database_identifier; primary_identifier; secondary_identifier."
-  # Bio::EMBL::Common#dr  -> Hash w/in Array
-  # Bio::EMBL::Common#dr {|k,v| } 
+  #  "DR  database_identifier; primary_identifier; secondary_identifier."
   def dr
     unless @data['DR']
       tmp = Hash.new
@@ -261,82 +317,6 @@ module Common
   end
 
 end # module Common
-end # class EMBL
+end # class EMBLDB
 end # module Bio
-
-
-#     ID - identification             (begins each entry; 1 per entry)
-#     AC - accession number           (>=1 per entry)
-#     SV - sequence version           (1 per entry)
-#     DT - date                       (2 per entry)
-#     DE - description                (>=1 per entry)
-#     KW - keyword                    (>=1 per entry)
-#     OS - organism species           (>=1 per entry)
-#     OC - organism classification    (>=1 per entry)
-#     OG - organelle                  (0 or 1 per entry)
-#     RN - reference number           (>=1 per entry)
-#     RC - reference comment          (>=0 per entry)
-#     RP - reference positions        (>=1 per entry)
-#     RX - reference cross-reference  (>=0 per entry)
-#     RA - reference author(s)        (>=1 per entry)
-#     RG - reference group            (>=0 per entry)
-#     RT - reference title            (>=1 per entry)
-#     RL - reference location         (>=1 per entry)
-#     DR - database cross-reference   (>=0 per entry)
-#     FH - feature table header       (0 or 2 per entry)
-#     FT - feature table data         (>=0 per entry)
-#     CC - comments or notes          (>=0 per entry)
-#     XX - spacer line                (many per entry)
-#     SQ - sequence header            (1 per entry)
-#     bb - (blanks) sequence data     (>=1 per entry)
-#     // - termination line           (ends each entry; 1 per entry)
-
-
-=begin
-
-= Bio::EMBL::Common
-
-This module defines a common framework among EMBL, SWISS-PROT, TrEMBL.
-For more details, see the documentations in each embl/*.rb libraries.
-
-
---- Bio::EMBL::Common::DELIMITER
---- Bio::EMBL::Common::RS
---- Bio::EMBL::Common::TAGSIZE
-
-
---- Bio::EMBL::Common#ac
-                    #accessions
-
---- Bio::EMBL::Common#accession
-
-
---- Bio::EMBL::Common#de
-                    #description
-                    #definition
-
-
---- Bio::EMBL::Common#os
-
-
---- Bio::EMBL::Common#og
-
-
---- Bio::EMBL::Common#oc
-
-
---- Bio::EMBL::Common#kw
-                    #keywords
-
-
---- Bio::EMBL::Common#ref
-        Reterns R* lines in hsh w/in ary.
-
---- Bio::EMBL::Common#references
-        Retruns Bio::References.
-
-
---- Bio::EMBL::Common#dr
-
-=end
 
