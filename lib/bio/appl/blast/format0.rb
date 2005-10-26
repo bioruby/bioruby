@@ -1,7 +1,9 @@
 #
-# bio/appl/blast/format0.rb - BLAST default output (-m 0) parser
+# = bio/appl/blast/format0.rb - BLAST default output (-m 0) parser
 # 
-#   Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
+# Author:: Naohisa GOTO
+# Copyright:: Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
+# License:: LGPL
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,13 +19,14 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: format0.rb,v 1.12 2005/09/26 13:00:04 k Exp $
+#  $Id: format0.rb,v 1.13 2005/10/26 09:12:06 ngoto Exp $
 #
 
 begin
   require 'strscan'
 rescue LoadError
 end
+require 'singleton'
 
 #require 'bio/db'
 require 'bio/io/flatfile'
@@ -32,13 +35,19 @@ module Bio
   class Blast
     module Default
 
+      # Bio::Blast::Default::Report parses NCBI BLAST default output
+      # and stores information in the data.
+      # It may store some Bio::Blast::Default::Report::Iteration objects.
       class Report #< DB
+        # Delimiter of each entry. Bio::FlatFile uses it.
         DELIMITER = RS = "\nBLAST"
 
+        # Opens file by using Bio::FlatFile.open.
         def self.open(filename, *mode)
           Bio::FlatFile.open(self, filename, *mode)
         end
 
+        # Creates a new Report object from BLAST result text.
         def initialize(str)
           str = str.sub(/\A\s+/, '')
           str.sub!(/\n(T?BLAST.*)/m, "\n") # remove trailing entries for sure
@@ -50,13 +59,19 @@ module Bio
           @iterations = format0_split_search(data)
           format0_split_stat_params(data)
         end
+        # piece of next entry. Bio::FlatFile uses it.
         attr_reader :entry_overrun
 
-        attr_reader :f0header, :f0reference, :f0query, :f0database, :f0dbstat
+        # (PSI-BLAST)
+        # Returns iterations.
+        # It returns an array of Bio::Blast::Default::Report::Iteration class.
+        # Note that normal blastall result usually contains one iteration.
         attr_reader :iterations
 
+        # Returns whole entry as a string.
         def to_s; @entry; end
 
+        #:stopdoc:
         # prevent using StringScanner_R (in old version of strscan)
         if !defined?(StringScanner) then
           def initialize(*arg)
@@ -67,47 +82,115 @@ module Bio
             raise 'cannot use StringScanner_R'
           end #def
         end
-        
-        def db_num;      @f0dbstat.db_num;       end
-        def db_len;      @f0dbstat.db_len;       end
-        def posted_date; @f0dbstat.posted_date;  end
-        def eff_space;   @f0dbstat.eff_space;    end
-        def sc_match;    @f0dbstat.sc_match;     end
-        def sc_mismatch; @f0dbstat.sc_mismatch;  end
-        def gap_open;    @f0dbstat.gap_open;     end
-        def gap_extend;  @f0dbstat.gap_extend;   end
-        def matrix;      @f0dbstat.matrix;       end
-        def expect;      @f0dbstat.expect;       end
-        def num_hits;    @f0dbstat.num_hits;     end
+        #:startdoc:
 
+        # Defines attributes which delegate to @f0dbstat objects.
+        def self.delegate_to_f0dbstat(*names)
+          names.each do |x|
+            module_eval("def #{x}; @f0dbstat.#{x}; end")
+          end
+        end
+        private_class_method :delegate_to_f0dbstat
+
+        # number of sequences in database
+        attr_reader          :db_num if false #dummy
+        delegate_to_f0dbstat :db_num
+
+        # number of letters in database
+        attr_reader          :db_len if false #dummy
+        delegate_to_f0dbstat :db_len
+
+        # posted date of the database
+        attr_reader          :posted_date if false #dummy
+        delegate_to_f0dbstat :posted_date
+
+        # effective length of the database
+        attr_reader          :eff_space if false #dummy
+        delegate_to_f0dbstat :eff_space
+
+        # name of the matrix
+        attr_reader          :matrix if false #dummy
+        delegate_to_f0dbstat :matrix
+
+        # match score of the matrix
+        attr_reader          :sc_match if false #dummy
+        delegate_to_f0dbstat :sc_match
+
+        # mismatch score of the matrix
+        attr_reader          :sc_mismatch if false #dummy
+        delegate_to_f0dbstat :sc_mismatch
+
+        # gap open penalty
+        attr_reader          :gap_open if false #dummy
+        delegate_to_f0dbstat :gap_open
+
+        # gap extend penalty
+        attr_reader          :gap_extend if false #dummy
+        delegate_to_f0dbstat :gap_extend
+
+        # e-value threshold specified when BLAST was executed
+        attr_reader          :expect if false #dummy
+        delegate_to_f0dbstat :expect
+
+        # number of hits. Note that this may differ from <tt>hits.size</tt>.
+        attr_reader          :num_hits if false #dummy
+        delegate_to_f0dbstat :num_hits
+
+        # Same as <tt>iterations.last.kappa</tt>.
         def kappa;          @iterations.last.kappa;          end
+        # Same as <tt>iterations.last.lambda</tt>.
         def lambda;         @iterations.last.lambda;         end
+        # Same as <tt>iterations.last.entropy</tt>.
         def entropy;        @iterations.last.entropy;        end
+
+        # Same as <tt>iterations.last.gapped_kappa</tt>.
         def gapped_kappa;   @iterations.last.gapped_kappa;   end
+        # Same as <tt>iterations.last.gapped_lambda</tt>.
         def gapped_lambda;  @iterations.last.gapped_lambda;  end
+        # Same as <tt>iterations.last.gapped_entropy</tt>.
         def gapped_entropy; @iterations.last.gapped_entropy; end
 
+        # Returns program name.
         def program;        format0_parse_header; @program;        end
+        # Returns version of the program.
         def version;        format0_parse_header; @version;        end
+        # Returns version number string of the program.
         def version_number; format0_parse_header; @version_number; end
+        # Returns released date of the program.
         def version_date;   format0_parse_header; @version_date;   end
 
+        # Returns length of the query.
         def query_len; format0_parse_query; @query_len; end
+
+        # Returns definition of the query.
         def query_def; format0_parse_query; @query_def; end
 
+        # (PHI-BLAST)
+        # Same as <tt>iterations.first.pattern</tt>.
+        # Note that it returns the FIRST iteration's value.
         def pattern; @iterations.first.pattern; end
+
+        # (PHI-BLAST)
+        # Same as <tt>iterations.first.pattern_positions</tt>.
+        # Note that it returns the FIRST iteration's value.
         def pattern_positions
           @iterations.first.pattern_positions
         end
 
-        # <for blastpgp>
+        # (PSI-BLAST)
+        # Iterates over each iteration.
+        # Same as <tt>iterations.each</tt>.
+        # Yields a Bio::Blast::Default::Report::Iteration object.
         def each_iteration
           @iterations.each do |x|
             yield x
           end
         end
 
-        # <for blastall> shortcut for the last iteration's hits
+        # Iterates over each hit of the last iteration.
+        # Same as <tt>iterations.last.each_hit</tt>.
+        # Yields a Bio::Blast::Default::Report::Hit object.
+        # This is very useful in most cases, e.g. for blastall results.
         def each_hit
           @iterations.last.each do |x|
             yield x
@@ -115,19 +198,29 @@ module Bio
         end
         alias each each_hit
 
-        # shortcut for the last iteration's hits
+        # Same as <tt>iterations.last.hits</tt>.
+        # Returns the last iteration's hits.
+        # Returns an array of Bio::Blast::Default::Report::Hit object.
+        # This is very useful in most cases, e.g. for blastall results.
         def hits
           @iterations.last.hits
         end
 
-        # shortcut for the last iteration's message (for checking 'CONVERGED')
+        # (PSI-BLAST)
+        # Same as <tt>iterations.last.message</tt>.
         def message
           @iterations.last.message
         end
+
+        # (PSI-BLAST)
+        # Same as <tt>iterations.last.converged?</tt>.
+        # Returns true if the last iteration is converged,
+        # otherwise, returns false.
         def converged?
           @iterations.last.converged?
         end
 
+        # Returns the bibliography reference of the BLAST software. 
         def reference
           unless defined?(@reference)
             @reference = @f0reference.to_s.gsub(/\s+/, ' ').strip
@@ -135,6 +228,7 @@ module Bio
           @reference
         end
 
+        # Returns the name (filename or title) of the database.
         def db
           unless defined?(@db)
             if /Database *\: *(.*)/m =~ @f0database then
@@ -147,6 +241,7 @@ module Bio
         end
 
         private
+        # Parses the query lines (begins with "Query = ").
         def format0_parse_query
           unless defined?(@query_def)
             sc = StringScanner.new(@f0query)
@@ -163,6 +258,7 @@ module Bio
           end
         end
 
+        # Parses the first line of the BLAST result.
         def format0_parse_header
           unless defined?(@program)
             if /(\w+) +([\w\-\.\d]+) *\[ *([\-\.\w]+) *\] *(\[.+\])?/ =~ @f0header.to_s
@@ -174,6 +270,8 @@ module Bio
           end
         end
 
+        # Splits headers into the first line, reference, query line and
+        # database line.
         def format0_split_headers(data)
           @f0header = data.shift
           @f0reference = data.shift
@@ -181,6 +279,7 @@ module Bio
           @f0database = data.shift
         end
 
+        # Splits the statistical parameters.
         def format0_split_stat_params(data)
           dbs = []
           while r = data.first and /^ *Database\:/ =~ r
@@ -191,13 +290,14 @@ module Bio
           while r = data[0] and /^Lambda/ =~ r
             #i -= 1 unless /^Gapped/ =~ r
             if itr = @iterations[i] then
-              itr.f0stat << data.shift
-              itr.f0dbstat = @f0dbstat
+              x = data.shift; itr.instance_eval { @f0stat << x }
+              x = @f0dbstat; itr.instance_eval { @f0dbstat = x }
             end
           end
           @f0dbstat.f0params = data
         end
 
+        # Splits the search results.
         def format0_split_search(data)
           iterations = []
           while r = data[0] and /^Searching/ =~ r
@@ -206,7 +306,11 @@ module Bio
           iterations
         end
 
-        class F0dbstat
+        # Stores format0 database statistics.
+        # Internal use only. Users must not use the class.
+        class F0dbstat #:nodoc:
+          # Creates new F0dbstat class.
+          # Internal use only.
           def initialize(ary)
             @f0dbstat = ary
             @hash = {}
@@ -214,6 +318,7 @@ module Bio
           attr_reader :f0dbstat
           attr_accessor :f0params
 
+          # Parses colon-separeted lines (in +ary+) and stores to +hash+.
           def parse_colon_separated_params(hash, ary)
             ary.each do |str|
               sc = StringScanner.new(str)
@@ -235,6 +340,7 @@ module Bio
           end #def
           private :parse_colon_separated_params
 
+          # Parses parameters.
           def parse_params
             unless defined?(@parse_params)
               parse_colon_separated_params(@hash, @f0params)
@@ -265,16 +371,29 @@ module Bio
             end #unless
           end
           private :parse_params
-          def self.method_after_parse_params(*names)
-            names.each do |x|
-              module_eval("def #{x}; parse_params; @#{x}; end")
-            end
-          end
-          private_class_method :method_after_parse_params
-          method_after_parse_params :matrix, :gap_open, :gap_extend,
-            :eff_space, :expect, :sc_match, :sc_mismatch,
-            :num_hits
 
+          # Returns name of the matrix.
+          def matrix;      parse_params; @matrix;      end
+          # Returns the match score of the matrix.
+          def sc_match;    parse_params; @sc_match;    end
+          # Returns the mismatch score of the matrix.
+          def sc_mismatch; parse_params; @sc_mismatch; end
+
+          # Returns gap open penalty value.
+          def gap_open;    parse_params; @gap_open;    end
+          # Returns gap extend penalty value.
+          def gap_extend;  parse_params; @gap_extend;  end
+
+          # Returns effective length of the database.
+          def eff_space;   parse_params; @eff_space;   end
+
+          # Returns e-value threshold specified when BLAST was executed.
+          def expect;      parse_params; @expect;      end
+
+          # Returns number of hits.
+          def num_hits;    parse_params; @num_hits;    end
+
+          # Parses database statistics lines.
           def parse_dbstat
             a = @f0dbstat[0].to_s.split(/^/)
             d = []
@@ -311,19 +430,51 @@ module Bio
             end
           end #def
           private :parse_dbstat
-          def self.method_after_parse_dbstat(*names)
-            names.each do |x|
-              module_eval("def #{x}; unless defined?(@#{x}); parse_dbstat; end; @#{x}; end")
-            end
+
+          # Returns name (title or filename) of the database.
+          def database
+            unless defined?(@database);    parse_dbstat; end; @database
           end
-          private_class_method :method_after_parse_dbstat
-          method_after_parse_dbstat :database, :posted_date, :db_len, :db_num
+
+          # Returns posted date of the database.
+          def posted_date
+            unless defined?(@posted_date); parse_dbstat; end; @posted_date
+          end
+
+          # Returns number of letters in database.
+          def db_len
+            unless defined?(@db_len);      parse_dbstat; end; @db_len
+          end
+
+          # Returns number of sequences in database.
+          def db_num
+            unless defined?(@db_num);      parse_dbstat; end; @db_num
+          end
         end #class F0dbstat
 
+        # Provides a singleton object of which any methods always return nil.
+        # Internal use only. Users must not use the class.
+        class AlwaysNil #:nodoc:
+          include Singleton
+          def method_missing(*arg)
+            nil
+          end
+        end #class AlwaysNil
+
+        # Bio::Blast::Default::Report::Iteration stores information about
+        # a iteration.
+        # It may contain some Bio::Blast::Default::Report::Hit objects.
+        # Note that a PSI-BLAST (blastpgp command) result usually contain
+        # multiple iterations in it, and a normal BLAST (blastall command)
+        # result usually contain one iteration in it.
         class Iteration
+          # Creates a new Iteration object.
+          # It is designed to be called only internally from
+          # the Bio::Blast::Default::Report class.
+          # Users shall not use the method directly.
           def initialize(data)
             @f0stat = []
-            @f0dbstat = nil
+            @f0dbstat = AlwaysNil.instance
             @f0hitlist = []
             @hits = []
             @num = 1
@@ -377,27 +528,37 @@ module Bio
               @flag_converged = true
             end
           end
-          attr_reader :num
-          attr_reader :message
-          attr_reader :pattern_in_database
-          attr_reader :f0message, :f0hitlist
-          attr_accessor :f0stat, :f0dbstat
 
+          # (PSI-BLAST) Iteration round number.
+          attr_reader :num
+          # (PSI-BLAST) Messages of the iteration.
+          attr_reader :message
+          # (PHI-BLAST) Number of occurrences of pattern in the database.
+          attr_reader :pattern_in_database
+
+          # Returns the hits of the iteration.
+          # It returns an array of Bio::Blast::Default::Report::Hit objects.
           def hits
             parse_hitlist
             @hits
           end
 
+          # Iterates over each hit of the iteration.
+          # Yields a Bio::Blast::Default::Report::Hit object.
           def each
             hits.each do |x|
               yield x
             end
           end
 
+          # (PSI-BLAST) Returns true if the iteration is converged.
+          # Otherwise, returns false.
           def converged?
             @flag_converged
           end
 
+          # (PHI-BLAST) Returns pattern string.
+          # Returns nil if it is not a PHI-BLAST result.
           def pattern
             #PHI-BLAST
             if !defined?(@pattern) and defined?(@pattern_in_database) then
@@ -415,27 +576,37 @@ module Bio
             @pattern
           end
 
+          # (PHI-BLAST) Returns pattern positions.
+          # Returns nil if it is not a PHI-BLAST result.
           def pattern_positions
             #PHI-BLAST
             pattern
             @pattern_positions
           end
 
+          # (PSI-BLAST)
+          # Returns hits which have been found again in the iteration.
+          # It returns an array of Bio::Blast::Default::Report::Hit objects.
           def hits_found_again
             parse_hitlist
             @hits_found_again
           end
 
+          # (PSI-BLAST)
+          # Returns hits which have been newly found in the iteration.
+          # It returns an array of Bio::Blast::Default::Report::Hit objects.
           def hits_newly_found
             parse_hitlist
             @hits_newly_found
           end
 
+          # (PHI-BLAST) Returns hits for pattern. ????
           def hits_for_pattern
             parse_hitlist
             @hits_for_pattern
           end
 
+          # Parses list of hits.
           def parse_hitlist
             unless defined?(@parse_hitlist)
               @hits_found_again = []
@@ -501,9 +672,10 @@ module Bio
           end
           private :parse_hitlist
 
+          # Parses statistics for the iteration.
           def parse_stat
             unless defined?(@parse_stat)
-              f0stat.each do |x|
+              @f0stat.each do |x|
                 gapped = nil
                 sc = StringScanner.new(x)
                 sc.skip(/\s*/)
@@ -538,27 +710,72 @@ module Bio
           end #def
           private :parse_stat
 
+          # Defines attributes which call +parse_stat+ before accessing.
           def self.method_after_parse_stat(*names)
             names.each do |x|
               module_eval("def #{x}; parse_stat; @#{x}; end")
             end
           end
           private_class_method :method_after_parse_stat
-          method_after_parse_stat :lambda, :kappa, :entropy,
-            :gapped_lambda, :gapped_kappa, :gapped_entropy
 
-          def self.method_delegate_f0dbstat(*names)
+          # lambda of the database
+          attr_reader             :lambda  if false #dummy
+          method_after_parse_stat :lambda
+          # kappa of the database
+          attr_reader             :kappa   if false #dummy
+          method_after_parse_stat :kappa
+          # entropy of the database
+          attr_reader             :entropy if false #dummy
+          method_after_parse_stat :entropy
+
+          # gapped lambda of the database
+          attr_reader             :gapped_lambda  if false #dummy
+          method_after_parse_stat :gapped_lambda
+          # gapped kappa of the database
+          attr_reader             :gapped_kappa   if false #dummy
+          method_after_parse_stat :gapped_kappa
+          # gapped entropy of the database
+          attr_reader             :gapped_entropy if false #dummy
+          method_after_parse_stat :gapped_entropy
+
+          # Defines attributes which delegate to @f0dbstat objects.
+          def self.delegate_to_f0dbstat(*names)
             names.each do |x|
-              module_eval("def #{x}; if @f0dbstat then @f0dbstat.#{x}; else nil; end; end")
+              module_eval("def #{x}; @f0dbstat.#{x}; end")
             end
           end
-          private_class_method :method_delegate_f0dbstat
-          method_delegate_f0dbstat :database, :posted_date, :db_num, :db_len,
-            :eff_space, :expect
+          private_class_method :delegate_to_f0dbstat
+
+          # name (title or filename) of the database
+          attr_reader          :database if false #dummy
+          delegate_to_f0dbstat :database
+          # posted date of the database
+          attr_reader          :posted_date if false #dummy
+          delegate_to_f0dbstat :posted_date
+
+          # number of letters in database
+          attr_reader          :db_num if false #dummy
+          delegate_to_f0dbstat :db_num
+          # number of sequences in database
+          attr_reader          :db_len if false #dummy
+          delegate_to_f0dbstat :db_len
+          # effective length of the database
+          attr_reader          :eff_space if false #dummy
+          delegate_to_f0dbstat :eff_space
+
+          # e-value threshold specified when BLAST was executed
+          attr_reader          :expect if false #dummy
+          delegate_to_f0dbstat :expect
 
         end #class Iteration
 
+        # Bio::Blast::Default::Report::Hit contains information about a hit.
+        # It may contain some Bio::Blast::Default::Report::HSP objects.
         class Hit
+          # Creates a new Hit object.
+          # It is designed to be called only internally from the
+          # Bio::Blast::Default::Report::Iteration class.
+          # Users should not call the method directly.
           def initialize(data)
             @f0hitname = data.shift
             @hsps = []
@@ -567,20 +784,31 @@ module Bio
             end
             @again = false
           end
-          attr_reader :f0hitname, :hsps
 
+          # Hsp(high-scoring segment pair)s of the hit.
+          # Returns an array of Bio::Blast::Default::Report::HSP objects.
+          attr_reader :hsps
+
+          # Iterates over each hsp(high-scoring segment pair) of the hit.
+          # Yields a Bio::Blast::Default::Report::HSP object.
           def each
             @hsps.each { |x| yield x }
           end
 
+          # (PSI-BLAST)
+          # Returns true if the hit is found again in the iteration.
+          # Otherwise, returns false or nil.
           def found_again?
             @again
           end
 
+          # Returns first hsp's score.
           def score
             (h = @hsps.first) ? h.score : nil
           end
 
+          # Returns first hsp's bit score.
+          # (shown in hit list of BLAST result)
           def bit_score
             unless defined?(@bit_score)
               if h = @hsps.first then
@@ -589,6 +817,9 @@ module Bio
             end
             @bit_score
           end
+
+          # Returns first hsp's e-value.
+          # (shown in hit list of BLAST result)
           def evalue
             unless defined?(@evalue)
               if h = @hsps.first then
@@ -598,6 +829,7 @@ module Bio
             @evalue
           end
 
+          # Parses name of the hit.
           def parse_hitname
             unless defined?(@parse_hitname)
               sc = StringScanner.new(@f0hitname)
@@ -615,37 +847,91 @@ module Bio
           end
           private :parse_hitname
 
+          # Returns length of the hit.
           def len;        parse_hitname; @len;        end
+
+          # Returns definition of the hit.
           def definition; parse_hitname; @definition; end
 
-          # Compatible with Bio::Fasta::Report::Hit
+          #--
+          # Aliases to keep compatibility with Bio::Fasta::Report::Hit.
           #alias target_id accession
           alias target_def definition
           alias target_len len
+          #++
 
-          # Shortcut methods for the best Hsp
+          # Sends given method to the first hsp or returns nil if
+          # there are no hsps.
           def hsp_first(m)
             (h = hsps.first) ? h.send(m) : nil
           end
           private :hsp_first
 
+          #--
+          # Shortcut methods for the best Hsp
+          # (Compatibility method with FASTA)
+          #++
+
+          # Same as hsps.first.identity.
+          # Returns nil if there are no hsp in the hit.
+          # (Compatibility method with FASTA)
           def identity;      hsp_first :identity;     end
+
+          # Same as hsps.first.align_len.
+          # Returns nil if there are no hsp in the hit.
+          # (Compatibility method with FASTA)
           def overlap;       hsp_first :align_len;    end
-          
+
+          # Same as hsps.first.qseq.
+          # Returns nil if there are no hsp in the hit.
+          # (Compatibility method with FASTA)
           def query_seq;     hsp_first :qseq;         end
+
+          # Same as hsps.first.hseq.
+          # Returns nil if there are no hsp in the hit.
+          # (Compatibility method with FASTA)
           def target_seq;    hsp_first :hseq;         end
+
+          # Same as hsps.first.midline.
+          # Returns nil if there are no hsp in the hit.
+          # (Compatibility method with FASTA)
           def midline;       hsp_first :midline;      end
 
+          # Same as hsps.first.query_from.
+          # Returns nil if there are no hsp in the hit.
+          # (Compatibility method with FASTA)
           def query_start;   hsp_first :query_from;   end
+
+          # Same as hsps.first.query_to.
+          # Returns nil if there are no hsp in the hit.
+          # (Compatibility method with FASTA)
           def query_end;     hsp_first :query_to;     end
+
+          # Same as hsps.first.hit_from.
+          # Returns nil if there are no hsp in the hit.
+          # (Compatibility method with FASTA)
           def target_start;  hsp_first :hit_from;     end
+
+          # Same as hsps.first.hit_to.
+          # Returns nil if there are no hsp in the hit.
+          # (Compatibility method with FASTA)
           def target_end;    hsp_first :hit_to;       end
+
+          # Returns an array which contains
+          # [ query_start, query_end, target_start, target_end ].
+          # (Compatibility method with FASTA)
           def lap_at
             [ query_start, query_end, target_start, target_end ]
           end
         end #class Hit
 
+        # Bio::Blast::Default::Report::HSP holds information about the hsp
+        # (high-scoring segment pair).
         class HSP
+          # Creates new HSP object.
+          # It is designed to be called only internally from the
+          # Bio::Blast::Default::Report::Hit class.
+          # Users should not call the method directly.
           def initialize(data)
             @f0score = data.shift
             @f0alignment = []
@@ -653,8 +939,8 @@ module Bio
               @f0alignment << data.shift
             end
           end
-          attr_reader :f0score, :f0alignment
 
+          # Parses scores, identities, positives, gaps, and so on.
           def parse_score
             unless defined?(@parse_score)
               sc = StringScanner.new(@f0score)
@@ -727,18 +1013,66 @@ module Bio
           end
           private :parse_score
 
+          # Defines attributes which call parse_score before accessing.
           def self.method_after_parse_score(*names)
             names.each do |x|
               module_eval("def #{x}; parse_score; @#{x}; end")
             end
           end
           private_class_method :method_after_parse_score
-          method_after_parse_score :bit_score, :score,
-            :evalue, :query_frame, :hit_frame,
-            :identity, :positive, :gaps, :align_len,
-            :percent_identity, :percent_positive, :percent_gaps,
-            :query_strand, :hit_strand
 
+          # bit score
+          attr_reader              :bit_score if false #dummy
+          method_after_parse_score :bit_score
+          # score
+          attr_reader              :score if false #dummy
+          method_after_parse_score :score
+
+          # e-value
+          attr_reader              :evalue if false #dummy
+          method_after_parse_score :evalue
+
+          # frame of the query
+          attr_reader              :query_frame if false #dummy
+          method_after_parse_score :query_frame
+          # frame of the hit
+          attr_reader              :hit_frame if false #dummy
+          method_after_parse_score :hit_frame
+
+          # Identity (number of identical nucleotides or amino acids)
+          attr_reader              :identity if false #dummy
+          method_after_parse_score :identity
+          # percent of identical nucleotides or amino acids
+          attr_reader              :percent_identity if false #dummy
+          method_after_parse_score :percent_identity
+
+          # Positives (number of positive hit amino acids or nucleotides)
+          attr_reader              :positive if false #dummy
+          method_after_parse_score :positive
+          # percent of positive hit amino acids or nucleotides
+          attr_reader              :percent_positive if false #dummy
+          method_after_parse_score :percent_positive
+
+          # Gaps (number of gaps)
+          attr_reader              :gaps if false #dummy
+          method_after_parse_score :gaps
+          # percent of gaps
+          attr_reader              :percent_gaps if false #dummy
+          method_after_parse_score :percent_gaps
+
+          # aligned length
+          attr_reader              :align_len if false #dummy
+          method_after_parse_score :align_len
+
+          # strand of the query ("Plus" or "Minus" or nil)
+          attr_reader              :query_strand if false #dummy
+          method_after_parse_score :query_strand
+
+          # strand of the hit ("Plus" or "Minus" or nil)
+          attr_reader              :hit_strand if false #dummy
+          method_after_parse_score :hit_strand
+
+          # Parses alignments.
           def parse_alignment
             unless defined?(@parse_alignment)
               qpos1 = nil
@@ -808,19 +1142,50 @@ module Bio
           end #def
           private :parse_alignment
 
+          # Defines attributes which call parse_alignment before accessing.
           def self.method_after_parse_alignment(*names)
             names.each do |x|
               module_eval("def #{x}; parse_alignment; @#{x}; end")
             end
           end
           private_class_method :method_after_parse_alignment
-          method_after_parse_alignment :qseq, :hseq, :midline,
-            :query_from, :query_to, :hit_from, :hit_to
+
+          # query sequence (with gaps) of the alignment of the hsp
+          attr_reader                  :qseq if false #dummy
+          method_after_parse_alignment :qseq
+          # hit sequence (with gaps) of the alignment of the hsp
+          attr_reader                  :hseq if false #dummy
+          method_after_parse_alignment :hseq
+
+          # middle line of the alignment of the hsp
+          attr_reader                  :midline if false #dummy
+          method_after_parse_alignment :midline
+
+          # start position of the query (the first position is 1)
+          attr_reader                  :query_from if false #dummy
+          method_after_parse_alignment :query_from
+
+          # end position of the query (including its position)
+          attr_reader                  :query_to
+          method_after_parse_alignment :query_to
+
+          # start position of the hit (the first position is 1)
+          attr_reader                  :hit_from if false #dummy
+          method_after_parse_alignment :hit_from
+
+          # end position of the hit (including its position)
+          attr_reader                  :hit_to if false #dummy
+          method_after_parse_alignment :hit_to
+
         end #class HSP
 
       end #class Report
 
+      # NCBI BLAST default (-m 0 option) output parser for TBLAST.
+      # All methods are equal to Bio::Blast::Default::Report.
+      # Only DELIMITER (and RS) is different.
       class Report_TBlast < Report
+        # Delimter of each entry for TBLAST. Bio::FlatFile uses it.
         DELIMITER = RS = "\nTBLAST"
       end #class Report_TBlast
 
