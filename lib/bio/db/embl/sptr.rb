@@ -5,7 +5,7 @@
 # Copyright::   Copyright (C) 2001-2005 BioRuby Project
 # License::     LGPL
 #
-# $Id: sptr.rb,v 1.26 2005/10/23 08:59:43 nakao Exp $
+# $Id: sptr.rb,v 1.27 2005/10/27 09:30:42 nakao Exp $
 #
 # == UniProtKB/SwissProt and TrEMBL
 #
@@ -105,7 +105,7 @@ class SPTR < EMBLDB
   alias aalen sequence_length
 
 
-  # Bio::EMBL::Common#ac  -> ary
+  # Bio::EMBLDB::Common#ac  -> ary
   #                  #accessions  -> ary
   #                  #accession  -> String (accessions.first)
   @@ac_regrexp = /[OPQ][0-9][A-Z0-9]{3}[0-9]/ 
@@ -205,6 +205,7 @@ class SPTR < EMBLDB
     end
   end
 
+  # returns contents in the old style GN line.
   # GN Line: Gene name(s) (>=0, optional)
   #  GN   HNS OR DRDX OR OSMZ OR BGLY.
   #  GN   CECA1 AND CECA2.
@@ -229,7 +230,7 @@ class SPTR < EMBLDB
   end
   private :gn_old_parser
 
-
+  # returns contents in the structured GN line.
   # The new format of the GN line is:
   #  GN   Name=; Synonyms=[, ...]; OrderedLocusNames=[, ...];
   #  GN   ORFNames=[, ...];
@@ -322,13 +323,13 @@ class SPTR < EMBLDB
   end
   
 
-  # Bio::EMBL::Common#og -> Array
+  # Bio::EMBLDB::Common#og -> Array
   # OG Line; organella (0 or 1/entry)
   # ["MITOCHONDRION", "CHLOROPLAST", "Cyanelle", "Plasmid"]
   #  or a plasmid name (e.g. "Plasmid pBR322").  
 
 
-  # Bio::EMBL::Common#oc -> Array
+  # Bio::EMBLDB::Common#oc -> Array
   # OC Line; organism classification (>=1)
   # "OC   Eukaryota; Alveolata; Apicomplexa; Piroplasmida; Theileriidae;"
   # "OC   Theileria."
@@ -356,7 +357,7 @@ class SPTR < EMBLDB
   end
 
   
-  # Bio::EMBL::Common#ref -> Array
+  # Bio::EMBLDB::Common#ref -> Array
   # R Lines
   # RN RC RP RX RA RT RL
 
@@ -512,6 +513,9 @@ class SPTR < EMBLDB
       end
       return tmp
 
+    when 'INTERACTION'
+      return cc_interaction_parse(@data['CC']['INTERACTION'].to_s)
+
     when nil
       return @data['CC']	
 
@@ -519,6 +523,7 @@ class SPTR < EMBLDB
       return @data['CC'][tag]
     end
   end
+
 
 
   def cc_ap_variants_parse(ent)
@@ -535,6 +540,18 @@ class SPTR < EMBLDB
   private :cc_ap_variants_parse
 
 
+  # returns conteins in a line of the CC INTERACTION section.
+  #
+  #  CC       P46527:CDKN1B; NbExp=1; IntAct=EBI-359815, EBI-519280;
+  def cc_interaction_parse(str)
+    it = str.scan(/(.+?); NbExp=(.+?); IntAct=(.+?);/)
+    it.map {|ent|
+      {:partner_id => ent[0].strip,
+       :nbexp => ent[1].strip, 
+       :intact_acc => ent[2].split(', ') }
+    }
+  end
+  private :cc_interaction_parse
 
   # returns databases cross-references in the DR lines.
   # * Bio::EMBLDB#dr  -> Hash w/in Array
@@ -549,8 +566,8 @@ class SPTR < EMBLDB
     'PROSITE','REBASE','AARHUS/GHENT-2DPAGE','SGD','STYGENE','SUBTILIST',
     'SWISS-2DPAGE','TIGR','TRANSFAC','TUBERCULIST','WORMPEP','YEPD','ZFIN']
 
-  # Bio::EMBL::Common#kw - Array
-  #            #keywords  -> Array
+  # Bio::EMBLDB::Common#kw - Array
+  #                    #keywords  -> Array
   #
   # KW Line; keyword (>=1)
   # KW   [Keyword;]+
