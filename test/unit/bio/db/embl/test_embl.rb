@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_embl.rb,v 1.1 2005/09/25 05:07:12 nakao Exp $
+#  $Id: test_embl.rb,v 1.2 2005/10/27 09:38:12 nakao Exp $
 #
 
 require 'pathname'
@@ -40,21 +40,27 @@ module Bio
     def test_id_line
       assert(@obj.id_line)
     end
+
     def test_id_line_iterator
       assert(@obj.id_line {|key, value| })
     end
+
     def test_id_line_entry_name
       assert_equal(@obj.id_line('ENTRY_NAME'), 'AB090716')
     end
+
     def test_id_line_data_class
       assert_equal(@obj.id_line('DATA_CLASS'), 'standard')
     end
+
     def test_id_line_molecule_type
       assert_equal(@obj.id_line('MOLECULE_TYPE'), 'genomic DNA')
     end
+
     def test_id_line_division
       assert_equal(@obj.id_line('DIVISION'), 'VRT')
     end
+
     def test_id_line_sequence_length
       assert_equal(@obj.id_line('SEQUENCE_LENGTH'), 166)
     end
@@ -82,11 +88,14 @@ module Bio
       assert_equal(@obj.seqlen, seqlen)
     end
 
-    def test_ac # Bio::EMBLDB#ac
+    # Bio::EMBLDB::COMMON#ac
+    def test_ac 
       ac = ['AB090716']
       assert_equal(@obj.ac, ac)
       assert_equal(@obj.accessions, ac)
     end
+
+    # Bio::EMBLDB::COMMON#accession
     def test_accession
       assert_equal(@obj.accession, 'AB090716')
     end
@@ -102,21 +111,26 @@ module Bio
     def test_dt
       assert(@obj.dt)
     end
+
     def test_dt_iterator
       assert(@obj.dt {|key, value| })
     end
+
     def test_dt_created
       assert_equal(@obj.dt('created'), '25-OCT-2002 (Rel. 73, Created)')
     end
+
     def test_dt_updated
       assert_equal(@obj.dt('updated'), '29-NOV-2002 (Rel. 73, Last updated, Version 2)')
     end
 
-    def test_de # Bio::EMBL::COMMON#de
+    # Bio::EMBLDB::COMMON#de
+    def test_de
       assert_equal(@obj.de, "Haplochromis sp. 'muzu, rukwa' LWS gene for long wavelength-sensitive opsin, partial cds, specimen_voucher:specimen No. HT-9361.")
     end
 
-    def test_kw # Bio::EMBL::COMMON#kw
+    # Bio::EMBLDB::COMMON#kw
+    def test_kw 
       k = []
       assert_equal(@obj.kw, [])
       assert_equal(@obj.keywords, [])
@@ -132,23 +146,28 @@ module Bio
       assert_equal(@obj.os, "Haplochromis sp. 'muzu rukwa'")
     end
 
-    def test_oc # Bio::EMBL::COMMON#oc
+    # Bio::EMBLDB::COMMON#oc
+    def test_oc 
       assert_equal(@obj.oc.first, 'Eukaryota')
     end
 
-    def test_og # Bio::EMBL::COMMON#og
+    # Bio::EMBLDB::COMMON#og
+    def test_og 
       assert_equal(@obj.og, [])
     end
 
-    def test_ref # Bio::EMBL::COMMON#ref
+    # Bio::EMBLDB::COMMON#ref
+    def test_ref
       assert_equal(@obj.ref.size, 2)
     end
 
-    def test_references # Bio::EMBL::COMMON#references
+    # Bio::EMBLDB::COMMON#references
+    def test_references 
       assert_equal(@obj.references.class, Bio::References)
     end
 
-    def test_dr # Bio::EMBL::COMMON#dr
+    # Bio::EMBLDB::COMMON#dr
+    def test_dr
       assert_equal(@obj.dr, {})
     end
 
@@ -157,14 +176,17 @@ module Bio
     end
 
     def test_ft
-      assert(@obj.ft)
-      assert(@obj.features)
+      assert_equal(@obj.ft.class, Bio::Features)
     end
+
     def test_ft_iterator
-      assert(@obj.ft {|x| })
+      @obj.ft.each do |feature|
+        assert_equal(feature.class, Bio::Feature)
+      end
     end
+
     def test_ft_accessor
-      assert_equal(@obj.ft(1).features.first.feature, 'source')
+      assert_equal(@obj.ft.features[1].feature, 'CDS')
     end
 
     def test_each_cds
@@ -187,8 +209,10 @@ module Bio
 #    end
 
     def test_sq
-      assert_equal(@obj.sq, {"a"=>29, "c"=>42, "ntlen"=>166, "g"=>41, "t"=>54, "other"=>0})
+      data = {"a"=>29, "c"=>42, "ntlen"=>166, "g"=>41, "t"=>54, "other"=>0}
+      assert_equal(@obj.sq, data)
     end
+
     def test_sq_get
       assert_equal(@obj.sq("a"), 29)
     end
