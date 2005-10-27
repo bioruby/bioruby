@@ -6,7 +6,7 @@
 # Copyright::   Copyright (C) 2001-2005 BioRuby Project
 # License::     LGPL
 #
-# $Id: embl.rb,v 1.22 2005/10/23 09:59:48 nakao Exp $
+# $Id: embl.rb,v 1.23 2005/10/27 09:34:49 nakao Exp $
 #
 # == EMBL database entry
 #
@@ -228,14 +228,13 @@ class EMBL < EMBLDB
   end
 
   # returns contents in the feature table (FT) lines.
-  # * Bio::EMBL#ft -> [ <FT Hash>* ]
-  # * Bio::EMBL#ft {} -> {|<FT Hash>| }
-  # * Bio::EMBL#ft(Int) -> Hash
+  # * Bio::EMBL#ft -> Bio::Features
+  # * Bio::EMBL#ft {} -> {|Bio::Feature| }
   #
   # same as features method in bio/db/genbank.rb 
   #
   # FT Line; feature table data (>=0)
-  def ft(num = nil)
+  def ft
     unless @data['FT']
       @data['FT'] = Array.new
       ary = Array.new
@@ -270,8 +269,8 @@ class EMBL < EMBLDB
       @data['FT'] = Features.new(ary)
     end
     if block_given?
-      @data['FT'].each do |feature_table|
-        yield feature_table
+      @data['FT'].each do |feature|
+        yield feature
       end
     else
       @data['FT']
