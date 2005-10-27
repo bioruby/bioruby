@@ -5,7 +5,7 @@
 # Copyright::   Copyright (C) 2001-2005 BioRuby Project
 # License::     LGPL
 #
-# $Id: common.rb,v 1.5 2005/10/23 09:25:16 nakao Exp $
+# $Id: common.rb,v 1.6 2005/10/27 09:36:07 nakao Exp $
 #
 # == EMBL style databases class
 #
@@ -166,11 +166,21 @@ module Common
   # * Bio::EMBLDB::Common#og  -> [ <ogranella String>* ]
   #
   # OG Line; organella (0 or 1/entry)
+  #  OG   Plastid; Chloroplast.
+  #  OG   Mitochondrion.
+  #  OG   Plasmid sym pNGR234a.
+  #  OG   Plastid; Cyanelle.
+  #  OG   Plasmid pSymA (megaplasmid 1).
+  #  OG   Plasmid pNRC100, Plasmid pNRC200, and Plasmid pHH1.
   def og
     unless @data['OG']
       og = Array.new
       if get('OG').size > 0
-        fetch('OG').sub(/\.$/,'').sub(/ and/,'').split(/,/).each do |tmp|
+        ogstr = fetch('OG')
+        ogstr.sub!(/\.$/,'')
+        ogstr.sub!(/ and/,'')
+        ogstr.sub!(/;/, ',')
+        ogstr.split(',').each do |tmp|
           og.push(tmp.strip)
         end
       end
