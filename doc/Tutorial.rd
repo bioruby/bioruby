@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd,v 1.7 2005/09/24 14:58:21 ngoto Exp $
+  $Id: Tutorial.rd,v 1.8 2005/10/27 11:55:58 pjotr Exp $
 
 Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -37,6 +37,25 @@ command. Showing something like:
 
   ruby 1.8.2 (2005-04-11) [powerpc-linux]
 
+
+== Trying Bioruby
+
+Bioruby comes with its own shell. After unpacking the sources run the
+following command
+
+  $BIORUBY/bin/bioruby
+
+and you should see a prompt
+
+  bioruby>
+
+Now test the following:
+
+  bioruby> seq = Bio::Sequence::NA.new("atgcatgcaaaa")
+  bioruby> puts seq
+  atgcatgcaaaa
+  bioruby> puts seq.complement 
+  ttttgcatgcat
 
 == Working with nucleic / amino acid sequences (Bio::Sequence class)
 
@@ -79,7 +98,9 @@ the screen. If you want to know more about standard Ruby commands you
 can use the 'ri' command on the command line (or the help command in
 Windows). For example
 
+  % ri puts
   % ri p
+  % ri File.open
 
 Nucleic acid sequence is an object of +Bio::Sequence::NA+ class, and
 amino acid sequence is an object of +Bio::Sequence::AA+ class.  Shared
