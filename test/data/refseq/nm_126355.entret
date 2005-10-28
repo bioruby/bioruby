@@ -1,0 +1,64 @@
+LOCUS       NM_126355                615 bp    mRNA    linear   PLN 25-JAN-2005
+DEFINITION  Arabidopsis thaliana Toll-Interleukin-Resistance (TIR)
+            domain-containing protein (At2g03030) mRNA, complete cds.
+ACCESSION   NM_126355
+VERSION     NM_126355.1  GI:18395472
+KEYWORDS    .
+SOURCE      Arabidopsis thaliana (thale cress)
+  ORGANISM  Arabidopsis thaliana
+            Eukaryota; Viridiplantae; Streptophyta; Embryophyta; Tracheophyta;
+            Spermatophyta; Magnoliophyta; eudicotyledons; core eudicotyledons;
+            rosids; eurosids II; Brassicales; Brassicaceae; Arabidopsis.
+COMMENT     PROVISIONAL REFSEQ: This record has not yet been subject to final
+            NCBI review. This record is derived from an annotated genomic
+            sequence (NC_003071). The reference sequence was derived from
+            mrna.At2g03030.1.
+FEATURES             Location/Qualifiers
+     source          1..615
+                     /organism="Arabidopsis thaliana"
+                     /mol_type="mRNA"
+                     /db_xref="taxon:3702"
+                     /chromosome="2"
+                     /map="unknown"
+                     /clone="CHR2v01212004"
+                     /ecotype="Columbia"
+     gene            1..615
+                     /locus_tag="At2g03030"
+                     /note="synonym: T17M13.20; Toll-Interleukin-Resistance
+                     (TIR) domain-containing protein"
+                     /db_xref="GeneID:814832"
+     CDS             1..615
+                     /locus_tag="At2g03030"
+                     /note="domain signature TIR exists, suggestive of a
+                     disease resistance protein;
+                     go_function: defense/immunity protein activity [goid
+                     0003793];
+                     go_process: defense response signaling pathway,
+                     resistance-gene dependent [goid 0009870]"
+                     /codon_start=1
+                     /product="Toll-Interleukin-Resistance (TIR)
+                     domain-containing protein"
+                     /protein_id="NP_178403.1"
+                     /db_xref="GI:15227520"
+                     /db_xref="GeneID:814832"
+                     /translation="MTFFSPTQVFLNYRGEQLRRSFVSHLIDAFERNEINFFVDKYEQ
+                     RGKDLKNLFLRIQESKIALAIFSTRYTESSWCLDELVKIKKLADKKKLHVIPIFYKVK
+                     VEDVRKQTGEFGDNFWTLAKVSSGDQIKKWKEALECIPNKMGLSLGDKSSEADFIKEV
+                     VKAVQCVVATIGLEEEEENHFGKKKRKDCKCELPDLKKSRTKKL"
+     misc_feature    22..423
+                     /locus_tag="At2g03030"
+                     /note="TIR; Region: Toll - interleukin 1 - resistance"
+                     /db_xref="CDD:22729"
+ORIGIN
+       1  atgacattct tctctcccac tcaggtgttt ttgaactaca ggggagaaca actgcgtcgc
+      61  agcttcgtga gccacctcat tgatgccttt gaaaggaatg agatcaactt cttcgtagac
+     121  aaatacgaac agagaggcaa agacctcaaa aatctctttc ttaggatcca agagtcgaag
+     181  atcgcgcttg ccatcttctc aaccagatac acggagtcaa gctggtgttt ggatgagttg
+     241  gtgaagataa agaaacttgc tgataaaaaa aaactccatg tcattccaat tttctacaag
+     301  gtgaaggtag aagacgttcg aaaacagaca ggtgagtttg gtgacaactt ctggacgctg
+     361  gcaaaggttt caagtggtga tcagatcaag aaatggaaag aagccttgga atgtatcccc
+     421  aacaagatgg gtttgtcgtt gggagacaag agttctgaag cagatttcat caaggaagtt
+     481  gttaaggcgg ttcagtgtgt tgtagcaacg attggacttg aggaagaaga agagaatcat
+     541  tttgggaaaa agaagagaaa ggattgcaaa tgtgagcttc ctgatttgaa gaaaagcaga
+     601  accaaaaagt tgtga
+//
