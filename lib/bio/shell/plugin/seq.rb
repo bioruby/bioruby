@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: seq.rb,v 1.3 2005/09/23 15:51:59 nakao Exp $
+#  $Id: seq.rb,v 1.4 2005/10/28 02:08:10 nakao Exp $
 #
 
 require 'bio/sequence'
@@ -99,19 +99,25 @@ module Bio::Shell
     return str
   end
 
+  # Reterns and displays a DNA sequence pretty printing 
+  # in B-type double helix.
+  # Argument ``seq'' required at least 16 bases length.
   def double_helix(seq)
+    str = ''
     m = [[5, 0], [4, 2], [3, 3], [2, 4], 
          [1, 4], [0, 3], [0, 2], [1, 0]]
     naseq(seq).window_search(16, 16) do |subseq|
       m.each_with_index do |mij, x|
         base = subseq[x, 1]
-        puts ' ' * mij[0] + base + '-' * mij[1] + base.complement
+        str << ' ' * mij[0] + base + '-' * mij[1] + base.complement + "\n"
       end
       m.reverse.each_with_index do |mij, x|
         base = subseq[x + 8, 1]
-        puts ' ' * mij[0] + base.complement + '-' * mij[1] + base
+        str << ' ' * mij[0] + base.complement + '-' * mij[1] + base + "\n"
       end
     end
+    display(str)
+    return str
   end
 
 end
