@@ -1,7 +1,14 @@
 #
-# bio/appl/psort/report.rb - PSORT systems report classes
+# = bio/appl/psort/report.rb - PSORT systems report classes
 #
-#   Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::   Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
+# License::     LGPL
+#
+#  $Id: report.rb,v 1.10 2005/10/31 13:13:35 nakao Exp $
+#
+# == A Report classes for PSORT Systems
+# 
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +24,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.9 2005/09/09 15:48:17 ngoto Exp $
+# ++
 #
 
 require 'bio/sequence'
@@ -30,16 +37,21 @@ module Bio
 
     class PSORT1
 
+      # = Bio::PSORT::PSORT1::Report
+      # Parser class for PSORT1 output report.
+      # 
+      # == Example
       class Report
 
-        def self.parser(str)
-          self.default_parser(str)
+        # Returns aBio::PSORT::PSORT1::Report.
+        def self.parser(output_report)
+          self.default_parser(output_report)
         end
 
-        
-        def self.default_parser(str)
+        # Returns aBio::PSORT::PSORT1::Report.
+        def self.default_parser(output_report)
           rpt = self.new
-          rpt.raw = str
+          rpt.raw = output_report
           query_info = str.scan(/^Query Information\n\n(.+?)\n\n/m)[0][0].split(/\n/)
           result_info = str.scan(/^Result Information\n\n(.+?)\n\n\*/m)[0][0]
           step1 = str.scan(/^\*\*\* Reasoning Step: 1\n\n(.+?)\n\n/m)[0][0]
@@ -61,7 +73,18 @@ module Bio
           return rpt
         end
 
-        # new
+        attr_accessor :entry_id
+        attr_accessor :origin
+        attr_accessor :title
+        attr_accessor :sequence
+        attr_accessor :result_info
+        attr_accessor :reasoning
+        attr_accessor :final_result
+        attr_accessor :raw
+
+
+
+        # Constructs aBio::PSORT::PSORT1::Report object.
         def initialize(entry_id = '', origin = '', title = '', sequence = '',
                        result_info = '', reasoning = {}, final_result = [])
           @entry_id = entry_id
@@ -73,8 +96,6 @@ module Bio
           @final_result = final_result
           @raw = ''
         end
-        attr_accessor :entry_id, :origin, :title, :sequence, 
-          :result_info, :reasoning,:final_result, :raw
 
 
       end # class Report
@@ -82,9 +103,10 @@ module Bio
     end # class PSORT1
 
 
-    # Bio::PSORT::PSORT2
+
     class PSORT2
 
+      # Subcellular localization name codes used by PSORT2 
       SclNames = { 
         'csk' => 'cytoskeletal',
         'cyt' => 'cytoplasmic',
@@ -100,6 +122,7 @@ module Bio
         '---' => 'other'
       }
     
+      # Feature name codes
       Features = [
         'psg',  # PSG: PSG score
         'gvh',  # GvH: GvH score
@@ -138,6 +161,7 @@ module Bio
         'len'   # $leng
       ]
       
+      # Feature name codes (long version).
       FeaturesLong = {
         'psg' => 'PSG',  
         'gvh' => 'GvH',
@@ -175,12 +199,47 @@ module Bio
         'len' => 'AA'       # length of input sequence
       }
 
-      # Bio::PSORT::PSORT2::Report
+      # = Bio::PSORT::PSORT2::Report
+      # Report parser classe for PSORT II(PSORT2).
+      # == Example
       class Report
 
+        # Report boundary string.
         BOUNDARY  = '-' * 75
+
+
+        # Report delimiter.
         RS = DELIMITER = "\)\n\n#{BOUNDARY}"
 
+        # entry_id of query sequence. 
+        attr_accessor :entry_id 
+
+        # Given subcellular localization (three letters code).
+        attr_accessor :scl
+
+        # Definition of query sequence.
+        attr_accessor :definition
+        
+        # Sequence of query sequence.
+        attr_accessor :seq
+
+        # k parameter of k-nearest neighbors classifier.
+        attr_accessor :k
+
+        # Feature vector used the kNN prediction.
+        attr_accessor :features
+
+        # Probability vector of kNN prediction.
+        attr_accessor :prob
+
+        # Predicted subcellular localization (three letters code).
+        attr_accessor :pred
+        
+        # Raw text of output report.
+        attr_accessor :raw
+
+
+        # Constructs aBio::PSORT::PSORT2::Report object.
         def initialize(raw = '', entry_id = nil, scl = nil, definition = nil, 
                        seq = nil, k = nil, features = {}, prob = {}, pred = nil)
           @entry_id   = entry_id
@@ -193,11 +252,9 @@ module Bio
           @k          = k
           @raw        = raw
         end
-        attr_accessor :entry_id, :scl, :definition, :seq, 
-          :k, :features, :prob, :pred, :raw
 
         
-        # report format to be auto detection
+        # Parses output report with output format detection automatically.
         def self.parser(str, entry_id)
           case str
           when /^ psg:/   # default report
@@ -213,8 +270,9 @@ module Bio
           end
         end
 
-
-        # $id: too short length ($leng), skipped\n";
+        # Parser for ``too short length'' report.
+        #
+        #  $id: too short length ($leng), skipped\n";
         def self.too_short_parser(ent, entry_id = nil)
           report = self.new(ent)
           report.entry_id = entry_id
@@ -226,8 +284,8 @@ module Bio
         end
 
 
-        # default report
-        # ``psort test.faa'' output
+        # Parser for the default report format.
+        # ``psort report'' output.
         def self.default_parser(ent, entry_id = nil)
           report = self.new(ent, entry_id)
           ent = ent.split(/\n\n/).map {|e| e.chomp }
@@ -246,7 +304,7 @@ module Bio
           return report
         end
 
-
+        # Returns header information.
         def set_header_line(str)
           str.sub!(/^-+\n/,'')
           tmp = str.split(/\t| /)
@@ -263,7 +321,7 @@ module Bio
           @scl = scl if SclNames.keys.index(scl)
         end
 
-
+        # Returns @prob value.
         def self.set_kNN_prob(str)
           prob = Hash.new
           Bio::PSORT::PSORT2::SclNames.keys.each {|a| 
@@ -277,7 +335,7 @@ module Bio
           return prob
         end
 
-
+        # Returns @prob and @k values.
         def set_prediction(str)
           case str
           when /prediction for (\S+?) is (\w{3}) \(k=(\d+)\)/
@@ -291,8 +349,8 @@ module Bio
         end
 
 
-
-        # ``psort -v report'' and WWW server output
+        # Parser for the verbose output report format.
+        # ``psort -v report'' and WWW server output.
         def self.v_parser(ent, entry_id = nil)
           report = Bio::PSORT::PSORT2::Report.new(ent, entry_id)
 
@@ -303,14 +361,13 @@ module Bio
               ent[i - j] += e
               ent[i] = nil
             end
-            if /^none/ =~ e    # for psort output bug
+            if /^none/ =~ e    # psort output bug
               j = self.__send__(:search_j, i, ent)
               ent[i - j] += e
               ent[i] = nil
             end
           }
           ent.compact!
-          # ent.each_with_index {|e,i| p [i.to_s.ljust(2), e] }
 
           if /^ PSORT II server/ =~ ent[0] # for WWW version
             ent.shift 
@@ -333,6 +390,7 @@ module Bio
         end
 
 
+        # 
         def self.search_j(i, ent)
           j = 1
           1.upto(ent.size) {|x|
@@ -346,15 +404,15 @@ module Bio
         private_class_method :search_j
 
 
-        # divide entry body
-        def self.divent(ent)
-          boundary = ent.index(BOUNDARY)
+        # Divides entry body
+        def self.divent(entry)
+          boundary = entry.index(BOUNDARY)
           return ent[0..(boundary - 1)], ent[(boundary + 2)..ent.length]
         end
 
-
-        def set_features(fary)
-          fary.each {|fent|
+        # Sets @features values.
+        def set_features(features_ary)
+          features_ary.each {|fent|
             key = fent.split(/\:( |\n)/)[0].strip
             self.features[key] = fent # unless /^\>/ =~ key
           }
@@ -413,67 +471,3 @@ if __FILE__ == $0
   end
 
 end
-
-
-
-
-
-=begin
-
-= Bio::PSORT::PSORT1
-
-= Bio::PSORT::PSORT1::Report
-
---- Bio::PSORT::PSORT1::Report.parser
---- Bio::PSORT::PSORT1::Report#entry_id
---- Bio::PSORT::PSORT1::Report#origin
---- Bio::PSORT::PSORT1::Report#title
---- Bio::PSORT::PSORT1::Report#sequence
---- Bio::PSORT::PSORT1::Report#result_info
---- Bio::PSORT::PSORT1::Report#reasoning
---- Bio::PSORT::PSORT1::Report#final_result
---- Bio::PSORT::PSORT1::Report#raw
-
-
-
-
-
-= Bio::PSORT::PSORT2
-
---- Bio::PSORT::SclNames
---- Bio::PSORT::Features
---- Bio::PSORT::FeaturesLong
-
-= Bio::PSORT::PSORT2::Report
-
-Parsed results of the PSORT2 report for default, ``-v'' and WWW version 
-output format.
-
---- Bio::PSORT::PSORT2::Report.new
---- Bio::PSORT::PSORT2::Report#entry_id
-
-      
---- Bio::PSORT::PSORT2::Report#scl
---- Bio::PSORT::PSORT2::Report#definition
---- Bio::PSORT::PSORT2::Report#seq
---- Bio::PSORT::PSORT2::Report#features
---- Bio::PSORT::PSORT2::Report#prob
---- Bio::PSORT::PSORT2::Report#pred
---- Bio::PSORT::PSORT2::Report#k
---- Bio::PSORT::PSORT2::Report#raw
-
-
---- Bio::PSORT::PSORT2::Report.parser(report)
-
-      Returns a PSORT report object (Bio::PSORT::PSORT2::Report). 
-      Formats are auto detedted.
-
---- Bio::PSORT::PSORT2::Report::BOUNDARY
-
-      Fields boundary in a PSORT report.
-
---- Bio::PSORT::PSORT2::Report::DELIMITER
-
-      Entry boundary in PSORT reports.
-
-=end
