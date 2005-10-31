@@ -1,8 +1,10 @@
 #
-# bio/appl/blast/wublast.rb - WU-BLAST default output parser
+# = bio/appl/blast/wublast.rb - WU-BLAST default output parser
 # 
-#   Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
+# Copyright:: Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
+# Licence:: LGPL
 #
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -16,30 +18,51 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: wublast.rb,v 1.2 2005/09/08 01:22:08 k Exp $
+#  $Id: wublast.rb,v 1.3 2005/10/31 19:24:14 ngoto Exp $
+#
+#  WU-BLAST default output parser.
+#
+#  The parser is still incomplete and may contain many bugs,
+#  because I didn't have WU-BLAST license.
+#  It was tested under web-based WU-BLAST results and
+#  obsolete version downloaded from http://blast.wustl.edu/ .
+#
+# = References
+# * http://blast.wustl.edu/
+# * http://www.ebi.ac.uk/blast2/
 #
 
 require 'bio/appl/blast/format0'
 
-module Bio
-  class Blast
-    module WU
+module Bio #:nodoc:
+  class Blast #:nodoc:
+    module WU #:nodoc:
 
+      # Bio::Blast::WU::Report parses WU-BLAST default output
+      # and stores information in the data.
+      # It may contain a Bio::Blast::WU::Report::Iteration object.
+      # Because it inherits Bio::Blast::Default::Report,
+      # please also refer Bio::Blast::Default::Report.
       class Report < Default::Report
 
+        # Returns parameters (???)
         def parameters
           parse_parameters
           @parameters
         end
 
+        # Returns parameter matrix (???)
         def parameter_matrix
           parse_parameters
           @parameter_matrix
         end
 
+        # Returns e-value threshold specified when BLAST was executed.
         def expect; parse_parameters; @parameters['E']; end
 
+        # Returns warning messages.
         def warnings
           unless defined?(@warnings)
             @warnings = @f0warnings
@@ -48,6 +71,7 @@ module Bio
           @warnings
         end
 
+        # Returns notice messages.
         def notice
           unless defined?(@notice)
             @notice = @f0notice.to_s.gsub(/\s+/, ' ').strip
@@ -56,6 +80,7 @@ module Bio
         end
 
         private
+        # Splits headers.
         def format0_split_headers(data)
           @f0header = data.shift
           while r = data.first
@@ -79,10 +104,12 @@ module Bio
           @f0database = data.shift
         end
 
+        # Splits search data.
         def format0_split_search(data)
           [ Iteration.new(data) ]
         end
 
+        # Splits statistics parameters.
         def format0_split_stat_params(data)
           @f0warnings = []
           if r = data.first and r =~ /^WARNING\: / then
@@ -99,9 +126,11 @@ module Bio
           end
           @f0dbstat = F0dbstat.new(@f0wu_stats)
           itr = @iterations[0]
-          itr.f0dbstat = @f0dbstat if itr
+          x = @f0dbstat
+          itr.instance_eval { @f0dbstat = x } if itr
         end
 
+        # Splits parameters.
         def parse_parameters
           unless defined?(@parse_parameters)
             @parameters = {}
@@ -125,22 +154,25 @@ module Bio
           end
         end
 
-        class F0dbstat < Default::Report::F0dbstat
+        # Stores database statistics.
+        # Internal use only. Users must not use the class.
+        class F0dbstat < Default::Report::F0dbstat #:nodoc:
           def initialize(ary)
             @f0stat = ary
             @hash = {}
           end
 
+          #--
           #undef :f0params
           #undef :matrix, :gap_open, :gap_extend,
           #  :eff_space, :expect, :sc_match, :sc_mismatch,
           #  :num_hits
+          #++
 
+          # Parses database statistics.
           def parse_dbstat
             unless defined?(@parse_dbstat)
-              @f0stat.each do |x|
-                parse_colon_separated(@hash, x)
-              end
+              parse_colon_separated_params(@hash, @f0stat)
               @database = @hash['Database']
               @posted_date = @hash['Posted']
               if val = @hash['# of letters in database'] then
@@ -156,13 +188,26 @@ module Bio
 
         end #class F0dbstat
 
-        class Frame
-        end #class FrameParams
+        #--
+        #class Frame
+        #end #class FrameParams
+        #++
 
+        # Iteration class for WU-BLAST report.
+        # Though WU-BLAST does not iterate like PSI-BLAST,
+        # Bio::Blast::WU::Report::Iteration aims to keep compatibility
+        # with Bio::Blast::Default::Report::* classes.
+        # It may contain some Bio::Blast::WU::Report::Hit objects.
+        # Because it inherits Bio::Blast::Default::Report::Iteration,
+        # please also refer Bio::Blast::Default::Report::Iteration.
         class Iteration < Default::Report::Iteration
+          # Creates a new Iteration object.
+          # It is designed to be called only internally from
+          # the Bio::Blast::WU::Report class.
+          # Users shall not use the method directly.
           def initialize(data)
             @f0stat = []
-            @f0dbstat = nil
+            @f0dbstat = Default::Report::AlwaysNil.instance
             @f0hitlist = []
             @hits = []
             @num = 1
@@ -182,11 +227,13 @@ module Bio
             end #unless
           end
 
+          # Returns warning messages.
           def warnings
             @f0warnings
           end
 
           private
+          # Parses hit list.
           def parse_hitlist
             unless defined?(@parse_hitlist)
               r = @f0hitlist.shift.to_s
@@ -231,7 +278,16 @@ module Bio
           end
         end #class Iteration
 
+        # Bio::Blast::WU::Report::Hit contains information about a hit.
+        # It may contain some Bio::Blast::WU::Report::HSP objects.
+        #
+        # Because it inherits Bio::Blast::Default::Report::Hit,
+        # please also refer Bio::Blast::Default::Report::Hit.
         class Hit < Default::Report::Hit
+          # Creates a new Hit object.
+          # It is designed to be called only internally from the
+          # Bio::Blast::WU::Report::Iteration class.
+          # Users should not call the method directly.
           def initialize(data)
             @f0hitname = data.shift
             @hsps = []
@@ -249,19 +305,37 @@ module Bio
             @again = false
           end
 
+          # Returns score.
           def score
             @score
           end
-          attr_reader :pvalue, :n_number
+          # p-value
+          attr_reader :pvalue
+          # n-number (???)
+          attr_reader :n_number
         end #class Hit
 
+        # Bio::Blast::WU::Report::HSP holds information about the hsp
+        # (high-scoring segment pair).
+        #
+        # Because it inherits Bio::Blast::Default::Report::HSP,
+        # please also refer Bio::Blast::Default::Report::HSP.
         class HSP < Default::Report::HSP
-          method_after_parse_score :pvalue, :p_sum_n
+          # p-value
+          attr_reader :pvalue if false #dummy
+          method_after_parse_score :pvalue
+          # p_sum_n (???)
+          attr_reader :p_sum_n if false #dummy
+          method_after_parse_score :p_sum_n
         end #class HSP
 
       end #class Report
 
+      # WU-BLAST default output parser for TBLAST.
+      # All methods are equal to Bio::Blast::WU::Report.
+      # Only DELIMITER (and RS) is different.
       class Report_TBlast < Report
+        # Delimter of each entry for TBLAST. Bio::FlatFile uses it.
         DELIMITER = RS = "\nTBLAST"
       end #class Report_TBlast
 
@@ -477,25 +551,3 @@ end #if __FILE__ == $0
 
 ######################################################################
 
-=begin
-
-= Bio::Blast::WU::Report
-
-    WU-BLAST default output parser.
-    It is still incomplete and may contain many bugs,
-    because I don't have WU-BLAST license.
-    It was tested under web-based WU-BLAST results and
-    obsolete version downloaded from ((<URL:http://blast.wustl.edu/>)).
-
-= Bio::Blast::WU::Report_TBlast
-
-    WU-BLAST default output parser for TBLAST.
-    All methods are equal to Bio::Blast::WU::Report.
-    Only DELIMITER (and RS) is different.
-
-= References
-
-* ((<URL:http://blast.wustl.edu/>))
-* ((<URL:http://www.ebi.ac.uk/blast2/>))
-
-=end
