@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_report.rb,v 1.1 2005/10/31 17:53:48 nakao Exp $
+#  $Id: test_report.rb,v 1.2 2005/10/31 17:59:46 nakao Exp $
 #
 
 require 'pathname'
@@ -122,6 +122,7 @@ HOGE
     def test_prediction
       hash = {"Name"=>"MGI_2141503", "Loc."=>"_", "RC"=>3, "SP"=>0.271,
               "other"=>0.844, "mTP"=>0.161, "cTP"=>0.031, "Length"=>640}
+      assert_equal(@obj.pred, hash)
       assert_equal(@obj.prediction, hash)
     end
 
@@ -141,6 +142,10 @@ HOGE
 
     def test_query_len
       assert_equal(@obj.query_len, 640)
+    end
+
+    def test_length
+      assert_equal(@obj.length, 640)
     end
 
     def test_loc
