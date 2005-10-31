@@ -21,7 +21,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: format0.rb,v 1.14 2005/10/31 11:07:05 ngoto Exp $
+#  $Id: format0.rb,v 1.15 2005/10/31 19:22:27 ngoto Exp $
 #
 # NCBI BLAST default (-m 0 option) output parser.
 #
@@ -342,7 +342,7 @@ module Bio #:nodoc:
                   @expect = sc[1]
                   @num_hits = sc[2].tr(',', '').to_i
                 end
-                if sc.skip(/([\-\,\.\'\(\)\w ]+)\: *(.+)/) then
+                if sc.skip(/([\-\,\.\'\(\)\#\w ]+)\: *(.*)/) then
                   hash[sc[1]] = sc[2]
                 else
                   #p sc.peek(20)
