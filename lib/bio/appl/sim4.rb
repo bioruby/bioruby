@@ -1,8 +1,10 @@
 #
-# bio/appl/sim4.rb - sim4 wrapper class
+# = bio/appl/sim4.rb - sim4 wrapper class
 #
-#   Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
+# Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
+# Licence::   LGPL
 #
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -16,18 +18,33 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: sim4.rb,v 1.2 2005/09/09 15:58:42 ngoto Exp $
+#  $Id: sim4.rb,v 1.3 2005/10/31 20:03:41 ngoto Exp $
+#
+# The sim4 execution wrapper class.
+#
+# == References
+#
+# * Florea, L., et al., A Computer program for aligning a cDNA sequence
+#   with a genomic DNA sequence, Genome Research, 8, 967--974, 1998.
+#   http://www.genome.org/cgi/content/abstract/8/9/967
 #
 
 require 'open3'
 require 'tempfile'
 
-module Bio
+module Bio #:nodoc:
+
+  # The sim4 execution wrapper class.
   class Sim4
 
     autoload :Report,       'bio/appl/sim4/report'
 
+    # Creates a new sim4 execution wrapper object.
+    # [+program+]  Program name. Usually 'sim4' in UNIX.
+    # [+database+] Default file name of database('seq2').
+    # [+option+]   Options (array of strings).
     def initialize(program = 'sim4', database = nil, option = [])
       @program = program
       @option = option
@@ -37,11 +54,31 @@ module Bio
       @report = nil
       @log = nil
     end
-    attr_accessor :database
-    attr_reader :program, :option
-    attr_reader :command, :log
-    attr_reader :output, :report
 
+    # default file name of database('seq2')
+    attr_accessor :database
+
+    # name of the program (usually 'sim4' in UNIX)
+    attr_reader :program
+
+    # options
+    attr_reader :option
+
+    # last command-line strings executed by the object
+    attr_reader :command
+
+    # last messages of program reported to the STDERR
+    attr_reader :log
+
+    # last result text (String)
+    attr_reader :output
+
+    # last result. Returns a Bio::Sim4::Report object.
+    attr_reader :report
+
+    # Executes the sim4 program.
+    # <tt>seq1</tt> shall be a Bio::Sequence object.
+    # Returns a Bio::Sim4::Report object.
     def query(seq1)
       tf = Tempfile.open('sim4')
       tf.print seq1.to_fasta('seq1', 70)
@@ -51,6 +88,10 @@ module Bio
       r
     end
 
+    # Executes the sim4 program.
+    # Perform mRNA-genome alignment between given sequences.
+    # <tt>seq1</tt> and <tt>seq2</tt> should be Bio::Sequence objects.
+    # Returns a Bio::Sim4::Report object.
     def query_pairwise(seq1, seq2)
       tf = Tempfile.open('sim4')
       tf.print seq1.to_fasta('seq1', 70)
@@ -64,6 +105,10 @@ module Bio
       r
     end
 
+    # Executes the sim4 program.
+    # Perform mRNA-genome alignment between sequences in given files.
+    # <tt>filename1</tt> and <tt>filename2</tt> should be file name strings.
+    # If <tt>filename2</tt> is not specified, using <tt>self.database</tt>.
     def exec_local(filename1, filename2 = nil)
       @command = [ @program, filename1, (filename2 or @database), *@option ]
       @output = nil
@@ -86,62 +131,4 @@ module Bio
 
   end #class Sim4
 end #module Bio
-
-=begin
-
-= Bio::Sim4
-
-  Sim4 wrapper.
-
---- Bio::Sim4.new(program = 'sim4', database = nil, option = [])
-
-      Creates new wrapper.
-        program: program name (String)
-        database: default file name of database('seq2') (String)
-        option: options (Array of String)
-
---- Bio::Sim4#database
---- Bio::Sim4#program
---- Bio::Sim4#option
-
-      Access to the variables specified in initialize.
-
---- Bio::Sim4#query(seq)
-
-      Executes the program(sim4).
-        seq: Bio::Sequence object
-      Returns a Bio::Sim4::Report object.
-
---- Bio::Sim4#query_pairwise(seq1, seq2)
-
-      Executes the program(sim4).
-      Perform mRNA-genome alignment between given sequences.
-        seq1: Bio::Sequence object
-        seq2: Bio::Sequence object
-      Returns a Bio::Sim4::Report object.
-
---- Bio::Sim4#exec(filename1, filename2 = nil)
-
-      Executes the program(sim4).
-        filename1: file name (String)
-        filename2: file name (String)
-                   If not specified, using self.database.
-
---- Bio::Sim4#command
-
-      Shows latest command-line executed by this class.
-
---- Bio::Sim4#log
-
-      Shows latest messages of program reported to stderr.
-
---- Bio::Sim4#report
-
-      Shows latest result (Bio::Sim4::Report object)
-
---- Bio::Sim4#output
-
-      Shows latest raw result.
-
-=end
 
