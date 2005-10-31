@@ -1,7 +1,18 @@
 #
-# bio/appl/targetp/report.rb - TargetP report class
+# = bio/appl/targetp/report.rb - TargetP report class
 # 
-#   Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::  Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
+# Licence::    LGPL
+#
+#  $Id: report.rb,v 1.6 2005/10/31 18:00:16 nakao Exp $
+#
+# == Description
+#
+# TargetP class for http://www.cbs.dtu.dk/services/TargetP/
+#
+# == Example
+# == References
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,17 +28,54 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.5 2005/09/26 13:00:05 k Exp $
+#++
 #
 
 module Bio
 
+
   class TargetP
 
+    # = A parser and container class for TargetP report.
     class Report
 
+      # Delimiter
       DELIMITER = "\n \n"
 
+      # Delimiter      
+      RS = DELIMITER
+
+      # Returns the program version.
+      attr_reader :version
+      
+      # Returns the query sequences.
+      attr_reader :query_sequences
+
+      # Returns 'included' or 'not included'.
+      # If the value is 'included', Bio::TargetP::Report#prediction['TPlen']
+      # contains a valid value.
+      attr_reader :cleavage_site_prediction
+      
+      # Returns ``PLANT'' or ``NON-PLANT'' networks.
+      attr_reader :networks
+
+      # Returns a Hash of the prediction results.
+      #
+      # {"Name"=>"MGI_2141503", "Loc."=>"_", "RC"=>3, "SP"=>0.271,
+      #  "other"=>0.844, "mTP"=>0.161, "cTP"=>0.031, "Length"=>640}
+      # 
+      # Keys: Name, Len, SP, mTP, other, Loc, RC
+      # Optional key for PLANT networks: cTP
+      # Optional key in Cleavage site: TPlen
+      #
+      # Use 'Length' and 'Loc.' instead of 'Len' and 'Loc' respectively
+      # for the version 1.0 report.
+      attr_reader :prediction
+
+      # Returns a Hash of cutoff values.
+      attr_reader :cutoff
+
+      # Sets output report.
       def initialize(str)
         @version                  = nil
         @query_sequences          = nil
@@ -38,17 +86,15 @@ module Bio
         parse_entry(str)
       end
 
-      attr_reader :version, :query_sequences, 
-        :cleavage_site_prediction, :networks,
-        :prediction, :cutoff
-
       alias pred prediction
 
+      # Returns the name of query sequence.
       def name
         @prediction['Name']
       end
       alias entry_id name 
 
+      # Returns length of query sequence.
       def query_len
         if @prediction['Len']
           @prediction['Len']
@@ -58,6 +104,12 @@ module Bio
       end
       alias length query_len
 
+      # Returns the predicted localization signal: 
+      # 1. S (Signal peptide)
+      # 2. M (mTP)
+      # 3. C (cTP)
+      # 4. * 
+      # 5. _
       def loc
         if @prediction['Loc'] 
           @prediction['Loc']   # version 1.0
@@ -66,12 +118,14 @@ module Bio
         end
       end
 
+      # Returns RC.
       def rc
         @prediction['RC']
       end
       
       private
 
+      # 
       def parse_entry(str)
         labels = []
         cutoff = []
@@ -226,63 +280,4 @@ HOGE
 end
 
 
-=begin
-
-= Bio::TargetP
-
-    TargetP class for ((<URL:http://www.cbs.dtu.dk/services/TargetP/>))
-
-= Bio::TargetP::Report
-
-    A parser and container class for TargetP report.
-
---- Bio::TargetP::Report.new(str)
-
---- Bio::TargetP::Report#version
-
-      This class is tested by version 1.0 and 1.1 reports.
-
---- Bio::TargetP::Report#query_sequences
---- Bio::TargetP::Report#cleavage_site_prediction
-
-      Returns 'included' or 'not included'.
-      If the value is 'included', Bio::TargetP::Report#prediction['TPlen']
-      contains a valid value.
-
---- Bio::TargetP::Report#networks
- 
-      There are PLANT and NON-PLANT networks.
-
---- Bio::TargetP::Report#entry_id
---- Bio::TargetP::Report#name
-
-      Returns the qeury entry_id.
-
---- Bio::TargetP::Report#query_len
-
-      Returns query length.
-
---- Bio::TargetP::Report#prediction
-
-      Returns a Hash of the prediction results.
-
-      Valid keys: Name, Len, SP, mTP, other, Loc, RC
-      Additional key in PLANT networks: cTP
-      Additional key in Cleavage site: TPlen
-
-      Use 'Length' and 'Loc.' instead of 'Len' and 'Loc' respectively
-      for the version 1.0 report.
-
---- Bio::TargetP::Report#cutoff
-      
-      Returns a Hash of cutoff values.
-
---- Bio::TargetP::Report#loc
-
-      Returns the predicted localization S, M, C, * or _.
-
---- Bio::TargetP::Report#rc
-
-
-=end
 
