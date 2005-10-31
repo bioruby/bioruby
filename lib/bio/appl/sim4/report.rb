@@ -1,8 +1,10 @@
 #
-# bio/appl/sim4/report.rb - sim4 result parser
+# = bio/appl/sim4/report.rb - sim4 result parser
 #
-#   Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
+# Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
+# Licence::   LGPL
 #
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -16,17 +18,43 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: report.rb,v 1.3 2005/09/08 01:22:10 k Exp $
+#  $Id: report.rb,v 1.4 2005/10/31 07:51:27 ngoto Exp $
+#
+# The sim4 report parser classes.
+#
+# == References
+#
+# * Florea, L., et al., A Computer program for aligning a cDNA sequence
+#   with a genomic DNA sequence, Genome Research, 8, 967--974, 1998.
+#   http://www.genome.org/cgi/content/abstract/8/9/967
 #
 
 module Bio
   class Sim4
 
+    # Bio::Sim4::Report is the sim4 report parser class.
+    # Its object may contain some Bio::Sim4::Report::Hit objects.
     class Report #< DB
+      #--
       # format: A=0, A=3, or A=4
+      #++
+
+      # Delimiter of each entry. Bio::FlatFile uses it.
+      # In Bio::Sim4::Report, it it nil (1 entry 1 file).
       DELIMITER = RS = nil # 1 entry 1 file
 
+      # Creates new Bio::Sim4::Report object from String.
+      # You can use Bio::FlatFile to read a file.
+      # Currently, format A=0, A=3, and A=4 are supported.
+      # (A=1, A=2, A=5 are NOT supported yet.)
+      #
+      # Note that 'seq1' in sim4 result is always regarded as 'query',
+      # and 'seq2' is always regarded as 'subject'(target, hit).
+      #
+      # Note that first 'seq1' informations are used for
+      # Bio::Sim4::Report#query_id, #query_def, #query_len, and #seq1 methods.
       def initialize(text)
         @hits = []
         @all_hits = []
@@ -44,18 +72,53 @@ module Bio
         end
         @seq1 = @all_hits[0].seq1
       end
-      attr_reader :hits, :all_hits, :seq1
 
+      # Returns hits of the entry.
+      # Unlike Bio::Sim4::Report#all_hits, it returns
+      # hits which have alignments.
+      # Returns an Array of Bio::Sim4::Report::Hit objects.
+      attr_reader :hits
+
+      # Returns all hits of the entry.
+      # Unlike Bio::Sim4::Report#hits, it returns
+      # results of all trials of pairwise alignment.
+      # This would be a Bio::Sim4 specific method.
+      # Returns an Array of Bio::Sim4::Report::Hit objects.
+      attr_reader :all_hits
+
+      # Returns sequence informations of 'seq1'.
+      # Returns a Bio::Sim4::Report::SeqDesc object.
+      # This would be a Bio::Sim4 specific method.
+      attr_reader :seq1
+
+      # Bio::Sim4::Report::SeqDesc stores sequence information of
+      # query or subject of sim4 report.
       class SeqDesc
+        #--
         # description/definitions of a sequence
+        #++
+
+        # Creates a new object.
+        # It is designed to be called internally from Bio::Sim4::Report object.
+        # Users shall not use it directly.
         def initialize(seqid, seqdef, len, filename)
           @entry_id   = seqid
           @definition = seqdef
           @len        = len
           @filename   = filename
         end
-        attr_reader :entry_id, :definition, :len, :filename
+        # identifier of the sequence
+        attr_reader :entry_id
+        # definition of the sequence
+        attr_reader :definition
+        # sequence length of the sequence
+        attr_reader :len
+        # filename of the sequence
+        attr_reader :filename
 
+        # Parses part of sim4 result text and creates new SeqDesc object.
+        # It is designed to be called internally from Bio::Sim4::Report object.
+        # Users shall not use it directly.
         def self.parse(str, str2 = nil)
           /^seq[12] \= (.*)(?: \((.*)\))?\,\s*(\d+)\s*bp\s*$/ =~ str
           seqid = $2
@@ -72,8 +135,23 @@ module Bio
         end
       end #class SeqDesc
 
+
+      # Sequence segment pair of the sim4 result.
+      # Similar to Bio::Blast::Report::HSP but lacks many methods.
+      # For mRNA-genome mapping programs,
+      # unlike other homology search programs,
+      # the class is used not only for exons but also for introns.
+      # (Note that intron data would not be available according to run-time
+      # options of the program.)
       class SegmentPair
+        #--
         # segment pair (like Bio::BLAST::*::Report::HSP)
+        #++
+
+        # Creates a new SegmentPair object.
+        # It is designed to be called internally from
+        # Bio::Sim4::Report::Hit object.
+        # Users shall not use it directly.
         def initialize(seq1, seq2, midline = nil,
                        percent_identity = nil, direction = nil)
           @seq1 = seq1
@@ -82,9 +160,31 @@ module Bio
           @percent_identity = percent_identity
           @direction = direction
         end
-        attr_reader :seq1, :seq2, :midline,
-        :percent_identity, :direction
+        # Returns segment informations of 'seq1'.
+        # Returns a Bio::Sim4::Report::Segment object.
+        # These would be Bio::Sim4 specific methods.
+        attr_reader :seq1
+        # Returns segment informations of 'seq2'.
+        # Returns a Bio::Sim4::Report::Segment object.
+        # These would be Bio::Sim4 specific methods.
+        attr_reader :seq2
 
+        # Returns the "midline" of the segment pair.
+        # Returns nil if no alignment data are available.
+        attr_reader :midline
+
+        # Returns percent identity of the segment pair.
+        attr_reader :percent_identity
+
+        # Returns directions of mapping.
+        # Maybe one of "->", "<-" or "" or nil.
+        # This would be a Bio::Sim4 specific method.
+        attr_reader :direction
+
+        # Parses part of sim4 result text and creates a new SegmentPair object.
+        # It is designed to be called internally from
+        # Bio::Sim4::Report::Hit class.
+        # Users shall not use it directly.
         def self.parse(str, aln)
           /^(\d+)\-(\d+)\s*\((\d+)\-(\d+)\)\s*([\d\.]+)\%\s*([\-\<\>]*)/ =~ str
           self.new(Segment.new($1, $2, aln[0]),
@@ -92,50 +192,97 @@ module Bio
                    aln[1], $5, $6)
         end
 
+        # Parses part of sim4 result text and creates a new SegmentPair
+        # object when the seq1 is a intron.
+        # It is designed to be called internally from
+        # Bio::Sim4::Report::Hit class.
+        # Users shall not use it directly.
         def self.seq1_intron(prev_e, e, aln)
           self.new(Segment.new(prev_e.seq1.to+1, e.seq1.from-1, aln[0]),
                    Segment.new(nil, nil, aln[2]),
                    aln[1])
         end
 
+        # Parses part of sim4 result text and creates a new SegmentPair
+        # object when seq2 is a intron.
+        # It is designed to be called internally from
+        # Bio::Sim4::Report::Hit class.
+        # Users shall not use it directly.
         def self.seq2_intron(prev_e, e, aln)
           self.new(Segment.new(nil, nil, aln[0]),
                    Segment.new(prev_e.seq2.to+1, e.seq2.from-1, aln[2]),
                    aln[1])
         end
 
+        #--
         # Bio::BLAST::*::Report::Hsp compatible methods
         #   Methods already defined: midline, percent_identity
+        #++
+
+        # start position of the query (the first position is 1)
         def query_from; @seq1.from; end
+
+        # end position of the query (including its position)
         def query_to;   @seq1.to;   end
+
+        # query sequence (with gaps) of the alignment of the segment pair.
         def qseq;       @seq1.seq;  end
+
+        # start position of the hit(target) (the first position is 1)
         def hit_from;   @seq2.from; end
+
+        # end position of the hit(target) (including its position)
         def hit_to;     @seq2.to;   end
+
+        # hit(target) sequence (with gaps) of the alignment
+        # of the segment pair.
         def hseq;       @seq2.seq;  end
 
+        # Returns alignment length of the segment pair.
+        # Returns nil if no alignment data are available.
         def align_len
           (@midline and @seq1.seq and @seq2.seq) ? @midline.length : nil
         end
       end #class SegmentPair
       
+      # Segment informations of a segment pair.
       class Segment
+        #--
         # the segment of a sequence
+        #++
+
+        # Creates a new Segment object.
+        # It is designed to be called internally from
+        # Bio::Sim4::Report::SegmentPair class.
+        # Users shall not use it directly.
         def initialize(pos_st, pos_ed, seq = nil)
           @from = pos_st.to_i
           @to   = pos_ed.to_i
           @seq  = seq
         end
-        attr_reader :from, :to, :seq
+        # start position of the segment (the first position is 1)
+        attr_reader :from
+        # end position of the segment (including its position)
+        attr_reader :to
+        # sequence (with gaps) of the segment
+        attr_reader :seq
       end #class Segment
 
+      # Hit object of the sim4 result.
+      # Similar to Bio::Blast::Report::Hit but lacks many methods.
       class Hit
+
+        # Parses part of sim4 result text and creates a new Hit object.
+        # It is designed to be called internally from Bio::Sim4::Report class.
+        # Users shall not use it directly.
         def initialize(str)
           @data = str.split(/\n(?:\r?\n)+/)
           parse_seqdesc
         end
 
-        # seq1: query, seq2: target(hit)
+        # Parses sequence descriptions.
         def parse_seqdesc
+          # seq1: query, seq2: target(hit)
           a0 = @data.shift.split(/\r?\n/)
           if @data[0].to_s =~ /^\>/ then
             a1 = @data.shift.split(/\r?\n/)
@@ -153,12 +300,26 @@ module Bio
           end
         end
         private :parse_seqdesc
-        attr_reader :seq1, :seq2
 
+        # Returns sequence informations of 'seq1'.
+        # Returns a Bio::Sim4::Report::SeqDesc object.
+        # This would be Bio::Sim4 specific method.
+        attr_reader :seq1
+
+        # Returns sequence informations of 'seq2'.
+        # Returns a Bio::Sim4::Report::SeqDesc object.
+        # This would be Bio::Sim4 specific method.
+        attr_reader :seq2
+
+        # Returns true if the hit reports '-'(complemental) strand
+        # search result.
+        # Otherwise, return false or nil.
+        # This would be a Bio::Sim4 specific method.
         def complement?
           @complement
         end
 
+        # Parses segment pair.
         def parse_segmentpairs
           aln = (self.align ? self.align.dup : [])
           exo = [] #exons
@@ -190,6 +351,7 @@ module Bio
         end
         private :parse_segmentpairs
 
+        # Parses alignment.
         def parse_align
           s1 = []; ml = []; s2 = []
           dat = @data[1..-1]
@@ -217,34 +379,67 @@ module Bio
           @align = alx
         end
         private :parse_align
-        
+
+        # Returns exons of the hit.
+        # Each exon is a Bio::Sim4::Report::SegmentPair object.
         def exons
           unless defined?(@exons); parse_segmentpairs; end
           @exons
         end
 
+        # Returns segment pairs (exons and introns) of the hit.
+        # Each segment pair is a Bio::Sim4::Report::SegmentPair object.
+        # Returns an array of Bio::Sim4::Report::SegmentPair objects.
+        # (Note that intron data is not always available
+        # according to run-time options of the program.)
         def segmentpairs
           unless defined?(@segmentpairs); parse_segmentpairs; end
           @segmentpairs
         end
 
+        # Returns introns of the hit.
+        # Some of them would contain untranscribed regions.
+        # Returns an array of Bio::Sim4::Report::SegmentPair objects.
+        # (Note that intron data is not always available
+        # according to run-time options of the program.)
         def introns
           unless defined?(@introns); parse_segmentpairs; end
           @introns
         end
 
+        # Returns alignments.
+        # Returns an Array of arrays.
+        # Each array contains sequence of seq1, midline, sequence of seq2,
+        # respectively.
+        # This would be a Bio::Sim4 specific method.
         def align
           unless defined?(@align); parse_align; end
           @align
         end
 
+        #--
         # Bio::BLAST::*::Report::Hit compatible methods
+        #++
+
+        # Length of the query sequence.
+        # Same as Bio::Sim4::Report#query_len.
         def query_len;  seq1.len;        end
+
+        # Identifier of the query sequence.
+        # Same as Bio::Sim4::Report#query_id.
         def query_id;   seq1.entry_id;   end
+
+        # Definition of the query sequence
+        # Same as Bio::Sim4::Report#query_def.
         def query_def;  seq1.definition; end
 
+        # length of the hit(target) sequence
         def target_len; seq2.len;        end
+
+        # Identifier of the hit(target) sequence
         def target_id;  seq2.entry_id;   end
+
+        # Definition of the hit(target) sequence
         def target_def; seq2.definition; end
 
         alias hit_id     target_id
@@ -252,15 +447,41 @@ module Bio
         alias definition target_def
 
         alias hsps exons
-        def each(&x); exons.each(&x); end
+
+        # Iterates over each exon of the hit.
+        # Yields a Bio::Sim4::Report::SegmentPair object.
+        def each(&x) #:yields: segmentpair
+          exons.each(&x)
+        end
       end #class Hit
 
+      #--
       #Bio::BLAST::*::Report compatible methods
+      #++
+
+      # Returns number of hits.
+      # Same as hits.size.
       def num_hits;     @hits.size;     end
-      def each_hit(&x); @hits.each(&x); end
+
+      # Iterates over each hits of the sim4 result.
+      # Same as hits.each.
+      # Yields a Bio::Sim4::Report::Hit object.
+      def each_hit(&x) #:yields: hit
+        @hits.each(&x)
+      end
       alias each each_hit
+
+      # Returns the definition of query sequence.
+      # The value will be filename or (first word of) sequence definition
+      # according to sim4 run-time options.
       def query_def; @seq1.definition; end
+
+      # Returns the identifier of query sequence.
+      # The value will be filename or (first word of) sequence definition
+      # according to sim4 run-time options.
       def query_id;  @seq1.entry_id;   end
+
+      # Returns the length of query sequence.
       def query_len; @seq1.len;        end
     end #class Report
 
@@ -270,208 +491,6 @@ end #module Bio
 =begin
 
 = Bio::Sim4::Report
-
---- Bio::Sim4::Report.new(text)
-
-    Creates new Bio::Sim4::Report object from String.
-    You can use Bio::FlatFile to read a file.
-  
-    Currently, format A=0, A=3, and A=4 are supported.
-    (A=1, A=2, A=5 are NOT supported yet.)
-
-    Note that 'seq1' in sim4 result is always regarded as 'query',
-    and 'seq2' is always regarded as 'subject'(target, hit).
-
-    Note that first 'seq1' informations are used for
-    Bio::Sim4::Report#query_id, #query_def, #query_len, and #seq1 methods.
-
---- Bio::Sim4::Report#hits
-
-    Returns an Array of Bio::Sim4::Report::Hit objects.
-
---- Bio::Sim4::Report#all_hits
-
-    Returns an Array of Bio::Sim4::Report::Hit objects.
-    Unlike Bio::Sim4::Report#hits, the method returns
-    results of all trials of pairwise alignment.
-    This would be a Bio::Sim4 specific method.
-
---- Bio::Sim4::Report#each_hit
---- Bio::Sim4::Report#each
-
-    Iterates over each Bio::Sim4::Report::Hit object.
-    Same as hits.each.
-
---- Bio::Sim4::Report#num_hits
-
-    Returns number of hits.
-    Same as hits.size.
-
---- Bio::Sim4::Report#query_id
-
-    Returns the identifier of query sequence.
-    The value will be filename or (first word of) sequence definition
-    according to sim4 run-time options.
-
---- Bio::Sim4::Report#query_def
-
-    Returns the definition of query sequence.
-    The value will be filename or (first word of) sequence definition
-    according to sim4 run-time options.
-
---- Bio::Sim4::Report#query_len
-
-    Returns the length of query sequence.
-
---- Bio::Sim4::Report#seq1
-
-    Returns sequence informations of 'seq1'.
-    Returns a Bio::Sim4::Report::SeqDesc object.
-    This would be a Bio::Sim4 specific method.
-
-== Bio::Sim4::Report::Hit
-
-    Hit object of sim4 result.
-    Similar to Bio::Blast::Report::Hit but lacks many methods.
-
---- Bio::Sim4::Report::Hit#hit_id
---- Bio::Sim4::Report::Hit#target_id
-
-    Returns the identifier of subject sequence.
-    The value will be filename or (first word of) sequence definition
-    according to sim4 run-time options.
-
---- Bio::Sim4::Report::Hit#definition
---- Bio::Sim4::Report::Hit#target_def
-
-    Returns the identifier of subject sequence.
-    The value will be filename or (first word of) sequence definition
-    according to sim4 run-time options.
-
---- Bio::Sim4::Report::Hit#len
---- Bio::Sim4::Report::Hit#target_len
-
-    Returns the length of subject sequence.
-
---- Bio::Sim4::Report::Hit#query_id
---- Bio::Sim4::Report::Hit#query_def
---- Bio::Sim4::Report::Hit#query_len
-
-    Same as Bio::Sim4::Report#(query_id|query_def|query_len).
-
---- Bio::Sim4::Report::Hit#exons
-
-    Returns exons of the hit.
-    Each exon is a Bio::Sim4::Report::SegmentPair object.
-
---- Bio::Sim4::Report::Hit#hsps
-
-    Same as Bio::Sim4::Report#exons
-    The method aims to provide compatibility between
-    other homology search program's result objects.
-
---- Bio::Sim4::Report::Hit#each
-
-    Iterates over each exon (Bio::Sim4::Report::SegmentPair object)
-    of the hit.
-
---- Bio::Sim4::Report::Hit#segmentpairs
-
-    Returns segment pairs (exons and introns) of the hit.
-    Each segment pair is a Bio::Sim4::Report::SegmentPair object.
-    Returns an array of Bio::Sim4::Report::SegmentPair objects.
-    (Note that intron data is not always available
-    according to run-time options of the program.)
-
---- Bio::Sim4::Report::Hit#introns
-
-    Returns introns of the hit.
-    Some of them would contain untranscribed regions.
-    Returns an array of Bio::Sim4::Report::SegmentPair objects.
-    (Note that intron data is not always available
-    according to run-time options of the program.)
-
---- Bio::Sim4::Report::Hit#seq1
---- Bio::Sim4::Report::Hit#seq2
-
-    Returns sequence informations of 'seq1' or 'seq2', respectively.
-    Returns a Bio::Sim4::Report::SeqDesc object.
-    These would be Bio::Sim4 specific methods.
-
---- Bio::Sim4::Report::Hit#complement?
-
-    Returns true if the hit reports '-'(complemental) strand search result.
-    Otherwise, return false or nil.
-    This would be a Bio::Sim4 specific method.
-
---- Bio::Sim4::Report::Hit#align
-
-    Returns alignments.
-    Returns an Array of arrays.
-    Each array contains sequence of seq1, midline, sequence of seq2,
-    respectively.
-    This would be a Bio::Sim4 specific method.
-
-== Bio::Sim4::Report::SegmentPair
-
-    Sequence segment pair of sim4 result.
-    Similar to Bio::Blast::Report::HSP but lacks many methods.
-    For mRNA-genome mapping programs, unlike other homology search programs,
-    the class is used not only for exons but also for introns.
-    (Note that intron data would not be available according to run-time
-    options of the program.)
-
---- Bio::Sim4::Report::SegmentPair#query_from
---- Bio::Sim4::Report::SegmentPair#query_to
---- Bio::Sim4::Report::SegmentPair#qseq
-
---- Bio::Sim4::Report::SegmentPair#hit_from
---- Bio::Sim4::Report::SegmentPair#hit_to
---- Bio::Sim4::Report::SegmentPair#hseq
-
---- Bio::Sim4::Report::SegmentPair#midline
-
-    Returns the "midline" of the segment pair.
-    Returns nil if no alignment data are available.
-
---- Bio::Sim4::Report::SegmentPair#percent_identity
-
-    Returns percent identity of the segment pair.
-
---- Bio::Sim4::Report::SegmentPair#align_len
-
-    Returns alignment length of the segment pair.
-    Returns nil if no alignment data are available.
-
---- Bio::Sim4::Report::SegmentPair#direction
-
-    Returns directions of mapping.
-    Maybe one of "->", "<-" or "" or nil.
-    This would be a Bio::Sim4 specific method.
-
---- Bio::Sim4::Report::SegmentPair#seq1
---- Bio::Sim4::Report::SegmentPair#seq2
-
-    Returns segment informations of 'seq1' or 'seq2', respectively.
-    Returns a Bio::Sim4::Report::Segment object.
-    These would be Bio::Sim4 specific methods.
-
-== Bio::Sim4::Report::Segment
-
-    Segment informations of a segment pair.
-
---- Bio::Sim4::Report::Segment#from
---- Bio::Sim4::Report::Segment#to
---- Bio::Sim4::Report::Segment#seq
-
-== Bio::Sim4::Report::SeqDesc
-
-    Sequence information of query or subject.
-
---- Bio::Sim4::Report::SeqDesc#filename
---- Bio::Sim4::Report::SeqDesc#entry_id
---- Bio::Sim4::Report::SeqDesc#definition
---- Bio::Sim4::Report::SeqDesc#len
 
 = References
 
