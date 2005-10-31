@@ -1,7 +1,8 @@
 #
-# bio/appl/hmmer/report.rb - hmmsearch, hmmpfam parser
+# bio/appl/hmmer/report.rb - hmmsearch, hmmpfam parserer
 #
 #   Copyright (C) 2002 Hiroshi Suga <suga@biophys.kyoto-u.ac.jp>
+#   Copyright (C) 2005 Masashi Fujita <fujita@kuicr.kyoto-u.ac.jp>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,100 +18,84 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.8 2005/09/26 13:00:05 k Exp $
+#  $Id: report.rb,v 1.9 2005/10/31 09:12:03 k Exp $
 #
 
 require 'bio/appl/hmmer'
 
 module Bio
   class HMMER
-    class Report
 
-      def initialize(data)
-        # HMM and sequence profiles
-        data.sub!(/(.+ -$\n)(.+ -$\n)\n(.+?\n\n)Scores/m, '')
-
-        @program = parse_program($1)
-        @parameter = parse_parameter($2)
-        @query_info =parse_query_info($3)
-
-        case @program['name']
-        when /hmmsearch/
-          is_hmmsearch = true
+    def self.reports(input)
+      ary = []
+      input.each("\n//\n") do |data|
+        if block_given?
+          yield Report.new(data)
         else
-          is_hmmsearch = false		# hmmpfam
-        end
-
-        # Scores for complete sequences. (parsed to Hit objects)
-        data.sub!(/.+-$\n(.+?)\n\nParsed/m, '')
-        @hits = []
-        $1.each do |l|
-          @hits.push(Hit.new(l))
-        end
-
-        # Scores for domains. (parsed to Hsp objects)
-        data.sub!(/.+-$\n(.+?)\n\nAlignments of top-scoring domains:\n/m, '')
-        hsps=[]
-        $1.each do |l|
-          hsps.push(Hsp.new(l,is_hmmsearch))
-        end
-
-        # Alignments
-        if is_hmmsearch
-          data.sub!(/(.+?)\n\n\nHistogram of all scores:\n/m, '')
-        else
-          data.sub!(/(.+?)\n\n\/\//m, '')
-        end
-        $1.split(/^\S+.*?\n/).slice(1..-1).each_with_index do |al,k|
-          al2 = al.gsub(/\n\n/,"\n").to_s.collect { |l|
-            l.sub(/^.{19}/,'').sub(/\s(\d+|-)\s*$/,'')
-          }
-          align = ['', '', '']
-          al2.each_with_index { |s,i| align[i%3] += s.chomp }
-          align.each { |a| a.sub!(/^.{3}(.*).{3}$/, '\1') }
-          hsps[k].hmmseq  << align[0]
-          hsps[k].midline << align[1]
-          hsps[k].flatseq << align[2]
-        end
-        hsps.each do |s|
-          @hits.each do |h|
-            if h.accession == s.accession
-              h.hsps.push(s)
-              next
-            end
-          end
-        end
-        if is_hmmsearch
-          data.sub!(/(.+?)\n\n\n%/m, '')
-          @histogram = $1
-
-          @statistical_detail = {}
-          data.sub!(/(.+?)\n\n/m, '')
-          $1.each do |l|
-            @statistical_detail[$1] = $2.to_f if /^\s*(.+)\s*=\s*(\S+)/ =~ l
-          end
-
-          @total_seq_searched = nil
-          data.sub!(/(.+?)\n\n/m, '')
-          $1.each do |l|
-            @total_seq_searched = $2.to_i if /^\s*(.+)\s*:\s*(\S+)/ =~ l
-          end
-
-          @whole_seq_top_hits = {}
-          data.sub!(/(.+?)\n\n/m, '')
-          $1.each do |l|
-            @whole_seq_top_hits[$1] = $2.to_i if /^\s*(.+)\s*:\s*(\S+)/ =~ l
-          end
-
-          @domain_top_hits = {}
-          data.each do |l|
-            @domain_top_hits[$1] = $2.to_i if /^\s*(.+)\s*:\s*(\S+)/ =~ l
-          end
+          ary << Report.new(data)
         end
       end
-      attr_reader :program, :parameter, :query_info, :hits,
+      return ary
+    end
+
+
+    # Bio::HMMER::Report
+    class Report
+
+      # for Bio::FlatFile support
+      DELIMITER = RS = "\n//\n"
+
+      def initialize(data)
+
+        # The input data is divided into six data fields, i.e. header,
+        # query infomation, hits, HSPs, alignments and search statistics.
+        # However, header and statistics data don't necessarily exist.
+        subdata, is_hmmsearch = get_subdata(data)
+
+        # if header exists, parse it
+        if subdata["header"]
+          @program, @parameter = parse_header_data(subdata["header"])
+        else
+          @program, @parameter = [{}, {}]
+        end
+
+        @query_info = parse_query_info(subdata["query"])
+        @hits       = parse_hit_data(subdata["hit"])
+        @hsps       = parse_hsp_data(subdata["hsp"], is_hmmsearch)
+
+        if @hsps != []
+          # split alignment subdata into an array of alignments
+          aln_ary = subdata["alignment"].split(/^\S+.*?\n/).slice(1..-1)
+
+          # append alignment information to corresponding Hsp
+          aln_ary.each_with_index do |aln, i|
+            @hsps[i].set_alignment(aln)
+          end
+        end
+
+        # assign each Hsp object to its parent Hit
+        hits_hash = {}
+        @hits.each do |hit|
+          hits_hash[hit.accession] = hit
+        end
+        @hsps.each do |hsp|
+          if hits_hash.has_key?(hsp.accession)
+            hits_hash[hsp.accession].append_hsp(hsp)
+          end
+        end
+
+        # parse statistics (for hmmsearch)
+        if is_hmmsearch
+          @histogram, @statistical_detail, @total_seq_searched, \
+          @whole_seq_top_hits, @domain_top_hits = \
+          parse_stat_data(subdata["statistics"])
+        end
+
+      end
+      attr_reader :program, :parameter, :query_info, :hits, :hsps,
         :histogram, :statistical_detail, :total_seq_searched,
-        :whole_seq_top_hits, :domain_top_hits 
+        :whole_seq_top_hits, :domain_top_hits
+
 
       def each
         @hits.each do |x|
@@ -119,6 +104,45 @@ module Bio
       end
 
 
+      # Bio::HMMER::Report::Hit
+      class Hit
+        def initialize(data)
+          @hsps = Array.new
+          if /^(\S+)\s+(.*?)\s+(\S+)\s+(\S+)\s+(\S+)$/ =~ data
+            @accession, @description, @score, @evalue, @num = 
+              [$1, $2, $3.to_f, $4.to_f, $5.to_i]
+          end
+        end
+        attr_reader :hsps, :accession, :description, :score, :evalue, :num
+
+        def each
+          @hsps.each do |x|
+            yield x
+          end
+        end
+
+        alias target_id  accession
+        alias hit_id     accession
+        alias entry_id   accession
+        alias definition description
+        alias bit_score  score
+
+        def target_def
+          if @hsps.size == 1
+            "<#{@hsps[0].domain}> #{@description}"
+          else
+            "<#{@num.to_s}> #{@description}"
+          end
+        end
+
+        def append_hsp(hsp)
+          @hsps << hsp
+        end
+
+      end
+
+
+      # Bio::HMMER::Report::Hsp
       class Hsp
         def initialize(data, is_hmmsearch)
           @is_hmmsearch = is_hmmsearch
@@ -136,95 +160,120 @@ module Bio
           @midline = ''
           @query_frame = 1
           @target_frame = 1
+          # CS and RF lines are rarely used.
+          @csline = nil
+          @rfline = nil
         end
-        attr_accessor :accession, :domain, :seq_f, :seq_t, :seq_ft,
+        attr_reader :accession, :domain, :seq_f, :seq_t, :seq_ft,
           :hmm_f, :hmm_t, :hmm_ft, :score, :evalue, :midline, :hmmseq,
-          :flatseq, :query_frame, :target_frame
+          :flatseq, :query_frame, :target_frame, :csline, :rfline
 
-        def query_seq
-          if @is_hmmsearch; @hmmseq else; @flatseq end
+        def set_alignment(aln)
+          # First, split the input alignment into an array of
+          # "alignment blocks." One block usually has three lines,
+          # i.e. hmmseq, midline and flatseq. 
+          # However, although infrequent, it can contain CS or RF lines.
+          aln.split(/ (?:\d+|-)\s*\n\n/).each do |blk|
+            lines = blk.split(/\n/)   
+            cstmp = (lines[0] =~ /^ {16}CS/) ? lines.shift : nil
+            rftmp = (lines[0] =~ /^ {16}RF/) ? lines.shift : nil
+            aln_width = lines[0][/\S+/].length
+            @csline  = @csline.to_s + cstmp[19, aln_width] if cstmp
+            @rfline  = @rfline.to_s + rftmp[19, aln_width] if rftmp
+            @hmmseq  += lines[0][19, aln_width]
+            @midline += lines[1][19, aln_width]
+            @flatseq += lines[2][19, aln_width]
+          end
+          @csline  = @csline[3...-3] if @csline
+          @rfline  = @rfline[3...-3] if @rfline
+          @hmmseq  = @hmmseq[3...-3]
+          @midline = @midline[3...-3]
+          @flatseq = @flatseq[3...-3]
         end
 
-        def target_seq
-          if @is_hmmsearch; @flatseq else; @hmmseq end
-        end
+        def query_seq;   @is_hmmsearch ? @hmmseq  : @flatseq; end
+        def target_seq;  @is_hmmsearch ? @flatseq : @hmmseq;  end
+        def target_from; @is_hmmsearch ? @seq_f   : @hmm_f;   end
+        def target_to;   @is_hmmsearch ? @seq_t   : @hmm_t;   end
+        def query_from;  @is_hmmsearch ? @hmm_f   : @seq_f;   end
+        def query_to;    @is_hmmsearch ? @hmm_t   : @seq_t;   end
 
-        def target_from
-          if @is_hmmsearch; @seq_f else; @hmm_f end
-        end
+        alias bit_score score
+        alias target_id accession
 
-        def target_to
-          if @is_hmmsearch; @seq_t else; @hmm_t end
-        end
-
-        def query_from
-          if @is_hmmsearch; @hmm_f else; @seq_f end
-        end
-
-        def query_to
-          if @is_hmmsearch; @hmm_t else; @seq_t end
-        end
-
-        def bit_score;	 @score;	end
-        def target_id;	 @accession;	end
       end
 
 
-      class Hit
-        def initialize(data)
-          @hsps = Array.new
-          if /^(\S+)\s+(.*)\s+(\S+)\s+(\S+)\s+(\S+)$/ =~ data
-            @accession, @description, @score, @evalue, @num = 
-              [$1, $2, $3.to_f, $4.to_f, $5.to_i]
-          end
-        end
-        attr_accessor :hsps, :accession, :description, :score, :evalue, :num
+      # Bio::HMMER::Report#get_subdata
+      def get_subdata(data)
+        subdata = {}
+        header_prefix = '\Ahmm(search|pfam) - search'
+        query_prefix  = '^Query (HMM|sequence): .*\nAccession: '
+        hit_prefix    = '^Scores for (complete sequences|sequence family)'
+        hsp_prefix    = '^Parsed for domains:'
+        aln_prefix    = '^Alignments of top-scoring domains:\n'
+        stat_prefix   = '^\nHistogram of all scores:'
 
-        def each
-          @hsps.each do |x|
-            yield x
-          end
+        # if header exists, get it
+        if data =~ /#{header_prefix}/
+          is_hmmsearch = ($1 == "search")   # hmmsearch or hmmpfam
+          subdata["header"] = data[/(\A.+?)(?=#{query_prefix})/m]
+        else
+          is_hmmsearch = false   # if no header, assumed to be hmmpfam
         end
 
-        def target_id;	@accession;	end
-        def hit_id;	@accession;	end
-        def entry_id;	@accession;	end
-        def definition;	@description;	end
-        def bit_score;	@score;		end
+        # get query, Hit and Hsp data
+        subdata["query"] = data[/(#{query_prefix}.+?)(?=#{hit_prefix})/m]
+        subdata["hit"]   = data[/(#{hit_prefix}.+?)(?=#{hsp_prefix})/m]
+        subdata["hsp"]   = data[/(#{hsp_prefix}.+?)(?=#{aln_prefix})/m]
 
-        def target_def
-          if @hsps.size == 1
-            "<#{@hsps[0].domain}> #{@description}"
-          else
-            "<#{@num.to_s}> #{@description}"
-          end
+        # get alignment data
+        if is_hmmsearch
+          data =~ /#{aln_prefix}(.+?)#{stat_prefix}/m
+          subdata["alignment"] = $1
+        else
+          data =~ /#{aln_prefix}(.+?)\/\/\n/m
+          subdata["alignment"] = $1
+          raise "multiple reports found" if $'.length > 0
         end
+
+        # handle -A option of HMMER
+        cutoff_line = '\t\[output cut off at A = \d+ top alignments\]\n\z'
+        subdata["alignment"].sub!(/#{cutoff_line}/, '')
+
+        # get statistics data
+        subdata["statistics"] = data[/(#{stat_prefix}.+)\z/m]
+
+        [subdata, is_hmmsearch]
       end
+      private :get_subdata
+      
+      # Bio::HMMER::Report#parse_header_data
+      def parse_header_data(data)
+        data =~ /\A(.+? - - -$\n)(.+? - - -$\n)\n\z/m
+        program_data   = $1
+        parameter_data = $2
 
+        program = {}
+        program['name'], program['version'], program['copyright'], \
+        program['license'] = program_data.split(/\n/)
 
-      private
-
-      def parse_program(data)
-        hash = {}
-        hash['name'], hash['version'], hash['copyright'], hash['license'] =
-          data.split(/\n/)
-        hash
-      end
-
-      def parse_parameter(data)
-        hash = {}
-        data.each do |x|
-          if /(.+):\s+(.*)/ =~ x
-            hash[$1] = $2
+        parameter = {}
+        parameter_data.each do |x|
+          if /^(.+?):\s+(.*?)\s*$/ =~ x
+            parameter[$1] = $2
           end
         end
-        hash
-      end
 
+        [program, parameter]
+      end
+      private :parse_header_data
+
+      # Bio::HMMER::Report#parse_query_info
       def parse_query_info(data)
         hash = {}
         data.each do |x|
-          if /(.+):\s+(.*)/ =~ x
+          if /^(.+?):\s+(.*?)\s*$/ =~ x
             hash[$1] = $2
           elsif /\s+\[(.+)\]/ =~ x
             hash['comments'] = $1
@@ -232,6 +281,72 @@ module Bio
         end
         hash
       end
+      private :parse_query_info
+
+      # Bio::HMMER::Report#parse_hit_data
+      def parse_hit_data(data)
+        data.sub!(/.+?---\n/m, '').chop!
+        hits = []
+        return hits if data == "\t[no hits above thresholds]\n"
+        data.each do |l|
+          hits.push(Hit.new(l))
+        end
+        hits
+      end
+      private :parse_hit_data
+
+      # Bio::HMMER::Report#parse_hsp_data
+      def parse_hsp_data(data, is_hmmsearch)
+        data.sub!(/.+?---\n/m, '').chop!
+        hsps=[]
+        return hsps if data == "\t[no hits above thresholds]\n"
+        data.each do |l|
+          hsps.push(Hsp.new(l, is_hmmsearch))
+        end
+        return hsps
+      end
+      private :parse_hsp_data
+
+      # Bio::HMMER::Report#parse_stat_data
+      def parse_stat_data(data)
+        data.sub!(/\nHistogram of all scores:\n(.+?)\n\n\n%/m, '')
+        histogram = $1
+
+        statistical_detail = {}
+        data.sub!(/(.+?)\n\n/m, '')
+        $1.each do |l|
+          statistical_detail[$1] = $2.to_f if /^\s*(.+?)\s*=\s*(\S+)/ =~ l
+        end
+        
+        total_seq_searched = nil
+        data.sub!(/(.+?)\n\n/m, '')
+        $1.each do |l|
+          total_seq_searched = $2.to_i if /^\s*(.+)\s*:\s*(\S+)/ =~ l
+        end
+        
+        whole_seq_top_hits = {}
+        data.sub!(/(.+?)\n\n/m, '')
+        $1.each do |l|
+          if /^\s*(.+?):\s*(\d+)\s*$/ =~ l
+            whole_seq_top_hits[$1] = $2.to_i
+          elsif /^\s*(.+?):\s*(\S+)\s*$/ =~ l
+            whole_seq_top_hits[$1] = $2
+          end
+        end
+        
+        domain_top_hits = {}
+        data.each do |l|
+          if /^\s*(.+?):\s*(\d+)\s*$/ =~ l
+            domain_top_hits[$1] = $2.to_i
+          elsif /^\s*(.+?):\s*(\S+)\s*$/ =~ l
+            domain_top_hits[$1] = $2
+          end
+        end
+
+        [histogram, statistical_detail, total_seq_searched, \
+          whole_seq_top_hits, domain_top_hits]
+      end
+      private :parse_stat_data
 
     end
 
@@ -240,6 +355,20 @@ end
 
 
 if __FILE__ == $0
+
+=begin
+
+  #
+  # for multiple reports in a single output file (hmmpfam)
+  #
+  Bio::HMMER.reports(ARGF.read) do |report|
+    report.hits.each do |hit|
+      hit.hsps.each do |hsp|
+      end
+    end
+  end
+
+=end
 
   begin
     require 'pp'
@@ -386,6 +515,13 @@ end
 
 == Bio::HMMER::Report::Hsp
 
+--- Bio::HMMER::Report#hsps
+
+      Returns an Array of Bio::HMMER::Report::Hsp objects.
+      Under special circumstances, some HSPs do not have
+      parent Hit objects. If you want to access such HSPs,
+      use this method.
+
 --- Bio::HMMER::Report::Hsp#target_id
 --- Bio::HMMER::Report::Hsp#accession
 --- Bio::HMMER::Report::Hsp#domain
@@ -412,6 +548,9 @@ end
 --- Bio::HMMER::Report::Hsp#target_seq
 --- Bio::HMMER::Report::Hsp#target_from
 --- Bio::HMMER::Report::Hsp#target_to
+
+--- Bio::HMMER::Report::Hsp#csline
+--- Bio::HMMER::Report::Hsp#rfline
 
 =end
 
