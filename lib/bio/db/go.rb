@@ -1,7 +1,17 @@
 #
-# bio/db/go.rb - Classes for Gene Ontology
+# = bio/db/go.rb - Classes for Gene Ontology
 #
-#   Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::   Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
+# License::
+#
+#  $Id: go.rb,v 1.9 2005/10/31 18:32:36 nakao Exp $
+#
+# == Gene Ontology
+#
+# == Example
+#
+# == References
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,22 +27,32 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: go.rb,v 1.8 2005/09/26 13:00:06 k Exp $
+#++
 #
 
 require 'bio/pathway'
 
 module Bio
 
-# Bio::GO
+# = Bio::GO
+# Classes for Gene Ontology http://www.geneontology.org
 class GO
 
-  # Bio::GO::Ontology - Class for a DAG Edit format of Gene Ontology.
+  # = Bio::GO::Ontology
+  #
+  # Container class for ontologies in the DAG Edit format.
+  #
+  # == Example
+  #
+  #  c_data = File.open('component.oontology').read
+  #  go_c = Bio::GO::Ontology.new(c_data)
+  #  p go_c.bfs_shortest_path('0003673','0005632')
   class Ontology < Bio::Pathway
 
     # Bio::GO::Ontology.parse_ogids(line)
+    #
     # Parsing GOID line in the DAGEdit format  
-    # GO:ID[ ; GO:ID...]
+    #  GO:ID[ ; GO:ID...]
     def self.parse_goids(line)
       goids = []
       loop {
@@ -50,13 +70,18 @@ class GO
       return goids
     end
 
-
+    # Returns a Hash instance of the header lines in ontology flatfile.
     attr_reader :header_lines
+
+    # 
     attr_reader :id2term
+
+    #
     attr_reader :id2id
 
 
     # Bio::GO::Ontology.new(str)
+    # The DAG Edit format ontology data parser.
     def initialize(str)
       @id2term      = {}
       @header_lines = {}
@@ -66,7 +91,7 @@ class GO
     end
 
         
-    # Bio::GO::Ontology.goid2term(goid)
+    # Returns a GO_Term correspondig with the given GO_ID.
     def goid2term(goid)
       term = id2term[goid]
       term = id2term[id2id[goid]] if term == nil
@@ -137,7 +162,8 @@ class GO
     end
 
 
-    # Bio::GO::Ontology#parse_goids(line)
+    # Returns an ary of GO IDs by parsing an entry line in the DAG Edit 
+    # format.
     def parse_goids(line)
       Ontology.parse_goids(line)
     end
@@ -161,15 +187,31 @@ class GO
 
 
 
-  # Bio::GO::GeneAssociation
+  # = Bio::GO::GeneAssociation
   # $CVSROOT/go/gene-associations/gene_association.*
+  #
+  # Data parser for the gene_association go annotation.
+  # See also the file format http://www.geneontology.org/doc/GO.annotation.html#file
+  #
+  # == Example
+  #
+  #  mgi_data = File.open('gene_association.mgi').read
+  #  mgi = Bio::GO::GeneAssociation.parser(mgi_data)
+  #
+  #  Bio::GO::GeneAssociation.parser(mgi_data) do |entry|
+  #    p [entry.entry_id, entry.evidence, entry.goid]
+  #  end
   #
   class GeneAssociation # < Bio::DB
 
-    DELIMITER = RS = "\n"
+    # Delimiter
+    DELIMITER = "\n"
 
-    # Bio::GO::GeneAssociation.parser(str)
-    # gene_association.* file parser
+    # Delimiter
+    RS = DELIMITER 
+
+    # Retruns an Array of parsed gene_association flatfile.
+    # Block is acceptable.  
     def self.parser(str)
       if block_given?
         str.each(DELIMITER) {|line|
@@ -186,24 +228,52 @@ class GO
       end
     end
 
+    # Returns DB variable.
     attr_reader :db                # -> aStr
+
+    # Returns Db_Object_Id variable. Alias to entry_id.
     attr_reader :db_object_id      # -> aStr
+
+    # Returns Db_Object_Symbol variable.
     attr_reader :db_object_symbol
+
+    # Returns Db_Object_Name variable.
     attr_reader :qualifier
+    
+    # Returns Db_Reference variable.
     attr_reader :db_reference      # -> []
+
+    # Retruns Evidence code variable.
     attr_reader :evidence
+
+    # Returns the entry is associated with this value.
     attr_reader :with              # -> []
+
+    # Returns Aspect valiable.
     attr_reader :aspect
+
+    #
     attr_reader :db_object_name
+
+    #
     attr_reader :db_object_synonym # -> []
+
+    # Returns Db_Object_Type variable.
     attr_reader :db_object_type
+
+    # Returns Taxon variable.
     attr_reader :taxon
+
+    # Returns Date variable.
     attr_reader :date
+    
+    # 
     attr_reader :assigned_by 
+    
     alias entry_id db_object_id
 
 
-    # Bio::GO::GeneAssociation.new(entry)
+    # Parsing an entry (in a line) in the gene_association flatfile.  
     def initialize(entry) 
       tmp = entry.chomp.split(/\t/)
       @db                = tmp[0] 
@@ -224,10 +294,11 @@ class GO
     end
 
 
-    # Bio::GO::GeneAssociation#goid(org = nil) -> GO ID
+    # Returns GO_ID in /\d{7}/ format. Giving not nil arg, returns 
+    # /GO:\d{7}/ style.
     #
-    # Bio::GO::GeneAssociation#goid -> "001234"
-    # Bio::GO::GeneAssociation#goid(true) -> "GO:001234"
+    # * Bio::GO::GeneAssociation#goid -> "001234"
+    # * Bio::GO::GeneAssociation#goid(true) -> "GO:001234"
     def goid(org = nil)
       if org
         @goid
@@ -248,25 +319,35 @@ class GO
 
 
 
-  # Container class for files in geneontology.org/go/external2go/*2go.
+  # = Container class for files in geneontology.org/go/external2go/*2go.
   #
   # The line syntax is: 
   #
   # database:<identifier> > GO:<term> ; GO:<GO_id>
   #
+  # == Example
+  # 
+  #  spkw2go = Bio::GO::External2go.new(File.read("spkw2go"))
+  #  spkw2go.size
+  #  spkw2go.each do |relation|
+  #    relation # -> {:db => "", :db_id => "", :go_term => "", :go_id => ""}
+  #  end
+  #  spkw2go.dbs
+  #
   # == SAMPLE
-  # !date: 2005/02/08 18:02:54
-  # !Mapping of SWISS-PROT KEYWORDS to GO terms.
-  # !Evelyn Camon, SWISS-PROT.
-  # !
-  # SP_KW:ATP synthesis > GO:ATP biosynthesis ; GO:0006754
-  # ...
+  #  !date: 2005/02/08 18:02:54
+  #  !Mapping of SWISS-PROT KEYWORDS to GO terms.
+  #  !Evelyn Camon, SWISS-PROT.
+  #  !
+  #  SP_KW:ATP synthesis > GO:ATP biosynthesis ; GO:0006754
+  #  ...
   #
   class External2go < Array
+
+    # Returns aHash of the external2go header information
     attr_reader :header
 
-    # Bio::GO::External2go.parser(str)
-    # Constructor
+    # Constructor from parsing external2go file.
     def self.parser(str)
       e2g = self.new
       str.each_line do |line|
@@ -284,23 +365,29 @@ class GO
       return e2g
     end
 
-    # Bio::GO::External2go.new
+
+    # Constructor.
+    # relation := {:db => aStr, :db_id => aStr, :go_term => aStr, :go_id => aStr}
     def initialize
       @header = {:date => '', :desc => []}
       super
     end
+
 
     # Bio::GO::External2go#set_date(value)
     def set_date(value)
       @header[:date] = value
     end
 
+
     # Bio::GO::External2go#set_desc(ary)
     def set_desc(ary)
       @header[:desc] = ary
     end
 
+
     # Bio::GO::External2go#to_str
+    # Returns the contents in the external2go format.
     def to_str
       ["!date: #{@header[:date]}",
        @header[:desc].map {|e| "!#{e}" },
@@ -309,22 +396,23 @@ class GO
     end
     
 
-    # Bio::GO::External2go#db
+    # Returns ary of databases.
     def dbs
       self.map {|rel| rel[:db] }.uniq
     end
 
-    # Bio::GO::External2go#db_ids
+
+    # Returns ary of database IDs.
     def db_ids
       self.map {|rel| rel[:db_id] }.uniq
     end
 
-    # Bio::GO::External2go#go_terms
+    # Returns ary of GO Terms.
     def go_terms
       self.map {|rel| rel[:go_term] }.uniq
     end
 
-    # Bio::GO::External2go#go_ids
+    # Returns ary of GO IDs.
     def go_ids
       self.map {|rel| rel[:go_id] }.uniq
     end
@@ -407,173 +495,3 @@ if __FILE__ == $0
 
   
 end
-
-
-
-
-=begin
-
-= Bio::GO
-
-* Classes for ((<Gene Ontology|URL:http://www.geneontology.org>)).
-
-
-= Bio::GO::Ontology < Bio::Pathway
-
-* Container class for ontologies in the DAG Edit format.
-
-  c_data = File.open('component.oontology').read
-  go_c = Bio::GO::Ontology.new(c_data)
-  p go_c.bfs_shortest_path('0003673','0005632')
-
-
---- Bio::GO::Ontology.new(data)
-
-      The DAG Edit format ontology data is allowed.
-
---- Bio::GO::Ontology#hader_lines
-
-      Returns a Hash instance of the header lines in ontology flatfile.
-
-
---- Bio::GO::Ontology#goid2term(GO_ID)
-
-      Returns a GO_Term correspondig with the given GO_ID.
-
---- Bio::GO::Ontology.parse_goids(line)
-
-      Returns an ary of GO IDs by parsing an entry line in the DAG Edit 
-      format.
-
-
-= Bio::GO::GeneAssociation
-
-* Data parser for the gene_association go annotation.
-  See also ((<the file format|URL:http://www.geneontology.org/doc/GO.annotation.html#file>)).
-
-
-  mgi_data = File.open('gene_association.mgi').read
-  mgi = Bio::GO::GeneAssociation.parser(mgi_data)
-
-or
-
-  Bio::GO::GeneAssociation.parser(mgi_data) {|entry|
-    p [entry.entry_id, entry.evidence, entry.goid]
-  }
-
-
---- Bio::GO::GeneAssociation.parser(data) 
-
-      Retruns an Array of parsed gene_association flatfile.
-      Block is acceptable.  
-
---- Bio::GO::GeneAssociation.new(line)
-
-      Parsing an entry (in a line) in the gene_association flatfile.  
-
---- Bio::GO::GeneAssociation.DELIMITER
-
-      The entry delimiter is "\n".
-      alias as RS.
-
---- Bio::GO::GeneAssociation#goid(arg = nil)
-
-      Returns GO_ID in /\d{7}/ format. Giving not nil arg, returns 
-      /GO:\d{7}/ style.
-
---- Bio::GO::GeneAssociation#db
-
-      DB variable.
-
---- Bio::GO::GeneAssociation#db_object_id
-
-      Db_Object_Id variable. Alias to entry_id.
-
---- Bio::GO::GeneAssociation#db_object_symbol
-
-      Db_Object_Symbol variable.
-
---- Bio::GO::GeneAssociation#db_object_name
-
-      Db_Object_Name variable.
-
---- Bio::GO::GeneAssociation#db_object_type
-
-      Db_Object_Type variable.
-
---- Bio::GO::GeneAssociation#db_reference
-
-      Db_Reference variable.
-
---- Bio::GO::GeneAssociation#evidence
-
-      Evidence code variable.
-
---- Bio::GO::GeneAssociation#with
-
-      The entry is associated with this value.
-
---- Bio::GO::GeneAssociation#aspect
-
-      Aspect valiable.
-
---- Bio::GO::GeneAssociation#taxon
-
-      Taxon variable.
-
---- Bio::GO::GeneAssociation#date
-
-      Date variable.
-
-
-
-= Bio::GO::External2go < Array
-
-Class for files in geneontology.org/go/external2go/
-
-
-  spkw2go = Bio::GO::External2go.new(File.read("spkw2go"))
-  spkw2go.size
-  spkw2go.each do |relation|
-    relation # -> {:db => "", :db_id => "", :go_term => "", :go_id => ""}
-  end
-  spkw2go.dbs
-
---- Bio::GO::External2go.parser(str)
-
-      Constructor from parsing external2go file.
-
---- Bio::GO::External2go.new
-
-      Constructor.
-      relation := {:db => aStr, :db_id => aStr, :go_term => aStr, :go_id => aStr}
-
---- Bio::GO::External2go#[index] -> relation
-
-      Index accessing to a list of external2go relations.
-
---- Bio::GO::External2go#header -> {:date => "", :desc => ""}
-
-      Hash of the header information.
-
---- Bio::GO::External2go#dbs -> ary
-
-      List of databases.
- 
---- Bio::GO::External2go#db_ids -> ary
-
-      List of database IDs.
-
---- Bio::GO::External2go#go_terms -> ary
-
-      List of GO Terms.
-
---- Bio::GO::External2go#go_ids -> ary
-
-      List of GO IDs.
-
---- Bio::GO::External2go#to_str -> str
-
-      Formats the content in the external2go format.
-
-=end
