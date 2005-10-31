@@ -5,6 +5,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
 # License:: LGPL
 #
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -18,8 +19,19 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: format0.rb,v 1.13 2005/10/26 09:12:06 ngoto Exp $
+#  $Id: format0.rb,v 1.14 2005/10/31 11:07:05 ngoto Exp $
+#
+# NCBI BLAST default (-m 0 option) output parser.
+#
+# == References
+#
+# * Altschul, Stephen F., Thomas L. Madden, Alejandro A. Schaffer,
+#   Jinghui Zhang, Zheng Zhang, Webb Miller, and David J. Lipman (1997),
+#   "Gapped BLAST and PSI-BLAST: a new generation of protein database search
+#   programs", Nucleic Acids Res. 25:3389-3402.
+# * http://www.ncbi.nlm.nih.gov/blast/ 
 #
 
 begin
@@ -28,12 +40,14 @@ rescue LoadError
 end
 require 'singleton'
 
+#--
 #require 'bio/db'
+#++
 require 'bio/io/flatfile'
 
-module Bio
-  class Blast
-    module Default
+module Bio #:nodoc:
+  class Blast #:nodoc:
+    module Default #:nodoc:
 
       # Bio::Blast::Default::Report parses NCBI BLAST default output
       # and stores information in the data.
@@ -1386,17 +1400,3 @@ if __FILE__ == $0
 end #if __FILE__ == $0
 
 ######################################################################
-
-=begin
-
-= Bio::Blast::Default::Report
-
-    NCBI BLAST default (-m 0 option) output parser
-
-= Bio::Blast::Default::Report_TBlast
-
-    NCBI BLAST default (-m 0 option) output parser for TBLAST.
-    All methods are equal to Bio::Blast::Default::Report.
-    Only DELIMITER (and RS) is different.
-
-=end
