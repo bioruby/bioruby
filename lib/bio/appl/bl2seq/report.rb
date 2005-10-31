@@ -1,8 +1,10 @@
 #
-# bio/appl/bl2seq/report.rb - bl2seq (BLAST 2 sequences) parser
+# = bio/appl/bl2seq/report.rb - bl2seq (BLAST 2 sequences) parser
 # 
-#   Copyright (C) 2005 GOTO Naohisa <ng@bioruby.org>
+# Copyright:: Copyright (C) 2005 GOTO Naohisa <ng@bioruby.org>
+# Licence::   LGPL
 #
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -16,32 +18,47 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: report.rb,v 1.3 2005/09/08 01:22:08 k Exp $
+#  $Id: report.rb,v 1.4 2005/10/31 14:37:30 ngoto Exp $
 #
-#  Acknowledgements:
-#    Thanks to Tomoaki NISHIYAMA <tomoakin@kenroku.kanazawa-u.ac.jp> 
-#    for providing bl2seq parser patches based on
-#    lib/bio/appl/blast/format0.rb.
+# Bio::Bl2seq::Report is a NCBI bl2seq (BLAST 2 sequences) output parser.
+#
+# = Acknowledgements
+#
+# Thanks to Tomoaki NISHIYAMA <tomoakin __at__ kenroku.kanazawa-u.ac.jp> 
+# for providing bl2seq parser patches based on
+# lib/bio/appl/blast/format0.rb.
 #
 
 require 'bio/appl/blast/format0'
 
-module Bio
-class Blast
+module Bio #:nodoc:
+class Blast #:nodoc:
 
-  class Bl2seq
+  class Bl2seq #:nodoc:
+
+    # Bio::Bl2seq::Report is a NCBI bl2seq (BLAST 2 sequences) output parser.
+    # It inherits Bio::Blast::Default::Report.
+    # Most of its methods are the same as Bio::Blast::Default::Report,
+    # but it lacks many methods.
     class Report < Bio::Blast::Default::Report
+
+      # Delimiter of each entry. Bio::FlatFile uses it.
+      # In Bio::Bl2seq::Report, it it nil (1 entry 1 file).
       DELIMITER = RS = nil
 
       undef format0_parse_header
       undef program, version, version_number, version_date,
         message, converged?, reference, db
 
+      # Splits headers.
       def format0_split_headers(data)
         @f0query = data.shift
       end
+      private :format0_split_headers
 
+      # Splits the search results.
       def format0_split_search(data)
         iterations = []
         while r = data[0] and /^\>/ =~ r
@@ -52,8 +69,12 @@ class Blast
         end
         iterations
       end
+      private :format0_split_search
 
-      class F0dbstat < Bio::Blast::Default::Report::F0dbstat
+      # Stores format0 database statistics.
+      # Internal use only. Users must not use the class.
+      class F0dbstat < Bio::Blast::Default::Report::F0dbstat #:nodoc:
+        # Returns number of sequences in database.
         def db_num
           unless defined?(@db_num)
             parse_params
@@ -62,6 +83,7 @@ class Blast
           @db_num
         end
 
+        # Returns number of letters in database.
         def db_len
           unless defined?(@db_len)
             parse_params
@@ -71,10 +93,20 @@ class Blast
         end
       end #class F0dbstat
 
+      # Bio::Bl2seq::Report::Iteration stores information about
+      # a iteration.
+      # Normally, it may contain some Bio::Bl2seq::Report::Hit objects.
+      #
+      # Note that its main existance reason is to keep complatibility
+      # between Bio::Blast::Default::Report::* classes.
       class Iteration < Bio::Blast::Default::Report::Iteration
+        # Creates a new Iteration object.
+        # It is designed to be called only internally from
+        # the Bio::Blast::Default::Report class.
+        # Users shall not use the method directly.
         def initialize(data)
           @f0stat = []
-          @f0dbstat = nil
+          @f0dbstat = Bio::Blast::Default::Report::AlwaysNil.instance
           @hits = []
           @num = 1
           while r = data[0] and /^\>/ =~ r
@@ -82,17 +114,29 @@ class Blast
           end
         end
 
+        # Returns the hits of the iteration.
+        # It returns an array of Bio::Bl2seq::Report::Hit objects.
         def hits; @hits; end
-        undef message, pattern_in_database, f0message, f0hitlist,
+
+        undef message, pattern_in_database, 
           pattern, pattern_positions, hits_found_again,
           hits_newly_found, hits_for_pattern, parse_hitlist,
           converged?
       end #class Iteration
 
+      # Bio::Bl2seq::Report::Hit contains information about a hit.
+      # It may contain some Bio::Blast::Default::Report::HSP objects.
+      # All methods are the same as Bio::Blast::Default::Report::Hit class.
+      # Please refer to Bio::Blast::Default::Report::Hit.
       class Hit < Bio::Blast::Default::Report::Hit
       end #class Hit
 
-      # NOTE: HSP class below is NOT used!!
+      # Bio::Bl2seq::Report::HSP holds information about the hsp
+      # (high-scoring segment pair).
+      # NOTE that the HSP class below is NOT used because
+      # Ruby's constants namespace are normally statically determined
+      # and HSP object is created in Bio::Blast::Default::Report::Hit class.
+      # Please refer to Bio::Blast::Default::Report::HSP.
       class HSP < Bio::Blast::Default::Report::HSP
       end #class HSP
 
