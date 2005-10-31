@@ -1,7 +1,16 @@
 #
-# bio/appl/sosui/report.rb - SOSUI report class
+# = bio/appl/sosui/report.rb - SOSUI report class
 # 
-#   Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::   Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
+# Licence::     LGPL
+#
+#  $Id: report.rb,v 1.8 2005/10/31 17:01:50 nakao Exp $
+#
+# == Example
+#
+# == References
+# * http://sosui.proteome.bio.tuat.ac.jp/sosui_submit.html
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +26,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.7 2005/10/31 16:31:29 nakao Exp $
+#++
 #
 
 
@@ -25,36 +34,75 @@ module Bio
 
   class SOSUI
 
+    # = SOSUI output report parsing class
+    #
+    # == References
+    # * http://sosui.proteome.bio.tuat.ac.jp/sosui_submit.html
     class Report
 
-      RS = DELIMITER = "\n>"
+      # Delimiter
+      DELIMITER = "\n>"
+      RS = DELIMITER
 
-      def initialize(entry)
-        entry       = entry.split(/\n/)
+      # Query entry_id
+      attr_reader :entry_id
+
+      # Returns the prediction result whether "MEMBRANE PROTEIN" or 
+      # "SOLUBLE PROTEIN".
+      attr_reader :prediction
+
+      # Transmembrane helixes ary
+      attr_reader :tmhs
+
+      # Parser for SOSUI output report.
+      def initialize(output_report)
+        entry       = output_report.split(/\n/)
 
         @entry_id   = entry[0].strip.sub(/^>/,'')
         @prediction = entry[1].strip
-        @tmh        = []
-        @tmhs       = 0
+        @tms        = 0
+        @tmhs       = []
         parse_tmh(entry) if /MEMBRANE/ =~ @prediction
       end
 
-      attr_reader :entry_id, :prediction, :tmhs, :tmh
-
-
       private
 
+      # Parser for TMH lines.
       def parse_tmh(entry)
         entry.each do |line|
           if /NUMBER OF TM HELIX = (\d+)/ =~ line
-            @tmhs = $1
+            @tms = $1
           elsif /TM (\d+) +(\d+)- *(\d+) (\w+) +(\w+)/ =~ line
-            tmp = {'TMH'   => $1.to_i, 
-                   'range' => Range.new($2.to_i, $3.to_i), 
-                   'grade' => $4, 
-                   'seq'   => $5 }
-            @tmh.push(tmp)
+            tmh  = $1.to_i
+            range = Range.new($2.to_i, $3.to_i)
+            grade = $4
+            seq   = $5
+            @tmhs.push(TMH.new(range, grade, seq))
           end
+        end
+      end
+
+
+      # = Bio::SOSUI::Report::TMH
+      # Container class for transmembrane helix information.
+      #  
+      #  TM 1   31-  53 SECONDARY   HIRMTFLRKVYSILSLQVLLTTV
+      class TMH
+
+        # Returns aRng of transmembrane helix
+        attr_reader :range
+        
+        # Retruns ``PRIMARY'' or ``SECONDARY'' of helix.
+        attr_reader :grade
+
+        # Returns the sequence. of transmembrane helix. 
+        attr_reader :sequence
+
+        # Sets values.
+        def initialize(range, grade, sequence)
+          @range = range
+          @grade = grade
+          @sequence = sequence
         end
       end
 
@@ -98,8 +146,8 @@ HOGE
     sosui = Bio::SOSUI::Report.new(ent)
     p [:entry_id, sosui.entry_id]
     p [:prediction, sosui.prediction]
-    p [:tmhs, sosui.tmhs]
-    pp [:tmh, sosui.tmh]
+    p [:tmhs.size, sosui.tmhs]
+    pp [:tmhs, sosui.tmh]
   end
 
   sample.split(/#{Bio::SOSUI::Report::DELIMITER}/).each {|ent|
@@ -116,30 +164,3 @@ end
 
 
 
-=begin
-
-= Bio::SOSUI
-
-    SOSUI class for
-    ((<URL:http://sosui.proteome.bio.tuat.ac.jp/sosuiframe0.html>))
-
-= Bio::SOSUI::Report
-
-    A parser and contianer class
-
---- Bio::SOSUI::Report.new(str)
---- Bio::SOSUI::Report#entry_id
---- Bio::SOSUI::Report#prediction
-
-      Returns the prediction result whether "MEMBRANE PROTEIN" or 
-      "SOLUBLE PROTEIN".
-
---- Bio::SOSUI::Report#tmhs
-
-      Returns the number of predicted TMHs.
-    
---- Bio::SOSUI::Report#tmh
-
-      Returns an Array of TMHs in Hash.
-
-=end
