@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.6 2005/09/26 13:00:05 k Exp $
+#  $Id: report.rb,v 1.7 2005/10/31 16:31:29 nakao Exp $
 #
 
 
@@ -27,7 +27,7 @@ module Bio
 
     class Report
 
-      DELIMITER = "\n>"
+      RS = DELIMITER = "\n>"
 
       def initialize(entry)
         entry       = entry.split(/\n/)
