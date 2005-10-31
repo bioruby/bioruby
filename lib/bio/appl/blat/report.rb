@@ -1,8 +1,10 @@
 #
-# bio/appl/blat/report.rb - BLAT result parser
+# = bio/appl/blat/report.rb - BLAT result parser
 #
-#   Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
+# Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
+# Licence:: LGPL
 #
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -16,17 +18,53 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: report.rb,v 1.2 2005/09/08 01:22:09 k Exp $
+#  $Id: report.rb,v 1.3 2005/10/31 09:29:14 ngoto Exp $
 #
+# BLAT result parser (psl / pslx format).
+#
+# == Important Notes
+#
+# In BLAT results, the start position of a sequnece is numbered as 0.
+# On the other hand, in many other homology search programs,
+# the start position of a sequence is numbered as 1.
+# To keep compatibility, the BLAT parser adds 1 to every position number.
+#
+# == References
+#
+# * Kent, W.J., BLAT--the BLAST-like alignment tool,
+#   Genome Research, 12, 656--664, 2002.
+#   http://www.genome.org/cgi/content/abstract/12/4/656
+# 
 
 require 'bio'
 
 module Bio
   class Blat
+
+    # Bio::Blat::Report is a BLAT report parser class.
+    # Its object may contain some Bio::Blat::Report::Hits objects.
+    #
+    # In BLAT results, the start position of a sequnece is numbered as 0.
+    # On the other hand, in many other homology search programs,
+    # the start position of a sequence is numbered as 1.
+    # To keep compatibility, the BLAT parser adds 1 to every position number.
+    #
+    # Note that Bio::Blat::Report#query_def, #query_id, #query_len  methods
+    # simply return first hit's query_*.
+    # If multiple query sequences are given, these values
+    # will be incorrect.
+    #
     class Report #< DB
+      # Delimiter of each entry. Bio::FlatFile uses it.
+      # In Bio::Blat::Report, it it nil (1 entry 1 file).
       DELIMITER = RS = nil # 1 file 1 entry
 
+      # Creates a new Bio::Blat::Report object from BLAT result text (String).
+      # You can use Bio::FlatFile to read a file.
+      # Currently, results created with options -out=psl (default) or
+      # -out=pslx are supported.
       def initialize(text)
         flag = false
         head = []
@@ -45,8 +83,17 @@ module Bio
         end
         @columns = parse_header(head)
       end
-      attr_reader :hits, :columns
 
+      # hits of the result.
+      # Returns an Array of Bio::Blat::Report::Hit objects.
+      attr_reader :hits
+
+      # Returns descriptions of columns.
+      # Returns an Array.
+      # This would be a Bio::Blat specific method.
+      attr_reader :columns
+
+      # Parses headers.
       def parse_header(ary)
         ary.shift # first line is removed
         a0 = ary.collect { |x| x.split(/\t/) }
@@ -62,7 +109,13 @@ module Bio
       end
       private :parse_header
 
+      # Bio::Blat::Report::SeqDesc stores sequence information of
+      # query or subject of the BLAT report.
+      # It also includes some hit information.
       class SeqDesc
+        # Creates a new SeqDesc object.
+        # It is designed to be called internally from Bio::Blat::Report class.
+        # Users shall not use it directly.
         def initialize(gap_count, gap_bases, name, size,
                        st, ed, starts, seqs)
           @gap_count = gap_count.to_i
@@ -74,11 +127,33 @@ module Bio
           @starts = starts.collect { |x| x.to_i }
           @seqs = seqs
         end
-        attr_reader :gap_count, :gap_bases,
-          :name, :size, :start, :end, :starts, :seqs
+        # gap count
+        attr_reader :gap_count
+        # gap bases
+        attr_reader :gap_bases
+        # name of the sequence
+        attr_reader :name
+        # length of the sequence
+        attr_reader :size
+        # start position of the first segment
+        attr_reader :start
+        # end position of the final segment
+        attr_reader :end
+        # start positions of segments.
+        # Returns an array of numbers.
+        attr_reader :starts
+        # sequences of segments.
+        # Returns an array of String.
+        # Returns nil if there are no sequence data.
+        attr_reader :seqs
       end #class SeqDesc
 
+      # Sequence segment pair of BLAT result.
+      # Similar to Bio::Blast::Report::Hsp but lacks many methods.
       class SegmentPair
+        # Creates a new SegmentPair object.
+        # It is designed to be called internally from Bio::Blat::Report class.
+        # Users shall not use it directly.
         def initialize(query_len, strand,
                        blksize, qstart, tstart, qseq, tseq)
           @blocksize  = blksize
@@ -106,26 +181,77 @@ module Bio
             @hit_to     = tstart + blksize # - 1 + 1
           end
         end
-        attr_reader :query_from, :query_to, :qseq, :query_strand
-        attr_reader :hit_from,   :hit_to,   :hseq, :hit_strand
-        attr_reader :blocksize
+        # Returns query start position.
+        # CAUTION: In Blat's raw result(psl format), first position is 0.
+        # To keep compatibility, the parser add 1 to the position.
+        attr_reader :query_from
 
+        # Returns query end position.
+        # CAUTION: In Blat's raw result(psl format), first position is 0.
+        # To keep compatibility, the parser add 1 to the position.
+        attr_reader :query_to
+
+        # Returns query sequence.
+        # If sequence data is not available, returns nil.
+        attr_reader :qseq
+
+        # Returns strand information of the query.
+        # Returns 'plus' or 'minus'.
+        attr_reader :query_strand
+
+        # Returns target (subject, hit) start position.
+        # CAUTION: In Blat's raw result(psl format), first position is 0.
+        # To keep compatibility, the parser add 1 to the position.
+        attr_reader :hit_from
+
+        # Returns target (subject, hit) end position.
+        # CAUTION: In Blat's raw result(psl format), first position is 0.
+        # To keep compatibility, the parser add 1 to the position.
+        attr_reader :hit_to
+
+        # Returns the target (subject, hit) sequence.
+        # If sequence data is not available, returns nil.
+        attr_reader :hseq
+
+        # Returns strand information of the target (subject, hit).
+        # Returns 'plus' or 'minus'.
+        attr_reader :hit_strand
+
+        # Returns block size (length) of the segment pair.
+        # This would be a Bio::Blat specific method.
+       attr_reader :blocksize
+
+        # Returns alignment length of the segment pair.
+        # Returns nil if no alignment data are available.
         def align_len
           @qseq ? @qseq.size : nil
         end
       end #class SegmentPair
 
+      # Hit class for the BLAT result parser.
+      # Similar to Bio::Blast::Report::Hit but lacks many methods.
+      # Its object may contain some Bio::Blat::Report::SegmentPair objects.
       class Hit
+        # Creates a new Hit object from a piece of BLAT result text.
+        # It is designed to be called internally from Bio::Blat::Report object.
+        # Users shall not use it directly.
         def initialize(str)
           @data = str.chomp.split(/\t/)
         end
+
+        # Raw data of the hit.
+        # (Note that it doesn't add 1 to position numbers.)
         attr_reader :data
 
+        # split comma-separeted text
         def split_comma(str)
           str.to_s.sub(/\s*\,+\s*\z/, '').split(/\s*\,\s*/)
         end
         private :split_comma
 
+        # Returns sequence informations of the query.
+        # Returns a Bio::Blat::Report::SeqDesc object.
+        # This would be Bio::Blat specific method.
         def query
           unless defined?(@query)
             d = @data
@@ -135,6 +261,9 @@ module Bio
           @query
         end
 
+        # Returns sequence informations of the target(hit).
+        # Returns a Bio::Blat::Report::SeqDesc object.
+        # This would be Bio::Blat specific method.
         def target
           unless defined?(@target)
             d = @data
@@ -144,14 +273,25 @@ module Bio
           @target
         end
 
+        # Match nucleotides.
         def match;       @data[0].to_i;  end
+        # Mismatch nucleotides.
         def mismatch;    @data[1].to_i;  end
+        # rep. match (???)
         def rep_match;   @data[2].to_i;  end
+        # N's (???)
         def n_s;         @data[3].to_i;  end
 
+        # Returns strand information of the hit.
+        # Returns '+' or '-'.
+        # This would be a Bio::Blat specific method.
         def strand;      @data[8];       end
+
+        # Number of blocks(exons, segment pairs).
         def block_count; @data[17].to_i; end
 
+        # Sizes of all blocks(exons, segment pairs).
+        # Returns an array of numbers.
         def block_sizes
           unless defined?(@block_sizes) then
             @block_sizes = split_comma(@data[18]).collect { |x| x.to_i }
@@ -159,6 +299,8 @@ module Bio
           @block_sizes
         end
 
+        # Returns blocks(exons, segment pairs) of the hit.
+        # Returns an array of Bio::Blat::Report::SegmentPair objects.
         def blocks
           unless defined?(@blocks)
             bs    = block_sizes
@@ -175,27 +317,59 @@ module Bio
         end
         alias exons blocks
 
+        #--
         # Bio::BLAST::*::Report::Hit compatible methods
+        #++
+        alias hsps blocks
+
+        # Returns the length of query sequence.
         def query_len;  query.size;  end
+
+        # Returns the name of query sequence.
         def query_def;  query.name;  end
         alias query_id query_def
 
+        # Returns the length of the target(subject) sequence.
         def target_len; target.size; end
+        alias len target_len
+
+        # Returns the name of the target(subject) sequence.
         def target_def; target.name; end
         alias target_id target_def
-
-        alias len        target_len
         alias definition target_def
 
-        alias hsps blocks
-        def each(&x); exons.each(&x); end
+        #Iterates over each block(exon, segment pair) of the hit.
+        # Yields a Bio::Blat::Report::SegmentPair object.
+        def each(&x) #:yields: segmentpair
+          exons.each(&x)
+        end
       end #class Hit
 
+      #--
       #Bio::BLAST::*::Report compatible methods
+      #++
+
+      # Returns number of hits.
+      # Same as hits.size.
       def num_hits;     @hits.size;     end
-      def each_hit(&x); @hits.each(&x); end
+
+      # Iterates over each Bio::Blat::Report::Hit object.
+      # Same as hits.each.
+      def each_hit(&x) #:yields: hit
+        @hits.each(&x)
+      end
       alias each each_hit
+
+      # Returns the name of query sequence.
+      # CAUTION: query_* methods simply return first hit's query_*.
+      # If multiple query sequences are given, these values
+      # will be incorrect.
       def query_def; (x = @hits.first) ? x.query_def : nil; end
+
+      # Returns the length of query sequence.
+      # CAUTION: query_* methods simply return first hit's query_*.
+      # If multiple query sequences are given, these values
+      # will be incorrect.
       def query_len; (x = @hits.first) ? x.query_len : nil; end
       alias query_id query_def
     end #class Report
@@ -208,181 +382,6 @@ end #module Bio
 = Bio::Blat::Report
 
   BLAT result parser. (psl / pslx format)
-
---- Bio::Blat::Report.new(text)
-
-    Creates new Bio::Blat::Report object from String.
-    You can use Bio::FlatFile to read a file.
-  
-    Currently, results created with options -out=psl (default) or
-    -out=pslx are supported.
-
---- Bio::Blat::Report#hits
-
-    Returns an Array of Bio::Blat::Report::Hit objects.
-
---- Bio::Blat::Report#each_hit
---- Bio::Blat::Report#each
-
-    Iterates over each Bio::Blat::Report::Hit object.
-    Same as hits.each.
-
---- Bio::Blat::Report#num_hits
-
-    Returns number of hits.
-    Same as hits.size.
-
---- Bio::Blat::Report#query_id
-
-    Returns the identifier of query sequence.
-    This method is alias of query_def method.
-    CAUTION: query_* methods simply return first hit's query_*.
-             If multiple query sequences are given, these values
-             will be incorrect.
-
---- Bio::Blat::Report#query_def
-
-    Returns the name of query sequence.
-    CAUTION: query_* methods simply return first hit's query_*.
-             If multiple query sequences are given, these values
-             will be incorrect.
-
---- Bio::Blat::Report#query_len
-
-    Returns the length of query sequence.
-    CAUTION: query_* methods simply return first hit's query_*.
-             If multiple query sequences are given, these values
-             will be incorrect.
-
---- Bio::Blat::Report#columns
-
-    Returns descriptions of columns.
-    Returns an Array.
-    This would be a Bio::Blat specific method.
-
-== Bio::Blat::Report::Hit
-
-    Hit object.
-    Similar to Bio::Blast::Report::Hit but lacks many methods.
-
---- Bio::Blat::Report::Hit#hit_id
---- Bio::Blat::Report::Hit#target_id
-
-    Returns the identifier of subject sequence.
-    This method is alias of target_def method.
-
---- Bio::Blat::Report::Hit#definition
---- Bio::Blat::Report::Hit#target_def
-
-    Returns the name of subject sequence.
-
---- Bio::Blat::Report::Hit#len
---- Bio::Blat::Report::Hit#target_len
-
-    Returns the length of subject sequence.
-
---- Bio::Blat::Report::Hit#query_id
-
-    Returns the identifier of query sequence.
-    This method is alias of query_def method.
-
---- Bio::Blat::Report::Hit#query_def
-
-    Returns the name of query sequence.
-
---- Bio::Blat::Report::Hit#query_len
-
-    Returns the length of query sequence.
-
---- Bio::Blat::Report::Hit#blocks
---- Bio::Blat::Report::Hit#exons
-
-    Returns blocks(exons) of the hit.
-    Each exon is a Bio::Blat::Report::SegmentPair object.
-
---- Bio::Blat::Report::Hit#hsps
-
-    Same as Bio::Blat::Report#exons
-    The method aims to provide compatibility between
-    other homology search program's result objects.
-
---- Bio::Blat::Report::Hit#each
-
-    Iterates over each exon (Bio::Blat::Report::SegmentPair object)
-    of the hit.
-
---- Bio::Blat::Report::Hit#query
---- Bio::Blat::Report::Hit#target
-
-    Returns sequence informations of "query" or "target", respectively.
-    Returns a Bio::Blat::Report::SeqDesc object.
-    These would be Bio::Blat specific methods.
-
---- Bio::Blat::Report::Hit#data
-
-    Returns raw data.
-    Returns an Array.
-    These would be Bio::Blat specific methods.
-
---- Bio::Blat::Report::Hit#strand
-
-    Returns strand information of the hit.
-    Returns '+' or '-'.
-    This would be a Bio::Blat specific method.
-
-== Bio::Blat::Report::SegmentPair
-
-    Sequence segment pair of BLAT result.
-    Similar to Bio::Blast::Report::HSP but lacks many methods.
-
---- Bio::Blat::Report::SegmentPair#query_from
-
-     Returns query start position.
-     Note that first position is 1.
-     CAUTION: In Blat's raw result(psl format), first position is 0.
-              However, we add 1 to the position to keep compatibility.
-
---- Bio::Blat::Report::SegmentPair#query_to
-
-     Returns query end position.
-
---- Bio::Blat::Report::SegmentPair#qseq
-
-     Returns query sequence.
-
---- Bio::Blat::Report::SegmentPair#hit_from
---- Bio::Blat::Report::SegmentPair#hit_to
---- Bio::Blat::Report::SegmentPair#hseq
-
---- Bio::Blat::Report::SegmentPair#query_strand
---- Bio::Blat::Report::SegmentPair#hit_strand
-
-    Returns strand information of query or hit, respectively.
-    Returns 'plus' or 'minus'.
-
---- Bio::Blat::Report::SegmentPair#align_len
-
-    Returns alignment length of the segment pair.
-    Returns nil if no alignment data are available.
-
---- Bio::Blat::Report::SegmentPair#blocksize
-
-    Returns block size (length) of the segment pair.
-    This would be a Bio::Blat specific method.
-
-== Bio::Blat::Report::SeqDesc
-
-    Sequence information of query or target.
-    It also includes some hit information.
-
---- Bio::Blat::Report::SeqDesc#gap_count
---- Bio::Blat::Report::SeqDesc#gap_bases
---- Bio::Blat::Report::SeqDesc#name
---- Bio::Blat::Report::SeqDesc#size
---- Bio::Blat::Report::SeqDesc#start
---- Bio::Blat::Report::SeqDesc#end
---- Bio::Blat::Report::SeqDesc#starts
---- Bio::Blat::Report::SeqDesc#seqs
 
 = References
 
