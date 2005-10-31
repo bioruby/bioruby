@@ -1,8 +1,10 @@
 #
-# bio/appl/clustalw/report.rb - CLUSTAL W format data (*.aln) class
+# = bio/appl/clustalw/report.rb - CLUSTAL W format data (*.aln) class
 #
-#   Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+# Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+# Licence::   LGPL
 #
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -16,8 +18,22 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: report.rb,v 1.6 2005/09/26 13:00:05 k Exp $
+#  $Id: report.rb,v 1.7 2005/10/31 13:56:09 ngoto Exp $
+#
+# Bio::ClustalW::Report is a CLUSTAL W report (*.aln file) parser.
+# CLUSTAL W is a very popular software for multiple sequence alignment.
+#
+# == References
+#
+# * Thompson,J.D., Higgins,D.G. and Gibson,T.J..
+#   CLUSTAL W: improving the sensitivity of progressive multiple sequence
+#   alignment through sequence weighting, position-specific gap penalties
+#   and weight matrix choice. Nucleic Acids Research, 22:4673-4680, 1994.
+#   http://nar.oxfordjournals.org/cgi/content/abstract/22/22/4673
+# * http://www.ebi.ac.uk/clustalw/
+# * ftp://ftp.ebi.ac.uk/pub/software/unix/clustalw/
 #
 
 require 'bio/sequence'
@@ -25,11 +41,21 @@ require 'bio/db'
 require 'bio/alignment'
 require 'bio/appl/clustalw'
 
-module Bio
-  class ClustalW
+module Bio #:nodoc:
+  class ClustalW #:nodoc:
+
+    # CLUSTAL W result data (*.aln file) parser class.
     class Report < Bio::DB
+
+      # Delimiter of each entry. Bio::FlatFile uses it.
+      # In Bio::ClustalW::Report, it it nil (1 entry 1 file).
       DELIMITER = nil
 
+      # Creates new instance.
+      # +str+ should be a CLUSTAL format string.
+      # +seqclass+ should on of following:
+      # * Class:  Bio::Sequence::AA, Bio::Sequence::NA, ...
+      # * String: 'PROTEIN', 'DNA', ...
       def initialize(str, seqclass = nil)
         @raw = str
         @align = nil
@@ -48,32 +74,49 @@ module Bio
           end
         end
       end
+      # string of whole result
       attr_reader :raw
+
+      # sequence class (one of Bio::Sequence, Bio::Sequence::NA,
+      # Bio::Sequence::AA, ...)
       attr_reader :seqclass
 
+      # Shows first line of the result data, for example,
+      # 'CLUSTAL W (1.82) multiple sequence alignment'.
+      # Returns a string.
       def header
         @header or (do_parse or @header)
       end
 
+      # Shows "match line" of CLUSTAL's alignment result, for example,
+      # ':* :* .*   *       .*::*.   ** :* . *    .        '.
+      # Returns a string.
       def match_line
         @match_line or (do_parse or @match_line)
       end
 
+      # Gets an multiple alignment.
+      # Returns a Bio::Alignment object.
       def align
         do_parse() unless @align
         @align
       end
       alias alignment align
 
+      # Gets an fasta-format string of the sequences.
+      # Returns a string.
       def to_fasta(*arg)
         align.to_fasta(*arg)
       end
 
+      # Gets an array of the sequences.
+      # Returns an array of Bio::FastaFormat objects.
       def to_a
         align.to_fastaformat_array
       end
 
       private
+      # Parses Clustal W result text.
       def do_parse
         return nil if @align
         a = @raw.split(/\r?\n\r?\n/)
@@ -109,51 +152,3 @@ module Bio
   end #class ClustalW
 end #module Bio
 
-=begin
-
-= Bio::ClustalW::Report
-
- CLUSTAL W result data (*.aln file) parser class.
-
---- Bio::ClustalW::Report.new(raw, seqclass = nil)
-
-    Creates new instance.
-    'raw' should be a string of CLUSTAL format data.
-    'seqclass' should on of following:
-      Class:  Bio::Sequence::AA, Bio::Sequence::NA, ...
-      String: 'PROTEIN', 'DNA', ...
-
---- Bio::ClustalW::Report#raw
---- Bio::ClustalW::Report#seqclass
-
-    Acess methods of variables given in Bio::ClustalW::Report.new method.
-
---- Bio::ClustalW::Report#alginment
---- Bio::ClustalW::Report#algin
-
-    Gets an multiple alignment.
-    Returns an instance of Bio::Alignment class.
-
---- Bio::ClustalW::Report#to_a
-
-    Gets an array of the sequences.
-    Returns an array of Bio::FastaFormat instances.
-
---- Bio::ClustalW::Report#to_fasta
-
-    Gets an fasta-format string of the sequences.
-    Returns a string.
-
---- Bio::ClustalW::Report#header
-
-    Shows first line of the result data, for example,
-        'CLUSTAL W (1.82) multiple sequence alignment'.
-    Returns a string.
-
---- Bio::ClustalW::Report#match_line
-
-    Shows "match line" of CLUSTAL's alignment result, for example,
-        ':* :* .*   *       .*::*.   ** :* . *    .        '.
-    Returns a string.
-
-=end
