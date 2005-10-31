@@ -1,0 +1,21 @@
+# O42385 Length: 423
+# O42385 Number of predicted TMHs:  7
+# O42385 Exp number of AAs in TMHs: 157.40784
+# O42385 Exp number, first 60 AAs:  13.85627
+# O42385 Total prob of N-in:        0.00993
+# O42385 POSSIBLE N-term signal sequence
+O42385  TMHMM2.0        outside      1    46
+O42385  TMHMM2.0        TMhelix     47    69
+O42385  TMHMM2.0        inside      70    81
+O42385  TMHMM2.0        TMhelix     82   104
+O42385  TMHMM2.0        outside    105   118
+O42385  TMHMM2.0        TMhelix    119   141
+O42385  TMHMM2.0        inside     142   161
+O42385  TMHMM2.0        TMhelix    162   184
+O42385  TMHMM2.0        outside    185   205
+O42385  TMHMM2.0        TMhelix    206   228
+O42385  TMHMM2.0        inside     229   348
+O42385  TMHMM2.0        TMhelix    349   371
+O42385  TMHMM2.0        outside    372   380
+O42385  TMHMM2.0        TMhelix    381   403
+O42385  TMHMM2.0        inside     404   423
