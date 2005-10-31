@@ -1,9 +1,11 @@
 #
-# bio/db/nbrf.rb - NBRF/PIR format sequence data class
+# = bio/db/nbrf.rb - NBRF/PIR format sequence data class
 #
-#   Copyright (C) 2001-2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
-#   Copyright (C) 2001-2002 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright:: Copyright (C) 2001-2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+#             Copyright (C) 2001-2002 KATAYAMA Toshiaki <k@bioruby.org>
+# Licence::   LGPL
 #
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -17,19 +19,36 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: nbrf.rb,v 1.4 2005/09/26 13:00:06 k Exp $
+#  $Id: nbrf.rb,v 1.5 2005/10/31 23:58:19 ngoto Exp $
+#
+# Sequence data class for NBRF/PIR flatfile format.
+#
+# = References
+#
+# * http://pir.georgetown.edu/pirwww/otherinfo/doc/techbulletin.html
+# * http://www.sander.embl-ebi.ac.uk/Services/webin/help/webin-align/align_format_help.html#pir
+# * http://www.cmbi.kun.nl/bioinf/tools/crab_pir.html
 #
 
 require 'bio/db'
 require 'bio/sequence'
 
-module Bio
+#  Sequence data class for NBRF/PIR flatfile format.
+module Bio #:nodoc:
   class NBRF < DB
+    #--
     # based on Bio::FastaFormat class
+    #++
 
+    # Delimiter of each entry. Bio::FlatFile uses it.
     DELIMITER	= RS = "*\n"
 
+    # Creates a new NBRF object. It stores the comment and sequence
+    # information from one entry of the NBRF/PIR format string.
+    # If the argument contains more than one
+    # entry, only the first entry is used.
     def initialize(str)
       str = str.sub(/\A[\r\n]+/, '') # remove first void lines
       line1, line2, rest = str.split(/^/, 3)
@@ -46,16 +65,36 @@ module Bio
         @entry_id = $2
       end
     end
-    attr_accessor :seq_type, :entry_id, :definition, :data
-    attr_reader :entry_overrun
 
+    # Returns sequence type described in the entry.
+    #  P1 (protein), F1 (protein fragment)
+    #  DL (DNA linear), DC (DNA circular)
+    #  RL (DNA linear), RC (DNA circular)
+    #  N3 (tRNA), N1 (other functional RNA)
+    attr_accessor :seq_type
+
+    # Returns ID described in the entry.
+    attr_accessor :entry_id
     alias accession entry_id
 
+    # Returns the description line of the NBRF/PIR formatted data.
+    attr_accessor :definition
+
+    # sequence data of the entry (???)
+    attr_accessor :data
+
+    # piece of next entry. Bio::FlatFile uses it.
+    attr_reader :entry_overrun
+
+
+    # Returns the stored one entry as a NBRF/PIR format. (same as to_s)
     def entry
       @entry = ">#{@seq_type or 'XX'};#{@entry_id}\n#{definition}\n#{@data}*\n"
     end
     alias to_s entry
 
+    # Returns Bio::Sequence::AA, Bio::Sequence::NA, or Bio::Sequence,
+    # depending on sequence type.
     def seq_class
       case @seq_type
       when /[PF]1/
@@ -69,6 +108,9 @@ module Bio
       end
     end
 
+    # Returns sequence data.
+    # Returns Bio::Sequence::NA, Bio::Sequence::AA or Bio::Sequence,
+    # according to the sequence type.
     def seq
       unless defined?(@seq)
         @seq = seq_class.new(@data.tr(" \t\r\n0-9", '')) # lazy clean up
@@ -76,10 +118,14 @@ module Bio
       @seq
     end
 
+    # Returns sequence length.
     def length
       seq.length
     end
 
+    # Returens the nucleic acid sequence.
+    # If you call naseq for protein sequence, RuntimeError will be occurred.
+    # Use the method if you know whether the sequence is NA or AA.
     def naseq
       if seq.is_a?(Bio::Sequence::AA) then
         raise 'not nucleic but protein sequence'
@@ -90,10 +136,17 @@ module Bio
       end
     end
       
+    # Returens the length of sequence.
+    # If you call nalen for protein sequence, RuntimeError will be occurred.
+    # Use the method if you know whether the sequence is NA or AA.
     def nalen
       naseq.length
     end
 
+    # Returens the protein (amino acids) sequence.
+    # If you call aaseq for nucleic acids sequence,
+    # RuntimeError will be occurred.
+    # Use the method if you know whether the sequence is NA or AA.
     def aaseq
       if seq.is_a?(Bio::Sequence::NA) then
         raise 'not nucleic but protein sequence'
@@ -104,11 +157,20 @@ module Bio
       end
     end
 
+    # Returens the length of protein (amino acids) sequence.
+    # If you call aaseq for nucleic acids sequence,
+    # RuntimeError will be occurred.
+    # Use the method if you know whether the sequence is NA or AA.
     def aalen
       aaseq.length
     end
 
+    #--
     #class method
+    #++
+
+    # Creates a NBRF/PIR formatted text.
+    # Parameters can be omitted.
     def self.to_nbrf(hash)
       seq_type = hash[:seq_type]
       seq = hash[:seq]
@@ -133,86 +195,4 @@ module Bio
 
   end #class NBRF
 end #module Bio
-
-=begin
-
-= Bio::NBRF
-
- This is a sequence data class for NBRF/PIR flatfile format.
-
- http://pir.georgetown.edu/pirwww/otherinfo/doc/techbulletin.html
- http://www.sander.embl-ebi.ac.uk/Services/webin/help/webin-align/align_format_help.html#pir
- http://www.cmbi.kun.nl/bioinf/tools/crab_pir.html
-
-The precedent '>' can be omitted and the trailing '>' will be removed
-automatically.
-
---- Bio::NBRF.new(entry)
-
-      Stores the comment and sequence information from one entry of the
-      NBRF/PIR format string.  If the argument contains more than one
-      entry, only the first entry is used.
-
---- Bio::NBRF#entry
-
-      Returns the stored one entry as a NBRF/PIR format. (same as to_s)
-
-
---- Bio::NBRF#seq_type
-
-      Returns sequence type described in the entry.
-
-      * P1 (protein), F1 (protein fragment)
-      * DL (DNA linear), DC (DNA circular)
-      * RL (DNA linear), RC (DNA circular)
-      * N3 (tRNA), N1 (other functional RNA)
-
---- Bio::NBRF#seq_class
-
-      Returns Bio::Sequence::AA, Bio::Sequence::NA, or Bio::Sequence,
-      depending on sequence type.
-
---- Bio::NBRF#entry_id
-
-      Returns ID described in the entry.
-
---- Bio::NBRF#accession
-
-      Same as Bio::NBRF#entry_id.
-
---- Bio::NBRF#definition
-
-      Returns the description line of the NBRF/PIR formatted data.
-
---- Bio::NBRF#seq
-
-      Returns a joined sequence line as a String.
-      Returns Bio::Sequence::NA, Bio::Sequence::AA or Bio::Sequence,
-      according to the sequence type.
-
---- Bio::NBRF#length
-
-      Returns sequence length.
-
---- Bio::NBRF#naseq
---- Bio::NBRF#nalen
---- Bio::NBRF#aaseq
---- Bio::NBRF#aalen
-
-      If you know whether the sequence is NA or AA, use these methods.
-      'naseq' and 'aaseq' methods returen the Bio::Sequence::NA or
-      Bio::Sequence::AA object respectively. 'nalen' and 'aalen' methods
-      return the length of them.
-
-      If you call naseq for protein sequence, or aaseq for nucleic sequence,
-      a RuntimeError will be occurred.
-
---- Bio::NBRF.to_nbrf(:seq_type=>'P1', :entry_id=>'XXX00000',
-                      :definition=>'xxx protein',
-                      :seq=>seq, :width=>70)
-
-      Creates a NBRF/PIR formatted text.
-      Parameters can be omitted.
-
-=end
 
