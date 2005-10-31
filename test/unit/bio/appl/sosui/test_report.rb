@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_report.rb,v 1.1 2005/10/31 16:26:55 nakao Exp $
+#  $Id: test_report.rb,v 1.2 2005/10/31 17:02:45 nakao Exp $
 #
 
 require 'pathname'
@@ -38,11 +38,11 @@ module Bio
   class TestSOSUIReportConst  < Test::Unit::TestCase
 
     def test_delimiter
-      assert_equal(Bio::SOSUI::DELIMITER, "\n>")
+      assert_equal(Bio::SOSUI::Report::DELIMITER, "\n>")
     end
 
     def test_rs
-      assert_equal(Bio::SOSUI::RS, "\n>")
+      assert_equal(Bio::SOSUI::Report::RS, "\n>")
     end
 
   end
@@ -64,26 +64,26 @@ module Bio
 
     def test_tmhs
       assert_equal(@obj.tmhs.class, Array)
-      assert_equal(@obj.tmhs[0].class, Bio::SOSUI::TMH)
+      assert_equal(@obj.tmhs[0].class, Bio::SOSUI::Report::TMH)
     end
 
     def test_tmh
-      assert_equal(@obj.tmh.size, 7)
+      assert_equal(@obj.tmhs.size, 7)
     end
 
   end # class TestSOSUIReport
 
   class TestSOSUITMH < Test::Unit::TestCase
     def setup
-      @obj = Bio::SOSUI::Report.new(SOSUIReport).tmh.first
+      @obj = Bio::SOSUI::Report.new(SOSUIReport).tmhs.first
     end
 
     def test_range
       assert_equal(@obj.range, 31..53)
     end
 
-    def test_status
-      assert_equal(@obj.status, 'SECONDARY')
+    def test_grade
+      assert_equal(@obj.grade, 'SECONDARY')
     end
     
     def test_sequence
