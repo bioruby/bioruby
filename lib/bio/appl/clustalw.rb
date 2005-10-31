@@ -1,8 +1,10 @@
 #
-# bio/appl/clustalw.rb - CLUSTAL W wrapper class
+# = bio/appl/clustalw.rb - CLUSTAL W wrapper class
 #
-#   Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+# Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+# Licence::   LGPL
 #
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -16,9 +18,25 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: clustalw.rb,v 1.7 2005/09/09 15:52:57 ngoto Exp $
+#  $Id: clustalw.rb,v 1.8 2005/10/31 19:46:19 ngoto Exp $
 #
+# Bio::ClustalW is a CLUSTAL W execution wrapper class.
+# Its object is also called an alignment factory.
+# CLUSTAL W is a very popular software for multiple sequence alignment.
+#
+# == References
+#
+# * Thompson,J.D., Higgins,D.G. and Gibson,T.J..
+#   CLUSTAL W: improving the sensitivity of progressive multiple sequence
+#   alignment through sequence weighting, position-specific gap penalties
+#   and weight matrix choice. Nucleic Acids Research, 22:4673-4680, 1994.
+#   http://nar.oxfordjournals.org/cgi/content/abstract/22/22/4673
+# * http://www.ebi.ac.uk/clustalw/
+# * ftp://ftp.ebi.ac.uk/pub/software/unix/clustalw/
+#
+
 
 require 'tempfile'
 require 'open3'
@@ -26,11 +44,16 @@ require 'open3'
 require 'bio/sequence'
 require 'bio/alignment'
 
-module Bio
+module Bio #:nodoc:
+
+  # Bio::ClustalW is a CLUSTAL W execution wrapper class.
+  # Its object is also called an alignment factory.
+  # CLUSTAL W is a very popular software for multiple sequence alignment.
   class ClustalW
 
     autoload :Report, 'bio/appl/clustalw/report'
 
+    # Creates a new CLUSTAL W execution wrapper object (alignment factory).
     def initialize(program = 'clustalw', option = [])
       @program = program
       @option = option
@@ -39,10 +62,32 @@ module Bio
       @report = nil
       @log = nil
     end
-    attr_accessor :program, :option
-    attr_reader :command, :log
-    attr_reader :output, :report
 
+    # name of the program (usually 'clustalw' in UNIX)
+    attr_accessor :program
+
+    # options
+    attr_accessor :option
+
+    # Returns last command-line strings executed by this factory.
+    # Note that filenames described in the command-line may already
+    # be removed because they are temporary files.
+    # Returns an array.
+    attr_reader :command
+
+    # Returns last messages of CLUSTAL W execution.
+    attr_reader :log
+
+    # Returns last raw alignment result (String).
+    attr_reader :output
+
+    # Returns last alignment result.
+    # Returns a Bio::ClustalW::Report object.
+    attr_reader :report
+
+    # Executes the program(clustalw).
+    # If +seqs+ is not nil, perform alignment for seqs.
+    # If +seqs+ is nil, simply executes CLUSTAL W.
     def query(seqs)
       if seqs then
         query_align(seqs)
@@ -51,8 +96,9 @@ module Bio
       end
     end
 
+    # Performs alignment for +seqs+.
+    # +seqs+ should be Bio::Alignment or Array of sequences or nil.
     def query_align(seqs)
-      # seqs should be Bio::Alignment or Array of sequences or nil
       seqtype = nil
       unless seqs.is_a?(Bio::Alignment)
         seqs = Bio::Alignment.new(seqs)
@@ -68,6 +114,8 @@ module Bio
       query_string(seqs.to_fasta(70, :avoid_same_name => true), seqtype)
     end
 
+    # Performs alignment for +str+.
+    # +str+ should be a string that can be recognized by CLUSTAL W.
     def query_string(str, *arg)
       begin
         tf_in = Tempfile.open('align')
@@ -80,6 +128,7 @@ module Bio
       r
     end
 
+    # Performs alignment of sequences in the file named +path+.
     def query_by_filename(path, seqtype = nil)
       require 'bio/appl/clustalw/report'
 
@@ -106,10 +155,15 @@ module Bio
       @report = Report.new(@output, seqtype)
       @report
     end
+
+    # Returns last alignment guild-tree (file.dnd).
     attr_reader :output_dnd
 
+    # Returns last error messages (to stderr) of CLUSTAL W execution.
     attr_reader :errorlog
+
     private
+    # Executes the program in the local machine.
     def exec_local(opt)
       @command = [ @program,  *opt ]
       #STDERR.print "DEBUG: ", @command.join(" "), "\n"
@@ -135,64 +189,3 @@ module Bio
 
 end #module Bio
 
-=begin
-
-= Bio::ClustalW
-
---- Bio::ClustalW.new(path_to_clustalw = 'clustalw', option = [])
-
-      Creates new alignment factory.
-
---- Bio::ClustalW#program
---- Bio::ClustalW#option
-
-      Access to the variables specified in Bio::ClustalW.new.
-
---- Bio::ClustalW#query(seqs)
-
-      Executes the program(clustalw).
-      If 'seqs' is not nil, perform alignment for seqs.
-      If 'seqs' is nil, simply executes CLUSTAL W.
-
---- Bio::ClustalW#query_align(seqs)
-
-      Performs alignment for seqs.
-
---- Bio::ClustalW#query_string(str)
-
-      Performs alignment for str.
-      Str should be a string that can be recognized by CLUSTAL W.
-
---- Bio::ClustalW#query_by_filename(filename)
-
-      Performs alignment of sequences in the file named filename.
-
---- Bio::ClustalW#command
-
-      Shows latest command-line executed by this factory.
-      Note that filenames described in the command-line may already
-      be removed because they are temporary files.
-      Returns an array.
-
---- Bio::ClustalW#log
-
-      Shows latest messages of CLUSTAL W execution.
-
---- Bio::ClustalW#report
-
-      Shows latest alignment result (instance of Bio::ClustalW::Report)
-      performed by this factory.
-
---- Bio::ClustalW#output
-
-      Shows latest raw alignment result (String).
-
---- Bio::ClustalW#output_dnd
-
-      Shows latest alignment guild-tree (filename.dnd).
-
---- Bio::ClustalW#errorlog
-
-      Shows latest error messages (thourgh stderr) of CLUSTAL W execution.
-
-=end
