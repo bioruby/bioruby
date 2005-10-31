@@ -1,8 +1,10 @@
 #
-# bio/appl/spidey/report.rb - SPIDEY result parser
+# = bio/appl/spidey/report.rb - SPIDEY result parser
 #
-#   Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
+# Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
+# Licence::   LGPL
 #
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -16,21 +18,43 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: report.rb,v 1.5 2005/10/11 15:30:01 ngoto Exp $
+#  $Id: report.rb,v 1.6 2005/10/31 10:56:14 ngoto Exp $
+#
+# NCBI Spidey result parser.
+# Currently, output of default (-p 0 option) or -p 1 option are supported.
+#
+# == Notes
+#
+# The mRNA sequence is regarded as a query, and
+# the enomic sequence is regarded as a target (subject, hit).
+#
+# == References
+#
+# * Wheelan, S.J., et al., Spidey: a tool for mRNA-to-genomic alignments,
+#   Genome Research, 11, 1952--1957, 2001.
+#   http://www.genome.org/cgi/content/abstract/11/11/1952
+# * http://www.ncbi.nlm.nih.gov/spidey/
 #
 
 require 'bio'
 
-module Bio
-  class Spidey
+module Bio #:nodoc:
+  class Spidey #:nodoc:
 
+    # Spidey report parser class.
+    # Its object may contain some Bio::Spidey::Report::Hit objects.
     class Report #< DB
-      # 
+      #--
       # File format: -p 0 (default) or -p 1 options
+      #++
 
+      # Delimiter of each entry. Bio::FlatFile uses it.
       DELIMITER = RS = "\n--SPIDEY "
 
+      # Creates a new Bio::Spidey::Report object from String.
+      # You can use Bio::FlatFile to read a file.
       def initialize(str)
         str = str.sub(/\A\s+/, '')
         str.sub!(/\n(^\-\-SPIDEY .*)/m, '')  # remove trailing entries for sure
@@ -45,18 +69,47 @@ module Bio
           @hits = [ @hit ]
         end
       end
+      # piece of next entry. Bio::FlatFile uses it.
       attr_reader :entry_overrun
-      attr_reader :hits, :all_hits
 
+      # Returns an Array of Bio::Spidey::Report::Hit objects.
+      # Because current version of SPIDEY supports only 1 genomic sequences,
+      # the number of hits is 1 or 0.
+      attr_reader :hits
+
+      # Returns an Array of Bio::Spidey::Report::Hit objects.
+      # Unlike Bio::Spidey::Report#hits, the method returns
+      # results of all trials of pairwise alignment.
+      # This would be a Bio::Spidey specific method.
+      attr_reader :all_hits
+
+      # SeqDesc stores sequence information of query or subject.
       class SeqDesc
+        #--
         # description/definitions of a sequence
+        #++
+
+        # Creates a new SeqDesc object.
+        # It is designed to be called from Bio::Spidey::Report::* classes.
+        # Users shall not call it directly.
         def initialize(seqid, seqdef, len)
           @entry_id   = seqid
           @definition = seqdef
           @len        = len
         end
-        attr_reader :entry_id, :definition, :len
 
+        # Identifier of the sequence.
+        attr_reader :entry_id
+
+        # Definition of the sequence.
+        attr_reader :definition
+
+        # Length of the sequence.
+        attr_reader :len
+
+        # Parses piece of Spidey result text and creates a new SeqDesc object.
+        # It is designed to be called from Bio::Spidey::Report::* classes.
+        # Users shall not call it directly.
         def self.parse(str)
           /^(Genomic|mRNA)\:\s*(([^\s]*) (.+))\, (\d+) bp\s*$/ =~ str.to_s
           seqid  = $3
@@ -66,8 +119,20 @@ module Bio
         end
       end #class SeqDesc
 
+      # Sequence segment pair of Spidey result.
+      # Similar to Bio::Blast::Report::Hsp but lacks many methods.
+      # For mRNA-genome mapping programs, unlike other homology search
+      # programs, the class is used not only for exons but also for introns.
+      # (Note that intron data would not be available according to run-time
+      # options of the program.)
       class SegmentPair
-        # segment pair (like Bio::BLAST::*::Report::HSP)
+        #--
+        # segment pair (like Bio::BLAST::*::Report::Hsp)
+        #++
+
+        # Creates a new SegmentPair object.
+        # It is designed to be called from Bio::Spidey::Report::* classes.
+        # Users shall not call it directly.
         def initialize(genomic, mrna, midline, aaseqline,
                        percent_identity, mismatches, gaps, splice_site,
                        align_len)
@@ -81,10 +146,50 @@ module Bio
           @splice_site      = splice_site
           @align_len        = align_len
         end
-        attr_reader :genomic, :mrna, :midline, :aaseqline,
-        :percent_identity, :mismatches, :gaps,
-        :splice_site, :align_len
 
+        # Returns segment informations of the 'Genomic'.
+        # Returns a Bio::Spidey::Report::Segment object.
+        # This would be a Bio::Spidey specific method.
+        attr_reader :genomic
+
+        # Returns segment informations of the 'mRNA'.
+        # Returns a Bio::Spidey::Report::Segment object.
+        # This would be a Bio::Spidey specific method.
+        attr_reader :mrna
+
+        # Returns the middle line of the alignment of the segment pair.
+        # Returns nil if no alignment data are available.
+        attr_reader :midline
+
+        # Returns amino acide sequence in alignment.
+        # Returns String, because white spaces is also important.
+        # Returns nil if no alignment data are available.
+        attr_reader :aaseqline
+
+        # Returns percent identity of the segment pair.
+        attr_reader :percent_identity
+
+        # Returns mismatches.
+        attr_reader :mismatches
+        alias mismatch_count mismatches
+
+        # Returns gaps.
+        attr_reader :gaps
+
+        # Returns splice site information.
+        # Returns a hash which contains :d and :a for keys and
+        # 0, 1, or nil for values.
+        # This would be a Bio::Spidey specific methods.
+        attr_reader :splice_site
+
+        # Returns alignment length of the segment pair.
+        # Returns nil if no alignment data are available.
+        attr_reader :align_len
+
+        # Creates a new SegmentPair object when the segment pair is an intron.
+        # It is designed to be called internally from
+        # Bio::Spidey::Report::* classes.
+        # Users shall not call it directly.
         def self.new_intron(from, to, strand, aln)
           genomic   = Segment.new(from, to, strand, aln[0])
           mrna      = Segment.new(nil, nil, nil,    aln[2])
@@ -93,7 +198,12 @@ module Bio
           self.new(genomic, mrna, midline, aaseqline,
                    nil, nil, nil, nil, nil)
         end
-        
+
+        # Parses a piece of Spidey result text and creates a new
+        # SegmentPair object.
+        # It is designed to be called internally from
+        # Bio::Spidey::Report::* classes.
+        # Users shall not call it directly.
         def self.parse(str, strand, complement, aln)
           /\AExon\s*\d+(\(\-\))?\:\s*(\d+)\-(\d+)\s*\(gen\)\s+(\d+)\-(\d+)\s*\(mRNA\)\s+id\s*([\d\.]+)\s*\%\s+mismatches\s+(\d+)\s+gaps\s+(\d+)\s+splice site\s*\(d +a\)\s*\:\s*(\d+)\s+(\d+)/ =~ str
           if strand == 'minus' then
@@ -120,36 +230,80 @@ module Bio
                    (midline ? midline.length : nil))
         end
 
+        #--
         # Bio::BLAST::*::Report::Hsp compatible methods
         #   Methods already defined: midline, percent_identity, 
-        #     gaps, align_len
-        alias mismatch_count mismatches
+        #     gaps, align_len, mismatch_count
+        #++
+
+        # Returns start position of the mRNA (query) (the first position is 1).
         def query_from;   @mrna.from;       end
+
+        # Returns end position (including its position) of the mRNA (query).
         def query_to;     @mrna.to;         end
+
+        # Returns the sequence (with gaps) of the mRNA (query).
         def qseq;         @mrna.seq;        end
+
+        # Returns strand information of the mRNA (query).
+        # Returns 'plus', 'minus', or nil.
         def query_strand; @mrna.strand;     end
+
+        # Returns start position of the genomic (target, hit)
+        # (the first position is 1).
         def hit_from;     @genomic.from;    end
+
+        # Returns end position (including its position) of the
+        # genomic (target, hit).
         def hit_to;       @genomic.to;      end
+
+        # Returns the sequence (with gaps) of the genomic (target, hit).
         def hseq;         @genomic.seq;     end
+
+        # Returns strand information of the genomic (target, hit).
+        # Returns 'plus', 'minus', or nil.
         def hit_strand;   @genomic.strand;  end
       end #class SegmentPair
 
+      # Segment informations of a segment pair.
       class Segment
+        # Creates a new Segment object.
+        # It is designed to be called internally from
+        # Bio::Spidey::Report::* classes.
+        # Users shall not call it directly.
         def initialize(pos_st, pos_ed, strand = nil, seq = nil)
           @from   = pos_st ? pos_st.to_i : nil
           @to     = pos_ed ? pos_ed.to_i : nil
           @strand = strand
           @seq    = seq
         end
-        attr_reader :from, :to, :strand, :seq
+
+        # start position
+        attr_reader :from
+
+        # end position
+        attr_reader :to
+
+        # strand information
+        attr_reader :strand
+
+        # sequence data
+        attr_reader :seq
       end #class Segment
 
+      # Hit object of Spidey result.
+      # Similar to Bio::Blast::Report::Hit but lacks many methods.
       class Hit
+        # Creates a new Hit object.
+        # It is designed to be called internally from
+        # Bio::Spidey::Report::* classes.
+        # Users shall not call it directly.
         def initialize(data, d0)
           @data = data
           @d0 = d0
         end
 
+        # Fetches fields.
         def field_fetch(t, ary)
           reg = Regexp.new(/^#{Regexp.escape(t)}\:\s*(.+)\s*$/)
           if ary.find { |x| reg =~ x }
@@ -160,6 +314,7 @@ module Bio
         end
         private :field_fetch
 
+        # Parses information about strand.
         def parse_strand
           x = field_fetch('Strand', @d0)
           if x =~ /^(.+)Reverse +complement\s*$/ then
@@ -172,16 +327,23 @@ module Bio
         end
         private :parse_strand
 
+        # Returns strand information of the hit.
+        # Returns 'plus', 'minus', or nil.
+        # This would be a Bio::Spidey specific method.
         def strand
           unless defined?(@strand); parse_strand; end
           @strand
         end
 
+        # Returns true if the result reports 'Reverse complement'.
+        # Otherwise, return false or nil.
+        # This would be a Bio::Spidey specific method.
         def complement?
           unless defined?(@complement); parse_strand; end
           @complement
         end
 
+        # Returns number of exons in the hit.
         def number_of_exons
           unless defined?(@number_of_exons)
             @number_of_exons = field_fetch('Number of exons', @d0).to_i
@@ -189,6 +351,7 @@ module Bio
           @number_of_exons
         end
 
+        # Returns number of splice sites of the hit.
         def number_of_splice_sites
           unless defined?(@number_of_splice_sites)
             @number_of_splice_sites = 
@@ -197,6 +360,7 @@ module Bio
           @number_of_splice_sites
         end
 
+        #  Returns overall percent identity of the hit.
         def percent_identity
           unless defined?(@percent_identity)
             x = field_fetch('overall percent identity', @d0)
@@ -206,6 +370,7 @@ module Bio
           @percent_identity
         end
 
+        # Returns missing mRNA ends of the hit.
         def missing_mrna_ends
           unless defined?(@missing_mrna_ends)
             @missing_mrna_ends = field_fetch('Missing mRNA ends', @d0)
@@ -213,6 +378,9 @@ module Bio
           @missing_mrna_ends
         end
 
+        # Returns sequence informations of the 'Genomic'.
+        # Returns a Bio::Spidey::Report::SeqDesc object.
+        # This would be a Bio::Spidey specific method.
         def genomic
           unless defined?(@genomic)
             @genomic = SeqDesc.parse(@d0.find { |x| /^Genomic\:/ =~ x })
@@ -220,6 +388,9 @@ module Bio
           @genomic
         end
         
+        # Returns sequence informations of the mRNA.
+        # Returns a Bio::Spidey::Report::SeqDesc object.
+        # This would be a Bio::Spidey specific method.
         def mrna
           unless defined?(@mrna)
             @mrna = SeqDesc.parse(@d0.find { |x| /^mRNA\:/ =~ x })
@@ -227,6 +398,7 @@ module Bio
           @mrna
         end
 
+        # Parses segment pairs.
         def parse_segmentpairs
           aln = self.align.dup
           ex = []
@@ -270,27 +442,43 @@ module Bio
           @segmentpairs = segpairs
         end
         private :parse_segmentpairs
-        
+
+        # Returns exons of the hit.
+        # Returns an array of Bio::Spidey::Report::SegmentPair object.
         def exons
           unless defined?(@exons); parse_segmentpairs; end
           @exons
         end
 
+        # Returns introns of the hit.
+        # Some of them would contain untranscribed regions.
+        # Returns an array of Bio::Spidey::Report::SegmentPair objects.
+        # (Note that intron data is not always available
+        # according to run-time options of the program.)
         def introns
           unless defined?(@introns); parse_segmentpairs; end
           @introns
         end
 
+        # Returns segment pairs (exons and introns) of the hit.
+        # Each segment pair is a Bio::Spidey::Report::SegmentPair object.
+        # Returns an array of Bio::Spidey::Report::SegmentPair objects.
+        # (Note that intron data is not always available
+        # according to run-time options of the program.)
         def segmentpairs
           unless defined?(@segmentparis); parse_segmentpairs; end
           @segmentpairs
         end
 
+        # Returns alignments.
+        # Returns an Array of arrays.
+        # This would be a Bio::Spidey specific method.
         def align
           unless defined?(@align); parse_align; end
           @align
         end
 
+        # Parses alignment lines.
         def parse_align_lines(data)
           misc = [ [], [], [], [] ]
           data.each do |x|
@@ -327,6 +515,7 @@ module Bio
         end
         private :parse_align_lines
 
+        # Parses alignments.
         def parse_align
           r = []
           data = @data
@@ -341,13 +530,29 @@ module Bio
         end
         private :parse_align
 
+        #--
         # Bio::BLAST::*::Report::Hit compatible methods
+        #++
+
+        # Length of the mRNA (query) sequence.
+        # Same as Bio::Spidey::Report#query_len.
         def query_len;  mrna.len;        end
+
+        # Identifier of the mRNA (query).
+        # Same as Bio::Spidey::Report#query_id.
         def query_id;   mrna.entry_id;   end
+
+        # Definition of the mRNA (query).
+        # Same as Bio::Spidey::Report#query_def.
         def query_def;  mrna.definition; end
 
+        # The genomic (target) sequence length.
         def target_len; genomic.len;        end
+
+        # Identifier of the genomic (target) sequence.
         def target_id;  genomic.entry_id;   end
+
+        # Definition of the genomic (target) sequence.
         def target_def; genomic.definition; end
 
         alias hit_id     target_id
@@ -355,251 +560,45 @@ module Bio
         alias definition target_def
 
         alias hsps exons
-        def each(&x); exons.each(&x); end
+
+        # Iterates over each exon of the hit.
+        # Yields Bio::Spidey::Report::SegmentPair object.
+        def each(&x) #:yields: segmentpair
+          exons.each(&x)
+        end
       end #class Hit
 
+      # Returns sequence informationsof the mRNA.
+      # Returns a Bio::Spidey::Report::SeqDesc object.
+      # This would be a Bio::Spidey specific method.
       def mrna; @hit.mrna; end
 
+      #--
       #Bio::BLAST::*::Report compatible methods
+      #++
+
+      # Returns number of hits.
+      # Same as hits.size.
       def num_hits;     @hits.size;     end
-      def each_hit(&x); @hits.each(&x); end
+
+      # Iterates over each hits.
+      # Same as hits.each.
+      # Yields a Bio::Spidey::Report::Hit object.
+      def each_hit(&x) #:yields: hit
+        @hits.each(&x)
+      end
       alias each each_hit
+
+      # Returns definition of the mRNA (query) sequence.
       def query_def; @hit.mrna.definition; end
+
+      # Returns identifier of the mRNA (query) sequence.
       def query_id;  @hit.mrna.entry_id;   end
+
+      # Returns the length of the mRNA (query) sequence.
       def query_len; @hit.mrna.len;        end
     end #class Report
 
   end #class Spidey
 end #module Bio
 
-=begin
-
-= Bio::Spidey::Report
-
---- Bio::Spidey::Report.new(text)
-
-    Creates new Bio::Spidey::Report object from String.
-    You can use Bio::FlatFile to read a file.
-  
-    Currently, result created with options -p 0 (default) or -p 1 
-    are supported.
-
-    Note that "mRNA" is always regarded as "query" and
-    "Genomic" is always regarded as "subject"(target, hit).
-
---- Bio::Spidey::Report#hits
-
-    Returns an Array of Bio::Spidey::Report::Hit objects.
-    Because current version of SPIDEY supports only 1 genomic sequences,
-    the number of hits is 1 or 0.
-
---- Bio::Spidey::Report#all_hits
-
-    Returns an Array of Bio::Spidey::Report::Hit objects.
-    Unlike Bio::Spidey::Report#hits, the method returns
-    results of all trials of pairwise alignment.
-    This would be a Bio::Spidey specific method.
-
---- Bio::Spidey::Report#each_hit
---- Bio::Spidey::Report#each
-
-    Iterates over each Bio::Spidey::Report::Hit object.
-    Same as hits.each.
-
---- Bio::Spidey::Report#num_hits
-
-    Returns number of hits.
-    Same as hits.size.
-
---- Bio::Spidey::Report#query_id
-
-    Returns the identifier of query sequence.
-
---- Bio::Spidey::Report#query_def
-
-    Returns the definition of query sequence.
-
---- Bio::Spidey::Report#query_len
-
-    Returns the length of query sequence.
-
---- Bio::Spidey::Report#mrna
-
-    Returns sequence informations of "mRNA".
-    Returns a Bio::Spidey::Report::SeqDesc object.
-    This would be a Bio::Spidey specific method.
-
-== Bio::Spidey::Report::Hit
-
-    Hit object of SPIDEY result.
-    Similar to Bio::Blast::Report::Hit but lacks many methods.
-
---- Bio::Spidey::Report::Hit#hit_id
---- Bio::Spidey::Report::Hit#target_id
-
-    Returns the identifier of subject sequence.
-
---- Bio::Spidey::Report::Hit#definition
---- Bio::Spidey::Report::Hit#target_def
-
-    Returns the identifier of subject sequence.
-
---- Bio::Spidey::Report::Hit#len
---- Bio::Spidey::Report::Hit#target_len
-
-    Returns the length of subject sequence.
-
---- Bio::Spidey::Report::Hit#query_id
---- Bio::Spidey::Report::Hit#query_def
---- Bio::Spidey::Report::Hit#query_len
-
-    Same as Bio::Spidey::Report#(query_id|query_def|query_len).
-
---- Bio::Spidey::Report::Hit#exons
-
-    Returns exons of the hit.
-    Each exon is a Bio::Spidey::Report::SegmentPair object.
-
---- Bio::Spidey::Report::Hit#hsps
-
-    Same as Bio::Spidey::Report#exons
-    The method aims to provide compatibility between
-    other homology search program's result objects.
-
---- Bio::Spidey::Report::Hit#each
-
-    Iterates over each exon (Bio::Spidey::Report::SegmentPair object)
-    of the hit.
-
---- Bio::Spidey::Report::Hit#segmentpairs
-
-    Returns segment pairs (exons and introns) of the hit.
-    Each segment pair is a Bio::Spidey::Report::SegmentPair object.
-    Returns an array of Bio::Spidey::Report::SegmentPair objects.
-    (Note that intron data is not always available
-    according to run-time options of the program.)
-
---- Bio::Spidey::Report::Hit#introns
-
-    Returns introns of the hit.
-    Some of them would contain untranscribed regions.
-    Returns an array of Bio::Spidey::Report::SegmentPair objects.
-    (Note that intron data is not always available
-    according to run-time options of the program.)
-
---- Bio::Spidey::Report::Hit#mrna
---- Bio::Spidey::Report::Hit#genomic
-
-    Returns sequence informations of "mRNA" or "Genomic", respectively.
-    Returns a Bio::Spidey::Report::SeqDesc object.
-    These would be Bio::Spidey specific methods.
-
---- Bio::Spidey::Report::Hit#strand
-
-    Returns strand information of the hit.
-    Returns 'plus', 'minus', or nil.
-    This would be a Bio::Spidey specific method.
-
---- Bio::Spidey::Report::Hit#complement?
-
-    Returns true if the result reports 'Reverse complement'.
-    Otherwise, return false or nil.
-    This would be a Bio::Spidey specific method.
-
---- Bio::Spidey::Report::Hit#align
-
-    Returns alignments.
-    Returns an Array of arrays.
-    This would be a Bio::Spidey specific method.
-
-== Bio::Spidey::Report::SegmentPair
-
-    Sequence segment pair of SPIDEY result.
-    Similar to Bio::Blast::Report::HSP but lacks many methods.
-    For mRNA-genome mapping programs, unlike other homology search programs,
-    the class is used not only for exons but also for introns.
-    (Note that intron data would not be available according to run-time
-    options of the program.)
-
---- Bio::Spidey::Report::SegmentPair#query_from
---- Bio::Spidey::Report::SegmentPair#query_to
---- Bio::Spidey::Report::SegmentPair#qseq
-
---- Bio::Spidey::Report::SegmentPair#hit_from
---- Bio::Spidey::Report::SegmentPair#hit_to
---- Bio::Spidey::Report::SegmentPair#hseq
-
---- Bio::Spidey::Report::SegmentPair#query_strand
---- Bio::Spidey::Report::SegmentPair#hit_strand
-
-    Returns strand information of query or hit, respectively.
-    Returns 'plus', 'minus', or nil.
-
---- Bio::Spidey::Report::SegmentPair#gaps
-
-    Returns gaps.
-
---- Bio::Spidey::Report::SegmentPair#mismatches
---- Bio::Spidey::Report::SegmentPair#mismatch_count
-
-    Returns mismatches.
-
---- Bio::Spidey::Report::SegmentPair#midline
-
-    Returns the "midline" of the segment pair.
-    Returns nil if no alignment data are available.
-
---- Bio::Spidey::Report::SegmentPair#percent_identity
-
-    Returns percent identity of the segment pair.
-
---- Bio::Spidey::Report::SegmentPair#align_len
-
-    Returns alignment length of the segment pair.
-    Returns nil if no alignment data are available.
-
---- Bio::Spidey::Report::SegmentPair#aaseqline
-
-    Returns amino acide sequence in alignment.
-    Returns String, because white spaces in the result is also important.
-    Returns nil if no alignment data are available.
-    This would be a Bio::Spidey specific methods.
-
---- Bio::Spidey::Report::SegmentPair#splice_site
-
-    Returns splice site information.
-    Returns a hash which contains :d and :a for keys and
-    0, 1, or nil for values.
-    This would be a Bio::Spidey specific methods.
-
---- Bio::Spidey::Report::SegmentPair#mrna
---- Bio::Spidey::Report::SegmentPair#genomic
-
-    Returns segment informations of 'mRNA' or 'Genomic', respectively.
-    Returns a Bio::Spidey::Report::Segment object.
-    These would be Bio::Spidey specific methods.
-
-== Bio::Spidey::Report::Segment
-
-    Segment informations of a segment pair.
-
---- Bio::Spidey::Report::Segment#from
---- Bio::Spidey::Report::Segment#to
---- Bio::Spidey::Report::Segment#seq
---- Bio::Spidey::Report::Segment#strand
-
-== Bio::Spidey::Report::SeqDesc
-
-    Sequence information of query or subject.
-
---- Bio::Spidey::Report::SeqDesc#entry_id
---- Bio::Spidey::Report::SeqDesc#definition
---- Bio::Spidey::Report::SeqDesc#len
-
-= References
-
-* ((<URL:http://www.genome.org/cgi/content/abstract/11/11/1952>))
-  Wheelan, S.J., et al., Spidey: a tool for mRNA-to-genomic alignments,
-  Genome Research, 11, 1952--1957, 2001.
-
-=end
