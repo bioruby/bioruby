@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: report.rb,v 1.3 2005/10/31 09:29:14 ngoto Exp $
+#  $Id: report.rb,v 1.4 2005/10/31 11:09:22 ngoto Exp $
 #
 # BLAT result parser (psl / pslx format).
 #
@@ -40,8 +40,8 @@
 
 require 'bio'
 
-module Bio
-  class Blat
+module Bio #:nodoc:
+  class Blat #:nodoc:
 
     # Bio::Blat::Report is a BLAT report parser class.
     # Its object may contain some Bio::Blat::Report::Hits objects.

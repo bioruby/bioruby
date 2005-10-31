@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: report.rb,v 1.4 2005/10/31 07:51:27 ngoto Exp $
+#  $Id: report.rb,v 1.5 2005/10/31 11:09:22 ngoto Exp $
 #
 # The sim4 report parser classes.
 #
@@ -31,8 +31,8 @@
 #   http://www.genome.org/cgi/content/abstract/8/9/967
 #
 
-module Bio
-  class Sim4
+module Bio #:nodoc:
+  class Sim4 #:nodoc:
 
     # Bio::Sim4::Report is the sim4 report parser class.
     # Its object may contain some Bio::Sim4::Report::Hit objects.
