@@ -2,11 +2,10 @@
 # = bio/db/embl/embl.rb - EMBL database class
 #
 # 
-# Author::      Mitsuteru C. Nakao <n@bioruby.org>
-# Copyright::   Copyright (C) 2001-2005 BioRuby Project
+# Copyright::   Copyright (C) 2001-2005 Mitsuteru C. Nakao <n@bioruby.org>
 # License::     LGPL
 #
-# $Id: embl.rb,v 1.23 2005/10/27 09:34:49 nakao Exp $
+# $Id: embl.rb,v 1.24 2005/11/01 02:16:06 nakao Exp $
 #
 # == EMBL database entry
 #

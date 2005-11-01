@@ -1,11 +1,10 @@
 #
 # = bio/db/embl/sptr.rb - UniProt/SwissProt and TrEMBL database class
 # 
-# Author::      Mitsuteru C. Nakao <n@bioruby.org>
-# Copyright::   Copyright (C) 2001-2005 BioRuby Project
+# Copyright::   Copyright (C) 2001-2005 Mitsuteru C. Nakao <n@bioruby.org>
 # License::     LGPL
 #
-# $Id: sptr.rb,v 1.27 2005/10/27 09:30:42 nakao Exp $
+# $Id: sptr.rb,v 1.28 2005/11/01 02:16:06 nakao Exp $
 #
 # == UniProtKB/SwissProt and TrEMBL
 #
