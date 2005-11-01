@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: flatfile.rb,v 1.38 2005/11/01 02:56:11 ngoto Exp $
+#  $Id: flatfile.rb,v 1.39 2005/11/01 03:15:33 ngoto Exp $
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
 # It acts like a IO object.
@@ -41,7 +41,7 @@ module Bio #:nodoc:
     # Creates a new Bio::FlatFile object to read a file or a stream
     # which contains +dbclass+ data.
     #
-    # +dbclass+ shoud be a class (or module) or nil.
+    # +dbclass+ should be a class (or module) or nil.
     # e.g. Bio::GenBank, Bio::FastaFormat.
     #
     # If +file+ is a filename (which doesn't have gets method),
@@ -222,6 +222,7 @@ module Bio #:nodoc:
       @io.pos - @prefetch.size
     end
 
+    # (Not recommended to use it.)
     # Sets position of input stream.
     # If the input stream is not a normal file,
     # the result is not guaranteed.
@@ -247,7 +248,7 @@ module Bio #:nodoc:
     end
 
     # Similar to IO#gets.
-    # Internal use only. Users shold not call it directly.
+    # Internal use only. Users should not call it directly.
     def gets(io_rs = $/)
       if @prefetch.size > 0
         if io_rs == nil then
@@ -303,7 +304,7 @@ module Bio #:nodoc:
     end
 
     # Similar to IO#ungetc.
-    # Internal use only. Users should not call it directly.
+    # Internal use only. Users should not call it.
     def ungetc(c)
       @prefetch = sprintf("%c", c) + @prefetch
       nil
@@ -337,8 +338,8 @@ module Bio #:nodoc:
     # Pre-reads +lines+ lines for format determination (default 31 lines).
     # If fails, returns nil or false. Otherwise, returns database class.
     #
-    # The method can be called anytime if you want (but not so recommended).
-    # It may be useful if input file is a mixture of muitiple format data.
+    # The method can be called anytime if you want (but not recommended).
+    # This might be useful if input file is a mixture of muitiple format data.
     def autodetect(lines = 31)
       r = nil
       1.upto(lines) do |x|
