@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: report.rb,v 1.6 2005/10/31 12:47:12 ngoto Exp $
+#  $Id: report.rb,v 1.7 2005/11/01 05:32:24 ngoto Exp $
 #
 # MAFFT result parser class.
 # MAFFT is a very fast multiple sequence alignment software.
@@ -42,8 +42,8 @@ require 'bio/db/fasta'
 require 'bio/io/flatfile'
 require 'bio/appl/mafft'
 
-module Bio #:nodoc:
-  class MAFFT #:nodoc:
+module Bio
+  class MAFFT
 
     # MAFFT result parser class.
     # MAFFT is a very fast multiple sequence alignment software.

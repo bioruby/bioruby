@@ -21,7 +21,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: nbrf.rb,v 1.5 2005/10/31 23:58:19 ngoto Exp $
+#  $Id: nbrf.rb,v 1.6 2005/11/01 05:32:24 ngoto Exp $
 #
 # Sequence data class for NBRF/PIR flatfile format.
 #
@@ -35,8 +35,9 @@
 require 'bio/db'
 require 'bio/sequence'
 
-#  Sequence data class for NBRF/PIR flatfile format.
-module Bio #:nodoc:
+module Bio
+
+  # Sequence data class for NBRF/PIR flatfile format.
   class NBRF < DB
     #--
     # based on Bio::FastaFormat class

@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: report.rb,v 1.4 2005/10/31 14:37:30 ngoto Exp $
+#  $Id: report.rb,v 1.5 2005/11/01 05:32:23 ngoto Exp $
 #
 # Bio::Bl2seq::Report is a NCBI bl2seq (BLAST 2 sequences) output parser.
 #
@@ -33,10 +33,10 @@
 
 require 'bio/appl/blast/format0'
 
-module Bio #:nodoc:
-class Blast #:nodoc:
+module Bio
+class Blast
 
-  class Bl2seq #:nodoc:
+  class Bl2seq
 
     # Bio::Bl2seq::Report is a NCBI bl2seq (BLAST 2 sequences) output parser.
     # It inherits Bio::Blast::Default::Report.

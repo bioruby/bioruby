@@ -21,7 +21,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: format0.rb,v 1.15 2005/10/31 19:22:27 ngoto Exp $
+#  $Id: format0.rb,v 1.16 2005/11/01 05:32:23 ngoto Exp $
 #
 # NCBI BLAST default (-m 0 option) output parser.
 #
@@ -45,8 +45,8 @@ require 'singleton'
 #++
 require 'bio/io/flatfile'
 
-module Bio #:nodoc:
-  class Blast #:nodoc:
+module Bio
+  class Blast
     module Default #:nodoc:
 
       # Bio::Blast::Default::Report parses NCBI BLAST default output

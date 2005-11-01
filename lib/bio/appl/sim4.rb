@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: sim4.rb,v 1.3 2005/10/31 20:03:41 ngoto Exp $
+#  $Id: sim4.rb,v 1.4 2005/11/01 05:32:23 ngoto Exp $
 #
 # The sim4 execution wrapper class.
 #
@@ -34,7 +34,7 @@
 require 'open3'
 require 'tempfile'
 
-module Bio #:nodoc:
+module Bio
 
   # The sim4 execution wrapper class.
   class Sim4

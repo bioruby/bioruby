@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: report.rb,v 1.7 2005/10/31 13:56:09 ngoto Exp $
+#  $Id: report.rb,v 1.8 2005/11/01 05:32:23 ngoto Exp $
 #
 # Bio::ClustalW::Report is a CLUSTAL W report (*.aln file) parser.
 # CLUSTAL W is a very popular software for multiple sequence alignment.
@@ -41,8 +41,8 @@ require 'bio/db'
 require 'bio/alignment'
 require 'bio/appl/clustalw'
 
-module Bio #:nodoc:
-  class ClustalW #:nodoc:
+module Bio
+  class ClustalW
 
     # CLUSTAL W result data (*.aln file) parser class.
     class Report < Bio::DB

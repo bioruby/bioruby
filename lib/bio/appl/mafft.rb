@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: mafft.rb,v 1.7 2005/10/31 13:17:18 ngoto Exp $
+#  $Id: mafft.rb,v 1.8 2005/11/01 05:32:23 ngoto Exp $
 #
 # Bio::MAFFT is a wrapper class to execute MAFFT.
 # MAFFT is a very fast multiple sequence alignment software.
@@ -47,7 +47,7 @@ require 'bio/io/flatfile'
 #++
 require 'open3'
 
-module Bio #:nodoc:
+module Bio
 
   # Bio::MAFFT is a wrapper class to execute MAFFT.
   # MAFFT is a very fast multiple sequence alignment software.

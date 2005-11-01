@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: clustalw.rb,v 1.8 2005/10/31 19:46:19 ngoto Exp $
+#  $Id: clustalw.rb,v 1.9 2005/11/01 05:32:23 ngoto Exp $
 #
 # Bio::ClustalW is a CLUSTAL W execution wrapper class.
 # Its object is also called an alignment factory.
@@ -44,7 +44,7 @@ require 'open3'
 require 'bio/sequence'
 require 'bio/alignment'
 
-module Bio #:nodoc:
+module Bio
 
   # Bio::ClustalW is a CLUSTAL W execution wrapper class.
   # Its object is also called an alignment factory.

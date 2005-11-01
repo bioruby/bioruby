@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: wublast.rb,v 1.3 2005/10/31 19:24:14 ngoto Exp $
+#  $Id: wublast.rb,v 1.4 2005/11/01 05:32:23 ngoto Exp $
 #
 #  WU-BLAST default output parser.
 #
@@ -36,8 +36,8 @@
 
 require 'bio/appl/blast/format0'
 
-module Bio #:nodoc:
-  class Blast #:nodoc:
+module Bio
+  class Blast
     module WU #:nodoc:
 
       # Bio::Blast::WU::Report parses WU-BLAST default output

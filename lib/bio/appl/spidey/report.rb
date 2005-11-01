@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: report.rb,v 1.6 2005/10/31 10:56:14 ngoto Exp $
+#  $Id: report.rb,v 1.7 2005/11/01 05:32:24 ngoto Exp $
 #
 # NCBI Spidey result parser.
 # Currently, output of default (-p 0 option) or -p 1 option are supported.
@@ -40,8 +40,8 @@
 
 require 'bio'
 
-module Bio #:nodoc:
-  class Spidey #:nodoc:
+module Bio
+  class Spidey
 
     # Spidey report parser class.
     # Its object may contain some Bio::Spidey::Report::Hit objects.

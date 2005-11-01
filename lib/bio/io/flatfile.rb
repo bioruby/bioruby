@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: flatfile.rb,v 1.39 2005/11/01 03:15:33 ngoto Exp $
+#  $Id: flatfile.rb,v 1.40 2005/11/01 05:32:24 ngoto Exp $
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
 # It acts like a IO object.
@@ -28,7 +28,7 @@
 # the class what the data is.
 #
 
-module Bio #:nodoc:
+module Bio
 
   # Bio::FlatFile is a helper and wrapper class to read a biological data file.
   # It acts like a IO object.
