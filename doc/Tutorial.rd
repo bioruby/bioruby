@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd,v 1.8 2005/10/27 11:55:58 pjotr Exp $
+  $Id: Tutorial.rd,v 1.9 2005/11/01 04:31:48 nakao Exp $
 
 Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -231,7 +231,7 @@ the data:
 
     require 'bio'
 
-		# Read all lines from STDIN split by the GenBank delimiter
+    # Read all lines from STDIN split by the GenBank delimiter
     while entry = gets(Bio::GenBank::DELIMITER)
       gb = Bio::GenBank.new(entry)      # creates GenBank object
 
@@ -245,9 +245,9 @@ generic method is to use Bio::FlatFile which allows you to use different
 input formats:
 
     #!/usr/bin/env ruby
-
+  
     require 'bio'
-
+    
     ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
     ff.each_entry do |gb|
       definition = "#{gb.accession} #{gb.definition}"
@@ -300,7 +300,7 @@ very complicated:
       # shows accession and organism
       puts "# #{gb.accession} - #{gb.organism}"
 
-			# iterates over each element in 'features'
+      # iterates over each element in 'features'
       gb.features.each do |feature|
         position = feature.position
         hash = feature.assoc            # put into Hash
@@ -476,7 +476,7 @@ we should provide sample data to readers.)
 
     # Creates FASTA factory object ("ssearch" instead of "fasta34" can also work)
     factory = Bio::Fasta.local('fasta34', ARGV.pop)
-		(EDITOR's NOTE: not consistent pop command)
+    (EDITOR's NOTE: not consistent pop command)
 
     # Reads FASTA-formatted files (TRANSLATOR'S NOTE: something wrong in Japanese text)
     ff = Bio::FlatFile.new(Bio::FastaFormat, ARGF)
@@ -805,6 +805,7 @@ maximum number of hits to show results can be specified.
 See the ((<help page of
 E-Utils|URL:http://eutils.ncbi.nlm.nih.gov/entrez/query/static/eutils_help.html>))
 for more details.
+
 
 
 === More about BibTeX
