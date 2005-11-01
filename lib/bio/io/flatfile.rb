@@ -1,8 +1,10 @@
 #
-# bio/io/flatfile.rb - flatfile access wrapper class
+# = bio/io/flatfile.rb - flatfile access wrapper class
 #
-#   Copyright (C) 2001, 2002 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+# Copyright:: Copyright (C) 2001, 2002 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+# License:: LGPL
 #
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -16,16 +18,58 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: flatfile.rb,v 1.37 2005/09/26 13:00:08 k Exp $
+#  $Id: flatfile.rb,v 1.38 2005/11/01 02:56:11 ngoto Exp $
+#
+# Bio::FlatFile is a helper and wrapper class to read a biological data file.
+# It acts like a IO object.
+# It can automatically detect data format, and users do not need to tell
+# the class what the data is.
 #
 
-module Bio
+module Bio #:nodoc:
 
+  # Bio::FlatFile is a helper and wrapper class to read a biological data file.
+  # It acts like a IO object.
+  # It can automatically detect data format, and users do not need to tell
+  # the class what the data is.
   class FlatFile
 
     include Enumerable
 
+    # Creates a new Bio::FlatFile object to read a file or a stream
+    # which contains +dbclass+ data.
+    #
+    # +dbclass+ shoud be a class (or module) or nil.
+    # e.g. Bio::GenBank, Bio::FastaFormat.
+    #
+    # If +file+ is a filename (which doesn't have gets method),
+    # the method opens a local file named +file+
+    # with 'File.open(filename, mode, perm)'.
+    #
+    # When nil is given to dbclass, trying to determine database class
+    # (file format) automatically. If fails to determine, dbclass is
+    # set to nil and FlatFile#next_entry works same as IO#gets when
+    # raw = true. It is recommended to set dbclass using
+    # FlatFile#dbclass= method if fails to determine automatically.
+    #
+    # * Example 1
+    #     Bio::FlatFile.open(Bio::GenBank, "genbank/gbest40.seq")
+    # * Example 2
+    #     Bio::FlatFile.open(nil, "embl/est_hum17.dat")
+    # * Example 3
+    #     Bio::FlatFile.open(Bio::GenBank, $stdin)
+    #
+    # If it is called with block, the block will be executed with
+    # a newly opened Bio::FlatFile instance object. If filename
+    # is given, the file is automatically closed when leaving the block.
+    #
+    # * Example 4
+    #     Bio::FlatFile.open(nil, 'test4.fst') do |ff|
+    #         ff.each { |e| print e.definition, "\n" }
+    #     end
+    #
     def self.open(dbclass, file, *arg)
       # 3rd and 4th arg: mode, perm (passed to File.open)
       openmode = []
@@ -52,10 +96,21 @@ module Bio
       end
     end
 
+    # Same as Bio::FlatFile.open(nil, filename_or_stream, mode, perm, options).
+    #
+    # * Example 1
+    #    Bio::FlatFile.auto(ARGF)
+    # * Example 2
+    #    Bio::FlatFile.auto("embl/est_hum17.dat")
+    # * Example 3
+    #    Bio::FlatFile.auto(IO.popen("gzip -dc nc1101.flat.gz"))
+    #
     def self.auto(*arg, &block)
       self.open(nil, *arg, &block)
     end
 
+    # Same as FlatFile.auto(filename_or_stream, *arg).to_a
+    # (It might be OBSOLETED in the future.)
     def self.to_a(*arg)
       self.auto(*arg) do |ff|
         raise 'cannot determine file format' unless ff.dbclass
@@ -63,6 +118,24 @@ module Bio
       end
     end
 
+    # Same as FlatFile.open, except that 'stream' should be a opened
+    # stream object (IO, File, ..., who have the 'gets' method).
+    #
+    # * Example 1
+    #    Bio::FlatFile.new(Bio::GenBank, ARGF)
+    # * Example 2
+    #    Bio::FlatFile.new(Bio::GenBank, IO.popen("gzip -dc nc1101.flat.gz"))
+    #
+    # +options+ should be a hash (or nil). It will be OBSOLETED!!
+    # Available options are below:
+    # [<tt>:raw</tt>] if true, "raw mode" (same as #raw=true).
+    # default: false (not "raw mode").
+    #
+    # * Example 3
+    #    Bio::FlatFile.new(nil, $stdin, :raw=>true)
+    # * Example 3 in old style (deprecated)
+    #    Bio::FlatFile.new(nil, $stdin, true)
+    #
     def initialize(dbclass, stream, options = nil)
       # 2nd arg: IO object
       @io = stream
@@ -82,8 +155,11 @@ module Bio
         autodetect
       end
     end
+
+    # IO object in the flatfile object.
     attr_reader :io
 
+    # Get next entry.
     def next_entry
       @entry_raw = gets(@rs)
       return nil unless @entry_raw
@@ -103,8 +179,18 @@ module Bio
         e
       end
     end
+
+    # Returns the last raw entry as a string.
     attr_reader :entry_raw
 
+    # Iterates over each entry in the flatfile.
+    #
+    # * Example
+    #    include Bio
+    #    ff = FlatFile.open(GenBank, "genbank/gbhtg14.seq")
+    #    ff.each_entry do |x|
+    #      puts x.definition
+    #    end
     def each_entry
       while e = self.next_entry
         yield e
@@ -112,26 +198,46 @@ module Bio
     end
     alias each each_entry
 
+    # Resets file pointer to the start of the flatfile.
+    # (similar to IO#rewind)
     def rewind
       r = @io.rewind
       @prefetch = ''
       r
     end
 
+    # Closes input stream.
+    # (similar to IO#close)
     def close
       @io.close
     end
 
+    # Returns current position of input stream.
+    # If the input stream is not a normal file,
+    # the result is not guaranteed.
+    # It is similar to IO#pos.
+    # Note that it will not be equal to io.pos,
+    # because FlatFile#autodetect may pre-read some lines.
     def pos
       @io.pos - @prefetch.size
     end
 
+    # Sets position of input stream.
+    # If the input stream is not a normal file,
+    # the result is not guaranteed.
+    # It is similar to IO#pos=.
+    # Note that it will not be equal to io.pos=,
+    # because FlatFile#autodetect may pre-read some lines.
     def pos=(p)
       r = (@io.pos = p)
       @prefetch = ''
       r
     end
 
+    # Returns true if input stream is end-of-file.
+    # Otherwise, returns false.
+    # (Similar to IO#eof?, but may not be equal to io.eof?,
+    # because FlatFile#autodetect may pre-read some lines.)
     def eof?
       if @prefetch.size > 0
         false
@@ -140,6 +246,8 @@ module Bio
       end
     end
 
+    # Similar to IO#gets.
+    # Internal use only. Users shold not call it directly.
     def gets(io_rs = $/)
       if @prefetch.size > 0
         if io_rs == nil then
@@ -175,11 +283,15 @@ module Bio
       end
     end
 
+    # Unread read data.
+    # Internal use only. Users must not call it.
     def ungets(str)
       @prefetch = str + @prefetch
       nil
     end
 
+    # Similar to IO#getc.
+    # Internal use only. Users should not call it directly.
     def getc
       if @prefetch.size > 0 then
         r = @prefetch[0]
@@ -190,16 +302,23 @@ module Bio
       r
     end
 
+    # Similar to IO#ungetc.
+    # Internal use only. Users should not call it directly.
     def ungetc(c)
       @prefetch = sprintf("%c", c) + @prefetch
       nil
     end
 
+    # If true is given, the next_entry method returns
+    # a entry as a text, whereas if false, returns as a parsed object.
     def raw=(bool)
       @raw = (bool ? true : false)
     end
+
+    # If true, raw mode.
     attr_reader :raw
 
+    # Sets database class. Plese use only if autodetect fails.
     def dbclass=(k)
       if k then
         @dbclass = k
@@ -209,9 +328,17 @@ module Bio
         @rs = $/
       end
     end
+
+    # Returns database class which is automatically detected or
+    # given in FlatFile#initialize.
     attr_reader :dbclass
 
-    # format autodetection
+    # Performs determination of database class (file format).
+    # Pre-reads +lines+ lines for format determination (default 31 lines).
+    # If fails, returns nil or false. Otherwise, returns database class.
+    #
+    # The method can be called anytime if you want (but not so recommended).
+    # It may be useful if input file is a mixture of muitiple format data.
     def autodetect(lines = 31)
       r = nil
       1.upto(lines) do |x|
@@ -230,6 +357,8 @@ module Bio
       r
     end
 
+    # Detects database class (== file format) of given file.
+    # If fails to determine, returns nil.
     def self.autodetect_file(filename)
       ff = self.open(nil, filename)
       r = ff.dbclass
@@ -237,12 +366,18 @@ module Bio
       r
     end
 
+    # Detects database class (== file format) of given input stream.
+    # If fails to determine, returns nil.
+    # Caution: the method reads some data from the input stream,
+    # and the data will be lost.
     def self.autodetect_stream(io)
       ff = self.new(nil, io)
       r = ff.dbclass
       r
     end
 
+    # Detects database class (== file format) of given string.
+    # If fails to determine, returns false or nil.
     def self.autodetect(text)
       require 'bio'
       case text
@@ -324,6 +459,9 @@ module Bio
       when /^\-\-SPIDEY version .+\-\-$/
         Bio::Spidey::Report
 
+      when /^HMMER +\d+\./
+        Bio::HMMER::Report
+
       when /^seq1 \= .*\, \d+ bp(\r|\r?\n)seq2 \= .*\, \d+ bp(\r|\r?\n)/
         Bio::Sim4::Report
 
@@ -354,173 +492,4 @@ if __FILE__ == $0
     p Bio::FlatFile.open(eval(ARGV.shift), ARGV.shift).next_entry
   end
 end
-
-
-=begin
-
-= Bio::FlatFile
-
---- Bio::FlatFile.auto(filename_or_stream[, mode, perm, options])
-
-      Same as Bio::FlatFile.open(nil, filename_or_stream, mode, perm, options).
-
-      * Example 1
-          Bio::FlatFile.auto(ARGF)
-      * Example 2
-          Bio::FlatFile.auto("embl/est_hum17.dat")
-      * Example 3
-          Bio::FlatFile.auto(IO.popen("gzip -dc nc1101.flat.gz"))
-
---- Bio::FlatFile.open(dbclass, filename_or_stream[, mode, perm, options])
-
-      Prepare to read a file or a stream 'filename_or_stream'
-      which contains 'dbclass'-style formatted data.
-
-      'dbclass' shoud be a class (or module) or nil.
-      e.g. Bio::GenBank, Bio::FastaFormat.
-
-      If 'filename_or_stream' is a filename (which doesn't have gets method),
-      the method opens a local file named 'filename_or_stream'
-      with 'File.open(filename, mode, perm)'.
-
-      When nil is given to dbclass, trying to determine database class
-      (file format) automatically. If fails to determine, dbclass is
-      set to nil and FlatFile#next_entry works same as IO#gets when
-      raw = true. It is recommended to set dbclass using
-      FlatFile#dbclass= method if fails to determine automatically.
-
-      * Example 1
-          Bio::FlatFile.open(Bio::GenBank, "genbank/gbest40.seq")
-      * Example 2
-          Bio::FlatFile.open(nil, "embl/est_hum17.dat")
-      * Example 3
-          Bio::FlatFile.open(Bio::GenBank, $stdin)
-
-      If it is called with block, the block will be executed with
-      a newly opened Bio::FlatFile instance object. If filename
-      is given, the file is automatically closed when leaving the block.
-
-      * Example 4
-          Bio::FlatFile.open(nil, 'test4.fst') do |ff|
-              ff.each { |e| print e.definition, "\n" }
-          end
-
---- Bio::FlatFile.new(dbclass, stream, options = nil)
-
-      Same as FlatFile.open, except that 'stream' should be a opened
-      stream object (IO, File, ..., who have the 'gets' method).
-
-      * Example 1
-          Bio::FlatFile.new(Bio::GenBank, ARGF)
-      * Example 2
-          Bio::FlatFile.new(Bio::GenBank, IO.popen("gzip -dc nc1101.flat.gz"))
-
-      'options' needs to be a hash (or nil).
-      Current options are below:
-         :raw --> if true, "raw mode" (same as #raw=true).
-                  default: false (not "raw mode").
-
-      * Example 3
-          Bio::FlatFile.new(nil, $stdin, :raw=>true)
-      * Example 3 in old style (deprecated)
-          Bio::FlatFile.new(nil, $stdin, true)
-
---- Bio::FlatFile.to_a(filename_or_stream, *arg)
-
-      Same as FlatFile.auto(filename_or_stream, *arg).to_a
-
---- Bio::FlatFile#next_entry
-
-      Get next entry.
-
---- Bio::FlatFile#each_entry { |entry| ... }
---- Bio::FlatFile#each { |entry| ... }
-
-      Iterates over each entry in the flatfile.
-
-      * Example
-          include Bio
-          ff = FlatFile.open(GenBank, "genbank/gbhtg14.seq")
-          ff.each_entry do |x|
-            puts x.definition
-          end
-
---- Bio::FlatFile#to_a
-
-      Creates an array that contains all entries in the flatfile.
-
---- Bio::FlatFile#rewind
-
-      Resets file pointer to the start of the flatfile.
-      (Same as IO#rewind)
-
---- Bio::FlatFile#close
-
-      Closes input stream.
-      (Same as IO#close)
-
---- Bio::FlatFile#raw=
-
-      Assign true or false.  If true, the next_entry method returns
-      a entry as a text, whereas if false, as a parsed object.
-
---- Bio::FlatFile#raw
-
-      Returns current state of the raw mode.
-
---- Bio::FlatFile#entry_raw
-
-      Returns the current entry as a text.
-
---- Bio::FlatFile#io
-
-      Returns input stream (IO object).
-
---- Bio::FlatFile#pos
-
-      Returns current position of input stream.
-      (Same as IO#pos, but may not be equal to io.pos,
-       because  FlatFile#autodetect may pre-read some lines.)
-
---- Bio::FlatFile#eof?
-
-      Returns true if input stream is end-of-file.
-      Otherwise, returns false.
-      (Same as IO#eof?, but may not be equal to io.eof?,
-       because  FlatFile#autodetect may pre-read some lines.)
-
---- Bio::FlatFile#dbclass
-
-      Returns database class given in FlatFile#initialize
-      (FlatFile.new or FlatFile.open).
-
---- Bio::FlatFile#dbclass=(klass)
-
-      Sets database class. (Plese use only if autodetect fails.)
-
---- Bio::FlatFile#autodetect([lines])
-
-      Performs determination of database class (file format).
-      Pre-reads 'lines' lines for format determination (default 31 lines).
-      If fails, returns nil or false. Otherwise, returns database class.
-      It may be useful if input file is a mixture of muitiple format data.
-
---- Bio::FlatFile.autodetect(str)
-
-      Determines database class (== file format) of given string.
-      If fails to determine, returns false or nil.
-
---- Bio::FlatFile.autodetect_file(filename)
-
-      Determines database class (== file format) of given file.
-      If fails to determine, returns nil.
-
---- Bio::FlatFile.autodetect_stream(io)
-
-      Determines database class (== file format) of given input stream.
-      If fails to determine, returns nil.
-      Caution: the method reads some data from the input stream,
-      and the data will be lost.
-
-=end
 
