@@ -4,7 +4,7 @@
 # Copyright::   Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
 # License::     LGPL
 #
-#  $Id: report.rb,v 1.10 2005/10/31 13:13:35 nakao Exp $
+#  $Id: report.rb,v 1.11 2005/11/01 05:15:15 nakao Exp $
 #
 # == A Report classes for PSORT Systems
 # 
@@ -299,7 +299,7 @@ module Bio
           }
 
           report.prob = self.set_kNN_prob(ent[2])
-          report.set_prediction(ent[3])	         
+          report.set_prediction(ent[3])         
 
           return report
         end
@@ -378,13 +378,13 @@ module Bio
             ent.delete_at(i - 1)
           end
 
-          report.set_header_line(ent.shift)	  
+          report.set_header_line(ent.shift)  
           report.seq = Bio::Sequence::AA.new(ent.shift)
 
           fent, pent = self.divent(ent)
-          report.set_features(fent)	          
-          report.prob = self.set_kNN_prob(pent[0].strip)	  
-          report.set_prediction(pent[1].strip)	
+          report.set_features(fent)          
+          report.prob = self.set_kNN_prob(pent[0].strip)  
+          report.set_prediction(pent[1].strip)
 
           return report
         end

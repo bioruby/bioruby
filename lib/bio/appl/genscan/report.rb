@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.5 2005/09/08 01:22:09 k Exp $
+#  $Id: report.rb,v 1.6 2005/11/01 05:15:15 nakao Exp $
 #
 
 require 'bio/db/fasta'
@@ -125,7 +125,7 @@ class Genscan
       if /^Parameter matrix: (\w.+)$/ =~ line.chomp
         @matrix = $1
       else
-        raise "Error: [#{line}]"	  
+        raise "Error: [#{line}]"  
       end
     end
     private :parse_parameter

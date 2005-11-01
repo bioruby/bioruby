@@ -5,7 +5,7 @@
 # License::     LGPL
 #
 #
-# $Id: psort.rb,v 1.7 2005/10/31 10:26:58 nakao Exp $
+# $Id: psort.rb,v 1.8 2005/11/01 05:15:15 nakao Exp $
 #
 # == A client for PSORT WWW Server 
 #
@@ -63,13 +63,13 @@ module Bio
     #   Peking   srs.pku.edu.cn:8088     
     WWWServer = {
       'IMSUT'   => {'host' => 'psort.hgc.jp', #'psort.ims.u-tokyo.ac.jp', 
- 	            'PSORT1' => '/cgi-bin/okumura.pl',
- 	            'PSORT2' => '/cgi-bin/runpsort.pl'},
+                    'PSORT1' => '/cgi-bin/okumura.pl',
+                    'PSORT2' => '/cgi-bin/runpsort.pl'},
       'Okazaki' => {'host' => 'psort.nibb.ac.jp', 
- 	            'PSORT1' => '/cgi-bin/okumura.pl',
+                    'PSORT1' => '/cgi-bin/okumura.pl',
                     'PSORT2' => '/cgi-bin/runpsort.pl'},
       'Peking'  => {'host' => 'srs.pku.edu.en:8088', 
- 	            'PSORT1' => '/cgi-bin/okumura.pl',
+                    'PSORT1' => '/cgi-bin/okumura.pl',
                     'PSORT2' => '/cgi-bin/runpsort.pl'}
     }
 
@@ -134,12 +134,12 @@ module Bio
 
       # Bio::CGIDriver#parse_report. An API skelton.
       def parse_report(result_body)
-        # The routin should be provided in the inherited class	
+        # The routin should be provided in the inherited class
       end
 
       # Erases HTML tags
       def erase_html_tags(str)
-        return str.gsub(/<\S.*?>/,'')	
+        return str.gsub(/<\S.*?>/,'')
       end
 
       # Returns CGI argument text in String (key=value&) from a Hash ({key=>value}).
@@ -449,7 +449,7 @@ end # module Bio
 if __FILE__ == $0
 
   begin
-    require 'psort/report.rb'	
+    require 'psort/report.rb'
   rescue LoadError
   end
 
