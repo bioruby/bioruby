@@ -4,7 +4,7 @@
 # Copyright::   Copyright (C) 2001-2005 Mitsuteru C. Nakao <n@bioruby.org>
 # License::     LGPL
 #
-# $Id: common.rb,v 1.7 2005/11/01 02:16:06 nakao Exp $
+# $Id: common.rb,v 1.8 2005/11/02 07:30:14 nakao Exp $
 #
 # == EMBL style databases class
 #
@@ -74,8 +74,9 @@ module Bio
 class EMBLDB
 module Common
 
-  DELIMITER	= RS = "\n//\n"
-  TAGSIZE	= 5
+  DELIMITER = "\n//\n"
+  RS = DELIMITER
+  TAGSIZE = 5
 
   def initialize(entry)
     super(entry, TAGSIZE)
@@ -118,7 +119,7 @@ module Common
     end
     @data['DE']
   end
-  alias description de	
+  alias description de
   alias definition de   # API
   
 
@@ -215,7 +216,7 @@ module Common
     unless @data['KW']
       if get('KW').size > 0
         tmp = fetch('KW').sub(/.$/,'')
-        @data['KW'] = tmp.split(/;/).map {|e| e.strip }	
+        @data['KW'] = tmp.split(/;/).map {|e| e.strip }
       else
         @data['KW'] = []
       end

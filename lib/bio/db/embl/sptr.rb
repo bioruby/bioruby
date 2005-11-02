@@ -4,7 +4,7 @@
 # Copyright::   Copyright (C) 2001-2005 Mitsuteru C. Nakao <n@bioruby.org>
 # License::     LGPL
 #
-# $Id: sptr.rb,v 1.28 2005/11/01 02:16:06 nakao Exp $
+# $Id: sptr.rb,v 1.29 2005/11/02 07:30:14 nakao Exp $
 #
 # == UniProtKB/SwissProt and TrEMBL
 #
@@ -68,9 +68,9 @@ class SPTR < EMBLDB
     end
 
     if key
-      @data['ID'][key]	# String/Int
+      @data['ID'][key] # String/Int
     else
-      @data['ID']		# Hash
+      @data['ID']      # Hash
     end
   end
 
@@ -516,7 +516,7 @@ class SPTR < EMBLDB
       return cc_interaction_parse(@data['CC']['INTERACTION'].to_s)
 
     when nil
-      return @data['CC']	
+      return @data['CC']
 
     else
       return @data['CC'][tag]

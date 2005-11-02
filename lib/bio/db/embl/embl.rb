@@ -5,7 +5,7 @@
 # Copyright::   Copyright (C) 2001-2005 Mitsuteru C. Nakao <n@bioruby.org>
 # License::     LGPL
 #
-# $Id: embl.rb,v 1.24 2005/11/01 02:16:06 nakao Exp $
+# $Id: embl.rb,v 1.25 2005/11/02 07:30:14 nakao Exp $
 #
 # == EMBL database entry
 #
@@ -241,19 +241,19 @@ class EMBL < EMBLDB
       @orig['FT'].each_line do |line|
         next if line =~ /^FEATURES/
 
-        head = line[0,20].strip	# feature key (source, CDS, ...)
-        body = line[20,60].chomp	# feature value (position, /qualifier=)
+        head = line[0,20].strip  # feature key (source, CDS, ...)
+        body = line[20,60].chomp # feature value (position, /qualifier=)
         if line =~ /^FT {3}(\S+)/
-          ary.push([ $1, body ])	# [ feature, position, /q="data", ... ]
+          ary.push([ $1, body ]) # [ feature, position, /q="data", ... ]
         elsif body =~ /^ \// and not in_quote
-          ary.last.push(body)		# /q="data..., /q=data, /q
+          ary.last.push(body)    # /q="data..., /q=data, /q
 
           if body =~ /=" / and body !~ /"$/
             in_quote = true
           end
 
         else
-          ary.last.last << body	# ...data..., ...data..."
+          ary.last.last << body # ...data..., ...data..."
 
           if body =~ /"$/
             in_quote = false
