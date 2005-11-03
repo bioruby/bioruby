@@ -4,7 +4,7 @@
 # Copyright::   Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
 # License::     LGPL
 #
-#  $Id: report.rb,v 1.11 2005/11/01 05:15:15 nakao Exp $
+#  $Id: report.rb,v 1.12 2005/11/03 10:50:58 nakao Exp $
 #
 # == A Report classes for PSORT Systems
 # 
@@ -52,11 +52,11 @@ module Bio
         def self.default_parser(output_report)
           rpt = self.new
           rpt.raw = output_report
-          query_info = str.scan(/^Query Information\n\n(.+?)\n\n/m)[0][0].split(/\n/)
-          result_info = str.scan(/^Result Information\n\n(.+?)\n\n\*/m)[0][0]
-          step1 = str.scan(/^\*\*\* Reasoning Step: 1\n\n(.+?)\n\n/m)[0][0]
-          step2 = str.scan(/^\*\*\* Reasoning Step: 2\n\n(.+?)\n\n/m)[0][0]
-          final_result = str.scan(/\n\n----- Final Results -----\n\n(.+?)\n\n\n/m)[0][0]
+          query_info = output_report.scan(/^Query Information\n\n(.+?)\n\n/m)[0][0].split(/\n/)
+          result_info = output_report.scan(/^Result Information\n\n(.+?)\n\n\*/m)[0][0]
+          step1 = output_report.scan(/^\*\*\* Reasoning Step: 1\n\n(.+?)\n\n/m)[0][0]
+          step2 = output_report.scan(/^\*\*\* Reasoning Step: 2\n\n(.+?)\n\n/m)[0][0]
+          final_result = output_report.scan(/\n\n----- Final Results -----\n\n(.+?)\n\n\n/m)[0][0]
 
           rpt.entry_id = query_info[2].scan(/^>(\S+) */).to_s
           rpt.origin   = query_info[0].scan(/ORIGIN (\w+)/).to_s
@@ -407,7 +407,7 @@ module Bio
         # Divides entry body
         def self.divent(entry)
           boundary = entry.index(BOUNDARY)
-          return ent[0..(boundary - 1)], ent[(boundary + 2)..ent.length]
+          return entry[0..(boundary - 1)], entry[(boundary + 2)..(entry.length)]
         end
 
         # Sets @features values.
