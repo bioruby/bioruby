@@ -61,3 +61,45 @@ If you need a precise value, you can calculate it by values from the
 The 'gc' method is removed as the method name doesn't represent its value
 is ambiguous.
 
+--- Bio::KEGG::Microarrays, Bio::KEGG::Microarray
+
+* lib/bio/db/kegg/microarray.rb is renamed to lib/bio/db/kegg/expression.rb
+* Bio::KEGG::Microarray is renamed to Bio::KEGG::EXPRESSION
+* Bio::KEGG::Microarrays is removed
+
+Bio::KEGG::Microarrays was intended to store a series of microarray
+expressions as a Hash of Array -like data structure,
+
+  gene1 => [exp1, exp2, exp3, ... ]
+  gene2 => [exp1, exp2, exp3, ... ]
+
+however, it is not utilized well and more suitable container class
+can be proposed.  Until then, this class is removed.
+
+--- Bio::Pathway
+
+* Bio::Pathway#nodes returns an Array of the node objects instead of
+  the number of the node objects.
+* Bio::Pathway#edges returns an Array of the edge objects instead of
+  the number of the edge objects.
+
+=== Deleted files
+
+: lib/bio/db/genbank.rb
+: lib/bio/db/embl.rb
+
+These files are removed as we changed to use autoload.  You can safely
+replace
+
+  require 'bio/db/genbank'
+
+or
+
+  require 'bio/db/embl'
+
+in your code to
+
+  require 'bio'
+
+and this change will also speeds up loading time if you only need
+one of the sub classes under the genbank/ or embl/ directory.
