@@ -1,7 +1,13 @@
 #
-# bio/data/aa.rb - Amino Acids
+# = bio/data/aa.rb - Amino Acids
 #
-#   Copyright (C) 2001, 2005 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::	Copyright (C) 2001, 2005
+#		Toshiaki Katayama <k@bioruby.org>
+# Lisence::	LGPL
+#
+# $Id: aa.rb,v 0.13 2005/11/04 17:49:10 k Exp $
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,258 +23,262 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aa.rb,v 0.12 2005/09/26 13:00:06 k Exp $
+#++
 #
 
 module Bio
 
-  class AminoAcid
+class AminoAcid
 
-    module Data
+  module Data
 
-      # IUPAC code
-      # * http://www.iupac.org/
-      # * http://www.chem.qmw.ac.uk/iubmb/newsletter/1999/item3.html
+    # IUPAC code
+    # * http://www.iupac.org/
+    # * http://www.chem.qmw.ac.uk/iubmb/newsletter/1999/item3.html
 
-      Names= {
+    Names= {
 
-        'A' => 'Ala',
-        'C' => 'Cys',
-        'D' => 'Asp',
-        'E' => 'Glu',
-        'F' => 'Phe',
-        'G' => 'Gly',
-        'H' => 'His',
-        'I' => 'Ile',
-        'K' => 'Lys',
-        'L' => 'Leu',
-        'M' => 'Met',
-        'N' => 'Asn',
-        'P' => 'Pro',
-        'Q' => 'Gln',
-        'R' => 'Arg',
-        'S' => 'Ser',
-        'T' => 'Thr',
-        'V' => 'Val',
-        'W' => 'Trp',
-        'Y' => 'Tyr',
-        'B' => 'Asx',	# D/N
-        'Z' => 'Glx',	# E/Q
-        'U' => 'Sec',	# 'uga' (stop)
-        '?' => 'Pyl',	# 'uag' (stop)
-       
-        'Ala' => 'alanine',
-        'Cys' => 'cysteine',
-        'Asp' => 'aspartic acid',
-        'Glu' => 'glutamic acid',
-        'Phe' => 'phenylalanine',
-        'Gly' => 'glycine',
-        'His' => 'histidine',
-        'Ile' => 'isoleucine',
-        'Lys' => 'lysine',
-        'Leu' => 'leucine',
-        'Met' => 'methionine',
-        'Asn' => 'asparagine',
-        'Pro' => 'proline',
-        'Gln' => 'glutamine',
-        'Arg' => 'arginine',
-        'Ser' => 'serine',
-        'Thr' => 'threonine',
-        'Val' => 'valine',
-        'Trp' => 'tryptophan',
-        'Tyr' => 'tyrosine',
-        'Asx' => 'asparagine/aspartic acid',
-        'Glx' => 'glutamine/glutamic acid',
-        'Sec' => 'selenocysteine',
-        'Pyl' => 'pyrrolysine',
+      'A' => 'Ala',
+      'C' => 'Cys',
+      'D' => 'Asp',
+      'E' => 'Glu',
+      'F' => 'Phe',
+      'G' => 'Gly',
+      'H' => 'His',
+      'I' => 'Ile',
+      'K' => 'Lys',
+      'L' => 'Leu',
+      'M' => 'Met',
+      'N' => 'Asn',
+      'P' => 'Pro',
+      'Q' => 'Gln',
+      'R' => 'Arg',
+      'S' => 'Ser',
+      'T' => 'Thr',
+      'V' => 'Val',
+      'W' => 'Trp',
+      'Y' => 'Tyr',
+      'B' => 'Asx',	# D/N
+      'Z' => 'Glx',	# E/Q
+      'U' => 'Sec',	# 'uga' (stop)
+      '?' => 'Pyl',	# 'uag' (stop)
+     
+      'Ala' => 'alanine',
+      'Cys' => 'cysteine',
+      'Asp' => 'aspartic acid',
+      'Glu' => 'glutamic acid',
+      'Phe' => 'phenylalanine',
+      'Gly' => 'glycine',
+      'His' => 'histidine',
+      'Ile' => 'isoleucine',
+      'Lys' => 'lysine',
+      'Leu' => 'leucine',
+      'Met' => 'methionine',
+      'Asn' => 'asparagine',
+      'Pro' => 'proline',
+      'Gln' => 'glutamine',
+      'Arg' => 'arginine',
+      'Ser' => 'serine',
+      'Thr' => 'threonine',
+      'Val' => 'valine',
+      'Trp' => 'tryptophan',
+      'Tyr' => 'tyrosine',
+      'Asx' => 'asparagine/aspartic acid',
+      'Glx' => 'glutamine/glutamic acid',
+      'Sec' => 'selenocysteine',
+      'Pyl' => 'pyrrolysine',
 
-      }
+    }
 
-      # AAindex FASG760101 - Molecular weight (Fasman, 1976)
-      #   Fasman, G.D., ed.
-      #   Handbook of Biochemistry and Molecular Biology", 3rd ed.,
-      #   Proteins - Volume 1, CRC Press, Cleveland (1976)
+    # AAindex FASG760101 - Molecular weight (Fasman, 1976)
+    #   Fasman, G.D., ed.
+    #   Handbook of Biochemistry and Molecular Biology", 3rd ed.,
+    #   Proteins - Volume 1, CRC Press, Cleveland (1976)
 
-      Weight = {
+    Weight = {
 
-        'A' => 89.09,
-        'C' => 121.15,	# 121.16 according to the Wikipedia
-        'D' => 133.10,
-        'E' => 147.13,
-        'F' => 165.19,
-        'G' => 75.07,
-        'H' => 155.16,
-        'I' => 131.17,
-        'K' => 146.19,
-        'L' => 131.17,
-        'M' => 149.21,
-        'N' => 132.12,
-        'P' => 115.13,
-        'Q' => 146.15,
-        'R' => 174.20,
-        'S' => 105.09,
-        'T' => 119.12,
-        'U' => 168.06,
-        'V' => 117.15,
-        'W' => 204.23,
-        'Y' => 181.19,
-      }
+      'A' => 89.09,
+      'C' => 121.15,	# 121.16 according to the Wikipedia
+      'D' => 133.10,
+      'E' => 147.13,
+      'F' => 165.19,
+      'G' => 75.07,
+      'H' => 155.16,
+      'I' => 131.17,
+      'K' => 146.19,
+      'L' => 131.17,
+      'M' => 149.21,
+      'N' => 132.12,
+      'P' => 115.13,
+      'Q' => 146.15,
+      'R' => 174.20,
+      'S' => 105.09,
+      'T' => 119.12,
+      'U' => 168.06,
+      'V' => 117.15,
+      'W' => 204.23,
+      'Y' => 181.19,
+    }
 
-      def weight(x = nil)
-        if x
-          if x.length > 1
-            total = 0.0
-            x.each_byte do |byte|
-              aa = byte.chr.upcase
+    def weight(x = nil)
+      if x
+        if x.length > 1
+          total = 0.0
+          x.each_byte do |byte|
+            aa = byte.chr.upcase
+            if Weight[aa]
               total += Weight[aa]
+            else
+              raise "Error: invalid amino acid '#{aa}'"
             end
-            total -= NucleicAcid.weight[:water] * (x.length - 1)
-          else
-            Weight[x]
           end
+          total -= NucleicAcid.weight[:water] * (x.length - 1)
         else
-          Weight
+          Weight[x]
         end
+      else
+        Weight
       end
-
-      def [](x)
-        Names[x]
-      end
-
-      # backward compatibility
-      def names
-        Names
-      end
-      alias aa names
-
-      def name(x)
-        str = Names[x]
-        if str and str.length == 3
-          Names[str]
-        else
-          str
-        end
-      end
-
-      def to_1(x)
-        case x.to_s.length
-        when 1
-          x
-        when 3
-          three2one(x)
-        else
-          name2one(x)
-        end
-      end
-      alias one to_1
-
-      def to_3(x)
-        case x.to_s.length
-        when 1
-          one2three(x)
-        when 3
-          x
-        else
-          name2three(x)
-        end
-      end
-      alias three to_3
-
-      def one2three(x)
-        if x and x.length != 1
-          raise ArgumentError
-        else
-          Names[x]
-        end
-      end
-
-      def three2one(x)
-        if x and x.length != 3
-          raise ArgumentError
-        else
-          reverse[x]
-        end
-      end
-
-      def one2name(x)
-        if x and x.length != 1
-          raise ArgumentError
-        else
-          three2name(Names[x])
-        end
-      end
-
-      def name2one(x)
-        str = reverse[x.to_s.downcase]
-        if str and str.length == 3
-          three2one(str)
-        else
-          str
-        end
-      end
-
-      def three2name(x)
-        if x and x.length != 3
-          raise ArgumentError
-        else
-          Names[x]
-        end
-      end
-
-      def name2three(x)
-        reverse[x.downcase]
-      end
-
-      def to_re(seq)
-        str = seq.to_s.upcase
-        str.gsub!(/[^BZACDEFGHIKLMNPQRSTVWYU]/, ".")
-        str.gsub!("B", "[DN]")
-        str.gsub!("Z", "[EQ]")
-        Regexp.new(str)
-      end
-
-
-      private
-
-
-      def reverse
-        hash = Hash.new
-        Names.each do |k, v|
-          hash[v] = k
-        end
-        hash
-      end
-
     end
 
-
-    # as instance methods
-    include Data
-
-    # as class methods
-    extend Data
-
+    def [](x)
+      Names[x]
+    end
 
     # backward compatibility
-    Names = Data::Names
-    Weight = Data::Weight
+    def names
+      Names
+    end
+    alias aa names
+
+    def name(x)
+      str = Names[x]
+      if str and str.length == 3
+        Names[str]
+      else
+        str
+      end
+    end
+
+    def to_1(x)
+      case x.to_s.length
+      when 1
+        x
+      when 3
+        three2one(x)
+      else
+        name2one(x)
+      end
+    end
+    alias one to_1
+
+    def to_3(x)
+      case x.to_s.length
+      when 1
+        one2three(x)
+      when 3
+        x
+      else
+        name2three(x)
+      end
+    end
+    alias three to_3
+
+    def one2three(x)
+      if x and x.length != 1
+        raise ArgumentError
+      else
+        Names[x]
+      end
+    end
+
+    def three2one(x)
+      if x and x.length != 3
+        raise ArgumentError
+      else
+        reverse[x]
+      end
+    end
+
+    def one2name(x)
+      if x and x.length != 1
+        raise ArgumentError
+      else
+        three2name(Names[x])
+      end
+    end
+
+    def name2one(x)
+      str = reverse[x.to_s.downcase]
+      if str and str.length == 3
+        three2one(str)
+      else
+        str
+      end
+    end
+
+    def three2name(x)
+      if x and x.length != 3
+        raise ArgumentError
+      else
+        Names[x]
+      end
+    end
+
+    def name2three(x)
+      reverse[x.downcase]
+    end
+
+    def to_re(seq)
+      str = seq.to_s.upcase
+      str.gsub!(/[^BZACDEFGHIKLMNPQRSTVWYU]/, ".")
+      str.gsub!("B", "[DN]")
+      str.gsub!("Z", "[EQ]")
+      Regexp.new(str)
+    end
 
 
     private
 
 
-    # override when used as an instance method to improve performance
-    alias orig_reverse reverse
     def reverse
-      unless @reverse
-        @reverse = orig_reverse
+      hash = Hash.new
+      Names.each do |k, v|
+        hash[v] = k
       end
-      @reverse
+      hash
     end
 
   end
 
+
+  # as instance methods
+  include Data
+
+  # as class methods
+  extend Data
+
+
+  # backward compatibility
+  Names = Data::Names
+  Weight = Data::Weight
+
+
+  private
+
+
+  # override when used as an instance method to improve performance
+  alias orig_reverse reverse
+  def reverse
+    unless @reverse
+      @reverse = orig_reverse
+    end
+    @reverse
+  end
+
 end
+
+end # module Bio
 
 
 if __FILE__ == $0

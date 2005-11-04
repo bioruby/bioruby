@@ -1,7 +1,13 @@
 #
-# bio/data/na.rb - Nucleic Acids
+# = bio/data/na.rb - Nucleic Acids
 #
-#   Copyright (C) 2001, 2005 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::	Copyright (C) 2001, 2005
+#		Toshiaki Katayama <k@bioruby.org>
+# Lisence::	LGPL
+#
+# $Id: na.rb,v 0.15 2005/11/04 17:49:10 k Exp $
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,145 +23,149 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: na.rb,v 0.14 2005/09/26 13:00:06 k Exp $
+#++
 #
 
 module Bio
 
-  class NucleicAcid
+class NucleicAcid
 
-    module Data
+  module Data
 
-      # IUPAC code
-      # * Faisst and Meyer (Nucleic Acids Res. 20:3-26, 1992)
-      # * http://www.ncbi.nlm.nih.gov/collab/FT/
+    # IUPAC code
+    # * Faisst and Meyer (Nucleic Acids Res. 20:3-26, 1992)
+    # * http://www.ncbi.nlm.nih.gov/collab/FT/
 
-      Names = {
+    Names = {
 
-        'y'	=> '[tc]',	# pYrimidine
-        'r'	=> '[ag]',	# puRine
-        'w'	=> '[at]',	# Weak
-        's'	=> '[gc]',	# Strong
-        'k'	=> '[tg]',	# Keto
-        'm'	=> '[ac]',	# aMino
+      'y'	=> '[tc]',	# pYrimidine
+      'r'	=> '[ag]',	# puRine
+      'w'	=> '[at]',	# Weak
+      's'	=> '[gc]',	# Strong
+      'k'	=> '[tg]',	# Keto
+      'm'	=> '[ac]',	# aMino
 
-        'b'	=> '[tgc]',	# not A
-        'd'	=> '[atg]',	# not C
-        'h'	=> '[atc]',	# not G
-        'v'	=> '[agc]',	# not T
+      'b'	=> '[tgc]',	# not A
+      'd'	=> '[atg]',	# not C
+      'h'	=> '[atc]',	# not G
+      'v'	=> '[agc]',	# not T
 
-        'n'	=> '[atgc]',
+      'n'	=> '[atgc]',
 
-        'a'	=> 'a',
-        't'	=> 't',
-        'g'	=> 'g',
-        'c'	=> 'c',
-        'u'	=> 'u',
+      'a'	=> 'a',
+      't'	=> 't',
+      'g'	=> 'g',
+      'c'	=> 'c',
+      'u'	=> 'u',
 
-        'A'	=> 'adenine',
-        'T'	=> 'thymine',
-        'G'	=> 'guanine',
-        'C'	=> 'cytosine',
-        'U'	=> 'uracil',
+      'A'	=> 'adenine',
+      'T'	=> 'thymine',
+      'G'	=> 'guanine',
+      'C'	=> 'cytosine',
+      'U'	=> 'uracil',
 
-      }
+    }
 
-      Weight = {
+    Weight = {
 
-        # Calculated by BioPerl's Bio::Tools::SeqStats.pm :-)
+      # Calculated by BioPerl's Bio::Tools::SeqStats.pm :-)
 
-        'a'	=> 135.15,
-        't'	=> 126.13,
-        'g'	=> 151.15,
-        'c'	=> 111.12,
-        'u'	=> 112.10,
+      'a'	=> 135.15,
+      't'	=> 126.13,
+      'g'	=> 151.15,
+      'c'	=> 111.12,
+      'u'	=> 112.10,
 
-        :adenine	=> 135.15,
-        :thymine	=> 126.13,
-        :guanine	=> 151.15,
-        :cytosine	=> 111.12,
-        :uracil		=> 112.10,
+      :adenine	=> 135.15,
+      :thymine	=> 126.13,
+      :guanine	=> 151.15,
+      :cytosine	=> 111.12,
+      :uracil		=> 112.10,
 
-        :deoxyribose_phosphate	=> 196.11,
-        :ribose_phosphate	=> 212.11,
+      :deoxyribose_phosphate	=> 196.11,
+      :ribose_phosphate	=> 212.11,
 
-        :hydrogen	=> 1.00794,
-        :water		=> 18.015,
+      :hydrogen	=> 1.00794,
+      :water		=> 18.015,
 
-      }
+    }
 
-      def weight(x = nil, rna = nil)
-        if x
-          if x.length > 1
-            if rna
-              phosphate = Weight[:ribose_phosphate]
-            else
-              phosphate = Weight[:deoxyribose_phosphate]
-            end
-            hydrogen    = Weight[:hydrogen]
-            water       = Weight[:water]
+    def weight(x = nil, rna = nil)
+      if x
+        if x.length > 1
+          if rna
+            phosphate = Weight[:ribose_phosphate]
+          else
+            phosphate = Weight[:deoxyribose_phosphate]
+          end
+          hydrogen    = Weight[:hydrogen]
+          water       = Weight[:water]
 
-            total = 0.0
-            x.each_byte do |byte|
-              base = byte.chr.downcase
+          total = 0.0
+          x.each_byte do |byte|
+            base = byte.chr.downcase
+            if Weight[base]
               total += Weight[base] + phosphate - hydrogen * 2
+            else
+              raise "Error: invalid nucleic acid '#{base}'"
             end
-            total -= water * (x.length - 1)
-          else
-            Weight[x.to_s.downcase]
           end
+          total -= water * (x.length - 1)
         else
-          Weight
+          Weight[x.to_s.downcase]
         end
+      else
+        Weight
       end
-
-      def [](x)
-        Names[x]
-      end
-
-      # backward compatibility
-      def names
-        Names
-      end
-      alias na names
-
-      def name(x)
-        Names[x.to_s.upcase]
-      end
-
-      def to_re(seq, rna = false)
-        str = ""
-        seq.to_s.downcase.each_byte do |base|
-          if re = Names[base.chr]
-            str += re
-          else
-            str += "."
-          end
-        end
-        if rna
-          str.tr!("t", "u")
-        end
-        Regexp.new(str)
-      end
-
     end
 
-
-    # as instance methods
-    include Data
-
-    # as class methods
-    extend Data
-
+    def [](x)
+      Names[x]
+    end
 
     # backward compatibility
-    Names = Data::Names
-    Weight = Data::Weight
+    def names
+      Names
+    end
+    alias na names
 
+    def name(x)
+      Names[x.to_s.upcase]
+    end
+
+    def to_re(seq, rna = false)
+      str = ""
+      seq.to_s.downcase.each_byte do |base|
+        if re = Names[base.chr]
+          str += re
+        else
+          str += "."
+        end
+      end
+      if rna
+        str.tr!("t", "u")
+      end
+      Regexp.new(str)
+    end
 
   end
 
+
+  # as instance methods
+  include Data
+
+  # as class methods
+  extend Data
+
+
+  # backward compatibility
+  Names = Data::Names
+  Weight = Data::Weight
+
+
 end
+
+end # module Bio
 
 
 if __FILE__ == $0
