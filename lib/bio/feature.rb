@@ -1,11 +1,16 @@
 #
 # = bio/feature.rb - Features/Feature class (GenBank Feature table)
 #
-# Author::	Toshiaki Katayama <k@bioruby.org>
-# Copyright::	Copyright (c) 2002, 2005 BioRuby project
+# Copyright::	Copyright (c) 2002, 2005
+#		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: feature.rb,v 1.7 2005/10/23 07:21:00 k Exp $
+# $Id: feature.rb,v 1.8 2005/11/04 17:36:47 k Exp $
+#
+#--
+# *TODO*
+# add to_gff method
+#++
 #
 # == INSD Feature table definition
 #
