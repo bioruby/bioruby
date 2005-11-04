@@ -1,3 +1,19 @@
+2005-10-23  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/util/color_scheme
+
+	  Newly contributed Bio::ColorScheme
+
+	* lib/bio/db/kegg/kgml.rb
+
+	  Newly added KEGG KGML parser.
+
+2005-10-05  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/shell/plugin/midi.rb
+
+	  Sequcne to MIDI plugin is contributed by Natsuhiro Ichinose
+
 2005-09-25  Toshiaki Katayama <k@bioruby.org>
 
 	* README.DEV
