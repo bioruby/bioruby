@@ -1,6 +1,6 @@
 =begin
 
-  $Id: README.DEV,v 1.2 2005/09/26 02:07:02 k Exp $
+  $Id: README.DEV,v 1.3 2005/11/04 17:31:32 k Exp $
 
   Copyright (C) 2005 Toshiaki Katayama <k@bioruby.org>
 
@@ -52,9 +52,25 @@ comments, include it in the RDoc documentation.
 === Each file must start with the following text
 
   #
-  # bio/foo/bar.rb - foo bar class
+  # = bio/foo/bar.rb - foo bar class
   #
-  #   Copyright (C) 2005 Ruby B. Hacker <rbh@example.org>
+  # Copyright::	Copyright (C) 2005
+  #		Bio R. Hacker <brh@example.org>,
+  #		Chem R. Hacker <crh@example.org>
+  # Lisence::	LGPL
+  #
+  # $Id: README.DEV,v 1.3 2005/11/04 17:31:32 k Exp $
+  #
+  # == Blah blah blah
+  #
+  # blah blah blah ...
+  #
+  # === Examples
+  #
+  #   hoge = Bio::Foo::Bar.new
+  #   puts hoge.fuga
+  #
+  #--
   #
   #  This library is free software; you can redistribute it and/or
   #  modify it under the terms of the GNU Lesser General Public
@@ -70,19 +86,18 @@ comments, include it in the RDoc documentation.
   #  License along with this library; if not, write to the Free Software
   #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
   #
-  #  $Id: README.DEV,v 1.2 2005/09/26 02:07:02 k Exp $
   #
 
 === Documentation should be written in the RDoc format in the source code
 
 The RDoc format is becoming de facto standard for the Ruby documentation.
-
-So, we are now in transition from the RD format to the RDoc format
-as we had been written the API documentations in the RD format and
-put them at the end of each file.
+So, we are now in transition from the RD format which we have been used
+to the RDoc format in API documentations.
 
 Additional tutorial documents and some working examples are also
-welcome when you contribute your codes.
+welcome when you contribute your codes.  You may also able to use
+the header part of the file for this purpose as shown in the previous
+section.
 
 === Testing code should use 'test/unit'
 
