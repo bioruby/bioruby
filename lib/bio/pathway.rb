@@ -1,13 +1,13 @@
 #
 # = bio/pathway.rb - Binary relations and Graph algorithms
 #
-# Author::	Toshiaki Katayama <k@bioruby.org>
-#		Shuichi Kawashima <shuichi@hgc.jp>
+# Copyright::	Copyright (c) 2001, 2005
+# 		Toshiaki Katayama <k@bioruby.org>,
+#		Shuichi Kawashima <shuichi@hgc.jp>,
 #		Nobuya Tanaka <t@chemruby.org>
-# Copyright::	Copyright (c) 2001, 2005 BioRuby project
 # License::	LGPL
 #
-# $Id: pathway.rb,v 1.32 2005/10/23 09:48:58 k Exp $
+# $Id: pathway.rb,v 1.33 2005/11/04 17:39:44 k Exp $
 #
 #--
 # TODO:
@@ -52,8 +52,8 @@ module Bio
 class Pathway
 
   #--
-  #require 'chem'
-  #include Chem::Graph
+  # require 'chem'
+  # include Chem::Graph
   #++
 
   # Initial graph (adjacency list) generation from the list of Relation
@@ -294,9 +294,10 @@ f          x = @index[from]
     sub_graph = Pathway.new([], @undirected)
     @graph.each do |from, hash|
       next unless @label[from]
+      sub_graph.graph[from] = {}
       hash.each do |to, relation|
         next unless @label[to]
-        sub_graph.append(Relation.new(from, to, relation))
+        sub_graph.graph[from][to] = relation
       end
     end
     return sub_graph
@@ -321,18 +322,28 @@ f          x = @index[from]
   # indicates completeness of the edge density among the surrounded nodes.
   #
   def cliquishness(node)
+    if not undirected?
+      raise "Can't calculate cliquishness in directed graph"
+    end
     neighbors = @graph[node].keys
-    sg = subgraph(neighbors)
-    if sg.graph.size != 0
-      edges = sg.edges.length / 2.0
-      nodes = sg.nodes.length
-      complete = (nodes.length * (nodes.length - 1)) / 2.0
-      return edges/complete
+    case neighbors.size
+    when 0
+      return Float::NaN
+    when 1
+      return 1
     else
-      return 0.0
+      num_neighbor_edges = subgraph_adjacency_matrix(neighbors).flatten.sum / 2
+      num_complete_edges = neighbors.size * (neighbors.size - 1) / 2
+      return num_neighbor_edges.to_f / num_complete_edges.to_f
     end
   end
 
+  def subgraph_adjacency_matrix(nodes)
+    adjacency_matrix = to_matrix(0).to_a
+    node_indices = nodes.collect {|x| @index[x]}
+    subgraph = adjacency_matrix.values_at(*node_indices)
+    subgraph.collect!{|row| row.values_at(*node_indices)}
+  end
 
   # Returns frequency of the nodes having same number of edges as hash
   #
