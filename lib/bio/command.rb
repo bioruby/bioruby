@@ -2,11 +2,11 @@
 # = bio/command.rb - general methods for external command execution
 #
 # Copyright::	Copyright (C) 2003-2005
-# 		Naohisa Goto <ng@bioruby.org>
+# 		Naohisa Goto <ng@bioruby.org>,
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-#  $Id: command.rb,v 1.2 2005/10/30 16:41:37 k Exp $
+#  $Id: command.rb,v 1.3 2005/11/04 17:36:00 k Exp $
 #
 #--
 #
