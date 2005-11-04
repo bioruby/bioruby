@@ -1,7 +1,13 @@
 #
-#  bio/shell.rb - Loading all BioRuby shell features
+# = bio/shell.rb - Loading all BioRuby shell features
 #
-#   Copyright (C) 2005 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::	Copyright (C) 2005
+#		Toshiaki Katayama <k@bioruby.org>
+# Lisence::	LGPL
+#
+# $Id: shell.rb,v 1.4 2005/11/04 17:40:33 k Exp $
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +23,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: shell.rb,v 1.3 2005/10/05 08:58:33 k Exp $
+#++
 #
 
 require 'bio'
@@ -31,10 +37,14 @@ module Bio::Shell
 
   require 'bio/shell/core'
   require 'bio/shell/session'
+  #require 'bio/shell/help'
   require 'bio/shell/plugin/seq'
+  require 'bio/shell/plugin/midi'
   require 'bio/shell/plugin/flatfile'
   require 'bio/shell/plugin/obda'
-  require 'bio/shell/plugin/midi'
+  require 'bio/shell/plugin/keggapi'
+  #require 'bio/shell/plugin/das'
+  #require 'bio/shell/plugin/demo'
 
   extend Core
 
