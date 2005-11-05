@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # Lisence::	LGPL
 #
-# $Id: shell.rb,v 1.4 2005/11/04 17:40:33 k Exp $
+# $Id: shell.rb,v 1.5 2005/11/05 08:24:23 k Exp $
 #
 #--
 #
@@ -40,6 +40,7 @@ module Bio::Shell
   #require 'bio/shell/help'
   require 'bio/shell/plugin/seq'
   require 'bio/shell/plugin/midi'
+  require 'bio/shell/plugin/codon'
   require 'bio/shell/plugin/flatfile'
   require 'bio/shell/plugin/obda'
   require 'bio/shell/plugin/keggapi'
