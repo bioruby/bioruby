@@ -1,8 +1,14 @@
 #!/usr/bin/env ruby
 #
-#  BioRuby shell - command line interface for the BioRuby library
+# = BioRuby shell - command line interface for the BioRuby library
 #
-#   Copyright (C) 2005 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::	Copyright (C) 2005
+#		Toshiaki Katayama <k@bioruby.org>
+# Lisence::	LGPL
+#
+# $Id: bioruby,v 1.4 2005/11/05 08:33:53 k Exp $
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -18,10 +24,16 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: bioruby,v 1.3 2005/10/27 11:55:58 pjotr Exp $
+#++
 #
 
-$: << File.dirname(__FILE__)+'/../lib'
+# $: << File.dirname(__FILE__)+'/../lib'
+
+begin
+  require 'rubygems'
+  require_gem 'bio', '~> 0.7'
+rescue LoadError
+end
 
 require 'bio/shell'
 
@@ -79,7 +91,7 @@ irb = IRB::Irb.new
 IRB.conf[:MAIN_CONTEXT] = irb.context
 
 # loading workspace and command history
-Bio::Shell.opening
+Bio::Shell.open
 
 Signal.trap("SIGINT") do
   irb.signal_handle
@@ -90,4 +102,4 @@ catch(:IRB_EXIT) do
 end
 
 # saving workspace, command history and configuration before exit
-Bio::Shell.closing
+Bio::Shell.close
