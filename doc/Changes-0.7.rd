@@ -52,14 +52,20 @@ or newly added.
 * Bio::Sequence::NA#gc_percent returns integer instead of float
 * Bio::Sequence::NA#gc (was aliased to gc_percent) is removed
 
-In BioRuby, GC% is rounded to one decimal place.  However, how many digits
+Previously, GC% is rounded to one decimal place.  However, how many digits
 should be left when rounding the value is not clear and as the GC% is an
 rough measure by its nature, we have changed to return integer part only.
 If you need a precise value, you can calculate it by values from the
 'composition' method by your own criteria.
 
-The 'gc' method is removed as the method name doesn't represent its value
-is ambiguous.
+Also, the 'gc' method is removed as the method name doesn't represent
+its value is ambiguous.
+
+* Bio::Sequence#blast
+* Bio::Sequence#fasta
+
+These two methods are removed.  Use Bio::Blast and Bio::Fasta to execute
+BLAST and FASTA search.
 
 --- Bio::KEGG::Microarrays, Bio::KEGG::Microarray
 
