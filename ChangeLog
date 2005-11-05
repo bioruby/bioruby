@@ -1,3 +1,28 @@
+2005-11-05  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/sequence.rb
+
+	  Bio::Sequence.auto(str) method is added which auto detect the
+	  molecular type of the string and then returns the
+	  Bio::Sequence::NA or Bio::Sequence::AA object.
+	  
+	  Bio::Sequence#blast and Bio::Sequence#fasta methods are removed.
+
+	* lib/bio/shell/plugin/codon.rb
+
+	  Newly added plugin to treat codon table.
+	  ColoredCodonTable is ported from the codontable.rb
+
+2005-11-01  Toshiaki Katayama <k@bioruby.org>
+
+	* bin/bioruby, lib/bio/shell/
+
+	  All methods are changed to private methods to avoid adding them
+	  in top level binding, which caused many unexpected behaviors,
+	  as adviced by Koichi Sasada.
+
+	  The MIDI plugin is now able to select musical scales.
+	
 2005-10-23  Toshiaki Katayama <k@bioruby.org>
 
 	* lib/bio/util/color_scheme
