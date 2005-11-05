@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # Lisence::	LGPL
 #
-# $Id: codon.rb,v 1.1 2005/11/05 08:24:24 k Exp $
+# $Id: codon.rb,v 1.2 2005/11/05 11:54:35 k Exp $
 #
 #--
 #
@@ -28,6 +28,7 @@
 
 require 'bio/data/codontable'
 require 'bio/data/aa'
+require 'bio/data/na'
 
 module Bio::Shell
 
@@ -164,4 +165,39 @@ module Bio::Shell
     end
   end
 
+  def aminoacids
+    names = Bio::AminoAcid.names
+    names.sort.each do |aa, code|
+      if aa.length == 1
+        puts "#{aa}\t#{code}\t#{names[code]}"
+      end
+    end
+    return names
+  end
+
+  def nucleicacids
+    [
+      [ 'A', 'Adenine'  ],
+      [ 'T', 'Thymine'  ],
+      [ 'G', 'Guanine'  ],
+      [ 'C', 'Cytosine' ],
+      [ 'U', 'Uracil'   ],
+      [ 'r', '[ag]', 'puRine' ],
+      [ 'y', '[tc]', 'pYrimidine' ],
+      [ 'w', '[at]', 'Weak' ],
+      [ 's', '[gc]', 'Strong' ],
+      [ 'k', '[tg]', 'Keto' ],
+      [ 'm', '[ac]', 'aMino' ],
+      [ 'b', '[tgc]', 'not A' ],
+      [ 'v', '[agc]', 'not T' ],
+      [ 'h', '[atc]', 'not G' ],
+      [ 'd', '[atg]', 'not C' ],
+      [ 'n', '[atgc]', 'any' ],
+    ].each do |list|
+      puts list.join("\t")
+    end
+    return Bio::NucleicAcid.names
+  end
+
 end
+
