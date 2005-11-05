@@ -19,7 +19,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: sequence.rb,v 0.44 2005/09/26 13:00:04 k Exp $
+#  $Id: sequence.rb,v 0.45 2005/11/05 08:22:52 k Exp $
 #
 
 require 'bio/data/na'
@@ -32,6 +32,34 @@ module Bio
   # Nucleic/Amino Acid sequence
 
   class Sequence < String
+
+    def self.auto(str)
+      moltype = guess(str)
+      if moltype == NA
+        NA.new(str)
+      else
+        AA.new(str)
+      end
+    end
+
+    def guess(threshold = 0.9)
+      cmp = self.composition
+
+      bases = cmp['A'] + cmp['T'] + cmp['G'] + cmp['C'] + 
+              cmp['a'] + cmp['t'] + cmp['g'] + cmp['c']
+
+      total = self.length - cmp['N'] - cmp['n']
+
+      if bases.to_f / total > threshold
+        return NA
+      else
+        return AA
+      end
+    end 
+
+    def self.guess(str, *args)
+      self.new(str).guess(*args)
+    end
 
     def to_s
       String.new(self)
@@ -74,14 +102,6 @@ module Bio
       end
     end
 
-    def fasta(factory, header = nil)
-      factory.query(self.to_fasta(header))
-    end
-
-    def blast(factory, header = nil)
-      factory.query(self.to_fasta(header))
-    end
-
     def window_search(window_size, step_size = 1)
       i = 0
       0.step(self.length - window_size, step_size) do |i| 
@@ -107,25 +127,6 @@ module Bio
         count[x] += 1
       end
       return count
-    end
-
-    def guess(threshold = 0.9)
-      cmp = self.composition
-
-      bases = cmp['A'] + cmp['T'] + cmp['G'] + cmp['C'] + 
-              cmp['a'] + cmp['t'] + cmp['g'] + cmp['c']
-
-      total = self.length - cmp['N'] - cmp['n']
-
-      if bases.to_f / total > threshold
-        return NA
-      else
-        return AA
-      end
-    end 
-
-    def self.guess(str, *args)
-      self.new(str).guess(*args)
     end
 
     def randomize(hash = nil)
