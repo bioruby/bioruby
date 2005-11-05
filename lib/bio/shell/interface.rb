@@ -1,7 +1,13 @@
 #
-#  bio/shell/session.rb - core user interface of the BioRuby shell
+# = bio/shell/session.rb - core user interface of the BioRuby shell
 #
-#   Copyright (C) 2005 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::	Copyright (C) 2005
+#		Toshiaki Katayama <k@bioruby.org>
+# Lisence::	LGPL
+#
+# $Id: interface.rb,v 1.2 2005/11/05 08:34:49 k Exp $
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,15 +23,21 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: interface.rb,v 1.1 2005/09/23 13:57:08 k Exp $
+#++
 #
 
 module Bio::Shell
+
+  private
 
   ### work space
 
   def ls
     display eval("local_variables", conf.workspace.binding).inspect
+  end
+
+  def rm(name)                  # name = :hoge
+    eval("#{name} = nil", conf.workspace.binding)
   end
 
   ### config
@@ -48,6 +60,9 @@ module Bio::Shell
 
   ### pager
 
+  #
+  # mysql> pager less
+  #
   def display(*obj)
     # The original idea is from http://sheepman.parfait.ne.jp/20050215.html
     if $bioruby_config[:PAGER]
