@@ -1,7 +1,13 @@
 #
-#  bio/shell/plugin/flatfile.rb - plugin for flatfile database
+# = bio/shell/plugin/flatfile.rb - plugin for flatfile database
 #
-#   Copyright (C) 2005 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::	Copyright (C) 2005
+#		Toshiaki Katayama <k@bioruby.org>
+# Lisence::	LGPL
+#
+# $Id: flatfile.rb,v 1.4 2005/11/05 08:36:24 k Exp $
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,12 +23,14 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: flatfile.rb,v 1.3 2005/10/05 08:56:14 k Exp $
+#++
 #
 
 require 'bio/io/flatfile'
 
 module Bio::Shell
+
+  private
 
   def flatauto(filename)
     if block_given?
@@ -39,7 +47,7 @@ module Bio::Shell
     end
   end
 
-  def convert_to_fasta(fastafile, *flatfiles)
+  def save_fasta(fastafile, *flatfiles)
     puts "Saving fasta file (#{fastafile}) ... "
     File.open(fastafile, "w") do |fasta|
       flatfiles.each do |flatfile|
@@ -55,7 +63,7 @@ module Bio::Shell
     puts "done"
   end
 
-  def bioflat_index(dbname, *flatfiles)
+  def flatindex(dbname, *flatfiles)
     prefix = Core::SAVEDIR + Core::BIOFLAT
     unless File.directory?(prefix)
       Bio::Shell.create_save_dir
@@ -71,7 +79,7 @@ module Bio::Shell
     end
   end
 
-  def bioflat_search(dbname, keyword)
+  def flatsearch(dbname, keyword)
     dir = Core::SAVEDIR + Core::BIOFLAT + dbname.to_s
     Bio::FlatFileIndex.open(dir) do |db|
       if results = db.include?(keyword)
@@ -84,11 +92,13 @@ module Bio::Shell
     end
   end
 
+=begin
   def bioflat_namespaces(dbname)
     dir = Core::SAVEDIR + Core::BIOFLAT + dbname.to_s
     db = Bio::FlatFileIndex.open(dir)
     display db.namespaces.inspect
     db.close
   end
+=end
 
 end
