@@ -1,7 +1,48 @@
 #
-# bio/data/codontable.rb - Codon Table
+# = bio/data/codontable.rb - Codon Table
 #
-#   Copyright (C) 2001, 2004 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::	Copyright (C) 2001, 2004
+#		Toshiaki Katayama <k@bioruby.org>
+# Lisence::	LGPL
+#
+# $Id: codontable.rb,v 0.14 2005/11/05 08:25:47 k Exp $
+#
+# == Data source
+#
+# Data in this class is converted from the NCBI's genetic codes page.
+#
+#  * ((<URL:http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi?mode=t>))
+#
+# === Examples
+#
+# Obtain a codon table No.1 -- Standard (Eukaryote)
+#
+#   table = Bio::CodonTable[1]
+#
+# Obtain a copy of the codon table No.1 to modify.  In this example,
+# reassign a seleno cystein ('U') to the 'tga' codon.
+#
+#   table = Bio::CodonTable.copy(1)
+#   table['tga'] = 'U'
+#
+# Create a new codon table by your own from the Hash which contains
+# pairs of codon and amino acid.  You can also define the table name
+# in the second argument.
+#
+#   hash = { 'ttt' => 'F', 'ttc' => 'ttc', ... }
+#   table = Bio::CodonTable.new(hash, "my codon table")
+#
+# Obtain a translated amino acid by codon.
+#
+#   table = Bio::CodonTable[1]
+#   table['ttt']  # => F
+#
+# Reverse translation of a amino acid into a list of relevant codons.
+#
+#   table = Bio::CodonTable[1]
+#   table.revtrans("A")  # => ["gcg", "gct", "gca", "gcc"]
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,13 +58,15 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: codontable.rb,v 0.13 2005/09/26 13:00:06 k Exp $
+#++
 #
 
 module Bio
 
 class CodonTable
 
+  # Select a codon table by number.  This method will return one of the
+  # hard coded codon tables in this class as a Bio::CodonTable object.
   def self.[](i)
     hash = Tables[i]
     raise "ERROR: Unknown codon table No.#{i}" unless hash
@@ -33,31 +76,74 @@ class CodonTable
     self.new(hash, definition, start, stop)
   end
 
+  # Similar to Bio::CodonTable[num] but returns a copied codon table.
+  # You can modify the codon table without influencing hard coded tables.
   def self.copy(i)
     ct = self[i]
     return Marshal.load(Marshal.dump(ct))
   end
 
+  # Create your own codon table by giving a Hash table of codons and relevant
+  # amino acids.  You can also able to define the table's name as a second
+  # argument.
+  #
+  # Two Arrays 'start' and 'stop' can be specified which contains a list of
+  # start and stop codons used by 'start_codon?' and 'stop_codon?' methods.
   def initialize(hash, definition = nil, start = [], stop = [])
     @table = hash
     @definition = definition
     @start = start
     @stop = stop.empty? ? generate_stop : stop
   end
-  attr_accessor :table, :definition, :start, :stop
 
+  # Accessor methods for a Hash of the currently selected codon table.
+  attr_accessor :table
+
+  # Accessor methods for the name of the currently selected table.
+  attr_accessor :definition
+
+  # Accessor methods for an Array which contains a list of start or stop
+  # codons respectively.
+  attr_accessor :start, :stop
+
+  # Translate a codon into a relevant amino acid.  This method is used for
+  # translating a DNA sequence into amino acid sequence.
   def [](codon)
     @table[codon]
   end
 
+  # Modify the codon table.  Use with caution as it may break hard coded
+  # tables.  If you want to modify existing table, you should use copy
+  # method instead of [] method to generate CodonTable object to be modified.
+  #
+  #   # This is OK.
+  #   table = Bio::CodonTable.copy(1)
+  #   table['tga'] = 'U'
+  #
+  #   # Not recommended as it overrides the hard coded table
+  #   table = Bio::CodonTable[1]
+  #   table['tga'] = 'U'
+  #
   def []=(codon, aa)
     @table[codon] = aa
   end
 
+  # Iterates on codon table hash.
+  #
+  #   table = Bio::CodonTable[1]
+  #   table.each do |codon, aa|
+  #     puts "#{codon} -- #{aa}"
+  #    end
+  #
   def each(&block)
     @table.each(&block)
   end
 
+  # Reverse translation of a amino acid into a list of relevant codons.
+  #
+  #   table = Bio::CodonTable[1]
+  #   table.revtrans("A")	# => ["gcg", "gct", "gca", "gcc"]
+  #
   def revtrans(aa)
     unless @reverse
       @reverse = {}
@@ -69,10 +155,14 @@ class CodonTable
     @reverse[aa.upcase]
   end
 
+  # Returns true if the codon is a start codon in the currently selected
+  # codon table, otherwise false.
   def start_codon?(codon)
     @start.include?(codon.downcase)
   end
 
+  # Returns true if the codon is a stop codon in the currently selected
+  # codon table, otherwise false.
   def stop_codon?(codon)
     @stop.include?(codon.downcase)
   end
@@ -557,321 +647,94 @@ end # module Bio
 
 if __FILE__ == $0
 
-  class ColoredCodonTable
-
-    @@colors = {
-      :text		=> "\e[30m",    # black
-      :aa		=> "\e[32m",    # green
-      :start		=> "\e[31m",    # red
-      :stop		=> "\e[31m",    # red
-      :basic		=> "\e[36m",    # cyan
-      :polar		=> "\e[34m",    # blue
-      :acidic		=> "\e[35m",    # magenta
-      :nonpolar		=> "\e[33m",    # yellow
-    }
-
-    @@properties = {
-      :basic => %w( H K R ),
-      :polar => %w( S T Y Q N S ),
-      :acidic => %w( D E ),
-      :nonpolar => %w( F L I M V P A C W G ),
-      :stop => %w( * ),
-    }
-
-    def initialize(number)
-      require 'bio/data/aa'
-      @aacode = Bio::AminoAcid.names
-      @ctable = Bio::CodonTable[number]
-      @number = number
-      table_number_check
-      generate_colored_text
-    end
-
-    def table_number_check
-      unless @ctable.definition
-        puts "ERROR: Codon table No.#{@number} not found."
-        Bio::CodonTable::Definitions.sort.each do |i, definition|
-          puts "#{i}\t#{definition}"
-        end
-        exit 1
-      end
-    end
-
-    def generate_colored_text
-      @ctable.table.each do |codon, aa|
-        property, = @@properties.detect {|key, list| list.include?(aa)}
-        if aa == '*'
-          color_code = "#{@@colors[:stop]}STOP"
-          color_aa = ""
-        else
-          color_code = "#{@@colors[property]}#{@aacode[aa]}"
-          if @ctable.start_codon?(codon)
-            color_aa = "#{@@colors[:start]}#{aa}"
-          else
-            color_aa = "#{@@colors[:aa]}#{aa}"
-          end
-        end
-        eval("@#{codon} = ' #{color_code} #{color_aa}#{@@colors[:text]} '")
-      end
-
-      @hydrophilic = [
-        "#{@@colors[:basic]}basic#{@@colors[:text]},",
-        "#{@@colors[:polar]}polar#{@@colors[:text]},",
-        "#{@@colors[:acidic]}acidic#{@@colors[:text]}"
-      ].join(" ")
-      @hydrophobic = "#{@@colors[:nonpolar]}nonpolar"
-    end
-
-    def output
-      text = <<-END
-        #
-        #= Codon table #{@number} : #{@ctable.definition}
-        #
-        #  hydrophilic: #{@hydrophilic}
-        #  hydrophobic: #{@hydrophobic}
-        #
-        #*---------------------------------------------*
-        #|       |              2nd              |     |
-        #|  1st  |-------------------------------| 3rd |
-        #|       |  U    |  C    |  A    |  G    |     |
-        #|-------+-------+-------+-------+-------+-----|
-        #| U   U |#{@ttt}|#{@tct}|#{@tat}|#{@tgt}|  u  |
-        #| U   U |#{@ttc}|#{@tcc}|#{@tac}|#{@tgc}|  c  |
-        #| U   U |#{@tta}|#{@tca}|#{@taa}|#{@tga}|  a  |
-        #|  UUU  |#{@ttg}|#{@tcg}|#{@tag}|#{@tgg}|  g  |
-        #|-------+-------+-------+-------+-------+-----|
-        #|  CCCC |#{@ctt}|#{@cct}|#{@cat}|#{@cgt}|  u  |
-        #| C     |#{@ctc}|#{@ccc}|#{@cac}|#{@cgc}|  c  |
-        #| C     |#{@cta}|#{@cca}|#{@caa}|#{@cga}|  a  |
-        #|  CCCC |#{@ctg}|#{@ccg}|#{@cag}|#{@cgg}|  g  |
-        #|-------+-------+-------+-------+-------+-----|
-        #|   A   |#{@att}|#{@act}|#{@aat}|#{@agt}|  u  |
-        #|  A A  |#{@atc}|#{@acc}|#{@aac}|#{@agc}|  c  |
-        #| AAAAA |#{@ata}|#{@aca}|#{@aaa}|#{@aga}|  a  |
-        #| A   A |#{@atg}|#{@acg}|#{@aag}|#{@agg}|  g  |
-        #|-------+-------+-------+-------+-------+-----|
-        #|  GGGG |#{@gtt}|#{@gct}|#{@gat}|#{@ggt}|  u  |
-        #| G     |#{@gtc}|#{@gcc}|#{@gac}|#{@ggc}|  c  |
-        #| G GGG |#{@gta}|#{@gca}|#{@gaa}|#{@gga}|  a  |
-        #|  GG G |#{@gtg}|#{@gcg}|#{@gag}|#{@ggg}|  g  |
-        #*---------------------------------------------*
-        #
-      END
-      text.gsub(/^\s+#/, @@colors[:text])
-    end
-
+  begin
+    require 'pp'
+    alias p pp
+  rescue LoadError
   end
 
-  if ARGV.size > 0
+  puts "### Bio::CodonTable[1]"
+  p ct1 = Bio::CodonTable[1]
 
-    number = ARGV.shift.to_i
-    cct = ColoredCodonTable.new(number)
-    puts cct.output
+  puts ">>> Bio::CodonTable#table"
+  p ct1.table
 
-  else
-
-    begin
-      require 'pp'
-      alias p pp
-    rescue LoadError
-    end
-
-    puts "### Bio::CodonTable[1]"
-    p ct1 = Bio::CodonTable[1]
-
-    puts ">>> Bio::CodonTable#table"
-    p ct1.table
-
-    puts ">>> Bio::CodonTable#each"
-    ct1.each do |codon, aa|
-      puts "#{codon} -- #{aa}"
-    end
-
-    puts ">>> Bio::CodonTable#definition"
-    p ct1.definition
-
-    puts ">>> Bio::CodonTable#['atg']"
-    p ct1['atg']
-
-    puts ">>> Bio::CodonTable#revtrans('A')"
-    p ct1.revtrans('A')
-
-    puts ">>> Bio::CodonTable#start_codon?('atg')"
-    p ct1.start_codon?('atg')
-    
-    puts ">>> Bio::CodonTable#start_codon?('aaa')"
-    p ct1.start_codon?('aaa')
-
-    puts ">>> Bio::CodonTable#stop_codon?('tag')"
-    p ct1.stop_codon?('tag')
-    
-    puts ">>> Bio::CodonTable#stop_codon?('aaa')"
-    p ct1.stop_codon?('aaa')
-
-    puts ">>> ct1_copy = Bio::CodonTable.copy(1)"
-    p ct1_copy = Bio::CodonTable.copy(1)
-    puts ">>> ct1_copy['tga'] = 'U'"
-    p ct1_copy['tga'] = 'U'
-    puts " orig : #{ct1['tga']}"
-    puts " copy : #{ct1_copy['tga']}"
-
-
-    puts "### ct = Bio::CodonTable.new(hash, definition)"
-    hash = {
-      'ttt' => 'F', 'tct' => 'S', 'tat' => 'Y', 'tgt' => 'C',
-      'ttc' => 'F', 'tcc' => 'S', 'tac' => 'Y', 'tgc' => 'C',
-      'tta' => 'L', 'tca' => 'S', 'taa' => '*', 'tga' => 'U',
-      'ttg' => 'L', 'tcg' => 'S', 'tag' => '*', 'tgg' => 'W',
-
-      'ctt' => 'L', 'cct' => 'P', 'cat' => 'H', 'cgt' => 'R',
-      'ctc' => 'L', 'ccc' => 'P', 'cac' => 'H', 'cgc' => 'R',
-      'cta' => 'L', 'cca' => 'P', 'caa' => 'Q', 'cga' => 'R',
-      'ctg' => 'L', 'ccg' => 'P', 'cag' => 'Q', 'cgg' => 'R',
-
-      'att' => 'I', 'act' => 'T', 'aat' => 'N', 'agt' => 'S',
-      'atc' => 'I', 'acc' => 'T', 'aac' => 'N', 'agc' => 'S',
-      'ata' => 'I', 'aca' => 'T', 'aaa' => 'K', 'aga' => 'R',
-      'atg' => 'M', 'acg' => 'T', 'aag' => 'K', 'agg' => 'R',
-
-      'gtt' => 'V', 'gct' => 'A', 'gat' => 'D', 'ggt' => 'G',
-      'gtc' => 'V', 'gcc' => 'A', 'gac' => 'D', 'ggc' => 'G',
-      'gta' => 'V', 'gca' => 'A', 'gaa' => 'E', 'gga' => 'G',
-      'gtg' => 'V', 'gcg' => 'A', 'gag' => 'E', 'ggg' => 'G',
-    }
-    my_ct = Bio::CodonTable.new(hash, "my codon table")
-
-    puts ">>> ct.definition"
-    puts my_ct.definition
-
-    puts ">>> ct.definition=(str)"
-    my_ct.definition = "selenoproteins (Eukaryote)"
-    puts my_ct.definition
-
-    puts ">>> ct['tga']"
-    puts my_ct['tga']
-
-    puts ">>> ct.revtrans('U')"
-    puts my_ct.revtrans('U')
-
-    puts ">>> ct.stop_codon?('tga')"
-    puts my_ct.stop_codon?('tga')
-
-    puts ">>> ct.stop_codon?('tag')"
-    puts my_ct.stop_codon?('tag')
-
-    puts "#"
-    puts "# Example (try to run this module with a codon table number)"
-    puts "#   % ruby codontable.rb 1"
-    puts "#"
-
-    cct = ColoredCodonTable.new(1)
-    puts cct.output
-
+  puts ">>> Bio::CodonTable#each"
+  ct1.each do |codon, aa|
+    puts "#{codon} -- #{aa}"
   end
+
+  puts ">>> Bio::CodonTable#definition"
+  p ct1.definition
+
+  puts ">>> Bio::CodonTable#['atg']"
+  p ct1['atg']
+
+  puts ">>> Bio::CodonTable#revtrans('A')"
+  p ct1.revtrans('A')
+
+  puts ">>> Bio::CodonTable#start_codon?('atg')"
+  p ct1.start_codon?('atg')
+  
+  puts ">>> Bio::CodonTable#start_codon?('aaa')"
+  p ct1.start_codon?('aaa')
+
+  puts ">>> Bio::CodonTable#stop_codon?('tag')"
+  p ct1.stop_codon?('tag')
+  
+  puts ">>> Bio::CodonTable#stop_codon?('aaa')"
+  p ct1.stop_codon?('aaa')
+
+  puts ">>> ct1_copy = Bio::CodonTable.copy(1)"
+  p ct1_copy = Bio::CodonTable.copy(1)
+  puts ">>> ct1_copy['tga'] = 'U'"
+  p ct1_copy['tga'] = 'U'
+  puts " orig : #{ct1['tga']}"
+  puts " copy : #{ct1_copy['tga']}"
+
+
+  puts "### ct = Bio::CodonTable.new(hash, definition)"
+  hash = {
+    'ttt' => 'F', 'tct' => 'S', 'tat' => 'Y', 'tgt' => 'C',
+    'ttc' => 'F', 'tcc' => 'S', 'tac' => 'Y', 'tgc' => 'C',
+    'tta' => 'L', 'tca' => 'S', 'taa' => '*', 'tga' => 'U',
+    'ttg' => 'L', 'tcg' => 'S', 'tag' => '*', 'tgg' => 'W',
+
+    'ctt' => 'L', 'cct' => 'P', 'cat' => 'H', 'cgt' => 'R',
+    'ctc' => 'L', 'ccc' => 'P', 'cac' => 'H', 'cgc' => 'R',
+    'cta' => 'L', 'cca' => 'P', 'caa' => 'Q', 'cga' => 'R',
+    'ctg' => 'L', 'ccg' => 'P', 'cag' => 'Q', 'cgg' => 'R',
+
+    'att' => 'I', 'act' => 'T', 'aat' => 'N', 'agt' => 'S',
+    'atc' => 'I', 'acc' => 'T', 'aac' => 'N', 'agc' => 'S',
+    'ata' => 'I', 'aca' => 'T', 'aaa' => 'K', 'aga' => 'R',
+    'atg' => 'M', 'acg' => 'T', 'aag' => 'K', 'agg' => 'R',
+
+    'gtt' => 'V', 'gct' => 'A', 'gat' => 'D', 'ggt' => 'G',
+    'gtc' => 'V', 'gcc' => 'A', 'gac' => 'D', 'ggc' => 'G',
+    'gta' => 'V', 'gca' => 'A', 'gaa' => 'E', 'gga' => 'G',
+    'gtg' => 'V', 'gcg' => 'A', 'gag' => 'E', 'ggg' => 'G',
+  }
+  my_ct = Bio::CodonTable.new(hash, "my codon table")
+
+  puts ">>> ct.definition"
+  puts my_ct.definition
+
+  puts ">>> ct.definition=(str)"
+  my_ct.definition = "selenoproteins (Eukaryote)"
+  puts my_ct.definition
+
+  puts ">>> ct['tga']"
+  puts my_ct['tga']
+
+  puts ">>> ct.revtrans('U')"
+  puts my_ct.revtrans('U')
+
+  puts ">>> ct.stop_codon?('tga')"
+  puts my_ct.stop_codon?('tga')
+
+  puts ">>> ct.stop_codon?('tag')"
+  puts my_ct.stop_codon?('tag')
 
 end
 
-
-
-=begin
-
-= Bio::CodonTable
-
-Data in this class is converted from the NCBI's genetic codes page.
-
-  * ((<URL:http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi?mode=t>))
-
---- Bio::CodonTable[num]
-
-Select a codon table by number.  You can use this class method to
-obtain hard coded codon table as a Bio::CodonTable object.
-
-  table = Bio::CodonTable[1]
-
---- Bio::CodonTable.copy(num)
-
-Similar to Bio::CodonTable[num] but returns copied codon table.
-You can modify the codon table without influencing hard coded tables.
-
-  table = Bio::CodonTable.copy(1)
-  table['tga'] = 'U'
-
---- Bio::CodonTable.new(hash, definition = nil, start = [], stop = [])
-
-Create your own codon table by passing a Hash table of codons and relevant
-amino acids.  You can give table's name as a definition.
-
-  hash = { 'ttt' => 'F', 'ttc' => 'ttc', ... }
-  table = Bio::CodonTable.new(hash, "my codon table")
-
-Two Arrays 'start' and 'stop' can be specified which contains a list of
-start and stop codons used by 'start_codon?' and 'stop_codon?' methods.
-
---- Bio::CodonTable#[codon]
-
-Translate a codon into a relevant amino acid.  This method is used for
-translating a DNA sequence into amino acid sequence.
-
-  table = Bio::CodonTable[1]
-  table['ttt']  # => F
-
---- Bio::CodonTable#[codon]=(aa)
-
-Modify the codon table.  Use with caution as it may break hard coded
-tables.  If you want to modify existing table, you should use copy
-method instead of [] method to generate CodonTable object to modify.
-
-  table = Bio::CodonTable.copy(1)
-  table['tga'] = 'U'	# This is OK.
-
-  table = Bio::CodonTable.new(hash, definition, ... )
-  table['tga'] = 'U'	# This is also OK.
-
-  table = Bio::CodonTable[1]
-  table['tga'] = 'U'	# not recommended as it rewrites a hard coded table
-
---- Bio::CodonTable#each
-
-Iterates on codon table hash.
-
-  table = Bio::CodonTable[1]
-  table.each do |codon, aa|
-    puts "#{codon} -- #{aa}"
-  end  
-
---- Bio::CodonTable#revtrans(aa)
-
-Reverse translation of a amino acid into a list of relevant codons.
-
-  table = Bio::CodonTable[1]
-  table.revtrans("A")	# => ["gcg", "gct", "gca", "gcc"]
-
---- Bio::CodonTable#start_codon?(codon)
-
-Returns true if the codon is a start codon in the currently selected
-codon table, otherwise false.
-
---- Bio::CodonTable#stop_codon?(codon)
-
-Returns true if the codon is a stop codon in the currently selected
-codon table, otherwise false.
-
---- Bio::CodonTable#table
---- Bio::CodonTable#table=(hash)
-
-Accessor methods for a Hash of the currently selected codon table.
-
---- Bio::CodonTable#definition
---- Bio::CodonTable#definition=(string)
-
-Accessor methods for the name of the currently selected table.
-
---- Bio::CodonTable#start
---- Bio::CodonTable#start=(array)
---- Bio::CodonTable#stop
---- Bio::CodonTable#stop=(array)
-
-Accessor methods for an Array which contains a list of start or stop
-codons respectively.
-
-=end
