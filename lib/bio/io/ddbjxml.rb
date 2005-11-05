@@ -1,7 +1,13 @@
 #
-# bio/io/ddbjxml.rb - DDBJ SOAP server access class
+# = bio/io/ddbjxml.rb - DDBJ SOAP server access class
 #
-#   Copyright (C) 2003, 2004 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::	Copyright (C) 2003, 2004
+#		KATAYAMA Toshiaki <k@bioruby.org>
+# Lisence::	LGPL
+#
+# $Id: ddbjxml.rb,v 1.7 2005/11/05 08:33:01 k Exp $
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +23,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: ddbjxml.rb,v 1.6 2005/09/26 13:00:08 k Exp $
+#++
 #
 
 require 'bio/io/soapwsdl'
