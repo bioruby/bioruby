@@ -1,7 +1,13 @@
 #
-#  bio/shell/plugin/seq.rb - plugin for biological sequence manipulations
+# = bio/shell/plugin/seq.rb - plugin for biological sequence manipulations
 #
-#   Copyright (C) 2005 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::	Copyright (C) 2005
+#		Toshiaki Katayama <k@bioruby.org>
+# Lisence::	LGPL
+#
+# $Id: seq.rb,v 1.5 2005/11/05 10:19:07 k Exp $
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,107 +23,111 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: seq.rb,v 1.4 2005/10/28 02:08:10 nakao Exp $
+#++
 #
 
 require 'bio/sequence'
 
 module Bio::Shell
 
-  def naseq(str)
-    Bio::Sequence::NA.new(str)
-  end
+  private
 
-  def aaseq(str)
-    Bio::Sequence::AA.new(str)
-  end
-  
-  def revseq(str)
-    seq = Bio::Sequence::NA.new(str)
-    res = seq.complement
-    display res
-    return res
-  end
-
-  def translate(str)
-    seq = Bio::Sequence::NA.new(str)
-    res = seq.translate
-    display res
-    return res
-  end
-  
-  def seq_report(str)
-    if File.exist?(str)
-      Bio::FlatFile.open(nil, arg).each do |f|
-        seq = f.seq
-        if seq.class == Bio::Sequence::NA
-          na_report(seq) 
-        else
-          aa_report(seq) 
-        end
+  # Obtain a Bio::Sequence::NA (DNA) or a Bio::Sequence::AA (Amino Acid)
+  # sequence from
+  #   * String -- "atgcatgc" or "MQKKP"
+  #   * File   -- "gbvrl.gbk" (only the first entry is used)
+  #   * ID     -- "embl:BUM"  (entry is retrieved by the OBDA)
+  def seq(arg)
+    if arg.respond_to?(:gets) or File.exists?(arg)
+      entry = flatauto(arg)
+    elsif arg[/:/]
+      db, entry_id = arg.split(/:/)
+      str = obda_get_entry(db, entry_id)
+      if cls = Bio::FlatFile.autodetect(str)
+        entry = cls.new(str)
       end
     else
-      moltype = Bio::Seq.guess(str)
-      if moltype == Bio::Sequence::NA
-        display na_report(str)
-      elsif moltype == Bio::Sequence::AA
-        display aa_report(str)
-      end
-      return Bio::Seq.guess(str)
+      tmp = arg
     end
+
+    if entry.respond_to?(:seq)
+      tmp = entry.seq
+    elsif entry.respond_to?(:naseq)
+      s = entry.naseq
+    elsif entry.respond_to?(:aaseq)
+      s = entry.aaseq
+    end
+
+    if tmp and tmp.is_a?(String) and not tmp.empty?
+      s = Bio::Sequence.auto(tmp)
+    end
+
+    return s || ""
   end
 
-  def na_report(seq)
-    seq = naseq(seq) unless seq === Bio::Sequence::NA
-    str = ""
-    str << "input sequence     : #{seq}\n"
-    str << "reverse complement : #{seq.complement}\n"
-    str << "translation 1      : #{seq.translate}\n"
-    str << "translation 2      : #{seq.translate(2)}\n"
-    str << "translation 3      : #{seq.translate(3)}\n"
-    str << "translation -1     : #{seq.translate(-1)}\n"
-    str << "translation -2     : #{seq.translate(-2)}\n"
-    str << "translation -3     : #{seq.translate(-3)}\n"
-    str << "gc percent         : #{seq.gc_percent} %\n"
-    str << "composition        : #{seq.composition.inspect}\n"
-    str << "molecular weight   : #{seq.molecular_weight}\n"
-    str << "complemnet weight  : #{seq.complement.molecular_weight}\n"
-    str << "protein weight     : #{seq.translate.molecular_weight}\n"
-    str << "//\n"
-    return str
+  # Displays some basic properties of the sequence.
+  def seqstat(str)
+    seq = seq(str)
+    rep = ""
+    if seq.respond_to?(:complement)
+      rep << "Sequence           : #{seq}\n"
+      rep << "Reverse complement : #{seq.complement}\n"
+      rep << "Translation  1     : #{seq.translate}\n"
+      rep << "Translation  2     : #{seq.translate(2)}\n"
+      rep << "Translation  3     : #{seq.translate(3)}\n"
+      rep << "Translation -1     : #{seq.translate(-1)}\n"
+      rep << "Translation -2     : #{seq.translate(-2)}\n"
+      rep << "Translation -3     : #{seq.translate(-3)}\n"
+      rep << "GC percent         : #{seq.gc_percent} %\n"
+      rep << "Composition        : #{seq.composition.inspect}\n"
+      begin
+        rep << "Molecular weight   : #{seq.molecular_weight}\n"
+        rep << "Complemnet weight  : #{seq.complement.molecular_weight}\n"
+        rep << "Protein weight     : #{seq.translate.molecular_weight}\n"
+      rescue
+        rep << "Molecular weight   : #{$!}\n"
+      end
+    else
+      rep << "Sequence          : #{seq}\n"
+      rep << "Composition       : #{seq.composition.inspect}\n"
+      begin
+        rep << "Protein weight    : #{seq.molecular_weight}\n"
+      rescue
+        rep << "Protein weight    : #{$!}\n"
+      end
+#     rep << "amino acid codes  : #{seq.codes.inspect}\n"
+#     rep << "amino acid names  : #{seq.names.inspect}\n"
+    end
+    rep  << "//\n"
+    display rep
   end
 
-  def aa_report(seq)
-    seq = aaseq(seq) unless seq === Bio::Sequence::AA
-    str = ""
-    str << "input sequence    : #{seq}\n"
-    str << "composition       : #{seq.composition.inspect}\n"
-    str << "protein weight    : #{seq.molecular_weight}\n"
-    str << "amino acid codes  : #{seq.codes.inspect}\n"
-    str << "amino acid names  : #{seq.names.inspect}\n"
-    str << "//\n"
-    return str
-  end
-
-  # Reterns and displays a DNA sequence pretty printing 
-  # in B-type double helix.
-  # Argument ``seq'' required at least 16 bases length.
-  def double_helix(seq)
-    str = ''
-    m = [[5, 0], [4, 2], [3, 3], [2, 4], 
-         [1, 4], [0, 3], [0, 2], [1, 0]]
-    naseq(seq).window_search(16, 16) do |subseq|
-      m.each_with_index do |mij, x|
+  # Displays a DNA sequence by ascii art in B-type double helix.
+  # Argument need to be at least 16 bases in length.
+  def doublehelix(str)
+    seq = seq(str)
+    if str.length < 16
+      display "Sequence must be longer than 16 bases."
+      return
+    end
+    if ! seq.respond_to?(:complement)
+      display "Sequence must be a DNA sequence."
+      return
+    end
+    helix = ''
+    pairs = [ [5, 0], [4, 2], [3, 3], [2, 4], 
+              [1, 4], [0, 3], [0, 2], [1, 0] ]
+    seq.window_search(16, 16) do |subseq|
+      pairs.each_with_index do |ij, x|
         base = subseq[x, 1]
-        str << ' ' * mij[0] + base + '-' * mij[1] + base.complement + "\n"
+        helix << ' ' * ij[0] + base + '-' * ij[1] + base.complement + "\n"
       end
-      m.reverse.each_with_index do |mij, x|
+      pairs.reverse.each_with_index do |ij, x|
         base = subseq[x + 8, 1]
-        str << ' ' * mij[0] + base.complement + '-' * mij[1] + base + "\n"
+        helix << ' ' * ij[0] + base.complement + '-' * ij[1] + base + "\n"
       end
     end
-    display(str)
-    return str
+    display helix
   end
 
 end
