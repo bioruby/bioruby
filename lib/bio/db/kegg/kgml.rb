@@ -1,11 +1,11 @@
 #
 # = bio/db/kegg/kgml.rb - KEGG KGML parser class
 #
-# Author::	Toshiaki Katayama <k@bioruby.org>
-# Copyright::	Copyright (C) 2005 BioRuby project
+# Copyright::	Copyright (C) 2005
+# 		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: kgml.rb,v 1.1 2005/10/23 08:27:22 k Exp $
+# $Id: kgml.rb,v 1.2 2005/11/05 08:29:53 k Exp $
 #
 # == KGML (KEGG XML) parser
 #
@@ -28,6 +28,7 @@
 #    # <entry> attributes
 #    puts entry.id
 #    puts entry.name
+#    puts entry.names
 #    puts entry.type
 #    puts entry.link
 #    puts entry.reaction
@@ -49,6 +50,9 @@
 #    puts relation.entry2
 #    puts relation.type
 #    # <subtype> attributes
+#    puts relation.name
+#    puts relation.value
+#    # or
 #    relation.subtype.each do |value, name|
 #      puts value, name
 #    end
@@ -115,12 +119,13 @@ class KGML
   attr_reader :entries, :relations, :reactions		# Array
 
   class Entry
-    attr_accessor :id, :name, :type, :link, :reaction, :map
+    attr_accessor :id, :name, :names, :type, :link, :reaction, :map
     attr_accessor :label, :x, :y, :type, :width, :height, :fgcolor, :bgcolor
   end
 
   class Relation
     attr_accessor :entry1, :entry2, :type
+    attr_accessor :name, :value
     attr_accessor :subtype      			# Hash
   end
 
@@ -149,6 +154,7 @@ class KGML
       entry.id        = attr["id"].to_i
       entry.map       = attr["map"]
       entry.name      = attr["name"]
+      entry.names     = entry.name.split(/\s+/)
       entry.type      = attr["type"]
       entry.link      = attr["link"]
       entry.reaction  = attr["reaction"]
@@ -174,18 +180,19 @@ class KGML
     @dom.elements.each("/pathway/relation") { |node|
       attr = node.attributes
       relation = Relation.new
-      relation.entry1 = attr["entry1"]
-      relation.entry2 = attr["entry2"]
+      relation.entry1 = attr["entry1"].to_i
+      relation.entry2 = attr["entry2"].to_i
       relation.type   = attr["type"]
 
       hash = Hash.new
       node.elements.each("subtype") { |subtype|
         attr = subtype.attributes
-        name = attr["name"]
-        e_id = attr["value"].to_i
-        hash[e_id] = name
+        relation.name  = name  = attr["name"]
+        relation.value = value = attr["value"].to_i
+        hash[value] = name
       }
       relation.subtype = hash
+      @relations << relation
     }
   end
 
@@ -222,6 +229,8 @@ class KGML
       reaction.substrates = substrates
       reaction.products   = products
       reaction.alt        = hash
+
+      @reactions << reaction
     }
   end
 
