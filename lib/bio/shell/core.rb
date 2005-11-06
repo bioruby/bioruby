@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # Lisence::	LGPL
 #
-# $Id: core.rb,v 1.5 2005/11/06 01:36:11 k Exp $
+# $Id: core.rb,v 1.6 2005/11/06 18:30:04 k Exp $
 #
 #--
 #
@@ -133,10 +133,15 @@ module Bio::Shell::Core
     else
       dir = SAVEDIR
       if ! File.directory?(dir)
-        print "Save in \"#{dir}\" directory? [y/n]: "
-        answer = gets
-        if /^\s*n/.match(answer.downcase)
-          dir = USERDIR
+        loop do
+          print "Save in \"#{dir}\" directory? [y/n]: "
+          answer = gets
+          if /^\s*[Yy]/.match(answer)
+            break
+          elsif /^\s*[Nn]/.match(answer)
+            dir = USERDIR
+            break
+          end
         end
       end
       $bioruby_cache[:SAVEDIR] = dir
