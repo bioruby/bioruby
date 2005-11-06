@@ -1,11 +1,11 @@
 #
-# = bio/shell/plugin/obda.rb - plugin for OBDA
+# = bio/shell/plugin/keggapi.rb - plugin for KEGG API
 #
 # Copyright::	Copyright (C) 2005
 #		Toshiaki Katayama <k@bioruby.org>
 # Lisence::	LGPL
 #
-# $Id: keggapi.rb,v 1.1 2005/11/05 10:58:01 k Exp $
+# $Id: keggapi.rb,v 1.2 2005/11/06 02:12:03 k Exp $
 #
 #--
 #
@@ -26,7 +26,7 @@
 #++
 #
 
-require 'bio/io/soapwsdl'
+require 'bio/io/keggapi'
 
 module Bio::Shell
 
@@ -34,7 +34,7 @@ module Bio::Shell
 
   def setup_keggapi
     unless @keggapi
-      @keggapi = Bio::SOAPWSDL.new("http://soap.genome.jp/KEGG.wsdl")
+      @keggapi = Bio::KEGG::API.new
     end
   end
 
