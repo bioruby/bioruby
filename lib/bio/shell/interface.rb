@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # Lisence::	LGPL
 #
-# $Id: interface.rb,v 1.3 2005/11/06 01:37:00 k Exp $
+# $Id: interface.rb,v 1.4 2005/11/06 18:28:48 k Exp $
 #
 #--
 #
@@ -33,11 +33,18 @@ module Bio::Shell
   ### work space
 
   def ls
-    display eval("local_variables", conf.workspace.binding).inspect
+    list = eval("local_variables", conf.workspace.binding).reject { |x|
+      eval(x, conf.workspace.binding).nil?
+    }
+    display list.inspect
   end
 
   def rm(name)                  # name = :hoge
-    eval("#{name} = nil", conf.workspace.binding)
+    begin
+      eval("#{name} = nil", conf.workspace.binding)
+    rescue
+      puts "Usage: rm :var (rm var is not valid)"
+    end
   end
 
   ### config
