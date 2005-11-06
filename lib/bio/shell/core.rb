@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # Lisence::	LGPL
 #
-# $Id: core.rb,v 1.4 2005/11/05 08:33:53 k Exp $
+# $Id: core.rb,v 1.5 2005/11/06 01:36:11 k Exp $
 #
 #--
 #
@@ -63,7 +63,9 @@ module Bio::Shell::Core
     version_check
   end
 
+  #--
   # *TODO* is this needed? (for reset)
+  #++
   def reload
     load_config
     load_plugin
@@ -83,7 +85,11 @@ module Bio::Shell::Core
     save_config
   end
 
+  #--
   # *TODO* This works, but sometimes causes terminal collapse
+  # how about to suppress loading messages?
+  # or try to load @keggapi and @obda during this?
+  #++
   def opening_thread
     begin
       t1 = Thread.new do
@@ -110,10 +116,32 @@ module Bio::Shell::Core
     end
   end
 
-  def create_save_dir(dir = SAVEDIR)
+  def create_save_dir
+    dir = ask_save_dir
     create_real_dir(dir)
     create_real_dir(dir + PLUGIN)
     create_real_dir(dir + BIOFLAT)
+    return dir
+  end
+
+  # 1. ask to save in SAVEDIR directory in the current directory
+  # 2. otherwise save in USERDIR directory
+  # 3. remember the choice in $bioruby_cache[:SAVEDIR] once per session
+  def ask_save_dir
+    if $bioruby_cache[:SAVEDIR]
+      dir = $bioruby_cache[:SAVEDIR]
+    else
+      dir = SAVEDIR
+      if ! File.directory?(dir)
+        print "Save in \"#{dir}\" directory? [y/n]: "
+        answer = gets
+        if /^\s*n/.match(answer.downcase)
+          dir = USERDIR
+        end
+      end
+      $bioruby_cache[:SAVEDIR] = dir
+    end
+    return dir
   end
 
   def create_real_dir(dir)
@@ -147,8 +175,11 @@ module Bio::Shell::Core
   end
 
   def save_config
-    create_save_dir
-    file = SAVEDIR + CONFIG
+    dir = create_save_dir
+    save_config_file(dir + CONFIG)
+  end
+
+  def save_config_file(file)
     begin
       print "Saving config (#{file}) ... "
       File.open(file, "w") do |f|
@@ -232,6 +263,8 @@ module Bio::Shell::Core
   ### object
 
   def load_object
+    load_object_file(SITEDIR + OBJECT)
+    load_object_file(USERDIR + OBJECT)
     load_object_file(SAVEDIR + OBJECT)
   end
 
@@ -257,8 +290,8 @@ module Bio::Shell::Core
   end
   
   def save_object
-    create_save_dir
-    save_object_file(SAVEDIR + OBJECT)
+    dir = create_save_dir
+    save_object_file(dir + OBJECT)
   end
 
   def save_object_file(file)
@@ -291,7 +324,11 @@ module Bio::Shell::Core
   ### history
 
   def load_history
-    load_history_file(SAVEDIR + HISTORY) unless $bioruby_cache[:no_readline]
+    if $bioruby_cache[:READLINE]
+      load_history_file(SITEDIR + HISTORY)
+      load_history_file(USERDIR + HISTORY)
+      load_history_file(SAVEDIR + HISTORY)
+    end
   end
 
   def load_history_file(file)
@@ -305,8 +342,10 @@ module Bio::Shell::Core
   end
   
   def save_history
-    create_save_dir
-    save_history_file(SAVEDIR + HISTORY) unless $bioruby_cache[:no_readline]
+    if $bioruby_cache[:READLINE]
+      dir = create_save_dir
+      save_history_file(dir + HISTORY)
+    end
   end
 
   def save_history_file(file)
@@ -323,13 +362,24 @@ module Bio::Shell::Core
 
   ### script
 
-  def script(mode)
+  def script(mode = nil)
     case mode
     when :begin, "begin", :start, "start"
+      $bioruby_cache[:SCRIPT] = true
       script_begin
     when :end, "end", :stop, "stop"
+      $bioruby_cache[:SCRIPT] = false
       script_end
-      script_save
+      save_script
+    else
+      if $bioruby_cache[:SCRIPT]
+        $bioruby_cache[:SCRIPT] = false
+        script_end
+        save_script
+      else
+        $bioruby_cache[:SCRIPT] = true
+        script_begin
+      end
     end
   end
 
@@ -343,16 +393,16 @@ module Bio::Shell::Core
     @script_end = Readline::HISTORY.size - 2
   end
 
-  def script_save
-    create_save_dir
+  def save_script
     if @script_begin and @script_end and @script_begin <= @script_end
-      script_save_file(SAVEDIR + SCRIPT)
+      dir = create_save_dir
+      save_script_file(dir + SCRIPT)
     else
-      raise "Script range '#{@script_begin}' .. '#{@script_end}' is invalid"
+      puts "Error: script range #{@script_begin}..#{@script_end} is invalid"
     end
   end
 
-  def script_save_file(file)
+  def save_script_file(file)
     begin
       print "Saving script (#{file}) ... "
         File.open(file, "w") do |f|
