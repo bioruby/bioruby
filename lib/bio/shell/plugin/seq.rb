@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # Lisence::	LGPL
 #
-# $Id: seq.rb,v 1.5 2005/11/05 10:19:07 k Exp $
+# $Id: seq.rb,v 1.6 2005/11/06 03:03:08 k Exp $
 #
 #--
 #
@@ -88,15 +88,15 @@ module Bio::Shell
         rep << "Molecular weight   : #{$!}\n"
       end
     else
-      rep << "Sequence          : #{seq}\n"
-      rep << "Composition       : #{seq.composition.inspect}\n"
+      rep << "Sequence           : #{seq}\n"
+      rep << "Composition        : #{seq.composition.inspect}\n"
       begin
-        rep << "Protein weight    : #{seq.molecular_weight}\n"
+        rep << "Protein weight     : #{seq.molecular_weight}\n"
       rescue
-        rep << "Protein weight    : #{$!}\n"
+        rep << "Protein weight     : #{$!}\n"
       end
-#     rep << "amino acid codes  : #{seq.codes.inspect}\n"
-#     rep << "amino acid names  : #{seq.names.inspect}\n"
+#     rep << "amino acid codes   : #{seq.codes.inspect}\n"
+#     rep << "amino acid names   : #{seq.names.inspect}\n"
     end
     rep  << "//\n"
     display rep
