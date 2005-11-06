@@ -1,7 +1,18 @@
 #
-# bio/appl/genscan/report.rb - Genscan report classes
+# = bio/appl/genscan/report.rb - Genscan report classes
 #
-#   Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::  Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
+# Licence::    LGPL
+#
+#  $Id: report.rb,v 1.7 2005/11/06 18:24:41 nakao Exp $
+#
+# == Description
+#
+#
+# == Example
+# == References
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +28,9 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.6 2005/11/01 05:15:15 nakao Exp $
+#  $Id: report.rb,v 1.7 2005/11/06 18:24:41 nakao Exp $
+#
+#++
 #
 
 require 'bio/db/fasta'
@@ -25,22 +38,42 @@ require 'bio/db/fasta'
 
 module Bio
 
-# Bio::Genscan
+# = Bio::Genscan
 class Genscan
 
-  # Bio::Genscan::Report - Class for Genscan report output.
+  # = Bio::Genscan::Report - Class for Genscan report output.
+  #
+  # Parser for the Genscan report output.
+  # * Genscan http://genes.mit.edu/GENSCAN.html
   class Report
 
+    # Returns Genscan version.
     attr_reader :genscan_version
+
+    # Returns
     attr_reader :date_run
+
+    # Returns
     attr_reader :time
+
+    # Returns Name of query sequence.
     attr_reader :query_name
     alias_method :sequence_name, :query_name
     alias_method :name,          :query_name
+
+    # Returns Length of the query sequence.
     attr_reader :length
+
+    # Returns C+G content of the query sequence.
     attr_reader :gccontent
+
+    # Returns
     attr_reader :isochore
+
+    # Returns
     attr_reader :matrix
+
+    # Returns Array of Bio::Genscan::Report::Gene.
     attr_reader :predictions
     alias_method :prediction, :predictions
     alias_method :genes,      :predictions
@@ -176,7 +209,7 @@ class Genscan
     private :add_seq
 
 
-    # Bio::Genescan::Report::Gene
+    # = Container class of predicted gene structures.
     class Gene
 
       # Bio::Genescan::Report::Gene.new(gene_number)
@@ -188,11 +221,23 @@ class Genscan
         @exons    = []
         @polyA    = nil
       end
+
+      # Returns "Gn", gene number field.
       attr_reader :number
+
+      # Returns Bio::FastaFormat object.
       attr_reader :aaseq
+
+      # Returns Bio::FastaFormat object.
       attr_reader :naseq
+
+      # Returns Array of Bio::Genscan::Report::Exon.
       attr_reader :exons
+
+      # Returns Bio::Genscan::Report::Exon object.
       attr_reader :promoter
+
+      # Returns Bio::Genscan::Report::Exon object.
       attr_reader :polyA
 
 
@@ -222,8 +267,19 @@ class Genscan
     end # class Gene
 
 
-    # Bio::Genescan::Report::Exon
+    # = Container class of a predicted gene structure.
     class Exon
+
+      #
+      TYPES = {
+        'Init' => 'Initial exon', 
+        'Intr' => 'Internal exon',
+        'Term' => 'Terminal exon',
+        'Sngl' => 'Single-exon gene',
+        'Prom' => 'Promoter',
+        'PlyA' => 'poly-A signal'
+      }
+
 
       # Bio::Genescan::Report::Exon.parser
       def self.parser(line)
@@ -238,17 +294,42 @@ class Genscan
                  e[7], e[8], e[9], e[10], e[11], e[12])
       end
 
+
+      # Returns
+      attr_reader :gene_number
+
+      # Returns "Ex", exon number field
+      attr_reader :number
+
+      # Returns "Type" field.
+      attr_reader :exon_type
+
+      # Returns "S" field.
+      attr_reader :strand
+
+      # Returns Returns first position of the region. "Begin" field.
+      attr_reader :first
+
+      # Returns Returns last position of the region. "End" field.
+      attr_reader :last
+
+      # Returns "Fr" field.
+      attr_reader :frame
+
+      # Returns "Ph" field.
+      attr_reader :phase
+
+      # Returns "CodRg" field.
+      attr_reader :score
+
+      # Returns "P" field.
+      attr_reader :p_value
+
+      # Returns "Tscr" field.
+      attr_reader :t_score
+      alias_method :coding_region_score, :score 
+
       
-      TYPES = {
-        'Init' => 'Initial exon', 
-        'Intr' => 'Internal exon',
-        'Term' => 'Terminal exon',
-        'Sngl' => 'Single-exon gene',
-        'Prom' => 'Promoter',
-        'PlyA' => 'poly-A signal'
-      }
-
-
       # Bio::Genescan::Report::Exon.new(gene_number, exon_type, strand, first, 
       # end, length, frame, phase, acceptor_score, donor_score, score, p_value, 
       # t_score)
@@ -267,33 +348,28 @@ class Genscan
         @p_value   = prob.to_f
         @t_score   = ts.to_f
       end
-      attr_reader :gene_number
-      attr_reader :number
-      attr_reader :exon_type
-      attr_reader :strand
-      attr_reader :first
-      attr_reader :last
-      attr_reader :frame
-      attr_reader :phase
-      attr_reader :score
-      attr_reader :p_value
-      attr_reader :t_score
-      alias_method :coding_region_score, :score 
+
 
 
       # Bio::Genescan::Report::Exon#exon_type_long      
+      #
+      # Returns a human-readable "Type" of exon.
       def exon_type_long
         TYPES[exon_type]
       end
 
         
       # Bio::Genescan::Report::Exon#range
+      #
+      # Returns Range object of the region.
       def range 
         Range.new(@first, @last)
       end
 
 
       # Bio::Genescan::Report::Exon#acceptor_score
+      #
+      # "I/Ac" field.
       def acceptor_score
         @i_ac
       end
@@ -301,6 +377,8 @@ class Genscan
 
 
       # Bio::Genescan::Report::Exon#donor_score
+      #
+      # "Do/T" field.
       def donor_score
         @do_t
       end
@@ -420,138 +498,6 @@ end
 
 
 =begin
-
-= Bio::Genscan::Report
-
-Parser for the Genscan report output.
-* ((Genscan|URL:http://genes.mit.edu/GENSCAN.html)
-
-
---- Bio::Genscan::Report.new(report)
-
-     Parse a Genscan report output.
-
---- Bio::Genscan::Report#genscan_version
-
-      Genscan version.
-
---- Bio::Genscan::Report#date_run
---- Bio::Genscan::Report#time
---- Bio::Genscan::Report#query_name
-
-      Name of query sequence.
-
---- Bio::Genscan::Report#length
-
-      Length of the query sequence.
-
---- Bio::Genscan::Report#gccontent
-
-      C+G content of the query sequence.
-
---- Bio::Genscan::Report#isochore
---- Bio::Genscan::Report#predictions
-
-      Array of Bio::Genscan::Report::Gene.
-
-
-= Bio::Genscan::Report::Gene
-
-Container class of predicted gene structures.
-
---- Bio::Genscan::Report::Gene#number
-
-      "Gn", gene number field.
-
---- Bio::Genscan::Report::Gene#aaseq
-
-      Returns Bio::FastaFormat object. 
-
---- Bio::Genscan::Report::Gene#naseq
-
-      Returns Bio::FastaFormat object. 
-
---- Bio::Genscan::Report::Gene#promoter
-
-      Returns Bio::Genscan::Report::Exon object. 
-
---- Bio::Genscan::Report::Gene#polyA
-
-      Returns Bio::Genscan::Report::Exon object.
-
---- Bio::Genscan::Report::Gene#exons
-
-      Array of Bio::Genscan::Report::Exon.
-
-
-= Bio::Genscan::Report::Exon
-
-Container class of a predicted gene structure.
-
---- Bio::Genscan::Report::Gene#number
-
-      "Ex", exon number field
-
---- Bio::Genscan::Report::Gene#exon_type
-
-      "Type" field.
-
---- Bio::Genscan::Report::Gene#exon_type_long
-
-      Returns a human-readable "Type" of exon.
-
---- Bio::Genscan::Report::Gene#strand
-
-      "S" field.
-
---- Bio::Genscan::Report::Gene#first
-
-      Returns first position of the region. "Begin" field.
-
---- Bio::Genscan::Report::Gene#last
-
-      Returns last position of the region. "End" field.
-
---- Bio::Genscan::Report::Gene#range
-
-      Returns Range object of the region.
-
---- Bio::Genscan::Report::Gene#frame
-
-      "Fr" field.
-
---- Bio::Genscan::Report::Gene#phase
-
-      "Ph" field.
-
---- Bio::Genscan::Report::Gene#acceptor_score
-
-      "I/Ac" field.
-
---- Bio::Genscan::Report::Gene#donor_score
-
-      "Do/T" field.
-
---- Bio::Genscan::Report::Gene#initiation_score
-
-      "I/Ac" field.
-
---- Bio::Genscan::Report::Gene#termination_score
-
-      "Do/T" field.
-
---- Bio::Genscan::Report::Gene#score
-
-      "CodRg" field.
-
---- Bio::Genscan::Report::Gene#p_value
-
-      "P" field.
-
---- Bio::Genscan::Report::Gene#t_score
-
-      "Tscr" field.
-
 
 
 = Sample Genscan report with '^>>>> '.
