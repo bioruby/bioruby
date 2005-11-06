@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # Lisence::	LGPL
 #
-# $Id: interface.rb,v 1.2 2005/11/05 08:34:49 k Exp $
+# $Id: interface.rb,v 1.3 2005/11/06 01:37:00 k Exp $
 #
 #--
 #
@@ -48,7 +48,7 @@ module Bio::Shell
 
   ### script
 
-  def script(mode = :begin)
+  def script(mode = nil)
     Bio::Shell.script(mode)
   end
 
@@ -60,9 +60,9 @@ module Bio::Shell
 
   ### pager
 
-  #
+  #--
   # mysql> pager less
-  #
+  #++
   def display(*obj)
     # The original idea is from http://sheepman.parfait.ne.jp/20050215.html
     if $bioruby_config[:PAGER]
