@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # Lisence::	LGPL
 #
-# $Id: shell.rb,v 1.5 2005/11/05 08:24:23 k Exp $
+# $Id: shell.rb,v 1.6 2005/11/06 01:29:27 k Exp $
 #
 #--
 #
@@ -30,22 +30,22 @@ require 'bio'
 require 'yaml'
 require 'pp'
 
+# A hash to store persistent configurations
 $bioruby_config = {}
+
+# A hash to store temporal (per session) configurations
 $bioruby_cache  = {}
 
 module Bio::Shell
 
   require 'bio/shell/core'
   require 'bio/shell/session'
-  #require 'bio/shell/help'
   require 'bio/shell/plugin/seq'
   require 'bio/shell/plugin/midi'
   require 'bio/shell/plugin/codon'
   require 'bio/shell/plugin/flatfile'
   require 'bio/shell/plugin/obda'
   require 'bio/shell/plugin/keggapi'
-  #require 'bio/shell/plugin/das'
-  #require 'bio/shell/plugin/demo'
 
   extend Core
 
