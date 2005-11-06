@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # Lisence::	LGPL
 #
-# $Id: bioruby,v 1.4 2005/11/05 08:33:53 k Exp $
+# $Id: bioruby,v 1.5 2005/11/06 01:28:44 k Exp $
 #
 #--
 #
@@ -47,8 +47,9 @@ Bio::Shell.setup
 require 'irb'
 begin
   require 'irb/completion'
+  $bioruby_cache[:READLINE] = true
 rescue LoadError
-  $bioruby_cache[:no_readline] = true
+  $bioruby_cache[:READLINE] = false
 end
 
 IRB.setup(nil)
@@ -103,3 +104,4 @@ end
 
 # saving workspace, command history and configuration before exit
 Bio::Shell.close
+
