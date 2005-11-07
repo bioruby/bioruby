@@ -1,7 +1,19 @@
 #
-# bio/db/gff.rb - GFF format class
+# = bio/db/gff.rb - GFF format class
 #
-#   Copyright (C) 2003 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::  Copyright (C) 2003 KATAYAMA Toshiaki <k@bioruby.org>
+# Licence::    LGPL
+#
+#  $Id: gff.rb,v 1.4 2005/11/07 13:19:17 nakao Exp $
+#
+# == Description
+#
+#
+# == Example
+# == References
+# * http://www.sanger.ac.uk/Software/formats/GFF/
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,21 +29,59 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: gff.rb,v 1.3 2005/09/26 13:00:06 k Exp $
+#++
 #
 
 module Bio
 
+  # = GFF
   class GFF
+
+    # Returns
+    attr_accessor :records
+
+    #
     def initialize(str = '')
       @records = Array.new
       str.each_line do |line|
         @records << Record.new(line)
       end
     end
-    attr_accessor :records
 
+    # = GFF::Record
     class Record
+
+      # Returns
+      attr_accessor :seqname
+
+      # Returns
+      attr_accessor :source
+
+      # Returns
+      attr_accessor :feature
+
+      # Returns
+      attr_accessor :start
+
+      # Returns
+      attr_accessor :end
+
+      # Returns
+      attr_accessor :score
+
+      # Returns
+      attr_accessor :strand
+
+      # Returns
+      attr_accessor :frame
+
+      # Returns
+      attr_accessor :attributes
+
+      # Returns
+      attr_accessor :comments
+
+      #
       def initialize(str)
         @comments = str.chomp[/#.*/]
         return if /^#/.match(str)
@@ -39,8 +89,6 @@ module Bio
           attributes, = str.chomp.split("\t")
         @attributes = parse_attributes(attributes) if attributes
       end
-      attr_accessor :seqname, :source, :feature, :start, :end, :score,
-        :strand, :frame, :attributes, :comments
 
       private
 
@@ -55,11 +103,17 @@ module Bio
     end
   end
 
+  # = GFF2
   class GFF2 < GFF
+
+    #
     VERSION = 2
   end
 
+  # = GFF3
   class GFF3 < GFF
+
+    #
     VERSION = 3
   end
 
@@ -75,8 +129,3 @@ if __FILE__ == $0
 
   p Bio::GFF.new(ARGF.read)
 end
-
-
-=begin
-  http://www.sanger.ac.uk/Software/formats/GFF/
-=end
