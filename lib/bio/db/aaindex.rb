@@ -1,7 +1,17 @@
 #
-# bio/db/aaindex.rb - AAindex database class
+# = bio/db/aaindex.rb - AAindex database class
 #
-#   Copyright (C) 2001 KAWASHIMA Shuichi <s@bioruby.org>
+# Copyright::  Copyright (C) 2001 KAWASHIMA Shuichi <s@bioruby.org>
+# Licence::    LGPL
+#
+#  $Id: aaindex.rb,v 1.14 2005/11/07 10:14:28 nakao Exp $
+#
+# == Description
+#
+#
+# == Example
+# == References
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +27,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: aaindex.rb,v 1.13 2005/09/08 01:22:11 k Exp $
+#++
 #
 
 require "bio/db"
@@ -27,37 +37,51 @@ module Bio
 
   class AAindex < KEGGDB
 
-    DELIMITER	= RS = "\n//\n"
+    # Delimiter
+    DELIMITER	="\n//\n"
+
+    # Delimiter
+    RS = DELIMITER
+
+    #
     TAGSIZE	= 2
 
+    #
     def initialize(entry)
       super(entry, TAGSIZE)
     end
 
+    # Returns
     def entry_id
       field_fetch('H')
     end
 
+    # Returns
     def definition
       field_fetch('D')
     end
 
+    # Returns
     def dblinks
       field_fetch('R')
     end
 
+    # Returns
     def author
       field_fetch('A')
     end
 
+    # Returns
     def title
       field_fetch('T')
     end
 
+    # Returns
     def journal
       field_fetch('J')
     end
 
+    # Returns
     def comment
       get('*')
     end
@@ -67,14 +91,17 @@ module Bio
 
   class AAindex1 < AAindex
 
+    #
     def initialize(entry)
       super(entry)
     end
 
+    # Returns
     def correlation_coefficient
       field_fetch('C')
     end
 
+    # Returns
     def index(type = :float)
       aa = %w( A R N D C Q E G H I L K M F P S T W Y V )
       values = field_fetch('I', 1).split(' ')
@@ -125,20 +152,24 @@ module Bio
 
   class AAindex2 < AAindex
 
+    #
     def initialize(entry)
       super(entry)
     end
 
+    # Returns
     def rows
       label_data
       @rows
     end
 
+    # Returns
     def cols
       label_data
       @cols
     end
 
+    # Returns
     def matrix
       ma = Array.new
 
@@ -151,6 +182,7 @@ module Bio
       Matrix[*ma]
     end
 
+    # Returns
     def old_matrix	# for AAindex <= ver 5.0
 
       @aa = {}		# used to determine row/column of the aa
@@ -233,30 +265,4 @@ if __FILE__ == $0
   p aax2.matrix.rank
   p aax2.matrix.transpose
 end
-
-=begin
-
-= Bio::AAindex
-
---- Bio::AAindex.new(entry)
---- Bio::AAindex#entry_id
---- Bio::AAindex#definition
---- Bio::AAindex#dblinks
---- Bio::AAindex#author
---- Bio::AAindex#title
---- Bio::AAindex#journal
---- Bio::AAindex#comment
-
-= Bio::AAindex1
-
---- Bio::AAindex1#correlation_coefficient
---- Bio::AAindex1#index
-
-= Bio::AAindex2
-
---- Bio::AAindex2#matrix
---- Bio::AAindex2#rows
---- Bio::AAindex2#cols
-
-=end
 
