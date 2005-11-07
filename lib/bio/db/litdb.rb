@@ -1,7 +1,18 @@
 #
-# bio/db/litdb.rb - LITDB database class
+# = bio/db/litdb.rb - LITDB database class
 #
-#   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::  Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+# Licence::    LGPL
+#
+#  $Id: litdb.rb,v 0.6 2005/11/07 14:28:12 nakao Exp $
+#
+# == Description
+#
+#
+# == Example
+# == References
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,35 +28,44 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: litdb.rb,v 0.5 2002/11/22 22:58:18 k Exp $
+#++
 #
 
 require 'bio/db'
 
 module Bio
 
+  # = LITDB class
   class LITDB < NCBIDB
 
-    DELIMITER	= RS = "\nEND\n"
-    TAGSIZE	= 12
+    # Delimiter
+    DELIMITER = "\nEND\n"
 
+    # Delimiter
+    RS = DELIMITER
+
+    #
+    TAGSIZE = 12
+
+    #
     def initialize(entry)
       super(entry, TAGSIZE)
     end
 
+    # Returns
     def reference
       hash = Hash.new('') 
 
-      hash['authors']	= author.split(/;/).map {|x| x.sub(/,/, ', ')}
-      hash['title']	= title 
-      hash['journal']	= journal.gsub(/\./, '. ').strip
+      hash['authors'] = author.split(/;/).map {|x| x.sub(/,/, ', ')}
+      hash['title']   = title 
+      hash['journal'] = journal.gsub(/\./, '. ').strip
 
       vol = volume.split(/,\s+/)
       if vol.size > 1
-        hash['volume']	= vol.shift.sub(/Vol\./, '')
+        hash['volume'] = vol.shift.sub(/Vol\./, '')
         hash['pages'],
-        hash['year']	= vol.pop.split(' ')
-        hash['issue']	= vol.shift.sub(/No\./, '') unless vol.empty?
+        hash['year'] = vol.pop.split(' ')
+        hash['issue'] = vol.shift.sub(/No\./, '') unless vol.empty?
       end
 
       return Reference.new(hash) 
@@ -109,22 +129,3 @@ if __FILE__ == $0
   puts entry
   p Bio::LITDB.new(entry).reference
 end
-
-
-=begin
-
-= Bio::LITDB
-
---- Bio::LITDB.new(entry)
---- Bio::LITDB#reference
---- Bio::LITDB#entry_id
---- Bio::LITDB#title
---- Bio::LITDB#field
---- Bio::LITDB#journal
---- Bio::LITDB#volume
---- Bio::LITDB#keyword
---- Bio::LITDB#author
-
-=end
-
-
