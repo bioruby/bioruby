@@ -1,6 +1,6 @@
 =begin
 
-  $Id: README.DEV,v 1.4 2005/11/08 01:41:10 k Exp $
+  $Id: README.DEV,v 1.5 2005/11/08 06:42:54 k Exp $
 
   Copyright (C) 2005 Toshiaki Katayama <k@bioruby.org>
 
@@ -59,7 +59,7 @@ comments, include it in the RDoc documentation.
   #		Chem R. Hacker <crh@example.org>
   # Lisence::	LGPL
   #
-  # $Id: README.DEV,v 1.4 2005/11/08 01:41:10 k Exp $
+  # $Id: README.DEV,v 1.5 2005/11/08 06:42:54 k Exp $
   #
   # == Blah blah blah
   #
@@ -75,6 +75,8 @@ comments, include it in the RDoc documentation.
   # == References
   #
   # * Hoge F. et al., The Hoge database, Nucleic. Acid. Res. 123:100--123 (2030)
+  #
+  # * http://hoge.db/
   #
   #--
   #
