@@ -4,13 +4,25 @@
 # Copyright::  Copyright (C) 2001 KAWASHIMA Shuichi <s@bioruby.org>
 # Licence::    LGPL
 #
-#  $Id: aaindex.rb,v 1.14 2005/11/07 10:14:28 nakao Exp $
+# $Id: aaindex.rb,v 1.15 2005/11/08 02:13:44 nakao Exp $
 #
 # == Description
+# Classes for Amino Acid Index Database (AAindex and AAindex2).
+# * AAindex Manual: http://www.genome.jp/dbget-bin/show_man?aaindex
 #
+# == Examples
+#  aax1 = Bio::AAindex1.new("PRAM900102.aaindex1")
+#  aax1.entry_id
+#  aax1.index
 #
-# == Example
+#  aax2 = Bio::AAindex2.new("HENS920102.aaindex2")
+#  aax2.entry_id
+#  aax2.matrix
+#  aax2.matrix[2,2]
+#
 # == References
+# * http://www.genome.jp/aaindex/
+#
 #--
 #
 #  This library is free software; you can redistribute it and/or
@@ -38,15 +50,15 @@ module Bio
   class AAindex < KEGGDB
 
     # Delimiter
-    DELIMITER	="\n//\n"
+    DELIMITER ="\n//\n"
 
     # Delimiter
     RS = DELIMITER
 
-    #
-    TAGSIZE	= 2
+    # Bio::DB API
+    TAGSIZE = 2
 
-    #
+
     def initialize(entry)
       super(entry, TAGSIZE)
     end
@@ -91,7 +103,7 @@ module Bio
 
   class AAindex1 < AAindex
 
-    #
+
     def initialize(entry)
       super(entry)
     end
@@ -115,7 +127,7 @@ module Bio
         values.each do |a|
           sum += a.to_f
         end
-        mean = sum / values.size	# / 20
+        mean = sum / values.size # / 20
         var = 0.0
         values.each do |a|
           var += (a.to_f - mean) ** 2
@@ -152,7 +164,7 @@ module Bio
 
   class AAindex2 < AAindex
 
-    #
+
     def initialize(entry)
       super(entry)
     end
@@ -183,15 +195,15 @@ module Bio
     end
 
     # Returns
-    def old_matrix	# for AAindex <= ver 5.0
+    def old_matrix # for AAindex <= ver 5.0
 
-      @aa = {}		# used to determine row/column of the aa
+      @aa = {} # used to determine row/column of the aa
       attr_reader :aa
 
       field = field_fetch('I')
 
       case field
-      when / (ARNDCQEGHILKMFPSTWYV)\s+(.*)/	# 20x19/2 matrix
+      when / (ARNDCQEGHILKMFPSTWYV)\s+(.*)/ # 20x19/2 matrix
         aalist = $1
         values = $2.split(/\s+/)
 
@@ -201,7 +213,7 @@ module Bio
 
         ma = Array.new
         20.times do
-          ma.push(Array.new(20))		# 2D array of 20x(20)
+          ma.push(Array.new(20)) # 2D array of 20x(20)
         end
 
         for i in 0 .. 19 do
@@ -212,9 +224,9 @@ module Bio
         end
         Matrix[*ma]
 
-      when / -ARNDCQEGHILKMFPSTWYV /		# 21x20/2 matrix (with gap)
+      when / -ARNDCQEGHILKMFPSTWYV / # 21x20/2 matrix (with gap)
         raise NotImplementedError
-      when / ACDEFGHIKLMNPQRSTVWYJ- /		# 21x21 matrix (with gap)
+      when / ACDEFGHIKLMNPQRSTVWYJ- / # 21x21 matrix (with gap)
         raise NotImplementedError
       end
     end
