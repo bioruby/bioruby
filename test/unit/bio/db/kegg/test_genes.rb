@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_genes.rb,v 1.1 2005/11/08 11:07:54 nakao Exp $
+#  $Id: test_genes.rb,v 1.2 2005/11/09 07:58:19 nakao Exp $
 #
 
 require 'pathname'
@@ -38,8 +38,16 @@ END
       @obj = Bio::KEGG::GENES.new(entry)
     end
 
+    def test_data
+      assert_equal(@obj.instance_eval('get("DBLINKS")'), '')
+    end
+
+    def test_dblinks_0
+      assert_equal(@obj.dblinks, {})
+    end
+
     def test_dblinks_1
-      assert_equal(@obj.dblinks['TIGR'], 'At3g05560')
+      assert_equal(@obj.dblinks['TIGR'], ['At3g05560'])
     end
 
     def test_dblinks_2
