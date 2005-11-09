@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genes.rb,v 0.21 2005/11/09 07:15:42 k Exp $
+#  $Id: genes.rb,v 0.22 2005/11/09 12:30:07 k Exp $
 #
 
 require 'bio/db'
@@ -128,7 +128,7 @@ module Bio
       def dblinks
         unless @data['DBLINKS']
           hash = {}
-          get('DBLINKS').scan(/(\S+):\s*(.*)\n/).each do |db, str|
+          get('DBLINKS').scan(/(\S+):\s*(.*)\n?/).each do |db, str|
             id_array = str.strip.split(/\s+/)
             hash[db] = id_array
           end
