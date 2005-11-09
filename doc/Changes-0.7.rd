@@ -89,6 +89,25 @@ can be proposed.  Until then, this class is removed.
 * Bio::Pathway#edges returns an Array of the edge objects instead of
   the number of the edge objects.
 
+--- Bio::GenBank::Common
+
+* lib/bio/db/genbank/common.rb is removed.
+
+Renamed to Bio::NCBIDB::Common for the simple autoload dependency.
+
+--- Bio::EMBL::Common
+
+* lib/bio/db/embl/common.rb is removed.
+
+Renamed to Bio::EMBLDB::Common for the simple autoload dependency.
+
+--- Bio::KEGG::GENES
+
+* lib/bio/db/kegg/genes.rb
+
+linkdb method is changed to return a Hash of an Array of entry IDs
+instead of a Hash of a entry ID string.
+
 === Deleted files
 
 : lib/bio/db/genbank.rb
