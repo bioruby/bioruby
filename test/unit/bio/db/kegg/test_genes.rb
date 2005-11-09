@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_genes.rb,v 1.2 2005/11/09 07:58:19 nakao Exp $
+#  $Id: test_genes.rb,v 1.3 2005/11/09 13:20:09 nakao Exp $
 #
 
 require 'pathname'
@@ -39,19 +39,20 @@ END
     end
 
     def test_data
-      assert_equal(@obj.instance_eval('get("DBLINKS")'), '')
+      str = "DBLINKS     TIGR: At3g05560\n            NCBI-GI: 15230008  42572267"
+      assert_equal(str, @obj.instance_eval('get("DBLINKS")'))
     end
 
     def test_dblinks_0
-      assert_equal(@obj.dblinks, {})
+      assert_equal(Hash, @obj.dblinks.class)
     end
 
     def test_dblinks_1
-      assert_equal(@obj.dblinks['TIGR'], ['At3g05560'])
+      assert_equal(['At3g05560'], @obj.dblinks['TIGR'])
     end
 
     def test_dblinks_2
-      assert_equal(@obj.dblinks['NCBI-GI'], ['15230008', '42572267'])
+      assert_equal(['15230008', '42572267'], @obj.dblinks['NCBI-GI'])
     end
   end
 end
