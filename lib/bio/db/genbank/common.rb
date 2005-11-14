@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: common.rb,v 1.7 2005/10/23 07:20:36 k Exp $
+#  $Id: common.rb,v 1.8 2005/11/14 05:43:43 k Exp $
 #
 
 require 'bio/db'
@@ -114,7 +114,7 @@ module Common
   def common_name
     source['common_name']
   end
-  alias varnacular_name common_name
+  alias vernacular_name common_name
 
   def organism
     source['organism']

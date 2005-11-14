@@ -1,7 +1,7 @@
 #
 # bio/db/genbank/genbank.rb - GenBank database class
 #
-#   Copyright (C) 2000-2004 KATAYAMA Toshiaki <k@bioruby.org>
+#   Copyright (C) 2000-2005 KATAYAMA Toshiaki <k@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.36 2005/10/23 07:20:37 k Exp $
+#  $Id: genbank.rb,v 0.37 2005/11/14 05:43:43 k Exp $
 #
 
 require 'bio/db'
@@ -117,12 +117,6 @@ class GenBank < NCBIDB
     end
   end
 
-  def gc
-    num_gc = basecount('g') + basecount('c')
-    num_at = basecount('a') + basecount('t')
-    return format("%.1f", num_gc * 100.0 / (num_at + num_gc)).to_f
-  end
-
 end # GenBank
 end # Bio
 
@@ -185,7 +179,7 @@ if __FILE__ == $0
   puts "## SOURCE"
   p gb.source
   p gb.common_name
-  p gb.varnacular_name
+  p gb.vernacular_name
   p gb.organism
   p gb.taxonomy
 
@@ -202,7 +196,6 @@ if __FILE__ == $0
   p gb.basecount
   p gb.basecount('a')
   p gb.basecount('A')
-  p gb.gc
 
   puts "## ORIGIN"
   p gb.origin
@@ -291,14 +284,14 @@ Returns contents of the SEGMENT record as a "m/n" form String.
 Returns contents of the SOURCE record as a Hash.
 
 --- Bio::GenBank#common_name -> String
---- Bio::GenBank#varnacular_name -> String
+--- Bio::GenBank#vernacular_name -> String
 --- Bio::GenBank#organism -> String
 --- Bio::GenBank#taxonomy -> String
 
 Access methods for the contents of the SOURCE record.
 
 The 'common_name' method is same as source['common_name'].
-The 'varnacular_name' method is an alias for the 'common_name'.
+The 'vernacular_name' method is an alias for the 'common_name'.
 The 'organism' method is same as source['organism'].
 The 'taxonomy' method is same as source['taxonomy'].
 
@@ -336,10 +329,6 @@ Iterate only for the 'gene' portion of the Bio::Features.
 Returns the BASE COUNT as a Hash.  When the base is specified, returns
 count of the base as a Fixnum.  The base can be one of 'a', 't', 'g',
 'c', and 'o' (others).
-
---- Bio::GenBank#gc -> Float
-
-Returns the average G+C% content of the sequence as a Float.
 
 === ORIGIN
 
