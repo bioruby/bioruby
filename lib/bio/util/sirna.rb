@@ -1,7 +1,55 @@
 #
-# bio/util/sirna.rb - Class for designing small inhibitory RNAs
+# = bio/util/sirna.rb - Class for designing small inhibitory RNAs
 #
-#   Copyright (C) 2004, 2005  Itoshi NIKAIDO <dritoshi@gmail.com>
+# Copyright::    Copyright (C) 2004, 2005
+#        Itoshi NIKAIDO <dritoshi@gmail.com>
+# License::    LGPL
+#
+# $Id: sirna.rb,v 1.5 2005/11/14 14:47:59 nakao Exp $
+#
+# = Bio::SiRNA - Designing siRNA.
+#
+# This class implements the selection rules described by Kumiko Ui-Tei
+# et al. (2004) and Reynolds et al. (2004).
+#
+# = Example
+#
+#  seq = Bio::Sequence::NA.new(ARGF.read)
+#  
+#  sirna = Bio::SiRNA.new(seq)
+#  pairs = sirna.design
+#  
+#  pairs.each do |pair|
+#    puts pair.report
+#    shrna = Bio::SiRNA::ShRNA.new(pair)
+#    shrna.design
+#    puts shrna.report
+#    
+#    puts shrna.top_strand.dna
+#    puts shrna.bottom_strand.dna
+#  end
+#
+# = References
+# 
+# * Kumiko Ui-Tei et al.  Guidelines for the selection of highly effective
+#   siRNA sequences for mammalian and chick RNA interference.
+#   Nucl. Acids. Res. 2004 32: 936-948.
+#    
+# * Angela Reynolds et al.  Rational siRNA design for RNA interference.
+#   Nature Biotech. 2004 22: 326-330.
+#
+# = ChangeLog
+#
+#   2005/03/21 Itoshi NIKAIDO <itoshi.nikaido@nifty.com>
+#   Bio::SiRNA#ShRNA_designer method was changed design method.
+#
+#   2004/06/25
+#   Bio::ShRNA class was added.
+#
+#   2004/06/17 Itoshi NIKAIDO <itoshi.nikaido@nifty.com>
+#   We can use shRNA loop sequence from piGene document.
+#
+# #--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,15 +65,28 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-# $Id: sirna.rb,v 1.4 2005/09/08 01:22:12 k Exp $
+#++
 #
 
 require 'bio/sequence'
 
 module Bio
 
+  # = Bio::SiRNA
+  # Designing siRNA.
   class SiRNA
 
+    # A parameter of size of antisense.
+    attr_accessor :antisense_size
+
+    # A parameter of maximal %GC.
+    attr_accessor :max_gc_percent
+
+    # A parameter of minimum %GC.
+    attr_accessor :min_gc_percent
+
+    # Input is a Bio::Sequence::NA object (the target sequence).
+    # Output is a list of Bio::SiRNA::Pair object.
     def initialize(seq, antisense_size = 21, max_gc_percent = 60.0, min_gc_percent = 40.0)
       @seq = seq.rna!
       @pairs = Array.new
@@ -33,8 +94,8 @@ module Bio
       @max_gc_percent = max_gc_percent
       @min_gc_percent = min_gc_percent
     end
-    attr_accessor :antisense_size, :max_gc_percent, :min_gc_percent
 
+    # Ui-Tei's rule.
     def uitei?(target)
       return false unless /^.{2}[GC]/i =~ target
       return false unless /[AU].{2}$/i =~ target
@@ -49,20 +110,24 @@ module Bio
       return true
     end
 
+    # Reynolds' rule.
     def reynolds?(target)
       return false if /[GC]{9}/i =~ target
       return false unless /^.{4}A.{6}U.{2}[AUC].{5}[AU].{2}$/i =~ target
       return true
     end
 
+    # same as design('uitei').
     def uitei
       design('uitei')
     end
 
+    # same as design('reynolds').
     def reynolds
       design('reynolds')
     end
 
+    #  rule can be one of 'uitei' (default) and 'reynolds'.
     def design(rule = 'uitei')
       @target_size = @antisense_size + 2
 
@@ -80,9 +145,9 @@ module Bio
         
         case rule
         when 'uitei'
-  	  next unless uitei?(target)
+          next unless uitei?(target)
         when 'reynolds'
-    	  next unless reynolds?(target)
+          next unless reynolds?(target)
         else
           raise NotImplementedError
         end
@@ -93,8 +158,22 @@ module Bio
       return @pairs
     end
 
-
+    # == Bio::SiRNA::Pair
     class Pair
+
+      attr_accessor :target
+
+      attr_accessor :sense
+
+      attr_accessor :antisense
+
+      attr_accessor :start
+
+      attr_accessor :stop
+
+      attr_accessor :rule
+
+      attr_accessor :gc_percent
 
       def initialize(target, sense, antisense, start, stop, rule, gc_percent)
         @target     = target
@@ -105,7 +184,6 @@ module Bio
         @rule       = rule
         @gc_percent = gc_percent
       end
-      attr_accessor :target, :sense, :antisense, :start, :stop, :rule, :gc_percent
 
       # human readable report
       def report
@@ -124,16 +202,24 @@ module Bio
       #  [ @antisense, @start, @stop ].join("\t")
       #end
 
-    end #class Pair
+    end # class Pair
 
-    
+    # == Bio::SiRNA::ShRNA
+    # Input is a Bio::SiRNA::Pair object (the target sequence).
     class ShRNA
+
+      # aBio::Sequence::NA
+      attr_accessor :top_strand
+
+      # aBio::Sequence::NA
+      attr_accessor :bottom_strand
     
       def initialize(pair)
         @pair = pair
       end
-      attr_accessor :top_strand, :bottom_strand
 
+
+      # only the 'BLOCK-iT' rule is implemented for now.
       def design(method = 'BLOCK-iT')
         case method
         when 'BLOCK-iT'
@@ -143,9 +229,12 @@ module Bio
         end
       end
 
+
+      # same as design('BLOCK-iT').
+      # method can be one of 'piGENE' (default) and 'BLOCK-iT'.
       def block_it(method = 'piGENE')
-        top = Bio::Sequence::NA.new('CACC')	# top_strand_shrna_overhang
-        bot = Bio::Sequence::NA.new('AAAA')	# bottom_strand_shrna_overhang
+        top = Bio::Sequence::NA.new('CACC') # top_strand_shrna_overhang
+        bot = Bio::Sequence::NA.new('AAAA') # bottom_strand_shrna_overhang
         fwd = @pair.sense
         rev = @pair.sense.complement
 
@@ -163,14 +252,15 @@ module Bio
         end
 
         if /^G/i =~ fwd
-  	  @top_strand    = top + fwd + loop_fwd + rev
+          @top_strand    = top + fwd + loop_fwd + rev
           @bottom_strand = bot + fwd + loop_rev + rev
         else
-  	  @top_strand    = top + 'G' + fwd + loop_fwd + rev
+          @top_strand    = top + 'G' + fwd + loop_fwd + rev
           @bottom_strand = bot + fwd + loop_rev + rev + 'C'
         end
       end
       
+      # human readable report
       def report
         report = "### shRNA\n"
         report << "Top strand shRNA (#{@top_strand.length} nt):\n"
@@ -179,11 +269,11 @@ module Bio
         report << "      3'-#{@bottom_strand.reverse.upcase}-5'\n"
       end
 
-    end #class ShRNA
+    end # class ShRNA
 
-  end #class SiRNA
+  end # class SiRNA
 
-end #module bio
+end # module Bio
 
 
 if __FILE__ == $0
@@ -191,13 +281,13 @@ if __FILE__ == $0
   seq = Bio::Sequence::NA.new(ARGF.read)
 
   sirna = Bio::SiRNA.new(seq)
-  pairs = sirna.design		# or .design('uitei') or .uitei or .reynolds
+  pairs = sirna.design # or .design('uitei') or .uitei or .reynolds
 
   pairs.each do |pair|
     puts pair.report
 
     shrna = Bio::SiRNA::ShRNA.new(pair)
-    shrna.design		# or .design('BLOCK-iT') or .block_it
+    shrna.design # or .design('BLOCK-iT') or .block_it
     puts shrna.report
 
     puts "# as DNA"
@@ -207,84 +297,3 @@ if __FILE__ == $0
 
 end  
 
-=begin
-
-= Bio::SiRNA
-
-    Designing siRNA.
-    
-    Input is a Bio::Sequence::NA object (the target sequence).
-    Output is a list of Bio::SiRNA::Pair object.
-    
-    This class implements the selection rules described by Kumiko Ui-Tei
-    et al. (2004) and Reynolds et al. (2004)
-
-    Kumiko Ui-Tei et al.  Guidelines for the selection of highly effective
-    siRNA sequences for mammalian and chick RNA interference.
-    Nucl. Acids. Res. 2004 32: 936-948.
-    
-    Angela Reynolds et al.  Rational siRNA design for RNA interference.
-    Nature Biotech. 2004 22: 326-330.
-
---- Bio::SiRNA.new(seq, antisense_size, max_gc_percent, min_gc_percent)
-
---- Bio::SiRNA#design(rule)
-
-  rule can be one of 'uitei' (default) and 'reynolds'.
-
---- Bio::SiRNA#uitei
-
-  same as design('uitei')
-
---- Bio::SiRNA#reynolds
-
-  same as design('reynolds')
-
---- Bio::SiRNA#antisense_size
---- Bio::SiRNA#max_gc_percent
---- Bio::SiRNA#min_gc_percent
-
-== Bio::SiRNA::Pair
-
---- Bio::SiRNA::Pair.new(target, sense, antisense, target_start, target_stop, rule, antisense_gc_percent)
-
---- Bio::SiRNA::Pair#target
---- Bio::SiRNA::Pair#sense
---- Bio::SiRNA::Pair#antisense
---- Bio::SiRNA::Pair#start
---- Bio::SiRNA::Pair#stop
---- Bio::SiRNA::Pair#rule
---- Bio::SiRNA::Pair#report
-
-== Bio::SiRNA::ShRNA
-
-    Input is a Bio::SiRNA::Pair object (the target sequence).
-
---- Bio::ShRNA.new(pair)
-
---- Bio::ShRNA#design(rule)
-
-  only the 'BLOCK-iT' rule is implemented for now
-
---- Bio::ShRNA#block_it(method)
-
-  same as design('BLOCK-iT').
-  method can be one of 'piGENE' (default) and 'BLOCK-iT'.
-
---- Bio::ShRNA#top_strand
---- Bio::ShRNA#bottom_strand
---- Bio::ShRNA#report
-
-
-=== ChangeLog
-
-  2005/03/21 Itoshi NIKAIDO <itoshi.nikaido@nifty.com>
-  Bio::SiRNA#ShRNA_designer method was changed design method.
-
-  2004/06/25
-  Bio::ShRNA class was added.
-
-  2004/06/17 Itoshi NIKAIDO <itoshi.nikaido@nifty.com>
-  We can use shRNA loop sequence from piGene document.
-
-=end
