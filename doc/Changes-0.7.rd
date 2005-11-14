@@ -89,6 +89,15 @@ can be proposed.  Until then, this class is removed.
 * Bio::Pathway#edges returns an Array of the edge objects instead of
   the number of the edge objects.
 
+--- Bio::GenBank
+
+Bio::GenBank#gc is removed as the value can be calculated by the
+Bio::Sequence::NA#gc method and the method is also changed to
+return integer instead of float.
+
+Bio::GenBank#varnacular_name is renamed to Bio::GenBank#vernacular_name
+as it was a typo.
+
 --- Bio::GenBank::Common
 
 * lib/bio/db/genbank/common.rb is removed.
