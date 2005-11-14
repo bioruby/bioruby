@@ -3,9 +3,9 @@
 #
 # Copyright::	Copyright (C) 2005
 #		Toshiaki Katayama <k@bioruby.org>
-# Lisence::	LGPL
+# License::	LGPL
 #
-# $Id: flatfile.rb,v 1.4 2005/11/05 08:36:24 k Exp $
+# $Id: flatfile.rb,v 1.5 2005/11/14 02:01:54 k Exp $
 #
 #--
 #

@@ -3,9 +3,9 @@
 #
 # Copyright::	Copyright (C) 2001, 2004
 #		Toshiaki Katayama <k@bioruby.org>
-# Lisence::	LGPL
+# License::	LGPL
 #
-# $Id: codontable.rb,v 0.14 2005/11/05 08:25:47 k Exp $
+# $Id: codontable.rb,v 0.15 2005/11/14 02:01:54 k Exp $
 #
 # == Data source
 #

@@ -3,9 +3,9 @@
 #
 # Copyright::	Copyright (C) 2005
 #		Toshiaki Katayama <k@bioruby.org>
-# Lisence::	LGPL
+# License::	LGPL
 #
-# $Id: obda.rb,v 1.2 2005/11/05 09:06:49 k Exp $
+# $Id: obda.rb,v 1.3 2005/11/14 02:01:54 k Exp $
 #
 #--
 #

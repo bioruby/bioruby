@@ -3,9 +3,9 @@
 #
 # Copyright::	Copyright (C) 2005
 #		Toshiaki Katayama <k@bioruby.org>
-# Lisence::	LGPL
+# License::	LGPL
 #
-# $Id: codon.rb,v 1.2 2005/11/05 11:54:35 k Exp $
+# $Id: codon.rb,v 1.3 2005/11/14 02:01:54 k Exp $
 #
 #--
 #
@@ -187,7 +187,7 @@ module Bio::Shell
       [ 'w', '[at]', 'Weak' ],
       [ 's', '[gc]', 'Strong' ],
       [ 'k', '[tg]', 'Keto' ],
-      [ 'm', '[ac]', 'aMino' ],
+      [ 'm', '[ac]', 'aroMatic' ],
       [ 'b', '[tgc]', 'not A' ],
       [ 'v', '[agc]', 'not T' ],
       [ 'h', '[atc]', 'not G' ],

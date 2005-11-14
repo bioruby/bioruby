@@ -4,9 +4,9 @@
 # Copyright::	Copyright (C) 2003, 2004
 #		Shuichi Kawashima <shuichi@hgc.jp>,
 #		Toshiaki Katayama <k@bioruby.org>
-# Lisence::	LGPL
+# License::	LGPL
 #
-# $Id: das.rb,v 1.10 2005/11/05 08:31:26 k Exp $
+# $Id: das.rb,v 1.11 2005/11/14 02:01:54 k Exp $
 #
 #--
 # == TODO

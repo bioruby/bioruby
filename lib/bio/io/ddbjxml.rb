@@ -3,9 +3,9 @@
 #
 # Copyright::	Copyright (C) 2003, 2004
 #		KATAYAMA Toshiaki <k@bioruby.org>
-# Lisence::	LGPL
+# License::	LGPL
 #
-# $Id: ddbjxml.rb,v 1.7 2005/11/05 08:33:01 k Exp $
+# $Id: ddbjxml.rb,v 1.8 2005/11/14 02:01:54 k Exp $
 #
 #--
 #

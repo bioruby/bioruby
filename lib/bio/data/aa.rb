@@ -3,9 +3,9 @@
 #
 # Copyright::	Copyright (C) 2001, 2005
 #		Toshiaki Katayama <k@bioruby.org>
-# Lisence::	LGPL
+# License::	LGPL
 #
-# $Id: aa.rb,v 0.13 2005/11/04 17:49:10 k Exp $
+# $Id: aa.rb,v 0.14 2005/11/14 02:01:54 k Exp $
 #
 #--
 #
