@@ -1,18 +1,18 @@
 #
 # = bio/util/sirna.rb - Class for designing small inhibitory RNAs
 #
-# Copyright::    Copyright (C) 2004, 2005
-#        Itoshi NIKAIDO <dritoshi@gmail.com>
-# License::    LGPL
+# Copyright::   Copyright (C) 2004, 2005
+#               Itoshi NIKAIDO <dritoshi@gmail.com>
+# License::     LGPL
 #
-# $Id: sirna.rb,v 1.5 2005/11/14 14:47:59 nakao Exp $
+# $Id: sirna.rb,v 1.6 2005/11/14 15:44:30 nakao Exp $
 #
-# = Bio::SiRNA - Designing siRNA.
+# == Bio::SiRNA - Designing siRNA.
 #
 # This class implements the selection rules described by Kumiko Ui-Tei
 # et al. (2004) and Reynolds et al. (2004).
 #
-# = Example
+# == Example
 #
 #  seq = Bio::Sequence::NA.new(ARGF.read)
 #  
@@ -29,7 +29,7 @@
 #    puts shrna.bottom_strand.dna
 #  end
 #
-# = References
+# == References
 # 
 # * Kumiko Ui-Tei et al.  Guidelines for the selection of highly effective
 #   siRNA sequences for mammalian and chick RNA interference.
@@ -38,18 +38,7 @@
 # * Angela Reynolds et al.  Rational siRNA design for RNA interference.
 #   Nature Biotech. 2004 22: 326-330.
 #
-# = ChangeLog
-#
-#   2005/03/21 Itoshi NIKAIDO <itoshi.nikaido@nifty.com>
-#   Bio::SiRNA#ShRNA_designer method was changed design method.
-#
-#   2004/06/25
-#   Bio::ShRNA class was added.
-#
-#   2004/06/17 Itoshi NIKAIDO <itoshi.nikaido@nifty.com>
-#   We can use shRNA loop sequence from piGene document.
-#
-# #--
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -74,6 +63,9 @@ module Bio
 
   # = Bio::SiRNA
   # Designing siRNA.
+  #
+  # This class implements the selection rules described by Kumiko Ui-Tei
+  # et al. (2004) and Reynolds et al. (2004).
   class SiRNA
 
     # A parameter of size of antisense.
@@ -158,7 +150,7 @@ module Bio
       return @pairs
     end
 
-    # == Bio::SiRNA::Pair
+    # = Bio::SiRNA::Pair
     class Pair
 
       attr_accessor :target
@@ -204,8 +196,9 @@ module Bio
 
     end # class Pair
 
-    # == Bio::SiRNA::ShRNA
-    # Input is a Bio::SiRNA::Pair object (the target sequence).
+
+    # = Bio::SiRNA::ShRNA
+    # Designing shRNA.
     class ShRNA
 
       # aBio::Sequence::NA
@@ -213,11 +206,11 @@ module Bio
 
       # aBio::Sequence::NA
       attr_accessor :bottom_strand
-    
+
+      # Input is a Bio::SiRNA::Pair object (the target sequence).    
       def initialize(pair)
         @pair = pair
       end
-
 
       # only the 'BLOCK-iT' rule is implemented for now.
       def design(method = 'BLOCK-iT')
@@ -297,3 +290,17 @@ if __FILE__ == $0
 
 end  
 
+=begin
+
+= ChangeLog
+
+  2005/03/21 Itoshi NIKAIDO <itoshi.nikaido@nifty.com>
+  Bio::SiRNA#ShRNA_designer method was changed design method.
+
+  2004/06/25
+  Bio::ShRNA class was added.
+
+  2004/06/17 Itoshi NIKAIDO <itoshi.nikaido@nifty.com>
+  We can use shRNA loop sequence from piGene document.
+
+=end
