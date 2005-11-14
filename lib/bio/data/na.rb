@@ -3,9 +3,40 @@
 #
 # Copyright::	Copyright (C) 2001, 2005
 #		Toshiaki Katayama <k@bioruby.org>
-# Lisence::	LGPL
+# License::	LGPL
 #
-# $Id: na.rb,v 0.15 2005/11/04 17:49:10 k Exp $
+# $Id: na.rb,v 0.16 2005/11/14 01:52:19 k Exp $
+#
+# == Synopsis
+#
+# Bio::NucleicAcid class contains data related to nucleic acids.
+#
+# == Usage
+#
+# Examples:
+#
+#   require 'bio'
+#
+#   puts "### na = Bio::NucleicAcid.new"
+#   na = Bio::NucleicAcid.new
+#
+#   puts "# na.to_re('yrwskmbdhvnatgc')"
+#   p na.to_re('yrwskmbdhvnatgc')
+#
+#   puts "# Bio::NucleicAcid.to_re('yrwskmbdhvnatgc')"
+#   p Bio::NucleicAcid.to_re('yrwskmbdhvnatgc')
+#
+#   puts "# na.weight('A')"
+#   p na.weight('A')
+#
+#   puts "# Bio::NucleicAcid.weight('A')"
+#   p Bio::NucleicAcid.weight('A')
+#
+#   puts "# na.weight('atgc')"
+#   p na.weight('atgc')
+#
+#   puts "# Bio::NucleicAcid.weight('atgc')"
+#   p Bio::NucleicAcid.weight('atgc')
 #
 #--
 #
@@ -43,7 +74,7 @@ class NucleicAcid
       'w'	=> '[at]',	# Weak
       's'	=> '[gc]',	# Strong
       'k'	=> '[tg]',	# Keto
-      'm'	=> '[ac]',	# aMino
+      'm'	=> '[ac]',	# aroMatic
 
       'b'	=> '[tgc]',	# not A
       'd'	=> '[atg]',	# not C
@@ -80,13 +111,13 @@ class NucleicAcid
       :thymine	=> 126.13,
       :guanine	=> 151.15,
       :cytosine	=> 111.12,
-      :uracil		=> 112.10,
+      :uracil	=> 112.10,
 
       :deoxyribose_phosphate	=> 196.11,
-      :ribose_phosphate	=> 212.11,
+      :ribose_phosphate		=> 212.11,
 
       :hydrogen	=> 1.00794,
-      :water		=> 18.015,
+      :water	=> 18.015,
 
     }
 
@@ -157,11 +188,9 @@ class NucleicAcid
   # as class methods
   extend Data
 
-
   # backward compatibility
   Names = Data::Names
   Weight = Data::Weight
-
 
 end
 
