@@ -1,6 +1,6 @@
 =begin
 
-  $Id: README.DEV,v 1.6 2005/11/14 01:34:12 k Exp $
+  $Id: README.DEV,v 1.7 2005/11/14 14:53:51 nakao Exp $
 
   Copyright (C) 2005 Toshiaki Katayama <k@bioruby.org>
 
@@ -57,11 +57,11 @@ comments, include it in the RDoc documentation.
   #        Chem R. Hacker <crh@example.org>
   # License::    LGPL
   #
-  # $Id: README.DEV,v 1.6 2005/11/14 01:34:12 k Exp $
+  # $Id: README.DEV,v 1.7 2005/11/14 14:53:51 nakao Exp $
   #
   # == Blah blah blah
   #
-  # See http://hoge.db/ for more details on the Hoge databse.
+  # See http://hoge.db/ for more details on the Hoge database.
   # ... blah blah blah ...
   #
   # == Examples
@@ -72,8 +72,7 @@ comments, include it in the RDoc documentation.
   #
   # == References
   #
-  # * Hoge F. et al., The Hoge database, Nucleic. Acid. Res. 
-123:100--123 (2030)
+  # * Hoge F. et al., The Hoge database, Nucleic. Acid. Res.   123:100--123 (2030)
   #
   # * http://hoge.db/
   #
@@ -91,9 +90,9 @@ comments, include it in the RDoc documentation.
   #
   #  You should have received a copy of the GNU Lesser General Public
   #  License along with this library; if not, write to the Free Software
-  #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 
-02111-1307  USA
+  #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
   #
+  #++
   #
 
 === Documentation should be written in the RDoc format in the source code
@@ -168,9 +167,9 @@ There are already several sub directories in 'bioruby/lib':
 If your module doesn't match any of the above, please propose
 an appropriate directory name when you contribute.
 
-== Maintainance
+== Maintenance
 
-Finally, please maintain the code you've contrubuted.  The BioRuby
+Finally, please maintain the code you've contributed.  The BioRuby
 staff is willing to give you CVS privileges if needed.
 
 =end
