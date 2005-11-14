@@ -1,6 +1,6 @@
 =begin
 
-  $Id: README.DEV,v 1.7 2005/11/14 14:53:51 nakao Exp $
+  $Id: README.DEV,v 1.8 2005/11/14 15:50:21 nakao Exp $
 
   Copyright (C) 2005 Toshiaki Katayama <k@bioruby.org>
 
@@ -52,12 +52,12 @@ comments, include it in the RDoc documentation.
   #
   # = bio/db/hoge.rb - Hoge database parser
   #
-  # Copyright::    Copyright (C) 2001, 2005
-  #        Bio R. Hacker <brh@example.org>,
-  #        Chem R. Hacker <crh@example.org>
-  # License::    LGPL
+  # Copyright::   Copyright (C) 2001, 2005
+  #               Bio R. Hacker <brh@example.org>,
+  #               Chem R. Hacker <crh@example.org>
+  # License::     LGPL
   #
-  # $Id: README.DEV,v 1.7 2005/11/14 14:53:51 nakao Exp $
+  # $Id: README.DEV,v 1.8 2005/11/14 15:50:21 nakao Exp $
   #
   # == Blah blah blah
   #
