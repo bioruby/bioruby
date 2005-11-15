@@ -67,6 +67,39 @@ its value is ambiguous.
 These two methods are removed.  Use Bio::Blast and Bio::Fasta to execute
 BLAST and FASTA search.
 
+--- Bio::NucleicAcid
+
+Bio::NucleicAcid::Names and Bio::NucleicAcid::Weight no longer exists.
+
+Bio::NucleicAcid::Names is renamed to Bio::NucleicAcid::Data::NAMES and
+can be accessed by Bio::NucleicAcid#names, Bio::NucleicAcid.names methods
+and Bio::NucleicAcid::WEIGHT hash as the Data module is included.
+
+Bio::NucleicAcid::Weight is renamed to Bio::NucleicAcid::Data::Weight and
+can be accessed by Bio::NucleicAcid#weight, Bio::NucleicAcid.weight methods
+and Bio::NucleicAcid::WEIGHT hash as the Data module is included.
+
+--- Bio::AminoAcid
+
+Bio::AminoAcid::Names and Bio::AminoAcid::Weight no longer exists.
+
+Bio::AminoAcid::Names is renamed to Bio::AminoAcid::Data::NAMES and
+can be accessed by Bio::AminoAcid#names, Bio::AminoAcid.names methods
+and Bio::AminoAcid::WEIGHT hash as the Data module is included.
+
+Bio::AminoAcid::Weight is renamed to Bio::AminoAcid::Data::Weight and
+can be accessed by Bio::AminoAcid#weight, Bio::AminoAcid.weight methods
+and Bio::AminoAcid::WEIGHT hash as the Data module is included.
+
+--- Bio::CodonTable
+
+Bio::CodonTable::Tables, Bio::CodonTable::Definitions,
+Bio::CodonTable::Starts, and Bio::CodonTable::Stops
+are renamed to
+Bio::CodonTable::TABLES, Bio::CodonTable::DEFINITIONS,
+Bio::CodonTable::STARTS, and Bio::CodonTable::STOPS
+respectively.
+
 --- Bio::KEGG::Microarrays, Bio::KEGG::Microarray
 
 * lib/bio/db/kegg/microarray.rb is renamed to lib/bio/db/kegg/expression.rb

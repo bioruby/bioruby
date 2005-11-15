@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: na.rb,v 0.16 2005/11/14 01:52:19 k Exp $
+# $Id: na.rb,v 0.17 2005/11/15 12:43:37 k Exp $
 #
 # == Synopsis
 #
@@ -67,7 +67,7 @@ class NucleicAcid
     # * Faisst and Meyer (Nucleic Acids Res. 20:3-26, 1992)
     # * http://www.ncbi.nlm.nih.gov/collab/FT/
 
-    Names = {
+    NAMES = {
 
       'y'	=> '[tc]',	# pYrimidine
       'r'	=> '[ag]',	# puRine
@@ -97,7 +97,7 @@ class NucleicAcid
 
     }
 
-    Weight = {
+    WEIGHT = {
 
       # Calculated by BioPerl's Bio::Tools::SeqStats.pm :-)
 
@@ -125,49 +125,49 @@ class NucleicAcid
       if x
         if x.length > 1
           if rna
-            phosphate = Weight[:ribose_phosphate]
+            phosphate = WEIGHT[:ribose_phosphate]
           else
-            phosphate = Weight[:deoxyribose_phosphate]
+            phosphate = WEIGHT[:deoxyribose_phosphate]
           end
-          hydrogen    = Weight[:hydrogen]
-          water       = Weight[:water]
+          hydrogen    = WEIGHT[:hydrogen]
+          water       = WEIGHT[:water]
 
           total = 0.0
           x.each_byte do |byte|
             base = byte.chr.downcase
-            if Weight[base]
-              total += Weight[base] + phosphate - hydrogen * 2
+            if WEIGHT[base]
+              total += WEIGHT[base] + phosphate - hydrogen * 2
             else
               raise "Error: invalid nucleic acid '#{base}'"
             end
           end
           total -= water * (x.length - 1)
         else
-          Weight[x.to_s.downcase]
+          WEIGHT[x.to_s.downcase]
         end
       else
-        Weight
+        WEIGHT
       end
     end
 
     def [](x)
-      Names[x]
+      NAMES[x]
     end
 
     # backward compatibility
     def names
-      Names
+      NAMES
     end
     alias na names
 
     def name(x)
-      Names[x.to_s.upcase]
+      NAMES[x.to_s.upcase]
     end
 
     def to_re(seq, rna = false)
       str = ""
       seq.to_s.downcase.each_byte do |base|
-        if re = Names[base.chr]
+        if re = NAMES[base.chr]
           str += re
         else
           str += "."
@@ -187,10 +187,6 @@ class NucleicAcid
 
   # as class methods
   extend Data
-
-  # backward compatibility
-  Names = Data::Names
-  Weight = Data::Weight
 
 end
 

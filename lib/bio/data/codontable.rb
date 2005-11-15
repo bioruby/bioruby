@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: codontable.rb,v 0.15 2005/11/14 02:01:54 k Exp $
+# $Id: codontable.rb,v 0.16 2005/11/15 12:43:37 k Exp $
 #
 # == Data source
 #
@@ -68,11 +68,11 @@ class CodonTable
   # Select a codon table by number.  This method will return one of the
   # hard coded codon tables in this class as a Bio::CodonTable object.
   def self.[](i)
-    hash = Tables[i]
+    hash = TABLES[i]
     raise "ERROR: Unknown codon table No.#{i}" unless hash
-    definition = Definitions[i]
-    start = Starts[i]
-    stop = Stops[i]
+    definition = DEFINITIONS[i]
+    start = STARTS[i]
+    stop = STOPS[i]
     self.new(hash, definition, start, stop)
   end
 
@@ -178,7 +178,7 @@ class CodonTable
   end
   private :generate_stop
 
-  Definitions = {
+  DEFINITIONS = {
 
     1	=> "Standard (Eukaryote)",
     2	=> "Vertebrate Mitochondrial",
@@ -201,7 +201,7 @@ class CodonTable
   }
 
 
-  Starts = {
+  STARTS = {
     1	=> %w(ttg ctg atg gtg),		# gtg added (cf. NCBI #SG1 document)
     2	=> %w(att atc ata atg gtg),
     3	=> %w(ata atg),
@@ -222,7 +222,7 @@ class CodonTable
   }
 
 
-  Stops = {
+  STOPS = {
     1	=> %w(taa tag tga),
     2	=> %w(taa tag aga agg),
     3	=> %w(taa tag),
@@ -243,7 +243,7 @@ class CodonTable
   }
 
 
-  Tables = {
+  TABLES = {
 
     # codon table 1
     1 => {

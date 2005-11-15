@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: aa.rb,v 0.14 2005/11/14 02:01:54 k Exp $
+# $Id: aa.rb,v 0.15 2005/11/15 12:43:37 k Exp $
 #
 #--
 #
@@ -36,7 +36,7 @@ class AminoAcid
     # * http://www.iupac.org/
     # * http://www.chem.qmw.ac.uk/iubmb/newsletter/1999/item3.html
 
-    Names= {
+    NAMES= {
 
       'A' => 'Ala',
       'C' => 'Cys',
@@ -95,7 +95,7 @@ class AminoAcid
     #   Handbook of Biochemistry and Molecular Biology", 3rd ed.,
     #   Proteins - Volume 1, CRC Press, Cleveland (1976)
 
-    Weight = {
+    WEIGHT = {
 
       'A' => 89.09,
       'C' => 121.15,	# 121.16 according to the Wikipedia
@@ -126,35 +126,35 @@ class AminoAcid
           total = 0.0
           x.each_byte do |byte|
             aa = byte.chr.upcase
-            if Weight[aa]
-              total += Weight[aa]
+            if WEIGHT[aa]
+              total += WEIGHT[aa]
             else
               raise "Error: invalid amino acid '#{aa}'"
             end
           end
           total -= NucleicAcid.weight[:water] * (x.length - 1)
         else
-          Weight[x]
+          WEIGHT[x]
         end
       else
-        Weight
+        WEIGHT
       end
     end
 
     def [](x)
-      Names[x]
+      NAMES[x]
     end
 
     # backward compatibility
     def names
-      Names
+      NAMES
     end
     alias aa names
 
     def name(x)
-      str = Names[x]
+      str = NAMES[x]
       if str and str.length == 3
-        Names[str]
+        NAMES[str]
       else
         str
       end
@@ -188,7 +188,7 @@ class AminoAcid
       if x and x.length != 1
         raise ArgumentError
       else
-        Names[x]
+        NAMES[x]
       end
     end
 
@@ -204,7 +204,7 @@ class AminoAcid
       if x and x.length != 1
         raise ArgumentError
       else
-        three2name(Names[x])
+        three2name(NAMES[x])
       end
     end
 
@@ -221,7 +221,7 @@ class AminoAcid
       if x and x.length != 3
         raise ArgumentError
       else
-        Names[x]
+        NAMES[x]
       end
     end
 
@@ -243,7 +243,7 @@ class AminoAcid
 
     def reverse
       hash = Hash.new
-      Names.each do |k, v|
+      NAMES.each do |k, v|
         hash[v] = k
       end
       hash
@@ -257,11 +257,6 @@ class AminoAcid
 
   # as class methods
   extend Data
-
-
-  # backward compatibility
-  Names = Data::Names
-  Weight = Data::Weight
 
 
   private
