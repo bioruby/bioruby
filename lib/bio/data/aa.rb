@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: aa.rb,v 0.15 2005/11/15 12:43:37 k Exp $
+# $Id: aa.rb,v 0.16 2005/11/15 13:33:11 k Exp $
 #
 #--
 #
@@ -36,7 +36,7 @@ class AminoAcid
     # * http://www.iupac.org/
     # * http://www.chem.qmw.ac.uk/iubmb/newsletter/1999/item3.html
 
-    NAMES= {
+    NAMES = {
 
       'A' => 'Ala',
       'C' => 'Cys',
