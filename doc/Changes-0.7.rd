@@ -170,3 +170,12 @@ in your code to
 
 and this change will also speeds up loading time if you only need
 one of the sub classes under the genbank/ or embl/ directory.
+
+: lib/bio/extend.rb
+
+This file contained some additional methods to String and Array classes.
+The methods added to Array are already included in Ruby itself since the
+version 1.8, and the methods added to String are moved to the BioRuby shell
+(lib/bio/shell/plugin/seq.rb).
+
+
