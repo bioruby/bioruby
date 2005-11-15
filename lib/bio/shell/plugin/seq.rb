@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: seq.rb,v 1.7 2005/11/14 02:01:54 k Exp $
+# $Id: seq.rb,v 1.8 2005/11/15 12:56:39 k Exp $
 #
 #--
 #
@@ -27,6 +27,7 @@
 #
 
 require 'bio/sequence'
+require 'bio/util/color_scheme'
 
 module Bio::Shell
 
@@ -64,6 +65,36 @@ module Bio::Shell
 
     return s || ""
   end
+
+
+  # Convert sequence to colored HTML string
+  def htmlseq(str)
+    if str.instance_of?(String)
+      s = seq(str)
+    elsif str.kind_of?(Bio::Sequence)
+      s = str
+    end
+
+    if s.is_a?(Bio::Sequence::AA)
+      scheme = Bio::ColorScheme::Taylor
+    else
+      scheme = Bio::ColorScheme::Nucleotide
+    end
+
+    html = %Q[<div style="font-family:monospace;">\n]
+    s.fold(50).each_byte do |c|
+      case c.chr
+      when "\n"
+        html += "<br>\n"
+      else
+        color = scheme[c.chr]
+        html += %Q[<span style="background:\##{color};">#{c.chr}</span>\n]
+      end
+    end
+    html += "</div>\n"
+    return html
+  end
+
 
   # Displays some basic properties of the sequence.
   def seqstat(str)
@@ -130,4 +161,70 @@ module Bio::Shell
     display helix
   end
 
+end
+
+
+class String
+
+  def to_naseq
+    Bio::Sequence::NA.new(self)
+  end
+
+  def to_aaseq
+    Bio::Sequence::AA.new(self)
+  end
+
+  # folding both line end justified
+  def fold(fill_column = 72, indent = 0)
+    str = ''
+
+    # size : allowed length of the actual text
+    unless (size = fill_column - indent) > 0
+      raise "[Error] indent > fill_column"
+    end
+
+    0.step(self.length - 1, size) do |n|
+      str << ' ' * indent + self[n, size] + "\n"
+    end
+
+    return str
+  end
+
+  # folding with conscious about word boundaries with prefix string
+  def fill(fill_column = 80, indent = 0, separater = ' ', prefix = '', first_line_only = true)
+
+    # size : allowed length of the actual text
+    unless (size = fill_column - indent) > 0
+      raise "[Error] indent > fill_column"
+    end
+
+    n = pos = 0
+    str = []
+    while n < self.length
+      pos = self[n, size].rindex(separater)
+
+      if self[n, size].length < size	# last line of the folded str
+        pos = nil
+      end
+
+      if pos
+        str << self[n, pos+separater.length]
+        n += pos + separater.length
+      else				# line too long or the last line
+        str << self[n, size]
+        n += size
+      end
+    end
+    str = str.join("\n")
+
+    str[0,0] = prefix + ' ' * (indent - prefix.length)
+    if first_line_only
+      head = ' ' * indent
+    else
+      head = prefix + ' ' * (indent - prefix.length)
+    end
+    str.gsub!("\n", "\n#{head}")
+
+    return str.chomp
+  end
 end
