@@ -1,13 +1,13 @@
 #
 # = bio/sequence.rb - biological sequence class
 #
-# Copyright::	Copyright (C) 2000-2005
-#		Toshiaki Katayama <k@bioruby.org>,
-#		Yoshinori K. Okuji <okuji@embug.org>,
-#		Naohisa Goto <ng@bioruby.org>
-# License::	LGPL
+# Copyright::   Copyright (C) 2000-2005
+#               Toshiaki Katayama <k@bioruby.org>,
+#               Yoshinori K. Okuji <okuji@embug.org>,
+#               Naohisa Goto <ng@bioruby.org>
+# License::     LGPL
 #
-# $Id: sequence.rb,v 0.46 2005/11/15 14:49:00 k Exp $
+# $Id: sequence.rb,v 0.47 2005/11/15 14:58:57 nakao Exp $
 #
 #--
 # *TODO* remove this functionality?
@@ -382,7 +382,7 @@ class Sequence < String
     protected :rna?
 
     def pikachu
-      self.dna.tr("atgc", "pika")	# joke, of course :-)
+      self.dna.tr("atgc", "pika") # joke, of course :-)
     end
 
   end
