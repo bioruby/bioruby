@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: seq.rb,v 1.8 2005/11/15 12:56:39 k Exp $
+# $Id: seq.rb,v 1.9 2005/11/16 04:03:23 k Exp $
 #
 #--
 #
@@ -39,14 +39,14 @@ module Bio::Shell
   #   * File   -- "gbvrl.gbk" (only the first entry is used)
   #   * ID     -- "embl:BUM"  (entry is retrieved by the OBDA)
   def seq(arg)
-    if arg.respond_to?(:gets) or File.exists?(arg)
+    if arg.kind_of?(Bio::Sequence)
+      s = arg
+    elsif arg.respond_to?(:gets) or File.exists?(arg)
       entry = flatauto(arg)
     elsif arg[/:/]
       db, entry_id = arg.split(/:/)
       str = obda_get_entry(db, entry_id)
-      if cls = Bio::FlatFile.autodetect(str)
-        entry = cls.new(str)
-      end
+      entry = parse(str)
     else
       tmp = arg
     end
@@ -69,20 +69,20 @@ module Bio::Shell
 
   # Convert sequence to colored HTML string
   def htmlseq(str)
-    if str.instance_of?(String)
-      s = seq(str)
-    elsif str.kind_of?(Bio::Sequence)
-      s = str
+    if str.kind_of?(Bio::Sequence)
+      seq = str
+    else
+      seq = seq(str)
     end
 
-    if s.is_a?(Bio::Sequence::AA)
+    if seq.is_a?(Bio::Sequence::AA)
       scheme = Bio::ColorScheme::Taylor
     else
       scheme = Bio::ColorScheme::Nucleotide
     end
 
     html = %Q[<div style="font-family:monospace;">\n]
-    s.fold(50).each_byte do |c|
+    seq.fold(50).each_byte do |c|
       case c.chr
       when "\n"
         html += "<br>\n"
@@ -101,25 +101,33 @@ module Bio::Shell
     seq = seq(str)
     rep = ""
     if seq.respond_to?(:complement)
-      rep << "Sequence           : #{seq}\n"
-      rep << "Reverse complement : #{seq.complement}\n"
-      rep << "Translation  1     : #{seq.translate}\n"
-      rep << "Translation  2     : #{seq.translate(2)}\n"
-      rep << "Translation  3     : #{seq.translate(3)}\n"
-      rep << "Translation -1     : #{seq.translate(-1)}\n"
-      rep << "Translation -2     : #{seq.translate(-2)}\n"
-      rep << "Translation -3     : #{seq.translate(-3)}\n"
+      rep << "Sequence           : #{seq.fold(71,21).strip}\n"
+      rep << "Reverse complement : #{seq.complement.fold(71,21).strip}\n"
+      rep << "Translation  1     : #{seq.translate.fold(71,21).strip}\n"
+      rep << "Translation  2     : #{seq.translate(2).fold(71,21).strip}\n"
+      rep << "Translation  3     : #{seq.translate(3).fold(71,21).strip}\n"
+      rep << "Translation -1     : #{seq.translate(-1).fold(71,21).strip}\n"
+      rep << "Translation -2     : #{seq.translate(-2).fold(71,21).strip}\n"
+      rep << "Translation -3     : #{seq.translate(-3).fold(71,21).strip}\n"
       rep << "GC percent         : #{seq.gc_percent} %\n"
       rep << "Composition        : #{seq.composition.inspect}\n"
       begin
         rep << "Molecular weight   : #{seq.molecular_weight}\n"
-        rep << "Complemnet weight  : #{seq.complement.molecular_weight}\n"
-        rep << "Protein weight     : #{seq.translate.molecular_weight}\n"
       rescue
         rep << "Molecular weight   : #{$!}\n"
       end
+      begin
+        rep << "Complemnet weight  : #{seq.complement.molecular_weight}\n"
+      rescue
+        rep << "Complement weight  : #{$!}\n"
+      end
+      begin
+        rep << "Protein weight     : #{seq.translate.molecular_weight}\n"
+      rescue
+        rep << "Protein weight     : #{$!}\n"
+      end
     else
-      rep << "Sequence           : #{seq}\n"
+      rep << "Sequence           : #{seq.fold(71,21).strip}\n"
       rep << "Composition        : #{seq.composition.inspect}\n"
       begin
         rep << "Protein weight     : #{seq.molecular_weight}\n"
