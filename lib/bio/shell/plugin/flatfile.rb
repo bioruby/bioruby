@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: flatfile.rb,v 1.5 2005/11/14 02:01:54 k Exp $
+# $Id: flatfile.rb,v 1.6 2005/11/16 04:01:10 k Exp $
 #
 #--
 #
@@ -32,6 +32,23 @@ module Bio::Shell
 
   private
 
+  def flatfile(filename)
+    if block_given?
+      Bio::FlatFile.auto(filename) do |flat|
+        flat.each do |entry|
+          yield flat.entry_raw
+        end
+      end
+    else
+      entry = ''
+      Bio::FlatFile.auto(filename) do |flat|
+        flat.next_entry
+        entry = flat.entry_raw
+      end
+      return entry
+    end
+  end
+
   def flatauto(filename)
     if block_given?
       Bio::FlatFile.auto(filename) do |flat|
@@ -40,14 +57,21 @@ module Bio::Shell
         end
       end
     else
-      flat = Bio::FlatFile.auto(filename)
-      entry = flat.next_entry
-      flat.close
+      entry = ''
+      Bio::FlatFile.auto(filename) do |flat|
+        entry = flat.next_entry
+      end
       return entry
     end
   end
 
-  def save_fasta(fastafile, *flatfiles)
+  def parse(entry)
+    if cls = Bio::FlatFile.autodetect(entry)
+      return cls.new(entry)
+    end
+  end
+
+  def flatfasta(fastafile, *flatfiles)
     puts "Saving fasta file (#{fastafile}) ... "
     File.open(fastafile, "w") do |fasta|
       flatfiles.each do |flatfile|
@@ -64,23 +88,21 @@ module Bio::Shell
   end
 
   def flatindex(dbname, *flatfiles)
-    prefix = Core::SAVEDIR + Core::BIOFLAT
-    unless File.directory?(prefix)
-      Bio::Shell.create_save_dir
-    end
-    dir = prefix + dbname.to_s
-    bdb = format = options = nil
+    prefix = Bio::Shell.create_save_dir + Core::BIOFLAT
+    idxdir = prefix + dbname.to_s
     begin
-      print "Creating BioFlat index (#{dir}) ... "
-      Bio::FlatFileIndex.makeindex(bdb, dir, format, options, *flatfiles)
+      print "Creating BioFlat index (#{idxdir}) ... "
+      bdb = format = options = nil
+      Bio::FlatFileIndex.makeindex(bdb, idxdir, format, options, *flatfiles)
       puts "done"
     rescue
-      raise "Failed to create index (#{dir}) : #{$!}"
+      raise "Failed to create index (#{idxdir}) : #{$!}"
     end
   end
 
   def flatsearch(dbname, keyword)
     dir = Core::SAVEDIR + Core::BIOFLAT + dbname.to_s
+    dir = Core::USERDIR + Core::BIOFLAT + dbname.to_s unless File.exists?(dir)
     Bio::FlatFileIndex.open(dir) do |db|
       if results = db.include?(keyword)
         results.each do |entry_id|
