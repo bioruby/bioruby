@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_report.rb,v 1.1 2005/10/31 16:27:46 nakao Exp $
+#  $Id: test_report.rb,v 1.2 2005/11/22 08:31:47 nakao Exp $
 #
 
 require 'pathname'
@@ -41,39 +41,39 @@ module Bio
     end
 
     def test_genscan_version
-      assert_equal(@obj.genscan_version, '1.0')
+      assert_equal('1.0', @obj.genscan_version)
     end
 
     def test_date_run
-      assert_equal(@obj.date_run, '30-May-103')
+      assert_equal('30-May-103', @obj.date_run)
     end
 
     def test_time
-      assert_equal(@obj.time, "14:06:28")
+      assert_equal("14:06:28", @obj.time)
     end
 
     def test_query_name
-      assert_equal(@obj.query_name, 'HUMRASH')
+      assert_equal('HUMRASH', @obj.query_name)
     end
 
     def test_length
-      assert_equal(@obj.length, 12942)
+      assert_equal(12942, @obj.length)
     end
 
     def test_gccontent
-      assert_equal(@obj.gccontent, 68.17)
+      assert_equal(68.17, @obj.gccontent)
     end
 
     def test_isochore
-      assert_equal(@obj.isochore, '4 (57 - 100 C+G%)')
+      assert_equal('4 (57 - 100 C+G%)', @obj.isochore)
     end
 
     def test_matrix
-      assert_equal(@obj.matrix, 'HumanIso.smat')
+      assert_equal('HumanIso.smat', @obj.matrix)
     end
 
     def test_predictions_size
-      assert_equal(@obj.predictions.size, 2)
+      assert_equal(2, @obj.predictions.size)
     end
 
   end # TestGenscanReport
@@ -89,33 +89,33 @@ module Bio
     end
 
     def test_number
-      assert_equal(@obj.first.number, 1)
+      assert_equal(1, @obj.first.number)
     end
 
     def test_aaseq
-      assert_equal(@obj.first.aaseq.class, Bio::FastaFormat)
+      assert_equal(Bio::FastaFormat, @obj.first.aaseq.class)
       seq =  "MTEYKLVVVGAGGVGKSALTIQLIQNHFVDEYDPTIEDSYRKQVVIDGETCLLDILDTAGQEEYSAMRDQYMRTGEGFLCVFAINNTKSFEDIHQYREQIKRVKDSDDVPMVLVGNKCDLAARTVESRQAQDLARSYGIPYIETSAKTRQGVEDAFYTLVREIRQHKLRKLNPPDESGPGCMSCKCVLS"
-      assert_equal(@obj.first.aaseq.seq, seq)
+      assert_equal(seq, @obj.first.aaseq.seq)
       definition = "HUMRASH|GENSCAN_predicted_peptide_1|189_aa"
-      assert_equal(@obj.first.aaseq.definition, definition)
+      assert_equal(definition, @obj.first.aaseq.definition)
     end
 
     def test_naseq
-      assert_equal(@obj.first.naseq.class, Bio::FastaFormat)
+      assert_equal(Bio::FastaFormat, @obj.first.naseq.class)
       seq = "atgacggaatataagctggtggtggtgggcgccggcggtgtgggcaagagtgcgctgaccatccagctgatccagaaccattttgtggacgaatacgaccccactatagaggattcctaccggaagcaggtggtcattgatggggagacgtgcctgttggacatcctggataccgccggccaggaggagtacagcgccatgcgggaccagtacatgcgcaccggggagggcttcctgtgtgtgtttgccatcaacaacaccaagtcttttgaggacatccaccagtacagggagcagatcaaacgggtgaaggactcggatgacgtgcccatggtgctggtggggaacaagtgtgacctggctgcacgcactgtggaatctcggcaggctcaggacctcgcccgaagctacggcatcccctacatcgagacctcggccaagacccggcagggagtggaggatgccttctacacgttggtgcgtgagatccggcagcacaagctgcggaagctgaaccctcctgatgagagtggccccggctgcatgagctgcaagtgtgtgctctcctga"
-      assert_equal(@obj.first.naseq.seq, seq)
+      assert_equal(seq, @obj.first.naseq.seq)
       definition = "HUMRASH|GENSCAN_predicted_CDS_1|570_bp"
-      assert_equal(@obj.first.naseq.definition, definition)
+      assert_equal(definition, @obj.first.naseq.definition)
     end
 
     def test_promoter
-      assert_equal(@obj.last.promoter.class, Bio::Genscan::Report::Exon)
-      assert_equal(@obj.last.promoter.exon_type, "Prom")
+      assert_equal(Bio::Genscan::Report::Exon, @obj.last.promoter.class)
+      assert_equal("Prom", @obj.last.promoter.exon_type)
     end
 
     def test_polyA
-      assert_equal(@obj.first.polyA.class, Bio::Genscan::Report::Exon)
-      assert_equal(@obj.first.polyA.exon_type, 'PlyA')
+      assert_equal(Bio::Genscan::Report::Exon, @obj.first.polyA.class)
+      assert_equal('PlyA', @obj.first.polyA.exon_type)
     end
 
   end # TestGenscanReportGene
@@ -131,63 +131,63 @@ module Bio
     end
 
     def test_number
-      assert_equal(@obj.number, 1)
+      assert_equal(1, @obj.number)
     end
 
     def test_exon_type
-      assert_equal(@obj.exon_type, 'Init')
+      assert_equal('Init', @obj.exon_type)
     end
 
     def test_exon_type_long
-      assert_equal(@obj.exon_type_long, 'Initial exon')
+      assert_equal('Initial exon',  @obj.exon_type_long)
     end
 
     def test_strand
-      assert_equal(@obj.strand, '+')
+      assert_equal('+', @obj.strand)
     end
 
     def test_first
-      assert_equal(@obj.first, 1664)
+      assert_equal(1664, @obj.first)
     end
 
     def test_last
-      assert_equal(@obj.last, 1774)
+      assert_equal(1774, @obj.last)
     end
 
     def test_range
-      assert_equal(@obj.range, 1664..1774)
+      assert_equal(1664..1774, @obj.range)
     end
 
     def test_phase
-      assert_equal(@obj.phase, '0')
+      assert_equal('0', @obj.phase)
     end
 
     def test_acceptor_score
-      assert_equal(@obj.acceptor_score, 94)
+      assert_equal(94, @obj.acceptor_score)
     end
 
     def test_donor_score
-      assert_equal(@obj.donor_score, 83)
+      assert_equal(83, @obj.donor_score)
     end
 
     def test_initiation_score
-      assert_equal(@obj.initiation_score, 94)
+      assert_equal(94, @obj.initiation_score)
     end
 
     def test_termination_score
-      assert_equal(@obj.termination_score, 83)
+      assert_equal(83, @obj.termination_score)
     end
 
     def test_score
-      assert_equal(@obj.score, 212)
+      assert_equal(212, @obj.score)
     end
 
     def test_p_value
-      assert_equal(@obj.p_value, 0.997)
+      assert_equal(0.997, @obj.p_value)
     end
 
     def test_t_score
-      assert_equal(@obj.t_score, 21.33)
+      assert_equal(21.33, @obj.t_score)
     end
 
   end # TestGenscanReportExon

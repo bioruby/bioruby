@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_report.rb,v 1.1 2005/10/28 02:30:57 nakao Exp $
+#  $Id: test_report.rb,v 1.2 2005/11/22 08:31:47 nakao Exp $
 #
 
 require 'pathname'
@@ -62,50 +62,50 @@ module Bio
     end
 
     def test_parameters
-      assert_equal(@report.parameters['matrix'], 'BLOSUM62')
-      assert_equal(@report.parameters['expect'], 10)
-      assert_equal(@report.parameters['gap-open'], 11)
-      assert_equal(@report.parameters['gap-extend'], 1)
-      assert_equal(@report.parameters['filter'], 'S')
+      assert_equal('BLOSUM62', @report.parameters['matrix'])
+      assert_equal(10, @report.parameters['expect'])
+      assert_equal(11, @report.parameters['gap-open'])
+      assert_equal(1, @report.parameters['gap-extend'])
+      assert_equal('S', @report.parameters['filter'])
     end
 
     def test_program
-      assert_equal(@report.program, 'blastp')
+      assert_equal('blastp', @report.program)
     end
 
     def test_version
-      assert_equal(@report.version, 'blastp 2.2.10 [Oct-19-2004]')
+      assert_equal('blastp 2.2.10 [Oct-19-2004]', @report.version)
     end
 
     def test_reference
       xml_quoted_str = "~Reference: Altschul, Stephen F., Thomas L. Madden, Alejandro A. Schaffer, ~Jinghui Zhang, Zheng Zhang, Webb Miller, and David J. Lipman (1997), ~&quot;Gapped BLAST and PSI-BLAST: a new generation of protein database search~programs&quot;,  Nucleic Acids Res. 25:3389-3402."
       text_str = '~Reference: Altschul, Stephen F., Thomas L. Madden, Alejandro A. Schaffer, ~Jinghui Zhang, Zheng Zhang, Webb Miller, and David J. Lipman (1997), ~"Gapped BLAST and PSI-BLAST: a new generation of protein database search~programs",  Nucleic Acids Res. 25:3389-3402.'
-      assert_equal(@report.reference, xml_quoted_str)
-      assert_equal(@report.reference, text_str)
+      assert_equal(xml_quoted_str, @report.reference)
+      assert_equal(text_str, @report.reference)
     end
 
     def test_db
-      assert_equal(@report.db, 'eco:b0002.faa')
+      assert_equal('eco:b0002.faa', @report.db)
     end
 
     def test_query_id
-      assert_equal(@report.query_id, 'lcl|QUERY')
+      assert_equal('lcl|QUERY', @report.query_id)
     end
 
     def test_query_def
-      assert_equal(@report.query_def, 'eco:b0002 thrA, Hs, thrD, thrA2, thrA1; bifunctional: aspartokinase I (N-terminal); homoserine dehydrogenase I (C-terminal) [EC:2.7.2.4 1.1.1.3]; K00003 homoserine dehydrogenase; K00928 aspartate kinase (A)')
+      assert_equal('eco:b0002 thrA, Hs, thrD, thrA2, thrA1; bifunctional: aspartokinase I (N-terminal); homoserine dehydrogenase I (C-terminal) [EC:2.7.2.4 1.1.1.3]; K00003 homoserine dehydrogenase; K00928 aspartate kinase (A)', @report.query_def)
     end
 
     def test_query_len
-      assert_equal(@report.query_len, 820)
+      assert_equal(820, @report.query_len)
     end
 
     def test_matrix
-      assert_equal(@report.matrix, 'BLOSUM62')
+      assert_equal('BLOSUM62', @report.matrix)
     end
 
     def test_expect
-      assert_equal(@report.expect, 10)
+      assert_equal(10, @report.expect)
     end
 
     def test_inclusion
@@ -121,15 +121,15 @@ module Bio
     end
 
     def test_gap_open
-      assert_equal(@report.gap_open, 11)
+      assert_equal(11, @report.gap_open)
     end
 
     def test_gap_extend
-      assert_equal(@report.gap_extend, 1)
+      assert_equal(1, @report.gap_extend)
     end
 
     def test_filter
-      assert_equal(@report.filter, 'S')
+      assert_equal('S', @report.filter)
     end
 
     def test_pattern
@@ -153,35 +153,35 @@ module Bio
     end
 
     def test_statistics
-      assert_equal(@report.statistics, {"kappa"=>0.041, "db-num"=>1, "eff-space"=>605284.0, "hsp-len"=>42, "db-len"=>820, "lambda"=>0.267, "entropy"=>0.14})
+      assert_equal({"kappa"=>0.041, "db-num"=>1, "eff-space"=>605284.0, "hsp-len"=>42, "db-len"=>820, "lambda"=>0.267, "entropy"=>0.14}, @report.statistics)
     end
 
     def test_db_num
-      assert_equal(@report.db_num, 1)
+      assert_equal(1, @report.db_num)
     end
 
     def test_db_len
-      assert_equal(@report.db_len, 820)
+      assert_equal(820, @report.db_len)
     end
 
     def test_hsp_len
-      assert_equal(@report.hsp_len, 42)
+      assert_equal(42, @report.hsp_len)
     end
 
     def test_eff_space
-      assert_equal(@report.eff_space, 605284)
+      assert_equal(605284, @report.eff_space)
     end
 
     def test_kappa
-      assert_equal(@report.kappa, 0.041)
+      assert_equal(0.041, @report.kappa)
     end
 
     def test_lambda
-      assert_equal(@report.lambda, 0.267)
+      assert_equal(0.267, @report.lambda)
     end
 
     def test_entropy
-      assert_equal(@report.entropy, 0.14)
+      assert_equal(0.14, @report.entropy)
     end
 
     def test_message
@@ -191,7 +191,7 @@ module Bio
   
   class TestBlastReportIteration < Test::Unit::TestCase
     def setup
-      data = Bio::TestBlastData.data
+      data = Bio::TestBlastReportData.output
       report = Bio::Blast::Report.new(data)
       @itr = report.iterations.first
     end
@@ -205,7 +205,7 @@ module Bio
     end
 
     def test_num
-      assert_equal(@itr.num, 1)
+      assert_equal(1, @itr.num)
     end
 
     def test_message
@@ -215,7 +215,7 @@ module Bio
 
   class TestBlastReportHit < Test::Unit::TestCase
     def setup
-      data = Bio::TestBlastData.data
+      data = Bio::TestBlastReportData.output
       report = Bio::Blast::Report.new(data)
       @hit = report.hits.first
     end
@@ -225,15 +225,15 @@ module Bio
     end
 
     def test_Hit_query_id
-      assert_equal(@hit.query_id, 'lcl|QUERY')
+      assert_equal('lcl|QUERY', @hit.query_id)
     end
 
     def test_Hit_query_def
-      assert_equal(@hit.query_def, 'eco:b0002 thrA, Hs, thrD, thrA2, thrA1; bifunctional: aspartokinase I (N-terminal); homoserine dehydrogenase I (C-terminal) [EC:2.7.2.4 1.1.1.3]; K00003 homoserine dehydrogenase; K00928 aspartate kinase (A)')
+      assert_equal('eco:b0002 thrA, Hs, thrD, thrA2, thrA1; bifunctional: aspartokinase I (N-terminal); homoserine dehydrogenase I (C-terminal) [EC:2.7.2.4 1.1.1.3]; K00003 homoserine dehydrogenase; K00928 aspartate kinase (A)', @hit.query_def)
     end
 
     def test_Hit_query_len
-      assert_equal(@hit.query_len, 820)
+      assert_equal(820, @hit.query_len)
     end
 
     def test_Hit_num
@@ -241,15 +241,15 @@ module Bio
     end
 
     def test_Hit_hit_id
-      assert_equal(@hit.hit_id, 'gnl|BL_ORD_ID|0') 
+      assert_equal('gnl|BL_ORD_ID|0', @hit.hit_id) 
     end
 
     def test_Hit_len
-      assert_equal(@hit.len, 820)
+      assert_equal(820, @hit.len)
     end
 
     def test_Hit_target_len
-      assert_equal(@hit.target_len, 820)
+      assert_equal(820, @hit.target_len)
     end
 
     def test_Hit_definition
@@ -269,86 +269,86 @@ module Bio
     end
     
     def test_Hit_evalue
-      assert_equal(@hit.evalue, 0)
+      assert_equal(0, @hit.evalue)
     end
 
     def test_Hit_bit_score
-      assert_equal(@hit.bit_score, 1567.75)
+      assert_equal(1567.75, @hit.bit_score)
     end
 
     def test_Hit_identity
-      assert_equal(@hit.identity, 820)
+      assert_equal(820, @hit.identity)
     end
 
     def test_Hit_overlap
-      assert_equal(@hit.overlap, 820)
+      assert_equal(820, @hit.overlap)
     end
 
     def test_Hit_query_seq
       seq = 'MRVLKFGGTSVANAERFLRVADILESNARQGQVATVLSAPAKITNHLVAMIEKTISGQDALPNISDAERIFAELLTGLAAAQPGFPLAQLKTFVDQEFAQIKHVLHGISLLGQCPDSINAALICRGEKMSIAIMAGVLEARGHNVTVIDPVEKLLAVGHYLESTVDIAESTRRIAASRIPADHMVLMAGFTAGNEKGELVVLGRNGSDYSAAVLAACLRADCCEIWTDVDGVYTCDPRQVPDARLLKSMSYQEAMELSYFGAKVLHPRTITPIAQFQIPCLIKNTGNPQAPGTLIGASRDEDELPVKGISNLNNMAMFSVSGPGMKGMVGMAARVFAAMSRARISVVLITQSSSEYSISFCVPQSDCVRAERAMQEEFYLELKEGLLEPLAVTERLAIISVVGDGMRTLRGISAKFFAALARANINIVAIAQGSSERSISVVVNNDDATTGVRVTHQMLFNTDQVIEVFVIGVGGVGGALLEQLKRQQSWLKNKHIDLRVCGVANSKALLTNVHGLNLENWQEELAQAKEPFNLGRLIRLVKEYHLLNPVIVDCTSSQAVADQYADFLREGFHVVTPNKKANTSSMDYYHQLRYAAEKSRRKFLYDTNVGAGLPVIENLQNLLNAGDELMKFSGILSGSLSYIFGKLDEGMSFSEATTLAREMGYTEPDPRDDLSGMDVARKLLILARETGRELELADIEIEPVLPAEFNAEGDVAAFMANLSQLDDLFAARVAKARDEGKVLRYVGNIDEDGVCRVKIAEVDGNDPLFKVKNGENALAFYSHYYQPLPLVLRGYGAGNDVTAAGVFADLLRTLSWKLGV'
-      assert_equal(@hit.query_seq, seq)
+      assert_equal(seq, @hit.query_seq)
     end
 
     def test_Hit_target_seq
       seq = 'MRVLKFGGTSVANAERFLRVADILESNARQGQVATVLSAPAKITNHLVAMIEKTISGQDALPNISDAERIFAELLTGLAAAQPGFPLAQLKTFVDQEFAQIKHVLHGISLLGQCPDSINAALICRGEKMSIAIMAGVLEARGHNVTVIDPVEKLLAVGHYLESTVDIAESTRRIAASRIPADHMVLMAGFTAGNEKGELVVLGRNGSDYSAAVLAACLRADCCEIWTDVDGVYTCDPRQVPDARLLKSMSYQEAMELSYFGAKVLHPRTITPIAQFQIPCLIKNTGNPQAPGTLIGASRDEDELPVKGISNLNNMAMFSVSGPGMKGMVGMAARVFAAMSRARISVVLITQSSSEYSISFCVPQSDCVRAERAMQEEFYLELKEGLLEPLAVTERLAIISVVGDGMRTLRGISAKFFAALARANINIVAIAQGSSERSISVVVNNDDATTGVRVTHQMLFNTDQVIEVFVIGVGGVGGALLEQLKRQQSWLKNKHIDLRVCGVANSKALLTNVHGLNLENWQEELAQAKEPFNLGRLIRLVKEYHLLNPVIVDCTSSQAVADQYADFLREGFHVVTPNKKANTSSMDYYHQLRYAAEKSRRKFLYDTNVGAGLPVIENLQNLLNAGDELMKFSGILSGSLSYIFGKLDEGMSFSEATTLAREMGYTEPDPRDDLSGMDVARKLLILARETGRELELADIEIEPVLPAEFNAEGDVAAFMANLSQLDDLFAARVAKARDEGKVLRYVGNIDEDGVCRVKIAEVDGNDPLFKVKNGENALAFYSHYYQPLPLVLRGYGAGNDVTAAGVFADLLRTLSWKLGV'
-      assert_equal(@hit.target_seq, seq)
+      assert_equal(seq, @hit.target_seq)
     end
 
     def test_Hit_midline
       seq = 'MRVLKFGGTSVANAERFLRVADILESNARQGQVATVLSAPAKITNHLVAMIEKTISGQDALPNISDAERIFAELLTGLAAAQPGFPLAQLKTFVDQEFAQIKHVLHGISLLGQCPDSINAALICRGEKMSIAIMAGVLEARGHNVTVIDPVEKLLAVGHYLESTVDIAESTRRIAASRIPADHMVLMAGFTAGNEKGELVVLGRNGSDYSAAVLAACLRADCCEIWTDVDGVYTCDPRQVPDARLLKSMSYQEAMELSYFGAKVLHPRTITPIAQFQIPCLIKNTGNPQAPGTLIGASRDEDELPVKGISNLNNMAMFSVSGPGMKGMVGMAARVFAAMSRARISVVLITQSSSEYSISFCVPQSDCVRAERAMQEEFYLELKEGLLEPLAVTERLAIISVVGDGMRTLRGISAKFFAALARANINIVAIAQGSSERSISVVVNNDDATTGVRVTHQMLFNTDQVIEVFVIGVGGVGGALLEQLKRQQSWLKNKHIDLRVCGVANSKALLTNVHGLNLENWQEELAQAKEPFNLGRLIRLVKEYHLLNPVIVDCTSSQAVADQYADFLREGFHVVTPNKKANTSSMDYYHQLRYAAEKSRRKFLYDTNVGAGLPVIENLQNLLNAGDELMKFSGILSGSLSYIFGKLDEGMSFSEATTLAREMGYTEPDPRDDLSGMDVARKLLILARETGRELELADIEIEPVLPAEFNAEGDVAAFMANLSQLDDLFAARVAKARDEGKVLRYVGNIDEDGVCRVKIAEVDGNDPLFKVKNGENALAFYSHYYQPLPLVLRGYGAGNDVTAAGVFADLLRTLSWKLGV'
-      assert_equal(@hit.midline, seq)
+      assert_equal(seq, @hit.midline)
     end
 
     def test_Hit_query_start
-      assert_equal(@hit.query_start, 1)
-#      assert_equal(@hit.query_from, 1)
+      assert_equal(1, @hit.query_start)
+#      assert_equal(1, @hit.query_from)
     end
 
     def test_Hit_query_end
-      assert_equal(@hit.query_end, 820)
-#      assert_equal(@hit.query_to, 820)
+      assert_equal(820, @hit.query_end)
+#      assert_equal(820, @hit.query_to)
     end
 
     def test_Hit_target_start
-      assert_equal(@hit.target_start, 1)
-#      assert_equal(@hit.hit_from, 1)
+      assert_equal(1, @hit.target_start)
+#      assert_equal(1, @hit.hit_from)
     end
 
     def test_Hit_target_end
-      assert_equal(@hit.target_end,  820)
-#      assert_equal(@hit.hit_to,  820)
+      assert_equal(820, @hit.target_end)
+#      assert_equal(820, @hit.hit_to)
     end
 
     def test_Hit_lap_at
-      assert_equal(@hit.lap_at, [1, 820, 1, 820])
+      assert_equal([1, 820, 1, 820], @hit.lap_at)
     end
   end
 
   class TestBlastReportHsp < Test::Unit::TestCase
     def setup
-      data = Bio::TestBlastData.data
+      data = Bio::TestBlastReportData.output
       report = Bio::Blast::Report.new(data)
       @hsp = report.hits.first.hsps.first
     end
     
     def test_Hsp_num
-      assert_equal(@hsp.num, 1)
+      assert_equal(1, @hsp.num)
     end
 
     def test_Hsp_hit_score
-      assert_equal(@hsp.bit_score, 1567.75)
+      assert_equal(1567.75, @hsp.bit_score)
     end
 
     def test_Hsp_score
-      assert_equal(@hsp.score, 4058)
+      assert_equal(4058, @hsp.score)
     end
 
     def test_Hsp_evalue
-      assert_equal(@hsp.evalue, 0)
+      assert_equal(0, @hsp.evalue)
     end
 
     def test_Hsp_identity
-      assert_equal(@hsp.identity, 820)
+      assert_equal(820, @hsp.identity)
     end
 
     def test_Hsp_gaps
@@ -356,11 +356,11 @@ module Bio
     end
 
     def test_Hsp_positive
-      assert_equal(@hsp.positive, 820)
+      assert_equal(820, @hsp.positive)
     end
 
     def test_Hsp_align_len
-      assert_equal(@hsp.align_len, 820)
+      assert_equal(820, @hsp.align_len)
     end
 
     def test_Hsp_density
@@ -368,27 +368,27 @@ module Bio
     end
 
     def test_Hsp_query_frame
-      assert_equal(@hsp.query_frame, 1)
+      assert_equal(1, @hsp.query_frame)
     end
 
     def test_Hsp_query_from
-      assert_equal(@hsp.query_from, 1)
+      assert_equal(1, @hsp.query_from)
     end
 
     def test_Hsp_query_to
-      assert_equal(@hsp.query_to, 820)
+      assert_equal(820, @hsp.query_to)
     end
 
     def test_Hsp_hit_frame
-      assert_equal(@hsp.hit_frame, 1)
+      assert_equal(1, @hsp.hit_frame)
     end
 
     def test_Hsp_hit_from
-      assert_equal(@hsp.hit_from, 1)
+      assert_equal(1, @hsp.hit_from)
     end
 
     def test_Hsp_hit_to
-      assert_equal(@hsp.hit_to, 820)
+      assert_equal(820, @hsp.hit_to)
     end
 
     def test_Hsp_pattern_from
@@ -401,17 +401,17 @@ module Bio
 
     def test_Hsp_qseq
       seq = 'MRVLKFGGTSVANAERFLRVADILESNARQGQVATVLSAPAKITNHLVAMIEKTISGQDALPNISDAERIFAELLTGLAAAQPGFPLAQLKTFVDQEFAQIKHVLHGISLLGQCPDSINAALICRGEKMSIAIMAGVLEARGHNVTVIDPVEKLLAVGHYLESTVDIAESTRRIAASRIPADHMVLMAGFTAGNEKGELVVLGRNGSDYSAAVLAACLRADCCEIWTDVDGVYTCDPRQVPDARLLKSMSYQEAMELSYFGAKVLHPRTITPIAQFQIPCLIKNTGNPQAPGTLIGASRDEDELPVKGISNLNNMAMFSVSGPGMKGMVGMAARVFAAMSRARISVVLITQSSSEYSISFCVPQSDCVRAERAMQEEFYLELKEGLLEPLAVTERLAIISVVGDGMRTLRGISAKFFAALARANINIVAIAQGSSERSISVVVNNDDATTGVRVTHQMLFNTDQVIEVFVIGVGGVGGALLEQLKRQQSWLKNKHIDLRVCGVANSKALLTNVHGLNLENWQEELAQAKEPFNLGRLIRLVKEYHLLNPVIVDCTSSQAVADQYADFLREGFHVVTPNKKANTSSMDYYHQLRYAAEKSRRKFLYDTNVGAGLPVIENLQNLLNAGDELMKFSGILSGSLSYIFGKLDEGMSFSEATTLAREMGYTEPDPRDDLSGMDVARKLLILARETGRELELADIEIEPVLPAEFNAEGDVAAFMANLSQLDDLFAARVAKARDEGKVLRYVGNIDEDGVCRVKIAEVDGNDPLFKVKNGENALAFYSHYYQPLPLVLRGYGAGNDVTAAGVFADLLRTLSWKLGV'
-      assert_equal(@hsp.qseq, seq)
+      assert_equal(seq, @hsp.qseq)
     end
 
     def test_Hsp_midline
       seq = 'MRVLKFGGTSVANAERFLRVADILESNARQGQVATVLSAPAKITNHLVAMIEKTISGQDALPNISDAERIFAELLTGLAAAQPGFPLAQLKTFVDQEFAQIKHVLHGISLLGQCPDSINAALICRGEKMSIAIMAGVLEARGHNVTVIDPVEKLLAVGHYLESTVDIAESTRRIAASRIPADHMVLMAGFTAGNEKGELVVLGRNGSDYSAAVLAACLRADCCEIWTDVDGVYTCDPRQVPDARLLKSMSYQEAMELSYFGAKVLHPRTITPIAQFQIPCLIKNTGNPQAPGTLIGASRDEDELPVKGISNLNNMAMFSVSGPGMKGMVGMAARVFAAMSRARISVVLITQSSSEYSISFCVPQSDCVRAERAMQEEFYLELKEGLLEPLAVTERLAIISVVGDGMRTLRGISAKFFAALARANINIVAIAQGSSERSISVVVNNDDATTGVRVTHQMLFNTDQVIEVFVIGVGGVGGALLEQLKRQQSWLKNKHIDLRVCGVANSKALLTNVHGLNLENWQEELAQAKEPFNLGRLIRLVKEYHLLNPVIVDCTSSQAVADQYADFLREGFHVVTPNKKANTSSMDYYHQLRYAAEKSRRKFLYDTNVGAGLPVIENLQNLLNAGDELMKFSGILSGSLSYIFGKLDEGMSFSEATTLAREMGYTEPDPRDDLSGMDVARKLLILARETGRELELADIEIEPVLPAEFNAEGDVAAFMANLSQLDDLFAARVAKARDEGKVLRYVGNIDEDGVCRVKIAEVDGNDPLFKVKNGENALAFYSHYYQPLPLVLRGYGAGNDVTAAGVFADLLRTLSWKLGV'
-      assert_equal(@hsp.midline, seq)
+      assert_equal(seq, @hsp.midline)
     end
 
     def test_Hsp_hseq
       seq = 'MRVLKFGGTSVANAERFLRVADILESNARQGQVATVLSAPAKITNHLVAMIEKTISGQDALPNISDAERIFAELLTGLAAAQPGFPLAQLKTFVDQEFAQIKHVLHGISLLGQCPDSINAALICRGEKMSIAIMAGVLEARGHNVTVIDPVEKLLAVGHYLESTVDIAESTRRIAASRIPADHMVLMAGFTAGNEKGELVVLGRNGSDYSAAVLAACLRADCCEIWTDVDGVYTCDPRQVPDARLLKSMSYQEAMELSYFGAKVLHPRTITPIAQFQIPCLIKNTGNPQAPGTLIGASRDEDELPVKGISNLNNMAMFSVSGPGMKGMVGMAARVFAAMSRARISVVLITQSSSEYSISFCVPQSDCVRAERAMQEEFYLELKEGLLEPLAVTERLAIISVVGDGMRTLRGISAKFFAALARANINIVAIAQGSSERSISVVVNNDDATTGVRVTHQMLFNTDQVIEVFVIGVGGVGGALLEQLKRQQSWLKNKHIDLRVCGVANSKALLTNVHGLNLENWQEELAQAKEPFNLGRLIRLVKEYHLLNPVIVDCTSSQAVADQYADFLREGFHVVTPNKKANTSSMDYYHQLRYAAEKSRRKFLYDTNVGAGLPVIENLQNLLNAGDELMKFSGILSGSLSYIFGKLDEGMSFSEATTLAREMGYTEPDPRDDLSGMDVARKLLILARETGRELELADIEIEPVLPAEFNAEGDVAAFMANLSQLDDLFAARVAKARDEGKVLRYVGNIDEDGVCRVKIAEVDGNDPLFKVKNGENALAFYSHYYQPLPLVLRGYGAGNDVTAAGVFADLLRTLSWKLGV'
-      assert_equal(@hsp.hseq, seq)
+      assert_equal(seq, @hsp.hseq)
     end
 
     def test_Hsp_percent_identity

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_report.rb,v 1.2 2005/10/31 17:02:45 nakao Exp $
+#  $Id: test_report.rb,v 1.3 2005/11/22 08:31:48 nakao Exp $
 #
 
 require 'pathname'
@@ -38,11 +38,11 @@ module Bio
   class TestSOSUIReportConst  < Test::Unit::TestCase
 
     def test_delimiter
-      assert_equal(Bio::SOSUI::Report::DELIMITER, "\n>")
+      assert_equal("\n>", Bio::SOSUI::Report::DELIMITER)
     end
 
     def test_rs
-      assert_equal(Bio::SOSUI::Report::RS, "\n>")
+      assert_equal("\n>", Bio::SOSUI::Report::RS)
     end
 
   end
@@ -55,20 +55,20 @@ module Bio
     end
 
     def test_entry_id
-      assert_equal(@obj.entry_id, 'Q9HC19')
+      assert_equal('Q9HC19', @obj.entry_id)
     end
 
     def test_prediction
-      assert_equal(@obj.prediction, 'MEMBRANE PROTEIN')
+      assert_equal('MEMBRANE PROTEIN', @obj.prediction)
     end
 
     def test_tmhs
-      assert_equal(@obj.tmhs.class, Array)
-      assert_equal(@obj.tmhs[0].class, Bio::SOSUI::Report::TMH)
+      assert_equal(Array, @obj.tmhs.class)
+      assert_equal(Bio::SOSUI::Report::TMH, @obj.tmhs[0].class)
     end
 
     def test_tmh
-      assert_equal(@obj.tmhs.size, 7)
+      assert_equal(7, @obj.tmhs.size)
     end
 
   end # class TestSOSUIReport
@@ -79,15 +79,15 @@ module Bio
     end
 
     def test_range
-      assert_equal(@obj.range, 31..53)
+      assert_equal(31..53, @obj.range)
     end
 
     def test_grade
-      assert_equal(@obj.grade, 'SECONDARY')
+      assert_equal('SECONDARY', @obj.grade)
     end
     
     def test_sequence
-      assert_equal(@obj.sequence, 'HIRMTFLRKVYSILSLQVLLTTV')
+      assert_equal('HIRMTFLRKVYSILSLQVLLTTV', @obj.sequence)
     end
 
   end # class TestSOSUITMH

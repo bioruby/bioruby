@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_xmlparser.rb,v 1.1 2005/10/28 02:32:38 nakao Exp $
+#  $Id: test_xmlparser.rb,v 1.2 2005/11/22 08:31:47 nakao Exp $
 #
 
 require 'pathname'
@@ -71,7 +71,7 @@ module Bio
     end
 
     def test_db
-      assert_equal(@report.db, "eco:b0002.faa")
+      assert_equal("eco:b0002.faa", @report.db)
     end
 
     def test_query_id
@@ -310,7 +310,7 @@ module Bio
     end
     
     def test_num
-      assert_equal(@hsp.num, 1)
+      assert_equal(1, @hsp.num)
     end
 
     def test_hit_score
