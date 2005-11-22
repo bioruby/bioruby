@@ -7,7 +7,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     LGPL
 #
-# $Id: sequence.rb,v 0.47 2005/11/15 14:58:57 nakao Exp $
+# $Id: sequence.rb,v 0.48 2005/11/22 00:32:59 k Exp $
 #
 #--
 # *TODO* remove this functionality?
@@ -45,7 +45,7 @@ module Bio
 class Sequence < String
 
   def self.auto(str)
-    moltype = guess(str)
+    moltype = self.guess(str)
     if moltype == NA
       NA.new(str)
     else
@@ -258,23 +258,40 @@ class Sequence < String
       mRNA
     end
 
-    # Returns a reverse complement sequence (including the universal codes).
-    def complement
+    # Returns complement sequence without reversing ("atgc" -> "tacg")
+    def forward_complement
       s = self.class.new(self)
-      s.complement!
+      s.forward_complement!
       s
     end
 
-    def complement!
+    # Convert to complement sequence without reversing ("atgc" -> "tacg")
+    def forward_complement!
       if self.rna?
-        self.reverse!
         self.tr!('augcrymkdhvbswn', 'uacgyrkmhdbvswn')
       else
-        self.reverse!
         self.tr!('atgcrymkdhvbswn', 'tacgyrkmhdbvswn')
       end
       self
     end
+
+    # Returns reverse complement sequence ("atgc" -> "gcat")
+    def reverse_complement
+      s = self.class.new(self)
+      s.reverse_complement!
+      s
+    end
+
+    # Convert to reverse complement sequence ("atgc" -> "gcat")
+    def reverse_complement!
+      self.reverse!
+      self.forward_complement!
+    end
+
+    # Aliases for short
+    alias complement reverse_complement
+    alias complement! reverse_complement!
+
 
     # Translate into the amino acid sequence from the given frame and the
     # selected codon table.  The table also can be a Bio::CodonTable object.
