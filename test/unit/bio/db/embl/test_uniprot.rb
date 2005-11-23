@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_uniprot.rb,v 1.1 2005/10/27 09:28:43 nakao Exp $
+#  $Id: test_uniprot.rb,v 1.2 2005/11/23 10:12:09 nakao Exp $
 #
 
 require 'pathname'
@@ -40,25 +40,25 @@ module Bio
       assert(@obj.id_line)
     end
     def test_id_line_entry_name
-      assert_equal(@obj.id_line('ENTRY_NAME'), 'P53_HUMAN')
+      assert_equal('P53_HUMAN', @obj.id_line('ENTRY_NAME'))
     end   
     def test_id_line_data_class
-      assert_equal(@obj.id_line('DATA_CLASS'), 'STANDARD')
+      assert_equal('STANDARD', @obj.id_line('DATA_CLASS'))
     end
     def test_id_line_molecule_type
-      assert_equal(@obj.id_line('MOLECULE_TYPE'), 'PRT')
+      assert_equal('PRT', @obj.id_line('MOLECULE_TYPE'))
     end
     def test_id_line_sequence_length
-      assert_equal(@obj.id_line('SEQUENCE_LENGTH'), 393)
+      assert_equal(393, @obj.id_line('SEQUENCE_LENGTH'))
     end
 
 
     def test_ac
-      assert_equal(@obj.ac, [])
-      assert_equal(@obj.acccessions, [])
+      assert_equal([], @obj.ac)
+      assert_equal([], @obj.acccessions)
     end
     def test_accession
-      assert_equal(@obj.accession, '')
+      assert_equal('', @obj.accession)
     end
 
     def test_de
@@ -66,62 +66,64 @@ module Bio
     end
 
     def test_protein_name
-      assert_equal(@obj.protein_name, "Cellular tumor antigen p53")
+      assert_equal("Cellular tumor antigen p53", @obj.protein_name)
     end
 
     def test_synonyms
-      assert_equal(@obj.synonyms, ["Tumor suppressor p53", "Phosphoprotein p53", "Antigen NY-CO-13"])
+      assert_equal(["Tumor suppressor p53", "Phosphoprotein p53", "Antigen NY-CO-13"], @obj.synonyms)
     end
 
     def test_gn
-      assert_equal(@obj.gn, [{:orfs=>[], :synonyms=>["P53"], :name=>"TP53", :loci=>[]}])
+      assert_equal([{:orfs=>[], :synonyms=>["P53"], :name=>"TP53", :loci=>[]}], @obj.gn)
     end
     def test_gn_uniprot_parser
       gn_uniprot_data = ''
-      assert_equal(@obj.instance_eval(gn_uniprot_parser(gn_uniprot_data)), '')
+      assert_equal('', @obj.instance_eval(gn_uniprot_parser(gn_uniprot_data)))
     end
 #     def test_gn_old_parser
 #       gn_old_data = ''
-#       assert_equal(@obj.instance_eval(gn_old_parser(gn_old_data)), '')
+#       assert_equal('', @obj.instance_eval(gn_old_parser(gn_old_data)))
 #     end
 
     def test_gene_names
-      assert_equal(@obj.gene_names, ["TP53"])
+      assert_equal(["TP53"], @obj.gene_names)
     end
 
     def test_gene_name
-      assert_equal(@obj.gene_name, 'TP53')
+      assert_equal('TP53', @obj.gene_name)
     end
 
     def test_os
       assert(@obj.os)
     end
+
     def test_os_access
-      assert_equal(@obj.os(1), {'name' => '', 'os' => ''})
+      assert_equal({'name' => '', 'os' => ''}, @obj.os(1))
     end
+
     def test_os_access2
-      assert_equal(@obj.os[1], {})
+      assert_equal({}, @obj.os[1])
     end
 
 
     def test_cc
       data = ''
-      assert_equal(@obj.instance_eval(cc_scan_alternative_products(data)), '')
+      assert_equal('', @obj.instance_eval(cc_scan_alternative_products(data)))
       data = ''
-      assert_equal(@obj.instance_eval(cc_scan_database(data)), '')
+      assert_equal('', @obj.instance_eval(cc_scan_database(data)))
       data = ''
-      assert_equal(@obj.instance_eval(cc_scan_mass_spectorometry(data)), '')
+      assert_equal('', @obj.instance_eval(cc_scan_mass_spectorometry(data)))
 
-      assert_equal(@obj.cc, [])
+      assert_equal([], @obj.cc)
     end
     def test_cc_database
-      assert_equal(@obj.cc('DATABASE'), [])
+      assert_equal([], @obj.cc('DATABASE'))
     end
     def test_cc_alternative_products
-      assert_equal(@obj.cc('ALTERNATIVE PRODUCTS'), {})
+      assert_equal({}, @obj.cc('ALTERNATIVE PRODUCTS'))
     end
     def test_cc_mass_spectrometry
-      assert_equal(@obj.cc('MASS SPECTROMETRY'), [])
+      assert_equal([], @obj.cc('MASS SPECTROMETRY'))
     end
 
     def test_cc_interaction
@@ -132,7 +134,7 @@ CC       Q99759:MAP3K3; NbExp=1; IntAct=EBI-359815, EBI-307281;
 CC       P04049:RAF1; NbExp=4; IntAct=EBI-359815, EBI-365996;
 END
       @obj.instance_eval('@orig["CC"] = "#{data}"')
-      assert_equal(@obj.cc('INTERACTION'), '')
+      assert_equal('', @obj.cc('INTERACTION'))
     end
 
 
@@ -142,27 +144,27 @@ END
     def test_ft
       assert(@obj.ft)
       name = 'DNA_BIND'
-      assert_equal(@obj.ft(name), [])
+      assert_equal([], @obj.ft(name))
     end
 
     def test_sq_mw
       mw = 43653
-      assert_equal(@obj.sq('mw'), mw)
-      assert_equal(@obj.sq('molecular'), mw)
-      assert_equal(@obj.sq('weight'), mw)
+      assert_equal(mw, @obj.sq('mw'))
+      assert_equal(mw, @obj.sq('molecular'))
+      assert_equal(mw, @obj.sq('weight'))
     end
 
     def test_sq_len
       length = 393
-      assert_equal(@obj.sq('len'), length)
-      assert_equal(@obj.sq('length'), length)
-      assert_equal(@obj.sq('AA'), length)
+      assert_equal(length, @obj.sq('len'))
+      assert_equal(length, @obj.sq('length'))
+      assert_equal(length, @obj.sq('AA'))
     end
 
     def test_seq
       seq = 'MEEPQSDPSVEPPLSQETFSDLWKLLPENNVLSPLPSQAMDDLMLSPDDIEQWFTEDPGPDEAPRMPEAAPPVAPAPAAPTPAAPAPAPSWPLSSSVPSQKTYQGSYGFRLGFLHSGTAKSVTCTYSPALNKMFCQLAKTCPVQLWVDSTPPPGTRVRAMAIYKQSQHMTEVVRRCPHHERCSDSDGLAPPQHLIRVEGNLRVEYLDDRNTFRHSVVVPYEPPEVGSDCTTIHYNYMCNSSCMGGMNRRPILTIITLEDSSGNLLGRNSFEVRVCACPGRDRRTEEENLRKKGEPHHELPPGSTKRALPNNTSSSPQPKKKPLDGEYFTLQIRGRERFEMFRELNEALELKDAQAGKEPGGSRAHSSHLKSKKGQSTSRHKKLMFKTEGPDSD'
-      assert_equal(@obj.seq, seq)
-      assert_equal(@obj.aaseq, seq)
+      assert_equal(seq, @obj.seq)
+      assert_equal(seq, @obj.aaseq)
     end
   end
 end
