@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_prosite.rb,v 1.1 2005/10/27 17:17:49 nakao Exp $
+#  $Id: test_prosite.rb,v 1.2 2005/11/23 11:32:13 nakao Exp $
 #
 
 require 'pathname'
@@ -31,12 +31,12 @@ module Bio
   class TestPROSITEConst < Test::Unit::TestCase
 
     def test_delimiter
-      assert_equal(Bio::PROSITE::DELIMITER, "\n//\n")
-      assert_equal(Bio::PROSITE::RS, "\n//\n")
+      assert_equal("\n//\n", Bio::PROSITE::DELIMITER)
+      assert_equal("\n//\n", Bio::PROSITE::RS)
     end
 
     def test_tagsize
-      assert_equal(Bio::PROSITE::TAGSIZE, 5)
+      assert_equal(5, Bio::PROSITE::TAGSIZE)
     end
 
   end # class TestPROSITEConst
@@ -52,140 +52,140 @@ module Bio
     end
 
     def test_name
-      assert_equal(@obj.name, "G_PROTEIN_RECEP_F1_1")
+      assert_equal("G_PROTEIN_RECEP_F1_1", @obj.name)
     end
 
     def test_division
       data = "PATTERN"
-      assert_equal(@obj.division, data)
+      assert_equal(data, @obj.division)
     end
 
     def test_ac
       data = "PS00237"
-      assert_equal(@obj.ac, data)
+      assert_equal(data, @obj.ac)
     end
 
     def test_dt
-      assert_equal(@obj.dt, "APR-1990 (CREATED); NOV-1997 (DATA UPDATE); JUL-1998 (INFO UPDATE).")
+      assert_equal("APR-1990 (CREATED); NOV-1997 (DATA UPDATE); JUL-1998 (INFO UPDATE).", @obj.dt)
     end
 
     def test_de
       data = "G-protein coupled receptors family 1 signature."
-      assert_equal(@obj.de, data)
+      assert_equal(data, @obj.de)
     end
 
     def test_pa
       pattern = "[GSTALIVMFYWC]-[GSTANCPDE]-{EDPKRH}-x(2)-[LIVMNQGA]-x(2)-[LIVMFT]-[GSTANC]-[LIVMFYWSTAC]-[DENH]-R-[FYWCSH]-x(2)-[LIVM]."
-      assert_equal(@obj.pa, pattern)
+      assert_equal(pattern, @obj.pa)
     end
 
     def test_ma
-      assert_equal(@obj.ma, '')
+      assert_equal('', @obj.ma)
     end
 
     def test_ru
-      assert_equal(@obj.ru, '')
+      assert_equal('', @obj.ru)
     end
 
     def test_nr
       data = {"FALSE_NEG"=>112, "POSITIVE"=>[1057, 1057], "PARTIAL"=>48, "FALSE_POS"=>[64, 64], "RELEASE"=>["40.7", 103373], "TOTAL"=>[1121, 1121], "UNKNOWN"=>[0, 0]}
 
-      assert_equal(@obj.nr, data)
+      assert_equal(data, @obj.nr)
     end
 
     def test_release
-      assert_equal(@obj.release, ['40.7', 103373])
+      assert_equal(['40.7', 103373], @obj.release)
     end
 
     def test_swissprot_release_number
-      assert_equal(@obj.swissprot_release_number, '40.7')
+      assert_equal('40.7', @obj.swissprot_release_number)
     end
 
     def test_swissprot_release_sequences
-      assert_equal(@obj.swissprot_release_sequences, 103373)
+      assert_equal(103373, @obj.swissprot_release_sequences)
     end
 
     def test_total
-      assert_equal(@obj.total, [1121, 1121])
+      assert_equal([1121, 1121], @obj.total)
     end
 
     def test_total_hits
-      assert_equal(@obj.total_hits, 1121)
+      assert_equal(1121, @obj.total_hits)
     end
 
     def test_total_sequences
-      assert_equal(@obj.total_sequences, 1121)
+      assert_equal(1121, @obj.total_sequences)
     end
     
     def test_positive
-      assert_equal(@obj.positive, [1057, 1057])
+      assert_equal([1057, 1057], @obj.positive)
     end
 
     def test_positive_hits
-      assert_equal(@obj.positive_hits, 1057)
+      assert_equal(1057, @obj.positive_hits)
     end
 
     def test_positive_sequences
-      assert_equal(@obj.positive_sequences, 1057)
+      assert_equal(1057, @obj.positive_sequences)
     end
     
     def test_unknown
-      assert_equal(@obj.unknown, [0, 0])
+      assert_equal([0, 0], @obj.unknown)
     end
 
     def test_unknown_hits
-      assert_equal(@obj.unknown_hits, 0)
+      assert_equal(0, @obj.unknown_hits)
     end
 
     def test_unknown_sequences
-      assert_equal(@obj.unknown_sequences, 0)
+      assert_equal(0, @obj.unknown_sequences)
     end
 
     def test_false_pos
-      assert_equal(@obj.false_pos, [64, 64])
+      assert_equal([64, 64], @obj.false_pos)
     end
 
     def test_false_positive_sequences
-      assert_equal(@obj.false_positive_sequences, 64)
+      assert_equal(64, @obj.false_positive_sequences)
     end
 
     def test_false_neg
-      assert_equal(@obj.false_neg, 112)
+      assert_equal(112, @obj.false_neg)
     end
 
     def test_partial
-      assert_equal(@obj.partial, 48)
+      assert_equal(48, @obj.partial)
     end
 
     def test_cc
-      assert_equal(@obj.cc, {"TAXO-RANGE"=>"??E?V", "MAX-REPEAT"=>"1"})
+      assert_equal({"TAXO-RANGE"=>"??E?V", "MAX-REPEAT"=>"1"}, @obj.cc)
     end
 
     def test_taxon_range
-      assert_equal(@obj.taxon_range, '??E?V')
+      assert_equal('??E?V', @obj.taxon_range)
     end
 
     def test_max_repeat
-      assert_equal(@obj.max_repeat, 1)
+      assert_equal(1, @obj.max_repeat)
     end
     
     def test_site
-      assert_equal(@obj.site, [0, nil])
+      assert_equal([0, nil], @obj.site)
     end
 
     def test_skip_flag
-      assert_equal(@obj.skip_flag, nil)
+      assert_equal(nil, @obj.skip_flag)
     end
 
     def test_dr
-      assert_equal(@obj.dr.class, Hash)
+      assert_equal(Hash, @obj.dr.class)
       data = ['OPSD_LIMBE', 'T']
-      assert_equal(@obj.dr["O42427"], data)
+      assert_equal(data, @obj.dr["O42427"])
     end
 
     def test_list_xref
       flag = ''
-      assert_equal(@obj.list_xref(flag), [])
+      assert_equal([], @obj.list_xref(flag))
     end
 
     def test_list_truepositive
@@ -1246,7 +1246,7 @@ module Bio
  "P11616",
  "P23275",
  "Q01338"]
-      assert_equal(@obj.list_truepositive, data)
+      assert_equal(data, @obj.list_truepositive)
     end
 
     def test_list_falsenegative
@@ -1314,7 +1314,7 @@ module Bio
  "P77933",
  "P34529",
  "Q00126"]
-      assert_equal(@obj.list_falsenegative, data)
+      assert_equal(data, @obj.list_falsenegative)
     end
     
     def test_list_falsepositive
@@ -1366,7 +1366,7 @@ module Bio
  "Q95137",
  "Q62953",
  "Q95195"]
-      assert_equal(@obj.list_falsepositive, data)
+      assert_equal(data, @obj.list_falsepositive)
     end
 
     def test_list_potentialhit
@@ -1418,26 +1418,26 @@ module Bio
  "Q95137",
  "Q62953",
  "Q95195"]
-      assert_equal(@obj.list_potentialhit, data)
+      assert_equal(data, @obj.list_potentialhit)
     end
 
     def test_list_unknown
       data = []
-      assert_equal(@obj.list_unknown, data)
+      assert_equal(data, @obj.list_unknown)
     end
 
     def test_pdb_xref
       data = ["1BOJ", "1BOK", "1F88"]
-      assert_equal(@obj.pdb_xref, data)
+      assert_equal(data, @obj.pdb_xref)
     end
 
     def test_pdoc_xref
       data = "PDOC00210"
-      assert_equal(@obj.pdoc_xref, data)
+      assert_equal(data, @obj.pdoc_xref)
     end
 
     def test_pa2re
-      assert_equal(@obj.pa2re, '')
+      assert_equal('', @obj.pa2re)
     end
 
     def test_ma2re

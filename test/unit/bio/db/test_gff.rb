@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_gff.rb,v 1.1 2005/10/27 09:27:52 nakao Exp $
+#  $Id: test_gff.rb,v 1.2 2005/11/23 11:29:16 nakao Exp $
 #
 
 require 'pathname'
@@ -45,8 +45,8 @@ END
     end
 
     def test_records
-      assert_equal(@obj.records.size, 8)
-      assert_equal(@obj.records[0].class, Bio::GFF::Record)
+      assert_equal(8, @obj.records.size)
+      assert_equal(Bio::GFF::Record, @obj.records[0].class)
     end
 
   end # class TestGFF
@@ -54,14 +54,14 @@ END
 
   class TestGFF2 < Test::Unit::TestCase
     def test_version
-      assert_equal(Bio::GFF2::VERSION, 2)
+      assert_equal(2, Bio::GFF2::VERSION)
     end
   end
 
 
   class TestGFF3 < Test::Unit::TestCase
     def test_version
-      assert_equal(Bio::GFF3::VERSION, 3)
+      assert_equal(3, Bio::GFF3::VERSION)
     end
   end
 
@@ -76,44 +76,44 @@ END
     end
 
     def test_seqname
-      assert_equal(@obj.seqname, 'I')
+      assert_equal('I', @obj.seqname)
     end
 
     def test_source
-      assert_equal(@obj.source, 'sgd')
+      assert_equal('sgd', @obj.source)
     end
 
     def test_feature
-      assert_equal(@obj.feature, 'gene')
+      assert_equal('gene', @obj.feature)
     end
 
     def test_start
-      assert_equal(@obj.start, '151453')
+      assert_equal('151453', @obj.start)
     end
 
     def test_end
-      assert_equal(@obj.end, '151591')
+      assert_equal('151591', @obj.end)
     end
 
     def test_score
-      assert_equal(@obj.score, '.')
+      assert_equal('.', @obj.score)
     end
 
     def test_strand
-      assert_equal(@obj.strand, '+')
+      assert_equal('+', @obj.strand)
     end
 
     def test_frame
-      assert_equal(@obj.frame, '.')
+      assert_equal('.', @obj.frame)
     end
 
     def test_attributes
       at = {"Note"=>"Chromosome I Centromere", "Gene"=>"CEN1"}
-      assert_equal(@obj.attributes, at)
+      assert_equal(at, @obj.attributes)
     end
 
     def test_comments
-      assert_equal(@obj.comments, '')
+      assert_equal('', @obj.comments)
     end
 
   end # class TestGFFRecord
@@ -130,7 +130,7 @@ END
       record = Bio::GFF::Record.new
       record.seqname = name
       @obj.records << record
-      assert_equal(@obj.records[0].seqname, name)
+      assert_equal(name, @obj.records[0].seqname)
     end
 
   end # class TestGFFRecordConstruct
