@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_na.rb,v 1.2 2005/09/24 03:12:56 nakao Exp $
+#  $Id: test_na.rb,v 1.3 2005/11/23 05:10:34 nakao Exp $
 #
 
 require 'pathname'
@@ -36,49 +36,49 @@ module Bio
 
     def test_to_re
       re = /[tc][ag][at][gc][tg][ac][tgc][atg][agc][atgc]atgc/
-      assert_equal(@obj.to_re('yrwskmbdvnatgc'), re)
-      assert_equal(Bio::NucleicAcid.to_re('yrwskmbdvnatgc'), re)
+      assert_equal(re, @obj.to_re('yrwskmbdvnatgc'))
+      assert_equal(re, Bio::NucleicAcid.to_re('yrwskmbdvnatgc'))
     end
 
     def test_Names
-      assert_equal(Bio::NucleicAcid::Names['a'], 'a')
+      assert_equal('a', Bio::NucleicAcid::Names['a'])
     end
     def test_Names_1_to_name
-      assert_equal(Bio::NucleicAcid::Names['A'], 'adenine')
+      assert_equal('adenine', Bio::NucleicAcid::Names['A'])
     end
 
     def test_Weight
       mw = 135.15
-      assert_equal(Bio::NucleicAcid::Weight['a'], mw)
-      assert_equal(Bio::NucleicAcid::Weight[:adenine], mw)
+      assert_equal(mw, Bio::NucleicAcid::Weight['a'])
+      assert_equal(mw, Bio::NucleicAcid::Weight[:adenine])
     end
 
     def test_weight
       mw = 135.15
-      assert_equal(@obj.weight('a'), mw)
-      assert_equal(Bio::NucleicAcid.weight('a'), mw)
+      assert_equal(mw, @obj.weight('a'))
+      assert_equal(mw, Bio::NucleicAcid.weight('a'))
     end
 
     def test_weight_rna
       mw = 135.15
-      assert_equal(@obj.weight('A', true), mw)
-      assert_equal(Bio::NucleicAcid.weight('A', true), mw)
+      assert_equal(mw, @obj.weight('A', true))
+      assert_equal(mw, Bio::NucleicAcid.weight('A', true))
     end
 
     
     def test_accessor
-      assert_equal(@obj['A'], 'adenine')
+      assert_equal('adenine', @obj['A'])
     end
     
     def test_names
-      assert_equal(@obj.names, Bio::NucleicAcid::Names)
+      assert_equal(Bio::NucleicAcid::Names, @obj.names)
     end
     def test_na
-      assert_equal(@obj.na, Bio::NucleicAcid::Names)
+      assert_equal(Bio::NucleicAcid::Names, @obj.na)
     end
 
     def test_name
-      assert_equal(@obj.name('A'), 'adenine')
+      assert_equal('adenine', @obj.name('A'))
     end
   end
 end

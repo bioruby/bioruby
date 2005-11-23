@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_aa.rb,v 1.2 2005/09/24 03:12:56 nakao Exp $
+#  $Id: test_aa.rb,v 1.3 2005/11/23 05:10:34 nakao Exp $
 #
 
 require 'pathname'
@@ -35,67 +35,67 @@ module Bio
     end
 
     def test_bio_aminoacid
-      assert_equal(Bio::AminoAcid['A'], 'Ala')
+      assert_equal('Ala', Bio::AminoAcid['A'])
     end
 
     def test_13
-      assert_equal(@obj['A'], "Ala")
+      assert_equal("Ala", @obj['A'])
     end
 
     def test_1n
-      assert_equal(@obj.name('A'), 'alanine')
+      assert_equal('alanine', @obj.name('A'))
     end
 
     def test_to_1_name
-      assert_equal(@obj.to_1('alanine'), 'A')
+      assert_equal('A', @obj.to_1('alanine'))
     end
 
     def test_to_1_3
-      assert_equal(@obj.to_1('Ala'), 'A')
+      assert_equal('A', @obj.to_1('Ala'))
     end
 
     def test_to_1_1
-      assert_equal(@obj.to_1('A'), 'A')
+      assert_equal('A', @obj.to_1('A'))
     end
 
     def test_to_3_name
-      assert_equal(@obj.to_3('alanine'), 'Ala')
+      assert_equal('Ala', @obj.to_3('alanine'))
     end
 
     def test_to_3_3
-      assert_equal(@obj.to_3('Ala'), 'Ala')
+      assert_equal('Ala', @obj.to_3('Ala'))
     end
 
     def test_to_3_1
-      assert_equal(@obj.to_3('A'), 'Ala')
+      assert_equal('Ala', @obj.to_3('A'))
     end
 
     def test_one2three
-      assert_equal(@obj.one2three('A'), 'Ala')
+      assert_equal('Ala', @obj.one2three('A'))
     end
 
     def test_three2one
-      assert_equal(@obj.three2one('Ala'), 'A')
+      assert_equal('A', @obj.three2one('Ala'))
     end
 
     def test_one2name
-      assert_equal(@obj.one2name('A'), 'alanine')
+      assert_equal('alanine', @obj.one2name('A'))
     end
 
     def test_name2one
-      assert_equal(@obj.name2one('alanine'), 'A')
+      assert_equal('A', @obj.name2one('alanine'))
     end
     
     def test_three2name
-      assert_equal(@obj.three2name('Ala'), 'alanine')
+      assert_equal('alanine', @obj.three2name('Ala'))
     end
 
     def test_name2three
-      assert_equal(@obj.name2three('alanine'), 'Ala')
+      assert_equal('Ala', @obj.name2three('alanine'))
     end
     
     def test_to_re
-      assert_equal(@obj.to_re('BZACDEFGHIKLMNPQRSTVWYU'), /[DN][EQ]ACDEFGHIKLMNPQRSTVWYU/)
+      assert_equal(/[DN][EQ]ACDEFGHIKLMNPQRSTVWYU/, @obj.to_re('BZACDEFGHIKLMNPQRSTVWYU'))
     end
   end
 end

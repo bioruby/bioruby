@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_report.rb,v 1.1 2005/11/01 05:13:57 nakao Exp $
+#  $Id: test_report.rb,v 1.2 2005/11/23 05:10:34 nakao Exp $
 #
 
 require 'pathname'
@@ -48,37 +48,37 @@ module Bio
     end
 
     def test_entry_id
-      assert_equal(@obj.entry_id, 'O42385')
+      assert_equal('O42385', @obj.entry_id)
     end
 
     def test_query_len
-      assert_equal(@obj.query_len, 423)
+      assert_equal(423, @obj.query_len)
     end
 
     def test_predicted_tmhs
-      assert_equal(@obj.predicted_tmhs, 7)
+      assert_equal(7, @obj.predicted_tmhs)
     end
 
     def test_tmhs
-      assert_equal(@obj.tmhs.class, Array)
-      assert_equal(@obj.tmhs.size, 15)
+      assert_equal(Array, @obj.tmhs.class)
+      assert_equal(15, @obj.tmhs.size)
     end
 
     def test_exp_aas_in_tmhs
-      assert_equal(@obj.exp_aas_in_tmhs, 157.40784)
+      assert_equal(157.40784, @obj.exp_aas_in_tmhs)
     end
 
     def test_exp_first_60aa
-      assert_equal(@obj.exp_first_60aa, 13.85627)
+      assert_equal(13.85627, @obj.exp_first_60aa)
     end
 
     def test_total_prob_of_N_in
-      assert_equal(@obj.total_prob_of_N_in, 0.00993)
+      assert_equal(0.00993, @obj.total_prob_of_N_in)
     end
 
     def test_helix
-      assert_equal(@obj.helix.size, 7)
-      assert_equal(@obj.helix[0].class, Bio::TMHMM::TMH)
+      assert_equal(7, @obj.helix.size)
+      assert_equal(Bio::TMHMM::TMH, @obj.helix[0].class)
     end
     
     def test_to_s
@@ -102,7 +102,7 @@ module Bio
              "O42385\tTMHMM2.0\toutside\t372\t380",
              "O42385\tTMHMM2.0\tTMhelix\t381\t403",
              "O42385\tTMHMM2.0\tinside\t404\t423"].join("\n")
-      assert_equal(@obj.to_s, str)
+      assert_equal(str, @obj.to_s)
     end
 
   end # TestTMHMMReport
@@ -114,23 +114,23 @@ module Bio
     end
 
     def test_entry_id
-      assert_equal(@obj.entry_id, 'O42385')
+      assert_equal('O42385', @obj.entry_id)
     end
 
     def test_version
-      assert_equal(@obj.version, 'TMHMM2.0')
+      assert_equal('TMHMM2.0', @obj.version)
     end
 
     def test_status
-      assert_equal(@obj.status, 'outside')
+      assert_equal('outside', @obj.status)
     end
 
     def test_range
-      assert_equal(@obj.range, 1..46)
+      assert_equal(1..46, @obj.range)
     end
 
     def test_pos
-      assert_equal(@obj.pos, 1..46)
+      assert_equal(1..46, @obj.pos)
     end
 
   end # class TestTMHMMTMH
