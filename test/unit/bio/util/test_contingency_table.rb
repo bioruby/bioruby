@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_contingency_table.rb,v 1.1 2005/11/15 16:42:54 k Exp $
+#  $Id: test_contingency_table.rb,v 1.2 2005/11/23 11:55:17 nakao Exp $
 #
 
 require 'pathname'
@@ -83,23 +83,23 @@ module Bio
 =end
 
 
-      #assert_equal(results[0][2], 2.4)
-      assert_equal(results[0][2].to_s, '2.4')
-      assert_equal(results[0][3].to_s, '0.534522483824849')
+      #assert_equal(2.4, results[0][2])
+      assert_equal('2.4', results[0][2].to_s)
+      assert_equal('0.534522483824849', results[0][3].to_s)
 
-      assert_equal(results[5][2].to_s, '12.0')
-      assert_equal(results[5][3].to_s, '0.816496580927726')
+      assert_equal('12.0', results[5][2].to_s)
+      assert_equal('0.816496580927726', results[5][3].to_s)
 
-      assert_equal(results[9][2].to_s, '2.4')
-      assert_equal(results[9][3].to_s, '0.534522483824849')
+      assert_equal('2.4', results[9][2].to_s)
+      assert_equal('0.534522483824849', results[9][3].to_s)
 
       ctable = Bio::ContingencyTable.new
       ctable.table['a']['t'] = 4
       ctable.table['a']['g'] = 2
       ctable.table['g']['t'] = 3
-      assert_equal(ctable.chi_square.to_s, '1.28571428571429')
-      assert_equal(ctable.row_sum_all, ctable.column_sum_all)
-      assert_equal(ctable.table_sum_all, ctable.column_sum_all)
+      assert_equal('1.28571428571429', ctable.chi_square.to_s)
+      assert_equal(ctable.column_sum_all, ctable.row_sum_all)
+      assert_equal(ctable.column_sum_all, ctable.table_sum_all)
     end
 
   end
