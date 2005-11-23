@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_aa.rb,v 1.3 2005/11/23 05:10:34 nakao Exp $
+#  $Id: test_aa.rb,v 1.4 2005/11/23 05:25:10 nakao Exp $
 #
 
 require 'pathname'
@@ -28,14 +28,16 @@ require 'test/unit'
 require 'bio/data/aa'
 
 module Bio
-  class TestAA < Test::Unit::TestCase
-
-    def setup
-      @obj = Bio::AminoAcid.new
-    end
-
+  class TestAAConstants < Test::Unit::TestCase
     def test_bio_aminoacid
       assert_equal('Ala', Bio::AminoAcid['A'])
+    end
+  end
+
+
+  class TestAA < Test::Unit::TestCase
+    def setup
+      @obj = Bio::AminoAcid.new
     end
 
     def test_13

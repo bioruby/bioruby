@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_na.rb,v 1.3 2005/11/23 05:10:34 nakao Exp $
+#  $Id: test_na.rb,v 1.4 2005/11/23 05:25:10 nakao Exp $
 #
 
 require 'pathname'
@@ -28,8 +28,25 @@ require 'test/unit'
 require 'bio/data/na'
 
 module Bio
-  class TestNA < Test::Unit::TestCase
 
+  class TestNAConstants  < Test::Unit::TestCase
+    def test_NAMES
+      assert_equal('a', Bio::NucleicAcid::NAMES['a'])
+    end
+
+    def test_NAMES_1_to_name
+      assert_equal('adenine', Bio::NucleicAcid::NAMES['A'])
+    end
+
+    def test_WEIGHT
+      mw = 135.15
+      assert_equal(mw, Bio::NucleicAcid::WEIGHT['a'])
+      assert_equal(mw, Bio::NucleicAcid::WEIGHT[:adenine])
+    end
+  end
+
+
+  class TestNA < Test::Unit::TestCase
     def setup
       @obj = Bio::NucleicAcid.new
     end
@@ -40,18 +57,6 @@ module Bio
       assert_equal(re, Bio::NucleicAcid.to_re('yrwskmbdvnatgc'))
     end
 
-    def test_Names
-      assert_equal('a', Bio::NucleicAcid::Names['a'])
-    end
-    def test_Names_1_to_name
-      assert_equal('adenine', Bio::NucleicAcid::Names['A'])
-    end
-
-    def test_Weight
-      mw = 135.15
-      assert_equal(mw, Bio::NucleicAcid::Weight['a'])
-      assert_equal(mw, Bio::NucleicAcid::Weight[:adenine])
-    end
 
     def test_weight
       mw = 135.15
@@ -71,10 +76,10 @@ module Bio
     end
     
     def test_names
-      assert_equal(Bio::NucleicAcid::Names, @obj.names)
+      assert_equal(Bio::NucleicAcid::NAMES, @obj.names)
     end
     def test_na
-      assert_equal(Bio::NucleicAcid::Names, @obj.na)
+      assert_equal(Bio::NucleicAcid::NAMES, @obj.na)
     end
 
     def test_name

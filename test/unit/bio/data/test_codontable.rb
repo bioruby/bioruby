@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_codontable.rb,v 1.3 2005/11/23 05:10:34 nakao Exp $
+#  $Id: test_codontable.rb,v 1.4 2005/11/23 05:25:10 nakao Exp $
 #
 
 require 'pathname'
@@ -29,6 +29,28 @@ require 'test/unit'
 require 'bio/data/codontable'
 
 module Bio
+  class TestCodonTableConstants < Test::Unit::TestCase
+    def test_Definitions
+      assert(Bio::CodonTable::DEFINITIONS)
+      assert(Bio::CodonTable::DEFINITIONS[1], "Standard (Eukaryote)")
+    end
+
+    def test_Starts
+      assert(Bio::CodonTable::STARTS)
+      assert_equal(['ttg', 'ctg', 'atg', 'gtg'], Bio::CodonTable::STARTS[1])
+    end
+
+    def test_stops
+      assert(Bio::CodonTable::STOPS)
+      assert_equal(['taa', 'tag', 'tga'], Bio::CodonTable::STOPS[1])
+    end
+
+    def test_Tables
+      assert(Bio::CodonTable::TABLES)
+    end
+  end
+
+
   class TestCodonTable < Test::Unit::TestCase
     
     def setup
@@ -89,24 +111,9 @@ module Bio
       assert_equal(true, @ct.stop_codon?('taa'))
     end
 
-    def test_Definitions
-      assert(Bio::CodonTable::Definitions)
-      assert(Bio::CodonTable::Definitions[1], "Standard (Eukaryote)")
-    end
-
-    def test_Starts
-      assert(Bio::CodonTable::Starts)
-      assert_equal(['ttg', 'ctg', 'atg', 'gtg'], Bio::CodonTable::Starts[1])
-    end
-
-    def test_stops
-      assert(Bio::CodonTable::Stops)
-      assert_equal(['taa', 'tag', 'tga'], Bio::CodonTable::Stops[1])
-    end
 
     def test_Tables
-      assert(Bio::CodonTable::Tables)
-      assert_equal(@ct.table, Bio::CodonTable::Tables[1])
+      assert_equal(@ct.table, Bio::CodonTable::TABLES[1])
     end
 
   end
