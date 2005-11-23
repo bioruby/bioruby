@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_shell.rb,v 1.1 2005/10/27 15:10:48 nakao Exp $
+#  $Id: test_shell.rb,v 1.2 2005/11/23 11:49:50 nakao Exp $
 #
 
 require 'pathname'
@@ -31,11 +31,11 @@ module Bio
   class TestShell < Test::Unit::TestCase
 
     def test_const_bioruby_config
-      assert_equal($bioruby_config, {})
+      assert_equal({}, $bioruby_config)
     end
 
     def test_const_bioruby_cache
-      assert_equal($bioruby_cache, {})
+      assert_equal({}, $bioruby_cache)
     end
 
   end

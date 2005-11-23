@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_feature.rb,v 1.1 2005/09/24 14:20:18 nakao Exp $
+#  $Id: test_feature.rb,v 1.2 2005/11/23 11:47:12 nakao Exp $
 #
 
 require 'pathname'
@@ -38,11 +38,11 @@ module Bio
     end
 
     def test_qualifier
-      assert_equal(@obj.qualifier, 'gene')
+      assert_equal('gene', @obj.qualifier)
     end
 
     def test_value
-      assert_equal(@obj.value, 'CDS')
+      assert_equal('CDS', @obj.value)
     end
   end
 
@@ -61,42 +61,42 @@ module Bio
     end
 
     def test_feature
-      assert_equal(@obj.feature, "source")
+      assert_equal("source", @obj.feature)
     end
 
     def test_position
-      assert_equal(@obj.position, '1..615')
+      assert_equal('1..615', @obj.position)
     end
 
     def test_qualifiers
-      assert_equal(@obj.qualifiers, [@qualifier])
+      assert_equal([@qualifier], @obj.qualifiers)
     end
     
     def test_locations
-      assert_equal(@obj.locations.first.from, 1)
-      assert_equal(@obj.locations.first.to, 615)
+      assert_equal(1, @obj.locations.first.from)
+      assert_equal(615, @obj.locations.first.to)
     end
 
     def test_append_nil
       assert(@obj.append(nil))
-      assert_equal(@obj.qualifiers.size, 1)
+      assert_equal(1, @obj.qualifiers.size)
     end
 
     def test_append
       qualifier = Bio::Feature::Qualifier.new('db_xref', 'taxon:3702')
       assert(@obj.append(qualifier))
-      assert_equal(@obj.qualifiers.last.qualifier, 'db_xref')
+      assert_equal('db_xref', @obj.qualifiers.last.qualifier)
     end
 
     def test_each
       @obj.each do |qua| 
-        assert_equal(qua.value, 'Arabidopsis thaliana')
+        assert_equal('Arabidopsis thaliana', qua.value)
       end
     end
 
     def test_assoc
       @obj.append(Bio::Feature::Qualifier.new("organism", "Arabidopsis thaliana"))
-      assert_equal(@obj.assoc, {"organism" => "Arabidopsis thaliana"})
+      assert_equal({"organism" => "Arabidopsis thaliana"}, @obj.assoc)
     end
   end
 
@@ -106,22 +106,22 @@ module Bio
     end
     
     def test_features
-      assert_equal(@obj.features.size, 1)
+      assert_equal(1, @obj.features.size)
     end
 
     def test_append
       assert(@obj.append(Bio::Feature.new('gene', '1..615', [])))
-      assert_equal(@obj.features.size, 2)
+      assert_equal(2, @obj.features.size)
     end
 
     def test_each
       @obj.each do |feature| 
-        assert_equal(feature.feature, 'gene')
+        assert_equal('gene', feature.feature)
       end
     end
 
     def test_arg # def [](*arg)
-      assert_equal(@obj[0].feature, 'gene')
+      assert_equal('gene', @obj[0].feature)
     end
   end
 

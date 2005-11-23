@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_db.rb,v 1.1 2005/09/24 23:23:00 nakao Exp $
+#  $Id: test_db.rb,v 1.2 2005/11/23 11:44:12 nakao Exp $
 #
 
 require 'pathname'
@@ -44,15 +44,15 @@ module Bio
     end
 
     def test_tags
-      assert_equal(@obj.tags, ["TAG"])
+      assert_equal(["TAG"], @obj.tags)
     end
     
     def test_exists
-      assert_equal(@obj.exists?("TAG"), true)
+      assert_equal(true, @obj.exists?("TAG"))
     end
 
     def test_get
-      assert_equal(@obj.get("TAG"), "TAG value1\n    value2")
+      assert_equal("TAG value1\n    value2", @obj.get("TAG"))
     end
 
     def test_fetch
@@ -71,7 +71,7 @@ END
     end
 
     def test_fetch
-      assert_equal(@obj.fetch("LOCUS"), 'locus')
+      assert_equal('locus', @obj.fetch("LOCUS"))
     end
 
     def test_p_toptag2array
@@ -99,8 +99,8 @@ END
     end
 
     def test_fetch
-      assert_equal(@obj.fetch("ID"), 'id')
-      assert_equal(@obj.fetch("CC"), 'cc1 cc2')
+      assert_equal('id', @obj.fetch("ID"))
+      assert_equal('cc1 cc2', @obj.fetch("CC"))
     end
 
     def test_p_entry2hash
