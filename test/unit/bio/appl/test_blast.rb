@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_blast.rb,v 1.1 2005/09/24 16:38:55 nakao Exp $
+#  $Id: test_blast.rb,v 1.2 2005/11/23 02:47:19 nakao Exp $
 #
 
 require 'pathname'
@@ -61,61 +61,61 @@ module Bio
     
     def test_new
       blast = Bio::Blast.new(@program, @db)
-      assert_equal(blast.program, @program)
-      assert_equal(blast.db, @db)
+      assert_equal(@program, blast.program)
+      assert_equal(@db, blast.db)
       assert(blast.options)
-      assert_equal(blast.server, 'local')
-      assert_equal(blast.blastall, 'blastall')
+      assert_equal('local', blast.server)
+      assert_equal('blastall', blast.blastall)
     end
 
     def test_new_opt_string
       blast = Bio::Blast.new(@program, @db, '-m 7 -F F')
-      assert_equal(blast.options, ['-m', '7', '-F', 'F'])
+      assert_equal(['-m', '7', '-F', 'F'], blast.options)
     end
 
     def test_program
-      assert_equal(@blast.program, @program) 
+      assert_equal(@program, @blast.program) 
     end
 
     def test_db
-      assert_equal(@blast.db, @db) 
+      assert_equal(@db, @blast.db) 
     end
 
     def test_options
-      assert_equal(@blast.options, []) 
+      assert_equal([], @blast.options) 
     end
 
     def test_option
-      assert_equal(@blast.option, '') 
+      assert_equal('', @blast.option) 
     end
 
     def test_option_set
       @blast.option = '-m 7 -p T'
-      assert_equal(@blast.option, '-m 7 -p T') 
+      assert_equal('-m 7 -p T', @blast.option) 
     end
 
     def test_server
-      assert_equal(@blast.server, @server) 
+      assert_equal(@server, @blast.server) 
     end
 
     def test_blastll
-      assert_equal(@blast.blastall, 'blastall') 
+      assert_equal('blastall', @blast.blastall) 
     end
 
     def test_matrix
-      assert_equal(@blast.matrix, nil) 
+      assert_equal(nil, @blast.matrix) 
     end
 
     def test_filter
-      assert_equal(@blast.filter, nil) 
+      assert_equal(nil, @blast.filter) 
     end
 
     def test_parser
-      assert_equal(@blast.instance_eval { @parser }, nil)
+      assert_equal(nil, @blast.instance_eval { @parser })
     end
 
     def test_output
-      assert_equal(@blast.output, '')  
+      assert_equal('', @blast.output)  
     end
 
      def test_format
