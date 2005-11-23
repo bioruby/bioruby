@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_fasta.rb,v 1.1 2005/10/27 14:21:23 nakao Exp $
+#  $Id: test_fasta.rb,v 1.2 2005/11/23 11:21:15 nakao Exp $
 #
 
 require 'pathname'
@@ -31,8 +31,8 @@ module Bio
   class TestFastaFormatConst < Test::Unit::TestCase
 
     def test_delimiter
-      assert_equal(Bio::FastaFormat::DELIMITER, "\n>")
-      assert_equal(Bio::FastaFormat::RS, "\n>")
+      assert_equal("\n>", Bio::FastaFormat::DELIMITER)
+      assert_equal("\n>", Bio::FastaFormat::RS)
     end
 
   end # class TestFastaFormatConst
@@ -67,72 +67,72 @@ END
 
     def test_entry
       data = ">sce:YBR160W  CDC28, SRM5; cyclin-dependent protein kinase catalytic subunit [EC:2.7.1.-] [SP:CC28_YEAST]\nMSGELANYKRLEKVGEGTYGVVYKALDLRPGQGQRVVALKKIRLESEDEG\nVPSTAIREISLLKELKDDNIVRLYDIVHSDAHKLYLVFEFLDLDLKRYME\nGIPKDQPLGADIVKKFMMQLCKGIAYCHSHRILHRDLKPQNLLINKDGNL\nKLGDFGLARAFGVPLRAYTHEIVTLWYRAPEVLLGGKQYSTGVDTWSIGC\nIFAEMCNRKPIFSGDSEIDQIFKIFRVLGTPNEAIWPDIVYLPDFKPSFP\nQWRRKDLSQVVPSLDPRGIDLLDKLLAYDPINRISARRAAIHPYFQES\n"
-      assert_equal(@obj.entry, data)
+      assert_equal(data, @obj.entry)
     end
 
     def test_entry_id
-      assert_equal(@obj.entry_id, 'sce:YBR160W')
+      assert_equal('sce:YBR160W', @obj.entry_id)
     end
 
     def test_definition
       data = "sce:YBR160W  CDC28, SRM5; cyclin-dependent protein kinase catalytic subunit [EC:2.7.1.-] [SP:CC28_YEAST]"
-      assert_equal(@obj.definition, data)
+      assert_equal(data, @obj.definition)
     end
 
     def test_data
       data = "\nMSGELANYKRLEKVGEGTYGVVYKALDLRPGQGQRVVALKKIRLESEDEG\nVPSTAIREISLLKELKDDNIVRLYDIVHSDAHKLYLVFEFLDLDLKRYME\nGIPKDQPLGADIVKKFMMQLCKGIAYCHSHRILHRDLKPQNLLINKDGNL\nKLGDFGLARAFGVPLRAYTHEIVTLWYRAPEVLLGGKQYSTGVDTWSIGC\nIFAEMCNRKPIFSGDSEIDQIFKIFRVLGTPNEAIWPDIVYLPDFKPSFP\nQWRRKDLSQVVPSLDPRGIDLLDKLLAYDPINRISARRAAIHPYFQES\n"
-      assert_equal(@obj.data, data)
+      assert_equal(data, @obj.data)
     end
 
     def test_seq
       seq = 'MSGELANYKRLEKVGEGTYGVVYKALDLRPGQGQRVVALKKIRLESEDEGVPSTAIREISLLKELKDDNIVRLYDIVHSDAHKLYLVFEFLDLDLKRYMEGIPKDQPLGADIVKKFMMQLCKGIAYCHSHRILHRDLKPQNLLINKDGNLKLGDFGLARAFGVPLRAYTHEIVTLWYRAPEVLLGGKQYSTGVDTWSIGCIFAEMCNRKPIFSGDSEIDQIFKIFRVLGTPNEAIWPDIVYLPDFKPSFPQWRRKDLSQVVPSLDPRGIDLLDKLLAYDPINRISARRAAIHPYFQES'
-      assert_equal(@obj.seq, seq)
+      assert_equal(seq, @obj.seq)
     end
 
     def test_length
-      assert_equal(@obj.length, 298)
+      assert_equal(298, @obj.length)
     end
 
     def test_naseq
       seq = 'msgelanykrlekvgegtygvvykaldlrpgqgqrvvalkkirlesedegvpstaireisllkelkddnivrlydivhsdahklylvfefldldlkrymegipkdqplgadivkkfmmqlckgiaychshrilhrdlkpqnllinkdgnlklgdfglarafgvplraytheivtlwyrapevllggkqystgvdtwsigcifaemcnrkpifsgdseidqifkifrvlgtpneaiwpdivylpdfkpsfpqwrrkdlsqvvpsldprgidlldkllaydpinrisarraaihpyfqes'
-      assert_equal(@obj.naseq, seq)
+      assert_equal(seq, @obj.naseq)
     end
 
     def test_nalen
-      assert_equal(@obj.nalen, 298)
+      assert_equal(298, @obj.nalen)
     end
 
     def test_aaseq
       seq = "MSGELANYKRLEKVGEGTYGVVYKALDLRPGQGQRVVALKKIRLESEDEGVPSTAIREISLLKELKDDNIVRLYDIVHSDAHKLYLVFEFLDLDLKRYMEGIPKDQPLGADIVKKFMMQLCKGIAYCHSHRILHRDLKPQNLLINKDGNLKLGDFGLARAFGVPLRAYTHEIVTLWYRAPEVLLGGKQYSTGVDTWSIGCIFAEMCNRKPIFSGDSEIDQIFKIFRVLGTPNEAIWPDIVYLPDFKPSFPQWRRKDLSQVVPSLDPRGIDLLDKLLAYDPINRISARRAAIHPYFQES"
-      assert_equal(@obj.aaseq, seq)
+      assert_equal(seq, @obj.aaseq)
     end
 
     def test_aalen
-      assert_equal(@obj.aalen, 298)
+      assert_equal(298, @obj.aalen)
     end
 
     def test_identifiers
-      assert_equal(@obj.identifiers, '')
+      assert_equal('', @obj.identifiers)
     end
 
     def test_gi
-      assert_equal(@obj.gi, '')
+      assert_equal('', @obj.gi)
     end
 
     def test_accession
-      assert_equal(@obj.accession, '')
+      assert_equal('', @obj.accession)
     end
 
     def test_accessions
-      assert_equal(@obj.accessions, '')
+      assert_equal('', @obj.accessions)
     end
 
     def test_acc_version
-      assert_equal(@obj.acc_version, '')
+      assert_equal('', @obj.acc_version)
     end
 
     def test_locus
-      assert_equal(@obj.locus, '')
+      assert_equal('', @obj.locus)
     end
 
   end # class TestFastaFormat
@@ -150,24 +150,24 @@ END
     end
 
     def test_entry
-      assert_equal(@obj.entry, ">CRA3575282.F\n24 15 23 29 20 13 20 21 21 23 22 25 13 22 17 15 25 27 32 26  \n32 29 29 25\n")
+      assert_equal(">CRA3575282.F\n24 15 23 29 20 13 20 21 21 23 22 25 13 22 17 15 25 27 32 26  \n32 29 29 25\n", @obj.entry)
     end
 
     def test_entry_id
-      assert_equal(@obj.entry_id, 'CRA3575282.F') 
+      assert_equal('CRA3575282.F', @obj.entry_id) 
     end
 
     def test_definition
-      assert_equal(@obj.definition, 'CRA3575282.F')
+      assert_equal('CRA3575282.F', @obj.definition)
     end
 
     def test_data
       data = [24, 15, 23, 29, 20, 13, 20, 21, 21, 23, 22, 25, 13, 22, 17, 15, 25, 27, 32, 26, 32, 29, 29, 25]
-      assert_equal(@obj.data, data)
+      assert_equal(data, @obj.data)
     end
 
     def test_length
-      assert_equal(@obj.length, 24)
+      assert_equal(24, @obj.length)
     end
 
     def test_each
