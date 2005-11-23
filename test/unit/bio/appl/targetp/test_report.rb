@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_report.rb,v 1.2 2005/10/31 17:59:46 nakao Exp $
+#  $Id: test_report.rb,v 1.3 2005/11/23 01:42:38 nakao Exp $
 #
 
 require 'pathname'
@@ -87,11 +87,11 @@ HOGE
   class TestTargetPReportConst  < Test::Unit::TestCase
 
     def test_delimiter
-      assert_equal(Bio::TargetP::Report::DELIMITER, "\n \n")
+      assert_equal("\n \n", Bio::TargetP::Report::DELIMITER)
     end
 
     def test_rs
-      assert_equal(Bio::TargetP::Report::RS, "\n \n")
+      assert_equal("\n \n", Bio::TargetP::Report::RS)
     end
 
   end # class TestTargetPReportConst
@@ -104,56 +104,56 @@ HOGE
     end
 
     def test_version
-      assert_equal(@obj.version, '1.0')
+      assert_equal('1.0', @obj.version)
     end
 
     def test_query_sequences
-      assert_equal(@obj.query_sequences, 0)
+      assert_equal(0, @obj.query_sequences)
     end
 
     def test_cleavage_site_prediction
-      assert_equal(@obj.cleavage_site_prediction, 'not included')
+      assert_equal('not included', @obj.cleavage_site_prediction)
     end
 
     def test_networks
-      assert_equal(@obj.networks, 'PLANT')
+      assert_equal('PLANT', @obj.networks)
     end
 
     def test_prediction
       hash = {"Name"=>"MGI_2141503", "Loc."=>"_", "RC"=>3, "SP"=>0.271,
               "other"=>0.844, "mTP"=>0.161, "cTP"=>0.031, "Length"=>640}
-      assert_equal(@obj.pred, hash)
-      assert_equal(@obj.prediction, hash)
+      assert_equal(hash, @obj.pred)
+      assert_equal(hash, @obj.prediction)
     end
 
     def test_cutoff
       hash = {"SP"=>0.0, "other"=>0.0, "mTP"=>0.0, "cTP"=>0.0}
-      assert_equal(@obj.cutoff, hash)
+      assert_equal(hash, @obj.cutoff)
     end
 
 
     def test_entry_id
-      assert_equal(@obj.entry_id, 'MGI_2141503')
+      assert_equal('MGI_2141503', @obj.entry_id)
     end
 
     def test_name
-      assert_equal(@obj.name, 'MGI_2141503')
+      assert_equal('MGI_2141503', @obj.name)
     end
 
     def test_query_len
-      assert_equal(@obj.query_len, 640)
+      assert_equal(640, @obj.query_len)
     end
 
     def test_length
-      assert_equal(@obj.length, 640)
+      assert_equal(640, @obj.length)
     end
 
     def test_loc
-      assert_equal(@obj.loc, '_')
+      assert_equal('_', @obj.loc)
     end
 
     def test_rc
-      assert_equal(@obj.rc, 3)
+      assert_equal(3, @obj.rc)
     end
   end # class TestTargetPReport
 end
