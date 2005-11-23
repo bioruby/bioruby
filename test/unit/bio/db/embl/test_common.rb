@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_common.rb,v 1.1 2005/10/27 09:37:22 nakao Exp $
+#  $Id: test_common.rb,v 1.2 2005/11/23 10:00:54 nakao Exp $
 #
 
 require 'pathname'
@@ -30,7 +30,8 @@ require 'bio/db/embl/common'
 
 module Bio
 
-  class EMBL_API
+  # TestClass EMBLDB Inherited 
+  class EMBL_API < EMBLDB
     include Bio::EMBLDB::Common
   end
 
@@ -116,11 +117,11 @@ END
     end
 
     def test_ac
-      assert_equal(@obj.ac, ["A12345", "B23456"])
+      assert_equal(["A12345", "B23456"], @obj.ac)
     end
 
     def test_accessions
-      assert_equal(@obj.accessions, ["A12345", "B23456"])
+      assert_equal(["A12345", "B23456"], @obj.accessions)
     end
 
   end
