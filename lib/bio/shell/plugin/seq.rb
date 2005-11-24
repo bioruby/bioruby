@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: seq.rb,v 1.9 2005/11/16 04:03:23 k Exp $
+# $Id: seq.rb,v 1.10 2005/11/24 19:32:04 k Exp $
 #
 #--
 #
@@ -207,7 +207,7 @@ class String
     end
 
     n = pos = 0
-    str = []
+    ary = []
     while n < self.length
       pos = self[n, size].rindex(separater)
 
@@ -216,14 +216,14 @@ class String
       end
 
       if pos
-        str << self[n, pos+separater.length]
+        ary << self[n, pos+separater.length]
         n += pos + separater.length
       else				# line too long or the last line
-        str << self[n, size]
+        ary << self[n, size]
         n += size
       end
     end
-    str = str.join("\n")
+    str = ary.join("\n")
 
     str[0,0] = prefix + ' ' * (indent - prefix.length)
     if first_line_only
@@ -236,3 +236,4 @@ class String
     return str.chomp
   end
 end
+
