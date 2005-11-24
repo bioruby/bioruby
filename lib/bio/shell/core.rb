@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: core.rb,v 1.7 2005/11/14 02:01:54 k Exp $
+# $Id: core.rb,v 1.8 2005/11/24 16:19:38 k Exp $
 #
 #--
 #
@@ -281,8 +281,8 @@ module Bio::Shell::Core
         hash = Marshal.load(File.read(file))
         hash.each do |k, v|
           begin
-            # p [k, v, v.class, Marshal.load(v)]
-            eval("#{k} = Marshal.load('#{v}')", bind)
+            Thread.current[:restore_value] = v
+            eval("#{k} = Thread.current[:restore_value]", bind)
           rescue
             puts "Warning: object '#{k}' couldn't be loaded : #{$!}"
           end
@@ -311,7 +311,7 @@ module Bio::Shell::Core
           list.each do |elem|
             value = eval(elem, bind)
             if value
-              hash[elem] = Marshal.dump(value)
+              hash[elem] = value
             end
           end
           Marshal.dump(hash, f)
@@ -325,6 +325,7 @@ module Bio::Shell::Core
       raise "Failed to save (#{file}) : #{$!}"
     end
   end
+
 
   ### history
 
