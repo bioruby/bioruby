@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: core.rb,v 1.8 2005/11/24 16:19:38 k Exp $
+# $Id: core.rb,v 1.9 2005/11/24 16:57:43 k Exp $
 #
 #--
 #
@@ -311,7 +311,12 @@ module Bio::Shell::Core
           list.each do |elem|
             value = eval(elem, bind)
             if value
-              hash[elem] = value
+              begin
+                Marshal.dump(value)
+                hash[elem] = value
+              rescue
+                # value could not be dumped.
+              end
             end
           end
           Marshal.dump(hash, f)
