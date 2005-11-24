@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: codon.rb,v 1.3 2005/11/14 02:01:54 k Exp $
+# $Id: codon.rb,v 1.4 2005/11/24 19:30:08 k Exp $
 #
 #--
 #
@@ -154,7 +154,7 @@ module Bio::Shell
   private
 
   def codontable(num = 1)
-    cct = ColoredCodonTable.new(num, $bioruby_config[:COLOR])
+    cct = ColoredCodonTable.new(num, Bio::Shell.config(:color))
     display cct.output
     return cct.table
   end

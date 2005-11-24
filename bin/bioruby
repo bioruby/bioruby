@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: bioruby,v 1.6 2005/11/14 02:01:53 k Exp $
+# $Id: bioruby,v 1.7 2005/11/24 19:30:07 k Exp $
 #
 #--
 #
@@ -47,9 +47,9 @@ Bio::Shell.setup
 require 'irb'
 begin
   require 'irb/completion'
-  $bioruby_cache[:READLINE] = true
+  Bio::Shell.cache(:readline, true)
 rescue LoadError
-  $bioruby_cache[:READLINE] = false
+  Bio::Shell.cache(:readline, false)
 end
 
 IRB.setup(nil)
@@ -71,12 +71,12 @@ IRB.conf[:PROMPT][:BIORUBY] = {
   :PROMPT_C => "bioruby+ ",
   :RETURN   => "  ==> %s\n"
 }
-if $bioruby_config[:COLOR]
+if Bio::Shell.config(:color)
   IRB.conf[:PROMPT_MODE] = :BIORUBY_COLOR
 else
   IRB.conf[:PROMPT_MODE] = :BIORUBY
 end
-IRB.conf[:ECHO] = $bioruby_config[:ECHO] || false
+IRB.conf[:ECHO] = Bio::Shell.config(:echo) || false
 
 # irb/input-method.rb >= v1.5 (not in 1.8.2)
 #IRB.conf[:SAVE_HISTORY] = 100000

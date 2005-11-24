@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: shell.rb,v 1.7 2005/11/14 02:01:54 k Exp $
+# $Id: shell.rb,v 1.8 2005/11/24 19:30:07 k Exp $
 #
 #--
 #
@@ -29,12 +29,6 @@
 require 'bio'
 require 'yaml'
 require 'pp'
-
-# A hash to store persistent configurations
-$bioruby_config = {}
-
-# A hash to store temporal (per session) configurations
-$bioruby_cache  = {}
 
 module Bio::Shell
 

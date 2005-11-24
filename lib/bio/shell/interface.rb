@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: interface.rb,v 1.5 2005/11/14 02:01:54 k Exp $
+# $Id: interface.rb,v 1.6 2005/11/24 19:30:08 k Exp $
 #
 #--
 #
@@ -47,16 +47,37 @@ module Bio::Shell
     end
   end
 
-  ### config
-
-  def config(mode = :show, *opts)
-    Bio::Shell.config(mode, *opts)
-  end
-
   ### script
 
   def script(mode = nil)
     Bio::Shell.script(mode)
+  end
+
+  ### config
+
+  def config(mode = :show, *opts)
+    case mode
+    when :show, "show"
+      Bio::Shell.config_show
+    when :echo, "echo"
+      Bio::Shell.config_echo
+    when :color, "color"
+      Bio::Shell.config_color
+    when :pager, "pager"
+      Bio::Shell.config_pager(*opts)
+    when :message, "message"
+      Bio::Shell.config_message(*opts)
+    end
+  end
+
+  def reload_config
+    Bio::Shell.load_config
+  end
+
+  ### object
+
+  def reload_object
+    Bio::Shell.load_object
   end
 
   ### plugin
@@ -67,13 +88,21 @@ module Bio::Shell
 
   ### pager
 
+  def pager(cmd = nil)
+    unless Bio::Shell.config(:pager)
+      cmd = ENV['PAGER'] || cmd
+    end
+    Bio::Shell.config_pager(cmd)
+    puts "Pager is set to '#{cmd ? cmd : 'off'}'"
+  end
+
   #--
   # mysql> pager less
   #++
   def display(*obj)
     # The original idea is from http://sheepman.parfait.ne.jp/20050215.html
-    if $bioruby_config[:PAGER]
-      pg = IO.popen($bioruby_config[:PAGER], "w")
+    if Bio::Shell.config(:pager)
+      pg = IO.popen(Bio::Shell.config(:pager), "w")
       begin
         stdout_save = STDOUT.clone
         STDOUT.reopen(pg)
@@ -86,6 +115,26 @@ module Bio::Shell
     else
       puts(*obj)
     end
+  end
+
+  def less(file)
+    #Readline.completion_proc = proc {|p|
+    #  Dir.glob("#{p}*")
+    #}
+    pager = ENV['PAGER'] || "less"
+    system("#{pager} #{file}")
+  end
+
+  def head(file, num = 10)
+    str = ""
+    File.open(file) do |f|
+      num.times do
+        if line = f.gets
+          str << line
+        end
+      end
+    end
+    display str
   end
 
   ### file system
@@ -124,18 +173,6 @@ module Bio::Shell
       }
       display str
     end
-  end
-
-  def head(file, num = 10)
-    str = ""
-    File.open(file) do |f|
-      num.times do
-        if line = f.gets
-          str << line
-        end
-      end
-    end
-    display str
   end
 
 end

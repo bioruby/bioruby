@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: core.rb,v 1.9 2005/11/24 16:57:43 k Exp $
+# $Id: core.rb,v 1.10 2005/11/24 19:30:08 k Exp $
 #
 #--
 #
@@ -55,21 +55,34 @@ module Bio::Shell::Core
     :n => "\e[00m",  :none    => "\e[00m",  :reset => "\e[00m",
   }
 
+  # A hash to store persistent configurations
+  Config = {}
+
+  # A hash to store temporal (per session) configurations
+  Cache  = {}
+
+  attr_accessor :config, :cache
+
+  def config(param, value = nil)
+    if value
+      Config[param] = value
+    end
+    return Config[param]
+  end
+
+  def cache(param, value = nil)
+    if value
+      Cache[param] = value
+    end
+    return Cache[param]
+  end
+
   ### save/restore the environment
 
   def setup
     load_config
     load_plugin
     version_check
-  end
-
-  #--
-  # *TODO* is this needed? (for reset)
-  #++
-  def reload
-    load_config
-    load_plugin
-    load_object
   end
 
   def open
@@ -111,7 +124,7 @@ module Bio::Shell::Core
     if RUBY_VERSION < "1.8.2"
       raise "BioRuby shell runs on Ruby version >= 1.8.2"
     end
-    if $bioruby_config[:MARSHAL] and $bioruby_config[:MARSHAL] != MARSHAL
+    if Config[:marshal] and Config[:marshal] != MARSHAL
       raise "Marshal version mismatch"
     end
   end
@@ -126,10 +139,10 @@ module Bio::Shell::Core
 
   # 1. ask to save in SAVEDIR directory in the current directory
   # 2. otherwise save in USERDIR directory
-  # 3. remember the choice in $bioruby_cache[:SAVEDIR] once per session
+  # 3. remember the choice in Cache[:savedir] once per session
   def ask_save_dir
-    if $bioruby_cache[:SAVEDIR]
-      dir = $bioruby_cache[:SAVEDIR]
+    if Cache[:savedir]
+      dir = Cache[:savedir]
     else
       dir = SAVEDIR
       if ! File.directory?(dir)
@@ -144,7 +157,7 @@ module Bio::Shell::Core
           end
         end
       end
-      $bioruby_cache[:SAVEDIR] = dir
+      Cache[:savedir] = dir
     end
     return dir
   end
@@ -173,7 +186,7 @@ module Bio::Shell::Core
     if File.exists?(file)
       print "Loading config (#{file}) ... "
       if hash = YAML.load(File.read(file))
-        $bioruby_config.update(hash)
+        Config.update(hash)
       end
       puts "done"
     end
@@ -188,7 +201,7 @@ module Bio::Shell::Core
     begin
       print "Saving config (#{file}) ... "
       File.open(file, "w") do |f|
-        f.puts $bioruby_config.to_yaml
+        f.puts Config.to_yaml
       end
       puts "done"
     rescue
@@ -196,39 +209,24 @@ module Bio::Shell::Core
     end
   end
 
-  def config(mode, *opts)
-    case mode
-    when :show, "show"
-      config_show
-    when :echo, "echo"
-      config_echo
-    when :color, "color"
-      config_color
-    when :pager, "pager"
-      config_pager(*opts)
-    when :message, "message"
-      config_message(*opts)
-    end
-  end
-
   def config_show
-    $bioruby_config.each do |k, v|
+    Config.each do |k, v|
       puts "#{k}\t= #{v.inspect}"
     end
   end
 
   def config_echo
     bind = IRB.conf[:MAIN_CONTEXT].workspace.binding
-    flag = ! $bioruby_config[:ECHO]
-    $bioruby_config[:ECHO] = IRB.conf[:ECHO] = flag
+    flag = ! Config[:echo]
+    Config[:echo] = IRB.conf[:ECHO] = flag
     eval("conf.echo = #{flag}", bind)
     puts "Echo #{flag ? 'on' : 'off'}"
   end
 
   def config_color
     bind = IRB.conf[:MAIN_CONTEXT].workspace.binding
-    flag = ! $bioruby_config[:COLOR]
-    $bioruby_config[:COLOR] = flag
+    flag = ! Config[:color]
+    Config[:color] = flag
     if flag
       IRB.conf[:PROMPT_MODE] = :BIORUBY_COLOR
       eval("conf.prompt_mode = :BIORUBY_COLOR", bind)
@@ -239,12 +237,12 @@ module Bio::Shell::Core
   end
 
   def config_pager(cmd = nil)
-    $bioruby_config[:PAGER] = cmd
+    Config[:pager] = cmd
   end
 
   def config_message(str = nil)
     str ||= Bio::Shell::Core::MESSAGE
-    $bioruby_config[:MESSAGE] = str
+    Config[:message] = str
   end
 
   ### plugin
@@ -320,7 +318,7 @@ module Bio::Shell::Core
             end
           end
           Marshal.dump(hash, f)
-          $bioruby_config[:MARSHAL] = MARSHAL
+          Config[:marshal] = MARSHAL
         rescue
           raise "Failed to dump (#{file}) : #{$!}"
         end
@@ -335,7 +333,7 @@ module Bio::Shell::Core
   ### history
 
   def load_history
-    if $bioruby_cache[:READLINE]
+    if Cache[:readline]
       load_history_file(SITEDIR + HISTORY)
       load_history_file(USERDIR + HISTORY)
       load_history_file(SAVEDIR + HISTORY)
@@ -353,7 +351,7 @@ module Bio::Shell::Core
   end
   
   def save_history
-    if $bioruby_cache[:READLINE]
+    if Cache[:readline]
       dir = create_save_dir
       save_history_file(dir + HISTORY)
     end
@@ -376,19 +374,19 @@ module Bio::Shell::Core
   def script(mode = nil)
     case mode
     when :begin, "begin", :start, "start"
-      $bioruby_cache[:SCRIPT] = true
+      Cache[:script] = true
       script_begin
     when :end, "end", :stop, "stop"
-      $bioruby_cache[:SCRIPT] = false
+      Cache[:script] = false
       script_end
       save_script
     else
-      if $bioruby_cache[:SCRIPT]
-        $bioruby_cache[:SCRIPT] = false
+      if Cache[:script]
+        Cache[:script] = false
         script_end
         save_script
       else
-        $bioruby_cache[:SCRIPT] = true
+        Cache[:script] = true
         script_begin
       end
     end
@@ -433,8 +431,8 @@ module Bio::Shell::Core
   ### splash
 
   def splash_message
-    $bioruby_config[:MESSAGE] ||= MESSAGE
-    $bioruby_config[:MESSAGE].to_s.split(//).join(" ")
+    Config[:message] ||= MESSAGE
+    Config[:message].to_s.split(//).join(" ")
   end
 
   def splash_message_color
@@ -451,7 +449,7 @@ module Bio::Shell::Core
     x = " "
 
     print "\n"
-    if $bioruby_config[:COLOR]
+    if Config[:color]
       0.step(l,2) do |i|
         l1 = l-i;  l2 = l1/2;  l4 = l2/2
         print "#{c[:n]}#{s[0,i]}#{x*l1}#{c[:y]}#{s[i,1]}\r"
@@ -464,7 +462,7 @@ module Bio::Shell::Core
         sleep(0.008)
       end
     end
-    if $bioruby_config[:COLOR]
+    if Config[:color]
       print splash_message_color
     else
       print splash_message
@@ -476,7 +474,7 @@ module Bio::Shell::Core
 
   def closing_splash
     print "\n\n"
-    if $bioruby_config[:COLOR]
+    if Config[:color]
       print splash_message_color
     else
       print splash_message
