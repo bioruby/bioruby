@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: obda.rb,v 1.3 2005/11/14 02:01:54 k Exp $
+# $Id: obda.rb,v 1.4 2005/11/24 19:32:49 k Exp $
 #
 #--
 #
@@ -32,15 +32,15 @@ module Bio::Shell
 
   private
 
-  def setup_obda
+  def obda
     unless @obda
       @obda = Bio::Registry.new
     end
+    return @obda
   end
 
   def obda_get_entry(dbname, entry_id)
-    setup_obda
-    db = @obda.get_database(dbname)
+    db = obda.get_database(dbname)
     entry = db.get_by_id(entry_id)
     if block_given?
       yield entry
