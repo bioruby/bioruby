@@ -1,8 +1,14 @@
 #
-# bio/alignment.rb - multiple alignment of sequences
+# = bio/alignment.rb - multiple alignment of sequences
 #
-#   Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+# Copyright:: Copyright (C) 2003, 2005
+#             GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 #
+# License:: LGPL
+#
+#  $Id: alignment.rb,v 1.10 2005/11/24 16:21:00 ngoto Exp $
+#
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -16,8 +22,20 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: alignment.rb,v 1.9 2005/09/26 13:00:04 k Exp $
+# = About Bio::Alignment class
+#
+# Bio::Alignment is a multiple alignment container class.
+#
+# = References
+#
+# * Bio::Align::AlignI class of the BioPerl.
+# http://doc.bioperl.org/releases/bioperl-1.4/Bio/Align/AlignI.html
+#
+# * Bio::SimpleAlign class of the BioPerl.
+# http://doc.bioperl.org/releases/bioperl-1.4/Bio/SimpleAlign.html
+#
 #
 
 require 'bio/sequence'
@@ -25,1092 +43,1651 @@ require 'bio/sequence'
 module Bio
   class Alignment
 
-    GAP_REGEXP = /[^a-zA-Z]/
-    GAP_CHAR = '-'
-    MISSING_CHAR = '?'
+    # Bio::Alignment::CharacterProperty is a module to store
+    # the gap character and so on.
+    module CharacterProperty
+      GAP_REGEXP   = /[^a-zA-Z]/
+      GAP_CHAR     = '-'.freeze
+      MISSING_CHAR = '?'.freeze
 
-    include Enumerable
+      # If given character is a gap, returns true.
+      # Otherwise, return false.
+      # Note that <em>s</em> must be a String which contain a single character.
+      def is_gap?(s)
+        (gap_regexp =~ s) ? true : false
+      end
 
+      # Returns regular expression for checking gap.
+      def gap_regexp
+        @gap_regexp or GAP_REGEXP
+      end
+      # regular expression for checking gap
+      attr_writer :gap_regexp
+
+      # Gap character.
+      def gap_char
+        @gap_char or GAP_CHAR
+      end
+      # gap character
+      attr_writer :gap_char
+
+      # Character if the site is missing or unknown.
+      def missing_char
+        @missing_char or MISSING_CHAR
+      end
+      # Character if the site is missing or unknown.
+      attr_writer :missing_char
+
+      # Returns character property defined in the object as an hash.
+      def get_character_property
+        ret = {}
+        if defined? @gap_regexp
+          ret[:gap_regexp] = @gap_regexp
+        end
+        if defined? @gap_char
+          ret[:gap_char] = @gap_char
+        end
+        if defined? @missing_char
+          ret[:missing_char] = @missing_char
+        end
+        ret
+      end
+
+      # Sets character property from given hash.
+      # <em>hash</em> would be a return value of <tt>get_character</tt> method.
+      def set_character_property(hash)
+        @gap_regexp   = hash[:gap_regexp]   if hash.has_key?(:gap_regexp)
+        @gap_char     = hash[:gap_char]     if hash.has_key?(:gap_char)
+        @missing_char = hash[:missing_char] if hash.has_key?(:missing_char)
+        self
+      end
+    end #module ChacaterProperty
+
+    # Bio::Alignment::SiteMethods is a set of methods for
+    # Bio::Alignment::Site.
+    # It can also be used for extending an array of single-letter strings.
+    module SiteMethods
+      include CharacterProperty
+
+      # If there are gaps, returns true. Otherwise, returns false.
+      def has_gap?
+        (find { |x| is_gap?(x) }) ? true : false
+      end
+
+      # Removes gaps in the site. (destructive method)
+      def remove_gaps!
+        flag = nil
+        self.collect! do |x|
+          if is_gap?(x) then flag = self; nil; else x; end
+        end
+        self.compact!
+        flag
+      end
+
+      # Returns consensus character of the site.
+      def consensus_string(threshold = 1.0)
+        return nil if self.size <= 0
+        return self[0] if self.sort.uniq.size == 1
+        h = Hash.new(0)
+        self.each { |x| h[x] += 1 }
+        total = self.size
+        b = h.to_a.sort do |x,y|
+          z = (y[1] <=> x[1])
+          z = (self.index(x[0]) <=> self.index(y[0])) if z == 0
+          z
+        end
+        if total * threshold <= b[0][1] then
+          b[0][0]
+        else
+          nil
+        end
+      end
+
+      # IUPAC nucleotide groups. Internal use only.
+      IUPAC_NUC = [
+        %w( t           u ),
+        %w( m   a c       ),
+        %w( r   a   g     ),
+        %w( w   a     t u ),
+        %w( s     c g     ),
+        %w( y     c   t u ),
+        %w( k       g t u ),
+        %w( v   a c g     m r   s     ),
+        %w( h   a c   t u m   w   y   ),
+        %w( d   a   g t u   r w     k ),
+        %w( b     c g t u       s y k ),
+        %w( n   a c g t u m r w s y k v h d b )
+      ]
+
+      # Returns an IUPAC consensus base for the site
+      def consensus_iupac
+        a = self.collect { |x| x.downcase }.sort.uniq
+        if a.size == 1 then
+          a[0]
+        elsif r = IUPAC_NUC.find { |x| (a - x).size <= 0 } then
+          r[0]
+        else
+          nil
+        end
+      end
+
+      # Table of strongly conserved amino-acid groups.
+      #
+      # The value of the tables are taken from BioPerl
+      # (Bio/SimpleAlign.pm in BioPerl 1.0),
+      # and the BioPerl's document says that
+      # it is taken from Clustalw documentation and
+      #   These are all the positively scoring groups that occur in the 
+      #   Gonnet Pam250 matrix. The strong and weak groups are 
+      #   defined as strong score >0.5 and weak score =<0.5 respectively.
+      #
+      StrongConservationGroups = %w(STA NEQK NHQK NDEQ QHRK MILV MILF
+            HY FYW).collect { |x| x.split('').sort }
+
+      # Table of weakly conserved amino-acid groups.
+      #
+      # Please refer StrongConservationGroups document
+      # for the origin of the table.
+      WeakConservationGroups = %w(CSA ATV SAG STNK STPA SGND SNDEQK
+            NDEQHK NEQHRK FVLIM HFY).collect { |x| x.split('').sort }
+
+      # Returns the match-line character for the site.
+      # This is amino-acid version.
+      def match_line_amino(opt = {})
+        # opt[:match_line_char]   ==> 100% equal    default: '*'
+        # opt[:strong_match_char] ==> strong match  default: ':'
+        # opt[:weak_match_char]   ==> weak match    default: '.'
+        # opt[:mismatch_char]     ==> mismatch      default: ' '
+        mlc = (opt[:match_line_char]   or '*')
+        smc = (opt[:strong_match_char] or ':')
+        wmc = (opt[:weak_match_char]   or '.')
+        mmc = (opt[:mismatch_char]     or ' ')
+        a = self.collect { |c| c.upcase }.sort.uniq
+        a.extend(SiteMethods)
+        if a.has_gap? then
+          mmc
+        elsif a.size == 1 then
+          mlc
+        elsif StrongConservationGroups.find { |x| (a - x).empty? } then
+          smc
+        elsif WeakConservationGroups.find { |x| (a - x).empty? } then
+          wmc
+        else
+          mmc
+        end
+      end
+
+      # Returns the match-line character for the site.
+      # This is nucleic-acid version.
+      def match_line_nuc(opt = {})
+        # opt[:match_line_char]   ==> 100% equal    default: '*'
+        # opt[:mismatch_char]     ==> mismatch      default: ' '
+        mlc = (opt[:match_line_char]   or '*')
+        mmc = (opt[:mismatch_char]     or ' ')
+        a = self.collect { |c| c.upcase }.sort.uniq
+        a.extend(SiteMethods)
+        if a.has_gap? then
+          mmc
+        elsif a.size == 1 then
+          mlc
+        else
+          mmc
+        end
+      end
+    end #module SiteMethods
+
+    # Bio::Alignment::Site stores bases or amino-acids in a 
+    # site of the alignment.
+    # It would store multiple String objects of length 1.
+    # Please refer to the document of Array and SiteMethods for methods.
+    class Site < Array
+      include SiteMethods
+    end #module Site
+
+    # The module Bio::Alignment::GeneralExtension is a set of useful
+    # methods for multiple sequence alignment.
+    # It can be included to any classes or can be extended to any objects.
     #
-    ### class methods
+    # The classes or objects must have methods defined in Enumerable,
+    # and must have 'each_seq' method
+    # which iterates over each sequence (or string) and yields
+    # each sequence (or string) object.
+    # Note that the 'each_seq' method would be called multiple times,
+    # 'break' would be used in the given block and
+    # destructive methods would be used to the sequences.
     #
+    # For Array or Hash objects, you'd better using
+    # ArrayExtension or HashExtension modules, respectively.
+    # They have built-in 'each_seq' method.
+    #
+    module GeneralExtension
+      include CharacterProperty
 
-    def self.extract_seq(s)
-      seq = nil
-      if seq.is_a?(Bio::Sequence) then
-        seq = s
-      else
-        for m in [ :seq, :naseq, :aaseq ]
+      # Returns class of the sequence.
+      # If instance variable @seqclass (which can be
+      # set by 'seqclass=' method) is set, simply returns the value.
+      # Otherwise, returns the first sequence's class.
+      # If no sequences are found, returns nil.
+      def seqclass
+        if @seqclass then
+          @seqclass
+        else
+          klass = nil
+          each_seq do |s|
+            if s then
+              klass = s.class
+              break if klass
+            end
+          end
+          (klass or String)
+        end
+      end
+
+      # The class of the sequence.
+      # The class is expected to be String or its derivatives.
+      attr_writer :seqclass
+
+      # Returns the alignment length.
+      # Returns the longest length of the sequence in the alignment.
+      def alignment_length
+        maxlen = 0
+        each_seq do |s|
+          x = s.length
+          maxlen = x if x > maxlen
+        end
+        maxlen
+      end
+      alias seq_length alignment_length
+
+      # Gets a site of the position.
+      # Returns a Bio::Alignment::Site object.
+      # 
+      # If the position is out of range, it returns the site
+      # of which all are gaps.
+      def alignment_site(position)
+        site = Site.new
+        site.set_character_property(get_character_property)
+        each_seq do |s|
+          c = s[position, 1]
+          if c.to_s.empty?
+            c = seqclass.new(gap_char)
+          end
+          site << c
+        end
+        site
+      end
+
+      # Iterates over each site of the alignment.
+      # It yields a Bio::Alignment::Site object (which inherits Array).
+      # It returns self.
+      def each_site
+        (0...alignment_length).each do |i|
+          site = alignment_site(i)
+          yield(site)
+        end
+        self
+      end
+
+      # Iterates over each site of the alignment, with specifying
+      # start, stop positions and step.
+      # It yields Bio::Alignment::Site object (which inherits Array).
+      # It returns self.
+      # It is same as
+      # <tt>start.step(stop, step) { |i| yield alignment_site(i) }</tt>.
+      def each_site_step(start, stop, step = 1)
+        start.step(stop, step) do |i|
+          site = alignment_site(i)
+          yield(site)
+        end
+        self
+      end
+
+      # Iterates over each sequence and each results running block
+      # are collected and returns a new alignment as a
+      # Bio::Alignment::SequenceArray object.
+      #
+      # Note that it would be redefined if you want to change
+      # return value's class.
+      #
+      def alignment_collect
+        a = Bio::Alignment::SequenceArray.new
+        a.set_character_property(get_character_property)
+        each_seq do |str|
+          a << yield(str)
+        end
+        a
+      end
+
+      # Returns specified range of the alignment.
+      # For each sequence, the '[]' method (it may be String#[])
+      # is executed, and returns a new alignment
+      # as a Bio::Alignment::SequenceArray object.
+      #
+      # Unlike alignment_slice method, the result alignment are
+      # guaranteed to contain String object if the range specified
+      # is out of range.
+      #
+      # If you want to change return value's class, you should redefine
+      # alignment_collect method.
+      #
+      def alignment_window(*arg)
+        alignment_collect do |s|
+          s[*arg] or seqclass.new('')
+        end
+      end
+      alias window alignment_window
+
+      # Iterates over each sliding window of the alignment.
+      # window_size is the size of sliding window.
+      # step is the step of each sliding.
+      # It yields a Bio::Alignment::SequenceArray object which contains
+      # each sliding window.
+      # It returns a Bio::Alignment::SequenceArray object which contains
+      # remainder alignment at the terminal end.
+      # If window_size is smaller than 0, it returns nil.
+      def each_window(window_size, step_size = 1)
+        return nil if window_size < 0
+        if step_size >= 0 then
+          i = nil
+          0.step(alignment_length - window_size, step_size) do |i|
+            yield alignment_window(i, window_size)
+          end
+          alignment_window((i+window_size)..-1)
+        else
+          i = alignment_length - window_size
+          while i >= 0
+            yield alignment_window(i, window_size)
+            i += step_size
+          end
+          alignment_window(0...(i-step_size))
+        end
+      end
+
+      # Iterates over each site of the alignment and results running the
+      # block are collected and returns an array.
+      # It yields a Bio::Alignment::Site object.
+      def collect_each_site
+        ary = []
+        each_site do |site|
+          ary << yield(site)
+        end
+        ary
+      end
+
+      # Helper method for calculating consensus sequence.
+      # It iterates over each site of the alignment.
+      # In each site, gaps will be removed if specified with opt.
+      # It yields a Bio::Alignment::Site object.
+      # Results running the block (String objects are expected)
+      # are joined to a string and it returns the string.
+      #
+      #  opt[:gap_mode] ==> 0 -- gaps are regarded as normal characters
+      #                     1 -- a site within gaps is regarded as a gap
+      #                    -1 -- gaps are eliminated from consensus calculation
+      #      default: 0
+      #
+      def consensus_each_site(opt = {})
+        mchar = (opt[:missing_char] or self.missing_char)
+        gap_mode = opt[:gap_mode]
+        case gap_mode
+        when 0, nil
+          collect_each_site do |a|
+            yield(a) or mchar
+          end.join('')
+        when 1
+          collect_each_site do |a|
+            a.has_gap? ? gap_char : (yield(a) or mchar)
+          end.join('')
+        when -1
+          collect_each_site do |a|
+            a.remove_gaps!
+            a.empty? ? gap_char : (yield(a) or mchar)
+          end.join('')
+        else
+          raise ':gap_mode must be 0, 1 or -1'
+        end
+      end
+
+      # Returns the consensus string of the alignment.
+      # 0.0 <= threshold <= 1.0 is expected.
+      #
+      # It resembles the BioPerl's AlignI::consensus_string method.
+      #
+      # Please refer to the consensus_each_site method for opt.
+      #
+      def consensus_string(threshold = 1.0, opt = {})
+        consensus_each_site(opt) do |a|
+          a.consensus_string(threshold)
+        end
+      end
+      alias consensus consensus_string
+
+      # Returns the IUPAC consensus string of the alignment
+      # of nucleic-acid sequences.
+      #
+      # It resembles the BioPerl's AlignI::consensus_iupac method.
+      #
+      # Please refer to the consensus_each_site method for opt.
+      #
+      def consensus_iupac(opt = {})
+        consensus_each_site(opt) do |a|
+          a.consensus_iupac
+        end
+      end
+
+      # Returns the match line stirng of the alignment
+      # of amino-acid sequences.
+      # 
+      # It resembles the BioPerl's AlignI::match_line method.
+      #
+      #   opt[:match_line_char]   ==> 100% equal    default: '*'
+      #   opt[:strong_match_char] ==> strong match  default: ':'
+      #   opt[:weak_match_char]   ==> weak match    default: '.'
+      #   opt[:mismatch_char]     ==> mismatch      default: ' '
+      #
+      # More opt can be accepted.
+      # Please refer to the consensus_each_site method for opt.
+      #
+      def match_line_amino(opt = {})
+        collect_each_site do |a|
+          a.match_line_amino(opt)
+        end.join('')
+      end
+
+      # Returns the match line stirng of the alignment
+      # of nucleic-acid sequences.
+      # 
+      # It resembles the BioPerl's AlignI::match_line method.
+      #
+      #   opt[:match_line_char]   ==> 100% equal    default: '*'
+      #   opt[:mismatch_char]     ==> mismatch      default: ' '
+      #
+      # More opt can be accepted.
+      # Please refer to the consensus_each_site method for opt.
+      #
+      def match_line_nuc(opt = {})
+        collect_each_site do |a|
+          a.match_line_nuc(opt)
+        end.join('')
+      end
+
+      # Returns the match line stirng of the alignment
+      # of nucleic- or amino-acid sequences.
+      # The type of the sequence is automatically determined
+      # or you can specify with opt[:type].
+      #
+      # It resembles the BioPerl's AlignI::match_line method.
+      #
+      #   opt[:type] ==> :na or :aa (or determined by sequence class)
+      #   opt[:match_line_char]   ==> 100% equal    default: '*'
+      #   opt[:strong_match_char] ==> strong match  default: ':'
+      #   opt[:weak_match_char]   ==> weak match    default: '.'
+      #   opt[:mismatch_char]     ==> mismatch      default: ' '
+      #     :strong_ and :weak_match_char are used only in amino mode (:aa)
+      # 
+      # More opt can be accepted.
+      # Please refer to the consensus_each_site method for opt.
+      #
+      def match_line(opt = {})
+        case opt[:type]
+        when :aa
+          amino = true
+        when :na, :dna, :rna
+          amino = false
+        else
+          if seqclass == Bio::Sequence::AA then
+            amino = true
+          elsif seqclass == Bio::Sequence::NA then
+            amino = false
+          elsif self.find { |x| /[EFILPQ]/i =~ x } then
+            amino = true
+          else
+            amino = nil
+          end
+        end
+        if amino then
+          match_line_amino(opt)
+        else
+          match_line_nuc(opt)
+        end
+      end
+
+      # This is the BioPerl's AlignI::match like method.
+      #
+      # Changes second to last sequences' sites to match_char(default: '.')
+      # when a site is equeal to the first sequence's corresponding site.
+      #
+      # Note that it is a destructive method.
+      #
+      # For Hash, please use it carefully because
+      # the order of the sequences is inconstant.
+      #
+      def convert_match(match_char = '.')
+        #(BioPerl) AlignI::match like method
+        len = alignment_length
+        firstseq = nil
+        each_seq do |s|
+          unless firstseq then
+            firstseq = s
+          else
+            (0...len).each do |i|
+              if s[i] and firstseq[i] == s[i] and !is_gap?(firstseq[i..i])
+                s[i..i] = match_char
+              end
+            end
+          end
+        end
+        self
+      end
+
+      # This is the BioPerl's AlignI::unmatch like method.
+      #
+      # Changes second to last sequences' sites match_char(default: '.')
+      # to original sites' characters.
+      #
+      # Note that it is a destructive method.
+      #
+      # For Hash, please use it carefully because
+      # the order of the sequences is inconstant.
+      #
+      def convert_unmatch(match_char = '.')
+        #(BioPerl) AlignI::unmatch like method
+        len = alignment_length
+        firstseq = nil
+        each_seq do |s|
+          unless firstseq then
+            firstseq = s
+          else
+            (0...len).each do |i|
+              if s[i..i] == match_char then
+                s[i..i] = (firstseq[i..i] or match_char)
+              end
+            end
+          end
+        end
+        self
+      end
+
+      # Fills gaps to the tail of each sequence if the length of
+      # the sequence is shorter than the alignment length.
+      #
+      # Note that it is a destructive method.
+      def alignment_normalize!
+        #(original)
+        len = alignment_length
+        each_seq do |s|
+          s << (gap_char * (len - s.length)) if s.length < len
+        end
+        self
+      end
+      alias normalize! alignment_normalize!
+
+      # Removes excess gaps in the tail of the sequences.
+      # If removes nothing, returns nil.
+      # Otherwise, returns self.
+      #
+      # Note that it is a destructive method.
+      def alignment_rstrip!
+        #(String-like)
+        len = alignment_length
+        newlen = len
+        each_site_step(len - 1, 0, -1) do |a|
+          a.remove_gaps!
+          if a.empty then
+            newlen -= 1
+          else
+            break
+          end
+        end
+        return nil if newlen >= len
+        each_seq do |s|
+          s[len..-1] = '' if s.length > len
+        end
+        self
+      end
+      alias rstrip! alignment_rstrip!
+
+      # Removes excess gaps in the head of the sequences.
+      # If removes nothing, returns nil.
+      # Otherwise, returns self.
+      #
+      # Note that it is a destructive method.
+      def alignment_lstrip!
+        #(String-like)
+        pos = 0
+        each_site do |a|
+          a.remove_gaps!
+          if a.empty?
+            pos += 1
+          else
+            break
+          end
+        end
+        return nil if pos <= 0
+        each_seq { |s| s[0, pos] = '' }
+        self
+      end
+      alias lstrip! alignment_lstrip!
+
+      # Removes excess gaps in the sequences.
+      # If removes nothing, returns nil.
+      # Otherwise, returns self.
+      #
+      # Note that it is a destructive method.
+      def alignment_strip!
+        #(String-like)
+        r = alignment_rstrip!
+        l = alignment_lstrip!
+        (r or l)
+      end
+      alias strip! alignment_strip!
+
+      # Completely removes ALL gaps in the sequences.
+      # If removes nothing, returns nil.
+      # Otherwise, returns self.
+      #
+      # Note that it is a destructive method.
+      def remove_all_gaps!
+        ret = nil
+        each_seq do |s|
+          ret ||= s.gsub!(gap_regexp, '')
+        end
+        ret ? self : nil
+      end
+
+      # Returns the specified range of the alignment.
+      # For each sequence, the 'slice' method (it may be String#slice,
+      # which is the same as String#[]) is executed, and
+      # returns a new alignment as a Bio::Alignment::SequenceArray object.
+      #
+      # Unlike alignment_window method, the result alignment
+      # might contain nil.
+      #
+      # If you want to change return value's class, you should redefine
+      # alignment_collect method.
+      #
+      def alignment_slice(*arg)
+        #(String-like)
+        #(BioPerl) AlignI::slice like method
+        alignment_collect do |s|
+          s.slice(*arg)
+        end
+      end
+      alias slice alignment_slice
+
+      # For each sequence, the 'subseq' method (Bio::Seqeunce#subseq is
+      # expected) is executed, and returns a new alignment as
+      # a Bio::Alignment::SequenceArray object.
+      #
+      # All sequences in the alignment are expected to be kind of
+      # Bio::Sequence objects.
+      #
+      # Unlike alignment_window method, the result alignment
+      # might contain nil.
+      #
+      # If you want to change return value's class, you should redefine
+      # alignment_collect method.
+      #
+      def alignment_subseq(*arg)
+        #(original)
+        alignment_collect do |s|
+          s.subseq(*arg)
+        end
+      end
+      alias subseq alignment_subseq
+
+      # Concatinates the given alignment.
+      # The given alignment must have 'each_seq' method.
+      # Returns self.
+      #
+      # Note that it is a destructive method.
+      #
+      # For Hash, please use it carefully because
+      # the order of the sequences is inconstant and
+      # key information is completely ignored.
+      #
+      def alignment_concat(align)
+        a = []
+        each_seq { |s| a << s }
+        i = 0
+        align.each_seq do |seq|
+          a[i].concat(seq) if a[i]
+          i += 1
+        end
+        self
+      end
+    end #module GeneralExtension
+
+    # ClustalWFormatter is a module to create ClustalW-formatted text
+    # from an alignment object.
+    #
+    # It will be obsoleted and the methods will be frequently changed.
+    module ClustalWFormatter
+      # Check whether there are same names.
+      #
+      # array:: names of the sequences (array of string)
+      # len::   length to check (default:30)
+      def have_same_name?(array, len = 30)
+        na30 = array.collect do |k|
+          k.to_s.split(/[\x00\s]/)[0].to_s[0, len].gsub(/\:\;\,\(\)/, '_').to_s
+        end
+        #p na30
+        na30idx = (0...(na30.size)).to_a
+        na30idx.sort! do |x,y|
+          na30[x] <=> na30[y]
+        end
+        #p na30idx
+        y = nil
+        dupidx = []
+        na30idx.each do |x|
+          if y and na30[y] == na30[x] then
+            dupidx << y
+            dupidx << x
+          end
+          y = x
+        end
+        if dupidx.size > 0 then
+          dupidx.sort!
+          dupidx.uniq!
+          dupidx
+        else
+          false
+        end
+      end
+      private :have_same_name?
+
+      # Changes sequence names if there are conflicted names.
+      #
+      # array:: names of the sequences (array of string)
+      # len::   length to check (default:30)
+      def avoid_same_name(array, len = 30)
+        na = array.collect { |k| k.to_s.gsub(/[\r\n\x00]/, ' ') }
+        if dupidx = have_same_name?(na, len)
+          procs = [
+            Proc.new { |s, i|
+              s[0, len].to_s.gsub(/\s/, '_') + s[len..-1].to_s
+            },
+            # Proc.new { |s, i|
+            #   "#{i}_#{s}"
+            # },
+          ]
+          procs.each do |pr|
+            dupidx.each do |i|
+              s = array[i]
+              na[i] = pr.call(s.to_s, i)
+            end
+            dupidx = have_same_name?(na, len)
+            break unless dupidx
+          end
+          if dupidx then
+            na.each_with_index do |s, i|
+              na[i] = "#{i}_#{s}"
+            end
+          end
+        end
+        na
+      end
+      private :avoid_same_name
+
+      # Generates ClustalW-formatted text
+      # seqs:: sequences (must be an alignment object)
+      # names:: names of the sequences
+      # options:: options
+      def clustalw_formatter(seqs, names, options = {})
+        #(original)
+        aln = [ "CLUSTAL   (0.00) multiple sequence alignment\n\n" ]
+        len = seqs.seq_length
+        
+        if !options.has_key?(:avoid_same_name) or options[:avoid_same_name]
+          sn = avoid_same_name(names)
+        else
+          sn = names.collect { |x| x.to_s.gsub(/[\r\n\x00]/, ' ') }
+        end
+        if options[:replace_space]
+          sn.collect! { |x| x.gsub(/\s/, '_') }
+        end
+        if !options.has_key?(:escape) or options[:escape]
+          sn.collect! { |x| x.gsub(/[\:\;\,\(\)]/, '_') }
+        end
+        if !options.has_key?(:split) or options[:split]
+          sn.collect! { |x| x.split(/\s/)[0].to_s }
+        end
+        
+        if sn.find { |x| x.length > 10 } then
+          seqwidth = 50
+          namewidth = 30
+          sep = ' ' * 6
+        else
+          seqwidth = 60
+          namewidth = 10
+          sep = ' ' * 6
+        end
+        seqregexp = Regexp.new("(.{1,#{seqwidth}})")
+        gchar = (options[:gap_char] or '-')
+
+        case options[:type].to_s
+        when /protein/i, /aa/i
+          mopt = { :type => :aa }
+        when /na/i
+          mopt = { :type => :na }
+        else
+          mopt = {}
+        end
+        mline = (options[:match_line] or seqs.match_line(mopt))
+        
+        aseqs = seqs.collect do |s|
+          s.to_s.gsub(seqs.gap_regexp, gchar)
+        end
+        case options[:case].to_s
+        when /lower/i
+          aseqs.each { |s| s.downcase! }
+        when /upper/i
+          aseqs.each { |s| s.upcase! }
+        end
+        
+        aseqs << mline
+        aseqs.collect! do |s|
+          snx = sn.shift
+          head = sprintf("%*s", -namewidth, snx.to_s)[0, namewidth] + sep
+          s << (gchar * (len - s.length))
+          s.gsub!(seqregexp, "\\1\n")
+          a = s.split(/^/)
+          if options[:seqnos] and snx then
+            i = 0
+            a.each do |x|
+              x.chomp!
+              l = x.tr(gchar, '').length
+              i += l
+              x.concat(l > 0 ? " #{i}\n" : "\n")
+            end
+          end
+          a.collect { |x| head + x }
+        end
+        lines = (len + seqwidth - 1).div(seqwidth)
+        lines.times do
+          aln << "\n"
+          aseqs.each { |a| aln << a.shift }
+        end
+        aln.join('')
+      end
+      private :clustalw_formatter
+    end #module ClustalWFormatter
+
+
+    # Bio::Alignment::ArrayExtension is a set of useful methods for
+    # multiple sequence alignment.
+    # It is designed to be extended to array objects or
+    # included in your own classes which inherit Array.
+    # (It can also be included in Array, though not recommended.)
+    #
+    # It possesses all methods defined in GeneralExtension.
+    # For usage of methods, please refer to GeneralExtension.
+    module ArrayExtension
+      include GeneralExtension
+
+      def each_seq(&block)
+        each(&block)
+      end
+
+      include ClustalWFormatter
+      # Returns a string of Clustal W formatted text of the alignment.
+      def to_clustal(options = {})
+        clustalw_formatter(self, (0...(self.size)).to_a, options)
+      end
+    end #module ArrayExtension
+
+    # Bio::Alignment::HashExtension is a set of useful methods for
+    # multiple sequence alignment.
+    # It is designed to be extended to hash objects or
+    # included in your own classes which inherit Hash.
+    # (It can also be included in Hash, though not recommended.)
+    #
+    # It possesses all methods defined in GeneralExtension.
+    # For usage of methods, please refer to GeneralExtension.
+    #
+    # Because the order of the objects in a hash is inconstant,
+    # some methods strictly affected with the order of objects
+    # might not work correctly,
+    # e.g. GeneralExtension#convert_match, #convert_unmatch
+    # and #alignment_concat.
+    module HashExtension
+      include GeneralExtension
+
+      def each_seq(&block)
+        each_value(&block)
+      end
+
+      include ClustalWFormatter
+      # Returns a string of Clustal W formatted text of the alignment.
+      def to_clustal(options = {})
+        seqs = SequenceArray.new
+        names = self.keys
+        names.each do |k|
+          seqs << self[k]
+        end
+        clustalw_formatter(seqs, names, options)
+      end
+    end #module HashExtension
+
+    # Bio::Alignment::SequenceArray is a container class of
+    # multiple sequence alignment.
+    # Since it inherits Array, it acts completely same as Array.
+    # In addition, methods defined in ArrayExtension and GeneralExtension
+    # can be used.
+    class SequenceArray < Array
+      include ArrayExtension
+    end #class SequenceArray
+
+    # Bio::Alignment::SequenceHash is a container class of
+    # multiple sequence alignment.
+    # Since it inherits Hash, it acts completely same as Hash.
+    # In addition, methods defined in HashExtension and GeneralExtension
+    # can be used.
+    class SequenceHash < Hash
+      include HashExtension
+    end #class SequenceHash
+
+    # Bio::Alignment::OriginalPrivate is a set of private methods
+    # for Bio::Alignment::OriginalAlignment.
+    module OriginalPrivate
+
+      # Gets the sequence from given object.
+      def extract_seq(obj)
+        seq = nil
+        if obj.is_a?(Bio::Sequence) then
+          seq = obj
+        else
+          for m in [ :seq, :naseq, :aaseq ]
+            begin
+              seq = obj.send(m)
+            rescue NameError, ArgumentError
+              seq = nil
+            end
+            break if seq
+          end
+          seq = obj unless seq
+        end
+        seq
+      end
+      module_function :extract_seq
+
+      # Gets the name or the definition of the sequence from given object.
+      def extract_key(obj)
+        sn = nil
+        for m in [ :definition, :entry_id ]
           begin
-            seq = s.send(m)
+            sn = obj.send(m)
           rescue NameError, ArgumentError
-            seq = nil
+            sn = nil
           end
-          break if seq
+          break if sn
         end
-        seq = s unless seq
+        sn
       end
-      seq
-    end
+      module_function :extract_key
+    end #module OriginalPrivate
 
-    def extract_seq(s)
-      self.class.extract_seq(s)
-    end
-    private :extract_seq
-
-    def self.extract_key(s)
-      sn = nil
-      for m in [ :definition, :entry_id ]
-        begin
-          sn = s.send(m)
-        rescue NameError, ArgumentError
-          sn = nil
-        end
-        break if sn
-      end
-      sn
-    end
-
-    def extract_key(s)
-      self.class.extract_key(s)
-    end
-    private :extract_key
-
+    # Bio::Alignment::OriginalAlignment is
+    # the BioRuby original multiple sequence alignment container class.
+    # It includes GeneralExtension.
     #
-    ### initializing methods
+    # It is recommended only to use methods defined in GeneralExtension
+    # (and the each_seq method).
+    # The method only defined in this class might be obsoleted in the future.
     #
+    class OriginalAlignment
 
-    def self.readfiles(*files)
-      require 'bio/io/flatfile'
-      aln = self.new
-      files.each do |fn|
-        Bio::FlatFile.open(nil, fn) do |ff|
-          aln.add_sequences(ff)
-        end
-      end
-      aln
-    end
+      # default value of gap regular expression
+      GAP_REGEXP   = CharacterProperty::GAP_REGEXP
+      # default value of gap character
+      GAP_CHAR     = CharacterProperty::GAP_CHAR
+      # default value of missing character
+      MISSING_CHAR = CharacterProperty::MISSING_CHAR
 
-    def self.new2(*arg)
-      self.new(arg)
-    end
+      include Enumerable
+      include GeneralExtension
+      include OriginalPrivate
 
-    def initialize(seqs = [])
-      @seqs = {}
-      @keys = []
-      self.add_sequences(seqs)
-    end
-
-    def add_sequences(seqs)
-      if block_given? then
-        seqs.each do |x|
-          s, key = yield x
-          self.store(key, s)
-        end
-      else
-        if seqs.is_a?(self.class) then
-          seqs.each_pair do |k, s|
-            self.store(k, s)
+      # Read files and creates a new alignment object.
+      def self.readfiles(*files)
+        require 'bio/io/flatfile'
+        aln = self.new
+        files.each do |fn|
+          Bio::FlatFile.open(nil, fn) do |ff|
+            aln.add_sequences(ff)
           end
-        elsif seqs.respond_to?(:each_pair)
-          seqs.each_pair do |k, x|
-            s = extract_seq(x)
-            self.store(k, s)
+        end
+        aln
+      end
+      
+      # Creates a new alignment object from given arguments.
+      def self.new2(*arg)
+        self.new(arg)
+      end
+
+      # Creates a new alignment object.
+      # _seqs_ may be one of follows:
+      # an array of sequences (or strings),
+      # an array of sequence database objects,
+      # an alignment object.
+      def initialize(seqs = [])
+        @seqs = {}
+        @keys = []
+        self.add_sequences(seqs)
+      end
+
+      # compares object
+      def ==(x)
+        #(original)
+        if x.is_a?(self.class)
+          self.to_hash == x.to_hash
+        else
+          false
+        end
+      end
+      
+      # convert to hash
+      def to_hash
+        #(Hash-like)
+        @seqs
+      end
+
+      # Adds sequences to the alignment. _seqs_ may be
+      # _seqs_ may be one of follows:
+      # an array of sequences (or strings),
+      # an array of sequence database objects,
+      # an alignment object.
+      def add_sequences(seqs)
+        if block_given? then
+          seqs.each do |x|
+            s, key = yield x
+            self.store(key, s)
           end
         else
-          seqs.each do |x|
-            s = extract_seq(x)
-            k = extract_key(x)
-            self.store(k, s)
-          end
-        end
-      end
-      self
-    end
-
-    #
-    ### basic methods
-    #
-    attr_reader :keys
-
-    def ==(x)
-      #(original)
-      if x.is_a?(self.class)
-        self.to_hash == x.to_hash
-      else
-        false
-      end
-    end
-
-    def to_hash
-      #(Hash-like)
-      @seqs
-    end
-
-    def __store__(key, seq)
-      #(Hash-like)
-      h = { key => seq }
-      @keys << h.keys[0]
-      @seqs.update(h)
-      seq
-    end
-
-    def store(key, seq)
-      #(Hash-like) returns key instead of seq
-      if @seqs.has_key?(key) then
-        # don't allow same key
-        # New key is discarded, while existing key is preserved.
-        key = nil
-      end
-      unless key then
-        unless defined?(@serial)
-          @serial = 0
-        end
-        @serial = @seqs.size if @seqs.size > @serial
-        while @seqs.has_key?(@serial)
-          @serial += 1
-        end
-        key = @serial
-      end
-      self.__store__(key, seq)
-      key
-    end
-
-    def rehash
-      @seqs.rehash
-      oldkeys = @keys
-      tmpkeys = @seqs.keys
-      @keys.collect! do |k|
-        tmpkeys.delete(k)
-      end
-      @keys.compact!
-      @keys.concat(tmpkeys)
-      self
-    end
-
-    def unshift(key, seq)
-      #(Array-like)
-      self.store(key, seq)
-      k = @keys.pop
-      @keys.unshift(k)
-      k
-    end
-
-    def shift
-      #(Hash-like)
-      k = @keys.shift
-      if k then
-        s = @seqs.delete(k)
-        [ k, s ]
-      else
-        nil
-      end
-    end
-
-    def order(n)
-      #(original)
-      @seqs[@keys[n]]
-    end
-
-    def delete(key)
-      #(Hash-like)
-      @keys.delete(key)
-      @seqs.delete(key)
-    end
-
-    def values
-      #(Hash-like)
-      @keys.collect { |k| @seqs[k] }
-    end
-
-    def <<(s)
-      #(Array-like)
-      self.store(nil, s)
-      self
-    end
-
-    def [](*arg)
-      #(Hash-like)
-      @seqs[*arg]
-    end
-
-    def size
-      #(Hash&Array-like)
-      @seqs.size
-    end
-
-    def has_key?(key)
-      #(Hash-like)
-      @seqs.has_key?(key)
-    end
-
-    def each
-      #(Array-like)
-      @keys.each do |k|
-        yield @seqs[k]
-      end
-    end
-    alias each_seq each
-
-    def each_pair
-      #(Hash-like)
-      @keys.each do |k|
-        yield k, @seqs[k]
-      end
-    end
-
-    def collect!
-      #(Array-like)
-      @keys.each do |k|
-        @seqs[k] = yield @seqs[k]
-      end
-    end
-    #
-    ### note that 'collect' and 'to_a' is defined in Enumerable
-    #
-
-    def seqclass
-      #(original)
-      (defined?(@seqclass) ? @seqclass : nil) or
-        (@seqs[@keys[0]] ? @seqs[@keys[0]].class : String)
-    end
-    attr_writer :seqclass
-
-    #
-    ### methods for special characters
-    #
-    def gap_char
-      #(original)
-      unless defined?(@gap_char)
-        @gap_char = String.new(GAP_CHAR)
-      end
-      @gap_char
-    end
-    attr_writer :gap_char
-
-    def gap_regexp
-      #(original)
-      unless defined?(@gap_regexp)
-        @gap_regexp = Regexp.new(GAP_REGEXP)
-      end
-      @gap_regexp
-    end
-    attr_writer :gap_regexp
-
-    def missing_char
-      #(original)
-      # used in consensus methods
-      unless defined?(@missing_char)
-        @missing_char = String.new(MISSING_CHAR)
-      end
-      @missing_char
-    end
-    attr_writer :missing_char
-
-    #
-    ### instance-variable-related methods
-    #
-    def new(*arg)
-      na = self.class.new(*arg)
-      if defined?(@seqclass)
-        na.seqclass = @seqclass
-      end
-      if defined?(@gap_char)
-        na.gap_char = @gap_char
-      end
-      if defined?(@gap_regexp)
-        na.gap_regexp = @gap_regexp
-      end
-      if defined?(@missing_char)
-        na.missing_char = @missing_char
-      end
-      na
-    end
-    protected :new
-
-    def dup
-      #(Hash-like)
-      self.new(self)
-    end
-
-    #
-    ### methods below should not access instance variables
-    #
-    def merge(*other)
-      #(Hash-like)
-      na = self.new(self)
-      na.merge!(*other)
-      na
-    end
-
-    def merge!(*other)
-      #(Hash-like)
-      if block_given? then
-        other.each do |aln|
-          aln.each_pair do |k, s|
-            if self.has_key?(k) then
-              s = yield k, self[k], s
-              self.to_hash.store(k, s)
-            else
+          if seqs.is_a?(self.class) then
+            seqs.each_pair do |k, s|
+              self.store(k, s)
+            end
+          elsif seqs.respond_to?(:each_pair)
+            seqs.each_pair do |k, x|
+              s = extract_seq(x)
+              self.store(k, s)
+            end
+          else
+            seqs.each do |x|
+              s = extract_seq(x)
+              k = extract_key(x)
               self.store(k, s)
             end
           end
         end
-      else
-        other.each do |aln|
-          aln.each_pair do |k, s|
-            self.delete(k) if self.has_key?(k)
-            self.store(k, s)
-          end
-        end
+        self
       end
-      self
-    end
 
-    def index(seq)
-      #(Hash-like)
-      k = nil
-      self.each_pair do |k, s|
-        if s.class == seq.class then
-          r = (s == seq)
+      # sequence names
+      attr_reader :keys
+
+      # stores a sequences with the name
+      # key:: name of the sequence
+      # seq:: sequence
+      def __store__(key, seq)
+        #(Hash-like)
+        h = { key => seq }
+        @keys << h.keys[0]
+        @seqs.update(h)
+        seq
+      end
+
+      # stores a sequence with <em>key</em>
+      # (name or definition of the sequence).
+      # Unlike <em>__store__</em> method, the method doesn't allow
+      # same keys.
+      # If the key is already used, returns nil.
+      # When succeeded, returns key.
+      def store(key, seq)
+        #(Hash-like) returns key instead of seq
+        if @seqs.has_key?(key) then
+          # don't allow same key
+          # New key is discarded, while existing key is preserved.
+          key = nil
+        end
+        unless key then
+          unless defined?(@serial)
+            @serial = 0
+          end
+          @serial = @seqs.size if @seqs.size > @serial
+          while @seqs.has_key?(@serial)
+            @serial += 1
+          end
+          key = @serial
+        end
+        self.__store__(key, seq)
+        key
+      end
+
+      # Reconstructs internal data structure.
+      # (Like Hash#rehash)
+      def rehash
+        @seqs.rehash
+        oldkeys = @keys
+        tmpkeys = @seqs.keys
+        @keys.collect! do |k|
+          tmpkeys.delete(k)
+        end
+        @keys.compact!
+        @keys.concat(tmpkeys)
+        self
+      end
+
+      # Prepends seq (with key) to the front of the alignment.
+      # (Like Array#unshift)
+      def unshift(key, seq)
+        #(Array-like)
+        self.store(key, seq)
+        k = @keys.pop
+        @keys.unshift(k)
+        k
+      end
+
+      # Removes the first sequence in the alignment and
+      # returns [ key, seq ].
+      def shift
+        k = @keys.shift
+        if k then
+          s = @seqs.delete(k)
+          [ k, s ]
         else
-          r = (s.to_s == seq.to_s)
+          nil
         end
-        break if r
       end
-      k
-    end
 
-    def isolate(*arg)
-      #(original)
-      if arg.size == 0 then
-        self.collect! do |s|
-          seqclass.new(s)
+      # Gets the <em>n</em>-th sequence.
+      # If not found, returns nil.
+      def order(n)
+        #(original)
+        @seqs[@keys[n]]
+      end
+
+      # Removes the sequence whose key is <em>key</em>.
+      # Returns the removed sequence.
+      # If not found, returns nil.
+      def delete(key)
+        #(Hash-like)
+        @keys.delete(key)
+        @seqs.delete(key)
+      end
+
+      # Returns sequences. (Like Hash#values)
+      def values
+        #(Hash-like)
+        @keys.collect { |k| @seqs[k] }
+      end
+
+      # Adds a sequence without key.
+      # The key is automatically determined.
+      def <<(seq)
+        #(Array-like)
+        self.store(nil, seq)
+        self
+      end
+
+      # Gets a sequence. (Like Hash#[])
+      def [](*arg)
+        #(Hash-like)
+        @seqs[*arg]
+      end
+
+      # Number of sequences in the alignment.
+      def size
+        #(Hash&Array-like)
+        @seqs.size
+      end
+
+      # If the key exists, returns true. Otherwise, returns false.
+      # (Like Hash#has_key?)
+      def has_key?(key)
+        #(Hash-like)
+        @seqs.has_key?(key)
+      end
+
+      # Iterates over each sequence.
+      # (Like Array#each)
+      def each
+        #(Array-like)
+        @keys.each do |k|
+          yield @seqs[k]
         end
-      else
-        arg.each do |k|
-          if self.has_key?(k) then
-            s = self.delete(key)
-            self.store(k, seqclass.new(s))
+      end
+      alias :each_seq :each
+
+      # Iterates over each key and sequence.
+      # (Like Hash#each_pair)
+      def each_pair
+        #(Hash-like)
+        @keys.each do |k|
+          yield k, @seqs[k]
+        end
+      end
+
+      # Iterates over each sequence, replacing the sequence with the
+      # value returned by the block.
+      def collect!
+        #(Array-like)
+        @keys.each do |k|
+          @seqs[k] = yield @seqs[k]
+        end
+      end
+
+      ###--
+      ### note that 'collect' and 'to_a' is defined in Enumerable
+      ###
+      ### instance-variable-related methods
+      ###++
+
+      # Creates new alignment. Internal use only.
+      def new(*arg)
+        na = self.class.new(*arg)
+        if defined?(@seqclass)
+          na.seqclass = @seqclass
+        end
+        if defined?(@gap_char)
+          na.gap_char = @gap_char
+        end
+        if defined?(@gap_regexp)
+          na.gap_regexp = @gap_regexp
+        end
+        if defined?(@missing_char)
+          na.missing_char = @missing_char
+        end
+        na
+      end
+      protected :new
+
+      # Duplicates the alignment
+      def dup
+        #(Hash-like)
+        self.new(self)
+      end
+
+      #--
+      # methods below should not access instance variables
+      #++
+
+      # Merges given alignment and returns a new alignment.
+      def merge(*other)
+        #(Hash-like)
+        na = self.new(self)
+        na.merge!(*other)
+        na
+      end
+
+      # Merge given alignment.
+      # Note that it is destructive method.
+      def merge!(*other)
+        #(Hash-like)
+        if block_given? then
+          other.each do |aln|
+            aln.each_pair do |k, s|
+              if self.has_key?(k) then
+                s = yield k, self[k], s
+                self.to_hash.store(k, s)
+              else
+                self.store(k, s)
+              end
+            end
           end
-        end
-      end
-      self
-    end
-
-    def collect_align
-      #(original)
-      na = self.new
-      self.each_pair do |k, s|
-        na.store(k, yield(s))
-      end
-      na
-    end
-
-    def compact!
-      #(Array-like)
-      d = []
-      self.each_pair do |k, s|
-        if !s or s.empty?
-          d << k
-        end
-      end
-      d.each do |k|
-        self.delete(d)
-      end
-      d.empty? ? nil : d
-    end
-
-    def compact
-      #(Array-like)
-      na = self.dup
-      na.compact!
-      na
-    end
-
-    def add_seq(seq, key = nil)
-      #(BioPerl) AlignI::add_seq like method
-      unless seq.is_a?(Bio::Sequence) then
-        s =   extract_seq(seq)
-        key = extract_key(seq) unless key
-        seq = s
-      end
-      self.store(key, seq)
-    end
-
-    def remove_seq(seq)
-      #(BioPerl) AlignI::remove_seq like method
-      if k = self.index(seq) then
-        self.delete(k)
-      else
-        nil
-      end
-    end
-
-    def purge(*arg)
-      #(BioPerl) AlignI::purge like method
-      purged = self.new
-      arg.each do |k|
-        if self[k] then
-          purged.store(k, self.delete(k))
-        end
-      end
-      purged
-    end
-
-    def select(*arg)
-      #(original)
-      na = self.new
-      if block_given? then
-        # 'arg' is ignored
-        # nearly same action as Array#select(Enumerable#select)
-        self.each_pair.each do |k, s|
-          na.store(k, s) if yield(s)
-        end
-      else
-        # BioPerl's AlignI::select like function
-        arg.each do |k|
-          if s = self[k] then
-            na.store(k, s)
-          end
-        end
-      end
-      na
-    end
-
-    def slice(*arg)
-      #(String-like)
-      #(BioPerl) AlignI::slice like method
-      self.collect_align do |s|
-        s.slice(*arg)
-      end
-    end
-
-    def subseq(*arg)
-      #(original)
-      self.collect_align do |s|
-        s.subseq(*arg)
-      end
-    end
-
-    def window(*arg)
-      #(original)
-      a = []
-      self.each do |s|
-        w = s[*arg]
-        w = seqclass.new('') unless w
-        a << w
-      end
-      a
-    end
-
-    def seq_length
-      #(original)
-      maxlen = 0
-      self.each do |s|
-        x = s.length
-        maxlen = x if x > maxlen
-      end
-      maxlen
-    end
-
-    def each_site
-      #(original)
-      (0...(self.seq_length)).each do |i|
-        yield(self.collect do |s|
-          c = s[i..i]
-          c = seqclass.new(gap_char) if c.to_s.empty?
-          c
-        end)
-      end
-    end
-
-    def each_window(window_size, step = 1)
-      #(original)
-      return nil if window_size < 0
-      if step >= 0 then
-        i = nil
-        0.step(self.seq_length - window_size, step) do |i|
-          yield self.window(i, window_size)
-        end
-        self.window((i+window_size)..-1)
-      else
-        i = self.seq_length - window_size
-        while i >= 0
-          yield self.window(i, window_size)
-          i += step
-        end
-        self.window(0...(i-step))
-      end
-    end
-
-    def consensus_string(threshold = 1, opt = {})
-      #(BioPerl) AlignI::consensus_string
-      # 0 <= threshold <= 1
-      mchar = (opt[:missing_char] or self.missing_char)
-      gap_mode = opt[:gap_mode]
-      ### gap_mode : 0(default) --- gaps are regarded as normal characters
-      ###            1          --- a site within gaps is regarded as a gap
-      ###           -1          --- gaps are ignored
-      ###                           (eliminated from threshold caliculation)
-      cseq = ''
-      self.each_site do |a|
-        case gap_mode
-        when 1
-          if gap_regexp =~ a.join('') then
-            cseq << gap_char
-            next
-          end
-        when -1
-          a = a.join('').gsub(gap_regexp, '').split('')
-          if a.size == 0 then
-            cseq << gap_char
-            next
-          end
-        end
-        h = Hash.new(0)
-        a.each do |x|
-          h[x] += 1
-        end
-        total = a.size
-        a2 = h.to_a.sort do |x,y|
-          z = (y[1] <=> x[1])
-          z = (a.index(x[0]) <=> a.index(y[0])) if z == 0
-          z
-        end
-        if total * threshold <= a2[0][1] then
-          cseq << a2[0][0]
         else
-          cseq << mchar
-        end
-      end
-      cseq
-    end
-    alias consensus consensus_string
-
-    IUPAC_NUC = [
-      %w( t           u ),
-      %w( m   a c       ),
-      %w( r   a   g     ),
-      %w( w   a     t u ),
-      %w( s     c g     ),
-      %w( y     c   t u ),
-      %w( k       g t u ),
-      %w( v   a c g     m r   s     ),
-      %w( h   a c   t u m   w   y   ),
-      %w( d   a   g t u   r w     k ),
-      %w( b     c g t u       s y k ),
-      %w( n   a c g t u m r w s y k v h d b )
-    ]
-
-    def consensus_iupac(opt = {})
-      #(BioPerl) AlignI::consensus_iupac like method
-      mchar = (opt[:missing_char] or self.missing_char)
-      gap_mode = opt[:gap_mode]
-      ### gap_mode : 0(default) --- gaps are regarded as normal characters
-      ###            1          --- a site within gaps is regarded as a gap
-      ###           -1          --- gaps are ignored
-      cstr = ''
-      self.each_site do |a|
-        a2 = a.collect { |c| c.downcase }.sort.uniq
-        if a2.size == 1 then
-          cstr << a2[0]
-          next
-        end
-        a3 = a2.join('')
-        if gap_regexp =~ a3 then
-          case gap_mode
-          when 1
-            cstr << gap_char
-            next
-          when -1
-            a2 = a3.gsub(gap_regexp, '').split('')
-          end
-        end
-        if a2.size == 1 then
-          cstr << a2[0]
-          next
-        end
-        if r = subsetof?(IUPAC_NUC, a2) then
-          cstr << r[0]
-        else
-          cstr << mchar
-        end
-      end
-      cstr
-    end
-
-    def convert_match(match_char = '.')
-      #(BioPerl) AlignI::match like method
-      if self.size > 0 then
-        len = self.seq_length
-        firstseq = self.order(0)
-        flag = true
-        self.each do |s|
-          if flag then
-            flag = nil
-            next
-          end
-          (0...len).each do |i|
-            s[i..i] = match_char if s[i] and
-              firstseq[i] == s[i] and !(gap_regexp =~ firstseq[i..i])
-          end
-        end
-      end
-      self
-    end
-
-    def convert_unmatch(match_char = '.')
-      #(BioPerl) AlignI::unmatch like method
-      if self.size > 0 then
-        len = self.seq_length
-        firstseq = self.order(0)
-        flag = true
-        self.each do |s|
-          if flag then
-            flag = nil
-            next
-          end
-          (0...len).each do |i|
-            if s[i..i] == match_char then
-              s[i..i] = (firstseq[i..i] or match_char)
+          other.each do |aln|
+            aln.each_pair do |k, s|
+              self.delete(k) if self.has_key?(k)
+              self.store(k, s)
             end
           end
         end
+        self
       end
-      self
-    end
 
-    # it is taken from Bio/SimpleAlign.pm (BioPerl 1.0)
-    ## it is taken from Clustalw documentation
-    ## These are all the positively scoring groups that occur in the 
-    ## Gonnet Pam250 matrix. The strong and weak groups are 
-    ## defined as strong score >0.5 and weak score =<0.5 respectively.
-    Strong_Conservation_Groups = %w(STA NEQK NHQK NDEQ QHRK MILV MILF
-      HY FYW).collect { |x| x.split('').sort }
-    Weak_Conservation_Groups = %w(CSA ATV SAG STNK STPA SGND SNDEQK
-      NDEQHK NEQHRK FVLIM HFY).collect { |x| x.split('').sort }
-
-    def subsetof?(aryary, ary2)
-      flag = nil
-      aryary.each do |x|
-        ary2.each do |c|
-          flag = x.include?(c)
-          break unless flag
-        end
-        if flag then
-          flag = x
-          break
-        end
-      end
-      flag
-    end
-    private :subsetof?
-
-    def match_line(hash = {})
-      #(BioPerl) AlignI::match_line like method
-      #
-      # hash[:match_line_char]   ==> 100% equal
-      # hash[:strong_match_char] ==> strong match
-      # hash[:weak_match_char]   ==> weak match
-      # hash[:mismatch_char]     ==> mismatch
-      # hash[:type] ==> :na or :aa (or determined by sequence class)
-      # strong_ and weak_match_char are used only in amino mode (:aa)
-      #
-      mlc = (hash[:match_line_char]   or '*')
-      smc = (hash[:strong_match_char] or ':')
-      wmc = (hash[:weak_match_char]   or '.')
-      mmc = (hash[:mismatch_char]     or ' ')
-      if hash[:type] == :aa
-        amino = true
-      elsif hash[:type] == :na
-        amino = false
-      elsif self.order(0).class.is_a?(Bio::Sequence::AA) then
-        amino = true
-      elsif self.find { |x| /[EFILPQ]/i =~ x } then
-        amino = true
-      else
-        amino = nil
-      end
-      mstr = ''
-      if amino then
-        self.each_site do |a|
-          a2 = a.sort.uniq.collect { |c| c.upcase }
-          a3 = a2.join('')
-          mstr <<
-            (if gap_regexp =~ a3 then
-               mmc
-             elsif a2.size == 1 then
-               mlc
-             elsif subsetof?(Strong_Conservation_Groups, a2) then
-               smc
-             elsif subsetof?(Weak_Conservation_Groups, a2) then
-               wmc
-             else
-               mmc
-             end)
-        end
-      else
-        self.each_site do |a|
-          a2 = a.sort.uniq.collect { |c| c.upcase }
-          mstr <<
-            (if gap_regexp =~ a2.join('') then
-               mmc
-             elsif a2.size == 1 then
-               mlc
-             else
-               mmc
-             end)
-        end
-      end
-      mstr
-    end
-
-    def normalize!
-      #(original)
-      len = self.seq_length
-      self.each do |s|
-        s << (gap_char * (len - s.length)) if s.length < len
-      end
-      self
-    end
-
-    def normalize
-      #(original)
-      na = self.dup
-      na.normalize!
-      na
-    end
-
-    def rstrip!
-      #(String-like)
-      len = self.seq_length
-      self.each_window(1,-1) do |a|
-        b = a.sort.uniq.compact
-        if b.find_all { |x| gap_regexp =~ x } == b then
-          len -= 1
-        else
-          break
-        end
-      end
-      self.each do |s|
-        s[len..-1] = '' if s.length > len
-      end
-      self
-    end
-
-    def lstrip!
-      #(String-like)
-      len = 0
-      self.each_window(1,1) do |a|
-        b = a.sort.uniq.compact
-        if b.find_all { |x| gap_regexp =~ x } == b then
-          len += 1
-        else
-          break
-        end
-      end
-      if len > 0 then
-        self.each do |s|
-          s[0, len] = ''
-        end
-      end
-      self
-    end
-
-    def strip!
-      #(String-like)
-      self.lstrip!
-      self.rstrip!
-      self
-    end
-
-    def rstrip
-      #(String-like)
-      na = self.dup
-      na.isolate
-      na.rstrip!
-      na
-    end
-
-    def lstrip
-      #(String-like)
-      na = self.dup
-      na.isolate
-      na.lstrip!
-      na
-    end
-
-    def strip
-      #(String-like)
-      na = self.dup
-      na.isolate
-      na.strip!
-      na
-    end
-
-    def remove_gap!
-      #(original)
-      self.each do |s|
-        s.gsub!(gap_regexp, '')
-      end
-      self
-    end
-
-    def remove_gap
-      #(original)
-      na = self.dup
-      na.isolate
-      na.remove_gap!
-      na
-    end
-
-    def concat(aln)
-      #(String-like)
-      if aln.respond_to?(:to_str) then #aln.is_a?(String)
-        self.each do |s|
-          s << aln
-        end
-      elsif aln.is_a?(self.class) then
-        aln.each_pair do |k, s|
-          self[k] << s
-        end
-      else
-        i = 0
-        aln.each do |s|
-          self.order(i) << s
-          i += 1
-        end
-      end
-      self
-    end
-
-    def replace_slice(*arg)
-      #(original)
-      aln = arg.pop
-      if aln.respond_to?(:to_str) then #aln.is_a?(String)
-        self.each do |s|
-          s[*arg] = aln
-        end
-      elsif aln.is_a?(self.class) then
-        aln.each_pair do |k, s|
-          self[k][*arg] = s
-        end
-      else
-        i = 0
-        aln.each do |s|
-          self.order(i)[*arg] = s
-          i += 1
-        end
-      end
-      self
-    end
-
-    # perform multiple alignment by using external program
-    def do_align(factory)
-      #(original)
-      a0 = self.class.new
-      (0...self.size).each { |i| a0.store(i, self.order(i)) }
-      r = factory.query(a0)
-      a1 = r.alignment
-      a0.keys.each do |k|
-        unless a1[k.to_s] then
-          raise 'alignment result is inconsistent with input data'
-        end
-      end
-      a2 = self.new
-      a0.keys.each do |k|
-        a2.store(self.keys[k], a1[k.to_s])
-      end
-      a2
-    end
-
-    # format conversion
-    def self.have_same_name?(array, len = 30)
-      na30 = array.collect do |k|
-        k.to_s.split(/[\x00\s]/)[0].to_s[0, len].gsub(/\:\;\,\(\)/, '_').to_s
-      end
-      #p na30
-      na30idx = (0...(na30.size)).to_a
-      na30idx.sort! do |x,y|
-        na30[x] <=> na30[y]
-      end
-      #p na30idx
-      y = nil
-      dupidx = []
-      na30idx.each do |x|
-        if y and na30[y] == na30[x] then
-          dupidx << y
-          dupidx << x
-        end
-        y = x
-      end
-      if dupidx.size > 0 then
-        dupidx.sort!
-        dupidx.uniq!
-        dupidx
-      else
-        false
-      end
-    end
-
-    def have_same_name?(*arg)
-      self.class.have_same_name?(*arg)
-    end
-    private :have_same_name?
-
-    def self.avoid_same_name(array, len = 30)
-      na = array.collect { |k| k.to_s.gsub(/[\r\n\x00]/, ' ') }
-      if dupidx = have_same_name?(na, len)
-        procs = [
-          Proc.new { |s, i|
-            s[0, len].to_s.gsub(/\s/, '_') + s[len..-1].to_s
-          },
-          # Proc.new { |s, i|
-          #   "#{i}_#{s}"
-          # },
-        ]
-        procs.each do |pr|
-          dupidx.each do |i|
-            s = array[i]
-            na[i] = pr.call(s.to_s, i)
-          end
-          dupidx = have_same_name?(na, len)
-          break unless dupidx
-        end
-        if dupidx then
-          na.each_with_index do |s, i|
-            na[i] = "#{i}_#{s}"
-          end
-        end
-      end
-      na
-    end
-
-    def avoid_same_name(*arg)
-      self.class.avoid_same_name(*arg)
-    end
-    private :avoid_same_name
-
-    def to_fasta_array(*arg)
-      #(original)
-      width = nil
-      if arg[0].is_a?(Integer) then
-        width = arg.shift
-      end
-      options = (arg.shift or {})
-      width = options[:width] unless width
-      if options[:avoid_same_name] then
-        na = avoid_same_name(self.keys, 30)
-      else
-        na = self.keys.collect { |k| k.to_s.gsub(/[\r\n\x00]/, ' ') }
-      end
-      a = self.collect do |s|
-        ">#{na.shift}\n" +
-          if width then
-            s.to_s.gsub(Regexp.new(".{1,#{width}}"), "\\0\n")
+      # Returns the key for a given sequence. If not found, returns nil.
+      def index(seq)
+        #(Hash-like)
+        k = nil
+        self.each_pair do |k, s|
+          if s.class == seq.class then
+            r = (s == seq)
           else
-            s.to_s + "\n"
+            r = (s.to_s == seq.to_s)
           end
-      end
-      a
-    end
-
-    def to_fastaformat_array(*arg)
-      #(original)
-      require 'bio/db/fasta'
-      a = self.to_fasta_array(*arg)
-      a.collect! do |x|
-        Bio::FastaFormat.new(x)
-      end
-      a
-    end
-
-    def to_fasta(*arg)
-      #(original)
-      self.to_fasta_array(*arg).join('')
-    end
-
-    def to_clustal(options = {})
-      #(original)
-      aln = [ "CLUSTAL   (0.00) multiple sequence alignment\n\n" ]
-      len = self.seq_length
-
-      if !options.has_key?(:avoid_same_name) or options[:avoid_same_name]
-        sn = avoid_same_name(self.keys)
-      else
-        sn = self.keys.collect { |x| x.to_s.gsub(/[\r\n\x00]/, ' ') }
-      end
-      if options[:replace_space]
-        sn.collect! { |x| x.gsub(/\s/, '_') }
-      end
-      if !options.has_key?(:escape) or options[:escape]
-        sn.collect! { |x| x.gsub(/[\:\;\,\(\)]/, '_') }
-      end
-      if !options.has_key?(:split) or options[:split]
-        sn.collect! { |x| x.split(/\s/)[0].to_s }
+          break if r
+        end
+        k
       end
 
-      if sn.find { |x| x.length > 10 } then
-        seqwidth = 50
-        namewidth = 30
-        sep = ' ' * 6
-      else
-        seqwidth = 60
-        namewidth = 10
-        sep = ' ' * 6
-      end
-      seqregexp = Regexp.new("(.{1,#{seqwidth}})")
-      gchar = (options[:gap_char] or '-')
-
-      aseqs = self.collect { |s| s.to_s.gsub(self.gap_regexp, gchar) }
-      case options[:case].to_s
-      when /lower/i
-        aseqs.each { |s| s.downcase! }
-      when /upper/i
-        aseqs.each { |s| s.upcase! }
-      end
-
-      case options[:type].to_s
-      when /protein/i, /aa/i
-        mopt = { :type => :aa }
-      when /na/i
-        mopt = { :type => :na }
-      else
-        mopt = {}
-      end
-      mline = (options[:match_line] or self.match_line(mopt))
-
-      aseqs << mline
-      aseqs.collect! do |s|
-        snx = sn.shift
-        head = sprintf("%*s", -namewidth, snx.to_s)[0, namewidth] + sep
-        s << (gchar * (len - s.length))
-        s.gsub!(seqregexp, "\\1\n")
-        a = s.split(/^/)
-        if options[:seqnos] and snx then
-          i = 0
-          a.each do |x|
-            x.chomp!
-            l = x.tr(gchar, '').length
-            i += l
-            x.concat(l > 0 ? " #{i}\n" : "\n")
+      # Sequences in the alignment are duplicated.
+      # If keys are given to the argument, sequences of given keys are
+      # duplicated.
+      def isolate(*arg)
+        #(original)
+        if arg.size == 0 then
+          self.collect! do |s|
+            seqclass.new(s)
+          end
+        else
+          arg.each do |k|
+            if self.has_key?(k) then
+              s = self.delete(key)
+              self.store(k, seqclass.new(s))
+            end
           end
         end
-        a.collect { |x| head + x }
+        self
       end
-      lines = (len + seqwidth - 1) / seqwidth
-      lines.times do
-        aln << "\n"
-        aseqs.each { |a| aln << a.shift }
-      end
-      aln.join('')
-    end
 
-    #
-    ### gap-related position translation
-    #
+      # Iterates over each sequence and each results running block
+      # are collected and returns a new alignment.
+      #
+      # The method name 'collect_align' will be obsoleted.
+      # Please use 'alignment_collect' instead.
+      def collect_align
+        #(original)
+        na = self.new
+        self.each_pair do |k, s|
+          na.store(k, yield(s))
+        end
+        na
+      end
+      alias alignment_collect collect_align
+
+      # Removes empty sequences or nil in the alignment.
+      def compact!
+        #(Array-like)
+        d = []
+        self.each_pair do |k, s|
+          if !s or s.empty?
+            d << k
+          end
+        end
+        d.each do |k|
+          self.delete(k)
+        end
+        d.empty? ? nil : d
+      end
+
+      # Removes empty sequences or nil and returns new alignment.
+      def compact
+        #(Array-like)
+        na = self.dup
+        na.compact!
+        na
+      end
+
+      # Adds a sequence to the alignment.
+      # Returns key if succeeded.
+      # Returns nil (and not added to the alignment) if key is already used.
+      #
+      # It resembles BioPerl's AlignI::add_seq method.
+      def add_seq(seq, key = nil)
+        #(BioPerl) AlignI::add_seq like method
+        unless seq.is_a?(Bio::Sequence) then
+          s =   extract_seq(seq)
+          key = extract_key(seq) unless key
+          seq = s
+        end
+        self.store(key, seq)
+      end
+
+      # Removes given sequence from the alignment.
+      # Returns removed sequence. If nothing removed, returns nil.
+      #
+      # It resembles BioPerl's AlignI::remove_seq.
+      def remove_seq(seq)
+        #(BioPerl) AlignI::remove_seq like method
+        if k = self.index(seq) then
+          self.delete(k)
+        else
+          nil
+        end
+      end
+
+      # Removes sequences from the alignment by given keys.
+      # Returns an alignment object consists of removed sequences.
+      #
+      # It resembles BioPerl's AlignI::purge method.
+      def purge(*arg)
+        #(BioPerl) AlignI::purge like method
+        purged = self.new
+        arg.each do |k|
+          if self[k] then
+            purged.store(k, self.delete(k))
+          end
+        end
+        purged
+      end
+
+      # If block is given, it acts like Array#select (Enumerable#select). 
+      # Returns a new alignment containing all sequences of the alignment
+      # for which return value of given block is not false.
+      #
+      # If no block is given, it acts like the BioPerl's AlignI::select.
+      # Returns a new alignment containing sequences of given keys.
+      #
+      def select(*arg)
+        #(original)
+        na = self.new
+        if block_given? then
+          # 'arg' is ignored
+          # nearly same action as Array#select (Enumerable#select)
+          self.each_pair.each do |k, s|
+            na.store(k, s) if yield(s)
+          end
+        else
+          # BioPerl's AlignI::select like function
+          arg.each do |k|
+            if s = self[k] then
+              na.store(k, s)
+            end
+          end
+        end
+        na
+      end
+
+      alias slice  alignment_slice
+      alias subseq alignment_subseq
+
+      # Not-destructive version of alignment_normalize!.
+      # Returns a new alignment.
+      def normalize
+        #(original)
+        na = self.dup
+        na.alignment_normalize!
+        na
+      end
+
+      # Not-destructive version of alignment_rstrip!.
+      # Returns a new alignment.
+      def rstrip
+        #(String-like)
+        na = self.dup
+        na.isolate
+        na.alignment_rstrip!
+        na
+      end
+
+      # Not-destructive version of alignment_lstrip!.
+      # Returns a new alignment.
+      def lstrip
+        #(String-like)
+        na = self.dup
+        na.isolate
+        na.alignment_lstrip!
+        na
+      end
+
+      # Not-destructive version of alignment_strip!.
+      # Returns a new alignment.
+      def strip
+        #(String-like)
+        na = self.dup
+        na.isolate
+        na.alignment_strip!
+        na
+      end
+
+      # Not-destructive version of remove_gaps!.
+      # Returns a new alignment.
+      #
+      # The method name 'remove_gap' will be obsoleted.
+      # Please use 'remove_all_gaps' instead.
+      def remove_all_gaps
+        #(original)
+        na = self.dup
+        na.isolate
+        na.remove_all_gaps!
+        na
+      end
+
+      # Concatenates a string or an alignment.
+      # Returns self.
+      #
+      # Note that the method will be obsoleted.
+      # Please use <tt>each_seq { |s| s << str }</tt> for concatenating
+      # a string and
+      # <tt>alignment_concat(aln)</tt> for concatenating an alignment.
+      def concat(aln)
+        #(String-like)
+        if aln.respond_to?(:to_str) then #aln.is_a?(String)
+          self.each do |s|
+            s << aln
+          end
+          self
+        else
+          alignment_concat(aln)
+        end
+      end
+
+      # Concatenates given alignment.
+      def alignment_concat(aln)
+        if aln.is_a?(self.class) then
+          aln.each_pair do |k, s|
+            self[k] << s
+          end
+        elsif aln.respond_to?(:each_seq) then
+          i = 0
+          aln.each_seq do |s|
+            self.order(i) << s
+            i += 1
+          end
+        else
+          i = 0
+          aln.each do |s|
+            self.order(i) << s
+            i += 1
+          end
+        end
+        self
+      end
+
+      # Replace the specified region of the alignment to aln.
+      # aln:: String or Bio::Alignment object
+      # arg:: same format as String#slice
+      def replace_slice(aln, *arg)
+        #(original)
+        if aln.respond_to?(:to_str) then #aln.is_a?(String)
+          self.each do |s|
+            s[*arg] = aln
+          end
+        elsif aln.is_a?(self.class) then
+          aln.each_pair do |k, s|
+            self[k][*arg] = s
+          end
+        else
+          i = 0
+          aln.each do |s|
+            self.order(i)[*arg] = s
+            i += 1
+          end
+        end
+        self
+      end
+
+      # Performs multiple alignment by using external program.
+      def do_align(factory)
+        a0 = self.class.new
+        (0...self.size).each { |i| a0.store(i, self.order(i)) }
+        r = factory.query(a0)
+        a1 = r.alignment
+        a0.keys.each do |k|
+          unless a1[k.to_s] then
+            raise 'alignment result is inconsistent with input data'
+          end
+        end
+        a2 = self.new
+        a0.keys.each do |k|
+          a2.store(self.keys[k], a1[k.to_s])
+        end
+        a2
+      end
+
+      # Convert to fasta format and returns an array of strings.
+      #
+      # It will be obsoleted.
+      def to_fasta_array(*arg)
+        #(original)
+        width = nil
+        if arg[0].is_a?(Integer) then
+          width = arg.shift
+        end
+        options = (arg.shift or {})
+        width = options[:width] unless width
+        if options[:avoid_same_name] then
+          na = avoid_same_name(self.keys, 30)
+        else
+          na = self.keys.collect { |k| k.to_s.gsub(/[\r\n\x00]/, ' ') }
+        end
+        a = self.collect do |s|
+          ">#{na.shift}\n" +
+            if width then
+              s.to_s.gsub(Regexp.new(".{1,#{width}}"), "\\0\n")
+            else
+              s.to_s + "\n"
+            end
+        end
+        a
+      end
+
+      # Convets to fasta format and returns an array of FastaFormat objects.
+      #
+      # It will be obsoleted.
+      def to_fastaformat_array(*arg)
+        #(original)
+        require 'bio/db/fasta'
+        a = self.to_fasta_array(*arg)
+        a.collect! do |x|
+          Bio::FastaFormat.new(x)
+        end
+        a
+      end
+
+      # Converts to fasta format and returns a string.
+      #
+      # The specification of the argument will be changed.
+      def to_fasta(*arg)
+        #(original)
+        self.to_fasta_array(*arg).join('')
+      end
+
+      include ClustalWFormatter
+      def to_clustal(options = {})
+        clustalw_formatter(self, self.keys, options)
+      end
+    end #module Original
+
+    # Bio::Alignment::GAP is a set of class methods for
+    # gap-related position translation.
     module GAP
+      # position with gaps are translated into the position without gaps.
+      #<em>seq</em>:: sequence
+      #<em>pos</em>:: position with gaps
+      #<em>gap_regexp</em>:: regular expression to specify gaps
       def ungapped_pos(seq, pos, gap_regexp)
         p = seq[0..pos].gsub(gap_regexp, '').length
         p -= 1 if p > 0
@@ -1118,6 +1695,10 @@ module Bio
       end
       module_function :ungapped_pos
 
+      # position without gaps are translated into the position with gaps.
+      #<em>seq</em>:: sequence
+      #<em>pos</em>:: position with gaps
+      #<em>gap_regexp</em>:: regular expression to specify gaps
       def gapped_pos(seq, pos, gap_regexp)
         olen = seq.gsub(gap_regexp, '').length
         pos = olen if pos >= olen
@@ -1136,136 +1717,24 @@ module Bio
       module_function :gapped_pos
     end # module GAP
 
+    # creates a new Bio::Alignment::OriginalAlignment object.
+    # Please refer document of OriginalAlignment.new.
+    def self.new(*arg)
+      OriginalAlignment.new(*arg)
+    end
+
+    # creates a new Bio::Alignment::OriginalAlignment object.
+    # Please refer document of OriginalAlignment.new2.
+    def self.new2(*arg)
+      OriginalAlignment.new2(*arg)
+    end
+
+    # creates a new Bio::Alignment::OriginalAlignment object.
+    # Please refer document of OriginalAlignment.readfiles.
+    def self.readfiles(*files)
+      OriginalAlignment.readfiles(*files)
+    end
   end #class Alignment
 
 end #module Bio
 
-=begin
-
-= Bio::Alignment
-
-  Bio::Alignment is a multiple alignment container class.
-
--- Bio::Alignment.new(seqs)
--- Bio::Alignment.new2(seq, ...)
--- Bio::Alignment.readfiles(filename, ...)
-
-- Hash-like action
-
--- Bio::Alignment#==(x)
--- Bio::Alignment#[](*arg)
--- Bio::Alignment#to_hash
--- Bio::Alignment#rehash
--- Bio::Alignment#store(key, seq)
--- Bio::Alignment#keys
--- Bio::Alignment#values
--- Bio::Alignment#shift
--- Bio::Alignment#delete(key)
--- Bio::Alignment#size
--- Bio::Alignment#has_key?(key)
--- Bio::Alignment#each_pair
--- Bio::Alignment#merge
--- Bio::Alignment#merge!
-
--- Bio::Alignment#unshift(key, seq)
-
-- Array-like action
-
--- Bio::Alignment#<<(seq)
--- Bio::Alignment#each
--- Bio::Alignment#collect!
--- Bio::Alignment#index(seq)
--- Bio::Alignment#select { |x| ...  }
--- Bio::Alignment#compact!
--- Bio::Alignment#compact
-
--- Bio::Alignment#collect
--- Bio::Alignment#to_a
-
-- BioPerl-oriented methods
-
--- Bio::Alignment#gap_char
--- Bio::Alignment#missing_char
--- Bio::Alignment#add_seq(seq[, key])
--- Bio::Alignment#remove_seq(seq)
--- Bio::Alignment#purge(*arg)
--- Bio::Alignment#select(*arg)
--- Bio::Alignment#slice(*arg)
--- Bio::Alignment#consensus_string(threshold = 1, options...)
--- Bio::Alignment#consensus(threshold = 1, options...)
--- Bio::Alignment#consensus_iupac(options...)
--- Bio::Alignment#match_line(options...)
-
--- Bio::Alignment#convert_match(match_char = '.')
--- Bio::Alignment#convert_unmatch(match_char = '.')
-
-- String-oriented methods
-
--- Bio::Alignment#rstrip!
--- Bio::Alignment#rstrip
--- Bio::Alignment#lstrip!
--- Bio::Alignment#lstrip
--- Bio::Alignment#strip!
--- Bio::Alignment#strip
--- Bio::Alignment#concat(aln)
--- Bio::Alignment#slice(*arg)
-
--- Bio::Alignment#seq_length
--- Bio::Alignment#subseq(*arg)
--- Bio::Alignment#remove_gap!
--- Bio::Alignment#remove_gap
--- Bio::Alignment#normalize!
--- Bio::Alignment#normalize
--- Bio::Alignment#replace_slice(x[, y], aln)
-
-- Original methods
-
--- Bio::Alignment#add_sequences(seqs)
--- Bio::Alignment#seqclass
--- Bio::Alignment#gap_regexp
--- Bio::Alignment#order(n)
--- Bio::Alignment#isolate(*arg)
--- Bio::Alignment#collect_align
--- Bio::Alignment#window(*arg)
--- Bio::Alignment#each_site
--- Bio::Alignment#each_window(window_size, step = 1)
-
-- Perform multiple alignment
-
--- Bio::Alignment#do_align(factory)
-
-- Data format conversion
-
--- Bio::Alignment#to_fasta_array([ width, ] options...)
--- Bio::Alignment#to_fastaformat_array([ width, ] options...)
--- Bio::Alignment#to_fasta([ width, ] options...)
--- Bio::Alignment#to_clustal(options...)
-
-
-
--- Bio::Alignment#add_seq(seq[, key])
-
- Adds another sequence 'seq' to the alignment.
- Note: This method does not align sequences.
-
- add_seq(seq) returns key (or internal id, if key isn't given).
-
--- Bio::Alignment#remove_seq(x)
-
- Removes a single sequence from an alignment.
- Returns the removed sequence (or nil if nothing removed).
-
--- Bio::Alignment#purge(x, ...)
-
- Removes sequences specified in the arguments.
- Returns a new alginment of the removed sequences.
-
-= References
-
-* Bio::Align::AlignI class of the BioPerl.
-((<URL:http://docs.bioperl.org/releases/bioperl-1.2/Bio/Align/AlignI.html>))
-
-* Bio::SimpleAlign class of the BioPerl.
-((<URL:http://docs.bioperl.org/releases/bioperl-1.2/Bio/SimpleAlign.html>))
-
-=end
