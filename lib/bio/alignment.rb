@@ -6,7 +6,7 @@
 #
 # License:: LGPL
 #
-#  $Id: alignment.rb,v 1.10 2005/11/24 16:21:00 ngoto Exp $
+#  $Id: alignment.rb,v 1.11 2005/11/25 15:36:43 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -24,30 +24,73 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-# = About Bio::Alignment class
+# = About Bio::Alignment
 #
-# Bio::Alignment is a multiple alignment container class.
+# Please refer document of Bio::Alignment module.
 #
 # = References
 #
 # * Bio::Align::AlignI class of the BioPerl.
 # http://doc.bioperl.org/releases/bioperl-1.4/Bio/Align/AlignI.html
-#
+# 
 # * Bio::SimpleAlign class of the BioPerl.
 # http://doc.bioperl.org/releases/bioperl-1.4/Bio/SimpleAlign.html
-#
 #
 
 require 'bio/sequence'
 
 module Bio
-  class Alignment
 
-    # Bio::Alignment::CharacterProperty is a module to store
+=begin rdoc
+
+= About Bio::Alignment
+
+Bio::Alignment is a namespace of classes/modules for multiple sequence
+alignment.
+
+= Multiple alignment container classes
+
+== Bio::Alignment::OriginalAlignment
+
+== Bio::Alignment::SequenceArray
+
+== Bio::Alignment::SequenceHash
+
+= Bio::Alignment::Site
+
+= Modules
+
+== Bio::Alignment::EnumerableExtension
+
+Mix-in for classes included Enumerable.
+
+== Bio::Alignment::ArrayExtension
+
+Mix-in for Array or Array-like classes.
+
+== Bio::Alignment::HashExtension
+
+Mix-in for Hash or Hash-like classes.
+
+== Bio::Alignment::SiteMethods
+
+== Bio::Alignment::PropertyMethods
+
+= Bio::Alignment::GAP
+
+= Compatibility from older BioRuby
+
+=end
+  module Alignment
+
+    # Bio::Alignment::PropertyMethods is a set of methods to treat
     # the gap character and so on.
-    module CharacterProperty
+    module PropertyMethods
+      # regular expression for detecting gaps.
       GAP_REGEXP   = /[^a-zA-Z]/
+      # gap character
       GAP_CHAR     = '-'.freeze
+      # missing character
       MISSING_CHAR = '?'.freeze
 
       # If given character is a gap, returns true.
@@ -78,8 +121,21 @@ module Bio
       # Character if the site is missing or unknown.
       attr_writer :missing_char
 
-      # Returns character property defined in the object as an hash.
-      def get_character_property
+      # Returns class of the sequence.
+      # If instance variable @seqclass (which can be
+      # set by 'seqclass=' method) is set, simply returns the value.
+      # Otherwise, returns the first sequence's class.
+      # If no sequences are found, returns nil.
+      def seqclass
+        @seqclass or String
+      end
+
+      # The class of the sequence.
+      # The value must be String or its derivatives.
+      attr_writer :seqclass
+
+      # Returns properties defined in the object as an hash.
+      def get_all_property
         ret = {}
         if defined? @gap_regexp
           ret[:gap_regexp] = @gap_regexp
@@ -90,24 +146,28 @@ module Bio
         if defined? @missing_char
           ret[:missing_char] = @missing_char
         end
+        if defined? @seqclass
+          ret[:seqclass] = @seqclass
+        end
         ret
       end
 
-      # Sets character property from given hash.
+      # Sets properties from given hash.
       # <em>hash</em> would be a return value of <tt>get_character</tt> method.
-      def set_character_property(hash)
+      def set_all_property(hash)
         @gap_regexp   = hash[:gap_regexp]   if hash.has_key?(:gap_regexp)
         @gap_char     = hash[:gap_char]     if hash.has_key?(:gap_char)
         @missing_char = hash[:missing_char] if hash.has_key?(:missing_char)
+        @seqclass     = hash[:seqclass]     if hash.has_key?(:seqclass)
         self
       end
-    end #module ChacaterProperty
+    end #module PropertyMethods
 
     # Bio::Alignment::SiteMethods is a set of methods for
     # Bio::Alignment::Site.
     # It can also be used for extending an array of single-letter strings.
     module SiteMethods
-      include CharacterProperty
+      include PropertyMethods
 
       # If there are gaps, returns true. Otherwise, returns false.
       def has_gap?
@@ -244,24 +304,39 @@ module Bio
       include SiteMethods
     end #module Site
 
-    # The module Bio::Alignment::GeneralExtension is a set of useful
+    # The module Bio::Alignment::EnumerableExtension is a set of useful
     # methods for multiple sequence alignment.
-    # It can be included to any classes or can be extended to any objects.
-    #
+    # It can be included by any classes or can be extended to any objects.
     # The classes or objects must have methods defined in Enumerable,
-    # and must have 'each_seq' method
+    # and must have the <tt>each</tt> method 
     # which iterates over each sequence (or string) and yields
-    # each sequence (or string) object.
-    # Note that the 'each_seq' method would be called multiple times,
-    # 'break' would be used in the given block and
+    # a sequence (or string) object.
+    # 
+    # Optionally, if <tt>each_seq</tt> method is defined,
+    # which iterates over each sequence (or string) and yields
+    # each sequence (or string) object, it is used instead of <tt>each</tt>.
+    #
+    # Note that the <tt>each</tt> or <tt>each_seq</tt> method would be
+    # called multiple times.
+    # This means that the module is not suitable for IO objects.
+    # In addition, <tt>break</tt> would be used in the given block and
     # destructive methods would be used to the sequences.
     #
     # For Array or Hash objects, you'd better using
     # ArrayExtension or HashExtension modules, respectively.
     # They have built-in 'each_seq' method.
     #
-    module GeneralExtension
-      include CharacterProperty
+    module EnumerableExtension
+      include PropertyMethods
+
+      # Iterates over each sequences.
+      # Yields a sequence.
+      # It acts same as Enumerable#each.
+      #
+      # You would redefine the method suitable for the class/object.
+      def each_seq(&block) #:yields: seq
+        each(&block)
+      end
 
       # Returns class of the sequence.
       # If instance variable @seqclass (which can be
@@ -283,10 +358,6 @@ module Bio
         end
       end
 
-      # The class of the sequence.
-      # The class is expected to be String or its derivatives.
-      attr_writer :seqclass
-
       # Returns the alignment length.
       # Returns the longest length of the sequence in the alignment.
       def alignment_length
@@ -304,9 +375,8 @@ module Bio
       # 
       # If the position is out of range, it returns the site
       # of which all are gaps.
-      def alignment_site(position)
+      def _alignment_site(position)
         site = Site.new
-        site.set_character_property(get_character_property)
         each_seq do |s|
           c = s[position, 1]
           if c.to_s.empty?
@@ -316,13 +386,27 @@ module Bio
         end
         site
       end
+      private :_alignment_site
+
+      # Gets a site of the position.
+      # Returns a Bio::Alignment::Site object.
+      # 
+      # If the position is out of range, it returns the site
+      # of which all are gaps.
+      def alignment_site(position)
+        site = _alignment_site(position)
+        site.set_all_property(get_all_property)
+        site
+      end
 
       # Iterates over each site of the alignment.
       # It yields a Bio::Alignment::Site object (which inherits Array).
       # It returns self.
       def each_site
+        cp = get_all_property
         (0...alignment_length).each do |i|
-          site = alignment_site(i)
+          site = _alignment_site(i)
+          site.set_all_property(cp)
           yield(site)
         end
         self
@@ -335,8 +419,10 @@ module Bio
       # It is same as
       # <tt>start.step(stop, step) { |i| yield alignment_site(i) }</tt>.
       def each_site_step(start, stop, step = 1)
+        cp = get_all_property
         start.step(stop, step) do |i|
-          site = alignment_site(i)
+          site = _alignment_site(i)
+          site.set_all_property(cp)
           yield(site)
         end
         self
@@ -350,8 +436,8 @@ module Bio
       # return value's class.
       #
       def alignment_collect
-        a = Bio::Alignment::SequenceArray.new
-        a.set_character_property(get_character_property)
+        a = SequenceArray.new
+        a.set_all_property(get_all_property)
         each_seq do |str|
           a << yield(str)
         end
@@ -460,7 +546,6 @@ module Bio
           a.consensus_string(threshold)
         end
       end
-      alias consensus consensus_string
 
       # Returns the IUPAC consensus string of the alignment
       # of nucleic-acid sequences.
@@ -736,8 +821,10 @@ module Bio
       end
       alias subseq alignment_subseq
 
-      # Concatinates the given alignment.
-      # The given alignment must have 'each_seq' method.
+      # Concatenates the given alignment.
+      # <em>align</em> must have <tt>each_seq</tt>
+      # or <tt>each</tt> method.
+      # 
       # Returns self.
       #
       # Note that it is a destructive method.
@@ -747,16 +834,27 @@ module Bio
       # key information is completely ignored.
       #
       def alignment_concat(align)
+        flag = nil
         a = []
         each_seq { |s| a << s }
         i = 0
-        align.each_seq do |seq|
-          a[i].concat(seq) if a[i]
+        begin
+          align.each_seq do |seq|
+            flag = true
+            a[i].concat(seq) if a[i] and seq
+            i += 1
+          end
+          return self
+        rescue NoMethodError, ArgumentError => evar
+          raise evar if flag
+        end
+        align.each do |seq|
+          a[i].concat(seq) if a[i] and seq
           i += 1
         end
         self
       end
-    end #module GeneralExtension
+    end #module EnumerableExtension
 
     # ClustalWFormatter is a module to create ClustalW-formatted text
     # from an alignment object.
@@ -837,12 +935,7 @@ module Bio
         #(original)
         aln = [ "CLUSTAL   (0.00) multiple sequence alignment\n\n" ]
         len = seqs.seq_length
-        
-        if !options.has_key?(:avoid_same_name) or options[:avoid_same_name]
-          sn = avoid_same_name(names)
-        else
-          sn = names.collect { |x| x.to_s.gsub(/[\r\n\x00]/, ' ') }
-        end
+        sn = names.collect { |x| x.to_s.gsub(/[\r\n\x00]/, ' ') }
         if options[:replace_space]
           sn.collect! { |x| x.gsub(/\s/, '_') }
         end
@@ -851,6 +944,9 @@ module Bio
         end
         if !options.has_key?(:split) or options[:split]
           sn.collect! { |x| x.split(/\s/)[0].to_s }
+        end
+        if !options.has_key?(:avoid_same_name) or options[:avoid_same_name]
+          sn = avoid_same_name(sn)
         end
         
         if sn.find { |x| x.length > 10 } then
@@ -920,12 +1016,16 @@ module Bio
     # included in your own classes which inherit Array.
     # (It can also be included in Array, though not recommended.)
     #
-    # It possesses all methods defined in GeneralExtension.
-    # For usage of methods, please refer to GeneralExtension.
+    # It possesses all methods defined in EnumerableExtension.
+    # For usage of methods, please refer to EnumerableExtension.
     module ArrayExtension
-      include GeneralExtension
+      include EnumerableExtension
 
-      def each_seq(&block)
+      # Iterates over each sequences.
+      # Yields a sequence.
+      #
+      # It works the same as Array#each.
+      def each_seq(&block) #:yields: seq
         each(&block)
       end
 
@@ -942,19 +1042,85 @@ module Bio
     # included in your own classes which inherit Hash.
     # (It can also be included in Hash, though not recommended.)
     #
-    # It possesses all methods defined in GeneralExtension.
-    # For usage of methods, please refer to GeneralExtension.
+    # It possesses all methods defined in EnumerableExtension.
+    # For usage of methods, please refer to EnumerableExtension.
+    #
+    # Because SequenceHash#alignment_collect is redefined,
+    # some methods' return value's class are changed to
+    # SequenceHash instead of SequenceArray.
     #
     # Because the order of the objects in a hash is inconstant,
     # some methods strictly affected with the order of objects
     # might not work correctly,
-    # e.g. GeneralExtension#convert_match, #convert_unmatch
-    # and #alignment_concat.
+    # e.g. EnumerableExtension#convert_match and #convert_unmatch.
     module HashExtension
-      include GeneralExtension
+      include EnumerableExtension
 
-      def each_seq(&block)
+      # Iterates over each sequences.
+      # Yields a sequence.
+      #
+      # It works the same as Hash#each_value.
+      def each_seq(&block) #:yields: seq
         each_value(&block)
+      end
+
+      # Iterates over each sequence and each results running block
+      # are collected and returns a new alignment as a
+      # Bio::Alignment::SequenceHash object.
+      #
+      # Note that it would be redefined if you want to change
+      # return value's class.
+      #
+      def alignment_collect
+        a = SequenceHash.new
+        a.set_all_property(get_all_property)
+        each_pair do |key, str|
+          a.store(key, yield(str))
+        end
+        a
+      end
+
+      # Concatenates the given alignment.
+      # If <em>align</em> is a Hash (or SequenceHash),
+      # sequences of same keys are concatenated.
+      # Otherwise, <em>align</em> must have <tt>each_seq</tt>
+      # or <tt>each</tt> method and
+      # works same as EnumerableExtension#alignment_concat.
+      # 
+      # Returns self.
+      #
+      # Note that it is a destructive method.
+      #
+      def alignment_concat(align)
+        flag = nil
+        begin
+          align.each_pair do |key, seq|
+            flag = true
+            if origseq = self[key]
+              origseq.concat(seq)
+            end
+          end
+          return self
+        rescue NoMethodError, ArgumentError =>evar
+          raise evar if flag
+        end
+        a = values
+        i = 0
+        begin
+          align.each_seq do |seq|
+            flag = true
+            a[i].concat(seq) if a[i] and seq
+            i += 1
+          end
+          return self
+        rescue NoMethodError, ArgumentError => evar
+          raise evar if flag
+        end
+        align.each do |seq|
+          a[i].concat(seq) if a[i] and seq
+          i += 1
+        end
+        self
       end
 
       include ClustalWFormatter
@@ -972,7 +1138,7 @@ module Bio
     # Bio::Alignment::SequenceArray is a container class of
     # multiple sequence alignment.
     # Since it inherits Array, it acts completely same as Array.
-    # In addition, methods defined in ArrayExtension and GeneralExtension
+    # In addition, methods defined in ArrayExtension and EnumerableExtension
     # can be used.
     class SequenceArray < Array
       include ArrayExtension
@@ -981,7 +1147,7 @@ module Bio
     # Bio::Alignment::SequenceHash is a container class of
     # multiple sequence alignment.
     # Since it inherits Hash, it acts completely same as Hash.
-    # In addition, methods defined in HashExtension and GeneralExtension
+    # In addition, methods defined in HashExtension and EnumerableExtension
     # can be used.
     class SequenceHash < Hash
       include HashExtension
@@ -1029,26 +1195,21 @@ module Bio
 
     # Bio::Alignment::OriginalAlignment is
     # the BioRuby original multiple sequence alignment container class.
-    # It includes GeneralExtension.
+    # It includes HashExtension.
     #
-    # It is recommended only to use methods defined in GeneralExtension
+    # It is recommended only to use methods defined in EnumerableExtension
     # (and the each_seq method).
     # The method only defined in this class might be obsoleted in the future.
     #
     class OriginalAlignment
 
-      # default value of gap regular expression
-      GAP_REGEXP   = CharacterProperty::GAP_REGEXP
-      # default value of gap character
-      GAP_CHAR     = CharacterProperty::GAP_CHAR
-      # default value of missing character
-      MISSING_CHAR = CharacterProperty::MISSING_CHAR
-
       include Enumerable
-      include GeneralExtension
+      include HashExtension
       include OriginalPrivate
 
       # Read files and creates a new alignment object.
+      #
+      # It will be obsoleted.
       def self.readfiles(*files)
         require 'bio/io/flatfile'
         aln = self.new
@@ -1061,12 +1222,14 @@ module Bio
       end
       
       # Creates a new alignment object from given arguments.
+      #
+      # It will be obsoleted.
       def self.new2(*arg)
         self.new(arg)
       end
 
       # Creates a new alignment object.
-      # _seqs_ may be one of follows:
+      # <em>seqs</em> may be one of follows:
       # an array of sequences (or strings),
       # an array of sequence database objects,
       # an alignment object.
@@ -1076,7 +1239,8 @@ module Bio
         self.add_sequences(seqs)
       end
 
-      # compares object
+      # If <em>x</em> is the same value, returns true.
+      # Otherwise, returns false.
       def ==(x)
         #(original)
         if x.is_a?(self.class)
@@ -1092,8 +1256,8 @@ module Bio
         @seqs
       end
 
-      # Adds sequences to the alignment. _seqs_ may be
-      # _seqs_ may be one of follows:
+      # Adds sequences to the alignment. 
+      # <em>seqs</em> may be one of follows:
       # an array of sequences (or strings),
       # an array of sequence database objects,
       # an alignment object.
@@ -1124,7 +1288,7 @@ module Bio
         self
       end
 
-      # sequence names
+      # identifiers (or definitions or names) of the sequences
       attr_reader :keys
 
       # stores a sequences with the name
@@ -1140,7 +1304,7 @@ module Bio
 
       # stores a sequence with <em>key</em>
       # (name or definition of the sequence).
-      # Unlike <em>__store__</em> method, the method doesn't allow
+      # Unlike <tt>__store__</tt> method, the method doesn't allow
       # same keys.
       # If the key is already used, returns nil.
       # When succeeded, returns key.
@@ -1258,7 +1422,7 @@ module Bio
           yield @seqs[k]
         end
       end
-      alias :each_seq :each
+      alias each_seq each
 
       # Iterates over each key and sequence.
       # (Like Hash#each_pair)
@@ -1287,18 +1451,7 @@ module Bio
       # Creates new alignment. Internal use only.
       def new(*arg)
         na = self.class.new(*arg)
-        if defined?(@seqclass)
-          na.seqclass = @seqclass
-        end
-        if defined?(@gap_char)
-          na.gap_char = @gap_char
-        end
-        if defined?(@gap_regexp)
-          na.gap_regexp = @gap_regexp
-        end
-        if defined?(@missing_char)
-          na.missing_char = @missing_char
-        end
+        na.set_all_property(get_all_property)
         na
       end
       protected :new
@@ -1365,6 +1518,8 @@ module Bio
       # Sequences in the alignment are duplicated.
       # If keys are given to the argument, sequences of given keys are
       # duplicated.
+      #
+      # It will be obsoleted.
       def isolate(*arg)
         #(original)
         if arg.size == 0 then
@@ -1387,17 +1542,19 @@ module Bio
       #
       # The method name 'collect_align' will be obsoleted.
       # Please use 'alignment_collect' instead.
-      def collect_align
+      def alignment_collect
         #(original)
-        na = self.new
+        na = self.class.new
+        na.set_all_property(get_all_property)
         self.each_pair do |k, s|
           na.store(k, yield(s))
         end
         na
       end
-      alias alignment_collect collect_align
+      alias collect_align alignment_collect
 
       # Removes empty sequences or nil in the alignment.
+      # (Like Array#compact!)
       def compact!
         #(Array-like)
         d = []
@@ -1413,6 +1570,7 @@ module Bio
       end
 
       # Removes empty sequences or nil and returns new alignment.
+      # (Like Array#compact)
       def compact
         #(Array-like)
         na = self.dup
@@ -1465,11 +1623,12 @@ module Bio
 
       # If block is given, it acts like Array#select (Enumerable#select). 
       # Returns a new alignment containing all sequences of the alignment
-      # for which return value of given block is not false.
+      # for which return value of given block is not false nor nil.
       #
       # If no block is given, it acts like the BioPerl's AlignI::select.
       # Returns a new alignment containing sequences of given keys.
       #
+      # The BioPerl's AlignI::select-like action will be obsoleted.
       def select(*arg)
         #(original)
         na = self.new
@@ -1490,7 +1649,12 @@ module Bio
         na
       end
 
+      # The method name <tt>slice</tt> will be obsoleted.
+      # Please use <tt>alignment_slice</tt> instead.
       alias slice  alignment_slice
+
+      # The method name <tt>subseq</tt> will be obsoleted.
+      # Please use <tt>alignment_subseq</tt> instead.
       alias subseq alignment_subseq
 
       # Not-destructive version of alignment_normalize!.
@@ -1564,31 +1728,11 @@ module Bio
         end
       end
 
-      # Concatenates given alignment.
-      def alignment_concat(aln)
-        if aln.is_a?(self.class) then
-          aln.each_pair do |k, s|
-            self[k] << s
-          end
-        elsif aln.respond_to?(:each_seq) then
-          i = 0
-          aln.each_seq do |s|
-            self.order(i) << s
-            i += 1
-          end
-        else
-          i = 0
-          aln.each do |s|
-            self.order(i) << s
-            i += 1
-          end
-        end
-        self
-      end
-
       # Replace the specified region of the alignment to aln.
       # aln:: String or Bio::Alignment object
       # arg:: same format as String#slice
+      #
+      # It will be obsoleted.
       def replace_slice(aln, *arg)
         #(original)
         if aln.respond_to?(:to_str) then #aln.is_a?(String)
@@ -1676,10 +1820,15 @@ module Bio
       end
 
       include ClustalWFormatter
+      # Returns a string of Clustal W formatted text of the alignment.
       def to_clustal(options = {})
         clustalw_formatter(self, self.keys, options)
       end
-    end #module Original
+
+      # The method name <tt>consensus</tt> will be obsoleted.
+      # Please use <tt>consensus_string</tt> instead.
+      alias consensus consensus_string
+    end #class OriginalAlignment
 
     # Bio::Alignment::GAP is a set of class methods for
     # gap-related position translation.
@@ -1734,7 +1883,7 @@ module Bio
     def self.readfiles(*files)
       OriginalAlignment.readfiles(*files)
     end
-  end #class Alignment
+  end #module Alignment
 
 end #module Bio
 
