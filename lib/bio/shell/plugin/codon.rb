@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: codon.rb,v 1.4 2005/11/24 19:30:08 k Exp $
+# $Id: codon.rb,v 1.5 2005/11/25 16:01:28 k Exp $
 #
 #--
 #
@@ -55,10 +55,11 @@ module Bio::Shell
       :stop => %w( * ),
     }
 
-    def initialize(number, color = true)
+    def initialize(number, color = true, cuhash = nil)
       @aacode = Bio::AminoAcid.names
       @table  = Bio::CodonTable[number]
       @number = number
+      @cuhash = cuhash
       if color
         generate_colored_text
       else
@@ -71,11 +72,16 @@ module Bio::Shell
       @table.each do |codon, aa|
         if aa == '*'
           code = "STOP"
-          aa = ''
+          aa = '' unless @cuhash
         else
           code = @aacode[aa]
         end
-        eval("@#{codon} = ' #{code} #{aa} '")
+        if @cuhash
+          percent = @cuhash[codon].to_s.rjust(6)
+          eval("@#{codon} = '#{aa}#{percent}'")
+        else
+          eval("@#{codon} = ' #{code} #{aa} '")
+        end
       end
 
       @hydrophilic = [
@@ -89,18 +95,37 @@ module Bio::Shell
     def generate_colored_text
       @table.each do |codon, aa|
         property, = @@properties.detect {|key, list| list.include?(aa)}
+
         if aa == '*'
           color_code = "#{@@colors[:stop]}STOP"
-          color_aa = ""
+          if @cuhash
+            color_aa = "#{@@colors[:stop]}#{aa}"
+          else
+            color_aa = ''
+          end
         else
           color_code = "#{@@colors[property]}#{@aacode[aa]}"
           if @table.start_codon?(codon)
-            color_aa = "#{@@colors[:start]}#{aa}"
+            if @cuhash
+              color_aa = "#{@@colors[:aa]}#{aa}"
+            else
+              color_aa = "#{@@colors[:start]}#{aa}"
+            end
           else
-            color_aa = "#{@@colors[:aa]}#{aa}"
+            if @cuhash
+              color_aa = "#{@@colors[property]}#{aa}"
+            else
+              color_aa = "#{@@colors[:aa]}#{aa}"
+            end
           end
         end
-        eval("@#{codon} = ' #{color_code} #{color_aa}#{@@colors[:text]} '")
+
+        if @cuhash
+          percent = @cuhash[codon].to_s.rjust(6)
+          eval("@#{codon} = '#{color_aa}#{@@colors[:text]}#{percent}'")
+        else
+          eval("@#{codon} = ' #{color_code} #{color_aa}#{@@colors[:text]} '")
+        end
       end
 
       @hydrophilic = [
@@ -112,12 +137,14 @@ module Bio::Shell
     end
 
     def output
-      text = <<-END
+      header = <<-END
         #
         # = Codon table #{@number} : #{@table.definition}
         #
         #   hydrophilic: #{@hydrophilic}
         #   hydrophobic: #{@hydrophobic}
+      END
+      table = <<-END
         #
         # *---------------------------------------------*
         # |       |              2nd              |     |
@@ -146,6 +173,11 @@ module Bio::Shell
         # *---------------------------------------------*
         #
       END
+      if @cuhash
+        text = table
+      else
+        text = header + table
+      end
       text.gsub(/^\s+#/, @@colors[:text])
     end
 
@@ -153,8 +185,12 @@ module Bio::Shell
 
   private
 
+  def codon_usage_table(num = 1, codon_usage = nil)
+    ColoredCodonTable.new(num, Bio::Shell.config(:color), codon_usage)
+  end    
+
   def codontable(num = 1)
-    cct = ColoredCodonTable.new(num, Bio::Shell.config(:color))
+    cct = codon_usage_table(num)
     display cct.output
     return cct.table
   end
@@ -176,27 +212,11 @@ module Bio::Shell
   end
 
   def nucleicacids
-    [
-      [ 'A', 'Adenine'  ],
-      [ 'T', 'Thymine'  ],
-      [ 'G', 'Guanine'  ],
-      [ 'C', 'Cytosine' ],
-      [ 'U', 'Uracil'   ],
-      [ 'r', '[ag]', 'puRine' ],
-      [ 'y', '[tc]', 'pYrimidine' ],
-      [ 'w', '[at]', 'Weak' ],
-      [ 's', '[gc]', 'Strong' ],
-      [ 'k', '[tg]', 'Keto' ],
-      [ 'm', '[ac]', 'aroMatic' ],
-      [ 'b', '[tgc]', 'not A' ],
-      [ 'v', '[agc]', 'not T' ],
-      [ 'h', '[atc]', 'not G' ],
-      [ 'd', '[atg]', 'not C' ],
-      [ 'n', '[atgc]', 'any' ],
-    ].each do |list|
-      puts list.join("\t")
+    names = Bio::NucleicAcid.names
+    %w(a t g c u r y w s k m b v h d n).each do |base|
+      puts "#{base}\t#{names[base]}\t#{names[base.upcase]}"
     end
-    return Bio::NucleicAcid.names
+    return names
   end
 
 end
