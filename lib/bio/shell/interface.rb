@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: interface.rb,v 1.6 2005/11/24 19:30:08 k Exp $
+# $Id: interface.rb,v 1.7 2005/11/25 17:26:54 k Exp $
 #
 #--
 #
@@ -39,11 +39,18 @@ module Bio::Shell
     display list.inspect
   end
 
-  def rm(name)                  # name = :hoge
+  def rm(name)
+    list = eval("local_variables", conf.workspace.binding).reject { |x|
+      eval(x, conf.workspace.binding).nil?
+    }
     begin
-      eval("#{name} = nil", conf.workspace.binding)
+      if list.include?(name.to_s)
+        eval("#{name} = nil", conf.workspace.binding)
+      else
+        raise
+      end
     rescue
-      puts "Usage: rm :var (rm var is not valid)"
+      warn "Usage: rm :var or rm 'var' (rm var is not valid)"
     end
   end
 
@@ -51,6 +58,18 @@ module Bio::Shell
 
   def script(mode = nil)
     Bio::Shell.script(mode)
+  end
+
+  ### object
+
+  def reload_object
+    Bio::Shell.load_object
+  end
+
+  ### plugin
+
+  def reload_plugin
+    Bio::Shell.load_plugin
   end
 
   ### config
@@ -74,18 +93,6 @@ module Bio::Shell
     Bio::Shell.load_config
   end
 
-  ### object
-
-  def reload_object
-    Bio::Shell.load_object
-  end
-
-  ### plugin
-
-  def reload_plugin
-    Bio::Shell.load_plugin
-  end
-
   ### pager
 
   def pager(cmd = nil)
@@ -96,9 +103,6 @@ module Bio::Shell
     puts "Pager is set to '#{cmd ? cmd : 'off'}'"
   end
 
-  #--
-  # mysql> pager less
-  #++
   def display(*obj)
     # The original idea is from http://sheepman.parfait.ne.jp/20050215.html
     if Bio::Shell.config(:pager)
@@ -118,9 +122,6 @@ module Bio::Shell
   end
 
   def less(file)
-    #Readline.completion_proc = proc {|p|
-    #  Dir.glob("#{p}*")
-    #}
     pager = ENV['PAGER'] || "less"
     system("#{pager} #{file}")
   end
@@ -135,6 +136,30 @@ module Bio::Shell
       end
     end
     display str
+  end
+
+  ### file save
+
+  def save(file, *objs)
+    if File.exists?(file)
+      loop do
+        print "Overwrite existing #{file}? [y/n]: "
+        answer = gets
+        return if /^\s*[Nn]/.match(answer)
+        break if /^\s*[Yy]/.match(answer)
+      end
+    end
+    begin
+      print "Saving data (#{file}) ... "
+      File.open(file, "w") do |f|
+        objs.each do |obj|
+          f.puts obj.to_s
+        end
+      end
+      puts "done"
+    rescue
+      warn "Error: Failed to save (#{file}) : #{$!}"
+    end
   end
 
   ### file system
