@@ -6,7 +6,7 @@
 #
 # License:: LGPL
 #
-#  $Id: alignment.rb,v 1.11 2005/11/25 15:36:43 ngoto Exp $
+#  $Id: alignment.rb,v 1.12 2005/11/25 16:50:39 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -185,6 +185,8 @@ Mix-in for Hash or Hash-like classes.
       end
 
       # Returns consensus character of the site.
+      # If consensus is found, eturns a single-letter string.
+      # If not, returns nil.
       def consensus_string(threshold = 1.0)
         return nil if self.size <= 0
         return self[0] if self.sort.uniq.size == 1
@@ -219,7 +221,9 @@ Mix-in for Hash or Hash-like classes.
         %w( n   a c g t u m r w s y k v h d b )
       ]
 
-      # Returns an IUPAC consensus base for the site
+      # Returns an IUPAC consensus base for the site.
+      # If consensus is found, eturns a single-letter string.
+      # If not, returns nil.
       def consensus_iupac
         a = self.collect { |x| x.downcase }.sort.uniq
         if a.size == 1 then
