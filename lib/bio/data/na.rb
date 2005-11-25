@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: na.rb,v 0.17 2005/11/15 12:43:37 k Exp $
+# $Id: na.rb,v 0.18 2005/11/25 15:59:29 k Exp $
 #
 # == Synopsis
 #
@@ -69,17 +69,17 @@ class NucleicAcid
 
     NAMES = {
 
-      'y'	=> '[tc]',	# pYrimidine
-      'r'	=> '[ag]',	# puRine
-      'w'	=> '[at]',	# Weak
-      's'	=> '[gc]',	# Strong
-      'k'	=> '[tg]',	# Keto
-      'm'	=> '[ac]',	# aroMatic
+      'y'	=> '[tc]',
+      'r'	=> '[ag]',
+      'w'	=> '[at]',
+      's'	=> '[gc]',
+      'k'	=> '[tg]',
+      'm'	=> '[ac]',
 
-      'b'	=> '[tgc]',	# not A
-      'd'	=> '[atg]',	# not C
-      'h'	=> '[atc]',	# not G
-      'v'	=> '[agc]',	# not T
+      'b'	=> '[tgc]',
+      'd'	=> '[atg]',
+      'h'	=> '[atc]',
+      'v'	=> '[agc]',
 
       'n'	=> '[atgc]',
 
@@ -89,12 +89,23 @@ class NucleicAcid
       'c'	=> 'c',
       'u'	=> 'u',
 
-      'A'	=> 'adenine',
-      'T'	=> 'thymine',
-      'G'	=> 'guanine',
-      'C'	=> 'cytosine',
-      'U'	=> 'uracil',
+      'A'	=> 'Adenine',
+      'T'	=> 'Thymine',
+      'G'	=> 'Guanine',
+      'C'	=> 'Cytosine',
+      'U'	=> 'Uracil',
 
+      'Y'	=> 'pYrimidine',
+      'R'	=> 'puRine',
+      'W'	=> 'Weak',
+      'S'	=> 'Strong',
+      'K'	=> 'Keto',
+      'M'	=> 'aroMatic',
+
+      'B'	=> 'not A',
+      'D'	=> 'not C',
+      'H'	=> 'not G',
+      'V'	=> 'not T',
     }
 
     WEIGHT = {

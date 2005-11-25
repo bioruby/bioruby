@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_na.rb,v 1.4 2005/11/23 05:25:10 nakao Exp $
+#  $Id: test_na.rb,v 1.5 2005/11/25 15:59:29 k Exp $
 #
 
 require 'pathname'
@@ -35,7 +35,7 @@ module Bio
     end
 
     def test_NAMES_1_to_name
-      assert_equal('adenine', Bio::NucleicAcid::NAMES['A'])
+      assert_equal('Adenine', Bio::NucleicAcid::NAMES['A'])
     end
 
     def test_WEIGHT
@@ -72,7 +72,7 @@ module Bio
 
     
     def test_accessor
-      assert_equal('adenine', @obj['A'])
+      assert_equal('Adenine', @obj['A'])
     end
     
     def test_names
@@ -83,7 +83,7 @@ module Bio
     end
 
     def test_name
-      assert_equal('adenine', @obj.name('A'))
+      assert_equal('Adenine', @obj.name('A'))
     end
   end
 end
