@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: keggapi.rb,v 1.3 2005/11/14 02:01:54 k Exp $
+# $Id: keggapi.rb,v 1.4 2005/11/25 16:07:55 k Exp $
 #
 #--
 #
@@ -32,40 +32,106 @@ module Bio::Shell
 
   private
 
-  def setup_keggapi
+  def keggapi
     unless @keggapi
       @keggapi = Bio::KEGG::API.new
     end
+    return @keggapi
+  end
+
+  def _definition(list)
+    ary = []
+    list.each do |entry|
+      ary << "#{entry.entry_id}:\t#{entry.definition}"
+    end
+    return ary
+  end
+
+  # DBGET
+
+  def binfo(db = "all")
+    result = keggapi.binfo(db)
+    display result
+    return result
   end
 
   def bfind(str)
-    setup_keggapi
-    result = @keggapi.bfind(str)
+    result = keggapi.bfind(str)
     display result
     return result
   end
 
   def bget(str)
-    setup_keggapi
-    entry = @keggapi.bget(str)
+    result = keggapi.bget(str)
     if block_given?
-      yield entry
+      yield result
     else
-      display entry
+      display result
     end
-    return entry
+    return result
   end
+
+  def btit(str)
+    result = keggapi.btit(str)
+    display result
+    return result
+  end
+
+  def bconv(str)
+    result = keggapi.bconv(str)
+    display result
+    return result
+  end
+
+  # DATABASES
+
+  def keggdbs
+    list = keggapi.list_databases
+    result = _definition(list).join("\n")
+    display result
+    return result
+  end
+
+  def keggorgs
+    list = keggapi.list_organisms
+    result = _definition(list).sort.join("\n")
+    display result
+    return result
+  end
+
+  def keggpathways(org = "map")
+    list = keggapi.list_pathways(org)
+    result = _definition(list).join("\n")
+    display result
+    return result
+  end
+
+  #--
+  # *TODO* use kegg das instead?
+  #++
+  def kegggenome(org)
+    result = ""
+    require 'net/ftp'
+    Net::FTP.open("ftp.genome.jp", "anonymous") do |ftp|
+      path = "/pub/kegg/genomes/#{org}"
+      list = ftp.nlst(path)
+      file = list.grep(/.*genome$/).shift
+      if file
+        base = File.basename(file)
+        ftp.getbinaryfile(file, base)
+        result = File.read(base)
+      end
+    end
+    return result
+  end
+
+# def kegggene(genes_id)
+#    keggapi.bget()
+# end
 
 end
 
 =begin
---- list_databases
---- list_organisms
---- list_pathways(org)
---- binfo(string)
---- bfind(string)
---- bget(string)
---- btit(string)
 --- get_linkdb_by_entry(entry_id, db, start, max_results)
 --- get_best_best_neighbors_by_gene(genes_id, start, max_results)
 --- get_best_neighbors_by_gene(genes_id, start, max_results)
