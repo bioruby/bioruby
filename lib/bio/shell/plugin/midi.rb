@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: midi.rb,v 1.3 2005/11/05 08:38:13 k Exp $
+# $Id: midi.rb,v 1.4 2005/11/25 16:47:10 k Exp $
 #
 #--
 #
@@ -420,7 +420,7 @@ module Bio::Shell
       end
       puts "done"
     rescue
-      raise "Failed to save (#{filename}) : #{$!}"
+      warn "Error: Failed to save (#{filename}) : #{$!}"
     end
   end
 

@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: flatfile.rb,v 1.6 2005/11/16 04:01:10 k Exp $
+# $Id: flatfile.rb,v 1.7 2005/11/25 16:47:10 k Exp $
 #
 #--
 #
@@ -96,7 +96,7 @@ module Bio::Shell
       Bio::FlatFileIndex.makeindex(bdb, idxdir, format, options, *flatfiles)
       puts "done"
     rescue
-      raise "Failed to create index (#{idxdir}) : #{$!}"
+      warn "Error: Failed to create index (#{idxdir}) : #{$!}"
     end
   end
 

@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: seq.rb,v 1.11 2005/11/25 16:05:41 k Exp $
+# $Id: seq.rb,v 1.12 2005/11/25 16:47:10 k Exp $
 #
 #--
 #
@@ -222,7 +222,9 @@ class String
 
     # size : allowed length of the actual text
     unless (size = fill_column - indent) > 0
-      raise "[Error] indent > fill_column"
+      warn "Error: indent > fill_column (indent is set to 0)"
+      size = fill_column
+      indent = 0
     end
 
     0.step(self.length - 1, size) do |n|
@@ -237,7 +239,9 @@ class String
 
     # size : allowed length of the actual text
     unless (size = fill_column - indent) > 0
-      raise "[Error] indent > fill_column"
+      warn "Error: indent > fill_column (indent is set to 0)"
+      size = fill_column
+      indent = 0
     end
 
     n = pos = 0

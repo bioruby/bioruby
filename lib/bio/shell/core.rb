@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: core.rb,v 1.10 2005/11/24 19:30:08 k Exp $
+# $Id: core.rb,v 1.11 2005/11/25 16:47:10 k Exp $
 #
 #--
 #
@@ -169,7 +169,7 @@ module Bio::Shell::Core
         Dir.mkdir(dir)
         puts "done"
       rescue
-        raise "Failed to create #{dir} : #{$!}"
+        warn "Error: Failed to create #{dir} : #{$!}"
       end
     end
   end
@@ -205,7 +205,7 @@ module Bio::Shell::Core
       end
       puts "done"
     rescue
-      raise "Failed to save (#{file}) : #{$!}"
+      warn "Error: Failed to save (#{file}) : #{$!}"
     end
   end
 
@@ -286,7 +286,7 @@ module Bio::Shell::Core
           end
         end
       rescue
-        raise "Failed to load (#{file}) : #{$!}"
+        warn "Error: Failed to load (#{file}) : #{$!}"
       end
       puts "done"
     end
@@ -320,12 +320,12 @@ module Bio::Shell::Core
           Marshal.dump(hash, f)
           Config[:marshal] = MARSHAL
         rescue
-          raise "Failed to dump (#{file}) : #{$!}"
+          warn "Error: Failed to dump (#{file}) : #{$!}"
         end
       end
       puts "done"
     rescue
-      raise "Failed to save (#{file}) : #{$!}"
+      warn "Error: Failed to save (#{file}) : #{$!}"
     end
   end
 
@@ -365,7 +365,7 @@ module Bio::Shell::Core
       end
       puts "done"
     rescue
-      raise "Failed to save (#{file}) : #{$!}"
+      warn "Error: Failed to save (#{file}) : #{$!}"
     end
   end
 
@@ -424,7 +424,7 @@ module Bio::Shell::Core
       puts "done"
     rescue
       @script_begin = nil
-      raise "Failed to save (#{file}) : #{$!}"
+      warn "Error: Failed to save (#{file}) : #{$!}"
     end
   end
 
