@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggapi.rb,v 1.9 2005/09/26 13:00:08 k Exp $
+#  $Id: keggapi.rb,v 1.10 2005/11/25 11:28:30 k Exp $
 #
 
 require 'bio/io/soapwsdl'
@@ -145,7 +145,7 @@ class API < Bio::SOAPWSDL
     step = [@max_results, 50].min
     0.step(ary.length, step) do |i|
       str = ary[i, step].join(" ")
-      if entry = @driver.send(:bget, str)
+      if entry = @driver.send(:btit, str)
         result << entry.to_s
       end
     end
@@ -159,7 +159,7 @@ class API < Bio::SOAPWSDL
     if results.is_a?(Array)
       results.each do |result|
         def result.filter(fields)
-          fields.collect {|field| self.send(field)}
+          fields.collect { |field| self.send(field) }
         end
       end
     end
