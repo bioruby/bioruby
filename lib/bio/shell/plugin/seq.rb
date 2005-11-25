@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: seq.rb,v 1.10 2005/11/24 19:32:04 k Exp $
+# $Id: seq.rb,v 1.11 2005/11/25 16:05:41 k Exp $
 #
 #--
 #
@@ -28,6 +28,7 @@
 
 require 'bio/sequence'
 require 'bio/util/color_scheme'
+require 'bio/shell/plugin/codon'
 
 module Bio::Shell
 
@@ -98,44 +99,77 @@ module Bio::Shell
 
   # Displays some basic properties of the sequence.
   def seqstat(str)
+    max = 150
     seq = seq(str)
-    rep = ""
+    rep = "\n* * * Sequence statistics * * *\n\n"
     if seq.respond_to?(:complement)
-      rep << "Sequence           : #{seq.fold(71,21).strip}\n"
-      rep << "Reverse complement : #{seq.complement.fold(71,21).strip}\n"
-      rep << "Translation  1     : #{seq.translate.fold(71,21).strip}\n"
-      rep << "Translation  2     : #{seq.translate(2).fold(71,21).strip}\n"
-      rep << "Translation  3     : #{seq.translate(3).fold(71,21).strip}\n"
-      rep << "Translation -1     : #{seq.translate(-1).fold(71,21).strip}\n"
-      rep << "Translation -2     : #{seq.translate(-2).fold(71,21).strip}\n"
-      rep << "Translation -3     : #{seq.translate(-3).fold(71,21).strip}\n"
-      rep << "GC percent         : #{seq.gc_percent} %\n"
-      rep << "Composition        : #{seq.composition.inspect}\n"
+      fwd = seq
+      rev = seq.complement
+      if seq.length > max
+        dot = " ..."
+        fwd = fwd.subseq(1, max)
+        rev = rev.subseq(1, max)
+      end
+      rep << "5'->3' sequence   : #{fwd.fold(70,20).strip}#{dot}\n"
+      rep << "3'->5' sequence   : #{rev.fold(70,20).strip}#{dot}\n"
+      [ 1, 2, 3, -1, -2, -3 ].each do |frame|
+        pep = fwd.translate(frame).fold(70,20).strip
+        rep << "Translation  #{frame.to_s.rjust(2)}   : #{pep}#{dot}\n"
+      end
+      rep << "Length            : #{seq.length} bp\n"
+      rep << "GC percent        : #{seq.gc_percent} %\n"
+
+      ary = []
+      seq.composition.sort.each do |base, num|
+        percent = format("%.2f", 100.0 * num / seq.length).rjust(6)
+        count   = num.to_s.rjust(seq.length.to_s.length)
+        ary << "                    #{base} - #{count} (#{percent} %)\n"
+      end
+      rep << "Composition       : #{ary.join.strip}\n"
+
+      rep << "Codon usage       :\n"
+      hash = Hash.new("0.0%")
+      seq.codon_usage.sort.each do |codon, num|
+        percent = format("%.1f%", 100.0 * num / (seq.length / 3))
+        hash[codon] = percent
+      end
+      rep << codon_usage_table(1, hash).output
+
       begin
-        rep << "Molecular weight   : #{seq.molecular_weight}\n"
+        rep << "Molecular weight  : #{seq.molecular_weight}\n"
       rescue
-        rep << "Molecular weight   : #{$!}\n"
+        rep << "Molecular weight  : #{$!}\n"
       end
       begin
-        rep << "Complemnet weight  : #{seq.complement.molecular_weight}\n"
+        rep << "Protein weight    : #{seq.translate.chomp('*').molecular_weight}\n"
       rescue
-        rep << "Complement weight  : #{$!}\n"
-      end
-      begin
-        rep << "Protein weight     : #{seq.translate.molecular_weight}\n"
-      rescue
-        rep << "Protein weight     : #{$!}\n"
+        rep << "Protein weight    : #{$!}\n"
       end
     else
-      rep << "Sequence           : #{seq.fold(71,21).strip}\n"
-      rep << "Composition        : #{seq.composition.inspect}\n"
-      begin
-        rep << "Protein weight     : #{seq.molecular_weight}\n"
-      rescue
-        rep << "Protein weight     : #{$!}\n"
+      pep = seq
+      if seq.length > max
+        dot = " ..."
+        pep = seq.subseq(1, max)
       end
-#     rep << "amino acid codes   : #{seq.codes.inspect}\n"
-#     rep << "amino acid names   : #{seq.names.inspect}\n"
+      rep << "N->C sequence     : #{pep.fold(70,20).strip}#{dot}\n"
+      rep << "Length            : #{seq.length} aa\n"
+
+      names = Bio::AminoAcid.names
+      ary = []
+      seq.composition.sort.each do |aa, num|
+        percent = format("%.2f", 100.0 * num / seq.length).rjust(6)
+        count   = num.to_s.rjust(seq.length.to_s.length)
+        code    = names[aa]
+        name    = names[names[aa]]
+        ary << "                    #{aa} #{code} - #{count} (#{percent} %) #{name}\n"
+      end
+      rep << "Composition       : #{ary.join.strip}\n"
+
+      begin
+        rep << "Protein weight    : #{seq.molecular_weight}\n"
+      rescue
+        rep << "Protein weight    : #{$!}\n"
+      end
     end
     rep  << "//\n"
     display rep
