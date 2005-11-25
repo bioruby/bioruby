@@ -2,6 +2,7 @@
 # test/unit/bio/test_alignment.rb - Unit test for Bio::Alignment
 #
 #   Copyright (C) 2004 Moses Hohman <mmhohman@northwestern.edu>
+#                 2005 Naohisa Goto <ng@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_alignment.rb,v 1.3 2005/09/24 03:12:55 nakao Exp $
+#  $Id: test_alignment.rb,v 1.4 2005/11/25 16:53:32 ngoto Exp $
 #
 
 require 'pathname'
@@ -28,6 +29,220 @@ require 'test/unit'
 require 'bio/alignment'
 
 module Bio
+
+  class TestAlignmentPropertyMethods < Test::Unit::TestCase
+
+    def setup
+      @obj = Object.new
+      @obj.extend(Alignment::PropertyMethods)
+    end
+
+    def test_is_gap_default_false
+      assert_equal(false, @obj.is_gap?('a'), "\"a\" isn't a gap")
+    end
+
+    def test_is_gap_default_true
+      assert_equal(true, @obj.is_gap?('-'), '"-" is a gap')
+    end
+
+    def test_gap_regexp
+      assert_not_nil(@obj.gap_regexp)
+    end
+
+    def test_gap_regexp_never_nil
+      @obj.gap_regexp = nil
+      assert_not_nil(@obj.gap_regexp)
+    end
+
+    def test_gap_regexp=()
+      @obj.gap_regexp = /[^a-zA-Z0-9]/
+      assert_equal(/[^a-zA-Z0-9]/, @obj.gap_regexp)
+    end
+
+    def test_is_gap_nodefault_false
+      @obj.gap_regexp = /[^a-zA-Z0-9]/
+      assert_equal(false, @obj.is_gap?('3'))
+    end
+
+    def test_is_gap_nodefault_true
+      @obj.gap_regexp = /[^atgc]/
+      assert_equal(true, @obj.is_gap?('z'))
+    end
+
+    def test_gap_char_default
+      assert_not_nil(@obj.gap_char)
+    end
+
+    def test_gap_char_never_nil
+      @obj.gap_char = nil
+      assert_not_nil(@obj.gap_char)
+    end
+
+    def test_gap_char=()
+      @obj.gap_char = '#'
+      assert_equal('#', @obj.gap_char)
+    end
+
+    def test_missing_char_default
+      assert_not_nil(@obj.missing_char)
+    end
+
+    def test_missing_char_never_nil
+      @obj.missing_char = nil
+      assert_not_nil(@obj.missing_char)
+    end
+
+    def test_missing_char=()
+      @obj.missing_char = '_'
+      assert_equal('_', @obj.missing_char)
+    end
+      
+    def test_seqclass_default
+      assert_not_nil(@obj.seqclass)
+    end
+
+    def test_seqclass_never_nil
+      @obj.seqclass = nil
+      assert_not_nil(@obj.seqclass)
+    end
+
+    def test_seqclass=()
+      @obj.seqclass = Sequence::NA
+      assert_equal(Sequence::NA, @obj.seqclass)
+    end
+
+    def test_get_all_property_default
+      assert_equal({}, @obj.get_all_property)
+    end
+
+    def test_get_all_property_nodefault
+      @obj.gap_regexp   = /[^acgt]/
+      @obj.gap_char     = '#'
+      @obj.missing_char = '_'
+      @obj.seqclass     = Sequence::NA
+      assert_equal({ :gap_regexp   => /[^acgt]/,
+                     :gap_char     => '#',
+                     :missing_char => '_',
+                     :seqclass     => Sequence::NA },
+                   @obj.get_all_property)
+    end
+
+    def test_set_all_property
+      h = { :gap_regexp   => /[^acgt]/,
+        :gap_char     => '#',
+        :missing_char => '_',
+        :seqclass     => Sequence::NA }
+      @obj.set_all_property(h)
+      assert_equal(h, @obj.get_all_property)
+    end
+  end #class TestAlignmentPropertyMethods
+
+  
+  class TestAlignmentSite < Test::Unit::TestCase
+
+    def test_has_gap_true
+      site = Alignment::Site[ 'a', '-', 'c', 'g', 't' ]
+      assert_equal(true, site.has_gap?)
+    end
+
+    def test_has_gap_false
+      site = Alignment::Site[ 'a', 'c', 'g', 't' ]
+      assert_equal(false, site.has_gap?)
+    end
+
+    def test_remove_gaps!
+      site = Alignment::Site[ 'a', '-', 'c', '-' ]
+      assert_equal(Alignment::Site['a', 'c'], site.remove_gaps!)
+    end
+
+    def test_remove_gaps_bang_not_removed
+      site = Alignment::Site[ 'a', 'c']
+      assert_equal(nil, site.remove_gaps!)
+    end
+
+    def test_consensus_string_default
+      site = Alignment::Site[ 'a', 'a', 'a', 'a']
+      assert_equal('a', site.consensus_string)
+    end
+
+    def test_consensus_string_default_nil
+      site = Alignment::Site[ 'a', 'a', 'a', 'c']
+      assert_nil(site.consensus_string)
+    end
+
+    def test_consensus_string_50percent
+      site = Alignment::Site[ 'a', 'a', 'c', 'g']
+      assert_equal('a', site.consensus_string(0.5))
+    end
+
+    def test_consensus_string_50percent_nil
+      site = Alignment::Site[ 'a', 'c', 'g', 't']
+      assert_nil(site.consensus_string(0.5))
+    end
+
+    def test_consensus_iupac
+      data = {
+        'a' => [ 'a' ],
+        'c' => [ 'c' ],
+        'g' => [ 'g' ],
+        't' => [ 't' ],
+        't' => [ 't', 'u' ],
+        'm' => [ 'a', 'c' ],
+        'r' => [ 'a', 'g' ],
+        'w' => [ 'a', 't' ],
+        's' => [ 'c', 'g' ],
+        'y' => [ 'c', 't' ],
+        'k' => [ 'g', 't' ],
+        'v' => [ 'a', 'c', 'g' ],
+        'h' => [ 'a', 'c', 't' ],
+        'd' => [ 'a', 'g', 't' ],
+        'b' => [ 'c', 'g', 't' ],
+        'n' => [ 'a', 'c', 'g', 't' ],
+        nil => [ 'z', 'a' ]
+      }
+      data.each do |cons, testdata|
+        site = Alignment::Site[ *testdata ]
+        assert_equal(cons, site.consensus_iupac,
+                     "IUPAC consensus of #{testdata.join(',')} is #{cons}")
+      end
+    end
+
+    def test_match_line_amino_missing
+      site = Alignment::Site[ 'P', 'Q', 'R', 'S' ]
+      assert_equal(' ', site.match_line_amino)
+    end
+
+    def test_match_line_amino_100percent
+      site = Alignment::Site[ 'M', 'M', 'M', 'M' ]
+      assert_equal('*', site.match_line_amino)
+    end
+
+    def test_match_line_amino_strong
+      site = Alignment::Site[ 'N', 'E', 'Q', 'K' ]
+      assert_equal(':', site.match_line_amino)
+    end
+
+    def test_match_line_amino_weak
+      site = Alignment::Site[ 'S', 'G', 'N', 'D' ]
+      assert_equal('.', site.match_line_amino)
+    end
+
+    def test_match_line_nuc_missing
+      site = Alignment::Site[ 'A', 'C', 'G', 'T' ]
+      assert_equal(' ', site.match_line_nuc)
+    end
+
+    def test_match_line_nuc_100percent
+      site = Alignment::Site[ 'G', 'G', 'G', 'G' ]
+      assert_equal('*', site.match_line_nuc)
+    end
+  end #class TestAlignmentSite
+
+
+
+
+
+
   class TestAlignment < Test::Unit::TestCase
 
     # testing helper method
