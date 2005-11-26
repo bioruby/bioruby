@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_sequence.rb,v 1.4 2005/09/25 05:17:53 nakao Exp $
+#  $Id: test_sequence.rb,v 1.5 2005/11/26 06:51:45 nakao Exp $
 #
 
 require 'pathname'
@@ -257,7 +257,9 @@ module Bio
     # Test Sequence::NA#names
 
     def test_nucleic_acid_names
-      assert_equal(["adenine", "cytosine", "guanine", "thymine", "uracil"], Sequence::NA.new('acgtu').names)
+      # It is a Bio::NucleicAcid feature.
+      #      assert_equal(["adenine", "cytosine", "guanine", "thymine", "uracil"], Sequence::NA.new('acgtu').names)
+      assert(Sequence::NA.new('acgtu').names)
     end
 
     # Test Sequence::NA#pikachu
@@ -351,4 +353,34 @@ module Bio
       assert_equal(s.randomize.composition, s.randomize.randomize.composition)
     end
   end
+
+
+  class TestNATranslate < Test::Unit::TestCase
+    def setup
+      @obj = Bio::Sequence::NA.new("AAA")
+    end
+
+    def test_translate
+      assert_equal("K", @obj.translate)
+    end
+    def test_translate_1
+      assert_equal("K", @obj.translate(1))
+    end
+    def test_translate_2
+      assert_equal("", @obj.translate(2))
+    end
+    def test_translate_3
+      assert_equal("", @obj.translate(3))
+    end
+    def test_translate_4
+      assert_equal("F", @obj.translate(4))
+    end
+    def test_translate_5
+      assert_equal("", @obj.translate(5))
+    end
+    def test_translate_5
+      assert_equal("", @obj.translate(6))
+    end
+  end
+
 end
