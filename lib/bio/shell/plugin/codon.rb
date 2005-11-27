@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: codon.rb,v 1.5 2005/11/25 16:01:28 k Exp $
+# $Id: codon.rb,v 1.6 2005/11/27 15:01:17 k Exp $
 #
 #--
 #
@@ -196,7 +196,7 @@ module Bio::Shell
   end
 
   def codontables
-    Bio::CodonTable::Definitions.sort.each do |i, definition|
+    Bio::CodonTable::DEFINITIONS.sort.each do |i, definition|
       puts "#{i}\t#{definition}"
     end
   end
