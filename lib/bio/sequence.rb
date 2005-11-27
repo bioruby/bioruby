@@ -7,7 +7,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     LGPL
 #
-# $Id: sequence.rb,v 0.48 2005/11/22 00:32:59 k Exp $
+# $Id: sequence.rb,v 0.49 2005/11/27 15:46:01 k Exp $
 #
 #--
 # *TODO* remove this functionality?
@@ -309,18 +309,19 @@ class Sequence < String
       naseq = self.dna
       case frame
       when 1, 2, 3
-        frame -= 1
+        from = frame - 1
       when 4, 5, 6
-        frame -= 4
+        from = frame - 4
         naseq.complement!
       when -1, -2, -3
-        frame = -1 - frame
+        from = -1 - frame
         naseq.complement!
       else
-        frame = 0
+        from = 0
       end
-      nalen = naseq.length - (naseq.length - frame) % 3
-      aaseq = naseq[frame, nalen].gsub(/.{3}/) {|codon| ct[codon] or unknown}
+      nalen = naseq.length - from
+      nalen -= nalen % 3
+      aaseq = naseq[from, nalen].gsub(/.{3}/) {|codon| ct[codon] or unknown}
       return Bio::Sequence::AA.new(aaseq)
     end
 
