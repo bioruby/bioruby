@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: interface.rb,v 1.7 2005/11/25 17:26:54 k Exp $
+# $Id: interface.rb,v 1.8 2005/11/27 17:39:00 k Exp $
 #
 #--
 #
@@ -96,7 +96,7 @@ module Bio::Shell
   ### pager
 
   def pager(cmd = nil)
-    unless Bio::Shell.config(:pager)
+    unless Bio::Shell.config[:pager]
       cmd = ENV['PAGER'] || cmd
     end
     Bio::Shell.config_pager(cmd)
@@ -105,8 +105,8 @@ module Bio::Shell
 
   def display(*obj)
     # The original idea is from http://sheepman.parfait.ne.jp/20050215.html
-    if Bio::Shell.config(:pager)
-      pg = IO.popen(Bio::Shell.config(:pager), "w")
+    if Bio::Shell.config[:pager]
+      pg = IO.popen(Bio::Shell.config[:pager], "w")
       begin
         stdout_save = STDOUT.clone
         STDOUT.reopen(pg)

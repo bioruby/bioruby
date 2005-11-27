@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: core.rb,v 1.11 2005/11/25 16:47:10 k Exp $
+# $Id: core.rb,v 1.12 2005/11/27 17:39:00 k Exp $
 #
 #--
 #
@@ -55,35 +55,21 @@ module Bio::Shell::Core
     :n => "\e[00m",  :none    => "\e[00m",  :reset => "\e[00m",
   }
 
-  # A hash to store persistent configurations
-  Config = {}
-
-  # A hash to store temporal (per session) configurations
-  Cache  = {}
-
-  attr_accessor :config, :cache
-
-  def config(param, value = nil)
-    if value
-      Config[param] = value
-    end
-    return Config[param]
-  end
-
-  def cache(param, value = nil)
-    if value
-      Cache[param] = value
-    end
-    return Cache[param]
-  end
-
   ### save/restore the environment
 
   def setup
+    @config = {}
+    @cache  = {}
     load_config
     load_plugin
     version_check
   end
+ 
+  # A hash to store persistent configurations
+  attr_accessor :config
+
+  # A hash to store temporal (per session) configurations
+  attr_accessor :cache
 
   def open
     load_object
@@ -124,7 +110,7 @@ module Bio::Shell::Core
     if RUBY_VERSION < "1.8.2"
       raise "BioRuby shell runs on Ruby version >= 1.8.2"
     end
-    if Config[:marshal] and Config[:marshal] != MARSHAL
+    if @config[:marshal] and @config[:marshal] != MARSHAL
       raise "Marshal version mismatch"
     end
   end
@@ -139,10 +125,10 @@ module Bio::Shell::Core
 
   # 1. ask to save in SAVEDIR directory in the current directory
   # 2. otherwise save in USERDIR directory
-  # 3. remember the choice in Cache[:savedir] once per session
+  # 3. remember the choice in @cache[:savedir] once per session
   def ask_save_dir
-    if Cache[:savedir]
-      dir = Cache[:savedir]
+    if @cache[:savedir]
+      dir = @cache[:savedir]
     else
       dir = SAVEDIR
       if ! File.directory?(dir)
@@ -157,7 +143,7 @@ module Bio::Shell::Core
           end
         end
       end
-      Cache[:savedir] = dir
+      @cache[:savedir] = dir
     end
     return dir
   end
@@ -186,7 +172,7 @@ module Bio::Shell::Core
     if File.exists?(file)
       print "Loading config (#{file}) ... "
       if hash = YAML.load(File.read(file))
-        Config.update(hash)
+        @config.update(hash)
       end
       puts "done"
     end
@@ -201,7 +187,7 @@ module Bio::Shell::Core
     begin
       print "Saving config (#{file}) ... "
       File.open(file, "w") do |f|
-        f.puts Config.to_yaml
+        f.puts @config.to_yaml
       end
       puts "done"
     rescue
@@ -210,23 +196,23 @@ module Bio::Shell::Core
   end
 
   def config_show
-    Config.each do |k, v|
+    @config.each do |k, v|
       puts "#{k}\t= #{v.inspect}"
     end
   end
 
   def config_echo
     bind = IRB.conf[:MAIN_CONTEXT].workspace.binding
-    flag = ! Config[:echo]
-    Config[:echo] = IRB.conf[:ECHO] = flag
+    flag = ! @config[:echo]
+    @config[:echo] = IRB.conf[:ECHO] = flag
     eval("conf.echo = #{flag}", bind)
     puts "Echo #{flag ? 'on' : 'off'}"
   end
 
   def config_color
     bind = IRB.conf[:MAIN_CONTEXT].workspace.binding
-    flag = ! Config[:color]
-    Config[:color] = flag
+    flag = ! @config[:color]
+    @config[:color] = flag
     if flag
       IRB.conf[:PROMPT_MODE] = :BIORUBY_COLOR
       eval("conf.prompt_mode = :BIORUBY_COLOR", bind)
@@ -237,12 +223,12 @@ module Bio::Shell::Core
   end
 
   def config_pager(cmd = nil)
-    Config[:pager] = cmd
+    @config[:pager] = cmd
   end
 
   def config_message(str = nil)
     str ||= Bio::Shell::Core::MESSAGE
-    Config[:message] = str
+    @config[:message] = str
   end
 
   ### plugin
@@ -318,7 +304,7 @@ module Bio::Shell::Core
             end
           end
           Marshal.dump(hash, f)
-          Config[:marshal] = MARSHAL
+          @config[:marshal] = MARSHAL
         rescue
           warn "Error: Failed to dump (#{file}) : #{$!}"
         end
@@ -333,7 +319,7 @@ module Bio::Shell::Core
   ### history
 
   def load_history
-    if Cache[:readline]
+    if @cache[:readline]
       load_history_file(SITEDIR + HISTORY)
       load_history_file(USERDIR + HISTORY)
       load_history_file(SAVEDIR + HISTORY)
@@ -351,7 +337,7 @@ module Bio::Shell::Core
   end
   
   def save_history
-    if Cache[:readline]
+    if @cache[:readline]
       dir = create_save_dir
       save_history_file(dir + HISTORY)
     end
@@ -374,19 +360,19 @@ module Bio::Shell::Core
   def script(mode = nil)
     case mode
     when :begin, "begin", :start, "start"
-      Cache[:script] = true
+      @cache[:script] = true
       script_begin
     when :end, "end", :stop, "stop"
-      Cache[:script] = false
+      @cache[:script] = false
       script_end
       save_script
     else
-      if Cache[:script]
-        Cache[:script] = false
+      if @cache[:script]
+        @cache[:script] = false
         script_end
         save_script
       else
-        Cache[:script] = true
+        @cache[:script] = true
         script_begin
       end
     end
@@ -431,8 +417,8 @@ module Bio::Shell::Core
   ### splash
 
   def splash_message
-    Config[:message] ||= MESSAGE
-    Config[:message].to_s.split(//).join(" ")
+    @config[:message] ||= MESSAGE
+    @config[:message].to_s.split(//).join(" ")
   end
 
   def splash_message_color
@@ -449,7 +435,7 @@ module Bio::Shell::Core
     x = " "
 
     print "\n"
-    if Config[:color]
+    if @config[:color]
       0.step(l,2) do |i|
         l1 = l-i;  l2 = l1/2;  l4 = l2/2
         print "#{c[:n]}#{s[0,i]}#{x*l1}#{c[:y]}#{s[i,1]}\r"
@@ -462,7 +448,7 @@ module Bio::Shell::Core
         sleep(0.008)
       end
     end
-    if Config[:color]
+    if @config[:color]
       print splash_message_color
     else
       print splash_message
@@ -474,7 +460,7 @@ module Bio::Shell::Core
 
   def closing_splash
     print "\n\n"
-    if Config[:color]
+    if @config[:color]
       print splash_message_color
     else
       print splash_message
