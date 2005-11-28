@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: seq.rb,v 1.13 2005/11/28 02:06:47 k Exp $
+# $Id: seq.rb,v 1.14 2005/11/28 07:13:55 k Exp $
 #
 #--
 #
@@ -78,7 +78,7 @@ module Bio::Shell
       rep << "5'->3' sequence   : #{fwd.fold(70,20).strip}#{dot}\n"
       rep << "3'->5' sequence   : #{rev.fold(70,20).strip}#{dot}\n"
       [ 1, 2, 3, -1, -2, -3 ].each do |frame|
-        pep = fwd.translate(frame).fold(70,20).strip
+        pep = seq.subseq(1, max+2).translate(frame).fold(70,20).strip
         rep << "Translation  #{frame.to_s.rjust(2)}   : #{pep}#{dot}\n"
       end
       rep << "Length            : #{seq.length} bp\n"
@@ -98,10 +98,7 @@ module Bio::Shell
         percent = format("%.1f%", 100.0 * num / (seq.length / 3))
         hash[codon] = percent
       end
-      #--
-      #*TODO* how to hide this method
-      #++
-      rep << codon_usage_table(1, hash).output
+      rep << codontable(1, hash).output #*TODO* how to hide?
 
       begin
         rep << "Molecular weight  : #{seq.molecular_weight}\n"
