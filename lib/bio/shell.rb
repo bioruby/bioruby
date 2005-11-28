@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: shell.rb,v 1.8 2005/11/24 19:30:07 k Exp $
+# $Id: shell.rb,v 1.9 2005/11/28 02:05:40 k Exp $
 #
 #--
 #
@@ -28,6 +28,7 @@
 
 require 'bio'
 require 'yaml'
+require 'open-uri'
 require 'pp'
 
 module Bio::Shell
@@ -40,6 +41,7 @@ module Bio::Shell
   require 'bio/shell/plugin/flatfile'
   require 'bio/shell/plugin/obda'
   require 'bio/shell/plugin/keggapi'
+  require 'bio/shell/access'
 
   extend Core
 
