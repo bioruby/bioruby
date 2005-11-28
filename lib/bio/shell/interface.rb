@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: interface.rb,v 1.8 2005/11/27 17:39:00 k Exp $
+# $Id: interface.rb,v 1.9 2005/11/28 07:10:59 k Exp $
 #
 #--
 #
@@ -103,7 +103,7 @@ module Bio::Shell
     puts "Pager is set to '#{cmd ? cmd : 'off'}'"
   end
 
-  def display(*obj)
+  def display(*obj)             # *TODO* spec?
     # The original idea is from http://sheepman.parfait.ne.jp/20050215.html
     if Bio::Shell.config[:pager]
       pg = IO.popen(Bio::Shell.config[:pager], "w")
@@ -126,13 +126,20 @@ module Bio::Shell
     system("#{pager} #{file}")
   end
 
-  def head(file, num = 10)
+  def head(arg, num = 10)
     str = ""
-    File.open(file) do |f|
-      num.times do
-        if line = f.gets
-          str << line
+    if File.exists?(arg)
+      File.open(arg) do |file|
+        num.times do
+          if line = file.gets
+            str << line
+          end
         end
+      end
+    else
+      arg.to_s.each_with_index do |line, i|
+        break if i >= num
+        str << line
       end
     end
     display str
@@ -140,7 +147,7 @@ module Bio::Shell
 
   ### file save
 
-  def save(file, *objs)
+  def savefile(file, *objs)
     if File.exists?(file)
       loop do
         print "Overwrite existing #{file}? [y/n]: "
