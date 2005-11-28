@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: codon.rb,v 1.7 2005/11/28 07:12:03 k Exp $
+# $Id: codon.rb,v 1.8 2005/11/28 12:07:42 k Exp $
 #
 #--
 #
@@ -25,10 +25,6 @@
 #
 #++
 #
-
-require 'bio/data/codontable'
-require 'bio/data/aa'
-require 'bio/data/na'
 
 module Bio::Shell
 
@@ -187,8 +183,12 @@ module Bio::Shell
 
   def codontable(num = 1, codon_usage = nil)
     cct = ColoredCodonTable.new(num, codon_usage)
-    display cct.output unless codon_usage
-    return cct
+    if codon_usage
+      return cct
+    else
+      puts cct.output
+      return cct.table
+    end
   end
 
   def codontables

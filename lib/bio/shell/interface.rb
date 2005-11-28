@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: interface.rb,v 1.9 2005/11/28 07:10:59 k Exp $
+# $Id: interface.rb,v 1.10 2005/11/28 12:07:42 k Exp $
 #
 #--
 #
@@ -36,7 +36,7 @@ module Bio::Shell
     list = eval("local_variables", conf.workspace.binding).reject { |x|
       eval(x, conf.workspace.binding).nil?
     }
-    display list.inspect
+    puts list.inspect
   end
 
   def rm(name)
@@ -103,7 +103,7 @@ module Bio::Shell
     puts "Pager is set to '#{cmd ? cmd : 'off'}'"
   end
 
-  def display(*obj)             # *TODO* spec?
+  def display(*obj)
     # The original idea is from http://sheepman.parfait.ne.jp/20050215.html
     if Bio::Shell.config[:pager]
       pg = IO.popen(Bio::Shell.config[:pager], "w")
@@ -142,7 +142,8 @@ module Bio::Shell
         str << line
       end
     end
-    display str
+    puts str
+    return str
   end
 
   ### file save
@@ -175,11 +176,11 @@ module Bio::Shell
     if dir
       Dir.chdir(dir)
     end
-    display Dir.pwd.inspect
+    puts Dir.pwd.inspect
   end
 
   def pwd
-    display Dir.pwd.inspect
+    puts Dir.pwd.inspect
   end
 
   def dir(file = nil)
@@ -203,7 +204,8 @@ module Bio::Shell
         name = f.inspect
         str << format("%s  %s%13d  %s\n", mode, date, byte, name)
       }
-      display str
+      puts str
+      return str
     end
   end
 

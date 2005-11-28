@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: entry.rb,v 1.2 2005/11/28 07:09:34 k Exp $
+# $Id: entry.rb,v 1.3 2005/11/28 12:07:42 k Exp $
 #
 #--
 #
@@ -32,12 +32,12 @@ module Bio::Shell
 
   # Obtain a Bio::Sequence::NA (DNA) or a Bio::Sequence::AA (Amino Acid)
   # sequence from
-  #   * String -- "atgcatgc" or "MQKKP"
-  #   * File   -- "gbvrl.gbk" (only the first entry is used)
-  #   * ID     -- "embl:BUM"  (entry is retrieved by the OBDA)
+  #   * String     -- "atgcatgc" or "MQKKP"
+  #   * IO         -- io = IO.popen("gzip -dc db.gz") (first entry only)
+  #   * "filename" -- "gbvrl.gbk" (first entry only)
+  #   * "db:entry" -- "embl:BUM"  (entry is retrieved by the ent method)
   def seq(arg)
     seq = ""
-
     if arg.kind_of?(Bio::Sequence)
       seq = arg
     elsif arg.respond_to?(:gets) or File.exists?(arg)
@@ -60,15 +60,16 @@ module Bio::Shell
     if tmp and tmp.is_a?(String) and not tmp.empty?
       seq = Bio::Sequence.auto(tmp)
     end
-
     return seq
   end
 
+  # Obtain a database entry from
+  #   * IO          -- IO object (first entry only)
+  #   * "filename"  -- local file (first entry only)
+  #   * "db:entry"  -- local bioflat, OBDA, KEGG API
   def ent(arg)
     entry = ""
-
     db, entry_id = arg.to_s.strip.split(/:/)
-    
     if arg.respond_to?(:gets) or File.exists?(arg)
       entry = flatfile(arg)
     elsif Bio::Shell.find_flat_dir(db)
@@ -78,8 +79,6 @@ module Bio::Shell
     else
       entry = bget(arg)
     end
-
-    display entry
     return entry
   end
 

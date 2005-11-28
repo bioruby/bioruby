@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: obda.rb,v 1.6 2005/11/28 07:15:30 k Exp $
+# $Id: obda.rb,v 1.7 2005/11/28 12:07:42 k Exp $
 #
 #--
 #
@@ -25,8 +25,6 @@
 #
 #++
 #
-
-require 'bio/io/registry'
 
 module Bio::Shell
 
@@ -55,14 +53,12 @@ module Bio::Shell
 
   def obdadbs
     result = obda.databases.map {|db| db.database}
-    display result
     return result
   end
 
   def biofetch(db, id, style = 'raw', format = 'default')
     serv = Bio::Fetch.new("http://www.ebi.ac.uk/cgi-bin/dbfetch")
     result = serv.fetch(db, id, style, format)
-    display result
     return result
   end
 

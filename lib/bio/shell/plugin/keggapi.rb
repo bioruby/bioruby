@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: keggapi.rb,v 1.5 2005/11/28 07:18:14 k Exp $
+# $Id: keggapi.rb,v 1.6 2005/11/28 12:07:42 k Exp $
 #
 #--
 #
@@ -26,12 +26,10 @@
 #++
 #
 
-require 'bio/io/keggapi'
-
 module Bio::Shell
 
   module Private
-    def keeggapi_definition2tab(list)
+    def keggapi_definition2tab(list)
       ary = []
       list.each do |entry|
         ary << "#{entry.entry_id}:\t#{entry.definition}"
@@ -53,13 +51,12 @@ module Bio::Shell
 
   def binfo(db = "all")
     result = keggapi.binfo(db)
-    display result
+    puts result
     return result
   end
 
   def bfind(str)
     result = keggapi.bfind(str)
-    display result
     return result
   end
 
@@ -74,13 +71,11 @@ module Bio::Shell
 
   def btit(str)
     result = keggapi.btit(str)
-    display result
     return result
   end
 
   def bconv(str)
     result = keggapi.bconv(str)
-    display result
     return result
   end
 
@@ -89,26 +84,25 @@ module Bio::Shell
   def keggdbs
     list = keggapi.list_databases
     result = Bio::Shell.keggapi_definition2tab(list).join("\n")
-    display result
-    return result
+    puts result
+    return list.map {|x| x.entry_id}
   end
 
   def keggorgs
     list = keggapi.list_organisms
     result = Bio::Shell.keggapi_definition2tab(list).sort.join("\n")
-    display result
-    return result
+    puts result
+    return list.map {|x| x.entry_id}
   end
 
   def keggpathways(org = "map")
     list = keggapi.list_pathways(org)
     result = Bio::Shell.keggapi_definition2tab(list).join("\n")
-    display result
-    return result
+    puts result
+    return list.map {|x| x.entry_id}
   end
 
-=begin
-  def kegggenome(org)	# *TODO* use das instead?
+  def kegggenomeseq(org)
     result = ""
     require 'net/ftp'
     Net::FTP.open("ftp.genome.jp", "anonymous") do |ftp|
@@ -116,14 +110,13 @@ module Bio::Shell
       list = ftp.nlst(path)
       file = list.grep(/.*genome$/).shift
       if file
-        base = File.basename(file)
-        ftp.getbinaryfile(file, base)
-        result = File.read(base)
+        open("ftp://ftp.genome.jp/#{file}") do |file|
+          result = file.read
+        end
       end
     end
     return result
   end
-=end
 
 end
 

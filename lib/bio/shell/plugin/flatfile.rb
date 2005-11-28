@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: flatfile.rb,v 1.9 2005/11/28 07:14:37 k Exp $
+# $Id: flatfile.rb,v 1.10 2005/11/28 12:07:42 k Exp $
 #
 #--
 #
@@ -25,8 +25,6 @@
 #
 #++
 #
-
-require 'bio/io/flatfile'
 
 module Bio::Shell
 
@@ -105,15 +103,17 @@ module Bio::Shell
       warn "Error: Failed to open database (#{dbname})"
       return
     end
+    entry = ''
     Bio::FlatFileIndex.open(dir) do |db|
       if results = db.include?(keyword)
         results.each do |entry_id|
-          display db.search_primary(entry_id)
+          entry << db.search_primary(entry_id)
         end
       else
-        display "No hits found"
+        warn "Error: No hits found in #{dbname} (#{keyword})"
       end
     end
+    return entry
   end
 
 end

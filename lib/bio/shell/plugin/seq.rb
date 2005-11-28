@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: seq.rb,v 1.14 2005/11/28 07:13:55 k Exp $
+# $Id: seq.rb,v 1.15 2005/11/28 12:07:42 k Exp $
 #
 #--
 #
@@ -25,9 +25,6 @@
 #
 #++
 #
-
-require 'bio/sequence'
-require 'bio/util/color_scheme'
 
 module Bio::Shell
 
@@ -137,7 +134,8 @@ module Bio::Shell
       end
     end
     rep  << "//\n"
-    display rep
+    puts rep
+    return rep
   end
 
   # Displays a DNA sequence by ascii art in B-type double helix.
@@ -145,27 +143,25 @@ module Bio::Shell
   def doublehelix(str)
     seq = seq(str)
     if str.length < 16
-      display "Sequence must be longer than 16 bases."
+      warn "Error: Sequence must be longer than 16 bases."
       return
     end
     if ! seq.respond_to?(:complement)
-      display "Sequence must be a DNA sequence."
+      warn "Error: Sequence must be a DNA sequence."
       return
     end
-    helix = ''
     pairs = [ [5, 0], [4, 2], [3, 3], [2, 4], 
               [1, 4], [0, 3], [0, 2], [1, 0] ]
     seq.window_search(16, 16) do |subseq|
       pairs.each_with_index do |ij, x|
         base = subseq[x, 1]
-        helix << ' ' * ij[0] + base + '-' * ij[1] + base.complement + "\n"
+        puts ' ' * ij[0] + base + '-' * ij[1] + base.complement + "\n"
       end
       pairs.reverse.each_with_index do |ij, x|
         base = subseq[x + 8, 1]
-        helix << ' ' * ij[0] + base.complement + '-' * ij[1] + base + "\n"
+        puts ' ' * ij[0] + base.complement + '-' * ij[1] + base + "\n"
       end
     end
-    display helix
   end
 
 end
