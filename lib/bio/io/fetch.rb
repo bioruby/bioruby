@@ -1,7 +1,13 @@
 #
-# bio/io/biofetch.rb - BioFetch access module
+# = bio/io/biofetch.rb - BioFetch access module
 #
-#   Copyright (C) 2002 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::   Copyright (C) 2002, 2005
+#               Toshiaki Katayama <k@bioruby.org>
+# Licence::     LGPL
+#
+# $Id: fetch.rb,v 1.3 2005/11/28 02:02:38 k Exp $
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +23,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fetch.rb,v 1.2 2004/02/21 19:40:34 k Exp $
+#++
 #
 
 require 'uri'
@@ -25,33 +31,67 @@ require 'net/http'
 
 module Bio
 
-  class Fetch
+class Fetch
 
-    def initialize(url = 'http://bioruby.org/cgi-bin/biofetch.rb')
-      schema, user, @host, @port, reg, @path, = URI.split(url)
-    end
-    attr_accessor :database
+  # Create a new Bio::Fetch server object.
+  # Use Bio::Fetch.new('http://www.ebi.ac.uk/cgi-bin/dbfetch') to connect
+  # to EBI BioFetch server.
+  def initialize(url = 'http://bioruby.org/cgi-bin/biofetch.rb')
+    schema, user, @host, @port, reg, @path, = URI.split(url)
+  end
 
-    def get_by_id(id)
-      fetch(@database, id)
-    end
+  # Set default database to dbname (prepare for get_by_id).
+  attr_accessor :database
 
-    def fetch(db, id, style = 'raw', format = nil)
-      data = [ "db=#{db}", "id=#{id}", "style=#{style}" ]
-      data.push("format=#{format}") if format
-      data = data.join('&')
+  # Get raw database entry by id (mainly used by Bio::Registry).
+  def get_by_id(id)
+    fetch(@database, id)
+  end
 
-      responce, result = Net::HTTP.new(@host, @port).post(@path, data)
+  # Fetch a database entry as specified by database (db), entry id (id),
+  # 'raw' text or 'html' (style), and format.  When using BioRuby's
+  # BioFetch server, value for the format should not be set.
+  def fetch(db, id, style = 'raw', format = nil)
+    data = [ "db=#{db}", "id=#{id}", "style=#{style}" ]
+    data.push("format=#{format}") if format
+    data = data.join('&')
+
+    responce, result = Net::HTTP.new(@host, @port).post(@path, data)
+    return result
+  end
+
+  # Short cut for using BioRuby's BioFetch server.  You can fetch an entry
+  # without creating instance of BioFetch server.
+  def self.query(*args)
+    self.new.fetch(*args)
+  end
+
+  # What databases are available?
+  def databases
+    query = "info=dbs"
+    responce, result = Net::HTTP.new(@host, @port).post(@path, query)
+    return result
+  end
+
+  # What formats does the database X have?
+  def formats(database = @database)
+    if database
+      query = "info=formats;db=#{database}"
+      responce, result = Net::HTTP.new(@host, @port).post(@path, query)
       return result
     end
+  end
 
-    def self.query(*args)
-      self.new.fetch(*args)
-    end
-
+  # How many entries can be retrieved simultaneously?
+  def maxids
+    query = "info=maxids"
+    responce, result = Net::HTTP.new(@host, @port).post(@path, query)
+    return result
   end
 
 end
+
+end # module Bio
 
 
 
@@ -71,34 +111,4 @@ if __FILE__ == $0
 
 end
 
-
-=begin
-
-= Bio::Fetch
-
---- Bio::Fetch.new(url = 'http://bioruby.org/cgi-bin/biofetch.rb')
-
-      Use Bio::Fetch.new('http://www.ebi.ac.uk/cgi-bin/dbfetch') to connect
-      to EBI BioFetch server.
-
---- Bio::Fetch#fetch(db, id, style = 'raw', format = nil)
-
-      Fetch a database entry as specified by database (db), entry id (id),
-      'raw' text or 'html' (style), and format.  When using BioRuby's
-      BioFetch server, value for the format should not be set.
-
---- Bio::Fetch#database=(dbname)
-
-      Set default database to dbname (prepare for get_by_id).
-
---- Bio::Fetch#get_by_id(id)
-
-      Get raw database entry by id (mainly used by Bio::Registry).
-
---- Bio::Fetch.query(db, id, style = 'raw', format = nil)
-
-      Short cut for using BioRuby's BioFetch server.  You can fetch an entry
-      without creating instance of BioFetch server.
-
-=end
 
