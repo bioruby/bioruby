@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: codon.rb,v 1.6 2005/11/27 15:01:17 k Exp $
+# $Id: codon.rb,v 1.7 2005/11/28 07:12:03 k Exp $
 #
 #--
 #
@@ -55,12 +55,12 @@ module Bio::Shell
       :stop => %w( * ),
     }
 
-    def initialize(number, color = true, cuhash = nil)
+    def initialize(number, cuhash = nil)
       @aacode = Bio::AminoAcid.names
       @table  = Bio::CodonTable[number]
       @number = number
       @cuhash = cuhash
-      if color
+      if Bio::Shell.config[:color]
         generate_colored_text
       else
         generate_mono_text
@@ -185,14 +185,10 @@ module Bio::Shell
 
   private
 
-  def codon_usage_table(num = 1, codon_usage = nil)
-    ColoredCodonTable.new(num, Bio::Shell.config(:color), codon_usage)
-  end    
-
-  def codontable(num = 1)
-    cct = codon_usage_table(num)
-    display cct.output
-    return cct.table
+  def codontable(num = 1, codon_usage = nil)
+    cct = ColoredCodonTable.new(num, codon_usage)
+    display cct.output unless codon_usage
+    return cct
   end
 
   def codontables
