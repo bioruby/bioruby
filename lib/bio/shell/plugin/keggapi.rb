@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: keggapi.rb,v 1.4 2005/11/25 16:07:55 k Exp $
+# $Id: keggapi.rb,v 1.5 2005/11/28 07:18:14 k Exp $
 #
 #--
 #
@@ -30,6 +30,16 @@ require 'bio/io/keggapi'
 
 module Bio::Shell
 
+  module Private
+    def keeggapi_definition2tab(list)
+      ary = []
+      list.each do |entry|
+        ary << "#{entry.entry_id}:\t#{entry.definition}"
+      end
+      return ary
+    end
+  end
+
   private
 
   def keggapi
@@ -37,14 +47,6 @@ module Bio::Shell
       @keggapi = Bio::KEGG::API.new
     end
     return @keggapi
-  end
-
-  def _definition(list)
-    ary = []
-    list.each do |entry|
-      ary << "#{entry.entry_id}:\t#{entry.definition}"
-    end
-    return ary
   end
 
   # DBGET
@@ -66,9 +68,8 @@ module Bio::Shell
     if block_given?
       yield result
     else
-      display result
+      return result
     end
-    return result
   end
 
   def btit(str)
@@ -87,29 +88,27 @@ module Bio::Shell
 
   def keggdbs
     list = keggapi.list_databases
-    result = _definition(list).join("\n")
+    result = Bio::Shell.keggapi_definition2tab(list).join("\n")
     display result
     return result
   end
 
   def keggorgs
     list = keggapi.list_organisms
-    result = _definition(list).sort.join("\n")
+    result = Bio::Shell.keggapi_definition2tab(list).sort.join("\n")
     display result
     return result
   end
 
   def keggpathways(org = "map")
     list = keggapi.list_pathways(org)
-    result = _definition(list).join("\n")
+    result = Bio::Shell.keggapi_definition2tab(list).join("\n")
     display result
     return result
   end
 
-  #--
-  # *TODO* use kegg das instead?
-  #++
-  def kegggenome(org)
+=begin
+  def kegggenome(org)	# *TODO* use das instead?
     result = ""
     require 'net/ftp'
     Net::FTP.open("ftp.genome.jp", "anonymous") do |ftp|
@@ -124,10 +123,7 @@ module Bio::Shell
     end
     return result
   end
-
-# def kegggene(genes_id)
-#    keggapi.bget()
-# end
+=end
 
 end
 
