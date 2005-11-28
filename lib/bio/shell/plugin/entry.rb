@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: entry.rb,v 1.1 2005/11/28 02:05:41 k Exp $
+# $Id: entry.rb,v 1.2 2005/11/28 07:09:34 k Exp $
 #
 #--
 #
@@ -28,48 +28,58 @@
 
 module Bio::Shell
 
+  private
+
   # Obtain a Bio::Sequence::NA (DNA) or a Bio::Sequence::AA (Amino Acid)
   # sequence from
   #   * String -- "atgcatgc" or "MQKKP"
   #   * File   -- "gbvrl.gbk" (only the first entry is used)
   #   * ID     -- "embl:BUM"  (entry is retrieved by the OBDA)
   def seq(arg)
+    seq = ""
+
     if arg.kind_of?(Bio::Sequence)
-      s = arg
+      seq = arg
     elsif arg.respond_to?(:gets) or File.exists?(arg)
-      entry = flatauto(arg)
+      ent = flatauto(arg)
     elsif arg[/:/]
       str = ent(arg)
-      entry = parse(str)
+      ent = flatparse(str)
     else
       tmp = arg
     end
 
-    if entry.respond_to?(:seq)
-      tmp = entry.seq
-    elsif entry.respond_to?(:naseq)
-      s = entry.naseq
-    elsif entry.respond_to?(:aaseq)
-      s = entry.aaseq
+    if ent.respond_to?(:seq)
+      tmp = ent.seq
+    elsif ent.respond_to?(:naseq)
+      seq = ent.naseq
+    elsif ent.respond_to?(:aaseq)
+      seq = ent.aaseq
     end
 
     if tmp and tmp.is_a?(String) and not tmp.empty?
-      s = Bio::Sequence.auto(tmp)
+      seq = Bio::Sequence.auto(tmp)
     end
 
-    return s || ""
+    return seq
   end
 
   def ent(arg)
+    entry = ""
+
     db, entry_id = arg.to_s.strip.split(/:/)
     
-    if Bio::Shell.find_flat_dir(db)
+    if arg.respond_to?(:gets) or File.exists?(arg)
+      entry = flatfile(arg)
+    elsif Bio::Shell.find_flat_dir(db)
       entry = flatsearch(db, entry_id)
-    eleif obdadbs.include?(db)
-      entry = obda_get_entry(db, entry_id)
+    elsif obdadbs.include?(db)
+      entry = obdaentry(db, entry_id)
     else
       entry = bget(arg)
     end
+
+    display entry
     return entry
   end
 
