@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: obda.rb,v 1.4 2005/11/24 19:32:49 k Exp $
+# $Id: obda.rb,v 1.5 2005/11/28 02:09:52 k Exp $
 #
 #--
 #
@@ -41,6 +41,10 @@ module Bio::Shell
 
   def obda_get_entry(dbname, entry_id)
     db = obda.get_database(dbname)
+    unless db
+      warn "Error: No such database (#{dbname})"
+      return
+    end
     entry = db.get_by_id(entry_id)
     if block_given?
       yield entry
@@ -50,6 +54,18 @@ module Bio::Shell
     return entry
   end
 
-end
+  def obdadbs
+    result = obda.databases.map {|db| db.database}
+    display result
+    return result
+  end
 
+  def biofetch(db, id, style = 'raw', format = 'default')
+    serv = Bio::Fetch.new("http://www.ebi.ac.uk/cgi-bin/dbfetch")
+    result = serv.fetch(db, id, style, format)
+    display result
+    return result
+  end
+
+end
 
