@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: flatfile.rb,v 1.7 2005/11/25 16:47:10 k Exp $
+# $Id: flatfile.rb,v 1.8 2005/11/28 02:08:22 k Exp $
 #
 #--
 #
@@ -88,21 +88,23 @@ module Bio::Shell
   end
 
   def flatindex(dbname, *flatfiles)
-    prefix = Bio::Shell.create_save_dir + Core::BIOFLAT
-    idxdir = prefix + dbname.to_s
+    dir = Bio::Shell.create_flat_dir(dbname)
     begin
-      print "Creating BioFlat index (#{idxdir}) ... "
+      print "Creating BioFlat index (#{dir}) ... "
       bdb = format = options = nil
-      Bio::FlatFileIndex.makeindex(bdb, idxdir, format, options, *flatfiles)
+      Bio::FlatFileIndex.makeindex(bdb, dir, format, options, *flatfiles)
       puts "done"
     rescue
-      warn "Error: Failed to create index (#{idxdir}) : #{$!}"
+      warn "Error: Failed to create index (#{dir}) : #{$!}"
     end
   end
 
   def flatsearch(dbname, keyword)
-    dir = Core::SAVEDIR + Core::BIOFLAT + dbname.to_s
-    dir = Core::USERDIR + Core::BIOFLAT + dbname.to_s unless File.exists?(dir)
+    dir = Bio::Shell.find_flat_dir(dbname)
+    unless dir
+      warn "Error: Failed to open database (#{dbname})"
+      return
+    end
     Bio::FlatFileIndex.open(dir) do |db|
       if results = db.include?(keyword)
         results.each do |entry_id|
@@ -113,14 +115,5 @@ module Bio::Shell
       end
     end
   end
-
-=begin
-  def bioflat_namespaces(dbname)
-    dir = Core::SAVEDIR + Core::BIOFLAT + dbname.to_s
-    db = Bio::FlatFileIndex.open(dir)
-    display db.namespaces.inspect
-    db.close
-  end
-=end
 
 end

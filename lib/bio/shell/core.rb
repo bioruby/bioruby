@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: core.rb,v 1.12 2005/11/27 17:39:00 k Exp $
+# $Id: core.rb,v 1.13 2005/11/28 02:08:22 k Exp $
 #
 #--
 #
@@ -157,6 +157,26 @@ module Bio::Shell::Core
       rescue
         warn "Error: Failed to create #{dir} : #{$!}"
       end
+    end
+  end
+
+  ### bioflat
+
+  def create_flat_dir(dbname)
+    if prefix = create_save_dir
+      return prefix + BIOFLAT + dbname.to_s
+    else
+      return nil
+    end
+  end
+
+  def find_flat_dir(dbname)
+    dir = SAVEDIR + BIOFLAT + dbname.to_s
+    dir = USERDIR + BIOFLAT + dbname.to_s unless File.exists?(dir)
+    if File.exists?(dir)
+      return dir
+    else
+      return nil
     end
   end
 
@@ -314,7 +334,6 @@ module Bio::Shell::Core
       warn "Error: Failed to save (#{file}) : #{$!}"
     end
   end
-
 
   ### history
 
