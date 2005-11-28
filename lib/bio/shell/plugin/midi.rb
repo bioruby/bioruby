@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: midi.rb,v 1.5 2005/11/28 07:17:13 k Exp $
+# $Id: midi.rb,v 1.6 2005/11/28 12:06:18 k Exp $
 #
 #--
 #
@@ -412,7 +412,7 @@ module Bio::Shell
 
   private
 
-  def midi(seq, filename, *args)	# *TODO* interface?
+  def midifile(filename, seq, *args)
     begin
       print "Saving MIDI file (#{filename}) ... "
       File.open(filename, "w") do |file|
