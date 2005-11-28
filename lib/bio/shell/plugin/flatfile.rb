@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: flatfile.rb,v 1.8 2005/11/28 02:08:22 k Exp $
+# $Id: flatfile.rb,v 1.9 2005/11/28 07:14:37 k Exp $
 #
 #--
 #
@@ -65,7 +65,7 @@ module Bio::Shell
     end
   end
 
-  def parse(entry)
+  def flatparse(entry)
     if cls = Bio::FlatFile.autodetect(entry)
       return cls.new(entry)
     end
