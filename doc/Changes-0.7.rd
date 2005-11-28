@@ -150,6 +150,20 @@ Renamed to Bio::EMBLDB::Common for the simple autoload dependency.
 linkdb method is changed to return a Hash of an Array of entry IDs
 instead of a Hash of a entry ID string.
 
+--- Bio::TRANSFAC
+
+* Bio::TFMATRIX is renamed to Bio::TRANSFAC::MATRIX
+* Bio::TFSITE   is renamed to Bio::TRANSFAC::SITE
+* Bio::TFFACTOR is renamed to Bio::TRANSFAC::FACTOR
+* Bio::TFCELL   is renamed to Bio::TRANSFAC::CELL
+* Bio::TFCLASS  is renamed to Bio::TRANSFAC::CLASS
+* Bio::TFGENE   is renamed to Bio::TRANSFAC::GENE
+
+--- Bio::GFF
+
+* Bio::GFF2 is renamed to Bio::GFF::GFF2
+* Bio::GFF3 is renamed to Bio::GFF::GFF3
+
 === Deleted files
 
 : lib/bio/db/genbank.rb

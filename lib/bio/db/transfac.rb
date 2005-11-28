@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: transfac.rb,v 1.9 2005/09/08 01:22:11 k Exp $
+#  $Id: transfac.rb,v 1.10 2005/11/28 04:57:33 k Exp $
 #
 
 require "bio/db"
@@ -25,81 +25,79 @@ require "matrix"
 
 module Bio
 
-  class TRANSFAC < EMBLDB
+class TRANSFAC < EMBLDB
 
-    DELIMITER	= RS = "\n//\n"
-    TAGSIZE	= 4
+  DELIMITER	= RS = "\n//\n"
+  TAGSIZE	= 4
 
-    def initialize(entry)
-      super(entry, TAGSIZE)
-    end
-
-    # AC  Accession number                   (1 per entry)
-    #
-    #  AC  T00001   in the case of FACTOR
-    #  AC  M00001   in the case of MATRIX
-    #  AC  R00001   in the case of SITE
-    #  AC  G000001  in the case of GENE
-    #  AC  C00001   in the case of CLASS
-    #  AC  00001    in the case of CELL 
-    #
-    def ac
-      unless @data['AC']
-        @data['AC'] = fetch('AC')
-      end
-      @data['AC']
-    end
-    alias entry_id ac
-
-    # DT  Date                               (1 per entry)
-    #
-    #  DT  DD.MM.YYYY (created); ewi.
-    #  DT  DD.MM.YYYY (updated); mpr.
-    #
-    def dt
-      field_fetch('DT')
-    end
-    alias date dt
-
-    def cc
-      field_fetch('CC')
-    end
-    alias comment cc
-
-    def os
-      field_fetch('OS')
-    end
-    alias org_species os
-
-    def oc
-      field_fetch('OC')
-    end
-    alias org_class oc
-
-    def rn
-      field_fetch('RN')
-    end
-    alias ref_no rn
-
-    def ra
-      field_fetch('RA')
-    end
-    alias ref_authors ra
-
-    def rt
-      field_fetch('RT')
-    end
-    alias ref_title rt
-
-    def rl
-      field_fetch('RL')
-    end
-    alias ref_data rl
-
+  def initialize(entry)
+    super(entry, TAGSIZE)
   end
 
+  # AC  Accession number                   (1 per entry)
+  #
+  #  AC  T00001   in the case of FACTOR
+  #  AC  M00001   in the case of MATRIX
+  #  AC  R00001   in the case of SITE
+  #  AC  G000001  in the case of GENE
+  #  AC  C00001   in the case of CLASS
+  #  AC  00001    in the case of CELL 
+  #
+  def ac
+    unless @data['AC']
+      @data['AC'] = fetch('AC')
+    end
+    @data['AC']
+  end
+  alias entry_id ac
 
-  class TFMATRIX < TRANSFAC
+  # DT  Date                               (1 per entry)
+  #
+  #  DT  DD.MM.YYYY (created); ewi.
+  #  DT  DD.MM.YYYY (updated); mpr.
+  #
+  def dt
+    field_fetch('DT')
+  end
+  alias date dt
+
+  def cc
+    field_fetch('CC')
+  end
+  alias comment cc
+
+  def os
+    field_fetch('OS')
+  end
+  alias org_species os
+
+  def oc
+    field_fetch('OC')
+  end
+  alias org_class oc
+
+  def rn
+    field_fetch('RN')
+  end
+  alias ref_no rn
+
+  def ra
+    field_fetch('RA')
+  end
+  alias ref_authors ra
+
+  def rt
+    field_fetch('RT')
+  end
+  alias ref_title rt
+
+  def rl
+    field_fetch('RL')
+  end
+  alias ref_data rl
+
+
+  class MATRIX < TRANSFAC
 
     def initialize(entry)
       super(entry)
@@ -150,7 +148,7 @@ module Bio
   end
 
 
-  class TFSITE < TRANSFAC
+  class SITE < TRANSFAC
 
     def initialize(entry)
       super(entry)
@@ -208,7 +206,7 @@ module Bio
   end
 
 
-  class TFFACTOR < TRANSFAC
+  class FACTOR < TRANSFAC
 
     def initialize(entry)
       super(entry)
@@ -302,7 +300,7 @@ module Bio
   end
 
 
-  class TFCELL < TRANSFAC
+  class CELL < TRANSFAC
 
     def initialize(entry)
       super(entry)
@@ -316,7 +314,7 @@ module Bio
   end
 
 
-  class TFCLASS < TRANSFAC
+  class CLASS < TRANSFAC
 
     def initialize(entry)
       super(entry)
@@ -345,7 +343,7 @@ module Bio
   end
 
 
-  class TFGENE < TRANSFAC
+  class GENE < TRANSFAC
 
     def initialize(entry)
       super(entry)
@@ -383,5 +381,7 @@ module Bio
 
   end
 
-end
+end # class TRANSFAC
+
+end # module Bio
 

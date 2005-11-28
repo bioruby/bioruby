@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: bio.rb,v 1.57 2005/11/04 17:34:42 k Exp $
+# $Id: bio.rb,v 1.58 2005/11/28 04:57:32 k Exp $
 #
 #--
 #
@@ -132,16 +132,8 @@ module Bio
   autoload :FastaNumericFormat, 'bio/db/fasta' # change to FastaFormat::Numeric ?
   autoload :FastaDefline,       'bio/db/fasta' # change to FastaFormat::Defline
   autoload :GFF,            'bio/db/gff'
-  autoload :GFF2,           'bio/db/gff'       # change to GFF::GFF2, improve
-  autoload :GFF3,           'bio/db/gff'       # change to GFF::GFF3, improve
   autoload :AAindex,        'bio/db/aaindex'
   autoload :TRANSFAC,       'bio/db/transfac'
-  autoload :TFMATRIX,       'bio/db/transfac'  # change to TRANSFAC::MATRIX
-  autoload :TFSITE,         'bio/db/transfac'  # change to TRANSFAC::SITE
-  autoload :TFFACTOR,       'bio/db/transfac'  # change to TRANSFAC::FACTOR
-  autoload :TFCELL,         'bio/db/transfac'  # change to TRANSFAC::CELL
-  autoload :TFCLASS,        'bio/db/transfac'  # change to TRANSFAC::CLASS
-  autoload :TFGENE,         'bio/db/transfac'  # change to TRANSFAC::GENE
   autoload :PROSITE,        'bio/db/prosite'
   autoload :LITDB,          'bio/db/litdb'
   autoload :MEDLINE,        'bio/db/medline'
