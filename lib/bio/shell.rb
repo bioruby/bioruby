@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: shell.rb,v 1.9 2005/11/28 02:05:40 k Exp $
+# $Id: shell.rb,v 1.10 2005/11/28 07:06:32 k Exp $
 #
 #--
 #
@@ -35,15 +35,16 @@ module Bio::Shell
 
   require 'bio/shell/core'
   require 'bio/shell/session'
+  require 'bio/shell/access'
   require 'bio/shell/plugin/seq'
   require 'bio/shell/plugin/midi'
   require 'bio/shell/plugin/codon'
   require 'bio/shell/plugin/flatfile'
   require 'bio/shell/plugin/obda'
   require 'bio/shell/plugin/keggapi'
-  require 'bio/shell/access'
 
   extend Core
+  extend Private
 
 end
 
