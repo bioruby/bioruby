@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: seq.rb,v 1.12 2005/11/25 16:47:10 k Exp $
+# $Id: seq.rb,v 1.13 2005/11/28 02:06:47 k Exp $
 #
 #--
 #
@@ -28,45 +28,10 @@
 
 require 'bio/sequence'
 require 'bio/util/color_scheme'
-require 'bio/shell/plugin/codon'
 
 module Bio::Shell
 
   private
-
-  # Obtain a Bio::Sequence::NA (DNA) or a Bio::Sequence::AA (Amino Acid)
-  # sequence from
-  #   * String -- "atgcatgc" or "MQKKP"
-  #   * File   -- "gbvrl.gbk" (only the first entry is used)
-  #   * ID     -- "embl:BUM"  (entry is retrieved by the OBDA)
-  def seq(arg)
-    if arg.kind_of?(Bio::Sequence)
-      s = arg
-    elsif arg.respond_to?(:gets) or File.exists?(arg)
-      entry = flatauto(arg)
-    elsif arg[/:/]
-      db, entry_id = arg.split(/:/)
-      str = obda_get_entry(db, entry_id)
-      entry = parse(str)
-    else
-      tmp = arg
-    end
-
-    if entry.respond_to?(:seq)
-      tmp = entry.seq
-    elsif entry.respond_to?(:naseq)
-      s = entry.naseq
-    elsif entry.respond_to?(:aaseq)
-      s = entry.aaseq
-    end
-
-    if tmp and tmp.is_a?(String) and not tmp.empty?
-      s = Bio::Sequence.auto(tmp)
-    end
-
-    return s || ""
-  end
-
 
   # Convert sequence to colored HTML string
   def htmlseq(str)
@@ -133,6 +98,9 @@ module Bio::Shell
         percent = format("%.1f%", 100.0 * num / (seq.length / 3))
         hash[codon] = percent
       end
+      #--
+      #*TODO* how to hide this method
+      #++
       rep << codon_usage_table(1, hash).output
 
       begin
