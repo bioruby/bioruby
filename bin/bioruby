@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: bioruby,v 1.8 2005/11/27 17:39:00 k Exp $
+# $Id: bioruby,v 1.9 2005/11/28 07:03:28 k Exp $
 #
 #--
 #
@@ -92,7 +92,7 @@ irb = IRB::Irb.new
 IRB.conf[:MAIN_CONTEXT] = irb.context
 
 # loading workspace and command history
-Bio::Shell.open
+Bio::Shell.load
 
 Signal.trap("SIGINT") do
   irb.signal_handle
@@ -103,5 +103,5 @@ catch(:IRB_EXIT) do
 end
 
 # saving workspace, command history and configuration before exit
-Bio::Shell.close
+Bio::Shell.save
 

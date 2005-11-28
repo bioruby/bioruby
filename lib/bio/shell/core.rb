@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: core.rb,v 1.13 2005/11/28 02:08:22 k Exp $
+# $Id: core.rb,v 1.14 2005/11/28 07:03:28 k Exp $
 #
 #--
 #
@@ -60,9 +60,10 @@ module Bio::Shell::Core
   def setup
     @config = {}
     @cache  = {}
+    check_version
+    check_marshal
     load_config
     load_plugin
-    version_check
   end
  
   # A hash to store persistent configurations
@@ -71,13 +72,13 @@ module Bio::Shell::Core
   # A hash to store temporal (per session) configurations
   attr_accessor :cache
 
-  def open
+  def load
     load_object
     load_history
     opening_splash
   end
 
-  def close
+  def save
     closing_splash
     save_history
     save_object
@@ -85,15 +86,25 @@ module Bio::Shell::Core
   end
 
   #--
-  # *TODO* This works, but sometimes causes terminal collapse
-  # how about to suppress loading messages?
-  # or try to load @keggapi and @obda during this?
+  # *TODO* How to prevent terminal collapse and suppress loading messages?
   #++
-  def opening_thread
+  def load_thread
+    message = ''
     begin
       t1 = Thread.new do
-        load_object
-        load_history
+        require 'stringio'
+        sio = StringIO.new('')
+        begin
+          stdout_save = STDOUT.clone
+          STDOUT.reopen(sio)
+          load_object
+          load_history
+        ensure
+          STDOUT.reopen(stdout_save)
+          stdout_save.close
+          message = sio.read
+          sio.close
+        end
       end
       t2 = Thread.new do
         opening_splash
@@ -102,14 +113,18 @@ module Bio::Shell::Core
       t2.join
     rescue
     end
+    puts message
   end
 
   ### setup
 
-  def version_check
+  def check_version
     if RUBY_VERSION < "1.8.2"
       raise "BioRuby shell runs on Ruby version >= 1.8.2"
     end
+  end
+
+  def check_marshal
     if @config[:marshal] and @config[:marshal] != MARSHAL
       raise "Marshal version mismatch"
     end
@@ -164,15 +179,15 @@ module Bio::Shell::Core
 
   def create_flat_dir(dbname)
     if prefix = create_save_dir
-      return prefix + BIOFLAT + dbname.to_s
+      return prefix + BIOFLAT + dbname.to_s.strip
     else
       return nil
     end
   end
 
   def find_flat_dir(dbname)
-    dir = SAVEDIR + BIOFLAT + dbname.to_s
-    dir = USERDIR + BIOFLAT + dbname.to_s unless File.exists?(dir)
+    dir = SAVEDIR + BIOFLAT + dbname.to_s.strip
+    dir = USERDIR + BIOFLAT + dbname.to_s.strip unless File.exists?(dir)
     if File.exists?(dir)
       return dir
     else
@@ -447,25 +462,28 @@ module Bio::Shell::Core
     return str.sub(/R u b y/) { "#{ruby}R u b y#{none}" }
   end
 
-  def opening_splash
+  def splash_message_action
     s = splash_message
     l = s.length
     c = ESC_SEQ
     x = " "
+    0.step(l,2) do |i|
+      l1 = l-i;  l2 = l1/2;  l4 = l2/2
+      STDERR.print "#{c[:n]}#{s[0,i]}#{x*l1}#{c[:y]}#{s[i,1]}\r"
+      sleep(0.001)
+      STDERR.print "#{c[:n]}#{s[0,i]}#{x*l2}#{c[:g]}#{s[i,1]}#{x*(l1-l2)}\r"
+      sleep(0.002)
+      STDERR.print "#{c[:n]}#{s[0,i]}#{x*l4}#{c[:r]}#{s[i,1]}#{x*(l2-l4)}\r"
+      sleep(0.004)
+      STDERR.print "#{c[:n]}#{s[0,i+1]}#{x*l4}\r"
+      sleep(0.008)
+    end
+  end
 
+  def opening_splash
     print "\n"
     if @config[:color]
-      0.step(l,2) do |i|
-        l1 = l-i;  l2 = l1/2;  l4 = l2/2
-        print "#{c[:n]}#{s[0,i]}#{x*l1}#{c[:y]}#{s[i,1]}\r"
-        sleep(0.001)
-        print "#{c[:n]}#{s[0,i]}#{x*l2}#{c[:g]}#{s[i,1]}#{x*(l1-l2)}\r"
-        sleep(0.002)
-        print "#{c[:n]}#{s[0,i]}#{x*l4}#{c[:r]}#{s[i,1]}#{x*(l2-l4)}\r"
-        sleep(0.004)
-        print "#{c[:n]}#{s[0,i+1]}#{x*l4}\r"
-        sleep(0.008)
-      end
+      splash_message_action
     end
     if @config[:color]
       print splash_message_color
