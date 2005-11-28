@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: obda.rb,v 1.5 2005/11/28 02:09:52 k Exp $
+# $Id: obda.rb,v 1.6 2005/11/28 07:15:30 k Exp $
 #
 #--
 #
@@ -39,7 +39,7 @@ module Bio::Shell
     return @obda
   end
 
-  def obda_get_entry(dbname, entry_id)
+  def obdaentry(dbname, entry_id)
     db = obda.get_database(dbname)
     unless db
       warn "Error: No such database (#{dbname})"
@@ -49,9 +49,8 @@ module Bio::Shell
     if block_given?
       yield entry
     else
-      display entry
+      return entry
     end
-    return entry
   end
 
   def obdadbs
