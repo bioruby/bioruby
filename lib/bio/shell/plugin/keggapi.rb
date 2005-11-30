@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: keggapi.rb,v 1.6 2005/11/28 12:07:42 k Exp $
+# $Id: keggapi.rb,v 1.7 2005/11/30 02:01:04 k Exp $
 #
 #--
 #
@@ -41,10 +41,7 @@ module Bio::Shell
   private
 
   def keggapi
-    unless @keggapi
-      @keggapi = Bio::KEGG::API.new
-    end
-    return @keggapi
+    @keggapi ||= Bio::KEGG::API.new  
   end
 
   # DBGET

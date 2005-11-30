@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: obda.rb,v 1.7 2005/11/28 12:07:42 k Exp $
+# $Id: obda.rb,v 1.8 2005/11/30 02:01:04 k Exp $
 #
 #--
 #
@@ -31,10 +31,7 @@ module Bio::Shell
   private
 
   def obda
-    unless @obda
-      @obda = Bio::Registry.new
-    end
-    return @obda
+    @obda ||= Bio::Registry.new
   end
 
   def obdaentry(dbname, entry_id)
