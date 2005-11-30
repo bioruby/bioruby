@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: feature.rb,v 1.8 2005/11/04 17:36:47 k Exp $
+# $Id: feature.rb,v 1.9 2005/11/30 01:54:38 k Exp $
 #
 #--
 # *TODO*
@@ -98,14 +98,16 @@ class Feature
   end
 
   # Iterates on each qualifier.
-  def each
+  def each(arg = nil)
     @qualifiers.each do |x|
+      next if arg and x.qualifier != arg
       yield x
     end
   end
 
   # Returns a Hash constructed from qualifier objects.
   def assoc
+    STDERR.puts "Bio::Feature#assoc is deprecated, use Bio::Feature#to_hash instead" if $DEBUG
     hash = Hash.new
     @qualifiers.each do |x|
       hash[x.qualifier] = x.value
@@ -113,6 +115,20 @@ class Feature
     return hash
   end
 
+  # Returns a Hash constructed from qualifier objects.
+  def to_hash
+    hash = Hash.new
+    @qualifiers.each do |x|
+      hash[x.qualifier] ||= []
+      hash[x.qualifier] << x.value
+    end
+    return hash
+  end
+
+  # Short cut for the Bio::Feature#to_hash[key]
+  def [](key)
+    self.to_hash[key]
+  end
 
   # Container for the qualifier-value pair.
   class Qualifier
@@ -142,6 +158,12 @@ class Features
   # Returns an Array of Feature objects.
   attr_accessor :features
 
+  def to_gff
+    # *TODO*
+    # to generate Bio::GFF object and implement Bio::GFF#to_s or
+    # to generate GFF string in this method?
+  end
+
   # Appends a Feature object to Features.
   def append(a)
     @features.push(a) if a.is_a? Feature
@@ -160,6 +182,16 @@ class Features
   # Short cut for the Features#features[n]
   def [](*arg)
     @features[*arg]
+  end
+
+  # Short cut for the Features#features.first
+  def first
+    @features.first
+  end
+
+  # Short cut for the Features#features.last
+  def last
+    @features.last
   end
 
 end
