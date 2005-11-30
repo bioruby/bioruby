@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: flatfile.rb,v 1.10 2005/11/28 12:07:42 k Exp $
+# $Id: flatfile.rb,v 1.11 2005/11/30 01:57:18 k Exp $
 #
 #--
 #
@@ -107,7 +107,7 @@ module Bio::Shell
     Bio::FlatFileIndex.open(dir) do |db|
       if results = db.include?(keyword)
         results.each do |entry_id|
-          entry << db.search_primary(entry_id)
+          entry << db.search_primary(entry_id).to_s
         end
       else
         warn "Error: No hits found in #{dbname} (#{keyword})"
