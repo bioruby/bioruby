@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_alignment.rb,v 1.4 2005/11/25 16:53:32 ngoto Exp $
+#  $Id: test_alignment.rb,v 1.5 2005/12/02 07:01:38 ngoto Exp $
 #
 
 require 'pathname'
@@ -137,7 +137,10 @@ module Bio
     end
   end #class TestAlignmentPropertyMethods
 
-  
+  # This is a unit test of Bio::Alignment::Site class and
+  # Bio::Alignment::SiteMethods module.
+  # Since Bio::Alignment::Site includes Bio::Alignment::SiteMethods,
+  # we can test both at a time.
   class TestAlignmentSite < Test::Unit::TestCase
 
     def test_has_gap_true
@@ -238,7 +241,175 @@ module Bio
     end
   end #class TestAlignmentSite
 
+  class TestAlignmentSequenceArray < Test::Unit::TestCase
+    def test_each_seq
+      expected_results = [ 'atg', 'aag', 'acg' ]
+      a = Alignment::SequenceArray[ *expected_results ]
+      a.each_seq do |x|
+        assert_equal(expected_results.shift, x)
+      end
+      assert(expected_results.empty?)
+    end
 
+    def test_seqclass_default
+      a = Alignment::SequenceArray.new
+      assert_equal(String, a.seqclass)
+    end
+
+    def test_seqclass
+      a = Alignment::SequenceArray[ Bio::Sequence::NA.new('atg') ]
+      assert_equal(Bio::Sequence::NA, a.seqclass)
+    end
+
+    def test_seqclass=()
+      a = Alignment::SequenceArray.new
+      assert_equal(String, a.seqclass)
+      a << Bio::Sequence::NA.new('a')
+      assert_equal(Bio::Sequence::NA, a.seqclass)
+      a.seqclass = Bio::Sequence::AA
+      assert_equal(Bio::Sequence::AA, a.seqclass)
+    end
+
+    def test_alignment_length
+      a = Alignment::SequenceArray[ 'a', 'at', 'atgc', 'atg', '' ]
+      assert_equal(4, a.alignment_length)
+    end
+
+    def test_private_alignment_site
+      a = Alignment::SequenceArray[ 'a', 'at', 'atgc', 'atg', '' ]
+      assert_equal(Alignment::Site[ '-', 't', 't', 't', '-' ],
+                   a.instance_eval { _alignment_site(1) })
+    end
+
+    def test_alignment_site
+      a = Alignment::SequenceArray[ 'a', 'at', 'atgc', 'atg', '' ]
+      assert_equal(Alignment::Site[ '-', 't', 't', 't', '-' ],
+                   a.__send__(:_alignment_site, 1))
+    end
+
+    def test_each_site
+      expected_results = [
+        Alignment::Site[ 'a', 'a', 'a', 'a', '-' ],
+        Alignment::Site[ '-', 't', 't', 't', '-' ],
+        Alignment::Site[ '-', '-', 'g', 'g', '-' ],
+        Alignment::Site[ '-', '-', 'c', '-', '-' ]
+      ]
+      a = Alignment::SequenceArray[ 'a', 'at', 'atgc', 'atg', '' ]
+      a.each_site do |site|
+        assert_equal(expected_results.shift, site)
+      end
+      assert(expected_results.empty?)
+    end
+
+    def test_each_site_step
+      expected_results = [
+        Alignment::Site[ '-', 't', 't', 't', '-' ], # site 1
+        Alignment::Site[ '-', 'a', 'g', 't', '-' ], # site 3
+      ]
+      a = Alignment::SequenceArray[ 'a', 'atgatc', 'atggcc', 'atgtga', '' ]
+      a.each_site_step(1, 4, 2) do |site|
+        assert_equal(expected_results.shift, site)
+      end
+      assert(expected_results.empty?)
+    end
+
+    def test_alignment_collect
+      a = Alignment::SequenceArray[ 'a', 'at', 'atgc', 'atg', '' ]
+      assert_equal(Alignment::SequenceArray[ 'a', 'au', 'augc', 'aug', '' ],
+                   a.alignment_collect { |x| x.gsub(/t/, 'u') })
+    end
+
+    def test_alignment_window
+      a = Alignment::SequenceArray[ 'a', 'at', 'atgca', 'atg', '' ]
+      assert_equal(Alignment::SequenceArray[ '', 't', 'tgc', 'tg', '' ],
+                   a.alignment_window(1, 3))
+    end
+
+    def test_each_window
+      expected_results = [
+        Alignment::SequenceArray[ 'atg', 'tcg', '' ], # 0..2
+        Alignment::SequenceArray[ 'gca', 'gat', '' ], # 2..4
+        Alignment::SequenceArray[ 'atg', 'tgc', '' ], # 4..6
+        Alignment::SequenceArray[ 'c', 'a', '' ]      # 7..7
+      ]
+      a = Alignment::SequenceArray[ 'atgcatgc', 'tcgatgca', '' ]
+      r = a.each_window(3, 2) do |x|
+        assert_equal(expected_results.shift, x)
+      end
+      assert_equal(expected_results.shift, r)
+      assert(expected_results.empty?)
+    end
+
+    def test_collect_each_site
+      a = Alignment::SequenceArray[ 'a', 'at', 'atgc', 'atg', '' ]
+      assert_equal(["aaaa-", "-ttt-", "--gg-", "--c--" ],
+                   a.collect_each_site { |x| x.join('') })
+    end
+
+    def test_consensus_each_site_default
+      expected_results = [
+        Alignment::Site[ 'a', 'a', 'a', 'a', 'a' ],
+        Alignment::Site[ 'a', 'c', 'g', 't', '-' ]
+      ]
+
+      a = Alignment::SequenceArray[ 'aa', 'ac', 'ag', 'at', 'a-' ]
+      result = a.consensus_each_site do |site|
+        assert_equal(expected_results.shift, site)
+        'x'
+      end
+      assert_equal('xx', result)
+      assert(expected_results.empty?)
+    end
+
+    def test_consensus_each_site_gap_mode_1
+      expected_results = [
+        Alignment::Site[ 'a', 'a', 'a', 'a', 'a' ]
+      ]
+
+      a = Alignment::SequenceArray[ 'aa', 'ac', 'ag', 'at', 'a-' ]
+      result = a.consensus_each_site(:gap_mode => 1) do |site|
+        assert_equal(expected_results.shift, site)
+        'x'
+      end
+      assert_equal('x-', result)
+      assert(expected_results.empty?)
+    end
+
+    def test_consensus_each_site_gap_mode_minus1
+      expected_results = [
+        Alignment::Site[ 'a', 'a', 'a', 'a', 'a' ],
+        Alignment::Site[ 'a', 'c', 'g', 't' ]
+      ]
+
+      a = Alignment::SequenceArray[ 'aa', 'ac', 'ag', 'at', 'a-' ]
+      result = a.consensus_each_site(:gap_mode => -1) do |site|
+        assert_equal(expected_results.shift, site)
+        'x'
+      end
+      assert_equal('xx', result)
+      assert(expected_results.empty?)
+    end
+
+    def test_consensus_string_default
+      a = Alignment::SequenceArray[ 'ata', 'aac', 'aag', 'aat' ]
+      assert_equal('a??', a.consensus_string)
+    end
+
+    def test_consensus_string_half
+      a = Alignment::SequenceArray[ 'ata', 'aac', 'aag', 'aat' ]
+      assert_equal('aa?', a.consensus_string(0.5))
+    end
+
+    def test_consensus_iupac
+      a = Alignment::SequenceArray[
+        'acgtaaaccgaaacaz',
+        'acgtaaaccgccggcz',
+        'acgtcgtgttgtttgz',
+        'acgtcgtgttaaactz' ]
+      assert_equal('acgtmrwsykvhdbn?', a.consensus_iupac)
+    end
+
+  end #class TestAlignmentSequenceArray
 
 
 

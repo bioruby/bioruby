@@ -6,7 +6,7 @@
 #
 # License:: LGPL
 #
-#  $Id: alignment.rb,v 1.12 2005/11/25 16:50:39 ngoto Exp $
+#  $Id: alignment.rb,v 1.13 2005/12/02 07:01:37 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -227,7 +227,14 @@ Mix-in for Hash or Hash-like classes.
       def consensus_iupac
         a = self.collect { |x| x.downcase }.sort.uniq
         if a.size == 1 then
-          a[0]
+          case a[0]
+          when 'a', 'c', 'g', 't'
+            a[0]
+          when 'u'
+            't'
+          else
+            IUPAC_NUC.find { |x| a[0] == x[0] } ? a[0] : nil
+          end
         elsif r = IUPAC_NUC.find { |x| (a - x).size <= 0 } then
           r[0]
         else
@@ -328,14 +335,15 @@ Mix-in for Hash or Hash-like classes.
     #
     # For Array or Hash objects, you'd better using
     # ArrayExtension or HashExtension modules, respectively.
-    # They have built-in 'each_seq' method.
+    # They would have built-in <tt>each_seq</tt> method and/or
+    # some methods would be redefined.
     #
     module EnumerableExtension
       include PropertyMethods
 
       # Iterates over each sequences.
       # Yields a sequence.
-      # It acts same as Enumerable#each.
+      # It acts the same as Enumerable#each.
       #
       # You would redefine the method suitable for the class/object.
       def each_seq(&block) #:yields: seq
@@ -379,6 +387,10 @@ Mix-in for Hash or Hash-like classes.
       # 
       # If the position is out of range, it returns the site
       # of which all are gaps.
+      #
+      # It is a private method.
+      # Only difference from public alignment_site method is
+      # it does not do <tt>set_all_property(get_all_property)</tt>.
       def _alignment_site(position)
         site = Site.new
         each_seq do |s|
@@ -432,7 +444,7 @@ Mix-in for Hash or Hash-like classes.
         self
       end
 
-      # Iterates over each sequence and each results running block
+      # Iterates over each sequence and results running blocks
       # are collected and returns a new alignment as a
       # Bio::Alignment::SequenceArray object.
       #
