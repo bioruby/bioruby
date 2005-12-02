@@ -6,7 +6,7 @@
 #
 # License:: LGPL
 #
-#  $Id: alignment.rb,v 1.13 2005/12/02 07:01:37 ngoto Exp $
+#  $Id: alignment.rb,v 1.14 2005/12/02 12:01:28 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -734,7 +734,7 @@ Mix-in for Hash or Hash-like classes.
         newlen = len
         each_site_step(len - 1, 0, -1) do |a|
           a.remove_gaps!
-          if a.empty then
+          if a.empty? then
             newlen -= 1
           else
             break
@@ -742,7 +742,7 @@ Mix-in for Hash or Hash-like classes.
         end
         return nil if newlen >= len
         each_seq do |s|
-          s[len..-1] = '' if s.length > len
+          s[newlen..-1] = '' if s.length > newlen
         end
         self
       end
@@ -791,7 +791,8 @@ Mix-in for Hash or Hash-like classes.
       def remove_all_gaps!
         ret = nil
         each_seq do |s|
-          ret ||= s.gsub!(gap_regexp, '')
+          x = s.gsub!(gap_regexp, '')
+          ret ||= x
         end
         ret ? self : nil
       end
