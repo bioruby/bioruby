@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_alignment.rb,v 1.5 2005/12/02 07:01:38 ngoto Exp $
+#  $Id: test_alignment.rb,v 1.6 2005/12/02 13:01:49 ngoto Exp $
 #
 
 require 'pathname'
@@ -241,10 +241,15 @@ module Bio
     end
   end #class TestAlignmentSite
 
-  class TestAlignmentSequenceArray < Test::Unit::TestCase
+  # This is sample class for testing Bio::Alignment::EnumerableExtension.
+  class A < Array
+    include Alignment::EnumerableExtension
+  end
+
+  class TestAlignmentEnumerableExtension < Test::Unit::TestCase
     def test_each_seq
       expected_results = [ 'atg', 'aag', 'acg' ]
-      a = Alignment::SequenceArray[ *expected_results ]
+      a = A[ *expected_results ]
       a.each_seq do |x|
         assert_equal(expected_results.shift, x)
       end
@@ -252,17 +257,17 @@ module Bio
     end
 
     def test_seqclass_default
-      a = Alignment::SequenceArray.new
+      a = A.new
       assert_equal(String, a.seqclass)
     end
 
     def test_seqclass
-      a = Alignment::SequenceArray[ Bio::Sequence::NA.new('atg') ]
+      a = A[ Bio::Sequence::NA.new('atg') ]
       assert_equal(Bio::Sequence::NA, a.seqclass)
     end
 
     def test_seqclass=()
-      a = Alignment::SequenceArray.new
+      a = A.new
       assert_equal(String, a.seqclass)
       a << Bio::Sequence::NA.new('a')
       assert_equal(Bio::Sequence::NA, a.seqclass)
@@ -271,18 +276,18 @@ module Bio
     end
 
     def test_alignment_length
-      a = Alignment::SequenceArray[ 'a', 'at', 'atgc', 'atg', '' ]
+      a = A[ 'a', 'at', 'atgc', 'atg', '' ]
       assert_equal(4, a.alignment_length)
     end
 
     def test_private_alignment_site
-      a = Alignment::SequenceArray[ 'a', 'at', 'atgc', 'atg', '' ]
+      a = A[ 'a', 'at', 'atgc', 'atg', '' ]
       assert_equal(Alignment::Site[ '-', 't', 't', 't', '-' ],
                    a.instance_eval { _alignment_site(1) })
     end
 
     def test_alignment_site
-      a = Alignment::SequenceArray[ 'a', 'at', 'atgc', 'atg', '' ]
+      a = A[ 'a', 'at', 'atgc', 'atg', '' ]
       assert_equal(Alignment::Site[ '-', 't', 't', 't', '-' ],
                    a.__send__(:_alignment_site, 1))
     end
@@ -294,7 +299,7 @@ module Bio
         Alignment::Site[ '-', '-', 'g', 'g', '-' ],
         Alignment::Site[ '-', '-', 'c', '-', '-' ]
       ]
-      a = Alignment::SequenceArray[ 'a', 'at', 'atgc', 'atg', '' ]
+      a = A[ 'a', 'at', 'atgc', 'atg', '' ]
       a.each_site do |site|
         assert_equal(expected_results.shift, site)
       end
@@ -306,7 +311,7 @@ module Bio
         Alignment::Site[ '-', 't', 't', 't', '-' ], # site 1
         Alignment::Site[ '-', 'a', 'g', 't', '-' ], # site 3
       ]
-      a = Alignment::SequenceArray[ 'a', 'atgatc', 'atggcc', 'atgtga', '' ]
+      a = A[ 'a', 'atgatc', 'atggcc', 'atgtga', '' ]
       a.each_site_step(1, 4, 2) do |site|
         assert_equal(expected_results.shift, site)
       end
@@ -314,13 +319,13 @@ module Bio
     end
 
     def test_alignment_collect
-      a = Alignment::SequenceArray[ 'a', 'at', 'atgc', 'atg', '' ]
+      a = A[ 'a', 'at', 'atgc', 'atg', '' ]
       assert_equal(Alignment::SequenceArray[ 'a', 'au', 'augc', 'aug', '' ],
                    a.alignment_collect { |x| x.gsub(/t/, 'u') })
     end
 
     def test_alignment_window
-      a = Alignment::SequenceArray[ 'a', 'at', 'atgca', 'atg', '' ]
+      a = A[ 'a', 'at', 'atgca', 'atg', '' ]
       assert_equal(Alignment::SequenceArray[ '', 't', 'tgc', 'tg', '' ],
                    a.alignment_window(1, 3))
     end
@@ -332,7 +337,7 @@ module Bio
         Alignment::SequenceArray[ 'atg', 'tgc', '' ], # 4..6
         Alignment::SequenceArray[ 'c', 'a', '' ]      # 7..7
       ]
-      a = Alignment::SequenceArray[ 'atgcatgc', 'tcgatgca', '' ]
+      a = A[ 'atgcatgc', 'tcgatgca', '' ]
       r = a.each_window(3, 2) do |x|
         assert_equal(expected_results.shift, x)
       end
@@ -341,7 +346,7 @@ module Bio
     end
 
     def test_collect_each_site
-      a = Alignment::SequenceArray[ 'a', 'at', 'atgc', 'atg', '' ]
+      a = A[ 'a', 'at', 'atgc', 'atg', '' ]
       assert_equal(["aaaa-", "-ttt-", "--gg-", "--c--" ],
                    a.collect_each_site { |x| x.join('') })
     end
@@ -352,7 +357,7 @@ module Bio
         Alignment::Site[ 'a', 'c', 'g', 't', '-' ]
       ]
 
-      a = Alignment::SequenceArray[ 'aa', 'ac', 'ag', 'at', 'a-' ]
+      a = A[ 'aa', 'ac', 'ag', 'at', 'a-' ]
       result = a.consensus_each_site do |site|
         assert_equal(expected_results.shift, site)
         'x'
@@ -366,7 +371,7 @@ module Bio
         Alignment::Site[ 'a', 'a', 'a', 'a', 'a' ]
       ]
 
-      a = Alignment::SequenceArray[ 'aa', 'ac', 'ag', 'at', 'a-' ]
+      a = A[ 'aa', 'ac', 'ag', 'at', 'a-' ]
       result = a.consensus_each_site(:gap_mode => 1) do |site|
         assert_equal(expected_results.shift, site)
         'x'
@@ -381,7 +386,7 @@ module Bio
         Alignment::Site[ 'a', 'c', 'g', 't' ]
       ]
 
-      a = Alignment::SequenceArray[ 'aa', 'ac', 'ag', 'at', 'a-' ]
+      a = A[ 'aa', 'ac', 'ag', 'at', 'a-' ]
       result = a.consensus_each_site(:gap_mode => -1) do |site|
         assert_equal(expected_results.shift, site)
         'x'
@@ -391,27 +396,174 @@ module Bio
     end
 
     def test_consensus_string_default
-      a = Alignment::SequenceArray[ 'ata', 'aac', 'aag', 'aat' ]
+      a = A[ 'ata', 'aac', 'aag', 'aat' ]
       assert_equal('a??', a.consensus_string)
     end
 
     def test_consensus_string_half
-      a = Alignment::SequenceArray[ 'ata', 'aac', 'aag', 'aat' ]
+      a = A[ 'ata', 'aac', 'aag', 'aat' ]
       assert_equal('aa?', a.consensus_string(0.5))
     end
 
     def test_consensus_iupac
-      a = Alignment::SequenceArray[
+      a = A[
         'acgtaaaccgaaacaz',
         'acgtaaaccgccggcz',
         'acgtcgtgttgtttgz',
-        'acgtcgtgttaaactz' ]
+        'acgtcgtgttaaactz'
+      ]
       assert_equal('acgtmrwsykvhdbn?', a.consensus_iupac)
     end
 
-  end #class TestAlignmentSequenceArray
+    def test_match_line_amino
+      a = A[
+        'M-SNNNQMMHF-CASSSSSNNFH-AW',
+        'M-TEHDHIIYY-STATTGNDEVF-FW',
+        'M-AQQERLLHW-AVGNPNDEQLY-HW',
+        'M-SKKQKVFYF-CASKADEQHIH-LW',
+        'M-TNNNQMMHY-STASSSQHRMF-QW',
+        'M-AEHDHIIYW-AVGTTGKKKFY-YW'
+        #* ::::::::: ...........  *
+      ]
+      assert_equal('* ::::::::: ...........  *', a.match_line_amino)
+    end
 
+    def test_match_line_nuc
+      a = A[ 'aaa', 'aa-','aac', 'at-' ]
+      assert_equal('*  ', a.match_line_nuc)
+    end
 
+    def test_match_line
+      a = A[
+        Sequence::AA.new('MNSA'),
+        Sequence::AA.new('MHTL'),
+        Sequence::AA.new('MQNV'),
+        Sequence::AA.new('MKKW'),
+      ]
+      assert_equal('*:. ', a.match_line)
+      assert_equal('*:. ', a.match_line(:type => :aa))
+      assert_equal('*   ', a.match_line(:type => :na))
+    end
+
+    def test_convert_match
+      a = A[
+        'aaaa',
+        'accc',
+        'acac',
+        'actc'
+      ]
+      a.convert_match
+      assert_equal(A[ 'aaaa', '.ccc', '.c.c', '.ctc' ], a)
+    end
+
+    def test_convert_unmatch
+      a = A[ 'aaaa', '.ccc', '.c.c', '.ctc' ]
+      a.convert_unmatch
+      assert_equal(A[ 'aaaa', 'accc', 'acac', 'actc' ], a)
+    end
+
+    def test_alignment_normalize!
+      a = A[ 'a', 'atg', 'atgc', '' ]
+      a.alignment_normalize!
+      assert_equal(A[ 'a---', 'atg-', 'atgc', '----'], a)
+    end
+
+    def test_alignment_rstrip!
+      a = A[ '--aaa--', '--t-t--', '---g---', '--t' ]
+      assert(a.alignment_rstrip!)
+      assert_equal(A[ '--aaa', '--t-t', '---g-', '--t' ], a)
+    end
+
+    def test_alignment_rstrip_nil
+      a = A[ 'aa', '-a', 'a-' ]
+      assert_nil(a.alignment_rstrip!)
+      assert_equal(A[ 'aa', '-a', 'a-' ], a)
+    end
+
+    def test_alignment_lstrip!
+      a = A[ '--aaa--', '--t-t--', '---g---', '--t' ]
+      assert(a.alignment_lstrip!)
+      assert_equal(A[ 'aaa--', 't-t--', '-g---', 't' ], a)
+    end
+
+    def test_alignment_lstrip_nil
+      a = A[ 'aa', '-a', 'a-' ]
+      assert_nil(a.alignment_lstrip!)
+      assert_equal(A[ 'aa', '-a', 'a-' ], a)
+    end
+
+    def test_alignment_strip!
+      a = A[ '--aaa--', '--t-t--', '---g---', '--t' ]
+      assert(a.alignment_strip!)
+      assert_equal(A[ 'aaa', 't-t', '-g-', 't' ], a)
+    end
+
+    def test_alignment_strip_nil
+      a = A[ 'aa', '-a', 'a-' ]
+      assert_nil(a.alignment_strip!)
+      assert_equal(A[ 'aa', '-a', 'a-' ], a)
+    end
+
+    def test_remove_all_gaps!
+      a = A[ '--aaa--', '--t-t--', '---g---', '--t' ]
+      assert(a.remove_all_gaps!)
+      assert_equal(A[ 'aaa', 'tt', 'g', 't' ], a)
+    end
+
+    # test of alignment_slice.
+    # Please also refer alignment_window.
+    def test_alignment_slice
+      a = A[ 'a', 'at', 'atgca', 'atg', '' ]
+      assert_equal(Alignment::SequenceArray[ '', 't', 'tgc', 'tg', nil ],
+                   a.alignment_slice(1, 3))
+    end
+
+    def test_alignment_subseq
+      a = A[ Sequence.new('a'), Sequence.new('at'), Sequence.new('atgca'),
+        Sequence.new('atg'), Sequence.new('') ]
+      assert_equal(Alignment::SequenceArray[ Sequence.new(''),
+                     Sequence.new('t'), Sequence.new('tgc'),
+                     Sequence.new('tg'), nil ],
+                   a.alignment_subseq(2,4))
+    end
+
+    def test_alignment_concat
+      a = A[ 'aaa',  'c', 'gg', 't' ]
+      a.alignment_concat(A[ 'ttt', 'gg', 'aa', 'cc', 'aa' ])
+      assert_equal(A[ 'aaattt', 'cgg', 'ggaa', 'tcc' ], a)
+      a.alignment_concat([ 'c', 't' ])
+      assert_equal(A[ 'aaatttc', 'cggt', 'ggaa', 'tcc' ], a)
+    end
+  end #class TestAlignmentEnumerableExtension
+
+  class TestAlignmentClustalWFormatter < Test::Unit::TestCase
+    def setup
+      @obj = Object.new
+      @obj.extend(Alignment::ClustalWFormatter)
+    end
+
+    def test_have_same_name_true
+      assert_equal([ 0, 1 ], @obj.instance_eval {
+                     have_same_name?([ 'ATP ATG', 'ATP ATA', 'BBB' ]) })
+    end
+
+    def test_have_same_name_false
+      assert_equal(false, @obj.instance_eval {
+               have_same_name?([ 'GTP ATG', 'ATP ATA', 'BBB' ]) })
+    end
+
+    def test_avoid_same_name
+      assert_equal([ 'ATP_ATG', 'ATP_ATA', 'BBB' ],
+                   @obj.instance_eval {
+                     avoid_same_name([ 'ATP ATG', 'ATP ATA', 'BBB' ]) })
+    end
+    def test_avoid_same_name_numbering
+      assert_equal([ '0_ATP', '1_ATP', '2_BBB' ],
+                   @obj.instance_eval {
+                     avoid_same_name([ 'ATP', 'ATP', 'BBB' ]) })
+    end
+
+  end #class TestAlignmentClustalWFormatter
 
 
   class TestAlignment < Test::Unit::TestCase
