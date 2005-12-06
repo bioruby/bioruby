@@ -1,38 +1,986 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.16 2005/09/24 14:58:21 ngoto Exp $
+  $Id: Tutorial.rd.ja,v 1.17 2005/12/06 12:29:00 k Exp $
 
-  Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>
-
-  英語版翻訳: Naohisa Goto <ng@bioruby.org>
-  英語版監訳: PjotrPrins
-
-Wikiでご覧になっている方へ: この文書はBioRubyのCVSレポジトリにて管理
-しています。Wikiで編集しても、別途CVSにも反映させないと変更内容が失わ
-れてしまいます。連絡方法は((<URL:http://bioruby.org>)) をご覧ください。
+  Copyright (C) 2001-2003, 2005 KATAYAMA Toshiaki <k@bioruby.org>
 
 = BioRuby の使い方
 
+BioRuby は国産の高機能オブジェクト指向スクリプト言語 Ruby のための
+オープンソースなバイオインフォマティクス用ライブラリです。
+
+Ruby 言語は Perl 言語ゆずりの強力なテキスト処理と、
+シンプルで分かりやすい文法、クリアなオブジェクト指向機能により、
+広く使われるようになりました。Ruby について詳しくは、ウェブサイト
+http://www.ruby-lang.org/ や市販の書籍等を参照してください。
+
 == はじめに
 
-言うまでもないことですが、BioRubyを使用するにはRubyとBioRubyをインストール
-する必要があります。インストール方法は((<README>))をご覧ください。
-(EDITOR's NOTE: urlを示す必要がある。)
-(EDITOR's NOTE: rdoc)
+BioRuby を使用するには Ruby と BioRuby をインストールする必要があります。
 
-Ruby言語自体の入門については、http://www.ruby-lang.org/ や市販の単行本
-を参照してください。
+=== Ruby のインストール
 
-あなたのコンピュータにどのバージョンのRubyがインストールされているかを
+Ruby は Mac OS X や最近の UNIX には通常インストールされています。
+Windows の場合も１クリックインストーラや ActiveScriptRuby などが
+用意されています。見つからない場合は
+
+  http://jp.rubyist.net/magazine/?0002-FirstProgramming
+  http://jp.rubyist.net/magazine/?FirstStepRuby
+
+などを参照してインストールしましょう。
+
+あなたのコンピュータにどのバージョンの Ruby がインストールされているかを
 チェックするには
 
-    % ruby -v
+  % ruby -v
 
 とコマンドを入力してください。すると、たとえば
 
-   ruby 1.8.2 (2005-04-11) [powerpc-linux]
+  ruby 1.8.2 (2004-12-25) [powerpc-darwin7.7.0]
 
-のような感じでバージョンが表示されます。
+のような感じでバージョンが表示されます。バージョン 1.8.2 以降をお勧めします。
+
+=== BioRuby のインストール
+
+BioRuby のインストール方法は http://bioruby.org/archive/ から
+最新版を取得して以下のように行います。詳しくは同梱されている
+README ファイルを参照して頂きたいのですが、１日がかりの
+BioPerl と比べて BioRuby のインストールはすぐに終わります。
+
+  % wget http://bioruby.org/archive/bioruby-x.x.x.tar.gz
+  % tar zxvf bioruby-x.x.x.tar.gz
+  % cd bioruby-x.x.x
+  % ruby install.rb config
+  % ruby install.rb setup
+  # ruby install.rb install
+
+さらに、RubyGems が使える環境であれば
+
+  % gems install bio
+
+だけでインストールできます。
+
+このあと README に書かれているように
+
+  bioruby-x.x.x/etc/bioinformatics/seqdatabase.ini
+
+というファイルをホームディレクトリの ~/.bioinformatics にコピーして
+おくとよいでしょう。RubyGems の場合は
+
+  /usr/local/lib/ruby/gems/1.8/gems/bio-x.x.x/
+
+などにあるはずです。
+
+  % mkdir ~/.bioinformatics
+  % cp bioruby-x.x.x/etc/bioinformatics/seqdatabase.ini ~/.bioinformatics
+
+また、Emacs エディタを使うひとは Ruby のソースに同梱されている
+ruby-mode.el をインストールしておくとよいでしょう。
+
+  % mkdir -p ~/lib/lisp/ruby
+  % cp ruby-x.x.x/misc/ruby-mode.el ~/lib/lisp/ruby
+
+などとしておいて、~/.emacs に以下の設定を書き足します。
+
+  ; subdirs の設定
+  (let ((default-directory "~/lib/lisp"))
+    (normal-top-level-add-subdirs-to-load-path)
+
+  ; ruby-mode の設定
+  (autoload 'ruby-mode "ruby-mode" "Mode for editing ruby source files")
+  (add-to-list 'auto-mode-alist '("\\.rb$" . rd-mode))
+  (add-to-list 'interpeter-mode-alist '("ruby" . ruby-mode))
+
+== BioRuby シェル
+
+BioRuby バージョン 0.7 以降では、簡単な操作は BioRuby と共にインストールされる
+bioruby コマンドで行うことができます。
+
+  % bioruby
+
+bioruby コマンドは Ruby についてくるインタラクティブシェル irb を
+利用していますので、Ruby にできることは全て自由に実行することができます。
+
+=== 塩基, アミノ酸の配列を作る
+
+--- seq
+
+seq コマンドを使って文字列から塩基配列やアミノ酸配列を作ることができます。
+塩基とアミノ酸は ATGC の含量が 90% 以上かどうかで自動判定されます。
+ここでは、できた塩基配列を dna という変数に代入します。
+
+  bioruby> dna = seq("atgcatgcaaaa")
+
+変数の中身を確認するには Ruby の puts メソッドを使います。
+
+  bioruby> puts dna
+  atgcatgcaaaa
+
+手元にあるファイルから配列を得ることもできます。
+GenBank, EMBL, UniProt, FAST など主要な配列フォーマットは自動判別されます
+（拡張子などのファイル名ではなくエントリの中身で判定されます）。
+以下は UniProt フォーマットのエントリをファイルから読み込んでいます。
+この方法では、複数のエントリがある場合最初のエントリだけが読み込まれます。
+
+  bioruby> cdc2 = seq("p04551.sp")
+  bioruby> puts cdc2
+  MENYQKVEKIGEGTYGVVYKARHKLSGRIVAMKKIRLEDESEGVPSTAIREISLLKEVNDENNRSN...(略)
+
+データベース名とエントリ名が分かっていれば、インターネットを通じて
+配列を自動的に取得することができます。
+
+  bioruby> psaB = seq("genbank:AB044425")
+  bioruby> puts psaB
+  actgaccctgttcatattcgtcctattgctcacgcgatttgggatccgcactttggccaaccagca...(略)
+
+どこのデータベースからどのような方法でエントリを取得するかは、BioPerl
+などと共通の OBDA 設定ファイル ~/.bioinformatics/seqdatabase.ini
+を用いてデータベースごとに指定することができます（後述）。
+
+どの方法で取得した場合も、seq コマンドによって返される配列は、
+バイオインフォマティクスでもっとも基礎となるデータである
+DNA 配列やアミノ酸配列をあつかう Bio::Sequence クラスのオブジェクトで、
+DNA 配列のための Bio::Sequence::NA クラスと
+アミノ酸配列のための Bio::sequence::AA クラスのどちらかになります。
+
+配列がどちらのクラスに属するかは
+
+  bioruby> p cdc2.class
+  Bio::Sequence::AA
+
+  bioruby> p psaB.class
+  Bio::Sequence::NA
+
+のように判定できます。自動判定が間違っている場合などには to_naseq,
+to_aaseq メソッドで変換できます。
+
+  bioruby> cdc2new = cdc2.to_naseq
+  bioruby> p cdc2new.class
+  Bio::Sequence::NA
+
+これらのクラスは Ruby の文字列クラスである String を継承していますので、
+length で長さを調べたり、+ で足し合わせたり、* で繰り返したりなど、
+Ruby の文字列に対して行える操作は全て塩基配列やアミノ酸配列に対しても可能です。
+これはオブジェクト指向の強力な側面の一つです。
+
+  bioruby> puts dna.length
+  12
+
+  bioruby> puts dna + dna
+  atgcatgcaaaaatgcatgcaaaa
+
+  bioruby> puts dna * 5
+  atgcatgcaaaaatgcatgcaaaaatgcatgcaaaaatgcatgcaaaaatgcatgcaaaa
+
+--- complement
+
+塩基配列の相補鎖配列を得るには塩基配列の complement メソッドを呼びます。
+
+  bioruby> puts dna.complement
+  ttttgcatgcat
+
+--- translate
+
+塩基配列をアミノ酸配列に翻訳するには translate メソッドを使います。
+翻訳されたアミノ酸配列を pep という変数に代入してみます。
+
+  bioruby> pep = dna.translate
+  bioruby> puts pep
+  MHAK
+
+フレームを変えて翻訳するには
+
+  bioruby> puts dna.translate(2)
+  CMQ
+  bioruby> puts dna.translate(3)
+  ACK
+
+などとします。
+
+--- molecular_weight
+
+分子量は molecular_weight メソッドで表示されます。
+
+  bioruby> puts dna.molecular_weight
+  3718.66444
+
+  bioruby> puts pep.molecular_weight
+  485.605
+
+--- seqstat(seq)
+
+seqstat コマンドを使うと、組成などの情報も一度に表示されます。
+
+  bioruby> seqstat(dna)
+
+  * * * Sequence statistics * * *
+
+  5'->3' sequence   : atgcatgcaaaa
+  3'->5' sequence   : ttttgcatgcat
+  Translation   1   : MHAK
+  Translation   2   : CMQ
+  Translation   3   : ACK
+  Translation  -1   : FCMH
+  Translation  -2   : FAC
+  Translation  -3   : LHA
+  Length            : 12 bp
+  GC percent        : 33 %
+  Composition       : a -  6 ( 50.00 %)
+                      c -  2 ( 16.67 %)
+                      g -  2 ( 16.67 %)
+                      t -  2 ( 16.67 %)
+  Codon usage       :
+
+   *---------------------------------------------*
+   |       |              2nd              |     |
+   |  1st  |-------------------------------| 3rd |
+   |       |  U    |  C    |  A    |  G    |     |
+   |-------+-------+-------+-------+-------+-----|
+   | U   U |F  0.0%|S  0.0%|Y  0.0%|C  0.0%|  u  |
+   | U   U |F  0.0%|S  0.0%|Y  0.0%|C  0.0%|  c  |
+   | U   U |L  0.0%|S  0.0%|*  0.0%|*  0.0%|  a  |
+   |  UUU  |L  0.0%|S  0.0%|*  0.0%|W  0.0%|  g  |
+   |-------+-------+-------+-------+-------+-----|
+   |  CCCC |L  0.0%|P  0.0%|H 25.0%|R  0.0%|  u  |
+   | C     |L  0.0%|P  0.0%|H  0.0%|R  0.0%|  c  |
+   | C     |L  0.0%|P  0.0%|Q  0.0%|R  0.0%|  a  |
+   |  CCCC |L  0.0%|P  0.0%|Q  0.0%|R  0.0%|  g  |
+   |-------+-------+-------+-------+-------+-----|
+   |   A   |I  0.0%|T  0.0%|N  0.0%|S  0.0%|  u  |
+   |  A A  |I  0.0%|T  0.0%|N  0.0%|S  0.0%|  c  |
+   | AAAAA |I  0.0%|T  0.0%|K 25.0%|R  0.0%|  a  |
+   | A   A |M 25.0%|T  0.0%|K  0.0%|R  0.0%|  g  |
+   |-------+-------+-------+-------+-------+-----|
+   |  GGGG |V  0.0%|A  0.0%|D  0.0%|G  0.0%|  u  |
+   | G     |V  0.0%|A  0.0%|D  0.0%|G  0.0%|  c  |
+   | G GGG |V  0.0%|A 25.0%|E  0.0%|G  0.0%|  a  |
+   |  GG G |V  0.0%|A  0.0%|E  0.0%|G  0.0%|  g  |
+   *---------------------------------------------*
+
+  Molecular weight  : 3718.66444
+  Protein weight    : 485.605
+  //
+
+
+アミノ酸配列の場合は以下のようになります。
+
+  bioruby> seqstat(pep)
+
+  * * * Sequence statistics * * *
+
+  N->C sequence     : MHAK
+  Length            : 4 aa
+  Composition       : A Ala - 1 ( 25.00 %) alanine
+                      H His - 1 ( 25.00 %) histidine
+                      K Lys - 1 ( 25.00 %) lysine
+                      M Met - 1 ( 25.00 %) methionine
+  Protein weight    : 485.605
+  //
+
+--- composition
+
+ここで表示される組成は composition メソッドで得ることができます。
+結果が文字列ではなく Hash で返されるので、
+puts の代わりに p コマンドを使って表示すると良いでしょう。
+
+  bioruby> p dna.composition
+  {"a"=>6, "c"=>2, "g"=>2, "t"=>2}
+
+他にも塩基配列、アミノ酸配列に対して行える操作は色々とあります。
+
+--- subseq(from, to)
+
+部分配列の取り出し
+
+  bioruby> puts dna.subseq(1, 3)
+  atg
+
+--- window_search(len, step)
+
+部分配列毎の繰り返し
+
+  bioruby> dna.window_search(3, 3) do |codon|
+  bioruby+   puts "#{codon}\t#{codon.translate}"
+  bioruby+ end
+  atg     M
+  cat     H
+  gca     A
+  aaa     K
+
+ゲノム配列を 11000bp ごとにブツ切りにして FASTA フォーマットに整形。このとき末端 1000bp をオーバーラップさせ、10000bp に満たない 3' 端は 別途受け取って表示します。
+
+  bioruby> i = 1
+  bioruby> remainder = seq.window_search(11000, 10000) do |subseq|
+  bioruby>   puts subseq.to_fasta("segment #{i*10000}", 60)
+  bioruby>   i += 1
+  bioruby> end
+  bioruby> puts remainder.to_fasta("segment #{i}", 60)
+
+--- splicing(position)
+
+塩基配列の GenBank 等の position 文字列による切り出し
+
+  bioruby> puts dna
+  atgcatgcaaaa
+  bioruby> puts dna.splicing("join(1..3,7..9)")
+  atggca
+
+--- randomize
+
+ランダム配列の生成
+
+  bioruby> puts dna.randomize
+  agcaatagatac
+
+--- to_re
+
+正規表現への変換
+
+  bioruby> ambiguous = seq("atgcyatgcatgcatgc")
+
+  bioruby> p ambiguous.to_re
+  /atgc[tc]atgcatgcatgc/
+
+  bioruby> puts ambiguous.to_re
+  (?-mix:atgc[tc]atgcatgcatgc)
+
+seq メソッドは ATGC の含有量が 90% 以下だとアミノ酸配列とみなすので、
+ambiguous な文字が多く含まれる配列の場合は明示的に Bio::Sequence::NA
+オブジェクトを作る必要があります。
+
+  bioruby> s = Bio::Sequence::NA.new("atgcurywskmbvhdn")
+  bioruby> p s.to_re
+  /augcu[ag][uc][au][gc][ug][ac][ugc][agc][auc][aug][augc]/
+  bioruby> puts s.to_re
+  (?-mix:augcu[ag][uc][au][gc][ug][ac][ugc][agc][auc][aug][augc])
+
+--- names
+
+塩基名、アミノ酸名での表示
+
+  bioruby> p dna.names
+  ["adenine", "thymine", "guanine", "cytosine", "adenine", "thymine",
+  "guanine", "cytosine", "adenine", "adenine", "adenine", "adenine"]
+
+  bioruby> p pep.names
+  ["methionine", "histidine", "alanine", "lysine"]
+
+--- codes
+
+アミノ酸配列の 3 文字コードでの表示
+
+  bioruby> p pep.codes
+  ["Met", "His", "Ala", "Lys"]
+
+--- gc_percent
+
+塩基配列の GC 含量の表示
+
+  bioruby> puts dna.gc_percent
+  33
+
+--- to_fasta
+
+FASTA フォーマットに変換するには to_fasta メソッドを使います。
+
+  bioruby> puts dna.to_fasta("dna sequence")
+  >dna sequence
+  aaccggttacgt
+
+
+=== 塩基やアミノ酸のコード、コドン表をあつかう
+
+アミノ酸、塩基、コドンテーブルを得るための aminoacids, nucleicacids,
+codontables, codontable コマンドを紹介します。
+ 
+--- aminoacids
+
+アミノ酸の一覧
+
+  bioruby> aminoacids
+  ?       Pyl     pyrrolysine
+  A       Ala     alanine
+  B       Asx     asparagine/aspartic acid
+  C       Cys     cysteine
+  D       Asp     aspartic acid
+  E       Glu     glutamic acid
+  F       Phe     phenylalanine
+  G       Gly     glycine
+  H       His     histidine
+  I       Ile     isoleucine
+  K       Lys     lysine
+  L       Leu     leucine
+  M       Met     methionine
+  N       Asn     asparagine
+  P       Pro     proline
+  Q       Gln     glutamine
+  R       Arg     arginine
+  S       Ser     serine
+  T       Thr     threonine
+  U       Sec     selenocysteine
+  V       Val     valine
+  W       Trp     tryptophan
+  Y       Tyr     tyrosine
+  Z       Glx     glutamine/glutamic acid
+
+  bioruby> aa = aminoacids
+  bioruby> puts aa["G"]
+  Gly
+  bioruby> puts aa["Gly"]
+  glycine
+
+--- nucleicacids
+
+  bioruby> nucleicacids
+  a       a       Adenine
+  t       t       Thymine
+  g       g       Guanine
+  c       c       Cytosine
+  u       u       Uracil
+  r       [ag]    puRine
+  y       [tc]    pYrimidine
+  w       [at]    Weak
+  s       [gc]    Strong
+  k       [tg]    Keto
+  m       [ac]    aroMatic
+  b       [tgc]   not A
+  v       [agc]   not T
+  h       [atc]   not G
+  d       [atg]   not C
+  n       [atgc]  
+
+  bioruby> na = nucleicacids
+  bioruby> puts na["r"]
+  [ag]
+
+--- codontables
+
+コドンテーブルの一覧は codontables コマンドで表示できます。
+
+  bioruby> codontables
+  1       Standard (Eukaryote)
+  2       Vertebrate Mitochondrial
+  3       Yeast Mitochondorial
+  4       Mold, Protozoan, Coelenterate Mitochondrial and Mycoplasma/Spiroplasma
+  5       Invertebrate Mitochondrial
+  6       Ciliate Macronuclear and Dasycladacean
+  9       Echinoderm Mitochondrial
+  10      Euplotid Nuclear
+  11      Bacteria
+  12      Alternative Yeast Nuclear
+  13      Ascidian Mitochondrial
+  14      Flatworm Mitochondrial
+  15      Blepharisma Macronuclear
+  16      Chlorophycean Mitochondrial
+  21      Trematode Mitochondrial
+  22      Scenedesmus obliquus mitochondrial
+  23      Thraustochytrium Mitochondrial
+
+--- codontable
+
+コドン表の自体は codontable コマンドで表示できます。
+
+  bioruby> codontable(11)
+
+   = Codon table 11 : Bacteria
+
+     hydrophilic: H K R (basic), S T Y Q N S (polar), D E (acidic)
+     hydrophobic: F L I M V P A C W G (nonpolar)
+
+   *---------------------------------------------*
+   |       |              2nd              |     |
+   |  1st  |-------------------------------| 3rd |
+   |       |  U    |  C    |  A    |  G    |     |
+   |-------+-------+-------+-------+-------+-----|
+   | U   U | Phe F | Ser S | Tyr Y | Cys C |  u  |
+   | U   U | Phe F | Ser S | Tyr Y | Cys C |  c  |
+   | U   U | Leu L | Ser S | STOP  | STOP  |  a  |
+   |  UUU  | Leu L | Ser S | STOP  | Trp W |  g  |
+   |-------+-------+-------+-------+-------+-----|
+   |  CCCC | Leu L | Pro P | His H | Arg R |  u  |
+   | C     | Leu L | Pro P | His H | Arg R |  c  |
+   | C     | Leu L | Pro P | Gln Q | Arg R |  a  |
+   |  CCCC | Leu L | Pro P | Gln Q | Arg R |  g  |
+   |-------+-------+-------+-------+-------+-----|
+   |   A   | Ile I | Thr T | Asn N | Ser S |  u  |
+   |  A A  | Ile I | Thr T | Asn N | Ser S |  c  |
+   | AAAAA | Ile I | Thr T | Lys K | Arg R |  a  |
+   | A   A | Met M | Thr T | Lys K | Arg R |  g  |
+   |-------+-------+-------+-------+-------+-----|
+   |  GGGG | Val V | Ala A | Asp D | Gly G |  u  |
+   | G     | Val V | Ala A | Asp D | Gly G |  c  |
+   | G GGG | Val V | Ala A | Glu E | Gly G |  a  |
+   |  GG G | Val V | Ala A | Glu E | Gly G |  g  |
+   *---------------------------------------------*
+
+
+codontable コマンドの結果を変数に代入するとコドンの変換に使うことができます。
+
+  bioruby> ct = codontable(2)
+  bioruby> p ct["atg"]
+  "M"
+
+コドン表の定義の説明
+
+  bioruby> puts ct.definition
+  Vertebrate Mitochondrial
+
+開始コドン一覧
+
+  bioruby> p ct.start
+  ["att", "atc", "ata", "atg", "gtg"]
+
+終止コドン一覧
+
+  bioruby> p ct.stop
+  ["taa", "tag", "aga", "agg"]
+
+アミノ酸からコードするコドンを調べる
+
+  bioruby> p ct.revtrans("V")
+  ["gtc", "gtg", "gtt", "gta"]
+
+
+=== フラットファイルのエントリ
+
+データベースのエントリと、フラットファイルそのものを扱う方法を紹介します。
+GenBank のファージのエントリが含まれるファイル gbphg.seq はファイルサイズが
+小さいので例として使ってみます。
+
+  % wget http://ftp.hgc.jp/pub/mirror/ncbi/genbank/gbphg.seq.gz
+  % gunzip gbphg.seq.gz
+
+--- ent
+
+seq コマンドは配列を取得しましたが、配列だけでなくエントリ全体を取得するには
+ent コマンドを使います。
+
+  bioruby> entry = ent("genbank:AB044425")
+  bioruby> puts entry
+  LOCUS       AB044425                1494 bp    DNA     linear   PLN 28-APR-2001
+  DEFINITION  Volvox carteri f. kawasakiensis chloroplast psaB gene for
+              photosystem I P700 chlorophyll a apoprotein A2,
+              strain:NIES-732.
+  (略)
+
+ent コマンドのオプションには db:entry_id 形式の文字列、ファイル、IO が
+与えられ、データベースの１エントリ分の文字列が返されます。
+扱えるデータベースの種類も配列データベースに限らず数多く対応しています。
+
+--- flatparse
+
+取得したエントリをパースして欲しいデータをとりだすには flatparse
+コマンドを使います。
+
+  bioruby> entry = ent("gbphg.seq")
+  bioruby> gb = flatparse(entry)
+  bioruby> puts gb.entry_id
+  AB000833
+  bioruby> puts gb.definition
+  Bacteriophage Mu DNA for ORF1, sheath protein gpL, ORF2, ORF3, complete cds.
+  bioruby> puts psaB.naseq
+  acggtcagacgtttggcccgaccaccgggatgaggctgacgcaggtcagaaatctttgtgacgacaaccgtatcaat
+  (略)
+
+--- flatfile
+
+ent コマンドは１エントリしか扱えないため、ローカルのファイルを開いて 
+各エントリ毎に処理を行うには flatfile コマンドを使います。
+
+  bioruby> flatfile("gbphg.seq") do |entry|
+  bioruby+   # do something on entry
+  bioruby+ end
+
+--- flatauto
+
+各エントリを flatparse と同様にパースした状態で順番に処理するためには、
+flatfile コマンドの代わりに flatauto コマンドを使います。
+
+  bioruby> flatauto("gbphg.seq") do |entry|
+  bioruby+   print entry.entry_id
+  bioruby+   puts  entry.definition
+  bioruby+ end
+
+=== フラットファイルのインデクシング
+
+EMBOSS の dbiflat に似た機能として、BioRuby, BioPerl などに共通の BioFlat
+というインデックスを作成する仕組みがあります。一度インデックスを
+作成しておくとエントリの取り出しが高速かつ容易に行えます。
+これにより自分専用のデータベースを手軽に作ることができます。
+
+--- flatindex
+
+GenBank のファージの配列ファイル gbphg.seq に入っているエントリに対して
+mydb というデータベース名でインデックスを作成します。
+
+  bioruby> flatindex("mydb", "gbphg.seq")
+  Creating BioFlat index (.bioruby/bioflat/mydb) ... done
+
+--- flatsearch
+
+作成した mydb データベースからエントリをとり出すには flatsearch コマンドを
+使います。
+
+  bioruby> entry = flatsearch("mydb", "AB004561")
+  bioruby> puts entry
+  LOCUS       AB004561                2878 bp    DNA     linear   PHG 20-MAY-1998
+  DEFINITION  Bacteriophage phiU gene for integrase, complete cds, integration
+              site.
+  ACCESSION   AB004561
+  (略)
+
+=== 様々な DB の配列を FASTA フォーマットに変換して保存
+
+FASTA フォーマットは配列データで標準的に用いられているフォーマットです。
+「>」記号ではじまる１行目に配列の説明があり、２行目以降に配列がつづきます。
+配列中の空白文字は無視されます。
+
+  >entry_id definition ...
+  ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT
+  ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT
+
+配列の説明行は、最初の単語が配列の ID になっていることが多いのですが、
+NCBI の BLAST 用データベースではさらに高度な構造化がおこなわれています。
+
+* ((<URL:ftp://ftp.ncbi.nih.gov/blast/documents/README.formatdb>))
+* ((<URL:http://blast.wustl.edu/doc/FAQ-Indexing.html#Identifiers>))
+* FASTA format (Wikipedia)
+  ((<URL:http://en.wikipedia.org/wiki/Fasta_format>))
+
+BioRuby のデータベースエントリのクラスにはエントリID、配列、定義について
+共通のメソッドが用意されています。
+
+* entry_id - エントリ ID を取得
+* definition - 定義文を取得
+* seq - 配列を取得
+
+これらの共通メソッドを使うと、どんな配列データベースエントリでも
+FASTA フォーマットに変換できるプログラムが簡単に作れます。
+
+  entry.seq.to_fasta("#{entry.entry_id} #{entry.definition}", 60)
+
+さらに、BioRuby では入力データベースの形式を自動判別できますので、
+GenBank, UniProt など多くの主要な配列データベースでは
+ファイル名を指定するだけで FASTA フォーマットに変換できます。
+
+--- flatfasta
+
+入力データベースのファイル名のリストから、指定した FASTA フォーマットの
+ファイルを生成するコマンドです。ここではいくつかの GenBank のファイルを
+FASTA フォーマットに変換し、myfasta.fa というファイルに保存しています。
+
+  bioruby> flatfasta("myfasta.fa", "gbphg.seq", "gbvrl1.seq", "gbvrl2.seq")
+  Saving fasta file (myfasta.fa) ... 
+    converting -- gbphg.gbk
+    converting -- gbvrl1.gbk
+    converting -- gbvrl2.gbk
+  done
+
+# === OBDA
+# 
+# OBDA (Open Bio Database Access) の設定ファイル
+# 
+# * ~/.bioinformatics/seqdatabase.ini
+# 
+# に従って、データベースのエントリを
+# 
+# * BioFlat - ローカルのファイル
+# * BioFetch - HTTP によるウェブサーバ
+# * BioSQL - RDBM
+# 
+# など様々なソースから生物学データベースエントリを取得することができます。
+# 
+#   bioruby> obda_get_entry("embl:BUM")
+# 
+
+=== KEGG API
+
+BioRuby シェルでは KEGG API も簡単に利用できます。
+
+--- keggdbs
+
+ゲノムネットで KEGG API を通じて利用可能なデータベースのリストを表示します。
+
+  bioruby> keggdbs
+  nt:     Non-redundant nucleic acid sequence database
+  aa:     Non-redundant protein sequence database
+  gb:     GenBank nucleic acid sequence database
+  (略)
+
+--- keggorgs
+
+KEGG に収録されている全生物種のリストを表示します。
+
+  bioruby> keggorgs
+  aae:    Aquifex aeolicus
+  aci:    Acinetobacter sp. ADP1
+  afu:    Archaeoglobus fulgidus
+  (略)
+
+--- keggpathways
+
+KEGG に収録されている全パスウェイのリストを表示します。
+
+  bioruby> keggpathways
+  path:map00010:  Glycolysis / Gluconeogenesis - Reference pathway
+  path:map00020:  Citrate cycle (TCA cycle) - Reference pathway
+  path:map00030:  Pentose phosphate pathway - Reference pathway
+  (略)
+
+引数に３文字の KEGG 生物種記号をあたえると、その生物で利用できる
+パスウェイだけの一覧を返します。大腸菌 eco の場合以下のようになります。
+
+  bioruby> keggpathways("eco")
+  path:eco00010:  Glycolysis / Gluconeogenesis - Escherichia coli K-12 MG1655
+  path:eco00020:  Citrate cycle (TCA cycle) - Escherichia coli K-12 MG1655
+  path:eco00030:  Pentose phosphate pathway - Escherichia coli K-12 MG1655
+  (略)
+
+--- keggapi
+
+これら以外の KEGG API のメソッドは、keggapi に続けて呼び出すことで
+利用できます。
+
+  bioruby> p keggapi.get_genes_by_pathway("path:eco00010")
+  ["eco:b0114", "eco:b0115", "eco:b0116", "eco:b0356", "eco:b0688", (略)
+
+利用可能なメソッドの一覧は KEGG API のマニュアルを参照してください。
+
+* ((<URL:http://www.genome.jp/kegg/soap/doc/keggapi_manual_ja.html>))
+
+=== DBGET
+
+ゲノムネットの DBGET のコマンドである binfo, bfind, bget, btit, bconv は
+KEGG API を利用してそのまま実行できるようになっています。
+
+--- binfo
+
+  bioruby> binfo
+                           *** Last database updates ***
+  Date      Database              Release              #Entries      #Residues
+ --------  -------------   ------------------------  ------------  ----------------
+  05/12/06  nr-nt                 05-12-04 (Dec 05)    63,078,043   111,609,773,616
+  05/12/06  nr-aa                 05-12-05 (Dec 05)     2,682,790       890,953,839
+  05/10/25  genbank                  150.0 (Oct 05)    49,152,445    53,655,236,500
+  05/12/06  genbank-upd       150.0+/12-04 (Dec 05)     7,470,976     6,357,888,366
+  (略)
+
+binfo コマンドに続けてデータベース名を指定することでより詳細な情報が
+表示されます。
+
+  bioruby> binfo "genbank"
+  genbank          GenBank nucleic acid sequence database
+  gb               Release 150.0, Oct 05
+                   National Center for Biotechnology Information
+                   49,152,445 entries, 53,655,236,500 bases
+                   Last update:  05/10/25
+                   <dbget> <fasta> <blast>
+
+--- bfind
+
+bfind コマンドでデータベースに対するキーワードサーチを行うことができます。
+データベース名と検索したいキーワードを文字列で渡します。
+
+  bioruby> list = bfind "genbank ebola human"
+  bioruby> puts list
+  gb:BD177378 [BD177378] A monoclonal antibody recognizing ebola virus.
+  gb:BD177379 [BD177379] A monoclonal antibody recognizing ebola virus.
+  (略)
+
+--- bget
+
+bget コマンドで指定した db:entry_id のデータベースエントリを取得できます。
+
+  bioruby> entry = bget "gb:BD177378"
+  bioruby> puts entry
+  LOCUS       BD177378                  24 bp    DNA     linear   PAT 16-APR-2003
+  DEFINITION  A monoclonal antibody recognizing ebola virus.
+  (略)
+
+
+=== スクリプト生成
+
+作業手順をスクリプト化して保存しておくこともできます。
+
+  bioruby> script
+  -- 8< -- 8< -- 8< --  Script  -- 8< -- 8< -- 8< --
+  bioruby> seq = seq("gbphg.seq")
+  bioruby> p seq
+  bioruby> p seq.translate
+  bioruby> script
+  -- >8 -- >8 -- >8 --  Script  -- >8 -- >8 -- >8 --
+  Saving script (.bioruby/script.rb) ... done
+
+生成された .bioruby/script.rb は以下のようになります。
+
+  #!/usr/bin/env ruby
+  
+  require 'bio/shell'
+  
+  include Bio::Shell
+  
+  Bio::Shell.setup
+  
+  seq = seq("gbphg.seq")
+  p seq
+  p seq.translate
+
+このスクリプトを ruby で実行することができます。
+
+  % ruby .bioruby/script.rb
+
+=== 簡易シェル機能
+
+--- cd
+
+カレントディレクトリを変更します。
+
+  bioruby> cd "/tmp"
+  "/tmp"
+
+ホームディレクトリに戻るには引数をつけずに cd を実行します。
+
+  bioruby> cd
+  "/home/k"
+
+--- pwd
+
+カレントディレクトリを表示します。
+
+  bioruby> pwd
+  "/home/k"
+
+--- dir
+
+カレントディレクトリのファイルを一覧表示します。
+
+  bioruby> dir
+     UGO  Date                                 Byte  File
+  ------  ----------------------------  -----------  ------------
+   40755  Tue Nov 29 16:55:20 JST 2005         2176  "bin"
+  100644  Sat Oct 15 03:01:00 JST 2005     42599518  "gbphg.seq"
+   40755  Wed Oct 26 19:26:27 JST 2005          170  "lib"
+  (略)
+
+--- head
+
+テキストファイルの先頭を表示します。
+
+  bioruby> head "gbphg.seq"
+  GBPHG.SEQ            Genetic Sequence Data Bank
+                            October 15 2005
+  
+                  NCBI-GenBank Flat File Release 150.0
+  
+                            Phage Sequences         
+  
+      2713 loci,    16892737 bases, from     2713 reported sequences
+
+行数を指定することもできます。
+
+  bioruby> head "gbphg.seq", 2
+  GBPHG.SEQ            Genetic Sequence Data Bank
+                            October 15 2005
+
+--- less
+
+テキストファイルを PAGER で表示します。デフォルトでは環境変数 PAGER
+の値か less コマンドを使用します。
+
+  bioruby> less "gbphg.seq"
+
+=== 変数
+
+--- ls
+
+セッション中に作成した変数（オブジェクト）の一覧を表示します。
+
+  bioruby> ls
+  ["entry", "seq"]
+
+  bioruby> a = 123
+  ["a", "entry", "seq"]
+
+--- rm
+
+変数を消去します。
+
+  bioruby> rm "a"
+
+  bioruby> ls
+  ["entry", "seq"]
+
+--- savefile
+
+変数に保存されている内容をテキストファイルに保存します。
+
+  bioruby> savefile "testfile.txt", entry
+  Saving data (testfile.txt) ... done
+
+  bioruby> less "testfile.txt"
+
+=== 各種設定
+
+永続化の仕組みとして BioRuby シェル終了時に .bioruby ディレクトリ内に
+ヒストリ、オブジェクト、個人の設定が保存され、次回起動時に自動的に
+読み込まれます。
+
+--- config
+
+BioRuby シェルの各種設定を表示します。
+
+  bioruby> config
+  message = "...BioRuby in the shell..."
+  marshal = [4, 8]
+  color   = false
+  pager   = nil
+  echo    = false
+
+echo 表示するかどうかを切り替えます。
+
+  bioruby> config :echo
+  Echo on
+    ==> nil
+
+  bioruby> config :echo
+  Echo off
+
+可能な場合にカラー表示するかどうかを切り替えます。
+カラー表示の場合、プロンプトにも色がつきますので判別できます。
+
+  bioruby> config :color
+  bioruby> codontable
+  (色付き)
+  bioruby> config :color
+  bioruby> codontable
+  (色なし)
+
+--- pager
+
+less などで利用する PAGER を設定します。
+
+  bioruby> pager "more"
+  Pager is set to 'more'
+
+PAGER を使用しない設定にする場合は引数なしで実行します。
+
+  bioruby> pager
+  Pager is set to 'off'
+
+=== 遺伝子音楽
+
+--- midifile
+
+DNA 配列を MIDI ファイルに変換するオマケ機能があります。
+適当な塩基配列 seq を使って生成した midifile.mid を
+MIDI プレイヤーで演奏してみましょう。
+
+  bioruby> midifile("midifile.mid", seq)
+  Saving MIDI file (midifile.mid) ... done
+
+以上で BioRuby シェルの解説を終わり、以下では BioRuby ライブラリ自体の
+解説を行います。
+
 
 == 塩基・アミノ酸配列を処理する (Bio::Sequence クラス)
 
@@ -1080,38 +2028,6 @@ to be written...
 
 他のチュートリアル的なドキュメントとしては、BioRuby Wikiに置いてある
 BioRuby in Anger があります。
-
-= APPENDIX
-
-= KEGG API
-
-別ファイルの KEGG_API.rd.ja や
-
-  * ((<URL:http://www.genome.jp/kegg/soap/>))
-
-を参照してください。
-
-== Using BioRuby with R
-
-(編集中)
-
-== Using BioPerl from Ruby
-
-(...)
-
-== 必要なライブラリのインストール
-
-現在のところ、BioRubyの使用には追加の外部ライブラリや拡張モジュールは必要
-ありません(Ruby 1.8.0以降の場合)。(ただし、XMLParseやBDBなど、いくつかの
-拡張モジュールをインストールすることで、一部の機能がスピードアップしたり
-機能が増える場合があります。)
-
-とはいえ、将来的には必要になるかもしれませんので、BioRubyのウェブサイトや
-付属文書をチェックしてみてください。
-
-Rubyの拡張ライブラリをインストールするには、基本的にはその配布物に付属の
-READMEなどの文章を注意深く読んで、そこに書いてある事を手動で行う必要が
-あります。(将来的には、gems が標準になってより簡単になるかもしれません。)
 
 =end
 
