@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: interface.rb,v 1.10 2005/11/28 12:07:42 k Exp $
+# $Id: interface.rb,v 1.11 2005/12/07 07:50:44 k Exp $
 #
 #--
 #
@@ -122,7 +122,7 @@ module Bio::Shell
   end
 
   def less(file)
-    pager = ENV['PAGER'] || "less"
+    pager = Bio::Shell.config[:pager] || ENV['PAGER'] || "less"
     system("#{pager} #{file}")
   end
 
