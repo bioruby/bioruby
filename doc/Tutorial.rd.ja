@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.17 2005/12/06 12:29:00 k Exp $
+  $Id: Tutorial.rd.ja,v 1.18 2005/12/07 11:40:45 k Exp $
 
   Copyright (C) 2001-2003, 2005 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -39,6 +39,16 @@ Windows の場合も１クリックインストーラや ActiveScriptRuby などが
   ruby 1.8.2 (2004-12-25) [powerpc-darwin7.7.0]
 
 のような感じでバージョンが表示されます。バージョン 1.8.2 以降をお勧めします。
+
+Ruby 標準装備のクラスやメソッドについては、Ruby のリファレンスマニュアルを
+参照してください。
+
+* ((<URL:http://www.ruby-lang.org/ja/man/>))
+
+コマンドラインでヘルプを参照するには、Ruby 標準添付の ri コマンドや、
+日本語版の refe コマンドが便利です。
+
+* ((<URL:http://i.loveruby.net/ja/prog/refe.html>))
 
 === BioRuby のインストール
 
@@ -143,7 +153,7 @@ DNA 配列やアミノ酸配列をあつかう Bio::Sequence クラスのオブジェクトで、
 DNA 配列のための Bio::Sequence::NA クラスと
 アミノ酸配列のための Bio::sequence::AA クラスのどちらかになります。
 
-配列がどちらのクラスに属するかは
+配列がどちらのクラスに属するかは Ruby の class メソッドを用いて
 
   bioruby> p cdc2.class
   Bio::Sequence::AA
@@ -151,12 +161,12 @@ DNA 配列のための Bio::Sequence::NA クラスと
   bioruby> p psaB.class
   Bio::Sequence::NA
 
-のように判定できます。自動判定が間違っている場合などには to_naseq,
-to_aaseq メソッドで変換できます。
+のように調べることができます。自動判定が間違っている場合などには
+to_naseq, to_aaseq メソッドで強制的に変換できます。
 
-  bioruby> cdc2new = cdc2.to_naseq
-  bioruby> p cdc2new.class
-  Bio::Sequence::NA
+  bioruby> pep = dna.to_aaseq
+  bioruby> p pep.class
+  Bio::Sequence::AA
 
 これらのクラスは Ruby の文字列クラスである String を継承していますので、
 length で長さを調べたり、+ で足し合わせたり、* で繰り返したりなど、
@@ -279,25 +289,38 @@ seqstat コマンドを使うと、組成などの情報も一度に表示されます。
 
 --- composition
 
-ここで表示される組成は composition メソッドで得ることができます。
-結果が文字列ではなく Hash で返されるので、
-puts の代わりに p コマンドを使って表示すると良いでしょう。
+seqstat の中で表示されている組成は composition メソッドで得ることができます。
+結果が文字列ではなく Hash で返されるので、とりあえず表示してみる場合には
+puts の代わりに p コマンドを使うと良いでしょう。
 
   bioruby> p dna.composition
   {"a"=>6, "c"=>2, "g"=>2, "t"=>2}
+
+=== 塩基配列、アミノ酸配列のその他のメソッド
 
 他にも塩基配列、アミノ酸配列に対して行える操作は色々とあります。
 
 --- subseq(from, to)
 
-部分配列の取り出し
+部分配列を取り出すには subseq メソッドを使います。
 
   bioruby> puts dna.subseq(1, 3)
   atg
 
+Ruby など多くのプログラミング言語の文字列は 1 文字目を 0 から数えますが、
+subseq メソッドは 1 から数えて切り出せるようになっています。
+
+  bioruby> puts dna[0, 3]
+  atg
+
+Ruby の String クラスが持つ slice メソッド str[] と適宜使い分けると
+よいでしょう。
+
 --- window_search(len, step)
 
-部分配列毎の繰り返し
+window_search メソッドを使うと長い配列の部分配列毎の繰り返しを
+簡単に行うことができます。DNA 配列をコドン毎に処理する場合、
+３文字ずつずらしながら３文字を切り出せばよいので以下のようになります。
 
   bioruby> dna.window_search(3, 3) do |codon|
   bioruby+   puts "#{codon}\t#{codon.translate}"
@@ -307,18 +330,27 @@ puts の代わりに p コマンドを使って表示すると良いでしょう。
   gca     A
   aaa     K
 
-ゲノム配列を 11000bp ごとにブツ切りにして FASTA フォーマットに整形。このとき末端 1000bp をオーバーラップさせ、10000bp に満たない 3' 端は 別途受け取って表示します。
+ゲノム配列を、末端 1000bp をオーバーラップさせながら 11000bp ごとに
+ブツ切りにし FASTA フォーマットに整形する場合は以下のようになります。
+
+  bioruby> seq.window_search(11000, 10000) do |subseq|
+  bioruby+   puts subseq.to_fasta
+  bioruby+ end
+
+最後の 10000bp に満たない 3' 端の余り配列は返り値として得られるので、
+必要な場合は別途受け取って表示します。
 
   bioruby> i = 1
   bioruby> remainder = seq.window_search(11000, 10000) do |subseq|
   bioruby>   puts subseq.to_fasta("segment #{i*10000}", 60)
   bioruby>   i += 1
   bioruby> end
-  bioruby> puts remainder.to_fasta("segment #{i}", 60)
+  bioruby> puts remainder.to_fasta("segment #{i*10000}", 60)
 
 --- splicing(position)
 
-塩基配列の GenBank 等の position 文字列による切り出し
+塩基配列の GenBank 等の position 文字列による切り出しは splicing
+メソッドで行います。
 
   bioruby> puts dna
   atgcatgcaaaa
@@ -327,14 +359,15 @@ puts の代わりに p コマンドを使って表示すると良いでしょう。
 
 --- randomize
 
-ランダム配列の生成
+randomize メソッドは、配列の組成を保存したままランダム配列を生成します。
 
   bioruby> puts dna.randomize
   agcaatagatac
 
 --- to_re
 
-正規表現への変換
+to_re メソッドは、塩基配列を atgc だけのパターンからなる正規表現に
+変換します。
 
   bioruby> ambiguous = seq("atgcyatgcatgcatgc")
 
@@ -345,18 +378,20 @@ puts の代わりに p コマンドを使って表示すると良いでしょう。
   (?-mix:atgc[tc]atgcatgcatgc)
 
 seq メソッドは ATGC の含有量が 90% 以下だとアミノ酸配列とみなすので、
-ambiguous な文字が多く含まれる配列の場合は明示的に Bio::Sequence::NA
-オブジェクトを作る必要があります。
+曖昧な塩基が多く含まれる配列の場合は to_naseq メソッドを使って
+明示的に Bio::Sequence::NA オブジェクトに変換する必要があります。
 
-  bioruby> s = Bio::Sequence::NA.new("atgcurywskmbvhdn")
+  bioruby> s = seq("atgcrywskmbvhdn").to_naseq
   bioruby> p s.to_re
-  /augcu[ag][uc][au][gc][ug][ac][ugc][agc][auc][aug][augc]/
+  /atgc[ag][tc][at][gc][tg][ac][tgc][agc][atc][atg][atgc]/
+
   bioruby> puts s.to_re
-  (?-mix:augcu[ag][uc][au][gc][ug][ac][ugc][agc][auc][aug][augc])
+  (?-mix:atgc[ag][tc][at][gc][tg][ac][tgc][agc][atc][atg][atgc])
 
 --- names
 
-塩基名、アミノ酸名での表示
+あまり使うことはありませんが、配列を塩基名やアミノ酸名に変換する
+メソッドです。
 
   bioruby> p dna.names
   ["adenine", "thymine", "guanine", "cytosine", "adenine", "thymine",
@@ -367,16 +402,16 @@ ambiguous な文字が多く含まれる配列の場合は明示的に Bio::Sequence::NA
 
 --- codes
 
-アミノ酸配列の 3 文字コードでの表示
+アミノ酸配列を３文字コードに変換する names と似たメソッドです。
 
   bioruby> p pep.codes
   ["Met", "His", "Ala", "Lys"]
 
 --- gc_percent
 
-塩基配列の GC 含量の表示
+塩基配列の GC 含量は gc_percent メソッドで得られます。
 
-  bioruby> puts dna.gc_percent
+  bioruby> p dna.gc_percent
   33
 
 --- to_fasta
@@ -395,7 +430,7 @@ codontables, codontable コマンドを紹介します。
  
 --- aminoacids
 
-アミノ酸の一覧
+アミノ酸の一覧は aminoacids コマンドで表示できます。
 
   bioruby> aminoacids
   ?       Pyl     pyrrolysine
@@ -423,6 +458,8 @@ codontables, codontable コマンドを紹介します。
   Y       Tyr     tyrosine
   Z       Glx     glutamine/glutamic acid
 
+返り値は短い表記と対応する長い表記のハッシュになっています。
+
   bioruby> aa = aminoacids
   bioruby> puts aa["G"]
   Gly
@@ -430,6 +467,8 @@ codontables, codontable コマンドを紹介します。
   glycine
 
 --- nucleicacids
+
+塩基の一覧は nucleicacids コマンドで表示できます。
 
   bioruby> nucleicacids
   a       a       Adenine
@@ -448,6 +487,8 @@ codontables, codontable コマンドを紹介します。
   h       [atc]   not G
   d       [atg]   not C
   n       [atgc]  
+
+返り値は塩基の１文字表記と該当する塩基のハッシュになっています。
 
   bioruby> na = nucleicacids
   bioruby> puts na["r"]
@@ -476,9 +517,15 @@ codontables, codontable コマンドを紹介します。
   22      Scenedesmus obliquus mitochondrial
   23      Thraustochytrium Mitochondrial
 
+返り値はテーブル番号と名前のハッシュになっています。
+
+  bioruby> ct = codontables
+  bioruby> puts ct[3]
+  Yeast Mitochondorial
+
 --- codontable
 
-コドン表の自体は codontable コマンドで表示できます。
+コドン表自体は codontable コマンドで表示できます。
 
   bioruby> codontable(11)
 
@@ -514,7 +561,8 @@ codontables, codontable コマンドを紹介します。
    *---------------------------------------------*
 
 
-codontable コマンドの結果を変数に代入するとコドンの変換に使うことができます。
+返り値は Bio::CodonTable クラスのオブジェクトで、コドンとアミノ酸の
+変換ができるだけでなく、以下のようなデータも得ることができます。
 
   bioruby> ct = codontable(2)
   bioruby> p ct["atg"]
@@ -535,19 +583,18 @@ codontable コマンドの結果を変数に代入するとコドンの変換に使うことができます。
   bioruby> p ct.stop
   ["taa", "tag", "aga", "agg"]
 
-アミノ酸からコードするコドンを調べる
+アミノ酸をコードするコドンを調べる
 
   bioruby> p ct.revtrans("V")
   ["gtc", "gtg", "gtt", "gta"]
 
-
 === フラットファイルのエントリ
 
 データベースのエントリと、フラットファイルそのものを扱う方法を紹介します。
-GenBank のファージのエントリが含まれるファイル gbphg.seq はファイルサイズが
-小さいので例として使ってみます。
+GenBank データベースの中でファージのエントリが含まれる gbphg.seq は
+ファイルサイズが小さいので、このファイルを例として使います。
 
-  % wget http://ftp.hgc.jp/pub/mirror/ncbi/genbank/gbphg.seq.gz
+  % wget ftp://ftp.hgc.jp/pub/mirror/ncbi/genbank/gbphg.seq.gz
   % gunzip gbphg.seq.gz
 
 --- ent
@@ -676,26 +723,9 @@ FASTA フォーマットに変換し、myfasta.fa というファイルに保存しています。
     converting -- gbvrl2.gbk
   done
 
-# === OBDA
-# 
-# OBDA (Open Bio Database Access) の設定ファイル
-# 
-# * ~/.bioinformatics/seqdatabase.ini
-# 
-# に従って、データベースのエントリを
-# 
-# * BioFlat - ローカルのファイル
-# * BioFetch - HTTP によるウェブサーバ
-# * BioSQL - RDBM
-# 
-# など様々なソースから生物学データベースエントリを取得することができます。
-# 
-#   bioruby> obda_get_entry("embl:BUM")
-# 
-
 === KEGG API
 
-BioRuby シェルでは KEGG API も簡単に利用できます。
+BioRuby シェルでは KEGG API のウェブサービスも簡単に利用できます。
 
 --- keggdbs
 
@@ -797,7 +827,6 @@ bget コマンドで指定した db:entry_id のデータベースエントリを取得できます。
   DEFINITION  A monoclonal antibody recognizing ebola virus.
   (略)
 
-
 === スクリプト生成
 
 作業手順をスクリプト化して保存しておくこともできます。
@@ -815,11 +844,7 @@ bget コマンドで指定した db:entry_id のデータベースエントリを取得できます。
 
   #!/usr/bin/env ruby
   
-  require 'bio/shell'
-  
-  include Bio::Shell
-  
-  Bio::Shell.setup
+  require 'bioruby'
   
   seq = seq("gbphg.seq")
   p seq
@@ -857,9 +882,9 @@ bget コマンドで指定した db:entry_id のデータベースエントリを取得できます。
   bioruby> dir
      UGO  Date                                 Byte  File
   ------  ----------------------------  -----------  ------------
+   40700  Tue Dec 06 07:07:35 JST 2005         1768  "Desktop"
    40755  Tue Nov 29 16:55:20 JST 2005         2176  "bin"
   100644  Sat Oct 15 03:01:00 JST 2005     42599518  "gbphg.seq"
-   40755  Wed Oct 26 19:26:27 JST 2005          170  "lib"
   (略)
 
 --- head
@@ -876,16 +901,23 @@ bget コマンドで指定した db:entry_id のデータベースエントリを取得できます。
   
       2713 loci,    16892737 bases, from     2713 reported sequences
 
-行数を指定することもできます。
+表示する行数を指定することもできます。
 
   bioruby> head "gbphg.seq", 2
   GBPHG.SEQ            Genetic Sequence Data Bank
                             October 15 2005
 
+テキストの入っている変数の先頭を見ることもできます。
+
+  bioruby> entry = ent("gbphg.seq")
+  bioruby> head entry, 2
+  GBPHG.SEQ            Genetic Sequence Data Bank
+                            October 15 2005
+
 --- less
 
-テキストファイルを PAGER で表示します。デフォルトでは環境変数 PAGER
-の値か less コマンドを使用します。
+テキストファイルを PAGER で表示します。ここで使用するページャーは
+pager コマンドで変更することができます（後述）。
 
   bioruby> less "gbphg.seq"
 
@@ -936,7 +968,11 @@ BioRuby シェルの各種設定を表示します。
   pager   = nil
   echo    = false
 
-echo 表示するかどうかを切り替えます。
+echo 表示するかどうかを切り替えます。on の場合は、puts や p などを
+つけなくても評価した値が画面に表示されます。
+irb の場合は初期設定が on になっていますが、bioruby コマンドでは
+長い配列やエントリなど長大な文字列を扱うことが多いため、初期設定では
+off にしています。
 
   bioruby> config :echo
   Echo on
@@ -945,12 +981,15 @@ echo 表示するかどうかを切り替えます。
   bioruby> config :echo
   Echo off
 
-可能な場合にカラー表示するかどうかを切り替えます。
+コドン表などで可能な場合にカラー表示するかどうかを切り替えます。
 カラー表示の場合、プロンプトにも色がつきますので判別できます。
 
   bioruby> config :color
   bioruby> codontable
   (色付き)
+
+実行するたびに設定が切り替わります。
+
   bioruby> config :color
   bioruby> codontable
   (色なし)
@@ -989,7 +1028,9 @@ Bio::Sequence クラスは、配列に対する様々な操作を行うことができます。
 部分配列の切り出し、塩基組成の計算、アミノ酸への翻訳、分子量計算などを
 行なってみます。アミノ酸への翻訳では、必要に応じて何塩基目から翻訳を開
 始するかフレームを指定したり、codontable.rb で定義されているコドンテー
-ブルの中から使用するものを指定したりする事ができます。
+ブルの中から使用するものを指定したりする事ができます（コドンテーブルの
+番号は ((<URL:http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi>))
+を参照）。
 
     #!/usr/bin/env ruby
     
@@ -998,17 +1039,16 @@ Bio::Sequence クラスは、配列に対する様々な操作を行うことができます。
     seq = Bio::Sequence::NA.new("atgcatgcaaaa")
     
     puts seq                            # 元の配列
-    puts seq.complement                 # 相補配列 (Sequence::NA オブジェクト)
+    puts seq.complement                 # 相補配列 (Bio::Sequence::NA)
     puts seq.subseq(3,8)                # 3 塩基目から 8 塩基目まで
     
-    p seq.gc_percent                    # GC 塩基の割合 (bioruby 0.6以前: Float 0.7以降: Integer)
+    p seq.gc_percent                    # GC 塩基の割合 (Integer)
     p seq.composition                   # 全塩基組成 (Hash)
     
-    puts seq.translate                  # 翻訳配列 (Sequence::AA オブジェクト)
+    puts seq.translate                  # 翻訳配列 (Bio::Sequence::AA)
     puts seq.translate(2)               # ２文字目から翻訳（普通は１から）
-    puts seq.translate(1,11)            # 11番目のコドンテーブルを使用
-                                        # (コドンテーブルの番号は http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi を参照。)
-    
+    puts seq.translate(1,9)             # ９番のコドンテーブルを使用
+
     p seq.translate.codes               # アミノ酸を３文字コードで表示 (Array)
     p seq.translate.names               # アミノ酸を名前で表示 (Array)
     p seq.translate.composition         # アミノ酸組成 (Hash)
@@ -1016,41 +1056,35 @@ Bio::Sequence クラスは、配列に対する様々な操作を行うことができます。
     
     puts seq.complement.translate       # 相補配列の翻訳
 
-pやprintやputsは指定した内容を表示するためのRuby標準メソッドです。
-Ruby標準装備のクラスやメソッドについては、
-((<Rubyのリファレンスマニュアル|URL:http://www.ruby-lang.org/ja/man/>))
-を参照してください。(Windows版Rubyならヘルプも使えるかもしれません。)
-英語での表示になりますが、riコマンドも使えます。
-
-  % ri p
-
-(日本語でコマンドラインからリファレンスマニュアルを見たい場合は、
-((<refe|URL:http://i.loveruby.net/ja/prog/refe.html>))
-をインストールするのがお勧めです。)
+print, puts, p は内容を画面に表示するための Ruby 標準メソッドです。
+基本となる print と比べて、puts は改行を自動でつけてくれる、
+p は文字列や数字以外のオブジェクトも人間が見やすいように表示してくれる、
+という特徴がありますので適宜使い分けます。
 
 塩基配列は Bio::Sequence::NA クラスの、アミノ酸配列は Bio::Sequence::AA
 クラスのオブジェクトになります。それぞれ Bio::Sequence クラスを継承し
 ているため、多くのメソッドは共通です。
 
-Bio::Sequence クラスは Ruby の String クラスを継承しているので String
-クラスが持つメソッドも使う事ができます。例えば部分配列を切り出すには
-subseq(from,to) の他に、String の [] メソッドも使うことができます。
-ただし、Ruby の文字列は 1 文字目を 0 番目として数える点には注意が必要です。
-たとえば、
+さらに Bio::Sequence クラスは Ruby の String クラスを継承しているので
+String クラスが持つメソッドも使う事ができます。例えば部分配列を切り出すには
+Bio::Sequence クラスの subseq(from,to) メソッドの他に、String クラスの
+[] メソッドを使うこともできます。
 
-  s = 'abc'
-  puts s[0..0]
+Ruby の文字列は 1 文字目を 0 番目として数える点には注意が必要です。たとえば、
 
-  >a
+  puts seq.subseq(1, 3)
+  puts seq[0, 3]
 
-Stringのメソッドを使う場合は、生物学で普通使用される1文字目を1番目として
-数えた場所の数字からは 1 を引く必要があります。（subseq メソッドはこれを
-内部でやっています。また、from, to のどちらかでも 0 以下の場合は nil を
-返すようになっています。）
+はどちらも seq の最初の３文字 atg を表示します。
+
+このように、String のメソッドを使う場合は、生物学で普通使用される 1 文字目を
+1 番目として数えた数字からは 1 を引く必要があります（subseq メソッドは
+これを内部でやっています。また、from, to のどちらかでも 0 以下の場合は
+nil を返すようになっています）。
 
 window_search(window_size, step_size) メソッドを使うと、配列に対してウィ
 ンドウをずらしながらそれぞれの部分配列に対する処理を行うことができます。
-Rubyの特長のひとつである「ブロック」によって、「それぞれに対する処理」を
+Ruby の特長のひとつである「ブロック」によって、「それぞれに対する処理」を
 簡潔かつ明瞭に書くことが可能です。以下の例では、's' という変数にそれぞれ
 部分配列を代入しながらブロックを繰り返し実行することになります。
 
@@ -1066,7 +1100,7 @@ Bio::Sequence::AA クラスのオブジェクトなので、配列クラスの持つ全てのメ
 
 また、２番目の引数に移動幅を指定することが出来るようになっているので、
 
-* コドン単位でずらしながら 15 塩基を翻訳して表示する
+* コドン単位でずらしながら 15 塩基を 5 残基のペプチドに翻訳して表示する
 
     seq.window_search(15, 3) do |s|
       puts s.translate
@@ -1141,12 +1175,14 @@ Bio::Sequence::AA クラスのオブジェクトなので、配列クラスの持つ全てのメ
 
 == GenBank のパース (Bio::GenBank クラス)
 
-GenBank 形式のファイルを用意してください。(なければ、
-ftp://ftp.ncbi.nih.gov/genbank/ から .seq ファイルをダウンロードすること。)
+GenBank 形式のファイルを用意してください（なければ、
+ftp://ftp.ncbi.nih.gov/genbank/ から .seq ファイルをダウンロードします)。
 
+  % wget ftp://ftp.hgc.jp/pub/mirror/ncbi/genbank/gbphg.seq.gz
+  % gunzip gbphg.seq.gz
+  
 まずは、各エントリから ID と説明文、配列を取り出して FASTA 形式に変換して
-みましょう。なお、これと同じような例はBioRubyのサンプルスクリプトにも入って
-います。
+みましょう。
 
 Bio::GenBank::DELIMITER は GenBank クラスで定義されている定数で、
 データベースごとに異なるエントリの区切り文字（たとえば GenBank の場合は //）
@@ -1164,9 +1200,9 @@ Bio::GenBank::DELIMITER は GenBank クラスで定義されている定数で、
       puts gb.naseq                     # 塩基配列（Sequence::NA オブジェクト）
     end
 
-しかし、これはGenBankファイルのデータ構造に依存しています。
+しかし、この書き方では GenBank ファイルのデータ構造に依存しています。
 ファイルからのデータ入力を扱うクラス Bio::FlatFile を使用することで、
-以下のようにより汎用的に書くことができます。
+以下のように区切り文字などを気にせず書くことができます。
 
     #!/usr/bin/env ruby
     
@@ -1175,7 +1211,7 @@ Bio::GenBank::DELIMITER は GenBank クラスで定義されている定数で、
     ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
     ff.each_entry do |gb|
       definition = "#{gb.accession} #{gb.definition}"
-      puts gb.naseq.to_fasta(definition, 60)    
+      puts gb.naseq.to_fasta(definition, 60)
     end
 
 形式の違うデータ、たとえばFASTAフォーマットのファイルを読み込むときでも、
@@ -1191,11 +1227,7 @@ Bio::GenBank::DELIMITER は GenBank クラスで定義されている定数で、
       puts "naseq      : " + f.naseq
     end
 
-のように、似た書き方で済ませられます。
-
-上の例では、Bio::FlatFile.new の最初の引数にデータベースファイルのフォー
-マットを BioRuby のクラス名で指定しています。これについて詳しくは次の
-セクションを参照してください。
+のように、同じような書き方で済ませられます。
 
 さらに、各 Bio::DB クラスの open メソッドで同様のことができます。たとえば、
 
@@ -1209,10 +1241,39 @@ Bio::GenBank::DELIMITER は GenBank クラスで定義されている定数で、
       puts gb.naseq.to_fasta(definition, 60)    
     end
 
-などと書くことができます。(ただし、この書き方はあまり使われていません。)
+などと書くことができます（ただし、この書き方はあまり使われていません)。
 
-次に、GenBank の複雑な FEATURES の中をパースして、遺伝子ごとの塩基配列と
-アミノ酸配列を取り出してみます。
+次に、GenBank の複雑な FEATURES の中をパースして必要な情報を取り出します。
+まずは /tranlation="アミノ酸配列" という Qualifier がある場合だけ
+アミノ酸配列を抽出して表示してみます。
+
+    #!/usr/bin/env ruby
+
+    require 'bio'
+    
+    ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
+
+    # GenBank の１エントリごとに
+    ff.each_entry do |gb|
+    
+      # FEATURES の要素を一つずつ処理
+      gb.features.each do |feature|
+
+        # Feature に含まれる Qualifier を全てハッシュに変換
+        hash = feature.to_hash
+
+        # Qualifier に translation がある場合だけ
+        if hash['translation']
+          # エントリのアクセッション番号と翻訳配列を表示
+          puts ">#{gb.accession}
+          puts hash['translation']
+        end
+      end
+    end
+
+さらに、Feature のポジションに書かれている情報からエントリの塩基配列を
+スプライシングし、それを翻訳したものと /translation= に書かれていた配列を
+両方表示して比べてみましょう。
 
     #!/usr/bin/env ruby
     
@@ -1224,55 +1285,56 @@ Bio::GenBank::DELIMITER は GenBank クラスで定義されている定数で、
     ff.each_entry do |gb|
 
       # ACCESSION 番号と生物種名を表示
-      puts "# #{gb.accession} - #{gb.organism}"
+      puts "### #{gb.accession} - #{gb.organism}"
     
-      gb.features.each do |feature|     # FEATURES の要素を一つずつ処理
+      # FEATURES の要素を一つずつ処理
+      gb.features.each do |feature|
+
+        # Feature の position (join ...など) を取り出す
         position = feature.position
-        hash = feature.assoc            # レガシーだが簡単のためハッシュに直す
+
+        # Feature に含まれる Qualifier を全てハッシュに変換
+        hash = feature.to_hash
 
         # /translation= がなければスキップ
         next unless hash['translation']
 
-        # 遺伝子名などの情報を集める
+        # /gene=, /product= などの Qualifier から遺伝子名などの情報を集める
         gene_info = [
           hash['gene'], hash['product'], hash['note'], hash['function']
         ].compact.join(', ')
+        puts "## #{gene_info}"
 
-        # 塩基配列
-        puts ">NA splicing('#{position}') : #{gene_info}"
+        # 塩基配列（position の情報によってスプライシング）
+        puts ">NA splicing('#{position}')"
         puts gb.naseq.splicing(position)
 
-        # アミノ酸配列（塩基配列から翻訳）
+        # アミノ酸配列（スプライシングした塩基配列から翻訳）
         puts ">AA translated by splicing('#{position}').translate"
         puts gb.naseq.splicing(position).translate
 
-        # アミノ酸配列（/translation= のもの）
+        # アミノ酸配列（/translation= に書かれていたのもの）
         puts ">AA original translation"
         puts hash['translation']
       end
     end
 
-* 注：上記のように assoc メソッドで Feature オブジェクトからハッシュを生成
-  すると qualifier をキーとしてデータを取り出すことができるので便利ですが、
-  キーが同一の複数の qualifier が 1 つの feature 中に存在する場合、情報が
-  失われます（これを防ぐためにFeature#featureメソッドではデータを配列で
-  持たせています）。
-
-上の例で使用されている Bio::Sequence#splicing メソッドは、GenBank,EMBL,DDBJ
-フォーマットのLocationの表記を元に、塩基配列から部分配列を切り出す強力な
-メソッドです。
-
-もし、データで使用しているコドンテーブルがデフォルト(universal)と違ったり、
+もし、使用されているコドンテーブルがデフォルト (universal) と違ったり、
 最初のコドンが "atg" 以外だったり、セレノシステインが含まれていたり、
-あるいは BioRuby にバグがあれば、上の例の最後の2行で表示されるアミノ酸配列
-が異なる事になります。
+あるいは BioRuby にバグがあれば、上の例で表示される２つのアミノ酸配列は
+異なる事になります。
 
-この splicing メソッドの引数には GenBank の Feature で使われている形式の
-文字列以外に Bio::Locations オブジェクトを渡すことも可能です。
-Location文字列のフォーマットや Bio::Locations について詳しく知りたい場合は 
-bio/location.rb を見てください。
+この例で使用されている Bio::Sequence#splicing メソッドは、GenBank, EMBL,
+DDBJ フォーマットで使われている Location の表記を元に、塩基配列から
+部分配列を切り出す強力なメソッドです。
 
-* GenBank形式のデータの Feature で使われていたLocation文字列の例
+この splicing メソッドの引数には GenBank 等の Location の文字列以外に
+BioRuby の Bio::Locations オブジェクトを渡すことも可能ですが、
+通常は見慣れている Location 文字列の方が分かりやすいかも知れません。
+Location 文字列のフォーマットや Bio::Locations について詳しく知りたい場合は 
+BioRuby の bio/location.rb を見てください。
+
+* GenBank 形式のデータの Feature で使われていた Location 文字列の例
 
     naseq.splicing('join(2035..2050,complement(1775..1818),13..345')
 
@@ -1284,16 +1346,16 @@ bio/location.rb を見てください。
 ちなみに、アミノ酸配列 (Bio::Sequence::AA) についても splicing メソッド
 を使用して部分配列を取り出すことが可能です。
 
-* アミノ酸配列の部分配列を切り出す(たとえばシグナルペプチドとか)
+* アミノ酸配列の部分配列を切り出す（シグナルペプチドなど）
 
     aaseq.splicing('21..119')
 
 
 === GenBank 以外のデータベース
 
-BioRuby では、GenBank 以外のデータベースについても基本的なやり方は同じで、
-データベースの１エントリを対応するデータベースのクラスに渡せば、パースさ
-れた結果がオブジェクトになって返ってきます。
+BioRuby では、GenBank 以外のデータベースについても基本的な扱い方は同じで、
+データベースの１エントリ分の文字列を対応するデータベースのクラスに渡せば、
+パースされた結果がオブジェクトになって返ってきます。
 
 データベースのフラットファイルから１エントリずつ取り出してパースされた
 オブジェクトを取り出すには、先にも出てきた Bio::FlatFile を使います。
@@ -1302,8 +1364,8 @@ Bio::FlatFile.new の引数にはデータベースに対応する BioRuby でのクラス
 
     ff = Bio::FlatFile.new(Bio::データベースクラス名, ARGF)
 
-が、すばらしいことに、実は FlatFile クラスはデータベースの自動認識がで
-きますので、
+しかし、すばらしいことに、実は FlatFile クラスはデータベースの自動認識が
+できますので、
 
     ff = Bio::FlatFile.auto(ARGF)
 
@@ -1314,10 +1376,28 @@ Bio::FlatFile.new の引数にはデータベースに対応する BioRuby でのクラス
     require 'bio'
     
     ff = Bio::FlatFile.auto(ARGF)
+
     ff.each_entry do |entry|
       p entry.entry_id          # エントリの ID
       p entry.definition        # エントリの説明文
       p entry.seq               # 配列データベースの場合
+    end
+
+    ff.close
+
+さらに、開いたデータベースの閉じ忘れをなくすためには Ruby のブロックを
+活用して以下のように書くのがよいでしょう。
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+    
+    Bio::FlatFile.auto(ARGF) do |ff|
+      ff.each_entry do |entry|
+        p entry.entry_id          # エントリの ID
+        p entry.definition        # エントリの説明文
+        p entry.seq               # 配列データベースの場合
+      end
     end
 
 パースされたオブジェクトから、エントリ中のそれぞれの部分を取り出すための
@@ -1341,8 +1421,8 @@ Bio::FlatFile.new の引数にはデータベースに対応する BioRuby でのクラス
 
 === アライメント (Bio::Alignment クラス)
 
-Bio::Alignmentクラス (bio/alignment.rb に記述されています) はRubyのHash
-やArray、あるいは BioPerl の Bio::SimpleAlign に似た感じの、アライメントを
+Bio::Alignmentクラス (bio/alignment.rb で実装されています) は Ruby の Hash
+や Array、あるいは BioPerl の Bio::SimpleAlign に似た感じの、アライメントを
 格納するコンテナクラスです。以下に簡単な使い方を示します。
 
   require 'bio'
@@ -1356,7 +1436,7 @@ Bio::Alignmentクラス (bio/alignment.rb に記述されています) はRubyのHash
   # コンセンサス配列を表示
   p a.consensus             # ==> "a?gc?"
 
-  # IUPAC標準の曖昧な塩基を使用したコンセンサス配列を表示
+  # IUPAC 標準の曖昧な塩基を使用したコンセンサス配列を表示
   p a.consensus_iupac       # ==> "ahgcr"
 
   # 各配列について繰り返す
@@ -1366,6 +1446,7 @@ Bio::Alignmentクラス (bio/alignment.rb に記述されています) はRubyのHash
     #    "aagca"
     #    "acgca"
     #    "acgcg"
+
   # 各サイトについて繰り返す
   a.each_site { |x| p x }
     # ==>
@@ -1389,12 +1470,17 @@ FASTA 形式の配列ファイル query.pep に対して、自分のマシン(ローカル)あるいは
 
 === ローカルの場合
 
-FASTA がインストールされていることを確認してください。（コマンド名が
- fasta34 でパスが通ったディレクトリにインストールされていると仮定します。
-無い場合は ftp://ftp.virginia.edu/pub/fasta/ からダウンロードおよび
-インストールを行ってください。）検索対象とする FASTA 形式のデータ
-ベースファイル target.pep と、FASTA 形式で問い合わせ配列がいくつか入った
-ファイル query.pep を準備し、
+FASTA がインストールされていることを確認してください。以下の例では、
+コマンド名が fasta34 でパスが通ったディレクトリにインストール
+されている状況を仮定しています。
+
+* ((<URL:ftp://ftp.virginia.edu/pub/fasta/>))
+
+検索対象とする FASTA 形式のデータベースファイル target.pep と、FASTA
+形式の問い合わせ配列がいくつか入ったファイル query.pep を準備します。
+
+この例では、各問い合わせ配列ごとに FASTA 検索を実行し、ヒットした配列の
+evalue が 0.0001 以下のものだけを表示します。
 
     #!/usr/bin/env ruby
     
@@ -1425,26 +1511,19 @@ FASTA がインストールされていることを確認してください。（コマンド名が
       end
     end
 
-というスクリプトを f_search.rb という名前で作ったとすると、
+ここで factory は繰り返し FASTA を実行するために、あらかじめ作っておく
+実行環境です。
 
-    % ./f_search.rb query.pep target.pep > f_search.out
+上記のスクリプトを search.rb とすると、問い合わせ配列とデータベース配列の
+ファイル名を引数にして、以下のように実行します。
 
-のように実行すれば検索することができます。
+    % ruby search.rb query.pep target.pep > search.out
 
-ここで factory は繰り返し FASTA を実行するために、あらかじめ作っておく実
-行環境です。上の例では Fasta オブジェクトの query メソッドを使って検索し
-ていますが、逆に問い合わせ配列に対し
-
-    seq = ">test seq\nYQVLEEIGRGSFGSVRKVIHIPTKKLLVRKDIKYGHMNSKE"
-    seq.fasta(factory)
-
-のように factory を渡して fasta メソッドを呼ぶ方法もあります。
-(TRANSLATOR'S NOTE: この機能は将来無くなるかもしれない。)
-
-FASTA コマンドにオプションを与えたい場合、３番目の引数に FASTA のコマン
-ドラインオプションを書いて渡します。ktup 値だけはメソッドで指定します。
-たとえば ktup 値を 1 にして、トップ 10 位以内のヒットを得る場合のオプショ
-ンは、以下のようになります。
+FASTA コマンドにオプションを与えたい場合、３番目の引数に FASTA の
+コマンドラインオプションを書いて渡します。ただし、ktup 値だけは
+メソッドを使って指定することになっています。
+たとえば ktup 値を 1 にして、トップ 10 位以内のヒットを得る場合の
+オプションは、以下のようになります。
 
     factory = Bio::Fasta.local('fasta34', 'target.pep', '-b 10')
     factory.ktup = 1
@@ -1486,7 +1565,7 @@ FASTA 特有の値を取り出すメソッドが必要な場合は、Bio::Fasta::Report
     puts factory.output
 
 のように、query メソッドを実行した後で factory オブジェクトの output
-メソッドを使ってください。
+メソッドを使って取り出すことができます。
 
 
 === リモートの場合
@@ -1554,16 +1633,14 @@ Bio::Blast と書き換えただけでも大丈夫な場合が多いです。
 
 をそれぞれ指定します。
 
-ところで、Bio::Blast は、Ruby用のXMLライブラリである XMLParser または
-REXML が使用可能な場合は、BLASTの "-m 7" オプションによるXML出力を利用
-します(XMLParser のほうが高速なので優先的に使用されます) 。
-なお、Ruby 1.8.0以降では REXMLはRuby本体に標準添付されています。
-もしXMLライブラリがインストールされていない場合は "-m 8" のタブ区切りの
+ところで、BLAST では "-m 7" オプションによる XML 出力フォーマッットの方が
+得られる情報が豊富なため、Bio::Blast は Ruby 用の XML ライブラリである
+XMLParser または REXML が使用可能な場合は、XML 出力を利用します。
+両方使用可能な場合、XMLParser のほうが高速なので優先的に使用されます。
+なお、Ruby 1.8.0 以降では REXML は Ruby 本体に標準添付されています。
+もし XML ライブラリがインストールされていない場合は "-m 8" のタブ区切りの
 出力形式を扱うようにしています。しかし、このフォーマットでは得られる
 データが限られるので、"-m 7" の XML 形式の出力を使うことをお勧めします。
-(Ruby 1.8.0以降を使用すれば、特別な外部ライブラリを別途インストール
-しなくても大丈夫です。Ruby 1.6.X では XMLParser または REXMLを別途
-インストールしてください。)
 
 すでに見たように Bio::Fasta::Report と Bio::Blast::Report の Hit オブジェ
 クトはいくつか共通のメソッドを持っています。BLAST 固有のメソッドで良く使
