@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: codon.rb,v 1.8 2005/11/28 12:07:42 k Exp $
+# $Id: codon.rb,v 1.9 2005/12/07 05:12:07 k Exp $
 #
 #--
 #
@@ -30,19 +30,6 @@ module Bio::Shell
 
   class ColoredCodonTable
 
-    Color = Bio::Shell::Core::ESC_SEQ
-
-    @@colors = {
-      :text		=> Color[:none],
-      :aa		=> Color[:green],
-      :start		=> Color[:red],
-      :stop		=> Color[:red],
-      :basic		=> Color[:cyan],
-      :polar		=> Color[:blue],
-      :acidic		=> Color[:magenta],
-      :nonpolar		=> Color[:yellow],
-    }
-
     @@properties = {
       :basic => %w( H K R ),
       :polar => %w( S T Y Q N S ),
@@ -57,12 +44,28 @@ module Bio::Shell
       @number = number
       @cuhash = cuhash
       if Bio::Shell.config[:color]
+        setup_colors
         generate_colored_text
       else
         generate_mono_text
       end
     end
     attr_reader :table
+
+    def setup_colors
+      esc_seq = Bio::Shell.esc_seq
+
+      @colors = {
+        :text		=> esc_seq[:none],
+        :aa		=> esc_seq[:green],
+        :start		=> esc_seq[:red],
+        :stop		=> esc_seq[:red],
+        :basic		=> esc_seq[:cyan],
+        :polar		=> esc_seq[:blue],
+        :acidic		=> esc_seq[:magenta],
+        :nonpolar	=> esc_seq[:yellow],
+      }
+    end
 
     def generate_mono_text
       @table.each do |codon, aa|
@@ -93,43 +96,43 @@ module Bio::Shell
         property, = @@properties.detect {|key, list| list.include?(aa)}
 
         if aa == '*'
-          color_code = "#{@@colors[:stop]}STOP"
+          color_code = "#{@colors[:stop]}STOP"
           if @cuhash
-            color_aa = "#{@@colors[:stop]}#{aa}"
+            color_aa = "#{@colors[:stop]}#{aa}"
           else
             color_aa = ''
           end
         else
-          color_code = "#{@@colors[property]}#{@aacode[aa]}"
+          color_code = "#{@colors[property]}#{@aacode[aa]}"
           if @table.start_codon?(codon)
             if @cuhash
-              color_aa = "#{@@colors[:aa]}#{aa}"
+              color_aa = "#{@colors[:aa]}#{aa}"
             else
-              color_aa = "#{@@colors[:start]}#{aa}"
+              color_aa = "#{@colors[:start]}#{aa}"
             end
           else
             if @cuhash
-              color_aa = "#{@@colors[property]}#{aa}"
+              color_aa = "#{@colors[property]}#{aa}"
             else
-              color_aa = "#{@@colors[:aa]}#{aa}"
+              color_aa = "#{@colors[:aa]}#{aa}"
             end
           end
         end
 
         if @cuhash
           percent = @cuhash[codon].to_s.rjust(6)
-          eval("@#{codon} = '#{color_aa}#{@@colors[:text]}#{percent}'")
+          eval("@#{codon} = '#{color_aa}#{@colors[:text]}#{percent}'")
         else
-          eval("@#{codon} = ' #{color_code} #{color_aa}#{@@colors[:text]} '")
+          eval("@#{codon} = ' #{color_code} #{color_aa}#{@colors[:text]} '")
         end
       end
 
       @hydrophilic = [
-        "#{@@colors[:basic]}basic#{@@colors[:text]},",
-        "#{@@colors[:polar]}polar#{@@colors[:text]},",
-        "#{@@colors[:acidic]}acidic#{@@colors[:text]}"
+        "#{@colors[:basic]}basic#{@colors[:text]},",
+        "#{@colors[:polar]}polar#{@colors[:text]},",
+        "#{@colors[:acidic]}acidic#{@colors[:text]}"
       ].join(" ")
-      @hydrophobic = "#{@@colors[:nonpolar]}nonpolar"
+      @hydrophobic = "#{@colors[:nonpolar]}nonpolar"
     end
 
     def output
@@ -174,7 +177,7 @@ module Bio::Shell
       else
         text = header + table
       end
-      text.gsub(/^\s+#/, @@colors[:text])
+      text.gsub(/^\s+#/, @colors[:text])
     end
 
   end

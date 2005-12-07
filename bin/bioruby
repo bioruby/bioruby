@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: bioruby,v 1.9 2005/11/28 07:03:28 k Exp $
+# $Id: bioruby,v 1.10 2005/12/07 05:12:06 k Exp $
 #
 #--
 #
@@ -58,7 +58,7 @@ IRB.setup(nil)
 IRB.conf[:AP_NAME] = 'bioruby'
 
 # change prompt for bioruby
-$_ = Bio::Shell::Core::ESC_SEQ
+$_ = Bio::Shell.esc_seq
 IRB.conf[:PROMPT][:BIORUBY_COLOR] = {
   :PROMPT_I => "bio#{$_[:ruby]}ruby#{$_[:none]}> ",
   :PROMPT_S => "bio#{$_[:ruby]}ruby#{$_[:none]}%l ",

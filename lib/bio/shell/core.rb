@@ -1,11 +1,11 @@
 #
-# = bio/shell/core.rb - internal methods for BioRuby shell
+# = bio/shell/core.rb - internal methods for the BioRuby shell
 #
 # Copyright::	Copyright (C) 2005
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: core.rb,v 1.14 2005/11/28 07:03:28 k Exp $
+# $Id: core.rb,v 1.15 2005/12/07 05:12:07 k Exp $
 #
 #--
 #
@@ -26,7 +26,7 @@
 #++
 #
 
-module Bio::Shell::Core
+module Bio::Shell::Ghost
 
   CONFIG  = "config"
   OBJECT  = "object"
@@ -54,6 +54,10 @@ module Bio::Shell::Core
     :w => "\e[37m",  :white   => "\e[37m",
     :n => "\e[00m",  :none    => "\e[00m",  :reset => "\e[00m",
   }
+
+  def esc_seq
+    ESC_SEQ
+  end
 
   ### save/restore the environment
 
@@ -262,7 +266,7 @@ module Bio::Shell::Core
   end
 
   def config_message(str = nil)
-    str ||= Bio::Shell::Core::MESSAGE
+    str ||= MESSAGE
     @config[:message] = str
   end
 
@@ -436,10 +440,9 @@ module Bio::Shell::Core
       print "Saving script (#{file}) ... "
         File.open(file, "w") do |f|
         f.print "#!/usr/bin/env ruby\n\n"
-        f.print "require 'bio/shell'\n\n"
-        f.print "include Bio::Shell\n\n"
-        f.print "Bio::Shell.setup\n\n"
-        f.puts Readline::HISTORY.to_a[@script_begin..@script_end]
+        f.print "require 'bioruby'\n\n"
+        f.print Readline::HISTORY.to_a[@script_begin..@script_end]
+        f.print "\n\n"
       end
       puts "done"
     rescue

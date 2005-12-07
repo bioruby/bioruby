@@ -1,11 +1,11 @@
 #
-# = bio/shell/access.rb - database access module
+# = bio/shell/plugin/entry.rb - extract entry and sequence
 #
 # Copyright::	Copyright (C) 2005
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: entry.rb,v 1.3 2005/11/28 12:07:42 k Exp $
+# $Id: entry.rb,v 1.4 2005/12/07 05:12:07 k Exp $
 #
 #--
 #

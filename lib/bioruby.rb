@@ -1,11 +1,11 @@
 #
-# = bio/shell.rb - Loading all BioRuby shell features
+# = bioruby.rb - Loading all BioRuby modules and setup for shell programming
 #
 # Copyright::	Copyright (C) 2005
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: shell.rb,v 1.11 2005/12/07 05:12:06 k Exp $
+# $Id: bioruby.rb,v 1.1 2005/12/07 05:12:06 k Exp $
 #
 #--
 #
@@ -26,26 +26,9 @@
 #++
 #
 
-require 'bio'
-require 'yaml'
-require 'open-uri'
-require 'pp'
+require 'bio/shell'
 
-module Bio::Shell
+include Bio::Shell
 
-  require 'bio/shell/core'
-  require 'bio/shell/session'
-  require 'bio/shell/plugin/entry'
-  require 'bio/shell/plugin/seq'
-  require 'bio/shell/plugin/midi'
-  require 'bio/shell/plugin/codon'
-  require 'bio/shell/plugin/flatfile'
-  require 'bio/shell/plugin/obda'
-  require 'bio/shell/plugin/keggapi'
-
-  extend Ghost
-  extend Private
-
-end
-
+Bio::Shell.setup
 
