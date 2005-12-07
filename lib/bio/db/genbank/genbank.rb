@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: genbank.rb,v 0.37 2005/11/14 05:43:43 k Exp $
+#  $Id: genbank.rb,v 0.38 2005/12/07 11:23:51 k Exp $
 #
 
 require 'bio/db'
@@ -31,7 +31,9 @@ class GenBank < NCBIDB
   # LOCUS
   class Locus
     def initialize(locus_line)
-      if locus_line.length > 75 			# after Rel 126.0
+      if locus_line.empty?
+        # do nothing (just for empty or incomplete entry string)
+      elsif locus_line.length > 75 			# after Rel 126.0
         @entry_id = locus_line[12..27].strip
         @length   = locus_line[29..39].to_i
         @strand   = locus_line[44..46].strip

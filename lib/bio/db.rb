@@ -5,7 +5,7 @@
 #		KATAYAMA Toshiaki <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: db.rb,v 0.30 2005/10/30 17:15:05 k Exp $
+# $Id: db.rb,v 0.31 2005/12/07 11:23:51 k Exp $
 #
 # == On-demand parsing and cache
 #
@@ -210,18 +210,29 @@ class DB
   # Returns a String with successive white spaces are replaced by one
   # space and stripeed.
   def truncate(str)
-    return str.gsub(/\s+/, ' ').strip
+    if str
+      str.gsub(/\s+/, ' ').strip
+    else
+      ""
+    end
   end
 
   # Returns a tag name of the field as a String.
   def tag_get(str)
-    return str[0,@tagsize].strip
+    if str
+      str[0,@tagsize].strip
+    else
+      ""
+    end
   end
 
   # Returns a String of the field without a tag name.
   def tag_cut(str)
-    str[0,@tagsize] = ''
-    return str
+    if str
+      str[0,@tagsize] = ''
+    else
+      ""
+    end
   end
 
   # Returns the content of the field as a String like the fetch method.

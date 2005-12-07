@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: common.rb,v 1.8 2005/11/14 05:43:43 k Exp $
+#  $Id: common.rb,v 1.9 2005/12/07 11:23:51 k Exp $
 #
 
 require 'bio/db'
@@ -53,11 +53,11 @@ module Common
   end
 
   def acc_version
-    versions.first
+    versions.first.to_s
   end
 
   def accession
-    acc_version.split(/\./).first
+    acc_version.split(/\./).first.to_s
   end
 
   def version
@@ -91,6 +91,7 @@ module Common
   def source
     unless @data['SOURCE']
       name, org = get('SOURCE').split('ORGANISM')
+      org ||= ""
       if org[/\S+;/]
         organism = $`
         taxonomy = $& + $'
@@ -136,7 +137,7 @@ module Common
           when /AUTHORS/
             authors = truncate(tag_cut(field))
             authors = authors.split(/, /)
-            authors[-1] = authors[-1].split(/\s+and\s+/)
+            authors[-1] = authors[-1].split(/\s+and\s+/) if authors[-1]
             authors = authors.flatten.map { |a| a.sub(/,/, ', ') }
             hash['authors']	= authors
           when /TITLE/
@@ -236,6 +237,7 @@ module Common
   def origin
     unless @data['ORIGIN']
       ori, seqstr = get('ORIGIN').split("\n", 2)
+      seqstr ||= ""
       @data['ORIGIN'] = truncate(tag_cut(ori))
       @data['SEQUENCE'] = seqstr.tr("0-9 \t\n\r\/", '')
     end
