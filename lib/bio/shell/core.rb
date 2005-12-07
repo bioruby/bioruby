@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: core.rb,v 1.15 2005/12/07 05:12:07 k Exp $
+# $Id: core.rb,v 1.16 2005/12/07 10:54:23 k Exp $
 #
 #--
 #
@@ -441,7 +441,7 @@ module Bio::Shell::Ghost
         File.open(file, "w") do |f|
         f.print "#!/usr/bin/env ruby\n\n"
         f.print "require 'bioruby'\n\n"
-        f.print Readline::HISTORY.to_a[@script_begin..@script_end]
+        f.puts Readline::HISTORY.to_a[@script_begin..@script_end]
         f.print "\n\n"
       end
       puts "done"
