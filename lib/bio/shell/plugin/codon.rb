@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: codon.rb,v 1.9 2005/12/07 05:12:07 k Exp $
+# $Id: codon.rb,v 1.10 2005/12/07 07:24:15 k Exp $
 #
 #--
 #
@@ -195,9 +195,11 @@ module Bio::Shell
   end
 
   def codontables
-    Bio::CodonTable::DEFINITIONS.sort.each do |i, definition|
+    tables = Bio::CodonTable::DEFINITIONS
+    tables.sort.each do |i, definition|
       puts "#{i}\t#{definition}"
     end
+    return tables
   end
 
   def aminoacids
