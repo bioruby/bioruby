@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: codon.rb,v 1.10 2005/12/07 07:24:15 k Exp $
+# $Id: codon.rb,v 1.11 2005/12/07 07:31:40 k Exp $
 #
 #--
 #
@@ -43,8 +43,8 @@ module Bio::Shell
       @table  = Bio::CodonTable[number]
       @number = number
       @cuhash = cuhash
+      setup_colors
       if Bio::Shell.config[:color]
-        setup_colors
         generate_colored_text
       else
         generate_mono_text
