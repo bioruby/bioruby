@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: na.rb,v 0.18 2005/11/25 15:59:29 k Exp $
+# $Id: na.rb,v 0.19 2005/12/10 18:14:22 k Exp $
 #
 # == Synopsis
 #
@@ -176,14 +176,10 @@ class NucleicAcid
     end
 
     def to_re(seq, rna = false)
-      str = ""
-      seq.to_s.downcase.each_byte do |base|
-        if re = NAMES[base.chr]
-          str += re
-        else
-          str += "."
-        end
-      end
+      str = seq.to_s
+      str.gsub!(/[^atgcu]/) { |base|
+        NAMES[base] || '.'
+      }
       if rna
         str.tr!("t", "u")
       end
