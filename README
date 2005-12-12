@@ -1,6 +1,6 @@
 =begin
 
-  $Id: README,v 1.10 2005/09/26 00:48:04 k Exp $
+  $Id: README,v 1.11 2005/12/12 01:44:54 k Exp $
 
   Copyright (C) 2001-2005 Toshiaki Katayama <k@bioruby.org>
 
@@ -164,7 +164,7 @@ In RubyGems, you need to load 'rubygems' library before using 'bio'.
   require 'rubygems'
   require_gem 'bio'
 
-== LICENCE
+== LICENSE
 
 BioRuby can be freely distributed under the GNU LGPL licence.
 
