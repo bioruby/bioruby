@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: strand.rb,v 1.1 2005/10/23 08:40:41 k Exp $
+#  $Id: strand.rb,v 1.2 2005/12/13 14:17:50 trevor Exp $
 #
 
 require 'bio/util/color_scheme'
@@ -31,7 +31,7 @@ module Bio::ColorScheme
 
     def self.score_to_rgb_hex(score, min, max)
       percent = score_to_percent(score, min, max)
-      rgb_percent_to_hex(percent, 0.0, 1.0-percent)
+      rgb_percent_to_hex(percent, percent, 1.0-percent)
     end
 
     @colors = {}
