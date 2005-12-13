@@ -1,7 +1,15 @@
+module Bio
+
 #
 # bio/util/color_scheme.rb - Popular color codings for nucleic and amino acids
 #
-#   Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
+# Copyright::  Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
+# License::    LGPL
+#
+#  $Id: color_scheme.rb,v 1.2 2005/12/13 14:58:07 trevor Exp $
+#
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,11 +25,13 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: color_scheme.rb,v 1.1 2005/10/23 08:40:41 k Exp $
+#++
+#
 #
 
-
 =begin rdoc
+bio/util/color_scheme.rb - Popular color codings for nucleic and amino acids
+
 == Synopsis
 
 The Bio::ColorScheme module contains classes that return popular color codings
@@ -59,14 +69,6 @@ values.
 
   require 'bio/util/color_scheme'
 
-  puts Bio::ColorScheme::Buried['A']  # 00DC22
-  puts Bio::ColorScheme::Buried[:c]   # 00BF3F
-  puts Bio::ColorScheme::Buried[nil]  # nil
-  puts Bio::ColorScheme::Buried['-']  # FFFFFF
-  puts Bio::ColorScheme::Buried[7]    # FFFFFF
-  puts Bio::ColorScheme::Buried['junk']  # FFFFFF
-  puts Bio::ColorScheme::Buried['t']  # 00CC32
-
   seq = 'gattaca'
   scheme = Bio::ColorScheme::Zappo
   postfix = '</span>'
@@ -80,6 +82,17 @@ values.
   puts html
 
 
+=== Accessing colors
+
+  puts Bio::ColorScheme::Buried['A']  # 00DC22
+  puts Bio::ColorScheme::Buried[:c]   # 00BF3F
+  puts Bio::ColorScheme::Buried[nil]  # nil
+  puts Bio::ColorScheme::Buried['-']  # FFFFFF
+  puts Bio::ColorScheme::Buried[7]    # FFFFFF
+  puts Bio::ColorScheme::Buried['junk']  # FFFFFF
+  puts Bio::ColorScheme::Buried['t']  # 00CC32
+
+
 == Author
 Trevor Wennblom <trevor@corevx.com>
 
@@ -89,7 +102,6 @@ Copyright (C) 2005 Trevor Wennblom
 Licensed under the same terms as BioRuby.
 
 =end
-module Bio
 module ColorScheme
   cs_location = 'bio/util/color_scheme'
 

@@ -1,7 +1,13 @@
 #
 # bio/util/color_scheme/strand.rb - Color codings for strand propensity
 #
-#   Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
+# Copyright::  Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
+# License::    LGPL
+#
+#  $Id: strand.rb,v 1.3 2005/12/13 14:58:07 trevor Exp $
+#
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +23,8 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: strand.rb,v 1.2 2005/12/13 14:17:50 trevor Exp $
+#++
+#
 #
 
 require 'bio/util/color_scheme'

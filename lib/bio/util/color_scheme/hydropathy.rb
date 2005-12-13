@@ -1,7 +1,13 @@
 #
 # bio/util/color_scheme/hydropathy.rb - Color codings for hydrophobicity
 #
-#   Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
+# Copyright::  Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
+# License::    LGPL
+#
+#  $Id: hydropathy.rb,v 1.2 2005/12/13 14:58:07 trevor Exp $
+#
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,16 +23,18 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: hydropathy.rb,v 1.1 2005/10/23 08:40:41 k Exp $
+#++
+#
 #
 
 require 'bio/util/color_scheme'
 
-# Hydropathy index
-# Kyte, J., and Doolittle, R.F., J. Mol. Biol.
-# 1157, 105-132, 1982
-
 module Bio::ColorScheme
+
+  # Hydropathy index
+  # Kyte, J., and Doolittle, R.F., J. Mol. Biol.
+  # 1157, 105-132, 1982
+
   class Hydropathy < Score
 
     #########

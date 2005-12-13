@@ -1,10 +1,13 @@
+require 'bio/reference'
+module Bio
+
 #
 # bio/db/rebase.rb - Interface for EMBOSS formatted REBASE files
 #
 # Copyright::  Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
 # License::    LGPL
 #
-#  $Id: rebase.rb,v 1.1 2005/12/05 19:44:06 trevor Exp $
+#  $Id: rebase.rb,v 1.2 2005/12/13 15:02:41 trevor Exp $
 #
 #
 #--
@@ -27,11 +30,9 @@
 #
 #
 
-require 'bio/reference'
-
-module Bio
-
 =begin rdoc
+bio/db/rebase.rb - Interface for EMBOSS formatted REBASE files
+
 == Synopsis
 
 Bio::REBASE provides utilties for interacting with REBASE data in EMBOSS

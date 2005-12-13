@@ -1,7 +1,15 @@
+module Bio
+
 #
 # bio/util/contingency_table.rb - Statistical contingency table analysis for aligned sequences
 #
-#   Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
+# Copyright::  Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
+# License::    LGPL
+#
+#  $Id: contingency_table.rb,v 1.2 2005/12/13 14:58:37 trevor Exp $
+#
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,12 +25,13 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: contingency_table.rb,v 1.1 2005/11/15 16:42:54 k Exp $
+#++
+#
 #
 
-module Bio
-
 =begin rdoc
+bio/util/contingency_table.rb - Statistical contingency table analysis for aligned sequences
+
 == Synopsis
 
 The Bio::ContingencyTable class provides basic statistical contingency table
@@ -48,17 +57,17 @@ maximum correlation.
 
 == Further Reading
 
-http://en.wikipedia.org/wiki/Contingency_table
-http://www.physics.csbsju.edu/stats/exact.details.html
-Numerical Recipes in C by Press, Flannery, Teukolsky, and Vetterling
+* http://en.wikipedia.org/wiki/Contingency_table
+* http://www.physics.csbsju.edu/stats/exact.details.html
+* Numerical Recipes in C by Press, Flannery, Teukolsky, and Vetterling
 
 
 == Usage
 
 What follows is an example of ContingencyTable in typical usage analyzing results from a clustal alignment.
 
-  require 'bio/contingency_table'
   require 'bio'
+  require 'bio/contingency_table'
 
   seqs = {}
   max_length = 0
@@ -134,7 +143,7 @@ too much trouble.
   lite_example(seqs, length_of_every_sequence, allowed_letters)
 
 
-This produces the following results:
+Producing the following results:
 
   i           j           chi_square  contingency_coefficient
   1           2           0.0         0.0
@@ -214,11 +223,11 @@ best way to improve the accuracy of your results, as is often the case with stat
 increase the sample size.
 
 
-== Efficiency
+== A Note on Efficiency
 
-ContingencyTable is slow.  It involves many calculations for even a seemingly small five-string sequence.
+ContingencyTable is slow.  It involves many calculations for even a seemingly small five-string data set.
 Even worse, it's very dependent on matrix traversal, and this is done with two dimensional hashes which
-just kills any hope of decent speed.  
+dashes any hope of decent speed.  
 
 Finally, half of the matrix is redundant and positions could be summed with their companion position to reduce
 calculations.  For example the positions (5,2) and (2,5) could both have their values added together and
@@ -242,9 +251,9 @@ Licensed under the same terms as BioRuby.
 
 class ContingencyTable
   # Since we're making this math-notation friendly here is the layout of @table:
-  # @table[row][column]
-  # @table[i][j]
-  # @table[y][x]
+  # * @table[row][column]
+  # * @table[i][j]
+  # * @table[y][x]
   attr_accessor :table
   attr_reader :characters
 
@@ -271,7 +280,9 @@ class ContingencyTable
   end
 
   # Report the sum of all values in all columns.
-  # This is the same thing as asking for the sum of all values in the table.
+  #
+  # * This is the same thing as asking for the sum of all values in the table.
+  #
   def column_sum_all
     total = 0
     @characters.each { |j| total += column_sum(j) }
@@ -279,7 +290,9 @@ class ContingencyTable
   end
 
   # Report the sum of all values in all rows.
-  # This is the same thing as asking for the sum of all values in the table.
+  #
+  # * This is the same thing as asking for the sum of all values in the table.
+  #
   def row_sum_all
     total = 0
     @characters.each { |i| total += row_sum(i) }
@@ -287,7 +300,9 @@ class ContingencyTable
   end
   alias table_sum_all row_sum_all
 
-  # e(sub:ij) = (r(sub:i)/N) * (c(sub:j))
+  #
+  #   e(sub:ij) = (r(sub:i)/N) * (c(sub:j))
+  #
   def expected(i, j)
     (row_sum(i).to_f / table_sum_all) * column_sum(j)
   end
