@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: atom.rb,v 1.2 2005/09/08 01:22:11 k Exp $
+#  $Id: atom.rb,v 1.3 2005/12/16 19:23:02 ngoto Exp $
 
 require 'matrix'
 require 'bio/db/pdb'
@@ -55,70 +55,56 @@ module Bio
       end
     end #class Coordinate
 
-    #Atom class
+    # Bio::PDB::Atom is a class for atom data.
+    # Each ATOM line is parsed into an Atom object.
+    Atom = Struct.new(:serial, :element, :alt_loc, :x, :y, :z,
+                      :occ, :bfac, :residue)
     class Atom
-
       include Utils
       include Comparable
 
-      attr_accessor :serial, :element, :alt_loc, :x, :y, :z,
-        :occ, :bfac, :residue
-
-      def initialize(serial, element, alt_loc, x, y, z,
-                     occ, bfac, residue = nil)
-
-        @serial  = serial
-        @element = element
-        @alt_loc = alt_loc
-        @x       = x
-        @y       = y
-        @z       = z
-        @occ     = occ
-        @bfac    = bfac
-        
-        @residue = residue
-        
-      end
-
       #Returns a Coordinate class instance of the xyz positions
       def xyz
-        Coordinate[@x,@y,@z]
+        Coordinate[ x, y, z ]
       end
 
       #Returns an array of the xyz positions
       def to_a
-        [@x,@y,@z]
+        [ x, y, z ]
       end
       
       #Sorts based on serial numbers
       def <=>(other)
-        return @serial <=> other.serial
+        return serial <=> other.serial
       end
       
       #Stringifies to PDB format
       def to_s
-        if @element.length < 4
-          elementOutput = " " << "%-3s" % @element
+        if element.length < 4
+          elementOutput = sprintf(" %-3s", element)
         else
-          elementOutput = @element
+          elementOutput = element
         end
-        if @residue.hetatm
-          "HETATM%5s %s%1s%3s %1s%4s%1s   %8.3f%8.3f%8.3f%6.2f%6.2f" % [ @serial, elementOutput, @alt_loc, @residue.resName, @residue.chain.id, @residue.resSeq, @residue.iCode, @x, @y, @z, @occ, @bfac ]
-        else
-          "ATOM  %5s %s%1s%3s %1s%4s%1s   %8.3f%8.3f%8.3f%6.2f%6.2f" % [ @serial, elementOutput, @alt_loc, @residue.resName, @residue.chain.id, @residue.resSeq, @residue.iCode, @x, @y, @z, @occ, @bfac ]
-        end
+        sprintf("%-6s%5s %s%1s%3s %1s%4s%1s   %8.3f%8.3f%8.3f%6.2f%6.2f",
+                record_type,
+                serial, elementOutput, alt_loc, residue.resName,
+                residue.chain.id, residue.resSeq, residue.iCode,
+                x, y, z, occ, bfac)
       end
-      
-    end
 
-  end
+      def record_type
+        'ATOM'
+      end
+    end #class Atom
 
-end
+    # Bio::PDB::HetAtm is a class for HETATM data.
+    # Each HETATM line is parsed into an HetAtm object.
+    # Since HetAtm inherits Atom class, please refer Atom class for usage.
+    class HetAtm < Atom
+      def record_type
+        'HETATM'
+      end
+    end #class HetAtm
 
-=begin
-
-= Bio::PDB::Atom
-
- A class for atom data - each ATOM line is parsed into an Atom object
-
-=end
+  end #class PDB
+end #class Bio

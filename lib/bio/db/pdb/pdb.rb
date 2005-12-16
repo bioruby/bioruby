@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pdb.rb,v 1.3 2005/09/26 13:00:08 k Exp $
+#  $Id: pdb.rb,v 1.4 2005/12/16 19:23:03 ngoto Exp $
 #
 
 # *** CAUTION ***
@@ -32,7 +32,7 @@ module Bio
 
   #This is the main PDB class which takes care of parsing, annotations
   #and is the entry way to the co-ordinate data held in models
-  class PDB < DB
+  class PDB #< DB
 
     include Utils
     include AtomFinder
@@ -43,159 +43,184 @@ module Bio
 
     DELIMITER = RS = nil # 1 file 1 entry
 
-    Pdb_Continuation = nil
-
     #Modules required by the field definitions
-    module Pdb_Integer
-      def self.new(str)
-        str.strip.to_i
-      end
-    end
+    module DataType
 
-    module Pdb_SList
-      def self.new(str)
-        str.strip.split(/\;\s*/)
-      end
-    end
+      Pdb_Continuation = nil
 
-    module Pdb_List
-      def self.new(str)
-        str.strip.split(/\,\s*/)
-      end
-    end
-
-    module Pdb_Specification_list
-      def self.new(str)
-        a = str.strip.split(/\;\s*/)
-        a.collect! { |x| x.split(/\:\s*/, 2) }
-        a
-      end
-    end
-
-    module Pdb_String
-      def self.new(str)
-        str.gsub(/\s+\z/, '')
-      end
-    end
-
-    #Creates a new module with a string left justified to the
-    #length given in nn
-    def self.Pdb_String(nn)
-      m = Module.new
-      m.module_eval {
-        @@nn = nn
+      module Pdb_Integer
         def self.new(str)
-          str.gsub(/\s+\z/, '').ljust(@@nn)[0, @@nn]
+          str.strip.to_i
         end
-      }
-      m
-    end
-
-    Pdb_LString = String
-    def self.Pdb_LString(nn)
-      m = Module.new
-      m.module_eval {
-        @@nn = nn
-        def self.new(str)
-          str.ljust(@@nn)[0, @@nn]
-        end
-      }
-      m
-    end
-
-    def self.Pdb_Real(fmt)
-      Pdb_String
-    end
-
-    module Pdb_StringRJ
-      def self.new(str)
-        str.gsub(/\A\s+/, '')
       end
-    end
 
-    Pdb_Date         = Pdb_String
-    Pdb_IDcode       = Pdb_String
-    Pdb_Residue_name = Pdb_String
-    Pdb_SymOP        = Pdb_String
-    Pdb_Atom         = Pdb_String
-    Pdb_AChar        = Pdb_String
-    Pdb_Character    = Pdb_LString
+      module Pdb_SList
+        def self.new(str)
+          str.strip.split(/\;\s*/)
+        end
+      end
 
-    #Field definition class - each record contains a FieldDef which
-    #contains an array of field definintions( range, type, symbol)
-    #a hash of the symbols used, and a flag to say whether it continues
-    #over muiltiple lines or not.
-    #The symbol hash has symbols as keys and an array of types and string 
-    #ranges as values
-    class FieldDef
+      module Pdb_List
+        def self.new(str)
+          str.strip.split(/\,\s*/)
+        end
+      end
 
-      def initialize(*ary)
+      module Pdb_Specification_list
+        def self.new(str)
+          a = str.strip.split(/\;\s*/)
+          a.collect! { |x| x.split(/\:\s*/, 2) }
+          a
+        end
+      end
 
-        @definition = ary
-        @symbols = {}
-        @cont = false
+      module Pdb_String
+        def self.new(str)
+          str.gsub(/\s+\z/, '')
+        end
 
-        #For each field definition (range,type,symbol)
+        #Creates a new module with a string left justified to the
+        #length given in nn
+        def self.[](nn)
+          m = Module.new
+          m.module_eval %Q{
+            @@nn = nn
+            def self.new(str)
+              str.gsub(/\s+\z/, '').ljust(@@nn)[0, @@nn]
+            end
+          }
+          m
+        end
+      end #module Pdb_String
+
+      module Pdb_LString
+        def self.[](nn)
+          m = Module.new
+          m.module_eval %Q{
+            @@nn = nn
+            def self.new(str)
+              str.ljust(@@nn)[0, @@nn]
+            end
+          }
+          m
+        end
+        def self.new(str)
+          String.new(str)
+        end
+      end
+
+      module Pdb_Real
+        def self.[](fmt)
+          Pdb_String
+        end
+        def self.new(str)
+          Pdb_String.new(str)
+        end
+      end
+
+      module Pdb_StringRJ
+        def self.new(str)
+          str.gsub(/\A\s+/, '')
+        end
+      end
+
+      Pdb_Date         = Pdb_String
+      Pdb_IDcode       = Pdb_String
+      Pdb_Residue_name = Pdb_String
+      Pdb_SymOP        = Pdb_String
+      Pdb_Atom         = Pdb_String
+      Pdb_AChar        = Pdb_String
+      Pdb_Character    = Pdb_LString
+
+      module ConstLikeMethod
+        def Pdb_LString(nn)
+          Pdb_LString[nn]
+        end
+
+        def Pdb_String(nn)
+          Pdb_String[nn]
+        end
+
+        def Pdb_Real(fmt)
+          Pdb_Real[fmt]
+        end
+      end #module ConstLikeMethod
+    end #module DataType
+
+    class Record < Struct
+      include DataType
+      extend DataType::ConstLikeMethod
+      
+      def self.new(*ary)
+        symbolhash = {}
+        symbolary = []
+        cont = false
+
+        # For each field definition (range(start, end), type,symbol)
         ary.each do |x|
           range = (x[0] - 1)..(x[1] - 1)
-          #If type is nil (Pdb_Continuation) then set @cont to the range
-          #(other wise it is false to indicate no continuation in this FieldDef
+          # If type is nil (Pdb_Continuation) then set 'cont' to the range
+          # (other wise it is false to indicate no continuation
           unless x[2] then
-            @cont = range
+            cont = range
           else
             klass = x[2]
             sym = x[3]
-            #If the symbol is a proper symbol then...
+            # If the symbol is a proper symbol then...
             if sym.is_a?(Symbol) then
-              #..if we have the symbol already in the symbol hash
-              #then add the range onto the range array
-              if @symbols.has_key?(sym) then
-                @symbols[sym][1] << range
+              # ..if we have the symbol already in the symbol hash
+              # then add the range onto the range array
+              if symbolhash.has_key?(sym) then
+                symbolhash[sym][1] << range
               else
-                #Other wise put a new symbol in with its type and range
-                #range is given its own array, not sure why. Can you 
-                #have anumber of ranges (I suppose so!)
-                @symbols[sym] = [ klass, [ range ] ]
+                # Other wise put a new symbol in with its type and range
+                # range is given its own array. You can have
+                # anumber of ranges.
+                symbolhash[sym] = [ klass, [ range ] ]
+                symbolary << sym
               end
             end
           end
         end #each
-      end #def initialize
 
-      attr_reader :symbols
-      def continue?
+        klass = super(*symbolary)
+        klass.module_eval {
+          @definition = ary
+          @symbols = symbolhash
+          @cont = cont
+        }
+        klass
+      end #def self.new
+
+      def self.symbols
+        #p self
+        @symbols
+      end
+
+      def self.continue?
         @cont
       end
 
-      #Each method - returns the symbol(k), type(x[0]) and range
-      #of each symbol. Or rather the array of ranges(x[1])
-      def each
-        @symbols.each do |k, x|
+      # Returns true if this record has a field type which allows 
+      # continuations.
+      def continue?
+        self.class.continue?
+      end
+
+      # yields the symbol(k), type(x[0]) and array of ranges
+      # of each symbol.
+      def each_symbol
+        self.class.symbols.each do |k, x|
           yield k, x[0], x[1]
         end
       end
-    end #class FieldDef
 
-    #Record class - contains the original string, the type (str[0..5])
-    #and the definition (looked up from the Definition hash). Each definition
-    #is an array of FieldDef(s). parse is a flag to say whether the string
-    #has been parsed. Parsing auto-generates hash entries using the symbol 
-    #table. Remember Record is just a hash!
-    class Record < Hash
-      def initialize(str)
+      # initialize from the string
+      def initialize_from_string(str)
         @str = str
-        #fetch_type just does str[0..5]
-        @type = fetch_type(str)
-        #get definition does the lookup in the Definition hash and some
-        #munging if the type is JRNL or REMARK
-        @definition = get_definition(str)
-        @parse = nil
-      end #def initialize
-
-      attr_reader :definition
-      def definition=(d)
-        @definition = d
-        @parse = false
+        @record_name = fetch_record_name(str)
+        @parsed = nil
+        self
       end
 
       #Return original string for this record (usually just @str, but
@@ -211,10 +236,9 @@ module Bio
       #Called when we need to access the data, takes the string
       #and the array of FieldDefs and parses it out
       def do_parse
-        return self if @parse
+        return self if @parsed
         str = @str
-        #.each returns the symbol (key), the type (klass) and range array
-        @definition.each do |key, klass, ranges|
+        each_symbol do |key, klass, ranges|
           #If we only have one range then pull that out
           #and store it in the hash
           if ranges.size <= 1 then
@@ -228,12 +252,12 @@ module Bio
             end
             self[key] = ary
           end
-        end #each
+        end #each_symbol
         #If we have continuations then for each line of extra data...
         if defined?(@cont_data) then
           @cont_data.each do |str|
             #Get the symbol, type and range array 
-            @definition.each do |key, klass, ranges|
+            each_symbol do |key, klass, ranges|
               #If there's one range then grab that range
               if ranges.size <= 1 then
                 r = ranges.first
@@ -252,788 +276,812 @@ module Bio
             end
           end
         end
-        @parse = true
+        @parsed = true
         self
       end
 
-      def fetch_type(str)
+      def fetch_record_name(str)
         str[0..5].strip
       end
-      private :fetch_type
+      private :fetch_record_name
 
-      #If this can contiunue then return the str associated with the
-      #Pdb_Continuation field definition. Hmmmm. Still not sure here
+      def self.fetch_record_name(str)
+        str[0..5].strip
+      end
+      private_class_method :fetch_record_name
+
+      # If given str can be the continuation of the current record, then
+      # then return the order number of the continuation associated with
+      # the Pdb_Continuation field definition.
+      # Otherwise, returns -1.
       def fetch_cont(str)
         (c = continue?) ? str[c].to_i : -1
       end
       private :fetch_cont
 
-      def record_type
-        @type
+      def record_name
+        @record_name or self.class.to_s.split(/\:\:/)[-1]
       end
+      alias record_type record_name
 
-      #Returns true if this record has a field type which allows 
-      #continuations
-      def continue?
-        @definition.continue?
-      end
-
-      #Adds continuation data to the record from str
+      # Adds continuation data to the record from str if str is
+      # really the continuation of current record.
+      # Returns self (= not nil) if str is the continuation.
+      # Otherwaise, returns false.
       def add_continuation(str)
         #Check that this record can continue
         #and that str has the same type and definition
         return false unless self.continue?
-        return false unless fetch_type(str) == @type
-        return false unless get_definition(str) == @definition
+        return false unless fetch_record_name(str) == @record_name
+        return false unless self.class.get_record_class(str) == self.class
         return false unless fetch_cont(str) >= 2
         #If all this is OK then add onto @cont_data
         unless defined?(@cont_data)
           @cont_data = []
         end
         @cont_data << str
+        # Returns self (= not nil) if succeeded.
         self
       end
 
-      #Basically just look up the definition in Definition hash
-      #do some munging for JRNL and REMARK
-      def get_definition(str)
-        d = Definition[@type]
-        return d if d
-        case @type
+      # creates definition hash from current classes constants
+      def self.create_definition_hash
+        hash = {}
+        constants.each do |x|
+          hash[x] =  const_get(x) if /\A[A-Z][A-Z0-9]+\z/ =~ x
+        end
+        if x = const_get(:Default) then
+          hash.default = x
+        end
+        hash
+      end
+
+      def inspect
+        do_parse
+        super
+      end
+
+      # definitions
+      # contains all the rules for parsing each field
+      # based on format V 2.2, 16-DEC-1996
+      #
+      # http://www.rcsb.org/pdb/docs/format/pdbguide2.2/guide2.2_frame.html
+      # http://www.rcsb.org/pdb/docs/format/pdbguide2.2/Contents_Guide_21.html
+      #
+      # Details of following data are taken from these documents.
+
+      # [ 1..6,  :Record_name, nil ],
+
+      # XXXXXX =
+      #   new([ start, end, type of data, symbol to access ], ...)
+
+      HEADER = 
+        new([ 11, 50, Pdb_String, :classification ], #Pdb_String(40)
+            [ 51, 59, Pdb_Date,   :depDate ],
+            [ 63, 66, Pdb_IDcode, :idCode ]
+            )
+
+      OBSLTE =
+        new([  9, 10, Pdb_Continuation, nil ],
+            [ 12, 20, Pdb_Date,   :repDate ],
+            [ 22, 25, Pdb_IDcode, :idCode ],
+            [ 32, 35, Pdb_IDcode, :rIdCode ],
+            [ 37, 40, Pdb_IDcode, :rIdCode ],
+            [ 42, 45, Pdb_IDcode, :rIdCode ],
+            [ 47, 50, Pdb_IDcode, :rIdCode ],
+            [ 52, 55, Pdb_IDcode, :rIdCode ],
+            [ 57, 60, Pdb_IDcode, :rIdCode ],
+            [ 62, 65, Pdb_IDcode, :rIdCode ],
+            [ 67, 70, Pdb_IDcode, :rIdCode ]
+            )
+
+      TITLE =
+        new([  9, 10, Pdb_Continuation, nil ],
+            [ 11, 70, Pdb_String, :title ]
+            )
+
+      CAVEAT =
+        new([  9, 10, Pdb_Continuation, nil ],
+            [ 12, 15, Pdb_IDcode, :idcode ],
+            [ 20, 70, Pdb_String, :comment ]
+            )
+
+      COMPND =
+        new([  9, 10, Pdb_Continuation, nil ],
+            [ 11, 70, Pdb_Specification_list, :compound ]
+            )
+
+      SOURCE =
+        new([  9, 10, Pdb_Continuation, nil ],
+            [ 11, 70, Pdb_Specification_list, :srcName ]
+            )
+
+      KEYWDS =
+        new([  9, 10, Pdb_Continuation, nil ],
+            [ 11, 70, Pdb_List, :keywds ]
+            )
+
+      EXPDTA =
+        new([  9, 10, Pdb_Continuation, nil ],
+            [ 11, 70, Pdb_SList, :technique ]
+            )
+
+      AUTHOR =
+        new([  9, 10, Pdb_Continuation, nil ],
+            [ 11, 70, Pdb_List, :authorList ]
+            )
+
+      REVDAT =
+        new([  8, 10, Pdb_Integer,      :modNum  ],
+            [ 11, 12, Pdb_Continuation, nil      ],
+            [ 14, 22, Pdb_Date,         :modDate ],
+            [ 24, 28, Pdb_String,       :modId   ], # Pdb_String(5)
+            [ 32, 32, Pdb_Integer,      :modType ],
+            [ 40, 45, Pdb_LString(6),   :record  ],
+            [ 47, 52, Pdb_LString(6),   :record  ],
+            [ 54, 59, Pdb_LString(6),   :record  ],
+            [ 61, 66, Pdb_LString(6),   :record  ]
+            )
+
+      SPRSDE =
+        new([  9, 10, Pdb_Continuation, nil ],
+            [ 12, 20, Pdb_Date,   :sprsdeDate ],
+            [ 22, 25, Pdb_IDcode, :idCode ],
+            [ 32, 35, Pdb_IDcode, :sIdCode ],
+            [ 37, 40, Pdb_IDcode, :sIdCode ],
+            [ 42, 45, Pdb_IDcode, :sIdCode ],
+            [ 47, 50, Pdb_IDcode, :sIdCode ],
+            [ 52, 55, Pdb_IDcode, :sIdCode ],
+            [ 57, 60, Pdb_IDcode, :sIdCode ],
+            [ 62, 65, Pdb_IDcode, :sIdCode ],
+            [ 67, 70, Pdb_IDcode, :sIdCode ]
+            )
+
+      # 'JRNL' is defined below
+      JRNL = nil
+
+      # 'REMARK' is defined below
+      REMARK = nil
+
+      DBREF =
+        new([  8, 11, Pdb_IDcode,    :idCode      ],
+            [ 13, 13, Pdb_Character, :chainID     ],
+            [ 15, 18, Pdb_Integer,   :seqBegin    ],
+            [ 19, 19, Pdb_AChar,     :insertBegin ],
+            [ 21, 24, Pdb_Integer,   :seqEnd      ],
+            [ 25, 25, Pdb_AChar,     :insertEnd   ],
+            [ 27, 32, Pdb_String,    :database    ], #Pdb_LString
+            [ 34, 41, Pdb_String,    :dbAccession ], #Pdb_LString
+            [ 43, 54, Pdb_String,    :dbIdCode    ], #Pdb_LString
+            [ 56, 60, Pdb_Integer,   :dbseqBegin  ],
+            [ 61, 61, Pdb_AChar,     :idbnsBeg    ],
+            [ 63, 67, Pdb_Integer,   :dbseqEnd    ],
+            [ 68, 68, Pdb_AChar,     :dbinsEnd    ]
+            )
+
+      SEQADV =
+        new([  8, 11, Pdb_IDcode,       :idCode   ],
+            [ 13, 15, Pdb_Residue_name, :resName  ],
+            [ 17, 17, Pdb_Character,    :chainID  ],
+            [ 19, 22, Pdb_Integer,      :seqNum   ],
+            [ 23, 23, Pdb_AChar,        :iCode    ],
+            [ 25, 28, Pdb_String,       :database ], #Pdb_LString
+            [ 30, 38, Pdb_String,       :dbIdCode ], #Pdb_LString
+            [ 40, 42, Pdb_Residue_name, :dbRes    ],
+            [ 44, 48, Pdb_Integer,      :dbSeq    ],
+            [ 50, 70, Pdb_LString,      :conflict ]
+            )
+
+      SEQRES =
+        new(#[  9, 10, Pdb_Integer,      :serNum ],
+            [  9, 10, Pdb_Continuation, nil      ],
+            [ 12, 12, Pdb_Character,    :chainID ],
+            [ 14, 17, Pdb_Integer,      :numRes  ],
+            [ 20, 22, Pdb_Residue_name, :resName ],
+            [ 24, 26, Pdb_Residue_name, :resName ],
+            [ 28, 30, Pdb_Residue_name, :resName ],
+            [ 32, 34, Pdb_Residue_name, :resName ],
+            [ 36, 38, Pdb_Residue_name, :resName ],
+            [ 40, 42, Pdb_Residue_name, :resName ],
+            [ 44, 46, Pdb_Residue_name, :resName ],
+            [ 48, 50, Pdb_Residue_name, :resName ],
+            [ 52, 54, Pdb_Residue_name, :resName ],
+            [ 56, 58, Pdb_Residue_name, :resName ],
+            [ 60, 62, Pdb_Residue_name, :resName ],
+            [ 64, 66, Pdb_Residue_name, :resName ],
+            [ 68, 70, Pdb_Residue_name, :resName ]
+            )
+
+      MODRES =
+        new([  8, 11, Pdb_IDcode,       :idCode ],
+            [ 13, 15, Pdb_Residue_name, :resName ],
+            [ 17, 17, Pdb_Character,    :chainID ],
+            [ 19, 22, Pdb_Integer,      :seqNum ],
+            [ 23, 23, Pdb_AChar,        :iCode ],
+            [ 25, 27, Pdb_Residue_name, :stdRes ],
+            [ 30, 70, Pdb_String,       :comment ]
+            )
+
+      HET =
+        new([  8, 10, Pdb_LString(3), :hetID ],
+            [ 13, 13, Pdb_Character,  :ChainID ],
+            [ 14, 17, Pdb_Integer,    :seqNum ],
+            [ 18, 18, Pdb_AChar,      :iCode ],
+            [ 21, 25, Pdb_Integer,    :numHetAtoms ],
+            [ 31, 70, Pdb_String,     :text ]
+            )
+
+      HETNAM =
+        new([ 9, 10,  Pdb_Continuation, nil ],
+            [ 12, 14, Pdb_LString(3),   :hetID ],
+            [ 16, 70, Pdb_String,       :text ]
+            )
+
+      HETSYN =
+        new([  9, 10, Pdb_Continuation, nil ],
+            [ 12, 14, Pdb_LString(3),   :hetID ],
+            [ 16, 70, Pdb_SList,        :hetSynonyms ]
+            )
+
+      FORMUL =
+        new([  9, 10, Pdb_Integer,    :compNum ],
+            [ 13, 15, Pdb_LString(3), :hetID ],
+            [ 17, 18, Pdb_Integer,    :continuation ],
+            [ 19, 19, Pdb_Character,  :asterisk ],
+            [ 20, 70, Pdb_String,     :text ]
+            )
+
+      HELIX =
+        new([  8, 10, Pdb_Integer,      :serNum ],
+            #[ 12, 14, Pdb_LString(3),   :helixID ],
+            [ 12, 14, Pdb_StringRJ,     :helixID ],
+            [ 16, 18, Pdb_Residue_name, :initResName ],
+            [ 20, 20, Pdb_Character,    :initChainID ],
+            [ 22, 25, Pdb_Integer,      :initSeqNum ],
+            [ 26, 26, Pdb_AChar,        :initICode ],
+            [ 28, 30, Pdb_Residue_name, :endResName ],
+            [ 32, 32, Pdb_Character,    :endChainID ],
+            [ 34, 37, Pdb_Integer,      :endSeqNum ],
+            [ 38, 38, Pdb_AChar,        :endICode ],
+            [ 39, 40, Pdb_Integer,      :helixClass ],
+            [ 41, 70, Pdb_String,       :comment ],
+            [ 72, 76, Pdb_Integer,      :length ]
+            )
+
+      SHEET =
+        new([  8, 10, Pdb_Integer,      :strand ],
+          #[ 12, 14, Pdb_LString(3),   :sheetID ],
+            [ 12, 14, Pdb_StringRJ,     :sheetID ],
+            [ 15, 16, Pdb_Integer,      :numStrands ],
+            [ 18, 20, Pdb_Residue_name, :initResName ],
+            [ 22, 22, Pdb_Character,    :initChainID ],
+            [ 23, 26, Pdb_Integer,      :initSeqNum ],
+            [ 27, 27, Pdb_AChar,        :initICode ],
+            [ 29, 31, Pdb_Residue_name, :endResName ],
+            [ 33, 33, Pdb_Character,    :endChainID ],
+            [ 34, 37, Pdb_Integer,      :endSeqNum ],
+            [ 38, 38, Pdb_AChar,        :endICode ],
+            [ 39, 40, Pdb_Integer,      :sense ],
+            [ 42, 45, Pdb_Atom,         :curAtom ],
+            [ 46, 48, Pdb_Residue_name, :curResName ],
+            [ 50, 50, Pdb_Character,    :curChainId ],
+            [ 51, 54, Pdb_Integer,      :curResSeq ],
+            [ 55, 55, Pdb_AChar,        :curICode ],
+            [ 57, 60, Pdb_Atom,         :prevAtom ],
+            [ 61, 63, Pdb_Residue_name, :prevResName ],
+            [ 65, 65, Pdb_Character,    :prevChainId ],
+            [ 66, 69, Pdb_Integer,      :prevResSeq ],
+            [ 70, 70, Pdb_AChar,        :prevICode ]
+            )
+
+      TURN =
+        new([  8, 10, Pdb_Integer,      :seq ],
+            #[ 12, 14, Pdb_LString(3),   :turnId ],
+            [ 12, 14, Pdb_StringRJ,     :turnId ],
+            [ 16, 18, Pdb_Residue_name, :initResName ],
+            [ 20, 20, Pdb_Character,    :initChainId ],
+            [ 21, 24, Pdb_Integer,      :initSeqNum ],
+            [ 25, 25, Pdb_AChar,        :initICode ],
+            [ 27, 29, Pdb_Residue_name, :endResName ],
+            [ 31, 31, Pdb_Character,    :endChainId ],
+            [ 32, 35, Pdb_Integer,      :endSeqNum ],
+            [ 36, 36, Pdb_AChar,        :endICode ],
+            [ 41, 70, Pdb_String,       :comment ]
+            )
+
+      SSBOND =
+        new([  8, 10, Pdb_Integer,    :serNum   ],
+            [ 12, 14, Pdb_LString(3), :pep1     ], # "CYS"
+            [ 16, 16, Pdb_Character,  :chainID1 ],
+            [ 18, 21, Pdb_Integer,    :seqNum1  ],
+            [ 22, 22, Pdb_AChar,      :icode1   ],
+            [ 26, 28, Pdb_LString(3), :pep2     ], # "CYS"
+            [ 30, 30, Pdb_Character,  :chainID2 ],
+            [ 32, 35, Pdb_Integer,    :seqNum2  ],
+            [ 36, 36, Pdb_AChar,      :icode2   ],
+            [ 60, 65, Pdb_SymOP,      :sym1     ],
+            [ 67, 72, Pdb_SymOP,      :sym2     ]
+            )
+
+      LINK =
+        new([ 13, 16, Pdb_Atom,         :name1 ],
+            [ 17, 17, Pdb_Character,    :altLoc1 ],
+            [ 18, 20, Pdb_Residue_name, :resName1 ],
+            [ 22, 22, Pdb_Character,    :chainID1 ],
+            [ 23, 26, Pdb_Integer,      :resSeq1 ],
+            [ 27, 27, Pdb_AChar,        :iCode1 ],
+            [ 43, 46, Pdb_Atom,         :name2 ],
+            [ 47, 47, Pdb_Character,    :altLoc2 ],
+            [ 48, 50, Pdb_Residue_name, :resName2 ],
+            [ 52, 52, Pdb_Character,    :chainID2 ],
+            [ 53, 56, Pdb_Integer,      :resSeq2 ],
+            [ 57, 57, Pdb_AChar,        :iCode2 ],
+            [ 60, 65, Pdb_SymOP,        :sym1 ],
+            [ 67, 72, Pdb_SymOP,        :sym2 ]
+            )
+
+      HYDBND =
+        new([ 13, 16, Pdb_Atom,         :name1 ],
+            [ 17, 17, Pdb_Character,    :altLoc1 ],
+            [ 18, 20, Pdb_Residue_name, :resName1 ],
+            [ 22, 22, Pdb_Character,    :Chain1 ],
+            [ 23, 27, Pdb_Integer,      :resSeq1 ],
+            [ 28, 28, Pdb_AChar,        :ICode1 ],
+            [ 30, 33, Pdb_Atom,         :nameH ],
+            [ 34, 34, Pdb_Character,    :altLocH ],
+            [ 36, 36, Pdb_Character,    :ChainH ],
+            [ 37, 41, Pdb_Integer,      :resSeqH ],
+            [ 42, 42, Pdb_AChar,        :iCodeH ],
+            [ 44, 47, Pdb_Atom,         :name2 ],
+            [ 48, 48, Pdb_Character,    :altLoc2 ],
+            [ 49, 51, Pdb_Residue_name, :resName2 ],
+            [ 53, 53, Pdb_Character,    :chainID2 ],
+            [ 54, 58, Pdb_Integer,      :resSeq2 ],
+            [ 59, 59, Pdb_AChar,        :iCode2 ],
+            [ 60, 65, Pdb_SymOP,        :sym1 ],
+            [ 67, 72, Pdb_SymOP,        :sym2 ]
+            )
+
+      SLTBRG =
+        new([ 13, 16, Pdb_Atom,          :atom1 ],
+            [ 17, 17, Pdb_Character,     :altLoc1 ],
+            [ 18, 20, Pdb_Residue_name,  :resName1 ],
+            [ 22, 22, Pdb_Character,     :chainID1 ],
+            [ 23, 26, Pdb_Integer,       :resSeq1 ],
+            [ 27, 27, Pdb_AChar,         :iCode1 ],
+            [ 43, 46, Pdb_Atom,          :atom2 ],
+            [ 47, 47, Pdb_Character,     :altLoc2 ],
+            [ 48, 50, Pdb_Residue_name,  :resName2 ],
+            [ 52, 52, Pdb_Character,     :chainID2 ],
+            [ 53, 56, Pdb_Integer,       :resSeq2 ],
+            [ 57, 57, Pdb_AChar,         :iCode2 ],
+            [ 60, 65, Pdb_SymOP,         :sym1 ],
+            [ 67, 72, Pdb_SymOP,         :sym2 ]
+            )
+
+      CISPEP =
+        new([  8, 10, Pdb_Integer,     :serNum ],
+            [ 12, 14, Pdb_LString(3),  :pep1 ],
+            [ 16, 16, Pdb_Character,   :chainID1 ],
+            [ 18, 21, Pdb_Integer,     :seqNum1 ],
+            [ 22, 22, Pdb_AChar,       :icode1 ],
+            [ 26, 28, Pdb_LString(3),  :pep2 ],
+            [ 30, 30, Pdb_Character,   :chainID2 ],
+            [ 32, 35, Pdb_Integer,     :seqNum2 ],
+            [ 36, 36, Pdb_AChar,       :icode2 ],
+            [ 44, 46, Pdb_Integer,     :modNum ],
+            [ 54, 59, Pdb_Real('6.2'), :measure ]
+            )
+
+      SITE =
+        new([  8, 10, Pdb_Integer,      :seqNum    ],
+            [ 12, 14, Pdb_LString(3),   :siteID    ],
+            [ 16, 17, Pdb_Integer,      :numRes    ],
+            [ 19, 21, Pdb_Residue_name, :resName1  ],
+            [ 23, 23, Pdb_Character,    :chainID1  ],
+            [ 24, 27, Pdb_Integer,      :seq1      ],
+            [ 28, 28, Pdb_AChar,        :iCode1    ],
+            [ 30, 32, Pdb_Residue_name, :resName2  ],
+            [ 34, 34, Pdb_Character,    :chainID2  ],
+            [ 35, 38, Pdb_Integer,      :seq2      ],
+            [ 39, 39, Pdb_AChar,        :iCode2    ],
+            [ 41, 43, Pdb_Residue_name, :resName3  ],
+            [ 45, 45, Pdb_Character,    :chainID3  ],
+            [ 46, 49, Pdb_Integer,      :seq3      ],
+            [ 50, 50, Pdb_AChar,        :iCode3    ],
+            [ 52, 54, Pdb_Residue_name, :resName4  ],
+            [ 56, 56, Pdb_Character,    :chainID4  ],
+            [ 57, 60, Pdb_Integer,      :seq4      ],
+            [ 61, 61, Pdb_AChar,        :iCode4    ]
+            )
+
+      CRYST1 =
+        new([  7, 15, Pdb_Real('9.3'), :a ],
+            [ 16, 24, Pdb_Real('9.3'), :b ],
+            [ 25, 33, Pdb_Real('9.3'), :c ],
+            [ 34, 40, Pdb_Real('7.2'), :alpha ],
+            [ 41, 47, Pdb_Real('7.2'), :beta ],
+            [ 48, 54, Pdb_Real('7.2'), :gamma ],
+            [ 56, 66, Pdb_LString,     :sGroup ],
+            [ 67, 70, Pdb_Integer,     :z ]
+            )
+
+      # ORIGXn n=1, 2, or 3
+      ORIGX1 =
+        new([ 11, 20, Pdb_Real('10.6'), :On1 ],
+            [ 21, 30, Pdb_Real('10.6'), :On2 ],
+            [ 31, 40, Pdb_Real('10.6'), :On3 ],
+            [ 46, 55, Pdb_Real('10.5'), :Tn ]
+            )
+
+      ORIGX2 = ORIGX1.dup
+      ORIGX3 = ORIGX1.dup
+
+      # SCALEn n=1, 2, or 3
+      SCALE1 =
+        new([ 11, 20, Pdb_Real('10.6'), :Sn1 ],
+            [ 21, 30, Pdb_Real('10.6'), :Sn2 ],
+            [ 31, 40, Pdb_Real('10.6'), :Sn3 ],
+            [ 46, 55, Pdb_Real('10.5'), :Un ]
+            )
+
+      SCALE2 = SCALE1.dup
+      SCALE3 = SCALE1.dup
+      
+      # MTRIXn n=1,2, or 3
+      MTRIX1 =
+        new([  8, 10, Pdb_Integer,      :serial ],
+            [ 11, 20, Pdb_Real('10.6'), :Mn1 ],
+            [ 21, 30, Pdb_Real('10.6'), :Mn2 ],
+            [ 31, 40, Pdb_Real('10.6'), :Mn3 ],
+            [ 46, 55, Pdb_Real('10.5'), :Vn ],
+            [ 60, 60, Pdb_Integer,      :iGiven ]
+            )
+
+      MTRIX2 = MTRIX1.dup
+      MTRIX3 = MTRIX1.dup
+
+      TVECT =
+        new([  8, 10, Pdb_Integer,      :serial ],
+            [ 11, 20, Pdb_Real('10.5'), :t1 ],
+            [ 21, 30, Pdb_Real('10.5'), :t2 ],
+            [ 31, 40, Pdb_Real('10.5'), :t3 ],
+            [ 41, 70, Pdb_String,       :text ]
+            )
+
+      MODEL =
+        new(#[ 11, 14, Pdb_Integer, :serial ]
+            [ 11, 14, Pdb_Integer, :model_serial ],
+            [  2,  1, Pdb_Integer, :serial ] # dummy field (always 0)
+            )
+
+      ATOM =
+        new([  7, 11, Pdb_Integer,      :serial ],
+            [ 13, 16, Pdb_Atom,         :name ],
+            [ 17, 17, Pdb_Character,    :altLoc ],
+            [ 18, 20, Pdb_Residue_name, :resName ],
+            [ 22, 22, Pdb_Character,    :chainID ],
+            [ 23, 26, Pdb_Integer,      :resSeq ],
+            [ 27, 27, Pdb_AChar,        :iCode ],
+            [ 31, 38, Pdb_Real('8.3'),  :x ],
+            [ 39, 46, Pdb_Real('8.3'),  :y ],
+            [ 47, 54, Pdb_Real('8.3'),  :z ],
+            [ 55, 60, Pdb_Real('6.2'),  :occupancy ],
+            [ 61, 66, Pdb_Real('6.2'),  :tempFactor ],
+            [ 73, 76, Pdb_LString(4),   :segID ],
+            [ 77, 78, Pdb_LString(2),   :element ],
+            [ 79, 80, Pdb_LString(2),   :charge ]
+            )
+
+      SIGATM =
+        new([  7, 11, Pdb_Integer,      :serial ],
+            [ 13, 16, Pdb_Atom,         :name ],
+            [ 17, 17, Pdb_Character,    :altLoc ],
+            [ 18, 20, Pdb_Residue_name, :resName ],
+            [ 22, 22, Pdb_Character,    :chainID ],
+            [ 23, 26, Pdb_Integer,      :resSeq ],
+            [ 27, 27, Pdb_AChar,        :iCode ],
+            [ 31, 38, Pdb_Real('8.3'),  :sigX ],
+            [ 39, 46, Pdb_Real('8.3'),  :sigY ],
+            [ 47, 54, Pdb_Real('8.3'),  :sigZ ],
+            [ 55, 60, Pdb_Real('6.2'),  :sigOcc ],
+            [ 61, 66, Pdb_Real('6.2'),  :sigTemp ],
+            [ 73, 76, Pdb_LString(4),   :segID ],
+            [ 77, 78, Pdb_LString(2),   :element ],
+            [ 79, 80, Pdb_LString(2),   :charge ]
+            )
+
+      ANISOU =
+        new([  7, 11, Pdb_Integer,      :serial ],
+            [ 13, 16, Pdb_Atom,         :name ],
+            [ 17, 17, Pdb_Character,    :altLoc ],
+            [ 18, 20, Pdb_Residue_name, :resName ],
+            [ 22, 22, Pdb_Character,    :chainID ],
+            [ 23, 26, Pdb_Integer,      :resSeq ],
+            [ 27, 27, Pdb_AChar,        :iCode ],
+            [ 29, 35, Pdb_Integer,      :U11 ],
+            [ 36, 42, Pdb_Integer,      :U22 ],
+            [ 43, 49, Pdb_Integer,      :U33 ],
+            [ 50, 56, Pdb_Integer,      :U12 ],
+            [ 57, 63, Pdb_Integer,      :U13 ],
+            [ 64, 70, Pdb_Integer,      :U23 ],
+            [ 73, 76, Pdb_LString(4),   :segID ],
+            [ 77, 78, Pdb_LString(2),   :element ],
+            [ 79, 80, Pdb_LString(2),   :charge ]
+            )
+
+      SIGUIJ =
+        new([  7, 11, Pdb_Integer,      :serial ],
+            [ 13, 16, Pdb_Atom,         :name ],
+            [ 17, 17, Pdb_Character,    :altLoc ],
+            [ 18, 20, Pdb_Residue_name, :resName ],
+            [ 22, 22, Pdb_Character,    :chainID ],
+            [ 23, 26, Pdb_Integer,      :resSeq ],
+            [ 27, 27, Pdb_AChar,        :iCode ],
+            [ 29, 35, Pdb_Integer,      :SigmaU11 ],
+            [ 36, 42, Pdb_Integer,      :SigmaU22 ],
+            [ 43, 49, Pdb_Integer,      :SigmaU33 ],
+            [ 50, 56, Pdb_Integer,      :SigmaU12 ],
+            [ 57, 63, Pdb_Integer,      :SigmaU13 ],
+            [ 64, 70, Pdb_Integer,      :SigmaU23 ],
+            [ 73, 76, Pdb_LString(4),   :segID ],
+            [ 77, 78, Pdb_LString(2),   :element ],
+            [ 79, 80, Pdb_LString(2),   :charge ]
+            )
+
+      TER =
+        new([  7, 11, Pdb_Integer,      :serial ],
+            [ 18, 20, Pdb_Residue_name, :resName ],
+            [ 22, 22, Pdb_Character,    :chainID ],
+            [ 23, 26, Pdb_Integer,      :resSeq ],
+            [ 27, 27, Pdb_AChar,        :iCode ]
+            )
+      
+      HETATM =
+        new([  7, 11, Pdb_Integer,      :serial ],
+            [ 13, 16, Pdb_Atom,         :name ],
+            [ 17, 17, Pdb_Character,    :altLoc ],
+            [ 18, 20, Pdb_Residue_name, :resName ],
+            [ 22, 22, Pdb_Character,    :chainID ],
+            [ 23, 26, Pdb_Integer,      :resSeq ],
+            [ 27, 27, Pdb_AChar,        :iCode ],
+            [ 31, 38, Pdb_Real('8.3'),  :x ],
+            [ 39, 46, Pdb_Real('8.3'),  :y ],
+            [ 47, 54, Pdb_Real('8.3'),  :z ],
+            [ 55, 60, Pdb_Real('6.2'),  :occupancy ],
+            [ 61, 66, Pdb_Real('6.2'),  :tempFactor ],
+            [ 73, 76, Pdb_LString(4),   :segID ],
+            [ 77, 78, Pdb_LString(2),   :element ],
+            [ 79, 80, Pdb_LString(2),   :charge ]
+            )
+
+      ENDMDL =
+        new([  2,  1, Pdb_Integer, :serial ] # dummy field (always 0)
+            )
+
+      CONECT =
+        new([  7, 11, Pdb_Integer, :serial ],
+            [ 12, 16, Pdb_Integer, :serial ],
+            [ 17, 21, Pdb_Integer, :serial ],
+            [ 22, 26, Pdb_Integer, :serial ],
+            [ 27, 31, Pdb_Integer, :serial ],
+            [ 32, 36, Pdb_Integer, :serial ],
+            [ 37, 41, Pdb_Integer, :serial ],
+            [ 42, 46, Pdb_Integer, :serial ],
+            [ 47, 51, Pdb_Integer, :serial ],
+            [ 52, 56, Pdb_Integer, :serial ],
+            [ 57, 61, Pdb_Integer, :serial ]
+            )
+
+      MASTER =
+        new([ 11, 15, Pdb_Integer, :numRemark ],
+            [ 16, 20, Pdb_Integer, "0" ],
+            [ 21, 25, Pdb_Integer, :numHet ],
+            [ 26, 30, Pdb_Integer, :numHelix ],
+            [ 31, 35, Pdb_Integer, :numSheet ],
+            [ 36, 40, Pdb_Integer, :numTurn ],
+            [ 41, 45, Pdb_Integer, :numSite ],
+            [ 46, 50, Pdb_Integer, :numXform ],
+            [ 51, 55, Pdb_Integer, :numCoord ],
+            [ 56, 60, Pdb_Integer, :numTer ],
+            [ 61, 65, Pdb_Integer, :numConect ],
+            [ 66, 70, Pdb_Integer, :numSeq ]
+            )
+
+      class Jrnl < self
+        # subrecord of JRNL
+        # 13, 16
+        AUTH =
+          new([ 13, 16, Pdb_String,       :sub_record ], # "AUTH"
+              [ 17, 18, Pdb_Continuation, nil ],
+              [ 20, 70, Pdb_List,         :authorList ]
+              )
+
+        TITL =
+          new([ 13, 16, Pdb_String,       :sub_record ], # "TITL"
+              [ 17, 18, Pdb_Continuation, nil ],
+              [ 20, 70, Pdb_LString,      :title ]
+              )
+
+        EDIT =
+          new([ 13, 16, Pdb_String,       :sub_record ], # "EDIT"
+              [ 17, 18, Pdb_Continuation, nil ],
+              [ 20, 70, Pdb_List,         :editorList ]
+              )
+
+        REF =
+          new([ 13, 16, Pdb_String,       :sub_record ], # "REF"
+              [ 17, 18, Pdb_Continuation, nil ],
+              [ 20, 47, Pdb_LString,      :pubName ],
+              [ 50, 51, Pdb_LString(2),   "V." ],
+              [ 52, 55, Pdb_String,       :volume ],
+              [ 57, 61, Pdb_String,       :page ],
+              [ 63, 66, Pdb_Integer,      :year ]
+              )
+
+        PUBL =
+          new([ 13, 16, Pdb_String,       :sub_record ], # "PUBL"
+              [ 17, 18, Pdb_Continuation, nil ],
+              [ 20, 70, Pdb_LString,      :pub ]
+              )
+
+        REFN =
+          new([ 13, 16, Pdb_String,     :sub_record ], # "REFN"
+              [ 20, 23, Pdb_LString(4), "ASTM" ], 
+              [ 25, 30, Pdb_LString(6), :astm ],
+              [ 33, 34, Pdb_LString(2), :country ],
+              [ 36, 39, Pdb_LString(4), :BorS ], # "ISBN" or "ISSN"
+              [ 41, 65, Pdb_LString,    :isbn ],
+              [ 67, 70, Pdb_LString(4), :coden ] # "0353" for unpublished
+              )
+
+        # default or unknown record
+        # ''
+        Default =
+          new([ 13, 16, Pdb_String, :sub_record ]) # ""
+
+        Definition = create_definition_hash
+      end #class JRNL
+
+      class Remark1 < self
+        # 13, 16
+        EFER =
+          new([  8, 10, Pdb_Integer,    :remarkNum ],  # "1"
+              [ 12, 20, Pdb_String,     :sub_record ], # "REFERENCE"
+              [ 22, 70, Pdb_Integer,    :refNum ]
+              )
+        
+        AUTH =
+          new([  8, 10, Pdb_Integer,      :remarkNum ],  # "1"
+              [ 13, 16, Pdb_String,       :sub_record ], # "AUTH"
+              [ 17, 18, Pdb_Continuation, nil ],
+              [ 20, 70, Pdb_List,         :authorList ]
+              )
+        
+        TITL =
+          new([  8, 10, Pdb_Integer,      :remarkNum ],  # "1"
+              [ 13, 16, Pdb_String,       :sub_record ], # "TITL"
+              [ 17, 18, Pdb_Continuation, nil ],
+              [ 20, 70, Pdb_LString,      :title ]
+              )
+        
+        EDIT =
+          new([  8, 10, Pdb_Integer,      :remarkNum ],  # "1"
+              [ 13, 16, Pdb_String,       :sub_record ], # "EDIT"
+              [ 17, 18, Pdb_Continuation, nil ],
+              [ 20, 70, Pdb_LString,      :editorList ]
+              )
+        
+        REF =
+          new([  8, 10, Pdb_Integer,      :remarkNum ],  # "1"
+              [ 13, 16, Pdb_LString(3),   :sub_record ], # "REF"
+              [ 17, 18, Pdb_Continuation, nil ],
+              [ 20, 47, Pdb_LString,      :pubName ],
+              [ 50, 51, Pdb_LString(2),   "V." ],
+              [ 52, 55, Pdb_String,       :volume ],
+              [ 57, 61, Pdb_String,       :page ],
+              [ 63, 66, Pdb_Integer,      :year ]
+              )
+        
+        PUBL =
+          new([  8, 10, Pdb_Integer,      :remarkNum ],  # "1"
+              [ 13, 16, Pdb_String,       :sub_record ], # "PUBL"
+              [ 17, 18, Pdb_Continuation, nil ],
+              [ 20, 70, Pdb_LString,      :pub ]
+              )
+        
+        REFN =
+          new([  8, 10, Pdb_Integer,    :remarkNum ],  # "1"
+              [ 13, 16, Pdb_String,     :sub_record ], # "REFN"
+              [ 20, 23, Pdb_LString(4), "ASTM" ],
+              [ 25, 30, Pdb_LString,    :astm ],
+              [ 33, 34, Pdb_LString,    :country ],
+              [ 36, 39, Pdb_LString(4), :BorS ],
+              [ 41, 65, Pdb_LString,    :isbn ],
+              [ 68, 70, Pdb_LString(4), :coden ]
+              )
+        
+        Default =
+          new([  8, 10, Pdb_Integer,    :remarkNum ],  # "1"
+              [ 13, 16, Pdb_String,     :sub_record ]  # ""
+              )
+
+        Definition = create_definition_hash
+      end #class Remark1
+
+      class Remark2 < self
+        # 29, 38 == 'ANGSTROMS.'
+        ANGSTROMS = 
+          new([  8, 10, Pdb_Integer,     :remarkNum ], # "2"
+              [ 12, 22, Pdb_LString(11), :sub_record ], # "RESOLUTION."
+              [ 23, 27, Pdb_Real('5.2'), :resolution ],
+              [ 29, 38, Pdb_LString(10), "ANGSTROMS." ]
+              )
+        
+        # 23, 38 == ' NOT APPLICABLE.'
+        NOT_APPLICABLE = 
+          new([  8, 10, Pdb_Integer,     :remarkNum ], # "2"
+              [ 12, 22, Pdb_LString(11), :sub_record ], # "RESOLUTION."
+              [ 23, 38, Pdb_LString(16), :resolution ], # " NOT APPLICABLE."
+              [ 41, 70, Pdb_String,      :comment ]
+              )
+        
+        # others
+        Default = 
+          new([  8, 10, Pdb_Integer,     :remarkNum ], # "2"
+              [ 12, 22, Pdb_LString(11), :sub_record ], # "RESOLUTION."
+              [ 24, 70, Pdb_String,      :comment ]
+              )
+      end #class Remark2
+      
+      RemarkN =
+        new([  8, 10, Pdb_Integer, :remarkNum ],
+            [ 12, 70, Pdb_LString, :text ]
+            )
+
+      Default = new([ 8, 70, Pdb_LString, :text ])
+
+      Definition = create_definition_hash
+
+      # because END is a reserved word of Ruby, it is separately
+      # added to the hash
+      End = 
+        new([  2,  1, Pdb_Integer, :serial ]) # dummy field (always 0)
+
+      Definition['END'] = End
+
+      # Basically just look up the class in Definition hash
+      # do some munging for JRNL and REMARK
+      def self.get_record_class(str)
+        t = fetch_record_name(str)
+        if d = Definition[t] then
+          return d
+        end
+        case t
         when 'JRNL'
-          d = Def_JRNL[str[12..15].to_s.strip]
-          d = Def_JRNL[''] unless d
+          d = Jrnl::Definition[str[12..15].to_s.strip]
         when 'REMARK'
           case str[7..9].to_i
           when 1
-            d = Def_REMARK_1[str[12..15].to_s.strip]
-            d = Def_REMARK_1[''] unless d
+            d = Remark1::Definition[str[12..15].to_s.strip]
           when 2
             if str[28..37] == 'ANGSTROMS.' then
-              d = Def_REMARK_2[0]
+              d = Remark2::ANGSTROMS
             elsif str[22..37] == ' NOT APPLICABLE.' then
-              d = Def_REMARK_2[1]
+              d = Remark2::NOT_APPLICABLE
             else
-              d = Def_REMARK_2[2]
+              d = Remark2::Default
             end
           else
-            d = Def_REMARK_N
+            d = RemarkN
           end
         else
           # unknown field
-          d = Def_default
+          d = Default
         end
-        d
-      end
-
-      #The clever bit - doesn't parse anything until its asked for
-      def method_missing(name)
-        self.do_parse
-        unless @definition.symbols[name] then
-          raise NameError, "undefiend method `#{name}' for #{@type} (#{self.class.to_s})"
-        else
-          self[name]
-        end
+        return d
       end
     end #class Record
-
-
-    #Definition hash - contains all the rules for parsing each field
-    # based on format V 2.2, 16-DEC-1996
-    #
-    # http://www.rcsb.org/pdb/docs/format/pdbguide2.2/guide2.2_frame.html
-    # http://www.rcsb.org/pdb/docs/format/pdbguide2.2/Contents_Guide_21.html
-    #
-    # Details of following data are taken from these documents.
-
-
-    #1..6,  :Record_name, nil
-    Definition = {
-      # 'XXXXXX' => \
-      # FieldDef.new([ start, end, type of data, symbol to access ], ...),
-
-      'HEADER' => \
-      FieldDef.new([ 11, 50, Pdb_String, :classification ], #Pdb_String(40)
-                   [ 51, 59, Pdb_Date,   :depDate ],
-                   [ 63, 66, Pdb_IDcode, :idCode ]
-                   ),
-
-      'OBSLTE' => \
-      FieldDef.new([  9, 10, Pdb_Continuation, nil ],
-                   [ 12, 20, Pdb_Date,   :repDate ],
-                   [ 22, 25, Pdb_IDcode, :idCode ],
-                   [ 32, 35, Pdb_IDcode, :rIdCode ],
-                   [ 37, 40, Pdb_IDcode, :rIdCode ],
-                   [ 42, 45, Pdb_IDcode, :rIdCode ],
-                   [ 47, 50, Pdb_IDcode, :rIdCode ],
-                   [ 52, 55, Pdb_IDcode, :rIdCode ],
-                   [ 57, 60, Pdb_IDcode, :rIdCode ],
-                   [ 62, 65, Pdb_IDcode, :rIdCode ],
-                   [ 67, 70, Pdb_IDcode, :rIdCode ]
-                   ),
-
-      'TITLE' => \
-      FieldDef.new([  9, 10, Pdb_Continuation, nil ],
-                   [ 11, 70, Pdb_String, :title ]
-                   ),
-
-      'CAVEAT' => \
-      FieldDef.new([  9, 10, Pdb_Continuation, nil ],
-                   [ 12, 15, Pdb_IDcode, :idcode ],
-                   [ 20, 70, Pdb_String, :comment ]
-                   ),
-
-      'COMPND' => \
-      FieldDef.new([  9, 10, Pdb_Continuation, nil ],
-                   [ 11, 70, Pdb_Specification_list, :compound ]
-                   ),
-
-      'SOURCE' => \
-      FieldDef.new([  9, 10, Pdb_Continuation, nil ],
-                   [ 11, 70, Pdb_Specification_list, :srcName ]
-                   ),
-
-      'KEYWDS' => \
-      FieldDef.new([  9, 10, Pdb_Continuation, nil ],
-                   [ 11, 70, Pdb_List, :keywds ]
-                   ),
-
-      'EXPDTA' => \
-      FieldDef.new([  9, 10, Pdb_Continuation, nil ],
-                   [ 11, 70, Pdb_SList, :technique ]
-                   ),
-
-      'AUTHOR' => \
-      FieldDef.new([  9, 10, Pdb_Continuation, nil ],
-                   [ 11, 70, Pdb_List, :authorList ]
-                   ),
-
-      'REVDAT' => \
-      FieldDef.new([  8, 10, Pdb_Integer,      :modNum  ],
-                   [ 11, 12, Pdb_Continuation, nil      ],
-                   [ 14, 22, Pdb_Date,         :modDate ],
-                   [ 24, 28, Pdb_String,       :modId   ], # Pdb_String(5)
-                   [ 32, 32, Pdb_Integer,      :modType ],
-                   [ 40, 45, Pdb_LString(6),   :record  ],
-                   [ 47, 52, Pdb_LString(6),   :record  ],
-                   [ 54, 59, Pdb_LString(6),   :record  ],
-                   [ 61, 66, Pdb_LString(6),   :record  ]
-                   ),
-
-      'SPRSDE' => \
-      FieldDef.new([  9, 10, Pdb_Continuation, nil ],
-                   [ 12, 20, Pdb_Date,   :sprsdeDate ],
-                   [ 22, 25, Pdb_IDcode, :idCode ],
-                   [ 32, 35, Pdb_IDcode, :sIdCode ],
-                   [ 37, 40, Pdb_IDcode, :sIdCode ],
-                   [ 42, 45, Pdb_IDcode, :sIdCode ],
-                   [ 47, 50, Pdb_IDcode, :sIdCode ],
-                   [ 52, 55, Pdb_IDcode, :sIdCode ],
-                   [ 57, 60, Pdb_IDcode, :sIdCode ],
-                   [ 62, 65, Pdb_IDcode, :sIdCode ],
-                   [ 67, 70, Pdb_IDcode, :sIdCode ]
-                   ),
-
-      # 'JRNL'
-      'JRNL' => nil,
-
-      # 'REMARK'
-      'REMARK' => nil,
-
-      'DBREF' => \
-      FieldDef.new([  8, 11, Pdb_IDcode,    :idCode      ],
-                   [ 13, 13, Pdb_Character, :chainID     ],
-                   [ 15, 18, Pdb_Integer,   :seqBegin    ],
-                   [ 19, 19, Pdb_AChar,     :insertBegin ],
-                   [ 21, 24, Pdb_Integer,   :seqEnd      ],
-                   [ 25, 25, Pdb_AChar,     :insertEnd   ],
-                   [ 27, 32, Pdb_String,    :database    ], #Pdb_LString
-                   [ 34, 41, Pdb_String,    :dbAccession ], #Pdb_LString
-                   [ 43, 54, Pdb_String,    :dbIdCode    ], #Pdb_LString
-                   [ 56, 60, Pdb_Integer,   :dbseqBegin  ],
-                   [ 61, 61, Pdb_AChar,     :idbnsBeg    ],
-                   [ 63, 67, Pdb_Integer,   :dbseqEnd    ],
-                   [ 68, 68, Pdb_AChar,     :dbinsEnd    ]
-                   ),
-
-      'SEQADV' => \
-      FieldDef.new([  8, 11, Pdb_IDcode,       :idCode   ],
-                   [ 13, 15, Pdb_Residue_name, :resName  ],
-                   [ 17, 17, Pdb_Character,    :chainID  ],
-                   [ 19, 22, Pdb_Integer,      :seqNum   ],
-                   [ 23, 23, Pdb_AChar,        :iCode    ],
-                   [ 25, 28, Pdb_String,       :database ], #Pdb_LString
-                   [ 30, 38, Pdb_String,       :dbIdCode ], #Pdb_LString
-                   [ 40, 42, Pdb_Residue_name, :dbRes    ],
-                   [ 44, 48, Pdb_Integer,      :dbSeq    ],
-                   [ 50, 70, Pdb_LString,      :conflict ]
-                   ),
-
-      'SEQRES' => \
-      FieldDef.new(#[  9, 10, Pdb_Integer,      :serNum ],
-                   [  9, 10, Pdb_Continuation, nil      ],
-                   [ 12, 12, Pdb_Character,    :chainID ],
-                   [ 14, 17, Pdb_Integer,      :numRes  ],
-                   [ 20, 22, Pdb_Residue_name, :resName ],
-                   [ 24, 26, Pdb_Residue_name, :resName ],
-                   [ 28, 30, Pdb_Residue_name, :resName ],
-                   [ 32, 34, Pdb_Residue_name, :resName ],
-                   [ 36, 38, Pdb_Residue_name, :resName ],
-                   [ 40, 42, Pdb_Residue_name, :resName ],
-                   [ 44, 46, Pdb_Residue_name, :resName ],
-                   [ 48, 50, Pdb_Residue_name, :resName ],
-                   [ 52, 54, Pdb_Residue_name, :resName ],
-                   [ 56, 58, Pdb_Residue_name, :resName ],
-                   [ 60, 62, Pdb_Residue_name, :resName ],
-                   [ 64, 66, Pdb_Residue_name, :resName ],
-                   [ 68, 70, Pdb_Residue_name, :resName ]
-                   ),
-
-      'MODRES' => \
-      FieldDef.new([  8, 11, Pdb_IDcode,       :idCode ],
-                   [ 13, 15, Pdb_Residue_name, :resName ],
-                   [ 17, 17, Pdb_Character,    :chainID ],
-                   [ 19, 22, Pdb_Integer,      :seqNum ],
-                   [ 23, 23, Pdb_AChar,        :iCode ],
-                   [ 25, 27, Pdb_Residue_name, :stdRes ],
-                   [ 30, 70, Pdb_String,       :comment ]
-                   ),
-
-      'HET' => \
-      FieldDef.new([  8, 10, Pdb_LString(3), :hetID ],
-                   [ 13, 13, Pdb_Character,  :ChainID ],
-                   [ 14, 17, Pdb_Integer,    :seqNum ],
-                   [ 18, 18, Pdb_AChar,      :iCode ],
-                   [ 21, 25, Pdb_Integer,    :numHetAtoms ],
-                   [ 31, 70, Pdb_String,     :text ]
-                   ),
-
-      'HETNAM' => \
-      FieldDef.new([ 9, 10,  Pdb_Continuation, nil ],
-                   [ 12, 14, Pdb_LString(3),   :hetID ],
-                   [ 16, 70, Pdb_String,       :text ]
-                   ),
-
-      'HETSYN' => \
-      FieldDef.new([  9, 10, Pdb_Continuation, nil ],
-                   [ 12, 14, Pdb_LString(3),   :hetID ],
-                   [ 16, 70, Pdb_SList,        :hetSynonyms ]
-                   ),
-
-      'FORMUL' =>
-      FieldDef.new([  9, 10, Pdb_Integer,    :compNum ],
-                   [ 13, 15, Pdb_LString(3), :hetID ],
-                   [ 17, 18, Pdb_Integer,    :continuation ],
-                   [ 19, 19, Pdb_Character,  :asterisk ],
-                   [ 20, 70, Pdb_String,     :text ]
-                   ),
-
-      'HELIX' =>
-      FieldDef.new([  8, 10, Pdb_Integer,      :serNum ],
-                   #[ 12, 14, Pdb_LString(3),   :helixID ],
-                   [ 12, 14, Pdb_StringRJ,     :helixID ],
-                   [ 16, 18, Pdb_Residue_name, :initResName ],
-                   [ 20, 20, Pdb_Character,    :initChainID ],
-                   [ 22, 25, Pdb_Integer,      :initSeqNum ],
-                   [ 26, 26, Pdb_AChar,        :initICode ],
-                   [ 28, 30, Pdb_Residue_name, :endResName ],
-                   [ 32, 32, Pdb_Character,    :endChainID ],
-                   [ 34, 37, Pdb_Integer,      :endSeqNum ],
-                   [ 38, 38, Pdb_AChar,        :endICode ],
-                   [ 39, 40, Pdb_Integer,      :helixClass ],
-                   [ 41, 70, Pdb_String,       :comment ],
-                   [ 72, 76, Pdb_Integer,      :length ]
-                   ),
-
-      'SHEET' =>
-      FieldDef.new([  8, 10, Pdb_Integer,      :strand ],
-                   #[ 12, 14, Pdb_LString(3),   :sheetID ],
-                   [ 12, 14, Pdb_StringRJ,     :sheetID ],
-                   [ 15, 16, Pdb_Integer,      :numStrands ],
-                   [ 18, 20, Pdb_Residue_name, :initResName ],
-                   [ 22, 22, Pdb_Character,    :initChainID ],
-                   [ 23, 26, Pdb_Integer,      :initSeqNum ],
-                   [ 27, 27, Pdb_AChar,        :initICode ],
-                   [ 29, 31, Pdb_Residue_name, :endResName ],
-                   [ 33, 33, Pdb_Character,    :endChainID ],
-                   [ 34, 37, Pdb_Integer,      :endSeqNum ],
-                   [ 38, 38, Pdb_AChar,        :endICode ],
-                   [ 39, 40, Pdb_Integer,      :sense ],
-                   [ 42, 45, Pdb_Atom,         :curAtom ],
-                   [ 46, 48, Pdb_Residue_name, :curResName ],
-                   [ 50, 50, Pdb_Character,    :curChainId ],
-                   [ 51, 54, Pdb_Integer,      :curResSeq ],
-                   [ 55, 55, Pdb_AChar,        :curICode ],
-                   [ 57, 60, Pdb_Atom,         :prevAtom ],
-                   [ 61, 63, Pdb_Residue_name, :prevResName ],
-                   [ 65, 65, Pdb_Character,    :prevChainId ],
-                   [ 66, 69, Pdb_Integer,      :prevResSeq ],
-                   [ 70, 70, Pdb_AChar,        :prevICode ]
-                   ),
-
-      'TURN' => \
-      FieldDef.new([  8, 10, Pdb_Integer,      :seq ],
-                   #[ 12, 14, Pdb_LString(3),   :turnId ],
-                   [ 12, 14, Pdb_StringRJ,     :turnId ],
-                   [ 16, 18, Pdb_Residue_name, :initResName ],
-                   [ 20, 20, Pdb_Character,    :initChainId ],
-                   [ 21, 24, Pdb_Integer,      :initSeqNum ],
-                   [ 25, 25, Pdb_AChar,        :initICode ],
-                   [ 27, 29, Pdb_Residue_name, :endResName ],
-                   [ 31, 31, Pdb_Character,    :endChainId ],
-                   [ 32, 35, Pdb_Integer,      :endSeqNum ],
-                   [ 36, 36, Pdb_AChar,        :endICode ],
-                   [ 41, 70, Pdb_String,       :comment ]
-                   ),
-
-      'SSBOND' =>
-      FieldDef.new([  8, 10, Pdb_Integer,    :serNum   ],
-                   [ 12, 14, Pdb_LString(3), :pep1     ], # "CYS"
-                   [ 16, 16, Pdb_Character,  :chainID1 ],
-                   [ 18, 21, Pdb_Integer,    :seqNum1  ],
-                   [ 22, 22, Pdb_AChar,      :icode1   ],
-                   [ 26, 28, Pdb_LString(3), :pep2     ], # "CYS"
-                   [ 30, 30, Pdb_Character,  :chainID2 ],
-                   [ 32, 35, Pdb_Integer,    :seqNum2  ],
-                   [ 36, 36, Pdb_AChar,      :icode2   ],
-                   [ 60, 65, Pdb_SymOP,      :sym1     ],
-                   [ 67, 72, Pdb_SymOP,      :sym2     ]
-                   ),
-
-      'LINK' => \
-      FieldDef.new([ 13, 16, Pdb_Atom,         :name1 ],
-                   [ 17, 17, Pdb_Character,    :altLoc1 ],
-                   [ 18, 20, Pdb_Residue_name, :resName1 ],
-                   [ 22, 22, Pdb_Character,    :chainID1 ],
-                   [ 23, 26, Pdb_Integer,      :resSeq1 ],
-                   [ 27, 27, Pdb_AChar,        :iCode1 ],
-                   [ 43, 46, Pdb_Atom,         :name2 ],
-                   [ 47, 47, Pdb_Character,    :altLoc2 ],
-                   [ 48, 50, Pdb_Residue_name, :resName2 ],
-                   [ 52, 52, Pdb_Character,    :chainID2 ],
-                   [ 53, 56, Pdb_Integer,      :resSeq2 ],
-                   [ 57, 57, Pdb_AChar,        :iCode2 ],
-                   [ 60, 65, Pdb_SymOP,        :sym1 ],
-                   [ 67, 72, Pdb_SymOP,        :sym2 ]
-                   ),
-
-      'HYDBND' => \
-      FieldDef.new([ 13, 16, Pdb_Atom,         :name1 ],
-                   [ 17, 17, Pdb_Character,    :altLoc1 ],
-                   [ 18, 20, Pdb_Residue_name, :resName1 ],
-                   [ 22, 22, Pdb_Character,    :Chain1 ],
-                   [ 23, 27, Pdb_Integer,      :resSeq1 ],
-                   [ 28, 28, Pdb_AChar,        :ICode1 ],
-                   [ 30, 33, Pdb_Atom,         :nameH ],
-                   [ 34, 34, Pdb_Character,    :altLocH ],
-                   [ 36, 36, Pdb_Character,    :ChainH ],
-                   [ 37, 41, Pdb_Integer,      :resSeqH ],
-                   [ 42, 42, Pdb_AChar,        :iCodeH ],
-                   [ 44, 47, Pdb_Atom,         :name2 ],
-                   [ 48, 48, Pdb_Character,    :altLoc2 ],
-                   [ 49, 51, Pdb_Residue_name, :resName2 ],
-                   [ 53, 53, Pdb_Character,    :chainID2 ],
-                   [ 54, 58, Pdb_Integer,      :resSeq2 ],
-                   [ 59, 59, Pdb_AChar,        :iCode2 ],
-                   [ 60, 65, Pdb_SymOP,        :sym1 ],
-                   [ 67, 72, Pdb_SymOP,        :sym2 ]
-                   ),
-
-      'SLTBRG' =>
-      FieldDef.new([ 13, 16, Pdb_Atom,          :atom1 ],
-                   [ 17, 17, Pdb_Character,     :altLoc1 ],
-                   [ 18, 20, Pdb_Residue_name,  :resName1 ],
-                   [ 22, 22, Pdb_Character,     :chainID1 ],
-                   [ 23, 26, Pdb_Integer,       :resSeq1 ],
-                   [ 27, 27, Pdb_AChar,         :iCode1 ],
-                   [ 43, 46, Pdb_Atom,          :atom2 ],
-                   [ 47, 47, Pdb_Character,     :altLoc2 ],
-                   [ 48, 50, Pdb_Residue_name,  :resName2 ],
-                   [ 52, 52, Pdb_Character,     :chainID2 ],
-                   [ 53, 56, Pdb_Integer,       :resSeq2 ],
-                   [ 57, 57, Pdb_AChar,         :iCode2 ],
-                   [ 60, 65, Pdb_SymOP,         :sym1 ],
-                   [ 67, 72, Pdb_SymOP,         :sym2 ]
-                   ),
-
-      'CISPEP' => \
-      FieldDef.new([  8, 10, Pdb_Integer,     :serNum ],
-                   [ 12, 14, Pdb_LString(3),  :pep1 ],
-                   [ 16, 16, Pdb_Character,   :chainID1 ],
-                   [ 18, 21, Pdb_Integer,     :seqNum1 ],
-                   [ 22, 22, Pdb_AChar,       :icode1 ],
-                   [ 26, 28, Pdb_LString(3),  :pep2 ],
-                   [ 30, 30, Pdb_Character,   :chainID2 ],
-                   [ 32, 35, Pdb_Integer,     :seqNum2 ],
-                   [ 36, 36, Pdb_AChar,       :icode2 ],
-                   [ 44, 46, Pdb_Integer,     :modNum ],
-                   [ 54, 59, Pdb_Real('6.2'), :measure ]
-                   ),
-
-      'SITE' => \
-      FieldDef.new([  8, 10, Pdb_Integer,      :seqNum    ],
-                   [ 12, 14, Pdb_LString(3),   :siteID    ],
-                   [ 16, 17, Pdb_Integer,      :numRes    ],
-                   [ 19, 21, Pdb_Residue_name, :resName1  ],
-                   [ 23, 23, Pdb_Character,    :chainID1  ],
-                   [ 24, 27, Pdb_Integer,      :seq1      ],
-                   [ 28, 28, Pdb_AChar,        :iCode1    ],
-                   [ 30, 32, Pdb_Residue_name, :resName2  ],
-                   [ 34, 34, Pdb_Character,    :chainID2  ],
-                   [ 35, 38, Pdb_Integer,      :seq2      ],
-                   [ 39, 39, Pdb_AChar,        :iCode2    ],
-                   [ 41, 43, Pdb_Residue_name, :resName3  ],
-                   [ 45, 45, Pdb_Character,    :chainID3  ],
-                   [ 46, 49, Pdb_Integer,      :seq3      ],
-                   [ 50, 50, Pdb_AChar,        :iCode3    ],
-                   [ 52, 54, Pdb_Residue_name, :resName4  ],
-                   [ 56, 56, Pdb_Character,    :chainID4  ],
-                   [ 57, 60, Pdb_Integer,      :seq4      ],
-                   [ 61, 61, Pdb_AChar,        :iCode4    ]
-                   ),
-
-      'CRYST1' => \
-      FieldDef.new([  7, 15, Pdb_Real('9.3'), :a ],
-                   [ 16, 24, Pdb_Real('9.3'), :b ],
-                   [ 25, 33, Pdb_Real('9.3'), :c ],
-                   [ 34, 40, Pdb_Real('7.2'), :alpha ],
-                   [ 41, 47, Pdb_Real('7.2'), :beta ],
-                   [ 48, 54, Pdb_Real('7.2'), :gamma ],
-                   [ 56, 66, Pdb_LString,     :sGroup ],
-                   [ 67, 70, Pdb_Integer,     :z ]
-                   ),
-
-      # ORIGXn n=1, 2, or 3
-      'ORIGX1' => \
-      FieldDef.new([ 11, 20, Pdb_Real('10.6'), :On1 ],
-                   [ 21, 30, Pdb_Real('10.6'), :On2 ],
-                   [ 31, 40, Pdb_Real('10.6'), :On3 ],
-                   [ 46, 55, Pdb_Real('10.5'), :Tn ]
-                   ),
-
-      # SCALEn n=1, 2, or 3
-      'SCALE1' => \
-      FieldDef.new([ 11, 20, Pdb_Real('10.6'), :Sn1 ],
-                   [ 21, 30, Pdb_Real('10.6'), :Sn2 ],
-                   [ 31, 40, Pdb_Real('10.6'), :Sn3 ],
-                   [ 46, 55, Pdb_Real('10.5'), :Un ]
-                   ),
-
-      # MTRIXn n=1,2, or 3
-      'MTRIX1' => \
-      FieldDef.new([  8, 10, Pdb_Integer,      :serial ],
-                   [ 11, 20, Pdb_Real('10.6'), :Mn1 ],
-                   [ 21, 30, Pdb_Real('10.6'), :Mn2 ],
-                   [ 31, 40, Pdb_Real('10.6'), :Mn3 ],
-                   [ 46, 55, Pdb_Real('10.5'), :Vn ],
-                   [ 60, 60, Pdb_Integer,      :iGiven ]
-                   ),
-
-      'TVECT' => \
-      FieldDef.new([  8, 10, Pdb_Integer,      :serial ],
-                   [ 11, 20, Pdb_Real('10.5'), :t1 ],
-                   [ 21, 30, Pdb_Real('10.5'), :t2 ],
-                   [ 31, 40, Pdb_Real('10.5'), :t3 ],
-                   [ 41, 70, Pdb_String,       :text ]
-                   ),
-
-      'MODEL' => \
-      FieldDef.new(#[ 11, 14, Pdb_Integer, :serial ]
-                   [ 11, 14, Pdb_Integer, :model_serial ],
-                   [  2,  1, Pdb_Integer, :serial ] # dummy field (always 0)
-                   ),
-
-      'ATOM' => \
-      FieldDef.new([  7, 11, Pdb_Integer,      :serial ],
-                   [ 13, 16, Pdb_Atom,         :name ],
-                   [ 17, 17, Pdb_Character,    :altLoc ],
-                   [ 18, 20, Pdb_Residue_name, :resName ],
-                   [ 22, 22, Pdb_Character,    :chainID ],
-                   [ 23, 26, Pdb_Integer,      :resSeq ],
-                   [ 27, 27, Pdb_AChar,        :iCode ],
-                   [ 31, 38, Pdb_Real('8.3'),  :x ],
-                   [ 39, 46, Pdb_Real('8.3'),  :y ],
-                   [ 47, 54, Pdb_Real('8.3'),  :z ],
-                   [ 55, 60, Pdb_Real('6.2'),  :occupancy ],
-                   [ 61, 66, Pdb_Real('6.2'),  :tempFactor ],
-                   [ 73, 76, Pdb_LString(4),   :segID ],
-                   [ 77, 78, Pdb_LString(2),   :element ],
-                   [ 79, 80, Pdb_LString(2),   :charge ]
-                   ),
-
-      'SIGATM' => \
-      FieldDef.new([  7, 11, Pdb_Integer,      :serial ],
-                   [ 13, 16, Pdb_Atom,         :name ],
-                   [ 17, 17, Pdb_Character,    :altLoc ],
-                   [ 18, 20, Pdb_Residue_name, :resName ],
-                   [ 22, 22, Pdb_Character,    :chainID ],
-                   [ 23, 26, Pdb_Integer,      :resSeq ],
-                   [ 27, 27, Pdb_AChar,        :iCode ],
-                   [ 31, 38, Pdb_Real('8.3'),  :sigX ],
-                   [ 39, 46, Pdb_Real('8.3'),  :sigY ],
-                   [ 47, 54, Pdb_Real('8.3'),  :sigZ ],
-                   [ 55, 60, Pdb_Real('6.2'),  :sigOcc ],
-                   [ 61, 66, Pdb_Real('6.2'),  :sigTemp ],
-                   [ 73, 76, Pdb_LString(4),   :segID ],
-                   [ 77, 78, Pdb_LString(2),   :element ],
-                   [ 79, 80, Pdb_LString(2),   :charge ]
-                   ),
-
-      'ANISOU' => \
-      FieldDef.new([  7, 11, Pdb_Integer,      :serial ],
-                   [ 13, 16, Pdb_Atom,         :name ],
-                   [ 17, 17, Pdb_Character,    :altLoc ],
-                   [ 18, 20, Pdb_Residue_name, :resName ],
-                   [ 22, 22, Pdb_Character,    :chainID ],
-                   [ 23, 26, Pdb_Integer,      :resSeq ],
-                   [ 27, 27, Pdb_AChar,        :iCode ],
-                   [ 29, 35, Pdb_Integer,      :U11 ],
-                   [ 36, 42, Pdb_Integer,      :U22 ],
-                   [ 43, 49, Pdb_Integer,      :U33 ],
-                   [ 50, 56, Pdb_Integer,      :U12 ],
-                   [ 57, 63, Pdb_Integer,      :U13 ],
-                   [ 64, 70, Pdb_Integer,      :U23 ],
-                   [ 73, 76, Pdb_LString(4),   :segID ],
-                   [ 77, 78, Pdb_LString(2),   :element ],
-                   [ 79, 80, Pdb_LString(2),   :charge ]
-                   ),
-
-      'SIGUIJ' => \
-      FieldDef.new([  7, 11, Pdb_Integer,      :serial ],
-                   [ 13, 16, Pdb_Atom,         :name ],
-                   [ 17, 17, Pdb_Character,    :altLoc ],
-                   [ 18, 20, Pdb_Residue_name, :resName ],
-                   [ 22, 22, Pdb_Character,    :chainID ],
-                   [ 23, 26, Pdb_Integer,      :resSeq ],
-                   [ 27, 27, Pdb_AChar,        :iCode ],
-                   [ 29, 35, Pdb_Integer,      :SigmaU11 ],
-                   [ 36, 42, Pdb_Integer,      :SigmaU22 ],
-                   [ 43, 49, Pdb_Integer,      :SigmaU33 ],
-                   [ 50, 56, Pdb_Integer,      :SigmaU12 ],
-                   [ 57, 63, Pdb_Integer,      :SigmaU13 ],
-                   [ 64, 70, Pdb_Integer,      :SigmaU23 ],
-                   [ 73, 76, Pdb_LString(4),   :segID ],
-                   [ 77, 78, Pdb_LString(2),   :element ],
-                   [ 79, 80, Pdb_LString(2),   :charge ]
-                   ),
-
-      'TER' => \
-      FieldDef.new([  7, 11, Pdb_Integer,      :serial ],
-                   [ 18, 20, Pdb_Residue_name, :resName ],
-                   [ 22, 22, Pdb_Character,    :chainID ],
-                   [ 23, 26, Pdb_Integer,      :resSeq ],
-                   [ 27, 27, Pdb_AChar,        :iCode ]
-                   ),
-
-      'HETATM' => \
-      FieldDef.new([  7, 11, Pdb_Integer,      :serial ],
-                   [ 13, 16, Pdb_Atom,         :name ],
-                   [ 17, 17, Pdb_Character,    :altLoc ],
-                   [ 18, 20, Pdb_Residue_name, :resName ],
-                   [ 22, 22, Pdb_Character,    :chainID ],
-                   [ 23, 26, Pdb_Integer,      :resSeq ],
-                   [ 27, 27, Pdb_AChar,        :iCode ],
-                   [ 31, 38, Pdb_Real('8.3'),  :x ],
-                   [ 39, 46, Pdb_Real('8.3'),  :y ],
-                   [ 47, 54, Pdb_Real('8.3'),  :z ],
-                   [ 55, 60, Pdb_Real('6.2'),  :occupancy ],
-                   [ 61, 66, Pdb_Real('6.2'),  :tempFactor ],
-                   [ 73, 76, Pdb_LString(4),   :segID ],
-                   [ 77, 78, Pdb_LString(2),   :element ],
-                   [ 79, 80, Pdb_LString(2),   :charge ]
-                   ),
-
-      'ENDMDL' => \
-      FieldDef.new([  2,  1, Pdb_Integer, :serial ] # dummy field (always 0)
-                   ),
-
-      'CONECT' => \
-      FieldDef.new([  7, 11, Pdb_Integer, :serial ],
-                   [ 12, 16, Pdb_Integer, :serial ],
-                   [ 17, 21, Pdb_Integer, :serial ],
-                   [ 22, 26, Pdb_Integer, :serial ],
-                   [ 27, 31, Pdb_Integer, :serial ],
-                   [ 32, 36, Pdb_Integer, :serial ],
-                   [ 37, 41, Pdb_Integer, :serial ],
-                   [ 42, 46, Pdb_Integer, :serial ],
-                   [ 47, 51, Pdb_Integer, :serial ],
-                   [ 52, 56, Pdb_Integer, :serial ],
-                   [ 57, 61, Pdb_Integer, :serial ]
-                   ),
-
-      'MASTER' => \
-      FieldDef.new([ 11, 15, Pdb_Integer, :numRemark ],
-                   [ 16, 20, Pdb_Integer, "0" ],
-                   [ 21, 25, Pdb_Integer, :numHet ],
-                   [ 26, 30, Pdb_Integer, :numHelix ],
-                   [ 31, 35, Pdb_Integer, :numSheet ],
-                   [ 36, 40, Pdb_Integer, :numTurn ],
-                   [ 41, 45, Pdb_Integer, :numSite ],
-                   [ 46, 50, Pdb_Integer, :numXform ],
-                   [ 51, 55, Pdb_Integer, :numCoord ],
-                   [ 56, 60, Pdb_Integer, :numTer ],
-                   [ 61, 65, Pdb_Integer, :numConect ],
-                   [ 66, 70, Pdb_Integer, :numSeq ]
-                   ),
-
-      'END' => FieldDef.new(), 
-
-      ''=> FieldDef.new()
-    } #Definition
-
-    # ORIGXn n=1, 2, or 3
-    Definition['ORIGX2'] = Definition['ORIGX1']
-    Definition['ORIGX3'] = Definition['ORIGX1']
-    # SCALEn n=1, 2, or 3
-    Definition['SCALE2'] = Definition['SCALE1']
-    Definition['SCALE3'] = Definition['SCALE1']
-    # MTRIXn n=1,2, or 3
-    Definition['MTRIX2'] = Definition['MTRIX1']
-    Definition['MTRIX3'] = Definition['MTRIX1']
-
-    Def_JRNL = {
-      # 13, 16
-      'AUTH' => \
-      FieldDef.new([ 13, 16, Pdb_String,       :sub_record ], # "AUTH"
-                   [ 17, 18, Pdb_Continuation, nil ],
-                   [ 20, 70, Pdb_List,         :authorList ]
-                   ),
-
-      'TITL' => \
-      FieldDef.new([ 13, 16, Pdb_String,       :sub_record ], # "TITL"
-                   [ 17, 18, Pdb_Continuation, nil ],
-                   [ 20, 70, Pdb_LString,      :title ]
-                   ),
-
-      'EDIT' => \
-      FieldDef.new([ 13, 16, Pdb_String,       :sub_record ], # "EDIT"
-                   [ 17, 18, Pdb_Continuation, nil ],
-                   [ 20, 70, Pdb_List,         :editorList ]
-                   ),
-
-      'REF' => \
-      FieldDef.new([ 13, 16, Pdb_String,       :sub_record ], # "REF"
-                   [ 17, 18, Pdb_Continuation, nil ],
-                   [ 20, 47, Pdb_LString,      :pubName ],
-                   [ 50, 51, Pdb_LString(2),   "V." ],
-                   [ 52, 55, Pdb_String,       :volume ],
-                   [ 57, 61, Pdb_String,       :page ],
-                   [ 63, 66, Pdb_Integer,      :year ]
-                   ),
-
-      'PUBL' => \
-      FieldDef.new([ 13, 16, Pdb_String,       :sub_record ], # "PUBL"
-                   [ 17, 18, Pdb_Continuation, nil ],
-                   [ 20, 70, Pdb_LString,      :pub ]
-                   ),
-
-      'REFN' => \
-      FieldDef.new([ 13, 16, Pdb_String,     :sub_record ], # "REFN"
-                   [ 20, 23, Pdb_LString(4), "ASTM" ], 
-                   [ 25, 30, Pdb_LString(6), :astm ],
-                   [ 33, 34, Pdb_LString(2), :country ],
-                   [ 36, 39, Pdb_LString(4), :BorS ], # "ISBN" or "ISSN"
-                   [ 41, 65, Pdb_LString,    :isbn ],
-                   [ 67, 70, Pdb_LString(4), :coden ] # "0353" for unpublished
-                   ),
-
-      '' => \
-      FieldDef.new([ 13, 16, Pdb_String, :sub_record ]) # ""
-    } #Def_JRNL
-
-    Def_REMARK_1 = {
-      # 13, 16
-      'EFER' => \
-      FieldDef.new([  8, 10, Pdb_Integer,    :remarkNum ],  # "1"
-                   [ 12, 20, Pdb_String,     :sub_record ], # "REFERENCE"
-                   [ 22, 70, Pdb_Integer,    :refNum ]
-                   ),
-
-      'AUTH' => \
-      FieldDef.new([  8, 10, Pdb_Integer,      :remarkNum ],  # "1"
-                   [ 13, 16, Pdb_String,       :sub_record ], # "AUTH"
-                   [ 17, 18, Pdb_Continuation, nil ],
-                   [ 20, 70, Pdb_List,         :authorList ]
-                   ),
-
-      'TITL' => \
-      FieldDef.new([  8, 10, Pdb_Integer,      :remarkNum ],  # "1"
-                   [ 13, 16, Pdb_String,       :sub_record ], # "TITL"
-                   [ 17, 18, Pdb_Continuation, nil ],
-                   [ 20, 70, Pdb_LString,      :title ]
-                   ),
-
-      'EDIT' => \
-      FieldDef.new([  8, 10, Pdb_Integer,      :remarkNum ],  # "1"
-                   [ 13, 16, Pdb_String,       :sub_record ], # "EDIT"
-                   [ 17, 18, Pdb_Continuation, nil ],
-                   [ 20, 70, Pdb_LString,      :editorList ]
-                   ),
-
-      'REF' => \
-      FieldDef.new([  8, 10, Pdb_Integer,      :remarkNum ],  # "1"
-                   [ 13, 16, Pdb_LString(3),   :sub_record ], # "REF"
-                   [ 17, 18, Pdb_Continuation, nil ],
-                   [ 20, 47, Pdb_LString,      :pubName ],
-                   [ 50, 51, Pdb_LString(2),   "V." ],
-                   [ 52, 55, Pdb_String,       :volume ],
-                   [ 57, 61, Pdb_String,       :page ],
-                   [ 63, 66, Pdb_Integer,      :year ]
-                   ),
-
-      'PUBL' => \
-      FieldDef.new([  8, 10, Pdb_Integer,      :remarkNum ],  # "1"
-                   [ 13, 16, Pdb_String,       :sub_record ], # "PUBL"
-                   [ 17, 18, Pdb_Continuation, nil ],
-                   [ 20, 70, Pdb_LString,      :pub ]
-                   ),
-
-      'REFN' => \
-      FieldDef.new([  8, 10, Pdb_Integer,    :remarkNum ],  # "1"
-                   [ 13, 16, Pdb_String,     :sub_record ], # "REFN"
-                   [ 20, 23, Pdb_LString(4), "ASTM" ],
-                   [ 25, 30, Pdb_LString,    :astm ],
-                   [ 33, 34, Pdb_LString,    :country ],
-                   [ 36, 39, Pdb_LString(4), :BorS ],
-                   [ 41, 65, Pdb_LString,    :isbn ],
-                   [ 68, 70, Pdb_LString(4), :coden ]
-                   ),
-
-      '' => \
-      FieldDef.new([  8, 10, Pdb_Integer,    :remarkNum ],  # "1"
-                   [ 13, 16, Pdb_String,     :sub_record ]  # ""
-                   )
-    } #Def_REMARK_1
-
-    Def_REMARK_2 = [
-      # 29, 38 == 'ANGSTROMS.'
-      FieldDef.new([  8, 10, Pdb_Integer,     :remarkNum ], # "2"
-                   [ 12, 22, Pdb_LString(11), :sub_record ], # "RESOLUTION."
-                   [ 23, 27, Pdb_Real('5.2'), :resolution ],
-                   [ 29, 38, Pdb_LString(10), "ANGSTROMS." ]
-                   ),
-
-      # 23, 38 == ' NOT APPLICABLE.'
-      FieldDef.new([  8, 10, Pdb_Integer,     :remarkNum ], # "2"
-                   [ 12, 22, Pdb_LString(11), :sub_record ], # "RESOLUTION."
-                   [ 23, 38, Pdb_LString(16), :resolution ], # " NOT APPLICABLE."
-                   [ 41, 70, Pdb_String,      :comment ]
-                   ),
-
-      # others
-      FieldDef.new([  8, 10, Pdb_Integer,     :remarkNum ], # "2"
-                   [ 12, 22, Pdb_LString(11), :sub_record ], # "RESOLUTION."
-                   [ 24, 70, Pdb_String,      :comment ]
-                   ),
-    ] #Def_REMARK_2
-
-    Def_REMARK_N = 
-      FieldDef.new([  8, 10, Pdb_Integer, :remarkNum ],
-                   [ 12, 70, Pdb_LString, :text ]
-                   )
-
-    Def_default = 
-      FieldDef.new([ 8, 70, Pdb_LString, :text ])
 
     Coordinate_fileds = {
       'MODEL'  => true,
@@ -1071,13 +1119,15 @@ module Bio
         #Go to next if the previous line was contiunation able, and
         #add_continuation returns true. Line is added by add_continuation
         next if cont and cont = cont.add_continuation(line)
+
         #Make the new record
-        f = Record.new(line)
+        f = Record.get_record_class(line).new.initialize_from_string(line)
+        #p f
         #Set cont
         cont = f if f.continue?
         #Set the hash to point to this record either by adding to an
         #array, or on it's own
-        key = f.record_type
+        key = f.record_name
         if a = @hash[key] then
           a << f
         else
@@ -1109,10 +1159,10 @@ module Bio
           if key == 'HETATM' and resName == 'HOH'
             solvent =   Residue.new(resName,resSeq,iCode,
                                     cModel.solvent,true)
-            solvent_atom = Atom.new(serial,name,altLoc,
-                                    x,y,z,
-                                    occupancy,tempFactor,
-                                    solvent)
+            solvent_atom = HetAtm.new(serial,name,altLoc,
+                                      x,y,z,
+                                      occupancy,tempFactor,
+                                      solvent)
             solvent.addAtom(solvent_atom)
             cModel.addSolvent(solvent)
             
@@ -1124,6 +1174,9 @@ module Bio
             residueID = "#{resSeq}#{iCode}".strip
             if key == 'HETATM'
               residueID = "LIGAND" << residueID
+              atomclass = Hetatm
+            else
+              atomclass = Atom
             end
             
             #If this atom is part of the current residue then add it to
@@ -1131,11 +1184,11 @@ module Bio
             if chainID == cChain.id and residueID == cResidue.id
               
               #If we have this chain and residue just add the atom
-              atom = Atom.new(serial,name,altLoc,
-                              x,y,z,
-                              occupancy,tempFactor,
-                              cResidue)
-              cResidue.addAtom(atom) 
+              atom = atomclass.new(serial,name,altLoc,
+                                   x,y,z,
+                                   occupancy,tempFactor,
+                                   cResidue)
+              cResidue.addAtom(atom)
 
             elsif !cModel[chainID]
               
@@ -1152,11 +1205,10 @@ module Bio
                                          newChain,true)
                 newChain.addLigand(newResidue)
               end
-              
-              atom = Atom.new(serial,name,altLoc,
-                              x,y,z,
-                              occupancy,tempFactor,
-                              newResidue)
+              atom = atomclass.new(serial,name,altLoc,
+                                   x,y,z,
+                                   occupancy,tempFactor,
+                                   newResidue)
               newResidue.addAtom(atom)
               
               cChain   = newChain
@@ -1178,10 +1230,10 @@ module Bio
                 chain.addLigand(newResidue)
               end
               
-              atom = Atom.new(serial,name,altLoc,
-                              x,y,z,
-                              occupancy,tempFactor,
-                              newResidue)
+              atom = atomclass.new(serial,name,altLoc,
+                                   x,y,z,
+                                   occupancy,tempFactor,
+                                   newResidue)
               newResidue.addAtom(atom)
               
               cResidue = newResidue

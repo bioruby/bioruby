@@ -17,14 +17,14 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pdb.rb,v 1.4 2004/03/08 07:32:35 ngoto Exp $
+#  $Id: pdb.rb,v 1.5 2005/12/16 19:23:03 ngoto Exp $
 #
 
 require 'bio/db'
 
 # definition of the PDB class
 module Bio
-  class PDB < DB
+  class PDB #< DB
   end #class PDB
 end #module Bio
 
