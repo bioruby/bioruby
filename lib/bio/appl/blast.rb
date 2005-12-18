@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: blast.rb,v 1.26 2005/09/26 13:00:04 k Exp $
+#  $Id: blast.rb,v 1.27 2005/12/18 17:28:55 nakao Exp $
 #
 
 require 'net/http'
@@ -39,16 +39,16 @@ module Bio
     include Bio::Command::Tools
 
     def initialize(program, db, opt = [], server = 'local')
-      @program	= program
-      @db	= db
-      @server	= server
+      @program  = program
+      @db       = db
+      @server   = server
 
       @blastall = 'blastall'
-      @matrix	= nil
-      @filter	= nil
+      @matrix   = nil
+      @filter   = nil
 
-      @output	= ''
-      @parser	= nil
+      @output   = ''
+      @parser   = nil
 
       begin
         a = opt.to_ary
@@ -63,11 +63,11 @@ module Bio
           @format = 8
         end
       end
-      @options	= [ *a ]
+      @options = [ *a ]
     end
     attr_accessor :program, :db, :options, :server, :blastall, :matrix, :filter
     attr_reader :output, :format
-    attr_writer :parser		# to change :xmlparser, :rexml, :tab
+    attr_writer :parser  # to change :xmlparser, :rexml, :tab
 
     def self.local(program, db, option = '')
       self.new(program, db, option, 'local')
@@ -96,8 +96,8 @@ module Bio
     def self.reports(input, parser = nil)
       ary = []
       input.each("</BlastOutput>\n") do |xml|
-        xml.sub!(/[^<]*(<?)/, '\1')		# skip before <?xml> tag
-        next if xml.empty?			# skip trailing no hits
+        xml.sub!(/[^<]*(<?)/, '\1') # skip before <?xml> tag
+        next if xml.empty?          # skip trailing no hits
         if block_given?
           yield Report.new(xml, parser)
         else
@@ -145,15 +145,15 @@ module Bio
       opt.concat(@options) if @options
 
       form = {
-        'style'		=> 'raw',
-        'prog'		=> @program,
-        'dbname'	=> @db,
-        'sequence'	=> CGI.escape(query),
-        'other_param'	=> CGI.escape(make_command_line_unix(opt)),
-        'matrix'	=> matrix,
-        'filter'	=> filter,
-        'V_value'	=> 500,		# default value for GenomeNet
-        'B_value'	=> 250,		# default value for GenomeNet
+        'style'          => 'raw',
+        'prog'           => @program,
+        'dbname'         => @db,
+        'sequence'       => CGI.escape(query),
+        'other_param'    => CGI.escape(make_command_line_unix(opt)),
+        'matrix'         => matrix,
+        'filter'         => filter,
+        'V_value'        => 500, # default value for GenomeNet
+        'B_value'        => 250, # default value for GenomeNet
         'alignment_view' => 0,
       }
 
