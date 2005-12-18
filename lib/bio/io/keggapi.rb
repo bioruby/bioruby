@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggapi.rb,v 1.10 2005/11/25 11:28:30 k Exp $
+#  $Id: keggapi.rb,v 1.11 2005/12/18 19:10:55 k Exp $
 #
 
 require 'bio/io/soapwsdl'
@@ -50,9 +50,9 @@ class API < Bio::SOAPWSDL
     return results
   end
 
-  def get_all_neighbors_by_gene(genes_id, org)
-    get_all(:get_neighbors_by_gene, genes_id, org)
-  end
+# def get_all_neighbors_by_gene(genes_id, org)
+#   get_all(:get_neighbors_by_gene, genes_id, org)
+# end
 
   def get_all_best_best_neighbors_by_gene(genes_id)
     get_all(:get_best_best_neighbors_by_gene, genes_id)
@@ -825,7 +825,7 @@ For the methods listed below, consult the KEGG API manual at
 --- bfind(string)
 --- btit(string)
 --- get_linkdb_by_entry(entry_id, db, start, max_results)
---- get_neighbors_by_gene(genes_id, org, start, max_results)
+#--- get_neighbors_by_gene(genes_id, org, start, max_results)
 --- get_best_best_neighbors_by_gene(genes_id, start, max_results)
 --- get_best_neighbors_by_gene(genes_id, start, max_results)
 --- get_reverse_best_neighbors_by_gene(genes_id, start, max_results)
