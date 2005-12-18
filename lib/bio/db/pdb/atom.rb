@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: atom.rb,v 1.4 2005/12/18 15:09:46 ngoto Exp $
+#  $Id: atom.rb,v 1.5 2005/12/18 17:33:32 ngoto Exp $
 
 require 'matrix'
 require 'bio/db/pdb'
@@ -55,59 +55,6 @@ module Bio
       end
     end #class Coordinate
 
-    # Bio::PDB::Atom is a class for atom data.
-    # Each ATOM line is parsed into an Atom object.
-    Atom = Struct.new(:serial, :element, :alt_loc, :x, :y, :z,
-                      :occ, :bfac, :residue)
-    class Atom
-      include Utils
-      include Comparable
-
-      #Returns a Coordinate class instance of the xyz positions
-      def xyz
-        Coordinate[ x, y, z ]
-      end
-
-      #Returns an array of the xyz positions
-      def to_a
-        [ x, y, z ]
-      end
-      
-      #Sorts based on serial numbers
-      def <=>(other)
-        return serial <=> other.serial
-      end
-      
-      #Stringifies to PDB format
-      def to_s
-        if element.length < 4
-          elementOutput = sprintf(" %-3s", element)
-        else
-          elementOutput = element
-        end
-        sprintf("%-6s%5s %s%1s%3s %1s%4s%1s   %8.3f%8.3f%8.3f%6.2f%6.2f",
-                record_type,
-                serial, elementOutput, alt_loc, residue.resName,
-                residue.chain.id, residue.resSeq, residue.iCode,
-                x, y, z, occ, bfac)
-      end
-
-      def record_name
-        'ATOM'
-      end
-      def record_type
-        record_name
-      end
-    end #class Atom
-
-    # Bio::PDB::HetAtm is a class for HETATM data.
-    # Each HETATM line is parsed into an HetAtm object.
-    # Since HetAtm inherits Atom class, please refer Atom class for usage.
-    class HetAtm < Atom
-      def record_name
-        'HETATM'
-      end
-    end #class HetAtm
-
   end #class PDB
 end #class Bio
+
