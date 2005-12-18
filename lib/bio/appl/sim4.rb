@@ -2,7 +2,7 @@
 # = bio/appl/sim4.rb - sim4 wrapper class
 #
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
-# Licence::   LGPL
+# License::   LGPL
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: sim4.rb,v 1.4 2005/11/01 05:32:23 ngoto Exp $
+#  $Id: sim4.rb,v 1.5 2005/12/18 15:58:40 k Exp $
 #
 # The sim4 execution wrapper class.
 #

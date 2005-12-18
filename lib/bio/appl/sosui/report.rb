@@ -2,9 +2,9 @@
 # = bio/appl/sosui/report.rb - SOSUI report class
 # 
 # Copyright::   Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
-# Licence::     LGPL
+# License::     LGPL
 #
-#  $Id: report.rb,v 1.8 2005/10/31 17:01:50 nakao Exp $
+#  $Id: report.rb,v 1.9 2005/12/18 15:58:41 k Exp $
 #
 # == Example
 #

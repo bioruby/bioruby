@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2002, 2005
 #               Toshiaki Katayama <k@bioruby.org>
-# Licence::     LGPL
+# License::     LGPL
 #
-# $Id: fetch.rb,v 1.3 2005/11/28 02:02:38 k Exp $
+# $Id: fetch.rb,v 1.4 2005/12/18 15:58:42 k Exp $
 #
 #--
 #

@@ -2,9 +2,9 @@
 # = bio/db/aaindex.rb - AAindex database class
 #
 # Copyright::  Copyright (C) 2001 KAWASHIMA Shuichi <s@bioruby.org>
-# Licence::    LGPL
+# License::    LGPL
 #
-# $Id: aaindex.rb,v 1.15 2005/11/08 02:13:44 nakao Exp $
+# $Id: aaindex.rb,v 1.16 2005/12/18 15:58:41 k Exp $
 #
 # == Description
 # Classes for Amino Acid Index Database (AAindex and AAindex2).

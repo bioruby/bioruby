@@ -2,9 +2,9 @@
 # = bio/appl/tmhmm/report.rb - TMHMM report class
 # 
 # Copyright::  Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
-# Licence::    LGPL
+# License::    LGPL
 #
-#  $Id: report.rb,v 1.5 2005/11/06 16:10:07 nakao Exp $
+#  $Id: report.rb,v 1.6 2005/12/18 15:58:41 k Exp $
 #
 # == Description
 #

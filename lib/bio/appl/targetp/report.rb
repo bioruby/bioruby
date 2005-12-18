@@ -2,9 +2,9 @@
 # = bio/appl/targetp/report.rb - TargetP report class
 # 
 # Copyright::  Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
-# Licence::    LGPL
+# License::    LGPL
 #
-#  $Id: report.rb,v 1.6 2005/10/31 18:00:16 nakao Exp $
+#  $Id: report.rb,v 1.7 2005/12/18 15:58:41 k Exp $
 #
 # == Description
 #

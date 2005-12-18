@@ -2,7 +2,7 @@
 # = bio/appl/bl2seq/report.rb - bl2seq (BLAST 2 sequences) parser
 # 
 # Copyright:: Copyright (C) 2005 GOTO Naohisa <ng@bioruby.org>
-# Licence::   LGPL
+# License::   LGPL
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: report.rb,v 1.5 2005/11/01 05:32:23 ngoto Exp $
+#  $Id: report.rb,v 1.6 2005/12/18 15:58:39 k Exp $
 #
 # Bio::Bl2seq::Report is a NCBI bl2seq (BLAST 2 sequences) output parser.
 #

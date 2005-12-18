@@ -2,7 +2,7 @@
 # = bio/appl/blast/wublast.rb - WU-BLAST default output parser
 # 
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
-# Licence:: LGPL
+# License:: LGPL
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: wublast.rb,v 1.4 2005/11/01 05:32:23 ngoto Exp $
+#  $Id: wublast.rb,v 1.5 2005/12/18 15:58:39 k Exp $
 #
 #  WU-BLAST default output parser.
 #

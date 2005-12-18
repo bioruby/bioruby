@@ -2,9 +2,9 @@
 # = bio/appl/genscan/report.rb - Genscan report classes
 #
 # Copyright::  Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
-# Licence::    LGPL
+# License::    LGPL
 #
-#  $Id: report.rb,v 1.7 2005/11/06 18:24:41 nakao Exp $
+#  $Id: report.rb,v 1.8 2005/12/18 15:58:40 k Exp $
 #
 # == Description
 #
@@ -28,7 +28,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: report.rb,v 1.7 2005/11/06 18:24:41 nakao Exp $
+#  $Id: report.rb,v 1.8 2005/12/18 15:58:40 k Exp $
 #
 #++
 #

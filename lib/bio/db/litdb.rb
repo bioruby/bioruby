@@ -2,9 +2,9 @@
 # = bio/db/litdb.rb - LITDB database class
 #
 # Copyright::  Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
-# Licence::    LGPL
+# License::    LGPL
 #
-#  $Id: litdb.rb,v 0.6 2005/11/07 14:28:12 nakao Exp $
+#  $Id: litdb.rb,v 0.7 2005/12/18 15:58:41 k Exp $
 #
 # == Description
 #
