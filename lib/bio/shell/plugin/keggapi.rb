@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: keggapi.rb,v 1.7 2005/11/30 02:01:04 k Exp $
+# $Id: keggapi.rb,v 1.8 2005/12/18 15:47:33 k Exp $
 #
 #--
 #
@@ -118,6 +118,26 @@ module Bio::Shell
 end
 
 =begin
+
+== BioRuby extensions
+
+--- get_all_best_best_neighbors_by_gene(genes_id)
+--- get_all_best_neighbors_by_gene(genes_id)
+--- get_all_reverse_best_neighbors_by_gene(genes_id)
+--- get_all_paralogs_by_gene(genes_id)
+--- get_all_genes_by_motifs(motif_id_list)
+--- get_all_oc_members_by_gene(genes_id)
+--- get_all_pc_members_by_gene(genes_id)
+--- get_all_genes_by_organism(org)
+--- get_all_linkdb_by_entry(entry_id, db)
+--- save_image(url, filename = nil)
+--- get_entries(ary = [])
+--- get_aaseqs(ary = [])
+--- get_naseqs(ary = [])
+--- get_definitions(ary = [])
+
+== Original KEGG API methods
+
 --- get_linkdb_by_entry(entry_id, db, start, max_results)
 --- get_best_best_neighbors_by_gene(genes_id, start, max_results)
 --- get_best_neighbors_by_gene(genes_id, start, max_results)
@@ -163,4 +183,5 @@ end
 --- get_genes_by_organism(org, start, max_results)
 --- get_number_of_genes_by_organism(org)
 --- convert_mol_to_kcf(mol_text)
+
 =end
