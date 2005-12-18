@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: reference.rb,v 1.17 2005/09/08 01:22:08 k Exp $
+#  $Id: reference.rb,v 1.18 2005/12/18 16:58:58 nakao Exp $
 #
 
 module Bio
@@ -26,21 +26,21 @@ module Bio
 
     def initialize(hash)
       hash.default = ''
-      @authors	= hash['authors']	# [ "Hoge, J.P.", "Fuga, F.B." ]
-      @title	= hash['title']		# "Title of the study."
-      @journal	= hash['journal']	# "Theor. J. Hoge"
-      @volume	= hash['volume']	# 12
-      @issue	= hash['issue']		# 3
-      @pages	= hash['pages']		# 123-145
-      @year	= hash['year']		# 2001
-      @pubmed	= hash['pubmed']	# 12345678
-      @medline	= hash['medline']	# 98765432
-      @abstract	= hash['abstract']
-      @url	= hash['url']
-      @mesh	= hash['mesh']
+      @authors  = hash['authors'] # [ "Hoge, J.P.", "Fuga, F.B." ]
+      @title    = hash['title']   # "Title of the study."
+      @journal  = hash['journal'] # "Theor. J. Hoge"
+      @volume   = hash['volume']  # 12
+      @issue    = hash['issue']   # 3
+      @pages    = hash['pages']   # 123-145
+      @year     = hash['year']    # 2001
+      @pubmed   = hash['pubmed']  # 12345678
+      @medline  = hash['medline'] # 98765432
+      @abstract = hash['abstract']
+      @url      = hash['url']
+      @mesh     = hash['mesh']
       @affiliations = hash['affiliations']
-      @authors	= [] if @authors.empty?
-      @mesh	= [] if @mesh.empty?
+      @authors = [] if @authors.empty?
+      @mesh    = [] if @mesh.empty?
       @affiliations = [] if @affiliations.empty?
     end
     attr_reader :authors, :title, :journal, :volume, :issue, :pages, :year,
