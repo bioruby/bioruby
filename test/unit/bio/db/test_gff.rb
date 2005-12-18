@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_gff.rb,v 1.2 2005/11/23 11:29:16 nakao Exp $
+#  $Id: test_gff.rb,v 1.3 2005/12/18 18:04:31 k Exp $
 #
 
 require 'pathname'
@@ -54,14 +54,14 @@ END
 
   class TestGFF2 < Test::Unit::TestCase
     def test_version
-      assert_equal(2, Bio::GFF2::VERSION)
+      assert_equal(2, Bio::GFF::GFF2::VERSION)
     end
   end
 
 
   class TestGFF3 < Test::Unit::TestCase
     def test_version
-      assert_equal(3, Bio::GFF3::VERSION)
+      assert_equal(3, Bio::GFF::GFF3::VERSION)
     end
   end
 
@@ -108,12 +108,12 @@ END
     end
 
     def test_attributes
-      at = {"Note"=>"Chromosome I Centromere", "Gene"=>"CEN1"}
+      at = {"Note"=>'"Chromosome I Centromere"', "Gene"=>'"CEN1"'}
       assert_equal(at, @obj.attributes)
     end
 
     def test_comments
-      assert_equal('', @obj.comments)
+      assert_equal(nil, @obj.comments)
     end
 
   end # class TestGFFRecord
@@ -127,7 +127,7 @@ END
 
     def test_add_seqname
       name = "test"
-      record = Bio::GFF::Record.new
+      record = Bio::GFF::Record.new("")
       record.seqname = name
       @obj.records << record
       assert_equal(name, @obj.records[0].seqname)
