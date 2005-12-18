@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: residue.rb,v 1.2 2005/09/26 13:00:08 k Exp $
+#  $Id: residue.rb,v 1.3 2005/12/18 15:09:46 ngoto Exp $
 
 require 'bio/db/pdb'
 
@@ -87,7 +87,7 @@ module Bio
       
       #Adds an atom to this residue
       def addAtom(atom)
-        raise "Expecting Bio::PDB::Atom" if not atom.is_a? Bio::PDB::Atom
+        raise "Expecting ATOM or HETATM" unless atom.is_a? Bio::PDB::Record::ATOM
         @atoms.push(atom)
         self
       end

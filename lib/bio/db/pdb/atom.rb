@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: atom.rb,v 1.3 2005/12/16 19:23:02 ngoto Exp $
+#  $Id: atom.rb,v 1.4 2005/12/18 15:09:46 ngoto Exp $
 
 require 'matrix'
 require 'bio/db/pdb'
@@ -92,8 +92,11 @@ module Bio
                 x, y, z, occ, bfac)
       end
 
-      def record_type
+      def record_name
         'ATOM'
+      end
+      def record_type
+        record_name
       end
     end #class Atom
 
@@ -101,7 +104,7 @@ module Bio
     # Each HETATM line is parsed into an HetAtm object.
     # Since HetAtm inherits Atom class, please refer Atom class for usage.
     class HetAtm < Atom
-      def record_type
+      def record_name
         'HETATM'
       end
     end #class HetAtm
