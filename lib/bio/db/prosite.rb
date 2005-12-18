@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 # Licence::    LGPL
 #
-# $Id: prosite.rb,v 0.12 2005/12/18 17:08:29 nakao Exp $
+# $Id: prosite.rb,v 0.13 2005/12/18 18:24:08 k Exp $
 #
 # == Description
 #
@@ -433,7 +433,7 @@ module Bio
     # Returns
     def pdb_xref
       unless @data['3D']
-        @data['3D'] = fetch('3D').split(/; /)
+        @data['3D'] = fetch('3D').split(/; */)
       end
       @data['3D']
     end
@@ -487,8 +487,7 @@ module Bio
     # This pattern, which must be in the N-terminal of the sequence (`<'), is
     # translated as: Ala-any-[Ser or Thr]-[Ser or Thr]-(any or none)-Val
     #
-    # Returns
-    def pa2re(pattern)
+    def self.pa2re(pattern)
       pattern.gsub!(/\s/, '')	# remove white spaces
       pattern.sub!(/\.$/, '')	# (1) remove trailing '.'
       pattern.sub!(/^</, '^')	# (2) restricted to the N-terminal : `<'
@@ -502,6 +501,10 @@ module Bio
       pattern.tr!('x', '.')	# (5) any amino acid is accepted : 'x'
       pattern.tr!('-', '')	# (6) each element is separated by a '-'
       Regexp.new(pattern)
+    end
+
+    def pa2re(pattern)
+      self.class.pa2re(pattern)
     end
 
 
