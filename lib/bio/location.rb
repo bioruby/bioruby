@@ -5,7 +5,7 @@
 #		KATAYAMA Toshiaki <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: location.rb,v 0.21 2005/10/30 22:59:56 k Exp $
+# $Id: location.rb,v 0.22 2005/12/18 15:50:06 k Exp $
 #
 # == Appendix : GenBank location descriptor classification
 # 
@@ -279,14 +279,14 @@ class Location
       s = $1.to_i
       e = $2.to_i
       if e - s < 0
-#       raise "[Error] invalid range : #{location}"
+#       raise "Error: invalid range : #{location}"
         $stderr.puts "[Warning] invalid range : #{location}" if $DEBUG
       end
     when /^[<>]?(\d+)\^[<>]?(\d+)$/			# (C, I) n^m
       s = $1.to_i
       e = $2.to_i
       if e - s != 1
-#       raise "[Error] invalid range : #{location}"
+#       raise "Error: invalid range : #{location}"
         $stderr.puts "[Warning] invalid range : #{location}" if $DEBUG
       end
     when /^"?([ATGCatgc]+)"?$/                  # (H) literal sequence
@@ -295,7 +295,7 @@ class Location
     when nil
       ;
     else
-      raise "[Error] unknown location format : #{location}"
+      raise "Error: unknown location format : #{location}"
     end
 
     @from       = s             # start position of the location
