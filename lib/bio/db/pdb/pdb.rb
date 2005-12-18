@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pdb.rb,v 1.5 2005/12/18 15:09:46 ngoto Exp $
+#  $Id: pdb.rb,v 1.6 2005/12/18 17:37:14 ngoto Exp $
 #
 
 # *** CAUTION ***
@@ -1195,12 +1195,12 @@ module Bio
       'TER'    => true,
     }
 
-    #Aha! Our entry into the world of PDB parsing, we initialise a PDB
-    #object with the whole PDB file as a string
-    #each PDB has an array of the lines of the original file
-    #a bit memory-tastic! A hash of records and an array of models
-    #also has an id
     def initialize(str)
+      #Aha! Our entry into the world of PDB parsing, we initialise a PDB
+      #object with the whole PDB file as a string
+      #each PDB has an array of the lines of the original file
+      #a bit memory-tastic! A hash of records and an array of models
+      #also has an id
 
       @data = str.split(/[\r\n]+/)
       @hash = {}
@@ -1235,19 +1235,45 @@ module Bio
           @hash[key] = [ f ]
         end
 
-        #The meat of the atom parsing - could be speeded up I think
+        # Do something for ATOM and HETATM
         case key
-        when 'ATOM', 'HETATM'
+        when 'ATOM'
+          residueID = "#{f.resSeq}#{f.iCode.strip}".strip
+          #p f
+
+          if f.chainID == cChain.id
+            chain = cChain
+          elsif !(chain = cModel[f.chainID])
+            #If we don't have chain, add a new chain
+            newChain = Chain.new(f.chainID, cModel)
+            cModel.addChain(newChain)
+            cChain = newChain
+            chain = newChain
+          end
+
+          if !newChain and residueID == cResidue.id
+            residue = cResidue
+          elsif newChain or !(residue = chain[residueID])
+            newResidue = Residue.new(f.resName, f.resSeq, f.iCode, chain)
+            chain.addResidue(newResidue)
+            cResidue = newResidue
+            residue = newResidue
+          end
+
+          f.residue = residue
+          residue.addAtom(f)
+
+        when 'HETATM'
 
           #Each model has a special solvent chain
           #any chain id with the solvent is lost
           #I can fix this if really needed
-          if key == 'HETATM' and f.resName == 'HOH'
+          if f.resName == 'HOH'
             solvent =   Residue.new(f.resName, f.resSeq, f.iCode,
                                     cModel.solvent, true)
-            solvent_atom = f
+            #p solvent
             f.residue = solvent
-            solvent.addAtom(solvent_atom)
+            solvent.addAtom(f)
             cModel.addSolvent(solvent)
             
           else
@@ -1256,63 +1282,33 @@ module Bio
             #I think this is neccessary because some PDB files reuse
             #numbers for HETATMS
             residueID = "#{f.resSeq}#{f.iCode.strip}".strip
-            if key == 'HETATM'
-              residueID = "LIGAND" + residueID
-            end
-            
-            #If this atom is part of the current residue then add it to
-            #the current residue straight away
-            if f.chainID == cChain.id and residueID == cResidue.id
-              
-              #If we have this chain and residue just add the atom
-              atom = f
-              f.residue = cResidue
-              cResidue.addAtom(atom)
+            residueID = "LIGAND" + residueID
+            #p f
+            #p residueID
 
-            elsif !cModel[f.chainID]
-              
-              #If we don't have anyhting, add a new chain, residue and atom
-              newChain   = Chain.new(f.chainID, cModel)
+            if f.chainID == cChain.id
+              chain = cChain
+            elsif !(chain = cModel[f.chainID])
+              #If we don't have chain, add a new chain
+              newChain = Chain.new(f.chainID, cModel)
               cModel.addChain(newChain)
-              
-              if key == 'ATOM'
-                newResidue = Residue.new(f.resName, f.resSeq, f.iCode,
-                                         newChain)
-                newChain.addResidue(newResidue)
-              else
-                newResidue = Residue.new(f.resName, f.resSeq, f.iCode,
-                                         newChain, true)
-                newChain.addLigand(newResidue)
-              end
-              atom = f
-              f.residue = newResidue
-              newResidue.addAtom(atom)
-              
-              cChain   = newChain
-              cResidue = newResidue
-
-            elsif !cModel[f.chainID][residueID]
-
-              #If we have the chain (but not the residue)
-              #make a new residue, add it and add the atom
-              chain = cModel[f.chainID]
-              
-              if key == 'ATOM'
-                newResidue = Residue.new(f.resName, f.resSeq, f.iCode,
-                                         chain)
-                chain.addResidue(newResidue)
-              else
-                newResidue = Residue.new(f.resName, f.resSeq, f.iCode,
-                                         chain, true)
-                chain.addLigand(newResidue)
-              end
-              
-              atom = f
-              f.residue = newResidue
-              newResidue.addAtom(atom)
-              cResidue = newResidue
-             
+              cChain = newChain
+              chain = newChain
             end
+
+            if !newChain and residueID == cResidue.id
+              residue = cResidue
+            elsif newChain or !(residue = chain[residueID])
+              newResidue = Residue.new(f.resName, f.resSeq, f.iCode,
+                                       chain, true)
+              chain.addLigand(newResidue)
+              cResidue = newResidue
+              residue = newResidue
+            end
+
+            f.residue = residue
+            residue.addAtom(f)
+            
           end
 
         when 'MODEL'
