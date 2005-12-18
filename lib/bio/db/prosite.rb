@@ -1,7 +1,17 @@
 #
-# bio/db/prosite.rb - PROSITE database class
+# = bio/db/prosite.rb - PROSITE database class
 #
-#   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::  Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+# Licence::    LGPL
+#
+# $Id: prosite.rb,v 0.12 2005/12/18 17:08:29 nakao Exp $
+#
+# == Description
+#
+#
+# == Example
+# == References
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +27,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: prosite.rb,v 0.11 2005/09/26 13:00:06 k Exp $
+#++
 #
 
 require 'bio/db'
@@ -26,8 +36,15 @@ module Bio
 
   class PROSITE < EMBLDB
 
-    DELIMITER	= RS = "\n//\n"
-    TAGSIZE	= 5
+    # Delimiter
+    DELIMITER = "\n//\n"
+
+    # Delimiter
+    RS = DELIMITER
+
+    # Bio::DB API
+    TAGSIZE = 5
+
 
     def initialize(entry)
       super(entry, TAGSIZE)
@@ -38,12 +55,15 @@ module Bio
     #
     #  ID   ENTRY_NAME; ENTRY_TYPE.  (ENTRY_TYPE : PATTERN, MATRIX, RULE)
     #
+    # Returns
     def name
       unless @data['ID']
         @data['ID'], @data['TYPE'] = fetch('ID').chomp('.').split('; ')
       end
       @data['ID']
     end
+
+    # Returns
     def division
       unless @data['TYPE']
         name
@@ -56,12 +76,14 @@ module Bio
     #
     #  AC   PSnnnnn;
     #
+    # Returns
     def ac
       unless @data['AC']
         @data['AC'] = fetch('AC').chomp(';')
       end
       @data['AC']
     end
+
     alias entry_id ac
 
 
@@ -69,9 +91,11 @@ module Bio
     #
     #  DT   MMM-YYYY (CREATED); MMM-YYYY (DATA UPDATE); MMM-YYYY (INFO UPDATE).
     #
+    # Returns
     def dt
       field_fetch('DT')
     end
+
     alias date dt
 
 
@@ -79,9 +103,11 @@ module Bio
     #
     #  DE   Description.
     #
+    # Returns
     def de
       field_fetch('DE')
     end
+
     alias definition de
 
 
@@ -89,12 +115,14 @@ module Bio
     #
     #  see - pa2re method
     #
+    # Returns
     def pa
       field_fetch('PA')
       @data['PA'] = fetch('PA') unless @data['PA']
       @data['PA'].gsub!(/\s+/, '') if @data['PA']
       @data['PA']
     end
+
     alias pattern pa
 
 
@@ -102,9 +130,11 @@ module Bio
     #
     #  see - ma2re method
     #
+    # Returns
     def ma
       field_fetch('MA')
     end
+
     alias profile ma
 
 
@@ -114,9 +144,11 @@ module Bio
     #
     #  The rule is described in ordinary English and is free-format.
     #
+    # Returns
     def ru
       field_fetch('RU')
     end
+
     alias rule ru
 
 
@@ -137,6 +169,7 @@ module Bio
     #              consideration, but  which  are  not  hit  by the pattern or
     #              profile because they are partial (fragment) sequences.
     #
+    # Returns
     def nr
       unless @data['NR']
         hash = {}			# temporal hash
@@ -158,73 +191,91 @@ module Bio
       end
       @data['NR']
     end
+
     alias statistics nr
 
+    # Returns
     def release
       statistics['RELEASE']
     end
 
+    # Returns
     def swissprot_release_number
       release.first
     end
 
+    # Returns
     def swissprot_release_sequences
       release.last
     end
 
+    # Returns
     def total
       statistics['TOTAL']
     end
 
+    # Returns
     def total_hits
       total.first
     end
 
+    # Returns
     def total_sequences
       total.last
     end
 
+    # Returns
     def positive
       statistics['POSITIVE']
     end
 
+    # Returns
     def positive_hits
       positive.first
     end
 
+    # Returns
     def positive_sequences
       positive.last
     end
 
+    # Returns
     def unknown
       statistics['UNKNOWN']
     end
 
+    # Returns
     def unknown_hits
       unknown.first
     end
 
+    # Returns
     def unknown_sequences
       unknown.last
     end
 
+    # Returns
     def false_pos
       statistics['FALSE_POS']
     end
 
+    # Returns
     def false_positive_hits
       false_pos.first
     end
 
+    # Returns
     def false_positive_sequences
       false_pos.last
     end
 
+    # Returns
     def false_neg
       statistics['FALSE_NEG']
     end
     alias false_negative_hits false_neg
 
+    # Returns
     def partial
       statistics['PARTIAL']
     end
@@ -241,6 +292,7 @@ module Bio
     # /SKIP-FLAG   Indication of  an entry that can be, in some cases, ignored
     #              by a program (because it is too unspecific).
     #
+    # Returns
     def cc
       unless @data['CC']
         hash = {}			# temporal hash
@@ -251,8 +303,10 @@ module Bio
       end
       @data['CC']
     end
+
     alias comment cc
 
+    # Returns
     def taxon_range(expand = nil)
       range = comment['TAXO-RANGE']
       if range and expand
@@ -271,10 +325,12 @@ module Bio
       return range
     end
 
+    # Returns
     def max_repeat
       comment['MAX-REPEAT'].to_i
     end
 
+    # Returns
     def site
       if comment['SITE']
         num, desc = comment['SITE'].split(',')
@@ -282,6 +338,7 @@ module Bio
       return [num.to_i, desc]
     end
 
+    # Returns
     def skip_flag
       if comment['SKIP-FLAG'] == 'TRUE'
         return true
@@ -311,6 +368,7 @@ module Bio
     # F For a false positive; a sequence which does not belong to the set in
     #   consideration.
     #
+    # Returns
     def dr
       unless @data['DR']
         hash = {}			# temporal hash
@@ -323,8 +381,10 @@ module Bio
       end
       @data['DR']
     end
+
     alias sp_xref dr
 
+    # Returns
     def list_xref(flag, by_name = nil)
       ary = []
       sp_xref.each do |sp_acc, value|
@@ -340,22 +400,27 @@ module Bio
       return ary
     end
 
+    # Returns
     def list_truepositive(by_name = nil)
       list_xref('T', by_name)
     end
 
+    # Returns
     def list_falsenegative(by_name = nil)
       list_xref('F', by_name)
     end
 
+    # Returns
     def list_falsepositive(by_name = nil)
       list_xref('P', by_name)
     end
 
+    # Returns
     def list_potentialhit(by_name = nil)
       list_xref('P', by_name)
     end
 
+    # Returns
     def list_unknown(by_name = nil)
       list_xref('?', by_name)
     end
@@ -365,6 +430,7 @@ module Bio
     #
     #  3D   name; [name2;...]
     #
+    # Returns
     def pdb_xref
       unless @data['3D']
         @data['3D'] = fetch('3D').split(/; /)
@@ -377,6 +443,7 @@ module Bio
     #
     #  DO   PDOCnnnnn;
     #
+    # Returns
     def pdoc_xref
       @data['DO'] = fetch('DO').chomp(';')
     end
@@ -420,6 +487,7 @@ module Bio
     # This pattern, which must be in the N-terminal of the sequence (`<'), is
     # translated as: Ala-any-[Ser or Thr]-[Ser or Thr]-(any or none)-Val
     #
+    # Returns
     def pa2re(pattern)
       pattern.gsub!(/\s/, '')	# remove white spaces
       pattern.sub!(/\.$/, '')	# (1) remove trailing '.'
@@ -441,6 +509,7 @@ module Bio
     #
     # prosite/profile.txt:
     #
+    # Returns
     def ma2re(matrix)
       raise NotImplementedError
     end
