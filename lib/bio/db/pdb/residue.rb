@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: residue.rb,v 1.3 2005/12/18 15:09:46 ngoto Exp $
+#  $Id: residue.rb,v 1.4 2005/12/18 17:34:47 ngoto Exp $
 
 require 'bio/db/pdb'
 
@@ -51,9 +51,9 @@ module Bio
         if (!@resSeq and !@iCode)
           @id = nil
         else
-          @id = @resSeq.to_s << @iCode
+          @id = "#{@resSeq}#{@iCode.strip}"
           if @hetatm
-            @id = 'LIGAND' << @id
+            @id = 'LIGAND' + @id
           end
         end
         
@@ -71,17 +71,17 @@ module Bio
       #Need to define these to make sure id is correctly updated
       def resSeq=(resSeq)
         @resSeq = resSeq.to_i
-        @id      = resSeq.to_s << @iCode
+        @id      = "#{@resSeq}#{@iCode.strip}"
         if @hetatm
-          @id = 'LIGAND' << @id
+          @id = 'LIGAND' + @id
         end
       end
       
       def iCode=(iCode)
         @iCode = iCode
-        @id    = @resSeq.to_s << iCode
+        @id    = "#{@resSeq}#{@iCode.strip}"
         if @hetatm
-          @id = 'LIGAND' << @id
+          @id = 'LIGAND' + @id
         end
       end
       
