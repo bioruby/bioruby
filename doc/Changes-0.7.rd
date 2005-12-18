@@ -164,6 +164,24 @@ instead of a Hash of a entry ID string.
 * Bio::GFF2 is renamed to Bio::GFF::GFF2
 * Bio::GFF3 is renamed to Bio::GFF::GFF3
 
+--- Bio::Alignment
+
+* Old Bio::Alignment class is renamed to Bio::Alignment::OriginalAlignment.
+  Now, new Bio::Alignment is a module. However, you don't mind so much
+  because most of the class methods previously existed are defined
+  to delegate to the new Bio::Alignment::OriginalAlignment class,
+  for keeping backward compatibility.
+* New classes and modules are introduced. Please refer RDoc.
+* each_site and some methods changed to return Bio::Alignment::Site,
+  which inherits Array (previously returned Array).
+* consensus_iupac now returns only standard bases
+  'a', 'c', 'g', 't', 'm', 'r', 'w', 's', 'y', 'k', 'v',
+  'h', 'd', 'b', 'n', or nil (in SiteMethods#consensus_iupac) or
+  '?' (or missing_char, in EnumerableExtension#consensus_iupac).
+  Note that consensus_iupac now does not return u and invalid letters
+  not defined in IUPAC standard even if all bases are equal.
+* There are more and more changes to be written...
+
 --- Bio::PDB
 
 * Bio::PDB::Atom is removed. Instead, please use Bio::PDB::Record::ATOM and
@@ -181,6 +199,7 @@ instead of a Hash of a entry ID string.
   Pdb_Real, Pdb_Residue_name, Pdb_SList, Pdb_Specification_list,
   Pdb_String, Pdb_StringRJ and Pdb_SymOP are moved under
   Bio::PDB::DataType.
+* There are more and more changes to be written...
 
 === Deleted files
 

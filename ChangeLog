@@ -14,11 +14,34 @@
 	    Pdb_Real, Pdb_Residue_name, Pdb_SList, Pdb_Specification_list,
 	    Pdb_String, Pdb_StringRJ and Pdb_SymOP are moved under
 	    Bio::PDB::DataType.
+	  * There are more and more changes to be written...
 
 	* lib/bio/db/pdb/atom.rb
 	  * Bio::PDB::Atom is removed.
 	    Instead, please use Bio::PDB::Record::ATOM and
             Bio::PDB::Record::HETATM.
+
+2005-12-02  Naohisa Goto <ng:bioruby.org>
+
+	* lib/bio/alignment.rb
+	  * Old Bio::Alignment class is renamed to
+	    Bio::Alignment::OriginalAlignment.
+	    Now, new Bio::Alignment is a module. However,
+	    you don't mind so much because most of the class methods
+	    previously existed are defined to delegate to the new
+	    Bio::Alignment::OriginalAlignment class,
+            for keeping backward compatibility.
+	  * New classes and modules are introduced. Please refer RDoc.
+	  * each_site and some methods changed to return Bio::Alignment::Site,
+	    which inherits Array (previously returned Array).
+	  * consensus_iupac now returns only standard bases
+	    'a', 'c', 'g', 't', 'm', 'r', 'w', 's', 'y', 'k', 'v',
+	    'h', 'd', 'b', 'n', or nil (in SiteMethods#consensus_iupac) or
+	    '?' (or missing_char, in EnumerableExtension#consensus_iupac).
+	    Note that consensus_iupac now does not return u and invalid
+	    letters not defined in IUPAC standard even if all bases
+	    are equal.
+	  * There are more and more changes to be written...
 
 2005-11-05  Toshiaki Katayama <k@bioruby.org>
 
