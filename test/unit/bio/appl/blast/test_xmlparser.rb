@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_xmlparser.rb,v 1.2 2005/11/22 08:31:47 nakao Exp $
+#  $Id: test_xmlparser.rb,v 1.3 2005/12/18 17:06:56 nakao Exp $
 #
 
 require 'pathname'
@@ -174,7 +174,7 @@ module Bio
 
   class TestBlastReportIteration < Test::Unit::TestCase
     def setup
-      data = Bio::TestBlastData.data
+      data = TestBlastFormat7XMLParserData.output
       report = Bio::Blast::Report.new(data)
       @itr = report.iterations.first
     end
