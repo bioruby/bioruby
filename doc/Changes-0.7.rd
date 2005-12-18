@@ -115,12 +115,16 @@ expressions as a Hash of Array -like data structure,
 however, it is not utilized well and more suitable container class
 can be proposed.  Until then, this class is removed.
 
---- Bio::Pathway
-
-* Bio::Pathway#nodes returns an Array of the node objects instead of
-  the number of the node objects.
-* Bio::Pathway#edges returns an Array of the edge objects instead of
-  the number of the edge objects.
+#
+# Following changes are suspended for a while (not yet introduced for now)
+#
+# --- Bio::Pathway
+#
+# * Bio::Pathway#nodes returns an Array of the node objects instead of
+#   the number of the node objects.
+# * Bio::Pathway#edges returns an Array of the edge objects instead of
+#   the number of the edge objects.
+#
 
 --- Bio::GenBank
 
