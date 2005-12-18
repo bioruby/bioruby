@@ -1,0 +1,63 @@
+GENSCAN 1.0	Date run: 30-May-103	Time: 14:06:28
+
+Sequence HUMRASH : 12942 bp : 68.17% C+G : Isochore 4 (57 - 100 C+G%)
+
+Parameter matrix: HumanIso.smat
+
+Predicted genes/exons:
+
+Gn.Ex Type S .Begin ...End .Len Fr Ph I/Ac Do/T CodRg P.... Tscr..
+----- ---- - ------ ------ ---- -- -- ---- ---- ----- ----- ------
+
+ 1.01 Init +   1664   1774  111  1  0   94   83   212 0.997  21.33
+ 1.02 Intr +   2042   2220  179  1  2  104   66   408 0.997  40.12
+ 1.03 Intr +   2374   2533  160  1  1   89   94   302 0.999  32.08
+ 1.04 Term +   3231   3350  120  2  0  115   48   202 0.980  18.31
+ 1.05 PlyA +   3722   3727    6                              -5.80
+
+ 2.00 Prom +   6469   6508   40                              -7.92
+ 2.01 Init +   8153   8263  111  1  0   94   83   212 0.998  21.33
+ 2.02 Intr +   8531   8709  179  1  2  104   66   408 0.997  40.12
+ 2.03 Intr +   8863   9022  160  1  1   89   94   302 0.999  32.08
+ 2.04 Term +   9720   9839  120  2  0  115   48   202 0.961  18.31
+
+Predicted peptide sequence(s):
+
+Predicted coding sequence(s):
+
+
+>HUMRASH|GENSCAN_predicted_peptide_1|189_aa
+MTEYKLVVVGAGGVGKSALTIQLIQNHFVDEYDPTIEDSYRKQVVIDGETCLLDILDTAG
+QEEYSAMRDQYMRTGEGFLCVFAINNTKSFEDIHQYREQIKRVKDSDDVPMVLVGNKCDL
+AARTVESRQAQDLARSYGIPYIETSAKTRQGVEDAFYTLVREIRQHKLRKLNPPDESGPG
+CMSCKCVLS
+
+>HUMRASH|GENSCAN_predicted_CDS_1|570_bp
+atgacggaatataagctggtggtggtgggcgccggcggtgtgggcaagagtgcgctgacc
+atccagctgatccagaaccattttgtggacgaatacgaccccactatagaggattcctac
+cggaagcaggtggtcattgatggggagacgtgcctgttggacatcctggataccgccggc
+caggaggagtacagcgccatgcgggaccagtacatgcgcaccggggagggcttcctgtgt
+gtgtttgccatcaacaacaccaagtcttttgaggacatccaccagtacagggagcagatc
+aaacgggtgaaggactcggatgacgtgcccatggtgctggtggggaacaagtgtgacctg
+gctgcacgcactgtggaatctcggcaggctcaggacctcgcccgaagctacggcatcccc
+tacatcgagacctcggccaagacccggcagggagtggaggatgccttctacacgttggtg
+cgtgagatccggcagcacaagctgcggaagctgaaccctcctgatgagagtggccccggc
+tgcatgagctgcaagtgtgtgctctcctga
+
+>HUMRASH|GENSCAN_predicted_peptide_2|189_aa
+MTEYKLVVVGAGGVGKSALTIQLIQNHFVDEYDPTIEDSYRKQVVIDGETCLLDILDTAG
+QEEYSAMRDQYMRTGEGFLCVFAINNTKSFEDIHQYREQIKRVKDSDDVPMVLVGNKCDL
+AARTVESRQAQDLARSYGIPYIETSAKTRQGVEDAFYTLVREIRQHKLRKLNPPDESGPG
+CMSCKCVLS
+
+>HUMRASH|GENSCAN_predicted_CDS_2|570_bp
+atgacggaatataagctggtggtggtgggcgccggcggtgtgggcaagagtgcgctgacc
+atccagctgatccagaaccattttgtggacgaatacgaccccactatagaggattcctac
+cggaagcaggtggtcattgatggggagacgtgcctgttggacatcctggataccgccggc
+caggaggagtacagcgccatgcgggaccagtacatgcgcaccggggagggcttcctgtgt
+gtgtttgccatcaacaacaccaagtcttttgaggacatccaccagtacagggagcagatc
+aaacgggtgaaggactcggatgacgtgcccatggtgctggtggggaacaagtgtgacctg
+gctgcacgcactgtggaatctcggcaggctcaggacctcgcccgaagctacggcatcccc
+tacatcgagacctcggccaagacccggcagggagtggaggatgccttctacacgttggtg
+cgtgagatccggcagcacaagctgcggaagctgaaccctcctgatgagagtggccccggc
+tgcatgagctgcaagtgtgtgctctcctga
