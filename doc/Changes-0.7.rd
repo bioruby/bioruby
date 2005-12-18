@@ -164,6 +164,24 @@ instead of a Hash of a entry ID string.
 * Bio::GFF2 is renamed to Bio::GFF::GFF2
 * Bio::GFF3 is renamed to Bio::GFF::GFF3
 
+--- Bio::PDB
+
+* Bio::PDB::Atom is removed. Instead, please use Bio::PDB::Record::ATOM and
+  Bio::PDB::Record::HETATM.
+* Bio::PDB::FieldDef is removed and Bio::PDB::Record is completely
+  changed. Now, Record is changed from hash to Struct, and
+  method_missing is no longer used.
+* In the "MODEL" record, model_serial is changed to serial.
+* In records, record_type is changed to record_name.
+* In any records, record_type is changed to record_name.
+* In most records contains real numbers, changed to return
+  float values instead of strings.
+* Pdb_AChar, Pdb_Atom, Pdb_Character, Pdb_Continuation,
+  Pdb_Date, Pdb_IDcode, Pdb_Integer, Pdb_LString, Pdb_List,
+  Pdb_Real, Pdb_Residue_name, Pdb_SList, Pdb_Specification_list,
+  Pdb_String, Pdb_StringRJ and Pdb_SymOP are moved under
+  Bio::PDB::DataType.
+
 === Deleted files
 
 : lib/bio/db/genbank.rb
