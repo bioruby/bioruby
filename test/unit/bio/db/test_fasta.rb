@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_fasta.rb,v 1.2 2005/11/23 11:21:15 nakao Exp $
+#  $Id: test_fasta.rb,v 1.3 2005/12/18 17:55:13 k Exp $
 #
 
 require 'pathname'
@@ -38,8 +38,46 @@ module Bio
   end # class TestFastaFormatConst
 
 
-  class TestFastaFormat < Test::Unit::TestCase
+  class TestFastaFormatSwissProt < Test::Unit::TestCase
+    def setup
+      text =<<END
+>gi|1171674|sp|P42267|NDD_BPR69 NUCLEAR DISRUPTION PROTEIN
+MKYMTVTDLNNAGATVIGTIKGGEWFLGTPHKDILSKPGFYFLVSKLDGRPFSNPCVSARFYVGNQRSKQGFSAVLSHIR
+QRRSQLARTIANNNMVYTVFYLPASKMKPLTTGFGKGQLALAFTRNHHSEYQTLEEMNRMLADNFKFVLQAY
+END
+      @obj = Bio::FastaFormat.new(text)
+    end
 
+    def test_locus
+      assert_equal(nil, @obj.locus)
+    end
+  end
+
+  class TestFastaFormatKeggGenesNT < Test::Unit::TestCase
+    def setup
+      text =<<END
+>eco:b0001 thrL; thr operon leader peptide (N)
+atgaaacgcattagcaccaccattaccaccaccatcaccattaccacaggtaacggtgcg
+ggctga
+END
+      @obj = Bio::FastaFormat.new(text)
+    end
+
+    def test_naseq_class
+      assert_equal(Bio::Sequence::NA, @obj.naseq.class)
+    end
+
+    def test_naseq
+      seq = 'atgaaacgcattagcaccaccattaccaccaccatcaccattaccacaggtaacggtgcgggctga'
+      assert_equal(seq, @obj.naseq)
+    end
+
+    def test_nalen
+      assert_equal(66, @obj.nalen)
+    end
+  end
+
+  class TestFastaFormatKeggGenesAA < Test::Unit::TestCase
     def setup
       text =<<END
 >sce:YBR160W  CDC28, SRM5; cyclin-dependent protein kinase catalytic subunit [EC:2.7.1.-] [SP:CC28_YEAST]
@@ -65,13 +103,17 @@ END
       @obj = Bio::FastaFormat.new(text)
     end
 
+    def test_entry_id
+      assert_equal('sce:YBR160W', @obj.entry_id)
+    end
+
+    def test_acc_version
+      assert_equal(nil, @obj.acc_version)
+    end
+
     def test_entry
       data = ">sce:YBR160W  CDC28, SRM5; cyclin-dependent protein kinase catalytic subunit [EC:2.7.1.-] [SP:CC28_YEAST]\nMSGELANYKRLEKVGEGTYGVVYKALDLRPGQGQRVVALKKIRLESEDEG\nVPSTAIREISLLKELKDDNIVRLYDIVHSDAHKLYLVFEFLDLDLKRYME\nGIPKDQPLGADIVKKFMMQLCKGIAYCHSHRILHRDLKPQNLLINKDGNL\nKLGDFGLARAFGVPLRAYTHEIVTLWYRAPEVLLGGKQYSTGVDTWSIGC\nIFAEMCNRKPIFSGDSEIDQIFKIFRVLGTPNEAIWPDIVYLPDFKPSFP\nQWRRKDLSQVVPSLDPRGIDLLDKLLAYDPINRISARRAAIHPYFQES\n"
       assert_equal(data, @obj.entry)
-    end
-
-    def test_entry_id
-      assert_equal('sce:YBR160W', @obj.entry_id)
     end
 
     def test_definition
@@ -83,56 +125,82 @@ END
       data = "\nMSGELANYKRLEKVGEGTYGVVYKALDLRPGQGQRVVALKKIRLESEDEG\nVPSTAIREISLLKELKDDNIVRLYDIVHSDAHKLYLVFEFLDLDLKRYME\nGIPKDQPLGADIVKKFMMQLCKGIAYCHSHRILHRDLKPQNLLINKDGNL\nKLGDFGLARAFGVPLRAYTHEIVTLWYRAPEVLLGGKQYSTGVDTWSIGC\nIFAEMCNRKPIFSGDSEIDQIFKIFRVLGTPNEAIWPDIVYLPDFKPSFP\nQWRRKDLSQVVPSLDPRGIDLLDKLLAYDPINRISARRAAIHPYFQES\n"
       assert_equal(data, @obj.data)
     end
+  end
+
+  class TestFastaFormat < Test::Unit::TestCase
+
+    def setup
+      text =<<END
+>gi|55416189|gb|AAV50056.1| NADH dehydrogenase subunit 1 [Dasyurus hallucatus]
+MFTINLLIYIIPILLAVAFLTLIERKMLGYMQFRKGPNIVGPYGLLQPFADAVKLFTKEPLRPLTSSISIFIIAPILALT
+IALTIWTPLPMPNTLLDLNLGLIFILSLSGLSVYSILWSGWASNSKYALIGALRAVAQTISYEVSLAIILLSIMLINGSF
+TLKTLSITQENLWLIITTWPLAMMWYISTLAETNRAPFDLTEGESELVSGFNVEYAAGPFAMFFLAEYANIIAMNAITTI
+LFLGPSLTPNLSHLNTLSFMLKTLLLTMVFLWVRASYPRFRYDQLMHLLWKNFLPMTLAMCLWFISLPIALSCIPPQL
+>gi|55416190|gb|AAV50057.1| NADH dehydrogenase subunit 2 [Dasyurus hallucatus]
+MSPYVLMILTLSLFIGTCLTIFSNHWFTAWMGLEINTLAIIPLMTAPNNPRSTEAATKYFLTQATASMLMMFAIIYNAWS
+TNQWALPQLSDDWISLLMTVALAIKLGLAPFHFWVPEVTQGIPLLTGMILLTWQKIAPTAILFQIAPYLNMKFLVILAIL
+STLVGGWGGLNQTHLRKILAYSSIAHMGWMIIIVQINPTLSIFTLTIYVMATLTTFLTLNLSNSTKIKSLGNLWNKSATA
+TIIIFLTLLSLGGLPPLTGFMPKWLILQELINNGNIITATMMALSALLNLFFYMRLIYASSLTMFPSINNSKMQWYNNSM
+KTTTLIPTATVISSLLLPLTPLFVTLY
+END
+      @obj = Bio::FastaFormat.new(text)
+    end
+
+    def test_entry
+      data = ">gi|55416189|gb|AAV50056.1| NADH dehydrogenase subunit 1 [Dasyurus hallucatus]\nMFTINLLIYIIPILLAVAFLTLIERKMLGYMQFRKGPNIVGPYGLLQPFADAVKLFTKEPLRPLTSSISIFIIAPILALT\nIALTIWTPLPMPNTLLDLNLGLIFILSLSGLSVYSILWSGWASNSKYALIGALRAVAQTISYEVSLAIILLSIMLINGSF\nTLKTLSITQENLWLIITTWPLAMMWYISTLAETNRAPFDLTEGESELVSGFNVEYAAGPFAMFFLAEYANIIAMNAITTI\nLFLGPSLTPNLSHLNTLSFMLKTLLLTMVFLWVRASYPRFRYDQLMHLLWKNFLPMTLAMCLWFISLPIALSCIPPQL\n"
+      assert_equal(data, @obj.entry)
+    end
+
+    def test_entry_id
+      assert_equal('gi|55416189', @obj.entry_id)
+    end
+
+    def test_definition
+      data = "gi|55416189|gb|AAV50056.1| NADH dehydrogenase subunit 1 [Dasyurus hallucatus]"
+      assert_equal(data, @obj.definition)
+    end
+
+    def test_data
+      data = "\nMFTINLLIYIIPILLAVAFLTLIERKMLGYMQFRKGPNIVGPYGLLQPFADAVKLFTKEPLRPLTSSISIFIIAPILALT\nIALTIWTPLPMPNTLLDLNLGLIFILSLSGLSVYSILWSGWASNSKYALIGALRAVAQTISYEVSLAIILLSIMLINGSF\nTLKTLSITQENLWLIITTWPLAMMWYISTLAETNRAPFDLTEGESELVSGFNVEYAAGPFAMFFLAEYANIIAMNAITTI\nLFLGPSLTPNLSHLNTLSFMLKTLLLTMVFLWVRASYPRFRYDQLMHLLWKNFLPMTLAMCLWFISLPIALSCIPPQL\n"
+      assert_equal(data, @obj.data)
+    end
 
     def test_seq
-      seq = 'MSGELANYKRLEKVGEGTYGVVYKALDLRPGQGQRVVALKKIRLESEDEGVPSTAIREISLLKELKDDNIVRLYDIVHSDAHKLYLVFEFLDLDLKRYMEGIPKDQPLGADIVKKFMMQLCKGIAYCHSHRILHRDLKPQNLLINKDGNLKLGDFGLARAFGVPLRAYTHEIVTLWYRAPEVLLGGKQYSTGVDTWSIGCIFAEMCNRKPIFSGDSEIDQIFKIFRVLGTPNEAIWPDIVYLPDFKPSFPQWRRKDLSQVVPSLDPRGIDLLDKLLAYDPINRISARRAAIHPYFQES'
+      seq = 'MFTINLLIYIIPILLAVAFLTLIERKMLGYMQFRKGPNIVGPYGLLQPFADAVKLFTKEPLRPLTSSISIFIIAPILALTIALTIWTPLPMPNTLLDLNLGLIFILSLSGLSVYSILWSGWASNSKYALIGALRAVAQTISYEVSLAIILLSIMLINGSFTLKTLSITQENLWLIITTWPLAMMWYISTLAETNRAPFDLTEGESELVSGFNVEYAAGPFAMFFLAEYANIIAMNAITTILFLGPSLTPNLSHLNTLSFMLKTLLLTMVFLWVRASYPRFRYDQLMHLLWKNFLPMTLAMCLWFISLPIALSCIPPQL'
       assert_equal(seq, @obj.seq)
     end
 
     def test_length
-      assert_equal(298, @obj.length)
-    end
-
-    def test_naseq
-      seq = 'msgelanykrlekvgegtygvvykaldlrpgqgqrvvalkkirlesedegvpstaireisllkelkddnivrlydivhsdahklylvfefldldlkrymegipkdqplgadivkkfmmqlckgiaychshrilhrdlkpqnllinkdgnlklgdfglarafgvplraytheivtlwyrapevllggkqystgvdtwsigcifaemcnrkpifsgdseidqifkifrvlgtpneaiwpdivylpdfkpsfpqwrrkdlsqvvpsldprgidlldkllaydpinrisarraaihpyfqes'
-      assert_equal(seq, @obj.naseq)
-    end
-
-    def test_nalen
-      assert_equal(298, @obj.nalen)
+      assert_equal(318, @obj.length)
     end
 
     def test_aaseq
-      seq = "MSGELANYKRLEKVGEGTYGVVYKALDLRPGQGQRVVALKKIRLESEDEGVPSTAIREISLLKELKDDNIVRLYDIVHSDAHKLYLVFEFLDLDLKRYMEGIPKDQPLGADIVKKFMMQLCKGIAYCHSHRILHRDLKPQNLLINKDGNLKLGDFGLARAFGVPLRAYTHEIVTLWYRAPEVLLGGKQYSTGVDTWSIGCIFAEMCNRKPIFSGDSEIDQIFKIFRVLGTPNEAIWPDIVYLPDFKPSFPQWRRKDLSQVVPSLDPRGIDLLDKLLAYDPINRISARRAAIHPYFQES"
+      seq = "MFTINLLIYIIPILLAVAFLTLIERKMLGYMQFRKGPNIVGPYGLLQPFADAVKLFTKEPLRPLTSSISIFIIAPILALTIALTIWTPLPMPNTLLDLNLGLIFILSLSGLSVYSILWSGWASNSKYALIGALRAVAQTISYEVSLAIILLSIMLINGSFTLKTLSITQENLWLIITTWPLAMMWYISTLAETNRAPFDLTEGESELVSGFNVEYAAGPFAMFFLAEYANIIAMNAITTILFLGPSLTPNLSHLNTLSFMLKTLLLTMVFLWVRASYPRFRYDQLMHLLWKNFLPMTLAMCLWFISLPIALSCIPPQL"
       assert_equal(seq, @obj.aaseq)
     end
 
     def test_aalen
-      assert_equal(298, @obj.aalen)
+      assert_equal(318, @obj.aalen)
     end
 
     def test_identifiers
-      assert_equal('', @obj.identifiers)
+      assert_equal(Bio::FastaDefline, @obj.identifiers.class)
     end
 
     def test_gi
-      assert_equal('', @obj.gi)
+      assert_equal('55416189', @obj.gi)
     end
 
     def test_accession
-      assert_equal('', @obj.accession)
+      assert_equal('AAV50056', @obj.accession)
     end
 
     def test_accessions
-      assert_equal('', @obj.accessions)
+      assert_equal(['AAV50056'], @obj.accessions)
     end
 
     def test_acc_version
-      assert_equal('', @obj.acc_version)
-    end
-
-    def test_locus
-      assert_equal('', @obj.locus)
+      assert_equal('AAV50056.1', @obj.acc_version)
     end
 
   end # class TestFastaFormat
