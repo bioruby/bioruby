@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_seq.rb,v 1.4 2005/12/18 16:28:46 k Exp $
+#  $Id: test_seq.rb,v 1.5 2005/12/19 02:44:03 k Exp $
 #
 
 require 'pathname'
@@ -99,7 +99,17 @@ Molecular weight  : 3701.61444
 Protein weight    : 460.565
 //
 END
-      assert_equal(output, seqstat(naseq))
+      $str = ''
+      alias puts_orig puts
+      def puts(*args)
+        args.each do |obj|
+          $str << obj.to_s
+        end
+      end
+      seqstat(naseq)
+      undef puts
+      alias puts puts_orig
+      assert_equal(output, $str)
     end
 
     def test_aa_seqstat
@@ -115,7 +125,17 @@ Composition       : D Asp - 1 ( 50.00 %) aspartic acid
 Protein weight    : 319.315
 //
 END
-      assert_equal(output, seqstat(aaseq))
+      $str = ''
+      alias puts_orig puts
+      def puts(*args)
+        args.each do |obj|
+          $str << obj.to_s
+        end
+      end
+      seqstat(aaseq)
+      undef puts
+      alias puts puts_orig
+      assert_equal(output, $str)
     end
 
     def test_doublehelix
@@ -138,17 +158,17 @@ c---g
     c--g
      at
 END
-      $doublehelix = ''
+      $str = ''
       alias puts_orig puts
       def puts(*args)
         args.each do |obj|
-          $doublehelix << obj.to_s
+          $str << obj.to_s
         end
       end
       doublehelix(seq)
       undef puts
       alias puts puts_orig
-      assert_equal(output, $doublehelix)
+      assert_equal(output, $str)
     end
 
   end
