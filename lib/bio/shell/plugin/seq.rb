@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: seq.rb,v 1.15 2005/11/28 12:07:42 k Exp $
+# $Id: seq.rb,v 1.16 2005/12/19 01:20:06 k Exp $
 #
 #--
 #
@@ -95,7 +95,7 @@ module Bio::Shell
         percent = format("%.1f%", 100.0 * num / (seq.length / 3))
         hash[codon] = percent
       end
-      rep << codontable(1, hash).output #*TODO* how to hide?
+      rep << codontable(1, hash).output
 
       begin
         rep << "Molecular weight  : #{seq.molecular_weight}\n"
