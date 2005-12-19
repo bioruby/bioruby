@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_gff.rb,v 1.3 2005/12/18 18:04:31 k Exp $
+#  $Id: test_gff.rb,v 1.4 2005/12/19 01:21:42 k Exp $
 #
 
 require 'pathname'
@@ -46,6 +46,9 @@ END
 
     def test_records
       assert_equal(8, @obj.records.size)
+    end
+
+    def test_record_class
       assert_equal(Bio::GFF::Record, @obj.records[0].class)
     end
 
