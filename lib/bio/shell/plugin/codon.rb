@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: codon.rb,v 1.11 2005/12/07 07:31:40 k Exp $
+# $Id: codon.rb,v 1.12 2005/12/19 02:34:24 k Exp $
 #
 #--
 #
@@ -177,7 +177,11 @@ module Bio::Shell
       else
         text = header + table
       end
-      text.gsub(/^\s+#/, @colors[:text])
+      if Bio::Shell.config[:color]
+        text.gsub(/^\s+#/, @colors[:text])
+      else
+        text.gsub(/^\s+#/, '')
+      end
     end
 
   end
