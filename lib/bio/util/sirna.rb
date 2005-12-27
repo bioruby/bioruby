@@ -5,7 +5,7 @@
 #               Itoshi NIKAIDO <dritoshi@gmail.com>
 # License::     LGPL
 #
-# $Id: sirna.rb,v 1.6 2005/11/14 15:44:30 nakao Exp $
+# $Id: sirna.rb,v 1.7 2005/12/27 17:27:38 k Exp $
 #
 # == Bio::SiRNA - Designing siRNA.
 #
@@ -201,10 +201,10 @@ module Bio
     # Designing shRNA.
     class ShRNA
 
-      # aBio::Sequence::NA
+      # Bio::Sequence::NA
       attr_accessor :top_strand
 
-      # aBio::Sequence::NA
+      # Bio::Sequence::NA
       attr_accessor :bottom_strand
 
       # Input is a Bio::SiRNA::Pair object (the target sequence).    

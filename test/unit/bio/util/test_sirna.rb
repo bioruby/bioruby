@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_sirna.rb,v 1.1 2005/11/14 14:46:06 nakao Exp $
+#  $Id: test_sirna.rb,v 1.2 2005/12/27 17:27:38 k Exp $
 #
 
 require 'pathname'
@@ -28,10 +28,12 @@ require 'test/unit'
 require 'bio/util/sirna'
 
 module Bio
+
+  RANDOM_SEQ = "ctttcggtgcggacgtaaggagtattcctgtactaactaaatggagttaccaaggtaggaccacggtaaaatcgcgagcagcctcgatacaagcgttgtgctgaagcctatcgctgacctgaaggggggcgtaagcaaggcagcggttcaccttcatcagttctgctagaaatcacctagcaccccttatcatccgcgtcaggtccattacccttcccattatgtcggactcaattgaggtgcttgtgaacttatacttgaatccaaaacgtctactgtattggcgactaaaaagcacttgtggggagtcggcttgatcagcctccattagggccaggcactgaggatcatccagttaacgtcagattcaaggtctggctcttagcactcggagttgcac"
+
   class TestSiRNANew < Test::Unit::TestCase
     def test_new
-      srand(1)
-      naseq = Bio::Sequence::NA.new("ACGT" * 100).randomize
+      naseq = Bio::Sequence::NA.new(RANDOM_SEQ)
       assert(Bio::SiRNA.new(naseq))
       assert(Bio::SiRNA.new(naseq, 21))
       assert(Bio::SiRNA.new(naseq, 21, 60.0))
@@ -43,8 +45,7 @@ module Bio
 
   class TestSiRNA < Test::Unit::TestCase
     def setup
-      srand(1)
-      naseq = Bio::Sequence::NA.new("ACGT" * 100).randomize
+      naseq = Bio::Sequence::NA.new(RANDOM_SEQ)
       @obj = Bio::SiRNA.new(naseq)
     end
 
@@ -116,8 +117,7 @@ module Bio
 
   class TestSiRNAPair < Test::Unit::TestCase
     def setup
-      srand(1)
-      naseq = Bio::Sequence::NA.new("ACGT" * 100).randomize
+      naseq = Bio::Sequence::NA.new(RANDOM_SEQ)
       @obj = Bio::SiRNA.new(naseq).design.first
     end
 
@@ -175,8 +175,7 @@ END
 
   class TestShRNA < Test::Unit::TestCase
     def setup
-      srand(1)
-      naseq = Bio::Sequence::NA.new("ACGT" * 100).randomize
+      naseq = Bio::Sequence::NA.new(RANDOM_SEQ)
       sirna = Bio::SiRNA.new(naseq)
       pairs = sirna.design
       @obj = Bio::SiRNA::ShRNA.new(pairs.first)
@@ -246,7 +245,8 @@ Top strand shRNA (57 nt):
 Bottom strand shRNA (57 nt):
       3'-CCUGCAUUCCUCAUAAGGACACACACGACAGGUGUCCUUAUGAGGAAUGCAGGAAAA-5'
 END
-      @obj.design
+      #@obj.design
+      @obj.block_it
       assert_equal(report, @obj.report)
     end
 
