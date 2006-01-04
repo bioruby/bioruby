@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: residue.rb,v 1.5 2006/01/04 13:01:09 ngoto Exp $
+#  $Id: residue.rb,v 1.6 2006/01/04 14:01:14 ngoto Exp $
 
 require 'bio/db/pdb'
 
@@ -140,7 +140,7 @@ module Bio
       end
     end #class Residue
 
-    class HeteroCompound < Residue
+    class Heterogen < Residue
 
       # Creates residue id from an ATOM (or HETATM) object.
       # 
@@ -165,7 +165,7 @@ module Bio
       def hetatm
         true
       end
-    end #class HeteroCompound
+    end #class Heterogen
 
   end #class PDB
 

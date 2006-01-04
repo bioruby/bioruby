@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pdb.rb,v 1.7 2006/01/04 13:01:09 ngoto Exp $
+#  $Id: pdb.rb,v 1.8 2006/01/04 14:01:14 ngoto Exp $
 #
 
 # *** CAUTION ***
@@ -1214,7 +1214,7 @@ module Bio
       cModel    = Model.new
       cChain    = Chain.new
       cResidue  = Residue.new
-      #cCompound = HeteroCompound.new
+      #cCompound = Heterogen.new
 
       #Goes through each line and replace that line with a PDB::Record
       @data.collect! do |line|
@@ -1270,8 +1270,8 @@ module Bio
           #any chain id with the solvent is lost
           #I can fix this if really needed
           if f.resName == 'HOH'
-            solvent =   HeteroCompound.new(f.resName, f.resSeq, f.iCode,
-                                           cModel.solvent)
+            solvent =   Heterogen.new(f.resName, f.resSeq, f.iCode,
+                                      cModel.solvent)
             #p solvent
             f.residue = solvent
             solvent.addAtom(f)
@@ -1279,7 +1279,7 @@ module Bio
             
           else
 
-            residueID = HeteroCompound.get_residue_id_from_atom(f)
+            residueID = Heterogen.get_residue_id_from_atom(f)
             #p f
             #p residueID
 
@@ -1296,7 +1296,7 @@ module Bio
             if !newChain and residueID == cResidue.id
               residue = cResidue
             elsif newChain or !(residue = chain[residueID])
-              newResidue = HeteroCompound.new(f.resName, f.resSeq, f.iCode,
+              newResidue = Heterogen.new(f.resName, f.resSeq, f.iCode,
                                               chain)
               chain.addLigand(newResidue)
               cResidue = newResidue
