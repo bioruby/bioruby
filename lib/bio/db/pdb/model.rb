@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: model.rb,v 1.2 2005/09/26 13:00:08 k Exp $
+#  $Id: model.rb,v 1.3 2006/01/04 15:41:50 ngoto Exp $
 
 require 'bio/db/pdb'
 
@@ -32,12 +32,17 @@ module Bio
       include AtomFinder
       include ResidueFinder
       include ChainFinder
+
+      include HetatmFinder
+      include HeterogenFinder
+
       include Enumerable
       include Comparable
       
-      attr_reader :model_serial, :structure, :solvent
-      attr_writer :model_serial
-      
+      attr_accessor :model_serial
+      attr_reader :structure
+      attr_reader :solvents
+
       def initialize(model_serial = nil, structure = nil)
         
         @model_serial = model_serial
@@ -45,9 +50,12 @@ module Bio
         @structure    = structure
         
         @chains       = Array.new
-        @solvent      = Chain.new('',self)
+        @solvents     = Chain.new('', self)
         
       end
+
+      attr_reader :chains
+      attr_reader :solvents
       
       #Adds a chain
       def addChain(chain)
@@ -59,23 +67,23 @@ module Bio
       #adds a solvent molecule
       def addSolvent(solvent)
         raise "Expecting a Bio::PDB::Residue" if not solvent.is_a? Bio::PDB::Residue
-        @solvent.addResidue(solvent)
+        @solvents.addResidue(solvent)
       end
 
       def removeSolvent
-        @solvent = nil
+        @solvents = nil
       end
 
       #Chain iterator
-      def each
-        @chains.each{ |chain| yield chain }
+      def each(&x) #:yields: chain
+        @chains.each(&x)
       end
       #Alias to override ChainFinder#each_chain
       alias each_chain each
      
       #Sorts models based on serial number
       def <=>(other)
-        return @mode_serial <=> other.model_serial
+        return @model_serial <=> other.model_serial
       end
       
       #Keyed access to chains

@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pdb.rb,v 1.8 2006/01/04 14:01:14 ngoto Exp $
+#  $Id: pdb.rb,v 1.9 2006/01/04 15:41:50 ngoto Exp $
 #
 
 # *** CAUTION ***
@@ -39,6 +39,10 @@ module Bio
     include ResidueFinder
     include ChainFinder
     include ModelFinder
+
+    include HetatmFinder
+    include HeterogenFinder
+
     include Enumerable
 
     DELIMITER = RS = nil # 1 file 1 entry
@@ -1212,9 +1216,9 @@ module Bio
 
       #Empty current model
       cModel    = Model.new
-      cChain    = Chain.new
-      cResidue  = Residue.new
-      #cCompound = Heterogen.new
+      cChain    = nil #Chain.new
+      cResidue  = nil #Residue.new
+      cLigand   = nil #Heterogen.new
 
       #Goes through each line and replace that line with a PDB::Record
       @data.collect! do |line|
@@ -1237,76 +1241,66 @@ module Bio
         end
 
         # Do something for ATOM and HETATM
-        case key
-        when 'ATOM'
-          residueID = Residue.get_residue_id_from_atom(f)
-          #p f
-
-          if f.chainID == cChain.id
+        if key == 'ATOM' or key == 'HETATM' then
+          if cChain and f.chainID == cChain.id
             chain = cChain
-          elsif !(chain = cModel[f.chainID])
-            #If we don't have chain, add a new chain
-            newChain = Chain.new(f.chainID, cModel)
-            cModel.addChain(newChain)
-            cChain = newChain
-            chain = newChain
-          end
-
-          if !newChain and residueID == cResidue.id
-            residue = cResidue
-          elsif newChain or !(residue = chain[residueID])
-            newResidue = Residue.new(f.resName, f.resSeq, f.iCode, chain)
-            chain.addResidue(newResidue)
-            cResidue = newResidue
-            residue = newResidue
-          end
-
-          f.residue = residue
-          residue.addAtom(f)
-
-        when 'HETATM'
-
-          #Each model has a special solvent chain
-          #any chain id with the solvent is lost
-          #I can fix this if really needed
-          if f.resName == 'HOH'
-            solvent =   Heterogen.new(f.resName, f.resSeq, f.iCode,
-                                      cModel.solvent)
-            #p solvent
-            f.residue = solvent
-            solvent.addAtom(f)
-            cModel.addSolvent(solvent)
-            
           else
-
-            residueID = Heterogen.get_residue_id_from_atom(f)
-            #p f
-            #p residueID
-
-            if f.chainID == cChain.id
-              chain = cChain
-            elsif !(chain = cModel[f.chainID])
-              #If we don't have chain, add a new chain
+            if chain = cModel[f.chainID]
+              cChain = chain unless cChain
+            else
+              # If we don't have chain, add a new chain
               newChain = Chain.new(f.chainID, cModel)
               cModel.addChain(newChain)
               cChain = newChain
               chain = newChain
             end
+          end
+        end
 
-            if !newChain and residueID == cResidue.id
-              residue = cResidue
-            elsif newChain or !(residue = chain[residueID])
-              newResidue = Heterogen.new(f.resName, f.resSeq, f.iCode,
-                                              chain)
-              chain.addLigand(newResidue)
+        case key
+        when 'ATOM'
+          residueID = Residue.get_residue_id_from_atom(f)
+
+          if cResidue and residueID == cResidue.id
+            residue = cResidue
+          else
+            if residue = chain.get_residue_by_id(residueID)
+              cResidue = residue unless cResidue
+            else
+              # add a new residue
+              newResidue = Residue.new(f.resName, f.resSeq, f.iCode, chain)
+              chain.addResidue(newResidue)
               cResidue = newResidue
               residue = newResidue
             end
-
-            f.residue = residue
-            residue.addAtom(f)
-            
           end
+          
+          f.residue = residue
+          residue.addAtom(f)
+
+        when 'HETATM'
+          residueID = Heterogen.get_residue_id_from_atom(f)
+
+          if cLigand and residueID == cLigand.id
+            ligand = cLigand
+          else
+            if ligand = chain.get_heterogen_by_id(residueID)
+              cLigand = ligand unless cLigand
+            else
+              # add a new heterogen
+              newLigand = Heterogen.new(f.resName, f.resSeq, f.iCode, chain)
+              chain.addLigand(newLigand)
+              cLigand = newLigand
+              ligand = newLigand
+              #Each model has a special solvent chain. (for compatibility)
+              if f.resName == 'HOH'
+                cModel.addSolvent(newLigand)
+              end
+            end
+          end
+
+          f.residue = ligand
+          ligand.addAtom(f)
 
         when 'MODEL'
           if cModel.model_serial
@@ -1322,7 +1316,10 @@ module Bio
       @data.compact!
     end #def initialize
 
-    attr_reader :data, :hash
+    attr_reader :data
+    attr_reader :hash
+
+    attr_reader :models
 
     #Adds a Bio::Model to the current strucutre
     def addModel(model)

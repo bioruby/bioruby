@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: utils.rb,v 1.2 2005/09/08 01:22:11 k Exp $
+#  $Id: utils.rb,v 1.3 2006/01/04 15:41:50 ngoto Exp $
 
 require 'matrix'
 require 'bio/db/pdb'
@@ -227,6 +227,32 @@ module Bio; class PDB
       self.each_residue{ |residue|
         residue.each{ |atom| yield atom }
       }
+    end
+  end
+
+  module HetatmFinder
+    def find_hetatm()
+      array = []
+      self.each_hetatm do |hetatm|
+        array.push(hetatm) if yield(hetatm)
+      end
+      return array
+    end
+    def each_hetatm(&x) #:yields: hetatm
+      self.each_heterogen { |heterogen| heterogen.each(&x) }
+    end
+  end
+
+  module HeterogenFinder
+    def find_heterogen()
+      array = []
+      self.each_heterogen do |heterogen|
+        array.push(heterogen) if yield(heterogen)
+      end
+      return array
+    end
+    def each_heterogen(&x) #:yields: heterogen
+      self.each_chain { |chain| chain.each_heterogen(&x) }
     end
   end
 

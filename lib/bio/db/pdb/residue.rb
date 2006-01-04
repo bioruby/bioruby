@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: residue.rb,v 1.6 2006/01/04 14:01:14 ngoto Exp $
+#  $Id: residue.rb,v 1.7 2006/01/04 15:41:50 ngoto Exp $
 
 require 'bio/db/pdb'
 
@@ -30,6 +30,7 @@ module Bio
       
       include Utils
       include AtomFinder
+
       include Enumerable
       include Comparable
 
@@ -114,7 +115,7 @@ module Bio
       def each
         @atoms.each{ |atom| yield atom }
       end
-      #Alias to override AtomFinder#each_atom
+      # Alias to override AtomFinder#each_atom
       alias each_atom each
       
       # Sorts based on resSeq and iCode if need be
@@ -142,29 +143,18 @@ module Bio
 
     class Heterogen < Residue
 
-      # Creates residue id from an ATOM (or HETATM) object.
-      # 
-      # We add 'LIGAND' to the id if it's a HETATM.
-      # I think this is neccessary because some PDB files reuse
-      # numbers for HETATMS.
-      def self.get_residue_id_from_atom(atom)
-        'LIGAND' + super
-      end
-
-      # Residue id is required because resSeq doesn't uniquely identify
-      # a residue. ID is constructed from resSeq and iCode and is appended
-      # to 'LIGAND' if the residue is a HETATM
-      def update_residue_id
-        super
-        @residue_id = 'LIGAND' + @residue_id if @residue_id
-      end
-      private :update_residue_id
+      include HetatmFinder
 
       # If the residue is HETATM, returns true.
       # Otherwise, returns false.
       def hetatm
         true
       end
+
+      # Alias to override HetatmFinder#each_hetatm
+      alias each_hetatm each
+
+      alias hetatms atoms
     end #class Heterogen
 
   end #class PDB
