@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pdb.rb,v 1.6 2005/12/18 17:37:14 ngoto Exp $
+#  $Id: pdb.rb,v 1.7 2006/01/04 13:01:09 ngoto Exp $
 #
 
 # *** CAUTION ***
@@ -1211,9 +1211,10 @@ module Bio
       cont = false
 
       #Empty current model
-      cModel   = Bio::PDB::Model.new
-      cChain   = Bio::PDB::Chain.new
-      cResidue = Bio::PDB::Residue.new
+      cModel    = Model.new
+      cChain    = Chain.new
+      cResidue  = Residue.new
+      #cCompound = HeteroCompound.new
 
       #Goes through each line and replace that line with a PDB::Record
       @data.collect! do |line|
@@ -1238,7 +1239,7 @@ module Bio
         # Do something for ATOM and HETATM
         case key
         when 'ATOM'
-          residueID = "#{f.resSeq}#{f.iCode.strip}".strip
+          residueID = Residue.get_residue_id_from_atom(f)
           #p f
 
           if f.chainID == cChain.id
@@ -1269,8 +1270,8 @@ module Bio
           #any chain id with the solvent is lost
           #I can fix this if really needed
           if f.resName == 'HOH'
-            solvent =   Residue.new(f.resName, f.resSeq, f.iCode,
-                                    cModel.solvent, true)
+            solvent =   HeteroCompound.new(f.resName, f.resSeq, f.iCode,
+                                           cModel.solvent)
             #p solvent
             f.residue = solvent
             solvent.addAtom(f)
@@ -1278,11 +1279,7 @@ module Bio
             
           else
 
-            #Make residue we add 'LIGAND' to the id if it's a HETATM
-            #I think this is neccessary because some PDB files reuse
-            #numbers for HETATMS
-            residueID = "#{f.resSeq}#{f.iCode.strip}".strip
-            residueID = "LIGAND" + residueID
+            residueID = HeteroCompound.get_residue_id_from_atom(f)
             #p f
             #p residueID
 
@@ -1299,8 +1296,8 @@ module Bio
             if !newChain and residueID == cResidue.id
               residue = cResidue
             elsif newChain or !(residue = chain[residueID])
-              newResidue = Residue.new(f.resName, f.resSeq, f.iCode,
-                                       chain, true)
+              newResidue = HeteroCompound.new(f.resName, f.resSeq, f.iCode,
+                                              chain)
               chain.addLigand(newResidue)
               cResidue = newResidue
               residue = newResidue
