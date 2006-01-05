@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: model.rb,v 1.3 2006/01/04 15:41:50 ngoto Exp $
+#  $Id: model.rb,v 1.4 2006/01/05 09:24:54 ngoto Exp $
 
 require 'bio/db/pdb'
 
@@ -25,7 +25,7 @@ module Bio
 
   class PDB
 
-    #Model class
+    # Model class
     class Model
       
       include Utils
@@ -39,68 +39,75 @@ module Bio
       include Enumerable
       include Comparable
       
-      attr_accessor :model_serial
-      attr_reader :structure
-      attr_reader :solvents
-
-      def initialize(model_serial = nil, structure = nil)
+      # Creates a new Model object
+      def initialize(serial = nil, structure = nil)
         
-        @model_serial = model_serial
-        
-        @structure    = structure
-        
-        @chains       = Array.new
-        @solvents     = Chain.new('', self)
-        
+        @serial = serial
+        @structure = structure
+        @chains = []
+        @solvents = Chain.new('', self)
       end
 
+      # chains in this model
       attr_reader :chains
+
+      # (OBSOLETE) solvents in this model
       attr_reader :solvents
-      
-      #Adds a chain
+
+      # serial number of this model. (Integer or nil)
+      attr_accessor :serial
+
+      # for backward compatibility
+      alias model_serial serial
+
+      # (deprecated)
+      attr_reader :structure
+     
+      # Adds a chain to this model
       def addChain(chain)
-        raise "Expecting a Bio::PDB::Chain" if not chain.is_a? Bio::PDB::Chain
+        raise "Expecting a Bio::PDB::Chain" unless chain.is_a? Bio::PDB::Chain
         @chains.push(chain)
         self        
       end
       
-      #adds a solvent molecule
+      # (OBSOLETE) Adds a solvent molecule to this model
       def addSolvent(solvent)
-        raise "Expecting a Bio::PDB::Residue" if not solvent.is_a? Bio::PDB::Residue
+        raise "Expecting a Bio::PDB::Residue" unless solvent.is_a? Bio::PDB::Residue
         @solvents.addResidue(solvent)
       end
 
+      # (OBSOLETE) not recommended to use this method
       def removeSolvent
         @solvents = nil
       end
 
-      #Chain iterator
+      # Iterates over each chain
       def each(&x) #:yields: chain
         @chains.each(&x)
       end
-      #Alias to override ChainFinder#each_chain
+      # Alias to override ChainFinder#each_chain
       alias each_chain each
      
-      #Sorts models based on serial number
+      # Operator aimed to sort models based on serial number
       def <=>(other)
-        return @model_serial <=> other.model_serial
+        return @serial <=> other.model_serial
       end
       
-      #Keyed access to chains
+      # Keyed access to chains
       def [](key)
         chain = @chains.find{ |chain| key == chain.id }
       end
       
-      #stringifies to chains
+      # stringifies to chains
       def to_s
         string = ""
         if model_serial
           string = "MODEL     #{model_serial}" #Should use proper formatting
         end
         @chains.each{ |chain| string << chain.to_s }
-        if solvent
-          string << @solvent.to_s
-        end
+        #if solvent
+        #  string << @solvent.to_s
+        #end
         if model_serial
           string << "ENDMDL"
         end
@@ -109,6 +116,6 @@ module Bio
       
     end #class Model
 
-  end
+  end #class PDB
 
-end
+end #module Bio

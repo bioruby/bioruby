@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pdb.rb,v 1.9 2006/01/04 15:41:50 ngoto Exp $
+#  $Id: pdb.rb,v 1.10 2006/01/05 09:24:54 ngoto Exp $
 #
 
 # *** CAUTION ***
@@ -839,6 +839,15 @@ module Bio
         # residue the atom belongs to.
         attr_accessor :residue
 
+        # SIGATM record
+        attr_accessor :sigatm
+
+        # ANISOU record
+        attr_accessor :anisou
+
+        # TER record
+        attr_accessor :ter
+
         #Returns a Coordinate class instance of the xyz positions
         def xyz
           Coordinate[ x, y, z ]
@@ -912,6 +921,11 @@ module Bio
                 [ 77, 78, Pdb_LString(2),   :element ],
                 [ 79, 80, Pdb_LString(2),   :charge ]
                 )
+
+      class ANISOU
+        # SIGUIJ record
+        attr_accessor :siguij
+      end #class ANISOU
 
       SIGUIJ =
         def_rec([  7, 11, Pdb_Integer,      :serial ],
@@ -1219,6 +1233,7 @@ module Bio
       cChain    = nil #Chain.new
       cResidue  = nil #Residue.new
       cLigand   = nil #Heterogen.new
+      c_atom    = nil
 
       #Goes through each line and replace that line with a PDB::Record
       @data.collect! do |line|
@@ -1259,6 +1274,7 @@ module Bio
 
         case key
         when 'ATOM'
+          c_atom = f
           residueID = Residue.get_residue_id_from_atom(f)
 
           if cResidue and residueID == cResidue.id
@@ -1279,6 +1295,7 @@ module Bio
           residue.addAtom(f)
 
         when 'HETATM'
+          c_atom = f
           residueID = Heterogen.get_residue_id_from_atom(f)
 
           if cLigand and residueID == cLigand.id
@@ -1303,11 +1320,43 @@ module Bio
           ligand.addAtom(f)
 
         when 'MODEL'
-          if cModel.model_serial
+          c_atom = nil
+          if cModel.model_serial or cModel.chains.size > 0 then
             self.addModel(cModel)
           end
-          model_serial = line[6,5]
-          cModel = Model.new(model_serial)
+          cModel = Model.new(f.serial)
+
+        when 'TER'
+          if c_atom
+            c_atom.ter = f
+          else
+            #$stderr.puts "Warning: stray TER?"
+          end
+        when 'SIGATM'
+          if c_atom
+            #$stderr.puts "Warning: duplicated SIGATM?" if c_atom.sigatm
+            c_atom.sigatm = f
+          else
+            #$stderr.puts "Warning: stray SIGATM?"
+          end
+        when 'ANISOU'
+          if c_atom
+            #$stderr.puts "Warning: duplicated ANISOU?" if c_atom.anisou
+            c_atom.anisou = f
+          else
+            #$stderr.puts "Warning: stray ANISOU?"
+          end
+        when 'SIGUIJ'
+          if c_atom and c_atom.anisou
+            #$stderr.puts "Warning: duplicated SIGUIJ?" if c_atom.anisou.siguij
+            c_atom.anisou.siguij = f
+          else
+            #$stderr.puts "Warning: stray SIGUIJ?"
+          end
+
+        else
+          c_atom = nil
+
         end
         f
       end #each
