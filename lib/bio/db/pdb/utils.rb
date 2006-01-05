@@ -18,35 +18,38 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: utils.rb,v 1.3 2006/01/04 15:41:50 ngoto Exp $
+#  $Id: utils.rb,v 1.4 2006/01/05 11:10:10 ngoto Exp $
 
 require 'matrix'
 require 'bio/db/pdb'
 
 module Bio; class PDB
 
+  # Utility methods for PDB data.
+  #
+  # The methods in this mixin should be applicalbe to all PDB objects.
   module Utils
-    #The methods in this mixin should be applicalbe to all PDB objects
     
-    #Returns the coordinates of the geometric centre (average co-ord)
-    #of any AtomFinder (or .atoms) implementing object
-    def geometricCentre()
-      
+    # Returns the coordinates of the geometric centre (average co-ord)
+    # of any AtomFinder (or .atoms) implementing object
+    #
+    # If you want to get the geometric centre of hetatms,
+    # call geometricCentre(:each_hetatm).
+    def geometricCentre(method = :each_atom)
       x = y = z = count = 0
       
-      self.each_atom{ |atom|
+      self.__send__(method) do |atom|
         x += atom.x
         y += atom.y
         z += atom.z
         count += 1
-      }
+      end
       
-      x = x / count
-      y = y / count
-      z = z / count
-      
+      x = (x / count)
+      y = (y / count)
+      z = (z / count)
+     
       Coordinate[x,y,z]
-      
     end
 
     #Returns the coords of the centre of gravity for any
@@ -63,8 +66,8 @@ module Bio; class PDB
       'P' => 31
     }
 
+    # calculates centre of gravitiy
     def centreOfGravity()
-      
       x = y = z = total = 0
       
       self.each_atom{ |atom|
@@ -81,19 +84,23 @@ module Bio; class PDB
       z = z / total
       
       Coordinate[x,y,z]
-      
     end
 
+    #--
     #Perhaps distance and dihedral would be better off as class methods?
     #(rather) than instance methods
-    def self.distance(coord1,coord2)
-      coord1 = to_xyz(coord1)
-      coord2 = to_xyz(coord2)
+    #++
+
+    # Calculates distance between _coord1_ and _coord2_.
+    def distance(coord1, coord2)
+      coord1 = convert_to_xyz(coord1)
+      coord2 = convert_to_xyz(coord2)
       (coord1 - coord2).r
     end
+    module_function :distance
 
-    def self.dihedral_angle(coord1,coord2,coord3,coord4)
-        
+    # Calculates dihedral angle.
+    def dihedral_angle(coord1, coord2, coord3, coord4)
       (a1,b1,c1,d) = calculatePlane(coord1,coord2,coord3)
       (a2,b2,c2)   = calculatePlane(coord2,coord3,coord4)
       
@@ -105,9 +112,10 @@ module Bio; class PDB
         torsion
       end
     end
+    module_function :dihedral_angle
       
-    #Implicit conversion into Vector or Bio::PDB::Coordinate
-    def self.to_xyz(obj)
+    # Implicit conversion into Vector or Bio::PDB::Coordinate
+    def convert_to_xyz(obj)
       unless obj.is_a?(Vector)
         begin
           obj = obj.xyz
@@ -117,18 +125,32 @@ module Bio; class PDB
       end
       obj
     end
+    module_function :convert_to_xyz
 
+    # (Deprecated) alias of convert_to_xyz(obj)
+    def self.to_xyz(obj)
+      convert_to_xyz(obj)
+    end
+
+    #--
     #Methods required for the dihedral angle calculations
     #perhaps these should go in some separate Math module
-    def self.rad2deg(r)
+    #++
+
+    # radian to degree
+    def rad2deg(r)
       (r/Math::PI)*180
     end
-    
-    def self.acos(x)
+    module_function :rad2deg
+
+    # acos
+    def acos(x)
       Math.atan2(Math.sqrt(1 - x**2),x)
     end
-      
-    def self.calculatePlane(coord1,coord2,coord3)
+    module_function :acos
+
+    # calculates plane
+    def calculatePlane(coord1, coord2, coord3)
       a = coord1.y * (coord2.z - coord3.z) +
           coord2.y * (coord3.z - coord1.z) + 
           coord3.y * (coord1.z - coord2.z)
@@ -146,13 +168,16 @@ module Bio; class PDB
            )
 
       return [a,b,c,d]
-        
     end
+    module_function :calculatePlane
 
-    #Every class in the heirarchy implements finder, this takes 
-    #a class which determines which type of object to find, the associated
-    #block is then run in classic .find style
-    def finder(findtype,&block)
+    # Every class in the heirarchy implements finder, this takes 
+    # a class which determines which type of object to find, the associated
+    # block is then run in classic .find style.
+    # 
+    # The method might be deprecated.
+    # You'd better using find_XXX  directly.
+    def finder(findtype, &block) #:yields: obj
       if findtype == Bio::PDB::Atom
         return self.find_atom(&block)
       elsif findtype == Bio::PDB::Residue
@@ -166,95 +191,172 @@ module Bio; class PDB
       end
     end
   end #module Utils
-  
+
+  #--
   #The *Finder modules implement a find_* method which returns
   #an array of anything for which the block evals true
   #(suppose Enumerable#find_all method).
   #The each_* style methods act as classic iterators.
+  #++
+
+  # methods to access models
+  #
+  # XXX#each_model must be defined.
   module ModelFinder
-    def find_model()
+    # returns an array containing all chains for which given block
+    # is not +false+ (similar to Enumerable#find_all).
+    def find_model
       array = []
-      self.each_model{ |model|
+      self.each_model do |model|
         array.push(model) if yield(model)
-      }
+      end
       return array
     end
-  end
+  end #module ModelFinder
   
+  #--
   #The heirarchical nature of the objects allow us to re-use the
   #methods from the previous level - e.g. A PDB object can use the .models
   #method defined in ModuleFinder to iterate through the models to find the
   #chains
-  module ChainFinder
-    def find_chain()
-      array = []
-      self.each_chain{ |chain|
-        array.push(chain) if yield(chain)
-      }
-      return array
-    end
-    def each_chain()
-      self.each_model{ |model|
-        model.each{ |chain| yield chain }
-      }
-    end
-  end
-  
-  module ResidueFinder
-    def find_residue()
-      array = []
-      self.each_residue{ |residue|
-        array.push(residue) if yield(residue)
-      }
-      return array
-    end
-    def each_residue()
-      self.each_chain{ |chain|
-        chain.each{ |residue| yield residue }
-      }
-    end
-  end
-  
-  module AtomFinder
-    def find_atom()
-      array = []
-      self.each_atom{ |atom|
-        array.push(atom) if yield(atom)
-      }
-      return array
-    end
-    def each_atom()
-      self.each_residue{ |residue|
-        residue.each{ |atom| yield atom }
-      }
-    end
-  end
+  #++
 
+  # methods to access chains
+  #
+  # XXX#each_model must be defined.
+  module ChainFinder
+
+    # returns an array containing all chains for which given block
+    # is not +false+ (similar to Enumerable#find_all).
+    def find_chain
+      array = []
+      self.each_chain do |chain|
+        array.push(chain) if yield(chain)
+      end
+      return array
+    end
+
+    # iterates over each chain
+    def each_chain(&x) #:yields: chain
+      self.each_model { |model| model.each(&x) }
+    end
+
+    # returns all chains
+    def chains
+      array = []
+      self.each_model { |model| array.concat(model.chains) }
+      return array
+    end
+  end #module ChainFinder
+  
+  # methods to access residues
+  #
+  # XXX#each_chain must be defined.
+  module ResidueFinder
+
+    # returns an array containing all residues for which given block
+    # is not +false+ (similar to Enumerable#find_all).
+    def find_residue
+      array = []
+      self.each_residue do |residue|
+        array.push(residue) if yield(residue)
+      end
+      return array
+    end
+
+    # iterates over each residue
+    def each_residue(&x) #:yields: residue
+      self.each_chain { |chain| chain.each(&x) }
+    end
+
+    # returns all residues
+    def residues
+      array = []
+      self.each_chain { |chain| array.concat(chain.residues) }
+      return array
+    end
+  end #module ResidueFinder
+  
+  # methods to access atoms
+  #
+  # XXX#each_residue must be defined.
+  module AtomFinder
+    # returns an array containing all atoms for which given block
+    # is not +false+ (similar to Enumerable#find_all).
+    def find_atom
+      array = []
+      self.each_atom do |atom|
+        array.push(atom) if yield(atom)
+      end
+      return array
+    end
+
+    # iterates over each atom
+    def each_atom(&x) #:yields: atom
+      self.each_residue { |residue| residue.each(&x) }
+    end
+
+    # returns all atoms
+    def atoms
+      array = []
+      self.each_residue { |residue| array.concat(residue.atoms) }
+      return array
+    end
+  end #module AtomFinder
+
+  # methods to access HETATMs
+  #
+  # XXX#each_heterogen must be defined.
   module HetatmFinder
-    def find_hetatm()
+    # returns an array containing all HETATMs for which given block
+    # is not +false+ (similar to Enumerable#find_all).
+    def find_hetatm
       array = []
       self.each_hetatm do |hetatm|
         array.push(hetatm) if yield(hetatm)
       end
       return array
     end
+
+    # iterates over each HETATM
     def each_hetatm(&x) #:yields: hetatm
       self.each_heterogen { |heterogen| heterogen.each(&x) }
     end
-  end
 
+    # returns all HETATMs
+    def hetatms
+      array = []
+      self.each_heterogen { |heterogen| array.concat(heterogen.hetatms) }
+      return array
+    end
+  end #module HetatmFinder
+
+  # methods to access heterogens (compounds or ligands)
+  #
+  # XXX#each_chain must be defined.
   module HeterogenFinder
-    def find_heterogen()
+    # returns an array containing all heterogens for which given block
+    # is not +false+ (similar to Enumerable#find_all).
+    def find_heterogen
       array = []
       self.each_heterogen do |heterogen|
         array.push(heterogen) if yield(heterogen)
       end
       return array
     end
+
+    # iterates over each heterogens
     def each_heterogen(&x) #:yields: heterogen
       self.each_chain { |chain| chain.each_heterogen(&x) }
     end
-  end
+
+    # returns all heterogens
+    def heterogens
+      array = []
+      self.each_chain { |chain| array.concat(chain.heterogens) }
+      return array
+    end
+  end #module HeterogenFinder
 
 end; end #module Bio; class PDB
 

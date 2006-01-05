@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pdb.rb,v 1.10 2006/01/05 09:24:54 ngoto Exp $
+#  $Id: pdb.rb,v 1.11 2006/01/05 11:10:10 ngoto Exp $
 #
 
 # *** CAUTION ***
@@ -30,8 +30,9 @@ require 'bio/data/aa'
 
 module Bio
 
-  #This is the main PDB class which takes care of parsing, annotations
-  #and is the entry way to the co-ordinate data held in models
+  # This is the main PDB class which takes care of parsing, annotations
+  # and is the entry way to the co-ordinate data held in models.
+  # 
   class PDB #< DB
 
     include Utils
@@ -47,7 +48,7 @@ module Bio
 
     DELIMITER = RS = nil # 1 file 1 entry
 
-    #Modules required by the field definitions
+    # Modules required by the field definitions
     module DataType
 
       Pdb_Continuation = nil
@@ -1368,20 +1369,21 @@ module Bio
     attr_reader :data
     attr_reader :hash
 
+    # models in this PDB entry
     attr_reader :models
 
-    #Adds a Bio::Model to the current strucutre
+    # Adds a Bio::Model object to the current strucutre
     def addModel(model)
       raise "Expecting a Bio::PDB::Model" if not model.is_a? Bio::PDB::Model
       @models.push(model)
       self
     end
     
-    #Iterates over the models
+    # Iterates over each model
     def each
       @models.each{ |model| yield model }
     end
-    #Alias needed for Bio::PDB::ModelFinder
+    # Alias needed for Bio::PDB::ModelFinder
     alias each_model each
     
     #Provides keyed access to the models based on serial number
@@ -1389,7 +1391,7 @@ module Bio
     def [](key)
       @models.find{ |model| key == model.model_serial }
     end
-    
+
     #Stringifies to a list of atom records - we could add the annotation
     #as well if needed
     def to_s
