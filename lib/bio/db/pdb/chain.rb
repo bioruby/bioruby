@@ -1,8 +1,14 @@
 #
-# bio/db/pdb/chain.rb - chain class for PDB
+# = bio/db/pdb/chain.rb - chain class for PDB
 #
-#   Copyright (C) 2004 Alex Gutteridge <alexg@ebi.ac.uk>
+# Copyright:: Copyright (C) 2004, 2006
+#             Alex Gutteridge <alexg@ebi.ac.uk>
+#             Naohisa Goto <ng@bioruby.org>
+# License:: LGPL
+# 
+#  $Id: chain.rb,v 1.4 2006/01/08 12:59:04 ngoto Exp $
 #
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -16,8 +22,12 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: chain.rb,v 1.3 2006/01/04 15:41:50 ngoto Exp $
+# = Bio::PDB::Chain
+# 
+# Please refer Bio::PDB::Chain.
+#
 
 require 'bio/db/pdb'
 
@@ -25,6 +35,11 @@ module Bio
 
   class PDB
 
+    # Bio::PDB::Chain is a class to store a chain.
+    #
+    # The object would contain some residues (Bio::PDB::Residue objects)
+    # and some heterogens (Bio::PDB::Heterogen objects).
+    # 
     class Chain
       
       include Utils
@@ -36,7 +51,8 @@ module Bio
 
       include Enumerable
       include Comparable
-      
+
+      # Creates a new chain object.
       def initialize(id = nil, model = nil)
         
         @chain_id  = id
@@ -47,10 +63,13 @@ module Bio
         @heterogens = []
       end
 
+      # Identifier of this chain
       attr_accessor :chain_id
-      attr_reader :model
-
+      # alias
       alias id chain_id
+
+      # the model to which this chain belongs.
+      attr_reader :model
 
       # residues in this chain
       attr_reader :residues
@@ -112,24 +131,26 @@ module Bio
         @residues.join('') + "TER\n"
       end
 
-      # gets an amino acid sequence of the chain
-      def atom_seq
-        string = ""
-        last_residue_num = nil
-        @residues.each do |residue|
-          if last_residue_num and 
-              (x = (residue.resSeq.to_i - last_residue_num).abs) > 1 then
-            x.times { string << 'X' }
+      # gets an amino acid sequence of this chain from ATOM records
+      def aaseq
+        unless defined? @aaseq
+          string = ""
+          last_residue_num = nil
+          @residues.each do |residue|
+            if last_residue_num and 
+                (x = (residue.resSeq.to_i - last_residue_num).abs) > 1 then
+              x.times { string << 'X' }
+            end
+            tlc = residue.resName.capitalize
+            olc = (Bio::AminoAcid.three2one(tlc) or 'X')
+            string << olc
           end
-          tlc = residue.resName.capitalize
-          olc = AminoAcid.names.invert[tlc]
-          if !olc
-            olc = 'X'
-          end
-          string << olc
+          @aaseq = Bio::Sequence::AA.new(string)
         end
-        Bio::Sequence::AA.new(string)
+        @aaseq
       end
+      # for backward compatibility
+      alias atom_seq aaseq
       
     end #class Chain
 

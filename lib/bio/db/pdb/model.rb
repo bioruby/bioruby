@@ -1,8 +1,14 @@
 #
-# bio/db/pdb/model.rb - model class for PDB
+# = bio/db/pdb/model.rb - model class for PDB
 #
-#   Copyright (C) 2004 Alex Gutteridge <alexg@ebi.ac.uk>
+# Copyright:: Copyright (C) 2004, 2006
+#             Alex Gutteridge <alexg@ebi.ac.uk>
+#             Naohisa Goto <ng@bioruby.org>
+# License:: LGPL
 #
+#  $Id: model.rb,v 1.5 2006/01/08 12:59:04 ngoto Exp $
+#
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -16,8 +22,12 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: model.rb,v 1.4 2006/01/05 09:24:54 ngoto Exp $
+# = Bio::PDB::Model
+#
+# Please refer Bio::PDB::Model.
+#
 
 require 'bio/db/pdb'
 
@@ -25,7 +35,9 @@ module Bio
 
   class PDB
 
-    # Model class
+    # Bio::PDB::Model is a class to store a model.
+    #
+    # The object would contain some chains (Bio::PDB::Chain objects).
     class Model
       
       include Utils
@@ -51,7 +63,7 @@ module Bio
       # chains in this model
       attr_reader :chains
 
-      # (OBSOLETE) solvents in this model
+      # (OBSOLETE) solvents (water, HOH) in this model
       attr_reader :solvents
 
       # serial number of this model. (Integer or nil)
@@ -60,7 +72,7 @@ module Bio
       # for backward compatibility
       alias model_serial serial
 
-      # (deprecated)
+      # (reserved for future extension)
       attr_reader :structure
      
       # Adds a chain to this model

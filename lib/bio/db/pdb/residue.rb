@@ -1,8 +1,14 @@
 #
-# bio/db/pdb/residue.rb - residue class for PDB
+# = bio/db/pdb/residue.rb - residue class for PDB
 #
-#   Copyright (C) 2004 Alex Gutteridge <alexg@ebi.ac.uk>
+# Copyright::  Copyright (C) 2004, 2006
+#              Alex Gutteridge <alexg@ebi.ac.uk>
+#              Naohisa Goto <ng@bioruby.org>
+# License:: LGPL
 #
+#  $Id: residue.rb,v 1.8 2006/01/08 12:59:04 ngoto Exp $
+#
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -16,8 +22,12 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: residue.rb,v 1.7 2006/01/04 15:41:50 ngoto Exp $
+# = Bio::PDB::Residue
+#
+# = Bio::PDB::Heterogen
+#
 
 require 'bio/db/pdb'
 
@@ -25,7 +35,9 @@ module Bio
 
   class PDB
 
-    #Residue class - id is a composite of resSeq and iCode
+    # Bio::PDB::Residue is a class to store a residue.
+    # The object would contain some atoms (Bio::PDB::Record::ATOM objects).
+    #
     class Residue
       
       include Utils
@@ -62,7 +74,8 @@ module Bio
       # resName (residue name)
       attr_accessor :resName
 
-      # residue id (String or nil)
+      # residue id (String or nil).
+      # The id is a composite of resSeq and iCode.
       attr_reader   :residue_id
 
       # Now, Residue#id is an alias of residue_id.
@@ -134,6 +147,8 @@ module Bio
         return string
       end
 
+      # Always returns false.
+      #
       # If the residue is HETATM, returns true.
       # Otherwise, returns false.
       def hetatm
@@ -141,10 +156,17 @@ module Bio
       end
     end #class Residue
 
+    # Bio::PDB::Heterogen is a class to store a heterogen.
+    # It inherits Bio::PDB::Residue and most of the methods are the same.
+    #
+    # The object would contain some HETATMs
+    # (Bio::PDB::Record::HETATM objects).
     class Heterogen < Residue
 
       include HetatmFinder
 
+      # Always returns true.
+      #
       # If the residue is HETATM, returns true.
       # Otherwise, returns false.
       def hetatm
@@ -154,6 +176,7 @@ module Bio
       # Alias to override HetatmFinder#each_hetatm
       alias each_hetatm each
 
+      # Alias needed for HeterogenFinder.
       alias hetatms atoms
     end #class Heterogen
 

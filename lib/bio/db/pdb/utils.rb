@@ -1,9 +1,14 @@
 #
-# bio/db/pdb/utils.rb - Utility modules for PDB
+# = bio/db/pdb/utils.rb - Utility modules for PDB
 #
-#   Copyright (C) 2004 Alex Gutteridge <alexg@ebi.ac.uk>
-#   Copyright (C) 2004 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+# Copyright::  Copyright (C) 2004, 2006
+#              Alex Gutteridge <alexg@ebi.ac.uk>
+#              Naohisa Goto <ng@bioruby.org>
+# License:: LGPL
 #
+#  $Id: utils.rb,v 1.5 2006/01/08 12:59:04 ngoto Exp $
+#
+#--
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
 #  License as published by the Free Software Foundation; either
@@ -17,8 +22,36 @@
 #  You should have received a copy of the GNU Lesser General Public
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#++
 #
-#  $Id: utils.rb,v 1.4 2006/01/05 11:10:10 ngoto Exp $
+# = Bio::PDB::Utils
+#
+# Bio::PDB::Utils
+#
+# = Bio::PDB::ModelFinder
+#
+# Bio::PDB::ModelFinder
+#
+# = Bio::PDB::ChainFinder
+#
+# Bio::PDB::ChainFinder
+#
+# = Bio::PDB::ResidueFinder
+#
+# Bio::PDB::ResidueFinder
+#
+# = Bio::PDB::AtomFinder
+#
+# Bio::PDB::AtomFinder
+#
+# = Bio::PDB::HeterogenFinder
+#
+# Bio::PDB::HeterogenFinder
+#
+# = Bio::PDB::HetatmFinder
+#
+# Bio::PDB::HetatmFinder
+#
 
 require 'matrix'
 require 'bio/db/pdb'
@@ -26,8 +59,10 @@ require 'bio/db/pdb'
 module Bio; class PDB
 
   # Utility methods for PDB data.
-  #
   # The methods in this mixin should be applicalbe to all PDB objects.
+  #
+  # Bio::PDB::Utils is included by Bio::PDB, Bio::PDB::Model,
+  # Bio::PDB::Chain, Bio::PDB::Residue, and Bio::PDB::Heterogen classes.
   module Utils
     
     # Returns the coordinates of the geometric centre (average co-ord)
@@ -202,6 +237,9 @@ module Bio; class PDB
   # methods to access models
   #
   # XXX#each_model must be defined.
+  #
+  # Bio::PDB::ModelFinder is included by Bio::PDB::PDB.
+  #
   module ModelFinder
     # returns an array containing all chains for which given block
     # is not +false+ (similar to Enumerable#find_all).
@@ -224,6 +262,9 @@ module Bio; class PDB
   # methods to access chains
   #
   # XXX#each_model must be defined.
+  #
+  # Bio::PDB::ChainFinder is included by Bio::PDB::PDB and Bio::PDB::Model.
+  #
   module ChainFinder
 
     # returns an array containing all chains for which given block
@@ -252,6 +293,10 @@ module Bio; class PDB
   # methods to access residues
   #
   # XXX#each_chain must be defined.
+  #
+  # Bio::PDB::ResidueFinder is included by Bio::PDB::PDB, Bio::PDB::Model,
+  # and Bio::PDB::Chain.
+  #
   module ResidueFinder
 
     # returns an array containing all residues for which given block
@@ -307,6 +352,10 @@ module Bio; class PDB
   # methods to access HETATMs
   #
   # XXX#each_heterogen must be defined.
+  #
+  # Bio::PDB::HetatmFinder is included by Bio::PDB::PDB, Bio::PDB::Model,
+  # Bio::PDB::Chain, and Bio::PDB::Heterogen.
+  #
   module HetatmFinder
     # returns an array containing all HETATMs for which given block
     # is not +false+ (similar to Enumerable#find_all).
@@ -334,6 +383,10 @@ module Bio; class PDB
   # methods to access heterogens (compounds or ligands)
   #
   # XXX#each_chain must be defined.
+  #
+  # Bio::PDB::HeterogenFinder is included by Bio::PDB::PDB, Bio::PDB::Model,
+  # and Bio::PDB::Chain.
+  #
   module HeterogenFinder
     # returns an array containing all heterogens for which given block
     # is not +false+ (similar to Enumerable#find_all).
