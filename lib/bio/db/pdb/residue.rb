@@ -6,7 +6,7 @@
 #              Naohisa Goto <ng@bioruby.org>
 # License:: LGPL
 #
-#  $Id: residue.rb,v 1.8 2006/01/08 12:59:04 ngoto Exp $
+#  $Id: residue.rb,v 1.9 2006/01/09 11:22:36 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -178,6 +178,9 @@ module Bio
 
       # Alias needed for HeterogenFinder.
       alias hetatms atoms
+
+      # Alias to avoid confusion
+      alias heterogen_id residue_id
     end #class Heterogen
 
   end #class PDB

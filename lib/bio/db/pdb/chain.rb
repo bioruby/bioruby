@@ -6,7 +6,7 @@
 #             Naohisa Goto <ng@bioruby.org>
 # License:: LGPL
 # 
-#  $Id: chain.rb,v 1.4 2006/01/08 12:59:04 ngoto Exp $
+#  $Id: chain.rb,v 1.5 2006/01/09 11:22:36 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -60,7 +60,9 @@ module Bio
         @model    = model
         
         @residues   = []
+        @residues_hash = {}
         @heterogens = []
+        @heterogens_hash = {}
       end
 
       # Identifier of this chain
@@ -79,26 +81,34 @@ module Bio
       
       # get the residue by id
       def get_residue_by_id(key)
-        @residues.find { |r| r.residue_id == key }
+        #@residues.find { |r| r.residue_id == key }
+        @residues_hash[key]
       end
 
       # get the residue by id.
-      # Compatibility Note: now, you cannot find HETATMS in this method.
-      # To add LIGAND to the id is no longer available.
-      # To get heterogens, you must use get_heterogen_by_id.
+      #
+      # Compatibility Note: Now, you cannot find HETATMS in this method.
+      # To add "LIGAND" to the id is no longer available.
+      # To get heterogens, you must use <code>get_heterogen_by_id</code>.
       def [](key)
         get_residue_by_id(key)
       end
 
       # get the heterogen (ligand) by id
       def get_heterogen_by_id(key)
-        @heterogens.find { |r| r.residue_id == key }
+        #@heterogens.find { |r| r.residue_id == key }
+        @heterogens_hash[key]
       end
       
       #Add a residue to this chain
       def addResidue(residue)
         raise "Expecting a Bio::PDB::Residue" unless residue.is_a? Bio::PDB::Residue
         @residues.push(residue)
+        if @residues_hash[residue.residue_id] then
+          $stderr.puts "Warning: residue_id #{residue.residue_id.inspect} is already used" if $VERBOSE
+        else
+          @residues_hash[residue.residue_id] = residue
+        end
         self
       end
       
@@ -106,9 +116,56 @@ module Bio
       def addLigand(ligand)
         raise "Expecting a Bio::PDB::Residue" unless ligand.is_a? Bio::PDB::Residue
         @heterogens.push(ligand)
+        if @heterogens_hash[ligand.residue_id] then
+          $stderr.puts "Warning: heterogen_id (residue_id) #{ligand.residue_id.inspect} is already used" if $VERBOSE
+        else
+          @heterogens_hash[ligand.residue_id] = ligand
+        end
         self
       end
-      
+
+      # rehash residues hash
+      def rehash_residues
+        begin
+          residues_bak = @residues
+          residues_hash_bak = @residues_hash
+          @residues = []
+          @residues_hash = {}
+          residues_bak.each do |residue|
+            self.addResidue(residue)
+          end
+        rescue RuntimeError
+          @residues = residues_bak
+          @residues_hash = residues_hash_bak
+          raise
+        end
+        self
+      end
+
+      # rehash heterogens hash
+      def rehash_heterogens
+        begin
+          heterogens_bak = @heterogens
+          heterogens_hash_bak = @heterogens_hash
+          @heterogens = []
+          @heterogens_hash = {}
+          heterogens_bak.each do |heterogen|
+            self.addLigand(heterogen)
+          end
+        rescue RuntimeError
+          @heterogens = heterogens_bak
+          @heterogens_hash = heterogens_hash_bak
+          raise
+        end
+        self
+      end
+
+      # rehash residues hash and heterogens hash
+      def rehash
+        rehash_residues
+        rehash_heterogens
+      end
+
       # Iterates over each residue
       def each(&x) #:yields: residue
         @residues.each(&x)

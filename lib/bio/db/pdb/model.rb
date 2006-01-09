@@ -6,7 +6,7 @@
 #             Naohisa Goto <ng@bioruby.org>
 # License:: LGPL
 #
-#  $Id: model.rb,v 1.5 2006/01/08 12:59:04 ngoto Exp $
+#  $Id: model.rb,v 1.6 2006/01/09 11:22:36 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -57,6 +57,7 @@ module Bio
         @serial = serial
         @structure = structure
         @chains = []
+        @chains_hash = {}
         @solvents = Chain.new('', self)
       end
 
@@ -79,7 +80,30 @@ module Bio
       def addChain(chain)
         raise "Expecting a Bio::PDB::Chain" unless chain.is_a? Bio::PDB::Chain
         @chains.push(chain)
-        self        
+        if @chains_hash[chain.chain_id] then
+          $stderr.puts "Warning: chain_id #{chain.chain_id.inspect} is already used" if $VERBOSE
+        else
+          @chains_hash[chain.chain_id] = chain
+        end
+        self
+      end
+
+      # rehash chains hash
+      def rehash
+        begin
+          chains_bak = @chains
+          chains_hash_bak = @chains_hash
+          @chains = []
+          @chains_hash = {}
+          chains_bak.each do |chain|
+            self.addChain(chain)
+          end
+        rescue RuntimeError
+          @chains = chains_bak
+          @chains_hash = chains_hash_bak
+          raise
+        end
+        self
       end
       
       # (OBSOLETE) Adds a solvent molecule to this model
@@ -107,7 +131,8 @@ module Bio
       
       # Keyed access to chains
       def [](key)
-        chain = @chains.find{ |chain| key == chain.id }
+        #chain = @chains.find{ |chain| key == chain.id }
+        @chains_hash[key]
       end
       
       # stringifies to chains
