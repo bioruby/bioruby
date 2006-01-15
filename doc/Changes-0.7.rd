@@ -188,21 +188,42 @@ instead of a Hash of a entry ID string.
 
 --- Bio::PDB
 
+In 0.7.0:
+
 * Bio::PDB::Atom is removed. Instead, please use Bio::PDB::Record::ATOM and
   Bio::PDB::Record::HETATM.
 * Bio::PDB::FieldDef is removed and Bio::PDB::Record is completely
-  changed. Now, Record is changed from hash to Struct, and
-  method_missing is no longer used.
+  changed. Now, records is changed from hash to Struct objects.
+  (Note that method_missing is no longer used.)
+* In records, "do_parse" is now automatically called.
+  Users don't need to call do_parse explicitly.
+  (0.7.0 feature: "inspect" does not call do_parse.)
+  (0.7.1 feature: "inspect" calls do_parse.)
 * In the "MODEL" record, model_serial is changed to serial.
 * In records, record_type is changed to record_name.
-* In any records, record_type is changed to record_name.
-* In most records contains real numbers, changed to return
-  float values instead of strings.
+* In most records contains real numbers, return values are changed
+  to float instead of string.
 * Pdb_AChar, Pdb_Atom, Pdb_Character, Pdb_Continuation,
   Pdb_Date, Pdb_IDcode, Pdb_Integer, Pdb_LString, Pdb_List,
   Pdb_Real, Pdb_Residue_name, Pdb_SList, Pdb_Specification_list,
   Pdb_String, Pdb_StringRJ and Pdb_SymOP are moved under
   Bio::PDB::DataType.
+* There are more and more changes to be written...
+
+In 0.7.1:
+
+* Heterogens and HETATMs are completely separeted from residues and ATOMs.
+  HETATMs (Bio::PDB::Record::HETATM objects) are stored in
+  Bio::PDB::Heterogen (which inherits Bio::PDB::Residue).
+* Waters (resName=="HOH") are treated as normal heterogens.
+  Model#solvents is still available but it will be deprecated.
+* In Bio::PDB::Chain, adding "LIGAND" to the heterogen id is no longer
+  available. Instead, please use Chain#get_heterogen_by_id method.
+  In addition, Bio::{PDB|PDB::Model::PDB::Chain}#heterogens, #each_heterogen,
+  #find_heterogen, Bio::{PDB|PDB::Model::PDB::Chain::PDB::Heterogen}#hetatms,
+  #each_hetatm, #find_hetatm methods are added.
+* Bio::PDB#seqres returns Bio::Sequence::NA object if the chain seems to be
+  a nucleic acid sequence.
 * There are more and more changes to be written...
 
 === Deleted files
