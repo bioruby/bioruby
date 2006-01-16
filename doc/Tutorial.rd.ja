@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.18 2005/12/07 11:40:45 k Exp $
+  $Id: Tutorial.rd.ja,v 1.19 2006/01/16 15:23:11 k Exp $
 
   Copyright (C) 2001-2003, 2005 KATAYAMA Toshiaki <k@bioruby.org>
 
@@ -50,6 +50,18 @@ Ruby 標準装備のクラスやメソッドについては、Ruby のリファレンスマニュアルを
 
 * ((<URL:http://i.loveruby.net/ja/prog/refe.html>))
 
+=== RubyGems のインストール
+
+RubyGems のページから最新版をダウンロードします。
+
+* ((<URL:http://rubyforge.org/projects/rubygems/>))
+
+展開してインストールします。
+
+  % tar zxvf rubygems-x.x.x.tar.gz
+  % cd rubygems-x.x.x
+  % ruby setup.rb
+
 === BioRuby のインストール
 
 BioRuby のインストール方法は http://bioruby.org/archive/ から
@@ -64,9 +76,9 @@ BioPerl と比べて BioRuby のインストールはすぐに終わります。
   % ruby install.rb setup
   # ruby install.rb install
 
-さらに、RubyGems が使える環境であれば
+RubyGems が使える環境であれば
 
-  % gems install bio
+  % gem install bio
 
 だけでインストールできます。
 
@@ -2048,7 +2060,7 @@ BioFetch を使ってエントリを取得するには、いくつかの方法があります。
       serv = reg.get_database('genbank')
       entry = serv.get_by_id('AA2CG')
 
-もし(4) を使いたい場合は seqdatabase.ini で
+もし (4) を使いたい場合は seqdatabase.ini で
 
     [genbank]
     protocol=biofetch
