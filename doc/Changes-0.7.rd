@@ -5,22 +5,22 @@ is released.
 
 --- Ruby 1.6 series are no longer supported.
 
-We use autoload functionality and many other libraries bundled in
-Ruby 1.8.2 (such as SOAP, open-uri, pp etc.) by default.
+We use autoload functionality and many standard (bundled) libraries
+(such as SOAP, open-uri, pp etc.) only in Ruby >1.8.2.
 
 --- BioRuby will be loaded about 30 times faster than before.
 
 As we changed to use autoload instead of require, time required
 to start up the BioRuby library made surprisingly faster.
 
-Other changes (including exciting BioRuby shell etc.) made in this release
-is described in this file.
+Other changes (including newly introduced BioRuby shell etc.) made
+in this series will be described in this file.
 
 == New features
 
 --- BioRuby shell
 
-Command line user interface for the BioRuby is included.
+A new command line user interface for the BioRuby is now included.
 You can invoke the shell by
 
   % bioruby
@@ -139,13 +139,13 @@ as it was a typo.
 
 * lib/bio/db/genbank/common.rb is removed.
 
-Renamed to Bio::NCBIDB::Common for the simple autoload dependency.
+Renamed to Bio::NCBIDB::Common to make simplify the autoload dependency.
 
 --- Bio::EMBL::Common
 
 * lib/bio/db/embl/common.rb is removed.
 
-Renamed to Bio::EMBLDB::Common for the simple autoload dependency.
+Renamed to Bio::EMBLDB::Common to make simplify the autoload dependency.
 
 --- Bio::KEGG::GENES
 
@@ -244,7 +244,7 @@ in your code to
 
   require 'bio'
 
-and this change will also speeds up loading time if you only need
+and this change will also speeds up loading time even if you only need
 one of the sub classes under the genbank/ or embl/ directory.
 
 : lib/bio/extend.rb
