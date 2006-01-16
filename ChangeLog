@@ -1,3 +1,7 @@
+2005-12-19  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby 0.7.0 is released.
+
 2005-12-19  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/db/pdb.rb, lib/bio/db/pdb/pdb.rb, lib/bio/db/pdb/*.rb
