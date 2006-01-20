@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_soapwsdl.rb,v 1.1 2005/12/18 17:11:25 nakao Exp $ 
+#  $Id: test_soapwsdl.rb,v 1.2 2006/01/20 12:04:03 k Exp $ 
 #
 
 require 'pathname'
@@ -30,7 +30,7 @@ require 'bio/io/soapwsdl'
 
 module Bio
 
-class TestSOAPWSDL < Test::Unit::TestCase
+class FuncTestSOAPWSDL < Test::Unit::TestCase
 
   def setup
     @wsdl = 'http://www.ebi.ac.uk/xembl/XEMBL.wsdl'
@@ -59,4 +59,6 @@ class TestSOAPWSDL < Test::Unit::TestCase
   end
 
 end
+
 end
+
