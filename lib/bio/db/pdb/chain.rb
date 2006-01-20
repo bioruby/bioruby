@@ -6,7 +6,7 @@
 #             Naohisa Goto <ng@bioruby.org>
 # License:: LGPL
 # 
-#  $Id: chain.rb,v 1.5 2006/01/09 11:22:36 ngoto Exp $
+#  $Id: chain.rb,v 1.6 2006/01/20 13:54:08 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -185,7 +185,7 @@ module Bio
       
       # Stringifies each residue
       def to_s
-        @residues.join('') + "TER\n"
+        @residues.join('') + "TER\n" + @heterogens.join('')
       end
 
       # gets an amino acid sequence of this chain from ATOM records

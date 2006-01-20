@@ -6,7 +6,7 @@
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 # License:: LGPL
 #
-#  $Id: pdb.rb,v 1.12 2006/01/08 12:59:04 ngoto Exp $
+#  $Id: pdb.rb,v 1.13 2006/01/20 13:54:08 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -1009,6 +1009,24 @@ module Bio
           @parsed = true
           self
         end
+
+        def to_s
+          sprintf("%-6s%5d %-4s%-1s%3s %-1s%4d%-1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %-4s%2s%-2s\n",
+                  self.record_name,
+                  self.serial, 
+                  self.name,
+                  self.altLoc,
+                  self.resName,
+                  self.chainID,
+                  self.resSeq,
+                  self.iCode,
+                  self.x, self.y, self.z,
+                  self.occupancy,
+                  self.tempFactor,
+                  self.segID,
+                  self.element,
+                  self.charge)
+        end
       end #class ATOM
 
       # SIGATM record class
@@ -1576,7 +1594,7 @@ module Bio
     def to_s
       string = ""
       @models.each{ |model| string << model.to_s }
-      string << "END"
+      string << "END\n"
       return string
     end
     

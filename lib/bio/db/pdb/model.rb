@@ -6,7 +6,7 @@
 #             Naohisa Goto <ng@bioruby.org>
 # License:: LGPL
 #
-#  $Id: model.rb,v 1.6 2006/01/09 11:22:36 ngoto Exp $
+#  $Id: model.rb,v 1.7 2006/01/20 13:54:08 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -139,14 +139,14 @@ module Bio
       def to_s
         string = ""
         if model_serial
-          string = "MODEL     #{model_serial}" #Should use proper formatting
+          string = "MODEL     #{model_serial}\n" #Should use proper formatting
         end
         @chains.each{ |chain| string << chain.to_s }
         #if solvent
         #  string << @solvent.to_s
         #end
         if model_serial
-          string << "ENDMDL"
+          string << "ENDMDL\n"
         end
         return string
       end
