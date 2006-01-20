@@ -7,7 +7,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     LGPL
 #
-# $Id: sequence.rb,v 0.49 2005/11/27 15:46:01 k Exp $
+# $Id: sequence.rb,v 0.50 2006/01/20 09:58:31 k Exp $
 #
 #--
 # *TODO* remove this functionality?
@@ -516,8 +516,8 @@ if __FILE__ == $0
   p rna.translate
 
   puts "\n== Test Bio::Sequence::NA#gc_percent"
-  p na.gc
-  p rna.gc
+  p na.gc_percent
+  p rna.gc_percent
 
   puts "\n== Test Bio::Sequence::NA#illegal_bases"
   p na.illegal_bases
