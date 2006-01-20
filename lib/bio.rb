@@ -1,11 +1,11 @@
 #
 # = bio.rb - Loading all BioRuby modules
 #
-# Copyright::	Copyright (C) 2001-2005
+# Copyright::	Copyright (C) 2001-2006
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: bio.rb,v 1.58 2005/11/28 04:57:32 k Exp $
+# $Id: bio.rb,v 1.59 2006/01/20 09:57:08 k Exp $
 #
 #--
 #
@@ -28,7 +28,7 @@
 
 module Bio
 
-  BIORUBY_VERSION = [0, 7, 0].extend(Comparable)
+  BIORUBY_VERSION = [0, 7, 1].extend(Comparable)
 
   ### Basic data types
 
@@ -78,19 +78,6 @@ module Bio
 
   ## GenBank/RefSeq/DDBJ
 
-  # module Bio
-  #   autoload :NCBIDB, 'bio/db'
-  #   class GenBank < NCBIDB
-  #     autoload :Common, 'bio/db/genbank/common'
-  #     include Bio::GenBank::Common
-
-  # module Bio
-  #   autoload :NCBIDB, 'bio/db'
-  #  end
-  #  class Bio::GenBank < Bio::NCBIDB
-  #     autoload :Common, 'bio/db/genbank/common'
-  #     include Bio::GenBank::Common
-
   autoload :GenBank,        'bio/db/genbank/genbank'
   autoload :GenPept,        'bio/db/genbank/genpept'
   autoload :RefSeq,         'bio/db/genbank/refseq'
@@ -107,7 +94,6 @@ module Bio
   autoload :TrEMBL,         'bio/db/embl/trembl'
   autoload :UniProt,        'bio/db/embl/uniprot'
   autoload :SwissProt,      'bio/db/embl/swissprot'
-
 
   ## KEGG
 
@@ -254,3 +240,4 @@ module Bio
   autoload :ColorScheme,    'bio/util/color_scheme'
 
 end
+

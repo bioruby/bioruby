@@ -1,3 +1,22 @@
+2005-01-20  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby 0.7.1 is released.
+
+	* test/unit/bio/db/test_rebase.rb: fixed to run w/o errors.
+
+2005-01-12  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/db.ra: fixed a bug of the tag_cut method introduced in 0.7.0
+	  (reported by Alex Gutteridge)
+
+2005-01-04  Naohisa Goto <ng@bioruby.org>
+
+	* Bio::PDB is refactored.  See doc/Changes-0.7 for more details.
+
+2005-12-28  Toshiaki Katayama <k@bioruby.org>
+
+	* test/unit/bio/util/test_sirna.rb: fixed to run w/o errors.
+
 2005-12-19  Toshiaki Katayama <k@bioruby.org>
 
 	* BioRuby 0.7.0 is released.
