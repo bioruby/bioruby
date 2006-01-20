@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
 # License::    LGPL
 #
-#  $Id: test_rebase.rb,v 1.1 2005/12/05 19:44:07 trevor Exp $
+#  $Id: test_rebase.rb,v 1.2 2006/01/20 09:53:24 k Exp $
 #
 #
 #--
@@ -35,7 +35,7 @@ require 'test/unit'
 require 'bio/db/rebase'
 
 module Bio
-  class TestGFF < Test::Unit::TestCase
+  class TestREBASE < Test::Unit::TestCase
     
     def setup
       enzyme_data = <<END
