@@ -661,6 +661,8 @@ class Installer
   #
 
   def exec_test
+    bioruby_path = './lib'
+    $:.unshift(bioruby_path) unless $:.include?(bioruby_path)
     testdir = 'test'
     $stderr.printf "Running all tests in %s...\n", testdir if verbose?
     require 'test/unit'
