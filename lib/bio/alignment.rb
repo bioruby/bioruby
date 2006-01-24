@@ -6,7 +6,7 @@
 #
 # License:: LGPL
 #
-#  $Id: alignment.rb,v 1.14 2005/12/02 12:01:28 ngoto Exp $
+#  $Id: alignment.rb,v 1.15 2006/01/24 14:16:59 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -817,12 +817,12 @@ Mix-in for Hash or Hash-like classes.
       end
       alias slice alignment_slice
 
-      # For each sequence, the 'subseq' method (Bio::Seqeunce#subseq is
+      # For each sequence, the 'subseq' method (Bio::Seqeunce::Common#subseq is
       # expected) is executed, and returns a new alignment as
       # a Bio::Alignment::SequenceArray object.
       #
       # All sequences in the alignment are expected to be kind of
-      # Bio::Sequence objects.
+      # Bio::Sequence::NA or Bio::Sequence::AA objects.
       #
       # Unlike alignment_window method, the result alignment
       # might contain nil.
@@ -1177,7 +1177,7 @@ Mix-in for Hash or Hash-like classes.
       # Gets the sequence from given object.
       def extract_seq(obj)
         seq = nil
-        if obj.is_a?(Bio::Sequence) then
+        if obj.is_a?(Bio::Sequence::NA) or obj.is_a?(Bio::Sequence::AA) then
           seq = obj
         else
           for m in [ :seq, :naseq, :aaseq ]
@@ -1602,7 +1602,7 @@ Mix-in for Hash or Hash-like classes.
       # It resembles BioPerl's AlignI::add_seq method.
       def add_seq(seq, key = nil)
         #(BioPerl) AlignI::add_seq like method
-        unless seq.is_a?(Bio::Sequence) then
+        unless seq.is_a?(Bio::Sequence::NA) or seq.is_a?(Bio::Sequence::AA)
           s =   extract_seq(seq)
           key = extract_key(seq) unless key
           seq = s
