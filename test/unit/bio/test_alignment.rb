@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_alignment.rb,v 1.6 2005/12/02 13:01:49 ngoto Exp $
+#  $Id: test_alignment.rb,v 1.7 2006/01/24 14:11:34 ngoto Exp $
 #
 
 require 'pathname'
@@ -519,12 +519,20 @@ module Bio
     end
 
     def test_alignment_subseq
-      a = A[ Sequence.new('a'), Sequence.new('at'), Sequence.new('atgca'),
-        Sequence.new('atg'), Sequence.new('') ]
-      assert_equal(Alignment::SequenceArray[ Sequence.new(''),
-                     Sequence.new('t'), Sequence.new('tgc'),
-                     Sequence.new('tg'), nil ],
-                   a.alignment_subseq(2,4))
+      a = A[
+        Sequence::NA.new('a'),
+        Sequence::NA.new('at'),
+        Sequence::NA.new('atgca'),
+        Sequence::NA.new('atg'),
+        Sequence::NA.new('')
+      ]
+      assert_equal(Alignment::SequenceArray[
+                     Sequence::NA.new(''),
+                     Sequence::NA.new('t'),
+                     Sequence::NA.new('tgc'),
+                     Sequence::NA.new('tg'),
+                     nil
+                   ], a.alignment_subseq(2,4))
     end
 
     def test_alignment_concat
