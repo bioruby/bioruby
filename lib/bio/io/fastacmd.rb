@@ -1,18 +1,22 @@
 #
 # = bio/io/fastacmd.rb - NCBI fastacmd wrapper class
 #
-# Copyright::  Copyright (C) 2005 
+# Copyright::  Copyright (C) 2005, 2006
 #              Shuji SHIGENOBU <shige@nibb.ac.jp>,
-#              Toshiaki Katayama <k@bioruby.org>
+#              Toshiaki Katayama <k@bioruby.org>,
+#              Mitsuteru C. Nakao <n@bioruby.org>
 # Lisence::    LGPL
 #
-# $Id: fastacmd.rb,v 1.9 2006/01/28 07:41:59 nakao Exp $
+# $Id: fastacmd.rb,v 1.10 2006/01/28 08:12:21 nakao Exp $
 #
 # == Description
 #
 # Retrives FASTA formatted sequences from a blast database using 
 # NCBI fastacmd command.
 # 
+# This class requires 'fastacmd' command and a blast database  
+# (formatted using the '-o' option of 'formatdb').
+#
 # == Examples
 #
 #    database = ARGV.shift || "/db/myblastdb"
