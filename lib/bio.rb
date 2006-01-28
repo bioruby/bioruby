@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: bio.rb,v 1.60 2006/01/28 06:46:42 k Exp $
+# $Id: bio.rb,v 1.61 2006/01/28 08:34:25 k Exp $
 #
 #--
 #
@@ -167,7 +167,6 @@ module Bio
   end
 
 # autoload :ESOAP,          'bio/io/esoap'      # NCBI::ESOAP ?
-# autoload :BRDB,           'bio/io/brdb'       # remove
 
 
   ### Applications
