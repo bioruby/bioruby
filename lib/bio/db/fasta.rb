@@ -1,8 +1,68 @@
 #
-# bio/db/fasta.rb - FASTA format class
+# = bio/db/fasta.rb - FASTA format class
 #
-#   Copyright (C) 2001 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
-#   Copyright (C) 2001, 2002 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::  Copyright (C) 2001, 2002
+#              GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>,
+#              KATAYAMA Toshiaki <k@bioruby.org>
+# Lisence::    LGPL
+#
+# $Id: fasta.rb,v 1.22 2006/01/28 10:48:59 nakao Exp $
+# 
+# == Description
+# 
+# FASTA format class.
+#
+# == Examples
+#
+#       rub = Bio::FastaDefline.new('>gi|671595|emb|CAA85678.1| rubisco large subunit [Perovskia abrotanoides]')
+#       rub.entry_id       ==> 'gi|671595'
+#       rub.get('emb')     ==> 'CAA85678.1'
+#       rub.emb            ==> 'CAA85678.1'
+#       rub.gi             ==> '671595'
+#       rub.accession      ==> 'CAA85678'
+#       rub.accessions     ==> [ 'CAA85678' ]
+#       rub.acc_version    ==> 'CAA85678.1'
+#       rub.locus          ==> nil
+#       rub.list_ids       ==> [["gi", "671595"],
+#                               ["emb", "CAA85678.1", nil],
+#                               ["Perovskia abrotanoides"]]
+#
+#       ckr = Bio::FastaDefline.new(">gi|2495000|sp|Q63931|CCKR_CAVPO CHOLECYSTOKININ TYPE A RECEPTOR (CCK-A RECEPTOR) (CCK-AR)\001gi|2147182|pir||I51898 cholecystokinin A receptor - guinea pig\001gi|544724|gb|AAB29504.1| cholecystokinin A receptor; CCK-A receptor [Cavia]")
+#       ckr.entry_id      ==> "gi|2495000"
+#       ckr.sp            ==> "CCKR_CAVPO"
+#       ckr.pir           ==> "I51898"
+#       ckr.gb            ==> "AAB29504.1"
+#       ckr.gi            ==> "2495000"
+#       ckr.accession     ==> "AAB29504"
+#       ckr.accessions    ==> ["Q63931", "AAB29504"]
+#       ckr.acc_version   ==> "AAB29504.1"
+#       ckr.locus         ==> nil
+#       ckr.description   ==>
+#         "CHOLECYSTOKININ TYPE A RECEPTOR (CCK-A RECEPTOR) (CCK-AR)"
+#       ckr.descriptions  ==>
+#         ["CHOLECYSTOKININ TYPE A RECEPTOR (CCK-A RECEPTOR) (CCK-AR)",
+#          "cholecystokinin A receptor - guinea pig",
+#          "cholecystokinin A receptor; CCK-A receptor [Cavia]"]
+#       ckr.words         ==> 
+#         ["cavia", "cck-a", "cck-ar", "cholecystokinin", "guinea", "pig",
+#          "receptor", "type"]
+#       ckr.id_strings    ==>
+#         ["2495000", "Q63931", "CCKR_CAVPO", "2147182", "I51898",
+#          "544724", "AAB29504.1", "Cavia"]
+#       ckr.list_ids      ==>
+#         [["gi", "2495000"], ["sp", "Q63931", "CCKR_CAVPO"],
+#          ["gi", "2147182"], ["pir", nil, "I51898"], ["gi", "544724"],
+#          ["gb", "AAB29504.1", nil], ["Cavia"]]
+#
+# == References
+#
+# * FASTA format (WikiPedia)
+#   http://en.wikipedia.org/wiki/FASTA_format
+#   
+# * Fasta format description (NCBI)
+#   http://www.ncbi.nlm.nih.gov/BLAST/fasta.shtml
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -18,7 +78,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.21 2005/09/26 13:00:06 k Exp $
+#++
 #
 
 require 'bio/db'
@@ -26,30 +86,125 @@ require 'bio/sequence'
 
 module Bio
 
+
+  # Treats a FASTA formatted entry, such as:
+  #
+  #   >id and/or some comments                    <== comment line
+  #   ATGCATGCATGCATGCATGCATGCATGCATGCATGC        <== sequence lines
+  #   ATGCATGCATGCATGCATGCATGCATGCATGCATGC
+  #   ATGCATGCATGC
+  # 
+  # The precedent '>' can be omitted and the trailing '>' will be removed
+  # automatically.
+  #
+  # === Examples
+  #
+  #   f_str = <<END
+  #   >sce:YBR160W  CDC28, SRM5; cyclin-dependent protein kinase catalytic subunit [EC:2.7.1.-] [SP:CC28_YEAST]
+  #   MSGELANYKRLEKVGEGTYGVVYKALDLRPGQGQRVVALKKIRLESEDEG
+  #   VPSTAIREISLLKELKDDNIVRLYDIVHSDAHKLYLVFEFLDLDLKRYME
+  #   GIPKDQPLGADIVKKFMMQLCKGIAYCHSHRILHRDLKPQNLLINKDGNL
+  #   KLGDFGLARAFGVPLRAYTHEIVTLWYRAPEVLLGGKQYSTGVDTWSIGC
+  #   IFAEMCNRKPIFSGDSEIDQIFKIFRVLGTPNEAIWPDIVYLPDFKPSFP
+  #   QWRRKDLSQVVPSLDPRGIDLLDKLLAYDPINRISARRAAIHPYFQES
+  #   >sce:YBR274W  CHK1; probable serine/threonine-protein kinase [EC:2.7.1.-] [SP:KB9S_YEAST]
+  #   MSLSQVSPLPHIKDVVLGDTVGQGAFACVKNAHLQMDPSIILAVKFIHVP
+  #   TCKKMGLSDKDITKEVVLQSKCSKHPNVLRLIDCNVSKEYMWIILEMADG
+  #   GDLFDKIEPDVGVDSDVAQFYFQQLVSAINYLHVECGVAHRDIKPENILL
+  #   DKNGNLKLADFGLASQFRRKDGTLRVSMDQRGSPPYMAPEVLYSEEGYYA
+  #   DRTDIWSIGILLFVLLTGQTPWELPSLENEDFVFFIENDGNLNWGPWSKI
+  #   EFTHLNLLRKILQPDPNKRVTLKALKLHPWVLRRASFSGDDGLCNDPELL
+  #   AKKLFSHLKVSLSNENYLKFTQDTNSNNRYISTQPIGNELAELEHDSMHF
+  #   QTVSNTQRAFTSYDSNTNYNSGTGMTQEAKWTQFISYDIAALQFHSDEND
+  #   CNELVKRHLQFNPNKLTKFYTLQPMDVLLPILEKALNLSQIRVKPDLFAN
+  #   FERLCELLGYDNVFPLIINIKTKSNGGYQLCGSISIIKIEEELKSVGFER
+  #   KTGDPLEWRRLFKKISTICRDIILIPN
+  #   END
+  #
+  #   f = Bio::FastaFormat.new(f_str)
+  #   puts "### FastaFormat"
+  #   puts "# entry"
+  #   puts f.entry
+  #   puts "# entry_id"
+  #   p f.entry_id
+  #   puts "# definition"
+  #   p f.definition
+  #   puts "# data"
+  #   p f.data
+  #   puts "# seq"
+  #   p f.seq
+  #   puts "# seq.type"
+  #   p f.seq.type
+  #   puts "# length"
+  #   p f.length
+  #   puts "# aaseq"
+  #   p f.aaseq
+  #   puts "# aaseq.type"
+  #   p f.aaseq.type
+  #   puts "# aaseq.composition"
+  #   p f.aaseq.composition
+  #   puts "# aalen"
+  #   p f.aalen
+  #
+  # === References
+  #
+  # * FASTA format (WikiPedia) 
+  #   http://en.wikipedia.org/wiki/FASTA_format
+  #
   class FastaFormat < DB
 
+    # Entry delimiter in flatfile text.
     DELIMITER	= RS = "\n>"
 
+    # The comment line of the FASTA formatted data.
+    attr_accessor :definition
+
+    # The seuqnce lines in text.
+    attr_accessor :data
+
+    attr_reader :entry_overrun
+
+    # Stores the comment and sequence information from one entry of the
+    # FASTA format string.  If the argument contains more than one
+    # entry, only the first entry is used.
     def initialize(str)
       @definition = str[/.*/].sub(/^>/, '').strip	# 1st line
       @data = str.sub(/.*/, '')				# rests
       @data.sub!(/^>.*/m, '')	# remove trailing entries for sure
       @entry_overrun = $&
     end
-    attr_accessor :definition, :data
-    attr_reader :entry_overrun
 
+    # Returns the stored one entry as a FASTA format. (same as to_s)
     def entry
       @entry = ">#{@definition}\n#{@data.strip}\n"
     end
     alias to_s entry
 
+
+    # Executes FASTA/BLAST search by using a Bio::Fasta or a Bio::Blast
+    # factory object.
+    #
+    #   #!/usr/bin/env ruby
+    #   require 'bio'
+    #   
+    #   factory = Bio::Fasta.local('fasta34', 'db/swissprot.f')
+    #   flatfile = Bio::FlatFile.open(Bio::FastaFormat, 'queries.f')
+    #   flatfile.each do |entry|
+    #     p entry.definition
+    #     result = entry.fasta(factory)
+    #     result.each do |hit|
+    #       print "#{hit.query_id} : #{hit.evalue}\t#{hit.target_id} at "
+    #       p hit.lap_at
+    #     end
+    #   end
+    #
     def query(factory)
       factory.query(@entry)
     end
     alias fasta query
     alias blast query
 
+    # Returns a joined sequence line as a String.
     def seq
       unless defined?(@seq)
         unless /\A\s*^\#/ =~ @data then
@@ -75,31 +230,41 @@ module Bio
       @seq
     end
 
+    # Returns comments.
     def comment
       seq
       @comment
     end
 
+    # Returns sequence length.
     def length
       seq.length
     end
 
+    # Returens the Bio::Sequence::NA.
     def naseq
       Sequence::NA.new(seq)
     end
 
+    # Returens the length of Bio::Sequence::NA.
     def nalen
       self.naseq.length
     end
 
+    # Returens the Bio::Sequence::AA.
     def aaseq
       Sequence::AA.new(seq)
     end
 
+    # Returens the length of Bio::Sequence::AA.
     def aalen
       self.aaseq.length
     end
 
+    # Parsing FASTA Defline, and extract IDs.
+    # IDs are NSIDs (NCBI standard FASTA sequence identifiers)
+    # or ":"-separated IDs.
+    # It returns a Bio::FastaDefline instance.
     def identifiers
       unless defined?(@ids) then
         @ids = FastaDefline.new(@definition)
@@ -107,34 +272,69 @@ module Bio
       @ids
     end
 
+    # Parsing FASTA Defline (using #identifiers method), and
+    # shows a possibly unique identifier.
+    # It returns a string.
     def entry_id
       identifiers.entry_id
     end
 
+    # Parsing FASTA Defline (using #identifiers method), and
+    # shows GI/locus/accession/accession with version number.
+    # If a entry has more than two of such IDs,
+    # only the first ID are shown.
+    # It returns a string or nil.
     def gi
       identifiers.gi
     end
 
+    # Returns an accession number.
     def accession
       identifiers.accession
     end
 
+    # Parsing FASTA Defline (using #identifiers method), and
+    # shows accession numbers.
+    # It returns an array of strings.
     def accessions
       identifiers.accessions
     end
 
+    # Returns accession number with version.
     def acc_version
       identifiers.acc_version
     end
 
+    # Returns locus.
     def locus
       identifiers.locus
     end
 
   end #class FastaFormat
 
+  # Treats a FASTA formatted numerical entry, such as:
+  # 
+  #   >id and/or some comments                    <== comment line
+  #   24 15 23 29 20 13 20 21 21 23 22 25 13      <== numerical data
+  #   22 17 15 25 27 32 26 32 29 29 25
+  # 
+  # The precedent '>' can be omitted and the trailing '>' will be removed
+  # automatically.
+  #
+  # --- Bio::FastaNumericFormat.new(entry)
+  # 
+  # Stores the comment and the list of the numerical data.
+  # 
+  # --- Bio::FastaNumericFormat#definition
+  #
+  # The comment line of the FASTA formatted data.
+  #
+  # * FASTA format (Wikipedia)
+  #   http://en.wikipedia.org/wiki/FASTA_format
   class FastaNumericFormat < FastaFormat
 
+    # Returns the list of the numerical data (typically the quality score
+    # of its corresponding sequence) as an Array.
     def data
       unless @list
         @list = @data.strip.split(/\s+/).map {|x| x.to_i}
@@ -142,16 +342,19 @@ module Bio
       @list
     end
 
+    # Returns the number of elements in the numerical data.
     def length
       data.length
     end
 
+    # Yields on each elements of the numerical data.
     def each
       data.each do |x|
         yield x
       end
     end
 
+    # Returns the n-th element.
     def [](n)
       data[n]
     end
@@ -160,11 +363,69 @@ module Bio
 
   end #class FastaNumericFormat
 
-  class FastaDefline
 
-    # specs are described in:
-    # ftp://ftp.ncbi.nih.gov/blast/documents/README.formatdb
-    # http://blast.wustl.edu/doc/FAQ-Indexing.html#Identifiers
+  # Parsing FASTA Defline, and extract IDs and other informations.
+  # IDs are NSIDs (NCBI standard FASTA sequence identifiers)
+  # or ":"-separated IDs.
+  # 
+  # specs are described in:
+  # ftp://ftp.ncbi.nih.gov/blast/documents/README.formatdb
+  # http://blast.wustl.edu/doc/FAQ-Indexing.html#Identifiers
+  #
+  # === Examples
+  #
+  #   rub = Bio::FastaDefline.new('>gi|671595|emb|CAA85678.1| rubisco large subunit [Perovskia abrotanoides]')
+  #   rub.entry_id       ==> 'gi|671595'
+  #   rub.get('emb')     ==> 'CAA85678.1'
+  #   rub.emb            ==> 'CAA85678.1'
+  #   rub.gi             ==> '671595'
+  #   rub.accession      ==> 'CAA85678'
+  #   rub.accessions     ==> [ 'CAA85678' ]
+  #   rub.acc_version    ==> 'CAA85678.1'
+  #   rub.locus          ==> nil
+  #   rub.list_ids       ==> [["gi", "671595"],
+  #                           ["emb", "CAA85678.1", nil],
+  #                           ["Perovskia abrotanoides"]]
+  #
+  #   ckr = Bio::FastaDefline.new(">gi|2495000|sp|Q63931|CCKR_CAVPO CHOLECYSTOKININ TYPE A RECEPTOR (CCK-A RECEPTOR) (CCK-AR)\001gi|2147182|pir||I51898 cholecystokinin A receptor - guinea pig\001gi|544724|gb|AAB29504.1| cholecystokinin A receptor; CCK-A receptor [Cavia]")
+  #   ckr.entry_id      ==> "gi|2495000"
+  #   ckr.sp            ==> "CCKR_CAVPO"
+  #   ckr.pir           ==> "I51898"
+  #   ckr.gb            ==> "AAB29504.1"
+  #   ckr.gi            ==> "2495000"
+  #   ckr.accession     ==> "AAB29504"
+  #   ckr.accessions    ==> ["Q63931", "AAB29504"]
+  #   ckr.acc_version   ==> "AAB29504.1"
+  #   ckr.locus         ==> nil
+  #   ckr.description   ==>
+  #     "CHOLECYSTOKININ TYPE A RECEPTOR (CCK-A RECEPTOR) (CCK-AR)"
+  #   ckr.descriptions  ==>
+  #     ["CHOLECYSTOKININ TYPE A RECEPTOR (CCK-A RECEPTOR) (CCK-AR)",
+  #      "cholecystokinin A receptor - guinea pig",
+  #      "cholecystokinin A receptor; CCK-A receptor [Cavia]"]
+  #   ckr.words         ==> 
+  #     ["cavia", "cck-a", "cck-ar", "cholecystokinin", "guinea", "pig",
+  #      "receptor", "type"]
+  #   ckr.id_strings    ==>
+  #     ["2495000", "Q63931", "CCKR_CAVPO", "2147182", "I51898",
+  #      "544724", "AAB29504.1", "Cavia"]
+  #   ckr.list_ids      ==>
+  #     [["gi", "2495000"], ["sp", "Q63931", "CCKR_CAVPO"],
+  #      ["gi", "2147182"], ["pir", nil, "I51898"], ["gi", "544724"],
+  #      ["gb", "AAB29504.1", nil], ["Cavia"]]
+  #
+  # === Refereneces
+  #
+  # * Fasta format description (NCBI)
+  #   http://www.ncbi.nlm.nih.gov/BLAST/fasta.shtml
+  #
+  # * Frequently Asked Questions:  Indexing of Sequence Identifiers (by Warren R. Gish.)
+  #   http://blast.wustl.edu/doc/FAQ-Indexing.html#Identifiers
+  #
+  # * README.formatdb
+  #   ftp://ftp.ncbi.nih.gov/blast/documents/README.formatdb
+  # 
+  class FastaDefline
 
     NSIDs = {
       # NCBI and WU-BLAST
@@ -197,6 +458,15 @@ module Bio
       'ri'  => [ 'entry_id', 'rearray_id', 'len' ], # RIKEN FANTOM DB
     }
 
+    # Shows array that contains IDs (or ID-like strings).
+    # Returns an array of arrays of strings.
+    attr_reader :list_ids
+
+    # Shows a possibly unique identifier.
+    # Returns a string.
+    attr_reader :entry_id
+
+    # Parses given string.
     def initialize(str)
       @deflines = []
       @info = {}
@@ -210,9 +480,7 @@ module Bio
       end
     end #def initialize
 
-    attr_reader :list_ids
-    attr_reader :entry_id
-
+    # Parses given string and adds parsed data.
     def add_defline(str)
       case str
       when /^\>?\s*((?:[^\|\s]*\|)+[^\s]+)\s*(.*)$/
@@ -343,6 +611,10 @@ module Bio
     end #def parse_NSIDs
     private :parse_NSIDs
 
+
+    # Shows original string.
+    # Note that the result of this method may be different from
+    # original string which is given in FastaDefline.new method.
     def to_s
       @deflines.collect { |a|
         s = a[0]
@@ -350,16 +622,20 @@ module Bio
       }.join("\x01")
     end
 
+    # Shows description.
     def description
       @deflines[0].to_a[-1]
     end
 
+    # Returns descriptions.
     def descriptions
       @deflines.collect do |a|
         a[-1]
       end
     end
 
+    # Shows ID-like strings.
+    # Returns an array of strings.
     def id_strings
       r = []
       @list_ids.each do |a|
@@ -401,6 +677,7 @@ module Bio
       /\A[A-Z][A-Z0-9]*\_[A-Z0-9\_]+\z/
     ]
 
+    # Shows words used in the defline. Returns an Array.
     def words(case_sensitive = nil, kill_regexp = self.class::KillRegexpArray,
               kwhash = self.class::KillWordsHash)
       a = descriptions.join(' ').split(/[\.\,\;\:\(\)\[\]\{\}\<\>\"\'\`\~\/\|\?\!\&\@\#\s\x00-\x1f\x7f]+/)
@@ -426,8 +703,9 @@ module Bio
       a
     end
 
-    def get(db)
-      db =db.to_s
+    # Returns identifires by a database name.
+    def get(dbname)
+      db = dbname.to_s
       r = nil
       unless r = @info[db] then
         di = @list_ids.find { |x| x[0] == db.to_s }
@@ -449,10 +727,11 @@ module Bio
       r
     end
 
-    def get_by_type(tstr)
+    # Returns an identifier by given type.
+    def get_by_type(type_str)
       @list_ids.each do |x|
         if labels = self.class::NSIDs[x[0]] then
-          if i = labels.index(tstr) then
+          if i = labels.index(type_str) then
             return x[i+1]
           end
         end
@@ -460,11 +739,12 @@ module Bio
       nil
     end
 
-    def get_all_by_type(*tstrarg)
+    # Returns identifiers by given type.
+    def get_all_by_type(*type_strarg)
       d = []
       @list_ids.each do |x|
         if labels = self.class::NSIDs[x[0]] then
-          tstrarg.each do |y|
+          type_strarg.each do |y|
             if i = labels.index(y) then
               d << x[i+1] if x[i+1]
             end
@@ -474,6 +754,10 @@ module Bio
       d
     end
 
+    # Shows locus.
+    # If the entry has more than two of such IDs,
+    # only the first ID are shown.
+    # Returns a string or nil.
     def locus
       unless defined?(@locus)
         @locus = get_by_type('locus')
@@ -481,6 +765,10 @@ module Bio
       @locus
     end
 
+    # Shows GI.
+    # If the entry has more than two of such IDs,
+    # only the first ID are shown.
+    # Returns a string or nil.
     def gi
       unless defined?(@gi) then
         @gi = get_by_type('gi')
@@ -488,6 +776,10 @@ module Bio
       @gi
     end
 
+    # Shows accession with version number.
+    # If the entry has more than two of such IDs,
+    # only the first ID are shown.
+    # Returns a string or nil.
     def acc_version
       unless defined?(@acc_version) then
         @acc_version = get_by_type('acc_version')
@@ -495,6 +787,8 @@ module Bio
       @acc_version
     end
 
+    # Shows accession numbers.
+    # Returns an array of strings.
     def accessions
       unless defined?(@accessions) then
         @accessions = get_all_by_type('accession', 'acc_version')
@@ -503,6 +797,7 @@ module Bio
       @accessions
     end
 
+    # Shows an accession number.
     def accession
       unless defined?(@accession) then
         if acc_version then
@@ -523,6 +818,7 @@ module Bio
       end
       r
     end
+    
 
   end #class FastaDefline
 
@@ -609,261 +905,4 @@ END
   p n[-1]
 
 end
-
-=begin
-
-= Bio::FastaFormat
-
-Treats a FASTA formatted entry, such as:
-
-  >id and/or some comments                    <== comment line
-  ATGCATGCATGCATGCATGCATGCATGCATGCATGC        <== sequence lines
-  ATGCATGCATGCATGCATGCATGCATGCATGCATGC
-  ATGCATGCATGC
-
-The precedent '>' can be omitted and the trailing '>' will be removed
-automatically.
-
---- Bio::FastaFormat.new(entry)
-
-      Stores the comment and sequence information from one entry of the
-      FASTA format string.  If the argument contains more than one
-      entry, only the first entry is used.
-
---- Bio::FastaFormat#entry
-
-      Returns the stored one entry as a FASTA format. (same as to_s)
-
---- Bio::FastaFormat#definition
-
-      Returns the comment line of the FASTA formatted data.
-
---- Bio::FastaFormat#seq
-
-      Returns a joined sequence line as a String.
-
---- Bio::FastaFormat#query(factory)
---- Bio::FastaFormat#fasta(factory)
---- Bio::FastaFormat#blast(factory)
-
-      Executes FASTA/BLAST search by using a Bio::Fasta or a Bio::Blast
-      factory object.
-
-        #!/usr/bin/env ruby
-
-        require 'bio'
-
-        factory = Bio::Fasta.local('fasta34', 'db/swissprot.f')
-        flatfile = Bio::FlatFile.open(Bio::FastaFormat, 'queries.f')
-        flatfile.each do |entry|
-          p entry.definition
-          result = entry.fasta(factory)
-          result.each do |hit|
-            print "#{hit.query_id} : #{hit.evalue}\t#{hit.target_id} at "
-            p hit.lap_at
-          end
-        end
-
---- Bio::FastaFormat#length
-
-      Returns sequence length.
-
---- Bio::FastaFormat#naseq
---- Bio::FastaFormat#nalen
---- Bio::FastaFormat#aaseq
---- Bio::FastaFormat#aalen
-
-      If you know whether the sequence is NA or AA, use these methods.
-      'naseq' and 'aaseq' methods returen the Bio::Sequence::NA or
-      Bio::Sequence::AA object respectively. 'nalen' and 'aalen' methods
-      return the length of them.
-
---- Bio::FastaFormat#identifiers
-
-      Parsing FASTA Defline, and extract IDs.
-      IDs are NSIDs (NCBI standard FASTA sequence identifiers)
-      or ":"-separated IDs.
-      It returns a Bio::FastaDefline instance.
-
---- Bio::FastaFormat#entry_id
-
-      Parsing FASTA Defline (using #identifiers method), and
-      shows a possibly unique identifier.
-      It returns a string.
-
---- Bio::FastaFormat#gi
---- Bio::FastaFormat#locus
---- Bio::FastaFormat#accession
---- Bio::FastaFormat#acc_version
-
-      Parsing FASTA Defline (using #identifiers method), and
-      shows GI/locus/accession/accession with version number.
-      If a entry has more than two of such IDs,
-      only the first ID are shown.
-      It returns a string or nil.
-
---- Bio::FastaFormat#accessions
-
-      Parsing FASTA Defline (using #identifiers method), and
-      shows accession numbers.
-      It returns an array of strings.
-
---- Bio::FastaFormat
-
-= Bio::FastaNumericFormat
-
-Treats a FASTA formatted numerical entry, such as:
-
-  >id and/or some comments                    <== comment line
-  24 15 23 29 20 13 20 21 21 23 22 25 13      <== numerical data
-  22 17 15 25 27 32 26 32 29 29 25
-
-The precedent '>' can be omitted and the trailing '>' will be removed
-automatically.
-
---- Bio::FastaNumericFormat.new(entry)
-
-      Stores the comment and the list of the numerical data.
-
---- Bio::FastaNumericFormat#definition
-
-      The comment line of the FASTA formatted data.
-
---- Bio::FastaNumericFormat#data
-
-      Returns the list of the numerical data (typically the quality score
-      of its corresponding sequence) as an Array.
-
---- Bio::FastaNumericFormat#length
-
-      Returns the number of elements in the numerical data.
-
---- Bio::FastaNumericFormat#each
-
-      Yields on each elements of the numerical data.
-
---- Bio::FastaNumericFormat#[](n)
-
-      Returns the n-th element.
-
---- Bio::FastaNumericFormat#identifiers
---- Bio::FastaNumericFormat#entry_id
---- Bio::FastaNumericFormat#gi
---- Bio::FastaNumericFormat#locus
---- Bio::FastaNumericFormat#accession
---- Bio::FastaNumericFormat#acc_version
---- Bio::FastaNumericFormat#accessions
-
-      Same as Bio::FastaFormat.
-
-
-= Bio::FastaDefline
-
-      Parsing FASTA Defline, and extract IDs and other informations.
-      IDs are NSIDs (NCBI standard FASTA sequence identifiers)
-      or ":"-separated IDs.
-      
---- see also:
-      ftp://ftp.ncbi.nih.gov/blast/documents/README.formatdb
-      http://blast.wustl.edu/doc/FAQ-Indexing.html#Identifiers
-
---- Bio::FastaDefline.new(str)
-
-      Parses given string.
-
---- Bio::FastaFormat#entry_id
-
-      Shows a possibly unique identifier.
-      Returns a string.
-
---- Bio::FastaDefline#gi
---- Bio::FastaDefline#locus
---- Bio::FastaDefline#accession
---- Bio::FastaDefline#acc_version
-
-      Shows GI/locus/accession/accession with version number.
-      If the entry has more than two of such IDs,
-      only the first ID are shown.
-      Returns a string or nil.
-
---- Bio::FastaFormat#accessions
-
-      Shows accession numbers.
-      Returns an array of strings.
-
---- Bio::FastaDefline#add_defline(str)
-
-      Parses given string and adds parsed data.
-
---- Bio::FastaDefline#to_s
-
-      Shows original string.
-      Note that the result of this method may be different from
-      original string which is given in FastaDefline.new method.
-
---- Bio::FastaDefline#id_strings
-
-      Shows ID-like strings.
-      Returns an array of strings.
-
---- Bio::FastaDefline#list_ids
-
-      Shows array that contains IDs (or ID-like strings).
-      Returns an array of arrays of strings.
-
---- Bio::FastaDefline#description
---- Bio::FastaDefline#descriptions
-
---- Bio::FastaDefline#words(case_sensitive = nil,
-                            kill_words_regexp_array, kill_words_hash)
-
---- Bio::FastaDefline#get(tag_of_id)
-
---- Bio::FastaDefline#get_by_type(type_of_id)
-
---- Bio::FastaDefline#get_all_by_type(type_of_id)
-
---- examples:
-      rub = Bio::FastaDefline.new('>gi|671595|emb|CAA85678.1| rubisco large subunit [Perovskia abrotanoides]')
-      rub.entry_id       ==> 'gi|671595'
-      rub.get('emb')     ==> 'CAA85678.1'
-      rub.emb            ==> 'CAA85678.1'
-      rub.gi             ==> '671595'
-      rub.accession      ==> 'CAA85678'
-      rub.accessions     ==> [ 'CAA85678' ]
-      rub.acc_version    ==> 'CAA85678.1'
-      rub.locus          ==> nil
-      rub.list_ids       ==> [["gi", "671595"],
-                              ["emb", "CAA85678.1", nil],
-                              ["Perovskia abrotanoides"]]
-
-      ckr = Bio::FastaDefline.new(">gi|2495000|sp|Q63931|CCKR_CAVPO CHOLECYSTOKININ TYPE A RECEPTOR (CCK-A RECEPTOR) (CCK-AR)\001gi|2147182|pir||I51898 cholecystokinin A receptor - guinea pig\001gi|544724|gb|AAB29504.1| cholecystokinin A receptor; CCK-A receptor [Cavia]")
-      ckr.entry_id      ==> "gi|2495000"
-      ckr.sp            ==> "CCKR_CAVPO"
-      ckr.pir           ==> "I51898"
-      ckr.gb            ==> "AAB29504.1"
-      ckr.gi            ==> "2495000"
-      ckr.accession     ==> "AAB29504"
-      ckr.accessions    ==> ["Q63931", "AAB29504"]
-      ckr.acc_version   ==> "AAB29504.1"
-      ckr.locus         ==> nil
-      ckr.description   ==>
-        "CHOLECYSTOKININ TYPE A RECEPTOR (CCK-A RECEPTOR) (CCK-AR)"
-      ckr.descriptions  ==>
-        ["CHOLECYSTOKININ TYPE A RECEPTOR (CCK-A RECEPTOR) (CCK-AR)",
-         "cholecystokinin A receptor - guinea pig",
-         "cholecystokinin A receptor; CCK-A receptor [Cavia]"]
-      ckr.words         ==> 
-        ["cavia", "cck-a", "cck-ar", "cholecystokinin", "guinea", "pig",
-         "receptor", "type"]
-      ckr.id_strings    ==>
-        ["2495000", "Q63931", "CCKR_CAVPO", "2147182", "I51898",
-         "544724", "AAB29504.1", "Cavia"]
-      ckr.list_ids      ==>
-        [["gi", "2495000"], ["sp", "Q63931", "CCKR_CAVPO"],
-         ["gi", "2147182"], ["pir", nil, "I51898"], ["gi", "544724"],
-         ["gb", "AAB29504.1", nil], ["Cavia"]]
-
-=end
-
 
