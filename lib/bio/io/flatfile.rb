@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: flatfile.rb,v 1.41 2005/11/01 15:34:45 ngoto Exp $
+#  $Id: flatfile.rb,v 1.42 2006/01/28 04:23:41 ngoto Exp $
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
 # It acts like a IO object.
@@ -412,18 +412,21 @@ module Bio
       when /^Entry           [A-Z0-9]+/
         Bio::KEGG::BRITE
         
-      when /^ENTRY       .+ KO\s*$/
+      when /^ENTRY       .+ KO\s*/
         Bio::KEGG::KO
-      when /^ENTRY       .+ Glycan\s*$/
+      when /^ENTRY       .+ Glycan\s*/
         Bio::KEGG::GLYCAN
+      when /^ENTRY       EC [0-9\.]+$/,
+           /^ENTRY       .+ Enzyme\s*/
+        Bio::KEGG::ENZYME
+      when /^ENTRY       C[A-Za-z0-9\._]+$/,
+           /^ENTRY       .+ Compound\s*/
+        Bio::KEGG::COMPOUND
+      when /^ENTRY       R[A-Za-z0-9\._]+$/,
+           /^ENTRY       .+ Reaction\s*/
+        Bio::KEGG::REACTION
       when /^ENTRY       .+ (CDS|gene|.*RNA) /
         Bio::KEGG::GENES
-      when /^ENTRY       EC [0-9\.]+$/
-        Bio::KEGG::ENZYME
-      when /^ENTRY       C[A-Za-z0-9\._]+$/
-        Bio::KEGG::COMPOUND
-      when /^ENTRY       R[A-Za-z0-9\._]+$/
-        Bio::KEGG::REACTION
       when /^ENTRY       [a-z]+$/
         Bio::KEGG::GENOME
 
