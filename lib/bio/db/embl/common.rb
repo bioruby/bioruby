@@ -4,12 +4,15 @@
 # Copyright::   Copyright (C) 2001-2005 Mitsuteru C. Nakao <n@bioruby.org>
 # License::     LGPL
 #
-# $Id: common.rb,v 1.8 2005/11/02 07:30:14 nakao Exp $
+# $Id: common.rb,v 1.9 2006/01/28 06:40:38 nakao Exp $
 #
-# == EMBL style databases class
+# == Description
 #
-# This module defines a common framework among EMBL, SWISS-PROT, TrEMBL.
-# For more details, see the documentations in each embl/*.rb libraries.
+# EMBL style databases class
+#
+# This module defines a common framework among EMBL, UniProtKB, SWISS-PROT, 
+# TrEMBL. For more details, see the documentations in each embl/*.rb 
+# libraries.
 #
 # EMBL style format:
 #     ID - identification             (begins each entry; 1 per entry)
@@ -38,15 +41,33 @@
 #     bb - (blanks) sequence data     (>=1 per entry)
 #     // - termination line           (ends each entry; 1 per entry)
 #
-#
-# == Example
+# == Examples
 # 
+#  # Make a new parser class for EMBL style database entry.
 #  require 'bio/db/embl/common'
 #  module Bio
 #    class NEWDB < EMBLDB
 #      include Bio::EMBLDB::Common
 #    end
 #  end
+#
+# == References
+#
+# * The EMBL Nucleotide Sequence Database
+#   http://www.ebi.ac.uk/embl/
+#
+# * The EMBL Nucleotide Sequence Database: Users Manual
+#   http://www.ebi.ac.uk/embl/Documentation/User_manual/usrman.html
+# 
+# * Swiss-Prot Protein knowledgebase. TrEMBL Computer-annotated supplement 
+#   to Swiss-Prot 
+#   http://au.expasy.org/sprot/
+# 
+# * UniProt 
+#   http://uniprot.org/
+# 
+# * The UniProtKB/SwissProt/TrEMBL User Manual 
+#   http://www.expasy.org/sprot/userman.html
 #
 #--
 #

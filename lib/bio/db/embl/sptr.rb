@@ -4,13 +4,32 @@
 # Copyright::   Copyright (C) 2001-2005 Mitsuteru C. Nakao <n@bioruby.org>
 # License::     LGPL
 #
-# $Id: sptr.rb,v 1.29 2005/11/02 07:30:14 nakao Exp $
+# $Id: sptr.rb,v 1.30 2006/01/28 06:40:38 nakao Exp $
 #
-# == UniProtKB/SwissProt and TrEMBL
+# == Description
+# 
+# Shared methods for UniProtKB/SwissProt and TrEMBL classes.
 #
-# See the SWISS-PROT dicument file SPECLIST.TXT.
+# See the SWISS-PROT document file SPECLIST.TXT or UniProtKB/SwissProt 
+# user manual.
+# 
+# == Examples
 #
-# == Example
+#   str = File.read("p53_human.swiss")
+#   obj = Bio::SPTR.new(str)
+#   obj.entry_id #=> "P53_HUMAN"
+# 
+# == References
+# 
+# * Swiss-Prot Protein knowledgebase. TrEMBL Computer-annotated supplement 
+#   to Swiss-Prot	
+#   http://au.expasy.org/sprot/
+#
+# * UniProt
+#   http://uniprot.org/
+#
+# * The UniProtKB/SwissProt/TrEMBL User Manual
+#   http://www.expasy.org/sprot/userman.html
 #
 #--
 #
@@ -36,7 +55,7 @@ require 'bio/db/embl/common'
 
 module Bio
 
-# Parser class for UniProtKB/SwissProt and TrEMBL database entry
+# Parser class for UniProtKB/SwissProt and TrEMBL database entry.
 class SPTR < EMBLDB
   include Bio::EMBLDB::Common
     
@@ -45,17 +64,19 @@ class SPTR < EMBLDB
 
   
   # returns a Hash of the ID line.
+  #
   # returns a content (Int or String) of the ID line by a given key.
   # Hash keys: ['ENTRY_NAME', 'DATA_CLASS', 'MODECULE_TYPE', 'SEQUENCE_LENGTH']
   #
-  # ID Line
-  # "ID  #{ENTRY_NAME} #{DATA_CLASS}; #{MOLECULE_TYPE}; #{SEQUENCE_LENGTH}."
+  # === ID Line
+  #   ID   P53_HUMAN      STANDARD;      PRT;   393 AA.
+  #   #"ID  #{ENTRY_NAME} #{DATA_CLASS}; #{MOLECULE_TYPE}; #{SEQUENCE_LENGTH}."
   #
-  #   ENTRY_NAME := "#{X}_#{Y}"
-  #     X =~ /[A-Z0-9]{1,5}/ # The protein name.
-  #     Y =~ /[A-Z0-9]{1,5}/ # The biological source of the protein.
-  #   MOLECULE_TYPE := 'PRT' =~ /\w{3}/ 
-  #   SEQUENCE_LENGTH =~ /\d+ AA/
+  # === Examples
+  #   obj.id_line  #=> {"ENTRY_NAME"=>"P53_HUMAN", "DATA_CLASS"=>"STANDARD", "SEQUENCE_LENGTH"=>393, "MOLECULE_TYPE"=>"PRT"}
+  #
+  #   obj.id_line('ENTRY_NAME') #=> "P53_HUMAN"
+  #
   def id_line(key = nil)
     unless @data['ID']
       tmp = Hash.new
@@ -78,7 +99,6 @@ class SPTR < EMBLDB
 
   # returns a ENTRY_NAME in the ID line. 
   #
-  # A short-cut for Bio::SPTR#id_line('ENTRY_NAME').
   def entry_id
     id_line('ENTRY_NAME')
   end
@@ -119,10 +139,10 @@ class SPTR < EMBLDB
   #
   # returns a String of information in the DT lines by a given key..
   #
-  # DT Line; date (3/entry)
-  #  DT DD-MMM-YYY (rel. NN, Created)
-  #  DT DD-MMM-YYY (rel. NN, Last sequence update)
-  #  DT DD-MMM-YYY (rel. NN, Last annotation update)
+  # === DT Line; date (3/entry)
+  #   DT DD-MMM-YYY (rel. NN, Created)
+  #   DT DD-MMM-YYY (rel. NN, Last sequence update)
+  #   DT DD-MMM-YYY (rel. NN, Last annotation update)
   def dt(key = nil)
     unless @data['DT']
       tmp = Hash.new
@@ -143,7 +163,7 @@ class SPTR < EMBLDB
 
   # returns the proposed official name of the protein.
   # 
-  # DE Line; description (>=1)
+  # === DE Line; description (>=1)
   #  "DE #{OFFICIAL_NAME} (#{SYNONYM})"
   #  "DE #{OFFICIAL_NAME} (#{SYNONYM}) [CONTEINS: #1; #2]."
   #  OFFICIAL_NAME  1/entry
@@ -192,7 +212,7 @@ class SPTR < EMBLDB
   # * Bio::SPTR#gn -> Array      # AND 
   # * Bio::SPTR#gn[0] -> Array   # OR
   #
-  # GN Line: Gene name(s) (>=0, optional)
+  # === GN Line: Gene name(s) (>=0, optional)
   def gn
     return @data['GN'] if @data['GN']
 
@@ -205,7 +225,7 @@ class SPTR < EMBLDB
   end
 
   # returns contents in the old style GN line.
-  # GN Line: Gene name(s) (>=0, optional)
+  # === GN Line: Gene name(s) (>=0, optional)
   #  GN   HNS OR DRDX OR OSMZ OR BGLY.
   #  GN   CECA1 AND CECA2.
   #  GN   CECA1 AND (HOGE OR FUGA).
@@ -292,7 +312,7 @@ class SPTR < EMBLDB
   # * Bio::SPTR#os[0]['name'] -> "(Human)"
   # * Bio::EPTR#os(0) -> "Homo sapiens (Human)"
   # 
-  # OS Line; organism species (>=1)
+  # === OS Line; organism species (>=1)
   #  OS   Genus species (name).
   #  OS   Genus species (name0) (name1).
   #  OS   Genus species (name0) (name1).
@@ -337,9 +357,9 @@ class SPTR < EMBLDB
 
   # returns a Hash of oraganism taxonomy cross-references.
   # * Bio::SPTR#ox -> Hash
-  #  {'NCBI_TaxID' => ['1234','2345','3456','4567'], ...}
+  #    {'NCBI_TaxID' => ['1234','2345','3456','4567'], ...}
   #
-  # OX Line; organism taxonomy cross-reference (>=1 per entry)
+  # === OX Line; organism taxonomy cross-reference (>=1 per entry)
   #  OX   NCBI_TaxID=1234;
   #  OX   NCBI_TaxID=1234, 2345, 3456, 4567;
   def ox
@@ -368,43 +388,43 @@ class SPTR < EMBLDB
     'SIMILARITY','SUBCELLULAR LOCATION','SUBUNIT','TISSUE SPECIFICITY']
   # returns contents in the CC lines.
   # * Bio::SPTR#cc -> Hash
-
-  # * Bio::SPTR#cc(Int) -> String
-  # returns an Array of contents in the TOPIC string.
+  #
+  # returns an object of contents in the TOPIC.
   # * Bio::SPTR#cc(TOPIC) -> Array w/in Hash, Hash
   #
   # returns contents of the "ALTERNATIVE PRODUCTS".
   # * Bio::SPTR#cc('ALTERNATIVE PRODUCTS') -> Hash
-  #  {'Event' => str, 
-  #   'Named isoforms' => int,  
-  #   'Comment' => str,
-  #   'Variants'=>[{'Name' => str, 'Synonyms' => str, 'IsoId' => str, 'Sequence' => []}]}
+  #    {'Event' => str, 
+  #     'Named isoforms' => int,  
+  #     'Comment' => str,
+  #     'Variants'=>[{'Name' => str, 'Synonyms' => str, 'IsoId' => str, 'Sequence' => []}]}
   # 
-  #  CC   -!- ALTERNATIVE PRODUCTS:
-  #  CC       Event=Alternative splicing; Named isoforms=15;
-  #  ...
-  #  CC         placentae isoforms. All tissues differentially splice exon 13;
-  #  CC       Name=A; Synonyms=no del;
-  #  CC         IsoId=P15529-1; Sequence=Displayed;
+  #    CC   -!- ALTERNATIVE PRODUCTS:
+  #    CC       Event=Alternative splicing; Named isoforms=15;
+  #    ...
+  #    CC         placentae isoforms. All tissues differentially splice exon 13;
+  #    CC       Name=A; Synonyms=no del;
+  #    CC         IsoId=P15529-1; Sequence=Displayed;
   #
   # returns contents of the "DATABASE".
   # * Bio::SPTR#cc('DATABASE') -> Array
-  #  [{'NAME'=>str,'NOTE'=>str, 'WWW'=>URI,'FTP'=>URI}, ...]
+  #    [{'NAME'=>str,'NOTE'=>str, 'WWW'=>URI,'FTP'=>URI}, ...]
   #
-  #  CC   -!- DATABASE: NAME=Text[; NOTE=Text][; WWW="Address"][; FTP="Address"].
+  #    CC   -!- DATABASE: NAME=Text[; NOTE=Text][; WWW="Address"][; FTP="Address"].
   #
   # returns contents of the "MASS SPECTROMETRY".
   # * Bio::SPTR#cc('MASS SPECTROMETRY') -> Array
-  #  [{'MW"=>float,'MW_ERR'=>float, 'METHOD'=>str,'RANGE'=>str}, ...]
+  #    [{'MW"=>float,'MW_ERR'=>float, 'METHOD'=>str,'RANGE'=>str}, ...]
   #
-  #  MASS SPECTROMETRY: MW=XXX[; MW_ERR=XX][; METHOD=XX][;RANGE=XX-XX].
+  #    CC   -!- MASS SPECTROMETRY: MW=XXX[; MW_ERR=XX][; METHOD=XX][;RANGE=XX-XX].
   #
-  # CC lines (>=0, optional)
-  #  CC   -!- TISSUE SPECIFICITY: HIGHEST LEVELS FOUND IN TESTIS. ALSO PRESENT
-  #  CC       IN LIVER, KIDNEY, LUNG AND BRAIN.
-  #  
-  #  CC   -!- TOPIC: FIRST LINE OF A COMMENT BLOCK;
-  #  CC       SECOND AND SUBSEQUENT LINES OF A COMMENT BLOCK.
+  # === CC lines (>=0, optional)
+  #   CC   -!- TISSUE SPECIFICITY: HIGHEST LEVELS FOUND IN TESTIS. ALSO PRESENT
+  #   CC       IN LIVER, KIDNEY, LUNG AND BRAIN.
+  # 
+  #   CC   -!- TOPIC: FIRST LINE OF A COMMENT BLOCK;
+  #   CC       SECOND AND SUBSEQUENT LINES OF A COMMENT BLOCK.
+  #
   def cc(tag = nil)
     unless @data['CC']
       cc  = Hash.new
@@ -541,7 +561,7 @@ class SPTR < EMBLDB
 
   # returns conteins in a line of the CC INTERACTION section.
   #
-  #  CC       P46527:CDKN1B; NbExp=1; IntAct=EBI-359815, EBI-519280;
+  #   CC       P46527:CDKN1B; NbExp=1; IntAct=EBI-359815, EBI-519280;
   def cc_interaction_parse(str)
     it = str.scan(/(.+?); NbExp=(.+?); IntAct=(.+?);/)
     it.map {|ent|
@@ -555,9 +575,9 @@ class SPTR < EMBLDB
   # returns databases cross-references in the DR lines.
   # * Bio::EMBLDB#dr  -> Hash w/in Array
   #
-  # DR Line; defabases cross-reference (>=0)
-  # a cross_ref pre one line
-  #  DR  database_identifier; primary_identifier; secondary_identifier.
+  # === DR Line; defabases cross-reference (>=0)
+  #    DR  database_identifier; primary_identifier; secondary_identifier.
+  #  a cross_ref pre one line
   @@dr_database_identifier = ['EMBL','CARBBANK','DICTYDB','ECO2DBASE',
     'ECOGENE',
     'FLYBASE','GCRDB','HIV','HSC-2DPAGE','HSSP','INTERPRO','MAIZEDB',
@@ -574,23 +594,23 @@ class SPTR < EMBLDB
 
   # returns conteins in the feature table.
   # * Bio::SPTR#ft -> Hash
-  #  {'feature_name' => [{'From' => str, 'To' => str,
-  #                       'Description' => str, 'FTId' => str}],...}
+  #    {'feature_name' => [{'From' => str, 'To' => str,
+  #                         'Description' => str, 'FTId' => str}],...}
   #
   # returns an Array of the information about the feature_name in the feature table.
   # * Bio::SPTR#ft(feature_name) -> Array of Hash
-  #  [{'From' => str, 'To' => str, 'Description' => str, 'FTId' => str},...]
+  #    [{'From' => str, 'To' => str, 'Description' => str, 'FTId' => str},...]
   #
-  # FT Line; feature table data (>=0, optional)
+  # == FT Line; feature table data (>=0, optional)
   #
-  #  Col     Data item
-  #  -----   -----------------
-  #   1- 2   FT
-  #   6-13   Feature name 
-  #  15-20   `FROM' endpoint
-  #  22-27   `TO' endpoint
-  #  35-75   Description (>=0 per key)
-  #  -----   -----------------
+  #   Col     Data item
+  #   -----   -----------------
+  #    1- 2   FT
+  #    6-13   Feature name 
+  #   15-20   `FROM' endpoint
+  #   22-27   `TO' endpoint
+  #   35-75   Description (>=0 per key)
+  #   -----   -----------------
   def ft(feature_name = nil)
     unless @data['FT']
       table        = Hash.new()
@@ -692,9 +712,9 @@ class SPTR < EMBLDB
   # * Bio::SPTRL#sq(key)  -> int or str
   # * Keys: ['MW', 'mw', 'molecular', 'weight', 'aalen', 'len', 'length', 'CRC64']
   #
-  # SQ Line; sequence header (1/entry)
-  #  SQ   SEQUENCE   233 AA;  25630 MW;  146A1B48A1475C86 CRC64;
-  #  SQ   SEQUENCE  \d+ AA; \d+ MW;  [0-9A-Z]+ CRC64;
+  # === SQ Line; sequence header (1/entry)
+  #    SQ   SEQUENCE   233 AA;  25630 MW;  146A1B48A1475C86 CRC64;
+  #    SQ   SEQUENCE  \d+ AA; \d+ MW;  [0-9A-Z]+ CRC64;
   #
   # MW, Dalton unit.
   # CRC64 (64-bit Cyclic Redundancy Check, ISO 3309).

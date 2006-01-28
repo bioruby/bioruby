@@ -5,20 +5,28 @@
 # Copyright::   Copyright (C) 2001-2005 Mitsuteru C. Nakao <n@bioruby.org>
 # License::     LGPL
 #
-# $Id: embl.rb,v 1.25 2005/11/02 07:30:14 nakao Exp $
+# $Id: embl.rb,v 1.26 2006/01/28 06:40:38 nakao Exp $
 #
-# == EMBL database entry
+# == Description
 #
+# Parser class for EMBL database entry.
 #
-#
-# == Example
+# == Examples
 # 
-# emb = Bio::EMBL.new($<.read)
-# emb.entry_id
-# emb.each_cds do |cds|
-#   cds
-# end
-# emb.seq
+#   emb = Bio::EMBL.new($<.read)
+#   emb.entry_id
+#   emb.each_cds do |cds|
+#     cds # A CDS in feature table.
+#   end
+#   emb.seq #=> "ACGT..."
+#
+# == References
+#
+# * The EMBL Nucleotide Sequence Database
+#   http://www.ebi.ac.uk/embl/
+#
+# * The EMBL Nucleotide Sequence Database: Users Manual
+#   http://www.ebi.ac.uk/embl/Documentation/User_manual/usrman.html
 #
 #--
 #
