@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: entry.rb,v 1.4 2005/12/07 05:12:07 k Exp $
+# $Id: entry.rb,v 1.5 2006/01/28 06:46:43 k Exp $
 #
 #--
 #
@@ -66,20 +66,46 @@ module Bio::Shell
   # Obtain a database entry from
   #   * IO          -- IO object (first entry only)
   #   * "filename"  -- local file (first entry only)
-  #   * "db:entry"  -- local bioflat, OBDA, KEGG API
+  #   * "db:entry"  -- local BioFlat, OBDA, EMBOSS, KEGG API
   def ent(arg)
     entry = ""
     db, entry_id = arg.to_s.strip.split(/:/)
+
+    # local file
     if arg.respond_to?(:gets) or File.exists?(arg)
+      puts "Retrieving entry from file (#{arg})"
       entry = flatfile(arg)
+
+    # BioFlat in ./.bioruby/bioflat/ or ~/.bioinformatics/.bioruby/bioflat/
     elsif Bio::Shell.find_flat_dir(db)
+      puts "Retrieving entry from local BioFlat database (#{arg})"
       entry = flatsearch(db, entry_id)
+
+    # OBDA in ~/.bioinformatics/seqdatabase.ini
     elsif obdadbs.include?(db)
+      puts "Retrieving entry from OBDA (#{arg})"
       entry = obdaentry(db, entry_id)
+
     else
-      entry = bget(arg)
+      # EMBOSS USA in ~/.embossrc
+      str = entret(arg)
+      if $?.exitstatus == 0 and str.length != 0
+        puts "Retrieving entry from EMBOSS (#{arg})"
+        entry = str
+
+      # KEGG API at http://www.genome.jp/kegg/soap/
+      else
+        puts "Retrieving entry from KEGG API (#{arg})"
+        entry = bget(arg)
+      end
     end
+
     return entry
+  end
+
+  def obj(arg)
+    str = ent(arg)
+    flatparse(str)
   end
 
 end

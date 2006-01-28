@@ -1,7 +1,17 @@
 #
-# bio/appl/emboss.rb - EMBOSS wrapper
+# = bio/appl/emboss.rb - EMBOSS wrapper
 # 
-#   Copyright (C) 2002 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::	Copyright (C) 2002, 2005
+#		KATAYAMA Toshiaki <k@bioruby.org>
+# License::	LGPL
+#
+# $Id: emboss.rb,v 1.3 2006/01/28 06:46:42 k Exp $
+#
+# == References
+#
+# * http://www.emboss.org
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,52 +27,53 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: emboss.rb,v 1.2 2005/09/08 01:22:08 k Exp $
+#++
 #
 
 module Bio
 
-  class EMBOSS
+autoload :Command, 'bio/command'
 
-    def initialize(cmd_line)
-      @cmd_line = cmd_line + ' -stdout'
-    end
+class EMBOSS
 
-    def exec
-      begin
-        @io = IO.popen(@cmd_line, "w+")
-        @result = @io.read
-        return @result
-      ensure
-        @io.close
-      end
-    end
-    attr_reader :io, :result
+  extend Bio::Command::Tools
 
+  def self.seqret(arg)
+    str = self.retrieve('seqret', arg)
   end
 
-end
+  def self.entret(arg)
+    str = self.retrieve('entret', arg)
+  end
 
-=begin
+  def initialize(cmd_line)
+    @cmd_line = cmd_line + ' -stdout -auto'
+  end
 
-= Bio::EMBOSS
+  def exec
+    begin
+      @io = IO.popen(@cmd_line, "w+")
+      @result = @io.read
+      return @result
+    ensure
+      @io.close
+    end
+  end
+  attr_reader :io, :result
 
-EMBOSS wrapper.
+  private
 
-  #!/usr/bin/env ruby
-  require 'bio'
+  def self.retrieve(cmd, arg)
+    cmd = [ cmd, arg, '-auto', '-stdout' ]
+    str = ''
+    call_command_local(cmd) do |inn, out|
+      inn.close_write
+      str = out.read
+    end
+    return str
+  end
 
-  emboss = Bio::EMBOSS.new("getorf -sequence ~/xlrhodop -outseq stdout")
-  puts emboss.exec
+end # EMBOSS
 
---- Bio::EMBOSS.new(command_line)
+end # Bio
 
---- Bio::EMBOSS#exec
---- Bio::EMBOSS#io
---- Bio::EMBOSS#result
-
-=== SEE ALSO
-
-* http://www.emboss.org
-
-=end

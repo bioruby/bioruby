@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: shell.rb,v 1.11 2005/12/07 05:12:06 k Exp $
+# $Id: shell.rb,v 1.12 2006/01/28 06:46:42 k Exp $
 #
 #--
 #
@@ -42,6 +42,7 @@ module Bio::Shell
   require 'bio/shell/plugin/flatfile'
   require 'bio/shell/plugin/obda'
   require 'bio/shell/plugin/keggapi'
+  require 'bio/shell/plugin/emboss'
 
   extend Ghost
   extend Private

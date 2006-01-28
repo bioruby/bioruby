@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: bio.rb,v 1.59 2006/01/20 09:57:08 k Exp $
+# $Id: bio.rb,v 1.60 2006/01/28 06:46:42 k Exp $
 #
 #--
 #
@@ -28,7 +28,7 @@
 
 module Bio
 
-  BIORUBY_VERSION = [0, 7, 1].extend(Comparable)
+  BIORUBY_VERSION = [0, 7, 2].extend(Comparable)
 
   ### Basic data types
 
@@ -194,7 +194,7 @@ module Bio
   #  autoload :Report,       'bio/appl/hmmer/report'
   #end
 
-# autoload :EMBOSS,         'bio/appl/emboss'    # use bio/command, improve
+  autoload :EMBOSS,         'bio/appl/emboss'    # use bio/command, improve
 
   autoload :PSORT,          'bio/appl/psort'
   ## below are described in bio/appl/psort.rb
