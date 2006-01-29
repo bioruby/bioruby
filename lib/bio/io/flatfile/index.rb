@@ -1,8 +1,13 @@
 # 
-# bio/io/flatfile/index.rb - OBDA flatfile index 
+# = bio/io/flatfile/index.rb - OBDA flatfile index 
 # 
-#   Copyright (C) 2002 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp> 
-# 
+# Copyright:: Copyright (C) 2002
+#             GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp> 
+# License:: LGPL
+#
+#  $Id: index.rb,v 1.16 2006/01/29 10:06:43 ngoto Exp $ 
+#
+#--
 #  This library is free software; you can redistribute it and/or 
 #  modify it under the terms of the GNU Lesser General Public 
 #  License as published by the Free Software Foundation; either 
@@ -16,13 +21,64 @@
 #  You should have received a copy of the GNU Lesser General Public 
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
+#++
 # 
-#  $Id: index.rb,v 1.15 2005/11/28 05:08:26 k Exp $ 
-# 
+# = About Bio::FlatFileIndex
+#
+# Please refer documents of following classes.
+# Classes/modules marked '#' are internal use only.
+#
+# == Classes/modules in index.rb
+# * class  Bio::FlatFileIndex
+# * class  Bio::FlatFileIndex::Results
+# * module Bio::FlatFileIndex::DEBUG
+# * #module Bio::FlatFileIndex::Template
+# * #class  Bio::FlatFileIndex::Template::NameSpace
+# * #class  Bio::FlatFileIndex::FileID
+# * #class  Bio::FlatFileIndex::FileIDs
+# * #module Bio::FlatFileIndex::Flat_1
+# * #class  Bio::FlatFileIndex::Flat_1::Record
+# * #class  Bio::FlatFileIndex::Flat_1::FlatMappingFile
+# * #class  Bio::FlatFileIndex::Flat_1::PrimaryNameSpace
+# * #class  Bio::FlatFileIndex::Flat_1::SecondaryNameSpace
+# * #class  Bio::FlatFileIndex::NameSpaces
+# * #class  Bio::FlatFileIndex::DataBank
+#
+# == Classes/modules in indexer.rb
+# * module Bio::FlatFileIndex::Indexer
+# * #class  Bio::FlatFileIndex::Indexer::NameSpace
+# * #class  Bio::FlatFileIndex::Indexer::NameSpaces
+# * #module Bio::FlatFileIndex::Indexer::Parser
+# * #class  Bio::FlatFileIndex::Indexer::Parser::TemplateParser
+# * #class  Bio::FlatFileIndex::Indexer::Parser::GenBankParser
+# * #class  Bio::FlatFileIndex::Indexer::Parser::GenPeptParser
+# * #class  Bio::FlatFileIndex::Indexer::Parser::EMBLParser
+# * #class  Bio::FlatFileIndex::Indexer::Parser::SPTRParser
+# * #class  Bio::FlatFileIndex::Indexer::Parser::FastaFormatParser
+# * #class  Bio::FlatFileIndex::Indexer::Parser::MaXMLSequenceParser
+# * #class  Bio::FlatFileIndex::Indexer::Parser::MaXMLClusterParser
+# * #class  Bio::FlatFileIndex::Indexer::Parser::BlastDefaultParser
+# * #class  Bio::FlatFileIndex::Indexer::Parser::PDBChemicalComponentParser
+#
+# == Classes/modules in bdb.rb
+# * #module Bio::FlatFileIndex::BDBDefault
+# * #class  Bio::FlatFileIndex::BDBWrapper
+# * #module Bio::FlatFileIndex::BDB_1
+# * #class  Bio::FlatFileIndex::BDB_1::BDBMappingFile
+# * #class  Bio::FlatFileIndex::BDB_1::PrimaryNameSpace
+# * #class  Bio::FlatFileIndex::BDB_1::SecondaryNameSpace
+#
+# = References
+# * ((<URL:http://obda.open-bio.org/>))
+# * ((<URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/obda-specs/?cvsroot=obf-common>))
+#
 
 require 'bio/io/flatfile/indexer'
 
 module Bio
+
+
+  # Bio::FlatFileIndex is a class for OBDA flatfile index.
   class FlatFileIndex
 
     autoload :Indexer,    'bio/io/flatfile/indexer'
@@ -30,10 +86,21 @@ module Bio
     autoload :BDBwrapper, 'bio/io/flatfile/bdb'
     autoload :BDB_1,      'bio/io/flatfile/bdb'
 
+    # magic string for flat/1 index
     MAGIC_FLAT = 'flat/1'
+
+    # magic string for BerkeleyDB/1 index
     MAGIC_BDB  = 'BerkeleyDB/1'
 
     #########################################################
+
+    # Opens existing databank. Databank is a directory which contains
+    # indexed files and configuration files. The type of the databank
+    # (flat or BerkeleyDB) are determined automatically.
+    #
+    # If block is given, the databank object is passed to the block.
+    # The databank will be automatically closed when the block terminates.
+    #
     def self.open(name)
       if block_given? then
         begin
@@ -53,22 +120,38 @@ module Bio
       r
     end
 
+    # Opens existing databank. Databank is a directory which contains
+    # indexed files and configuration files. The type of the databank
+    # (flat or BerkeleyDB) are determined automatically.
+    #
+    # Unlike +FlatFileIndex.open+, block is not allowed.
+    #
     def initialize(name)
       @db = DataBank.open(name)
     end
 
     # common interface defined in registry.rb
+    # Searching databank and returns entry (or entries) as a string.
+    # Multiple entries (contatinated to one string) may be returned.
+    # Returns empty string if not found.
+    #
     def get_by_id(key)
       search(key).to_s
     end
 
+    #--
     # original methods
+    #++
+
+    # Closes the databank.
+    # Returns nil.
     def close
       check_closed?
       @db.close
       @db = nil
     end
 
+    # Returns true if already closed. Otherwise, returns false.
     def closed?
       if @db then
         false
@@ -77,6 +160,19 @@ module Bio
       end
     end
 
+    # Set default namespaces.
+    # <code>default_namespaces = nil</code>
+    # means all namespaces in the databank.
+    #
+    # <code>default_namespaces= [ str1, str2, ... ]</code>
+    # means set default namespeces to str1, str2, ...
+    #
+    # Default namespaces specified in this method only affect 
+    # #get_by_id, #search, and #include? methods.
+    #
+    # Default of default namespaces is nil (that is, all namespaces
+    # are search destinations by default).
+    #
     def default_namespaces=(names)
       if names then
         @names = []
@@ -86,10 +182,14 @@ module Bio
       end
     end
 
+    # Returns default namespaces.
+    # Returns an array of strings or nil.
+    # nil means all namespaces.
     def default_namespaces
       @names
     end
 
+    # Searching databank and returns a Bio::FlatFileIndex::Results object.
     def search(key)
       check_closed?
       if @names then
@@ -99,16 +199,30 @@ module Bio
       end
     end
 
+    # Searching only specified namespeces.
+    # Returns a Bio::FlatFileIndex::Results object.
+    #
     def search_namespaces(key, *names)
       check_closed?
       @db.search_namespaces(key, *names)
     end
 
+    # Searching only primary namespece.
+    # Returns a Bio::FlatFileIndex::Results object.
+    #
     def search_primary(key)
       check_closed?
       @db.search_primary(key)
     end
 
+    # Searching databank.
+    # If some entries are found, returns an array of
+    # unique IDs (primary identifiers).
+    # If not found anything, returns nil.
+    #
+    # This method is useful when search result is very large and
+    # #search method is very slow.
+    #
     def include?(key)
       check_closed?
       if @names then
@@ -123,6 +237,8 @@ module Bio
       end
     end
 
+    # Same as #include?, but serching only specified namespaces.
+    #
     def include_in_namespaces?(key, *names)
       check_closed?
       r = @db.search_namespaces_get_unique_id(key, *names)
@@ -133,6 +249,8 @@ module Bio
       end
     end
 
+    # Same as #include?, but serching only primary namespace.
+    #
     def include_in_primary?(key)
       check_closed?
       r = @db.search_primary_get_unique_id(key)
@@ -143,6 +261,9 @@ module Bio
       end
     end
 
+    # Returns names of namespaces defined in the databank.
+    # (example: [ 'LOCUS', 'ACCESSION', 'VERSION' ] )
+    #
     def namespaces
       check_closed?
       r = secondary_namespaces
@@ -150,38 +271,82 @@ module Bio
       r
     end
 
+    # Returns name of primary namespace as a string.
     def primary_namespace
       check_closed?
       @db.primary.name
     end
 
+    # Returns names of secondary namespaces as an array of strings.
     def secondary_namespaces
       check_closed?
       @db.secondary.names
     end
 
+    # Check consistency between the databank(index) and original flat files.
+    #
+    # If the original flat files are changed after creating
+    # the databank, raises RuntimeError.
+    #
+    # Note that this check only compares file sizes as
+    # described in the OBDA specification.
+    #
     def check_consistency
       check_closed?
       @db.check_consistency
     end
 
+    # If true is given, consistency checks will be performed every time
+    # accessing flatfiles. If nil/false, no checks are performed.
+    #
+    # By default, always_check_consistency is true.
+    #
     def always_check_consistency=(bool)
       @db.always_check=(bool)
     end
+
+    # If true, consistency checks will be performed every time
+    # accessing flatfiles. If nil/false, no checks are performed.
+    #
+    # By default, always_check_consistency is true.
+    #
     def always_check_consistency(bool)
       @db.always_check
     end
 
+    #--
     # private methods
+    #++
+    
+    # If the databank is closed, raises IOError.
     def check_closed?
       @db or raise IOError, 'closed databank'
     end
     private :check_closed?
 
+    #--
     #########################################################
+    #++
 
+    # <code>Results</code> stores search results created by
+    # <code>Bio::FlatFileIndex</code> methods.
+    #
+    # Currently, this class inherits Hash, but internal
+    # structure of this class may be changed anytime.
+    # Only using methods described below are strongly recomended.
+    #
     class Results < Hash
 
+      # Add search results.
+      # "a + b" means "a OR b".
+      # * Example
+      #    # I want to search 'ADH_IRON_1' OR 'ADH_IRON_2'
+      #    db = Bio::FlatFIleIndex.new(location)
+      #    a1 = db.search('ADH_IRON_1')
+      #    a2 = db.search('ADH_IRON_2')
+      #    # a1 and a2 are Bio::FlatFileIndex::Results objects.
+      #    print a1 + a2
+      #
       def +(a)
         raise 'argument must be Results class' unless a.is_a?(self.class)
         res = self.dup
@@ -189,6 +354,16 @@ module Bio
         res
       end
 
+      # Returns set intersection of results.
+      # "a * b" means "a AND b".
+      # * Example
+      #    # I want to search 'HIS_KIN' AND 'human'
+      #    db = Bio::FlatFIleIndex.new(location)
+      #    hk = db.search('HIS_KIN')
+      #    hu = db.search('human')
+      #    # hk and hu are Bio::FlatFileIndex::Results objects.
+      #    print hk * hu
+      #
       def *(a)
         raise 'argument must be Results class' unless a.is_a?(self.class)
         res = self.class.new
@@ -196,22 +371,59 @@ module Bio
         res
       end
 
+      # Returns a string. (concatinated if multiple results exists).
+      # Same as <code>to_a.join('')</code>.
+      #
       def to_s
         self.values.join
       end
 
+      #--
       #alias each_orig each
+      #++
+
+      # alias for each_value.
       alias each each_value
+
+      # Iterates over each result (string).
+      # Same as to_a.each.
+      def each(&x) #:yields: str
+        each_value(&x)
+      end if false #dummy for RDoc
+
+      #--
       #alias to_a_orig to_a
+      #++
+
+      # alias for to_a.
       alias to_a values
+
+      # Returns an array of strings.
+      # If no search results are exist, returns an empty array.
+      #
+      def to_a; values; end if false #dummy for RDoc
+
+      # Returns number of results.
+      # Same as to_a.size.
+      def size; end if false #dummy for RDoc
 
     end #class Results
 
     #########################################################
 
+    # Module for output debug messages.
+    # Default setting: If $DEBUG or $VERBOSE is true, output debug
+    # messages to STDERR; Otherwise, don't output messages.
+    #
     module DEBUG
       @@out = STDERR
       @@flag = nil
+
+      # Set debug messages output destination.
+      # If true is given, outputs to STDERR.
+      # If nil is given, outputs nothing.
+      # This method affects ALL of FlatFileIndex related objects/methods.
+      #
       def self.out=(io)
         if io then
           @@out = io
@@ -223,9 +435,13 @@ module Bio
         end
         @@out
       end
+
+      # get current debug messeages output destination
       def self.out
         @@out
       end
+
+      # prints debug messages
       def self.print(*arg)
         @@flag = true if $DEBUG or $VERBOSE
         @@out.print(*arg) if @@out and @@flag
@@ -234,7 +450,14 @@ module Bio
 
     #########################################################
 
+    # Templates
+    #
+    # Internal use only.
     module Template
+
+      # templates of namespace
+      #
+      # Internal use only.
       class NameSpace
         def filename
           # should be redifined in child class
@@ -275,6 +498,9 @@ module Bio
       end #class NameSpace
     end #module Template
 
+    # FileID class.
+    #
+    # Internal use only.
     class FileID
       def self.new_from_string(str)
         a = str.split("\t", 2)
@@ -355,6 +581,9 @@ module Bio
       end
     end #class FileID
 
+    # FileIDs class.
+    #
+    # Internal use only.
     class FileIDs < Array
       def initialize(prefix, hash)
         @hash = hash
@@ -471,7 +700,14 @@ module Bio
 
     end #class FileIDs
 
+    # module for flat/1 databank
+    #
+    # Internal use only.
     module Flat_1
+
+      # Record class.
+      #
+      # Internal use only.
       class Record
         def initialize(str, size = nil)
           a = str.split("\t")
@@ -500,6 +736,9 @@ module Bio
         end
       end #class Record
 
+      # FlatMappingFile class.
+      #
+      # Internal use only.
       class FlatMappingFile
         @@recsize_width = 4
         @@recsize_regex = /\A\d{4}\z/
@@ -785,6 +1024,9 @@ module Bio
         end
       end #class FlatMappingFile
 
+      # primary name space
+      #
+      # Internal use only.
       class PrimaryNameSpace < Template::NameSpace
         def mapping(filename)
           FlatMappingFile.new(filename)
@@ -794,6 +1036,9 @@ module Bio
         end
       end #class PrimaryNameSpace
 
+      # secondary name space
+      #
+      # Internal use only.
       class SecondaryNameSpace < Template::NameSpace
         def mapping(filename)
           FlatMappingFile.new(filename)
@@ -810,7 +1055,9 @@ module Bio
       end #class SecondaryNameSpace
     end #module Flat_1
 
-
+    # namespaces
+    #
+    # Internal use only.
     class NameSpaces < Hash
       def initialize(dbname, nsclass, arg)
         @dbname = dbname
@@ -872,6 +1119,9 @@ module Bio
       end
     end #class NameSpaces
 
+    # databank
+    #
+    # Internal use only.
     class DataBank
       def self.file2hash(fileobj)
         hash = {}
@@ -1135,174 +1385,3 @@ module Bio
   end #class FlatFileIndex
 end #module Bio
 
-######################################################################
-
-=begin
-
-= Bio::FlatFileIndex
-
---- Bio::FlatFileIndex.new(dbname)
---- Bio::FlatFileIndex.open(dbname)
-
-      Opens existing databank. Databank is a directory which contains
-      indexed files and configuration files. The type of the databank
-      (flat or BerkeleyDB) are determined automatically.
-
---- Bio::FlatFileIndex#close
-
-      Closes opened databank.
-
---- Bio::FlatFileIndex#closed?
-
-      Returns true if already closed. Otherwise, returns false.
-
---- Bio::FlatFileIndex#get_by_id(key)
-
-      Common interface defined in registry.rb.
-      Searching databank and returns entry (or entries) as a string.
-      Multiple entries (contatinated to one string) may be returned.
-      Returns empty string If not found.
-
---- Bio::FlatFileIndex#search(key)
-
-      Searching databank and returns a Bio::FlatFileIndex::Results object.
-
---- Bio::FlatFileIndex#include?(key)
-
-      Searching databank.
-      If found, returns an array of unique IDs (primary identifiers).
-      If not found, returns nil.
-
---- Bio::FlatFileIndex#search_primary(key)
-
-      Searching only primary namespece.
-      Returns a Bio::FlatFileIndex::Results object.
-
---- Bio::FlatFileIndex#search_namespaces(key, name1, name2, ...)
-
-      Searching only specific namespeces.
-      Returns a Bio::FlatFileIndex::Results object.
-
---- Bio::FlatFileIndex#include_in_primary?(key)
-
-      Same as #include?, but serching only primary namespace.
-
---- Bio::FlatFileIndex#include_in_namespaces?(key, name1, name2, ...)
-
-      Same as #include?, but serching only specific namespaces.
-
---- Bio::FlatFileIndex#namespaces
-
-      Returns names of namespaces defined in the databank.
-      (example: [ 'LOCUS', 'ACCESSION', 'VERSION' ] )
-
---- Bio::FlatFileIndex#primary_namespace
-
-      Returns name of primary namespace.
-
---- Bio::FlatFileIndex#secondary_namespaces
-
-      Returns names of secondary namespaces.
-
---- Bio::FlatFileIndex#default_namespaces= [ str1, str2, ... ]
---- Bio::FlatFileIndex#default_namespaces= nil
-
-      Set default namespaces.
-      nil means all namespaces in the databank.
-      Default namespaces specified in this method only affect 
-      #get_by_id, #search, and #include? methods.
-      Default of default namespaces is nil (that is, all namespaces
-      are search destinations by default).
-
---- Bio::FlatFileIndex#default_namespaces
-
-      Returns default namespaces.
-      nil means all namespaces.
-
---- Bio::FlatFileIndex#check_consistency
-
-      Raise RuntimeError if flatfiles are changed after creating
-      the databank. (This check only compare file sizes as
-      described in the OBDA specification.)
-
---- Bio::FlatFileIndex#always_check_consistency=(bool)
---- Bio::FlatFileIndex#always_check_consistency
-
-      If true, consistency checks are performed every time
-      accessing flatfiles. If nil/false, no checks are performed.
-      Default of always_check_consistency is true.
-
-== Bio::FlatFileIndex::Results
-
-      This object is made by Bio::FlatFileIndex methods.
-      Currently, this class inherits Hash, but internal
-      structure of this class may be changed anytime.
-      Only using methods described below are strongly recomended.
-
---- Bio::FlatFileIndex::Results#to_a
-
-      Returns an array of strings.
-      If no search results are exist, returns an empty array.
-
---- Bio::FlatFileIndex::Results#each
-
-      Iterates over each result(string).
-      Same as to_a.each.
-
---- Bio::FlatFileIndex::Results#to_s
-
-      Returns a string. (concatinated if multiple results exists).
-      Same as to_a.join('').
-
---- Bio::FlatFileIndex::Results#size
-
-      Returns number of results.
-      Same as to_a.size.
-
---- Bio::FlatFileIndex::Results#+(res)
-
-      Add search results.
-      "a + b" means "a OR b".
-      * Example
-          # I want to search 'ADH_IRON_1' OR 'ADH_IRON_2'
-          db = Bio::FlatFIleIndex.new(location)
-          a1 = db.search('ADH_IRON_1')
-          a2 = db.search('ADH_IRON_2')
-          # a1 and a2 are Bio::FlatFileIndex::Results objects.
-          print a1 + a2
-
---- Bio::FlatFileIndex::Results#*(res)
-
-      Returns set intersection of results.
-      "a * b" means "a AND b".
-      * Example
-          # I want to search 'HIS_KIN' AND 'human'
-          db = Bio::FlatFIleIndex.new(location)
-          hk = db.search('HIS_KIN')
-          hu = db.search('human')
-          # hk and hu are Bio::FlatFileIndex::Results objects.
-          print hk * hu
-
-== Bio::FlatFileIndex::DEBUG
-
-      Module for output debug messages.
-      Default setting: If $DEBUG or $VERBOSE is true, output debug
-      messages to STDERR; Otherwise, don't output messages.
-
---- Bio::FlatFileIndex::DEBUG.out=(io)
-
-      Set debug messages output destination.
-      If true is given, outputs to STDERR.
-      If nil is given, outputs nothing.
-      This method affects ALL of FlatFileIndex related objects/methods.
-
-== Other classes/modules
-
-      Classes/modules not described in this file are internal use only.
-
-== SEE ALSO
-
-* ((<URL:http://obda.open-bio.org/>))
-* ((<URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/obda-specs/?cvsroot=obf-common>))
-
-=end
