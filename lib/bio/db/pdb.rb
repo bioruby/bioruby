@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pdb.rb,v 1.5 2005/12/16 19:23:03 ngoto Exp $
+#  $Id: pdb.rb,v 1.6 2006/01/29 06:54:13 ngoto Exp $
 #
 
 require 'bio/db'
@@ -25,6 +25,9 @@ require 'bio/db'
 # definition of the PDB class
 module Bio
   class PDB #< DB
+
+    autoload :ChemicalComponent, 'bio/db/pdb/chemicalcomponent'
+
   end #class PDB
 end #module Bio
 

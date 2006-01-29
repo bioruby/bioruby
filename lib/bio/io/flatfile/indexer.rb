@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
 # 
-#  $Id: indexer.rb,v 1.21 2005/09/26 13:00:08 k Exp $ 
+#  $Id: indexer.rb,v 1.22 2006/01/29 06:54:14 ngoto Exp $ 
 # 
 
 require 'bio/io/flatfile/index'
@@ -80,6 +80,8 @@ module Bio
             BlastDefaultParser.new(Bio::Blast::WU::Report, *arg)
           when 'Bio::Blast::WU::Report_TBlast'
             BlastDefaultParser.new(Bio::Blast::WU::Report_TBlast, *arg)
+          when 'Bio::PDB::ChemicalComponent'
+            PDBChemicalComponentParser.new(Bio::PDB::ChemicalComponent, *arg)
           else
             raise 'unknown or unsupported format'
           end #case dbclass.to_s
@@ -436,6 +438,35 @@ module Bio
             @flatfile.pos = pos
           end
         end #class BlastDefaultReportParser
+
+        class PDBChemicalComponentParser < TemplateParser
+          NAMESTYLE = NameSpaces.new(
+             NameSpace.new( 'UNIQUE', Proc.new { |x| x.entry_id } )
+                                     )
+          PRIMARY = 'UNIQUE'
+          def initialize(klass, pri_name = nil, sec_names = nil)
+            super()
+            self.format = 'raw'
+            self.dbclass = Bio::PDB::ChemicalComponent
+            self.set_primary_namespace((pri_name or PRIMARY))
+            unless sec_names then
+              sec_names = []
+              @namestyle.each_value do |x|
+                sec_names << x.name if x.name != self.primary.name
+              end
+            end
+            self.add_secondary_namespaces(*sec_names)
+          end
+          def open_flatfile(fileid, file)
+            super
+            @flatfile.pos = 0
+            begin
+              pos = @flatfile.pos
+              line = @flatfile.gets
+            end until (!line or line =~ /^RESIDUE /)
+            @flatfile.pos = pos
+          end
+        end #class PDBChemicalComponentParser
 
       end #module Parser
 

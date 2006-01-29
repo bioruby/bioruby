@@ -20,7 +20,7 @@
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #++
 #
-#  $Id: flatfile.rb,v 1.42 2006/01/28 04:23:41 ngoto Exp $
+#  $Id: flatfile.rb,v 1.43 2006/01/29 06:54:14 ngoto Exp $
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
 # It acts like a IO object.
@@ -441,6 +441,9 @@ module Bio
 
       when /^HEADER    .{40}\d\d\-[A-Z]{3}\-\d\d   [0-9A-Z]{4}/
         Bio::PDB
+
+      when /^RESIDUE +.+ +\d+\s*$/
+        Bio::PDB::ChemicalComponent
 
       when /^CLUSTAL .*\(.*\).*sequence +alignment/
         Bio::ClustalW::Report
