@@ -1,7 +1,23 @@
 #
-# bio/reference.rb - journal reference class
+# = bio/reference.rb - Journal reference classes
 #
-#   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::   Copyright (C) 2001 
+#               KATAYAMA Toshiaki <k@bioruby.org>
+# Lisence::     LGPL
+#
+# $Id: reference.rb,v 1.19 2006/01/29 07:39:31 nakao Exp $
+#
+# == Description
+# 
+# Journal reference classes.
+#
+# == Examples
+#
+# == References
+#
+# 
+#
+#--
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,13 +33,69 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: reference.rb,v 1.18 2005/12/18 16:58:58 nakao Exp $
+#++
 #
 
 module Bio
 
+  # A class for journal reference information.
+  #
+  # === Examples
+  # 
+  #    hash = {'authors' => [ "Hoge, J.P.", "Fuga, F.B." ], 'title' => "Title of the study.",
+  #            'journal' => "Theor. J. Hoge", 'volume' => 12, 'issue' => 3, 'pages' => "123-145",
+  #            'year' => 2001, 'pubmed' => 12345678, 'medline' => 98765432, 'abstract' => "...",
+  #            ''url' => "http://...", 'mesh' => [], 'affiliations' => []}
+  #    ref = Bio::Reference.new(hash)
+  #
+  #    # Formats in the BiBTeX style.
+  #    ref.format("bibtex")
+  #    
+  #    # Short-cut for Bio::Reference#format("bibtex")
+  #    ref.bibtex
+  #
   class Reference
 
+    # Author names in an Array, [ "Hoge, J.P.", "Fuga, F.B." ].
+    attr_reader :authors
+
+    # "Title of the study."
+    attr_reader :title
+
+    # "Theor. J. Hoge"
+    attr_reader :journal
+
+    # 12
+    attr_reader :volume
+    
+    # 3
+    attr_reader :issue
+
+    # "123-145"
+    attr_reader :pages
+
+    # 2001
+    attr_reader :year
+
+    # 12345678
+    attr_reader :pubmed
+
+    # 98765432
+    attr_reader :medline
+    
+    # Abstract test in String.
+    attr_reader :abstract
+
+    # A URL String.
+    attr_reader :url
+
+    # MeSH terms in an Array.
+    attr_reader :mesh
+
+    # Affiliations in an Array.
+    attr_reader :affiliations
+
+    # 
     def initialize(hash)
       hash.default = ''
       @authors  = hash['authors'] # [ "Hoge, J.P.", "Fuga, F.B." ]
@@ -43,9 +115,23 @@ module Bio
       @mesh    = [] if @mesh.empty?
       @affiliations = [] if @affiliations.empty?
     end
-    attr_reader :authors, :title, :journal, :volume, :issue, :pages, :year,
-      :pubmed, :medline, :abstract, :url, :mesh, :affiliations
 
+    # Formats the reference in a given style.
+    #
+    # Styles:
+    # 0. nil - general
+    # 1. endnote - Endnote
+    # 2. bibitem - Bibitem (option acceptable)
+    # 3. bibtex - BiBTeX (option acceptable)
+    # 4. rd - rd (option acceptable)
+    # 5. nature - Nature (option acceptable)
+    # 6. science - Science
+    # 7. genome_biol - Genome Biology
+    # 8. genome_res - Genome Research
+    # 9. nar - Nucleic Acids Research
+    # 10. current - Current Biology
+    # 11. trends - Trends in *
+    # 12. cell - Cell Press
     def format(style = nil, option = nil)
       case style
       when 'endnote'
@@ -77,6 +163,7 @@ module Bio
       end
     end
 
+    # Formats in the Endonote style.
     def endnote
       lines = []
       lines << "%0 Journal Article"
@@ -104,6 +191,7 @@ module Bio
       return lines.join("\n")
     end
 
+    # Formats in the bibitem.
     def bibitem(item = nil)
       item  = "PMID:#{@pubmed}" unless item
       pages = @pages.sub('-', '--')
@@ -115,6 +203,7 @@ module Bio
       END
     end
 
+    # Formats in the BiBTeX style.
     def bibtex(section = nil)
       section = "article" unless section
       authors = authors_join(' and ', ' and ')
@@ -132,11 +221,13 @@ module Bio
       END
     end
 
+    # Formats in a general style.                
     def general
       authors = @authors.join(', ')
       "#{authors} (#{@year}). \"#{@title}\" #{@journal} #{@volume}:#{@pages}."
     end
 
+    # Formats in the RD style.
     def rd(str = nil)
       @abstract ||= str
       lines = []
@@ -147,6 +238,8 @@ module Bio
       return lines.join("\n\n")
     end
 
+    # Formats in the Nature Publish Group style.
+    # * http://www.nature.com
     def nature(short = false)
       if short
         if @authors.size > 4
@@ -163,6 +256,8 @@ module Bio
       end
     end
 
+    # Formats in the Science style.
+    # * http://www.siencemag.com/
     def science
       if @authors.size > 4
         authors = rev_name(@authors[0]) + " et al."
@@ -173,28 +268,40 @@ module Bio
       "#{authors}, #{@journal} #{@volume} #{page_from} (#{@year})."
     end
 
+    # Formats in the Genome Biology style.
+    # * http://genomebiology.com/
     def genome_biol
       authors = @authors.collect {|name| strip_dots(name)}.join(', ')
       journal = strip_dots(@journal)
       "#{authors}: #{@title} #{journal} #{@year}, #{@volume}:#{@pages}."
     end
+    # Formats in the Current Biology style.
+    # * http://www.current-biology.com/
     alias current genome_biol
 
+    # Formats in the Genome Research style.
+    # * http://genome.org/
     def genome_res
       authors = authors_join(' and ')
       "#{authors} #{@year}.\n  #{@title} #{@journal} #{@volume}: #{@pages}."
     end
 
+    # Formats in the Nucleic Acids Reseach style.
+    # * http://nar.oxfordjournals.org/
     def nar
       authors = authors_join(' and ')
       "#{authors} (#{@year}) #{@title} #{@journal}, #{@volume}, #{@pages}."
     end
 
+    # Formats in the CELL Press style.
+    # http://www.cell.com/
     def cell
       authors = authors_join(' and ')
       "#{authors} (#{@year}). #{@title} #{@journal} #{@volume}, #{pages}."
     end
-
+    
+    # Formats in the TRENDS Journals.
+    # * http://www.trends.com/
     def trends
       if @authors.size > 2
         authors = "#{@authors[0]} et al."
@@ -235,74 +342,41 @@ module Bio
 
   end
 
-
+  # Set of Bio::Reference.
+  #
+  # === Examples
+  #
+  #   refs = Bio::References.new
+  #   refs.append(Bio::Reference.new(hash))
+  #   refs.each do |reference|
+  #     ...
+  #   end
+  #
   class References
 
+    # Array of Bio::Reference.
+    attr_accessor :references
+
+    # 
     def initialize(ary = [])
       @references = ary
     end
-    attr_accessor :references
 
-    def append(a)
-      @references.push(a) if a.is_a? Reference
+
+    # Append a Bio::Reference object.
+    def append(reference)
+      @references.push(reference) if a.is_a? Reference
       return self
     end
 
+    # Iterates each Bio::Reference object.
     def each
-      @references.each do |x|
-        yield x
+      @references.each do |reference|
+        yield reference
       end
     end
 
   end
 
 end
-
-
-
-=begin
-
-= Bio::Reference
-
---- Bio::Reference.new(hash)
-
---- Bio::Reference#authors -> Array
---- Bio::Reference#title -> String
---- Bio::Reference#journal -> String
---- Bio::Reference#volume -> Fixnum
---- Bio::Reference#issue -> Fixnum
---- Bio::Reference#pages -> String
---- Bio::Reference#year -> Fixnum
---- Bio::Reference#pubmed -> Fixnum
---- Bio::Reference#medline -> Fixnum
---- Bio::Reference#abstract -> String
---- Bio::Reference#url -> String
---- Bio::Reference#mesh -> Array
---- Bio::Reference#affiliations -> Array
-
---- Bio::Reference#format(style = nil, option = nil) -> String
-
---- Bio::Reference#endnote
---- Bio::Reference#bibitem(item = nil) -> String
---- Bio::Reference#bibtex(section = nil) -> String
---- Bio::Reference#rd(str = nil) -> String
---- Bio::Reference#nature(short = false) -> String
---- Bio::Reference#science -> String
---- Bio::Reference#genome_biol -> String
---- Bio::Reference#genome_res -> String
---- Bio::Reference#nar -> String
---- Bio::Reference#cell -> String
---- Bio::Reference#trends -> String
---- Bio::Reference#general -> String
-
-= Bio::References
-
---- Bio::References.new(ary = [])
-
---- Bio::References#references -> Array
---- Bio::References#append(a) -> Bio::References
---- Bio::References#each -> Array
-
-=end
-
 
