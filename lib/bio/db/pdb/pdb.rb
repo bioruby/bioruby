@@ -6,7 +6,7 @@
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 # License:: LGPL
 #
-#  $Id: pdb.rb,v 1.13 2006/01/20 13:54:08 ngoto Exp $
+#  $Id: pdb.rb,v 1.14 2006/01/29 06:48:39 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -86,19 +86,19 @@ module Bio
 
       module Pdb_SList
         def self.new(str)
-          str.strip.split(/\;\s*/)
+          str.to_s.strip.split(/\;\s*/)
         end
       end
 
       module Pdb_List
         def self.new(str)
-          str.strip.split(/\,\s*/)
+          str.to_s.strip.split(/\,\s*/)
         end
       end
 
       module Pdb_Specification_list
         def self.new(str)
-          a = str.strip.split(/\;\s*/)
+          a = str.to_s.strip.split(/\;\s*/)
           a.collect! { |x| x.split(/\:\s*/, 2) }
           a
         end
@@ -106,7 +106,7 @@ module Bio
 
       module Pdb_String
         def self.new(str)
-          str.gsub(/\s+\z/, '')
+          str.to_s.gsub(/\s+\z/, '')
         end
 
         #Creates a new module with a string left justified to the
@@ -116,7 +116,7 @@ module Bio
           m.module_eval %Q{
             @@nn = nn
             def self.new(str)
-              str.gsub(/\s+\z/, '').ljust(@@nn)[0, @@nn]
+              str.to_s.gsub(/\s+\z/, '').ljust(@@nn)[0, @@nn]
             end
           }
           m
@@ -129,7 +129,7 @@ module Bio
           m.module_eval %Q{
             @@nn = nn
             def self.new(str)
-              str.ljust(@@nn)[0, @@nn]
+              str.to_s.ljust(@@nn)[0, @@nn]
             end
           }
           m
@@ -157,7 +157,7 @@ module Bio
 
       module Pdb_StringRJ
         def self.new(str)
-          str.gsub(/\A\s+/, '')
+          str.to_s.gsub(/\A\s+/, '')
         end
       end
 
