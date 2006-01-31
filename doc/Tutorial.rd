@@ -1,12 +1,15 @@
 =begin
 
-  $Id: Tutorial.rd,v 1.9 2005/11/01 04:31:48 nakao Exp $
+See the document in the CVS repository ./doc/((<Tutorial.rd|URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/bioruby/doc/Tutorial.rd?rev=HEAD&cvsroot=bioruby&content-type=text/plain>)) - for a potentially more up-to-date edition. This one was updated:
 
-Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>
+  $Id: Tutorial.rd,v 1.10 2006/01/31 07:27:52 pjotr Exp $
 
 Translated into English: Naohisa Goto <ng@bioruby.org>
 
-Edited by:               PjotrPrins
+Editor:                  PjotrPrins
+
+Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>, 2005-2006 all
+others
 
 NOTE: This page is a work in progress at this point
 
@@ -114,9 +117,14 @@ Please take note that the Ruby's string's are base 0 - i.e. the first letter
 has index 0, for example:
 
   s = 'abc'
-  puts s[0..0]
+	puts s[0].chr
 
-  >a
+	>a
+
+  puts s[0..1]
+
+  >ab
+
 
 So when using String methods, you should subtract 1 from positions
 conventionally used in biology.  (subseq method returns nil if you
