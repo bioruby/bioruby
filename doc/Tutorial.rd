@@ -2,7 +2,7 @@
 
 See the document in the CVS repository ./doc/((<Tutorial.rd|URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/bioruby/doc/Tutorial.rd?rev=HEAD&cvsroot=bioruby&content-type=text/plain>)) - for a potentially more up-to-date edition. This one was updated:
 
-  $Id: Tutorial.rd,v 1.10 2006/01/31 07:27:52 pjotr Exp $
+  $Id: Tutorial.rd,v 1.11 2006/01/31 07:45:22 pjotr Exp $
 
 Translated into English: Naohisa Goto <ng@bioruby.org>
 
@@ -117,9 +117,9 @@ Please take note that the Ruby's string's are base 0 - i.e. the first letter
 has index 0, for example:
 
   s = 'abc'
-	puts s[0].chr
+  puts s[0].chr
 
-	>a
+  >a
 
   puts s[0..1]
 
