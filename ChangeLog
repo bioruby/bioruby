@@ -1,3 +1,9 @@
+2005-02-01  Trevor Wennblom <trevor@corevx.com>
+
+  * Bio::RestrictionEnzyme first commit for comments.
+	  * See lib/bio/util/restriction_enzyme.rb and
+		  test/unit/bio/util/restriction_enzyme
+
 2005-01-20  Toshiaki Katayama <k@bioruby.org>
 
 	* BioRuby 0.7.1 is released.
