@@ -5,7 +5,7 @@
 #		KATAYAMA Toshiaki <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: ddbjxml.rb,v 1.9 2005/11/26 09:37:11 nakao Exp $
+# $Id: ddbjxml.rb,v 1.10 2006/02/02 16:30:29 nakao Exp $
 #
 #--
 #
@@ -36,7 +36,7 @@ class DDBJ
 
 # = Bio::DDBJ::XML
 #
-# Accessing the DDBJ web services at
+# Accessing the DDBJ web services.
 #
 # * http://xml.nig.ac.jp/
 # * http://xml.nig.ac.jp/wsdl/index.jsp
@@ -45,52 +45,62 @@ class XML < Bio::SOAPWSDL
 
   BASE_URI = "http://xml.nig.ac.jp/wsdl/"
 
-  # = Blast
+  # === Description
   #
-  # BLAST Database Search
+  # DDBJ XML BLAST Database Search 
   #
   # * http://xml.nig.ac.jp/doc/Blast.txt
   #
-  # == Examples
+  # === Examples
   #
-  #  serv = Bio::DDBJ::XML::Blast.new
-  #  query = "MSSRIARALALVVTLLHLTRLALSTCPAACHCPLEAPKCAPGVGLVRDGCGCCKVCAKQL"
+  #   serv = Bio::DDBJ::XML::Blast.new
+  #   program = 'blastp'
+  #   database = 'SWISS'
+  #   query = "MSSRIARALALVVTLLHLTRLALSTCPAACHCPLEAPKCAPGVGLVRDGCGCCKVCAKQL"
+  #   
+  #   report = serv.searchSimple(program, database, query)
+  #   Bio::Blast::Default::Report.new(report).each_hit do |hit|
+  #     hit.hsps.find_all {|x| x.evalue < 0.1 }.each do |hsp|
+  #       p [hsps.evalue, hsps.identity, hsps.definition]
+  #     end
+  #   end
   #  
-  #  report = serv.searchSimple('blastp', 'SWISS', query)
-  #  Bio::Blast::Default::Report.new(report).each_hit do |hit|
-  #    hit.hsps.find_all {|x| x.evalue < 0.1 }.each do |hsp|
-  #      p [hsps.evalue, hsps.identity, hsps.definition]
-  #    end
-  #  end
+  #   program = 'tblastn'
+  #   database = 'ddbjvrl'
+  #   param = '-m 8 -e 0.001'
+  #   puts serv.searchParam(program, database, query, param)
+  # 
+  # === WSDL Methods
+  # 
+  # ==== searchSimple(program, database, query)
   #
-  #  puts serv.searchParam('tblastn', 'ddbjvrl', query, '-m 8')
-  # 
-  # == WSDL Methods
-  # 
-  # * searchSimple(program, database, query)
   # Returns a blast report in the default format.
-  # * searchParam(program, database, query, param)
+  #
+  # ==== searchParam(program, database, query, param)
+  #
   # Blasts with param and returns a blast report.
   #
-  # == References
+  # === References
   #
   # * http://xml.nig.ac.jp/doc/Blast.txt
   #
   class Blast < XML
     SERVER_URI = BASE_URI + "Blast.wsdl"
+
+    # returns a Bio::DDBJ::XML::Blast object.
     def initialize(wsdl = nil)
       super(wsdl || SERVER_URI)
     end
   end
 
 
-  # == ClustalW
+  # === ClustalW
   # 
   # Multiple seaquece alignment using ClustalW.
   #
   # * http://xml.nig.ac.jp/doc/ClustalW.txt
   #
-  # == Examples
+  # === Examples
   #
   #   serv = Bio::DDBJ::XML::ClustalW.new
   #
@@ -111,30 +121,32 @@ class XML < Bio::SOAPWSDL
   #   puts serv.analyzeSimple(query)
   #   puts serv.analyzeParam(query, '-align -matrix=blosum')
   #
-  # == WSDL Methods
+  # === WSDL Methods
   #
-  # * analyzeSimple(query)
-  # * analyzeParam(query, param)
+  # ==== analyzeSimple(query)
+  # ==== analyzeParam(query, param)
   #
-  # == References
+  # === References
   #
   # * http://xml.nig.ac.jp/doc/ClustalW.txt
   #
   class ClustalW < XML
     SERVER_URI = BASE_URI + "ClustalW.wsdl"
+
+    # returns a Bio::DDBJ::XML::ClustalW object.
     def initialize(wsdl = nil)
       super(wsdl || SERVER_URI)
     end
   end
 
 
-  # = DDBJ
+  # == DDBJ
   #
   # Retrieves a sequence entry from the DDBJ DNA Data Bank Japan.
   #
   # * http://xml.nig.ac.jp/doc/DDBJ.txt
   #
-  # == Examples
+  # === Examples
   #
   #   serv = Bio::DDBJ::XML::DDBJ.new
   #   puts serv.getFFEntry('AB000050')
@@ -144,34 +156,36 @@ class XML < Bio::SOAPWSDL
   #   puts serv.getRelatedFeatures('AL121903', '59000', '64000')
   #   puts serv.getRelatedFeaturesSeq('AL121903', '59000', '64000')
   #
-  # == WSDL Methods 
+  # === WSDL Methods 
   #
-  # * getFFEntry(accession)
-  # * getXMLEntry(accession)
-  # * getFeatureInfo(accession, feature)
-  # * getAllFeatures(accession)
-  # * getRelatedFeatures(accession, start, stop)
-  # * getRelatedFeaturesSeq(accession, start, stop)
+  # ==== getFFEntry(accession)
+  # ==== getXMLEntry(accession)
+  # ==== getFeatureInfo(accession, feature)
+  # ==== getAllFeatures(accession)
+  # ==== getRelatedFeatures(accession, start, stop)
+  # ==== getRelatedFeaturesSeq(accession, start, stop)
   #
-  # == References
+  # === References
   #
   # * http://xml.nig.ac.jp/doc/DDBJ.txt
   #
   class DDBJ < XML
     SERVER_URI = BASE_URI + "DDBJ.wsdl"
+
+    # returns a Bio::DDBJ::XML::DDBJ object.
     def initialize(wsdl = nil)
       super(wsdl || SERVER_URI)
     end
   end
 
 
-  # = Fasta
+  # == Fasta
   # 
   # Searching database using the Fasta package.
   #
   # * http://xml.nig.ac.jp/doc/Fasta.txt
   # 
-  # == Examples
+  # === Examples
   #
   #   serv = Bio::DDBJ::XML::Fasta.new
   #   query = ">Test\nMSDGAVQPDG GQPAVRNERA TGSGNGSGGG GGGGSGGVGI"
@@ -180,86 +194,90 @@ class XML < Bio::SOAPWSDL
   #   query = ">Test\nAGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC"
   #   puts serv.searchParam('fastx34_t', 'PDB', query, '-n')
   #
-  # == WSDL Methods
+  # === WSDL Methods
   #
-  # * searchSimple(program, database, query)
-  # * searchParam(program, database, query, param)
+  # ==== searchSimple(program, database, query)
+  # ==== searchParam(program, database, query, param)
   #
-  # == References
+  # === References
   #
   # * http://xml.nig.ac.jp/doc/Fasta.txt
   #
   class Fasta < XML
     SERVER_URI = BASE_URI + "Fasta.wsdl"
+
+    # returns a Bio::DDBJ::XML::Fasta object.
     def initialize(wsdl = nil)
       super(wsdl || SERVER_URI)
     end
   end
 
 
-  # = GetEntry
+  # == GetEntry
   #
   # Retrieves database entries.
   #
   # * http://xml.nig.ac.jp/doc/GetEntry.txt
   #
-  # == Examples
+  # === Examples
   #
   #  serv = Bio::DDBJ::XML::GetEntry.new
   #  puts serv.getDDBJEntry('AB000050')
   #  puts serv. getPDBEntry('1AAR')
   #
-  # == WSDL Methods
+  # === WSDL Methods
   #
-  # * getEntry(database, var, param1, param2)
-  # * getEntry(database, var)
-  # * getDDBJEntry(accession)
-  # * getDDBJCONEntry(accession)
-  # * getDDBJVerEntry(accession)
-  # * getLocus_DDBJEntry(locus)
-  # * getGene_DDBJEntry(gene)
-  # * getProd_DDBJEntry(products)
-  # * getPID_DDBJEntry(pid)
-  # * getClone_DDBJEntry(clone)
-  # * getXML_DDBJEntry(accession)
-  # * getEMBLEntry(accession)
-  # * getSWISSEntry(accession)
-  # * getPIREntry(accession)
-  # * getPRFEntry(accession)
-  # * getPDBEntry(accession)
-  # * getQVEntry(accession)
-  # * getDADEntry(accession)
-  # * getPID_DADEntry(pid)
-  # * getFASTA_DDBJEntry(accession)
-  # * getFASTA_DDBJCONEntry(accession)
-  # * getFASTA_DDBJVerEntry(accession)
-  # * getFASTA_DDBJSeqEntry(accession, start, end)
-  # * getFASTA_DADEntry(accession)
-  # * getFASTA_PIREntry(accession)
-  # * getFASTA_SWISSEntry(accession)
-  # * getFASTA_PDBEntry(accession)
-  # * getFASTA_PRFEntry(accession)
-  # * getFASTA_CDSEntry(accession)
+  # ==== getEntry(database, var, param1, param2)
+  # ==== getEntry(database, var)
+  # ==== getDDBJEntry(accession)
+  # ==== getDDBJCONEntry(accession)
+  # ==== getDDBJVerEntry(accession)
+  # ==== getLocus_DDBJEntry(locus)
+  # ==== getGene_DDBJEntry(gene)
+  # ==== getProd_DDBJEntry(products)
+  # ==== getPID_DDBJEntry(pid)
+  # ==== getClone_DDBJEntry(clone)
+  # ==== getXML_DDBJEntry(accession)
+  # ==== getEMBLEntry(accession)
+  # ==== getSWISSEntry(accession)
+  # ==== getPIREntry(accession)
+  # ==== getPRFEntry(accession)
+  # ==== getPDBEntry(accession)
+  # ==== getQVEntry(accession)
+  # ==== getDADEntry(accession)
+  # ==== getPID_DADEntry(pid)
+  # ==== getFASTA_DDBJEntry(accession)
+  # ==== getFASTA_DDBJCONEntry(accession)
+  # ==== getFASTA_DDBJVerEntry(accession)
+  # ==== getFASTA_DDBJSeqEntry(accession, start, end)
+  # ==== getFASTA_DADEntry(accession)
+  # ==== getFASTA_PIREntry(accession)
+  # ==== getFASTA_SWISSEntry(accession)
+  # ==== getFASTA_PDBEntry(accession)
+  # ==== getFASTA_PRFEntry(accession)
+  # ==== getFASTA_CDSEntry(accession)
   #
-  # == References
+  # === References
   #
   # * http://xml.nig.ac.jp/doc/GetEntry.txt
   #
   class GetEntry < XML
     SERVER_URI = BASE_URI + "GetEntry.wsdl"
+
+    # returns a Bio::DDBJ::XML::GetEntry object.
     def initialize(wsdl = nil)
       super(wsdl || SERVER_URI)
     end
   end
 
 
-  # = Gib
+  # === Gib
   # 
   # Genome Information broker
   #
   # * http://xml.nig.ac.jp/doc/Gib.txt
   #
-  # == Examples
+  # === Examples
   #
   #   serv = Bio::DDBJ::XML::Gib.new
   #   puts serv.getOrganismList
@@ -274,154 +292,164 @@ class XML < Bio::SOAPWSDL
   #   puts serv.getFlatFile('Nost_PCC7120:pCC7120zeta')
   #   puts serv.getFastaFile('Nost_PCC7120:pCC7120zeta', 'cdsaa')
   #
-  # == WSDL Methods
+  # === WSDL Methods
   #
-  # * getOrganismList
-  # * getChIDList
-  # * getOrganismNameFromChid(chid)
-  # * getChIDFromOrganismName(orgName)
-  # * getAccession(chid)
-  # * getPieceNumber(chid)
-  # * getDivision(chid)
-  # * getType(chid)
-  # * getFlatFile(chid)
-  # * getFastaFile(chid, type)
-  # * getCDS(chid)
+  # ==== getOrganismList
+  # ==== getChIDList
+  # ==== getOrganismNameFromChid(chid)
+  # ==== getChIDFromOrganismName(orgName)
+  # ==== getAccession(chid)
+  # ==== getPieceNumber(chid)
+  # ==== getDivision(chid)
+  # ==== getType(chid)
+  # ==== getFlatFile(chid)
+  # ==== getFastaFile(chid, type)
+  # ==== getCDS(chid)
   #
-  # == References
+  # === References
   #
   # * http://xml.nig.ac.jp/doc/Gib.txt
   #
   class Gib < XML
     SERVER_URI = BASE_URI + "Gib.wsdl"
+
+    # returns a Bio::DDBJ::XML::Gib object.
     def initialize(wsdl = nil)
       super(wsdl || SERVER_URI)
     end
   end
 
   
-  # = Gtop
+  # === Gtop
   #
   # GTOP: Gene to protein.
   #
   # * http://xml.nig.ac.jp/doc/Gtop.txt
   #
-  # == Examples
+  # === Examples
   #
-  # serv = Bio::DDBJ::XML::Gtop.new
-  # puts serv.getOrganismList
-  # puts serv.getMasterInfo('thrA', 'ecol0')
+  #   serv = Bio::DDBJ::XML::Gtop.new
+  #   puts serv.getOrganismList
+  #   puts serv.getMasterInfo('thrA', 'ecol0')
   #
-  # == WSDL Methods
+  # === WSDL Methods
   #
-  # * getOrganismList
-  # * getMasterInfo(orfID, organism)
+  # ==== getOrganismList
+  # ==== getMasterInfo(orfID, organism)
   #
-  # == References
+  # === References
   #
   # * http://xml.nig.ac.jp/doc/Gtop.txt
   #
   class Gtop < XML
     SERVER_URI = BASE_URI + "Gtop.wsdl"
+
+    # returns a Bio::DDBJ::XML::Gtop object.
     def initialize(wsdl = nil)
       super(wsdl || SERVER_URI)
     end
   end
 
 
-  # == PML
+  # === PML
   #
   # Variation database
   #
   # * http://xml.nig.ac.jp/doc/PML.txt
   # 
-  # == Examples
+  # === Examples
   #
-  #  serv = Bio::DDBJ::XML::PML.new
-  #  puts serv.getVariation('1')
+  #   serv = Bio::DDBJ::XML::PML.new
+  #   puts serv.getVariation('1')
   #
-  # == WSDL Methods
+  # === WSDL Methods
   #
-  # * searchVariation(field, query, order)
-  # * searchVariationSimple(field, query)
-  # * searchFrequency(field, query, order)
-  # * searchFrequencySimple(field, query)
-  # * getVariation(variation_id)
-  # * getFrequency(variation_id, population_id)
+  # ==== searchVariation(field, query, order)
+  # ==== searchVariationSimple(field, query)
+  # ==== searchFrequency(field, query, order)
+  # ==== searchFrequencySimple(field, query)
+  # ==== getVariation(variation_id)
+  # ==== getFrequency(variation_id, population_id)
   #
-  # == References
+  # === References
   #
   # * http://xml.nig.ac.jp/doc/PML.txt
   #
   class PML < XML
     SERVER_URI = BASE_URI + "PML.wsdl"
+
+    # returns a Bio::DDBJ::XML::PML object.
     def initialize(wsdl = nil)
       super(wsdl || SERVER_URI)
     end
   end
 
 
-  # = SRS
+  # === SRS
   #
   # Sequence Retrieving System
   # 
   # * http://xml.nig.ac.jp/doc/SRS.txt
   # 
-  # == Examples
+  # === Examples
   #
-  #  serv = Bio::DDBJ::XML::SRS.new
-  #  puts serv.searchSimple('[pathway-des:sugar]')
-  #  puts serv.searchParam('[swissprot-des:cohesin]', '-f seq -sf fasta')
+  #   serv = Bio::DDBJ::XML::SRS.new
+  #   puts serv.searchSimple('[pathway-des:sugar]')
+  #   puts serv.searchParam('[swissprot-des:cohesin]', '-f seq -sf fasta')
   #
-  # == WSDL Methods
+  # === WSDL Methods
   #
-  # * searchSimple(query)
-  # * searchParam(query, param)
+  # ==== searchSimple(query)
+  # ==== searchParam(query, param)
   #
-  # == Examples
+  # === Examples
   #
   # * http://xml.nig.ac.jp/doc/SRS.txt
   #
   class SRS < XML
     SERVER_URI = BASE_URI + "SRS.wsdl"
+
+    # returns a Bio::DDBJ::XML::SRS object.
     def initialize(wsdl = nil)
       super(wsdl || SERVER_URI)
     end
   end
   
 
-  # = TxSearch
+  # === TxSearch
   #
   # Searching taxonomy information.
   # 
   # * http://xml.nig.ac.jp/doc/TxSearch.txt
   #
-  # == Examples
+  # === Examples
   #
-  #  serv = Bio::DDBJ::XML::TxSearch.new
-  #  puts serv.searchSimple('*coli')
-  #  puts serv.searchSimple('*tardigrada*')
-  #  puts serv.getTxId('Escherichia coli')
-  #  puts serv.getTxName('562')
+  #   serv = Bio::DDBJ::XML::TxSearch.new
+  #   puts serv.searchSimple('*coli')
+  #   puts serv.searchSimple('*tardigrada*')
+  #   puts serv.getTxId('Escherichia coli')
+  #   puts serv.getTxName('562')
   #
-  #  query = ["Campylobacter coli", "Escherichia coli"].join("\n")
-  #  rank = ["family", "genus"].join("\n")
-  #  puts serv.searchLineage(query, rank, 'Bacteria')
+  #   query = ["Campylobacter coli", "Escherichia coli"].join("\n")
+  #   rank = ["family", "genus"].join("\n")
+  #   puts serv.searchLineage(query, rank, 'Bacteria')
   #
-  # == WSDL Methdos
+  # === WSDL Methdos
   #
-  # * searchSimple(tx_Name)
-  # * searchParam(tx_Name, tx_Clas, tx_Rank, tx_Rmax, tx_Dcls)
-  # * getTxId(tx_Name)
-  # * getTxName(tx_Id)
-  # * searchLineage(query, ranks, superkingdom)
+  # ==== searchSimple(tx_Name)
+  # ==== searchParam(tx_Name, tx_Clas, tx_Rank, tx_Rmax, tx_Dcls)
+  # ==== getTxId(tx_Name)
+  # ==== getTxName(tx_Id)
+  # ==== searchLineage(query, ranks, superkingdom)
   # 
-  # == References
+  # === References
   #
   # * http://xml.nig.ac.jp/doc/TxSearch.txt
   #
   class TxSearch < XML
     SERVER_URI = BASE_URI + "TxSearch.wsdl"
+
+    # returns a Bio::DDBJ::XML::TxSearch object.
     def initialize(wsdl = nil)
       super(wsdl || SERVER_URI)
     end
