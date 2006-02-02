@@ -1,0 +1,64 @@
+hmmpfam - search one or more sequences against HMM database
+HMMER 2.3.2 (Oct 2003)
+Copyright (C) 1992-2003 HHMI/Washington University School of Medicine
+Freely distributed under the GNU General Public License (GPL)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+HMM file:                 /Users/nakao/Sites/iprscan/data/Pfam
+Sequence file:            /Users/nakao/Sites/iprscan/tmp/20050517/iprscan-20050517-16244071/chunk_1/iprscan-20050517-16244071.nocrc
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Query sequence: 104K_THEPA
+Accession:      [none]
+Description:    [none]
+
+Scores for sequence family classification (score includes all domains):
+Model    Description                                    Score    E-value  N 
+-------- -----------                                    -----    ------- ---
+PF04385.4 Domain of unknown function, DUF529             259.3    6.6e-75   4
+
+Parsed for domains:
+Model    Domain  seq-f seq-t    hmm-f hmm-t      score  E-value
+-------- ------- ----- -----    ----- -----      -----  -------
+PF04385.4   1/4      36   111 ..     1    80 []    65.0    2e-16
+PF04385.4   2/4     149   224 ..     1    80 []    64.7  2.5e-16
+PF04385.4   3/4     265   343 ..     1    80 []    64.6  2.7e-16
+PF04385.4   4/4     379   456 ..     1    80 []    65.0    2e-16
+
+Alignments of top-scoring domains:
+PF04385.4: domain 1 of 4, from 36 to 111: score 65.0, E = 2e-16
+                   *->tLDlndtgstlkqfdykvalngdivvtytpkpGvkftkitdGnevvW
+                      t+D+n++++    f  +v+++g+++ + ++ ++v+++++++Gn+v+W
+  104K_THEPA    36    TFDINSNQTG-PAFLTAVEMAGVKYLQVQHGSNVNIHRLVEGNVVIW 81   
+
+                   eseddpefglivtlsfyldsnkfLvlllintak<-*
+                   e++   + +l++ ++++++++++++++++ +++   
+  104K_THEPA    82 ENA---STPLYTGAIVTNNDGPYMAYVEVLGDP    111  
+
+PF04385.4: domain 2 of 4, from 149 to 224: score 64.7, E = 2.5e-16
+                   *->tLDlndtgstlkqfdykvalngdivvtytpkpGvkftkitdGnevvW
+                      +L++ ++ +++k+ + ++a+ng ++vt++p++G+ +++++++n++++
+  104K_THEPA   149    SLNMAFQLENNKYEVETHAKNGANMVTFIPRNGHICKMVYHKNVRIY 195  
+
+                   eseddpefglivtlsfyldsnkfLvlllintak<-*
+                   ++     ++++vt++++++ +++L+l+++ +     
+  104K_THEPA   196 KA----TGNDTVTSVVGFFRGLRLLLINVFSID    224  
+
+PF04385.4: domain 3 of 4, from 265 to 343: score 64.6, E = 2.7e-16
+                   *->tLDlndtgstlkqfdykvalngdivvtytpkpGvkftkitdGnevvW
+                       +Dl+ +++ +++f+ + a+++ ++++++p++G+++tk++dG++v++
+  104K_THEPA   265    PVDLDIKDIDYTMFHLADATYHEPCFKIIPNTGFCITKLFDGDQVLY 311  
+
+                   eseddpefglivtlsfyldsnkfLvlllintak<-*
+                   es+ + + ++i  +++y+++n ++++l++n+++   
+  104K_THEPA   312 ESFNP-LIHCINEVHIYDRNNGSIICLHLNYSP    343  
+
+PF04385.4: domain 4 of 4, from 379 to 456: score 65.0, E = 2e-16
+                   *->tLDlndtgstlkqfdykvalngdivvty.tpkpGvkftkitdGnevv
+                      +LD+n  ++++k+ +++  +n d  +t+ tp+p+  + +++dG+ev+
+  104K_THEPA   379    ELDVN--FISDKDLYVAALTNADLNYTMvTPRPHRDVIRVSDGSEVL 423  
+
+                   WeseddpefglivtlsfyldsnkfLvlllintak<-*
+                   W++e+  ++ l++++++++d++ +Lv+l+i++     
+  104K_THEPA   424 WYYEGL-DNFLVCAWIYVSDGVASLVHLRIKDRI    456  
+
+//

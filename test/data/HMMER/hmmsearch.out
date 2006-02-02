@@ -1,0 +1,88 @@
+hmmsearch - search a sequence database with a profile HMM
+HMMER 2.2g (August 2001)
+Copyright (C) 1992-2001 HHMI/Washington University School of Medicine
+Freely distributed under the GNU General Public License (GPL)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+HMM file:                   /sw/share/hmmer/demo/7tm_1 [7tm_1]
+Sequence database:          /sw/share/hmmer/demo/P08908.fasta
+per-sequence score cutoff:  [none]
+per-domain score cutoff:    [none]
+per-sequence Eval cutoff:   <= 10        
+per-domain Eval cutoff:     [none]
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Query HMM:   7tm_1
+Accession:   PF00001
+Description: 7 transmembrane receptor (rhodopsin family)
+  [HMM has been calibrated; E-values are empirical estimates]
+
+Scores for complete sequences (score includes all domains):
+Sequence             Description                        Score    E-value  N 
+--------             -----------                        -----    ------- ---
+sp|P08908|5H1A_HUMAN 5-hydroxytryptamine 1A receptor    377.1   5.5e-130   1
+
+Parsed for domains:
+Sequence             Domain  seq-f seq-t    hmm-f hmm-t      score  E-value
+--------             ------- ----- -----    ----- -----      -----  -------
+sp|P08908|5H1A_HUMAN   1/1      53   400 ..     1   275 []   377.1 5.5e-130
+
+Alignments of top-scoring domains:
+sp|P08908|5H1A_HUMAN: domain 1 of 1, from 53 to 400: score 377.1, E = 5.5e-130
+                   *->GNlLVilvilrtkklrtptnifilNLAvADLLflltlppwalyylvg
+                      GN+ V+++i+++++l++++n++i++LAv+DL+++++++p+a++y v 
+  sp|P08908|    53    GNACVVAAIALERSLQNVANYLIGSLAVTDLMVSVLVLPMAALYQVL 99   
+
+                   gsedWpfGsalCklvtaldvvnmyaSillLtaISiDRYlAIvhPlryrrr
+                   +   W++G++ C+l++aldv+++++Sil+L+aI++DRY+AI++P+ y ++
+  sp|P08908|   100 N--KWTLGQVTCDLFIALDVLCCTSSILHLCAIALDRYWAITDPIDYVNK 147  
+
+                   rtsprrAkvvillvWvlalllslPpllfswvktveegngtlnvnvtvCli
+                   rt prrA+++i+l+W++++l+s+Pp +++w++++  +         +C+i
+  sp|P08908|   148 RT-PRRAAALISLTWLIGFLISIPP-MLGWRTPEDRSD------PDACTI 189  
+
+                   dfpeestasvstwlvsyvllstlvgFllPllvilvcYtrIlrtlrkrark
+                   + +++           y+++st+++F++Pll++lv+Y+rI+r++r r rk
+  sp|P08908|   190 SKDHG-----------YTIYSTFGAFYIPLLLMLVLYGRIFRAARFRIRK 228  
+
+                   gas...............................................
+                    + + ++++ +++++ ++ ++++++ ++++++++ + + +++ ++    +
+  sp|P08908|   229 TVKkvektgadtrhgaspapqpkksvngesgsrnwrlgveskaggalcan 278  
+
+                   ..................................................
+                   +  ++++++   +  + ++ ++++++ + +++ ++++  + + +++++++
+  sp|P08908|   279 gavrqgddgaalevievhrvgnskehlplpseagptpcapasferknern 328  
+
+                   .....kkrsskerkaaktllvvvvvFvlCWlPyfivllldtlc.lsiims
+                    + ++k+   +erk++ktl++++++F+lCWlP+fiv+l+ ++c++s++m 
+  sp|P08908|   329 aeakrKMALARERKTVKTLGIIMGTFILCWLPFFIVALVLPFCeSSCHM- 377  
+
+                   stCelervlptallvtlwLayvNsclNPiIY<-*
+                           +  +  +++wL+y+Ns lNP+IY   
+  sp|P08908|   378 --------PTLLGAIINWLGYSNSLLNPVIY    400  
+
+
+Histogram of all scores:
+score    obs    exp  (one = represents 1 sequences)
+-----    ---    ---
+  377      1      0|=                                                          
+
+
+% Statistical details of theoretical EVD fit:
+              mu =   -10.6639
+          lambda =     0.7676
+chi-sq statistic =     0.0000
+  P(chi-square)  =          0
+
+Total sequences searched: 1
+
+Whole sequence top hits:
+tophits_s report:
+     Total hits:           1
+     Satisfying E cutoff:  1
+     Total memory:         16K
+
+Domain top hits:
+tophits_s report:
+     Total hits:           1
+     Satisfying E cutoff:  1
+     Total memory:         17K
