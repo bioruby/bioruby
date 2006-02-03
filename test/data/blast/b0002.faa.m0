@@ -12,7 +12,7 @@ aspartokinase I (N-terminal); homoserine dehydrogenase I (C-terminal)
 aspartate kinase (A)
          (820 letters)
 
-Database: eco:b0002.faa 
+Database: b0002.faa 
            1 sequences; 820 total letters
 
 Searching.done
@@ -88,7 +88,7 @@ Query: 781 YSHYYQPLPLVLRGYGAGNDVTAAGVFADLLRTLSWKLGV 820
 Sbjct: 781 YSHYYQPLPLVLRGYGAGNDVTAAGVFADLLRTLSWKLGV 820
 
 
-  Database: eco:b0002.faa
+  Database: b0002.faa
     Posted date:  Aug 7, 2005  7:29 AM
   Number of letters in database: 820
   Number of sequences in database:  1

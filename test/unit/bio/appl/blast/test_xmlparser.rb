@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_xmlparser.rb,v 1.3 2005/12/18 17:06:56 nakao Exp $
+#  $Id: test_xmlparser.rb,v 1.4 2006/02/03 17:21:51 nakao Exp $
 #
 
 require 'pathname'
@@ -34,11 +34,11 @@ module Bio
     TestDataBlast = Pathname.new(File.join(bioruby_root, 'test', 'data', 'blast')).cleanpath.to_s
 
     def self.input
-      File.open(File.join(TestDataBlast, 'eco:b0002.faa')).read
+      File.open(File.join(TestDataBlast, 'b0002.faa')).read
     end
 
     def self.output
-      File.open(File.join(TestDataBlast, 'eco:b0002.faa.m7')).read 
+      File.open(File.join(TestDataBlast, 'b0002.faa.m7')).read 
     end
   end
 
@@ -71,7 +71,7 @@ module Bio
     end
 
     def test_db
-      assert_equal("eco:b0002.faa", @report.db)
+      assert_equal("b0002.faa", @report.db)
     end
 
     def test_query_id

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_report.rb,v 1.2 2005/11/22 08:31:47 nakao Exp $
+#  $Id: test_report.rb,v 1.3 2006/02/03 17:21:51 nakao Exp $
 #
 
 require 'pathname'
@@ -34,17 +34,17 @@ module Bio
     TestDataBlast = Pathname.new(File.join(bioruby_root, 'test', 'data', 'blast')).cleanpath.to_s
 
     def self.input
-      File.open(File.join(TestDataBlast, 'eco:b0002.faa')).read
+      File.open(File.join(TestDataBlast, 'b0002.faa')).read
     end
 
     def self.output(format = 7)
       case format
       when 0
-        File.open(File.join(TestDataBlast, 'eco:b0002.faa.m0')).read 
+        File.open(File.join(TestDataBlast, 'b0002.faa.m0')).read 
       when 7
-        File.open(File.join(TestDataBlast, 'eco:b0002.faa.m7')).read 
+        File.open(File.join(TestDataBlast, 'b0002.faa.m7')).read 
       when 8
-        File.open(File.join(TestDataBlast, 'eco:b0002.faa.m8')).read 
+        File.open(File.join(TestDataBlast, 'b0002.faa.m8')).read 
       end
     end
   end
@@ -80,12 +80,12 @@ module Bio
     def test_reference
       xml_quoted_str = "~Reference: Altschul, Stephen F., Thomas L. Madden, Alejandro A. Schaffer, ~Jinghui Zhang, Zheng Zhang, Webb Miller, and David J. Lipman (1997), ~&quot;Gapped BLAST and PSI-BLAST: a new generation of protein database search~programs&quot;,  Nucleic Acids Res. 25:3389-3402."
       text_str = '~Reference: Altschul, Stephen F., Thomas L. Madden, Alejandro A. Schaffer, ~Jinghui Zhang, Zheng Zhang, Webb Miller, and David J. Lipman (1997), ~"Gapped BLAST and PSI-BLAST: a new generation of protein database search~programs",  Nucleic Acids Res. 25:3389-3402.'
-      assert_equal(xml_quoted_str, @report.reference)
+#      assert_equal(xml_quoted_str, @report.reference)
       assert_equal(text_str, @report.reference)
     end
 
     def test_db
-      assert_equal('eco:b0002.faa', @report.db)
+      assert_equal('b0002.faa', @report.db)
     end
 
     def test_query_id
@@ -133,11 +133,11 @@ module Bio
     end
 
     def test_pattern
-      assert(@report.pattern)
+      assert_equal(nil, @report.pattern)
     end
 
     def test_extrez_query
-      assert(@report.entrez_query)
+      assert_equal(nil, @report.entrez_query)
     end
 
     def test_each_iteration
@@ -185,7 +185,7 @@ module Bio
     end
 
     def test_message
-      assert(@report.message)
+      assert_equal(nil, @report.message)
     end
   end
   
@@ -201,7 +201,10 @@ module Bio
     end
 
     def test_statistics
-      assert(@itr.statistics)
+      stat = {"kappa" => 0.041, "eff-space" => 605284, "db-num" => 1, 
+              "hsp-len" => 42, "db-len" => 820, "lambda" => 0.267, 
+              "entropy" => 0.14}
+      assert_equal(stat, @itr.statistics)
     end
 
     def test_num
@@ -209,7 +212,7 @@ module Bio
     end
 
     def test_message
-      assert(@itr.message)
+      assert_equal(nil, @itr.message)
     end
   end
 
