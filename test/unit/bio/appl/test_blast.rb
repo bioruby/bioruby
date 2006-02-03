@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_blast.rb,v 1.2 2005/11/23 02:47:19 nakao Exp $
+#  $Id: test_blast.rb,v 1.3 2006/02/03 17:39:13 nakao Exp $
 #
 
 require 'pathname'
@@ -34,17 +34,17 @@ module Bio
     TestDataBlast = Pathname.new(File.join(bioruby_root, 'test', 'data', 'blast')).cleanpath.to_s
 
     def self.input
-      File.open(File.join(TestDataBlast, 'eco:b0002.faa')).read
+      File.open(File.join(TestDataBlast, 'b0002.faa')).read
     end
 
     def self.output(format = '7')
       case format
       when '0'
-        File.open(File.join(TestDataBlast, 'eco:b0002.faa.m0')).read 
+        File.open(File.join(TestDataBlast, 'b0002.faa.m0')).read 
       when '7'
-        File.open(File.join(TestDataBlast, 'eco:b0002.faa.m7')).read 
+        File.open(File.join(TestDataBlast, 'b0002.faa.m7')).read 
       when '8'
-        File.open(File.join(TestDataBlast, 'eco:b0002.faa.m8')).read 
+        File.open(File.join(TestDataBlast, 'b0002.faa.m8')).read 
       end
     end
   end
