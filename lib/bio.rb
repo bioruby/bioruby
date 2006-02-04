@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: bio.rb,v 1.61 2006/01/28 08:34:25 k Exp $
+# $Id: bio.rb,v 1.62 2006/02/04 19:12:55 k Exp $
 #
 #--
 #
@@ -34,8 +34,8 @@ module Bio
 
   ## Sequence
 
-  autoload :Seq,            'bio/sequence'
   autoload :Sequence,       'bio/sequence'
+  autoload :String,         'bio/string'
 
   ## Locations/Location
 
