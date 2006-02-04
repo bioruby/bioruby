@@ -1,8 +1,8 @@
 =begin
 
-  $Id: README,v 1.12 2005/12/12 02:06:35 k Exp $
+  $Id: README,v 1.13 2006/02/04 19:17:16 k Exp $
 
-  Copyright (C) 2001-2005 Toshiaki Katayama <k@bioruby.org>
+  Copyright (C) 2001-2006 Toshiaki Katayama <k@bioruby.org>
 
 = BioRuby
 
@@ -167,6 +167,7 @@ In RubyGems, you need to load 'rubygems' library before using 'bio'.
 == LICENSE
 
 BioRuby can be freely distributed under the GNU LGPL license.
+We are trying to change the lincense to Ruby's now.
 
 Note that, install.rb included in the BioRuby package comes from
 [RAA:setup] developed by Minero Aoki, and modified by Moses Hohman.
