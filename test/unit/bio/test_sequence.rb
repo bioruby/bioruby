@@ -1,7 +1,8 @@
 #
-# test/unit/bio/tc_sequence.rb - Unit test for Bio::Sequencce
+# test/unit/bio/test_sequence.rb - Unit test for Bio::Sequencce
 #
 #   Copyright (C) 2004 Moses Hohman <mmhohman@northwestern.edu>
+#   Copyright (C) 2006 Mitsuteru C. Nakao <n@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_sequence.rb,v 1.5 2005/11/26 06:51:45 nakao Exp $
+#  $Id: test_sequence.rb,v 1.6 2006/02/05 17:39:27 nakao Exp $
 #
 
 require 'pathname'
@@ -29,34 +30,14 @@ require 'bio/sequence'
 
 module Bio
   class TestSequence < Test::Unit::TestCase
+
     def setup
       @na  = Sequence::NA.new('atgcatgcatgcatgcaaaa')
       @rna = Sequence::NA.new('augcaugcaugcaugcaaaa')
       @aa  = Sequence::AA.new('ACDEFGHIKLMNPQRSTVWYU')
     end
 
-    def test_to_s_returns_self_as_string
-      s = "abcefghijklmnop"
-      sequence = Sequence.new(s)
-      assert_equal(s, sequence.to_s, "wrong value")
-      assert_instance_of(String, sequence.to_s, "not a String")
-    end
 
-    def test_subseq_returns_nil_blank_sequence_default_end
-      sequence = Sequence.new("")
-      assert_nil(sequence.subseq(5))
-    end
-
-    def test_subseq_returns_nil_start_less_than_one
-      sequence = Sequence.new("blahblah")
-      assert_nil(sequence.subseq(0))
-    end
-    
-    def test_subseq_returns_subsequence
-      sequence = Sequence.new("hahasubhehe")
-      assert_equal("sub", sequence.subseq(5,7))
-    end
-    
     # "main" method tests translated into unit tests
     
     # Test Sequence::NA.new
@@ -124,32 +105,6 @@ module Bio
       assert_equal(?t, sequence[1])
     end
     
-    # Test Sequence#to_fasta
-    
-    def test_to_fasta
-      sequence = Sequence.new("agtc"*10)
-      header = "the header"
-      assert_equal(">the header\n" + ("agtc"*5) + "\n" + ("agtc"*5) + "\n", sequence.to_fasta(header, 20))
-    end
-    
-    # Test Sequence#window_wearch
-    
-    def test_window_search_with_width_3_default_step_no_residual
-      sequence = Sequence.new("agtca")
-      windows = []
-      returned_value = sequence.window_search(3) { |window| windows << window }
-      assert_equal(["agt", "gtc", "tca"], windows, "windows wrong")
-      assert_equal("", returned_value, "returned value wrong")
-    end
-    
-    # added
-    def test_window_search_with_width_3_step_two_with_residual
-      sequence = Sequence::NA.new("agtcat")
-      windows = []
-      returned_value = sequence.window_search(3, 2) { |window| windows << window }
-      assert_equal(["agt", "tca"], windows, "windows wrong")
-      assert_equal("t", returned_value, "returned value wrong")
-    end
     
     # Test Sequence#total
     
