@@ -1,8 +1,26 @@
+#
+# = bio/sequence/format.rb - various output format of the biological sequence
+#
+# Copyright::   Copyright (C) 2006
+#               Toshiaki Katayama <k@bioruby.org>,
+#               Naohisa Goto <ng@bioruby.org>
+# License::     Ruby's
+#
+# = TODO
+#
 # porting from N. Goto's feature-output.rb on BioRuby list.
+#
+# $Id: format.rb,v 1.2 2006/02/06 14:20:35 k Exp $
+#
+
 
 module Bio
 
+  autoload :Sequence, 'bio/sequence'
+
 class Sequence
+
+module Format
 
   # Output the FASTA format string of the sequence.  The 1st argument is
   # used in the comment line.  If the 2nd argument (integer) is given,
@@ -16,6 +34,10 @@ class Sequence
     else
       @seq.to_s + "\n"
     end
+  end
+
+  def format_gff
+    raise NotImplementedError
   end
 
   def format_genbank
@@ -33,6 +55,7 @@ class Sequence
 
     format_features(prefix, indent, fwidth)
   end
+
 
   private
 
@@ -103,6 +126,9 @@ class Sequence
     return result.join("\n")
   end
 
+end # Format
+
 end # Sequence
 
 end # Bio
+
