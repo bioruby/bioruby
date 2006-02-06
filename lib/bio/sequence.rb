@@ -7,7 +7,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     LGPL
 #
-# $Id: sequence.rb,v 0.51 2006/01/23 04:13:36 k Exp $
+# $Id: sequence.rb,v 0.52 2006/02/06 14:10:01 k Exp $
 #
 #--
 #
@@ -28,43 +28,41 @@
 #++
 #
 
-require 'bio/data/na'
-require 'bio/data/aa'
-require 'bio/data/codontable'
-require 'bio/location'
-
-require 'bio/sequence/common'
-require 'bio/sequence/na'
-require 'bio/sequence/aa'
-require 'bio/sequence/format'
 require 'bio/sequence/compat'
 
 module Bio
 
-# Nucleic/Amino Acid sequence
-
 class Sequence
+
+  def initialize(str)
+    @seq = str
+  end
+
+  def method_missing(*arg)
+    @seq.send(*arg)
+  end
 
   attr_accessor :entry_id, :definition, :features, :references, :comments,
     :date, :keywords, :dblinks, :taxonomy, :moltype, :seq
 
-#  def method_missing(*arg)
-#    @seq.send(*arg)
-#  end
+  autoload :Common,  'bio/sequence/common'
+  autoload :NA,      'bio/sequence/na'
+  autoload :AA,      'bio/sequence/aa'
+  autoload :Generic, 'bio/sequence/generic'
+  autoload :Format,  'bio/sequence/format'
 
   def output(style)
+    extend Bio::Sequence::Format
     case style
     when :fasta
       format_fasta
+    when :gff
+      format_gff
     when :genbank
       format_genbank
     when :embl
       format_embl
     end
-  end
-
-  def initialize(str)
-    @seq = str
   end
 
   def self.auto(str)
