@@ -1,7 +1,21 @@
+#
+# = bio/sequence/common.rb - common methods for biological sequence
+#
+# Copyright::   Copyright (C) 2006
+#               Toshiaki Katayama <k@bioruby.org>
+# License::     Ruby's
+#
+# $Id: common.rb,v 1.2 2006/02/06 14:16:17 k Exp $
+#
+
 module Bio
+
+  autoload :Locations, 'bio/location'
 
 class Sequence
 
+# This module provides common methods for biological sequence classes
+# which must inherit String.
 module Common
 
   def to_s
@@ -33,7 +47,7 @@ module Common
 
   # Returns the subsequence of the self string.
   def subseq(s = 1, e = self.length)
-    return nil if s < 1 or e < 1
+    raise "Error: start/end position must be a positive integer" unless s > 0 and e > 0
     s -= 1
     e -= 1
     self[s..e]
@@ -133,9 +147,7 @@ module Common
 
   # Receive a GenBank style position string and convert it to the Locations
   # objects to splice the sequence itself.  See also: bio/location.rb
-  #
-  # This method depends on Locations class, see bio/location.rb
-  def splicing(position)
+  def splice(position)
     unless position.is_a?(Locations) then
       position = Locations.new(position)
     end
@@ -154,6 +166,7 @@ module Common
     end
     return self.class.new(s)
   end
+  alias splicing splice
 
 end # Common
 
