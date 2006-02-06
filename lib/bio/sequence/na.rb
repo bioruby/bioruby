@@ -1,9 +1,24 @@
+#
+# = bio/sequence/na.rb - nucleic acid sequence class
+#
+# Copyright::   Copyright (C) 2006
+#               Toshiaki Katayama <k@bioruby.org>
+# License::     Ruby's
+#
+# $Id: na.rb,v 1.2 2006/02/06 14:13:52 k Exp $
+#
+
+require 'bio/sequence/common'
+
 module Bio
+
+  autoload :NucleicAcid, 'bio/data/na'
+  autoload :CodonTable,  'bio/data/codontable'
 
 class Sequence
 
-# Nucleic Acid sequence
 
+# Nucleic Acid sequence
 class NA < String
 
   include Bio::Sequence::Common
@@ -117,21 +132,20 @@ class NA < String
   end
 
   # Estimate the weight of this biological string molecule.
-  # NucleicAcid is defined in bio/data/na.rb
   def molecular_weight
     if self.rna?
-      NucleicAcid.weight(self, true)
+      Bio::NucleicAcid.weight(self, true)
     else
-      NucleicAcid.weight(self)
+      Bio::NucleicAcid.weight(self)
     end
   end
 
   # Convert the universal code string into the regular expression.
   def to_re
     if self.rna?
-      NucleicAcid.to_re(self.dna, true)
+      Bio::NucleicAcid.to_re(self.dna, true)
     else
-      NucleicAcid.to_re(self)
+      Bio::NucleicAcid.to_re(self)
     end
   end
 
@@ -139,7 +153,7 @@ class NA < String
   def names
     array = []
     self.each_byte do |x|
-      array.push(NucleicAcid.names[x.chr.upcase])
+      array.push(Bio::NucleicAcid.names[x.chr.upcase])
     end
     return array
   end
@@ -167,12 +181,9 @@ class NA < String
   end
   protected :rna?
 
-  def pikachu
-    self.dna.tr("atgc", "pika") # joke, of course :-)
-  end
-
 end # NA
 
 end # Sequence
 
 end # Bio
+
