@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_common.rb,v 1.1 2006/02/05 17:39:27 nakao Exp $
+#  $Id: test_common.rb,v 1.2 2006/02/07 16:53:08 nakao Exp $
 #
 
 require 'pathname'
@@ -135,16 +135,16 @@ module Bio
       assert_instance_of(String, sequence.to_s, "not a String")
     end
 
-    def test_subseq_returns_nil_blank_sequence_default_end
+    def test_subseq_returns_RuntimeError_blank_sequence_default_end
       sequence = TSequence.new("")
-      assert_equal(nil, sequence.subseq(5))
+      assert_raise(RuntimeError) { sequence.subseq(5) }
     end
 
-    def test_subseq_returns_nil_start_less_than_one
+    def test_subseq_returns_RuntimeError_start_less_than_one
       sequence = TSequence.new("blahblah")
-      assert_nil(sequence.subseq(0))
+      assert_raise(RuntimeError) { sequence.subseq(0) }
     end
-    
+
     def test_subseq_returns_subsequence
       sequence = TSequence.new("hahasubhehe")
       assert_equal("sub", sequence.subseq(5,7))
