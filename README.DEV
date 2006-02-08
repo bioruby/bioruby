@@ -1,8 +1,8 @@
 =begin
 
-  $Id: README.DEV,v 1.8 2005/11/14 15:50:21 nakao Exp $
+  $Id: README.DEV,v 1.9 2006/02/08 12:02:09 k Exp $
 
-  Copyright (C) 2005 Toshiaki Katayama <k@bioruby.org>
+  Copyright (C) 2005, 2006 Toshiaki Katayama <k@bioruby.org>
 
 = How to contribute to the BioRuby project?
 
@@ -14,7 +14,7 @@ such as:
 * Add and correct documentation
 * Develop code for new features, etc.
 
-All of these are welcome!  This document describes the last option,
+All of these are welcome!  However, this document describes the last option,
 how to contribute your code to the BioRuby distribution.
 
 We would like to include your contribution as long as the scope of
@@ -22,9 +22,12 @@ your module meets the field of bioinformatics.
 
 == License
 
-If you would like your module to be included in the BioRuby
-distribution, please license your module under GNU's LGPL for
-compatibility with the BioRuby project.
+If you would like your module to be included in the BioRuby distribution,
+you need to give us right to change the license of your module to make it
+compatible with other modules in BioRuby.
+
+BioRuby was previously distributed under the GNU GPL license, but now we
+are changing the license to Ruby's. 
 
 == Coding style
 
@@ -55,9 +58,9 @@ comments, include it in the RDoc documentation.
   # Copyright::   Copyright (C) 2001, 2005
   #               Bio R. Hacker <brh@example.org>,
   #               Chem R. Hacker <crh@example.org>
-  # License::     LGPL
+  # License::     Ruby's
   #
-  # $Id: README.DEV,v 1.8 2005/11/14 15:50:21 nakao Exp $
+  # $Id: README.DEV,v 1.9 2006/02/08 12:02:09 k Exp $
   #
   # == Blah blah blah
   #
@@ -72,27 +75,9 @@ comments, include it in the RDoc documentation.
   #
   # == References
   #
-  # * Hoge F. et al., The Hoge database, Nucleic. Acid. Res.   123:100--123 (2030)
+  # * Hoge F. et al., The Hoge database, Nucleic. Acid. Res. 123:100--123 (2030)
   #
   # * http://hoge.db/
-  #
-  #--
-  #
-  #  This library is free software; you can redistribute it and/or
-  #  modify it under the terms of the GNU Lesser General Public
-  #  License as published by the Free Software Foundation; either
-  #  version 2 of the License, or (at your option) any later version.
-  #
-  #  This library is distributed in the hope that it will be useful,
-  #  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  #  Lesser General Public License for more details.
-  #
-  #  You should have received a copy of the GNU Lesser General Public
-  #  License along with this library; if not, write to the Free Software
-  #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-  #
-  #++
   #
 
 === Documentation should be written in the RDoc format in the source code
