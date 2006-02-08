@@ -5,7 +5,7 @@
 #               KATAYAMA Toshiaki <k@bioruby.org>
 # Lisence::     LGPL
 #
-# $Id: reference.rb,v 1.19 2006/01/29 07:39:31 nakao Exp $
+# $Id: reference.rb,v 1.20 2006/02/08 14:38:59 nakao Exp $
 #
 # == Description
 # 
@@ -365,7 +365,7 @@ module Bio
 
     # Append a Bio::Reference object.
     def append(reference)
-      @references.push(reference) if a.is_a? Reference
+      @references.push(reference) if reference.is_a? Reference
       return self
     end
 
