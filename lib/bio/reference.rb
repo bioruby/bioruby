@@ -5,7 +5,7 @@
 #               KATAYAMA Toshiaki <k@bioruby.org>
 # Lisence::     LGPL
 #
-# $Id: reference.rb,v 1.20 2006/02/08 14:38:59 nakao Exp $
+# $Id: reference.rb,v 1.21 2006/02/08 15:06:26 nakao Exp $
 #
 # == Description
 # 
@@ -42,10 +42,19 @@ module Bio
   #
   # === Examples
   # 
-  #    hash = {'authors' => [ "Hoge, J.P.", "Fuga, F.B." ], 'title' => "Title of the study.",
-  #            'journal' => "Theor. J. Hoge", 'volume' => 12, 'issue' => 3, 'pages' => "123-145",
-  #            'year' => 2001, 'pubmed' => 12345678, 'medline' => 98765432, 'abstract' => "...",
-  #            ''url' => "http://...", 'mesh' => [], 'affiliations' => []}
+  #    hash = {'authors' => [ "Hoge, J.P.", "Fuga, F.B." ], 
+  #            'title' => "Title of the study.",
+  #            'journal' => "Theor. J. Hoge", 
+  #            'volume' => 12, 
+  #            'issue' => 3, 
+  #            'pages' => "123-145",
+  #            'year' => 2001, 
+  #            'pubmed' => 12345678, 
+  #            'medline' => 98765432, 
+  #            'abstract' => "Hoge fuga. ...",
+  #            'url' => "http://example.com", 
+  #            'mesh' => [], 
+  #            'affiliations' => []}
   #    ref = Bio::Reference.new(hash)
   #
   #    # Formats in the BiBTeX style.
@@ -170,13 +179,13 @@ module Bio
       @authors.each do |author|
         lines << "%A #{author}"
       end
-      lines << "%D #{@year}" unless @year.empty?
+      lines << "%D #{@year}" unless @year.to_s.empty?
       lines << "%T #{@title}" unless @title.empty?
       lines << "%J #{@journal}" unless @journal.empty?
-      lines << "%V #{@volume}" unless @volume.empty?
-      lines << "%N #{@issue}" unless @issue.empty?
+      lines << "%V #{@volume}" unless @volume.to_s.empty?
+      lines << "%N #{@issue}" unless @issue.to_s.empty?
       lines << "%P #{@pages}" unless @pages.empty?
-      lines << "%M #{@pubmed}" unless @pubmed.empty?
+      lines << "%M #{@pubmed}" unless @pubmed.to_s.empty?
       if @pubmed
         cgi = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi"
         opts = "cmd=Retrieve&db=PubMed&dopt=Citation&list_uids"
