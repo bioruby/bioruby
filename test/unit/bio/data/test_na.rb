@@ -1,23 +1,10 @@
 #
 # test/unit/bio/data/test_na.rb - Unit test for Bio::NucleicAcid
 #
-#   Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
+# Copyright::  Copyright (C) 2005,2006 Mitsuteru Nakao <n@bioruby.org>
+# Lisence::    Ruby's
 #
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#  $Id: test_na.rb,v 1.5 2005/11/25 15:59:29 k Exp $
+#  $Id: test_na.rb,v 1.6 2006/02/08 13:57:01 nakao Exp $
 #
 
 require 'pathname'
@@ -47,14 +34,18 @@ module Bio
 
 
   class TestNA < Test::Unit::TestCase
+
     def setup
       @obj = Bio::NucleicAcid.new
     end
 
     def test_to_re
       re = /[tc][ag][at][gc][tg][ac][tgc][atg][agc][atgc]atgc/
-      assert_equal(re, @obj.to_re('yrwskmbdvnatgc'))
-      assert_equal(re, Bio::NucleicAcid.to_re('yrwskmbdvnatgc'))
+      str = 'yrwskmbdvnatgc'
+      str0 = str.clone
+      assert_equal(re, @obj.to_re(str))
+      assert_equal(str0, str)
+      assert_equal(re, Bio::NucleicAcid.to_re(str))
     end
 
 
