@@ -3,29 +3,11 @@
 #
 # Copyright::   Copyright (C) 2000-2006
 #               Toshiaki Katayama <k@bioruby.org>,
-#               Yoshinori K. Okuji <okuji@embug.org>,
+#               Yoshinori K. Okuji <okuji@enbug.org>,
 #               Naohisa Goto <ng@bioruby.org>
-# License::     LGPL
+# License::     Ruby's
 #
-# $Id: sequence.rb,v 0.52 2006/02/06 14:10:01 k Exp $
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
+# $Id: sequence.rb,v 0.53 2006/02/08 17:22:22 k Exp $
 #
 
 require 'bio/sequence/compat'
@@ -34,8 +16,15 @@ module Bio
 
 class Sequence
 
+  autoload :Common,  'bio/sequence/common'
+  autoload :NA,      'bio/sequence/na'
+  autoload :AA,      'bio/sequence/aa'
+  autoload :Generic, 'bio/sequence/generic'
+  autoload :Format,  'bio/sequence/format'
+
   def initialize(str)
-    @seq = str
+    @seq = str.dup
+    @seq.extend Bio::Sequence::Common
   end
 
   def method_missing(*arg)
@@ -44,12 +33,6 @@ class Sequence
 
   attr_accessor :entry_id, :definition, :features, :references, :comments,
     :date, :keywords, :dblinks, :taxonomy, :moltype, :seq
-
-  autoload :Common,  'bio/sequence/common'
-  autoload :NA,      'bio/sequence/na'
-  autoload :AA,      'bio/sequence/aa'
-  autoload :Generic, 'bio/sequence/generic'
-  autoload :Format,  'bio/sequence/format'
 
   def output(style)
     extend Bio::Sequence::Format
@@ -66,13 +49,12 @@ class Sequence
   end
 
   def self.auto(str)
-    moltype = self.guess(str)
-    if moltype == NA
+    @moltype = self.guess(str)
+    if @moltype == NA
       @seq = NA.new(str)
     else
       @seq = AA.new(str)
     end
-
     return @seq
   end
 
