@@ -4,9 +4,9 @@
 # Copyright::  Copyright (C) 2001, 2002
 #              GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>,
 #              KATAYAMA Toshiaki <k@bioruby.org>
-# Lisence::    LGPL
+# Lisence::    Ruby's
 #
-# $Id: fasta.rb,v 1.22 2006/01/28 10:48:59 nakao Exp $
+# $Id: fasta.rb,v 1.23 2006/02/09 03:28:48 ngoto Exp $
 # 
 # == Description
 # 
@@ -61,24 +61,6 @@
 #   
 # * Fasta format description (NCBI)
 #   http://www.ncbi.nlm.nih.gov/BLAST/fasta.shtml
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
 #
 
 require 'bio/db'
@@ -208,7 +190,7 @@ module Bio
     def seq
       unless defined?(@seq)
         unless /\A\s*^\#/ =~ @data then
-          @seq = Sequence.new(@data.tr(" \t\r\n0-9", '')) # lazy clean up
+          @seq = Sequence::Generic.new(@data.tr(" \t\r\n0-9", '')) # lazy clean up
         else
           a = @data.split(/(^\#.*$)/)
           i = 0
@@ -224,7 +206,7 @@ module Bio
             end
           end
           @comment = cmnt
-          @seq = Bio::Sequence.new(s.join(''))
+          @seq = Bio::Sequence::Generic.new(s.join(''))
         end
       end
       @seq
