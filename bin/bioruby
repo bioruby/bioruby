@@ -6,7 +6,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: bioruby,v 1.11 2006/02/09 16:29:10 k Exp $
+# $Id: bioruby,v 1.12 2006/02/09 20:17:03 k Exp $
 #
 
 begin
@@ -22,17 +22,18 @@ include Bio::Shell
 ### Command line argument
 
 # working directory or script file
-arg = ARGV.shift
-if File.directory?(arg)
-  # directory or symlink to directory
-  Dir.chdir(arg)
-elsif File.exists?(arg)
-  # BioRuby shell script (lib/bioruby.rb can be obsolete)
-  load arg
-  exit
-elsif arg
-  Dir.mkdir(arg)
-  Dir.chdir(arg)
+if arg = ARGV.shift
+  if File.directory?(arg)
+    # directory or symlink to directory
+    Dir.chdir(arg)
+  elsif File.exists?(arg)
+    # BioRuby shell script (lib/bioruby.rb can be obsolete)
+    load arg
+    exit
+  elsif arg
+    Dir.mkdir(arg)
+    Dir.chdir(arg)
+  end
 end
 
 ### BioRuby shell setup
