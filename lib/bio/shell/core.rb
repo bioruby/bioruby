@@ -1,11 +1,11 @@
 #
 # = bio/shell/core.rb - internal methods for the BioRuby shell
 #
-# Copyright::	Copyright (C) 2005, 2006
-#		Toshiaki Katayama <k@bioruby.org>
-# License::	Ruby's
+# Copyright::   Copyright (C) 2005, 2006
+#               Toshiaki Katayama <k@bioruby.org>
+# License::     Ruby's
 #
-# $Id: core.rb,v 1.17 2006/02/09 20:26:08 k Exp $
+# $Id: core.rb,v 1.18 2006/02/09 20:48:53 k Exp $
 #
 
 

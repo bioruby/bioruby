@@ -1,29 +1,11 @@
 #
 # = bio/shell/plugin/seq.rb - plugin for biological sequence manipulations
 #
-# Copyright::	Copyright (C) 2005
-#		Toshiaki Katayama <k@bioruby.org>
-# License::	LGPL
+# Copyright::   Copyright (C) 2005
+#               Toshiaki Katayama <k@bioruby.org>
+# License::     Ruby's
 #
-# $Id: seq.rb,v 1.16 2005/12/19 01:20:06 k Exp $
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
+# $Id: seq.rb,v 1.17 2006/02/09 20:48:53 k Exp $
 #
 
 module Bio::Shell
@@ -210,14 +192,14 @@ class String
     while n < self.length
       pos = self[n, size].rindex(separater)
 
-      if self[n, size].length < size	# last line of the folded str
+      if self[n, size].length < size    # last line of the folded str
         pos = nil
       end
 
       if pos
         ary << self[n, pos+separater.length]
         n += pos + separater.length
-      else				# line too long or the last line
+      else                              # line too long or the last line
         ary << self[n, size]
         n += size
       end

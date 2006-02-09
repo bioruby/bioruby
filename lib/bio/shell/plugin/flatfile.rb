@@ -1,29 +1,11 @@
 #
 # = bio/shell/plugin/flatfile.rb - plugin for flatfile database
 #
-# Copyright::	Copyright (C) 2005
-#		Toshiaki Katayama <k@bioruby.org>
-# License::	LGPL
+# Copyright::   Copyright (C) 2005
+#               Toshiaki Katayama <k@bioruby.org>
+# License:      Ruby's
 #
-# $Id: flatfile.rb,v 1.11 2005/11/30 01:57:18 k Exp $
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
+# $Id: flatfile.rb,v 1.12 2006/02/09 20:48:53 k Exp $
 #
 
 module Bio::Shell
@@ -86,8 +68,8 @@ module Bio::Shell
   end
 
   def flatindex(dbname, *flatfiles)
-    dir = Bio::Shell.create_flat_dir(dbname)
     begin
+      dir = Bio::Shell.create_flat_dir(dbname)
       print "Creating BioFlat index (#{dir}) ... "
       bdb = format = options = nil
       Bio::FlatFileIndex.makeindex(bdb, dir, format, options, *flatfiles)
