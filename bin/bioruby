@@ -2,32 +2,12 @@
 #
 # = BioRuby shell - command line interface for the BioRuby library
 #
-# Copyright::	Copyright (C) 2005
-#		Toshiaki Katayama <k@bioruby.org>
-# License::	LGPL
+# Copyright::   Copyright (C) 2005, 2006
+#               Toshiaki Katayama <k@bioruby.org>
+# License::     Ruby's
 #
-# $Id: bioruby,v 1.10 2005/12/07 05:12:06 k Exp $
+# $Id: bioruby,v 1.11 2006/02/09 16:29:10 k Exp $
 #
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
-#
-
-# $: << File.dirname(__FILE__)+'/../lib'
 
 begin
   require 'rubygems'
@@ -38,6 +18,24 @@ end
 require 'bio/shell'
 
 include Bio::Shell
+
+### Command line argument
+
+# working directory or script file
+arg = ARGV.shift
+if File.directory?(arg)
+  # directory or symlink to directory
+  Dir.chdir(arg)
+elsif File.exists?(arg)
+  # BioRuby shell script (lib/bioruby.rb can be obsolete)
+  load arg
+  exit
+elsif arg
+  Dir.mkdir(arg)
+  Dir.chdir(arg)
+end
+
+### BioRuby shell setup
 
 # loading configuration and plugins
 Bio::Shell.setup
