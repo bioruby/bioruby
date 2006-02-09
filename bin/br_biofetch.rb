@@ -1,24 +1,12 @@
 #!/usr/bin/env ruby
 #
-# biofetch - BioFetch client
+# = biofetch - BioFetch client
 #
-#   Copyright (C) 2002 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::   Copyright (C) 2002
+#               Toshiaki Katayama <k@bioruby.org>
+# License::     Ruby's
 #
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#
-#  $Id: br_biofetch.rb,v 1.2 2002/12/03 18:54:43 k Exp $
+# $Id: br_biofetch.rb,v 1.3 2006/02/09 16:29:41 k Exp $
 #
 
 require 'bio/io/fetch'
