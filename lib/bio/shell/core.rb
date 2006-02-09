@@ -1,43 +1,24 @@
 #
 # = bio/shell/core.rb - internal methods for the BioRuby shell
 #
-# Copyright::	Copyright (C) 2005
+# Copyright::	Copyright (C) 2005, 2006
 #		Toshiaki Katayama <k@bioruby.org>
-# License::	LGPL
+# License::	Ruby's
 #
-# $Id: core.rb,v 1.16 2005/12/07 10:54:23 k Exp $
+# $Id: core.rb,v 1.17 2006/02/09 20:26:08 k Exp $
 #
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
-#
+
 
 module Bio::Shell::Ghost
 
+  SAVEDIR = "session/"
   CONFIG  = "config"
   OBJECT  = "object"
   HISTORY = "history"
   SCRIPT  = "script.rb"
   PLUGIN  = "plugin/"
+  DATADIR = "data/"
   BIOFLAT = "bioflat/"
-
-  SITEDIR = "/etc/bioinformatics/bioruby/"
-  USERDIR = "#{ENV['HOME']}/.bioinformatics/bioruby/"
-  SAVEDIR = ".bioruby/"
 
   MARSHAL = [ Marshal::MAJOR_VERSION, Marshal::MINOR_VERSION ]
 
@@ -135,36 +116,35 @@ module Bio::Shell::Ghost
   end
 
   def create_save_dir
-    dir = ask_save_dir
-    create_real_dir(dir)
-    create_real_dir(dir + PLUGIN)
-    create_real_dir(dir + BIOFLAT)
-    return dir
+    if @cache[:save].nil?
+      if ask_yes_or_no("Save session in '#{SAVEDIR}' directory? [y/n]: ")
+        create_real_dir(SAVEDIR)
+        create_real_dir(DATADIR)
+        create_real_dir(PLUGIN)
+#       create_real_dir(BIOFLAT)
+        @cache[:save] = true
+      else
+        @cache[:save] = false
+      end
+    end
+    return @cache[:save]
   end
 
-  # 1. ask to save in SAVEDIR directory in the current directory
-  # 2. otherwise save in USERDIR directory
-  # 3. remember the choice in @cache[:savedir] once per session
-  def ask_save_dir
-    if @cache[:savedir]
-      dir = @cache[:savedir]
-    else
-      dir = SAVEDIR
-      if ! File.directory?(dir)
-        loop do
-          print "Save in \"#{dir}\" directory? [y/n]: "
-          answer = gets
-          if /^\s*[Yy]/.match(answer)
-            break
-          elsif /^\s*[Nn]/.match(answer)
-            dir = USERDIR
-            break
-          end
-        end
+  def ask_yes_or_no(message)
+    loop do
+      print message
+      answer = gets
+      if answer.nil?
+        # readline support might be broken
+        return false
+      elsif /^\s*[Nn]/.match(answer)
+        return false
+      elsif /^\s*[Yy]/.match(answer)
+        return true
+      else
+        # loop
       end
-      @cache[:savedir] = dir
     end
-    return dir
   end
 
   def create_real_dir(dir)
@@ -174,7 +154,7 @@ module Bio::Shell::Ghost
         Dir.mkdir(dir)
         puts "done"
       rescue
-        warn "Error: Failed to create #{dir} : #{$!}"
+        warn "Error: Failed to create directory (#{dir}) : #{$!}"
       end
     end
   end
@@ -182,16 +162,18 @@ module Bio::Shell::Ghost
   ### bioflat
 
   def create_flat_dir(dbname)
-    if prefix = create_save_dir
-      return prefix + BIOFLAT + dbname.to_s.strip
-    else
-      return nil
+    dir = BIOFLAT + dbname.to_s.strip
+    unless File.directory?(BIOFLAT)
+      Dir.mkdir(BIOFLAT)
     end
+    unless File.directory?(dir)
+      Dir.mkdir(dir)
+    end
+    return dir
   end
 
   def find_flat_dir(dbname)
-    dir = SAVEDIR + BIOFLAT + dbname.to_s.strip
-    dir = USERDIR + BIOFLAT + dbname.to_s.strip unless File.exists?(dir)
+    dir = BIOFLAT + dbname.to_s.strip
     if File.exists?(dir)
       return dir
     else
@@ -202,8 +184,6 @@ module Bio::Shell::Ghost
   ### config
 
   def load_config
-    load_config_file(SITEDIR + CONFIG)
-    load_config_file(USERDIR + CONFIG)
     load_config_file(SAVEDIR + CONFIG)
   end
 
@@ -218,8 +198,9 @@ module Bio::Shell::Ghost
   end
 
   def save_config
-    dir = create_save_dir
-    save_config_file(dir + CONFIG)
+    if create_save_dir
+      save_config_file(SAVEDIR + CONFIG)
+    end
   end
 
   def save_config_file(file)
@@ -273,8 +254,6 @@ module Bio::Shell::Ghost
   ### plugin
 
   def load_plugin
-    load_plugin_dir(SITEDIR + PLUGIN)
-    load_plugin_dir(USERDIR + PLUGIN)
     load_plugin_dir(SAVEDIR + PLUGIN)
   end
 
@@ -291,8 +270,6 @@ module Bio::Shell::Ghost
   ### object
 
   def load_object
-    load_object_file(SITEDIR + OBJECT)
-    load_object_file(USERDIR + OBJECT)
     load_object_file(SAVEDIR + OBJECT)
   end
 
@@ -318,8 +295,9 @@ module Bio::Shell::Ghost
   end
   
   def save_object
-    dir = create_save_dir
-    save_object_file(dir + OBJECT)
+    if create_save_dir
+      save_object_file(SAVEDIR + OBJECT)
+    end
   end
 
   def save_object_file(file)
@@ -358,8 +336,6 @@ module Bio::Shell::Ghost
 
   def load_history
     if @cache[:readline]
-      load_history_file(SITEDIR + HISTORY)
-      load_history_file(USERDIR + HISTORY)
       load_history_file(SAVEDIR + HISTORY)
     end
   end
@@ -376,8 +352,9 @@ module Bio::Shell::Ghost
   
   def save_history
     if @cache[:readline]
-      dir = create_save_dir
-      save_history_file(dir + HISTORY)
+      if create_save_dir
+        save_history_file(SAVEDIR + HISTORY)
+      end
     end
   end
 
@@ -428,8 +405,9 @@ module Bio::Shell::Ghost
 
   def save_script
     if @script_begin and @script_end and @script_begin <= @script_end
-      dir = create_save_dir
-      save_script_file(dir + SCRIPT)
+      if create_save_dir
+        save_script_file(SAVEDIR + SCRIPT)
+      end
     else
       puts "Error: script range #{@script_begin}..#{@script_end} is invalid"
     end
