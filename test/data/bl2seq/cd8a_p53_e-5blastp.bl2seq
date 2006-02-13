@@ -1,0 +1,37 @@
+Query= CD8A_HUMAN P01732 T-cell surface glycoprotein CD8 alpha chain
+precursor (T-lymphocyte differentiation antigen T8/Leu-2).
+         (235 letters)
+
+Lambda     K      H
+   0.323    0.137    0.436 
+
+Gapped
+Lambda     K      H
+   0.267   0.0410    0.140 
+
+
+Matrix: BLOSUM62
+Gap Penalties: Existence: 11, Extension: 1
+Number of Hits to DB: 175
+Number of Sequences: 0
+Number of extensions: 8
+Number of successful extensions: 0
+Number of sequences better than 1.0e-05: 0
+Number of HSP's better than  0.0 without gapping: 0
+Number of HSP's successfully gapped in prelim test: 0
+Number of HSP's that attempted gapping in prelim test: 0
+Number of HSP's gapped (non-prelim): 0
+length of query: 235
+length of database: 393
+effective HSP length: 27
+effective length of query: 208
+effective length of database: 366
+effective search space:    76128
+effective search space used:    76128
+T: 11
+A: 40
+X1: 16 ( 7.5 bits)
+X2: 38 (14.6 bits)
+X3: 64 (24.7 bits)
+S1: 41 (22.0 bits)
+S2: 74 (33.1 bits)

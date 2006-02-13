@@ -1,0 +1,53 @@
+Query= CD8A_HUMAN P01732 T-cell surface glycoprotein CD8 alpha chain
+precursor (T-lymphocyte differentiation antigen T8/Leu-2).
+         (235 letters)
+
+>CD8B_HUMAN P10966 T-cell surface glycoprotein CD8 beta chain
+           precursor (Antigen CD8B).
+          Length = 210
+
+ Score = 29.6 bits (65), Expect = 5e-05
+ Identities = 21/90 (23%), Positives = 37/90 (41%), Gaps = 3/90 (3%)
+
+Query: 39  VELKCQVLLSNPTSGCSWLFQ---PRGAAASPTFLLYLSQNKPKAAEGLDTQRFSGKRLG 95
+           V L C+  +S       WL Q   P   +      L+ S       E ++ ++ +  R  
+Sbjct: 37  VMLSCEAKISLSNMRIYWLRQRQAPSSDSHHEFLALWDSAKGTIHGEEVEQEKIAVFRDA 96
+
+Query: 96  DTFVLTLSDFRRENEGYYFCSALSNSIMYF 125
+             F+L L+  + E+ G YFC  + +  + F
+Sbjct: 97  SRFILNLTSVKPEDSGIYFCMIVGSPELTF 126
+
+
+Lambda     K      H
+   0.323    0.137    0.436 
+
+Gapped
+Lambda     K      H
+   0.267   0.0410    0.140 
+
+
+Matrix: BLOSUM62
+Gap Penalties: Existence: 11, Extension: 1
+Number of Hits to DB: 102
+Number of Sequences: 0
+Number of extensions: 5
+Number of successful extensions: 3
+Number of sequences better than 10.0: 1
+Number of HSP's better than 10.0 without gapping: 1
+Number of HSP's successfully gapped in prelim test: 0
+Number of HSP's that attempted gapping in prelim test: 0
+Number of HSP's gapped (non-prelim): 1
+length of query: 235
+length of database: 210
+effective HSP length: 22
+effective length of query: 213
+effective length of database: 188
+effective search space:    40044
+effective search space used:    40044
+T: 11
+A: 40
+X1: 16 ( 7.5 bits)
+X2: 38 (14.6 bits)
+X3: 64 (24.7 bits)
+S1: 20 (12.2 bits)
+S2: 20 (12.3 bits)
