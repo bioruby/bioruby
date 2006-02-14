@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: entry.rb,v 1.6 2006/02/09 20:48:53 k Exp $
+# $Id: entry.rb,v 1.7 2006/02/14 13:46:43 k Exp $
 #
 
 module Bio::Shell
@@ -40,7 +40,7 @@ module Bio::Shell
     end
 
     if tmp and tmp.is_a?(String) and not tmp.empty?
-      seq = Bio::Sequence.auto(tmp)
+      seq = Bio::Sequence.auto(tmp).seq
     end
     return seq
   end

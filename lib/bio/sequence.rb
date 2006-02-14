@@ -7,7 +7,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: sequence.rb,v 0.54 2006/02/14 13:12:06 k Exp $
+# $Id: sequence.rb,v 0.55 2006/02/14 13:46:42 k Exp $
 #
 
 require 'bio/sequence/compat'
@@ -47,14 +47,19 @@ class Sequence
     end
   end
 
-  def self.auto(str)
-    @moltype = self.guess(str)
+  def auto
+    @moltype = guess
     if @moltype == NA
-      @seq = NA.new(str)
+      @seq = NA.new(@seq)
     else
-      @seq = AA.new(str)
+      @seq = AA.new(@seq)
     end
-    return @seq
+  end
+
+  def self.auto(str)
+    seq = self.new(str)
+    seq.auto
+    return seq
   end
 
   def guess(threshold = 0.9, length = 10000, index = 0)
