@@ -6,7 +6,7 @@
 #              KATAYAMA Toshiaki <k@bioruby.org>
 # Lisence::    Ruby's
 #
-# $Id: fasta.rb,v 1.23 2006/02/09 03:28:48 ngoto Exp $
+# $Id: fasta.rb,v 1.24 2006/02/14 13:42:40 ngoto Exp $
 # 
 # == Description
 # 
@@ -241,6 +241,20 @@ module Bio
     # Returens the length of Bio::Sequence::AA.
     def aalen
       self.aaseq.length
+    end
+
+    # Returns sequence as a Bio::Sequence object.
+    #
+    # Note: If you modify the returned Bio::Sequence object,
+    # the sequence or definition in this FastaFormat object
+    # might also be changed (but not always be changed)
+    # because of efficiency.
+    # 
+    def to_seq
+      seq
+      obj = Bio::Sequence.new(@seq)
+      obj.definition = self.definition
+      obj
     end
 
     # Parsing FASTA Defline, and extract IDs.
