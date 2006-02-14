@@ -7,7 +7,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: sequence.rb,v 0.53 2006/02/08 17:22:22 k Exp $
+# $Id: sequence.rb,v 0.54 2006/02/14 13:12:06 k Exp $
 #
 
 require 'bio/sequence/compat'
@@ -23,8 +23,7 @@ class Sequence
   autoload :Format,  'bio/sequence/format'
 
   def initialize(str)
-    @seq = str.dup
-    @seq.extend Bio::Sequence::Common
+    @seq = str
   end
 
   def method_missing(*arg)
@@ -58,8 +57,9 @@ class Sequence
     return @seq
   end
 
-  def guess(threshold = 0.9)
-    cmp = @seq.composition
+  def guess(threshold = 0.9, length = 10000, index = 0)
+    str = @seq.to_s[index,length].to_s.extend Bio::Sequence::Common
+    cmp = str.composition
 
     bases = cmp['A'] + cmp['T'] + cmp['G'] + cmp['C'] + 
             cmp['a'] + cmp['t'] + cmp['g'] + cmp['c']
