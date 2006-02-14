@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: core.rb,v 1.18 2006/02/09 20:48:53 k Exp $
+# $Id: core.rb,v 1.19 2006/02/14 13:18:35 k Exp $
 #
 
 
@@ -57,13 +57,13 @@ module Bio::Shell::Ghost
   # A hash to store temporal (per session) configurations
   attr_accessor :cache
 
-  def load
+  def load_session
     load_object
     load_history
     opening_splash
   end
 
-  def save
+  def save_session
     closing_splash
     save_history
     save_object
