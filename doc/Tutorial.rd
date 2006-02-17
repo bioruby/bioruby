@@ -2,11 +2,11 @@
 
 See the document in the CVS repository ./doc/((<Tutorial.rd|URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/bioruby/doc/Tutorial.rd?rev=HEAD&cvsroot=bioruby&content-type=text/plain>)) - for a potentially more up-to-date edition. This one was updated:
 
-  $Id: Tutorial.rd,v 1.11 2006/01/31 07:45:22 pjotr Exp $
+  $Id: Tutorial.rd,v 1.12 2006/02/17 14:59:26 pjotr Exp $
 
 Translated into English: Naohisa Goto <ng@bioruby.org>
 
-Editor:                  PjotrPrins
+Editor:                  PjotrPrins <p@bioruby.org>
 
 Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>, 2005-2006 all
 others
@@ -127,11 +127,9 @@ has index 0, for example:
 
 
 So when using String methods, you should subtract 1 from positions
-conventionally used in biology.  (subseq method returns nil if you
-specify positions smaller than or equal to 0 for either one of the
-"from" or "to".)
-
-(EDITOR'S NOTE: should 'subseq' not throw an exception instead?)
+conventionally used in biology.  (subseq method will throw an exception if you
+specify positions smaller than or equal to 0 for either one of the "from" or
+"to".)
 
 The window_search(window_size, step_size) method shows a typical Ruby
 way of writing concise and clear code using 'closures'. Each sliding
@@ -401,6 +399,9 @@ database class?
       p entry.definition        # definition of the entry
       p entry.seq               # sequence data of the entry
     end
+
+An example that can take any input, filter using a regular expression to output
+to a FASTA file can be found in sample/any2fasta.rb.
 
 Other methods to extract specific data from database objects can be
 different between databases, though some methods are common (see the
