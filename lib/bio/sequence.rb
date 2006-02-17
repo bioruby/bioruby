@@ -7,7 +7,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: sequence.rb,v 0.55 2006/02/14 13:46:42 k Exp $
+# $Id: sequence.rb,v 0.56 2006/02/17 17:15:08 k Exp $
 #
 
 require 'bio/sequence/compat'
@@ -80,6 +80,16 @@ class Sequence
 
   def self.guess(str, *args)
     self.new(str).guess(*args)
+  end
+
+  def na
+    @seq = NA.new(@seq)
+    @moltype = NA
+  end
+
+  def aa
+    @seq = AA.new(@seq)
+    @moltype = AA
   end
 
 end # Sequence
