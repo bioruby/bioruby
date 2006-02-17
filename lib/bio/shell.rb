@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License:      Ruby's
 #
-# $Id: shell.rb,v 1.13 2006/02/09 20:48:52 k Exp $
+# $Id: shell.rb,v 1.14 2006/02/17 17:12:39 k Exp $
 #
 
 require 'bio'
@@ -16,7 +16,7 @@ require 'pp'
 module Bio::Shell
 
   require 'bio/shell/core'
-  require 'bio/shell/session'
+  require 'bio/shell/interface'
   require 'bio/shell/plugin/entry'
   require 'bio/shell/plugin/seq'
   require 'bio/shell/plugin/midi'
