@@ -1,11 +1,11 @@
 #
-# = bio/shell/session.rb - core user interface of the BioRuby shell
+# = bio/shell/interface.rb - core user interface of the BioRuby shell
 #
 # Copyright::   Copyright (C) 2005
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: interface.rb,v 1.12 2006/02/09 20:48:53 k Exp $
+# $Id: interface.rb,v 1.13 2006/02/17 17:11:59 k Exp $
 #
 
 module Bio::Shell
@@ -64,6 +64,8 @@ module Bio::Shell
       Bio::Shell.config_echo
     when :color, "color"
       Bio::Shell.config_color
+    when :splash, "splash"
+      Bio::Shell.config_splash
     when :pager, "pager"
       Bio::Shell.config_pager(*opts)
     when :message, "message"
@@ -85,7 +87,7 @@ module Bio::Shell
     puts "Pager is set to '#{cmd ? cmd : 'off'}'"
   end
 
-  def display(*obj)
+  def disp(*obj)
     # The original idea is from http://sheepman.parfait.ne.jp/20050215.html
     if Bio::Shell.config[:pager]
       pg = IO.popen(Bio::Shell.config[:pager], "w")
@@ -99,6 +101,7 @@ module Bio::Shell
         pg.close
       end
     else
+      # or use Object#display ?
       puts(*obj)
     end
   end
@@ -131,16 +134,20 @@ module Bio::Shell
   ### file save
 
   def savefile(file, *objs)
+    datadir = Bio::Shell.datadir
+    message = "Save file '#{file}' in '#{datadir}' directory? [y/n]: "
+    if ! file[/^#{datadir}/] and Bio::Shell.ask_yes_or_no(message)
+      file = datadir + file
+    end
     if File.exists?(file)
-      loop do
-        print "Overwrite existing #{file}? [y/n]: "
-        answer = gets
-        return if /^\s*[Nn]/.match(answer)
-        break if /^\s*[Yy]/.match(answer)
+      message = "Overwrite existing '#{file}' file? [y/n]: "
+      if ! Bio::Shell.ask_yes_or_no(message)
+        puts " ... save aborted."
+        return
       end
     end
     begin
-      print "Saving data (#{file}) ... "
+      print "Saving file (#{file}) ... "
       File.open(file, "w") do |f|
         objs.each do |obj|
           f.puts obj.to_s
