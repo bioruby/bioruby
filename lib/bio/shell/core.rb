@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: core.rb,v 1.19 2006/02/14 13:18:35 k Exp $
+# $Id: core.rb,v 1.20 2006/02/17 17:09:17 k Exp $
 #
 
 
@@ -35,6 +35,10 @@ module Bio::Shell::Ghost
     :w => "\e[37m",  :white   => "\e[37m",
     :n => "\e[00m",  :none    => "\e[00m",  :reset => "\e[00m",
   }
+
+  def datadir
+    DATADIR
+  end
 
   def esc_seq
     ESC_SEQ
@@ -242,6 +246,12 @@ module Bio::Shell::Ghost
     end
   end
 
+  def config_splash
+    flag = ! @config[:splash]
+    @config[:splash] = flag
+    puts "Splash #{flag ? 'on' : 'off'}"
+  end
+
   def config_pager(cmd = nil)
     @config[:pager] = cmd
   end
@@ -254,7 +264,7 @@ module Bio::Shell::Ghost
   ### plugin
 
   def load_plugin
-    load_plugin_dir(SAVEDIR + PLUGIN)
+    load_plugin_dir(PLUGIN)
   end
 
   def load_plugin_dir(dir)
@@ -405,11 +415,20 @@ module Bio::Shell::Ghost
 
   def save_script
     if @script_begin and @script_end and @script_begin <= @script_end
-      if create_save_dir
-        save_script_file(SAVEDIR + SCRIPT)
+      if File.exists?(SCRIPT)
+        message = "Overwrite script file (#{SCRIPT})? [y/n]: "
+      else
+        message = "Save script file (#{SCRIPT})? [y/n]: "
       end
+      if ask_yes_or_no(message)
+        save_script_file(SCRIPT)
+      else
+        puts " ... save aborted."
+      end 
+    elsif @script_begin and @script_end and @script_begin - @script_end == 1
+      puts " ... script aborted."
     else
-      puts "Error: script range #{@script_begin}..#{@script_end} is invalid"
+      puts "Error: Script range #{@script_begin}..#{@script_end} is invalid"
     end
   end
 
@@ -417,10 +436,10 @@ module Bio::Shell::Ghost
     begin
       print "Saving script (#{file}) ... "
         File.open(file, "w") do |f|
-        f.print "#!/usr/bin/env ruby\n\n"
-        f.print "require 'bioruby'\n\n"
+        f.puts "#!/usr/bin/env bioruby"
+        f.puts
         f.puts Readline::HISTORY.to_a[@script_begin..@script_end]
-        f.print "\n\n"
+        f.puts
       end
       puts "done"
     rescue
@@ -446,6 +465,23 @@ module Bio::Shell::Ghost
   def splash_message_action
     s = splash_message
     l = s.length
+    x = " "
+    0.step(l,2) do |i|
+      l1 = l-i;  l2 = l1/2;  l4 = l2/2
+      STDERR.print "#{s[0,i]}#{x*l1}#{s[i,1]}\r"
+      sleep(0.001)
+      STDERR.print "#{s[0,i]}#{x*l2}#{s[i,1]}#{x*(l1-l2)}\r"
+      sleep(0.002)
+      STDERR.print "#{s[0,i]}#{x*l4}#{s[i,1]}#{x*(l2-l4)}\r"
+      sleep(0.004)
+      STDERR.print "#{s[0,i+1]}#{x*l4}\r"
+      sleep(0.008)
+    end
+  end
+
+  def splash_message_action_color
+    s = splash_message
+    l = s.length
     c = ESC_SEQ
     x = " "
     0.step(l,2) do |i|
@@ -462,28 +498,37 @@ module Bio::Shell::Ghost
   end
 
   def opening_splash
-    print "\n"
-    if @config[:color]
-      splash_message_action
+    puts
+    if @config[:splash]
+      if @config[:color]
+        splash_message_action_color
+      else
+        splash_message_action
+      end
     end
     if @config[:color]
       print splash_message_color
     else
       print splash_message
     end
-    print "\n\n"
+    puts
+    puts
     print "  Version : BioRuby #{Bio::BIORUBY_VERSION.join(".")}"
-    print " / Ruby #{RUBY_VERSION}\n\n"
+    print " / Ruby #{RUBY_VERSION}"
+    puts
+    puts
   end
 
   def closing_splash
-    print "\n\n"
+    puts
+    puts
     if @config[:color]
       print splash_message_color
     else
       print splash_message
     end
-    print "\n\n"
+    puts
+    puts
   end
 
 end
