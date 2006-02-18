@@ -29,7 +29,7 @@ class Bio::RestrictionEnzyme
 # Copyright::  Copyright (C) 2006 Trevor Wennblom <trevor@corevx.com>
 # License::    LGPL
 #
-#  $Id: analysis.rb,v 1.2 2006/02/18 22:00:55 trevor Exp $
+#  $Id: analysis.rb,v 1.3 2006/02/18 22:11:35 trevor Exp $
 #
 #
 #--
@@ -70,6 +70,7 @@ class Analysis
   end
 
   def cut_without_permutations( sequence, *args )
+    return nil if !sequence.kind_of?(String) or sequence.empty?
     sequence = Bio::Sequence::NA.new( sequence )
     enzyme_actions = create_enzyme_actions( sequence, *args )
     sr_with_cuts = SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
@@ -88,6 +89,7 @@ class Analysis
   end
 
   def cut_and_return_by_permutations( sequence, *args )
+    return nil if !sequence.kind_of?(String) or sequence.empty?
     sequence = Bio::Sequence::NA.new( sequence )
     enzyme_actions = create_enzyme_actions( sequence, *args )
     permutations = permute(enzyme_actions.size)
@@ -158,6 +160,7 @@ puts "EA.right: #{enzyme_action.right}"
   end
 
   def cut( sequence, *args )
+    return nil if !sequence.kind_of?(String) or sequence.empty?
     hash_of_sequence_ranges_with_cuts = cut_and_return_by_permutations( sequence, *args )
     unique_fragments_for_display( hash_of_sequence_ranges_with_cuts )
   end
