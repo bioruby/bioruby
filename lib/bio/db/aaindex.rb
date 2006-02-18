@@ -1,16 +1,24 @@
 #
 # = bio/db/aaindex.rb - AAindex database class
 #
-# Copyright::  Copyright (C) 2001 KAWASHIMA Shuichi <s@bioruby.org>
+# Copyright::  Copyright (C) 2001 
+#              KAWASHIMA Shuichi <s@bioruby.org>
+# Copyright::  Copyright (C) 2006
+#              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    LGPL
 #
-# $Id: aaindex.rb,v 1.16 2005/12/18 15:58:41 k Exp $
+# $Id: aaindex.rb,v 1.17 2006/02/18 14:44:40 nakao Exp $
 #
 # == Description
+#
 # Classes for Amino Acid Index Database (AAindex and AAindex2).
 # * AAindex Manual: http://www.genome.jp/dbget-bin/show_man?aaindex
 #
 # == Examples
+#
+#  aax1 = Bio::AAindex.auto("PRAM900102.aaindex1")
+#  aax2 = Bio::AAindex.auto("HENS920102.aaindex2")
+#
 #  aax1 = Bio::AAindex1.new("PRAM900102.aaindex1")
 #  aax1.entry_id
 #  aax1.index
@@ -21,6 +29,7 @@
 #  aax2.matrix[2,2]
 #
 # == References
+#
 # * http://www.genome.jp/aaindex/
 #
 #--
@@ -47,6 +56,7 @@ require "matrix"
 
 module Bio
 
+  # Super class for AAindex1 and AAindex2
   class AAindex < KEGGDB
 
     # Delimiter
@@ -58,62 +68,85 @@ module Bio
     # Bio::DB API
     TAGSIZE = 2
 
+    # Auto detecter for two AAindex formats.
+    # returns a Bio::AAindex1 object or a Bio::AAindex2 object.
+    def self.auto(str)
+      case str
+      when /^I /m 
+        Bio::AAindex1.new(str)
+      when /^M /m
+        Bio::AAindex2.new(str)
+      else
+        raise
+      end        
+    end
 
+    # 
     def initialize(entry)
       super(entry, TAGSIZE)
     end
 
-    # Returns
+    # Returns entry_id in the H line.
     def entry_id
       field_fetch('H')
     end
 
-    # Returns
+    # Returns definition in the D line.
     def definition
       field_fetch('D')
     end
 
-    # Returns
+    # Returns database links in the R line.
+    # cf.) ['LIT:123456', 'PMID:12345678']
     def dblinks
-      field_fetch('R')
+      field_fetch('R').split(' ')
     end
 
-    # Returns
+    # Returns authors in the A line.
     def author
       field_fetch('A')
     end
 
-    # Returns
+    # Returns title in the T line.
     def title
       field_fetch('T')
     end
 
-    # Returns
+    # Returns journal name in the J line.
     def journal
       field_fetch('J')
     end
 
-    # Returns
+    # Returns comment (if any).
     def comment
-      get('*')
+      field_fetch("*")
     end
-
   end
 
 
+  # Class for AAindex1 format.
   class AAindex1 < AAindex
-
 
     def initialize(entry)
       super(entry)
     end
 
-    # Returns
+    # Returns correlation_coefficient (Hash) in the C line.
+    #
+    # cf.) {'ABCD12010203' => 0.999, 'CDEF123456' => 0.543, ...}
     def correlation_coefficient
-      field_fetch('C')
+      hash = {}
+      ary = field_fetch('C').split(' ')
+      ary.each do |x|
+        next unless x =~ /^[A-Z]/
+        hash[x] = ary[ary.index(x) + 1].to_f
+      end
+      hash
     end
 
-    # Returns
+    # Returns the index (Array) in the I line.
+    #
+    # an argument: :string, :float, :zscore or :integer
     def index(type = :float)
       aa = %w( A R N D C Q E G H I L K M F P S T W Y V )
       values = field_fetch('I', 1).split(' ')
@@ -162,26 +195,26 @@ module Bio
   end
 
 
+  # Class for AAindex2 format.
   class AAindex2 < AAindex
-
 
     def initialize(entry)
       super(entry)
     end
 
-    # Returns
+    # Returns row labels.
     def rows
       label_data
       @rows
     end
 
-    # Returns
+    # Returns col labels.
     def cols
       label_data
       @cols
     end
 
-    # Returns
+    # Returns matrix in Matrix.
     def matrix
       ma = Array.new
 
@@ -194,7 +227,7 @@ module Bio
       Matrix[*ma]
     end
 
-    # Returns
+    # Returns 
     def old_matrix # for AAindex <= ver 5.0
 
       @aa = {} # used to determine row/column of the aa
@@ -243,9 +276,9 @@ module Bio
       return data
     end
 
-  end
+  end # class AAindex2
 
-end
+end # module Bio
 
 
 if __FILE__ == $0
@@ -259,6 +292,7 @@ if __FILE__ == $0
   p aax1.author
   p aax1.title
   p aax1.journal
+  p aax1.comment
   p aax1.correlation_coefficient
   p aax1.index
   puts "### AAindex2 (HENS920102)"
@@ -269,6 +303,7 @@ if __FILE__ == $0
   p aax2.author
   p aax2.title
   p aax2.journal
+  p aax1.comment
   p aax2.rows
   p aax2.cols
   p aax2.matrix

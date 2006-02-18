@@ -5,7 +5,7 @@
 #		KATAYAMA Toshiaki <k@bioruby.org>
 # License::	LGPL
 #
-# $Id: db.rb,v 0.32 2006/01/12 08:58:27 k Exp $
+# $Id: db.rb,v 0.33 2006/02/18 14:44:40 nakao Exp $
 #
 # == On-demand parsing and cache
 #
@@ -267,7 +267,7 @@ class NCBIDB < DB
   # Splits an entry into an Array of Strings at the level of top tags.
   def toptag2array(str)
     sep = "\001"
-    str.gsub(/\n([A-Za-z\/])/, "\n#{sep}\\1").split(sep)
+    str.gsub(/\n([A-Za-z\/\*])/, "\n#{sep}\\1").split(sep)
   end
 
   # Splits a field into an Array of Strings at the level of sub tags.
