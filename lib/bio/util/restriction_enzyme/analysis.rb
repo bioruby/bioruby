@@ -21,7 +21,6 @@ require 'pp'
 
 require 'bio/util/restriction_enzyme'
 require 'bio/util/restriction_enzyme/analysis/sequence_range.rb'
-require 'bio/util/restriction_enzyme/analysis/permutation.rb'
 
 class Bio::RestrictionEnzyme
 #
@@ -30,7 +29,7 @@ class Bio::RestrictionEnzyme
 # Copyright::  Copyright (C) 2006 Trevor Wennblom <trevor@corevx.com>
 # License::    LGPL
 #
-#  $Id: analysis.rb,v 1.1 2006/02/01 07:34:11 trevor Exp $
+#  $Id: analysis.rb,v 1.2 2006/02/18 22:00:55 trevor Exp $
 #
 #
 #--
@@ -70,7 +69,6 @@ class Analysis
     self.new.cut_and_return_by_permutations( sequence, *args )
   end
 
-
   def cut_without_permutations( sequence, *args )
     sequence = Bio::Sequence::NA.new( sequence )
     enzyme_actions = create_enzyme_actions( sequence, *args )
@@ -92,7 +90,7 @@ class Analysis
   def cut_and_return_by_permutations( sequence, *args )
     sequence = Bio::Sequence::NA.new( sequence )
     enzyme_actions = create_enzyme_actions( sequence, *args )
-    permutations = Permutation.new(enzyme_actions.size).map { |p| p.value }
+    permutations = permute(enzyme_actions.size)
 
     # Indexed by permutation.
     hash_of_sequence_ranges_with_cuts = {}
@@ -167,6 +165,21 @@ puts "EA.right: #{enzyme_action.right}"
   #########
   protected
   #########
+
+  def permute(count, permutations = [[0]])
+    return permutations if count <= 1
+    new_arrays = []
+    new_array = []
+
+    (permutations[0].size + 1).times do |n|
+      new_array.clear
+      permutations.each { |a| new_array << a.dup }
+      new_array.each { |e| e.insert(n, permutations[0].size) }
+      new_arrays += new_array
+    end
+
+    permute(count-1, new_arrays)
+  end
 
   UniqueFragment = Struct.new(:primary, :complement)
   class UniqueFragments < Array

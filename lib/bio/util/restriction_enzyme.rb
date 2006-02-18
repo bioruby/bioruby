@@ -18,7 +18,7 @@ module Bio; end
 # Copyright::  Copyright (C) 2006 Trevor Wennblom <trevor@corevx.com>
 # License::    LGPL
 #
-#  $Id: restriction_enzyme.rb,v 1.1 2006/02/01 07:30:19 trevor Exp $
+#  $Id: restriction_enzyme.rb,v 1.2 2006/02/18 22:00:55 trevor Exp $
 #
 #
 #--
@@ -201,10 +201,6 @@ Currently under development:
 * Tagging of sequence data
 * Much more documentation
 
-
-== Notes
-This module includes Florian Frank's permutation.rb licensed under the GPL.  To prevent licensing issues
-the source code to Bio::RestrictionEnzyme must be included whenever Bio::RestrictionEnzyme is distributed.
 
 == Author
 Trevor Wennblom <trevor@corevx.com>
