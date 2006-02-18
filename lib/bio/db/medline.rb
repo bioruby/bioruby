@@ -1,7 +1,26 @@
 #
-# bio/db/medline.rb - NCBI PubMed/MEDLINE database class
+# = bio/db/medline.rb - NCBI PubMed/MEDLINE database class
 #
-#   Copyright (C) 2001, 2005 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::  Copyright (C) 2001, 2005
+#              KATAYAMA Toshiaki <k@bioruby.org>
+# License::    LGPL
+#
+# == Description
+#
+# NCBI PubMed/MEDLINE database class.
+#
+# == Examples
+#
+#   medline = Bio::MEDLINE.new(txt)
+#   medline.reference
+#   medline.pmid == medline.entry_id
+#   medilne.mesh
+#
+# == References
+#
+# $Id: medline.rb,v 1.13 2006/02/18 15:03:47 nakao Exp $
+#
+#++
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -17,15 +36,17 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: medline.rb,v 1.12 2005/09/08 01:22:11 k Exp $
+#--
 #
 
 require 'bio/db'
 
 module Bio
 
+  # NCBI PubMed/MEDLINE database class.
   class MEDLINE < NCBIDB
 
+    # 
     def initialize(entry)
       @pubmed = Hash.new('')
 
@@ -39,7 +60,7 @@ module Bio
     end
 
 
-    # Reference object
+    # returns a Reference object.
     def reference
       hash = Hash.new('')
 
