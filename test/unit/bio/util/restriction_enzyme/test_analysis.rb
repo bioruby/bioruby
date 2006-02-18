@@ -47,6 +47,9 @@ class TestAnalysis < Test::Unit::TestCase
     @obj_7d = @t.cut_without_permutations('gaccaggaaaaagaccaggaaagcctggaaaagttaac', 'EcoRII')
     @obj_8d = @t.cut_without_permutations('gaccaggaaaaagaccaggaaagcctggaaaagttaac', 'EcoRII', 'HincII')
 
+    @obj_98 = @t.cut('', 'EcoRII', 'HincII')
+    @obj_99 = @t.cut_without_permutations('', 'EcoRII', 'HincII')
+
   end
 
   def test_cut
