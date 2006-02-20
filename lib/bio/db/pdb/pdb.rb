@@ -6,7 +6,7 @@
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 # License:: LGPL
 #
-#  $Id: pdb.rb,v 1.14 2006/01/29 06:48:39 ngoto Exp $
+#  $Id: pdb.rb,v 1.15 2006/02/20 13:00:43 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -1805,6 +1805,11 @@ module Bio
     # Classification in "HEADER".
     def classification
       self.record('HEADER').first.classification
+    end
+
+    # Get authors in "AUTHOR".
+    def authors
+      self.record('AUTHOR').first.authorList
     end
 
     #--
