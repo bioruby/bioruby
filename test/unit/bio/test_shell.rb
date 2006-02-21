@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_shell.rb,v 1.4 2005/12/18 17:00:10 k Exp $
+#  $Id: test_shell.rb,v 1.5 2006/02/21 17:40:37 nakao Exp $
 #
 
 require 'pathname'
@@ -25,7 +25,7 @@ libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3, 'lib')).cle
 $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'test/unit'
-require 'bioruby'
+require 'bio/shell'
 
 module Bio
 end

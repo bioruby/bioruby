@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_seq.rb,v 1.5 2005/12/19 02:44:03 k Exp $
+#  $Id: test_seq.rb,v 1.6 2006/02/21 17:38:15 nakao Exp $
 #
 
 require 'pathname'
@@ -25,7 +25,7 @@ libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cle
 $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'test/unit'
-require 'bioruby'
+require 'bio/shell'
 
 module Bio
   class TestShellPluginSeq < Test::Unit::TestCase
