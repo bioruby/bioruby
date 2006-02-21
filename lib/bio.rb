@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: bio.rb,v 1.64 2006/02/09 16:21:47 k Exp $
+# $Id: bio.rb,v 1.65 2006/02/21 18:01:59 ngoto Exp $
 #
 
 module Bio
@@ -100,6 +100,8 @@ module Bio
   autoload :FastaDefline,       'bio/db/fasta' # change to FastaFormat::Defline
   autoload :GFF,            'bio/db/gff'
   autoload :AAindex,        'bio/db/aaindex'
+  autoload :AAindex1,       'bio/db/aaindex'
+  autoload :AAindex2,       'bio/db/aaindex'
   autoload :TRANSFAC,       'bio/db/transfac'
   autoload :PROSITE,        'bio/db/prosite'
   autoload :LITDB,          'bio/db/litdb'
