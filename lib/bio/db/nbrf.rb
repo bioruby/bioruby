@@ -1,27 +1,11 @@
 #
 # = bio/db/nbrf.rb - NBRF/PIR format sequence data class
 #
-# Copyright:: Copyright (C) 2001-2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+# Copyright:: Copyright (C) 2001-2003,2006 Naohisa Goto <ng@bioruby.org>
 #             Copyright (C) 2001-2002 KATAYAMA Toshiaki <k@bioruby.org>
-# License::   LGPL
+# License::   Ruby's
 #
-#--
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#++
-#
-#  $Id: nbrf.rb,v 1.7 2005/12/18 15:58:41 k Exp $
+#  $Id: nbrf.rb,v 1.8 2006/02/22 08:43:15 ngoto Exp $
 #
 # Sequence data class for NBRF/PIR flatfile format.
 #
@@ -44,7 +28,15 @@ module Bio
     #++
 
     # Delimiter of each entry. Bio::FlatFile uses it.
-    DELIMITER	= RS = "*\n"
+    DELIMITER	= RS = "\n>"
+
+    # (Integer) excess read size included in DELIMITER.
+    DELIMITER_OVERRUN = 1 # '>'
+
+    #--
+    # Note: DELIMITER is changed due to the change of Bio::FlatFile.
+    # DELIMITER	= RS = "*\n"
+    #++
 
     # Creates a new NBRF object. It stores the comment and sequence
     # information from one entry of the NBRF/PIR format string.
