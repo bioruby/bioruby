@@ -1,0 +1,20 @@
+H PRAM900102
+D Relative frequency in alpha-helix (Prabhakaran, 1990)
+R LIT:1614053b PMID:2390062
+A Prabhakaran, M.
+T The distribution of physical, chemical and conformational properties in 
+  signal and nascent peptides
+J Biochem. J. 269, 691-696 (1990) Original reference of these three data: 
+  Creighton, T.E. In "Protein Structure and Melecular Properties", (Freeman, 
+  W.H., ed.), San Francisco P.235 (1983)
+C LEVM780101    1.000  LEVM780104    0.964  PALJ810101    0.943
+  KANM800101    0.942  ISOY800101    0.929  MAXF760101    0.924
+  ROBB760101    0.916  GEIM800101    0.912  GEIM800104    0.907
+  RACS820108    0.904  PALJ810102    0.902  PALJ810109    0.898
+  NAGK730101    0.894  CRAJ730101    0.887  CHOP780201    0.873
+  TANS770101    0.854  KANM800103    0.850  QIAN880107    0.829
+  QIAN880106    0.827  BURA740101    0.805  NAGK730103   -0.809
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+    1.29    0.96    0.90    1.04    1.11    1.27    1.44    0.56    1.22    0.97
+    1.30    1.23    1.47    1.07    0.52    0.82    0.82    0.99    0.72    0.91
+//
