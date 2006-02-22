@@ -2,27 +2,11 @@
 # = bio/io/flatfile/index.rb - OBDA flatfile index 
 # 
 # Copyright:: Copyright (C) 2002
-#             GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp> 
-# License:: LGPL
+#             GOTO Naohisa <ng@bioruby.org> 
+# License:: Ruby's
 #
-#  $Id: index.rb,v 1.17 2006/02/22 07:01:05 ngoto Exp $ 
+#  $Id: index.rb,v 1.18 2006/02/22 08:40:31 ngoto Exp $ 
 #
-#--
-#  This library is free software; you can redistribute it and/or 
-#  modify it under the terms of the GNU Lesser General Public 
-#  License as published by the Free Software Foundation; either 
-#  version 2 of the License, or (at your option) any later version. 
-# 
-#  This library is distributed in the hope that it will be useful, 
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of 
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
-#  Lesser General Public License for more details. 
-# 
-#  You should have received a copy of the GNU Lesser General Public 
-#  License along with this library; if not, write to the Free Software 
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
-#++
-# 
 # = About Bio::FlatFileIndex
 #
 # Please refer documents of following classes.
