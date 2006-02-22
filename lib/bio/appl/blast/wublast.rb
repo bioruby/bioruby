@@ -2,25 +2,9 @@
 # = bio/appl/blast/wublast.rb - WU-BLAST default output parser
 # 
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
-# License:: LGPL
+# License:: Ruby's
 #
-#--
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#++
-#
-#  $Id: wublast.rb,v 1.5 2005/12/18 15:58:39 k Exp $
+#  $Id: wublast.rb,v 1.6 2006/02/22 08:46:15 ngoto Exp $
 #
 #  WU-BLAST default output parser.
 #
@@ -337,6 +321,9 @@ module Bio
       class Report_TBlast < Report
         # Delimter of each entry for TBLAST. Bio::FlatFile uses it.
         DELIMITER = RS = "\nTBLAST"
+
+        # (Integer) excess read size included in DELIMITER.
+        DELIMITER_OVERRUN = 6 # "TBLAST"
       end #class Report_TBlast
 
     end #module WU
