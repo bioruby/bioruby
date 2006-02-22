@@ -6,7 +6,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: br_bioflat.rb,v 1.15 2006/02/09 16:29:41 k Exp $ 
+# $Id: br_bioflat.rb,v 1.16 2006/02/22 07:01:05 ngoto Exp $ 
 # 
 
 require 'bio'
@@ -139,7 +139,7 @@ def do_index(mode = :create)
       options['renew'] = true
 
     else
-      STDERR.print "Warning: ignoring invalid option #{x.inspect}\n"
+      $stderr.print "Warning: ignoring invalid option #{x.inspect}\n"
     end
   end
 
@@ -179,9 +179,9 @@ def do_search
   dbname = File.join(location, dbname) unless location.to_s.empty?
   db = Bio::FlatFileIndex.open(dbname)
   ARGV.each do |key|
-    STDERR.print "Searching for \'#{key}\'...\n"
+    $stderr.print "Searching for \'#{key}\'...\n"
     #r = db.search(key)
-    #STDERR.print "OK, #{r.size} entry found\n"
+    #$stderr.print "OK, #{r.size} entry found\n"
     #if r.size > 0 then
     #  print r
     #end
@@ -192,11 +192,11 @@ def do_search
 	r = db.include_in_namespaces?(key, *names)
       end
     rescue RuntimeError
-      STDERR.print "ERROR: #{$!}\n"
+      $stderr.print "ERROR: #{$!}\n"
       next
     end
     r = [] unless r
-    STDERR.print "OK, #{r.size} entry found\n"
+    $stderr.print "OK, #{r.size} entry found\n"
     r.each do |i|
       print db.search_primary(i)
     end
@@ -240,14 +240,14 @@ def do_show_namespaces
       break if k
     end
     if k then
-      STDERR.print "Format: #{k.to_s}\n"
+      $stderr.print "Format: #{k.to_s}\n"
       format = k
     else
-      STDERR.print "ERROR: couldn't determine file format\n"
+      $stderr.print "ERROR: couldn't determine file format\n"
       return
     end
   end
-  STDERR.print "Namespaces: (first line: primary namespace)\n"
+  $stderr.print "Namespaces: (first line: primary namespace)\n"
   if format then
     parser = Bio::FlatFileIndex::Indexer::Parser.new(format)
     print parser.primary.name, "\n"

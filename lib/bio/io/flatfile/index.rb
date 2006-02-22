@@ -5,7 +5,7 @@
 #             GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp> 
 # License:: LGPL
 #
-#  $Id: index.rb,v 1.16 2006/01/29 10:06:43 ngoto Exp $ 
+#  $Id: index.rb,v 1.17 2006/02/22 07:01:05 ngoto Exp $ 
 #
 #--
 #  This library is free software; you can redistribute it and/or 
@@ -413,21 +413,21 @@ module Bio
 
     # Module for output debug messages.
     # Default setting: If $DEBUG or $VERBOSE is true, output debug
-    # messages to STDERR; Otherwise, don't output messages.
+    # messages to $stderr; Otherwise, don't output messages.
     #
     module DEBUG
-      @@out = STDERR
+      @@out = $stderr
       @@flag = nil
 
       # Set debug messages output destination.
-      # If true is given, outputs to STDERR.
+      # If true is given, outputs to $stderr.
       # If nil is given, outputs nothing.
       # This method affects ALL of FlatFileIndex related objects/methods.
       #
       def self.out=(io)
         if io then
           @@out = io
-          @@out = STDERR if io == true
+          @@out = $stderr if io == true
           @@flag = true
         else
           @@out = nil
