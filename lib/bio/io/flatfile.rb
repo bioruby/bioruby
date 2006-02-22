@@ -5,7 +5,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: flatfile.rb,v 1.45 2006/02/22 09:15:22 ngoto Exp $
+#  $Id: flatfile.rb,v 1.46 2006/02/22 10:01:27 ngoto Exp $
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
@@ -988,8 +988,20 @@ module Bio
       # Returns a database class if succeeded.
       # Returns nil if failed.
       def autodetect_flatfile(ff, lines = 31)
+        meta = {}
         stream = ff.instance_eval { @stream }
-        meta = { :path => stream.path }
+        begin
+          path = stream.path
+        rescue NameError
+        end
+        if path then
+          meta[:path] = path
+          # call autodetect onece with meta and without any read action
+          if r = self.autodetect(stream.prefetch_buffer, meta)
+            return r
+          end
+        end
+        # reading stream
         1.upto(lines) do |x|
           break unless line = stream.prefetch_gets
           if line.strip.size > 0 then
