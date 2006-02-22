@@ -6,7 +6,7 @@
 #              KATAYAMA Toshiaki <k@bioruby.org>
 # Lisence::    Ruby's
 #
-# $Id: fasta.rb,v 1.24 2006/02/14 13:42:40 ngoto Exp $
+# $Id: fasta.rb,v 1.25 2006/02/22 08:44:46 ngoto Exp $
 # 
 # == Description
 # 
@@ -137,6 +137,9 @@ module Bio
 
     # Entry delimiter in flatfile text.
     DELIMITER	= RS = "\n>"
+
+    # (Integer) excess read size included in DELIMITER.
+    DELIMITER_OVERRUN = 1 # '>'
 
     # The comment line of the FASTA formatted data.
     attr_accessor :definition
