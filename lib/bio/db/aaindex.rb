@@ -7,7 +7,7 @@
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    LGPL
 #
-# $Id: aaindex.rb,v 1.17 2006/02/18 14:44:40 nakao Exp $
+# $Id: aaindex.rb,v 1.18 2006/02/22 07:35:19 nakao Exp $
 #
 # == Description
 #
@@ -17,16 +17,18 @@
 # == Examples
 #
 #  aax1 = Bio::AAindex.auto("PRAM900102.aaindex1")
-#  aax2 = Bio::AAindex.auto("HENS920102.aaindex2")
+#  aax2 = Bio::AAindex.auto("DAYM780301.aaindex2")
 #
 #  aax1 = Bio::AAindex1.new("PRAM900102.aaindex1")
 #  aax1.entry_id
 #  aax1.index
 #
-#  aax2 = Bio::AAindex2.new("HENS920102.aaindex2")
+#  aax2 = Bio::AAindex2.new("DAYM780301.aaindex2")
 #  aax2.entry_id
 #  aax2.matrix
 #  aax2.matrix[2,2]
+#  aax2.matrix('R', 'A')
+#  aax2['R', 'A']
 #
 # == References
 #
@@ -88,38 +90,66 @@ module Bio
 
     # Returns entry_id in the H line.
     def entry_id
-      field_fetch('H')
+      if @data['entry_id']
+        @data['entry_id']
+      else
+        @data['entry_id'] = field_fetch('H')
+      end
     end
 
     # Returns definition in the D line.
     def definition
-      field_fetch('D')
+      if @data['definition']
+        @data['definition']
+      else
+        @data['definition'] = field_fetch('D')
+      end
     end
 
     # Returns database links in the R line.
     # cf.) ['LIT:123456', 'PMID:12345678']
     def dblinks
-      field_fetch('R').split(' ')
+      if @data['ref']
+        @data['ref']
+      else
+        @data['ref'] = field_fetch('R').split(' ')
+      end
     end
 
     # Returns authors in the A line.
     def author
-      field_fetch('A')
+      if @data['author']
+        @data['author']
+      else
+        @data['author'] = field_fetch('A')
+      end
     end
 
     # Returns title in the T line.
     def title
-      field_fetch('T')
+      if @data['title']
+        @data['title']
+      else
+        @data['title'] = field_fetch('T')
+      end
     end
 
     # Returns journal name in the J line.
     def journal
-      field_fetch('J')
+      if @data['journal']
+        @data['journal']
+      else
+        @data['journal'] = field_fetch('J')
+      end
     end
 
     # Returns comment (if any).
     def comment
-      field_fetch("*")
+      if @data['comment']
+        @data['comment']
+      else
+        @data['comment'] = field_fetch('*')
+      end
     end
   end
 
@@ -135,13 +165,17 @@ module Bio
     #
     # cf.) {'ABCD12010203' => 0.999, 'CDEF123456' => 0.543, ...}
     def correlation_coefficient
-      hash = {}
-      ary = field_fetch('C').split(' ')
-      ary.each do |x|
-        next unless x =~ /^[A-Z]/
-        hash[x] = ary[ary.index(x) + 1].to_f
+      if @data['correlation_coefficient']
+        @data['correlation_coefficient']
+      else
+        hash = {}
+        ary = field_fetch('C').split(' ')
+        ary.each do |x|
+          next unless x =~ /^[A-Z]/
+          hash[x] = ary[ary.index(x) + 1].to_f
+        end
+        @data['correlation_coefficient'] = hash
       end
-      hash
     end
 
     # Returns the index (Array) in the I line.
@@ -204,34 +238,53 @@ module Bio
 
     # Returns row labels.
     def rows
-      label_data
-      @rows
+      if @data['rows']
+        @data['rows']
+      else 
+        label_data
+        @rows
+      end
     end
 
     # Returns col labels.
     def cols
-      label_data
-      @cols
-    end
-
-    # Returns matrix in Matrix.
-    def matrix
-      ma = Array.new
-
-      data = label_data
-      data.each_line do |line|
-        list = line.strip.split(/\s+/).map{|x| x.to_f}
-        ma.push(list)
+      if @data['cols']
+        @data['cols']
+      else 
+        label_data
+        @cols
       end
-
-      Matrix[*ma]
     end
 
-    # Returns 
-    def old_matrix # for AAindex <= ver 5.0
+    # Returns the value of amino acids substitution (aa1 -> aa2).
+    def [](aa1 = nil, aa2 = nil)
+      matrix[cols.index(aa1), rows.index(aa2)]
+    end
 
-      @aa = {} # used to determine row/column of the aa
+    # Returns amino acids matrix in Matrix.
+    def matrix(aa1 = nil, aa2 = nil)
+      return self[aa1, aa2] if aa1 and aa2
+
+      if @data['matrix'] 
+        @data['matrix'] 
+      else
+        ma = []
+        label_data.each_line do |line|
+          ma << line.strip.split(/\s+/).map {|x| x.to_f }
+        end
+        @data['matrix'] = Matrix[*ma]
+      end
+    end
+
+    # Returns amino acids matrix in Matrix  for the old format (<= ver 5.0).
+    def old_matrix # for AAindex <= ver 5.0
+      return @data['matrix'] if @data['matrix']
+
+      @aa = {} 
+      # used to determine row/column of the aa
       attr_reader :aa
+      alias_method :aa, :rows
+      alias_method :aa, :cols
 
       field = field_fetch('I')
 
@@ -255,8 +308,7 @@ module Bio
             ma[j][i] = ma[i][j]
           end
         end
-        Matrix[*ma]
-
+        @data['matrix'] = Matrix[*ma]
       when / -ARNDCQEGHILKMFPSTWYV / # 21x20/2 matrix (with gap)
         raise NotImplementedError
       when / ACDEFGHIKLMNPQRSTVWYJ- / # 21x21 matrix (with gap)
@@ -267,13 +319,17 @@ module Bio
     private
 
     def label_data
-      label, data = get('M').split("\n", 2)
-      if /M rows = (\S+), cols = (\S+)/.match(label)
-        rows, cols = $1, $2
-        @rows = rows.split('')
-        @cols = cols.split('')
+      if @data['data'] 
+        @data['data'] 
+      else
+        label, data = get('M').split("\n", 2)
+        if /M rows = (\S+), cols = (\S+)/.match(label)
+          rows, cols = $1, $2
+          @rows = rows.split('')
+          @cols = cols.split('')
+        end
+        @data['data'] = data
       end
-      return data
     end
 
   end # class AAindex2
@@ -295,8 +351,9 @@ if __FILE__ == $0
   p aax1.comment
   p aax1.correlation_coefficient
   p aax1.index
-  puts "### AAindex2 (HENS920102)"
-  aax2 = Bio::AAindex2.new(Bio::Fetch.query('aaindex', 'HENS920102', 'raw'))
+  p aax1
+  puts "### AAindex2 (DAYM780301)"
+  aax2 = Bio::AAindex2.new(Bio::Fetch.query('aaindex', 'DAYM780301', 'raw'))
   p aax2.entry_id
   p aax2.definition
   p aax2.dblinks
@@ -308,8 +365,11 @@ if __FILE__ == $0
   p aax2.cols
   p aax2.matrix
   p aax2.matrix[2,2]
+  p aax2.matrix[2,3]
+  p aax2.matrix[4,3]
   p aax2.matrix.determinant
   p aax2.matrix.rank
   p aax2.matrix.transpose
+  p aax2
 end
 

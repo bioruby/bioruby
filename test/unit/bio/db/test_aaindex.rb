@@ -5,7 +5,7 @@
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    Ruby's
 #
-# $Id: test_aaindex.rb,v 1.2 2006/02/22 05:07:36 nakao Exp $
+# $Id: test_aaindex.rb,v 1.3 2006/02/22 07:35:19 nakao Exp $
 #
 
 require 'pathname'
@@ -155,11 +155,30 @@ module Bio
 
     def test_matrix
       assert_equal(Matrix, @obj.matrix.class)
-#      assert_equal('', @obj.matrix)
     end
 
     def test_matrix_2_2
-      assert_equal(2.0, @obj.matrix[2,2])
+      assert_equal(2.0, @obj.matrix[2, 2])
+    end
+
+    def test_matrix_1_2
+      assert_equal(nil, @obj.matrix[1, 2])
+    end
+
+    def test_access_A_R
+      assert_equal(nil, @obj['A', 'R'])
+    end
+
+    def test_access_R_A
+      assert_equal(-2.0, @obj['R', 'A'])
+    end
+
+    def test_matrix_A_R
+      assert_equal(nil, @obj.matrix('A', 'R'))
+    end
+
+    def test_matrix_R_A
+      assert_equal(-2.0, @obj.matrix('R', 'A'))
     end
 
     def test_matrix_determinant
