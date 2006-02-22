@@ -5,7 +5,7 @@
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    Ruby's
 #
-# $Id: test_aaindex.rb,v 1.1 2006/02/18 14:44:40 nakao Exp $
+# $Id: test_aaindex.rb,v 1.2 2006/02/22 05:07:36 nakao Exp $
 #
 
 require 'pathname'
@@ -26,7 +26,7 @@ module Bio
     end
 
     def self.aax2
-      File.read(File.join(TestDataAAindex, "HENS920102"))
+      File.read(File.join(TestDataAAindex, "DAYM780301"))
     end
   end
 
@@ -116,31 +116,31 @@ module Bio
     end
 
     def test_entry_id
-      assert_equal('HENS920102', @obj.entry_id)
+      assert_equal('DAYM780301', @obj.entry_id)
     end
 
     def test_definition
-      assert_equal('BLOSUM62 substitution matrix (Henikoff-Henikoff, 1992)', @obj.definition)
+      assert_equal('Log odds matrix for 250 PAMs (Dayhoff et al., 1978)', @obj.definition)
     end
 
     def test_dblinks
-      assert_equal(['LIT:1902106', 'PMID:1438297'], @obj.dblinks)
+      assert_equal([], @obj.dblinks)
     end
 
     def test_author
-      assert_equal("Henikoff, S. and Henikoff, J.G.", @obj.author)
+      assert_equal("Dayhoff, M.O., Schwartz, R.M. and Orcutt, B.C.", @obj.author)
     end
 
     def test_title
-      assert_equal("Amino acid substitution matrices from protein blocks", @obj.title)
+      assert_equal("A model of evolutionary change in proteins", @obj.title)
     end
 
     def test_journal
-      assert_equal("Proc. Natl. Acad. Sci. USA 89, 10915-10919 (1992)", @obj.journal)
+      assert_equal('In "Atlas of Protein Sequence and Structure", Vol.5, Suppl.3 (Dayhoff, M.O., ed.), National Biomedical Research Foundation, Washington, D.C., p.352 (1978)', @obj.journal)
     end
 
     def test_comment
-      assert_equal("matrix in 1/3 Bit Units", @obj.comment)
+      assert_equal("", @obj.comment)
     end
 
     def test_rows
@@ -159,7 +159,7 @@ module Bio
     end
 
     def test_matrix_2_2
-      assert_equal(8.0, @obj.matrix[2,2])
+      assert_equal(2.0, @obj.matrix[2,2])
     end
 
     def test_matrix_determinant
@@ -171,7 +171,7 @@ module Bio
     end
 
     def test_matrix_transpose
-      ary = Matrix[[6.0, -2.0, -2.0, -3.0, -1.0, -1.0, -1.0, 0.0, -2.0, -2.0, -2.0, -1.0, -1.0, -3.0, -1.0, 2.0, 0.0, -4.0, -3.0, 0.0]]
+      ary = Matrix[[2.0, -2.0, 0.0, 0.0, -2.0, 0.0, 0.0, 1.0, -1.0, -1.0, -2.0, -1.0, -1.0, -4.0, 1.0, 1.0, 1.0, -6.0, -3.0, 0.0]]
       assert_equal(ary, @obj.matrix.transpose)
     end
   end    
