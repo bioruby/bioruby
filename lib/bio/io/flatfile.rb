@@ -5,7 +5,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: flatfile.rb,v 1.44 2006/02/22 08:38:41 ngoto Exp $
+#  $Id: flatfile.rb,v 1.45 2006/02/22 09:15:22 ngoto Exp $
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
@@ -272,7 +272,7 @@ module Bio
       # Default splitter.
       # It sees following constants in the given class.
       # DELIMITER:: (String) delimiter indicates the end of a entry.
-      # HEADER:: (String) start of a entry, located on head of a line.
+      # FLATFILE_HEADER:: (String) start of a entry, located on head of a line.
       # DELIMITER_OVERRUN:: (Integer) excess read size included in DELIMITER.
       #
       class Default < Template
@@ -282,7 +282,7 @@ module Bio
         def initialize(klass, bstream)
           @stream = bstream
           @delimiter = klass::DELIMITER rescue nil
-          @header = klass::HEADER rescue nil
+          @header = klass::FLATFILE_HEADER rescue nil
           # for specific classes' benefit
           unless header
             if klass == Bio::GenBank or klass == Bio::GenPept
@@ -305,7 +305,7 @@ module Bio
         #
         # If @header is not nil, it reads till the contents of @header
         # comes at the head of a line.
-        # If correct HEADER is found, returns true.
+        # If correct FLATFILE_HEADER is found, returns true.
         # Otherwise, returns nil.
         def skip_leader
           if @header then
