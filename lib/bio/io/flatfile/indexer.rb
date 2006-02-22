@@ -1,23 +1,10 @@
 # 
-# bio/io/flatfile/indexer.rb - OBDA flatfile indexer
+# = bio/io/flatfile/indexer.rb - OBDA flatfile indexer
 # 
-#   Copyright (C) 2002 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp> 
+# Copyright:: Copyright (C) 2002 GOTO Naohisa <ng@bioruby.org> 
+# License::   Ruby's
 # 
-#  This library is free software; you can redistribute it and/or 
-#  modify it under the terms of the GNU Lesser General Public 
-#  License as published by the Free Software Foundation; either 
-#  version 2 of the License, or (at your option) any later version. 
-# 
-#  This library is distributed in the hope that it will be useful, 
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of 
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
-#  Lesser General Public License for more details. 
-# 
-#  You should have received a copy of the GNU Lesser General Public 
-#  License along with this library; if not, write to the Free Software 
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA 
-# 
-#  $Id: indexer.rb,v 1.22 2006/01/29 06:54:14 ngoto Exp $ 
+#  $Id: indexer.rb,v 1.23 2006/02/22 08:41:03 ngoto Exp $ 
 # 
 
 require 'bio/io/flatfile/index'
@@ -132,10 +119,10 @@ module Bio
           attr_reader :fileid
 
           def each
-            pos = @flatfile.pos
             @flatfile.each do |x|
               @entry = x
-              len = @flatfile.entry_raw.length
+              pos = @flatfile.entry_start_pos
+              len = @flatfile.entry_ended_pos - @flatfile.entry_start_pos
               begin
                 yield pos, len
               rescue RuntimeError, NameError => evar
@@ -152,7 +139,6 @@ module Bio
                   DEBUG.print "This entry shall be incorrectly indexed.\n"
                 end
               end #rescue
-              pos = @flatfile.pos
             end
           end
 
@@ -205,15 +191,6 @@ module Bio
               end
             end
             self.add_secondary_namespaces(*sec_names)
-          end
-          def open_flatfile(fileid, file)
-            super
-            @flatfile.pos = 0
-            begin
-              pos = @flatfile.pos
-              line = @flatfile.gets
-            end until (!line or line =~ /^LOCUS /)
-            @flatfile.pos = pos
           end
         end #class GenBankParser
 
