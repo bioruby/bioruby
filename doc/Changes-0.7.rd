@@ -226,6 +226,28 @@ In 0.7.1:
   a nucleic acid sequence.
 * There are more and more changes to be written...
 
+--- Bio::FlatFile
+
+In 0.7.2:
+
+* Bio::FlatFile.open, Bio::FlatFile.auto and Bio::FlatFile.new are changed
+  not to accept the last argument to specify raw mode, e.g. :raw => true,
+  :raw => false, true or false. Instead, please use Bio::FlatFile#raw=
+  method after creating a new object.
+* Now, first argument of Bio::FlatFile.open, which shall be a database
+  class or nil, can be omitted, and you can do
+  Bio::FlatFile.open(filename, ...). Note that 
+  Bio::FlatFile.open(dbclass, filaname, ...) is still available.
+* Bio::FlatFile#io is obsoleted. Please use Bio::FlatFile#to_io instead.
+* When reading GenBank or GenPept files, comments at the  head of the file
+  before the first "LOCUS" lines are now skipped by default.
+  When reading other file formats, white space characters are skipped.
+* File format autodetection routine is completely rewritten.
+  If it fails to determine data format which was previously determined,
+  please report us with the data.
+* Internal structure is now completely changed. Codes depend on the internal
+  structure (which is not recommended) would not work.
+
 === Deleted files
 
 : lib/bio/db/genbank.rb
