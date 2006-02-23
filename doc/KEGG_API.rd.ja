@@ -1,8 +1,8 @@
 =begin
- 
-  $Id: KEGG_API.rd.ja,v 1.7 2005/08/31 13:29:01 k Exp $
-   
-    Copyright (C) 2003-2005 Toshiaki Katayama <k@bioruby.org>
+
+   $Id: KEGG_API.rd.ja,v 1.8 2006/02/23 04:51:23 k Exp $
+
+       Copyright (C) 2003-2006 Toshiaki Katayama <k@bioruby.org>
 
 = KEGG API
 
@@ -29,6 +29,7 @@ KEGG API を使う方法を説明します。後半のリファレンスで KEGG API の全機能を
     * ((<MotifResult 型>)), ((<ArrayOfMotifResult 型>))
     * ((<Definition 型>)), ((<ArrayOfDefinition 型>))
     * ((<LinkDBRelation 型>)), ((<ArrayOfLinkDBRelation 型>))
+    * ((<PathwayElement 型>)), ((<ArrayOfPathwayElement 型>))
   * ((<メソッド一覧>))
     * ((<メタ情報>))
       * ((<list_databases>)),
@@ -38,9 +39,22 @@ KEGG API を使う方法を説明します。後半のリファレンスで KEGG API の全機能を
       * ((<binfo>)),
         ((<bfind>)),
         ((<bget>)),
-        ((<btit>))
+        ((<btit>)),
+        ((<bconv>))
     * ((<LinkDB>))
       * ((<get_linkdb_by_entry>))
+      * ((<get_genes_by_enzyme>)),
+        ((<get_enzymes_by_gene>))
+      * ((<get_enzymes_by_compound>)),
+        ((<get_enzymes_by_glycan>)),
+        ((<get_enzymes_by_reaction>)),
+        ((<get_compounds_by_enzyme>)),
+        ((<get_compounds_by_reaction>)),
+        ((<get_glycans_by_enzyme>)),
+        ((<get_glycans_by_reaction>)),
+        ((<get_reactions_by_enzyme>)),
+        ((<get_reactions_by_compound>)),
+        ((<get_reactions_by_glycan>))
     * ((<SSDB>))
       * ((<get_best_best_neighbors_by_gene>)),
         ((<get_best_neighbors_by_gene>)),
@@ -62,9 +76,12 @@ KEGG API を使う方法を説明します。後半のリファレンスで KEGG API の全機能を
     * ((<PATHWAY>))
       * ((<mark_pathway_by_objects>)),
         ((<color_pathway_by_objects>)),
+        ((<color_pathway_by_elements>)),
         ((<get_html_of_marked_pathway_by_objects>)),
-        ((<get_html_of_colored_pathway_by_objects>))
-      * ((<get_genes_by_pathway>)),
+        ((<get_html_of_colored_pathway_by_objects>)),
+        ((<get_html_of_colored_pathway_by_elements>))
+      * ((<get_elements_by_pathway>)),
+        ((<get_genes_by_pathway>)),
         ((<get_enzymes_by_pathway>)),
         ((<get_compounds_by_pathway>)),
         ((<get_glycans_by_pathway>)),
@@ -77,18 +94,6 @@ KEGG API を使う方法を説明します。後半のリファレンスで KEGG API の全機能を
         ((<get_pathways_by_reactions>)),
         ((<get_pathways_by_kos>))
       * ((<get_linked_pathways>))
-      * ((<get_genes_by_enzyme>)),
-        ((<get_enzymes_by_gene>))
-      * ((<get_enzymes_by_compound>)),
-        ((<get_enzymes_by_glycan>)),
-        ((<get_enzymes_by_reaction>)),
-        ((<get_compounds_by_enzyme>)),
-        ((<get_compounds_by_reaction>)),
-        ((<get_glycans_by_enzyme>)),
-        ((<get_glycans_by_reaction>)),
-        ((<get_reactions_by_enzyme>)),
-        ((<get_reactions_by_compound>)),
-        ((<get_reactions_by_glycan>))
     * ((<GENES>))
       * ((<get_genes_by_organism>))
     * ((<GENOME>))
@@ -633,6 +638,18 @@ SSDB データベースの各フィールドに対応する値が入ったデータ型です。
 
 複数の LinkDBRelation 型データを含む配列です。
 
++ PathwayElement 型
+
+  element_id        パスウェイ上のオブジェクトを指すユニークな ID (int)
+  type              オブジェクトの種類 ("gene", "enzyme" など) (string)
+  names             オブジェクトにつけられた名前のリスト (ArrayOfstring)
+  components        グループの場合など含まれるオブジェクトのリスト (ArrayOfint)
+
++ ArrayOfPathwayElement 型
+
+複数の PathwayElement 型データを含む配列です。
+
+
 === メソッド一覧
 
 以下、KEGG API の全メソッドのリストです。メソッドにはメタ情報を返すものと
@@ -739,6 +756,18 @@ DBGET の btit コマンドへのラッパーです。指定したエントリの ID に対応す
   # これら４つの遺伝子のデフィニションを検索
   btit("hsa:1798 mmu:13478 dme:CG5287-PA cel:Y60A3A.14")
 
+--- bconv(string)
+
+外部データベースの ID を KEGG の ID に変換します。対応している外部データ
+ベースは NCBI Gene ID, NCBI GI, GenBank ID, UniProt ID です。
+結果は、１行毎に問い合わせ ID と変換 ID のタブ切り文字列として返されます。
+
+戻値：
+  string
+
+例：
+  # NCBI GI と Gene ID を KEGG genes_id に変換
+  serv.bconv("ncbi-gi:10047086 ncbi-gi:10047090 ncbi-geneid:14751")
 
 ==== LinkDB
 
@@ -754,6 +783,143 @@ db で指定したデータベースにたどれるまで検索します。
   # E. coli の遺伝子 b0002 からリンクのたどれる KEGG/PATHWAY のエントリを検索
   get_linkdb_by_entry('eco:b0002', 'pathway', 1, 10)
   get_linkdb_by_entry('eco:b0002', 'pathway', 11, 10)
+
++ 遺伝子と酵素番号の関係
+
+--- get_genes_by_enzyme(enzyme_id, org)
+
+対象生物種において、指定した酵素番号を持つ遺伝子のリストを返します。
+
+戻値：
+  ArrayOfstring (genes_id)
+
+例：
+  # 酵素番号 1.1.1.1 を持つ大腸菌の遺伝子のリスト
+  get_genes_by_enzyme('ec:1.1.1.1', 'eco')
+
+--- get_enzymes_by_gene(genes_id)
+
+指定した遺伝子に対応する酵素番号のリストを返します。
+
+戻値：
+  ArrayOfstring (enzyme_id)
+
+例：
+  # 大腸菌遺伝子 'eco:b0002' の酵素番号のリスト
+  get_enzymes_by_gene(eco:b0002)
+
+
++ 酵素、化合物、リアクションの関係
+
+--- get_enzymes_by_compound(compound_id)
+
+指定した化合物に対応する酵素番号のリストを返します。
+
+戻値：
+  ArrayOfstring (compound_id)
+
+例：
+  # 化合物 'cpd:C00345' の代謝に関わる酵素のリスト
+  get_enzymes_by_compound('cpd:C00345')
+
+--- get_enzymes_by_glycan(compound_id)
+
+指定した糖鎖に対応する酵素番号のリストを返します。
+
+戻値：
+  ArrayOfstring (glycan_id)
+
+例：
+  # 糖鎖 'gl:G00001' の代謝に関わる酵素のリスト
+  get_enzymes_by_glycan('gl:G00001')
+
+--- get_enzymes_by_reaction(reaction_id)
+
+指定したリアクション番号に対応する酵素番号のリストを返します。
+
+戻値：
+  ArrayOfstring (reaction_id)
+
+例：
+  # リアクション番号 R00100 を持つ酵素のリスト
+  get_enzymes_by_reaction('rn:R00100')
+
+--- get_compounds_by_enzyme(enzyme_id)
+
+指定した酵素番号に対応する化合物のリストを返します。
+
+戻値：
+  ArrayOfstring (compound_id)
+
+例：
+  # 酵素番号 'ec:2.7.1.12' の代謝に関わる化合物のリスト
+  get_compounds_by_enzyme('ec:2.7.1.12')
+
+--- get_compounds_by_reaction(reaction_id)
+
+指定したリアクションに対応する化合物のリストを返します。
+
+戻値：
+  ArrayOfstring (compound_id)
+
+例：
+  # リアクション番号 'rn:R00100' の反応に関わる化合物のリスト
+  get_compounds_by_reaction('rn:R00100')
+
+--- get_glycans_by_enzyme(enzyme_id)
+
+指定した酵素番号に対応する糖鎖のリストを返します。
+
+戻値：
+  ArrayOfstring (glycan_id)
+
+例：
+  # 酵素番号 'ec:2.4.1.141' の代謝に関わる糖鎖のリスト
+  get_glycans_by_enzyme('ec:2.4.1.141')
+
+--- get_glycans_by_reaction(reaction_id)
+
+指定したリアクションに対応する糖鎖のリストを返します。
+
+戻値：
+  ArrayOfstring (glycan_id)
+
+例：
+  # リアクション番号 'rn:R06164' の反応に関わる糖鎖のリスト
+  get_glycans_by_reaction('rn:R06164')
+
+--- get_reactions_by_enzyme(enzyme_id)
+
+指定した酵素番号に対応するリアクションのリストを返します。
+
+戻値：
+  ArrayOfstring (reaction_id)
+
+例：
+  # 酵素番号 'ec:2.7.1.12' の反応に関わるリアクション番号のリスト
+  get_reactions_by_enzyme('ec:2.7.1.12')
+
+--- get_reactions_by_compound(compound_id)
+
+指定した化合物に対応するリアクションのリストを返します。
+
+戻値：
+  ArrayOfstring (reaction_id)
+
+例：
+  # 化合物 'cpd:C00199' の触媒反応に関わるリアクション番号のリスト
+  get_reactions_by_compound('cpd:C00199')
+
+--- get_reactions_by_glycan(glycan_id)
+
+指定した糖鎖に対応するリアクションのリストを返します。
+
+戻値：
+  ArrayOfstring (reaction_id)
+
+例：
+  # 糖鎖 'gl:G00001' の触媒反応に関わるリアクション番号のリスト
+  get_reactions_by_glycan('gl:G00001')
 
 
 ==== SSDB
@@ -1008,6 +1174,45 @@ bg_color_list の要素の数と順番を揃えるように注意する必要があります。
   bg_list  = ['#ff0000', 'yellow']
   color_pathway_by_objects('path:eco00053', obj_list, fg_list, bg_list)
 
+--- color_pathway_by_elements(pathway_id, element_id_list, fg_color_list, bg_color_list)
+
+指定した element_id に対応するパスウェイ上のオブジェクト（長方形や丸など）
+に対し、文字と枠に fg_color_list で指定した色、背景に bg_color_list で
+指定した色をつけた画像を生成、画像の URL を返します。object_id_list と
+fg_color_list, bg_color_list の要素の数と順番を揃えるように注意する
+必要があります。
+
+KEGG PATHWAY では、複数の遺伝子が一つのボックスに割り当てられていたり、
+逆に１つの遺伝子が複数のボックスに割り当てられていることがあります。
+このような場合 color_pathway_by_objects メソッドでは塗り分けることが
+出来ませんが、color_pathway_by_elements を使うことで解決できます。
+
+element_id は KEGG PATHWAY の XML 表現である KGML の <entry> タグで
+指定される、パスウェイ上のグラフィカルな要素毎につけられたユニークな
+数値です。パスウェイ上の element_id は get_elements_by_pathway メソッドで
+PathwayElement オブジェクトのリストとして得ることができます。
+PathwayElement の type や name 属性により遺伝子、酵素、化合物などと
+対応を取り、element_id の値を使ってオブジェクトを特定します。
+
+KGML について詳しくは下記のページを参照してください。
+
+  * ((<URL:http://www.genome.jp/kegg/xml/>))
+
+戻り値：
+  string (URL)
+
+例：
+  # 枯草菌のパスウェイ path:bsu00010 上に載っている、
+  # 遺伝子 bsu:BG11350 (element_id 78, ec:3.2.1.86) を赤枠/黄背景で
+  # 遺伝子 bsu:BG11203 (element_id 79, ec:3.2.1.86) を青枠/黄背景で
+  # 遺伝子 bsu:BG11685 (element_id 51, ec:2.7.1.2)  を赤枠/橙背景で
+  # 遺伝子 bsu:BG11685 (element_id 47, ec:2.7.1.2)  を青枠/橙背景で
+  # それぞれ着色した画像の URL を返します。
+  element_id_list = [ 78, 79, 51, 47 ]
+  fg_list  = [ '#ff0000', '#0000ff', '#ff0000', '#0000ff' ]
+  bg_list  = [ '#ffff00', '#ffff00', '#ffcc00', '#ffcc00' ]
+  color_pathway_by_elements('path:bsu00010', element_id_list, fg_list, bg_list)
+
 --- get_html_of_marked_pathway_by_objects(pathway_id, object_id_list)
 
 画像の代わりにクリッカブルマップを含む HTML ページの URL を返す
@@ -1026,7 +1231,7 @@ bg_color_list の要素の数と順番を揃えるように注意する必要があります。
 --- get_html_of_colored_pathway_by_objects(pathway_id, object_id_list, fg_color_list, bg_color_list)
 
 画像の代わりにクリッカブルマップを含む HTML ページの URL を返す
-バージョンの 'color_pathway_by_object' メソッドです。
+バージョンの 'color_pathway_by_objects' メソッドです。
 
 戻値：
   string (URL)
@@ -1040,7 +1245,52 @@ bg_color_list の要素の数と順番を揃えるように注意する必要があります。
   bg_list  = ['#ff0000', 'yellow', 'orange']
   get_html_of_colored_pathway_by_objects('path:eco00970', obj_list, fg_list, bg_list)
 
+--- get_html_of_colored_pathway_by_elements(pathway_id, element_id_list, fg_color_list, bg_color_list)
+
+画像の代わりにクリッカブルマップを含む HTML ページの URL を返す
+バージョンの 'color_pathway_by_elements' メソッドです。
+
+戻値：
+  string (URL)
+
+例：
+  # 枯草菌のパスウェイ path:bsu00010 上に載っている、
+  # 遺伝子 bsu:BG11350 (element_id 78, ec:3.2.1.86) を赤枠/黄背景で
+  # 遺伝子 bsu:BG11203 (element_id 79, ec:3.2.1.86) を青枠/黄背景で
+  # 遺伝子 bsu:BG11685 (element_id 51, ec:2.7.1.2)  を赤枠/橙背景で
+  # 遺伝子 bsu:BG11685 (element_id 47, ec:2.7.1.2)  を青枠/橙背景で
+  # 着色した画像のクリッカブルマップを表示する HTML の URL を返します。
+  element_id_list = [ 78, 79, 51, 47 ]
+  fg_list  = [ '#ff0000', '#0000ff', '#ff0000', '#0000ff' ]
+  bg_list  = [ '#ffff00', '#ffff00', '#ffcc00', '#ffcc00' ]
+  color_pathway_by_elements('path:bsu00010', element_id_list, fg_list, bg_list)
+
 + パスウェイ上のオブジェクト検索
+
+--- get_elements_by_pathway(pathway_id)
+
+指定したパスウェイ上に載っているオブジェクト要素のリストを返します。
+利用法については color_pathway_by_elements メソッドを参照してください。
+
+戻値：
+  ArrayOfPathwayElement
+
+例：
+  # 枯草菌のパスウェイ path:bsu00010 上に載っている PathwayElement の
+  # リストを取得する。
+  get_elements_by_pathway('path:bsu00010')
+
+  # Ruby で遺伝子 bsu:BG11350, bsu:BG11203 と bsu:BG11685 の element_id を
+  # 調べる例。
+  elems = serv.get_elements_by_pathway('path:bsu00010')
+  genes = [ 'bsu:BG11350', 'bsu:BG11203', 'bsu:BG11685' ]
+  elems.each do |elem|
+    genes.each do |gene|
+      if elem.names.include?(gene)
+        puts gene, elem.element_id
+      end
+    end
+  end
 
 --- get_genes_by_pathway(pathway_id)
 
@@ -1096,7 +1346,7 @@ pathway_id に含まれる keggorg で指定します。
 
 例：
   # 大腸菌のパスウェイ 00260 番に載っているリアクションのリスト
-  get_reactions_by_pathways('path:eco00260')
+  get_reactions_by_pathway('path:eco00260')
 
 --- get_kos_by_pathway(pathway_id)
 
@@ -1199,144 +1449,6 @@ pathway_id に含まれる keggorg で指定します。
   get_linked_pathways('path:eco00620')
 
 
-+ 遺伝子と酵素番号の関係
-
---- get_genes_by_enzyme(enzyme_id, org)
-
-対象生物種において、指定した酵素番号を持つ遺伝子のリストを返します。
-
-戻値：
-  ArrayOfstring (genes_id)
-
-例：
-  # 酵素番号 1.1.1.1 を持つ大腸菌の遺伝子のリスト
-  get_genes_by_enzyme('ec:1.1.1.1', 'eco')
-
---- get_enzymes_by_gene(genes_id)
-
-指定した遺伝子に対応する酵素番号のリストを返します。
-
-戻値：
-  ArrayOfstring (enzyme_id)
-
-例：
-  # 大腸菌遺伝子 'eco:b0002' の酵素番号のリスト
-  get_enzymes_by_gene(eco:b0002)
-
-
-+ 酵素、化合物、リアクションの関係
-
---- get_enzymes_by_compound(compound_id)
-
-指定した化合物に対応する酵素番号のリストを返します。
-
-戻値：
-  ArrayOfstring (compound_id)
-
-例：
-  # 化合物 'cpd:C00345' の代謝に関わる酵素のリスト
-  get_enzymes_by_compound('cpd:C00345')
-
---- get_enzymes_by_glycan(compound_id)
-
-指定した糖鎖に対応する酵素番号のリストを返します。
-
-戻値：
-  ArrayOfstring (glycan_id)
-
-例：
-  # 糖鎖 'gl:G00001' の代謝に関わる酵素のリスト
-  get_enzymes_by_glycan('gl:G00001')
-
---- get_enzymes_by_reaction(reaction_id)
-
-指定したリアクション番号に対応する酵素番号のリストを返します。
-
-戻値：
-  ArrayOfstring (reaction_id)
-
-例：
-  # リアクション番号 R00100 を持つ酵素のリスト
-  get_enzymes_by_reaction('rn:R00100')
-
---- get_compounds_by_enzyme(enzyme_id)
-
-指定した酵素番号に対応する化合物のリストを返します。
-
-戻値：
-  ArrayOfstring (compound_id)
-
-例：
-  # 酵素番号 'ec:2.7.1.12' の代謝に関わる化合物のリスト
-  get_compounds_by_enzyme('ec:2.7.1.12')
-
---- get_compounds_by_reaction(reaction_id)
-
-指定したリアクションに対応する化合物のリストを返します。
-
-戻値：
-  ArrayOfstring (compound_id)
-
-例：
-  # リアクション番号 'rn:R00100' の反応に関わる化合物のリスト
-  get_compounds_by_reaction('rn:R00100')
-
---- get_glycans_by_enzyme(enzyme_id)
-
-指定した酵素番号に対応する糖鎖のリストを返します。
-
-戻値：
-  ArrayOfstring (glycan_id)
-
-例：
-  # 酵素番号 'ec:2.4.1.141' の代謝に関わる糖鎖のリスト
-  get_glycans_by_enzyme('ec:2.4.1.141')
-
---- get_glycans_by_reaction(reaction_id)
-
-指定したリアクションに対応する糖鎖のリストを返します。
-
-戻値：
-  ArrayOfstring (glycan_id)
-
-例：
-  # リアクション番号 'rn:R06164' の反応に関わる糖鎖のリスト
-  get_glycans_by_reaction('rn:R06164')
-
---- get_reactions_by_enzyme(enzyme_id)
-
-指定した酵素番号に対応するリアクションのリストを返します。
-
-戻値：
-  ArrayOfstring (reaction_id)
-
-例：
-  # 酵素番号 'ec:2.7.1.12' の反応に関わるリアクション番号のリスト
-  get_reactions_by_enzyme('ec:2.7.1.12')
-
---- get_reactions_by_compound(compound_id)
-
-指定した化合物に対応するリアクションのリストを返します。
-
-戻値：
-  ArrayOfstring (reaction_id)
-
-例：
-  # 化合物 'cpd:C00199' の触媒反応に関わるリアクション番号のリスト
-  get_reactions_by_compound('cpd:C00199')
-
---- get_reactions_by_glycan(glycan_id)
-
-指定した糖鎖に対応するリアクションのリストを返します。
-
-戻値：
-  ArrayOfstring (reaction_id)
-
-例：
-  # 糖鎖 'gl:G00001' の触媒反応に関わるリアクション番号のリスト
-  get_reactions_by_glycan('gl:G00001')
-
-
 ==== GENES
 
 GENES データベースに対するメソッドの一覧です。GENES データベースについて
@@ -1394,6 +1506,7 @@ MOL フォーマットのエントリを KCF フォーマットに変換します。
 
 == Notes
 
-Last updated: May 31, 2005
+Last updated: Feb 17, 2006
 
 =end
+

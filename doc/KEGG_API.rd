@@ -1,8 +1,8 @@
 =begin
 
-  $Id: KEGG_API.rd,v 1.1 2005/08/31 13:29:01 k Exp $
+  $Id: KEGG_API.rd,v 1.2 2006/02/23 04:51:23 k Exp $
 
-    Copyright (C) 2003-2005 Toshiaki Katayama <k@bioruby.org>
+    Copyright (C) 2003-2006 Toshiaki Katayama <k@bioruby.org>
 
 = KEGG API
 
@@ -79,6 +79,7 @@ page at GenomeNet:
     * ((<MotifResult>)), ((<ArrayOfMotifResult>))
     * ((<Definition>)), ((<ArrayOfDefinition>))
     * ((<LinkDBRelation>)), ((<ArrayOfLinkDBRelation>))
+    * ((<PathwayElement>)), ((<ArrayOfPathwayElement>))
   * ((<Methods>))
     * ((<Meta information>))
       * ((<list_databases>)),
@@ -88,9 +89,22 @@ page at GenomeNet:
       * ((<binfo>)),
         ((<bfind>)),
         ((<bget>)),
-        ((<btit>))
+        ((<btit>)),
+        ((<bconv>))
     * ((<LinkDB>))
       * ((<get_linkdb_by_entry>))
+      * ((<get_genes_by_enzyme>)),
+        ((<get_enzymes_by_gene>))
+      * ((<get_enzymes_by_compound>)),
+        ((<get_enzymes_by_glycan>)),
+        ((<get_enzymes_by_reaction>)),
+        ((<get_compounds_by_enzyme>)),
+        ((<get_compounds_by_reaction>)),
+        ((<get_glycans_by_enzyme>)),
+        ((<get_glycans_by_reaction>)),
+        ((<get_reactions_by_enzyme>)),
+        ((<get_reactions_by_compound>)),
+        ((<get_reactions_by_glycan>))
     * ((<SSDB>))
       * ((<get_best_best_neighbors_by_gene>)),
         ((<get_best_neighbors_by_gene>)),
@@ -112,9 +126,12 @@ page at GenomeNet:
     * ((<PATHWAY>))
       * ((<mark_pathway_by_objects>)),
         ((<color_pathway_by_objects>)),
+        ((<color_pathway_by_elements>)),
         ((<get_html_of_marked_pathway_by_objects>)),
-        ((<get_html_of_colored_pathway_by_objects>))
-      * ((<get_genes_by_pathway>)),
+        ((<get_html_of_colored_pathway_by_objects>)),
+        ((<get_html_of_colored_pathway_by_elements>))
+      * ((<get_elements_by_pathway>)),
+        ((<get_genes_by_pathway>)),
         ((<get_enzymes_by_pathway>)),
         ((<get_compounds_by_pathway>)),
         ((<get_glycans_by_pathway>)),
@@ -127,18 +144,6 @@ page at GenomeNet:
         ((<get_pathways_by_reactions>)),
         ((<get_pathways_by_kos>))
       * ((<get_linked_pathways>))
-      * ((<get_genes_by_enzyme>)),
-        ((<get_enzymes_by_gene>))
-      * ((<get_enzymes_by_compound>)),
-        ((<get_enzymes_by_glycan>)),
-        ((<get_enzymes_by_reaction>)),
-        ((<get_compounds_by_enzyme>)),
-        ((<get_compounds_by_reaction>)),
-        ((<get_glycans_by_enzyme>)),
-        ((<get_glycans_by_reaction>)),
-        ((<get_reactions_by_enzyme>)),
-        ((<get_reactions_by_compound>)),
-        ((<get_reactions_by_glycan>))
     * ((<GENES>))
       * ((<get_genes_by_organism>))
     * ((<GENOME>))
@@ -507,8 +512,9 @@ the KEGG API can be found at:
 
 === Terminology
 
-  * 'org' is a three-letter organism code used in KEGG.  The list can be
-    found at (see the description of the list_organisms method below):
+  * 'org' is a three-letter (or four-letter) organism code used in KEGG.
+    The list can be found at (see the description of the list_organisms
+    method below):
 
     * ((<URL:http://www.genome.jp/kegg/catalog/org_list.html>))
 
@@ -622,7 +628,7 @@ The following methods had been affected by this bug:
   * get_paralogs_by_gene
 # * get_similarity_between_genes
 
-This problem is fixed in the version 3.2.
+This problem is fixed in the KEGG API version 3.2.
 
 + ArrayOfSSDBRelation
 
@@ -670,6 +676,20 @@ LinkDBRelation data type contains the following fields:
 + ArrayOfLinkDBRelation
 
 ArrayOfLinkDBRelation data type is a list of the LinkDBRelation data type.
+
++ PathwayElement
+
+PathwayElement data type contains the following fields:
+
+  element_id        unique identifier of the object on the pathway (int)
+  type              type of the object ("gene", "enzyme" etc.) (string)
+  names             array of names of the object (ArrayOfstring)
+  components        array of element_ids of the group components (ArrayOfint)
+
++ ArrayOfPathwayElement
+
+ArrayOfPathwayElement data type is a list of the PathwayElement data type.
+
 
 === Methods
 
@@ -769,6 +789,19 @@ Example:
   # "mmu:13478", "dme:CG5287-PA" and cel:Y60A3A.14".
   btit("hsa:1798 mmu:13478 dme:CG5287-PA cel:Y60A3A.14")
 
+--- bconv(string)
+
+The bconv command converts external IDs (NCBI GI, NCBI GeneID, GenBank ID,
+and UniProt ID) to KEGG IDs.  The result is the tab separated pair of the
+given ID and the converted ID in each line.
+
+Return value:
+  string
+
+Example:
+  # Convert NCBI GI and NCBI GeneID to KEGG genes_id
+  serv.bconv("ncbi-gi:10047086 ncbi-gi:10047090 ncbi-geneid:14751")
+
 ==== LinkDB
 
 --- get_linkdb_by_entry(entry_id, db, start, max_results)
@@ -783,6 +816,155 @@ Example:
   # Get the entries of KEGG/PATHWAY database linked from the entry 'eco:b0002'.
   get_linkdb_by_entry('eco:b0002', 'pathway', 1, 10)
   get_linkdb_by_entry('eco:b0002', 'pathway', 11, 10)
+
++ Relation among genes and enzymes
+
+--- get_genes_by_enzyme(enzyme_id, org)
+
+Retrieve all genes of the given organism.
+
+Return value:
+  ArrayOfstring (genes_id)
+
+Example:
+  # Returns all the GENES entry IDs in E.coli genome which are assigned 
+  # EC number ec:1.2.1.1
+  get_genes_by_enzyme('ec:1.2.1.1', 'eco')
+
+--- get_enzymes_by_gene(genes_id)
+
+Retrieve all the EC numbers which are assigned to the given gene.
+
+Return value:
+  ArrayOfstring (enzyme_id)
+
+Example:
+  # Returns the EC numbers which are assigned to E.coli genes b0002
+  get_enzymes_by_gene('eco:b0002')
+
+
++ Relation among enzymes, compounds and reactions
+
+--- get_enzymes_by_compound(compound_id)
+
+Retrieve all enzymes which have a link to the given compound_id.
+
+Return value:
+  ArrayOfstring (enzyme_id)
+
+Example:
+  # Returns the ENZYME entry IDs which have a link to the COMPOUND entry,
+  # 'cpd:C00345'
+  get_enzymes_by_compound('cpd:C00345')
+
+--- get_enzymes_by_glycan(glycan_id)
+
+Retrieve all enzymes which have a link to the given glycan_id.
+
+Return value:
+  ArrayOfstring (enzyme_id)
+
+Example
+  # Returns the ENZYME entry IDs which have a link to the GLYCAN entry,
+  # 'gl:G00001'
+  get_enzymes_by_glycan('gl:G00001')
+
+--- get_enzymes_by_reaction(reaction_id)
+
+Retrieve all enzymes which have a link to the given reaction_id.
+
+Return value:
+  ArrayOfstring (enzyme_id)
+
+Example:
+  # Returns the ENZYME entry IDs which have a link to the REACTION entry, 
+  # 'rn:R00100'.
+  get_enzymes_by_reaction('rn:R00100')
+
+--- get_compounds_by_enzyme(enzyme_id)
+
+Retrieve all compounds which have a link to the given enzyme_id.
+
+Return value:
+  ArrayOfstring (compound_id)
+
+Example:
+  # Returns the COMPOUND entry IDs which have a link to the ENZYME entry, 
+  # 'ec:2.7.1.12'.
+  get_compounds_by_enzyme('ec:2.7.1.12')
+ 
+--- get_compounds_by_reaction(reaction_id)
+
+Retrieve all compounds which have a link to the given reaction_id.
+
+Return value:
+  ArrayOfstring (compound_id)
+
+Example:
+  # Returns the COMPOUND entry IDs which have a link to the REACTION entry, 
+  # 'rn:R00100'
+  get_compounds_by_reaction('rn:R00100')
+
+--- get_glycans_by_enzyme(enzyme_id)
+
+Retrieve all glycans which have a link to the given enzyme_id.
+
+Return value:
+  ArrayOfstring (glycan_id)
+
+Example
+  # Returns the GLYCAN entry IDs which have a link to the ENZYME entry,
+  # 'ec:2.4.1.141'
+  get_glycans_by_enzyme('ec:2.4.1.141')
+
+--- get_glycans_by_reaction(reaction_id)
+
+Retrieve all glycans which have a link to the given reaction_id.
+
+Return value:
+  ArrayOfstring (glycan_id)
+
+Example
+  # Returns the GLYCAN entry IDs which have a link to the REACTION entry,
+  # 'rn:R06164'
+  get_glycans_by_reaction('rn:R06164')
+
+--- get_reactions_by_enzyme(enzyme_id)
+
+Retrieve all reactions which have a link to the given enzyme_id.
+
+Return value:
+  ArrayOfstring (reaction_id)
+
+Example:
+  # Returns the REACTION entry IDs which have a link to the ENZYME entry,
+  # 'ec:2.7.1.12'
+  get_reactions_by_enzyme('ec:2.7.1.12')
+
+--- get_reactions_by_compound(compound_id)
+
+Retrieve all reactions which have a link to the given compound_id.
+
+Return value:
+  ArrayOfstring (reaction_id)
+
+Example:
+  # Returns the REACTION entry IDs which have a link to the COMPOUND entry,
+  # 'cpd:C00199'
+  get_reactions_by_compound('cpd:C00199')
+
+--- get_reactions_by_glycan(glycan_id)
+
+Retrieve all reactions which have a link to the given glycan_id.
+
+Return value:
+  ArrayOfstring (reaction_id)
+
+Example
+  # Returns the REACTION entry IDs which have a link to the GLYCAN entry,
+  # 'gl:G00001'
+  get_reactions_by_glycan('gl:G00001')
+
 
 ==== SSDB
 
@@ -1030,6 +1212,42 @@ Example:
   bg_list  = ['#ffff00', 'yellow']
   color_pathway_by_objects('path:eco00260', obj_list, fg_list, bg_list)
 
+--- color_pathway_by_elements(pathway_id, element_id_list, fg_color_list, bg_color_list)
+
+Color the objects (rectangles and circles on a pathway map) corresponding
+to the given 'element_id_list' with the specified colors and return the
+URL of the colored image.  'fg_color_list' is used for specifying the
+color of text and border of the objects with given 'element_id_list' and
+'bg_color_list' is used for its background area. The order of colors in
+these lists correspond with the order of objects in the 'element_id_list'
+list.
+
+This method is useful to specify which graphical object on the pathway
+to be colored as there are some cases that multiple genes are assigned to
+one rectangle or a gene is assigned to more than one rectangle on the
+pathway map. The 'element_id' is an unique numerical identifier on the
+pathway defined by the KGML (XML represeentation of the KEGG PATHWAY)
+in the <entry> tag.  List of the 'element_id's can be obtained by the
+'get_elements_by_pathway' method. 
+
+For more details on KGML, see:
+
+  * ((<URL:http://www.genome.jp/kegg/xml/>))
+
+Return value:
+  string (URL)
+
+Example:
+  # Returns the URL of the colored image of given pathway 'path:bsu00010' with
+  # * gene bsu:BG11350 (element_id 78, ec:3.2.1.86) colored in red on yellow
+  # * gene bsu:BG11203 (element_id 79, ec:3.2.1.86) colored in blue on yellow
+  # * gene bsu:BG11685 (element_id 51, ec:2.7.1.2)  colored in red on orange
+  # * gene bsu:BG11685 (element_id 47, ec:2.7.1.2)  colored in blue on orange
+  element_id_list = [ 78, 79, 51, 47 ]
+  fg_list  = [ '#ff0000', '#0000ff', '#ff0000', '#0000ff' ]
+  bg_list  = [ '#ffff00', '#ffff00', '#ffcc00', '#ffcc00' ]
+  color_pathway_by_elements('path:bsu00010', element_id_list, fg_list, bg_list)
+
 --- get_html_of_marked_pathway_by_objects(pathway_id, object_id_list)
 
 HTML version of the 'mark_pathway_by_objects' method.
@@ -1059,16 +1277,62 @@ Return value:
 
 Example:
   # Returns the URL of the HTML which can be passed to the web browser
-  # as a clickable map of coloerd image of the given pathway 'path:eco00970'
+  # as a clickable map of colored image of the given pathway 'path:eco00970'
   # with a gene 'eco:b4258' colored in gray/red, a compound 'cpd:C00135'
-  # coloerd in green/yellow and a KO 'ko:K01881' colored in blue/orange.
+  # colored in green/yellow and a KO 'ko:K01881' colored in blue/orange.
   obj_list = ['eco:b4258', 'cpd:C00135', 'ko:K01881']
   fg_list  = ['gray', '#00ff00', 'blue']
   bg_list  = ['#ff0000', 'yellow', 'orange']
   get_html_of_colored_pathway_by_objects('path:eco00970', obj_list, fg_list, bg_list)
 
+--- get_html_of_colored_pathway_by_elements(pathway_id, element_id_list, fg_color_list, bg_color_list)
+
+HTML version of the 'color_pathway_by_elements' method.
+Color the objects corresponding to the given 'element_id_list' on the pathway
+map with the specified colors and return the URL of the HTML containing the
+colored image as a clickable map.
+
+Return value:
+  string (URL)
+
+Example:
+  # Returns the URL of the HTML which can be passed to the web browser as a
+  # clickable map of colored image of the given pathway 'path:bsu00010' with
+  # * gene bsu:BG11350 (element_id 78, ec:3.2.1.86) colored in red on yellow
+  # * gene bsu:BG11203 (element_id 79, ec:3.2.1.86) colored in blue on yellow
+  # * gene bsu:BG11685 (element_id 51, ec:2.7.1.2)  colored in red on orange
+  # * gene bsu:BG11685 (element_id 47, ec:2.7.1.2)  colored in blue on orange
+  element_id_list = [ 78, 79, 51, 47 ]
+  fg_list  = [ '#ff0000', '#0000ff', '#ff0000', '#0000ff' ]
+  bg_list  = [ '#ffff00', '#ffff00', '#ffcc00', '#ffcc00' ]
+  get_html_of_colored_pathway_by_elements('path:bsu00010', element_id_list, fg_list, bg_list)
 
 + Objects on the pathway
+
+--- get_elements_by_pathway(pathway_id)
+
+Search all objects on the specified pathway.  This method will be used in
+combination with the color_pathway_by_elements method to distingish graphical
+objects on the pathway sharing the same name.
+
+Return value:
+  ArrayOfPathwayElement
+
+Example:
+  # Returns list of PathwayElement on the pathway map 'path:bsu00010'
+  get_elements_by_pathway('path:bsu00010')
+
+  # Find entry_ids for genes 'bsu:BG11350', 'bsu:BG11203' and 'bsu:BG11685'
+  # in Ruby language
+  elems = serv.get_elements_by_pathway('path:bsu00010')
+  genes = [ 'bsu:BG11350', 'bsu:BG11203', 'bsu:BG11685' ]
+  elems.each do |elem|
+    genes.each do |gene|
+      if elem.names.include?(gene)
+        puts gene, elem.element_id
+      end
+    end
+  end
 
 --- get_genes_by_pathway(pathway_id)
 
@@ -1226,155 +1490,6 @@ Example:
   get_linked_pathways('path:eco00620')
 
 
-+ Relation among genes and enzymes
-
---- get_genes_by_enzyme(enzyme_id, org)
-
-Retrieve all genes of the given organism.
-
-Return value:
-  ArrayOfstring (genes_id)
-
-Example:
-  # Returns all the GENES entry IDs in E.coli genome which are assigned 
-  # EC number ec:1.2.1.1
-  get_genes_by_enzyme('ec:1.2.1.1', 'eco')
-
---- get_enzymes_by_gene(genes_id)
-
-Retrieve all the EC numbers which are assigned to the given gene.
-
-Return value:
-  ArrayOfstring (enzyme_id)
-
-Example:
-  # Returns the EC numbers which are assigned to E.coli genes b0002
-  get_enzymes_by_gene('eco:b0002')
-
-
-+ Relation among enzymes, compounds and reactions
-
---- get_enzymes_by_compound(compound_id)
-
-Retrieve all enzymes which have a link to the given compound_id.
-
-Return value:
-  ArrayOfstring (enzyme_id)
-
-Example:
-  # Returns the ENZYME entry IDs which have a link to the COMPOUND entry,
-  # 'cpd:C00345'
-  get_enzymes_by_compound('cpd:C00345')
-
---- get_enzymes_by_glycan(glycan_id)
-
-Retrieve all enzymes which have a link to the given glycan_id.
-
-Return value:
-  ArrayOfstring (enzyme_id)
-
-Example
-  # Returns the ENZYME entry IDs which have a link to the GLYCAN entry,
-  # 'gl:G00001'
-  get_enzymes_by_glycan('gl:G00001')
-
---- get_enzymes_by_reaction(reaction_id)
-
-Retrieve all enzymes which have a link to the given reaction_id.
-
-Return value:
-  ArrayOfstring (enzyme_id)
-
-Example:
-  # Returns the ENZYME entry IDs which have a link to the REACTION entry, 
-  # 'rn:R00100'.
-  get_enzymes_by_reaction('rn:R00100')
-
---- get_compounds_by_enzyme(enzyme_id)
-
-Retrieve all compounds which have a link to the given enzyme_id.
-
-Return value:
-  ArrayOfstring (compound_id)
-
-Example:
-  # Returns the COMPOUND entry IDs which have a link to the ENZYME entry, 
-  # 'ec:2.7.1.12'.
-  get_compounds_by_enzyme('ec:2.7.1.12')
- 
---- get_compounds_by_reaction(reaction_id)
-
-Retrieve all compounds which have a link to the given reaction_id.
-
-Return value:
-  ArrayOfstring (compound_id)
-
-Example:
-  # Returns the COMPOUND entry IDs which have a link to the REACTION entry, 
-  # 'rn:R00100'
-  get_compounds_by_reaction('rn:R00100')
-
---- get_glycans_by_enzyme(enzyme_id)
-
-Retrieve all glycans which have a link to the given enzyme_id.
-
-Return value:
-  ArrayOfstring (glycan_id)
-
-Example
-  # Returns the GLYCAN entry IDs which have a link to the ENZYME entry,
-  # 'ec:2.4.1.141'
-  get_glycans_by_enzyme('ec:2.4.1.141')
-
---- get_glycans_by_reaction(reaction_id)
-
-Retrieve all glycans which have a link to the given reaction_id.
-
-Return value:
-  ArrayOfstring (glycan_id)
-
-Example
-  # Returns the GLYCAN entry IDs which have a link to the REACTION entry,
-  # 'rn:R06164'
-  get_glycans_by_reaction('rn:R06164')
-
---- get_reactions_by_enzyme(enzyme_id)
-
-Retrieve all reactions which have a link to the given enzyme_id.
-
-Return value:
-  ArrayOfstring (reaction_id)
-
-Example:
-  # Returns the REACTION entry IDs which have a link to the ENZYME entry,
-  # 'ec:2.7.1.12'
-  get_reactions_by_enzyme('ec:2.7.1.12')
-
---- get_reactions_by_compound(compound_id)
-
-Retrieve all reactions which have a link to the given compound_id.
-
-Return value:
-  ArrayOfstring (reaction_id)
-
-Example:
-  # Returns the REACTION entry IDs which have a link to the COMPOUND entry,
-  # 'cpd:C00199'
-  get_reactions_by_compound('cpd:C00199')
-
---- get_reactions_by_glycan(glycan_id)
-
-Retrieve all reactions which have a link to the given glycan_id.
-
-Return value:
-  ArrayOfstring (reaction_id)
-
-Example
-  # Returns the REACTION entry IDs which have a link to the GLYCAN entry,
-  # 'gl:G00001'
-  get_reactions_by_glycan('gl:G00001')
-
-
 ==== GENES
 
 This section describes the APIs for GENES database. For more details
@@ -1431,7 +1546,7 @@ Example:
 
 == Notes
 
-Last updated: May 31, 2005
+Last updated: Feb 17, 2006
 
 =end
 
