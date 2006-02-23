@@ -6,7 +6,7 @@
 #                Mitsuteru C. Nakao <n@bioruby.org>
 #  License::     Ruby's
 #
-#  $Id: test_report.rb,v 1.1 2006/02/13 15:51:11 nakao Exp $
+#  $Id: test_report.rb,v 1.2 2006/02/23 22:25:30 nakao Exp $
 #
 
 require 'pathname'
@@ -113,7 +113,7 @@ module Bio
   end
 
 
-  class TestBlastReportHit < Test::Unit::TestCase
+  class TestBl2seqReportHit < Test::Unit::TestCase
     def setup
       @empty = Bio::Blast::Bl2seq::Report.new(Bio::TestBl2seqReportData.output('empty'))
       @blastp = Bio::Blast::Bl2seq::Report.new(Bio::TestBl2seqReportData.output('blastp'))
@@ -121,9 +121,11 @@ module Bio
       @blastp_hit = @blastp.hits.first
     end
 
-    def test_hits
+    def test_empty_hits
       assert_equal(0, @empty.hits.size)
+    end
 
+    def test_hits
       assert_equal(Bio::Blast::Bl2seq::Report::Hit, @blastp.hits.first.class)
       assert_equal(1, @blastp.hits.size)
     end
