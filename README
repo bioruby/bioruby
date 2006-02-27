@@ -1,6 +1,6 @@
 =begin
 
-  $Id: README,v 1.13 2006/02/04 19:17:16 k Exp $
+  $Id: README,v 1.14 2006/02/27 12:28:03 k Exp $
 
   Copyright (C) 2001-2006 Toshiaki Katayama <k@bioruby.org>
 
@@ -68,7 +68,7 @@ the BioRuby package is also available for easy installation.
 == REQUIREMENTS
 
 * Ruby 1.8.2 or later -- ((<URL:http://www.ruby-lang.org/>))
-
+  (Ruby 1.8.4 or later is recommended)
 
 == OPTIONAL REQUIREMENTS
 
