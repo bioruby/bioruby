@@ -1,11 +1,10 @@
-
 #
 # = bio/util/contingency_table.rb - Statistical contingency table analysis for aligned sequences
 #
 # Copyright::  Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
 # License::    LGPL
 #
-#  $Id: contingency_table.rb,v 1.3 2006/02/27 13:03:14 k Exp $
+#  $Id: contingency_table.rb,v 1.4 2006/02/27 13:23:01 k Exp $
 #
 # == Synopsis
 # 
@@ -339,4 +338,6 @@ class ContingencyTable
   end
 
 end
-end
+
+end # Bio
+
