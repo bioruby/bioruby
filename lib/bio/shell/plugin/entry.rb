@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: entry.rb,v 1.7 2006/02/14 13:46:43 k Exp $
+# $Id: entry.rb,v 1.8 2006/02/27 09:37:14 k Exp $
 #
 
 module Bio::Shell
@@ -85,6 +85,7 @@ module Bio::Shell
     return entry
   end
 
+  # Obtain a parsed object from sources that ent() supports.
   def obj(arg)
     str = ent(arg)
     flatparse(str)
