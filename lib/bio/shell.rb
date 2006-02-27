@@ -1,11 +1,11 @@
 #
 # = bio/shell.rb - Loading all BioRuby shell features
 #
-# Copyright::   Copyright (C) 2005
+# Copyright::   Copyright (C) 2005, 2006
 #               Toshiaki Katayama <k@bioruby.org>
 # License:      Ruby's
 #
-# $Id: shell.rb,v 1.14 2006/02/17 17:12:39 k Exp $
+# $Id: shell.rb,v 1.15 2006/02/27 09:34:23 k Exp $
 #
 
 require 'bio'
@@ -17,6 +17,9 @@ module Bio::Shell
 
   require 'bio/shell/core'
   require 'bio/shell/interface'
+  require 'bio/shell/object'
+  require 'bio/shell/web'
+  require 'bio/shell/demo'
   require 'bio/shell/plugin/entry'
   require 'bio/shell/plugin/seq'
   require 'bio/shell/plugin/midi'
