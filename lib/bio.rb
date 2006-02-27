@@ -5,12 +5,12 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: bio.rb,v 1.65 2006/02/21 18:01:59 ngoto Exp $
+# $Id: bio.rb,v 1.66 2006/02/27 09:11:01 k Exp $
 #
 
 module Bio
 
-  BIORUBY_VERSION = [0, 8, 0].extend(Comparable)
+  BIORUBY_VERSION = [1, 0, 0].extend(Comparable)
 
   ### Basic data types
 
@@ -100,8 +100,8 @@ module Bio
   autoload :FastaDefline,       'bio/db/fasta' # change to FastaFormat::Defline
   autoload :GFF,            'bio/db/gff'
   autoload :AAindex,        'bio/db/aaindex'
-  autoload :AAindex1,       'bio/db/aaindex'
-  autoload :AAindex2,       'bio/db/aaindex'
+  autoload :AAindex1,       'bio/db/aaindex' # change to AAindex::AAindex1 ?
+  autoload :AAindex2,       'bio/db/aaindex' # change to AAindex::AAindex2 ?
   autoload :TRANSFAC,       'bio/db/transfac'
   autoload :PROSITE,        'bio/db/prosite'
   autoload :LITDB,          'bio/db/litdb'
