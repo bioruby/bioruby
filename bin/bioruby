@@ -6,7 +6,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: bioruby,v 1.13 2006/02/14 13:18:35 k Exp $
+# $Id: bioruby,v 1.14 2006/02/27 09:41:19 k Exp $
 #
 
 begin
@@ -15,31 +15,40 @@ begin
 rescue LoadError
 end
 
+
+### BioRuby shell setup
+
 require 'bio/shell'
 
 include Bio::Shell
 
-### Command line argument
-
-# working directory or script file
+# command line argument (working directory or bioruby shell script file)
+script = nil
 if arg = ARGV.shift
   if File.directory?(arg)
     # directory or symlink to directory
     Dir.chdir(arg)
   elsif File.exists?(arg)
-    # BioRuby shell script (lib/bioruby.rb can be obsolete)
-    load arg
-    exit
+    # BioRuby shell script (load script after the previous session is restored)
+    dir = File.dirname(arg)
+    script = File.basename(arg)
+    Dir.chdir(dir)
   elsif arg
     Dir.mkdir(arg)
     Dir.chdir(arg)
   end
+else
+  unless File.exists?(Bio::Shell.history)
+    message = "Are you sure to start new session in this directory? [y/n] "
+    unless Bio::Shell.ask_yes_or_no(message)
+      exit
+    end
+  end
 end
-
-### BioRuby shell setup
 
 # loading configuration and plugins
 Bio::Shell.setup
+
 
 ### IRB setup
 
@@ -83,7 +92,8 @@ IRB.conf[:ECHO] = Bio::Shell.config[:echo] || false
 # not beautifully works
 #IRB.conf[:AUTO_INDENT] = true
 
-### IRB main loop
+
+### Start IRB
 
 irb = IRB::Irb.new
 
@@ -93,12 +103,56 @@ IRB.conf[:MAIN_CONTEXT] = irb.context
 # loading workspace and command history
 Bio::Shell.load_session
 
+if script
+  # *TODO* - variables are seemed to exist, but couldn't access them ...
+  #eval("ls", irb.context.workspace.binding)
+  #eval("ls")
+  #eval("load '#{script}'", irb.context.workspace.binding)
+  #eval("load '#{script}'", IRB.conf[:MAIN_CONTEXT].workspace.binding)
+  #eval("load '#{script}'")
+  #eval("load '#{script}', true")
+  #eval("File.read('#{script}')", irb.context.workspace.binding)
+  #eval("File.read('#{script}')")
+  load script
+  exit
+end
+
+Bio::Shell.create_save_dir
+
+$history_file = File.open(Bio::Shell.history, "a")
+$history_file.sync = true
+
+# overwrite gets to store history with time stamp
+io = IRB.conf[:MAIN_CONTEXT].io
+
+io.class.class_eval do
+  alias_method :irb_original_gets, :gets
+end
+
+def io.gets
+  line = irb_original_gets
+  $history_file.puts "#{Time.now}\t#{line}" if line
+  line
+end
+
+# main loop
 Signal.trap("SIGINT") do
   irb.signal_handle
 end
 
 catch(:IRB_EXIT) do
   irb.eval_input
+end
+
+$history_file.close if $history_file
+
+# shut down the rails server
+if $web_server
+  $web_server.each do |io|
+    io.close
+  end
+  $web_access_log.close if $web_access_log
+  $web_error_log.close if $web_error_log
 end
 
 # saving workspace, command history and configuration before exit
