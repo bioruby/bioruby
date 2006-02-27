@@ -1,23 +1,11 @@
 #
 # test/unit/bio/shell/plugin/test_seq.rb - Unit test for Bio::Shell plugin for biological sequence manipulations
 #
-#   Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
+# Copyright::   Copyright (C) 2005 
+#               Mitsuteru Nakao <n@bioruby.org>
+# License::     Ruby's
 #
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#  $Id: test_seq.rb,v 1.6 2006/02/21 17:38:15 nakao Exp $
+# $Id: test_seq.rb,v 1.7 2006/02/27 09:40:13 nakao Exp $
 #
 
 require 'pathname'
@@ -26,12 +14,29 @@ $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'test/unit'
 require 'bio/shell'
+require 'bio/shell/plugin/seq'
 
 module Bio
-  class TestShellPluginSeq < Test::Unit::TestCase
 
-#    include Bio::Shell
-#    Bio::Shell.instance_variable_set :@config, {}
+  class TestShellPluginSeq < Test::Unit::TestCase
+    include Bio::Shell
+
+    Bio::Shell.config = {:color => false}
+
+    def test_htmlseq
+      str = 'ATGC'
+      html =<<END
+<div style="font-family:monospace;">
+<span style="background:#64F73F;">a</span>
+<span style="background:#3C88EE;">t</span>
+<span style="background:#EB413C;">g</span>
+<span style="background:#FFB340;">c</span>
+<br>
+</div>
+END
+      assert_equal(html, htmlseq(str))
+    end
+
 
     def test_naseq
       str = 'ACGT'
@@ -40,12 +45,14 @@ module Bio
       assert_equal('acgt', seq(str))
     end
 
+
     def test_aaseq
       str = 'WD'
       assert_equal(Bio::Sequence::AA, seq(str).class)
       assert_equal(Bio::Sequence::AA.new('WD'), seq(str))
       assert_equal('WD', seq(str))
     end
+
 
     def test_na_seqstat
       naseq = 'atgcatgcatgc'
@@ -112,6 +119,7 @@ END
       assert_equal(output, $str)
     end
 
+
     def test_aa_seqstat
       aaseq = 'WD'
       output =<<END
@@ -137,6 +145,7 @@ END
       alias puts puts_orig
       assert_equal(output, $str)
     end
+
 
     def test_doublehelix
       seq = 'ACGTACGTACGTACGT'
@@ -172,4 +181,5 @@ END
     end
 
   end
+
 end
