@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: core.rb,v 1.20 2006/02/17 17:09:17 k Exp $
+# $Id: core.rb,v 1.21 2006/02/27 09:09:57 k Exp $
 #
 
 
@@ -35,6 +35,10 @@ module Bio::Shell::Ghost
     :w => "\e[37m",  :white   => "\e[37m",
     :n => "\e[00m",  :none    => "\e[00m",  :reset => "\e[00m",
   }
+
+  def history
+    SAVEDIR + HISTORY
+  end
 
   def datadir
     DATADIR
@@ -69,40 +73,11 @@ module Bio::Shell::Ghost
 
   def save_session
     closing_splash
-    save_history
-    save_object
-    save_config
-  end
-
-  #--
-  # *TODO* How to prevent terminal collapse and suppress loading messages?
-  #++
-  def load_thread
-    message = ''
-    begin
-      t1 = Thread.new do
-        require 'stringio'
-        sio = StringIO.new('')
-        begin
-          stdout_save = STDOUT.clone
-          STDOUT.reopen(sio)
-          load_object
-          load_history
-        ensure
-          STDOUT.reopen(stdout_save)
-          stdout_save.close
-          message = sio.read
-          sio.close
-        end
-      end
-      t2 = Thread.new do
-        opening_splash
-      end
-      t1.join
-      t2.join
-    rescue
+    if create_save_dir_ask
+      #save_history	# changed to use our own...
+      save_object
+      save_config
     end
-    puts message
   end
 
   ### setup
@@ -120,8 +95,17 @@ module Bio::Shell::Ghost
   end
 
   def create_save_dir
+    create_real_dir(SAVEDIR)
+    create_real_dir(DATADIR)
+    create_real_dir(PLUGIN)
+  end
+
+  def create_save_dir_ask
+    if File.directory?(SAVEDIR)
+      @cache[:save] = true
+    end
     if @cache[:save].nil?
-      if ask_yes_or_no("Save session in '#{SAVEDIR}' directory? [y/n]: ")
+      if ask_yes_or_no("Save session in '#{SAVEDIR}' directory? [y/n] ")
         create_real_dir(SAVEDIR)
         create_real_dir(DATADIR)
         create_real_dir(PLUGIN)
@@ -136,7 +120,7 @@ module Bio::Shell::Ghost
 
   def ask_yes_or_no(message)
     loop do
-      print message
+      print "#{message}"
       answer = gets
       if answer.nil?
         # readline support might be broken
@@ -202,9 +186,7 @@ module Bio::Shell::Ghost
   end
 
   def save_config
-    if create_save_dir
-      save_config_file(SAVEDIR + CONFIG)
-    end
+    save_config_file(SAVEDIR + CONFIG)
   end
 
   def save_config_file(file)
@@ -246,19 +228,21 @@ module Bio::Shell::Ghost
     end
   end
 
+  def config_pager(cmd = nil)
+    @config[:pager] = cmd
+  end
+
   def config_splash
     flag = ! @config[:splash]
     @config[:splash] = flag
     puts "Splash #{flag ? 'on' : 'off'}"
-  end
-
-  def config_pager(cmd = nil)
-    @config[:pager] = cmd
+    opening_splash
   end
 
   def config_message(str = nil)
     str ||= MESSAGE
     @config[:message] = str
+    opening_splash
   end
 
   ### plugin
@@ -305,9 +289,7 @@ module Bio::Shell::Ghost
   end
   
   def save_object
-    if create_save_dir
-      save_object_file(SAVEDIR + OBJECT)
-    end
+    save_object_file(SAVEDIR + OBJECT)
   end
 
   def save_object_file(file)
@@ -354,7 +336,9 @@ module Bio::Shell::Ghost
     if File.exists?(file)
       print "Loading history (#{file}) ... "
       File.open(file).each do |line|
-        Readline::HISTORY.push line.chomp
+        #Readline::HISTORY.push line.chomp
+	date, hist = line.chomp.split("\t")
+        Readline::HISTORY.push hist if hist
       end
       puts "done"
     end
@@ -362,9 +346,7 @@ module Bio::Shell::Ghost
   
   def save_history
     if @cache[:readline]
-      if create_save_dir
-        save_history_file(SAVEDIR + HISTORY)
-      end
+      save_history_file(SAVEDIR + HISTORY)
     end
   end
 
@@ -416,9 +398,9 @@ module Bio::Shell::Ghost
   def save_script
     if @script_begin and @script_end and @script_begin <= @script_end
       if File.exists?(SCRIPT)
-        message = "Overwrite script file (#{SCRIPT})? [y/n]: "
+        message = "Overwrite script file (#{SCRIPT})? [y/n] "
       else
-        message = "Save script file (#{SCRIPT})? [y/n]: "
+        message = "Save script file (#{SCRIPT})? [y/n] "
       end
       if ask_yes_or_no(message)
         save_script_file(SCRIPT)
@@ -462,8 +444,8 @@ module Bio::Shell::Ghost
     return str.sub(/R u b y/) { "#{ruby}R u b y#{none}" }
   end
 
-  def splash_message_action
-    s = splash_message
+  def splash_message_action(message = nil)
+    s = message || splash_message
     l = s.length
     x = " "
     0.step(l,2) do |i|
@@ -479,8 +461,8 @@ module Bio::Shell::Ghost
     end
   end
 
-  def splash_message_action_color
-    s = splash_message
+  def splash_message_action_color(message = nil)
+    s = message || splash_message
     l = s.length
     c = ESC_SEQ
     x = " "
