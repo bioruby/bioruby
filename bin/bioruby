@@ -6,7 +6,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: bioruby,v 1.14 2006/02/27 09:41:19 k Exp $
+# $Id: bioruby,v 1.15 2006/02/27 09:41:54 k Exp $
 #
 
 begin
@@ -104,15 +104,6 @@ IRB.conf[:MAIN_CONTEXT] = irb.context
 Bio::Shell.load_session
 
 if script
-  # *TODO* - variables are seemed to exist, but couldn't access them ...
-  #eval("ls", irb.context.workspace.binding)
-  #eval("ls")
-  #eval("load '#{script}'", irb.context.workspace.binding)
-  #eval("load '#{script}'", IRB.conf[:MAIN_CONTEXT].workspace.binding)
-  #eval("load '#{script}'")
-  #eval("load '#{script}', true")
-  #eval("File.read('#{script}')", irb.context.workspace.binding)
-  #eval("File.read('#{script}')")
   load script
   exit
 end
