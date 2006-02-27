@@ -49,6 +49,19 @@ or newly added.
 
 --- Bio::Sequence
 
+Bio::Sequence is completely refactored to be a container class for
+any sequence annotations.  Functionalities are separated into several
+files under the lib/bio/sequence/ directory as
+
+  * common.rb : module provides common methods for NA and AA sequences
+  * compat.rb : methods for backward compatibility
+  * aa.rb     : Bio::Sequence::AA class
+  * na.rb     : Bio::Sequence::NA class
+  * format.rb : module for format conversion
+
+Bio::Sequence is no longer a sub-class of String, instead,
+Bio::Sequence::NA and AA inherits String directly.
+
 * Bio::Sequence::NA#gc_percent returns integer instead of float
 * Bio::Sequence::NA#gc (was aliased to gc_percent) is removed
 

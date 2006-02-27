@@ -1,19 +1,52 @@
-2005-02-01  Trevor Wennblom <trevor@corevx.com>
+2006-02-27  Toshiaki Katayama <k@bioruby.org>
 
-  * Bio::RestrictionEnzyme first commit for comments.
+	* BioRuby 1.0.0 released
+
+2006-02-10  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby shell is changed to use session/ directory under the current
+	  or specified directory to store the session information instead of
+	  ./.bioruby directory.
+
+2006-02-05  Toshiaki Katayama <k@bioruby.org>
+
+	* License to be changed to Ruby's (not yet completed).
+
+2006-02-01  Trevor Wennblom <trevor@corevx.com>
+
+	* Bio::RestrictionEnzyme first commit for comments.
 	  * See lib/bio/util/restriction_enzyme.rb and
-		  test/unit/bio/util/restriction_enzyme
+	    test/unit/bio/util/restriction_enzyme
 
-2005-01-20  Toshiaki Katayama <k@bioruby.org>
+2006-01-28  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/appl/emboss.rb
+
+          EMBOSS USA format is now accepted via seqret/entret commands
+	  and also utilized in the BioRuby shell (lib/bio/shell.rb,
+	  plugin/entry.rb, plugin/emboss.rb).
+
+	* lib/bio/io/brdb.rb is removed - unused Bio::BRDB (BioRuby DB)
+
+2006-01-23  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/sequence.rb
+
+	  Bio::Sequence is refactored to be a container class for
+	  any sequence annotations.  Functionality is separared into
+	  several files under the lib/bio/sequence/ direcotry as
+	  common.rb, compat.rb, aa.rb, na.rb, format.rb
+
+2006-01-20  Toshiaki Katayama <k@bioruby.org>
 
 	* BioRuby 0.7.1 is released.
 
-2005-01-12  Toshiaki Katayama <k@bioruby.org>
+2006-01-12  Toshiaki Katayama <k@bioruby.org>
 
 	* lib/bio/db.ra: fixed a bug of the tag_cut method introduced in 0.7.0
 	  (reported by Alex Gutteridge)
 
-2005-01-04  Naohisa Goto <ng@bioruby.org>
+2006-01-04  Naohisa Goto <ng@bioruby.org>
 
 	* Bio::PDB is refactored.  See doc/Changes-0.7 for more details.
 
