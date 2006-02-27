@@ -1,15 +1,99 @@
-require 'bio/reference'
-module Bio
-
 #
-# bio/db/rebase.rb - Interface for EMBOSS formatted REBASE files
+# = bio/db/rebase.rb - Interface for EMBOSS formatted REBASE files
 #
 # Copyright::  Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
 # License::    LGPL
 #
-#  $Id: rebase.rb,v 1.2 2005/12/13 15:02:41 trevor Exp $
+#  $Id: rebase.rb,v 1.3 2006/02/27 13:22:05 k Exp $
 #
 #
+# == Synopsis
+# 
+# Bio::REBASE provides utilties for interacting with REBASE data in EMBOSS
+# format.  REBASE is the Restriction Enzyme Database, more information
+# can be found here:
+# 
+
+# * http://rebase.neb.com
+# 
+# EMBOSS formatted files located at:
+# 
+# * http://rebase.neb.com/rebase/rebase.f37.html
+# 
+# These files are the same as the "emboss_?.???" files located at:
+# 
+# * ftp://ftp.neb.com/pub/rebase/
+# 
+# To easily get started with the data you can simply type this command
+# at your shell prompt:
+# 
+#   % wget ftp://ftp.neb.com/pub/rebase/emboss*
+# 
+# 
+# == Usage
+# 
+#   require 'bio/db/rebase'
+#   require 'pp'
+# 
+#   enz = File.read('emboss_e')
+#   ref = File.read('emboss_r')
+#   sup = File.read('emboss_s')
+# 
+#   # When creating a new instance of Bio::REBASE
+#   # the contents of the enzyme file must be passed.
+#   # The references and suppiers file contents
+#   # may also be passed.
+#   rebase = Bio::REBASE.new( enz )
+#   rebase = Bio::REBASE.new( enz, ref )
+#   rebase = Bio::REBASE.new( enz, ref, sup )
+# 
+#   # The 'read' class method allows you to read in files
+#   # that are REBASE EMBOSS formatted
+#   rebase = Bio::REBASE.read( 'emboss_e' )
+#   rebase = Bio::REBASE.read( 'emboss_e', 'emboss_r' )
+#   rebase = Bio::REBASE.read( 'emboss_e', 'emboss_r', 'emboss_s' )
+# 
+#   # The data loaded may be saved in YAML format
+#   rebase.save_yaml( 'enz.yaml' )
+#   rebase.save_yaml( 'enz.yaml', 'ref.yaml' )
+#   rebase.save_yaml( 'enz.yaml', 'ref.yaml', 'sup.yaml' )
+# 
+#   # YAML formatted files can also be read with the
+#   # class method 'load_yaml'
+#   rebase = Bio::REBASE.load_yaml( 'enz.yaml' )
+#   rebase = Bio::REBASE.load_yaml( 'enz.yaml', 'ref.yaml' )
+#   rebase = Bio::REBASE.load_yaml( 'enz.yaml', 'ref.yaml', 'sup.yaml' )
+# 
+#   pp rebase.enzymes[0..4]                     # ["AarI", "AasI", "AatI", "AatII", "Acc16I"]
+#   pp rebase['AarI'].pattern                   # "CACCTGC"
+#   pp rebase['AarI'].blunt?                    # false
+#   pp rebase['AarI'].organism                  # "Arthrobacter aurescens SS2-322"
+#   pp rebase['AarI'].source                    # "A. Janulaitis"
+#   pp rebase['AarI'].primary_strand_cut1       # 11
+#   pp rebase['AarI'].primary_strand_cut2       # 0
+#   pp rebase['AarI'].complementary_strand_cut1 # 15
+#   pp rebase['AarI'].complementary_strand_cut2 # 0
+#   pp rebase['AarI'].suppliers                 # ["F"]
+#   pp rebase['AarI'].supplier_names            # ["Fermentas International Inc."]
+# 
+#   pp rebase['AarI'].isoschizomers             # Currently none stored in the references file
+#   pp rebase['AarI'].methylation               # ""
+# 
+#   pp rebase['EcoRII'].methylation             # "2(5)"
+#   pp rebase['EcoRII'].suppliers               # ["F", "J", "M", "O", "S"]
+#   pp rebase['EcoRII'].supplier_names  # ["Fermentas International Inc.", "Nippon Gene Co., Ltd.",
+#                                       # "Roche Applied Science", "Toyobo Biochemicals",
+#                                       # "Sigma Chemical Corporation"]
+# 
+#   # Number of enzymes in the database
+#   pp rebase.size                              # 673
+#   pp rebase.enzymes.size                      # 673
+# 
+#   rebase.each do |name, info|
+#     pp "#{name}:  #{info.methylation}" unless info.methylation.empty?
+#   end
+# 
+# 
 #--
 #
 #  This library is free software; you can redistribute it and/or
@@ -28,104 +112,15 @@ module Bio
 #
 #++
 #
-#
 
-=begin rdoc
-bio/db/rebase.rb - Interface for EMBOSS formatted REBASE files
+autoload :YAML, 'yaml'
 
-== Synopsis
+module Bio
 
-Bio::REBASE provides utilties for interacting with REBASE data in EMBOSS
-format.  REBASE is the Restriction Enzyme Database, more information
-can be found here:
-* http://rebase.neb.com
+  autoload :Reference, 'reference'
 
-EMBOSS formatted files located at:
-* http://rebase.neb.com/rebase/rebase.f37.html
-
-These files are the same as the "emboss_?.???" files located at:
-* ftp://ftp.neb.com/pub/rebase/
-
-To easily get started with the data you can simply type this command at your shell prompt:
-  wget ftp://ftp.neb.com/pub/rebase/emboss*
-
-
-== Usage
-
-  require 'bio/db/rebase'
-  require 'pp'
-
-  enz = File.read('emboss_e')
-  ref = File.read('emboss_r')
-  sup = File.read('emboss_s')
-
-  # When creating a new instance of Bio::REBASE
-  # the contents of the enzyme file must be passed.
-  # The references and suppiers file contents
-  # may also be passed.
-  rebase = Bio::REBASE.new( enz )
-  rebase = Bio::REBASE.new( enz, ref )
-  rebase = Bio::REBASE.new( enz, ref, sup )
-
-  # The 'read' class method allows you to read in files
-  # that are REBASE EMBOSS formatted
-  rebase = Bio::REBASE.read( 'emboss_e' )
-  rebase = Bio::REBASE.read( 'emboss_e', 'emboss_r' )
-  rebase = Bio::REBASE.read( 'emboss_e', 'emboss_r', 'emboss_s' )
-
-  # The data loaded may be saved in YAML format
-  rebase.save_yaml( 'enz.yaml' )
-  rebase.save_yaml( 'enz.yaml', 'ref.yaml' )
-  rebase.save_yaml( 'enz.yaml', 'ref.yaml', 'sup.yaml' )
-
-  # YAML formatted files can also be read with the
-  # class method 'load_yaml'
-  rebase = Bio::REBASE.load_yaml( 'enz.yaml' )
-  rebase = Bio::REBASE.load_yaml( 'enz.yaml', 'ref.yaml' )
-  rebase = Bio::REBASE.load_yaml( 'enz.yaml', 'ref.yaml', 'sup.yaml' )
-
-  pp rebase.enzymes[0..4]                     # ["AarI", "AasI", "AatI", "AatII", "Acc16I"]
-  pp rebase['AarI'].pattern                   # "CACCTGC"
-  pp rebase['AarI'].blunt?                    # false
-  pp rebase['AarI'].organism                  # "Arthrobacter aurescens SS2-322"
-  pp rebase['AarI'].source                    # "A. Janulaitis"
-  pp rebase['AarI'].primary_strand_cut1       # 11
-  pp rebase['AarI'].primary_strand_cut2       # 0
-  pp rebase['AarI'].complementary_strand_cut1 # 15
-  pp rebase['AarI'].complementary_strand_cut2 # 0
-  pp rebase['AarI'].suppliers                 # ["F"]
-  pp rebase['AarI'].supplier_names            # ["Fermentas International Inc."]
-
-  pp rebase['AarI'].isoschizomers             # Currently none stored in the references file
-  pp rebase['AarI'].methylation               # ""
-
-  pp rebase['EcoRII'].methylation             # "2(5)"
-  pp rebase['EcoRII'].suppliers               # ["F", "J", "M", "O", "S"]
-  pp rebase['EcoRII'].supplier_names  # ["Fermentas International Inc.", "Nippon Gene Co., Ltd.",
-                                      # "Roche Applied Science", "Toyobo Biochemicals",
-                                      # "Sigma Chemical Corporation"]
-
-  # Number of enzymes in the database
-  pp rebase.size                              # 673
-  pp rebase.enzymes.size                      # 673
-
-  rebase.each do |name, info|
-    pp "#{name}:  #{info.methylation}" unless info.methylation.empty?
-  end
-
-
-== Author
-Trevor Wennblom <trevor@corevx.com>
-
-
-== Copyright
-Copyright (C) 2005 Trevor Wennblom
-Licensed under the same terms as BioRuby.
-
-=end
 
 class REBASE
-  autoload(:YAML, 'yaml')
 
   class DynamicMethod_Hash < Hash
     # Define a writer or reader
@@ -414,4 +409,5 @@ class REBASE
   end
 
 end # REBASE
+
 end # Bio
