@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: interface.rb,v 1.13 2006/02/17 17:11:59 k Exp $
+# $Id: interface.rb,v 1.14 2006/02/27 09:36:35 k Exp $
 #
 
 module Bio::Shell
@@ -19,6 +19,7 @@ module Bio::Shell
       eval(x, conf.workspace.binding).nil?
     }
     puts list.inspect
+    return list
   end
 
   def rm(name)
@@ -70,6 +71,8 @@ module Bio::Shell
       Bio::Shell.config_pager(*opts)
     when :message, "message"
       Bio::Shell.config_message(*opts)
+    else
+      puts "Invalid mode (#{mode}) - :show, :echo, :color, :splash, :massage"
     end
   end
 
@@ -81,34 +84,44 @@ module Bio::Shell
 
   def pager(cmd = nil)
     unless Bio::Shell.config[:pager]
-      cmd = ENV['PAGER'] || cmd
+      cmd ||= ENV['PAGER']
     end
     Bio::Shell.config_pager(cmd)
     puts "Pager is set to '#{cmd ? cmd : 'off'}'"
   end
 
-  def disp(*obj)
+  def disp(*objs)
     # The original idea is from http://sheepman.parfait.ne.jp/20050215.html
-    if Bio::Shell.config[:pager]
-      pg = IO.popen(Bio::Shell.config[:pager], "w")
+    if cmd = Bio::Shell.config[:pager]
+      pg = IO.popen(cmd, "w")
       begin
         stdout_save = STDOUT.clone
         STDOUT.reopen(pg)
-        puts(*obj)
+        objs.each do |obj|
+          if obj.is_a?(String)
+            if File.exists?(obj)
+              system("#{cmd} #{obj}")
+            else
+              obj.display
+            end
+          else
+            pp obj
+          end
+        end
       ensure
         STDOUT.reopen(stdout_save)
         stdout_save.close
         pg.close
       end
     else
-      # or use Object#display ?
-      puts(*obj)
+      objs.each do |obj|
+        if obj.is_a?(String)
+          obj.display
+        else
+          pp obj
+        end
+      end
     end
-  end
-
-  def less(file)
-    pager = Bio::Shell.config[:pager] || ENV['PAGER'] || "less"
-    system("#{pager} #{file}")
   end
 
   def head(arg, num = 10)
@@ -135,12 +148,12 @@ module Bio::Shell
 
   def savefile(file, *objs)
     datadir = Bio::Shell.datadir
-    message = "Save file '#{file}' in '#{datadir}' directory? [y/n]: "
+    message = "Save file '#{file}' in '#{datadir}' directory? [y/n] "
     if ! file[/^#{datadir}/] and Bio::Shell.ask_yes_or_no(message)
       file = datadir + file
     end
     if File.exists?(file)
-      message = "Overwrite existing '#{file}' file? [y/n]: "
+      message = "Overwrite existing '#{file}' file? [y/n] "
       if ! Bio::Shell.ask_yes_or_no(message)
         puts " ... save aborted."
         return
