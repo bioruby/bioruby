@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
 # License::    LGPL
 #
-#  $Id: rebase.rb,v 1.3 2006/02/27 13:22:05 k Exp $
+#  $Id: rebase.rb,v 1.4 2006/02/28 21:21:03 trevor Exp $
 #
 #
 # == Synopsis
@@ -117,7 +117,7 @@ autoload :YAML, 'yaml'
 
 module Bio
 
-  autoload :Reference, 'reference'
+  autoload :Reference, 'bio/reference'
 
 
 class REBASE
