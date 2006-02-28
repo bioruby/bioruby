@@ -30,6 +30,9 @@ class TestAnalysis < Test::Unit::TestCase
     @obj_7 = @t.cut('gaccaggaaaaagaccaggaaagcctggaaaagttaac', 'EcoRII')
     @obj_8 = @t.cut('gaccaggaaaaagaccaggaaagcctggaaaagttaac', 'EcoRII', 'HincII')
 
+    @obj_9 = @t.cut('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'EcoRII')
+    @obj_9 = @t.cut('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'EcoRII', 'HincII')
+
     @obj_1d = @t.cut_without_permutations('cagagag', 'ag^ag')
     @obj_2d = @t.cut_without_permutations('agagag', 'ag^ag')
     @obj_3d = @t.cut_without_permutations('cagagagt', 'ag^ag')
