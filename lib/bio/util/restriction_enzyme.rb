@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2006 Trevor Wennblom <trevor@corevx.com>
 # License::    LGPL
 #
-#  $Id: restriction_enzyme.rb,v 1.3 2006/02/27 13:11:28 k Exp $
+#  $Id: restriction_enzyme.rb,v 1.4 2006/02/28 21:45:56 trevor Exp $
 #
 #
 # NOTE: This documentation and the module are still very much under
@@ -213,7 +213,8 @@ class Bio::RestrictionEnzyme
     #
     # Returns a Bio::REBASE object loaded with all of the enzyme data on file.
     #
-    def self.rebase(enzymes_yaml)
+    #def self.rebase(enzymes_yaml = '/home/trevor/tmp5/bioruby/lib/bio/util/restriction_enzyme/enzymes.yaml')
+    def self.rebase(enzymes_yaml = File.dirname(__FILE__) + '/restriction_enzyme/enzymes.yaml')
       @@rebase_enzymes ||= Bio::REBASE.load_yaml(enzymes_yaml)
       @@rebase_enzymes
     end
