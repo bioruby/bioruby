@@ -29,7 +29,7 @@ class Bio::RestrictionEnzyme
 # Copyright::  Copyright (C) 2006 Trevor Wennblom <trevor@corevx.com>
 # License::    LGPL
 #
-#  $Id: analysis.rb,v 1.4 2006/02/28 22:21:48 trevor Exp $
+#  $Id: analysis.rb,v 1.5 2006/03/01 01:40:00 trevor Exp $
 #
 #
 #--
@@ -70,9 +70,13 @@ class Analysis
   end
 
   def cut_without_permutations( sequence, *args )
-    return nil if !sequence.kind_of?(String) or sequence.empty?
+    return {} if !sequence.kind_of?(String) or sequence.empty?
     sequence = Bio::Sequence::NA.new( sequence )
-    enzyme_actions = create_enzyme_actions( sequence, *args )
+
+    #enzyme_actions = create_enzyme_actions( sequence, *args )
+    tmp = create_enzyme_actions( sequence, *args )
+    enzyme_actions = tmp[0].merge(tmp[1])
+
     sr_with_cuts = SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
     enzyme_actions.each do |id, enzyme_action|
       enzyme_action.cut_ranges.each do |cut_range|
@@ -89,18 +93,30 @@ class Analysis
   end
 
   def cut_and_return_by_permutations( sequence, *args )
-    return nil if !sequence.kind_of?(String) or sequence.empty?
+    return {} if !sequence.kind_of?(String) or sequence.empty?
     sequence = Bio::Sequence::NA.new( sequence )
-    enzyme_actions = create_enzyme_actions( sequence, *args )
-    return nil if enzyme_actions.empty?
-    permutations = permute(enzyme_actions.size)
+    enzyme_actions, initial_cuts = create_enzyme_actions( sequence, *args )
+    return {} if enzyme_actions.empty? and initial_cuts.empty?
+
+    if enzyme_actions.size > 1
+      permutations = permute(enzyme_actions.size)
+    else
+      permutations = []
+    end
 
     # Indexed by permutation.
     hash_of_sequence_ranges_with_cuts = {}
 
+    if permutations.empty?
+      sr_with_cuts = SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
+      initial_cuts.each { |key, enzyme_action| enzyme_action.cut_ranges.each { |cut_range| sr_with_cuts.add_cut_range(cut_range) } }
+      hash_of_sequence_ranges_with_cuts[0] = sr_with_cuts
+    end
+
     permutations.each do |permutation|
       previous_cut_ranges = []
       sr_with_cuts = SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
+      initial_cuts.each { |enzyme_action| enzyme_action.cut_ranges.each { |cut_range| sr_with_cuts.add_cut_range(cut_range) } }
 
       permutation.each do |id|
         enzyme_action = enzyme_actions[id]
@@ -250,17 +266,74 @@ puts "EA.right: #{enzyme_action.right}"
   # +args+:: The enzymes to use.
   def create_enzyme_actions( sequence, *args )
     id = 0
-    enzyme_actions = {}
+    enzyme_actions_that_sometimes_cut = {}
+    enzyme_actions_that_always_cut = {}
+    indicies_of_sometimes_cut = []
 
     args.each do |enzyme|
       enzyme = Bio::RestrictionEnzyme.new(enzyme) unless enzyme.class == Bio::RestrictionEnzyme::DoubleStranded
       find_match_locations( sequence, enzyme.primary.to_re ).each do |offset|
-        enzyme_actions[id] = enzyme_to_enzyme_action( enzyme, offset )
+        enzyme_actions_that_always_cut[id] = enzyme_to_enzyme_action( enzyme, offset )
         id += 1
       end
     end
 
-    enzyme_actions
+    # enzyme_actions_that_always_cut may lose members, the members to be lost are recorded in indicies_of_sometimes_cut
+
+    max = enzyme_actions_that_always_cut.size - 1
+    0.upto(max) do |i|
+      enzyme_action = enzyme_actions_that_always_cut[i]
+      conflict = false
+      other_cut_ranges = {}
+      #enzyme_actions.each { |key,enzyme_action| next if i == key; puts "i: #{i}, key: #{key}"; previous_cut_ranges += enzyme_action.cut_ranges }
+#      enzyme_actions_that_always_cut.each { |key,i_ea|  next if i == key; puts "i: #{i}, key: #{key}"; other_cut_ranges[key] = i_ea.cut_ranges }
+      enzyme_actions_that_always_cut.each { |key,i_ea| next if i == key; other_cut_ranges[key] = i_ea.cut_ranges }
+#      puts "Enzyme action #{i}:"
+#      pp enzyme_actions[i]
+#      pp enzyme_action
+#      puts "Previous cut ranges:"
+#      pp previous_cut_ranges
+
+      other_cut_ranges.each do |key, cut_ranges|
+        cut_ranges.each do |cut_range|
+          next unless cut_range.class == VerticalCutRange  # we aren't concerned with horizontal cuts
+          previous_cut_left = cut_range.range.first 
+          previous_cut_right = cut_range.range.last
+
+          if (enzyme_action.right <= previous_cut_left) or
+             (enzyme_action.left > previous_cut_right) or
+             (enzyme_action.left > previous_cut_left and enzyme_action.right <= previous_cut_right) # in between cuts
+            # no conflict
+#  puts "no conflict"
+
+          else
+            conflict = true
+#  puts "conflict"
+  #puts "cut range:"
+  #pp cut_range
+  #puts "enzyme action:"
+  #pp enzyme_action
+          end
+
+          indicies_of_sometimes_cut += [i, key] if conflict == true
+        end
+      end
+
+      # We don't need to make permutations with this enzyme action if it always cuts
+#      indicies << i if conflict == false
+    end
+#    pp indicies_of_sometimes_cut
+
+    indicies_of_sometimes_cut.uniq.each do |i|
+      enzyme_actions_that_sometimes_cut[i] = enzyme_actions_that_always_cut[i]
+      enzyme_actions_that_always_cut.delete(i)
+    end
+#puts 'Always cut:'
+#pp enzyme_actions_that_always_cut
+#puts 'Permute:'
+#pp enzyme_actions_that_sometimes_cut
+
+    [enzyme_actions_that_sometimes_cut, enzyme_actions_that_always_cut]
   end
 
   # Returns the offsets of the match of a RegExp to a string.
