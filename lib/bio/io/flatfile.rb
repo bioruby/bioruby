@@ -5,7 +5,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: flatfile.rb,v 1.47 2006/03/03 08:18:49 ngoto Exp $
+#  $Id: flatfile.rb,v 1.48 2006/03/03 09:31:57 ngoto Exp $
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
@@ -735,6 +735,15 @@ module Bio
 
       include TSort
 
+      # Array to store autodetection rules.
+      # This is defined only for inspect.
+      class RulesArray < Array
+        # visualize contents
+        def inspect
+          "[#{self.collect { |e| e.name.inspect }.join(' ')}]"
+        end
+      end #class RulesArray
+
       # Template of a single rule of autodetection
       class RuleTemplate
         # Creates a new element.
@@ -744,12 +753,8 @@ module Bio
         
         # Creates a new element.
         def initialize
-          a = Array.new
-          def a.inspect
-            "[#{self.collect { |e| e.name.inspect }.join(' ')}]"
-          end
-          @higher_priority_elements = a.clone
-          @lower_priority_elements  = a.clone
+          @higher_priority_elements = RulesArray.new
+          @lower_priority_elements  = RulesArray.new
           @name = nil
         end
 
@@ -782,6 +787,24 @@ module Bio
         # :path => pathname, filename or uri.
         def guess(text, meta)
           nil
+        end
+
+        private
+        # Gets constant from constant name given as a string.
+        def str2const(str)
+          const = Object
+          str.split(/\:\:/).each do |x|
+            const = const.const_get(x)
+          end
+          const
+        end
+
+        # Gets database class from given object.
+        # Current implementation is: 
+        # if _obj_ is kind of String, regarded as a constant.
+        # Otherwise, returns _obj_ as is.
+        def get_dbclass(obj)
+          obj.kind_of?(String) ? str2const(obj) : obj
         end
       end #class Rule_Template
 
@@ -834,40 +857,49 @@ module Bio
         def initialize(dbclass, re)
           super()
           @re = re
-          @dbclass = dbclass
-          @dbclasses = [ dbclass ]
           @name = dbclass.to_s
+          @dbclass = nil
+          @dbclass_lazy = dbclass
+        end
+
+        # database class (lazy evaluation)
+        def dbclass
+          unless @dbclass
+            @dbclass = get_dbclass(@dbclass_lazy)
+          end
+          @dbclass
+        end
+        private :dbclass
+
+        # returns database classes
+        def dbclasses
+          [ dbclass ]
         end
 
         # If given text matches the regexp, returns the database class.
         # Otherwise, returns nil or false.
         # _meta_ is ignored.
         def guess(text, meta)
-          @re =~ text ? @dbclass : nil
+          @re =~ text ? dbclass : nil
         end
       end #class RuleRegexp
 
       # A autodetection rule to use more than two regular expressions.
-      class RuleRegexp2 < RuleTemplate
+      # If given string matches one of the regular expressions,
+      # returns the database class.
+      class RuleRegexp2 < RuleRegexp
         # Creates a new instance.
         def initialize(dbclass, *regexps)
-          super()
+          super(dbclass, nil)
           @regexps = regexps
-          @dbclass = dbclass
-          @dbclasses = [ dbclass ]
-          if name
-            @name = name
-          else
-            @name = @dbclass.to_s
-          end
         end
 
-        # If given text matches the regexp, returns the database class.
+        # If given text matches one of the regexp, returns the database class.
         # Otherwise, returns nil or false.
         # _meta_ is ignored.
         def guess(text, meta)
           @regexps.each do |re|
-            return @dbclass if re =~ text
+            return dbclass if re =~ text
           end
           nil
         end
@@ -879,8 +911,17 @@ module Bio
         def initialize(*dbclasses, &proc)
           super()
           @proc = proc
-          @dbclasses = dbclasses
+          @dbclasses = nil
+          @dbclasses_lazy = dbclasses
           @name = dbclasses.collect { |x| x.to_s }.join('|')
+        end
+
+        # database classes (lazy evaluation)
+        def dbclasses
+          unless @dbclasses
+            @dbclasses = @dbclasses_lazy.collect { |x| get_dbclass(x) }
+          end
+          @dbclasses
         end
 
         # If given text (and/or meta information) is known, returns
@@ -1038,22 +1079,22 @@ module Bio
       # make a default of default autodetect object
       def self.make_default
         a = self[
-          genbank  = RuleRegexp[ Bio::GenBank,
+          genbank  = RuleRegexp[ 'Bio::GenBank',
             /^LOCUS       .+ bp .*[a-z]*[DR]?NA/ ],
-          genpept  = RuleRegexp[ Bio::GenPept,
+          genpept  = RuleRegexp[ 'Bio::GenPept',
             /^LOCUS       .+ aa .+/ ],
-          medline  = RuleRegexp[ Bio::MEDLINE,
+          medline  = RuleRegexp[ 'Bio::MEDLINE',
             /^UI  \- [0-9]+$/ ],
-          embl     = RuleRegexp[ Bio::EMBL,
+          embl     = RuleRegexp[ 'Bio::EMBL',
             /^ID   .+\; .*(DNA|RNA|XXX)\;/ ],
-          sptr     = RuleRegexp[ Bio::SPTR,
+          sptr     = RuleRegexp[ 'Bio::SPTR',
             /^ID   .+\; *PRT\;/ ],
-          prosite  = RuleRegexp[ Bio::PROSITE,
+          prosite  = RuleRegexp[ 'Bio::PROSITE',
             /^ID   [-A-Za-z0-9_\.]+\; (PATTERN|RULE|MATRIX)\.$/ ],
-          transfac = RuleRegexp[ Bio::TRANSFAC,
+          transfac = RuleRegexp[ 'Bio::TRANSFAC',
             /^AC  [-A-Za-z0-9_\.]+$/ ],
 
-          aaindex  = RuleProc.new(Bio::AAindex1, Bio::AAindex2) do |text|
+          aaindex  = RuleProc.new('Bio::AAindex1', 'Bio::AAindex2') do |text|
             if /^H [-A-Z0-9_\.]+$/ =~ text then
               if text =~ /^M [rc]/ then
                 Bio::AAindex2
@@ -1067,33 +1108,33 @@ module Bio
             end
           end,
 
-          litdb    = RuleRegexp[ Bio::LITDB,
+          litdb    = RuleRegexp[ 'Bio::LITDB',
             /^CODE        [0-9]+$/ ],
-          brite    = RuleRegexp[ Bio::KEGG::BRITE,
+          brite    = RuleRegexp[ 'Bio::KEGG::BRITE',
             /^Entry           [A-Z0-9]+/ ],
-          ko       = RuleRegexp[ Bio::KEGG::KO,
+          ko       = RuleRegexp[ 'Bio::KEGG::KO',
             /^ENTRY       .+ KO\s*/ ],
-          glycan   = RuleRegexp[ Bio::KEGG::GLYCAN,
+          glycan   = RuleRegexp[ 'Bio::KEGG::GLYCAN',
             /^ENTRY       .+ Glycan\s*/ ],
-          enzyme   = RuleRegexp2[ Bio::KEGG::ENZYME,
+          enzyme   = RuleRegexp2[ 'Bio::KEGG::ENZYME',
             /^ENTRY       EC [0-9\.]+$/,
             /^ENTRY       .+ Enzyme\s*/
           ],
-          compound = RuleRegexp2[ Bio::KEGG::COMPOUND,
+          compound = RuleRegexp2[ 'Bio::KEGG::COMPOUND',
             /^ENTRY       C[A-Za-z0-9\._]+$/,
             /^ENTRY       .+ Compound\s*/
           ],
-          reaction = RuleRegexp2[ Bio::KEGG::REACTION,
+          reaction = RuleRegexp2[ 'Bio::KEGG::REACTION',
             /^ENTRY       R[A-Za-z0-9\._]+$/,
             /^ENTRY       .+ Reaction\s*/
           ],
-          genes    = RuleRegexp[ Bio::KEGG::GENES,
+          genes    = RuleRegexp[ 'Bio::KEGG::GENES',
             /^ENTRY       .+ (CDS|gene|.*RNA) / ],
-          genome   = RuleRegexp[ Bio::KEGG::GENOME,
+          genome   = RuleRegexp[ 'Bio::KEGG::GENOME',
             /^ENTRY       [a-z]+$/ ],
 
-          fantom = RuleProc.new(Bio::FANTOM::MaXML::Cluster,
-                                Bio::FANTOM::MaXML::Sequence) do |text|
+          fantom = RuleProc.new('Bio::FANTOM::MaXML::Cluster',
+                                'Bio::FANTOM::MaXML::Sequence') do |text|
             if /\<\!DOCTYPE\s+maxml\-(sequences|clusters)\s+SYSTEM/ =~ text
               case $1
               when 'clusters'
@@ -1108,37 +1149,37 @@ module Bio
             end
           end,
 
-          pdb = RuleRegexp[ Bio::PDB,
+          pdb = RuleRegexp[ 'Bio::PDB',
             /^HEADER    .{40}\d\d\-[A-Z]{3}\-\d\d   [0-9A-Z]{4}/ ],
-          het = RuleRegexp[ Bio::PDB::ChemicalComponent,
+          het = RuleRegexp[ 'Bio::PDB::ChemicalComponent',
             /^RESIDUE +.+ +\d+\s*$/ ],
 
-          clustal = RuleRegexp[ Bio::ClustalW::Report,
+          clustal = RuleRegexp[ 'Bio::ClustalW::Report',
           /^CLUSTAL .*\(.*\).*sequence +alignment/ ],
 
-          blastxml = RuleRegexp[ Bio::Blast::Report,
+          blastxml = RuleRegexp[ 'Bio::Blast::Report',
             /\<\!DOCTYPE BlastOutput PUBLIC / ],
-          wublast  = RuleRegexp[ Bio::Blast::WU::Report,
+          wublast  = RuleRegexp[ 'Bio::Blast::WU::Report',
             /^BLAST.? +[\-\.\w]+\-WashU +\[[\-\.\w ]+\]/ ],
-          wutblast = RuleRegexp[ Bio::Blast::WU::Report_TBlast,
+          wutblast = RuleRegexp[ 'Bio::Blast::WU::Report_TBlast',
             /^TBLAST.? +[\-\.\w]+\-WashU +\[[\-\.\w ]+\]/ ],
-          blast    = RuleRegexp[ Bio::Blast::Default::Report,
+          blast    = RuleRegexp[ 'Bio::Blast::Default::Report',
             /^BLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/ ],
-          tblast   = RuleRegexp[ Bio::Blast::Default::Report_TBlast,
+          tblast   = RuleRegexp[ 'Bio::Blast::Default::Report_TBlast',
             /^TBLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/ ],
 
-          blat   = RuleRegexp[ Bio::Blat::Report,
+          blat   = RuleRegexp[ 'Bio::Blat::Report',
             /^psLayout version \d+\s*$/ ],
-          spidey = RuleRegexp[ Bio::Spidey::Report,
+          spidey = RuleRegexp[ 'Bio::Spidey::Report',
             /^\-\-SPIDEY version .+\-\-$/ ],
-          hmmer  = RuleRegexp[ Bio::HMMER::Report,
+          hmmer  = RuleRegexp[ 'Bio::HMMER::Report',
             /^HMMER +\d+\./ ],
-          sim4   = RuleRegexp[ Bio::Sim4::Report,
+          sim4   = RuleRegexp[ 'Bio::Sim4::Report',
             /^seq1 \= .*\, \d+ bp(\r|\r?\n)seq2 \= .*\, \d+ bp(\r|\r?\n)/ ],
 
-          fastaformat = RuleProc.new(Bio::FastaFormat,
-                                     Bio::NBRF,
-                                     Bio::FastaNumericFormat) do |text|
+          fastaformat = RuleProc.new('Bio::FastaFormat',
+                                     'Bio::NBRF',
+                                     'Bio::FastaNumericFormat') do |text|
             if /^>.+$/ =~ text
               case text
               when /^>([PF]1|[DR][LC]|N[13]|XX)\;.+/
