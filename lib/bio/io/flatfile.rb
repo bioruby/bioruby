@@ -5,7 +5,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: flatfile.rb,v 1.46 2006/02/22 10:01:27 ngoto Exp $
+#  $Id: flatfile.rb,v 1.47 2006/03/03 08:18:49 ngoto Exp $
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
@@ -34,7 +34,6 @@ module Bio
         @path = path
         # initialize prefetch buffer
         @buffer = ''
-        @path = path
       end
 
       # Creates a new input stream wrapper from the given IO object.
@@ -518,13 +517,11 @@ module Bio
     #
     def initialize(dbclass, stream)
       # 2nd arg: IO object
-      if @stream.kind_of?(BufferedInputStream)
+      if stream.kind_of?(BufferedInputStream)
         @stream = stream
       else
         @stream = BufferedInputStream.for_io(stream)
       end
-      # default is raw mode
-      self.raw = false
       # 1st arg: database class (or file format autodetection)
       if dbclass then
 	self.dbclass = dbclass
@@ -534,6 +531,8 @@ module Bio
       #
       @skip_leader_mode = :firsttime
       @firsttime_flag = true
+      # default raw mode is false
+      self.raw = false
     end
 
     # The mode how to skip leader of the data.
@@ -742,7 +741,7 @@ module Bio
         def self.[](*arg)
           self.new(*arg)
         end
-          
+        
         # Creates a new element.
         def initialize
           a = Array.new
