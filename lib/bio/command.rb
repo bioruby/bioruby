@@ -1,33 +1,16 @@
 #
 # = bio/command.rb - general methods for external command execution
 #
-# Copyright::	Copyright (C) 2003-2005
+# Copyright::	Copyright (C) 2003-2006
 # 		Naohisa Goto <ng@bioruby.org>,
 #		Toshiaki Katayama <k@bioruby.org>
-# License::	LGPL
+# License::	Ruby's
 #
-#  $Id: command.rb,v 1.3 2005/11/04 17:36:00 k Exp $
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
+#  $Id: command.rb,v 1.4 2006/03/20 10:34:57 ngoto Exp $
 #
 
 require 'open3'
+require 'uri'
 
 module Bio
 module Command
@@ -161,6 +144,149 @@ module Tools
   public :errorlog
 
 end # module Tools
+
+
+# = Bio::Command::NetTools
+#
+# Bio::Command::NetTools is a collection of miscellaneous methods
+# for data transport through network.
+#
+# Library internal use only. Users should not directly use it.
+#
+# Note that it is under construction.
+module NetTools
+
+  # Same as OpenURI.open_uri(*arg).
+  # If open-uri.rb is already loaded, ::OpenURI is used.
+  # Otherwise, internal OpenURI in sandbox is used because
+  # open-uri.rb redefines Kernel.open.
+  def self.open_uri(uri, *arg)
+    if defined? ::OpenURI
+      ::OpenURI.open_uri(uri, *arg)
+    else
+      SandBox.load_openuri_in_sandbox
+      uri = uri.to_s if ::URI::Generic === uri
+      SandBox::OpenURI.open_uri(uri, *arg)
+    end
+  end
+
+  # Same as OpenURI.open_uri(uri).read.
+  # If open-uri.rb is already loaded, ::OpenURI is used.
+  # Otherwise, internal OpenURI in sandbox is used becase
+  # open-uri.rb redefines Kernel.open.
+  def self.read_uri(uri)
+    self.open_uri(uri).read
+  end
+
+  # Sandbox to load open-uri.rb.
+  # Internal use only.
+  module SandBox #:nodoc:
+
+    # Dummy module definition.
+    module Kernel #:nodoc:
+      # dummy method
+      def open(*arg); end #:nodoc:
+    end #module Kernel
+    
+    # a method to find proxy. dummy definition
+    module FindProxy; end #:nodoc:
+    
+    # dummy module definition
+    module OpenURI #:nodoc:
+      module OpenRead; end #:nodoc:
+    end #module OpenURI
+    
+    # Dummy module definition.
+    module URI #:nodoc:
+      class Generic < ::URI::Generic #:nodoc:
+        include SandBox::FindProxy
+      end
+      
+      class HTTPS < ::URI::HTTPS #:nodoc:
+        include SandBox::FindProxy
+        include SandBox::OpenURI::OpenRead
+      end
+      
+      class HTTP  < ::URI::HTTP  #:nodoc:
+        include SandBox::FindProxy
+        include SandBox::OpenURI::OpenRead
+      end
+      
+      class FTP  < ::URI::FTP    #:nodoc:
+        include SandBox::FindProxy
+        include SandBox::OpenURI::OpenRead
+      end
+      
+      # parse and new. internal use only.
+      def self.__parse_and_new__(klass, uri) #:nodoc:
+        scheme, userinfo, host, port,
+        registry, path, opaque, query, fragment = ::URI.split(uri)
+        klass.new(scheme, userinfo, host, port,
+                  registry, path, opaque, query,
+                  fragment)
+      end
+      private_class_method :__parse_and_new__
+      
+      # same as ::URI.parse. internal use only.
+      def self.parse(uri) #:nodoc:
+        r = ::URI.parse(uri)
+        case r
+        when ::URI::HTTPS
+          __parse_and_new__(HTTPS, uri)
+        when ::URI::HTTP
+          __parse_and_new__(HTTP, uri)
+        when ::URI::FTP
+          __parse_and_new__(FTP, uri)
+        else
+          r
+        end
+      end
+    end #module URI
+    
+    @load_openuri = nil
+    # load open-uri.rb in SandBox module.
+    def self.load_openuri_in_sandbox #:nodoc:
+      return if @load_openuri
+      fn = nil
+      unless $:.find do |x|
+          fn = File.join(x, 'open-uri.rb')
+          FileTest.exist?(fn)
+        end then
+        warn('Warning: cannot find open-uri.rb in $LOAD_PATH')
+      else
+        # reading open-uri.rb
+        str = File.read(fn)
+        # eval open-uri.rb contents in SandBox module
+        module_eval(str)
+        
+        # finds 'find_proxy' method
+        find_proxy_lines = nil
+        flag = nil
+        endstr = nil
+        str.each do |line|
+          if flag then
+            find_proxy_lines << line
+            if endstr == line[0, endstr.length] and
+                /^\s+end(\s+.*)?$/ =~ line then
+              break
+            end
+          elsif /^(\s+)def\s+find_proxy(\s+.*)?$/ =~ line then
+            flag = true
+            endstr = "#{$1}end"
+            find_proxy_lines = line 
+          end
+        end
+        if find_proxy_lines
+          module_eval("module FindProxy;\n#{find_proxy_lines}\n;end\n")
+        else
+          warn('Warning: cannot find find_proxy method in open-uri.rb.')
+        end
+        @load_openuri = true
+      end
+    end
+  end #module SandBox
+end #module NetTools
+
 end # module Command
 end # module Bio
 
