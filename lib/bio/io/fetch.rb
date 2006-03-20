@@ -21,11 +21,11 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fetch.rb,v 1.5 2006/03/16 17:29:05 aerts Exp $
+#  $Id: fetch.rb,v 1.6 2006/03/20 12:40:13 ngoto Exp $
 #
 
 require 'uri'
-require 'open-uri'
+require 'bio/command'
 
 module Bio
   # = DESCRIPTION
@@ -104,8 +104,7 @@ module Bio
       query.push("format=#{format}") if format
       query = query.join('&')
   
-      result = open(@url + '?' + query).readlines.join('')
-      return result
+      Bio::Command::NetTools.read_uri(@url + '?' + URI.escape(query))
     end
   
     # Shortcut for using BioRuby's BioFetch server. You can fetch an entry
@@ -140,8 +139,7 @@ module Bio
     def databases
       query = "info=dbs"
 
-      result = open(@url + '?' + query).readlines.join('')
-      return result
+      Bio::Command::NetTools.read_uri(@url + '?' + URI.escape(query)).strip.split(/\s+/)
     end
   
     # Lists the formats that are available for a given database. Like the
@@ -158,8 +156,7 @@ module Bio
       if database
         query = "info=formats;db=#{database}"
 
-        result = open(@url + '?' + query).readlines.join('')
-        return result
+        Bio::Command::NetTools.read_uri(@url + '?' + URI.escape(query)).strip.split(/\s+/)
       end
     end
   
@@ -173,8 +170,7 @@ module Bio
     def maxids
       query = "info=maxids"
 
-      result = open(@url + '?' + query).readlines.join('')
-      return result
+      Bio::Command::NetTools.read_uri(@url + '?' + URI.escape(query)).to_i
     end
   
   end
