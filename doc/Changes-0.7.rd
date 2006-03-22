@@ -261,6 +261,11 @@ In 0.7.2:
 * Internal structure is now completely changed. Codes depend on the internal
   structure (which is not recommended) would not work.
 
+In 1.0.1:
+
+* Bio::FlatFile#entry_start_pos and #entry_ended_pos are enabled
+  only when Bio::FlatFile#entry_pos_flag is true.
+
 === Deleted files
 
 : lib/bio/db/genbank.rb

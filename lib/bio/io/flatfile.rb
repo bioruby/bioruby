@@ -5,7 +5,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: flatfile.rb,v 1.48 2006/03/03 09:31:57 ngoto Exp $
+#  $Id: flatfile.rb,v 1.49 2006/03/22 10:19:22 ngoto Exp $
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
@@ -261,6 +261,9 @@ module Bio
         # the last entry read from the stream
         attr_reader :entry
 
+        # a flag to write down entry start and end positions
+        attr_accessor :entry_pos_flag
+
         # start position of the entry
         attr_reader :entry_start_pos
 
@@ -289,6 +292,7 @@ module Bio
             end
           end
           @delimiter_overrun = klass::DELIMITER_OVERRUN rescue nil
+          @entry_pos_flag = nil
         end
 
         # (String) delimiter indicates the end of a entry.
@@ -329,7 +333,7 @@ module Bio
 
         # gets a entry
         def get_entry
-          p0 = @stream.pos
+          p0 = @entry_pos_flag ? @stream.pos : nil
           e  = @stream.gets(@delimiter)
           if e and @delimiter_overrun then
             if e[-@delimiter.size, @delimiter.size ] == @delimiter then
@@ -338,7 +342,7 @@ module Bio
               @stream.ungets(overrun)
             end
           end
-          p1 = @stream.pos
+          p1 = @entry_pos_flag ? @stream.pos : nil
           @entry_start_pos = p0
           @entry = e
           @entry_ended_pos = p1
@@ -584,6 +588,16 @@ module Bio
     # Returns the last raw entry as a string.
     def entry_raw
       @splitter.entry
+    end
+
+    # a flag to write down entry start and end positions
+    def entry_pos_flag
+      @splitter.entry_pos_flag
+    end
+
+    # Sets flag to write down entry start and end positions
+    def entry_pos_flag=(x)
+      @splitter.entry_pos_flag = x
     end
 
     # start position of the last entry

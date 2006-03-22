@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2002 GOTO Naohisa <ng@bioruby.org> 
 # License::   Ruby's
 # 
-#  $Id: indexer.rb,v 1.23 2006/02/22 08:41:03 ngoto Exp $ 
+#  $Id: indexer.rb,v 1.24 2006/03/22 10:19:22 ngoto Exp $ 
 # 
 
 require 'bio/io/flatfile/index'
@@ -114,6 +114,7 @@ module Bio
             DEBUG.print "fileid=#{fileid} file=#{@flatfilename.inspect}\n"
             @flatfile = Bio::FlatFile.open(@dbclass, file, 'rb')
             @flatfile.raw = nil
+            @flatfile.entry_pos_flag = true
             @entry = nil
           end
           attr_reader :fileid
