@@ -3,14 +3,15 @@
 #
 # Copyright::   Copyright (C) 2006
 #               Toshiaki Katayama <k@bioruby.org>,
-#               Naohisa Goto <ng@bioruby.org>
+#               Naohisa Goto <ng@bioruby.org>,
+#               Ryan Raaum <ryan@raaum.org>
 # License::     Ruby's
 #
 # = TODO
 #
 # porting from N. Goto's feature-output.rb on BioRuby list.
 #
-# $Id: format.rb,v 1.2 2006/02/06 14:20:35 k Exp $
+# $Id: format.rb,v 1.3 2006/03/26 02:27:59 k Exp $
 #
 
 
@@ -20,11 +21,37 @@ module Bio
 
 class Sequence
 
+# = DESCRIPTION
+# A Mixin[http://www.rubycentral.com/book/tut_modules.html]
+# of methods used by Bio::Sequence#output to output sequences in 
+# common bioinformatic formats.  These are not called in isolation.
+#
+# = USAGE
+#   # Given a Bio::Sequence object,
+#   puts s.output(:fasta)
+#   puts s.output(:genbank)
+#   puts s.output(:embl)
 module Format
 
-  # Output the FASTA format string of the sequence.  The 1st argument is
-  # used in the comment line.  If the 2nd argument (integer) is given,
-  # the output sequence will be folded.
+  # INTERNAL USE ONLY, YOU SHOULD NOT CALL THIS METHOD. (And in any
+  # case, it would be difficult to successfully call this method outside
+  # its expected context).
+  #
+  # Output the FASTA format string of the sequence.  
+  #
+  # UNFORTUNATLY, the current implementation of Bio::Sequence is incapable of 
+  # using either the header or width arguments.  So something needs to be
+  # changed...
+  #
+  # Currently, this method is used in Bio::Sequence#output like so,
+  #
+  #   s = Bio::Sequence.new('atgc')
+  #   puts s.output(:fasta)                   #=> "> \natgc\n"
+  # ---
+  # *Arguments*:
+  # * (optional) _header_: String (default nil)
+  # * (optional) _width_: Fixnum (default nil)
+  # *Returns*:: String object
   def format_fasta(header = nil, width = nil)
     header ||= "#{@entry_id} #{@definition}"
 
@@ -36,10 +63,22 @@ module Format
     end
   end
 
-  def format_gff
+  # Not yet implemented :)
+  # Remove the nodoc command after implementation!
+  # ---
+  # *Returns*:: String object
+  def format_gff #:nodoc:
     raise NotImplementedError
   end
 
+  # INTERNAL USE ONLY, YOU SHOULD NOT CALL THIS METHOD. (And in any
+  # case, it would be difficult to successfully call this method outside
+  # its expected context).
+  #
+  # Output the Genbank format string of the sequence.  
+  # Used in Bio::Sequence#output.
+  # ---
+  # *Returns*:: String object
   def format_genbank
     prefix = ' ' * 5
     indent = prefix + ' ' * 16
@@ -48,6 +87,14 @@ module Format
     format_features(prefix, indent, fwidth)
   end
 
+  # INTERNAL USE ONLY, YOU SHOULD NOT CALL THIS METHOD. (And in any
+  # case, it would be difficult to successfully call this method outside
+  # its expected context).
+  #
+  # Output the EMBL format string of the sequence.  
+  # Used in Bio::Sequence#output.
+  # ---
+  # *Returns*:: String object
   def format_embl
     prefix = 'FT   '
     indent = prefix + ' ' * 16

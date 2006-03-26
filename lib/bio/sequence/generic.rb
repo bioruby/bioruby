@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: generic.rb,v 1.3 2006/02/06 14:26:04 k Exp $
+# $Id: generic.rb,v 1.4 2006/03/26 02:27:59 k Exp $
 #
 
 require 'bio/sequence/common'
@@ -13,7 +13,7 @@ require 'bio/sequence/common'
 module Bio
 class Sequence
 
-class Generic < String
+class Generic < String #:nodoc:
 
   include Bio::Sequence::Common
 
