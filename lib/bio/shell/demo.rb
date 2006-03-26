@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: demo.rb,v 1.1 2006/02/27 09:33:22 k Exp $
+# $Id: demo.rb,v 1.2 2006/03/26 00:38:10 k Exp $
 #
 
 module Bio::Shell
@@ -89,7 +89,7 @@ module Bio::Shell
       run(%q[ent_1bl8 = ent("pdb:1bl8")], "Retrieving PDB entry 1BL8 ...", false) &&
       run(%q[head ent_1bl8], "Head part of the entry ...", false) &&
       run(%q[savefile("1bl8.pdb", ent_1bl8)], "Saving the original entry in file ...", false) &&
-      run(%q[less "data/1bl8.pdb"], "Look through the entire entry ...", false) &&
+      run(%q[disp "data/1bl8.pdb"], "Look through the entire entry ...", false) &&
       run(%q[pdb_1bl8 = flatparse(ent_1bl8)], "Parsing the entry ...", false) &&
       run(%q[pdb_1bl8.entry_id], "Showing the entry ID ...", true) &&
       run(%q[pdb_1bl8.each_heterogen { |heterogen| p heterogen.resName }], "Showing each heterogen object ...", false) &&
@@ -97,17 +97,17 @@ module Bio::Shell
     end
 
     def pdb_hetdic
-      run(%q[het_dic = open("http://deposit.pdb.org/het_dictionary.txt").read],
-          "Retrieving the het_dic database ...", false) &&
-      run(%q[savefile("data/het_dictionary.txt", het_dic)],
-          "Saving the file ... ", false) &&
+#      run(%q[het_dic = open("http://deposit.pdb.org/het_dictionary.txt").read],
+#          "Retrieving the het_dic database ...", false) &&
+#      run(%q[savefile("data/het_dictionary.txt", het_dic)],
+#          "Saving the file ... ", false) &&
       run(%q[het_dic.size], "Bytes of the file ...", true) &&
-      run(%q[less "data/het_dictionary.txt"], "Take a look on the contents ...", true) &&
+      run(%q[disp "data/het_dictionary.txt"], "Take a look on the contents ...", true) &&
       run(%q[flatindex("het_dic", "data/het_dictionary.txt")],
           "Creating index to make the seaarchable database ...", false) &&
       run(%q[ethanol = flatsearch("het_dic", "EOH")], "Search an ethanol entry ...", true) &&
       run(%q[osake = flatparse(ethanol)], "Parse the entry ...", true) &&
-      run(%q[sake.conect], "Showing connect table (conect) of the molecule ...", true) &&
+      run(%q[osake.conect], "Showing connect table (conect) of the molecule ...", true) &&
       true
     end
 
