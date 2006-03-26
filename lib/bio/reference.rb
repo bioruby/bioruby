@@ -1,46 +1,21 @@
 #
 # = bio/reference.rb - Journal reference classes
 #
-# Copyright::   Copyright (C) 2001 
-#               KATAYAMA Toshiaki <k@bioruby.org>
-# Lisence::     LGPL
+# Copyright::   Copyright (C) 2001, 2006
+#               Toshiaki Katayama <k@bioruby.org>,
+#               Ryan Raaum <ryan@raaum.org>
+# Lisence::     Ruby's
 #
-# $Id: reference.rb,v 1.21 2006/02/08 15:06:26 nakao Exp $
-#
-# == Description
-# 
-# Journal reference classes.
-#
-# == Examples
-#
-# == References
-#
-# 
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
+# $Id: reference.rb,v 1.22 2006/03/26 02:32:56 k Exp $
 #
 
 module Bio
 
+  # = DESCRIPTION
+  #
   # A class for journal reference information.
   #
-  # === Examples
+  # = USAGE
   # 
   #    hash = {'authors' => [ "Hoge, J.P.", "Fuga, F.B." ], 
   #            'title' => "Title of the study.",
@@ -68,34 +43,34 @@ module Bio
     # Author names in an Array, [ "Hoge, J.P.", "Fuga, F.B." ].
     attr_reader :authors
 
-    # "Title of the study."
+    # String with title of the study
     attr_reader :title
 
-    # "Theor. J. Hoge"
+    # String with journal name
     attr_reader :journal
 
-    # 12
+    # volume number (typically Fixnum)
     attr_reader :volume
     
-    # 3
+    # issue number (typically Fixnum)
     attr_reader :issue
 
-    # "123-145"
+    # page range (typically String, e.g. "123-145")
     attr_reader :pages
 
-    # 2001
+    # year of publication (typically Fixnum)
     attr_reader :year
 
-    # 12345678
+    # pubmed identifier (typically Fixnum)
     attr_reader :pubmed
 
-    # 98765432
+    # medline identifier (typically Fixnum)
     attr_reader :medline
     
-    # Abstract test in String.
+    # Abstract text in String.
     attr_reader :abstract
 
-    # A URL String.
+    # An URL String.
     attr_reader :url
 
     # MeSH terms in an Array.
@@ -104,7 +79,42 @@ module Bio
     # Affiliations in an Array.
     attr_reader :affiliations
 
-    # 
+    # Create a new Bio::Reference object from a Hash of values. 
+    # Data is extracted from the values for keys:
+    #
+    # * authors - expected value: Array of Strings
+    # * title - expected value: String
+    # * journal - expected value: String
+    # * volume - expected value: Fixnum or String
+    # * issue - expected value: Fixnum or String
+    # * pages - expected value: String
+    # * year - expected value: Fixnum or String
+    # * pubmed - expected value: Fixnum or String
+    # * medline - expected value: Fixnum or String
+    # * abstract - expected value: String
+    # * url - expected value: String
+    # * mesh - expected value: Array of Strings
+    # * affiliations - expected value: Array of Strings
+    #
+    #
+    #    hash = {'authors' => [ "Hoge, J.P.", "Fuga, F.B." ], 
+    #            'title' => "Title of the study.",
+    #            'journal' => "Theor. J. Hoge", 
+    #            'volume' => 12, 
+    #            'issue' => 3, 
+    #            'pages' => "123-145",
+    #            'year' => 2001, 
+    #            'pubmed' => 12345678, 
+    #            'medline' => 98765432, 
+    #            'abstract' => "Hoge fuga. ...",
+    #            'url' => "http://example.com", 
+    #            'mesh' => [], 
+    #            'affiliations' => []}
+    #    ref = Bio::Reference.new(hash)
+    # ---
+    # *Arguments*:
+    # * (required) _hash_: Hash
+    # *Returns*:: Bio::Reference object
     def initialize(hash)
       hash.default = ''
       @authors  = hash['authors'] # [ "Hoge, J.P.", "Fuga, F.B." ]
@@ -130,10 +140,10 @@ module Bio
     # Styles:
     # 0. nil - general
     # 1. endnote - Endnote
-    # 2. bibitem - Bibitem (option acceptable)
-    # 3. bibtex - BiBTeX (option acceptable)
-    # 4. rd - rd (option acceptable)
-    # 5. nature - Nature (option acceptable)
+    # 2. bibitem - Bibitem (option available)
+    # 3. bibtex - BiBTeX (option available)
+    # 4. rd - rd (option available)
+    # 5. nature - Nature (option available)
     # 6. science - Science
     # 7. genome_biol - Genome Biology
     # 8. genome_res - Genome Research
@@ -141,6 +151,23 @@ module Bio
     # 10. current - Current Biology
     # 11. trends - Trends in *
     # 12. cell - Cell Press
+    #
+    # See individual methods for details. Basic usage is:
+    #
+    #   # ref is Bio::Reference object
+    #   # using simplest possible call (for general style)
+    #   puts ref.format
+    #   
+    #   # output in Nature style
+    #   puts ref.format("nature")      # alternatively, puts ref.nature
+    #
+    #   # output in Nature short style (see Bio::Reference#nature)
+    #   puts ref.format("nature",true) # alternatively, puts ref.nature(true)
+    # ---
+    # *Arguments*:
+    # * (optional) _style_: String with style identifier
+    # * (optional) _option_: Option for styles accepting one
+    # *Returns*:: String
     def format(style = nil, option = nil)
       case style
       when 'endnote'
@@ -172,7 +199,25 @@ module Bio
       end
     end
 
-    # Formats in the Endonote style.
+    # Returns reference formatted in the Endnote style.
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.endnote
+    #
+    #     %0 Journal Article
+    #     %A Hoge, J.P.
+    #     %A Fuga, F.B.
+    #     %D 2001
+    #     %T Title of the study.
+    #     %J Theor. J. Hoge
+    #     %V 12
+    #     %N 3
+    #     %P 123-145
+    #     %M 12345678
+    #     %U http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&dopt=Citation&list_uids=12345678
+    #     %X Hoge fuga. ...
+    # ---
+    # *Returns*:: String
     def endnote
       lines = []
       lines << "%0 Journal Article"
@@ -200,7 +245,17 @@ module Bio
       return lines.join("\n")
     end
 
-    # Formats in the bibitem.
+    # Returns reference formatted in the bibitem style
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.bibitem
+    #
+    #     \bibitem{PMID:12345678}
+    #     Hoge, J.P., Fuga, F.B.
+    #     Title of the study.,
+    #     {\em Theor. J. Hoge}, 12(3):123--145, 2001.
+    # ---
+    # *Returns*:: String
     def bibitem(item = nil)
       item  = "PMID:#{@pubmed}" unless item
       pages = @pages.sub('-', '--')
@@ -212,7 +267,38 @@ module Bio
       END
     end
 
-    # Formats in the BiBTeX style.
+    # Returns reference formatted in the BiBTeX style.
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.bibtex
+    #
+    #     @article{PMID:12345678,
+    #       author  = {Hoge, J.P. and Fuga, F.B.},
+    #       title   = {Title of the study.},
+    #       journal = {Theor. J. Hoge},
+    #       year    = {2001},
+    #       volume  = {12},
+    #       number  = {3},
+    #       pages   = {123--145},
+    #     }
+    #
+    #   # using a different section (e.g. "book")
+    #   # (but not really configured for anything other than articles)
+    #   puts ref.bibtex("book")
+    #
+    #     @book{PMID:12345678,
+    #       author  = {Hoge, J.P. and Fuga, F.B.},
+    #       title   = {Title of the study.},
+    #       journal = {Theor. J. Hoge},
+    #       year    = {2001},
+    #       volume  = {12},
+    #       number  = {3},
+    #       pages   = {123--145},
+    #     }    
+    # ---
+    # *Arguments*:
+    # * (optional) _section_: BiBTeX section as String
+    # *Returns*:: String
     def bibtex(section = nil)
       section = "article" unless section
       authors = authors_join(' and ', ' and ')
@@ -230,13 +316,37 @@ module Bio
       END
     end
 
-    # Formats in a general style.                
+    # Returns reference formatted in a general/generic style.
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.general
+    #
+    #     Hoge, J.P., Fuga, F.B. (2001). "Title of the study." Theor. J. Hoge 12:123-145.
+    # ---
+    # *Returns*:: String
     def general
       authors = @authors.join(', ')
       "#{authors} (#{@year}). \"#{@title}\" #{@journal} #{@volume}:#{@pages}."
     end
 
-    # Formats in the RD style.
+    # Return reference formatted in the RD style.
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.rd
+    #
+    #     == Title of the study.
+    #     
+    #     * Hoge, J.P. and Fuga, F.B.
+    #     
+    #     * Theor. J. Hoge 2001 12:123-145 [PMID:12345678]
+    #     
+    #     Hoge fuga. ...
+    #
+    # An optional string argument can be supplied, but does nothing.
+    # ---
+    # *Arguments*:
+    # * (optional) str: String (default nil)
+    # *Returns*:: String
     def rd(str = nil)
       @abstract ||= str
       lines = []
@@ -247,8 +357,22 @@ module Bio
       return lines.join("\n\n")
     end
 
-    # Formats in the Nature Publish Group style.
-    # * http://www.nature.com
+    # Formats in the Nature Publishing Group 
+    # (http://www.nature.com) style.
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.nature
+    #
+    #     Hoge, J.P. & Fuga, F.B. Title of the study. Theor. J. Hoge 12, 123-145 (2001).
+    #
+    #   # optionally, output short version
+    #   puts ref.nature(true)  # or puts ref.nature(short=true)
+    #
+    #     Hoge, J.P. & Fuga, F.B. Theor. J. Hoge 12, 123-145 (2001).
+    # ---
+    # *Arguments*:
+    # * (optional) _short_: Boolean (default false)
+    # *Returns*:: String
     def nature(short = false)
       if short
         if @authors.size > 4
@@ -265,8 +389,15 @@ module Bio
       end
     end
 
-    # Formats in the Science style.
-    # * http://www.siencemag.com/
+    # Returns reference formatted in the 
+    # Science[http://www.sciencemag.org] style.
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.science
+    #
+    #     J.P. Hoge, F.B. Fuga, Theor. J. Hoge 12 123 (2001).
+    # ---
+    # *Returns*:: String
     def science
       if @authors.size > 4
         authors = rev_name(@authors[0]) + " et al."
@@ -277,40 +408,86 @@ module Bio
       "#{authors}, #{@journal} #{@volume} #{page_from} (#{@year})."
     end
 
-    # Formats in the Genome Biology style.
-    # * http://genomebiology.com/
+    # Returns reference formatted in the Genome Biology 
+    # (http://genomebiology.com) style.
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.genome_biol
+    #
+    #     Hoge JP, Fuga FB: Title of the study. Theor J Hoge 2001, 12:123-145.
+    # ---
+    # *Returns*:: String
     def genome_biol
       authors = @authors.collect {|name| strip_dots(name)}.join(', ')
       journal = strip_dots(@journal)
       "#{authors}: #{@title} #{journal} #{@year}, #{@volume}:#{@pages}."
     end
-    # Formats in the Current Biology style.
-    # * http://www.current-biology.com/
-    alias current genome_biol
+    
+    # Returns reference formatted in the Current Biology 
+    # (http://current-biology.com) style. (Same as the Genome Biology style)
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.current
+    #
+    #     Hoge JP, Fuga FB: Title of the study. Theor J Hoge 2001, 12:123-145.
+    # ---
+    # *Returns*:: String
+    def current 
+      self.genome_biol
+    end
 
-    # Formats in the Genome Research style.
-    # * http://genome.org/
+    # Returns reference formatted in the Genome Research 
+    # (http://genome.org) style.
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.genome_res
+    #
+    #     Hoge, J.P. and Fuga, F.B. 2001.
+    #       Title of the study. Theor. J. Hoge 12: 123-145.
+    # ---
+    # *Returns*:: String
     def genome_res
       authors = authors_join(' and ')
       "#{authors} #{@year}.\n  #{@title} #{@journal} #{@volume}: #{@pages}."
     end
 
-    # Formats in the Nucleic Acids Reseach style.
-    # * http://nar.oxfordjournals.org/
+    # Returns reference formatted in the Nucleic Acids Reseach 
+    # (http://nar.oxfordjournals.org) style.
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.nar
+    #
+    #     Hoge, J.P. and Fuga, F.B. (2001) Title of the study. Theor. J. Hoge, 12, 123-145.
+    # ---
+    # *Returns*:: String
     def nar
       authors = authors_join(' and ')
       "#{authors} (#{@year}) #{@title} #{@journal}, #{@volume}, #{@pages}."
     end
 
-    # Formats in the CELL Press style.
-    # http://www.cell.com/
+    # Returns reference formatted in the 
+    # CELL[http://www.cell.com] Press style.
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.cell
+    #
+    #     Hoge, J.P. and Fuga, F.B. (2001). Title of the study. Theor. J. Hoge 12, 123-145.
+    # ---
+    # *Returns*:: String
     def cell
       authors = authors_join(' and ')
       "#{authors} (#{@year}). #{@title} #{@journal} #{@volume}, #{pages}."
     end
     
-    # Formats in the TRENDS Journals.
-    # * http://www.trends.com/
+    # Returns reference formatted in the 
+    # TRENDS[http://www.trends.com] style.
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.trends
+    #
+    #     Hoge, J.P. and Fuga, F.B. (2001) Title of the study. Theor. J. Hoge 12, 123-145
+    # ---
+    # *Returns*:: String
     def trends
       if @authors.size > 2
         authors = "#{@authors[0]} et al."
@@ -351,9 +528,11 @@ module Bio
 
   end
 
-  # Set of Bio::Reference.
+  # = DESCRIPTION
   #
-  # === Examples
+  # A container class for Bio::Reference objects.
+  #
+  # = USAGE
   #
   #   refs = Bio::References.new
   #   refs.append(Bio::Reference.new(hash))
@@ -363,22 +542,40 @@ module Bio
   #
   class References
 
-    # Array of Bio::Reference.
+    # Array of Bio::Reference objects
     attr_accessor :references
 
+    # Create a new Bio::References object
     # 
+    #   refs = Bio::References.new
+    # ---
+    # *Arguments*:
+    # * (optional) __: Array of Bio::Reference objects
+    # *Returns*:: Bio::References object
     def initialize(ary = [])
       @references = ary
     end
 
 
-    # Append a Bio::Reference object.
+    # Add a Bio::Reference object to the container.
+    #
+    #   refs.append(reference)
+    # ---
+    # *Arguments*:
+    # * (required) _reference_: Bio::Reference object
+    # *Returns*:: current Bio::References object
     def append(reference)
       @references.push(reference) if reference.is_a? Reference
       return self
     end
 
-    # Iterates each Bio::Reference object.
+    # Iterate through Bio::Reference objects.
+    #
+    #   refs.each do |reference|
+    #     ...
+    #   end
+    # ---
+    # *Block*:: yields each Bio::Reference object
     def each
       @references.each do |reference|
         yield reference
