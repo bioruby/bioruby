@@ -21,7 +21,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fetch.rb,v 1.6 2006/03/20 12:40:13 ngoto Exp $
+#  $Id: fetch.rb,v 1.7 2006/03/27 18:34:35 aerts Exp $
 #
 
 require 'uri'
@@ -30,8 +30,9 @@ require 'bio/command'
 module Bio
   # = DESCRIPTION
   # The Bio::Fetch class provides an interface to dbfetch servers. Given
-  # a database name and an accession number, these servers return the nucleic
-  # or amino acid sequence for that accession number in that database.
+  # a database name and an accession number, these servers return the associated
+  # record. For example, for the embl database on the EBI, that would be a
+  # nucleic or amino acid sequence.
   #
   # Possible dbfetch servers include:
   # * http://bioruby.org/cgi-bin/biofetch.rb (default)
@@ -81,7 +82,7 @@ module Bio
     attr_accessor :database
   
     # Get raw database entry by id. This method lets the Bio::Registry class
-    # use Bio::Fetch objects and should probably not be used directly.
+    # use Bio::Fetch objects.
     def get_by_id(id)
       fetch(@database, id)
     end
