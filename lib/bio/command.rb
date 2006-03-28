@@ -6,11 +6,12 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-#  $Id: command.rb,v 1.4 2006/03/20 10:34:57 ngoto Exp $
+#  $Id: command.rb,v 1.5 2006/03/28 14:00:48 ngoto Exp $
 #
 
 require 'open3'
 require 'uri'
+require 'open-uri'
 
 module Bio
 module Command
@@ -156,135 +157,10 @@ end # module Tools
 # Note that it is under construction.
 module NetTools
 
-  # Same as OpenURI.open_uri(*arg).
-  # If open-uri.rb is already loaded, ::OpenURI is used.
-  # Otherwise, internal OpenURI in sandbox is used because
-  # open-uri.rb redefines Kernel.open.
-  def self.open_uri(uri, *arg)
-    if defined? ::OpenURI
-      ::OpenURI.open_uri(uri, *arg)
-    else
-      SandBox.load_openuri_in_sandbox
-      uri = uri.to_s if ::URI::Generic === uri
-      SandBox::OpenURI.open_uri(uri, *arg)
-    end
-  end
-
   # Same as OpenURI.open_uri(uri).read.
-  # If open-uri.rb is already loaded, ::OpenURI is used.
-  # Otherwise, internal OpenURI in sandbox is used becase
-  # open-uri.rb redefines Kernel.open.
   def self.read_uri(uri)
-    self.open_uri(uri).read
+    OpenURI.open_uri(uri).read
   end
-
-  # Sandbox to load open-uri.rb.
-  # Internal use only.
-  module SandBox #:nodoc:
-
-    # Dummy module definition.
-    module Kernel #:nodoc:
-      # dummy method
-      def open(*arg); end #:nodoc:
-    end #module Kernel
-    
-    # a method to find proxy. dummy definition
-    module FindProxy; end #:nodoc:
-    
-    # dummy module definition
-    module OpenURI #:nodoc:
-      module OpenRead; end #:nodoc:
-    end #module OpenURI
-    
-    # Dummy module definition.
-    module URI #:nodoc:
-      class Generic < ::URI::Generic #:nodoc:
-        include SandBox::FindProxy
-      end
-      
-      class HTTPS < ::URI::HTTPS #:nodoc:
-        include SandBox::FindProxy
-        include SandBox::OpenURI::OpenRead
-      end
-      
-      class HTTP  < ::URI::HTTP  #:nodoc:
-        include SandBox::FindProxy
-        include SandBox::OpenURI::OpenRead
-      end
-      
-      class FTP  < ::URI::FTP    #:nodoc:
-        include SandBox::FindProxy
-        include SandBox::OpenURI::OpenRead
-      end
-      
-      # parse and new. internal use only.
-      def self.__parse_and_new__(klass, uri) #:nodoc:
-        scheme, userinfo, host, port,
-        registry, path, opaque, query, fragment = ::URI.split(uri)
-        klass.new(scheme, userinfo, host, port,
-                  registry, path, opaque, query,
-                  fragment)
-      end
-      private_class_method :__parse_and_new__
-      
-      # same as ::URI.parse. internal use only.
-      def self.parse(uri) #:nodoc:
-        r = ::URI.parse(uri)
-        case r
-        when ::URI::HTTPS
-          __parse_and_new__(HTTPS, uri)
-        when ::URI::HTTP
-          __parse_and_new__(HTTP, uri)
-        when ::URI::FTP
-          __parse_and_new__(FTP, uri)
-        else
-          r
-        end
-      end
-    end #module URI
-    
-    @load_openuri = nil
-    # load open-uri.rb in SandBox module.
-    def self.load_openuri_in_sandbox #:nodoc:
-      return if @load_openuri
-      fn = nil
-      unless $:.find do |x|
-          fn = File.join(x, 'open-uri.rb')
-          FileTest.exist?(fn)
-        end then
-        warn('Warning: cannot find open-uri.rb in $LOAD_PATH')
-      else
-        # reading open-uri.rb
-        str = File.read(fn)
-        # eval open-uri.rb contents in SandBox module
-        module_eval(str)
-        
-        # finds 'find_proxy' method
-        find_proxy_lines = nil
-        flag = nil
-        endstr = nil
-        str.each do |line|
-          if flag then
-            find_proxy_lines << line
-            if endstr == line[0, endstr.length] and
-                /^\s+end(\s+.*)?$/ =~ line then
-              break
-            end
-          elsif /^(\s+)def\s+find_proxy(\s+.*)?$/ =~ line then
-            flag = true
-            endstr = "#{$1}end"
-            find_proxy_lines = line 
-          end
-        end
-        if find_proxy_lines
-          module_eval("module FindProxy;\n#{find_proxy_lines}\n;end\n")
-        else
-          warn('Warning: cannot find find_proxy method in open-uri.rb.')
-        end
-        @load_openuri = true
-      end
-    end
-  end #module SandBox
 end #module NetTools
 
 end # module Command
