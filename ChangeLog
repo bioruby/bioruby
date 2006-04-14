@@ -1,3 +1,11 @@
+2006-04-14  Mitsuteru Nakao <n@bioruby.org>
+
+        * lib/bio/io/ensembl.rb
+
+          Bio::Ensembl first commit. It is a client class for Ensembl Genome
+          Browser.
+
+
 2006-02-27  Toshiaki Katayama <k@bioruby.org>
 
 	* BioRuby 1.0.0 released
