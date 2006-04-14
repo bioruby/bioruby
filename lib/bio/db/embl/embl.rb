@@ -2,10 +2,10 @@
 # = bio/db/embl/embl.rb - EMBL database class
 #
 # 
-# Copyright::   Copyright (C) 2001-2005 Mitsuteru C. Nakao <n@bioruby.org>
-# License::     LGPL
+# Copyright::   Copyright (C) 2001-2006 Mitsuteru C. Nakao <n@bioruby.org>
+# License::     Ruby's
 #
-# $Id: embl.rb,v 1.26 2006/01/28 06:40:38 nakao Exp $
+# $Id: embl.rb,v 1.27 2006/04/14 05:49:30 nakao Exp $
 #
 # == Description
 #
@@ -27,24 +27,6 @@
 #
 # * The EMBL Nucleotide Sequence Database: Users Manual
 #   http://www.ebi.ac.uk/embl/Documentation/User_manual/usrman.html
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
 #
 
 require 'bio/db'
@@ -394,61 +376,6 @@ class EMBL < EMBLDB
     return feature
   end
 
-end
+end # class EMBL
 
-end
-
-
-if __FILE__ == $0
-  while ent = $<.gets(Bio::EMBL::RS)
-    puts "\n ==> e = Bio::EMBL.new(ent) "
-    e = Bio::EMBL.new(ent)
-
-    puts "\n ==> e.entry_id "
-    p e.entry_id
-    puts "\n ==> e.id_line "
-    p e.id_line
-    puts "\n ==> e.id_line('molecule') "
-    p e.id_line('molecule')
-    puts "\n ==> e.molecule "
-    p e.molecule
-    puts "\n ==> e.ac "
-    p e.ac
-    puts "\n ==> e.sv "
-    p e.sv
-    puts "\n ==> e.dt "
-    p e.dt
-    puts "\n ==> e.dt('created') "
-    p e.dt('created')
-    puts "\n ==> e.de "
-    p e.de
-    puts "\n ==> e.kw "
-    p e.kw
-    puts "\n ==> e.os "
-    p e.os
-    puts "\n ==> e.oc "
-    p e.oc
-    puts "\n ==> e.og "
-    p e.og
-    puts "\n ==> e.ref "
-    p e.ref
-    puts "\n ==> e.dr "
-    p e.dr
-    puts "\n ==> e.ft "
-    p e.ft
-    puts "\n ==> e.each_cds {|c| p c}"
-    p e.each_cds {|c| p c }
-    puts "\n ==> e.sq "
-    p e.sq
-    puts "\n ==> e.sq('a') "
-    p e.sq('a')
-    puts "\n ==> e.gc"    
-    p e.gc
-    puts "\n ==> e.seq "
-    p e.seq
-  end
-
-end
-
-
-
+end # module Bio

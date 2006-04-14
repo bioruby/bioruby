@@ -1,10 +1,10 @@
 #
 # = bio/db/embl/sptr.rb - UniProt/SwissProt and TrEMBL database class
 # 
-# Copyright::   Copyright (C) 2001-2005 Mitsuteru C. Nakao <n@bioruby.org>
-# License::     LGPL
+# Copyright::   Copyright (C) 2001-2006 Mitsuteru C. Nakao <n@bioruby.org>
+# License::     Ruby's
 #
-# $Id: sptr.rb,v 1.30 2006/01/28 06:40:38 nakao Exp $
+# $Id: sptr.rb,v 1.31 2006/04/14 05:52:28 nakao Exp $
 #
 # == Description
 # 
@@ -31,24 +31,7 @@
 # * The UniProtKB/SwissProt/TrEMBL User Manual
 #   http://www.expasy.org/sprot/userman.html
 #
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
-#
+
 
 require 'bio/db'
 require 'bio/db/embl/common'
@@ -758,84 +741,6 @@ end # class SPTR
 
 end # module Bio
 
-
-if __FILE__ == $0
-  # Usage: ruby __FILE__ uniprot_sprot.dat 
-  # Usage: ruby __FILE__ uniprot_sprot.dat | egrep '^RuntimeError'
-
-  begin
-    require 'pp'
-    alias pp p
-  rescue LoadError
-  end
-
-  def cmd(cmd, tag = nil, ent = $ent)
-    puts " ==> #{cmd} "
-    puts Bio::SPTR.new(ent).get(tag) if tag
-    begin
-      p eval(cmd)
-    rescue RuntimeError
-      puts "RuntimeError(#{Bio::SPTR.new($ent).entry_id})}: #{$!} "
-    end
-    puts
-  end
-
-
-  while $ent = $<.gets(Bio::SPTR::RS)
-    
-    cmd "Bio::SPTR.new($ent).entry_id"
-
-    cmd "Bio::SPTR.new($ent).id_line", 'ID'
-    cmd "Bio::SPTR.new($ent).entry"
-    cmd "Bio::SPTR.new($ent).entry_name"
-    cmd "Bio::SPTR.new($ent).molecule"
-    cmd "Bio::SPTR.new($ent).sequence_length"
-
-    cmd "Bio::SPTR.new($ent).ac", 'AC'
-    cmd "Bio::SPTR.new($ent).accession"
-
-
-    cmd "Bio::SPTR.new($ent).gn", 'GN'
-    cmd "Bio::SPTR.new($ent).gene_name"
-    cmd "Bio::SPTR.new($ent).gene_names"
-
-    cmd "Bio::SPTR.new($ent).dt", "DT"
-    ['created','annotation','sequence'].each do |key|
-      cmd "Bio::SPTR.new($ent).dt('#{key}')"
-    end
-
-    cmd "Bio::SPTR.new($ent).de", 'DE'
-    cmd "Bio::SPTR.new($ent).definition"
-    cmd "Bio::SPTR.new($ent).protein_name"
-    cmd "Bio::SPTR.new($ent).synonyms"
-
-    cmd "Bio::SPTR.new($ent).kw", 'KW'
-
-    cmd "Bio::SPTR.new($ent).os", 'OS'
-
-    cmd "Bio::SPTR.new($ent).oc", 'OC'
-
-    cmd "Bio::SPTR.new($ent).og", 'OG'
-
-    cmd "Bio::SPTR.new($ent).ox", 'OX'
-
-    cmd "Bio::SPTR.new($ent).ref", 'R'
-
-    cmd "Bio::SPTR.new($ent).cc", 'CC'
-    cmd "Bio::SPTR.new($ent).cc('ALTERNATIVE PRODUCTS')"
-    cmd "Bio::SPTR.new($ent).cc('DATABASE')"
-    cmd "Bio::SPTR.new($ent).cc('MASS SPECTOMETRY')"
-
-    cmd "Bio::SPTR.new($ent).dr", 'DR'
-
-    cmd "Bio::SPTR.new($ent).ft", 'FT'
-    cmd "Bio::SPTR.new($ent).ft['DOMAIN']"
-
-    cmd "Bio::SPTR.new($ent).sq", "SQ"
-    cmd "Bio::SPTR.new($ent).seq"
-  end
-
-end
 
 
 =begin
