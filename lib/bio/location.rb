@@ -1,17 +1,168 @@
 #
 # = bio/location.rb - Locations/Location class (GenBank location format)
 #
-# Copyright::	Copyright (C) 2001, 2005
-#		KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::	Copyright (C) 2001, 2005 KATAYAMA Toshiaki <k@bioruby.org>
+#                             2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::	LGPL
 #
-# $Id: location.rb,v 0.22 2005/12/18 15:50:06 k Exp $
+# $Id: location.rb,v 0.23 2006/04/20 15:58:34 aerts Exp $
 #
-# == Appendix : GenBank location descriptor classification
+# 
+#--
+#
+#  This library is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public
+#  License as published by the Free Software Foundation; either
+#  version 2 of the License, or (at your option) any later version.
+#
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Lesser General Public License for more details.
+#
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library; if not, write to the Free Software
+#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#
+#++
+#
+
+module Bio
+
+# = DESCRIPTION
+# The Bio::Location class describes the position of a genomic locus. Typically,
+# Bio::Location objects are created automatically when the user creates a
+# Bio::Locations object, instead of initialized directly.
+#
+# = USAGE
+#   location = Bio::Location.new('500..550')
+#   puts "start=" + location.from.to_s + ";end=" + location.to.to_s
+#
+#   #, or better: through Bio::Locations
+#   locations = Bio::Locations.new('500..550')
+#   locations.each do |location|
+#     puts "start=" + location.from.to_s + ";end=" + location.to.to_s
+#   end
+class Location
+
+  # Parses a'location' segment, which can be 'ID:' + ('n' or 'n..m' or 'n^m'
+  # or "seq") with '<' or '>', and returns a Bio::Location object.
+  #   location = Bio::Location.new('500..550')
+  # 
+  # ---
+  # *Arguments*:
+  # * (required) _str_: GenBank style position string (see Bio::Locations documentation)
+  # *Returns*:: Bio::Location object
+  def initialize(location = nil)
+
+    if location
+      if location =~ /:/				# (G) ID:location
+        xref_id, location = location.split(':')
+      end
+      if location =~ /</				# (I) <,>
+        lt = true
+      end
+      if location =~ />/
+        gt = true
+      end
+    end
+
+    # s : start base, e : end base => from, to
+    case location
+    when /^[<>]?(\d+)$/				# (A, I) n
+      s = e = $1.to_i
+    when /^[<>]?(\d+)\.\.[<>]?(\d+)$/			# (B, I) n..m
+      s = $1.to_i
+      e = $2.to_i
+      if e - s < 0
+#       raise "Error: invalid range : #{location}"
+        $stderr.puts "[Warning] invalid range : #{location}" if $DEBUG
+      end
+    when /^[<>]?(\d+)\^[<>]?(\d+)$/			# (C, I) n^m
+      s = $1.to_i
+      e = $2.to_i
+      if e - s != 1
+#       raise "Error: invalid range : #{location}"
+        $stderr.puts "[Warning] invalid range : #{location}" if $DEBUG
+      end
+    when /^"?([ATGCatgc]+)"?$/                  # (H) literal sequence
+      sequence = $1.downcase
+      s = e = nil
+    when nil
+      ;
+    else
+      raise "Error: unknown location format : #{location}"
+    end
+
+    @from       = s             # start position of the location
+    @to         = e             # end position of the location
+    @strand     = 1             # strand direction of the location
+                                #   forward => 1 or complement => -1
+    @sequence   = sequence      # literal sequence of the location
+    @lt         = lt            # true if the position contains '<'
+    @gt         = gt            # true if the position contains '>'
+    @xref_id    = xref_id       # link to the external entry as GenBank ID
+  end
+
+  attr_accessor :from, :to, :strand, :sequence, :lt, :gt, :xref_id
+
+  # Complements the sequence (i.e. alternates the strand).
+  # ---
+  # *Returns*:: the Bio::Location object
+  def complement
+    @strand *= -1
+    self					# return Location object
+  end
+
+  # Replaces the sequence of the location.
+  # ---
+  # *Arguments*:
+  # * (required) _sequence_: sequence to be used to replace the sequence at the location
+  # *Returns*:: the Bio::Location object
+  def replace(sequence)
+    @sequence = sequence.downcase
+    self					# return Location object
+  end
+
+  # Returns the range (from..to) of the location as a Range object.
+  def range
+    @from..@to
+  end
+
+end # class location
+
+# = DESCRIPTION
+# The Bio::Locations class is a container for Bio::Location objects: creating a 
+# Bio::Locations object (based on a GenBank style position string) will
+# spawn an array of Bio::Location objects.
+#
+# = USAGE
+#   locations = Bio::Locations.new('join(complement(500..550), 600..625)')
+#   locations.each do |location|
+#     puts "class=" + location.class.to_s
+#     puts "start=" + location.from.to_s + ";end=" + location.to.to_s \
+#          + ";strand=" + location.strand.to_s
+#   end
+#     # Output would be:
+#     # class=Bio::Location
+#     # start=500;end=550;strand=-1
+#     # class=Bio::Location
+#     # start=600;end=625;strand=1
+# 
+#  # For the following three location strings, print the span and range
+#  ['one-of(898,900)..983',
+#   'one-of(5971..6308,5971..6309)',
+#   '8050..one-of(10731,10758,10905,11242)'].each do |loc|
+#      location = Bio::Locations.new(loc)
+#      puts location.span
+#      puts location.range
+#  end
+#
+# = GENBANK LOCATION DESCRIPTOR CLASSIFICATION
 # 
 # === Definition of the position notation of the GenBank location format
 # 
-# According to the GenBank manual 'gbrel.txt', I classified position notations
+# According to the GenBank manual 'gbrel.txt', position notations were classified
 # into 10 patterns - (A) to (J).
 # 
 #       3.4.12.2 Feature Location
@@ -83,34 +234,27 @@
 # 
 # === Reduction strategy of the position notations
 # 
-#   (A) Location n
-#   
-#   (B) Location n..m
-#   
-#   (C) Location n^m
-#   
-#   (D) (n.m)		=> Location n
-#   
-#   (E) one-of(n,m,..)	=> Location n
-#       one-of(n..m,..)	=> Location n..m
-#   
-#   (F) order(loc,loc,..)	=> join(loc, loc,..)
-#       group(loc,loc,..)	=> join(loc, loc,..)
-#       join(loc,loc,..)	=> Sequence
-#   
-#   (G) ID:loc		=> Location with ID
-#   
-#   (H) "atgc"		=> Location only with Sequence
-#   
-#   (I) <n			=> Location n with lt flag
-#       >n			=> Location n with gt flag
-#       <n..m		=> Location n..m with lt flag
-#       n..>m		=> Location n..m with gt flag
-#       <n..>m		=> Location n..m with lt, gt flag
-#   
-#   (J) complement(loc)	=> Sequence
-#   
-#   (K) replace(loc, str)	=> Location with replacement Sequence
+# * (A) Location n
+# * (B) Location n..m
+# * (C) Location n^m
+# * (D) (n.m)		=> Location n
+# * (E)
+#   * one-of(n,m,..)	=> Location n
+#   * one-of(n..m,..)	=> Location n..m
+# * (F)
+#   * order(loc,loc,..)	=> join(loc, loc,..)
+#   * group(loc,loc,..)	=> join(loc, loc,..)
+#   * join(loc,loc,..)	=> Sequence
+# * (G) ID:loc		=> Location with ID
+# * (H) "atgc"		=> Location only with Sequence
+# * (I)
+#   * <n			=> Location n with lt flag
+#   * >n			=> Location n with gt flag
+#   * <n..m		=> Location n..m with lt flag
+#   * n..>m		=> Location n..m with gt flag
+#   * <n..>m		=> Location n..m with lt, gt flag
+# * (J) complement(loc)	=> Sequence
+# * (K) replace(loc, str)	=> Location with replacement Sequence
 # 
 # === GenBank location examples
 # 
@@ -231,145 +375,53 @@
 # * [HUMMAGE12X]	replace(3002..3003,	<= replace(3002..3003, "GC")
 # * [ADR40FIB]	replace(510..520,	<= replace(510..520, "taatcctaccg")
 # * [RATDYIIAAB]	replace(1306..1443,"aagaacatccacggagtcagaactgggctcttcacgccggatttggcgttcgaggccattgtgaaaaagcaggcaatgcaccagcaagctcagttcctacccctgcgtggacctggttatccaggagctaatcagtacagttaggtggtcaagctgaaagagccctgtctgaaa")
-# 
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
-#
-
-module Bio
-
-class Location
-
-  # Pass a range of the 'location' segment.  The 'location' segment can be
-  # 'ID:' + ('n' or 'n..m' or 'n^m' or "seq") with '<' or '>'.
-  def initialize(location = nil)
-
-    if location
-      if location =~ /:/				# (G) ID:location
-        xref_id, location = location.split(':')
-      end
-      if location =~ /</				# (I) <,>
-        lt = true
-      end
-      if location =~ />/
-        gt = true
-      end
-    end
-
-    # s : start base, e : end base => from, to
-    case location
-    when /^[<>]?(\d+)$/				# (A, I) n
-      s = e = $1.to_i
-    when /^[<>]?(\d+)\.\.[<>]?(\d+)$/			# (B, I) n..m
-      s = $1.to_i
-      e = $2.to_i
-      if e - s < 0
-#       raise "Error: invalid range : #{location}"
-        $stderr.puts "[Warning] invalid range : #{location}" if $DEBUG
-      end
-    when /^[<>]?(\d+)\^[<>]?(\d+)$/			# (C, I) n^m
-      s = $1.to_i
-      e = $2.to_i
-      if e - s != 1
-#       raise "Error: invalid range : #{location}"
-        $stderr.puts "[Warning] invalid range : #{location}" if $DEBUG
-      end
-    when /^"?([ATGCatgc]+)"?$/                  # (H) literal sequence
-      sequence = $1.downcase
-      s = e = nil
-    when nil
-      ;
-    else
-      raise "Error: unknown location format : #{location}"
-    end
-
-    @from       = s             # start position of the location
-    @to         = e             # end position of the location
-    @strand     = 1             # strand direction of the location
-                                #   forward => 1 or complement => -1
-    @sequence   = sequence      # literal sequence of the location
-    @lt         = lt            # true if the position contains '<'
-    @gt         = gt            # true if the position contains '>'
-    @xref_id    = xref_id       # link to the external entry as GenBank ID
-  end
-
-  attr_accessor :from, :to, :strand, :sequence, :lt, :gt, :xref_id
-
-  # Complement the sequence from outside.
-  def complement
-    @strand *= -1
-    self					# return Location object
-  end
-
-  # Replace the sequence from outside.
-  def replace(sequence)
-    @sequence	= sequence.downcase
-    self					# return Location object
-  end
-
-  # Returns a range (from..to) of the segment as a Range object.
-  def range
-    @from..@to
-  end
-
-end # class location
-
-
 class Locations
-
   include Enumerable
 
-  # Parse a GenBank style position string and returns a Locations object,
-  # which contains a list of Location objects.
+  # Parses a GenBank style position string and returns a Bio::Locations object,
+  # which contains a list of Bio::Location objects.
+  #   locations = Bio::Locations.new('join(complement(500..550), 600..625)')
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _str_: GenBank style position string
+  # *Returns*:: Bio::Locations object
   def initialize(position)
     if position.is_a? Array
       @locations = position
     else
       position   = gbl_cleanup(position)	# preprocessing
-      @locations = gbl_pos2loc(position)	# create an Array of Location
+      @locations = gbl_pos2loc(position)	# create an Array of Bio::Location objects
     end
   end
+
+  # An Array of Bio::Location objects
   attr_accessor :locations
 
-  # Iterates on each Location object.
+  # Iterates on each Bio::Location object.
   def each
     @locations.each do |x|
       yield(x)
     end
   end
 
-  # Returns nth Location object.
+  # Returns nth Bio::Location object.
   def [](n)
     @locations[n]
   end
 
-  # Returns first Location object.
+  # Returns first Bio::Location object.
   def first
     @locations.first
   end
 
-  # Returns last Location object.
+  # Returns last Bio::Location object.
   def last
     @locations.last
   end
 
   # Returns an Array containing overall min and max position [min, max]
-  # of this Locations object.
+  # of this Bio::Locations object.
   def span
     span_min = @locations.min { |a,b| a.from <=> b.from }
     span_max = @locations.max { |a,b| a.to   <=> b.to   }
@@ -396,9 +448,20 @@ class Locations
   end
   alias size length
 
-  # Convert absolute position in DNA (na) to relative position in RNA (na).
-  # If type == :aa,
-  # convert absolute position in DNA (na) to relative position in Protein (aa).
+  # Converts absolute position in the whole of the DNA sequence to relative 
+  # position in the locus.
+  # 
+  # This method can for example be used to relate positions in a DNA-sequence
+  # with those in RNA. In this use, the optional ':aa'-flag returns the position
+  # of the associated amino-acid rather than the nucleotide.
+  #   loc = Bio::Locations.new('complement(12838..13533)')
+  #   puts loc.relative(13524)        # => 10
+  #   puts loc.relative(13506, :aa)   # => 3
+  # ---
+  # *Arguments*:
+  # * (required) _position_: nucleotide position within whole of the sequence
+  # * _:aa_: flag that lets method return position in aminoacid coordinates
+  # *Returns*:: position within the location
   def relative(n, type = nil)
     case type
     when :location
@@ -414,18 +477,20 @@ class Locations
     end
   end
 
-  # Convert relative position in RNA (na) to absolute position in DNA (na).
-  # If type == :aa,
-  # convert relative position in Protein (aa) -> absolute position in DNA (na).
-  #
-  # * Examples
-  #
-  #     loc = Bio::Locations.new('complement(12838..13533)')
-  #     loc.absolute(10)          #=> 13524 (rel2abs)
-  #     loc.relative(13524)       #=> 10    (abs2rel)
-  #     loc.absolute(10, :aa)     #=> 13506 (rel2abs)
-  #     loc.relative(13506, :aa)  #=> 10    (abs2rel)
-  #
+  # Converts relative position in the locus to position in the whole of the
+  # DNA sequence.
+  # 
+  # This method can for example be used to relate positions in a DNA-sequence
+  # with those in RNA. In this use, the optional ':aa'-flag returns the position
+  # of the associated amino-acid rather than the nucleotide.
+  #   loc = Bio::Locations.new('complement(12838..13533)')
+  #   puts loc.absolute(10)          # => 13524
+  #   puts loc.absolute(10, :aa)     # => 13506
+  # ---
+  # *Arguments*:
+  # * (required) _position_: nucleotide position within locus
+  # * _:aa_: flag to be used if _position_ is a aminoacid position rather than a nucleotide position
+  # *Returns*:: position within the whole of the sequence
   def absolute(n, type = nil)
     case type
     when :location
@@ -590,6 +655,11 @@ end # module Bio
 if __FILE__ == $0
   puts "Test new & span methods"
   [
+    '450',
+    '500..600',
+    'join(500..550, 600..625)',
+    'complement(join(500..550, 600..625))',
+    'join(complement(500..550), 600..625)',
     '754^755',
     'complement(53^54)',
     'replace(4792^4793,"a")',
@@ -617,9 +687,14 @@ if __FILE__ == $0
     '<200001..<318389',
   ].each do |pos|
     p pos
-    p Bio::Locations.new(pos).span
-    p Bio::Locations.new(pos).range
-    p Bio::Locations.new(pos)
+#    p Bio::Locations.new(pos)
+#    p Bio::Locations.new(pos).span
+#    p Bio::Locations.new(pos).range
+    Bio::Locations.new(pos).each do |location|
+      puts "class=" + location.class.to_s
+      puts "start=" + location.from.to_s + "\tend=" + location.to.to_s + "\tstrand=" + location.strand.to_s
+    end
+
   end
 
   puts "Test rel2abs/abs2rel method"
