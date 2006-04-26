@@ -6,12 +6,13 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-#  $Id: command.rb,v 1.5 2006/03/28 14:00:48 ngoto Exp $
+#  $Id: command.rb,v 1.6 2006/04/26 12:04:13 ngoto Exp $
 #
 
 require 'open3'
 require 'uri'
 require 'open-uri'
+require 'net/http'
 
 module Bio
 module Command
@@ -160,6 +161,30 @@ module NetTools
   # Same as OpenURI.open_uri(uri).read.
   def self.read_uri(uri)
     OpenURI.open_uri(uri).read
+  end
+
+  # Same as:
+  #  uri = URI.parse(uri); Net::HTTP.start(uri.host, uri.port)
+  # and 
+  # it uses proxy if an environment variable (same as OpenURI.open_uri)
+  # is set.
+  # uri must be a string or a URI object.
+  def self.net_http_start(uri, &block)
+    unless uri.kind_of?(URI::Generic)
+      uri = URI.parse(uri)
+    end
+    if uri.scheme != 'http' then
+      raise "only http is supported: #{uri.inspect}"
+    end
+    # Note: URI#find_proxy is an unofficial method defined in open-uri.rb.
+    # If the spec of open-uri.rb would be changed, we should change below.
+    if proxyuri = uri.find_proxy then
+      raise 'Non-HTTP proxy' if proxyuri.class != URI::HTTP
+      http = Net::HTTP.Proxy(proxyuri.host, proxyuri.port)
+    else
+      http = Net::HTTP
+    end
+    http.start(uri.host, uri.port, &block)
   end
 end #module NetTools
 
