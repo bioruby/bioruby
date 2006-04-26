@@ -1,53 +1,55 @@
 #
 # = bio/feature.rb - Features/Feature class (GenBank Feature table)
 #
-# Copyright::	Copyright (c) 2002, 2005
-#		Toshiaki Katayama <k@bioruby.org>
+# Copyright::	Copyright (c) 2002, 2005  Toshiaki Katayama <k@bioruby.org>
+#                             2006        Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::	Ruby's
 #
-# $Id: feature.rb,v 1.10 2006/02/27 09:13:46 k Exp $
-#
-# == INSD Feature table definition
-#
-# See http://www.ddbj.nig.ac.jp/FT/full_index.html for the INSD
-# (GenBank/EMBL/DDBJ) Feature table definition.
-#
-# === Example
-#
-#  # suppose features is a Bio::Features object
-#  features.each do |feature|
-#    f_name = feature.feature
-#    f_pos  = feature.position
-#    puts "#{f_name}:\t#{f_pos}"
-#    feature.each do |qualifier|
-#      q_name = qualifier.qualifier
-#      q_val  = qualifier.value
-#      puts "- #{q_name}:\t#{q_val}"
-#    end
-#  end
-#
-#  # Iterates only on CDS features and extract translated amino acid sequences
-#  features.each("CDS") do |feature|
-#    hash = feature.assoc
-#    name = hash["gene"] || hash["product"] || hash["note"] 
-#    seq  = hash["translation"]
-#    pos  = feature.position
-#    if gene and seq
-#      puts ">#{gene} #{feature.position}"
-#      puts aaseq
-#    end
-#  end
-#
+# $Id: feature.rb,v 1.11 2006/04/26 11:05:50 aerts Exp $
 
 require 'bio/location'
 
 module Bio
 
+# = DESCRIPTION
 # Container for the sequence annotation.
+#
+# = USAGE
+#  # Create a Bio::Feature object.
+#  # For example: the GenBank-formatted entry in genbank for accession M33388
+#  # contains the following feature:
+#  #    exon     1532..1799
+#  #             /gene="CYP2D6"
+#  #             /note="cytochrome P450 IID6; GOO-132-127"
+#  #             /number="1"
+#  feature = Bio::Feature.new('exon','1532..1799',['gene' => 'CYP2D6','note' => 'cytochrome P450 IID6; GOO-132-127','number' => '1'])
+#
+#  # Print the feature
+#  puts feature.feature + "\t" + feature.position
+#  feature.each do |qualifier|
+#    puts "- " + qualifier.qualifier + ": " + qualifier.value
+#  end
+#
+# = REFERENCES
+# INSD feature table definition:: http://www.ddbj.nig.ac.jp/FT/full_index.html
 class Feature
-
+  # Create a new Bio::Feature object.
+  # *Arguments*:
+  # * (required) _feature_: type of feature (e.g. "exon")
+  # * (required) _position_: position of feature (e.g. "complement(1532..1799)")
+  # * (optional) _qualifiers_: list of qualifiers (e.g. "['gene' => 'CYP2D6','number' => '1']")
+  # *Returns*:: Bio::Feature object
   def initialize(feature = '', position = '', qualifiers = [])
-    @feature, @position, @qualifiers = feature, position, qualifiers
+    @feature, @position = feature, position
+    @qualifiers = Array.new
+    if qualifiers.length.modulo(2) > 0
+      $stderr.puts "WARNING"
+    end
+    while qualifiers.length > 0
+      key = qualifiers.shift
+      value = qualifiers.shift || ''
+      self.append(Qualifier.new(key, value))
+    end
   end
 
   # Returns type of feature in String (e.g 'CDS', 'gene')
@@ -65,16 +67,19 @@ class Feature
   end
 
   # Appends a Qualifier object to the Feature.
-  #
-  # * Returns an Array of Qualifier objects.
-  # * If the argument is not a Qualifier object, returns nil.
-  #
+  # 
+  # *Arguments*:
+  # * (required) _qualifier_: Bio::Feature::Qualifier object
+  # *Returns*:: Bio::Feature object
   def append(a)
     @qualifiers.push(a) if a.is_a? Qualifier
     return self
   end
 
-  # Iterates on each qualifier.
+  # Iterates on each qualifier object.
+  #
+  # *Arguments*:
+  # * (optional) _key_: if specified, only iterates over qualifiers with this key
   def each(arg = nil)
     @qualifiers.each do |x|
       next if arg and x.qualifier != arg
@@ -107,9 +112,14 @@ class Feature
     self.to_hash[key]
   end
 
-  # Container for the qualifier-value pair.
+  # Container for qualifier-value pairs for sequence features.
   class Qualifier
-
+    # Creates a new Bio::Feature::Qualifier object
+    #
+    # *Arguments*:
+    # * (required) _key_: key of the qualifier (e.g. "gene")
+    # * (required) _value_: value of the qualifier (e.g. "CYP2D6")
+    # *Returns*:: Bio::Feature::Qualifier object
     def initialize(key, value)
       @qualifier, @value = key, value
     end
@@ -125,9 +135,44 @@ class Feature
 end
 
 
-# Container for the list of Feature objects.
+# = DESCRIPTION
+# Container for a list of Feature objects.
+#
+# = USAGE
+#  # First, create some Bio::Feature objects
+#  feature1 = Bio::Feature.new('intron','3627..4059',['gene', 'CYP2D6', 'note', 'G00-132-127','number','4'])
+#  feature2 = Bio::Feature.new('exon','4060..4236',['gene', 'CYP2D6', 'note', 'G00-132-127','number','5'])
+#  feature3 = Bio::Feature.new('intron','4237..4426',['gene', 'CYP2D6', 'note', 'G00-132-127','number','5'])
+#  feature4 = Bio::Feature.new('CDS','join(2538..3626,4060..4236)',['gene', 'CYP2D6','translation','MGXXTVMHLL...'])
+#
+#  # And create a container for them
+#  feature_container = Bio::Features.new([ feature1, feature2, feature3, feature4 ])
+#
+#  # Iterate over all features and print
+#  feature_container.each do |feature|
+#    puts feature.feature + "\t" + feature.position
+#    feature.each do |qualifier|
+#      puts "- " + qualifier.qualifier + ": " + qualifier.value
+#    end
+#  end
+#
+#  # Iterate only over CDS features and extract translated amino acid sequences
+#  features.each("CDS") do |feature|
+#    hash = feature.to_hash
+#    name = hash["gene"] || hash["product"] || hash["note"] 
+#    aaseq  = hash["translation"]
+#    pos  = feature.position
+#    if name and seq
+#      puts ">#{gene} #{feature.position}"
+#      puts aaseq
+#    end
+#  end
 class Features
-
+  # Create a new Bio::Features object.
+  #
+  # *Arguments*:
+  # * (optional) _list of features_: list of Bio::Feature objects
+  # *Returns*:: Bio::Features object
   def initialize(ary = [])
     @features = ary
   end
@@ -136,13 +181,19 @@ class Features
   attr_accessor :features
 
   # Appends a Feature object to Features.
+  # 
+  # *Arguments*:
+  # * (required) _feature_: Bio::Feature object
+  # *Returns*:: Bio::Features object
   def append(a)
     @features.push(a) if a.is_a? Feature
     return self
   end
 
-  # Iterates on each feature.  If a feature name is given as an argument,
-  # only iterates on each feature belongs to the name (e.g. 'CDS' etc.)
+  # Iterates on each feature object.
+  #
+  # *Arguments*:
+  # * (optional) _key_: if specified, only iterates over features with this key
   def each(arg = nil)
     @features.each do |x|
       next if arg and x.feature != arg
@@ -169,4 +220,38 @@ end
 
 end # Bio
 
+if __FILE__ == $0
+  puts "---TESTING Bio::Feature"
+  feature1 = Bio::Feature.new('exon','1532..1799',['gene','CYP2D6','note','cytochrome P450 IID6; GOO-132-127','number','1', 'note', 'a second note'])
 
+  # Print the feature out
+  puts feature1.feature + "\t" + feature1.position
+  feature1.each do |qualifier|
+    puts "- " + qualifier.qualifier + ": " + qualifier.value
+  end
+  
+  feature2 = Bio::Feature.new('CDS','join(2538..3626,4060..4236)',['gene', 'CYP2D6','translation','MGXXTVMHLL...'])
+
+  puts "---TESTING Bio::Features"
+  feature3 = Bio::Feature.new('intron','3627..4059',['gene', 'CYP2D6', 'note', 'G00-132-127','number','4'])
+  feature4 = Bio::Feature.new('exon','4060..4236',['gene', 'CYP2D6', 'note', 'G00-132-127','number','5'])
+  feature5 = Bio::Feature.new('intron','4237..4426',['gene', 'CYP2D6', 'note', 'G00-132-127','number','5'])
+  feature_container = Bio::Features.new([ feature1, feature2, feature3, feature4, feature5 ])
+  feature_container.each do |feature|
+    puts "-NEXT FEATURE"
+    puts feature.feature + "\t" + feature.position
+    feature.each do |qualifier|
+      puts "- " + qualifier.qualifier + ": " + qualifier.value
+    end
+  end
+
+  puts "---TESTING hash function"
+  feature_container.each('CDS') do |feature|
+    hash = feature.to_hash
+    name = hash["gene"] || hash["product"] || hash["note"] 
+    aaseq  = hash["translation"]
+    pos  = feature.position
+    puts ">#{name} #{feature.position}"
+    puts aaseq
+  end
+end
