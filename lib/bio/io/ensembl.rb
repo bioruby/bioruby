@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: ensembl.rb,v 1.1 2006/04/14 06:28:09 nakao Exp $
+# $Id: ensembl.rb,v 1.2 2006/04/27 05:38:50 nakao Exp $
 #
 # == Description
 #
@@ -26,7 +26,8 @@
 #   http:/www.ensembl.org/
 #
 
-require 'bio'
+require 'bio/command'
+require 'uri'
 require 'cgi'
 
 module Bio
@@ -43,15 +44,44 @@ module Bio
 #  seq = Bio::Ensembl::Mouse.exportview(1, 1000, 100000)
 #  gff = Bio::Ensembl::Mouse.exportview(1, 1000, 100000, ['gene', 'variation', 'genscan'])
 #
+#  Bio::Enesmbl.server_uri("http://www.gramene.org")
+#  class Rice < Base
+#    Organism = 'Oryza_sativa'
+#  end
+#  seq = Bio::Ensembl::Rice.exportview(1, 1000, 100000)
+#
 # == References
 #
 # * Ensembl
 #   http:/www.ensembl.org/
 #
+# * GRAMENE
+#   http://www.gramene.org/
+#
 class Ensembl
 
-  # Hostname of Ensembl Genome Browser.
-  ServerName = 'www.ensembl.org'
+  # Hostname of the Ensembl Genome Browser.
+  EBIServerURI = 'http://www.ensembl.org'
+
+  # An Alternative Hostname for Ensembl Genome Browser.
+  @@server_uri = nil
+
+  # Sets and uses an alternative hostname for ensembl genome browser.
+  #
+  # == Example
+  #
+  #   require 'bio'
+  #   p Bio::Enesmbl.server_uri #=> 'http://www.ensembl.org'
+  #   Bio::Enesmbl.server_uri("http://www.gramene.org")
+  #   p Bio::Enesmbl.server_uri #=> "http://www.gramene.org"
+  #
+  def self.server_uri(uri = nil)
+    if uri
+      @@server_uri = uri
+    else
+      @@server_uri || EBIServerURI
+    end
+  end
 
 
   # Ensembl Genome Browser Client Super Class
@@ -78,13 +108,18 @@ class Ensembl
     # == Examples
     #
     #   # Genomic sequence in Fasta format
-    #   Bio::Ensembl::Human.exportview(:seq_region_name => 1, :anchor1 => 1149206, :anchor2 => 1149229)
+    #   Bio::Ensembl::Human.exportview(:seq_region_name => 1, 
+    #                                  :anchor1 => 1149206, :anchor2 => 1149229)
     #   Bio::Ensembl::Human.exportview(1, 1149206, 1149229)
     #
     #   # Feature in GFF
-    #   Bio::Ensembl::Human.exportview(:seq_region_name => 1, :anchor1 => 1149206, :anchor2 => 1150000, 
-    #                                  :options => ['similarity', 'repeat', 'genscan', 'variation', 'gene'])
-    #   Bio::Ensembl::Human.exportview(1, 1149206, 1150000, ['variation', 'gene'])
+    #   Bio::Ensembl::Human.exportview(:seq_region_name => 1, 
+    #                                  :anchor1 => 1149206, :anchor2 => 1150000, 
+    #                                  :options => ['similarity', 'repeat', 
+    #                                               'genscan', 'variation', 
+    #                                               'gene'])
+    #   Bio::Ensembl::Human.exportview(1, 1149206, 1150000, 
+    #                                  ['variation', 'gene'])
     #
     # == Arguments
     #
@@ -98,7 +133,8 @@ class Ensembl
     # 2. anchor1         - From coordination (*)
     # 3. anchor2         - To coordination (*)
     # 4. options         - Features to export (in :format => 'gff' or 'tab')
-    #                      ['similarity', 'repeat', 'genscan', 'variation', 'gene']
+    #                      ['similarity', 'repeat', 'genscan', 'variation', 
+    #                       'gene']
     #
     # === Named Arguments
     # 
@@ -111,60 +147,93 @@ class Ensembl
     # * :downstream      - Bp downstream
     # * :format          - File format ['fasta', 'gff', 'tab']
     # * :options         - Features to export (for :format => 'gff' or 'tab')
-    #                      ['similarity', 'repeat', 'genscan', 'variation', 'gene']
+    #                      ['similarity', 'repeat', 'genscan', 'variation', 
+    #                       'gene']
     # 
     def self.exportview(*args)
-      cgi = Client.new('exportview', self::Organism)
-
       if args.first.class == Hash then opts = args.first
       else
-        opts = {:seq_region_name => args[0], :anchor1 => args[1], :anchor2 => args[2]}
+        options = {:seq_region_name => args[0], 
+                   :anchor1 => args[1], 
+                   :anchor2 => args[2]}
         case args.size
-        when 3 then opts.update({:format => 'fasta'})
-        when 4 then opts.update({:format => 'gff', :options => args[3]}) ;        end
+        when 3 then 
+          options.update({:format => 'fasta'})
+        when 4 then 
+          options.update({:format => 'gff', :options => args[3]})
+        end
       end
-      @hash = {:type1 => 'bp', 
+
+      @data = {:type1 => 'bp', 
                :type2 => 'bp', 
                :downstream => '', 
                :upstream => '', 
                :format => 'fasta',
                :options => [],
-               :action => 'export', :_format => 'Text', :output => 'txt', :submit => 'Continue >>'}
+               :action => 'export', 
+               :_format => 'Text', 
+               :output => 'txt', 
+               :submit => 'Continue >>'}
 
-      cgi.exec(@hash.update(opts))
+      cgi = Client.new('exportview', self::Organism)
+      cgi.exec(@data.update(options))
     end
 
+
+
     # An Ensembl CGI client class
+    #
+    # Enable the use of HTTP access via a proxy by setting the proxy address up
+    # as the 'http_proxy' enviroment variable. 
     # 
     # === Examples
     #
-    #  cgi = Client('martview', 'Homo_sapiens')
-    #  cgi.exec(hash_data)
+    #  cgi = Client.new('martview', 'Homo_sapiens')
+    #  result_body = cgi.exec(hash_data)
     #
-    class Client < PSORT::CGIDriver
+    class Client
+
+      # Sets cgi_name and genome_name.
+      #
+      # === Example
+      #
+      #  cgi = Client.new('martview', 'Homo_sapiens')
+      #
       def initialize(cgi_name, genome_name)
-        super(Ensembl::ServerName, ['', genome_name, cgi_name].join('/'))
+        @uri = URI.parse(Ensembl.server_uri)
+        @path = ['', genome_name, cgi_name].join('/')
+      end
+
+      # Executes query with data.
+      #
+      # === Example
+      #
+      #  result_body = cgi.exec(hash_data)
+      #
+      def exec(data_hash)
+        data = make_args(data_hash)
+
+        result = nil      
+        Bio::Command::NetTools.net_http_start(@uri.host, @uri.port) {|http|
+          result, = http.post(@path, data)
+        }
+        result.body
       end
 
       private
 
-      def make_args(query)
-        @args = {}
-        query.each { |k, v| @args[k.to_s] = v }
-        nested_args_join(query)
-      end
-
-      def nested_args_join(hash)
+      def make_args(hash)
         tmp = []
         hash.each do |key, value|
-          if value.class == Array then value.each { |val| tmp << [key, val] } else tmp << [key, value] end
+          if value.class == Array then 
+            value.each { |val| tmp << [key, val] } 
+          else 
+            tmp << [key, value] 
+          end
         end
-        tmp.map {|x| x.map {|x| CGI.escape(x.to_s) }.join("=") }.join('&')
+        tmp.map {|e| e.map {|x| CGI.escape(x.to_s) }.join("=") }.join('&')
       end
 
-      def parse_report(result_body)
-        result_body
-      end
     end # class Client
 
   end # class Base
