@@ -1,11 +1,13 @@
+module Bio
+
 #
 # = bio/appl/psort.rb - PSORT, protein sorting site prediction systems
 #
-# Copyright::   Copyright (C) 2003 Mitsuteru C. Nakao <n@bioruby.org>
-# License::     LGPL
+# Copyright::   Copyright (C) 2003-2006
+#               Mitsuteru C. Nakao <n@bioruby.org>
+# License::     Ruby's
 #
-#
-# $Id: psort.rb,v 1.8 2005/11/01 05:15:15 nakao Exp $
+# $Id: psort.rb,v 1.9 2006/04/30 07:13:39 nakao Exp $
 #
 # == A client for PSORT WWW Server 
 #
@@ -24,55 +26,33 @@
 # === Example
 #
 #
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
-#
 
 require 'bio/sequence'
+require 'bio/command'
 require 'bio/db/fasta'
-require 'net/http'
 require 'cgi'
 
 
-module Bio
-
-  
-
-
+  #
   class PSORT
+
     # a Hash for PSORT official hosts:
     #   Key      value (host)
     #   -------  -----------------------
     #   IMSUT    psort.ims.u-tokyo.ac.jp  
     #   Okazaki  psort.nibb.ac.jp        
     #   Peking   srs.pku.edu.cn:8088     
-    WWWServer = {
-      'IMSUT'   => {'host' => 'psort.hgc.jp', #'psort.ims.u-tokyo.ac.jp', 
-                    'PSORT1' => '/cgi-bin/okumura.pl',
-                    'PSORT2' => '/cgi-bin/runpsort.pl'},
-      'Okazaki' => {'host' => 'psort.nibb.ac.jp', 
-                    'PSORT1' => '/cgi-bin/okumura.pl',
-                    'PSORT2' => '/cgi-bin/runpsort.pl'},
-      'Peking'  => {'host' => 'srs.pku.edu.en:8088', 
-                    'PSORT1' => '/cgi-bin/okumura.pl',
-                    'PSORT2' => '/cgi-bin/runpsort.pl'}
+    ServerURI = {
+      :IMSUT   => {
+        :PSORT1 => URI.parse("http://psort.hgc.jp/cgi-bin/okumura.pl"),
+        :PSORT2 => URI.parse("http://psort.hgc.jp/cgi-bin/runpsort.pl") },
+      :Okazaki => {
+        :PSORT1 => URI.parse("http://psort.nibb.ac.jp/cgi-bin/okumura.pl"),
+        :PSORT2 => URI.parse("http://psort.nibb.ac.jp/cgi-bin/runpsort.pl") },
+      :Peking  => {
+        :PSORT1 => URI.parse("http:///src.pku.edu.cn:8088/cgi-bin/okumura.pl"),
+        :PSORT2 => URI.parse("http://src.pku.edu.cn:8088/cgi-bin/runpsort.pl") },
     }
-
 
     # = Generic CGI client class
     # A generic CGI client class for Bio::PSORT::* classes.
@@ -103,12 +83,26 @@ module Bio
       attr_reader :report
 
 
-      # Sets remote ``host'' and cgi ``path''.
-      def initialize(host = '', path = '') 
-        @host = host
-        @path = path
+      # Sets remote host name and cgi path or uri.
+      #
+      # == Examples
+      #
+      #   CGIDriver.new("localhost", "/cgi-bin/psort_www.pl")
+      #
+      #   CGIDriver.new("http://localhost/cgi-bin/psort_www.pl")
+      #
+      #   CGIDriver.new(URI.parse("http://localhost/cgi-bin/psort_www.pl"))
+      #
+      def initialize(host = '', path = '')
+        case host.to_s
+        when /^http:/
+          uri = host.to_s
+        else
+          uri = 'http://' + host + '/' + path
+        end
+        @uri = URI.parse(uri)
         @args = {}
-        @report
+        @report = ''
       end
 
 
@@ -117,7 +111,10 @@ module Bio
         data = make_args(query)  
 
         begin
-          result, = Net::HTTP.new(@host).post(@path, data)
+          result = nil
+          Bio::Command::NetTools.net_http_start(@uri.host) {|http|
+            result, = http.post(@uri.path, data)
+          }
           @report = result.body
           output = parse_report(@report)
         end
@@ -139,7 +136,7 @@ module Bio
 
       # Erases HTML tags
       def erase_html_tags(str)
-        return str.gsub(/<\S.*?>/,'')
+        return str.gsub(/<\S.*?>/, '')
       end
 
       # Returns CGI argument text in String (key=value&) from a Hash ({key=>value}).
@@ -148,7 +145,7 @@ module Bio
         hash.each do |key, val|
           tmp << CGI.escape(key.to_s) + '=' + CGI.escape(val.to_s)
         end
-        return tmp.join(delim)  # not ';' but '&' in psort's cgi
+        return tmp.join(delim)  # not ';' but '&' in the psort cgi script.
       end
 
     end # class CGIDriver
@@ -156,6 +153,7 @@ module Bio
 
 
     # = Bio::PSORT::PSORT1
+    #
     # Bio::PSORT::PSORT1 is a wapper class for the original PSORT program.
     #
     # == Example
@@ -168,9 +166,11 @@ module Bio
     #  report_raw = serv.exec(Bio::FastaFormat.new(seq), false)
     # 
     # == References
+    #
     # 1. Nakai, K. and Kanehisa, M., A knowledge base for predicting protein 
     #    localization sites in eukaryotic cells, Genomics 14, 897-911 (1992).
     #    [PMID:1478671]
+    #
     class PSORT1
 
       autoload :Report, 'bio/appl/psort/report'
@@ -178,33 +178,31 @@ module Bio
       # Returns a PSORT1 CGI Driver object (Bio::PSORT::PSORT1::Remote)     
       # connecting to the IMSUT server.
       def self.imsut
-        self.new(Remote.new(WWWServer['IMSUT']['host'],
-                            WWWServer['IMSUT']['PSORT1']))
+        self.new(Remote.new(ServerURI[:IMSUT][:PSORT1]))
       end
 
 
       # Returns a PSORT1 CGI Driver object (Bio::PSORT::PSORT1::Remote)
       # connecting to the NIBB server.
       def self.okazaki
-        self.new(Remote.new(WWWServer['Okazaki']['host'],
-                            WWWServer['Okazaki']['PSORT1']))
+        self.new(Remote.new(ServerURI[:Okazaki][:PSORT1]))
       end
       
 
       # Returns a PSORT1 CGI Driver object (Bio::PSORT::PSORT1::Remote)
       # connecting to the Peking server.
       def self.peking
-        self.new(Remote.new(WWWServer['Peking']['host'],
-                            WWWServer['Peking']['PSORT1']))
+        self.new(Remote.new(ServerURI[:Peking][:PSORT1]))
       end
 
 
-      # Sets a server CGI Driver (Bio::PSORT::PSORT1::Remote).
-      def initialize(driver, origin = 'yeast')
-        @serv     = driver
-        @origin   = origin  # Gram-positive bacterium, Gram-negative bacterium,
-                            # yeast, aminal, plant
-        @title    = 'MYSEQ'
+      # Sets a cgi client (Bio::PSORT::PSORT1::Remote).
+      #
+      def initialize(driver, origin = 'yeast', title = 'MYSEQ')
+        @serv = driver
+        @origin = origin  # Gram-positive bacterium, Gram-negative bacterium,
+                          # yeast, aminal, plant
+        @title = title
         @sequence = ''
       end
 
@@ -236,9 +234,9 @@ module Bio
       # returns ourput text without any parsing.
       def exec(faa, parsing = true)
         if faa.class == Bio::FastaFormat
-          @title        = faa.entry_id if @title == 'MYSEQ'
-          @sequence     = faa.seq
-          @serv.args    = {'title' => @title, 'origin' => @origin}
+          @title = faa.entry_id if @title == 'MYSEQ'
+          @sequence = faa.seq
+          @serv.args = {'title' => @title, 'origin' => @origin}
           @serv.parsing = parsing
           return @serv.exec(sequence)
         else
@@ -267,9 +265,9 @@ module Bio
         attr_accessor :parsing
         
         # Sets remote ``host'' and cgi ``path''.
-        def initialize(host, path)
-          @origin  = 'yeast'
-          @title   = 'MYSEQ'
+        def initialize(host, path = nil, title = 'MYSEQ', origin = 'yeast')
+          @title   = title
+          @origin  = origin
           @parsing = true
           super(host, path)
         end
@@ -326,29 +324,26 @@ module Bio
       #  IMSUT    psort.ims.u-tokyo.ac.jp  /cgi-bin/runpsort.pl  (default)
       #  Okazaki  psort.nibb.ac.jp         /cgi-bin/runpsort.pl
       #  Peking   srs.pku.edu.cn:8088      /cgi-bin/runpsort.pl
-      def self.remote(host, path)
+      def self.remote(host, path = nil)
         self.new(Remote.new(host, path))
       end
 
       # Returns a PSORT2 CGI Driver object (Bio::PSORT::PSORT2::Remote)     
       # connecting to the IMSUT server.
       def self.imsut
-        self.remote(WWWServer['IMSUT']['host'],
-                    WWWServer['IMSUT']['PSORT2'])
+        self.remote(ServerURI[:IMSUT][:PSORT2])
       end
 
       # Returns a PSORT2 CGI Driver object (Bio::PSORT::PSORT2::Remote)
       # connecting to the NIBB server.
       def self.okazaki
-        self.remote(WWWServer['Okazaki']['host'],
-                    WWWServer['Okazaki']['PSORT2'])
+        self.remote(ServerURI[:Okazaki][:PSORT2])
       end
 
       # Returns a PSORT2 CGI Driver object (Bio::PSORT::PSORT2::Remote)
       # connecting to the Peking server.
       def self.peking
-        self.remote(WWWServer['Peking']['host'],
-                    WWWServer['Peking']['PSORT2'])
+        self.remote(ServerURI[:Peking][:PSORT2])
       end
 
       # An accessor of the origin argument.
@@ -373,9 +368,9 @@ module Bio
       # Returns PSORT II report in text if parsing = false.
       def exec(faa, parsing = true)
         if faa.class == Bio::FastaFormat
-          @title        = faa.entry_id if @title == nil
-          @sequence     = faa.seq
-          @serv.args    = {'origin' => @origin, 'title' => @title}
+          @title = faa.entry_id if @title == nil
+          @sequence = faa.seq
+          @serv.args = {'origin' => @origin, 'title' => @title}
           @serv.parsing = parsing
           return @serv.exec(@sequence)
         else

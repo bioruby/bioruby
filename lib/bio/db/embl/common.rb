@@ -1,10 +1,11 @@
 #
 # = bio/db/embl.rb - Common methods for EMBL style database classes
 #
-# Copyright::   Copyright (C) 2001-2005 Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::   Copyright (C) 2001-2006
+#               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: common.rb,v 1.10 2006/04/14 06:04:09 nakao Exp $
+# $Id: common.rb,v 1.11 2006/04/30 07:11:29 nakao Exp $
 #
 # == Description
 #
