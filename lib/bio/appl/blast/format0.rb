@@ -5,7 +5,7 @@
 # Copyright:: Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
 # License:: Ruby's
 #
-#  $Id: format0.rb,v 1.17 2006/02/22 08:46:15 ngoto Exp $
+#  $Id: format0.rb,v 1.18 2006/04/30 05:47:59 ngoto Exp $
 #
 # NCBI BLAST default (-m 0 option) output parser.
 #
@@ -780,7 +780,7 @@ module Bio
           def initialize(data)
             @f0hitname = data.shift
             @hsps = []
-            while r = data[0] and /^\s+Score/ =~ r
+            while r = data[0] and /\A\s+Score/ =~ r
               @hsps << HSP.new(data)
             end
             @again = false
