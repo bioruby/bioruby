@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
 # License:: Ruby's
 #
-#  $Id: wublast.rb,v 1.6 2006/02/22 08:46:15 ngoto Exp $
+#  $Id: wublast.rb,v 1.7 2006/04/30 05:47:25 ngoto Exp $
 #
 #  WU-BLAST default output parser.
 #
@@ -280,7 +280,7 @@ module Bio
                 data.shift
                 r = data.first
               end
-              if /^\s+Score/ =~ r then
+              if /\A\s+Score/ =~ r then
                 @hsps << HSP.new(data)
               else
                 break
