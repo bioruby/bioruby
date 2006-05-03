@@ -1,3 +1,9 @@
+2006-05-02  Mitsuteru Nakao <n@bioruby.org>
+
+        * lib/bio/appl/pts1.rb
+
+          Bio::PTS1 first commit.
+
 2006-04-14  Mitsuteru Nakao <n@bioruby.org>
 
         * lib/bio/io/ensembl.rb
