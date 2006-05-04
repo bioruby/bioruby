@@ -5,7 +5,7 @@
 #                             2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::	LGPL
 #
-# $Id: location.rb,v 0.23 2006/04/20 15:58:34 aerts Exp $
+# $Id: location.rb,v 0.24 2006/05/04 13:13:57 aerts Exp $
 #
 # 
 #--
@@ -44,7 +44,8 @@ module Bio
 #     puts "start=" + location.from.to_s + ";end=" + location.to.to_s
 #   end
 class Location
-
+  include Comparable
+	
   # Parses a'location' segment, which can be 'ID:' + ('n' or 'n..m' or 'n^m'
   # or "seq") with '<' or '>', and returns a Bio::Location object.
   #   location = Bio::Location.new('500..550')
@@ -128,6 +129,38 @@ class Location
   def range
     @from..@to
   end
+
+	# Check where a Bio::Location object is located compared to another
+	# Bio::Location object (mainly to facilitate the use of Comparable).
+	# A location A is upstream of location B if the start position of location A
+	# is smaller than the start position of location B. If they're the same, the
+	# end positions are checked.
+	# ---
+	# *Arguments*:
+	# * (required) _other location_: a Bio::Location object
+	# *Returns*::
+	# * 1 if self < other location
+	# * -1 if self > other location
+	# * 0 if both location are the same
+	# * nil if the argument is not a Bio::Location object
+	def <=>(other)
+		if ! other.kind_of?(Bio::Location)
+			return nil
+		end
+    
+		if @from.to_f < other.from.to_f
+      return -1
+		elsif @from.to_f > other.from.to_f
+			return 1
+		end
+		
+		if @to.to_f < other.to.to_f
+      return -1
+		elsif @to.to_f > other.to.to_f
+			return 1
+		end
+    return 0
+	end
 
 end # class location
 
