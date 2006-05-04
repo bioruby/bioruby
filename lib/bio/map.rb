@@ -40,9 +40,9 @@ module Bio
   #  my_map1 = Bio::Map::SimpleMap.new('RH_map_ABC (2006)', 'RH', 'cR')
   #  my_map2 = Bio::Map::SimpleMap.new('consensus', 'linkage', 'cM')
   #  
-  #  my_map1.add_mapping(my_marker1, '17')
-  #  my_map1.add_mapping(Bio::Map::Marker.new('marker2'), '5')
-  #  my_marker3.add_mapping(my_map1, '9')
+  #  my_map1.add_mapping_to_marker(my_marker1, '17')
+  #  my_map1.add_mapping_to_marker(Bio::Map::Marker.new('marker2'), '5')
+  #  my_marker3.add_mapping_to_marker(my_map1, '9')
   #  
   #  puts "Does my_map1 contain marker3? => " + my_map1.contains_marker?(my_marker3).to_s
   #  puts "Does my_map2 contain marker3? => " + my_map2.contains_marker?(my_marker3).to_s
@@ -72,7 +72,7 @@ module Bio
       # 
       # = USAGE
       #   # suppose we have a Bio::Map::SimpleMap object called my_map
-      #   my_map.add_mapping(Bio::Map::Marker.new('marker_a'), '5')
+      #   my_map.add_mapping_to_marker(Bio::Map::Marker.new('marker_a'), '5')
       # ---
       # *Arguments*:
       # * _marker_ (required): Bio::Map::Marker object
@@ -132,7 +132,7 @@ module Bio
       # 
       # = USAGE
       #   # suppose we have a Bio::Map::Marker object called marker_a
-      #   marker_a.add_mapping(Bio::Map::SimpleMap.new('my_map'), '5')
+      #   marker_a.add_mapping_to_map(Bio::Map::SimpleMap.new('my_map'), '5')
       # ---
       # *Arguments*:
       # * _map_ (required): Bio::Map::SimpleMap object
