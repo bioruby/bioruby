@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: bio.rb,v 1.67 2006/04/27 09:29:35 aerts Exp $
+# $Id: bio.rb,v 1.68 2006/05/04 13:12:57 aerts Exp $
 #
 
 module Bio
@@ -43,6 +43,9 @@ module Bio
   autoload :Alignment,      'bio/alignment'
 
 
+  ## Map
+  autoload :Map,            'bio/map'
+	
   ### Constants
 
   autoload :NucleicAcid,    'bio/data/na'
