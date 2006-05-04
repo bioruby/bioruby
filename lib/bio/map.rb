@@ -3,7 +3,8 @@
 #
 # Copyright::   Copyright (C) 2006
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
-# License::     Ruby's
+# Licence::     Ruby's
+#
 require 'bio/location'
 
 module Bio
@@ -208,6 +209,10 @@ module Bio
         unless other.kind_of?(Bio::Map::Mapping)
           raise "[Error] markers are not comparable"
         end
+	unless @map.equal?(other.map)
+	  raise "[Error] maps have to be the same"
+	end
+
         return self.location.<=>(other.location)
       end
     end # Mapping
@@ -291,14 +296,16 @@ if __FILE__ == $0
   my_map1.add_mapping_to_marker(Bio::Map::Marker.new('marker2'), '5')
   my_marker3.add_mapping_to_map(my_map1, '9')
 
+  my_map2.add_mapping_to_marker(my_marker1, '57')
 
   puts "Does my_map1 contain marker3? => " + my_map1.contains_marker?(my_marker3).to_s
   puts "Does my_map2 contain marker3? => " + my_map2.contains_marker?(my_marker3).to_s
-	
+
   my_map1.sort.each do |mapping|
     puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location.from.to_s + ".." + mapping.location.to.to_s
   end
   puts my_map1.min.marker.name
+
   my_map2.each do |mapping|
     puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location.from.to_s + ".." + mapping.location.to.to_s
   end
