@@ -5,7 +5,7 @@
 #                             2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::	LGPL
 #
-# $Id: location.rb,v 0.24 2006/05/04 13:13:57 aerts Exp $
+# $Id: location.rb,v 0.25 2006/05/04 18:40:26 aerts Exp $
 #
 # 
 #--
@@ -130,37 +130,37 @@ class Location
     @from..@to
   end
 
-	# Check where a Bio::Location object is located compared to another
-	# Bio::Location object (mainly to facilitate the use of Comparable).
-	# A location A is upstream of location B if the start position of location A
-	# is smaller than the start position of location B. If they're the same, the
-	# end positions are checked.
-	# ---
-	# *Arguments*:
-	# * (required) _other location_: a Bio::Location object
-	# *Returns*::
-	# * 1 if self < other location
-	# * -1 if self > other location
-	# * 0 if both location are the same
-	# * nil if the argument is not a Bio::Location object
-	def <=>(other)
-		if ! other.kind_of?(Bio::Location)
-			return nil
-		end
-    
-		if @from.to_f < other.from.to_f
+  # Check where a Bio::Location object is located compared to another
+  # Bio::Location object (mainly to facilitate the use of Comparable).
+  # A location A is upstream of location B if the start position of location A
+  # is smaller than the start position of location B. If they're the same, the
+  # end positions are checked.
+  # ---
+  # *Arguments*:
+  # * (required) _other location_: a Bio::Location object
+  # *Returns*::
+  # * 1 if self < other location
+  # * -1 if self > other location
+  # * 0 if both location are the same
+  # * nil if the argument is not a Bio::Location object
+  def <=>(other)
+    if ! other.kind_of?(Bio::Location)
+      return nil
+    end
+
+    if @from.to_f < other.from.to_f
       return -1
-		elsif @from.to_f > other.from.to_f
-			return 1
-		end
-		
-		if @to.to_f < other.to.to_f
+    elsif @from.to_f > other.from.to_f
+      return 1
+    end
+
+    if @to.to_f < other.to.to_f
       return -1
-		elsif @to.to_f > other.to.to_f
-			return 1
-		end
+    elsif @to.to_f > other.to.to_f
+      return 1
+    end
     return 0
-	end
+  end
 
 end # class location
 
@@ -754,5 +754,7 @@ if __FILE__ == $0
   print "pos         : "; p pos
   print "`- loc[1]   : "; p loc[1]
   print "   `- range : "; p loc[1].range
+
+  puts Bio::Location.new('5').<=>(Bio::Location.new('3'))
 end
 
