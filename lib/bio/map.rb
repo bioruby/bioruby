@@ -4,6 +4,8 @@
 # Copyright::   Copyright (C) 2006
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     Ruby's
+require 'bio/location'
+
 module Bio
   # = DESCRIPTION
   # The Bio::Module contains classes that describe mapping information and can
@@ -31,10 +33,27 @@ module Bio
   #++
   # 
   # = USAGE
-  #   marker_a = Bio::Map::Marker.new('marker_a')
-  #   marker_b = Bio::Map::Marker.new('marker_b')
-  #   map_A = Bio::Map::SimpleMap.new('map_A', 'linkage', 'cM')
-  #   puts map_A.contains_marker?('marker_b')   # method defined in Bio::Map::ActsLikeMap
+  #  my_marker1 = Bio::Map::Marker.new('marker1')
+  #  my_marker2 = Bio::Map::Marker.new('marker2')
+  #  my_marker3 = Bio::Map::Marker.new('marker3')
+  #  
+  #  my_map1 = Bio::Map::SimpleMap.new('RH_map_ABC (2006)', 'RH', 'cR')
+  #  my_map2 = Bio::Map::SimpleMap.new('consensus', 'linkage', 'cM')
+  #  
+  #  my_map1.add_mapping(my_marker1, '17')
+  #  my_map1.add_mapping(Bio::Map::Marker.new('marker2'), '5')
+  #  my_marker3.add_mapping(my_map1, '9')
+  #  
+  #  puts "Does my_map1 contain marker3? => " + my_map1.contains_marker?(my_marker3).to_s
+  #  puts "Does my_map2 contain marker3? => " + my_map2.contains_marker?(my_marker3).to_s
+  #  
+  #  my_map1.sort.each do |mapping|
+  #    puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location.from.to_s + ".." + mapping.location.to.to_s
+  #  end
+  #  puts my_map1.min.marker.name
+  #  my_map2.each do |mapping|
+  #    puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location.from.to_s + ".." + mapping.location.to.to_s
+  #  end
   #
   # = TODO
   # Check if initialization of @mappings can be done in ActsLikeMap and
@@ -186,7 +205,7 @@ module Bio
       # * 0 if both location are the same
       # * nil if the argument is not a Bio::Location object
       def <=>(other)
-        unless other.kind_of(Bio::Map::Mapping)
+        unless other.kind_of?(Bio::Map::Mapping)
           raise "[Error] markers are not comparable"
         end
         return self.location.<=>(other.location)
@@ -255,7 +274,7 @@ module Bio
       attr_accessor :name
 			
       # Array of mappings for the marker
-      :mappings
+      attr_accessor :mappings
     end # Marker
   end # Map
 end # Bio
