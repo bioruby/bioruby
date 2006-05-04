@@ -78,7 +78,7 @@ module Bio
       # * _marker_ (required): Bio::Map::Marker object
       # * _location_: location of mapping. Should be a _string_, not a _number_.
       # *Returns*:: itself
-      def add_mapping(marker, location = nil)
+      def add_mapping_to_marker(marker, location = nil)
         unless marker.class.include?(Bio::Map::ActsLikeMarker)
           raise "[Error] marker is not object that implements Bio::Map::ActsLikeMarker"
         end
@@ -138,7 +138,7 @@ module Bio
       # * _map_ (required): Bio::Map::SimpleMap object
       # * _location_: location of mapping. Should be a _string_, not a _number_.
       # *Returns*:: itself
-      def add_mapping (map, location = nil)
+      def add_mapping_to_map(map, location = nil)
         unless map.class.include?(Bio::Map::ActsLikeMap)
           raise "[Error] map is not object that implements Bio::Map::ActsLikeMap"
         end
@@ -287,9 +287,9 @@ if __FILE__ == $0
   my_map1 = Bio::Map::SimpleMap.new('RH_map_ABC (2006)', 'RH', 'cR')
   my_map2 = Bio::Map::SimpleMap.new('consensus', 'linkage', 'cM')
 
-  my_map1.add_mapping(my_marker1, '17')
-  my_map1.add_mapping(Bio::Map::Marker.new('marker2'), '5')
-  my_marker3.add_mapping(my_map1, '9')
+  my_map1.add_mapping_to_marker(my_marker1, '17')
+  my_map1.add_mapping_to_marker(Bio::Map::Marker.new('marker2'), '5')
+  my_marker3.add_mapping_to_map(my_map1, '9')
 
 
   puts "Does my_map1 contain marker3? => " + my_map1.contains_marker?(my_marker3).to_s
