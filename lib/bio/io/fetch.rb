@@ -1,28 +1,29 @@
 #
-# bio/io/biofetch.rb - BioFetch access module
+# = bio/io/biofetch.rb - BioFetch access module
 #
-#  Copyright (C) 2002, 2005 Toshiaki Katayama <k@bioruby.org>
-#               2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
-           
-#  License: LGPL
+# Copyright::	Copyright (C) 2002, 2005 Toshiaki Katayama <k@bioruby.org>,
+#               Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
+# License::     Ruby's
 #
+#  $Id: fetch.rb,v 1.8 2006/05/08 14:29:58 k Exp $
 #
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
+# == DESCRIPTION
 #
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
+# Using BioRuby BioFetch server
 #
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+#   br_server = Bio::Fetch.new()
+#   puts br_server.databases
+#   puts br_server.formats('embl')
+#   puts br_server.maxids
 #
-#  $Id: fetch.rb,v 1.7 2006/03/27 18:34:35 aerts Exp $
+# Using EBI BioFetch server
 #
+#   ebi_server = Bio::Fetch.new('http://www.ebi.ac.uk/cgi-bin/dbfetch')
+#   puts ebi_server.fetch('embl', 'J00231', 'raw')
+#   puts ebi_server.fetch('embl', 'J00231', 'html')
+#   puts Bio::Fetch.query('genbank', 'J00231')
+#   puts Bio::Fetch.query('genbank', 'J00231', 'raw', 'fasta')
+# 
 
 require 'uri'
 require 'bio/command'
@@ -177,26 +178,4 @@ module Bio
   end
 
 end # module Bio
-
-
-
-if __FILE__ == $0
-
-  puts "# test 1"
-  br_server = Bio::Fetch.new()
-  puts br_server.databases
-  puts br_server.formats('embl')
-  puts br_server.maxids
-  ebi_server = Bio::Fetch.new('http://www.ebi.ac.uk/cgi-bin/dbfetch')
-  puts "# test 2"
-  puts ebi_server.fetch('embl', 'J00231', 'raw')
-  puts "# test 3"
-  puts ebi_server.fetch('embl', 'J00231', 'html')
-  puts "# test 4"
-  puts Bio::Fetch.query('genbank', 'J00231')
-  puts "# test 5"
-  puts Bio::Fetch.query('genbank', 'J00231', 'raw', 'fasta')
- 
-end
-
 
