@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-#  $Id: command.rb,v 1.8 2006/04/27 03:15:27 ngoto Exp $
+#  $Id: command.rb,v 1.9 2006/05/09 07:13:54 ngoto Exp $
 #
 
 require 'open3'
@@ -170,7 +170,7 @@ module NetTools
   # it uses proxy if an environment variable (same as OpenURI.open_uri)
   # is set.
   #
-  def net_http_start(address, port = 80, &block)
+  def http_start(address, port = 80, &block)
     uri = URI.parse("http://#{address}:#{port}")
     # Note: URI#find_proxy is an unofficial method defined in open-uri.rb.
     # If the spec of open-uri.rb would be changed, we should change below.
@@ -182,7 +182,35 @@ module NetTools
     end
     http.start(address, port, &block)
   end
+  module_function :http_start
+
+  alias net_http_start http_start
   module_function :net_http_start
+
+  # Same as:
+  # Net::HTTP.post_form(uri, params)
+  # and 
+  # it uses proxy if an environment variable (same as OpenURI.open_uri)
+  # is set.
+  # In addition, +header+ can be set.
+  # (Note that Content-Type and Content-Length are automatically
+  # set by default.)
+  # +uri+ must be a URI object and +params+ must be a hash.
+  #
+  def post_form(uri, params, header = {})
+    data = params.map do |key, val|
+      "#{URI.escape(key)}=#{URI.escape(val)}" 
+    end.join('&')
+    h = {
+      'Content-Type'   => 'application/x-www-form-urlencoded',
+      'Content-Length' => data.length.to_s
+    }
+    h.update(header)
+    net_http_start(uri.host, uri.port) do |http|
+      http.post(uri.path, data, h)
+    end
+  end
+  module_function :post_form
 
 end #module NetTools
 
