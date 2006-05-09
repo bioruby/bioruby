@@ -8,7 +8,7 @@ module Bio
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: pts1.rb,v 1.1 2006/05/02 10:29:19 nakao Exp $
+# $Id: pts1.rb,v 1.2 2006/05/09 08:18:49 nakao Exp $
 #
 
 require 'uri'
@@ -146,23 +146,12 @@ class PTS1
   def exec(query)
     seq = set_sequence_in_fastaformat(query)
     
-    @form_data = {'function' => @function.values,
+    @form_data = {'function' => @function.values.to_s,
                   'sequence' => seq.seq,
                   'name'     => seq.definition }
     @uri = URI.parse(["http:/", @host, @cgi_path].join('/'))
 
-    result = nil
-
-    # The server cannot understand a POST request by folowing codes, but 
-    # request by the Net::HTTP.post_form method is OK.
-    #
-    #    Bio::Command::NetTools.net_http_start(@uri.host) {|http|
-    #      result, = http.post(@uri.path, @form_data)
-    #      @output = Report.new(result.body)
-    #    }
-    #
-
-    result, = Net::HTTP.post_form(@uri, @form_data)
+    result, = Bio::Command::NetTools.post_form(@uri, @form_data)
     @output = Report.new(result.body)
     
     return @output
