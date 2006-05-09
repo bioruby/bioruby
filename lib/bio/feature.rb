@@ -5,7 +5,7 @@
 #                             2006        Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::	Ruby's
 #
-# $Id: feature.rb,v 1.11 2006/04/26 11:05:50 aerts Exp $
+# $Id: feature.rb,v 1.12 2006/05/09 11:52:30 aerts Exp $
 
 require 'bio/location'
 
@@ -22,7 +22,17 @@ module Bio
 #  #             /gene="CYP2D6"
 #  #             /note="cytochrome P450 IID6; GOO-132-127"
 #  #             /number="1"
-#  feature = Bio::Feature.new('exon','1532..1799',['gene' => 'CYP2D6','note' => 'cytochrome P450 IID6; GOO-132-127','number' => '1'])
+#  feature = Bio::Feature.new('exon','1532..1799')
+#  feature.append(Bio::Feature::Qualifier.new('gene', 'CYP2D6'))
+#  feature.append(Bio::Feature::Qualifier.new('note', 'cytochrome P450 IID6'))
+#  feature.append(Bio::Feature::Qualifier.new('number', '1'))
+#
+#  # or all in one go:
+#  feature2 = Bio::Feature.new('exon','1532..1799',
+#    [ Bio::Feature::Qualifier.new('gene', 'CYP2D6'),
+#      Bio::Feature::Qualifier.new('note', 'cytochrome P450 IID6; GOO-132-127'),
+#      Bio::Feature::Qualifier.new('number', '1')
+#    ])
 #
 #  # Print the feature
 #  puts feature.feature + "\t" + feature.position
@@ -37,19 +47,10 @@ class Feature
   # *Arguments*:
   # * (required) _feature_: type of feature (e.g. "exon")
   # * (required) _position_: position of feature (e.g. "complement(1532..1799)")
-  # * (optional) _qualifiers_: list of qualifiers (e.g. "['gene' => 'CYP2D6','number' => '1']")
+  # * (opt) _qualifiers_: list of Bio::Feature::Qualifier objects (default: [])
   # *Returns*:: Bio::Feature object
   def initialize(feature = '', position = '', qualifiers = [])
-    @feature, @position = feature, position
-    @qualifiers = Array.new
-    if qualifiers.length.modulo(2) > 0
-      $stderr.puts "WARNING"
-    end
-    while qualifiers.length > 0
-      key = qualifiers.shift
-      value = qualifiers.shift || ''
-      self.append(Qualifier.new(key, value))
-    end
+    @feature, @position, @qualifiers = feature, position, qualifiers
   end
 
   # Returns type of feature in String (e.g 'CDS', 'gene')
@@ -130,9 +131,9 @@ class Feature
     # Qualifier value in String
     attr_reader :value
 
-  end
+  end #Qualifier
 
-end
+end #Feature
 
 
 # = DESCRIPTION
@@ -140,10 +141,13 @@ end
 #
 # = USAGE
 #  # First, create some Bio::Feature objects
-#  feature1 = Bio::Feature.new('intron','3627..4059',['gene', 'CYP2D6', 'note', 'G00-132-127','number','4'])
-#  feature2 = Bio::Feature.new('exon','4060..4236',['gene', 'CYP2D6', 'note', 'G00-132-127','number','5'])
-#  feature3 = Bio::Feature.new('intron','4237..4426',['gene', 'CYP2D6', 'note', 'G00-132-127','number','5'])
-#  feature4 = Bio::Feature.new('CDS','join(2538..3626,4060..4236)',['gene', 'CYP2D6','translation','MGXXTVMHLL...'])
+#  feature1 = Bio::Feature.new('intron','3627..4059')
+#  feature2 = Bio::Feature.new('exon','4060..4236')
+#  feature3 = Bio::Feature.new('intron','4237..4426')
+#  feature4 = Bio::Feature.new('CDS','join(2538..3626,4060..4236)',
+#                   [ Bio::Feature::Qualifier.new('gene', 'CYP2D6'),
+#                     Bio::Feature::Qualifier.new('translation','MGXXTVMHLL...')
+#                   ])
 #
 #  # And create a container for them
 #  feature_container = Bio::Features.new([ feature1, feature2, feature3, feature4 ])
@@ -216,42 +220,7 @@ class Features
     @features.last
   end
 
-end
+end # Features
 
 end # Bio
 
-if __FILE__ == $0
-  puts "---TESTING Bio::Feature"
-  feature1 = Bio::Feature.new('exon','1532..1799',['gene','CYP2D6','note','cytochrome P450 IID6; GOO-132-127','number','1', 'note', 'a second note'])
-
-  # Print the feature out
-  puts feature1.feature + "\t" + feature1.position
-  feature1.each do |qualifier|
-    puts "- " + qualifier.qualifier + ": " + qualifier.value
-  end
-  
-  feature2 = Bio::Feature.new('CDS','join(2538..3626,4060..4236)',['gene', 'CYP2D6','translation','MGXXTVMHLL...'])
-
-  puts "---TESTING Bio::Features"
-  feature3 = Bio::Feature.new('intron','3627..4059',['gene', 'CYP2D6', 'note', 'G00-132-127','number','4'])
-  feature4 = Bio::Feature.new('exon','4060..4236',['gene', 'CYP2D6', 'note', 'G00-132-127','number','5'])
-  feature5 = Bio::Feature.new('intron','4237..4426',['gene', 'CYP2D6', 'note', 'G00-132-127','number','5'])
-  feature_container = Bio::Features.new([ feature1, feature2, feature3, feature4, feature5 ])
-  feature_container.each do |feature|
-    puts "-NEXT FEATURE"
-    puts feature.feature + "\t" + feature.position
-    feature.each do |qualifier|
-      puts "- " + qualifier.qualifier + ": " + qualifier.value
-    end
-  end
-
-  puts "---TESTING hash function"
-  feature_container.each('CDS') do |feature|
-    hash = feature.to_hash
-    name = hash["gene"] || hash["product"] || hash["note"] 
-    aaseq  = hash["translation"]
-    pos  = feature.position
-    puts ">#{name} #{feature.position}"
-    puts aaseq
-  end
-end
