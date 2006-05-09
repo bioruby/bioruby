@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-#  $Id: command.rb,v 1.9 2006/05/09 07:13:54 ngoto Exp $
+#  $Id: command.rb,v 1.10 2006/05/09 07:17:11 ngoto Exp $
 #
 
 require 'open3'
@@ -170,7 +170,7 @@ module NetTools
   # it uses proxy if an environment variable (same as OpenURI.open_uri)
   # is set.
   #
-  def http_start(address, port = 80, &block)
+  def net_http_start(address, port = 80, &block)
     uri = URI.parse("http://#{address}:#{port}")
     # Note: URI#find_proxy is an unofficial method defined in open-uri.rb.
     # If the spec of open-uri.rb would be changed, we should change below.
@@ -182,9 +182,6 @@ module NetTools
     end
     http.start(address, port, &block)
   end
-  module_function :http_start
-
-  alias net_http_start http_start
   module_function :net_http_start
 
   # Same as:
