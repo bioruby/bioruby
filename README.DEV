@@ -1,10 +1,9 @@
-=begin
+$Id: README.DEV,v 1.10 2006/05/11 10:53:25 aerts Exp $
 
-  $Id: README.DEV,v 1.9 2006/02/08 12:02:09 k Exp $
+Copyright (C):: 2005, 2006 Toshiaki Katayama <k@bioruby.org>
+Copyright (C):: 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
 
-  Copyright (C) 2005, 2006 Toshiaki Katayama <k@bioruby.org>
-
-= How to contribute to the BioRuby project?
+= HOW TO CONTRIBUTE TO THE BIORUBY PROJECT?
 
 There are many possible ways to contribute to the BioRuby project,
 such as:
@@ -20,7 +19,7 @@ how to contribute your code to the BioRuby distribution.
 We would like to include your contribution as long as the scope of
 your module meets the field of bioinformatics.
 
-== License
+= LICENSE
 
 If you would like your module to be included in the BioRuby distribution,
 you need to give us right to change the license of your module to make it
@@ -29,58 +28,28 @@ compatible with other modules in BioRuby.
 BioRuby was previously distributed under the GNU GPL license, but now we
 are changing the license to Ruby's. 
 
-== Coding style
+= CODING STYLE
 
 You will need to follow the typical coding styles of the BioRuby modules:
 
-=== Use the following naming conventions
+== Use the following naming conventions
 
 * CamelCase for module and class names
 * '_'-separated_lowercase for method names
 * '_'-separated_lowercase for variable names
 * all UPPERCASE for constants
 
-=== Indentation must not include tabs
+== Indentation must not include tabs
 
 * Use 2 spaces for indentation.
 * Don't replace spaces to tabs.
 
-=== Comments
+== Comments
 
-Don't use =begin and =end blocks for comments.  If you need to add
+Don't use <tt>=begin</tt> and <tt>=end</tt> blocks for comments.  If you need to add
 comments, include it in the RDoc documentation.
 
-=== Each file must start with the following text
-
-  #
-  # = bio/db/hoge.rb - Hoge database parser
-  #
-  # Copyright::   Copyright (C) 2001, 2005
-  #               Bio R. Hacker <brh@example.org>,
-  #               Chem R. Hacker <crh@example.org>
-  # License::     Ruby's
-  #
-  # $Id: README.DEV,v 1.9 2006/02/08 12:02:09 k Exp $
-  #
-  # == Blah blah blah
-  #
-  # See http://hoge.db/ for more details on the Hoge database.
-  # ... blah blah blah ...
-  #
-  # == Examples
-  #
-  #   hoge = Bio::Hoge.new(entry)
-  #   puts hoge.entry_id
-  #   puts hoge.definition
-  #
-  # == References
-  #
-  # * Hoge F. et al., The Hoge database, Nucleic. Acid. Res. 123:100--123 (2030)
-  #
-  # * http://hoge.db/
-  #
-
-=== Documentation should be written in the RDoc format in the source code
+== Documentation should be written in the RDoc format in the source code
 
 The RDoc format is becoming the popular standard for Ruby documentation.
 We are now in transition from the previously used RD format to the RDoc
@@ -90,13 +59,148 @@ Additional tutorial documentation and working examples are encouraged
 with your contribution.  You may use the header part of the file for
 this purpose as demonstrated in the previous section.
 
-=== Testing code should use 'test/unit'
+== Standard documentation
+
+=== of files
+
+Each file should start with a header, which covers the following topics:
+* copyright
+* license
+* description of the file (_not_ the classes; see below)
+* any references, if appropriate
+
+The header should be formatted as follows:
+  #
+  # = bio/db/hoge.rb - Hoge database parser classes
+  #
+  # Copyright (C):: 2001, 2003-2005   Bio R. Hacker <brh@example.org>,
+  # Copyright (C):: 2006              Chem R. Hacker <crh@example.org>
+  #
+  # License::     Ruby's
+  #
+  # $Id: README.DEV,v 1.10 2006/05/11 10:53:25 aerts Exp $
+  #
+  # = Description
+  #
+  # This file contains classes that implement an interface to the Hoge database.
+  #
+  # = References
+  #
+  # * Hoge F. et al., The Hoge database, Nucleic. Acid. Res. 123:100--123 (2030)
+  # * http://hoge.db/
+  #
+
+In the above sample, the
+  $Id: README.DEV,v 1.10 2006/05/11 10:53:25 aerts Exp $
+will be automatically changed into something like
+  $Id: README.DEV,v 1.10 2006/05/11 10:53:25 aerts Exp $
+when commiting to the CVS repository for the first time.
+
+=== of classes and methods within those files
+
+Classes and methods should be documented in a standardized format, as in the
+following example (from lib/bio/sequence.rb):
+
+  # = DESCRIPTION
+  # Bio::Sequence objects represent annotated sequences in bioruby.
+  # A Bio::Sequence object is a wrapper around the actual sequence, 
+  # represented as either a Bio::Sequence::NA or a Bio::Sequence::AA object.
+  # For most users, this encapsulation will be completely transparent.
+  # Bio::Sequence responds to all methods defined for Bio::Sequence::NA/AA
+  # objects using the same arguments and returning the same values (even though 
+  # these methods are not documented specifically for Bio::Sequence).
+  #
+  # = USAGE
+  #   require 'bio'
+  #   
+  #   # Create a nucleic or amino acid sequence
+  #   dna = Bio::Sequence.auto('atgcatgcATGCATGCAAAA')
+  #   rna = Bio::Sequence.auto('augcaugcaugcaugcaaaa')
+  #   aa = Bio::Sequence.auto('ACDEFGHIKLMNPQRSTVWYU')
+  # 
+  #   # Print in FASTA format
+  #   puts dna.output(:fasta)
+  # 
+  #   # Print all codons
+  #   dna.window_search(3,3) do |codon|
+  #     puts codon
+  #   end
+  # 
+  class Sequence
+  
+    # Create a new Bio::Sequence object
+    #
+    #   s = Bio::Sequence.new('atgc')
+    #   puts s                                  #=> 'atgc'
+    #
+    # Note that this method does not intialize the contained sequence
+    # as any kind of bioruby object, only as a simple string
+    #
+    #   puts s.seq.class                        #=> String
+    #
+    # See Bio::Sequence#na, Bio::Sequence#aa, and Bio::Sequence#auto 
+    # for methods to transform the basic String of a just created 
+    # Bio::Sequence object to a proper bioruby object
+    # ---
+    # *Arguments*:
+    # * (required) _str_: String or Bio::Sequence::NA/AA object
+    # *Returns*:: Bio::Sequence object
+    def initialize(str)
+      @seq = str
+    end
+  
+    # The sequence identifier.  For example, for a sequence
+    # of Genbank origin, this is the accession number.
+    attr_accessor :entry_id
+  
+    # An Array of Bio::Feature objects
+    attr_accessor :features
+  end # Sequence
+
+Preceding the class definition (<tt>class Sequence</tt>), there is at least a 
+description and a usage example. Please use the +Description+ and +Usage+
+headings. If appropriate, refer to other classes that interact with or are
+related to the class.
+
+The code in the usage example should, if possible, be in a format that a user
+can copy-and-paste into a new script to run. It should illustrate the most
+important uses of the class. If possible and if it would not clutter up the
+example too much, try to provide any input data directly into the usage example,
+instead of refering to ARGV or ARGF for input.
+  dna = Bio::Sequence.auto('atgcatgcATGCATGCAAAA')
+Otherwise, describe the input shortly, for example:
+  # input should be string consisting of nucleotides
+  dna = Bio::Sequence.auto(ARGF.read)
+
+Methods should be preceded by a comment that describes what the method does, 
+including any relevant usage examples. (In contrast to the documentation for
+the class itself, headings are not required.) In addition, any arguments should
+be listed, as well as the type of thing that is returned by the method. The
+format of this information is as follows:
+  # ---
+  # *Arguments*:
+  # * (required) _str_: String or Bio::Sequence::NA
+  # * (optional) _nr_: a number that means something
+  # *Returns*:: true or false
+
+Attribute accessors can be preceded by a short description.
+
+== Exception handling
+
+Don't use
+  $stderr.puts "WARNING"
+in your code. Instead, try to avoid printing error messages. For fatal errors,
+use +raise+ with an appropriate message.
+
+== Testing code should use 'test/unit'
 
 Unit tests should come with your modules by which you can assure what
 you meant to do with each method.  The test code is useful to make
-maintenance easy and ensure stability.
+maintenance easy and ensure stability. The use of
+ if __FILE__ == $0
+is deprecated.
 
-=== Using autoload
+== Using autoload
 
 To quicken the initial load time we have replaced most of 'require' to 
 'autoload'
@@ -134,7 +238,7 @@ You should not put several top level namespaces in one file.
 
   so autoload can be written in 1 line.
 
-== Name space
+= NAMESPACE
 
 Your module should be located under the top-level module Bio and put under
 the 'bioruby/lib/bio' directory.  The class/module names and the
@@ -150,12 +254,14 @@ There are already several sub directories in 'bioruby/lib':
   bio/util/  -- utilities and algorithms for bioinformatics
 
 If your module doesn't match any of the above, please propose
-an appropriate directory name when you contribute.
+an appropriate directory name when you contribute. Please let the staff
+discuss on namespaces (class names), API (method names) before commiting
+a new module or making changes on existing modules.
 
-== Maintenance
+= MAINTENANCE
 
 Finally, please maintain the code you've contributed.  The BioRuby
 staff is willing to give you CVS privileges if needed.
-
-=end
+Please let us know (on the bioruby list) before you commit, so that users
+can discuss on the change.
 
