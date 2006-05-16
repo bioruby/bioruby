@@ -1,30 +1,21 @@
 #
 # = bio/appl/blast.rb - BLAST wrapper
 # 
-# Copyright::  Copyright (C) 2001
-#              Mitsuteru C. Nakao <n@bioruby.org>
-# Copyrigth::  Copyright (C) 2002,2003
-#              KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright (C)::  2001       Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright (C)::  2002,2003  KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright (C)::  2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
+#
 # License::    Ruby's
 #
-# $Id: blast.rb,v 1.28 2006/02/18 16:08:10 nakao Exp $
+# $Id: blast.rb,v 1.29 2006/05/16 09:50:13 aerts Exp $
 #
-# = Description
+# = DESCRIPTION
 #
-# = Examples
-#
-#   program = 'blastp'
-#   database = 'SWISS'
-#   options = '-e 0.0001'
-#   serv = Bio::Blast.new(program, database, options)
-#   server = 'genomenet'
-#   genomenet = Bio::Blast.remote(program, database, options, server)
-#   report = serv.query(sequence_text)
+# This file holds the Bio::Blast class, which creates BLAST factories.
 #
 # = References
 #
 # * http://www.ncbi.nlm.nih.gov/blast/
-#
 # * http://blast.genome.jp/ideas/ideas.html#blast
 #
 
@@ -35,39 +26,53 @@ require 'shellwords'
 
 module Bio
 
-  # BLAST wrapper
+  # = DESCRIPTION
+  # 
+  # The Bio::Blast class contains methods for running local or remote BLAST
+  # searches, as well as for parsing of the output of such BLASTs (i.e. the
+  # BLAST reports). For more information on similarity searches and the BLAST
+  # program, see http://www.ncbi.nlm.nih.gov/Education/BLASTinfo/similarity.html.
   #
-  # == Description
+  # = USAGE
   #
-  # A blastall program wrapper.
-  #
-  # == Examples
-  #
-  #   program = 'blastp'
-  #   database = 'SWISS'
-  #   options = '-e 0.0001'
-  #   serv = Bio::Blast.new(program, database, options)
+  #   require 'bio'
   #   
-  #   server = 'genomenet'
-  #   genomenet = Bio::Blast.remote(program, database, options, server)
-  #   
-  #   report = serv.query(sequence_text)
+  #   # To run an actual BLAST analysis:
+  #   #   1. create a BLAST factory
+  #   remote_blast_factory = Bio::Blast.remote('blastp', 'SWISS',
+  #                                            '-e 0.0001', 'genomenet')
+  #   #or:
+  #   local_blast_factory = Bio::Blast.local('blastn','/path/to/db')
   #
-  # == Available databases for Blast.remote(@program, @db, option, 'genomenet')
+  #   #   2. run the actual BLAST by querying the factory
+  #   report = remote_blast_factory.query(sequence_text)
   #
-  # ----------+-------+---------------------------------------------------
-  #  @program | query | @db (supported in GenomeNet)
-  # ----------+-------+---------------------------------------------------
-  #  blastp   | AA    | nr-aa, genes, vgenes.pep, swissprot, swissprot-upd,
-  # ----------+-------+ pir, prf, pdbstr
-  #  blastx   | NA    | 
-  # ----------+-------+---------------------------------------------------
-  #  blastn   | NA    | nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss,
-  # ----------+-------+ htgs, dbsts, embl-nonst, embnonst-upd, epd,
-  #  tblastn  | AA    | genes-nt, genome, vgenes.nuc
-  # ----------+-------+---------------------------------------------------
+  #   # Then, to parse the report, see Bio::Blast::Report
   #
-  # * See http://blast.genome.jp/ideas/ideas.html#blast for more details.
+  # == Available databases for Bio::Blast.remote
+  #
+  #  ----------+-------+---------------------------------------------------
+  #   program  | query | db (supported in GenomeNet)
+  #  ----------+-------+---------------------------------------------------
+  #   blastp   | AA    | nr-aa, genes, vgenes.pep, swissprot, swissprot-upd,
+  #  ----------+-------+ pir, prf, pdbstr
+  #   blastx   | NA    | 
+  #  ----------+-------+---------------------------------------------------
+  #   blastn   | NA    | nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss,
+  #  ----------+-------+ htgs, dbsts, embl-nonst, embnonst-upd, epd,
+  #   tblastn  | AA    | genes-nt, genome, vgenes.nuc
+  #  ----------+-------+---------------------------------------------------
+  #
+  # = SEE ALSO
+  #
+  # * Bio::Blast::Report
+  # * Bio::Blast::Report::Hit
+  # * Bio::Blast::Report::Hsp
+  #
+  # = REFERENCE
+  # 
+  # * http://www.ncbi.nlm.nih.gov/Education/BLASTinfo/similarity.html
+  # * http://blast.genome.jp/ideas/ideas.html#blast
   #
   class Blast
 
@@ -79,12 +84,31 @@ module Bio
 
     include Bio::Command::Tools
 
-    # Sets up the blast program at the localhost
+    # This is a shortcut for Bio::Blast.new:
+    #  Bio::Blast.local(program, database, options)
+    # is equivalent to
+    #  Bio::Blast.new(program, database, options, 'local')
+    # ---
+    # *Arguments*:
+    # * _program_ (required): 'blastn', 'blastp', 'blastx', 'tblastn' or 'tblastx'
+    # * _db_ (required): name of the local database
+    # * _options_: blastall options \
+    # (see http://www.genome.jp/dbget-bin/show_man?blast2)
+    # *Returns*:: Bio::Blast factory object
     def self.local(program, db, option = '')
       self.new(program, db, option, 'local')
     end
 
-    # Sets up the blast program at the remote host (server)
+    # Bio::Blast.remote does exactly the same as Bio::Blast.new, but sets
+    # the remote server 'genomenet' as its default.
+    # ---
+    # *Arguments*:
+    # * _program_ (required): 'blastn', 'blastp', 'blastx', 'tblastn' or 'tblastx'
+    # * _db_ (required): name of the remote database
+    # * _options_: blastall options \
+    # (see http://www.genome.jp/dbget-bin/show_man?blast2)
+    # * _server_: server to use (DEFAULT = 'genomenet')
+    # *Returns*:: Bio::Blast factory object
     def self.remote(program, db, option = '', server = 'genomenet')
       self.new(program, db, option, server)
     end
@@ -106,16 +130,17 @@ module Bio
     end
 
 
-    # Program name for blastall -p (blastp, blastn, blastx, tblastn or tblastx).
+    # Program name (_-p_ option for blastall): blastp, blastn, blastx, tblastn
+    # or tblastx
     attr_accessor :program
 
-    # Database name for blastall -d
+    # Database name (_-d_ option for blastall)
     attr_accessor :db
     
-    # Options for blastall 
+    # Options for blastall
     attr_accessor :options
 
-    # 
+    # Server to submit the BLASTs to
     attr_accessor :server
 
     # Full path for blastall. (default: 'blastall').
@@ -140,15 +165,22 @@ module Bio
     attr_writer :parser  # to change :xmlparser, :rexml, :tab
 
 
-    # Returns a blast factory object (Bio::Blast).
-    #
-    # --- Bio::Blast.new(program, db, option = '', server = 'local')
-    # --- Bio::Blast.local(program, db, option = '')
-    # --- Bio::Blast.remote(program, db, option = '', server = 'genomenet')
-    #
-    # For the develpper, you can add server 'hoge' by adding
-    # exec_hoge(query) method.
-    #
+    # Creates a Bio::Blast factory object.
+    # 
+    # To run any BLAST searches, a factory has to be created that describes a
+    # certain BLAST pipeline: the program to use, the database to search, any
+    # options and the server to use. E.g.
+    # 
+    #   blast_factory = Bio::Blast.new('blastn','dbsts', '-e 0.0001 -r 4', 'genomenet')
+    # 
+    # ---
+    # *Arguments*:
+    # * _program_ (required): 'blastn', 'blastp', 'blastx', 'tblastn' or 'tblastx'
+    # * _db_ (required): name of the (local or remote) database
+    # * _options_: blastall options \
+    # (see http://www.genome.jp/dbget-bin/show_man?blast2)
+    # * _server_: server to use (e.g. 'genomenet'; DEFAULT = 'local')
+    # *Returns*:: Bio::Blast factory object
     def initialize(program, db, opt = [], server = 'local')
       @program  = program
       @db       = db
@@ -177,18 +209,27 @@ module Bio
       @options = [ *a ]
     end
 
-    # Execute blast search and returns Report object (Bio::Blast::Report).
+    # This method submits a sequence to a BLAST factory, which performs the
+    # actual BLAST.
+    # 
+    #   fasta_sequences = Bio::FlatFile.open(Bio::FastaFormat, 'my_sequences.fa')
+    #   report = blast_factory.query(fasta_sequences)
+    # 
+    # ---
+    # *Arguments*:
+    # * _query_ (required): single- or multiple-FASTA formatted sequence(s)
+    # *Returns*:: a Bio::Blast::Report object
     def query(query)
       return self.send("exec_#{@server}", query.to_s)
     end
 
-    # option reader
+    # Returns options of blastall
     def option
       # backward compatibility
       make_command_line(@options)
     end
 
-    # option setter
+    # Set options for blastall
     def option=(str)
       # backward compatibility
       @options = Shellwords.shellwords(str)
@@ -283,21 +324,4 @@ module Bio
   end # class Blast
 
 end # module Bio
-
-
-if __FILE__ == $0
-  begin
-    require 'pp'
-    alias p pp
-  rescue
-  end
-
-# serv = Bio::Blast.local('blastn', 'hoge.nuc')
-# serv = Bio::Blast.local('blastp', 'hoge.pep')
-  serv = Bio::Blast.remote('blastp', 'genes')
-
-  query = ARGF.read
-  p serv.query(query)
-end
-
 
