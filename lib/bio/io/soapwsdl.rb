@@ -5,7 +5,7 @@
 #               KATAYAMA Toshiaki <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: soapwsdl.rb,v 1.4 2006/05/08 14:29:58 k Exp $
+# $Id: soapwsdl.rb,v 1.5 2006/05/29 15:28:18 k Exp $
 #
 # == Examples
 # 
@@ -23,12 +23,14 @@
 # (case might be insensitive) as required by SOAP4R.
 #
 # --- soap_use_proxy
+#
 # Set the value of this variable to 'on'.
 #
 # --- http_proxy
+#
 # Set the URL of your proxy server (http://myproxy.com:8080 etc.).
 #
-# === Example
+# === Example to use HTTP proxy
 # 
 # % export soap_use_proxy=on
 # % export http_proxy=http://localhost:8080
@@ -79,6 +81,12 @@ class SOAPWSDL
   def log=(io)
     @log = io
     @driver.wiredump_dev = @log
+  end
+
+
+  # List of methods defined by WSDL
+  def list_methods
+    @driver.methods(false)
   end
 
 
