@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-#  $Id: command.rb,v 1.10 2006/05/09 07:17:11 ngoto Exp $
+#  $Id: command.rb,v 1.11 2006/05/30 13:59:36 ngoto Exp $
 #
 
 require 'open3'
@@ -29,8 +29,7 @@ module Tools
   QUOTE_CHARS_WINDOWS = /[^A-Za-z0-9\_\-\.\:\,\/\@\\]/n
   UNESCAPABLE_CHARS   = /[\x00-\x08\x10-\x1a\x1c-\x1f\x7f\xff]/n
 
-  #module_function
-  private
+  module_function
 
   # Escape special characters in command line string for cmd.exe on Windows.
   def escape_shell_windows(str)
@@ -93,7 +92,7 @@ module Tools
     when /mswin32|bccwin32/
       call_command_local_popen(cmd, query, &block)
     else
-      call_command_local_open3(cmd, query, &block)
+      call_command_local_fork(cmd, query, &block)
     end
   end
 
@@ -111,6 +110,30 @@ module Tools
         io.print query if query
         io.close_write
         io.read
+      end
+    end
+  end
+
+  # Executes the program via fork (by using IO.popen("-")) and exec.
+  # If block is given, yield the block with input and output IO objects.
+  #
+  # From the view point of security, this method is recommended
+  # rather than exec_local_popen.
+  def call_command_local_fork(cmd, query = nil)
+    IO.popen("-", "r+") do |io|
+      if io then
+        # parent
+        if block_given?
+          yield io, io
+        else
+          io.sync = true
+          io.print query if query
+          io.close_write
+          io.read
+        end
+      else
+        # child
+        Kernel.exec(*cmd)
       end
     end
   end
@@ -192,7 +215,8 @@ module NetTools
   # In addition, +header+ can be set.
   # (Note that Content-Type and Content-Length are automatically
   # set by default.)
-  # +uri+ must be a URI object and +params+ must be a hash.
+  # +uri+ must be a URI object, +params+ must be a hash, and
+  # +header+ must be a hash.
   #
   def post_form(uri, params, header = {})
     data = params.map do |key, val|
