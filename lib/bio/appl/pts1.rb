@@ -8,7 +8,7 @@ module Bio
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: pts1.rb,v 1.2 2006/05/09 08:18:49 nakao Exp $
+# $Id: pts1.rb,v 1.3 2006/06/05 02:55:51 nakao Exp $
 #
 
 require 'uri'
@@ -174,6 +174,9 @@ class PTS1
   #
   class Report
 
+    # Query sequence name.
+    attr_reader :entry_id
+
     # Amino acids subsequence at C-terminal region.
     attr_reader :cterm
 
@@ -228,6 +231,8 @@ class PTS1
     def parse
       @output.each do |line|
         case line
+        when /Name<\/td><td>(\S.+)<\/td><\/tr>/
+          @entry_id = $1
         when /C-terminus<\/td><td>(\w+)<\/td>/
           @cterm = $1
         when /Score<\/b><td><b>(-?\d.+?)<\/b><\/td><\/tr>/
