@@ -5,7 +5,7 @@
 #               Mitsuteru Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: test_pts1.rb,v 1.1 2006/05/02 10:29:19 nakao Exp $
+# $Id: test_pts1.rb,v 1.2 2006/06/05 02:54:42 nakao Exp $
 #
 
 require 'pathname'
@@ -103,6 +103,10 @@ END
 
     def test_output_size
       assert_equal(1634, @report.output.size)
+    end
+
+    def test_entry_id
+      assert_equal("hoge", @report.entry_id)
     end
 
     def test_prediction
