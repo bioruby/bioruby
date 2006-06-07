@@ -5,9 +5,25 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # Licence::     Ruby's
 #
+# $Id: map.rb,v 1.6 2006/06/07 12:55:50 aerts Exp $
 require 'bio/location'
 
 module Bio
+
+  # Add a method to Bio::Locations class
+  class Locations
+    def equals?(other)
+      if ! other.kind_of?(Bio::Locations)
+        return nil
+      end
+      if self.sort == other.sort
+        return true
+      else
+        return false
+      end
+    end
+  end
+
   # = DESCRIPTION
   # The Bio::Module contains classes that describe mapping information and can
   # be used to contain linkage maps, radiation-hybrid maps, etc.
@@ -41,24 +57,20 @@ module Bio
   #  my_map1 = Bio::Map::SimpleMap.new('RH_map_ABC (2006)', 'RH', 'cR')
   #  my_map2 = Bio::Map::SimpleMap.new('consensus', 'linkage', 'cM')
   #  
-  #  my_map1.add_mapping_to_marker(my_marker1, '17')
-  #  my_map1.add_mapping_to_marker(Bio::Map::Marker.new('marker2'), '5')
-  #  my_marker3.add_mapping_to_marker(my_map1, '9')
+  #  my_map1.add_mapping_as_map(my_marker1, '17')
+  #  my_map1.add_mapping_as_map(Bio::Map::Marker.new('marker2'), '5')
+  #  my_marker3.add_mapping_as_marker(my_map1, '9')
   #  
   #  puts "Does my_map1 contain marker3? => " + my_map1.contains_marker?(my_marker3).to_s
   #  puts "Does my_map2 contain marker3? => " + my_map2.contains_marker?(my_marker3).to_s
   #  
   #  my_map1.sort.each do |mapping|
-  #    puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location.from.to_s + ".." + mapping.location.to.to_s
+  #    puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location[0].from.to_s + ".." + mapping.location[-1].to.to_s
   #  end
   #  puts my_map1.min.marker.name
   #  my_map2.each do |mapping|
-  #    puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location.from.to_s + ".." + mapping.location.to.to_s
+  #    puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location[0].from.to_s + ".." + mapping.location[-1].to.to_s
   #  end
-  #
-  # = TODO
-  # Check if initialization of @mappings can be done in ActsLikeMap and
-  # ActsLikeMarker, instead of in the classes that include these modules.
   module Map
   # = DESCRIPTION
   # The Bio::Map::ActsLikeMap module contains methods that are typical for
@@ -66,27 +78,41 @@ module Bio
   # * add markers with their locations (through Bio::Map::Mappings)
   # * check if a given marker is mapped to it
   # , and can be mixed into other classes (e.g. Bio::Map::SimpleMap)
+  # 
+  # Classes that include this mixin should provide an array property called mappings_as_map.
     module ActsLikeMap
       include Enumerable
+      
       # = DESCRIPTION
       # Adds a Bio::Map::Mappings object to its array of mappings.
       # 
       # = USAGE
       #   # suppose we have a Bio::Map::SimpleMap object called my_map
-      #   my_map.add_mapping_to_marker(Bio::Map::Marker.new('marker_a'), '5')
+      #   my_map.add_mapping_as_map(Bio::Map::Marker.new('marker_a'), '5')
       # ---
       # *Arguments*:
       # * _marker_ (required): Bio::Map::Marker object
       # * _location_: location of mapping. Should be a _string_, not a _number_.
       # *Returns*:: itself
-      def add_mapping_to_marker(marker, location = nil)
+      def add_mapping_as_map(marker, location = nil)
         unless marker.class.include?(Bio::Map::ActsLikeMarker)
           raise "[Error] marker is not object that implements Bio::Map::ActsLikeMarker"
         end
-        my_mapping = Bio::Map::Mapping.new(self, marker, Bio::Location.new(location))
-        @mappings.push(my_mapping)
-        unless marker.mapped_to?(self)
-          marker.mappings.push(my_mapping)
+        my_mapping = ( location.nil? ) ? Bio::Map::Mapping.new(self, marker, nil) : Bio::Map::Mapping.new(self, marker, Bio::Locations.new(location))
+        if ! marker.mapped_to?(self)
+          self.mappings_as_map.push(my_mapping)
+          marker.mappings_as_marker.push(my_mapping)
+        else
+          already_mapped = false
+          marker.positions_on(self).each do |loc|
+            if loc.equals?(Bio::Locations.new(location))
+              already_mapped = true
+            end
+          end
+          if ! already_mapped
+            self.mappings_as_map.push(my_mapping)
+            marker.mappings_as_marker.push(my_mapping)
+          end
         end
 
         return self
@@ -102,7 +128,7 @@ module Bio
           raise "[Error] marker is not object that implements Bio::Map::ActsLikeMarker"
         end
         contains = false
-        @mappings.each do |mapping|
+        self.mappings_as_map.each do |mapping|
           if mapping.marker == marker
             contains = true
             return contains
@@ -113,7 +139,7 @@ module Bio
       
       # Go through all Bio::Map::Mapping objects linked to this Bio::Map::SimpleMap.
       def each
-        @mappings.each do |mapping|
+        self.mappings_as_map.each do |mapping|
           yield mapping
         end
       end
@@ -125,6 +151,8 @@ module Bio
     # * map it to one or more maps
     # * check if it's mapped to a given map
     # , and can be mixed into other classes (e.g. Bio::Map::Marker)
+    # 
+    # Classes that include this mixin should provide an array property called mappings_as_marker.
     module ActsLikeMarker
       include Enumerable
       
@@ -133,20 +161,38 @@ module Bio
       # 
       # = USAGE
       #   # suppose we have a Bio::Map::Marker object called marker_a
-      #   marker_a.add_mapping_to_map(Bio::Map::SimpleMap.new('my_map'), '5')
+      #   marker_a.add_mapping_as_marker(Bio::Map::SimpleMap.new('my_map'), '5')
       # ---
       # *Arguments*:
       # * _map_ (required): Bio::Map::SimpleMap object
       # * _location_: location of mapping. Should be a _string_, not a _number_.
       # *Returns*:: itself
-      def add_mapping_to_map(map, location = nil)
+      def add_mapping_as_marker(map, location = nil)
         unless map.class.include?(Bio::Map::ActsLikeMap)
           raise "[Error] map is not object that implements Bio::Map::ActsLikeMap"
         end
-        my_mapping = Bio::Map::Mapping.new(map, self, Bio::Location.new(location))
-        @mappings.push(my_mapping)
-        unless map.contains_marker?(self)
-          map.mappings.push(my_mapping)
+        my_mapping = (location.nil?) ? Bio::Map::Mappings.new(map, self, nil) : Bio::Map::Mapping.new(map, self, Bio::Locations.new(location))
+        if ! self.mapped_to?(map)
+          self.mappings_as_marker.push(my_mapping)
+          map.mappings_as_map.push(my_mapping)
+        else
+          already_mapped = false
+          self.positions_on(map).each do |loc|
+            if loc.equals?(Bio::Locations.new(location))
+              already_mapped = true
+            end
+          end
+          if ! already_mapped
+            self.mappings_as_marker.push(my_mapping)
+            map.mappings_as_map.push(my_mapping)
+          end
+        end
+      end
+
+      # Go through all Mapping objects linked to this marker.
+      def each
+        self.mappings_as_marker.each do |mapping|
+          yield mapping
         end
       end
       
@@ -159,23 +205,38 @@ module Bio
         unless map.class.include?(Bio::Map::ActsLikeMap)
           raise "[Error] map is not object that implements Bio::Map::ActsLikeMap"
         end
-				
+		
         mapped = false
-        @mappings.each do |mapping|
+        self.mappings_as_marker.each do |mapping|
           if mapping.map == map
             mapped = true
             return mapped
           end
         end
+
         return mapped
       end
-      
-      # Go through all Mapping objects linked to this marker.
-      def each
-        @mappings.each do |mapping|
-          yield mapping
+
+      # Return all positions of this marker on a given map.
+      # ---
+      # *Arguments*:
+      # * _map_: an object that mixes in Bio::Map::ActsLikeMap
+      # *Returns*:: array of Bio::Location objects
+      def positions_on(map)
+        unless map.class.include?(Bio::Map::ActsLikeMap)
+          raise "[Error] map is not object that implements Bio::Map::ActsLikeMap"
         end
+        
+        positions = Array.new
+        self.mappings_as_marker.each do |mapping|
+          if mapping.map == map
+            positions.push(mapping.location)
+          end
+        end
+        
+        return positions
       end
+      
     end #ActsLikeMarker
 	  
     # = DESCRIPTION
@@ -190,31 +251,31 @@ module Bio
       # *Arguments*:
       # * _map_: a Bio::Map::SimpleMap object
       # * _marker_: a Bio::Map::Marker object
-      # * _location_: a Bio::Location object
+      # * _location_: a Bio::Locations object
+
       def initialize (map, marker, location = nil)
         @map, @marker, @location = map, marker, location
       end
       attr_accessor :map, :marker, :location
       
-      # Compares the location of this mapping to another mapping.
-      # ---
-      # *Arguments*:
-      # * other_mapping: Bio::Map::Mapping object
-      # *Returns*::
-      # * 1 if self < other location
-      # * -1 if self > other location
-      # * 0 if both location are the same
-      # * nil if the argument is not a Bio::Location object
-      def <=>(other)
-        unless other.kind_of?(Bio::Map::Mapping)
-          raise "[Error] markers are not comparable"
-        end
-	unless @map.equal?(other.map)
-	  raise "[Error] maps have to be the same"
-	end
-
-        return self.location.<=>(other.location)
-      end
+#       # Compares the location of this mapping to another mapping.
+#       # ---
+#       # *Arguments*:
+#       # * other_mapping: Bio::Map::Mapping object
+#       # *Returns*::
+#       # * 1 if self < other location
+#       # * -1 if self > other location
+#       # * 0 if both location are the same
+#       # * nil if the argument is not a Bio::Location object
+#       def <=>(other)
+#         unless other.kind_of?(Bio::Map::Mapping)
+#           raise "[Error] markers are not comparable"
+#         end
+#         unless @map.equal?(other.map)
+#           raise "[Error] maps have to be the same"
+#         end
+#         return self.location<=>(other.location) # FIXME: no <=>-method in Bio::Locations
+#       end
     end # Mapping
     
     # = DESCRIPTION
@@ -227,7 +288,7 @@ module Bio
     #   my_map1.add_marker(Bio::Map::Marker.new('marker_a', '17')
     #   my_map1.add_marker(Bio::Map::Marker.new('marker_b', '5')
     class SimpleMap
-    include ActsLikeMap
+      include Bio::Map::ActsLikeMap
     
       # Builds a new Bio::Map::SimpleMap object
       # ---
@@ -236,9 +297,9 @@ module Bio
       # * type: type of the map (e.g. linkage, radiation_hybrid, cytogenetic, ...)
       # * units: unit of the map (e.g. cM, cR, ...)
       # *Returns*:: new Bio::Map::SimpleMap object
-      def initialize (name = nil, type = nil, units = nil)
-        @name, @type, @units = name, type, units
-        @mappings = Array.new
+      def initialize (name = nil, type = nil, length = nil, units = nil)
+        @name, @type, @length, @units = name, type, length, units
+        @mappings_as_map = Array.new
       end
       
       # Name of the map
@@ -246,12 +307,16 @@ module Bio
 			
       # Type of the map
       attr_accessor :type
-			
+	
+      # Length of the map
+      attr_accessor :length
+      		
       # Units of the map
       attr_accessor :units
       
-      # Array of mappings for the map
-      attr_accessor :mappings
+      # Mappings
+      attr_accessor :mappings_as_map
+      
     end # SimpleMap
     
     # = DESCRIPTION
@@ -263,7 +328,7 @@ module Bio
     #   marker_a = Bio::Map::Marker.new('marker_a')
     #   marker_b = Bio::Map::Marker.new('marker_b')
     class Marker
-      include ActsLikeMarker
+      include Bio::Map::ActsLikeMarker
       
       # Builds a new Bio::Map::Marker object
       # ---
@@ -272,44 +337,15 @@ module Bio
       # *Returns*:: new Bio::Map::Marker object
       def initialize(name)
         @name = name
-        @mappings = Array.new
+        @mappings_as_marker = Array.new
       end
 
       # Name of the marker
       attr_accessor :name
-			
-      # Array of mappings for the marker
-      attr_accessor :mappings
+      
+      # Mappings
+      attr_accessor :mappings_as_marker
+      
     end # Marker
   end # Map
 end # Bio
-
-if __FILE__ == $0
-  my_marker1 = Bio::Map::Marker.new('marker1')
-#  my_marker2 = Bio::Map::Marker.new('marker2')
-  my_marker3 = Bio::Map::Marker.new('marker3')
-
-  my_map1 = Bio::Map::SimpleMap.new('RH_map_ABC (2006)', 'RH', 'cR')
-  my_map2 = Bio::Map::SimpleMap.new('consensus', 'linkage', 'cM')
-
-  my_map1.add_mapping_to_marker(my_marker1, '17')
-  my_map1.add_mapping_to_marker(Bio::Map::Marker.new('marker2'), '5')
-  my_marker3.add_mapping_to_map(my_map1, '9')
-
-  my_map2.add_mapping_to_marker(my_marker1, '57')
-
-  puts "Does my_map1 contain marker3? => " + my_map1.contains_marker?(my_marker3).to_s
-  puts "Does my_map2 contain marker3? => " + my_map2.contains_marker?(my_marker3).to_s
-
-  my_map1.sort.each do |mapping|
-    puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location.from.to_s + ".." + mapping.location.to.to_s
-  end
-  puts my_map1.min.marker.name
-
-  my_map2.each do |mapping|
-    puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location.from.to_s + ".." + mapping.location.to.to_s
-  end
-
-#  p my_map1.between?(my_mappable2,my_mappable3)
-#  p my_map1.between?(my_mappable,my_mappable2)
-end
