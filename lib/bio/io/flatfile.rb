@@ -5,7 +5,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: flatfile.rb,v 1.49 2006/03/22 10:19:22 ngoto Exp $
+#  $Id: flatfile.rb,v 1.50 2006/06/12 10:35:42 ngoto Exp $
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
@@ -425,7 +425,7 @@ module Bio
       # check if file is filename or IO object
       unless file.respond_to?(:gets)
         # 'file' is a filename
-        self.open_file(file, *arg, &block)
+        _open_file(dbclass, file, *arg, &block)
       else
         # 'file' is a IO object
         ff = self.new(dbclass, file)
@@ -465,15 +465,27 @@ module Bio
     # Otherwise, it returns a new FlatFile object.
     #
     def self.open_file(filename, *arg)
+      _open_file(nil, filename, *arg)
+    end
+
+    # Same as FlatFile.open(dbclass, filename, *arg),
+    # except that it only accept filename and doesn't accept IO object.
+    #
+    # It can accept a block.
+    # If a block is given, it returns the block's return value.
+    # Otherwise, it returns a new FlatFile object.
+    #
+    def self._open_file(dbclass, filename, *arg)
       if block_given? then
         BufferedInputStream.open_file(filename, *arg) do |stream|
-          yield self.new(nil, stream)
+          yield self.new(dbclass, stream)
         end
       else
         stream = BufferedInputStream.open_file(filename, *arg)
-        self.new(nil, stream)
+        self.new(dbclass, stream)
       end
     end
+    private_class_method :_open_file
 
     # Opens URI specified as _uri_.
     # _uri_ must be a String or URI object.
