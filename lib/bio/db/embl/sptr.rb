@@ -1,10 +1,10 @@
 #
 # = bio/db/embl/sptr.rb - UniProt/SwissProt and TrEMBL database class
 # 
-# Copyright::   Copyright (C) 2001-2006 Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::   Copyright (C) 2001-2006  Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: sptr.rb,v 1.31 2006/04/14 05:52:28 nakao Exp $
+# $Id: sptr.rb,v 1.32 2006/06/16 17:01:01 nakao Exp $
 #
 # == Description
 # 
@@ -45,7 +45,6 @@ class SPTR < EMBLDB
   @@entry_regrexp = /[A-Z0-9]{1,4}_[A-Z0-9]{1,5}/
   @@data_class = ["STANDARD", "PRELIMINARY"]
 
-  
   # returns a Hash of the ID line.
   #
   # returns a content (Int or String) of the ID line by a given key.
@@ -56,28 +55,23 @@ class SPTR < EMBLDB
   #   #"ID  #{ENTRY_NAME} #{DATA_CLASS}; #{MOLECULE_TYPE}; #{SEQUENCE_LENGTH}."
   #
   # === Examples
-  #   obj.id_line  #=> {"ENTRY_NAME"=>"P53_HUMAN", "DATA_CLASS"=>"STANDARD", "SEQUENCE_LENGTH"=>393, "MOLECULE_TYPE"=>"PRT"}
+  #   obj.id_line  #=> {"ENTRY_NAME"=>"P53_HUMAN", "DATA_CLASS"=>"STANDARD", 
+  #                     "SEQUENCE_LENGTH"=>393, "MOLECULE_TYPE"=>"PRT"}
   #
   #   obj.id_line('ENTRY_NAME') #=> "P53_HUMAN"
   #
   def id_line(key = nil)
-    unless @data['ID']
-      tmp = Hash.new
-      a = @orig['ID'].split(/ +/)         
-      tmp['ENTRY_NAME']      = a[1]
-      tmp['DATA_CLASS']      = a[2].sub(/;/,'') 
-      tmp['MOLECULE_TYPE']   = a[3].sub(/;/,'')
-      tmp['SEQUENCE_LENGTH'] = a[4].to_i
-      @data['ID'] = tmp
-    end
+    return id_line[key] if key
+    return @data['ID'] if @data['ID']
 
-    if key
-      @data['ID'][key] # String/Int
-    else
-      @data['ID']      # Hash
-    end
+    part = @orig['ID'].split(/ +/)         
+    @data['ID'] = {
+      'ENTRY_NAME'      => part[1],
+      'DATA_CLASS'      => part[2].sub(/;/,''),
+      'MOLECULE_TYPE'   => part[3].sub(/;/,''),
+      'SEQUENCE_LENGTH' => part[4].to_i 
+    }
   end
-
 
 
   # returns a ENTRY_NAME in the ID line. 
@@ -127,20 +121,15 @@ class SPTR < EMBLDB
   #   DT DD-MMM-YYY (rel. NN, Last sequence update)
   #   DT DD-MMM-YYY (rel. NN, Last annotation update)
   def dt(key = nil)
-    unless @data['DT']
-      tmp = Hash.new
-      a = self.get('DT').split(/\n/)
-      tmp['created']    = a[0].sub(/\w{2}   /,'').strip
-      tmp['sequence']   = a[1].sub(/\w{2}   /,'').strip
-      tmp['annotation'] = a[2].sub(/\w{2}   /,'').strip
-      @data['DT'] = tmp
-    end
+    return dt[key] if key
+    return @data['DT'] if @data['DT']
 
-    if key
-      @data['DT'][key]
-    else
-      @data['DT']
-    end
+    part = self.get('DT').split(/\n/)
+    @data['DT'] = {
+      'created'    => part[0].sub(/\w{2}   /,'').strip,
+      'sequence'   => part[1].sub(/\w{2}   /,'').strip,
+      'annotation' => part[2].sub(/\w{2}   /,'').strip
+    }
   end
 
 
@@ -450,7 +439,8 @@ class SPTR < EMBLDB
       return ap unless ap
 
       # Event, Named isoforms, Comment, [Name, Synonyms, IsoId, Sequnce]+
-      tmp = {'Event' => nil, 'Named isoforms' => nil, 'Comment' => nil, 'Variants'  => []}
+      tmp = {'Event' => nil, 'Named isoforms' => nil, 'Comment' => nil, 
+             'Variants'  => []}
 
       if /Event=(.+?);/ =~ ap
         tmp['Event'] = $1
@@ -498,7 +488,7 @@ class SPTR < EMBLDB
       return ms unless ms
 
       ms.each do |m|
-        mass = {'MW'=>nil,'MW_ERR'=>nil,'METHOD'=>nil,'RANGE'=>nil}
+        mass = {'MW' => nil,'MW_ERR' => nil,'METHOD' => nil,'RANGE' => nil}
         m.sub(/.$/,'').split(/;/).each do |line|
           case line
           when /MW=(.+)/
@@ -549,7 +539,7 @@ class SPTR < EMBLDB
     it = str.scan(/(.+?); NbExp=(.+?); IntAct=(.+?);/)
     it.map {|ent|
       {:partner_id => ent[0].strip,
-       :nbexp => ent[1].strip, 
+       :nbexp      => ent[1].strip, 
        :intact_acc => ent[2].split(', ') }
     }
   end
@@ -576,9 +566,25 @@ class SPTR < EMBLDB
 
 
   # returns conteins in the feature table.
+  #
+  # == Examples
+  #
+  #  sp = Bio::SPTR.new(entry)
+  #  ft = sp.ft
+  #  ft.class #=> Hash
+  #  ft.keys.each do |feature_key|
+  #    ft[feature_key].each do |feature|
+  #      feature['From'] #=> '1'
+  #      feature['To']   #=> '21'
+  #      feature['Description'] #=> ''
+  #      feature['FTId'] #=> ''
+  #      feature['diff'] #=> []
+  #    end
+  #  end
+  #
   # * Bio::SPTR#ft -> Hash
-  #    {'feature_name' => [{'From' => str, 'To' => str,
-  #                         'Description' => str, 'FTId' => str}],...}
+  #    {FEATURE_KEY => [{'From' => int, 'To' => int, 'diff' => [],
+  #                      'Description' => aStr, 'FTId' => aStr}],...}
   #
   # returns an Array of the information about the feature_name in the feature table.
   # * Bio::SPTR#ft(feature_name) -> Array of Hash
@@ -594,98 +600,70 @@ class SPTR < EMBLDB
   #   22-27   `TO' endpoint
   #   35-75   Description (>=0 per key)
   #   -----   -----------------
-  def ft(feature_name = nil)
-    unless @data['FT']
-      table        = Hash.new()
-      last_feature = nil
+  #
+  def ft(feature_key = nil)
+    return ft[feature_key] if feature_key
+    return @data['FT'] if @data['FT']
 
-      begin
-        get('FT').split(/\n/).each {|line|
-
-          feature = line[5..12].strip
-
-          if feature == '' and line[34..74]
-            tmp = ' ' + line[34..74].strip 
-            table[last_feature].last['Description'] << tmp
-            
-            next unless /\.$/ =~ line
-          else
-            from = line[14..19].strip
-            to   = line[21..26].strip
-            desc = line[34..74].strip if line[34..74]
-
-            table[feature] = [] unless table[feature]
-            table[feature] << {
-              'From'        => from.to_i, 
-              'To'          => to.to_i, 
-              'Description' => desc,
-              'diff'        => [],
-              'FTId'        => nil }
-            last_feature = feature
-            next
-          end
-
-          case last_feature
-          when 'VARSPLIC', 'VARIANT', 'CONFLICT'
-            if /FTId=(.+?)\./ =~ line   # version 41 >
-              ftid = $1
-              table[last_feature].last['FTId'] = ftid
-              table[last_feature].last['Description'].sub!(/ \/FTId=#{ftid}./,'') 
-            end
-
-            case table[last_feature].last['Description']
-            when /(\w[\w ]*\w*) - ?> (\w[\w ]*\w*)/
-              original = $1
-              swap = $2
-              original = original.gsub(/ /,'').strip
-              swap = swap.gsub(/ /,'').strip
-            when /Missing/i
-              original = seq.subseq(table[last_feature].last['From'],
-                                    table[last_feature].last['To'])
-              swap = ''
-            else
-              raise line
-            end
-            table[last_feature].last['diff'] = [original, swap]
-          end
-        }
-
-      rescue
-        raise "Invalid FT Lines(#{$!}) in #{entry_id}:, \n" + 
-                  "'#{self.get('FT')}'\n"
+    table = []
+    begin
+    get('FT').split("\n").each do |line|
+      if line =~ /^FT   \w/
+        feature = line.chomp.ljust(74)
+        table << [feature[ 5..12].strip,   # Feature Name
+                  feature[14..19].strip,   # From
+                  feature[21..26].strip,   # To
+                  feature[34..74].strip ]  # Description
+      else
+        table.last << line.chomp.sub!(/^FT +/, '')
       end
+    end
 
-      table.each_key do |k|
-        table[k].each do |e|
-          if / -> / =~ e['Description']
-            pattern = /([A-Z][A-Z ]*[A-Z]*) -> ([A-Z][A-Z ]*[A-Z]*)/
-            e['Description'].sub!(pattern) {  
-              a = $1
-              b = $2
-              a.gsub(/ /,'') + " -> " + b.gsub(/ /,'') 
-            }
-          end
-          if /- [\w\d]/ =~ e['Description']
-            e['Description'].gsub!(/([\w\d]- [\w\d]+)/) { 
-              a = $1
-              if /- AND/ =~ a
-                a
-              else
-                a.sub(/ /,'') 
-              end
-            }
-          end
+    # Join Desctiption lines
+    table = table.map { |feature| 
+      ftid = feature.pop if feature.last =~ /FTId=/
+      if feature.size > 4
+        feature = [feature[0], feature[1], feature[2], 
+                   feature[3, feature.size - 3].join(" ")]
+      end
+      feature << ftid
+    }
+
+    hash = {}
+    table.each do |feature|
+      hash[feature[0]] = [] unless hash[feature[0]]
+
+      hash[feature[0]] << {
+        'From' => feature[1].to_i, 
+        'To'   => feature[2].to_i, 
+        'Description' => feature[3], 
+        'FTId' => feature[4].to_s.sub(/\/FTId=/, '').sub(/\.$/, ''),
+        'diff' => []
+      }
+
+      case feature[0]
+      when 'VARSPLIC', 'VARIANT', 'VAR_SEQ', 'CONFLICT'
+        case hash[feature[0]].last['Description']
+        when /(\w[\w ]*\w*) - ?> (\w[\w ]*\w*)/
+          original_res = $1
+          changed_res = $2
+          original_res = original_res.gsub(/ /,'').strip
+          chenged_res = changed_res.gsub(/ /,'').strip
+        when /Missing/i
+          original_res = seq.subseq(hash[feature[0]].last['From'],
+                                    hash[feature[0]].last['To'])
+          changed_res = ''
         end
+        hash[feature[0]].last['diff'] = [original_res, chenged_res]
       end
-      @data['FT'] = table
+    end
+    rescue
+      raise "Invalid FT Lines(#{$!}) in #{entry_id}:, \n'#{self.get('FT')}'\n"
     end
 
-    if feature_name
-      @data['FT'][feature_name]
-    else
-      @data['FT']
-    end
+    @data['FT'] = hash
   end
+
 
 
   # returns a Hash of conteins in the SQ lines.
@@ -693,7 +671,8 @@ class SPTR < EMBLDB
   #
   # returns a value of a key given in the SQ lines.
   # * Bio::SPTRL#sq(key)  -> int or str
-  # * Keys: ['MW', 'mw', 'molecular', 'weight', 'aalen', 'len', 'length', 'CRC64']
+  # * Keys: ['MW', 'mw', 'molecular', 'weight', 'aalen', 'len', 'length', 
+  #          'CRC64']
   #
   # === SQ Line; sequence header (1/entry)
   #    SQ   SEQUENCE   233 AA;  25630 MW;  146A1B48A1475C86 CRC64;
