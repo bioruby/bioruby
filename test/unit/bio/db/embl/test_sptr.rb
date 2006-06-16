@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_sptr.rb,v 1.2 2005/11/23 10:06:12 nakao Exp $
+#  $Id: test_sptr.rb,v 1.3 2006/06/16 16:51:05 nakao Exp $
 #
 
 require 'pathname'
@@ -233,7 +233,8 @@ module Bio
     def test_ft
       assert(@obj.ft)
       name = 'DNA_BIND'
-      assert_equal([{"FTId"=>nil, "From"=>102, "diff"=>[], "To"=>292, "Description"=>nil}], @obj.ft(name))
+      assert_equal([{"FTId"=>"", "From"=>102, "diff"=>[], "To"=>292, "Description"=>""}], @obj.ft(name))
+      assert_equal([{"FTId"=>"", "From"=>102, "diff"=>[], "To"=>292, "Description"=>""}], @obj.ft[name])
     end
 
     def test_sq
