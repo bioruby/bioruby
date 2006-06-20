@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
 # License:: Ruby's
 #
-#  $Id: report.rb,v 1.7 2006/05/08 14:37:55 ngoto Exp $
+#  $Id: report.rb,v 1.8 2006/06/20 14:21:34 ngoto Exp $
 #
 # BLAT result parser (psl / pslx format).
 #
@@ -326,6 +326,80 @@ module Bio
         # Yields a Bio::Blat::Report::SegmentPair object.
         def each(&x) #:yields: segmentpair
           exons.each(&x)
+        end
+
+        #--
+        # methods described in the BLAT FAQ at the UCSC genome browser.
+        # (http://genome.ucsc.edu/FAQ/FAQblat#blat5)
+        #++
+
+        # Calculates the pslCalcMilliBad value defined in the
+        # BLAT FAQ (http://genome.ucsc.edu/FAQ/FAQblat#blat5).
+        #
+        # The algorithm is taken from the BLAT FAQ
+        # (http://genome.ucsc.edu/FAQ/FAQblat#blat5).
+        def milli_bad
+          w = (self.protein? ? 3 : 1)
+          qalen = w * (self.query.end - self.query.start)
+          talen = self.target.end - self.target.start
+          alen = (if qalen < talen then qalen; else talen; end)
+          return 0 if alen <= 0
+          d = qalen - talen
+          d = 0 if d < 0
+          total = w * (self.match + self.rep_match + self.mismatch)
+          return 0 if total == 0
+          return (1000 * (self.mismatch * w + self.query.gap_count +
+                            (3 * Math.log(1 + d)).round) / total)
+        end
+
+        # Calculates the percent identity compatible with the BLAT web server
+        # as described in the BLAT FAQ
+        # (http://genome.ucsc.edu/FAQ/FAQblat#blat5).
+        #
+        # The algorithm is taken from the BLAT FAQ
+        # (http://genome.ucsc.edu/FAQ/FAQblat#blat5).
+        def percent_identity
+          100.0 - self.milli_bad * 0.1
+        end
+
+        # When the output data comes from the protein query, returns true.
+        # Otherwise (nucleotide query), returns false.
+        # It returns nil if this cannot be determined.
+        #
+        # The algorithm is taken from the BLAT FAQ
+        # (http://genome.ucsc.edu/FAQ/FAQblat#blat5).
+        def protein?
+          return nil if self.block_sizes.empty?
+          case self.strand
+          when '+'
+            if self.target.end == self.target.starts[-1] +
+                3 * self.block_sizes[-1] then
+              true
+            else
+              false
+            end
+          when '-'
+            if self.target.start == self.target.size -
+                self.target.starts[-1] + 3 * self.block_sizes[-1] then
+              true
+            else
+              false
+            end
+          else
+            nil
+          end
+        end
+
+        # Calculates the score compatible with the BLAT web server
+        # as described in the BLAT FAQ
+        # (http://genome.ucsc.edu/FAQ/FAQblat#blat5).
+        #
+        # The algorithm is taken from the BLAT FAQ
+        # (http://genome.ucsc.edu/FAQ/FAQblat#blat5).
+        def score
+          w = (self.protein? ? 3 : 1)
+          w * (self.match + (self.rep_match >> 1)) -
+            w * self.mismatch - self.query.gap_count - self.target.gap_count
         end
       end #class Hit
 
