@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
 # License:: Ruby's
 #
-#  $Id: report.rb,v 1.8 2006/06/20 14:21:34 ngoto Exp $
+#  $Id: report.rb,v 1.9 2006/06/20 14:34:38 ngoto Exp $
 #
 # BLAT result parser (psl / pslx format).
 #
@@ -20,7 +20,7 @@
 # * Kent, W.J., BLAT--the BLAST-like alignment tool,
 #   Genome Research, 12, 656--664, 2002.
 #   http://www.genome.org/cgi/content/abstract/12/4/656
-# 
+# * http://genome.ucsc.edu/goldenPath/help/blatSpec.html
 
 require 'bio'
 
@@ -261,9 +261,13 @@ module Bio
         def match;       @data[0].to_i;  end
         # Mismatch nucleotides.
         def mismatch;    @data[1].to_i;  end
-        # rep. match (???)
+
+        # "rep. match".
+        # Number of bases that match but are part of repeats.
+        # Note that current version of BLAT always set 0.
         def rep_match;   @data[2].to_i;  end
-        # N's (???)
+
+        # "N's". Number of 'N' bases.
         def n_s;         @data[3].to_i;  end
 
         # Returns strand information of the hit.
