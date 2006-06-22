@@ -5,7 +5,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: flatfile.rb,v 1.50 2006/06/12 10:35:42 ngoto Exp $
+#  $Id: flatfile.rb,v 1.51 2006/06/22 14:32:47 ngoto Exp $
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
@@ -1195,7 +1195,7 @@ module Bio
             /^TBLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/ ],
 
           blat   = RuleRegexp[ 'Bio::Blat::Report',
-            /^psLayout version \d+\s*$/ ],
+            /^psLayout version \d+/ ],
           spidey = RuleRegexp[ 'Bio::Spidey::Report',
             /^\-\-SPIDEY version .+\-\-$/ ],
           hmmer  = RuleRegexp[ 'Bio::HMMER::Report',
