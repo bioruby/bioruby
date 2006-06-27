@@ -4,26 +4,9 @@
 # Copyright:: Copyright (C) 2006
 #             Naohisa Goto <ng@bioruby.org>
 #
-# License:: LGPL
+# License:: Ruby's
 #
-#  $Id: test_pdb.rb,v 1.1 2006/01/26 16:06:03 ngoto Exp $
-#
-#--
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#++
-#
+#  $Id: test_pdb.rb,v 1.2 2006/06/27 14:25:40 ngoto Exp $
 #
 
 require 'pathname'
@@ -57,7 +40,7 @@ module Bio
       end
 
       def test_name
-        assert_equal(' CG2', @atom.name)
+        assert_equal('CG2', @atom.name)
       end
 
       def test_altLoc
@@ -77,7 +60,7 @@ module Bio
       end
 
       def test_iCode
-        assert_equal(' ', @atom.iCode)
+        assert_equal('', @atom.iCode)
       end
 
       def test_x
@@ -101,15 +84,15 @@ module Bio
       end
 
       def test_segID
-        assert_equal('A1  ', @atom.segID)
+        assert_equal('A1', @atom.segID)
       end
 
       def test_element
-        assert_equal(' C', @atom.element)
+        assert_equal('C', @atom.element)
       end
 
       def test_charge
-        assert_equal('  ', @atom.charge)
+        assert_equal('', @atom.charge)
       end
 
       def test_xyz
