@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
 # License:: Ruby's
 #
-#  $Id: report.rb,v 1.9 2006/06/20 14:34:38 ngoto Exp $
+#  $Id: report.rb,v 1.10 2006/06/27 15:17:07 ngoto Exp $
 #
 # BLAT result parser (psl / pslx format).
 #
@@ -33,7 +33,8 @@ module Bio
     # In BLAT results, the start position of a sequnece is numbered as 0.
     # On the other hand, in many other homology search programs,
     # the start position of a sequence is numbered as 1.
-    # To keep compatibility, the BLAT parser adds 1 to every position number.
+    # To keep compatibility, the BLAT parser adds 1 to every position number
+    # except Bio::Blat::Report::Seqdesc and some Bio::Blat specific methods.
     #
     # Note that Bio::Blat::Report#query_def, #query_id, #query_len  methods
     # simply return first hit's query_*.
@@ -334,14 +335,14 @@ module Bio
 
         #--
         # methods described in the BLAT FAQ at the UCSC genome browser.
-        # (http://genome.ucsc.edu/FAQ/FAQblat#blat5)
+        # (http://genome.ucsc.edu/FAQ/FAQblat#blat4)
         #++
 
         # Calculates the pslCalcMilliBad value defined in the
-        # BLAT FAQ (http://genome.ucsc.edu/FAQ/FAQblat#blat5).
+        # BLAT FAQ (http://genome.ucsc.edu/FAQ/FAQblat#blat4).
         #
         # The algorithm is taken from the BLAT FAQ
-        # (http://genome.ucsc.edu/FAQ/FAQblat#blat5).
+        # (http://genome.ucsc.edu/FAQ/FAQblat#blat4).
         def milli_bad
           w = (self.protein? ? 3 : 1)
           qalen = w * (self.query.end - self.query.start)
@@ -358,10 +359,10 @@ module Bio
 
         # Calculates the percent identity compatible with the BLAT web server
         # as described in the BLAT FAQ
-        # (http://genome.ucsc.edu/FAQ/FAQblat#blat5).
+        # (http://genome.ucsc.edu/FAQ/FAQblat#blat4).
         #
         # The algorithm is taken from the BLAT FAQ
-        # (http://genome.ucsc.edu/FAQ/FAQblat#blat5).
+        # (http://genome.ucsc.edu/FAQ/FAQblat#blat4).
         def percent_identity
           100.0 - self.milli_bad * 0.1
         end
@@ -371,7 +372,7 @@ module Bio
         # It returns nil if this cannot be determined.
         #
         # The algorithm is taken from the BLAT FAQ
-        # (http://genome.ucsc.edu/FAQ/FAQblat#blat5).
+        # (http://genome.ucsc.edu/FAQ/FAQblat#blat4).
         def protein?
           return nil if self.block_sizes.empty?
           case self.strand
@@ -396,10 +397,10 @@ module Bio
 
         # Calculates the score compatible with the BLAT web server
         # as described in the BLAT FAQ
-        # (http://genome.ucsc.edu/FAQ/FAQblat#blat5).
+        # (http://genome.ucsc.edu/FAQ/FAQblat#blat4).
         #
         # The algorithm is taken from the BLAT FAQ
-        # (http://genome.ucsc.edu/FAQ/FAQblat#blat5).
+        # (http://genome.ucsc.edu/FAQ/FAQblat#blat4).
         def score
           w = (self.protein? ? 3 : 1)
           w * (self.match + (self.rep_match >> 1)) -
