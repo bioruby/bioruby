@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # Lisence::     Ruby's
 #
-# $Id: test_na.rb,v 1.1 2006/02/08 07:08:22 nakao Exp $
+# $Id: test_na.rb,v 1.2 2006/06/27 05:44:57 ngoto Exp $
 #
 
 require 'pathname'
@@ -96,6 +96,32 @@ module Bio
       assert_equal(40, @obj.gc_percent)
       @obj[0, 1] = 'g'
       assert_equal(45, @obj.gc_percent)
+    end
+
+    def test_gc_content
+      assert_in_delta(0.4, @obj.gc_content, Float::EPSILON)
+      @obj[0, 1] = 'g'
+      assert_in_delta(0.45, @obj.gc_content, Float::EPSILON)
+    end
+
+    def test_at_content
+      assert_in_delta(0.6, @obj.at_content, Float::EPSILON)
+      @obj[0, 1] = 'g'
+      assert_in_delta(0.55, @obj.at_content, Float::EPSILON)
+    end
+
+    def test_gc_skew
+      assert_in_delta(0.0, @obj.gc_skew, Float::EPSILON)
+      @obj[0, 1] = 'g'
+      assert_in_delta(1.0/9.0, @obj.gc_skew, Float::EPSILON)
+      @obj.gsub!(/a/, 'c')
+      assert_in_delta(-3.0/8.0, @obj.gc_skew, Float::EPSILON)
+    end
+
+    def test_at_skew
+      assert_in_delta(1.0/3.0, @obj.at_skew, Float::EPSILON)
+      @obj[0, 1] = 'g'
+      assert_in_delta(3.0/11.0, @obj.at_skew, Float::EPSILON)
     end
 
     def test_iliegal_bases

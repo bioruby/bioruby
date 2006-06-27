@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     Ruby's
 #
-# $Id: na.rb,v 1.3 2006/03/26 02:27:59 k Exp $
+# $Id: na.rb,v 1.4 2006/06/27 05:44:57 ngoto Exp $
 #
 
 require 'bio/sequence/common'
@@ -281,7 +281,7 @@ class NA < String
   end
 
   # Calculate the ratio of GC / ATGC bases as a percentage rounded to 
-  # the nearest whole number.
+  # the nearest whole number. U is regarded as T.
   #
   #   s = Bio::Sequence::NA.new('atggcgtga')
   #   puts s.gc_percent                       #=> 55
@@ -291,8 +291,65 @@ class NA < String
     count = self.composition
     at = count['a'] + count['t'] + count['u']
     gc = count['g'] + count['c']
+    return 0 if at + gc == 0
     gc = 100 * gc / (at + gc)
     return gc
+  end
+
+  # Calculate the ratio of GC / ATGC bases. U is regarded as T.
+  #
+  #   s = Bio::Sequence::NA.new('atggcgtga')
+  #   puts s.gc_content                       #=> 0.555555555555556
+  # ---
+  # *Returns*:: Float
+  def gc_content
+    count = self.composition
+    at = count['a'] + count['t'] + count['u']
+    gc = count['g'] + count['c']
+    return 0.0 if at + gc == 0
+    return (gc.to_f / (at + gc).to_f)
+  end
+
+  # Calculate the ratio of AT / ATGC bases. U is regarded as T.
+  #
+  #   s = Bio::Sequence::NA.new('atggcgtga')
+  #   puts s.at_content                       #=> 0.444444444444444
+  # ---
+  # *Returns*:: Float
+  def at_content
+    count = self.composition
+    at = count['a'] + count['t'] + count['u']
+    gc = count['g'] + count['c']
+    return 0.0 if at + gc == 0
+    return (at.to_f / (at + gc).to_f)
+  end
+
+  # Calculate the ratio of (G - C) / (G + C) bases.
+  #
+  #   s = Bio::Sequence::NA.new('atggcgtga')
+  #   puts s.gc_skew                          #=> 0.6
+  # ---
+  # *Returns*:: Float
+  def gc_skew
+    count = self.composition
+    g = count['g']
+    c = count['c']
+    return 0.0 if g + c == 0
+    return ((g - c).to_f / (g + c).to_f)
+  end
+
+  # Calculate the ratio of (A - T) / (A + T) bases. U is regarded as T.
+  #
+  #   s = Bio::Sequence::NA.new('atgttgttgttc')
+  #   puts s.at_skew                          #=> -0.75
+  # ---
+  # *Returns*:: Float
+  def at_skew
+    count = self.composition
+    a = count['a']
+    t = count['t'] + count['u']
+    return 0.0 if a + t == 0
+    return ((a - t).to_f / (a + t).to_f)
   end
 
   # Returns an alphabetically sorted array of any non-standard bases 

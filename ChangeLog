@@ -1,3 +1,12 @@
+2006-06-27  Naohisa Goto <ng@bioruby.org>
+
+        * lib/bio/sequence/na.rb
+
+          Bio::Sequence::NA#gc_content, #at_content, #gc_skew, #at_skew
+	  are newly added. Bio::Sequence::NA#gc_percent are changed
+	  not to raise ZeroDivisionError and returns 0 when given sequence
+	  is empty.
+
 2006-05-02  Mitsuteru Nakao <n@bioruby.org>
 
         * lib/bio/appl/pts1.rb
