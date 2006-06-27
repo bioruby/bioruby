@@ -6,7 +6,7 @@
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 # License:: LGPL
 #
-#  $Id: pdb.rb,v 1.15 2006/02/20 13:00:43 ngoto Exp $
+#  $Id: pdb.rb,v 1.16 2006/06/27 14:23:45 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -992,29 +992,34 @@ module Bio
         def do_parse
           return self if @parsed
           self.serial     = @str[6..10].to_i
-          self.name       = @str[12..15]
+          self.name       = @str[12..15].strip
           self.altLoc     = @str[16..16]
-          self.resName    = @str[17..19].rstrip
+          self.resName    = @str[17..19].strip
           self.chainID    = @str[21..21]
           self.resSeq     = @str[22..25].to_i
-          self.iCode      = @str[26..26]
+          self.iCode      = @str[26..26].strip
           self.x          = @str[30..37].to_f
           self.y          = @str[38..45].to_f
           self.z          = @str[46..53].to_f
           self.occupancy  = @str[54..59].to_f
           self.tempFactor = @str[60..65].to_f
-          self.segID      = @str[72..75]
-          self.element    = @str[76..77]
-          self.charge     = @str[78..79]
+          self.segID      = @str[72..75].to_s.rstrip
+          self.element    = @str[76..77].to_s.lstrip
+          self.charge     = @str[78..79].to_s.strip
           @parsed = true
           self
         end
 
         def to_s
+          atomname = self.name.to_s
+          elem = self.element.to_s.strip
+          if elem.length == 1 and atomname.lstrip[0, 1] == elem then
+            atomname = ' ' + atomname
+          end
           sprintf("%-6s%5d %-4s%-1s%3s %-1s%4d%-1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %-4s%2s%-2s\n",
                   self.record_name,
                   self.serial, 
-                  self.name,
+                  atomname,
                   self.altLoc,
                   self.resName,
                   self.chainID,
