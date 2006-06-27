@@ -5,7 +5,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     Ruby's
 #
-# $Id: test_map.rb,v 1.2 2006/06/07 12:56:29 aerts Exp $
+# $Id:
 
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3, 'lib')).cleanpath.to_s
@@ -181,4 +181,17 @@ module Bio
       assert_equal(1, @clone_b.mappings_as_marker.length)
     end
   end
+  
+  class Clone
+    include Bio::Map::ActsLikeMap
+    include Bio::Map::ActsLikeMarker
+    
+    def initialize(name)
+      @name = name
+      @mappings_as_map = Array.new
+      @mappings_as_marker = Array.new
+    end
+    attr_accessor :name, :mappings_as_map, :mappings_as_marker
+  end
+  
 end

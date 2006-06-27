@@ -5,7 +5,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # Licence::     Ruby's
 #
-# $Id: map.rb,v 1.6 2006/06/07 12:55:50 aerts Exp $
+# $Id:
 require 'bio/location'
 
 module Bio
@@ -64,12 +64,12 @@ module Bio
   #  puts "Does my_map1 contain marker3? => " + my_map1.contains_marker?(my_marker3).to_s
   #  puts "Does my_map2 contain marker3? => " + my_map2.contains_marker?(my_marker3).to_s
   #  
-  #  my_map1.sort.each do |mapping|
-  #    puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location[0].from.to_s + ".." + mapping.location[-1].to.to_s
+  #  my_map1.mappings_as_map.sort.each do |mapping|
+  #    puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location.from.to_s + ".." + mapping.location.to.to_s
   #  end
-  #  puts my_map1.min.marker.name
-  #  my_map2.each do |mapping|
-  #    puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location[0].from.to_s + ".." + mapping.location[-1].to.to_s
+  #  puts my_map1.mappings_as_map.min.marker.name
+  #  my_map2.mappings_as_map.each do |mapping|
+  #    puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location.from.to_s + ".." + mapping.location.to.to_s
   #  end
   module Map
   # = DESCRIPTION
@@ -80,6 +80,16 @@ module Bio
   # , and can be mixed into other classes (e.g. Bio::Map::SimpleMap)
   # 
   # Classes that include this mixin should provide an array property called mappings_as_map.
+  # For example:
+  #   class MyMapThing
+  #     include Bio::Map::ActsLikeMap
+  #     
+  #     def initialize (name)
+  #       @name = name
+  #       @mappings_as_maps = Array.new
+  #     end
+  #     attr_accessor :name, :mappings_as_map
+  #    end
     module ActsLikeMap
       include Enumerable
       
@@ -137,12 +147,6 @@ module Bio
         return contains
       end
       
-      # Go through all Bio::Map::Mapping objects linked to this Bio::Map::SimpleMap.
-      def each
-        self.mappings_as_map.each do |mapping|
-          yield mapping
-        end
-      end
     end #ActsLikeMap
 
     # = DESCRIPTION
@@ -153,6 +157,16 @@ module Bio
     # , and can be mixed into other classes (e.g. Bio::Map::Marker)
     # 
     # Classes that include this mixin should provide an array property called mappings_as_marker.
+    # For example:
+    #   class MyMarkerThing
+    #     include Bio::Map::ActsLikeMarker
+    #     
+    #     def initialize (name)
+    #       @name = name
+    #       @mappings_as_marker = Array.new
+    #     end
+    #     attr_accessor :name, :mappings_as_marker
+    #    end
     module ActsLikeMarker
       include Enumerable
       
@@ -186,13 +200,6 @@ module Bio
             self.mappings_as_marker.push(my_mapping)
             map.mappings_as_map.push(my_mapping)
           end
-        end
-      end
-
-      # Go through all Mapping objects linked to this marker.
-      def each
-        self.mappings_as_marker.each do |mapping|
-          yield mapping
         end
       end
       
@@ -237,6 +244,7 @@ module Bio
         return positions
       end
       
+
     end #ActsLikeMarker
 	  
     # = DESCRIPTION
@@ -252,30 +260,30 @@ module Bio
       # * _map_: a Bio::Map::SimpleMap object
       # * _marker_: a Bio::Map::Marker object
       # * _location_: a Bio::Locations object
-
       def initialize (map, marker, location = nil)
         @map, @marker, @location = map, marker, location
       end
       attr_accessor :map, :marker, :location
       
-#       # Compares the location of this mapping to another mapping.
-#       # ---
-#       # *Arguments*:
-#       # * other_mapping: Bio::Map::Mapping object
-#       # *Returns*::
-#       # * 1 if self < other location
-#       # * -1 if self > other location
-#       # * 0 if both location are the same
-#       # * nil if the argument is not a Bio::Location object
-#       def <=>(other)
-#         unless other.kind_of?(Bio::Map::Mapping)
-#           raise "[Error] markers are not comparable"
-#         end
-#         unless @map.equal?(other.map)
-#           raise "[Error] maps have to be the same"
-#         end
-#         return self.location<=>(other.location) # FIXME: no <=>-method in Bio::Locations
-#       end
+      # Compares the location of this mapping to another mapping.
+      # ---
+      # *Arguments*:
+      # * other_mapping: Bio::Map::Mapping object
+      # *Returns*::
+      # * 1 if self < other location
+      # * -1 if self > other location
+      # * 0 if both location are the same
+      # * nil if the argument is not a Bio::Location object
+      def <=>(other)
+        unless other.kind_of?(Bio::Map::Mapping)
+          raise "[Error] markers are not comparable"
+        end
+	    unless @map.equal?(other.map)
+          raise "[Error] maps have to be the same"
+        end
+
+        return self.location.<=>(other.location)
+      end
     end # Mapping
     
     # = DESCRIPTION
