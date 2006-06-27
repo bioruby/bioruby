@@ -5,7 +5,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # Licence::     Ruby's
 #
-# $Id:
+# $Id: map.rb,v 1.8 2006/06/27 12:40:15 aerts Exp $
 require 'bio/location'
 
 module Bio
@@ -91,8 +91,6 @@ module Bio
   #     attr_accessor :name, :mappings_as_map
   #    end
     module ActsLikeMap
-      include Enumerable
-      
       # = DESCRIPTION
       # Adds a Bio::Map::Mappings object to its array of mappings.
       # 
@@ -168,8 +166,6 @@ module Bio
     #     attr_accessor :name, :mappings_as_marker
     #    end
     module ActsLikeMarker
-      include Enumerable
-      
       # = DESCRIPTION
       # Adds a Bio::Map::Mappings object to its array of mappings.
       # 
