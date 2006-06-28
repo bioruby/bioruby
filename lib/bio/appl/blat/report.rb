@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
 # License:: Ruby's
 #
-#  $Id: report.rb,v 1.10 2006/06/27 15:17:07 ngoto Exp $
+#  $Id: report.rb,v 1.11 2006/06/28 13:43:31 ngoto Exp $
 #
 # BLAT result parser (psl / pslx format).
 #
@@ -139,12 +139,14 @@ module Bio
         # Creates a new SegmentPair object.
         # It is designed to be called internally from Bio::Blat::Report class.
         # Users shall not use it directly.
-        def initialize(query_len, strand,
-                       blksize, qstart, tstart, qseq, tseq)
+        def initialize(query_len, target_len, strand,
+                       blksize, qstart, tstart, qseq, tseq,
+                       protein_flag)
           @blocksize  = blksize
           @qseq       = qseq
           @hseq       = hseq
           @hit_strand   = 'plus'
+          w = (protein_flag ? 3 : 1) # 3 means query=protein target=dna
           case strand
           when '-'
             # query is minus strand
@@ -155,15 +157,26 @@ module Bio
             # To keep compatibility, with other homology search programs,
             # we add 1 to each position number.
             @hit_from   = tstart + 1
-            @hit_to     = tstart + blksize # - 1 + 1
-          else #when '+'
+            @hit_to     = tstart + blksize * w # - 1 + 1
+          when '+-'
+            # hit is minus strand
+            @query_strand = 'plus'
+            @hit_strand = 'minus'
+            # To keep compatibility, with other homology search programs,
+            # we add 1 to each position number.
+            @query_from   = qstart + 1
+            @query_to     = qstart + blksize # - 1 + 1
+            # convert positions
+            @hit_from     = target_len - tstart
+            @hit_to       = target_len - tstart - blksize * w + 1
+          else #when '+', '++'
             @query_strand = 'plus'
             # To keep compatibility with other homology search programs,
             # we add 1 to each position number.
             @query_from = qstart + 1
             @query_to   = qstart + blksize # - 1 + 1
             @hit_from   = tstart + 1
-            @hit_to     = tstart + blksize # - 1 + 1
+            @hit_to     = tstart + blksize * w # - 1 + 1
           end
         end
         # Returns query start position.
@@ -297,9 +310,11 @@ module Bio
             tst   = target.starts
             qseqs = query.seqs
             tseqs = target.seqs
+            pflag = self.protein?
             @blocks = (0...block_count).collect do |i|
-              SegmentPair.new(query.size, strand, bs[i],
-                              qst[i], tst[i], qseqs[i], tseqs[i])
+              SegmentPair.new(query.size, target.size, strand, bs[i],
+                              qst[i], tst[i], qseqs[i], tseqs[i],
+                              pflag)
             end
           end
           @blocks
@@ -373,9 +388,12 @@ module Bio
         #
         # The algorithm is taken from the BLAT FAQ
         # (http://genome.ucsc.edu/FAQ/FAQblat#blat4).
+        #
+        # Note: It seems that it returns true only when protein query
+        # with nucleotide database (blat options: -q=prot -t=dnax).
         def protein?
           return nil if self.block_sizes.empty?
-          case self.strand
+          case self.strand[1,1]
           when '+'
             if self.target.end == self.target.starts[-1] +
                 3 * self.block_sizes[-1] then
@@ -385,7 +403,7 @@ module Bio
             end
           when '-'
             if self.target.start == self.target.size -
-                self.target.starts[-1] + 3 * self.block_sizes[-1] then
+                self.target.starts[-1] - 3 * self.block_sizes[-1] then
               true
             else
               false
