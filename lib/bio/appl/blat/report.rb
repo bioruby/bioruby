@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
 # License:: Ruby's
 #
-#  $Id: report.rb,v 1.11 2006/06/28 13:43:31 ngoto Exp $
+#  $Id: report.rb,v 1.12 2006/06/29 11:54:33 ngoto Exp $
 #
 # BLAT result parser (psl / pslx format).
 #
@@ -58,6 +58,11 @@ module Bio
           if flag then
             @hits << Hit.new(line)
           else
+            # for headerless data
+            if /^\d/ =~ line then
+              flag = true
+              redo
+            end
             line = line.chomp
             if /\A\-+\s*\z/ =~ line
               flag = true
@@ -80,7 +85,15 @@ module Bio
 
       # Parses headers.
       def parse_header(ary)
-        ary.shift # first line is removed
+        while x = ary.shift
+          if /psLayout version (\S+)/ =~ x then
+            @psl_version = $1
+            break
+          elsif !(x.strip.empty?)
+            ary.unshift(x)
+            break
+          end
+        end
         a0 = ary.collect { |x| x.split(/\t/) }
         k = []
         a0.each do |x|
@@ -93,6 +106,9 @@ module Bio
         k
       end
       private :parse_header
+
+      # version of the psl format (String or nil).
+      attr_reader :psl_version
 
       # Bio::Blat::Report::SeqDesc stores sequence information of
       # query or subject of the BLAT report.
