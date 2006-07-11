@@ -4,7 +4,7 @@
 # Copyright::   Copyright (C) 2001-2006  Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: sptr.rb,v 1.32 2006/06/16 17:01:01 nakao Exp $
+# $Id: sptr.rb,v 1.33 2006/07/11 15:52:51 nakao Exp $
 #
 # == Description
 # 
@@ -353,11 +353,33 @@ class SPTR < EMBLDB
   # RN RC RP RX RA RT RL
 
 
-  @@cc_topics = ['ALTERNATIVE PRODUCTS','CATALYTIC ACTIVITY','CAUTION',
-    'COFACTOR','DATABASE','DEVELOPMENTAL STAGE','DISEASE','DOMAIN',
-    'ENZYME REGULATION','FUNCTION','INDUCTION','MASS SPECTROMETRY',
-    'MISCELLANEOUS','PATHWAY','PHARMACEUTICAL','POLYMORPHISM','PTM',
-    'SIMILARITY','SUBCELLULAR LOCATION','SUBUNIT','TISSUE SPECIFICITY']
+  @@cc_topics = ['PHARMACEUTICAL',
+                 'BIOTECHNOLOGY',
+                 'TOXIC DOSE', 
+                 'ALLERGEN',   
+                 'RNA EDITING',
+                 'POLYMORPHISM',
+                 'BIOPHYSICOCHEMICAL PROPERTIES',
+                 'MASS SPECTROMETRY',
+                 'WEB RESOURCE', 
+                 'ENZYME REGULATION',
+                 'DISEASE',
+                 'INTERACTION',
+                 'DEVELOPMENTAL STAGE',
+                 'INDUCTION',
+                 'CAUTION',
+                 'ALTERNATIVE PRODUCTS',
+                 'DOMAIN',
+                 'PTM',
+                 'MISCELLANEOUS',
+                 'TISSUE SPECIFICITY',
+                 'COFACTOR',
+                 'PATHWAY',
+                 'SUBUNIT',
+                 'CATALYTIC ACTIVITY',
+                 'SUBCELLULAR LOCATION',
+                 'FUNCTION',
+                 'SIMILARITY']
   # returns contents in the CC lines.
   # * Bio::SPTR#cc -> Hash
   #
@@ -397,16 +419,26 @@ class SPTR < EMBLDB
   #   CC   -!- TOPIC: FIRST LINE OF A COMMENT BLOCK;
   #   CC       SECOND AND SUBSEQUENT LINES OF A COMMENT BLOCK.
   #
+  # See also http://www.expasy.org/sprot/userman.html#CC_line
+  #
   def cc(tag = nil)
     unless @data['CC']
       cc  = Hash.new
       cmt = '-' * (77 - 4 + 1)
       dlm = /-!- /
 
-      return cc if get('CC').size == 0 # 12KD_MYCSM has no CC lines.
+      # 12KD_MYCSM has no CC lines.
+      return cc if get('CC').size == 0
+      
+      cc_raw = fetch('CC')
+
+      cc_raw.sub!(/ *---.+---/m, '')
+      # Not any CC Lines without the copyright statement.
+      return cc if cc_raw == ''
+
 
       begin
-        fetch('CC').split(/#{cmt}/)[0].sub(dlm,'').split(dlm).each do |tmp|
+        cc_raw.split(/#{cmt}/)[0].sub(dlm,'').split(dlm).each do |tmp|
           if /(^[A-Z ]+[A-Z]): (.+)/ =~ tmp
             key  = $1
             body = $2.gsub(/- (?!AND)/,'-')
