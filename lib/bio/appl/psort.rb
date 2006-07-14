@@ -7,7 +7,7 @@ module Bio
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: psort.rb,v 1.9 2006/04/30 07:13:39 nakao Exp $
+# $Id: psort.rb,v 1.10 2006/07/14 14:28:44 ngoto Exp $
 #
 # == A client for PSORT WWW Server 
 #
@@ -112,7 +112,7 @@ require 'cgi'
 
         begin
           result = nil
-          Bio::Command::NetTools.net_http_start(@uri.host) {|http|
+          Bio::Command.start_http(@uri.host) {|http|
             result, = http.post(@uri.path, data)
           }
           @report = result.body

@@ -6,7 +6,7 @@
 #
 # License::	Ruby's
 #
-# $Id: emboss.rb,v 1.5 2006/05/17 14:24:33 aerts Exp $
+# $Id: emboss.rb,v 1.6 2006/07/14 14:28:44 ngoto Exp $
 #
 # = DESCRIPTION
 #
@@ -19,8 +19,6 @@
 #    EMBOSS: the European Molecular Biology Open Software Suite. \
 #    Trends Genet. 2000 Jun ; 16(6): 276-7 
 module Bio
-
-autoload :Command, 'bio/command'
 
 # = DESCRIPTION
 #
@@ -75,8 +73,6 @@ autoload :Command, 'bio/command'
 #    Trends Genet. 2000 Jun ; 16(6): 276-7 
 class EMBOSS
 
-  extend Bio::Command::Tools
-  
   # Combines the initialization and execution for the emboss +seqret+ command.
   #
   #  puts Bio::EMBOSS.seqret('embl:xlrhodop')
@@ -157,12 +153,7 @@ class EMBOSS
 
   def self.retrieve(cmd, arg)
     cmd = [ cmd, arg, '-auto', '-stdout' ]
-    str = ''
-    call_command_local(cmd) do |inn, out|
-      inn.close_write
-      str = out.read
-    end
-    return str
+    return Bio::Command.query_command(cmd)
   end
 
 end # EMBOSS

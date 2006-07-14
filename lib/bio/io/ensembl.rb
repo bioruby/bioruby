@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: ensembl.rb,v 1.2 2006/04/27 05:38:50 nakao Exp $
+# $Id: ensembl.rb,v 1.3 2006/07/14 14:28:44 ngoto Exp $
 #
 # == Description
 #
@@ -214,7 +214,7 @@ class Ensembl
         data = make_args(data_hash)
 
         result = nil      
-        Bio::Command::NetTools.net_http_start(@uri.host, @uri.port) {|http|
+        Bio::Command.start_http(@uri.host, @uri.port) {|http|
           result, = http.post(@path, data)
         }
         result.body

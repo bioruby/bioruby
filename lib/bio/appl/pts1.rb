@@ -8,7 +8,7 @@ module Bio
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: pts1.rb,v 1.3 2006/06/05 02:55:51 nakao Exp $
+# $Id: pts1.rb,v 1.4 2006/07/14 14:28:44 ngoto Exp $
 #
 
 require 'uri'
@@ -151,7 +151,7 @@ class PTS1
                   'name'     => seq.definition }
     @uri = URI.parse(["http:/", @host, @cgi_path].join('/'))
 
-    result, = Bio::Command::NetTools.post_form(@uri, @form_data)
+    result, = Bio::Command.post_form(@uri, @form_data)
     @output = Report.new(result.body)
     
     return @output
