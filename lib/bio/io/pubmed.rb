@@ -18,11 +18,12 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: pubmed.rb,v 1.13 2006/03/16 17:29:05 aerts Exp $
+#  $Id: pubmed.rb,v 1.14 2006/07/14 14:48:56 ngoto Exp $
 #
 
 require 'net/http'
 require 'cgi' unless defined?(CGI)
+require 'bio/command'
 
 module Bio
 
@@ -85,7 +86,7 @@ module Bio
       host = "www.ncbi.nlm.nih.gov"
       path = "/entrez/query.fcgi?tool=bioruby&cmd=Search&doptcmdl=MEDLINE&db=PubMed&term="
 
-      http = Net::HTTP.new(host)
+      http = Bio::Command.new_http(host)
       response, = http.get(path + CGI.escape(str))
       result = response.body
       result = result.gsub("\r", "\n").squeeze("\n")
@@ -122,7 +123,7 @@ module Bio
       host = "eutils.ncbi.nlm.nih.gov"
       path = "/entrez/eutils/esearch.fcgi?tool=bioruby&db=pubmed&#{opts.join('&')}&term="
 
-      http = Net::HTTP.new(host)
+      http = Bio::Command.new_http(host)
       response, = http.get(path + CGI.escape(str))
       result = response.body
       result = result.scan(/<Id>(.*?)<\/Id>/m).flatten
@@ -139,7 +140,7 @@ module Bio
       host = "www.ncbi.nlm.nih.gov"
       path = "/entrez/query.fcgi?tool=bioruby&cmd=Text&dopt=MEDLINE&db=PubMed&uid="
 
-      http = Net::HTTP.new(host)
+      http = Bio::Command.new_http(host)
       response, = http.get(path + id.to_s)
       result = response.body
       if result =~ /#{id}\s+Error/
@@ -160,7 +161,7 @@ module Bio
       host = "www.ncbi.nlm.nih.gov"
       path = "/entrez/utils/pmfetch.fcgi?tool=bioruby&mode=text&report=medline&db=PubMed&id="
 
-      http = Net::HTTP.new(host)
+      http = Bio::Command.new_http(host)
       response, = http.get(path + id.to_s)
       result = response.body
       if result =~ /#{id}\s+Error/
@@ -188,7 +189,7 @@ module Bio
 
       ids = ids.join(",")
 
-      http = Net::HTTP.new(host)
+      http = Bio::Command.new_http(host)
       response, = http.get(path + ids)
       result = response.body
       result = result.split(/\n\n+/)

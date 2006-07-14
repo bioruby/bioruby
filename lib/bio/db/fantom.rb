@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org> 
 # License::   Ruby's
 #
-#  $Id: fantom.rb,v 1.12 2006/04/30 05:57:40 ngoto Exp $
+#  $Id: fantom.rb,v 1.13 2006/07/14 14:48:55 ngoto Exp $
 #
 
 begin
@@ -15,6 +15,7 @@ require 'uri'
 require 'net/http'
 
 require 'bio/db'
+require 'bio/command'
 #require 'bio/sequence'
 
 module Bio
@@ -32,11 +33,18 @@ module Bio
       addr = 'fantom.gsc.riken.go.jp'
       port = 80
       path = "/db/maxml/maxmlseq.cgi?masterid=#{URI.escape(idstr.to_s)}&style=xml"
-      proxy = URI.parse(http_proxy.to_s)
       xml = ''
-      Net::HTTP.start(addr, port, proxy.host, proxy.port) do |http|
-        response, = http.get(path)
-        xml = response.body
+      if http_proxy then
+        proxy = URI.parse(http_proxy.to_s)
+        Net::HTTP.start(addr, port, proxy.host, proxy.port) do |http|
+          response, = http.get(path)
+          xml = response.body
+        end
+      else
+        Bio::Command.start_http(addr, port) do |http|
+          response, = http.get(path)
+          xml = response.body
+        end
       end
       xml
     end

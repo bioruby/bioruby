@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: registry.rb,v 1.17 2006/05/08 14:29:58 k Exp $
+# $Id: registry.rb,v 1.18 2006/07/14 14:48:56 ngoto Exp $
 #
 # == Description
 #
@@ -84,6 +84,7 @@
 
 require 'uri'
 require 'net/http'
+require 'bio/command'
 
 
 module Bio
@@ -170,7 +171,7 @@ class Registry
 
   def read_remote(url)
     schema, user, host, port, reg, path, = URI.split(url)
-    Net::HTTP.start(host, port) do |http|
+    Bio::Command.start_http(host, port) do |http|
       response, = http.get(path)
       parse_stanza(response.body)
     end

@@ -17,12 +17,13 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: keggapi.rb,v 1.11 2005/12/18 19:10:55 k Exp $
+#  $Id: keggapi.rb,v 1.12 2006/07/14 14:48:56 ngoto Exp $
 #
 
 require 'bio/io/soapwsdl'
 require 'uri'
 require 'net/http'
+require 'bio/command'
 
 module Bio
 class KEGG
@@ -95,7 +96,7 @@ class API < Bio::SOAPWSDL
     schema, user, host, port, reg, path, = URI.split(url)
     filename ||= File.basename(path)
 
-    http = Net::HTTP.new(host, port)
+    http = Bio::Command.new_http(host, port)
     response, = http.get(path)
     File.open(filename, "w+") do |f|
       f.print response.body
