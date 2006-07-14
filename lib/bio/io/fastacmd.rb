@@ -8,7 +8,7 @@
 #              Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # Lisence::    LGPL
 #
-# $Id: fastacmd.rb,v 1.11 2006/03/21 12:18:14 aerts Exp $
+# $Id: fastacmd.rb,v 1.12 2006/07/14 14:30:09 ngoto Exp $
 #
 #--
 #
@@ -68,15 +68,12 @@ class Blast
 class Fastacmd
 
   include Enumerable
-  include Bio::Command::Tools
 
   # Database file path.
   attr_accessor :database
 
   # fastacmd command file path.
   attr_accessor :fastacmd
-
-  attr_accessor :errorlog
 
   # This method provides a handle to a BLASTable database, which you can then
   # use to retrieve sequences.
@@ -135,9 +132,9 @@ class Fastacmd
     end
 
     cmd = [ @fastacmd, '-d', @database, '-s', entry_id ]
-    call_command_local(cmd) do |inn, out|
-      inn.close_write
-      Bio::FlatFile.new(Bio::FastaFormat, out).to_a
+    Bio::Command.call_command(cmd) do |io|
+      io.close_write
+      Bio::FlatFile.new(Bio::FastaFormat, io).to_a
     end
   end
 
@@ -150,9 +147,9 @@ class Fastacmd
   # *Returns*:: a Bio::FastaFormat object for each iteration
   def each_entry
     cmd = [ @fastacmd, '-d', @database, '-D', 'T' ]
-    call_command_local(cmd) do |inn, out|
-      inn.close_write
-      Bio::FlatFile.open(Bio::FastaFormat, out) do |f|
+    Bio::Command.call_command(cmd) do |io|
+      io.close_write
+      Bio::FlatFile.open(Bio::FastaFormat, io) do |f|
         f.each_entry do |entry|
           yield entry
         end
