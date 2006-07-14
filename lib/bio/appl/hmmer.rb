@@ -5,7 +5,7 @@
 #               KATAYAMA Toshiaki <k@bioruby.org>
 # Lisence::     LGPL
 #
-# $Id: hmmer.rb,v 1.5 2006/02/02 17:08:36 nakao Exp $
+# $Id: hmmer.rb,v 1.6 2006/07/14 14:26:39 ngoto Exp $
 #
 # == Description
 #
@@ -72,8 +72,6 @@ class HMMER
 
   autoload :Report, 'bio/appl/hmmer/report'
 
-  include Bio::Command::Tools
-
   # Prgrams name. (hmmsearch or hmmpfam).
   attr_accessor :program
   
@@ -112,7 +110,7 @@ class HMMER
   # Gets options by String.
   # backward compatibility.
   def option
-    make_command_line(@options)
+    Bio::Command.make_command_line(@options)
   end
 
 
@@ -131,7 +129,7 @@ class HMMER
       
     report = nil
     
-    @output = call_command_local(cmd, nil)
+    @output = Bio::Command.query_command(cmd, nil)
     report = parse_result(@output)
       
     return report

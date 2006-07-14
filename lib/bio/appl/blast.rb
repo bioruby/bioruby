@@ -7,7 +7,7 @@
 #
 # License::    Ruby's
 #
-# $Id: blast.rb,v 1.29 2006/05/16 09:50:13 aerts Exp $
+# $Id: blast.rb,v 1.30 2006/07/14 14:26:39 ngoto Exp $
 #
 # = DESCRIPTION
 #
@@ -81,8 +81,6 @@ module Bio
     autoload :Default,      'bio/appl/blast/format0'
     autoload :WU,           'bio/appl/blast/wublast'
     autoload :Bl2seq,       'bio/appl/bl2seq/report'
-
-    include Bio::Command::Tools
 
     # This is a shortcut for Bio::Blast.new:
     #  Bio::Blast.local(program, database, options)
@@ -226,7 +224,7 @@ module Bio
     # Returns options of blastall
     def option
       # backward compatibility
-      make_command_line(@options)
+      Bio::Command.make_command_line(@options)
     end
 
     # Set options for blastall
@@ -253,7 +251,7 @@ module Bio
 
       report = nil
 
-      @output = call_command_local(cmd, query)
+      @output = Bio::Command.query_command(cmd, query)
       report = parse_result(@output)
 
       return report
@@ -277,7 +275,7 @@ module Bio
         'prog'           => @program,
         'dbname'         => @db,
         'sequence'       => CGI.escape(query),
-        'other_param'    => CGI.escape(make_command_line_unix(opt)),
+        'other_param'    => CGI.escape(Bio::Command.make_command_line_unix(opt)),
         'matrix'         => matrix,
         'filter'         => filter,
         'V_value'        => 500, # default value for GenomeNet
@@ -294,7 +292,7 @@ module Bio
       report = nil
 
       begin
-        http = Net::HTTP.new(host)
+        http = Bio::Command.new_http(host)
         http.open_timeout = 300
         http.read_timeout = 600
         result, = http.post(path, data.join('&'))

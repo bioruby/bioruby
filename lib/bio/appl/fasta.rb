@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.20 2005/09/26 13:00:04 k Exp $
+#  $Id: fasta.rb,v 1.21 2006/07/14 14:26:39 ngoto Exp $
 #
 
 require 'net/http'
@@ -31,8 +31,6 @@ module Bio
 
     autoload :Report, 'bio/appl/fasta/format10'
     #autoload :?????,  'bio/appl/fasta/format6'
-
-    include Bio::Command::Tools
 
     def initialize(program, db, opt = [], server = 'local')
       @format	= 10
@@ -59,7 +57,7 @@ module Bio
 
     def option
       # backward compatibility
-      make_command_line(@options)
+      Bio::Command.make_command_line(@options)
     end
 
     def option=(str)
@@ -114,7 +112,7 @@ module Bio
 
       report = nil
 
-      @output = call_command_local(cmd, query)
+      @output = Bio::Command.query_command(cmd, query)
       report = parse_result(@output)
 
       return report
@@ -131,7 +129,7 @@ module Bio
         'prog'		=> @program,
         'dbname'	=> @db,
         'sequence'	=> CGI.escape(query),
-        'other_param'	=> CGI.escape(make_command_line_unix(@options)),
+        'other_param'	=> CGI.escape(Bio::Command.make_command_line_unix(@options)),
         'ktup_value'	=> @ktup,
         'matrix'	=> @matrix,
       }
@@ -145,7 +143,7 @@ module Bio
       report = nil
 
       begin
-        http = Net::HTTP.new(host)
+        http = Bio::Command.new_http(host)
         http.open_timeout = 300
         http.read_timeout = 600
         result, = http.post(path, data.join('&'))
