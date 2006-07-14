@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-#  $Id: command.rb,v 1.11 2006/05/30 13:59:36 ngoto Exp $
+#  $Id: command.rb,v 1.12 2006/07/14 14:23:47 ngoto Exp $
 #
 
 require 'open3'
@@ -15,15 +15,15 @@ require 'open-uri'
 require 'net/http'
 
 module Bio
-module Command
 
-# = Bio::Command::Tools
+# = Bio::Command
 #
-# Bio::Command::Tools is a collection of useful methods for execution
-# of external commands or web applications. Any wrapper class for
-# applications shall include this class. Note that all methods below
-# are private except for some methods.
-module Tools
+# Bio::Command is a collection of useful methods for execution
+# of external commands or web applications.
+# Any wrapper class for applications shall use this class.
+#
+# Library internal use only. Users should not directly use it.
+module Command
 
   UNSAFE_CHARS_UNIX   = /[^A-Za-z0-9\_\-\.\:\,\/\@\x1b\x80-\xfe]/n
   QUOTE_CHARS_WINDOWS = /[^A-Za-z0-9\_\-\.\:\,\/\@\\]/n
@@ -82,55 +82,37 @@ module Tools
   end
 
   # Executes the program.  Automatically select popen for Windows
-  # environment and open3 for the others.
-  #
-  # If block is given, yield the block with input and output IO objects.
-  # Note that in some platform, inn and out are the same object.
-  # Please be careful to do inn.close and out.close.
-  def call_command_local(cmd, query = nil, &block)
+  # environment and fork for the others.
+  # A block must be given. An IO object is passed to the block.
+  def call_command(cmd, &block)
     case RUBY_PLATFORM
     when /mswin32|bccwin32/
-      call_command_local_popen(cmd, query, &block)
+      call_command_popen(cmd, &block)
     else
-      call_command_local_fork(cmd, query, &block)
+      call_command_fork(cmd, &block)
     end
   end
 
   # Executes the program via IO.popen for OS which doesn't support fork.
-  # If block is given, yield the block with IO objects.
-  # The two objects are the same because of limitation of IO.popen.
-  def call_command_local_popen(cmd, query = nil)
+  # A block must be given. An IO object is passed to the block.
+  def call_command_popen(cmd)
     str = make_command_line(cmd)
     IO.popen(str, "w+") do |io|
-      if block_given? then
-        io.sync = true
-        yield io, io
-      else
-        io.sync = true
-        io.print query if query
-        io.close_write
-        io.read
-      end
+      io.sync = true
+      yield io
     end
   end
 
   # Executes the program via fork (by using IO.popen("-")) and exec.
-  # If block is given, yield the block with input and output IO objects.
+  # A block must be given. An IO object is passed to the block.
   #
   # From the view point of security, this method is recommended
-  # rather than exec_local_popen.
-  def call_command_local_fork(cmd, query = nil)
+  # rather than call_command_popen.
+  def call_command_fork(cmd)
     IO.popen("-", "r+") do |io|
       if io then
         # parent
-        if block_given?
-          yield io, io
-        else
-          io.sync = true
-          io.print query if query
-          io.close_write
-          io.read
-        end
+        yield io
       else
         # child
         Kernel.exec(*cmd)
@@ -139,53 +121,95 @@ module Tools
   end
 
   # Executes the program via Open3.popen3
-  # If block is given, yield the block with input and output IO objects.
+  # A block must be given. IO objects are passed to the block.
   #
-  # From the view point of security, this method is recommended
-  # rather than exec_local_popen.
-  def call_command_local_open3(cmd, query = nil)
+  # You would use this method only when you really need to get stderr.
+  def call_command_open3(cmd)
     cmd = cmd.collect { |x| x.to_s }
     Open3.popen3(*cmd) do |pin, pout, perr|
-      perr.sync = true
-      t = Thread.start { @errorlog = perr.read }
-      if block_given? then
-        yield pin, pout
+      yield pin, pout, perr
+    end
+  end
+
+  # Executes the program with the query (String) given to the standard input,
+  # waits the program termination, and returns the output data printed to the
+  # standard output as a string.
+  # 
+  # Automatically select popen for Windows environment and fork for the others.
+  def query_command(cmd, query = nil)
+    case RUBY_PLATFORM
+    when /mswin32|bccwin32/
+      query_command_popen(cmd, query)
+    else
+      query_command_fork(cmd, query)
+    end
+  end
+
+  # Executes the program with the query (String) given to the standard input,
+  # waits the program termination, and returns the output data printed to the
+  # standard output as a string.
+  #
+  # IO.popen is used for OS which doesn't support fork.
+  def query_command_popen(cmd, query = nil)
+    str = make_command_line(cmd)
+    IO.popen(str, "w+") do |io|
+      io.sync = true
+      io.print query if query
+      io.close_write
+      io.read
+    end
+  end
+
+  # Executes the program with the query (String) given to the standard input,
+  # waits the program termination, and returns the output data printed to the
+  # standard output as a string.
+  #
+  # Fork (by using IO.popen("-")) and exec is used to execute the program.
+  #
+  # From the view point of security, this method is recommended
+  # rather than query_popen.
+  def query_command_fork(cmd, query = nil)
+    IO.popen("-", "r+") do |io|
+      if io then
+        # parent
+        io.sync = true
+        io.print query if query
+        io.close_write
+        io.read
       else
-        begin
-          pin.print query if query
-          pin.close
-          output = pout.read
-        ensure
-          t.join
-        end
-        output
+        # child
+        Kernel.exec(*cmd)
       end
     end
   end
 
-  # Shows the latest stderr of the program execution.
-  # Note that this method may be thread unsafe.
-  attr_reader :errorlog
-  public :errorlog
-
-end # module Tools
-
-
-# = Bio::Command::NetTools
-#
-# Bio::Command::NetTools is a collection of miscellaneous methods
-# for data transport through network.
-#
-# Library internal use only. Users should not directly use it.
-#
-# Note that it is under construction.
-module NetTools
+  # Executes the program via Open3.popen3 with the query (String) given
+  # to the stain, waits the program termination, and
+  # returns the data from stdout and stderr as an array of the strings.
+  #
+  # From the view point of security, this method is recommended
+  # rather than exec_local_popen.
+  def query_command_open3(cmd, query = nil)
+    errorlog = nil
+    cmd = cmd.collect { |x| x.to_s }
+    Open3.popen3(*cmd) do |pin, pout, perr|
+      perr.sync = true
+      t = Thread.start { errorlog = perr.read }
+      begin
+        pin.print query if query
+        pin.close
+        output = pout.read
+      ensure
+        t.join
+      end
+      [ output, errorlog ]
+    end
+  end
 
   # Same as OpenURI.open_uri(uri).read.
   def read_uri(uri)
     OpenURI.open_uri(uri).read
   end
-  module_function :read_uri
 
   # Same as:
   #   Net::HTTP.start(address, port)
@@ -193,7 +217,7 @@ module NetTools
   # it uses proxy if an environment variable (same as OpenURI.open_uri)
   # is set.
   #
-  def net_http_start(address, port = 80, &block)
+  def start_http(address, port = 80, &block)
     uri = URI.parse("http://#{address}:#{port}")
     # Note: URI#find_proxy is an unofficial method defined in open-uri.rb.
     # If the spec of open-uri.rb would be changed, we should change below.
@@ -205,7 +229,24 @@ module NetTools
     end
     http.start(address, port, &block)
   end
-  module_function :net_http_start
+
+  # Same as:
+  #   Net::HTTP.new(address, port)
+  # and 
+  # it uses proxy if an environment variable (same as OpenURI.open_uri)
+  # is set.
+  #
+  def new_http(address, port = 80)
+    uri = URI.parse("http://#{address}:#{port}")
+    # Note: URI#find_proxy is an unofficial method defined in open-uri.rb.
+    # If the spec of open-uri.rb would be changed, we should change below.
+    if proxyuri = uri.find_proxy then
+      raise 'Non-HTTP proxy' if proxyuri.class != URI::HTTP
+      Net::HTTP.new(address, port, proxyuri.host, proxyuri.port)
+    else
+      Net::HTTP.new(address, port)
+    end
+  end
 
   # Same as:
   # Net::HTTP.post_form(uri, params)
@@ -227,13 +268,10 @@ module NetTools
       'Content-Length' => data.length.to_s
     }
     h.update(header)
-    net_http_start(uri.host, uri.port) do |http|
+    start_http(uri.host, uri.port) do |http|
       http.post(uri.path, data, h)
     end
   end
-  module_function :post_form
-
-end #module NetTools
 
 end # module Command
 end # module Bio

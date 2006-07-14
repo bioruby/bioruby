@@ -1,23 +1,12 @@
 #
 # test/unit/bio/test_command.rb - Unit test for external command execution methods
 #
-#   Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
+# Copyright::	Copyright (C) 2005-2006
+#               Mitsuteru Nakao <n@bioruby.org>,
+# 		Naohisa Goto <ng@bioruby.org>
+# License::	Ruby's
 #
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#  $Id: test_command.rb,v 1.1 2005/10/27 15:11:51 nakao Exp $
+#  $Id: test_command.rb,v 1.2 2006/07/14 14:23:48 ngoto Exp $
 #
 
 require 'pathname'
@@ -29,42 +18,117 @@ require 'test/unit'
 require 'bio/command'
 
 module Bio
-  class TestCommandTools < Test::Unit::TestCase
+  class TestCommand < Test::Unit::TestCase
     
-    def test_command_tools_constants
-      Bio::Command::Tools::UNSAFE_CHARS_UNIX
-      Bio::Command::Tools::QUOTE_CHARS_WINDOWS
-      Bio::Command::Tools::UNESCAPABLE_CHARS
+    def test_command_constants
+      Bio::Command::UNSAFE_CHARS_UNIX
+      Bio::Command::QUOTE_CHARS_WINDOWS
+      Bio::Command::UNESCAPABLE_CHARS
     end
 
     def test_escape_shell_windows
+      str = "bio_ruby.123@456:789"
+      assert_equal("bio_ruby.123@456:789",
+                   Bio::Command.escape_shell_windows(str))
+      str = "bio\'\"r u\"b\\y123@456:789"
+      assert_equal("\"bio'\"\"r u\"\"b\\y123@456:789\"",
+                   Bio::Command.escape_shell_windows(str))
     end
 
     def test_escape_shell_unix
+      str = "bio_ruby.123@456:789"
+      assert_equal("bio_ruby.123@456:789",
+                   Bio::Command.escape_shell_unix(str))
+      str = "bio\'\"r u\"b\\y123@456:789"
+      assert_equal("bio\\'\\\"r\\ u\\\"b\\\\y123@456:789",
+                   Bio::Command.escape_shell_unix(str))
     end
 
     def test_escape_shell
+      str = "bio_ruby.123@456:789"
+      assert_equal("bio_ruby.123@456:789",
+                   Bio::Command.escape_shell(str))
+      str = "bio\'\"r u\"b\\y123@456:789"
+      case RUBY_PLATFORM
+      when /mswin32|bccwin32/
+        assert_equal("\"bio'\"\"r u\"\"b\\y123@456:789\"",
+                     Bio::Command.escape_shell(str))
+      else
+        assert_equal("bio\\'\\\"r\\ u\\\"b\\\\y123@456:789",
+                     Bio::Command.escape_shell(str))
+      end
     end
 
     def test_make_command_line
+      ary = [ "ruby", 
+        "test.rb", "atgcatgc", "bio\'\"r u\"b\\y123@456:789" ]
+      case RUBY_PLATFORM
+      when /mswin32|bccwin32/
+        assert_equal("ruby" + 
+                       " test.rb atgcatgc" + 
+                       " \"bio'\"\"r u\"\"b\\y123@456:789\"",
+                     Bio::Command.make_command_line(ary))
+      else
+        assert_equal("ruby" + 
+                       " test.rb atgcatgc" + 
+                       " bio\\'\\\"r\\ u\\\"b\\\\y123@456:789",
+                     Bio::Command.make_command_line(ary))
+      end
     end
 
     def test_make_command_line_windows
+      ary = [ "C:\\Program Files\\Ruby\\bin\\ruby.exe", 
+        "test.rb", "atgcatgc", "bio\'\"r u\"b\\y123@456:789" ]
+      assert_equal("\"C:\\Program Files\\Ruby\\bin\\ruby.exe\"" + 
+                     " test.rb atgcatgc" + 
+                     " \"bio'\"\"r u\"\"b\\y123@456:789\"",
+                   Bio::Command.make_command_line_windows(ary))
     end
 
     def test_make_command_line_unix
+      ary = [ "/usr/local/bin/ruby", 
+        "test.rb", "atgcatgc", "bio\'\"r u\"b\\y123@456:789" ]
+      assert_equal("/usr/local/bin/ruby" + 
+                     " test.rb atgcatgc" +
+                     " bio\\'\\\"r\\ u\\\"b\\\\y123@456:789",
+                   Bio::Command.make_command_line_unix(ary))
     end
 
-    def test_call_commandline_local
+    def test_call_command
+      p $0
     end
 
-    def test_call_commandline_local_popen
+    def test_call_command_popen
     end
 
-    def test_call_commandline_local_open3
+    def test_call_command_fork
     end
 
-    def test_errorlog
+    def test_call_command_open3
+    end
+
+    def test_query_command
+    end
+
+    def test_query_command_popen
+    end
+
+    def test_query_command_fork
+    end
+
+    def test_query_command_open3
+    end
+
+    def test_read_uri
+    end
+
+    def test_start_http
+    end
+
+    def test_new_http
+    end
+
+    def test_post_form
     end
 
   end
