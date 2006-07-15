@@ -4,7 +4,7 @@
 # Copyright::   Copyright (C) 2001-2006  Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: sptr.rb,v 1.33 2006/07/11 15:52:51 nakao Exp $
+# $Id: sptr.rb,v 1.34 2006/07/15 15:29:26 nakao Exp $
 #
 # == Description
 # 
@@ -186,15 +186,17 @@ class SPTR < EMBLDB
   #
   # === GN Line: Gene name(s) (>=0, optional)
   def gn
-    return @data['GN'] if @data['GN']
-
-    case fetch('GN')
-    when /Name=/ then
-      return gn_uniprot_parser
-    else
-      return gn_old_parser
+    unless @data['GN']
+      case fetch('GN')
+      when /Name=/,/ORFNames=/
+        @data['GN'] = gn_uniprot_parser
+      else
+        @data['GN'] = gn_old_parser
+      end
     end
+    @data['GN']
   end
+
 
   # returns contents in the old style GN line.
   # === GN Line: Gene name(s) (>=0, optional)
@@ -217,7 +219,7 @@ class SPTR < EMBLDB
         }
       }
     end
-    return @data['GN'] = names
+    @data['GN'] = names
   end
   private :gn_old_parser
 
@@ -347,10 +349,195 @@ class SPTR < EMBLDB
     return @data['OX']
   end
 
+  # === The OH Line;  
+  #
+  # OH   NCBI_TaxID=TaxID; HostName.
+  # http://br.expasy.org/sprot/userman.html#OH_line
+  def oh
+    unless @data['OH']
+      @data['OH'] = fetch('OH').split("\. ").map {|x|
+        if x =~ /NCBI_TaxID=(\d+);/
+          taxid = $1
+        else
+          raise ArgumentError, ["Error: Invalid OH line format (#{self.entry_id}):",
+                                $!, "\n", get('OH'), "\n"].join
+          
+        end
+        if x =~ /NCBI_TaxID=\d+; (.+)/ 
+          host_name = $1
+          host_name.sub!(/\.$/, '')
+        else
+          host_name = nil
+        end
+        {'NCBI_TaxID' => taxid, 'HostName' => host_name}
+      }
+    end
+    @data['OH']
+  end
+
+
   
   # Bio::EMBLDB::Common#ref -> Array
   # R Lines
   # RN RC RP RX RA RT RL
+
+  # returns contents in the R lines.
+  # * Bio::EMBLDB::Common#ref -> [ <refernece information Hash>* ]
+  # where <reference information Hash> is:
+  #  {'RN' => '', 'RC' => '', 'RP' => '', 'RX' => '', 
+  #   'RA' => '', 'RT' => '', 'RL' => '', 'RG' => ''}
+  # 
+  # R Lines
+  # * RN RC RP RX RA RT RL RG
+  def ref
+    unless @data['R']
+      @data['R'] = [get('R').split(/\nRN   /)].flatten.map { |str|
+        hash = {'RN' => '', 'RC' => '', 'RP' => '', 'RX' => '', 
+               'RA' => '', 'RT' => '', 'RL' => '', 'RG' => ''}
+        str = 'RN   ' + str unless /^RN   / =~ str
+
+        str.split("\n").each do |line|
+          if /^(R[NPXARLCTG])   (.+)/ =~ line
+            hash[$1] += $2 + ' '
+          else
+            raise "Invalid format in R lines, \n[#{line}]\n"
+          end
+        end
+
+        hash['RN'] = set_RN(hash['RN'])
+        hash['RC'] = set_RC(hash['RC'])
+        hash['RP'] = set_RP(hash['RP'])
+        hash['RX'] = set_RX(hash['RX'])
+        hash['RA'] = set_RA(hash['RA'])
+        hash['RT'] = set_RT(hash['RT'])
+        hash['RL'] = set_RL(hash['RL'])
+        hash['RG'] = set_RG(hash['RG'])
+
+        hash
+      }
+
+    end
+    @data['R']
+  end
+
+  def set_RN(data)
+    data.strip
+  end
+
+  def set_RC(data)
+    data.scan(/([STP]\w+)=(.+);/).map { |comment|
+      [comment[1].split(/, and |, /)].flatten.map { |text|
+        {'Token' => comment[0], 'Text' => text}
+      }
+    }.flatten
+  end
+  private :set_RC
+
+  def set_RP(data)
+    data = data.strip
+    data = data.sub(/\.$/, '')
+    data.split(/, AND |, /i).map {|x| 
+      x = x.strip
+      x = x.gsub('  ', ' ')
+    }
+  end
+  private :set_RP
+
+  def set_RX(data)
+    rx = {'MEDLINE' => nil, 'PubMed' => nil, 'DOI' => nil}
+    if data =~ /MEDLINE=(.+?);/
+      rx['MEDLINE'] = $1
+    end
+    if data =~ /PubMed=(.+?);/
+      rx['PubMed'] = $1
+    end
+    if data =~ /DOI=(.+?);/
+      rx['DOI'] = $1
+    end
+    rx
+  end
+  private :set_RX
+
+  def set_RA(data)
+    data = data.sub(/; *$/, '')
+  end
+  private :set_RA
+
+  def set_RT(data)
+    data = data.sub(/; *$/, '')
+    data = data.gsub(/(^"|"$)/, '')
+  end
+  private :set_RT
+
+  def set_RL(data)
+    data = data.strip
+  end
+  private :set_RL
+
+  def set_RG(data)
+    data = data.split('; ')
+  end
+  private :set_RG
+
+
+
+  # returns Bio::Reference object from Bio::EMBLDB::Common#ref.
+  # * Bio::EMBLDB::Common#ref -> Bio::References
+  def references
+    unless @data['references']
+      ary = self.ref.map {|ent|
+        hash = Hash.new('')
+        ent.each {|key, value|
+          case key
+          when 'RA'
+            hash['authors'] = value.split(/, /)
+          when 'RT'
+            hash['title'] = value
+          when 'RL'
+            if value =~ /(.*) (\d+) \((\d+)\), (\d+-\d+) \((\d+)\)$/
+              hash['journal'] = $1
+              hash['volume']  = $2
+              hash['issue']   = $3
+              hash['pages']   = $4
+              hash['year']    = $5
+            else
+              hash['journal'] = value
+            end
+          when 'RX'  # PUBMED, MEDLINE
+            value.split('.').each {|item|
+              tag, xref = item.split(/; /).map {|i| i.strip }
+              hash[ tag.downcase ]  = xref
+            }
+          end
+        }
+        Reference.new(hash)
+      }
+      @data['references'] = References.new(ary)
+    end
+    @data['references']
+  end
+
+
+
+
+
+
+  # === The HI line
+  # Bio::SPTR#hi #=> hash
+  def hi
+    unless @data['HI']
+      @data['HI'] = []
+      fetch('HI').split(/\. /).each do |hlist|
+        hash = {'Category' => '',  'Keywords' => [], 'Keyword' => ''}
+        hash['Category'], hash['Keywords'] = hlist.split(': ')
+        hash['Keywords'] = hash['Keywords'].split('; ')
+        hash['Keyword'] = hash['Keywords'].pop
+        hash['Keyword'].sub!(/\.$/, '')
+        @data['HI'] << hash
+      end
+    end
+    @data['HI']
+  end
 
 
   @@cc_topics = ['PHARMACEUTICAL',
@@ -421,10 +608,10 @@ class SPTR < EMBLDB
   #
   # See also http://www.expasy.org/sprot/userman.html#CC_line
   #
-  def cc(tag = nil)
+  def cc(topic = nil)
     unless @data['CC']
       cc  = Hash.new
-      cmt = '-' * (77 - 4 + 1)
+      comment_border= '-' * (77 - 4 + 1)
       dlm = /-!- /
 
       # 12KD_MYCSM has no CC lines.
@@ -432,24 +619,31 @@ class SPTR < EMBLDB
       
       cc_raw = fetch('CC')
 
+      # Removing the copyright statement.
       cc_raw.sub!(/ *---.+---/m, '')
+
       # Not any CC Lines without the copyright statement.
       return cc if cc_raw == ''
 
-
       begin
-        cc_raw.split(/#{cmt}/)[0].sub(dlm,'').split(dlm).each do |tmp|
+        cc_raw, copyright = cc_raw.split(/#{comment_border}/)[0]
+        cc_raw = cc_raw.sub(dlm,'')
+        cc_raw.split(dlm).each do |tmp|
+          tmp = tmp.strip
+
           if /(^[A-Z ]+[A-Z]): (.+)/ =~ tmp
             key  = $1
-            body = $2.gsub(/- (?!AND)/,'-')
+            body = $2
+            body.gsub!(/- (?!AND)/,'-')
+            body.strip!
             unless cc[key]
               cc[key] = [body]
             else
               cc[key].push(body)
             end
           else
-            raise ["Error: [#{entry_id}]: CC Lines", '',
-                   tmp, '', '', fetch('CC'),''].join("\n")
+            raise ["Error: [#{entry_id}]: CC Lines", '"', tmp, '"',
+                   '', get('CC'),''].join("\n")
           end
         end
       rescue NameError
@@ -465,30 +659,62 @@ class SPTR < EMBLDB
       @data['CC'] = cc
     end
 
-    case tag
+
+    case topic
+    when 'ALLERGEN'
+      return @data['CC'][topic]
     when 'ALTERNATIVE PRODUCTS'
-      ap = @data['CC']['ALTERNATIVE PRODUCTS'].to_s
-      return ap unless ap
-
-      # Event, Named isoforms, Comment, [Name, Synonyms, IsoId, Sequnce]+
-      tmp = {'Event' => nil, 'Named isoforms' => nil, 'Comment' => nil, 
-             'Variants'  => []}
-
-      if /Event=(.+?);/ =~ ap
-        tmp['Event'] = $1
-      end
-      if /Named isoforms=(\S+?);/ =~ ap
-        tmp['Named isoforms'] = $1
-      end
-      if /Comment=(.+?);/m =~ ap
-        tmp['Comment'] = $1
-      end
-      ap.scan(/Name=.+?Sequence=.+?;/).each do |ent|
-        tmp['Variants'] << cc_ap_variants_parse(ent)
-      end
-      return tmp
-
-
+      return cc_alternative_products(@data['CC'][topic])
+    when 'BIOPHYSICOCHEMICAL PROPERTIES'
+      return cc_biophysiochemical_properties(@data['CC'][topic])
+    when 'BIOTECHNOLOGY'
+      return @data['CC'][topic]
+    when 'CATALITIC ACTIVITY'
+      return cc_catalytic_activity(@data['CC'][topic])
+    when 'CAUTION'
+      return cc_caution(@data['CC'][topic])
+    when 'COFACTOR'
+      return @data['CC'][topic]
+    when 'DEVELOPMENTAL STAGE'
+      return @data['CC'][topic].to_s
+    when 'DISEASE'
+      return @data['CC'][topic].to_s
+    when 'DOMAIN'
+      return @data['CC'][topic]
+    when 'ENZYME REGULATION'
+      return @data['CC'][topic].to_s
+    when 'FUNCTION'
+      return @data['CC'][topic].to_s
+    when 'INDUCTION'
+      return @data['CC'][topic].to_s
+    when 'INTERACTION'
+      return cc_interaction(@data['CC'][topic])
+    when 'MASS SPECTROMETRY'
+      return cc_mass_spectrometry(@data['CC'][topic])
+    when 'MISCELLANEOUS'
+      return @data['CC'][topic]
+    when 'PATHWAY'
+      return cc_pathway(@data['CC'][topic])
+    when 'PHARMACEUTICAL'
+      return @data['CC'][topic]
+    when 'POLYMORPHISM'
+      return @data['CC'][topic]
+    when 'PTM'
+      return @data['CC'][topic]
+    when 'RNA EDITING'
+      return cc_rna_editing(@data['CC'][topic])
+    when 'SIMILARITY'
+      return @data['CC'][topic]
+    when 'SUBCELLULAR LOCATION'
+      return cc_subcellular_location(@data['CC'][topic])
+    when 'SUBUNIT'
+      return @data['CC'][topic]
+    when 'TISSUE SPECIFICITY'
+      return @data['CC'][topic]
+    when 'TOXIC DOSE'
+      return @data['CC'][topic]
+    when 'WEB RESOURCE'
+      return cc_web_resource(@data['CC'][topic])
     when 'DATABASE'
       # DATABASE: NAME=Text[; NOTE=Text][; WWW="Address"][; FTP="Address"].
       tmp = Array.new
@@ -512,73 +738,208 @@ class SPTR < EMBLDB
         tmp.push(db)
       end
       return tmp
-
-    when 'MASS SPECTOROMETRY'
-      # MASS SPECTROMETRY: MW=XXX[; MW_ERR=XX][; METHOD=XX][;RANGE=XX-XX].
-      tmp = Array.new
-      ms = @data['CC']['MASS SPECTOROMETRY']
-      return ms unless ms
-
-      ms.each do |m|
-        mass = {'MW' => nil,'MW_ERR' => nil,'METHOD' => nil,'RANGE' => nil}
-        m.sub(/.$/,'').split(/;/).each do |line|
-          case line
-          when /MW=(.+)/
-            mass['MW'] = $1.to_f
-          when /MW_ERR=(.+)/
-            mass['MW_ERR'] = $1.to_f
-          when /METHOD="(.+)"/
-            mass['METHOD'] = $1.to_s
-          when /RANGE="(\d+-\d+)"/ 
-            mass['RANGE'] = $1          # RANGE class ? 
-          end 
-        end
-        tmp.push(mass)
-      end
-      return tmp
-
-    when 'INTERACTION'
-      return cc_interaction_parse(@data['CC']['INTERACTION'].to_s)
-
     when nil
       return @data['CC']
-
     else
-      return @data['CC'][tag]
+      return @data['CC'][topic]
     end
   end
 
 
+  def cc_alternative_products(data)
+    ap = data.to_s
+    return ap unless ap
 
-  def cc_ap_variants_parse(ent)
-    hsh = {}
-    ent.split(/; /).map {|e| e.split(/=/) }.each do |e|
+    # Event, Named isoforms, Comment, [Name, Synonyms, IsoId, Sequnce]+
+    tmp = {'Event' => "", 'Named isoforms' => "", 'Comment' => "", 
+           'Variants'  => []}
+    if /Event=(.+?);/ =~ ap
+      tmp['Event'] = $1
+      tmp['Event'] = tmp['Event'].sub(/;/,'').split(/, /)
+    end
+    if /Named isoforms=(\S+?);/ =~ ap
+      tmp['Named isoforms'] = $1
+    end
+    if /Comment=(.+?);/m =~ ap
+      tmp['Comment'] = $1
+    end
+    ap.scan(/Name=.+?Sequence=.+?;/).each do |ent|
+      tmp['Variants'] << cc_alternative_products_variants(ent)
+    end
+    return tmp
+  end
+  private :cc_alternative_products
+
+  def cc_alternative_products_variants(data)
+    variant = {'Name' => '', 'Synonyms' => [], 'IsoId' => [], 'Sequence' => []}
+    data.split(/; /).map {|x| x.split(/=/) }.each do |e|
       case e[0]
-      when 'Sequence'
+      when 'Sequence', 'Synonyms', 'IsoId'
         e[1] = e[1].sub(/;/,'').split(/, /)
       end
-      hsh[e[0]] = e[1]
+      variant[e[0]] = e[1]
     end
-    return hsh
+    variant
   end
-  private :cc_ap_variants_parse
+  private :cc_alternative_products_variants
+
+
+  def cc_biophysiochemical_properties(data)
+    data = data[0]
+
+    hash = {'Absorption' => {}, 
+            'Kinetic parameters' => {},
+            'pH dependence' => "",
+            'Redox potential' => "",
+            'Temperature dependence' => ""}
+    if data =~ /Absorption: Abs\(max\)=(.+?);/
+      hash['Absorption']['Abs(max)'] = $1
+    end
+    if data =~ /Absorption: Abs\(max\)=.+; Note=(.+?);/
+      hash['Absorption']['Note'] = $1
+    end
+    if data =~ /Kinetic parameters: KM=(.+?); Vmax=(.+?);/
+      hash['Kinetic parameters']['KM'] = $1
+      hash['Kinetic parameters']['Vmax'] = $2
+    end
+    if data =~ /Kinetic parameters: KM=.+; Vmax=.+; Note=(.+?);/
+      hash['Kinetic parameters']['Note'] = $1
+    end
+    if data =~ /pH dependence: (.+?);/
+      hash['pH dependence'] = $1
+    end
+    if data =~ /Redox potential: (.+?);/
+      hash['Redox potential'] = $1
+    end
+    if data =~ /Temperature dependence: (.+?);/
+      hash['Temperature dependence'] = $1
+    end
+    hash
+  end
+  private :cc_biophysiochemical_properties
+
+
+  def cc_caution(data)
+    data.to_s
+  end
+  private :cc_caution
 
 
   # returns conteins in a line of the CC INTERACTION section.
   #
   #   CC       P46527:CDKN1B; NbExp=1; IntAct=EBI-359815, EBI-519280;
-  def cc_interaction_parse(str)
+  def cc_interaction(data)
+    str = data.to_s
     it = str.scan(/(.+?); NbExp=(.+?); IntAct=(.+?);/)
     it.map {|ent|
-      {:partner_id => ent[0].strip,
-       :nbexp      => ent[1].strip, 
-       :intact_acc => ent[2].split(', ') }
+      ent.map! {|x| x.strip }
+      if ent[0] =~ /^(.+):(.+)/
+        spac = $1
+        spid = $2.split(' ')[0]
+        optid = nil
+      elsif ent[0] =~ /Self/
+        spac = self.entry_id
+        spid = self.entry_id
+        optid = nil
+      end
+      if ent[0] =~ /^.+:.+ (.+)/
+        optid = $1
+      end
+
+      {'SP_Ac' => spac,
+       'identifier' => spid,
+       'NbExp' => ent[1],
+       'IntAct' => ent[2].split(', '),
+       'optional_identifier' => optid}
     }
   end
-  private :cc_interaction_parse
+  private :cc_interaction
+
+
+  def cc_mass_spectrometry(data)
+    # MASS SPECTROMETRY: MW=XXX[; MW_ERR=XX][; METHOD=XX][;RANGE=XX-XX].
+    return data unless data
+
+    data.map { |m|
+      mass = {'MW' => nil, 'MW_ERR' => nil, 'METHOD' => nil, 'RANGE' => nil,
+              'NOTE' => nil}
+      m.sub(/.$/,'').split(/;/).each do |line|
+        case line
+        when /MW=(.+)/
+          mass['MW'] = $1
+        when /MW_ERR=(.+)/
+          mass['MW_ERR'] = $1
+        when /METHOD=(.+)/
+          mass['METHOD'] = $1
+        when /RANGE=(\d+-\d+)/ 
+          mass['RANGE'] = $1          # RANGE class ? 
+        when /NOTE=(.+)/
+          mass['NOTE'] = $1
+        end 
+      end
+      mass
+    }
+  end
+  private :cc_mass_spectrometry
+
+
+  def cc_pathway(data)
+    data.map {|x| x.sub(/\.$/, '') }.map {|x|
+      x.split(/; | and |: /)
+    }[0]
+  end
+  private :cc_pathway
+
+
+  def cc_rna_editing(data)
+ data = data.to_s
+    entry = {'Modified_positions' => [], 'Note' => ""}
+    if data =~ /Modified_positions=(.+?)(\.|;)/
+      entry['Modified_positions'] = $1.sub(/\.$/, '').split(', ')
+    else
+      raise ArgumentError, "Invarid CC RNA Editing lines (#{self.entry_id}):#{$!}\n#{get('CC')}"
+    end
+    if data =~ /Note=(.+)/
+      entry['Note'] = $1
+    end
+    entry
+  end
+  private :cc_rna_editing
+
+
+  def cc_subcellular_location(data)
+    data.map {|x| 
+      x.split('. ').map {|y| 
+        y.split('; ').map {|z| 
+          z.sub(/\.$/, '') 
+        } 
+      } 
+    }[0]
+  end
+  private :cc_subcellular_location
+
+  
+  # CC   -!- WEB RESOURCE: NAME=ResourceName[; NOTE=FreeText][; URL=WWWAddress].  
+  def cc_web_resource(data)
+    data.map {|x|
+      entry = {'NAME' => nil, 'NOTE' => nil, 'URL' => nil}
+      x.split(';').each do |y|
+        case y
+        when /NAME=(.+)/
+          entry['NAME'] = $1.strip
+        when /NOTE=(.+)/
+          entry['NOTE'] = $1.strip
+        when /URL="(.+)"/
+          entry['URL'] = $1.strip
+        end
+      end
+      entry
+    }
+  end
+  
 
   # returns databases cross-references in the DR lines.
-  # * Bio::EMBLDB#dr  -> Hash w/in Array
+  # * Bio::SPTR#dr  -> Hash w/in Array
   #
   # === DR Line; defabases cross-reference (>=0)
   #    DR  database_identifier; primary_identifier; secondary_identifier.
@@ -590,6 +951,24 @@ class SPTR < EMBLDB
     'PROSITE','REBASE','AARHUS/GHENT-2DPAGE','SGD','STYGENE','SUBTILIST',
     'SWISS-2DPAGE','TIGR','TRANSFAC','TUBERCULIST','WORMPEP','YEPD','ZFIN']
 
+  # Backup Bio::EMBLDB#dr as embl_dr
+  alias :embl_dr :dr 
+
+  # Bio::SPTR#dr
+  def dr(key = nil)
+    unless key
+      embl_dr
+    else
+      embl_dr[key].map {|x|
+        {'Accession' => x[0],
+         'Version' => x[1],
+         ' ' => x[2],
+         'Molecular Type' => x[3]}
+      }
+    end
+  end
+
+
   # Bio::EMBLDB::Common#kw - Array
   #                    #keywords  -> Array
   #
@@ -597,7 +976,7 @@ class SPTR < EMBLDB
   # KW   [Keyword;]+
 
 
-  # returns conteins in the feature table.
+  # returns contents in the feature table.
   #
   # == Examples
   #
@@ -611,12 +990,15 @@ class SPTR < EMBLDB
   #      feature['Description'] #=> ''
   #      feature['FTId'] #=> ''
   #      feature['diff'] #=> []
+  #      feature['original'] #=> [feature_key, '1', '21', '', '']
   #    end
   #  end
   #
   # * Bio::SPTR#ft -> Hash
-  #    {FEATURE_KEY => [{'From' => int, 'To' => int, 'diff' => [],
-  #                      'Description' => aStr, 'FTId' => aStr}],...}
+  #    {FEATURE_KEY => [{'From' => int, 'To' => int, 
+  #                      'Description' => aStr, 'FTId' => aStr,
+  #                      'diff' => [original_residues, changed_residues],
+  #                      'original' => aAry }],...}
   #
   # returns an Array of the information about the feature_name in the feature table.
   # * Bio::SPTR#ft(feature_name) -> Array of Hash
@@ -633,62 +1015,70 @@ class SPTR < EMBLDB
   #   35-75   Description (>=0 per key)
   #   -----   -----------------
   #
+  # Note: 'FROM' and 'TO' endopoints are allowed to use non-numerial charactors 
+  # including '<', '>' or '?'. (c.f. '<1', '?42')
+  #
+  # See also http://www.expasy.org/sprot/userman.html#FT_line
+  #
   def ft(feature_key = nil)
     return ft[feature_key] if feature_key
     return @data['FT'] if @data['FT']
 
     table = []
     begin
-    get('FT').split("\n").each do |line|
-      if line =~ /^FT   \w/
-        feature = line.chomp.ljust(74)
-        table << [feature[ 5..12].strip,   # Feature Name
-                  feature[14..19].strip,   # From
-                  feature[21..26].strip,   # To
-                  feature[34..74].strip ]  # Description
-      else
-        table.last << line.chomp.sub!(/^FT +/, '')
+      get('FT').split("\n").each do |line|
+        if line =~ /^FT   \w/
+          feature = line.chomp.ljust(74)
+          table << [feature[ 5..12].strip,   # Feature Name
+                    feature[14..19].strip,   # From
+                    feature[21..26].strip,   # To
+                    feature[34..74].strip ]  # Description
+        else
+          table.last << line.chomp.sub!(/^FT +/, '')
+        end
       end
-    end
 
-    # Join Desctiption lines
-    table = table.map { |feature| 
-      ftid = feature.pop if feature.last =~ /FTId=/
-      if feature.size > 4
-        feature = [feature[0], feature[1], feature[2], 
-                   feature[3, feature.size - 3].join(" ")]
-      end
-      feature << ftid
-    }
-
-    hash = {}
-    table.each do |feature|
-      hash[feature[0]] = [] unless hash[feature[0]]
-
-      hash[feature[0]] << {
-        'From' => feature[1].to_i, 
-        'To'   => feature[2].to_i, 
-        'Description' => feature[3], 
-        'FTId' => feature[4].to_s.sub(/\/FTId=/, '').sub(/\.$/, ''),
-        'diff' => []
+      # Joining Description lines
+      table = table.map { |feature| 
+        ftid = feature.pop if feature.last =~ /FTId=/
+        if feature.size > 4
+          feature = [feature[0], 
+                     feature[1], 
+                     feature[2], 
+                     feature[3, feature.size - 3].join(" ")]
+        end
+        feature << if ftid then ftid else '' end
       }
 
-      case feature[0]
-      when 'VARSPLIC', 'VARIANT', 'VAR_SEQ', 'CONFLICT'
-        case hash[feature[0]].last['Description']
-        when /(\w[\w ]*\w*) - ?> (\w[\w ]*\w*)/
-          original_res = $1
-          changed_res = $2
-          original_res = original_res.gsub(/ /,'').strip
-          chenged_res = changed_res.gsub(/ /,'').strip
-        when /Missing/i
-          original_res = seq.subseq(hash[feature[0]].last['From'],
-                                    hash[feature[0]].last['To'])
-          changed_res = ''
+      hash = {}
+      table.each do |feature|
+        hash[feature[0]] = [] unless hash[feature[0]]
+        hash[feature[0]] << {
+          # Removing '<', '>' or '?' in FROM/TO endopoint.
+          'From' => feature[1].sub(/\D/, '').to_i,  
+          'To'   => feature[2].sub(/\D/, '').to_i, 
+          'Description' => feature[3], 
+          'FTId' => feature[4].to_s.sub(/\/FTId=/, '').sub(/\.$/, ''),
+          'diff' => [],
+          'original' => feature
+        }
+
+        case feature[0]
+        when 'VARSPLIC', 'VARIANT', 'VAR_SEQ', 'CONFLICT'
+          case hash[feature[0]].last['Description']
+          when /(\w[\w ]*\w*) - ?> (\w[\w ]*\w*)/
+            original_res = $1
+            changed_res = $2
+            original_res = original_res.gsub(/ /,'').strip
+            chenged_res = changed_res.gsub(/ /,'').strip
+          when /Missing/i
+            original_res = seq.subseq(hash[feature[0]].last['From'],
+                                      hash[feature[0]].last['To'])
+            changed_res = ''
+          end
+          hash[feature[0]].last['diff'] = [original_res, chenged_res]
         end
-        hash[feature[0]].last['diff'] = [original_res, chenged_res]
       end
-    end
     rescue
       raise "Invalid FT Lines(#{$!}) in #{entry_id}:, \n'#{self.get('FT')}'\n"
     end
@@ -871,6 +1261,7 @@ Class for a entry in the SWISS-PROT/TrEMBL database.
   # OG - organelle                    (0 or 1 per entry; optional)
   # OC - organism classification      (>=1 per entry)
   # OX - organism taxonomy x-ref      (>=1 per entry)
+  # OH - Organism Host
   # RN - reference number             (>=1 per entry)
   # RP - reference positions          (>=1 per entry)
   # RC - reference comment(s)         (>=0 per entry; optional)
@@ -878,6 +1269,7 @@ Class for a entry in the SWISS-PROT/TrEMBL database.
   # RA - reference author(s)          (>=1 per entry)
   # RT - reference title              (>=0 per entry; optional)
   # RL - reference location           (>=1 per entry)
+  # RG - reference group(s)
   # CC - comments or notes            (>=0 per entry; optional)
   # DR - database cross-references    (>=0 per entry; optional)
   # KW - keywords                     (>=1 per entry)
