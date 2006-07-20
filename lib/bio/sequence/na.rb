@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     Ruby's
 #
-# $Id: na.rb,v 1.4 2006/06/27 05:44:57 ngoto Exp $
+# $Id: na.rb,v 1.5 2006/07/20 03:45:22 ngoto Exp $
 #
 
 require 'bio/sequence/common'
@@ -307,7 +307,7 @@ class NA < String
     at = count['a'] + count['t'] + count['u']
     gc = count['g'] + count['c']
     return 0.0 if at + gc == 0
-    return (gc.to_f / (at + gc).to_f)
+    return gc.quo(at + gc)
   end
 
   # Calculate the ratio of AT / ATGC bases. U is regarded as T.
@@ -321,7 +321,7 @@ class NA < String
     at = count['a'] + count['t'] + count['u']
     gc = count['g'] + count['c']
     return 0.0 if at + gc == 0
-    return (at.to_f / (at + gc).to_f)
+    return at.quo(at + gc)
   end
 
   # Calculate the ratio of (G - C) / (G + C) bases.
@@ -335,7 +335,7 @@ class NA < String
     g = count['g']
     c = count['c']
     return 0.0 if g + c == 0
-    return ((g - c).to_f / (g + c).to_f)
+    return (g - c).quo(g + c)
   end
 
   # Calculate the ratio of (A - T) / (A + T) bases. U is regarded as T.
@@ -349,7 +349,7 @@ class NA < String
     a = count['a']
     t = count['t'] + count['u']
     return 0.0 if a + t == 0
-    return ((a - t).to_f / (a + t).to_f)
+    return (a - t).quo(a + t)
   end
 
   # Returns an alphabetically sorted array of any non-standard bases 
