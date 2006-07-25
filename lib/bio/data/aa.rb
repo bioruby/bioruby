@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: aa.rb,v 0.17 2006/05/08 14:19:51 k Exp $
+# $Id: aa.rb,v 0.18 2006/07/25 18:50:01 k Exp $
 #
 
 module Bio
@@ -17,6 +17,7 @@ class AminoAcid
     # IUPAC code
     # * http://www.iupac.org/
     # * http://www.chem.qmw.ac.uk/iubmb/newsletter/1999/item3.html
+    # * http://www.ebi.ac.uk/RESID/faq.html
 
     NAMES = {
 
@@ -42,8 +43,10 @@ class AminoAcid
       'Y' => 'Tyr',
       'B' => 'Asx',	# D/N
       'Z' => 'Glx',	# E/Q
+      'J' => 'Xle',	# I/L
       'U' => 'Sec',	# 'uga' (stop)
-      '?' => 'Pyl',	# 'uag' (stop)
+      'O' => 'Pyl',	# 'uag' (stop)
+      'X' => 'Xaa',	# (unknown)
      
       'Ala' => 'alanine',
       'Cys' => 'cysteine',
@@ -67,8 +70,10 @@ class AminoAcid
       'Tyr' => 'tyrosine',
       'Asx' => 'asparagine/aspartic acid',
       'Glx' => 'glutamine/glutamic acid',
+      'Xle' => 'isoleucine/leucine',
       'Sec' => 'selenocysteine',
       'Pyl' => 'pyrrolysine',
+      'Xaa' => 'unknown',
 
     }
 
