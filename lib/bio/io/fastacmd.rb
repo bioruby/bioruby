@@ -8,7 +8,7 @@
 #              Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # Lisence::    LGPL
 #
-# $Id: fastacmd.rb,v 1.12 2006/07/14 14:30:09 ngoto Exp $
+# $Id: fastacmd.rb,v 1.13 2006/07/25 18:18:21 k Exp $
 #
 #--
 #
@@ -146,7 +146,7 @@ class Fastacmd
   # ---
   # *Returns*:: a Bio::FastaFormat object for each iteration
   def each_entry
-    cmd = [ @fastacmd, '-d', @database, '-D', 'T' ]
+    cmd = [ @fastacmd, '-d', @database, '-D', '1' ]
     Bio::Command.call_command(cmd) do |io|
       io.close_write
       Bio::FlatFile.open(Bio::FastaFormat, io) do |f|
