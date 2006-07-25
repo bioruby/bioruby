@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License:      Ruby's
 #
-# $Id: shell.rb,v 1.15 2006/02/27 09:34:23 k Exp $
+# $Id: shell.rb,v 1.16 2006/07/25 18:45:27 k Exp $
 #
 
 require 'bio'
@@ -28,6 +28,8 @@ module Bio::Shell
   require 'bio/shell/plugin/obda'
   require 'bio/shell/plugin/keggapi'
   require 'bio/shell/plugin/emboss'
+  require 'bio/shell/plugin/blast'
+  require 'bio/shell/plugin/psort'
 
   extend Ghost
   extend Private
