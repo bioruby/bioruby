@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
 # Licence::    Ruby's
 #
-#  $Id: prosite.rb,v 0.14 2006/05/08 14:23:07 k Exp $
+#  $Id: prosite.rb,v 0.15 2006/07/25 18:53:56 k Exp $
 #
 
 require 'bio/db'
@@ -477,11 +477,15 @@ module Bio
       }
       pattern.tr!('x', '.')	# (5) any amino acid is accepted : 'x'
       pattern.tr!('-', '')	# (6) each element is separated by a '-'
-      Regexp.new(pattern)
+      Regexp.new(pattern, Regexp::IGNORECASE)
     end
 
     def pa2re(pattern)
       self.class.pa2re(pattern)
+    end
+
+    def re
+      self.class.pa2re(self.pa)
     end
 
 
