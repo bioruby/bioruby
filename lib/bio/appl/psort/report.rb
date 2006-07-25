@@ -5,16 +5,17 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-#  $Id: report.rb,v 1.13 2006/04/30 07:11:28 nakao Exp $
+#  $Id: report.rb,v 1.14 2006/07/25 18:41:23 k Exp $
 #
 # == A Report classes for PSORT Systems
 # 
 
-require 'bio/sequence'
 require 'bio/appl/psort'
 
 
 module Bio
+
+  autoload :Sequence, 'bio/sequence'
 
   class PSORT
 

@@ -7,7 +7,7 @@ module Bio
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: psort.rb,v 1.10 2006/07/14 14:28:44 ngoto Exp $
+# $Id: psort.rb,v 1.11 2006/07/25 18:41:23 k Exp $
 #
 # == A client for PSORT WWW Server 
 #
@@ -27,9 +27,9 @@ module Bio
 #
 #
 
-require 'bio/sequence'
-require 'bio/command'
-require 'bio/db/fasta'
+require 'bio/appl/psort/report'
+autoload :FastaFormat, 'bio/db/fasta'
+autoload :Command, 'bio/command'
 require 'cgi'
 
 
