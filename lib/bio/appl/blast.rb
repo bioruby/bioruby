@@ -7,7 +7,7 @@
 #
 # License::    Ruby's
 #
-# $Id: blast.rb,v 1.30 2006/07/14 14:26:39 ngoto Exp $
+# $Id: blast.rb,v 1.31 2006/07/25 18:47:13 k Exp $
 #
 # = DESCRIPTION
 #
@@ -257,6 +257,10 @@ module Bio
       return report
     end
 
+    def exec_genomenet_tab(query)
+      @format = 8
+      exec_genomenet(query)
+    end
 
     def exec_genomenet(query)
       host = "blast.genome.jp"
