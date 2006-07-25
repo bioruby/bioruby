@@ -6,7 +6,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: bioruby,v 1.15 2006/02/27 09:41:54 k Exp $
+# $Id: bioruby,v 1.16 2006/07/25 18:16:28 k Exp $
 #
 
 begin
@@ -23,19 +23,22 @@ require 'bio/shell'
 include Bio::Shell
 
 # command line argument (working directory or bioruby shell script file)
+workdir = nil
 script = nil
 if arg = ARGV.shift
   if File.directory?(arg)
     # directory or symlink to directory
-    Dir.chdir(arg)
+    workdir = arg
+    Dir.chdir(workdir)
   elsif File.exists?(arg)
     # BioRuby shell script (load script after the previous session is restored)
-    dir = File.dirname(arg)
+    workdir = File.dirname(arg)
     script = File.basename(arg)
-    Dir.chdir(dir)
-  elsif arg
-    Dir.mkdir(arg)
-    Dir.chdir(arg)
+    Dir.chdir(workdir)
+  else
+    workdir = arg
+    Dir.mkdir(workdir)
+    Dir.chdir(workdir)
   end
 else
   unless File.exists?(Bio::Shell.history)
@@ -148,4 +151,10 @@ end
 
 # saving workspace, command history and configuration before exit
 Bio::Shell.save_session
+
+if workdir
+  puts "Leaving directory '#{workdir}'."
+  puts "History is saved in '#{workdir}/#{Bio::Shell.history}'."
+end
+
 
