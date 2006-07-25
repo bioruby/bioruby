@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: das.rb,v 1.12 2006/05/08 14:31:58 k Exp $
+# $Id: das.rb,v 1.13 2006/07/25 19:46:43 k Exp $
 #
 #--
 # == TODO
@@ -63,10 +63,14 @@ class DAS
 
   # Returns Bio::DAS::ENTRY_POINT.
   # The 'dsn' can be a String or a Bio::DAS::DSN object.
-  def get_entry_point(dsn)
+  def get_entry_points(dsn)
     entry_point = ENTRY_POINT.new
-    dsn = dsn.source if dsn.instance_of?(Bio::DAS::DSN)
-    result, = @server.get(@prefix + '/das/' + dsn + '/entry_points')
+    if dsn.instance_of?(Bio::DAS::DSN)
+      src = dsn.source 
+    else
+      src = dsn
+    end
+    result, = @server.get(@prefix + '/das/' + src + '/entry_points')
     doc = REXML::Document.new(result.body)
     doc.elements.each('/descendant::ENTRY_POINTS') do |e|
       entry_point.href = e.attributes['href']
@@ -76,7 +80,7 @@ class DAS
         segment.entry_id = e.attributes['id']
         segment.start = e.attributes['start']
         segment.stop = e.attributes['stop']
-        segment.stop = e.attributes['orientation']
+        segment.orientation = e.attributes['orientation']
         segment.subparts = e.attributes['subparts']
         segment.description = e.text
         entry_point.segments << segment
