@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: fasta.rb,v 1.21 2006/07/14 14:26:39 ngoto Exp $
+#  $Id: fasta.rb,v 1.22 2006/07/25 18:48:41 k Exp $
 #
 
 require 'net/http'
@@ -148,7 +148,7 @@ module Bio
         http.read_timeout = 600
         result, = http.post(path, data.join('&'))
         @output = result.body
-        # workaround 2005.08.12
+        # workaround 2005.08.12 - realized that this is bloken again (by new batch queuing system) 2006.06.08 
         if /\<A +HREF=\"(http\:\/\/fasta\.genome\.jp(\/tmp\/[^\"]+))\"\>Show all result\<\/A\>/i =~ @output.to_s then
           result, = http.get($2)
           @output = result.body
