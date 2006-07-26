@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_prosite.rb,v 1.3 2005/12/18 18:21:58 k Exp $
+#  $Id: test_prosite.rb,v 1.4 2006/07/26 08:15:28 nakao Exp $
 #
 
 require 'pathname'
@@ -1438,12 +1438,12 @@ module Bio
 
     def test_pa2re
       pa = '[AC]-x-V-x(4)-{ED}.'
-      assert_equal(/[AC].V.{4}[^ED]/, @obj.pa2re(pa))
+      assert_equal(/[AC].V.{4}[^ED]/i, @obj.pa2re(pa))
     end
 
     def test_self_pa2re
       pa = '[AC]-x-V-x(4)-{ED}.'
-      assert_equal(/[AC].V.{4}[^ED]/, Bio::PROSITE.pa2re(pa))
+      assert_equal(/[AC].V.{4}[^ED]/i, Bio::PROSITE.pa2re(pa))
     end
 
   end # class TestPROSITE
