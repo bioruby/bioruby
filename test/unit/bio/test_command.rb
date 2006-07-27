@@ -6,7 +6,7 @@
 # 		Naohisa Goto <ng@bioruby.org>
 # License::	Ruby's
 #
-#  $Id: test_command.rb,v 1.2 2006/07/14 14:23:48 ngoto Exp $
+#  $Id: test_command.rb,v 1.3 2006/07/27 03:50:36 ngoto Exp $
 #
 
 require 'pathname'
@@ -95,7 +95,6 @@ module Bio
     end
 
     def test_call_command
-      p $0
     end
 
     def test_call_command_popen
