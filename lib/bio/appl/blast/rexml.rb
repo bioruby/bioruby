@@ -1,24 +1,15 @@
 #
-# bio/appl/blast/rexml.rb - BLAST XML output (-m 7) parser by REXML
+# = bio/appl/blast/rexml.rb - BLAST XML output (-m 7) parser by REXML
 # 
-#   Copyright (C) 2002,2003 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::  Copyright (C) 2002, 2003 Toshiaki Katayama <k@bioruby.org>
+# License::    Ruby's
 #
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
+# $Id: rexml.rb,v 1.11 2006/09/19 06:10:19 k Exp $
 #
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#  $Id: rexml.rb,v 1.10 2005/09/08 01:22:08 k Exp $
-#
+# == Note
+# 
+# This file is automatically loaded by bio/appl/blast/report.rb
+# 
 
 begin
   require 'rexml/document'
@@ -144,8 +135,3 @@ module Bio
 end
 
 
-=begin
-
-This file is automatically loaded by bio/appl/blast/report.rb
-
-=end
