@@ -5,8 +5,14 @@
 # 		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: kgml.rb,v 1.4 2006/07/25 19:17:39 k Exp $
+# $Id: kgml.rb,v 1.5 2006/09/19 05:55:38 k Exp $
 #
+
+autoload :REXML, 'rexml/document'
+
+module Bio
+class KEGG
+
 # == KGML (KEGG XML) parser
 #
 # See http://www.genome.jp/kegg/xml/ for more details on KGML.
@@ -60,6 +66,8 @@
 #    puts entry.height
 #    puts entry.fgcolor
 #    puts entry.bgcolor
+#    # <component> attributes
+#    puts entry.components
 #    # methood
 #    puts entry.names
 #  end
@@ -100,12 +108,6 @@
 #    end
 #  end
 #
-
-autoload :REXML, 'rexml/document'
-
-module Bio
-class KEGG
-
 class KGML
 
   def initialize(xml)
@@ -121,6 +123,7 @@ class KGML
   class Entry
     attr_accessor :entry_id, :name, :entry_type, :link, :reaction, :map
     attr_accessor :label, :shape, :x, :y, :width, :height, :fgcolor, :bgcolor
+    attr_accessor :components
     def names
       @name.split(/\s+/)
     end
@@ -177,6 +180,13 @@ class KGML
         entry.fgcolor  = attr["fgcolor"]
         entry.bgcolor  = attr["bgcolor"]
       }
+
+      node.elements.each("component") { |component|
+        attr = component.attributes
+        entry.components ||= []
+        entry.components << attr["id"].to_i
+      }
+
       @entries << entry
     }
   end
