@@ -1,26 +1,18 @@
 #
 # = bio/appl/emboss.rb - EMBOSS wrapper
 # 
-# Copyright (C):: 2002, 2005  KATAYAMA Toshiaki <k@bioruby.org>
-# Copyright (C):: 2006        Aerts Jan <jan.aerts@bbsrc.ac.uk>
+# Copyright::  Copyright (C) 2002, 2005 Toshiaki Katayama<k@bioruby.org>
+# Copyright::  Copyright (C) 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
+# License::    Ruby's
 #
-# License::	Ruby's
+# $Id: emboss.rb,v 1.7 2006/09/19 06:31:08 k Exp $
 #
-# $Id: emboss.rb,v 1.6 2006/07/14 14:28:44 ngoto Exp $
-#
-# = DESCRIPTION
-#
-# This file holds classes pertaining to the EMBOSS software suite.
-#
-# = REFERENCES
-#
-# * http://emboss.sourceforge.net
-# * Rice P, Longden I and Bleasby A. \
-#    EMBOSS: the European Molecular Biology Open Software Suite. \
-#    Trends Genet. 2000 Jun ; 16(6): 276-7 
+
 module Bio
 
-# = DESCRIPTION
+# == Description
+#
+# This file holds classes pertaining to the EMBOSS software suite.
 #
 # This class provides a wrapper for the applications of the EMBOSS suite, which 
 # is a mature and stable collection of open-source applications that can handle
@@ -37,7 +29,7 @@ module Bio
 # See the emboss website for more information: http://emboss.sourceforge.net.
 #
 #
-# = USAGE
+# == Usage
 #
 #  require 'bio'
 #
@@ -60,17 +52,18 @@ module Bio
 #  puts Bio::EMBOSS.seqret('embl:xlrhodop')
 #  puts Bio::EMBOSS.entret('embl:xlrhodop')
 #
-# = PREREQUISITES
+# == Pre-requisites
 #
 # You must have the EMBOSS suite installed locally. You can download from the
 # project website (see References below).
 #
-# = REFERENCES
+# = Rereferences
 #
 # * http://emboss.sourceforge.net
 # * Rice P, Longden I and Bleasby A. \
 #    EMBOSS: the European Molecular Biology Open Software Suite. \
 #    Trends Genet. 2000 Jun ; 16(6): 276-7 
+#
 class EMBOSS
 
   # Combines the initialization and execution for the emboss +seqret+ command.

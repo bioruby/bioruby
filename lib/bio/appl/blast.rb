@@ -1,22 +1,12 @@
 #
 # = bio/appl/blast.rb - BLAST wrapper
 # 
-# Copyright (C)::  2001       Mitsuteru C. Nakao <n@bioruby.org>
-# Copyright (C)::  2002,2003  KATAYAMA Toshiaki <k@bioruby.org>
-# Copyright (C)::  2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
-#
+# Copyright::  Copyright (C) 2001       Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::  Copyright (C) 2002,2003  Toshiaki Katayama <k@bioruby.org>
+# Copyright::  Copyright (C) 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    Ruby's
 #
-# $Id: blast.rb,v 1.31 2006/07/25 18:47:13 k Exp $
-#
-# = DESCRIPTION
-#
-# This file holds the Bio::Blast class, which creates BLAST factories.
-#
-# = References
-#
-# * http://www.ncbi.nlm.nih.gov/blast/
-# * http://blast.genome.jp/ideas/ideas.html#blast
+# $Id: blast.rb,v 1.32 2006/09/19 06:31:08 k Exp $
 #
 
 require 'net/http'
@@ -26,14 +16,14 @@ require 'shellwords'
 
 module Bio
 
-  # = DESCRIPTION
+  # == Description
   # 
   # The Bio::Blast class contains methods for running local or remote BLAST
   # searches, as well as for parsing of the output of such BLASTs (i.e. the
   # BLAST reports). For more information on similarity searches and the BLAST
   # program, see http://www.ncbi.nlm.nih.gov/Education/BLASTinfo/similarity.html.
   #
-  # = USAGE
+  # == Usage
   #
   #   require 'bio'
   #   
@@ -49,7 +39,7 @@ module Bio
   #
   #   # Then, to parse the report, see Bio::Blast::Report
   #
-  # == Available databases for Bio::Blast.remote
+  # === Available databases for Bio::Blast.remote
   #
   #  ----------+-------+---------------------------------------------------
   #   program  | query | db (supported in GenomeNet)
@@ -63,14 +53,15 @@ module Bio
   #   tblastn  | AA    | genes-nt, genome, vgenes.nuc
   #  ----------+-------+---------------------------------------------------
   #
-  # = SEE ALSO
+  # == See also
   #
   # * Bio::Blast::Report
   # * Bio::Blast::Report::Hit
   # * Bio::Blast::Report::Hsp
   #
-  # = REFERENCE
+  # == References
   # 
+  # * http://www.ncbi.nlm.nih.gov/blast/
   # * http://www.ncbi.nlm.nih.gov/Education/BLASTinfo/similarity.html
   # * http://blast.genome.jp/ideas/ideas.html#blast
   #
