@@ -1,34 +1,33 @@
 #
-# bio/db/genbank/genbank.rb - GenBank database class
+# = bio/db/genbank/genbank.rb - GenBank database class
 #
-#   Copyright (C) 2000-2005 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::  Copyright (C) 2000-2005 Toshiaki Katayama <k@bioruby.org>
+# License::    Ruby's
 #
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#  $Id: genbank.rb,v 0.38 2005/12/07 11:23:51 k Exp $
+# $Id: genbank.rb,v 0.39 2006/09/19 05:59:07 k Exp $
 #
 
 require 'bio/db'
 require 'bio/db/genbank/common'
 
 module Bio
+
+# == Description
+#
+# Parses a GenBank formatted database entry
+#
+# == Example
+#
+#   # entry is a string containing only one entry contents
+#   gb = Bio::GenBank.new(entry)
+#
 class GenBank < NCBIDB
 
   include Bio::NCBIDB::Common
 
-  # LOCUS
+  # Parses the LOCUS line and returns contents of the LOCUS record
+  # as a Bio::GenBank::Locus object.  Locus object is created automatically
+  # when Bio::GenBank#locus, entry_id etc. methods are called.
   class Locus
     def initialize(locus_line)
       if locus_line.empty?
@@ -55,35 +54,23 @@ class GenBank < NCBIDB
       :division, :date
   end
 
+  # Accessor methods for the contents of the LOCUS record.
+
   def locus
     @data['LOCUS'] ||= Locus.new(get('LOCUS'))
   end
-  def entry_id;		locus.entry_id;		end
-  def length;		locus.length;		end
-  def circular;		locus.circular;		end
-  def division;		locus.division;		end
-  def date;		locus.date;		end
 
-  def strand;		locus.strand;		end
-  def natype;		locus.natype;		end
+  def entry_id;  locus.entry_id;  end
+  def length;    locus.length;    end
+  def circular;  locus.circular;  end
+  def division;  locus.division;  end
+  def date;      locus.date;      end
 
-
-  # ORIGIN
-  def seq
-    unless @data['SEQUENCE']
-      origin
-    end
-    Bio::Sequence::NA.new(@data['SEQUENCE'])
-  end
-  alias naseq seq
-  alias nalen length
-
-  def seq_len
-    seq.length
-  end
+  def strand;    locus.strand;    end
+  def natype;    locus.natype;    end
 
 
-  # FEATURES
+  # FEATURES -- Iterate only for the 'CDS' portion of the Bio::Features.
   def each_cds
     features.each do |feature|
       if feature.feature == 'CDS'
@@ -92,6 +79,7 @@ class GenBank < NCBIDB
     end
   end
 
+  # FEATURES -- Iterate only for the 'gene' portion of the Bio::Features.
   def each_gene
     features.each do |feature|
       if feature.feature == 'gene'
@@ -101,7 +89,10 @@ class GenBank < NCBIDB
   end
 
 
-  # BASE COUNT : obsoleted after GenBank release 138.0
+  # BASE COUNT (this field is obsoleted after GenBank release 138.0) --
+  # Returns the BASE COUNT as a Hash.  When the base is specified, returns
+  # count of the base as a Fixnum.  The base can be one of 'a', 't', 'g',
+  # 'c', and 'o' (others).
   def basecount(base = nil)
     unless @data['BASE COUNT']
       hash = Hash.new(0)
@@ -117,6 +108,21 @@ class GenBank < NCBIDB
     else
       @data['BASE COUNT']
     end
+  end
+
+  # ORIGIN -- Returns DNA sequence in the ORIGIN record as a
+  # Bio::Sequence::NA object.
+  def seq
+    unless @data['SEQUENCE']
+      origin
+    end
+    Bio::Sequence::NA.new(@data['SEQUENCE'])
+  end
+  alias naseq seq
+  alias nalen length
+
+  def seq_len
+    seq.length
   end
 
 end # GenBank
@@ -204,151 +210,6 @@ if __FILE__ == $0
   p gb.naseq
 
 end
-
-
-=begin
-
-= Bio::GenBank
-
-=== Initialize
-
---- Bio::GenBank.new(entry)
-
-=== LOCUS
-
---- Bio::GenBank#locus -> Bio::Locus
-
-Returns contents of the LOCUS record as a Bio::GenBank::Locus object.
-
---- Bio::GenBank#entry_id -> String
---- Bio::GenBank#nalen -> Fixnum
---- Bio::GenBank#strand -> String
---- Bio::GenBank#natype -> String
---- Bio::GenBank#circular -> String
---- Bio::GenBank#division -> String
---- Bio::GenBank#date -> String
-
-Access methods for the contents of the LOCUS record.
-
-=== DEFINITION
-
---- Bio::GenBank#definition -> String
-
-Returns contents of the DEFINITION record as a String.
-
-=== ACCESSION
-
---- Bio::GenBank#accessions -> Array
-
-Returns contents of the ACCESSION record as an Array.
-
-=== VERSION
-
---- Bio::GenBank#versions -> Array
-
-Returns contents of the VERSION record as an Array of Strings.
-
---- Bio::GenBank#acc_version -> String
---- Bio::GenBank#accession -> String
---- Bio::GenBank#version -> Fixnum
---- Bio::GenBank#gi -> String
-
-Access methods for the contents of the VERSION record.
-
-The 'acc_version' method returns the first part of the VERSION record
-as a "ACCESSION.VERSION" String, 'accession' method returns the ACCESSION
-part of the acc_version, 'version' method returns the VERSION part of the
-acc_version as a Fixnum, and the 'gi' method returns the second part of
-the VERSION record as a "GI:#######" String.
-
-=== NID
-
---- Bio::GenBank#nid -> String
-
-Returns contents of the NID record as a String.
-
-=== KEYWORDS
-
---- Bio::GenBank#keywords -> Array
-
-Returns contents of the KEYWORDS record as an Array of Strings.
-
-=== SEGMENT
-
---- Bio::GenBank#segment -> String
-
-Returns contents of the SEGMENT record as a "m/n" form String.
-
-=== SOURCE
-
---- Bio::GenBank#source -> Hash
-
-Returns contents of the SOURCE record as a Hash.
-
---- Bio::GenBank#common_name -> String
---- Bio::GenBank#vernacular_name -> String
---- Bio::GenBank#organism -> String
---- Bio::GenBank#taxonomy -> String
-
-Access methods for the contents of the SOURCE record.
-
-The 'common_name' method is same as source['common_name'].
-The 'vernacular_name' method is an alias for the 'common_name'.
-The 'organism' method is same as source['organism'].
-The 'taxonomy' method is same as source['taxonomy'].
-
-=== REFERENCE
-
---- Bio::GenBank#references -> Array
-
-Returns contents of the REFERENCE records as an Array of Bio::Reference
-objects.
-
-=== COMMENT
-
---- Bio::GenBank#comment -> String
-
-Returns contents of the COMMENT record as a String.
-
-=== FEATURES
-
---- Bio::GenBank#features -> Bio::Features
-
-Returns contents of the FEATURES record as a Bio::Features object.
-
---- Bio::GenBank#each_cds -> Array
-
-Iterate only for the 'CDS' portion of the Bio::Features.
-
---- Bio::GenBank#each_gene -> Array
-
-Iterate only for the 'gene' portion of the Bio::Features.
-
-=== BASE COUNT
-
---- Bio::GenBank#basecount(base = nil) -> Hash or Fixnum
-
-Returns the BASE COUNT as a Hash.  When the base is specified, returns
-count of the base as a Fixnum.  The base can be one of 'a', 't', 'g',
-'c', and 'o' (others).
-
-=== ORIGIN
-
---- Bio::GenBank#origin -> String
-
-Returns contents of the ORIGIN record as a String.
-
---- Bio::GenBank#naseq -> Bio::Sequence::NA
---- Bio::GenBank#seq -> Bio::Sequence::NA
-
-Returns DNA sequence in the ORIGIN record as a Bio::Sequence::NA object.
-
-== SEE ALSO
-
-* ((<URL:ftp://ftp.ncbi.nih.gov/genbank/gbrel.txt>))
-* ((<URL:http://www.ncbi.nlm.nih.gov/collab/FT/index.html>))
-
-=end
 
 
 

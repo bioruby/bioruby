@@ -1,29 +1,27 @@
 #
-# bio/db/genbank/common.rb - Common methods for GenBank style database classes
+# = bio/db/genbank/common.rb - Common methods for GenBank style database classes
 #
-#   Copyright (C) 2004 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
+# License::    Ruby's
 #
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#  $Id: common.rb,v 1.9 2005/12/07 11:23:51 k Exp $
+# $Id: common.rb,v 1.10 2006/09/19 05:57:20 k Exp $
 #
 
 require 'bio/db'
 
 module Bio
 class NCBIDB
+
+# == Description
+# 
+# This module defines a common framework among GenBank, GenPept, RefSeq, and
+# DDBJ.  For more details, see the documentations in each genbank/*.rb files.
+# 
+# == References
+# 
+# * ftp://ftp.ncbi.nih.gov/genbank/gbrel.txt
+# * http://www.ncbi.nlm.nih.gov/collab/FT/index.html
+#
 module Common
 
   DELIMITER	= RS = "\n//\n"
@@ -33,61 +31,68 @@ module Common
     super(entry, TAGSIZE)
   end
 
-  # LOCUS  -- Locus class must be defined in child classes
+  # LOCUS -- Locus class must be defined in child classes.
+  def locus
+    # must be overrided in each subclass
+  end
 
-  # DEFINITION
+  # DEFINITION -- Returns contents of the DEFINITION record as a String.
   def definition
     field_fetch('DEFINITION')
   end
 
 
-  # ACCESSION
+  # ACCESSION -- Returns contents of the ACCESSION record as an Array.
   def accessions
     accession.split(/\s+/)
   end
 
 
-  # VERSION
+  # VERSION -- Returns contents of the VERSION record as an Array of Strings.
   def versions
     @data['VERSION'] ||= fetch('VERSION').split(/\s+/)
   end
 
+  # Returns the first part of the VERSION record as "ACCESSION.VERSION" String.
   def acc_version
     versions.first.to_s
   end
 
+  # Returns the ACCESSION part of the acc_version.
   def accession
     acc_version.split(/\./).first.to_s
   end
 
+  # Returns the VERSION part of the acc_version as a Fixnum
   def version
     acc_version.split(/\./).last.to_i
   end
 
+  # Returns the second part of the VERSION record as a "GI:#######" String.
   def gi
     versions.last
   end
 
 
-  # NID
+  # NID -- Returns contents of the NID record as a String.
   def nid
     field_fetch('NID')
   end
 
 
-  # KEYWORDS
+  # KEYWORDS -- Returns contents of the KEYWORDS record as an Array of Strings.
   def keywords
     @data['KEYWORDS'] ||= fetch('KEYWORDS').chomp('.').split(/; /)
   end
 
 
-  # SEGMENT
+  # SEGMENT -- Returns contents of the SEGMENT record as a "m/n" form String.
   def segment
     @data['SEGMENT'] ||= fetch('SEGMENT').scan(/\d+/).join("/")
   end
 
 
-  # SOURCE
+  # SOURCE -- Returns contents of the SOURCE record as a Hash.
   def source
     unless @data['SOURCE']
       name, org = get('SOURCE').split('ORGANISM')
@@ -126,7 +131,8 @@ module Common
   end
 
 
-  # REFERENCE
+  # REFERENCE -- Returns contents of the REFERENCE records as an Array of
+  # Bio::Reference objects.
   def references
     unless @data['REFERENCE']
       ary = []
@@ -173,13 +179,14 @@ module Common
   end
 
 
-  # COMMENT
+  # COMMENT -- Returns contents of the COMMENT record as a String.
   def comment
     field_fetch('COMMENT')
   end
 
 
-  # FEATURES
+  # FEATURES -- Returns contents of the FEATURES record as a Bio::Features
+  # object.
   def features
     unless @data['FEATURES']
       ary = []
@@ -233,7 +240,7 @@ module Common
   end
 
 
-  # ORIGIN
+  # ORIGIN -- Returns contents of the ORIGIN record as a String.
   def origin
     unless @data['ORIGIN']
       ori, seqstr = get('ORIGIN').split("\n", 2)
@@ -276,24 +283,8 @@ module Common
   end
 
 end # Common 
+
 end # GenBank
 end # Bio
-
-
-=begin
-
-= Bio::GenBank::Common
-
-This module defines a common framework among GenBank, GenPept, RefSeq, and
-DDBJ.  For more details, see the documentations in each genbank/*.rb files.
-
-
-== SEE ALSO
-
-* ((<URL:ftp://ftp.ncbi.nih.gov/genbank/gbrel.txt>))
-* ((<URL:http://www.ncbi.nlm.nih.gov/collab/FT/index.html>))
-
-=end
-
 
 
