@@ -2,11 +2,18 @@
 # = bio/io/soapwsdl.rb - SOAP/WSDL interface class
 #
 # Copyright::   Copyright (C) 2004 
-#               KATAYAMA Toshiaki <k@bioruby.org>
+#               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: soapwsdl.rb,v 1.5 2006/05/29 15:28:18 k Exp $
+# $Id: soapwsdl.rb,v 1.6 2006/09/19 05:43:06 k Exp $
 #
+begin
+  require 'soap/wsdlDriver'
+rescue LoadError
+end
+
+module Bio
+
 # == Examples
 # 
 # class API < Bio::SOAPWSDL
@@ -35,20 +42,12 @@
 # % export soap_use_proxy=on
 # % export http_proxy=http://localhost:8080
 #
-
-begin
-  require 'soap/wsdlDriver'
-rescue LoadError
-end
-
-module Bio
-
 class SOAPWSDL
 
-  # WSDL URL
+  # Returns URL of the current WSDL file.
   attr_reader :wsdl
 
-  # log IO
+  # Returns current logging IO.
   attr_reader :log
 
 
@@ -70,14 +69,33 @@ class SOAPWSDL
   private :create_driver
 
 
-  # Set a WSDL URL.
+  # Change the URL for WSDL file
+  #
+  #   serv = Bio::SOAPWSDL.new("http://soap.genome.jp/KEGG.wsdl")
+  #
+  # or
+  # 
+  #   serv = Bio::SOAPWSDL.new
+  #   serv.wsdl = "http://soap.genome.jp/KEGG.wsdl"
+  #
+  # Note that you can't read two or more different WSDL files at once.
+  # In that case, create Bio::SOAPWSDL object for each.
+  #
   def wsdl=(url)
     @wsdl = url
     create_driver
   end
 
 
-  # Set log IO
+  # Change the IO for logging.  The argument is passed to wiredump_dev method
+  # of the SOAP4R, thus
+  #
+  #   serv = Bio::SOAPWSDL.new
+  #   serv.log = STDERR
+  #
+  # will print all the SOAP transactions in standard error.
+  # This feature is especially useful for debug.
+  #
   def log=(io)
     @log = io
     @driver.wiredump_dev = @log
@@ -95,7 +113,7 @@ class SOAPWSDL
   end
   private :method_missing
 
-end # SOAP
+end # SOAPWSDL
 
 end # Bio
 
