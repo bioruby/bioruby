@@ -1,7 +1,9 @@
-$Id: README.DEV,v 1.10 2006/05/11 10:53:25 aerts Exp $
+= README.DEV
 
-Copyright (C):: 2005, 2006 Toshiaki Katayama <k@bioruby.org>
-Copyright (C):: 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
+Copyright::  Copyright (C) 2005, 2006 Toshiaki Katayama <k@bioruby.org>
+Copyright::  Copyright (C) 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
+
+  $Id: README.DEV,v 1.11 2006/09/19 05:39:05 k Exp $
 
 = HOW TO CONTRIBUTE TO THE BIORUBY PROJECT?
 
@@ -70,30 +72,44 @@ Each file should start with a header, which covers the following topics:
 * any references, if appropriate
 
 The header should be formatted as follows:
+
   #
   # = bio/db/hoge.rb - Hoge database parser classes
   #
-  # Copyright (C):: 2001, 2003-2005   Bio R. Hacker <brh@example.org>,
-  # Copyright (C):: 2006              Chem R. Hacker <crh@example.org>
+  # Copyright::  Copyright (C) 2001, 2003-2005 Bio R. Hacker <brh@example.org>,
+  # Copyright::  Copyright (C) 2006            Chem R. Hacker <crh@example.org>
   #
-  # License::     Ruby's
+  # License::    Ruby's
   #
-  # $Id: README.DEV,v 1.10 2006/05/11 10:53:25 aerts Exp $
+  # $ I d: $
   #
-  # = Description
+  # == Description
   #
   # This file contains classes that implement an interface to the Hoge database.
   #
-  # = References
+  # == References
   #
   # * Hoge F. et al., The Hoge database, Nucleic. Acid. Res. 123:100--123 (2030)
   # * http://hoge.db/
   #
 
-In the above sample, the
-  $Id: README.DEV,v 1.10 2006/05/11 10:53:25 aerts Exp $
-will be automatically changed into something like
-  $Id: README.DEV,v 1.10 2006/05/11 10:53:25 aerts Exp $
+  require 'foo'
+
+  module Bio
+
+    autoload :Bar, 'bio/bar'
+
+  class Hoge
+    :
+  end  # Hoge
+
+  end  # Bio
+
+In the above sample, the '$ I d : $' (without spaces) will be automatically
+changed into something like
+
+  $Id: README.DEV,v 1.11 2006/09/19 05:39:05 k Exp $
+
 when commiting to the CVS repository for the first time.
 
 === of classes and methods within those files
@@ -101,7 +117,8 @@ when commiting to the CVS repository for the first time.
 Classes and methods should be documented in a standardized format, as in the
 following example (from lib/bio/sequence.rb):
 
-  # = DESCRIPTION
+  # == Description
+  #
   # Bio::Sequence objects represent annotated sequences in bioruby.
   # A Bio::Sequence object is a wrapper around the actual sequence, 
   # represented as either a Bio::Sequence::NA or a Bio::Sequence::AA object.
@@ -110,7 +127,8 @@ following example (from lib/bio/sequence.rb):
   # objects using the same arguments and returning the same values (even though 
   # these methods are not documented specifically for Bio::Sequence).
   #
-  # = USAGE
+  # == Usage
+  # 
   #   require 'bio'
   #   
   #   # Create a nucleic or amino acid sequence
@@ -167,8 +185,11 @@ can copy-and-paste into a new script to run. It should illustrate the most
 important uses of the class. If possible and if it would not clutter up the
 example too much, try to provide any input data directly into the usage example,
 instead of refering to ARGV or ARGF for input.
+
   dna = Bio::Sequence.auto('atgcatgcATGCATGCAAAA')
+
 Otherwise, describe the input shortly, for example:
+
   # input should be string consisting of nucleotides
   dna = Bio::Sequence.auto(ARGF.read)
 
@@ -177,6 +198,7 @@ including any relevant usage examples. (In contrast to the documentation for
 the class itself, headings are not required.) In addition, any arguments should
 be listed, as well as the type of thing that is returned by the method. The
 format of this information is as follows:
+
   # ---
   # *Arguments*:
   # * (required) _str_: String or Bio::Sequence::NA
@@ -188,7 +210,9 @@ Attribute accessors can be preceded by a short description.
 == Exception handling
 
 Don't use
+
   $stderr.puts "WARNING"
+
 in your code. Instead, try to avoid printing error messages. For fatal errors,
 use +raise+ with an appropriate message.
 
@@ -197,14 +221,15 @@ use +raise+ with an appropriate message.
 Unit tests should come with your modules by which you can assure what
 you meant to do with each method.  The test code is useful to make
 maintenance easy and ensure stability. The use of
- if __FILE__ == $0
+
+  if __FILE__ == $0
+
 is deprecated.
 
 == Using autoload
 
 To quicken the initial load time we have replaced most of 'require' to 
-'autoload'
-since BioRuby version 0.7.  During this change, we have found
+'autoload' since BioRuby version 0.7.  During this change, we have found
 some tips:
 
 You should not separate the same namespace into several files.
