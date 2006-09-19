@@ -1,40 +1,23 @@
 #
 # = bio/location.rb - Locations/Location class (GenBank location format)
 #
-# Copyright::	Copyright (C) 2001, 2005 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::	Copyright (C) 2001, 2005 Toshiaki Katayama <k@bioruby.org>
 #                             2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
-# License::	LGPL
+# License::	Ruby's
 #
-# $Id: location.rb,v 0.25 2006/05/04 18:40:26 aerts Exp $
-#
-# 
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
+# $Id: location.rb,v 0.26 2006/09/19 06:13:54 k Exp $
 #
 
 module Bio
 
-# = DESCRIPTION
+# == Description
+#
 # The Bio::Location class describes the position of a genomic locus. Typically,
 # Bio::Location objects are created automatically when the user creates a
 # Bio::Locations object, instead of initialized directly.
 #
-# = USAGE
+# == Usage
+#
 #   location = Bio::Location.new('500..550')
 #   puts "start=" + location.from.to_s + ";end=" + location.to.to_s
 #
@@ -43,6 +26,7 @@ module Bio
 #   locations.each do |location|
 #     puts "start=" + location.from.to_s + ";end=" + location.to.to_s
 #   end
+#
 class Location
   include Comparable
 	
@@ -164,12 +148,14 @@ class Location
 
 end # class location
 
-# = DESCRIPTION
-# The Bio::Locations class is a container for Bio::Location objects: creating a 
-# Bio::Locations object (based on a GenBank style position string) will
-# spawn an array of Bio::Location objects.
+# == Description
 #
-# = USAGE
+# The Bio::Locations class is a container for Bio::Location objects:
+# creating a Bio::Locations object (based on a GenBank style position string)
+# will spawn an array of Bio::Location objects.
+#
+# == Usage
+#
 #   locations = Bio::Locations.new('join(complement(500..550), 600..625)')
 #   locations.each do |location|
 #     puts "class=" + location.class.to_s
@@ -191,12 +177,12 @@ end # class location
 #      puts location.range
 #  end
 #
-# = GENBANK LOCATION DESCRIPTOR CLASSIFICATION
+# == GenBank location descriptor classification
 # 
 # === Definition of the position notation of the GenBank location format
 # 
-# According to the GenBank manual 'gbrel.txt', position notations were classified
-# into 10 patterns - (A) to (J).
+# According to the GenBank manual 'gbrel.txt', position notations were
+# classified into 10 patterns - (A) to (J).
 # 
 #       3.4.12.2 Feature Location
 #       
@@ -408,6 +394,7 @@ end # class location
 # * [HUMMAGE12X]	replace(3002..3003,	<= replace(3002..3003, "GC")
 # * [ADR40FIB]	replace(510..520,	<= replace(510..520, "taatcctaccg")
 # * [RATDYIIAAB]	replace(1306..1443,"aagaacatccacggagtcagaactgggctcttcacgccggatttggcgttcgaggccattgtgaaaaagcaggcaatgcaccagcaagctcagttcctacccctgcgtggacctggttatccaggagctaatcagtacagttaggtggtcaagctgaaagagccctgtctgaaa")
+#
 class Locations
   include Enumerable
 
@@ -485,8 +472,9 @@ class Locations
   # position in the locus.
   # 
   # This method can for example be used to relate positions in a DNA-sequence
-  # with those in RNA. In this use, the optional ':aa'-flag returns the position
-  # of the associated amino-acid rather than the nucleotide.
+  # with those in RNA. In this use, the optional ':aa'-flag returns the
+  # position of the associated amino-acid rather than the nucleotide.
+  #
   #   loc = Bio::Locations.new('complement(12838..13533)')
   #   puts loc.relative(13524)        # => 10
   #   puts loc.relative(13506, :aa)   # => 3
@@ -514,8 +502,9 @@ class Locations
   # DNA sequence.
   # 
   # This method can for example be used to relate positions in a DNA-sequence
-  # with those in RNA. In this use, the optional ':aa'-flag returns the position
-  # of the associated amino-acid rather than the nucleotide.
+  # with those in RNA. In this use, the optional ':aa'-flag returns the
+  # position of the associated amino-acid rather than the nucleotide.
+  #
   #   loc = Bio::Locations.new('complement(12838..13533)')
   #   puts loc.absolute(10)          # => 13524
   #   puts loc.absolute(10, :aa)     # => 13506
@@ -612,7 +601,7 @@ class Locations
         ary << gbl_pos2loc(position)
       end
 
-    when /^complement\((.*)\)$/			# (J) complement()
+    when /^complement\((.*)\)$/				# (J) complement()
       position =       $1
       gbl_pos2loc(position).reverse_each do |location|
         ary << location.complement
@@ -677,7 +666,7 @@ class Locations
         end
       end
     end
-    return nil				# out of range
+    return nil					# out of range
   end
 
 end # class Locations
