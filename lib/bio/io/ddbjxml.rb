@@ -2,10 +2,10 @@
 # = bio/io/ddbjxml.rb - DDBJ SOAP server access class
 #
 # Copyright::	Copyright (C) 2003, 2004
-#		KATAYAMA Toshiaki <k@bioruby.org>
+#		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: ddbjxml.rb,v 1.11 2006/05/08 14:29:58 k Exp $
+# $Id: ddbjxml.rb,v 1.12 2006/09/19 05:44:41 k Exp $
 #
 
 require 'bio/io/soapwsdl'
@@ -26,6 +26,10 @@ class DDBJ
 class XML < Bio::SOAPWSDL
 
   BASE_URI = "http://xml.nig.ac.jp/wsdl/"
+
+  def initialize(wsdl = nil)
+    super(wsdl || self.class::SERVER_URI)
+  end
 
   # === Description
   #
@@ -54,11 +58,11 @@ class XML < Bio::SOAPWSDL
   # 
   # === WSDL Methods
   # 
-  # ==== searchSimple(program, database, query)
+  # * searchSimple(program, database, query)
   #
   # Returns a blast report in the default format.
   #
-  # ==== searchParam(program, database, query, param)
+  # * searchParam(program, database, query, param)
   #
   # Blasts with param and returns a blast report.
   #
@@ -68,11 +72,6 @@ class XML < Bio::SOAPWSDL
   #
   class Blast < XML
     SERVER_URI = BASE_URI + "Blast.wsdl"
-
-    # returns a Bio::DDBJ::XML::Blast object.
-    def initialize(wsdl = nil)
-      super(wsdl || SERVER_URI)
-    end
   end
 
 
@@ -105,8 +104,8 @@ class XML < Bio::SOAPWSDL
   #
   # === WSDL Methods
   #
-  # ==== analyzeSimple(query)
-  # ==== analyzeParam(query, param)
+  # * analyzeSimple(query)
+  # * analyzeParam(query, param)
   #
   # === References
   #
@@ -114,11 +113,6 @@ class XML < Bio::SOAPWSDL
   #
   class ClustalW < XML
     SERVER_URI = BASE_URI + "ClustalW.wsdl"
-
-    # returns a Bio::DDBJ::XML::ClustalW object.
-    def initialize(wsdl = nil)
-      super(wsdl || SERVER_URI)
-    end
   end
 
 
@@ -140,12 +134,12 @@ class XML < Bio::SOAPWSDL
   #
   # === WSDL Methods 
   #
-  # ==== getFFEntry(accession)
-  # ==== getXMLEntry(accession)
-  # ==== getFeatureInfo(accession, feature)
-  # ==== getAllFeatures(accession)
-  # ==== getRelatedFeatures(accession, start, stop)
-  # ==== getRelatedFeaturesSeq(accession, start, stop)
+  # * getFFEntry(accession)
+  # * getXMLEntry(accession)
+  # * getFeatureInfo(accession, feature)
+  # * getAllFeatures(accession)
+  # * getRelatedFeatures(accession, start, stop)
+  # * getRelatedFeaturesSeq(accession, start, stop)
   #
   # === References
   #
@@ -153,11 +147,6 @@ class XML < Bio::SOAPWSDL
   #
   class DDBJ < XML
     SERVER_URI = BASE_URI + "DDBJ.wsdl"
-
-    # returns a Bio::DDBJ::XML::DDBJ object.
-    def initialize(wsdl = nil)
-      super(wsdl || SERVER_URI)
-    end
   end
 
 
@@ -178,8 +167,8 @@ class XML < Bio::SOAPWSDL
   #
   # === WSDL Methods
   #
-  # ==== searchSimple(program, database, query)
-  # ==== searchParam(program, database, query, param)
+  # * searchSimple(program, database, query)
+  # * searchParam(program, database, query, param)
   #
   # === References
   #
@@ -187,11 +176,6 @@ class XML < Bio::SOAPWSDL
   #
   class Fasta < XML
     SERVER_URI = BASE_URI + "Fasta.wsdl"
-
-    # returns a Bio::DDBJ::XML::Fasta object.
-    def initialize(wsdl = nil)
-      super(wsdl || SERVER_URI)
-    end
   end
 
 
@@ -209,35 +193,35 @@ class XML < Bio::SOAPWSDL
   #
   # === WSDL Methods
   #
-  # ==== getEntry(database, var, param1, param2)
-  # ==== getEntry(database, var)
-  # ==== getDDBJEntry(accession)
-  # ==== getDDBJCONEntry(accession)
-  # ==== getDDBJVerEntry(accession)
-  # ==== getLocus_DDBJEntry(locus)
-  # ==== getGene_DDBJEntry(gene)
-  # ==== getProd_DDBJEntry(products)
-  # ==== getPID_DDBJEntry(pid)
-  # ==== getClone_DDBJEntry(clone)
-  # ==== getXML_DDBJEntry(accession)
-  # ==== getEMBLEntry(accession)
-  # ==== getSWISSEntry(accession)
-  # ==== getPIREntry(accession)
-  # ==== getPRFEntry(accession)
-  # ==== getPDBEntry(accession)
-  # ==== getQVEntry(accession)
-  # ==== getDADEntry(accession)
-  # ==== getPID_DADEntry(pid)
-  # ==== getFASTA_DDBJEntry(accession)
-  # ==== getFASTA_DDBJCONEntry(accession)
-  # ==== getFASTA_DDBJVerEntry(accession)
-  # ==== getFASTA_DDBJSeqEntry(accession, start, end)
-  # ==== getFASTA_DADEntry(accession)
-  # ==== getFASTA_PIREntry(accession)
-  # ==== getFASTA_SWISSEntry(accession)
-  # ==== getFASTA_PDBEntry(accession)
-  # ==== getFASTA_PRFEntry(accession)
-  # ==== getFASTA_CDSEntry(accession)
+  # * getEntry(database, var, param1, param2)
+  # * getEntry(database, var)
+  # * getDDBJEntry(accession)
+  # * getDDBJCONEntry(accession)
+  # * getDDBJVerEntry(accession)
+  # * getLocus_DDBJEntry(locus)
+  # * getGene_DDBJEntry(gene)
+  # * getProd_DDBJEntry(products)
+  # * getPID_DDBJEntry(pid)
+  # * getClone_DDBJEntry(clone)
+  # * getXML_DDBJEntry(accession)
+  # * getEMBLEntry(accession)
+  # * getSWISSEntry(accession)
+  # * getPIREntry(accession)
+  # * getPRFEntry(accession)
+  # * getPDBEntry(accession)
+  # * getQVEntry(accession)
+  # * getDADEntry(accession)
+  # * getPID_DADEntry(pid)
+  # * getFASTA_DDBJEntry(accession)
+  # * getFASTA_DDBJCONEntry(accession)
+  # * getFASTA_DDBJVerEntry(accession)
+  # * getFASTA_DDBJSeqEntry(accession, start, end)
+  # * getFASTA_DADEntry(accession)
+  # * getFASTA_PIREntry(accession)
+  # * getFASTA_SWISSEntry(accession)
+  # * getFASTA_PDBEntry(accession)
+  # * getFASTA_PRFEntry(accession)
+  # * getFASTA_CDSEntry(accession)
   #
   # === References
   #
@@ -245,11 +229,6 @@ class XML < Bio::SOAPWSDL
   #
   class GetEntry < XML
     SERVER_URI = BASE_URI + "GetEntry.wsdl"
-
-    # returns a Bio::DDBJ::XML::GetEntry object.
-    def initialize(wsdl = nil)
-      super(wsdl || SERVER_URI)
-    end
   end
 
 
@@ -276,17 +255,17 @@ class XML < Bio::SOAPWSDL
   #
   # === WSDL Methods
   #
-  # ==== getOrganismList
-  # ==== getChIDList
-  # ==== getOrganismNameFromChid(chid)
-  # ==== getChIDFromOrganismName(orgName)
-  # ==== getAccession(chid)
-  # ==== getPieceNumber(chid)
-  # ==== getDivision(chid)
-  # ==== getType(chid)
-  # ==== getFlatFile(chid)
-  # ==== getFastaFile(chid, type)
-  # ==== getCDS(chid)
+  # * getOrganismList
+  # * getChIDList
+  # * getOrganismNameFromChid(chid)
+  # * getChIDFromOrganismName(orgName)
+  # * getAccession(chid)
+  # * getPieceNumber(chid)
+  # * getDivision(chid)
+  # * getType(chid)
+  # * getFlatFile(chid)
+  # * getFastaFile(chid, type)
+  # * getCDS(chid)
   #
   # === References
   #
@@ -294,11 +273,6 @@ class XML < Bio::SOAPWSDL
   #
   class Gib < XML
     SERVER_URI = BASE_URI + "Gib.wsdl"
-
-    # returns a Bio::DDBJ::XML::Gib object.
-    def initialize(wsdl = nil)
-      super(wsdl || SERVER_URI)
-    end
   end
 
   
@@ -316,8 +290,8 @@ class XML < Bio::SOAPWSDL
   #
   # === WSDL Methods
   #
-  # ==== getOrganismList
-  # ==== getMasterInfo(orfID, organism)
+  # * getOrganismList
+  # * getMasterInfo(orfID, organism)
   #
   # === References
   #
@@ -325,11 +299,6 @@ class XML < Bio::SOAPWSDL
   #
   class Gtop < XML
     SERVER_URI = BASE_URI + "Gtop.wsdl"
-
-    # returns a Bio::DDBJ::XML::Gtop object.
-    def initialize(wsdl = nil)
-      super(wsdl || SERVER_URI)
-    end
   end
 
 
@@ -346,12 +315,12 @@ class XML < Bio::SOAPWSDL
   #
   # === WSDL Methods
   #
-  # ==== searchVariation(field, query, order)
-  # ==== searchVariationSimple(field, query)
-  # ==== searchFrequency(field, query, order)
-  # ==== searchFrequencySimple(field, query)
-  # ==== getVariation(variation_id)
-  # ==== getFrequency(variation_id, population_id)
+  # * searchVariation(field, query, order)
+  # * searchVariationSimple(field, query)
+  # * searchFrequency(field, query, order)
+  # * searchFrequencySimple(field, query)
+  # * getVariation(variation_id)
+  # * getFrequency(variation_id, population_id)
   #
   # === References
   #
@@ -359,11 +328,6 @@ class XML < Bio::SOAPWSDL
   #
   class PML < XML
     SERVER_URI = BASE_URI + "PML.wsdl"
-
-    # returns a Bio::DDBJ::XML::PML object.
-    def initialize(wsdl = nil)
-      super(wsdl || SERVER_URI)
-    end
   end
 
 
@@ -381,8 +345,8 @@ class XML < Bio::SOAPWSDL
   #
   # === WSDL Methods
   #
-  # ==== searchSimple(query)
-  # ==== searchParam(query, param)
+  # * searchSimple(query)
+  # * searchParam(query, param)
   #
   # === Examples
   #
@@ -390,11 +354,6 @@ class XML < Bio::SOAPWSDL
   #
   class SRS < XML
     SERVER_URI = BASE_URI + "SRS.wsdl"
-
-    # returns a Bio::DDBJ::XML::SRS object.
-    def initialize(wsdl = nil)
-      super(wsdl || SERVER_URI)
-    end
   end
   
 
@@ -418,11 +377,11 @@ class XML < Bio::SOAPWSDL
   #
   # === WSDL Methdos
   #
-  # ==== searchSimple(tx_Name)
-  # ==== searchParam(tx_Name, tx_Clas, tx_Rank, tx_Rmax, tx_Dcls)
-  # ==== getTxId(tx_Name)
-  # ==== getTxName(tx_Id)
-  # ==== searchLineage(query, ranks, superkingdom)
+  # * searchSimple(tx_Name)
+  # * searchParam(tx_Name, tx_Clas, tx_Rank, tx_Rmax, tx_Dcls)
+  # * getTxId(tx_Name)
+  # * getTxName(tx_Id)
+  # * searchLineage(query, ranks, superkingdom)
   # 
   # === References
   #
@@ -430,11 +389,6 @@ class XML < Bio::SOAPWSDL
   #
   class TxSearch < XML
     SERVER_URI = BASE_URI + "TxSearch.wsdl"
-
-    # returns a Bio::DDBJ::XML::TxSearch object.
-    def initialize(wsdl = nil)
-      super(wsdl || SERVER_URI)
-    end
   end
 
 end # XML
