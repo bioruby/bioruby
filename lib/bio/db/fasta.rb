@@ -3,10 +3,10 @@
 #
 # Copyright::  Copyright (C) 2001, 2002
 #              GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>,
-#              KATAYAMA Toshiaki <k@bioruby.org>
+#              Toshiaki Katayama <k@bioruby.org>
 # Lisence::    Ruby's
 #
-# $Id: fasta.rb,v 1.25 2006/02/22 08:44:46 ngoto Exp $
+# $Id: fasta.rb,v 1.26 2006/09/19 06:03:51 k Exp $
 # 
 # == Description
 # 

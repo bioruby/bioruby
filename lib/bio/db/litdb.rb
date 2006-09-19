@@ -1,10 +1,10 @@
 #
 # = bio/db/litdb.rb - LITDB database class
 #
-# Copyright::  Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::  Copyright (C) 2001 Toshiaki Katayama <k@bioruby.org>
 # License::    Ruby's
 #
-#  $Id: litdb.rb,v 0.8 2006/05/08 14:22:12 k Exp $
+# $Id: litdb.rb,v 0.9 2006/09/19 06:03:51 k Exp $
 #
 
 require 'bio/db'

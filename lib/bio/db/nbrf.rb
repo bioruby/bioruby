@@ -2,10 +2,10 @@
 # = bio/db/nbrf.rb - NBRF/PIR format sequence data class
 #
 # Copyright:: Copyright (C) 2001-2003,2006 Naohisa Goto <ng@bioruby.org>
-#             Copyright (C) 2001-2002 KATAYAMA Toshiaki <k@bioruby.org>
+#             Copyright (C) 2001-2002 Toshiaki Katayama <k@bioruby.org>
 # License::   Ruby's
 #
-#  $Id: nbrf.rb,v 1.8 2006/02/22 08:43:15 ngoto Exp $
+#  $Id: nbrf.rb,v 1.9 2006/09/19 06:03:51 k Exp $
 #
 # Sequence data class for NBRF/PIR flatfile format.
 #
