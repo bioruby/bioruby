@@ -1,24 +1,56 @@
 #
 # = bio/db/kegg/keggtab.rb - KEGG keggtab class
 #
-# Copyright::	Copyright (C) 2001 Mitsuteru C. Nakao <n@bioruby.org>
-# 		Copyright (C) 2003, 2006 KATAYAMA Toshiaki <k@bioruby.org>
-# License::	Ruby's
+# Copyright::  Copyright (C) 2001 Mitsuteru C. Nakao <n@bioruby.org>
+#              Copyright (C) 2003, 2006 Toshiaki Katayama <k@bioruby.org>
+# License::    Ruby's
 #
-#  $Id: keggtab.rb,v 1.8 2006/05/08 14:26:35 k Exp $
+#  $Id: keggtab.rb,v 1.9 2006/09/19 05:54:29 k Exp $
 #
 
 module Bio
 class KEGG
 
-# Parse 'keggtab' KEGG database definition file which also includes
-# Taxonomic category of the KEGG organisms.  The 'keggtab' file can
-# be found in
+# == Description
 #
-# * ((<URL:ftp://ftp.genome.jp/pub/kegg/tarfiles/genes.tar.gz>))
+# Parse 'keggtab' KEGG database definition file which also includes
+# Taxonomic category of the KEGG organisms.
+#
+# == References
+#
+# The 'keggtab' file is included in
+#
+# * ftp://ftp.genome.jp/pub/kegg/tarfiles/genes.tar.gz
+# * ftp://ftp.genome.jp/pub/kegg/tarfiles/genes.weekly.last.tar.Z
+#
+# == Format
+#
+# File format is something like
+# 
+#   # KEGGTAB
+#   #
+#   # name            type            directory                    abbreviation
+#   #
+#   enzyme            enzyme          $BIOROOT/db/ideas/ligand     ec
+#   ec                alias           enzyme
+#   (snip)
+#   # Human
+#   h.sapiens         genes           $BIOROOT/db/kegg/genes       hsa
+#   H.sapiens         alias           h.sapiens
+#   hsa               alias           h.sapiens
+#   (snip)
+#   #
+#   # Taxonomy
+#   #
+#   (snip)
+#   animals           alias           hsa+mmu+rno+dre+dme+cel
+#   eukaryotes        alias           animals+plants+protists+fungi
+#   genes             alias           eubacteria+archaea+eukaryotes
 #
 class Keggtab
 
+  # Path for keggtab file and optionally set bioroot top directory.
+  # Environmental variable BIOROOT overrides bioroot.
   def initialize(file_path, bioroot = nil)
     @bioroot = ENV['BIOROOT'] || bioroot
     @db_names = Hash.new
@@ -28,12 +60,16 @@ class Keggtab
       parse_keggtab(f.read)
     end
   end
-  attr_reader :bioroot, :db_names
+
+  # Returns a string of the BIOROOT path prefix.
+  attr_reader :bioroot
+  attr_reader :db_names
 
 
   # Bio::KEGG::Keggtab::DB
 
   class DB
+    # Create a container object for database definitions.
     def initialize(db_name, db_type, db_path, db_abbrev)
       @name = db_name
       @type = db_type
@@ -41,7 +77,19 @@ class Keggtab
       @abbrev = db_abbrev
       @aliases = Array.new
     end
-    attr_reader :name, :type, :path, :abbrev, :aliases
+    # Database name. (e.g. 'enzyme', 'h.sapies', 'e.coli', ...)
+    attr_reader :name
+    # Definition type. (e.g. 'enzyme', 'alias', 'genes', ...)
+    attr_reader :type
+    # Database flat file path. (e.g. '$BIOROOT/db/kegg/genes', ...)
+    attr_reader :path
+    # Short name for the database. (e.g. 'ec', 'hsa', 'eco', ...)
+    # korg and keggorg are alias for abbrev method.
+    attr_reader :abbrev
+    # Array containing all alias names for the database.
+    # (e.g. ["H.sapiens", "hsa"], ["E.coli", "eco"], ...)
+    attr_reader :aliases
+
     alias korg abbrev
     alias keggorg abbrev
   end
@@ -49,6 +97,8 @@ class Keggtab
 
   # DB section
 
+  # Returns a hash containing DB definition section of the keggtab file.
+  # If database name is given as an argument, returns a Keggtab::DB object.
   def database(db_abbrev = nil)
     if db_abbrev
       @database[db_abbrev]
@@ -57,18 +107,24 @@ class Keggtab
     end
   end
 
+  # Returns an Array containing all alias names for the database.
+  # (e.g. 'hsa' -> ["H.sapiens", "hsa"], 'hpj' -> ["H.pylori_J99", "hpj"])
   def aliases(db_abbrev)
     if @database[db_abbrev]
       @database[db_abbrev].aliases
     end
   end
 
+  # Returns a canonical database name for the abbreviation.
+  # (e.g. 'ec' -> 'enzyme',  'hsa' -> 'h.sapies', ...)
   def name(db_abbrev)
     if @database[db_abbrev]
       @database[db_abbrev].name
     end
   end
 
+  # Returns an absolute path for the flat file database.
+  # (e.g. '/bio/db/kegg/genes', ...)
   def path(db_abbrev)
     if @database[db_abbrev]
       file = @database[db_abbrev].name
@@ -81,12 +137,14 @@ class Keggtab
   end
 
 
+  # deprecated
   def alias_list(db_name)
     if @db_names[db_name]
       @db_names[db_name].aliases
     end
   end
 
+  # deprecated
   def db_path(db_name)
     if @bioroot
       "#{@db_names[db_name].path.sub(/\$BIOROOT/,@bioroot)}/#{db_name}"
@@ -95,6 +153,7 @@ class Keggtab
     end
   end
 
+  # deprecated
   def db_by_abbrev(db_abbrev)
     @db_names.each do |k, db|
       return db if db.abbrev == db_abbrev
@@ -102,10 +161,12 @@ class Keggtab
     return nil
   end
 
+  # deprecated
   def name_by_abbrev(db_abbrev)
     db_by_abbrev(db_abbrev).name
   end
 
+  # deprecated
   def db_path_by_abbrev(db_abbrev)
     db_name = name_by_abbrev(db_abbrev)
     db_path(db_name)
@@ -114,6 +175,10 @@ class Keggtab
 
   # Taxonomy section
 
+  # Returns a hash containing Taxonomy section of the keggtab file.
+  # If argument is given, returns a List of all child nodes belongs
+  # to the label node.
+  # (e.g. "eukaryotes" -> ["animals", "plants", "protists", "fungi"], ...)
   def taxonomy(node = nil)
     if node
       @taxonomy[node]
@@ -122,6 +187,8 @@ class Keggtab
     end
   end
 
+  # List of all node labels from Taxonomy section.
+  # (e.g. ["actinobacteria", "animals", "archaea", "bacillales", ...)
   def taxa_list
     @taxonomy.keys.sort
   end
@@ -130,6 +197,9 @@ class Keggtab
     return @taxonomy[node]
   end
 
+  # Returns an array of organism names included in the specified taxon
+  # label. (e.g. 'proteobeta' -> ["nme", "nma", "rso"])
+  # This method has taxo2keggorgs, taxon2korgs, and taxon2keggorgs aliases.
   def taxo2korgs(node = 'genes')
     if node.length == 3
       return node
@@ -149,6 +219,9 @@ class Keggtab
   alias taxon2korgs    taxo2korgs
   alias taxon2keggorgs taxo2korgs
 
+  # Returns an array of taxonomy names the organism belongs.
+  # (e.g. 'eco' -> ['proteogamma','proteobacteria','eubacteria','genes'])
+  # This method has aliases as keggorg2taxo, korg2taxonomy, keggorg2taxonomy.
   def korg2taxo(keggorg)
     tmp = Array.new
     traverse = Proc.new {|keggorg|
@@ -281,133 +354,4 @@ if __FILE__ == $0
 
 end
 
-
-
-=begin
-
-The keggtab file is included in
-
-  * ((URL:ftp://ftp.genome.jp/pub/kegg/tarfiles/genes.weekly.last.tar.Z>))
-
-File format is something like
-
-  # KEGGTAB
-  #
-  # name            type            directory                     abbreviation
-  #
-  enzyme            enzyme          $BIOROOT/db/ideas/ligand      ec
-  ec                alias           enzyme
-  (snip)
-  # Human
-  h.sapiens         genes           $BIOROOT/db/kegg/genes        hsa
-  H.sapiens         alias           h.sapiens
-  hsa               alias           h.sapiens
-  (snip)
-  #
-  # Taxonomy
-  #
-  (snip)
-  animals           alias           hsa+mmu+rno+dre+dme+cel
-  eukaryotes        alias           animals+plants+protists+fungi
-  genes             alias           eubacteria+archaea+eukaryotes
-
-= Bio::KEGG::Keggtab
-
---- Bio::KEGG::Keggtab.new(file_path, bioroot = nil)
-
-      Path for keggtab file and optionally set bioroot top directory.
-      Environmental variable BIOROOT overrides bioroot.
-
---- Bio::KEGG::Keggtab#database -> Hash
-
-      Returns a hash containing DB definition section of the keggtab file.
-
---- Bio::KEGG::Keggtab#database(db_abbrev) -> Keggtab::DB
-
-      Returns a Keggtab::DB object.
-
---- Bio::KEGG::Keggtab#taxonomy -> Hash
-
-      Returns a hash containing Taxonomy section of the keggtab file.
-
---- Bio::KEGG::Keggtab#taxonomy(node) -> Array
-
-      Returns a List of all child nodes belongs to the label node.
-      (e.g. "eukaryotes" -> ["animals", "plants", "protists", "fungi"], ...)
-
---- Bio::KEGG::Keggtab#bioroot -> String
-
-      Returns a string of the BIOROOT path prefix.
-
---- Bio::KEGG::Keggtab#name(db_abbrev) -> String
-
-      Returns a canonical database name for the abbreviation.
-      (e.g. 'ec' -> 'enzyme',  'hsa' -> 'h.sapies', ...)
-
---- Bio::KEGG::Keggtab#aliases(db_abbrev) -> Array
-
-      Returns an Array containing all alias names for the database.
-      (e.g. 'hsa' -> ["H.sapiens", "hsa"], 'hpj' -> ["H.pylori_J99", "hpj"])
-
---- Bio::KEGG::Keggtab#path(db_abbrev) -> String
-
-      Returns an absolute path for the flat file database.
-      (e.g. '/bio/db/kegg/genes', ...)
-
---- Bio::KEGG::Keggtab#taxa_list -> Array
-
-      List of all node labels from Taxonomy section.
-      (e.g. ["actinobacteria", "animals", "archaea", "bacillales", ...)
-
---- Bio::KEGG::Keggtab#taxo2korgs(taxon) -> Array
-
-      Returns an array of organism names included in the specified taxon
-      label. (e.g. 'proteobeta' -> ["nme", "nma", "rso"])
-      This method has taxo2keggorgs, taxon2korgs, and taxon2keggorgs aliases.
-
---- Bio::KEGG::Keggtab#korg2taxo(keggorg) -> Array
-
-      Returns an array of taxonomy names the organism belongs.
-      (e.g. 'eco' -> ['proteogamma','proteobacteria','eubacteria','genes'])
-      This method has aliases as keggorg2taxo, korg2taxonomy, keggorg2taxonomy.
-
-* following methods are deprecated
-
---- Bio::KEGG::Keggtab#db_names[db_name] -> Keggtab::DB
---- Bio::KEGG::Keggtab#db_by_abbrev(db_abbrev) -> Keggtab::DB
---- Bio::KEGG::Keggtab#alias_list(db_name) -> Array
---- Bio::KEGG::Keggtab#name_by_abbrev(db_abbrev) -> String
---- Bio::KEGG::Keggtab#db_path(db_name) -> String
---- Bio::KEGG::Keggtab#db_path_by_abbrev(keggorg) -> String
-
-
-== Bio::KEGG::Keggtab::DB
-
---- Bio::KEGG::Keggtab::DB.new(db_name, db_type, db_path, db_abbrev)
-
-      Create a container object for database definitions.
-
---- Bio::KEGG::Keggtab::DB#name -> String
-
-      Database name. (e.g. 'enzyme', 'h.sapies', 'e.coli', ...)
-
---- Bio::KEGG::Keggtab::DB#type -> String
-
-      Definition type. (e.g. 'enzyme', 'alias', 'genes', ...)
-
---- Bio::KEGG::Keggtab::DB#path -> String
-
-      Database flat file path. (e.g. '$BIOROOT/db/kegg/genes', ...)
-
---- Bio::KEGG::Keggtab::DB#abbrev -> String
-
-      Short name for the database. (e.g. 'ec', 'hsa', 'eco', ...)
-      korg and keggorg are alias for abbrev method.
-
---- Bio::KEGG::Keggtab::DB#aliases -> Array
-
-      Array containing all alias names for the database.
-      (e.g. ["H.sapiens", "hsa"], ["E.coli", "eco"], ...)
-
-=end
 
