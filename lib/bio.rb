@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: bio.rb,v 1.69 2006/07/14 14:27:10 ngoto Exp $
+# $Id: bio.rb,v 1.70 2006/09/19 05:41:45 k Exp $
 #
 
 module Bio
@@ -120,6 +120,7 @@ module Bio
   autoload :Registry,       'bio/io/registry'
   autoload :Fetch,          'bio/io/fetch'
   autoload :SQL,            'bio/io/sql'
+  autoload :SOAPWSDL,       'bio/io/soapwsdl'
   autoload :FlatFile,       'bio/io/flatfile'
   autoload :FlatFileIndex,  'bio/io/flatfile/index' # chage to FlatFile::Index ?
   ## below are described in bio/io/flatfile/index.rb
@@ -154,7 +155,13 @@ module Bio
     autoload :HiGet,        'bio/io/higet'
   end
 
-# autoload :ESOAP,          'bio/io/esoap'      # NCBI::ESOAP ?
+  class EBI
+    autoload :SOAP,         'bio/io/ebisoap'
+  end
+
+  class NCBI
+    autoload :SOAP,       'bio/io/ncbisoap'
+  end
 
 
   ### Applications
