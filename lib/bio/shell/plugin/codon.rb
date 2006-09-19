@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: codon.rb,v 1.13 2006/02/09 20:48:53 k Exp $
+# $Id: codon.rb,v 1.14 2006/09/19 06:17:19 k Exp $
 #
 
 module Bio::Shell
@@ -52,7 +52,7 @@ module Bio::Shell
     def generate_mono_text
       @table.each do |codon, aa|
         if aa == '*'
-          code = "STOP"
+          code = 'STOP'
           aa = '' unless @cuhash
         else
           code = @aacode[aa]
@@ -78,11 +78,19 @@ module Bio::Shell
         property, = @@properties.detect {|key, list| list.include?(aa)}
 
         if aa == '*'
-          color_code = "#{@colors[:stop]}STOP"
           if @cuhash
+            color_code = "#{@colors[:stop]}STOP"
             color_aa = "#{@colors[:stop]}#{aa}"
           else
-            color_aa = ''
+            color_code = "#{@colors[:stop]}STP"
+            case codon
+            when 'tga'
+              color_aa = "#{@colors[:text]}U"
+            when 'tag'
+              color_aa = "#{@colors[:text]}O"
+            else
+              color_aa = "#{@colors[:text]}*"
+            end
           end
         else
           color_code = "#{@colors[property]}#{@aacode[aa]}"
