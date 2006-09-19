@@ -7,32 +7,30 @@ module Bio
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: psort.rb,v 1.11 2006/07/25 18:41:23 k Exp $
-#
-# == A client for PSORT WWW Server 
-#
-# A client for PSORT WWW Server for predicting protein subcellular 
-# localization.
-#
-# PSORT family members,
-# 1. PSORT
-# 2. PSORT II
-# 3. iPSORT
-# 4. PSORT-B  http://psort.org
-# 5. WoLF-PSORT
-#
-# See http://psort.ims.u-tokyo.ac.jp.
-#
-# === Example
-#
+# $Id: psort.rb,v 1.12 2006/09/19 06:30:42 k Exp $
 #
 
 require 'bio/appl/psort/report'
 autoload :FastaFormat, 'bio/db/fasta'
 autoload :Command, 'bio/command'
 require 'cgi'
+require 'uri'
 
-
+  # == A client for PSORT WWW Server 
+  #
+  # A client for PSORT WWW Server for predicting protein subcellular 
+  # localization.
+  #
+  # PSORT family members,
+  # 1. PSORT
+  # 2. PSORT II
+  # 3. iPSORT
+  # 4. PSORT-B  http://psort.org
+  # 5. WoLF-PSORT
+  #
+  # == References
+  #
+  # * http://psort.hgc.jp/
   #
   class PSORT
 
