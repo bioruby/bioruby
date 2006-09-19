@@ -1,11 +1,11 @@
 #
 # = bio/db.rb - common API for database parsers
 #
-# Copyright::	Copyright (C) 2001, 2002, 2005
-#		KATAYAMA Toshiaki <k@bioruby.org>
-# License::	Ruby's
+# Copyright::  Copyright (C) 2001, 2002, 2005
+#              Toshiaki Katayama <k@bioruby.org>
+# License::    Ruby's
 #
-# $Id: db.rb,v 0.34 2006/02/27 09:13:08 k Exp $
+# $Id: db.rb,v 0.35 2006/09/19 06:14:18 k Exp $
 #
 # == On-demand parsing and cache
 #

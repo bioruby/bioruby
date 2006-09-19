@@ -1,11 +1,12 @@
 #
 # = bio/appl/blast/format0.rb - BLAST default output (-m 0) parser
 # 
-# Author:: Naohisa GOTO
-# Copyright:: Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
-# License:: Ruby's
+# Copyright::  Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
+# License::    Ruby's
 #
-#  $Id: format0.rb,v 1.18 2006/04/30 05:47:59 ngoto Exp $
+# $Id: format0.rb,v 1.19 2006/09/19 06:12:37 k Exp $
+#
+# == Description
 #
 # NCBI BLAST default (-m 0 option) output parser.
 #

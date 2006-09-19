@@ -1,19 +1,22 @@
 #
 # = bio/appl/blast/wublast.rb - WU-BLAST default output parser
 # 
-# Copyright:: Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
-# License:: Ruby's
+# Copyright::  Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
+# License::    Ruby's
 #
-#  $Id: wublast.rb,v 1.7 2006/04/30 05:47:25 ngoto Exp $
+# $Id: wublast.rb,v 1.8 2006/09/19 06:12:37 k Exp $
 #
-#  WU-BLAST default output parser.
+# == Description
 #
-#  The parser is still incomplete and may contain many bugs,
-#  because I didn't have WU-BLAST license.
-#  It was tested under web-based WU-BLAST results and
-#  obsolete version downloaded from http://blast.wustl.edu/ .
+# WU-BLAST default output parser.
 #
-# = References
+# The parser is still incomplete and may contain many bugs,
+# because I didn't have WU-BLAST license.
+# It was tested under web-based WU-BLAST results and
+# obsolete version downloaded from http://blast.wustl.edu/ .
+#
+# == References
+#
 # * http://blast.wustl.edu/
 # * http://www.ebi.ac.uk/blast2/
 #

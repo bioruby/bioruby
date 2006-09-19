@@ -1,13 +1,13 @@
 #
 # = bio/appl/blast/xmlparser.rb - BLAST XML output (-m 7) parser by XMLParser
 # 
-# Copyright::    Copyright (C) 2001 
-#                Mitsuteru C. Nakao <n@bioruby.org>
-# Copyright::    Copyright (C) 2003 
-#                KATAYAMA Toshiaki <k@bioruby.org>
-# Lisence::      Ruby's
+# Copyright::  Copyright (C) 2001 
+#              Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::  Copyright (C) 2003 
+#              Toshiaki Katayama <k@bioruby.org>
+# Lisence::    Ruby's
 #
-# $Id: xmlparser.rb,v 1.14 2006/04/30 07:11:28 nakao Exp $
+# $Id: xmlparser.rb,v 1.15 2006/09/19 06:12:37 k Exp $
 #
 # == Description
 # 
@@ -17,16 +17,6 @@
 #
 # BioRuby provides two implements of the paser for the blast XML format report
 # (format 7) based on the XMLParser and the REXML.
-#
-# == Examples
-#
-# == References
-#
-# * Blast
-#   http://
-#
-# * XMLParser
-#   http://
 #
 
 begin
