@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: seq.rb,v 1.17 2006/02/09 20:48:53 k Exp $
+# $Id: seq.rb,v 1.18 2006/09/19 06:20:38 k Exp $
 #
 
 module Bio::Shell
@@ -38,6 +38,15 @@ module Bio::Shell
     end
     html += "</div>\n"
     return html
+  end
+
+
+  def sixtrans(str)
+    seq = seq(str)
+    [ 1, 2, 3, -1, -2, -3 ].each do |frame|
+      title = "Translation #{frame.to_s.rjust(2)}"
+      puts seq.translate(frame).to_fasta(title, 60)
+    end
   end
 
 
@@ -150,6 +159,24 @@ end
 
 
 class String
+
+  def step(window_size)
+    i = 0
+    0.step(self.length - window_size, window_size) do |i|
+      yield self[i, window_size]
+    end
+    yield self[i + window_size .. -1] if i + window_size < self.length
+  end
+
+  def skip(window_size, step_size = 1)
+    i = 0
+    0.step(self.length - window_size, step_size) do |i|
+      yield [self[i, window_size], i + 1, i + window_size]
+    end
+    from = i + step_size
+    to  = [self.length, i + step_size + window_size].min
+    yield [self[from, window_size], from + 1, to] if from + 1 <= to
+  end
 
   def to_naseq
     Bio::Sequence::NA.new(self)
