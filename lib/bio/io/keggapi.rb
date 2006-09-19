@@ -1,23 +1,10 @@
 #
-# bio/io/keggapi.rb - KEGG API access class
+# = bio/io/keggapi.rb - KEGG API access class
 #
-#   Copyright (C) 2003, 2004 KATAYAMA Toshiaki <k@bioruby.org>
+# Copyright::  Copyright (C) 2003, 2004 Toshiaki Katayama <k@bioruby.org>
+# License::    Ruby's
 #
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#  $Id: keggapi.rb,v 1.12 2006/07/14 14:48:56 ngoto Exp $
+# $Id: keggapi.rb,v 1.13 2006/09/19 05:45:48 k Exp $
 #
 
 require 'bio/io/soapwsdl'
@@ -28,10 +15,184 @@ require 'bio/command'
 module Bio
 class KEGG
 
+# == Description
+#
+# KEGG API is a web service to use KEGG system via SOAP/WSDL.
+#
+# == References
+#
+# For more informations on KEGG API, see the following site and read the
+# reference manual.
+#
+# * http://www.genome.jp/kegg/soap/
+# * http://www.genome.jp/kegg/soap/doc/keggapi_manual.html
+#
+# == List of methods
+#
+# As of KEGG API v5.0
+#
+# * list_databases
+# * list_organisms
+# * list_pathways(org)
+# * binfo(string)
+# * bget(string)
+# * bfind(string)
+# * btit(string)
+# * get_linkdb_by_entry(entry_id, db, start, max_results)
+# * get_best_best_neighbors_by_gene(genes_id, start, max_results)
+# * get_best_neighbors_by_gene(genes_id, start, max_results)
+# * get_reverse_best_neighbors_by_gene(genes_id, start, max_results)
+# * get_paralogs_by_gene(genes_id, start, max_results)
+# * get_similarity_between_genes(genes_id1, genes_id2)
+# * get_motifs_by_gene(genes_id, db)
+# * get_genes_by_motifs(motif_id_list, start, max_results)
+# * get_ko_by_gene(genes_id)
+# * get_ko_members(ko_id)
+# * get_oc_members_by_gene(genes_id, start, max_results)
+# * get_pc_members_by_gene(genes_id, start, max_results)
+# * mark_pathway_by_objects(pathway_id, object_id_list)
+# * color_pathway_by_objects(pathway_id, object_id_list, fg_color_list, bg_color_list)
+# * get_genes_by_pathway(pathway_id)
+# * get_enzymes_by_pathway(pathway_id)
+# * get_compounds_by_pathway(pathway_id)
+# * get_reactions_by_pathway(pathway_id)
+# * get_pathways_by_genes(genes_id_list)
+# * get_pathways_by_enzymes(enzyme_id_list)
+# * get_pathways_by_compounds(compound_id_list)
+# * get_pathways_by_reactions(reaction_id_list)
+# * get_linked_pathways(pathway_id)
+# * get_genes_by_enzyme(enzyme_id, org)
+# * get_enzymes_by_gene(genes_id)
+# * get_enzymes_by_compound(compound_id)
+# * get_enzymes_by_reaction(reaction_id)
+# * get_compounds_by_enzyme(enzyme_id)
+# * get_compounds_by_reaction(reaction_id)
+# * get_reactions_by_enzyme(enzyme_id)
+# * get_reactions_by_compound(compound_id)
+# * get_genes_by_organism(org, start, max_results)
+# * get_number_of_genes_by_organism(org)                             
+#
+# == KEGG API methods implemented only in BioRuby
+# 
+# In BioRuby, returned values are added filter method to pick up
+# values in a complex data type as an array.
+# 
+#   #!/usr/bin/env ruby
+# 
+#   require 'bio'
+# 
+#   serv = Bio::KEGG::API.new
+#   results = serv.get_best_neighbors_by_gene("eco:b0002", "bsu")
+# 
+#   # case 0 : without filter
+#   results.each do |hit|
+#     print hit.genes_id1, "\t", hit.genes_id2, "\t", hit.sw_score, "\n"
+#   end
+# 
+#   # case 1 : select gene names and SW score only
+#   fields = [:genes_id1, :genes_id2, :sw_score]
+#   results.each do |hit|
+#     puts hit.filter(fields).join("\t")
+#   end
+#   
+#   # case 2 : also uses aligned position in each amino acid sequence etc.
+#   fields1 = [:genes_id1, :start_position1, :end_position1, :best_flag_1to2]
+#   fields2 = [:genes_id2, :start_position2, :end_position2, :best_flag_2to1]
+#   results.each do |hit|
+#     print "> score: ", hit.sw_score, ", identity: ", hit.identity, "\n"
+#     print "1:\t", hit.filter(fields1).join("\t"), "\n"
+#     print "2:\t", hit.filter(fields2).join("\t"), "\n"
+#   end
+# 
+# Using filter method will make it easy to change fields to select and
+# keep the script clean.
+# 
+# * Bio::KEGG::API#get_all_neighbors_by_gene(genes_id, org)
+# * Bio::KEGG::API#get_all_best_best_neighbors_by_gene(genes_id)
+# * Bio::KEGG::API#get_all_best_neighbors_by_gene(genes_id)
+# * Bio::KEGG::API#get_all_reverse_best_neighbors_by_gene(genes_id)
+# * Bio::KEGG::API#get_all_paralogs_by_gene(genes_id)
+# * Bio::KEGG::API#get_all_genes_by_motifs(motif_id_list)
+# * Bio::KEGG::API#get_all_oc_members_by_gene(genes_id)
+# * Bio::KEGG::API#get_all_pc_members_by_gene(genes_id)
+# * Bio::KEGG::API#get_all_genes_by_organism(org)
+# 
+# These methods are wrapper for the methods without _all_ in its name
+# and internally iterate to retrive all the results using start/max_results
+# value pairs described above.  For example,
+# 
+#   #!/usr/bin/env ruby
+#   
+#   require 'soap/wsdlDriver'
+#   
+#   wsdl = "http://soap.genome.jp/KEGG.wsdl"
+#   serv = SOAP::WSDLDriverFactory.new(wsdl).create_driver
+#   serv.generate_explicit_type = true
+#   
+#   start = 1
+#   max_results = 100
+#   
+#   loop do
+#     results = serv.get_best_neighbors_by_gene('eco:b0002', start, max_results)
+#     break unless results	# when no more results returned
+#     results.each do |hit|
+#       print hit.genes_id1, "\t", hit.genes_id2, "\t", hit.sw_score, "\n"
+#     end
+#     start += max_results
+#   end
+# 
+# can be witten as
+# 
+#   #!/usr/bin/env ruby
+#   
+#   require 'bio'
+#   
+#   serv = Bio::KEGG::API.new
+#   
+#   results = serv.get_all_best_neighbors_by_gene('eco:b0002')
+#   results.each do |hit|
+#     print hit.genes_id1, "\t", hit.genes_id2, "\t", hit.sw_score, "\n"
+#   end
+# 
+# 
+# * Bio::KEGG::API#save_image(url, filename = nil)
+# 
+# Some methods of the KEGG API will return a URL of the generated image.
+# This method save an image specified by the URL.  The filename can be
+# specified by its second argument, otherwise basename of the URL will
+# be used.
+# 
+#   #!/usr/bin/env ruby
+#   
+#   require 'bio'
+#   
+#   serv = Bio::KEGG::API.new("http://soap.genome.jp/v3.0/KEGG.wsdl")
+#   
+#   list = ["eco:b1002", "eco:b2388"]
+#   url = serv.mark_pathway_by_objects("path:eco00010", list)
+#   
+#   # Save with the original filename (eco00010.gif in this case)
+#   serv.save_image(url)
+# 
+#   # or save as "save_image.gif"
+#   serv.save_image(url, "save_image.gif")
+# 
+# * Bio::KEGG::API#get_entries(entry_id_list)
+# * Bio::KEGG::API#get_aaseqs(entry_id_list)
+# * Bio::KEGG::API#get_naseqs(entry_id_list)
+# * Bio::KEGG::API#get_definitions(entry_id_list)
+# 
+# These methods are for the shortcut and backward compatibility
+# (these methods existed in the older version of the KEGG API).
+# 
 class API < Bio::SOAPWSDL
 
   SERVER_URI = "http://soap.genome.jp/KEGG.wsdl"
 
+  # Connect to the KEGG API's SOAP server.  A WSDL file will be automatically
+  # downloaded and parsed to generate the SOAP client driver.  The default URL
+  # for the WSDL is http://soap.genome.jp/KEGG.wsdl but it can be changed by
+  # the argument or by wsdl= method.
   def initialize(wsdl = nil)
     @wsdl = wsdl || SERVER_URI
     @log = nil
@@ -39,7 +200,17 @@ class API < Bio::SOAPWSDL
     @max_results = 100
     create_driver
   end
-  attr_accessor :start, :max_results
+
+  # Returns current value for the 'start' count for the methods having 
+  # start/max_results argument pairs or changes the default value for
+  # the 'start' count.
+  attr_accessor :start
+
+  # Returns current value for the 'max_results' number for the methods having 
+  # start/max_results argument pairs or changes the default value for the
+  # 'max_results' count. If your request timeouts, try smaller value for
+  # the max_results.
+  attr_accessor :max_results
 
   def method_missing(*arg)
     begin
@@ -50,6 +221,7 @@ class API < Bio::SOAPWSDL
     results = add_filter(results)
     return results
   end
+
 
 # def get_all_neighbors_by_gene(genes_id, org)
 #   get_all(:get_neighbors_by_gene, genes_id, org)
@@ -201,7 +373,7 @@ if __FILE__ == $0
   serv = Bio::KEGG::API.new
 # serv.log = STDERR
 
-  puts "--- parameters"
+  puts "# * parameters"
   puts "        wsdl : #{serv.wsdl}"
   puts "         log : #{serv.log}"
   puts "       start : #{serv.start}"
@@ -253,19 +425,19 @@ if __FILE__ == $0
   puts "### btit('eco:b0002 eco:b0003')"
   puts serv.btit("eco:b0002 eco:b0003")
 
-  puts "--- get_entries(['eco:b0002', 'eco:b0003'])"
+  puts "# * get_entries(['eco:b0002', 'eco:b0003'])"
   puts serv.get_entries(["eco:b0002", "eco:b0003"])
 
-  puts "--- get_aaseqs(['eco:b0002', 'eco:b0003'])"
+  puts "# * get_aaseqs(['eco:b0002', 'eco:b0003'])"
   puts serv.get_aaseqs(["eco:b0002", "eco:b0003"])
 
-  puts "--- get_naseqs(['eco:b0002', 'eco:b0003'])"
+  puts "# * get_naseqs(['eco:b0002', 'eco:b0003'])"
   puts serv.get_naseqs(["eco:b0002", "eco:b0003"])
 
-  puts "--- get_definitions(['eco:b0002', 'eco:b0003'])"
+  puts "# * get_definitions(['eco:b0002', 'eco:b0003'])"
   puts serv.get_definitions(["eco:b0002", "eco:b0003"])
 
-  puts "--- get_definitions(('eco:b0001'..'eco:b0200').to_a)"
+  puts "# * get_definitions(('eco:b0001'..'eco:b0200').to_a)"
   puts serv.get_definitions(("eco:b0001".."eco:b0200").to_a)
 
   puts "=== LinkDB"
@@ -276,7 +448,7 @@ if __FILE__ == $0
     puts [ link.entry_id1, link.entry_id2, link.type, link.path ].join("\t")
   end
 
-  puts "--- get_all_linkdb_by_entry('eco:b0002', 'pathway')"
+  puts "# * get_all_linkdb_by_entry('eco:b0002', 'pathway')"
   list = serv.get_all_linkdb_by_entry("eco:b0002", "pathway")
   list.each do |link|
     puts [ link.entry_id1, link.entry_id2, link.type, link.path ].join("\t")
@@ -290,7 +462,7 @@ if __FILE__ == $0
     puts [ hit.genes_id1, hit.genes_id2, hit.sw_score ].join("\t")
   end
 
-  puts "--- get_all_neighbors_by_gene('eco:b0002', 'bsu')"
+  puts "# * get_all_neighbors_by_gene('eco:b0002', 'bsu')"
   list = serv.get_all_neighbors_by_gene("eco:b0002", "bsu")
   list.each do |hit|
     puts [ hit.genes_id1, hit.genes_id2, hit.sw_score ].join("\t")
@@ -302,7 +474,7 @@ if __FILE__ == $0
     puts [ hit.genes_id1, hit.genes_id2, hit.sw_score ].join("\t")
   end
 
-  puts "--- get_all_best_best_neighbors_by_gene('eco:b0002')"
+  puts "# * get_all_best_best_neighbors_by_gene('eco:b0002')"
   list = serv.get_all_best_best_neighbors_by_gene("eco:b0002")
   list.each do |hit|
     puts [ hit.genes_id1, hit.genes_id2, hit.sw_score ].join("\t")
@@ -314,7 +486,7 @@ if __FILE__ == $0
     puts [ hit.genes_id1, hit.genes_id2, hit.sw_score ].join("\t")
   end
 
-  puts "--- get_all_best_neighbors_by_gene('eco:b0002')"
+  puts "# * get_all_best_neighbors_by_gene('eco:b0002')"
   list = serv.get_all_best_neighbors_by_gene("eco:b0002")
   list.each do |hit|
     puts [ hit.genes_id1, hit.genes_id2, hit.sw_score ].join("\t")
@@ -326,7 +498,7 @@ if __FILE__ == $0
     puts [ hit.genes_id1, hit.genes_id2, hit.sw_score ].join("\t")
   end
 
-  puts "--- get_all_reverse_best_neighbors_by_gene('eco:b0002')"
+  puts "# * get_all_reverse_best_neighbors_by_gene('eco:b0002')"
   list = serv.get_all_reverse_best_neighbors_by_gene("eco:b0002")
   list.each do |hit|
     puts [ hit.genes_id1, hit.genes_id2, hit.sw_score ].join("\t")
@@ -338,7 +510,7 @@ if __FILE__ == $0
     puts [ hit.genes_id1, hit.genes_id2, hit.sw_score ].join("\t")
   end
 
-  puts "--- get_all_paralogs_by_gene('eco:b0002')"
+  puts "# * get_all_paralogs_by_gene('eco:b0002')"
   list = serv.get_all_paralogs_by_gene("eco:b0002")
   list.each do |hit|
     puts [ hit.genes_id1, hit.genes_id2, hit.sw_score ].join("\t")
@@ -392,7 +564,7 @@ if __FILE__ == $0
   puts "### get_motifs_by_gene('eco:b0002', 'all')"
   list = serv.get_motifs_by_gene("eco:b0002", "all")
   list.each do |motif|
-    puts "--- motif result"
+    puts "# * motif result"
     puts "       motif_id : #{motif.motif_id}"
     puts "     definition : #{motif.definition}"
     puts "       genes_id : #{motif.genes_id}"
@@ -408,7 +580,7 @@ if __FILE__ == $0
     puts [ gene.entry_id, gene.definition ].join("\t")
   end
 
-  puts "--- get_all_genes_by_motifs(['pf:ACT', 'ps:ASPARTOKINASE'])"
+  puts "# * get_all_genes_by_motifs(['pf:ACT', 'ps:ASPARTOKINASE'])"
   list = serv.get_all_genes_by_motifs(["pf:ACT", "ps:ASPARTOKINASE"])
   list.each do |gene|
     puts [ gene.entry_id, gene.definition ].join("\t")
@@ -434,7 +606,7 @@ if __FILE__ == $0
     puts gene
   end
 
-  puts "--- get_all_oc_members_by_gene('eco:b0002')"
+  puts "# * get_all_oc_members_by_gene('eco:b0002')"
   list = serv.get_all_oc_members_by_gene("eco:b0002")
   list.each do |gene|
     puts gene
@@ -446,7 +618,7 @@ if __FILE__ == $0
     puts gene
   end
 
-  puts "--- get_all_pc_members_by_gene('eco:b0002')"
+  puts "# * get_all_pc_members_by_gene('eco:b0002')"
   list = serv.get_all_pc_members_by_gene("eco:b0002")
   list.each do |gene|
     puts gene
@@ -472,7 +644,7 @@ if __FILE__ == $0
   url = serv.color_pathway_by_objects("path:eco00053", obj_list, fg_list, bg_list)
   puts url
 
-  #puts "--- save_image(#{url})"
+  #puts "# * save_image(#{url})"
   #filename = serv.save_image(url, "test.gif")
   #filename = serv.save_image(url)
   #puts filename
@@ -617,7 +789,7 @@ if __FILE__ == $0
     puts gene
   end
 
-  puts "--- get_all_genes_by_organism('mge')"
+  puts "# * get_all_genes_by_organism('mge')"
   list = serv.get_all_genes_by_organism("mge")
   list.each do |gene|
     puts gene
@@ -629,236 +801,4 @@ if __FILE__ == $0
   puts serv.get_number_of_genes_by_organism("mge")
 
 end
-
-
-=begin
-
-= Bio::KEGG::API
-
-KEGG API is a web service to use KEGG system via SOAP/WSDL.  For more
-informations on KEGG API, see the following site and its reference manual.
-
-  * ((<URL:http://www.genome.jp/kegg/soap/>))
-
---- Bio::KEGG::API.new(wsdl = nil)
-
-Connect to the KEGG API's SOAP server.  A WSDL file will be automatically
-downloaded and parsed to generate the SOAP client driver.  The default URL
-for the WSDL is http://soap.genome.jp/KEGG.wsdl but it can be changed by
-the argument or by wsdl= method.
-
---- Bio::KEGG::API#wsdl
-
-Returns URL of the current WSDL file.
-
---- Bio::KEGG::API#wsdl=(url)
-
-Change the URL for WSDL file of the KEGG API if needed for some reason:
-
-  serv = Bio::KEGG::API.new("http://133.103.100.186/KEGG.wsdl")
-
-or
-
-  serv = Bio::KEGG::API.new
-  serv.wsdl = "http://133.103.100.186/KEGG.wsdl"
-
-note that both can't read two or more different WSDL files.
-
---- Bio::KEGG::API#log
-
-Returns current logging IO.
-
---- Bio::KEGG::API#log=(io)
-
-Change the IO for logging.  The argument is passed to wiredump_dev method
-of the SOAP4R, thus
-
-  serv = Bio::KEGG::API.new
-  serv.log = STDERR
-
-will print all the SOAP transactions in standard error.
-This feature is especially useful for debug.
-
---- Bio::KEGG::API#start
-
-Returns current value for the 'start' count for the methods having 
-start/max_results argument pairs.
-
---- Bio::KEGG::API#start=(number)
-
-Changes the default value for the 'start' count.
-
---- Bio::KEGG::API#max_results
-
-Returns current value for the 'max_results' number for the methods having 
-start/max_results argument pairs.
-
---- Bio::KEGG::API#max_results=(number)
-
-Changes the default value for the 'max_results' count.
-If your request timeouts, try smaller value for the max_results.
-
-=== KEGG API methods implemented only in BioRuby
-
-In BioRuby, returned values are added filter method to pick up
-values in a complex data type as an array.
-
-  #!/usr/bin/env ruby
-
-  require 'bio'
-
-  serv = Bio::KEGG::API.new
-  results = serv.get_best_neighbors_by_gene("eco:b0002", "bsu")
-
-  # case 0 : without filter
-  results.each do |hit|
-    print hit.genes_id1, "\t", hit.genes_id2, "\t", hit.sw_score, "\n"
-  end
-
-  # case 1 : select gene names and SW score only
-  fields = [:genes_id1, :genes_id2, :sw_score]
-  results.each do |hit|
-    puts hit.filter(fields).join("\t")
-  end
-  
-  # case 2 : also uses aligned position in each amino acid sequence etc.
-  fields1 = [:genes_id1, :start_position1, :end_position1, :best_flag_1to2]
-  fields2 = [:genes_id2, :start_position2, :end_position2, :best_flag_2to1]
-  results.each do |hit|
-    print "> score: ", hit.sw_score, ", identity: ", hit.identity, "\n"
-    print "1:\t", hit.filter(fields1).join("\t"), "\n"
-    print "2:\t", hit.filter(fields2).join("\t"), "\n"
-  end
-
-Using filter method will make it easy to change fields to select and
-keep the script clean.
-
-
---- Bio::KEGG::API#get_all_neighbors_by_gene(genes_id, org)
---- Bio::KEGG::API#get_all_best_best_neighbors_by_gene(genes_id)
---- Bio::KEGG::API#get_all_best_neighbors_by_gene(genes_id)
---- Bio::KEGG::API#get_all_reverse_best_neighbors_by_gene(genes_id)
---- Bio::KEGG::API#get_all_paralogs_by_gene(genes_id)
---- Bio::KEGG::API#get_all_genes_by_motifs(motif_id_list)
---- Bio::KEGG::API#get_all_oc_members_by_gene(genes_id)
---- Bio::KEGG::API#get_all_pc_members_by_gene(genes_id)
---- Bio::KEGG::API#get_all_genes_by_organism(org)
-
-These methods are wrapper for the methods without _all_ in its name
-and internally iterate to retrive all the results using start/max_results
-value pairs described above.  For example,
-
-  #!/usr/bin/env ruby
-  
-  require 'soap/wsdlDriver'
-  
-  wsdl = "http://soap.genome.jp/KEGG.wsdl"
-  serv = SOAP::WSDLDriverFactory.new(wsdl).create_driver
-  serv.generate_explicit_type = true
-  
-  start = 1
-  max_results = 100
-  
-  loop do
-    results = serv.get_best_neighbors_by_gene('eco:b0002', start, max_results)
-    break unless results	# when no more results returned
-    results.each do |hit|
-      print hit.genes_id1, "\t", hit.genes_id2, "\t", hit.sw_score, "\n"
-    end
-    start += max_results
-  end
-
-can be witten as
-
-  #!/usr/bin/env ruby
-  
-  require 'bio'
-  
-  serv = Bio::KEGG::API.new
-  
-  results = serv.get_all_best_neighbors_by_gene('eco:b0002')
-  results.each do |hit|
-    print hit.genes_id1, "\t", hit.genes_id2, "\t", hit.sw_score, "\n"
-  end
-
-
---- Bio::KEGG::API#save_image(url, filename = nil)
-
-Some methods of the KEGG API will return a URL of the generated image.
-This method save an image specified by the URL.  The filename can be
-specified by its second argument, otherwise basename of the URL will
-be used.
-
-  #!/usr/bin/env ruby
-  
-  require 'bio'
-  
-  serv = Bio::KEGG::API.new("http://soap.genome.jp/v3.0/KEGG.wsdl")
-  
-  list = ["eco:b1002", "eco:b2388"]
-  url = serv.mark_pathway_by_objects("path:eco00010", list)
-  
-  # Save with the original filename (eco00010.gif in this case)
-  serv.save_image(url)
-
-  # or save as "save_image.gif"
-  serv.save_image(url, "save_image.gif")
-
---- Bio::KEGG::API#get_entries(entry_id_list)
---- Bio::KEGG::API#get_aaseqs(entry_id_list)
---- Bio::KEGG::API#get_naseqs(entry_id_list)
---- Bio::KEGG::API#get_definitions(entry_id_list)
-
-For the shortcut and backward compatibility.
-
-
-=== General KEGG API methods
-
-For the methods listed below, consult the KEGG API manual at
-
-  * ((<URL:http://www.genome.jp/kegg/soap/doc/keggapi_manual.html>))
-
---- list_databases
---- list_organisms
---- list_pathways(org)
---- binfo(string)
---- bget(string)
---- bfind(string)
---- btit(string)
---- get_linkdb_by_entry(entry_id, db, start, max_results)
-#--- get_neighbors_by_gene(genes_id, org, start, max_results)
---- get_best_best_neighbors_by_gene(genes_id, start, max_results)
---- get_best_neighbors_by_gene(genes_id, start, max_results)
---- get_reverse_best_neighbors_by_gene(genes_id, start, max_results)
---- get_paralogs_by_gene(genes_id, start, max_results)
---- get_similarity_between_genes(genes_id1, genes_id2)
---- get_motifs_by_gene(genes_id, db)
---- get_genes_by_motifs(motif_id_list, start, max_results)
---- get_ko_by_gene(genes_id)
---- get_ko_members(ko_id)
---- get_oc_members_by_gene(genes_id, start, max_results)
---- get_pc_members_by_gene(genes_id, start, max_results)
---- mark_pathway_by_objects(pathway_id, object_id_list)
---- color_pathway_by_objects(pathway_id, object_id_list, fg_color_list, bg_color_list)
---- get_genes_by_pathway(pathway_id)
---- get_enzymes_by_pathway(pathway_id)
---- get_compounds_by_pathway(pathway_id)
---- get_reactions_by_pathway(pathway_id)
---- get_pathways_by_genes(genes_id_list)
---- get_pathways_by_enzymes(enzyme_id_list)
---- get_pathways_by_compounds(compound_id_list)
---- get_pathways_by_reactions(reaction_id_list)
---- get_linked_pathways(pathway_id)
---- get_genes_by_enzyme(enzyme_id, org)
---- get_enzymes_by_gene(genes_id)
---- get_enzymes_by_compound(compound_id)
---- get_enzymes_by_reaction(reaction_id)
---- get_compounds_by_enzyme(enzyme_id)
---- get_compounds_by_reaction(reaction_id)
---- get_reactions_by_enzyme(enzyme_id)
---- get_reactions_by_compound(compound_id)
---- get_genes_by_organism(org, start, max_results)
---- get_number_of_genes_by_organism(org)                             
-
-=end
 
