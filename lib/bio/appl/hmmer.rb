@@ -2,47 +2,10 @@
 # = bio/appl/hmmer.rb - HMMER wrapper
 # 
 # Copyright::   Copyright (C) 2002 
-#               KATAYAMA Toshiaki <k@bioruby.org>
-# Lisence::     LGPL
+#               Toshiaki Katayama <k@bioruby.org>
+# Lisence::     Ruby's
 #
-# $Id: hmmer.rb,v 1.6 2006/07/14 14:26:39 ngoto Exp $
-#
-# == Description
-#
-# A wrapper for the HMMER programs (hmmsearch or hmmpfam).
-#
-# == Examples
-#
-#   require 'bio'
-#   program = 'hmmsearch' # or 'hmmpfam'
-#   hmmfile = 'test.hmm'
-#   seqfile = 'test.faa'
-#   
-#   factory = Bio::HMMER.new(program, hmmfile, seqfile)
-#   p factory.query
-#
-# == References
-#
-# * HMMER
-#   http://hmmer.wustl.edu/
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
+# $Id: hmmer.rb,v 1.7 2006/09/19 06:29:37 k Exp $
 #
 
 require 'bio/command'
@@ -50,6 +13,8 @@ require 'shellwords'
 
 module Bio
 
+# == Description
+# 
 # A wapper for HMMER programs (hmmsearch or hmmpfam).
 #
 # === Examples
@@ -61,7 +26,7 @@ module Bio
 #   
 #   factory = Bio::HMMER.new(program, hmmfile, seqfile)
 #   report = factory.query
-#   report.class #=> Bio::HMMER::Report
+#   report.class # => Bio::HMMER::Report
 #
 # === References
 #
