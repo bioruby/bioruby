@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::   Ruby's
 #
-#  $Id: mafft.rb,v 1.10 2006/04/30 05:50:19 ngoto Exp $
+#  $Id: mafft.rb,v 1.11 2006/09/25 08:09:22 ngoto Exp $
 #
 # Bio::MAFFT is a wrapper class to execute MAFFT.
 # MAFFT is a very fast multiple sequence alignment software.
@@ -30,6 +30,7 @@ require 'bio/io/flatfile'
 # We use Open3.popen3, because MAFFT on win32 requires Cygwin.
 #++
 require 'open3'
+require 'tempfile'
 
 module Bio
 
