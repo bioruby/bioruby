@@ -4,7 +4,7 @@
 # Copyright:::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # Lisence::     Ruby's
 #
-#  $Id: test_sptr.rb,v 1.4 2006/07/15 15:29:26 nakao Exp $
+#  $Id: test_sptr.rb,v 1.5 2006/10/05 07:39:30 nakao Exp $
 #
 
 require 'pathname'
@@ -1755,6 +1755,20 @@ OH   NCBI_TaxID=23216x: Rubus (bramble)."
       assert_raise(ArgumentError) { sp.oh }
     end
 
+  end
+
+  class TestOSLine < Test::Unit::TestCase
+    def test_uncapitalized_letter_Q32725_9POAL
+      data = "OS   unknown cyperaceous sp.\n"
+      sp = SPTR.new(data)
+      assert_equal('unknown cyperaceous sp.', sp.os.first['os'])
+    end
+
+    def test_period_trancation_O63147
+      data = "OS   Hippotis sp. Clark and Watts 825.\n"
+      sp = SPTR.new(data)
+      assert_equal('Hippotis sp. Clark and Watts 825.', sp.os.first['os'])
+    end
   end
 
 end # module Bio

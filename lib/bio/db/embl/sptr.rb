@@ -4,7 +4,7 @@
 # Copyright::   Copyright (C) 2001-2006  Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: sptr.rb,v 1.34 2006/07/15 15:29:26 nakao Exp $
+# $Id: sptr.rb,v 1.35 2006/10/05 07:39:29 nakao Exp $
 #
 # == Description
 # 
@@ -292,11 +292,13 @@ class SPTR < EMBLDB
   #  OS   Genus species (name0) (name1).
   #  OS   Genus species (name0), G s0 (name0), and G s (name0) (name1).
   #  OS   Homo sapiens (Human), and Rarrus norveticus (Rat)
+  #  OS   Hippotis sp. Clark and Watts 825.
+  #  OS   unknown cyperaceous sp.
   def os(num = nil)
     unless @data['OS']
       os = Array.new
       fetch('OS').split(/, and|, /).each do |tmp|
-        if tmp =~ /([A-Z][a-z]* *[\w\d \:\'\+\-]+[\w\d])/
+        if tmp =~ /(\w+ *[\w\d \:\'\+\-\.]+[\w\d\.])/
           org = $1
           tmp =~ /(\(.+\))/ 
           os.push({'name' => $1, 'os' => org})
