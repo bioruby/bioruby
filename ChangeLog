@@ -1,3 +1,39 @@
+2006-10-05  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/newick.rb
+
+	  Bio::Newick for Newick standard phylogenetic tree parser is
+	  newly added (contributed by Daniel Amelang).
+
+        * lib/bio/phylogenetictree.rb
+
+	  Bio::PhylogeneticTree for phylogenetic tree data structure
+	  is newly added.
+
+2006-07-14  Naohisa Goto <ng@bioruby.org>
+
+        * lib/bio/command.rb
+
+          Bio::Command::Tools and Bio::Command::NetTools are combined
+	  and re-constructed into a new Bio::Command module.
+
+	  lib/bio/appl/blast.rb, lib/bio/appl/fasta.rb,
+	  lib/bio/appl/emboss.rb, lib/bio/appl/psort.rb,
+	  lib/bio/appl/hmmer.rb, lib/bio/db/fantom.rb, 
+	  lib/bio/io/fastacmd.rb, lib/bio/io/fetch.rb,
+	  lib/bio/io/keggapi.rb, lib/bio/io/pubmed.rb, and
+	  lib/bio/io/registry.rb are changed to use the new Bio::Command
+	  instead of old Bio::Command or Net::HTTP.
+
+2006-06-29  Naohisa Goto <ng@bioruby.org>
+
+        * lib/bio/appl/blat/report.rb
+
+	  Bio::BLAT::Report::Hit#milli_bad, #percent_identity, #protein?,
+	  #score, and #psl_version methods/attributes are newly added,
+	  and psl files without headers are supported (discussed in
+	  bioruby-ja ML).
+
 2006-06-27  Naohisa Goto <ng@bioruby.org>
 
         * lib/bio/sequence/na.rb
@@ -7,11 +43,32 @@
 	  not to raise ZeroDivisionError and returns 0 when given sequence
 	  is empty.
 
+	* lib/bio/db/pdb/pdb.rb
+
+	  Bio::PDB::ATOM#name, #resName, #iCode, #chaarge, #segID, and
+	  #element are changed to strip whitespaces when initializing.
+	  Bio::PDB::HETATM is also subject to the above changes.
+	  (suggested by Mikael Borg)
+
+2006-06-12  Naohisa Goto <ng@bioruby.org>
+
+        * lib/bio/io/flatfile.rb
+
+	  Bug fix: Bio::FlatFile.open(klass, filename) didn't work.
+
 2006-05-02  Mitsuteru Nakao <n@bioruby.org>
 
         * lib/bio/appl/pts1.rb
 
           Bio::PTS1 first commit.
+
+2006-04-30  Naohisa Goto <ng@bioruby.org>
+
+        * lib/bio/appl/blast/format0.rb
+
+	  Bug fix: parse error for hits whose database sequence names
+	  contain 'Score', and subsequent hits after them would lost
+	  (reported by Tomoaki NISHIYAMA).
 
 2006-04-14  Mitsuteru Nakao <n@bioruby.org>
 
@@ -20,6 +77,17 @@
           Bio::Ensembl first commit. It is a client class for Ensembl Genome
           Browser.
 
+2006-03-22  Naohisa Goto <ng@bioruby.org>
+
+        * lib/bio/io/flatfile.rb
+
+	  Bug fix: Bio::FlatFile raises error for pipes, ARGF, etc.
+	  The bug also affects bio/appl/mafft.rb, bio/appl/clustalw.rb,
+	  bio/appl/blast.rb, bio/io/fastacmd.rb, and so on.
+
+	  Bio::FlatFile#entry_start_pos and #entry_ended_pos are
+	  changed to be enabled only when Bio::FlatFile#entry_pos_flag
+	  is true.
 
 2006-02-27  Toshiaki Katayama <k@bioruby.org>
 
