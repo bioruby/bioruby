@@ -5,7 +5,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: test_tree.rb,v 1.1 2006/10/05 13:38:22 ngoto Exp $
+# $Id: test_tree.rb,v 1.2 2006/10/06 14:18:51 ngoto Exp $
 #
 
 require 'test/unit'
@@ -180,27 +180,34 @@ module Bio
     def setup
       # Note that below data is NOT real. The distances are random.
       @tree = Bio::PhylogeneticTree.new
-      mouse      = Bio::PhylogeneticTree::Node.new('mouse')
-      rat        = Bio::PhylogeneticTree::Node.new('rat')
-      rodents    = Bio::PhylogeneticTree::Node.new('rodents')
-      human      = Bio::PhylogeneticTree::Node.new('human')
-      chimpanzee = Bio::PhylogeneticTree::Node.new('chimpanzee')
-      primates   = Bio::PhylogeneticTree::Node.new('primates')
-      mammals    = Bio::PhylogeneticTree::Node.new('mammals')
-      @tree.add_edge(rodents,  mouse,
-                     Bio::PhylogeneticTree::Edge.new(0.0968))
-      @tree.add_edge(rodents,  rat, 
-                     Bio::PhylogeneticTree::Edge.new(0.1125))
-      @tree.add_edge(mammals,  rodents, 
-                     Bio::PhylogeneticTree::Edge.new(0.2560))
-      @tree.add_edge(primates, human, 
-                     Bio::PhylogeneticTree::Edge.new(0.0386))
-      @tree.add_edge(primates, chimpanzee, 
-                     Bio::PhylogeneticTree::Edge.new(0.0503))
-      @tree.add_edge(mammals,  primates, 
-                     Bio::PhylogeneticTree::Edge.new(0.2235))
+      @mouse      = Bio::PhylogeneticTree::Node.new('mouse')
+      @rat        = Bio::PhylogeneticTree::Node.new('rat')
+      @rodents    = Bio::PhylogeneticTree::Node.new('rodents')
+      @human      = Bio::PhylogeneticTree::Node.new('human')
+      @chimpanzee = Bio::PhylogeneticTree::Node.new('chimpanzee')
+      @primates   = Bio::PhylogeneticTree::Node.new('primates')
+      @mammals    = Bio::PhylogeneticTree::Node.new('mammals')
       @nodes =
-        [ mouse, rat, rodents, human, chimpanzee, primates, mammals ]
+        [ @mouse, @rat, @rodents, @human, @chimpanzee, @primates, @mammals ]
+      @edge_rodents_mouse   = Bio::PhylogeneticTree::Edge.new(0.0968)
+      @edge_rodents_rat     = Bio::PhylogeneticTree::Edge.new(0.1125)
+      @edge_mammals_rodents = Bio::PhylogeneticTree::Edge.new(0.2560)
+      @edge_primates_human  = Bio::PhylogeneticTree::Edge.new(0.0386)
+      @edge_primates_chimpanzee = Bio::PhylogeneticTree::Edge.new(0.0503)
+      @edge_mammals_primates    = Bio::PhylogeneticTree::Edge.new(0.2235)
+      @edges = [
+        [ @rodents,  @mouse,      @edge_rodents_mouse       ],
+        [ @rodents,  @rat,        @edge_rodents_rat         ],
+        [ @mammals,  @rodents,    @edge_mammals_rodents     ],
+        [ @primates, @human,      @edge_primates_human      ],
+        [ @primates, @chimpanzee, @edge_primates_chimpanzee ],
+        [ @mammals,  @primates,   @edge_mammals_primates    ]
+      ]
+      @edges.each do |a|
+        @tree.add_edge(*a)
+      end
+
+      @by_id = Proc.new { |a, b| a.__id__ <=> b.__id__ }
     end
 
     def test_clear
@@ -210,8 +217,8 @@ module Bio
     end
 
     def test_nodes
-      nodes = @nodes.sort { |a, b| a.__id__ <=> b.__id__ }
-      assert_equal(nodes, @tree.nodes.sort { |a, b| a.__id__ <=> b.__id__ })
+      nodes = @nodes.sort(&@by_id)
+      assert_equal(nodes, @tree.nodes.sort(&@by_id))
     end
 
     def test_number_of_nodes
@@ -219,6 +226,182 @@ module Bio
     end
 
     def test_each_node
+      @tree.each_node do |x|
+        assert_not_nil(@nodes.delete(x))
+      end
+      assert_equal(true, @nodes.empty?)
+    end
+
+    def test_each_edge
+      @tree.each_edge do |source, target, edge|
+        assert_not_nil(@edges.delete([ source, target, edge ]))
+      end
+      assert_equal(true, @edges.empty?)
+    end
+
+    def test_edges
+      edges = @edges.sort { |a, b| a[-1].distance <=> b[-1].distance }
+      assert_equal(edges,
+                   @tree.edges.sort {
+                     |a, b| a[-1].distance <=> b[-1].distance })
+    end
+
+    def test_number_of_edges
+      assert_equal(@edges.size, @tree.number_of_edges)
+    end
+
+    def test_adjacent_nodes
+      assert_equal([ @rodents ], @tree.adjacent_nodes(@mouse))
+      assert_equal([ @rodents ], @tree.adjacent_nodes(@rat))
+      assert_equal([ @primates ], @tree.adjacent_nodes(@human))
+      assert_equal([ @primates ], @tree.adjacent_nodes(@chimpanzee))
+      assert_equal([ @mouse, @rat, @mammals ].sort(&@by_id),
+                   @tree.adjacent_nodes(@rodents).sort(&@by_id))
+      assert_equal([ @human, @chimpanzee, @mammals ].sort(&@by_id),
+                   @tree.adjacent_nodes(@primates).sort(&@by_id))
+      assert_equal([ @rodents, @primates ].sort(&@by_id),
+                   @tree.adjacent_nodes(@mammals).sort(&@by_id))
+      # test for not existed nodes
+      assert_equal([], @tree.adjacent_nodes(Bio::PhylogeneticTree::Node.new))
+    end
+
+    def test_out_edges
+      assert_equal([[ @mouse, @rodents, @edge_rodents_mouse ]],
+                   @tree.out_edges(@mouse))
+      assert_equal([[ @rat, @rodents, @edge_rodents_rat ]],
+                   @tree.out_edges(@rat))
+      assert_equal([[ @human, @primates, @edge_primates_human ]],
+                   @tree.out_edges(@human))
+      assert_equal([[ @chimpanzee, @primates, @edge_primates_chimpanzee ]],
+                   @tree.out_edges(@chimpanzee))
+
+      adjacents = [ @mouse, @rat, @mammals ]
+      edges = [ @edge_rodents_mouse, @edge_rodents_rat, @edge_mammals_rodents ]
+      @tree.out_edges(@rodents).each do |a|
+        assert_equal(@rodents, a[0])
+        assert_not_nil(i = adjacents.index(a[1]))
+        assert_equal(edges[i], a[2])
+        adjacents.delete_at(i)
+        edges.delete_at(i)
+      end
+      assert_equal(true, adjacents.empty?)
+      assert_equal(true, edges.empty?)
+
+      adjacents = [ @human, @chimpanzee, @mammals ]
+      edges = [ @edge_primates_human, @edge_primates_chimpanzee,
+        @edge_mammals_primates ]
+      @tree.out_edges(@primates).each do |a|
+        assert_equal(@primates, a[0])
+        assert_not_nil(i = adjacents.index(a[1]))
+        assert_equal(edges[i], a[2])
+        adjacents.delete_at(i)
+        edges.delete_at(i)
+      end
+      assert_equal(true, adjacents.empty?)
+      assert_equal(true, edges.empty?)
+
+      adjacents = [ @rodents, @primates ]
+      edges = [ @edge_mammals_rodents, @edge_mammals_primates ]
+      @tree.out_edges(@mammals).each do |a|
+        assert_equal(@mammals, a[0])
+        assert_not_nil(i = adjacents.index(a[1]))
+        assert_equal(edges[i], a[2])
+        adjacents.delete_at(i)
+        edges.delete_at(i)
+      end
+      assert_equal(true, adjacents.empty?)
+      assert_equal(true, edges.empty?)
+
+      # test for not existed nodes
+      assert_equal([], @tree.out_edges(Bio::PhylogeneticTree::Node.new))
+    end
+
+    def test_each_out_edge
+      flag = nil
+      r = @tree.each_out_edge(@mouse) do |src, tgt, edge|
+        assert_equal(@mouse, src)
+        assert_equal(@rodents, tgt)
+        assert_equal(@edge_rodents_mouse, edge)
+        flag = true
+      end
+      assert_equal(@tree, r)
+      assert_equal(true, flag)
+
+      flag = nil
+      r =  @tree.each_out_edge(@rat) do |src, tgt, edge|
+        assert_equal(@rat, src)
+        assert_equal(@rodents, tgt)
+        assert_equal(@edge_rodents_rat, edge)
+        flag = true
+      end
+      assert_equal(@tree, r)
+      assert_equal(true, flag)
+
+      flag = nil
+      r = @tree.each_out_edge(@human) do |src, tgt, edge|
+        assert_equal(@human, src)
+        assert_equal(@primates, tgt)
+        assert_equal(@edge_primates_human, edge)
+        flag = true
+      end
+      assert_equal(@tree, r)
+      assert_equal(true, flag)
+
+      flag = nil
+      r = @tree.each_out_edge(@chimpanzee) do |src, tgt, edge|
+        assert_equal(@chimpanzee, src)
+        assert_equal(@primates, tgt)
+        assert_equal(@edge_primates_chimpanzee, edge)
+        flag = true
+      end
+      assert_equal(@tree, r)
+      assert_equal(true, flag)
+
+      adjacents = [ @mouse, @rat, @mammals ]
+      edges = [ @edge_rodents_mouse, @edge_rodents_rat, @edge_mammals_rodents ]
+      @tree.each_out_edge(@rodents) do |src, tgt, edge|
+        assert_equal(@rodents, src)
+        assert_not_nil(i = adjacents.index(tgt))
+        assert_equal(edges[i], edge)
+        adjacents.delete_at(i)
+        edges.delete_at(i)
+      end
+      assert_equal(true, adjacents.empty?)
+      assert_equal(true, edges.empty?)
+
+      adjacents = [ @human, @chimpanzee, @mammals ]
+      edges = [ @edge_primates_human, @edge_primates_chimpanzee,
+        @edge_mammals_primates ]
+      @tree.each_out_edge(@primates) do |src, tgt, edge|
+        assert_equal(@primates, src)
+        assert_not_nil(i = adjacents.index(tgt))
+        assert_equal(edges[i], edge)
+        adjacents.delete_at(i)
+        edges.delete_at(i)
+      end
+      assert_equal(true, adjacents.empty?)
+      assert_equal(true, edges.empty?)
+
+      adjacents = [ @rodents, @primates ]
+      edges = [ @edge_mammals_rodents, @edge_mammals_primates ]
+      @tree.each_out_edge(@mammals) do |src, tgt, edge|
+        assert_equal(@mammals, src)
+        assert_not_nil(i = adjacents.index(tgt))
+        assert_equal(edges[i], edge)
+        adjacents.delete_at(i)
+        edges.delete_at(i)
+      end
+      assert_equal(true, adjacents.empty?)
+      assert_equal(true, edges.empty?)
+
+      # test for not existed nodes
+      flag = nil
+      node = Bio::PhylogeneticTree::Node.new
+      r = @tree.each_out_edge(node) do |src, tgt, edge|
+        flag = true
+      end
+      assert_equal(@tree, r)
+      assert_equal(nil, flag)
     end
 
   end #class TestPhylogeneticTree2
