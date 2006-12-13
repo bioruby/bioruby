@@ -6,7 +6,7 @@
 #               Daniel Amelang <dan@amelang.net>
 # License::     Ruby's
 #
-# $Id: newick.rb,v 1.4 2006/12/13 16:29:37 ngoto Exp $
+# $Id: newick.rb,v 1.5 2006/12/13 17:29:17 ngoto Exp $
 #
 
 require 'bio/tree'
@@ -198,12 +198,12 @@ module Bio
     end
 
     # Returns formatted text (or something) of the tree
-    # Currently supported format is: :newick, :NHX
+    # Currently supported format is: :newick, :nhx
     def output(format, *arg, &block)
       case format
       when :newick
         output_newick(*arg, &block)
-      when :NHX
+      when :nhx
         output_nhx(*arg, &block)
       else
         raise 'Unknown format'
