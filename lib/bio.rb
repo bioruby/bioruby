@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: bio.rb,v 1.70 2006/09/19 05:41:45 k Exp $
+# $Id: bio.rb,v 1.71 2006/12/13 16:01:35 ngoto Exp $
 #
 
 module Bio
@@ -42,6 +42,8 @@ module Bio
 
   autoload :Alignment,      'bio/alignment'
 
+  ## PhylogeneticTree
+  autoload :PhylogeneticTree, 'bio/phylogenetictree'
 
   ## Map
   autoload :Map,            'bio/map'
@@ -114,6 +116,7 @@ module Bio
   autoload :PDB,            'bio/db/pdb'
   autoload :NBRF,           'bio/db/nbrf'
 
+  autoload :Newick,         'bio/db/newick'
 
   ### IO interface modules
 
