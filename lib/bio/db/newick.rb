@@ -6,8 +6,10 @@
 #               Daniel Amelang <dan@amelang.net>
 # License::     Ruby's
 #
-# $Id: newick.rb,v 1.2 2006/12/13 15:46:28 ngoto Exp $
+# $Id: newick.rb,v 1.3 2006/12/13 15:55:29 ngoto Exp $
 #
+
+require 'bio/phylogenetictree'
 
 module Bio
   class PhylogeneticTree
