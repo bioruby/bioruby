@@ -1,12 +1,12 @@
 #
 # = bio/alignment.rb - multiple alignment of sequences
 #
-# Copyright:: Copyright (C) 2003, 2005
-#             GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+# Copyright:: Copyright (C) 2003, 2005, 2006
+#             GOTO Naohisa <ng@bioruby.org>
 #
 # License:: Ruby's
 #
-#  $Id: alignment.rb,v 1.16 2006/04/30 05:56:40 ngoto Exp $
+#  $Id: alignment.rb,v 1.17 2006/12/13 16:58:39 ngoto Exp $
 #
 # = About Bio::Alignment
 #
@@ -25,46 +25,44 @@ require 'bio/sequence'
 
 module Bio
 
-=begin rdoc
-
-= About Bio::Alignment
-
-Bio::Alignment is a namespace of classes/modules for multiple sequence
-alignment.
-
-= Multiple alignment container classes
-
-== Bio::Alignment::OriginalAlignment
-
-== Bio::Alignment::SequenceArray
-
-== Bio::Alignment::SequenceHash
-
-= Bio::Alignment::Site
-
-= Modules
-
-== Bio::Alignment::EnumerableExtension
-
-Mix-in for classes included Enumerable.
-
-== Bio::Alignment::ArrayExtension
-
-Mix-in for Array or Array-like classes.
-
-== Bio::Alignment::HashExtension
-
-Mix-in for Hash or Hash-like classes.
-
-== Bio::Alignment::SiteMethods
-
-== Bio::Alignment::PropertyMethods
-
-= Bio::Alignment::GAP
-
-= Compatibility from older BioRuby
-
-=end
+# 
+# = About Bio::Alignment
+# 
+# Bio::Alignment is a namespace of classes/modules for multiple sequence
+# alignment.
+# 
+# = Multiple alignment container classes
+# 
+# == Bio::Alignment::OriginalAlignment
+# 
+# == Bio::Alignment::SequenceArray
+# 
+# == Bio::Alignment::SequenceHash
+# 
+# = Bio::Alignment::Site
+# 
+# = Modules
+# 
+# == Bio::Alignment::EnumerableExtension
+# 
+# Mix-in for classes included Enumerable.
+# 
+# == Bio::Alignment::ArrayExtension
+# 
+# Mix-in for Array or Array-like classes.
+# 
+# == Bio::Alignment::HashExtension
+# 
+# Mix-in for Hash or Hash-like classes.
+# 
+# == Bio::Alignment::SiteMethods
+# 
+# == Bio::Alignment::PropertyMethods
+# 
+# = Bio::Alignment::GAP
+# 
+# = Compatibility from older BioRuby
+# 
   module Alignment
 
     # Bio::Alignment::PropertyMethods is a set of methods to treat
