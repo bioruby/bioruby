@@ -5,7 +5,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: tree.rb,v 1.1 2006/10/05 13:38:21 ngoto Exp $
+# $Id: tree.rb,v 1.2 2006/12/13 15:46:28 ngoto Exp $
 #
 
 require 'matrix'
@@ -73,6 +73,30 @@ module Bio
       def to_s
         @distance_string.to_s
       end
+
+      #---
+      # methods for NHX (New Hampshire eXtended) and/or PhyloXML
+      #+++
+
+      # log likelihood value (:L in NHX)
+      attr_accessor :log_likelihood
+
+      # width of the edge
+      # (<branch width="w"> of PhyloXML, or :W="w" in NHX)
+      attr_accessor :width
+
+      # Other NHX parameters. Returns a Hash.
+      # Note that :L and :W
+      # are not stored here but stored in the proper attributes in this class.
+      # However, if you force to set these parameters in this hash,
+      # the parameters in this hash are preferred when generating NHX.
+      # In addition, If the same parameters are defined at Node object,
+      # the parameters in the node are preferred.
+      def nhx_parameters
+        @nhx_parameters ||= {}
+        @nhx_parameters
+      end
+
     end #class Edge
 
     # Gets distance value from the given edge.
@@ -164,6 +188,43 @@ module Bio
       def to_s
         @name.to_s
       end
+
+      # the order of the node
+      # (lower value, high priority)
+      attr_accessor :order_number
+
+      #---
+      # methods for NHX (New Hampshire eXtended) and/or PhyloXML
+      #+++
+
+      # Phylogenetic events.
+      # Returns an Array of one (or more?) of the following symbols
+      #   :gene_duplication
+      #   :speciation
+      def events
+        @events ||= []
+        @events
+      end
+
+      # EC number (EC_number in PhyloXML, or :E in NHX)
+      attr_accessor :ec_number
+
+      # scientific name (scientific_name in PhyloXML, or :S in NHX)
+      attr_accessor :scientific_name
+
+      # taxonomy identifier (taxonomy_identifier in PhyloXML, or :T in NHX)
+      attr_accessor :taxonomy_id
+
+      # Other NHX parameters. Returns a Hash.
+      # Note that :D, :E, :S, and :T
+      # are not stored here but stored in the proper attributes in this class.
+      # However, if you force to set these parameters in this hash,
+      # the parameters in this hash are preferred when generating NHX.
+      def nhx_parameters
+        @nhx_parameters ||= {}
+        @nhx_parameters
+      end
+
     end #class Node
 
     # Gets node name
