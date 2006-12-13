@@ -6,13 +6,13 @@
 #               Daniel Amelang <dan@amelang.net>
 # License::     Ruby's
 #
-# $Id: newick.rb,v 1.3 2006/12/13 15:55:29 ngoto Exp $
+# $Id: newick.rb,v 1.4 2006/12/13 16:29:37 ngoto Exp $
 #
 
-require 'bio/phylogenetictree'
+require 'bio/tree'
 
 module Bio
-  class PhylogeneticTree
+  class Tree
 
     #---
     # newick output
@@ -210,7 +210,7 @@ module Bio
       end
     end
 
-  end #class PhylogeneticTree
+  end #class Tree
 
   #---
   # newick parser
@@ -227,11 +227,11 @@ module Bio
     # parse error class
     class ParseError < RuntimeError; end
 
-    # same as Bio::PhylogeneticTree::Edge
-    Edge = Bio::PhylogeneticTree::Edge
+    # same as Bio::Tree::Edge
+    Edge = Bio::Tree::Edge
 
-    # same as Bio::PhylogeneticTree::Node
-    Node = Bio::PhylogeneticTree::Node
+    # same as Bio::Tree::Node
+    Node = Bio::Tree::Node
 
     # Creates a new Newick object.
     # _options_ for parsing can be set.
@@ -261,7 +261,7 @@ module Bio
     attr_reader :entry_overrun
 
     # Gets the tree.
-    # Returns a Bio::PhylogeneticTree object.
+    # Returns a Bio::Tree object.
     def tree
       if !defined?(@tree)
         @tree = __parse_newick(@original_string, @options)
@@ -474,7 +474,7 @@ module Bio
         edges.pop
       end
       # Let the tree into instance variables
-      tree = Bio::PhylogeneticTree.new
+      tree = Bio::Tree.new
       tree.instance_eval {
         @pathway.relations.concat(edges)
         @pathway.to_list

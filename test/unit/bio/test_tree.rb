@@ -1,11 +1,11 @@
 #
-# = test/bio/test_phylogenetictree.rb - unit test for Bio::PhylogeneticTree
+# = test/bio/test_tree.rb - unit test for Bio::Tree
 #
 # Copyright::   Copyright (C) 2006
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: test_tree.rb,v 1.2 2006/10/06 14:18:51 ngoto Exp $
+# $Id: test_tree.rb,v 1.3 2006/12/13 16:29:37 ngoto Exp $
 #
 
 require 'test/unit'
@@ -15,18 +15,18 @@ libpath = Pathname.new(File.join(File.dirname(__FILE__), [".."] * 3, "lib")).cle
 $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'bio'
-require 'bio/phylogenetictree'
+require 'bio/tree'
 
 module Bio
-  class TestPhylogeneticTreeEdge < Test::Unit::TestCase
+  class TestTreeEdge < Test::Unit::TestCase
     def setup
-      @obj = Bio::PhylogeneticTree::Edge.new(123.45)
+      @obj = Bio::Tree::Edge.new(123.45)
     end
 
     def test_initialize
-      assert_nothing_raised { Bio::PhylogeneticTree::Edge.new }
-      assert_equal(1.23, Bio::PhylogeneticTree::Edge.new(1.23).distance)
-      assert_equal(12.3, Bio::PhylogeneticTree::Edge.new('12.3').distance)
+      assert_nothing_raised { Bio::Tree::Edge.new }
+      assert_equal(1.23, Bio::Tree::Edge.new(1.23).distance)
+      assert_equal(12.3, Bio::Tree::Edge.new('12.3').distance)
     end
 
     def test_distance
@@ -62,17 +62,17 @@ module Bio
     def test_to_s
       assert_equal("123.45", @obj.to_s)
     end
-  end #class TestPhylogeneticTreeEdge
+  end #class TestTreeEdge
 
-  class TestPhylogeneticTreeNode < Test::Unit::TestCase
+  class TestTreeNode < Test::Unit::TestCase
     def setup
-      @obj = Bio::PhylogeneticTree::Node.new
+      @obj = Bio::Tree::Node.new
     end
 
     def test_initialize
-      assert_nothing_raised { Bio::PhylogeneticTree::Node.new }
+      assert_nothing_raised { Bio::Tree::Node.new }
       a = nil
-      assert_nothing_raised { a = Bio::PhylogeneticTree::Node.new('mouse') }
+      assert_nothing_raised { a = Bio::Tree::Node.new('mouse') }
       assert_equal('mouse', a.name)
     end
 
@@ -122,39 +122,39 @@ module Bio
       @obj.name = 'human'
       assert_equal('human', @obj.to_s)
     end
-  end #class TestPhylogeneticTreeNode
+  end #class TestTreeNode
 
-  class TestPhylogeneticTree < Test::Unit::TestCase
+  class TestTree < Test::Unit::TestCase
     def setup
-      @tree  = Bio::PhylogeneticTree.new
+      @tree  = Bio::Tree.new
     end
 
     def test_get_edge_distance
-      edge = Bio::PhylogeneticTree::Edge.new
+      edge = Bio::Tree::Edge.new
       assert_equal(nil, @tree.get_edge_distance(edge))
-      edge = Bio::PhylogeneticTree::Edge.new(12.34)
+      edge = Bio::Tree::Edge.new(12.34)
       assert_equal(12.34, @tree.get_edge_distance(edge))
       assert_equal(12.34, @tree.get_edge_distance(12.34))
     end
 
     def test_get_edge_distance_string
-      edge = Bio::PhylogeneticTree::Edge.new
+      edge = Bio::Tree::Edge.new
       assert_equal(nil, @tree.get_edge_distance_string(edge))
-      edge = Bio::PhylogeneticTree::Edge.new(12.34)
+      edge = Bio::Tree::Edge.new(12.34)
       assert_equal("12.34", @tree.get_edge_distance_string(edge))
       assert_equal("12.34", @tree.get_edge_distance_string(12.34))
     end
 
     def test_get_node_name
-      node = Bio::PhylogeneticTree::Node.new
+      node = Bio::Tree::Node.new
       assert_equal(nil, @tree.get_node_name(node))
       node.name = 'human'
       assert_equal('human', @tree.get_node_name(node))
     end
 
     def test_initialize
-      assert_nothing_raised { Bio::PhylogeneticTree.new }
-      assert_nothing_raised { Bio::PhylogeneticTree.new(@tree) }
+      assert_nothing_raised { Bio::Tree.new }
+      assert_nothing_raised { Bio::Tree.new(@tree) }
     end
 
     def test_root
@@ -163,7 +163,7 @@ module Bio
 
     def test_root=()
       assert_equal(nil, @tree.root)
-      node = Bio::PhylogeneticTree::Node.new
+      node = Bio::Tree::Node.new
       @tree.root = node
       assert_equal(node, @tree.root)
     end
@@ -174,27 +174,27 @@ module Bio
       assert_equal(:traditional, @tree.options[:bootstrap_style])
     end
 
-  end #class TestPhylogeneticTree
+  end #class TestTree
 
-  class TestPhylogeneticTree2 < Test::Unit::TestCase
+  class TestTree2 < Test::Unit::TestCase
     def setup
       # Note that below data is NOT real. The distances are random.
-      @tree = Bio::PhylogeneticTree.new
-      @mouse      = Bio::PhylogeneticTree::Node.new('mouse')
-      @rat        = Bio::PhylogeneticTree::Node.new('rat')
-      @rodents    = Bio::PhylogeneticTree::Node.new('rodents')
-      @human      = Bio::PhylogeneticTree::Node.new('human')
-      @chimpanzee = Bio::PhylogeneticTree::Node.new('chimpanzee')
-      @primates   = Bio::PhylogeneticTree::Node.new('primates')
-      @mammals    = Bio::PhylogeneticTree::Node.new('mammals')
+      @tree = Bio::Tree.new
+      @mouse      = Bio::Tree::Node.new('mouse')
+      @rat        = Bio::Tree::Node.new('rat')
+      @rodents    = Bio::Tree::Node.new('rodents')
+      @human      = Bio::Tree::Node.new('human')
+      @chimpanzee = Bio::Tree::Node.new('chimpanzee')
+      @primates   = Bio::Tree::Node.new('primates')
+      @mammals    = Bio::Tree::Node.new('mammals')
       @nodes =
         [ @mouse, @rat, @rodents, @human, @chimpanzee, @primates, @mammals ]
-      @edge_rodents_mouse   = Bio::PhylogeneticTree::Edge.new(0.0968)
-      @edge_rodents_rat     = Bio::PhylogeneticTree::Edge.new(0.1125)
-      @edge_mammals_rodents = Bio::PhylogeneticTree::Edge.new(0.2560)
-      @edge_primates_human  = Bio::PhylogeneticTree::Edge.new(0.0386)
-      @edge_primates_chimpanzee = Bio::PhylogeneticTree::Edge.new(0.0503)
-      @edge_mammals_primates    = Bio::PhylogeneticTree::Edge.new(0.2235)
+      @edge_rodents_mouse   = Bio::Tree::Edge.new(0.0968)
+      @edge_rodents_rat     = Bio::Tree::Edge.new(0.1125)
+      @edge_mammals_rodents = Bio::Tree::Edge.new(0.2560)
+      @edge_primates_human  = Bio::Tree::Edge.new(0.0386)
+      @edge_primates_chimpanzee = Bio::Tree::Edge.new(0.0503)
+      @edge_mammals_primates    = Bio::Tree::Edge.new(0.2235)
       @edges = [
         [ @rodents,  @mouse,      @edge_rodents_mouse       ],
         [ @rodents,  @rat,        @edge_rodents_rat         ],
@@ -262,7 +262,7 @@ module Bio
       assert_equal([ @rodents, @primates ].sort(&@by_id),
                    @tree.adjacent_nodes(@mammals).sort(&@by_id))
       # test for not existed nodes
-      assert_equal([], @tree.adjacent_nodes(Bio::PhylogeneticTree::Node.new))
+      assert_equal([], @tree.adjacent_nodes(Bio::Tree::Node.new))
     end
 
     def test_out_edges
@@ -313,7 +313,7 @@ module Bio
       assert_equal(true, edges.empty?)
 
       # test for not existed nodes
-      assert_equal([], @tree.out_edges(Bio::PhylogeneticTree::Node.new))
+      assert_equal([], @tree.out_edges(Bio::Tree::Node.new))
     end
 
     def test_each_out_edge
@@ -396,7 +396,7 @@ module Bio
 
       # test for not existed nodes
       flag = nil
-      node = Bio::PhylogeneticTree::Node.new
+      node = Bio::Tree::Node.new
       r = @tree.each_out_edge(node) do |src, tgt, edge|
         flag = true
       end
@@ -404,7 +404,7 @@ module Bio
       assert_equal(nil, flag)
     end
 
-  end #class TestPhylogeneticTree2
+  end #class TestTree2
 
 end #module Bio
 

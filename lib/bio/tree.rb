@@ -1,11 +1,11 @@
 #
-# = bio/phylogenetictree.rb - phylogenetic tree data structure class
+# = bio/tree.rb - phylogenetic tree data structure class
 #
 # Copyright::   Copyright (C) 2006
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: tree.rb,v 1.2 2006/12/13 15:46:28 ngoto Exp $
+# $Id: tree.rb,v 1.3 2006/12/13 16:29:37 ngoto Exp $
 #
 
 require 'matrix'
@@ -20,7 +20,7 @@ module Bio
   # However, users cannot handle Bio::Pathway object directly.
   #
   # This is alpha version. Incompatible changes may be made frequently.
-  class PhylogeneticTree
+  class Tree
 
     # Error when there are no path between specified nodes
     class NoPathError < RuntimeError; end
@@ -254,7 +254,7 @@ module Bio
 
     # Creates a new phylogenetic tree.
     # When no arguments are given, it creates a new empty tree.
-    # When a PhylogeneticTree object is given, it copies the tree.
+    # When a Tree object is given, it copies the tree.
     # Note that the  new tree shares Node and Edge objects
     # with the given tree.
     def initialize(tree = nil)
@@ -498,7 +498,7 @@ module Bio
     # Gets the sub-tree consisted of given nodes.
     # _nodes_ must be an array of nodes.
     # Nodes that do not exist in the original tree are ignored.
-    # Returns a PhylogeneticTree object.
+    # Returns a Tree object.
     # Note that the sub-tree shares Node and Edge objects
     # with the original tree.
     def subtree(nodes)
@@ -523,7 +523,7 @@ module Bio
     # all internal nodes connected between given nodes.
     # _nodes_ must be an array of nodes.
     # Nodes that do not exist in the original tree are ignored.
-    # Returns a PhylogeneticTree object.
+    # Returns a Tree object.
     # The result is unspecified for cyclic trees.
     # Note that the sub-tree shares Node and Edge objects
     # with the original tree.
@@ -550,7 +550,7 @@ module Bio
     # Concatenates the other tree.
     # If the same edge exists, the edge in _other_ is used.
     # Returns self.
-    # The result is unspecified if _other_ isn't a PhylogeneticTree object.
+    # The result is unspecified if _other_ isn't a Tree object.
     # Note that the Node and Edge objects in the _other_ tree are
     # shared in the concatinated tree.
     def concat(other)
@@ -815,7 +815,7 @@ module Bio
       self.add_edge(new_node, node2, edge)
       self
     end
-  end #class PhylogeneticTree
+  end #class Tree
 end #module Bio
 
 #---

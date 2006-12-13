@@ -6,7 +6,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: test_newick.rb,v 1.1 2006/10/05 13:38:22 ngoto Exp $
+# $Id: test_newick.rb,v 1.2 2006/12/13 16:29:37 ngoto Exp $
 #
 
 require 'test/unit'
@@ -16,7 +16,7 @@ libpath = Pathname.new(File.join(File.dirname(__FILE__), [".."] * 3, "lib")).cle
 $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'bio'
-require 'bio/phylogenetictree'
+require 'bio/tree'
 require 'bio/db/newick'
 
 module Bio
