@@ -6,7 +6,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: alignment.rb,v 1.18 2006/12/14 12:39:45 ngoto Exp $
+#  $Id: alignment.rb,v 1.19 2006/12/14 14:11:54 ngoto Exp $
 #
 # = About Bio::Alignment
 #
@@ -622,10 +622,14 @@ module Bio
             amino = true
           elsif seqclass == Bio::Sequence::NA then
             amino = false
-          elsif self.each_seq { |x| /[EFILPQ]/i =~ x } then
-            amino = true
           else
             amino = nil
+            self.each_seq do |x|
+              if /[EFILPQ]/i =~ x
+                amino = true
+                break
+              end
+            end
           end
         end
         if amino then
