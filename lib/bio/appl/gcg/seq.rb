@@ -5,11 +5,11 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: seq.rb,v 1.1 2006/12/14 19:52:53 ngoto Exp $
+# $Id: seq.rb,v 1.2 2006/12/14 19:55:10 ngoto Exp $
 #
-# = About Bio::GCG::Msf
+# = About Bio::GCG::Seq
 #
-# Please refer document of Bio::GCG::Msf.
+# Please refer document of Bio::GCG::Seq.
 #
 
 module Bio
