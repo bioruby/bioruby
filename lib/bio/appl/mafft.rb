@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::   Ruby's
 #
-#  $Id: mafft.rb,v 1.14 2006/12/14 15:59:21 ngoto Exp $
+#  $Id: mafft.rb,v 1.15 2006/12/14 16:08:46 ngoto Exp $
 #
 # Bio::MAFFT is a wrapper class to execute MAFFT.
 # MAFFT is a very fast multiple sequence alignment software.
@@ -168,7 +168,7 @@ module Bio
       unless seqs.is_a?(Bio::Alignment)
         seqs = Bio::Alignment.new(seqs, *arg)
       end
-      query_string(seqs.to_fasta(70))
+      query_string(seqs.output_fasta(:width => 70))
     end
 
     # Performs alignment for +str+.
