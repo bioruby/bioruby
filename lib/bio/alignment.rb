@@ -6,7 +6,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: alignment.rb,v 1.20 2006/12/14 15:08:59 ngoto Exp $
+#  $Id: alignment.rb,v 1.21 2006/12/14 19:52:53 ngoto Exp $
 #
 # = About Bio::Alignment
 #
@@ -22,6 +22,11 @@
 #
 
 require 'bio/sequence'
+
+#---
+# (depends on autoload)
+#require 'bio/appl/gcg/seq'
+#+++
 
 module Bio
 
@@ -870,6 +875,8 @@ module Bio
           output_phylip(*arg)
         when :phylipnon
           output_phylipnon(*arg)
+        when :msf
+          output_msf(*arg)
         when :molphy
           output_molphy(*arg)
         else
@@ -1176,6 +1183,124 @@ module Bio
         aseqs.unshift(header)
         aseqs.join('')
       end
+
+      # Generates msf formatted text as a string
+      def output_msf(options = {})
+        len = self.seq_length
+
+        if !options.has_key?(:avoid_same_name) or options[:avoid_same_name]
+          sn = __clustal_avoid_same_name(self.sequence_names)
+        else
+          sn = self.sequence_names.collect do |x|
+            x.to_s.gsub(/[\r\n\x00]/, ' ')
+          end
+        end
+        if !options.has_key?(:replace_space) or options[:replace_space]
+          sn.collect! { |x| x.gsub(/\s/, '_') }
+        end
+        if !options.has_key?(:escape) or options[:escape]
+          sn.collect! { |x| x.gsub(/[\:\;\,\(\)]/, '_') }
+        end
+        if !options.has_key?(:split) or options[:split]
+          sn.collect! { |x| x.split(/\s/)[0].to_s }
+        end
+
+        seqwidth = 50
+        namewidth = [31, sn.collect { |x| x.length }.max ].min
+        sep = ' ' * 2
+
+        seqregexp = Regexp.new("(.{1,#{seqwidth}})")
+        gchar = (options[:gap_char]  or '.')
+        pchar = (options[:padding_char] or '~')
+
+        aseqs = Array.new(self.number_of_sequences).clear
+        self.each_seq do |s|
+          aseqs << s.to_s.gsub(self.gap_regexp, gchar)
+        end
+        aseqs.each do |s|
+          s.sub!(/\A#{Regexp.escape(gchar)}+/) { |x| pchar * x.length }
+          s.sub!(/#{Regexp.escape(gchar)}+\z/, '')
+          s << (pchar * (len - s.length))
+        end
+
+        case options[:case].to_s
+        when /lower/i
+          aseqs.each { |s| s.downcase! }
+        when /upper/i
+          aseqs.each { |s| s.upcase! }
+        else #default upcase
+          aseqs.each { |s| s.upcase! }
+        end
+
+        case options[:type].to_s
+        when /protein/i, /aa/i
+          amino = true
+        when /na/i
+          amino = false
+        else
+          if seqclass == Bio::Sequence::AA then
+            amino = true
+          elsif seqclass == Bio::Sequence::NA then
+            amino = false
+          else
+            # if we can't determine, we asuume as protein.
+            amino = aseqs.size
+            aseqs.each { |x| amino -= 1 if /\A[acgt]\z/i =~ x }
+            amino = false if amino <= 0
+          end
+        end
+
+        seq_type = (amino ? 'P' : 'N')
+
+        fn = (options[:entry_id] or self.__id__.abs.to_s + '.msf')
+        dt = (options[:time] or Time.now).strftime('%B %d, %Y %H:%M')
+
+        sums = aseqs.collect { |s| GCG::Seq.calc_checksum(s) }
+        #sums = aseqs.collect { |s| 0 }
+        sum = 0; sums.each { |x| sum += x }; sum %= 10000
+        msf =
+          [
+           "#{seq_type == 'N' ? 'N' : 'A' }A_MULTIPLE_ALIGNMENT 1.0\n",
+           "\n",
+           "\n",
+           " #{fn}  MSF: #{len}  Type: #{seq_type}  #{dt}  Check: #{sum} ..\n",
+           "\n"
+          ]
+
+        sn.each do |snx|
+          msf << ' Name: ' +
+            sprintf('%*s', -namewidth, snx.to_s)[0, namewidth] +
+            "  Len: #{len}  Check: #{sums.shift}  Weight: 1.00\n"
+        end
+        msf << "\n//\n"
+
+        aseqs.collect! do |s|
+          snx = sn.shift
+          head = sprintf("%*s", namewidth, snx.to_s)[0, namewidth] + sep
+          s.gsub!(seqregexp, "\\1\n")
+          a = s.split(/^/)
+          a.collect { |x| head + x }
+        end
+        lines = (len + seqwidth - 1).div(seqwidth)
+        i = 1
+        lines.times do
+          msf << "\n"
+          n_l = i
+          n_r = [ i + seqwidth - 1, len ].min
+          if n_l != n_r then
+            w = [ n_r - n_l + 1 - n_l.to_s.length - n_r.to_s.length, 1 ].max
+            msf << (' ' * namewidth + sep + n_l.to_s + 
+                    ' ' * w + n_r.to_s + "\n")
+          else
+            msf << (' ' * namewidth + sep + n_l.to_s + "\n")
+          end
+          aseqs.each { |a| msf << a.shift }
+          i += seqwidth
+        end
+        msf << "\n"
+        msf.join('')
+      end
+
     end #module Output
 
     module EnumerableExtension
