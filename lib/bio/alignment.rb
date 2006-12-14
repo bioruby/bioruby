@@ -6,7 +6,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: alignment.rb,v 1.19 2006/12/14 14:11:54 ngoto Exp $
+#  $Id: alignment.rb,v 1.20 2006/12/14 15:08:59 ngoto Exp $
 #
 # = About Bio::Alignment
 #
@@ -988,7 +988,7 @@ module Bio
         end
         mline = (options[:match_line] or seqs.match_line(mopt))
         
-        aseqs = Array.new(seqs.size).clear
+        aseqs = Array.new(seqs.number_of_sequences).clear
         seqs.each_seq do |s|
           aseqs << s.to_s.gsub(seqs.gap_regexp, gchar)
         end
@@ -1086,7 +1086,7 @@ module Bio
       # common routine for interleaved/non-interleaved phylip format
       def __output_phylip_common(options = {})
         len = self.alignment_length
-        aln = [ " #{self.size} #{len}\n" ]
+        aln = [ " #{self.number_of_sequences} #{len}\n" ]
         sn = self.sequence_names.collect { |x| x.to_s.gsub(/[\r\n\x00]/, ' ') }
         if options[:replace_space]
           sn.collect! { |x| x.gsub(/\s/, '_') }
@@ -1107,7 +1107,7 @@ module Bio
         seqregexp = Regexp.new("(.{1,#{seqwidth.div(10) * 11}})")
         gchar = (options[:gap_char] or '-')
 
-        aseqs = Array.new(len).clear
+        aseqs = Array.new(self.number_of_sequences).clear
         self.each_seq do |s|
           aseqs << s.to_s.gsub(self.gap_regexp, gchar)
         end
@@ -1138,7 +1138,7 @@ module Bio
       # Generates Molphy alignment format text as a string
       def output_molphy(options = {})
         len = self.alignment_length
-        header = "#{self.size} #{len}\n"
+        header = "#{self.number_of_sequences} #{len}\n"
         sn = self.sequence_names.collect { |x| x.to_s.gsub(/[\r\n\x00]/, ' ') }
         if options[:replace_space]
           sn.collect! { |x| x.gsub(/\s/, '_') }
@@ -1181,13 +1181,18 @@ module Bio
     module EnumerableExtension
       include Output
 
+      # Returns number of sequences in this alignment.
+      def number_of_sequences
+        i = 0
+        self.each_seq { |s| i += 1 }
+        i
+      end
+
       # Returns an array of sequence names.
       # The order of the names must be the same as
       # the order of <tt>each_seq</tt>.
       def sequence_names
-        i = 0
-        self.each_seq { |s| i += 1 }
-        (0...i).to_a
+        (0...(self.number_of_sequences)).to_a
       end
     end #module EnumerableExtension
 
@@ -1208,6 +1213,11 @@ module Bio
       # It works the same as Array#each.
       def each_seq(&block) #:yields: seq
         each(&block)
+      end
+
+      # Returns number of sequences in this alignment.
+      def number_of_sequences
+        self.size
       end
     end #module ArrayExtension
 
@@ -1297,6 +1307,11 @@ module Bio
           i += 1
         end
         self
+      end
+
+      # Returns number of sequences in this alignment.
+      def number_of_sequences
+        self.size
       end
 
       # Returns an array of sequence names.
@@ -1578,6 +1593,7 @@ module Bio
         #(Hash&Array-like)
         @seqs.size
       end
+      alias number_of_sequences size
 
       # If the key exists, returns true. Otherwise, returns false.
       # (Like Hash#has_key?)
