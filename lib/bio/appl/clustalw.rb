@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::   Ruby's
 #
-#  $Id: clustalw.rb,v 1.14 2006/12/14 15:59:21 ngoto Exp $
+#  $Id: clustalw.rb,v 1.15 2006/12/14 16:04:02 ngoto Exp $
 #
 # Bio::ClustalW is a CLUSTAL W execution wrapper class.
 # Its object is also called an alignment factory.
@@ -168,7 +168,7 @@ module Bio
 
       Bio::Command.call_command(@command) do |io|
         io.close_write
-        @log = dout.read
+        @log = io.read
         t.join
       end
       @log
