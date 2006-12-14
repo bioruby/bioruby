@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::   Ruby's
 #
-#  $Id: report.rb,v 1.9 2006/04/30 05:50:19 ngoto Exp $
+#  $Id: report.rb,v 1.10 2006/12/14 15:22:05 ngoto Exp $
 #
 # MAFFT result parser class.
 # MAFFT is a very fast multiple sequence alignment software.
@@ -66,19 +66,27 @@ module Bio
       attr_reader :seqclass
 
       # Gets an multiple alignment.
-      # Returns an instance of Bio::Alignment class.
-      def align
+      # Returns a Bio::Alignment object.
+      def alignment
         do_parse() unless @align
         @align
       end
-      alias alignment align
+
+      # This will be deprecated. Instead, please use alignment.
+      #
+      # Gets an multiple alignment.
+      # Returns a Bio::Alignment object.
+      def align
+        warn "align method will be deprecated. Please use \'alignment\'."
+        alignment
+      end
 
       # Gets an fasta-format string of the sequences.
       # Returns a string.
       # Same as align.to_fasta.
       # Please refer to Bio::Alignment#to_fasta for arguments.
       def to_fasta(*arg)
-        align.to_fasta(*arg)
+        alignment.to_fasta(*arg)
       end
 
       # Gets an array of the sequences.
