@@ -6,7 +6,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: alignment.rb,v 1.17 2006/12/13 16:58:39 ngoto Exp $
+#  $Id: alignment.rb,v 1.18 2006/12/14 12:39:45 ngoto Exp $
 #
 # = About Bio::Alignment
 #
@@ -622,7 +622,7 @@ module Bio
             amino = true
           elsif seqclass == Bio::Sequence::NA then
             amino = false
-          elsif self.find { |x| /[EFILPQ]/i =~ x } then
+          elsif self.each_seq { |x| /[EFILPQ]/i =~ x } then
             amino = true
           else
             amino = nil
@@ -855,16 +855,29 @@ module Bio
       end
     end #module EnumerableExtension
 
-    # ClustalWFormatter is a module to create ClustalW-formatted text
-    # from an alignment object.
-    #
-    # It will be obsoleted and the methods will be frequently changed.
-    module ClustalWFormatter
-      # Check whether there are same names.
+    module Output
+      def output(format, *arg)
+        case format
+        when :clustal
+          output_clustal(*arg)
+        when :fasta
+          output_fasta(*arg)
+        when :phylip
+          output_phylip(*arg)
+        when :phylipnon
+          output_phylipnon(*arg)
+        when :molphy
+          output_molphy(*arg)
+        else
+          raise "Unknown format: #{format.inspect}"
+        end
+      end
+
+      # Check whether there are same names for ClustalW format.
       #
       # array:: names of the sequences (array of string)
       # len::   length to check (default:30)
-      def have_same_name?(array, len = 30)
+      def __clustal_have_same_name?(array, len = 30)
         na30 = array.collect do |k|
           k.to_s.split(/[\x00\s]/)[0].to_s[0, len].gsub(/\:\;\,\(\)/, '_').to_s
         end
@@ -891,15 +904,16 @@ module Bio
           false
         end
       end
-      private :have_same_name?
+      private :__clustal_have_same_name?
 
-      # Changes sequence names if there are conflicted names.
+      # Changes sequence names if there are conflicted names
+      # for ClustalW format.
       #
       # array:: names of the sequences (array of string)
       # len::   length to check (default:30)
-      def avoid_same_name(array, len = 30)
+      def __clustal_avoid_same_name(array, len = 30)
         na = array.collect { |k| k.to_s.gsub(/[\r\n\x00]/, ' ') }
-        if dupidx = have_same_name?(na, len)
+        if dupidx = __clustal_have_same_name?(na, len)
           procs = [
             Proc.new { |s, i|
               s[0, len].to_s.gsub(/\s/, '_') + s[len..-1].to_s
@@ -913,7 +927,7 @@ module Bio
               s = array[i]
               na[i] = pr.call(s.to_s, i)
             end
-            dupidx = have_same_name?(na, len)
+            dupidx = __clustal_have_same_name?(na, len)
             break unless dupidx
           end
           if dupidx then
@@ -924,13 +938,13 @@ module Bio
         end
         na
       end
-      private :avoid_same_name
+      private :__clustal_avoid_same_name
 
       # Generates ClustalW-formatted text
       # seqs:: sequences (must be an alignment object)
       # names:: names of the sequences
       # options:: options
-      def clustalw_formatter(seqs, names, options = {})
+      def __clustal_formatter(seqs, names, options = {})
         #(original)
         aln = [ "CLUSTAL   (0.00) multiple sequence alignment\n\n" ]
         len = seqs.seq_length
@@ -945,7 +959,7 @@ module Bio
           sn.collect! { |x| x.split(/\s/)[0].to_s }
         end
         if !options.has_key?(:avoid_same_name) or options[:avoid_same_name]
-          sn = avoid_same_name(sn)
+          sn = __clustal_avoid_same_name(sn)
         end
         
         if sn.find { |x| x.length > 10 } then
@@ -970,8 +984,9 @@ module Bio
         end
         mline = (options[:match_line] or seqs.match_line(mopt))
         
-        aseqs = seqs.collect do |s|
-          s.to_s.gsub(seqs.gap_regexp, gchar)
+        aseqs = Array.new(seqs.size).clear
+        seqs.each_seq do |s|
+          aseqs << s.to_s.gsub(seqs.gap_regexp, gchar)
         end
         case options[:case].to_s
         when /lower/i
@@ -1005,9 +1020,172 @@ module Bio
         end
         aln.join('')
       end
-      private :clustalw_formatter
-    end #module ClustalWFormatter
+      private :__clustal_formatter
 
+      # Generates ClustalW-formatted text
+      # seqs:: sequences (must be an alignment object)
+      # names:: names of the sequences
+      # options:: options
+      def output_clustal(options = {})
+        __clustal_formatter(self, self.sequence_names, options)
+      end
+
+      # to_clustal is deprecated. Instead, please use output_clustal.
+      #---
+      #alias to_clustal output_clustal
+      #+++
+      def to_clustal(*arg)
+        warn "to_clustal is deprecated. Please use output_clustal."
+        output_clustal(*arg)
+      end
+
+      # Generates fasta format text and returns a string.
+      def output_fasta(options={})
+        #(original)
+        width = (options[:width] or 70)
+        if options[:avoid_same_name] then
+          na = __clustal_avoid_same_name(self.sequence_names, 30)
+        else
+          na = self.sequence_names.collect do |k|
+            k.to_s.gsub(/[\r\n\x00]/, ' ')
+          end
+        end
+        if width and width > 0 then
+          w_reg = Regexp.new(".{1,#{width}}")
+          self.collect do |s|
+            ">#{na.shift}\n" + s.to_s.gsub(w_reg, "\\0\n")
+          end.join('')
+        else
+          self.collect do |s|
+            ">#{na.shift}\n" + s.to_s + "\n"
+          end.join('')
+        end
+      end
+
+      # generates phylip interleaved alignment format as a string
+      def output_phylip(options = {})
+        aln, aseqs, lines = __output_phylip_common(options)
+        lines.times do
+          aseqs.each { |a| aln << a.shift }
+          aln << "\n"
+        end
+        aln.pop if aln[-1] == "\n"
+        aln.join('')
+      end
+
+      # generates Phylip3.2 (old) non-interleaved format as a string
+      def output_phylipnon(options = {})
+        aln, aseqs, lines = __output_phylip_common(options)
+        aln.first + aseqs.join('')
+      end
+
+      # common routine for interleaved/non-interleaved phylip format
+      def __output_phylip_common(options = {})
+        len = self.alignment_length
+        aln = [ " #{self.size} #{len}\n" ]
+        sn = self.sequence_names.collect { |x| x.to_s.gsub(/[\r\n\x00]/, ' ') }
+        if options[:replace_space]
+          sn.collect! { |x| x.gsub(/\s/, '_') }
+        end
+        if !options.has_key?(:escape) or options[:escape]
+          sn.collect! { |x| x.gsub(/[\:\;\,\(\)]/, '_') }
+        end
+        if !options.has_key?(:split) or options[:split]
+          sn.collect! { |x| x.split(/\s/)[0].to_s }
+        end
+        if !options.has_key?(:avoid_same_name) or options[:avoid_same_name]
+          sn = __clustal_avoid_same_name(sn, 10)
+        end
+
+        namewidth = 10
+        seqwidth  = (options[:width] or 60)
+        seqwidth = seqwidth.div(10) * 10
+        seqregexp = Regexp.new("(.{1,#{seqwidth.div(10) * 11}})")
+        gchar = (options[:gap_char] or '-')
+
+        aseqs = Array.new(len).clear
+        self.each_seq do |s|
+          aseqs << s.to_s.gsub(self.gap_regexp, gchar)
+        end
+        case options[:case].to_s
+        when /lower/i
+          aseqs.each { |s| s.downcase! }
+        when /upper/i
+          aseqs.each { |s| s.upcase! }
+        end
+        
+        aseqs.collect! do |s|
+          snx = sn.shift
+          head = sprintf("%*s", -namewidth, snx.to_s)[0, namewidth]
+          head2 = ' ' * namewidth
+          s << (gchar * (len - s.length))
+          s.gsub!(/(.{1,10})/n, " \\1")
+          s.gsub!(seqregexp, "\\1\n")
+          a = s.split(/^/)
+          head += a.shift
+          ret = a.collect { |x| head2 + x }
+          ret.unshift(head)
+          ret
+        end
+        lines = (len + seqwidth - 1).div(seqwidth)
+        [ aln, aseqs, lines ]
+      end
+
+      # Generates Molphy alignment format text as a string
+      def output_molphy(options = {})
+        len = self.alignment_length
+        header = "#{self.size} #{len}\n"
+        sn = self.sequence_names.collect { |x| x.to_s.gsub(/[\r\n\x00]/, ' ') }
+        if options[:replace_space]
+          sn.collect! { |x| x.gsub(/\s/, '_') }
+        end
+        if !options.has_key?(:escape) or options[:escape]
+          sn.collect! { |x| x.gsub(/[\:\;\,\(\)]/, '_') }
+        end
+        if !options.has_key?(:split) or options[:split]
+          sn.collect! { |x| x.split(/\s/)[0].to_s }
+        end
+        if !options.has_key?(:avoid_same_name) or options[:avoid_same_name]
+          sn = __clustal_avoid_same_name(sn, 30)
+        end
+
+        seqwidth  = (options[:width] or 60)
+        seqregexp = Regexp.new("(.{1,#{seqwidth}})")
+        gchar = (options[:gap_char] or '-')
+
+        aseqs = Array.new(len).clear
+        self.each_seq do |s|
+          aseqs << s.to_s.gsub(self.gap_regexp, gchar)
+        end
+        case options[:case].to_s
+        when /lower/i
+          aseqs.each { |s| s.downcase! }
+        when /upper/i
+          aseqs.each { |s| s.upcase! }
+        end
+        
+        aseqs.collect! do |s|
+          s << (gchar * (len - s.length))
+          s.gsub!(seqregexp, "\\1\n")
+          sn.shift + "\n" + s
+        end
+        aseqs.unshift(header)
+        aseqs.join('')
+      end
+    end #module Output
+
+    module EnumerableExtension
+      include Output
+
+      # Returns an array of sequence names.
+      # The order of the names must be the same as
+      # the order of <tt>each_seq</tt>.
+      def sequence_names
+        i = 0
+        self.each_seq { |s| i += 1 }
+        (0...i).to_a
+      end
+    end #module EnumerableExtension
 
     # Bio::Alignment::ArrayExtension is a set of useful methods for
     # multiple sequence alignment.
@@ -1026,12 +1204,6 @@ module Bio
       # It works the same as Array#each.
       def each_seq(&block) #:yields: seq
         each(&block)
-      end
-
-      include ClustalWFormatter
-      # Returns a string of Clustal W formatted text of the alignment.
-      def to_clustal(options = {})
-        clustalw_formatter(self, (0...(self.size)).to_a, options)
       end
     end #module ArrayExtension
 
@@ -1059,8 +1231,9 @@ module Bio
       # Yields a sequence.
       #
       # It works the same as Hash#each_value.
-      def each_seq(&block) #:yields: seq
-        each_value(&block)
+      def each_seq #:yields: seq
+        #each_value(&block)
+        each_key { |k| yield self[k] }
       end
 
       # Iterates over each sequence and each results running block
@@ -1122,15 +1295,11 @@ module Bio
         self
       end
 
-      include ClustalWFormatter
-      # Returns a string of Clustal W formatted text of the alignment.
-      def to_clustal(options = {})
-        seqs = SequenceArray.new
-        names = self.keys
-        names.each do |k|
-          seqs << self[k]
-        end
-        clustalw_formatter(seqs, names, options)
+      # Returns an array of sequence names.
+      # The order of the names must be the same as
+      # the order of <tt>each_seq</tt>.
+      def sequence_names
+        self.keys
       end
     end #module HashExtension
 
@@ -1782,7 +1951,7 @@ module Bio
         options = (arg.shift or {})
         width = options[:width] unless width
         if options[:avoid_same_name] then
-          na = avoid_same_name(self.keys, 30)
+          na = __clustal_avoid_same_name(self.keys, 30)
         else
           na = self.keys.collect { |k| k.to_s.gsub(/[\r\n\x00]/, ' ') }
         end
@@ -1813,15 +1982,13 @@ module Bio
       # Converts to fasta format and returns a string.
       #
       # The specification of the argument will be changed.
+      #
+      # Note: <tt>to_fasta</tt> is deprecated.
+      # Please use <tt>output_fasta</tt> instead.
       def to_fasta(*arg)
         #(original)
+        warn "to_fasta is deprecated. Please use output_fasta."
         self.to_fasta_array(*arg).join('')
-      end
-
-      include ClustalWFormatter
-      # Returns a string of Clustal W formatted text of the alignment.
-      def to_clustal(options = {})
-        clustalw_formatter(self, self.keys, options)
       end
 
       # The method name <tt>consensus</tt> will be obsoleted.
