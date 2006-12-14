@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_alignment.rb,v 1.7 2006/01/24 14:11:34 ngoto Exp $
+#  $Id: test_alignment.rb,v 1.8 2006/12/14 14:10:57 ngoto Exp $
 #
 
 require 'pathname'
@@ -544,34 +544,35 @@ module Bio
     end
   end #class TestAlignmentEnumerableExtension
 
-  class TestAlignmentClustalWFormatter < Test::Unit::TestCase
+  class TestAlignmentOutput < Test::Unit::TestCase
     def setup
       @obj = Object.new
-      @obj.extend(Alignment::ClustalWFormatter)
+      @obj.extend(Alignment::Output)
     end
 
-    def test_have_same_name_true
+    def test_clustal_have_same_name_true
       assert_equal([ 0, 1 ], @obj.instance_eval {
-                     have_same_name?([ 'ATP ATG', 'ATP ATA', 'BBB' ]) })
+               __clustal_have_same_name?([ 'ATP ATG', 'ATP ATA', 'BBB' ]) })
     end
 
     def test_have_same_name_false
       assert_equal(false, @obj.instance_eval {
-               have_same_name?([ 'GTP ATG', 'ATP ATA', 'BBB' ]) })
+               __clustal_have_same_name?([ 'GTP ATG', 'ATP ATA', 'BBB' ]) })
     end
 
     def test_avoid_same_name
       assert_equal([ 'ATP_ATG', 'ATP_ATA', 'BBB' ],
-                   @obj.instance_eval {
-                     avoid_same_name([ 'ATP ATG', 'ATP ATA', 'BBB' ]) })
-    end
-    def test_avoid_same_name_numbering
-      assert_equal([ '0_ATP', '1_ATP', '2_BBB' ],
-                   @obj.instance_eval {
-                     avoid_same_name([ 'ATP', 'ATP', 'BBB' ]) })
+               @obj.instance_eval {
+                 __clustal_avoid_same_name([ 'ATP ATG', 'ATP ATA', 'BBB' ]) })
     end
 
-  end #class TestAlignmentClustalWFormatter
+    def test_avoid_same_name_numbering
+      assert_equal([ '0_ATP', '1_ATP', '2_BBB' ],
+               @obj.instance_eval {
+                 __clustal_avoid_same_name([ 'ATP', 'ATP', 'BBB' ]) })
+    end
+
+  end #class TestAlignmentOutput
 
 
   class TestAlignment < Test::Unit::TestCase
