@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
 # License::   Ruby's
 #
-#  $Id: sim4.rb,v 1.8 2006/12/14 15:56:22 ngoto Exp $
+#  $Id: sim4.rb,v 1.9 2006/12/14 15:59:21 ngoto Exp $
 #
 # The sim4 execution wrapper class.
 #
@@ -110,7 +110,7 @@ module Bio
       @command = [ @program, filename1, (filename2 or @database), *@options ]
       @output = nil
       @report = nil
-      Bio::Command.call_command(*@command) do |io|
+      Bio::Command.call_command(@command) do |io|
         io.close_write
         @output = io.read
         @report = Bio::Sim4::Report.new(@output)
