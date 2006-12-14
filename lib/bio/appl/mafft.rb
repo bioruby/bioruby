@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::   Ruby's
 #
-#  $Id: mafft.rb,v 1.11 2006/09/25 08:09:22 ngoto Exp $
+#  $Id: mafft.rb,v 1.12 2006/12/14 14:54:50 ngoto Exp $
 #
 # Bio::MAFFT is a wrapper class to execute MAFFT.
 # MAFFT is a very fast multiple sequence alignment software.
@@ -23,14 +23,12 @@
 # * http://www.biophys.kyoto-u.ac.jp/~katoh/programs/align/mafft/
 #
 
+require 'tempfile'
+
+require 'bio/command'
+
 require 'bio/db/fasta'
 require 'bio/io/flatfile'
-
-#--
-# We use Open3.popen3, because MAFFT on win32 requires Cygwin.
-#++
-require 'open3'
-require 'tempfile'
 
 module Bio
 
@@ -107,28 +105,41 @@ module Bio
     # Creates a new alignment factory.
     # +program+ is the name of the program.
     # +opt+ is options of the program.
-    def initialize(program, option)
+    def initialize(program, opt)
       @program = program
-      @option = option
+      @options = opt
       @command = nil
       @output = nil
       @report = nil
-      @log = nil
     end
 
     # program name
     attr_accessor :program
 
     # options
-    attr_accessor :option
+    attr_accessor :options
+
+    # option is deprecated. Instead, please use options.
+    def option
+      warn "option is deprecated. Please use options."
+      options
+    end
 
     # Shows last command-line string. Returns nil or an array of String.
     # Note that filenames described in the command-line may already
     # be removed because they are temporary files.
     attr_reader :command
 
+    #---
     # last message to STDERR when executing the program.
-    attr_reader :log
+    #attr_reader :log
+    #+++
+
+    #log is deprecated (no replacement) and returns empty string.
+    def log
+      warn "log is deprecated (no replacement) and returns empty string."
+      ''
+    end
 
     # Shows latest raw alignment result.
     # Since a result of MAFFT is simply a multiple-fasta format,
@@ -188,18 +199,11 @@ module Bio
       @command = [ @program, *opt ]
       #STDERR.print "DEBUG: ", @command.join(" "), "\n"
       @output = nil
-      @log = nil
-      Open3.popen3(*@command) do |din, dout, derr|
-        din.close
-        derr.sync = true
-        t = Thread.start do
-          @log = derr.read
-        end
-        ff = Bio::FlatFile.new(Bio::FastaFormat, dout)
+      Bio::Command.call_command(*@command) do |io|
+        io.close_write
+        ff = Bio::FlatFile.new(Bio::FastaFormat, io)
         @output = ff.to_a
-        t.join
       end
-      @log
     end
 
   end #class MAFFT

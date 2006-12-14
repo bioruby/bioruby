@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
 # License::   Ruby's
 #
-#  $Id: sim4.rb,v 1.6 2006/04/30 05:50:19 ngoto Exp $
+#  $Id: sim4.rb,v 1.7 2006/12/14 14:54:50 ngoto Exp $
 #
 # The sim4 execution wrapper class.
 #
@@ -15,8 +15,8 @@
 #   http://www.genome.org/cgi/content/abstract/8/9/967
 #
 
-require 'open3'
 require 'tempfile'
+require 'bio/command'
 
 module Bio
 
@@ -29,14 +29,13 @@ module Bio
     # [+program+]  Program name. Usually 'sim4' in UNIX.
     # [+database+] Default file name of database('seq2').
     # [+option+]   Options (array of strings).
-    def initialize(program = 'sim4', database = nil, option = [])
+    def initialize(program = 'sim4', database = nil, opt = [])
       @program = program
-      @option = option
+      @options = opt
       @database = database #seq2
       @command = nil
       @output = nil
       @report = nil
-      @log = nil
     end
 
     # default file name of database('seq2')
@@ -46,13 +45,27 @@ module Bio
     attr_reader :program
 
     # options
-    attr_reader :option
+    attr_accessor :options
+
+    # option is deprecated. Instead, please use options.
+    def option
+      warn "option is deprecated. Please use options."
+      options
+    end
 
     # last command-line strings executed by the object
     attr_reader :command
 
+    #---
     # last messages of program reported to the STDERR
-    attr_reader :log
+    #attr_reader :log
+    #+++
+
+    #log is deprecated (no replacement) and returns empty string.
+    def log
+      warn "log is deprecated (no replacement) and returns empty string."
+      ''
+    end
 
     # last result text (String)
     attr_reader :output
@@ -96,18 +109,11 @@ module Bio
     def exec_local(filename1, filename2 = nil)
       @command = [ @program, filename1, (filename2 or @database), *@option ]
       @output = nil
-      @log = nil
       @report = nil
-      Open3.popen3(*@command) do |din, dout, derr|
-        din.close
-        derr.sync = true
-        t = Thread.start { @log = derr.read }
-        begin
-          @output = dout.read
-          @report = Bio::Sim4::Report.new(@output)
-        ensure
-          t.join
-        end
+      Bio::Command.call_command(*@command) do |io|
+        io.close_write
+        @output = io.read
+        @report = Bio::Sim4::Report.new(@output)
       end
       @report
     end

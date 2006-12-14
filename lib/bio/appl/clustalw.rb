@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::   Ruby's
 #
-#  $Id: clustalw.rb,v 1.11 2006/04/30 05:50:19 ngoto Exp $
+#  $Id: clustalw.rb,v 1.12 2006/12/14 14:54:50 ngoto Exp $
 #
 # Bio::ClustalW is a CLUSTAL W execution wrapper class.
 # Its object is also called an alignment factory.
@@ -23,8 +23,8 @@
 
 
 require 'tempfile'
-require 'open3'
 
+require 'bio/command'
 require 'bio/sequence'
 require 'bio/alignment'
 
@@ -38,9 +38,9 @@ module Bio
     autoload :Report, 'bio/appl/clustalw/report'
 
     # Creates a new CLUSTAL W execution wrapper object (alignment factory).
-    def initialize(program = 'clustalw', option = [])
+    def initialize(program = 'clustalw', opt = [])
       @program = program
-      @option = option
+      @options = opt
       @command = nil
       @output = nil
       @report = nil
@@ -51,7 +51,13 @@ module Bio
     attr_accessor :program
 
     # options
-    attr_accessor :option
+    attr_accessor :options
+
+    # option is deprecated. Instead, please use options.
+    def option
+      warn "option is deprecated. Please use options."
+      options
+    end
 
     # Returns last command-line strings executed by this factory.
     # Note that filenames described in the command-line may already
@@ -143,8 +149,15 @@ module Bio
     # Returns last alignment guild-tree (file.dnd).
     attr_reader :output_dnd
 
+    #---
     # Returns last error messages (to stderr) of CLUSTAL W execution.
-    attr_reader :errorlog
+    #attr_reader :errorlog
+    #+++
+    #errorlog is deprecated (no replacement) and returns empty string.
+    def errorlog
+      warn "errorlog is deprecated (no replacement) and returns empty string."
+      ''
+    end
 
     private
     # Executes the program in the local machine.
@@ -153,19 +166,11 @@ module Bio
       #STDERR.print "DEBUG: ", @command.join(" "), "\n"
       @log = nil
 
-      Open3.popen3(*@command) do |din, dout, derr|
-        din.close
-        t = Thread.start do
-          @errorlog = derr.read
-        end
+      Bio::Command.call_command(*@command) do |io|
+        io.close_write
         @log = dout.read
         t.join
       end
-#      @command_string = @command.join(" ")
-#      IO.popen(@command, "r") do |io|
-#	io.sync = true
-#	@log = io.read
-#      end
       @log
     end
 
