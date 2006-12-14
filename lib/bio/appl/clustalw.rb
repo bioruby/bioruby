@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::   Ruby's
 #
-#  $Id: clustalw.rb,v 1.15 2006/12/14 16:04:02 ngoto Exp $
+#  $Id: clustalw.rb,v 1.16 2006/12/14 16:05:59 ngoto Exp $
 #
 # Bio::ClustalW is a CLUSTAL W execution wrapper class.
 # Its object is also called an alignment factory.
@@ -101,7 +101,7 @@ module Bio
         end
         break if seqtype
       end
-      query_string(seqs.to_fasta(70, :avoid_same_name => true), seqtype)
+      query_string(seqs.output_fasta(70, :avoid_same_name => true), seqtype)
     end
 
     # Performs alignment for +str+.
