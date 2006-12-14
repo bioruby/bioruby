@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
 # License::   Ruby's
 #
-#  $Id: sim4.rb,v 1.7 2006/12/14 14:54:50 ngoto Exp $
+#  $Id: sim4.rb,v 1.8 2006/12/14 15:56:22 ngoto Exp $
 #
 # The sim4 execution wrapper class.
 #
@@ -107,7 +107,7 @@ module Bio
     # <tt>filename1</tt> and <tt>filename2</tt> should be file name strings.
     # If <tt>filename2</tt> is not specified, using <tt>self.database</tt>.
     def exec_local(filename1, filename2 = nil)
-      @command = [ @program, filename1, (filename2 or @database), *@option ]
+      @command = [ @program, filename1, (filename2 or @database), *@options ]
       @output = nil
       @report = nil
       Bio::Command.call_command(*@command) do |io|

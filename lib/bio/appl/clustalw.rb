@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::   Ruby's
 #
-#  $Id: clustalw.rb,v 1.12 2006/12/14 14:54:50 ngoto Exp $
+#  $Id: clustalw.rb,v 1.13 2006/12/14 15:56:22 ngoto Exp $
 #
 # Bio::ClustalW is a CLUSTAL W execution wrapper class.
 # Its object is also called an alignment factory.
@@ -82,7 +82,7 @@ module Bio
       if seqs then
         query_align(seqs)
       else
-        exec_local(@option)
+        exec_local(@options)
       end
     end
 
@@ -134,7 +134,7 @@ module Bio
         "-outorder=input"
       ]
       opt << "-type=#{seqtype}" if seqtype
-      opt.concat(@option)
+      opt.concat(@options)
       exec_local(opt)
       tf_out.open
       @output = tf_out.read
