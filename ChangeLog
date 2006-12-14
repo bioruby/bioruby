@@ -1,3 +1,9 @@
+2006-12-15  Mitsuteru Nakao <n@bioruby.org>
+
+	* lib/bio/appl/iprscan/report.rb
+	
+	  Bio::Iprscan::Report for InterProScan output is newly added.		
+
 2006-10-05  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/db/newick.rb
