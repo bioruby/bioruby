@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::   Ruby's
 #
-#  $Id: report.rb,v 1.10 2006/12/14 15:22:05 ngoto Exp $
+#  $Id: report.rb,v 1.11 2006/12/15 16:23:18 ngoto Exp $
 #
 # MAFFT result parser class.
 # MAFFT is a very fast multiple sequence alignment software.
@@ -22,6 +22,7 @@
 # * http://www.biophys.kyoto-u.ac.jp/~katoh/programs/align/mafft/
 #
 
+require 'stringio'
 require 'bio/db/fasta'
 require 'bio/io/flatfile'
 require 'bio/appl/mafft'
@@ -38,12 +39,21 @@ module Bio
     class Report
 
       # Creates a new Report object.
-      # +ary+ should be an Array of Bio::FastaFormat.
+      # +str+ should be multi-fasta formatted text as a string.
       # +seqclass+ should on of following:
       # Class:  Bio::Sequence::AA, Bio::Sequence::NA, ...
       # String: 'PROTEIN', 'DNA', ...
-      def initialize(ary, seqclass = nil)
-        @data = ary
+      #
+      # Compatibility Note: the old usage (to get array of Bio::FastaFormat
+      # objects) is deprecated.
+      def initialize(str, seqclass = nil)
+        if str.is_a?(Array) then
+          warn "Array of Bio::FastaFormat objects will be no longer accepted."
+          @data = str
+        else
+          ff = Bio::FlatFile.new(Bio::FastaFormat, StringIO.new(str))
+          @data = ff.to_a
+        end
         @align = nil
         case seqclass
         when /PROTEIN/i
