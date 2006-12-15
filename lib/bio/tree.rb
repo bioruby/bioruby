@@ -5,7 +5,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: tree.rb,v 1.4 2006/12/15 18:32:00 ngoto Exp $
+# $Id: tree.rb,v 1.5 2006/12/15 18:43:10 ngoto Exp $
 #
 
 require 'matrix'
@@ -369,6 +369,19 @@ module Bio
     def add_edge(source, target, edge = Edge.new)
       @pathway.append(Bio::Relation.new(source, target, edge))
       edge
+    end
+
+    # Finds a node in the tree by given name and returns the node.
+    # If the node does not found, returns nil.
+    # If multiple nodes with the same name exist,
+    # the result would be one of those (unspecified).
+    def find_node_by_name(str)
+      self.each_node do |node|
+        if get_node_name(node) == str
+          return node
+        end
+      end
+      nil
     end
 
     # Adds a node to the tree.
