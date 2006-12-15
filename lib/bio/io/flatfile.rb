@@ -5,7 +5,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: flatfile.rb,v 1.52 2006/12/14 19:52:53 ngoto Exp $
+#  $Id: flatfile.rb,v 1.53 2006/12/15 16:54:25 ngoto Exp $
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
@@ -1180,8 +1180,9 @@ module Bio
           het = RuleRegexp[ 'Bio::PDB::ChemicalComponent',
             /^RESIDUE +.+ +\d+\s*$/ ],
 
-          clustal = RuleRegexp[ 'Bio::ClustalW::Report',
-          /^CLUSTAL .*\(.*\).*sequence +alignment/ ],
+          clustal = RuleRegexp2[ 'Bio::ClustalW::Report',
+          /^CLUSTAL .*\(.*\).*sequence +alignment/,
+          /^CLUSTAL FORMAT for T-COFFEE/ ],
 
           gcg_msf = RuleRegexp[ 'Bio::GCG::Msf',
           /^!!(N|A)A_MULTIPLE_ALIGNMENT .+/ ],
