@@ -5,7 +5,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: tree.rb,v 1.5 2006/12/15 18:43:10 ngoto Exp $
+# $Id: tree.rb,v 1.6 2006/12/15 18:45:17 ngoto Exp $
 #
 
 require 'matrix'
@@ -375,7 +375,7 @@ module Bio
     # If the node does not found, returns nil.
     # If multiple nodes with the same name exist,
     # the result would be one of those (unspecified).
-    def find_node_by_name(str)
+    def get_node_by_name(str)
       self.each_node do |node|
         if get_node_name(node) == str
           return node
