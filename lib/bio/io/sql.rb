@@ -2,9 +2,10 @@
 # = bio/io/sql.rb - BioSQL access module
 #
 # Copyright::  Copyright (C) 2002 Toshiaki Katayama <k@bioruby.org>
+# Copyright::  Copyright (C) 2006 Raoul Pierre Bonnal Jean <raoul.bonnal@itb.cnr.it>
 # License::    Ruby's
 #
-# $Id: sql.rb,v 1.5 2006/09/19 05:49:19 k Exp $
+# $Id: sql.rb,v 1.6 2006/12/15 14:24:42 k Exp $
 #
 
 begin
@@ -68,8 +69,8 @@ class SQL
       row = @dbh.execute(query, @bioentry_id).fetch
       return unless row
 
-      mol = row['molecule']
-      seq = row['biosequence_str']
+      mol = row['alphabet']
+      seq = row['seq']
 
       case mol
       when /.na/i			# 'dna' or 'rna'
@@ -82,12 +83,12 @@ class SQL
     # Returns Bio::Sequence::NA or AA object (by lazy fetching).
     def subseq(from, to)
       length = to - from + 1
-      query = "select molecule, substring(biosequence_str, ?, ?) as subseq" +
+      query = "select alphabet, substring(seq, ?, ?) as subseq" +
               " from biosequence where bioentry_id = ?"
       row = @dbh.execute(query, from, length, @bioentry_id).fetch
       return unless row
 
-      mol = row['molecule']
+      mol = row['alphabet']
       seq = row['subseq']
 
       case mol
@@ -107,9 +108,9 @@ class SQL
         next unless row
 
         f_id = row['seqfeature_id']
-        k_id = row['seqfeature_key_id']
-        s_id = row['seqfeature_source_id']
-        rank = row['seqfeature_rank'].to_i - 1
+        k_id = row['type_term_id']
+        s_id = row['source_term_id']
+        rank = row['rank'].to_i - 1
 
         # key : type (gene, CDS, ...)
         type = feature_key(k_id)
@@ -142,16 +143,16 @@ class SQL
         next unless row
 
         hash = {
-          'start'	=> row['reference_start'],
-          'end'	=> row['reference_end'],
-          'journal'	=> row['reference_location'],
-          'title'	=> row['reference_title'],
-          'authors'	=> row['reference_authors'],
-          'medline'	=> row['reference_medline']
+          'start'	=> row['start_pos'],
+          'end'		=> row['end_pos'],
+          'journal'	=> row['location'],
+          'title'	=> row['title'],
+          'authors'	=> row['authors'],
+          'medline'	=> row['crc']
         }
         hash.default = ''
 
-        rank = row['reference_rank'].to_i - 1
+        rank = row['rank'].to_i - 1
         array[rank] = hash
       end
       return array
@@ -171,7 +172,7 @@ class SQL
       query = "select * from comment where bioentry_id = ?"
       @dbh.execute(query, @bioentry_id).fetch_all.each do |row|
         next unless row
-        rank = row['comment_rank'].to_i - 1
+        rank = row['rank'].to_i - 1
         array[rank] = row['comment_text']
       end
       return array
@@ -210,14 +211,14 @@ class SQL
     # Use lineage, common_name, ncbi_taxa_id methods to extract in detail.
     def taxonomy
       query = <<-END
-        select full_lineage, common_name, ncbi_taxa_id
-        from bioentry_taxa, taxa
-        where bioentry_id = ? and bioentry_taxa.taxa_id = taxa.taxa_id
+        select taxon_name.name, taxon.ncbi_taxon_id from bioentry
+        join taxon_name using(taxon_id) join taxon using (taxon_id)
+        where bioentry_id = ?
       END
       row = @dbh.execute(query, @bioentry_id).fetch
-      @lineage = row ? row['full_lineage'] : ''
-      @common_name = row ? row['common_name'] : ''
-      @ncbi_taxa_id = row ? row['ncbi_taxa_id'] : ''
+#     @lineage = row ? row['full_lineage'] : ''
+      @common_name = row ? row['name'] : ''
+      @ncbi_taxa_id = row ? row['ncbi_taxon_id'] : ''
       row ? [@lineage, @common_name, @ncbi_taxa_id] : []
     end
 
@@ -240,50 +241,50 @@ class SQL
     private
 
     def feature_key(k_id)
-      query = "select * from seqfeature_key where seqfeature_key_id = ?"
+      query = "select * from term where term_id= ?"
       row = @dbh.execute(query, k_id).fetch
-      row ? row['key_name'] : ''
+      row ? row['name'] : ''
     end
 
     def feature_source(s_id)
-      query = "select * from seqfeature_source where seqfeature_source_id = ?"
+      query = "select * from term where term_id = ?"
       row = @dbh.execute(query, s_id).fetch
-      row ? row['source_name'] : ''
+      row ? row['name'] : ''
     end
 
     def feature_locations(f_id)
       locations = []
-      query = "select * from seqfeature_location where seqfeature_id = ?"
+      query = "select * from location where seqfeature_id = ?"
       @dbh.execute(query, f_id).fetch_all.each do |row|
         next unless row
 
         location = Bio::Location.new
-        location.strand = row['seq_strand']
-        location.from = row['seq_start']
-        location.to = row['seq_end']
+        location.strand = row['strand']
+        location.from = row['start_pos']
+        location.to = row['end_pos']
 
-        xref = feature_locations_remote(row['seqfeature_location_id'])
+        xref = feature_locations_remote(row['dbxref_if'])
         location.xref_id = xref.shift unless xref.empty?
 
         # just omit fuzzy location for now...
         #feature_locations_qv(row['seqfeature_location_id'])
 
-        rank = row['location_rank'].to_i - 1
+        rank = row['rank'].to_i - 1
         locations[rank] = location
       end
       return Bio::Locations.new(locations)
     end
 
     def feature_locations_remote(l_id)
-      query = "select * from remote_seqfeature_name where seqfeature_location_id = ?"
+      query = "select * from  dbxref where dbxref_id = ?"
       row = @dbh.execute(query, l_id).fetch
       row ? [row['accession'], row['version']] : []
     end
 
     def feature_locations_qv(l_id)
-      query = "select * from location_qualifier_value where seqfeature_location_id = ?"
+      query = "select * from location_qualifier_value where location_id = ?"
       row = @dbh.execute(query, l_id).fetch
-      row ? [row['qualifier_value'], row['slot_value']] : []
+      row ? [row['value'], row['int_value']] : []
     end
 
     def feature_qualifiers(f_id)
@@ -292,20 +293,23 @@ class SQL
       @dbh.execute(query, f_id).fetch_all.each do |row|
         next unless row
 
-        key = feature_qualifiers_key(row['seqfeature_qualifier_id'])
-        value = row['qualifier_value']
+        key = feature_qualifiers_key(row['seqfeature_id'])
+        value = row['value']
         qualifier = Bio::Feature::Qualifier.new(key, value)
 
-        rank = row['seqfeature_qualifier_rank'].to_i - 1
+        rank = row['rank'].to_i - 1
         qualifiers[rank] = qualifier
       end
       return qualifiers.compact	# .compact is nasty hack for a while
     end
 
     def feature_qualifiers_key(q_id)
-      query = "select * from seqfeature_qualifier where seqfeature_qualifier_id = ?"
+      query = <<-END
+        select * from seqfeature_qualifier_value
+        join term using(term_id) where seqfeature_id = ?
+      END
       row = @dbh.execute(query, q_id).fetch
-      row ? row['qualifier_name'] : ''
+      row ? row['name'] : ''
     end
   end
 
