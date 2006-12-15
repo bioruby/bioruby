@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: bio.rb,v 1.74 2006/12/15 06:29:01 nakao Exp $
+# $Id: bio.rb,v 1.75 2006/12/15 15:02:27 ngoto Exp $
 #
 
 module Bio
@@ -233,6 +233,11 @@ module Bio
   module GCG
     autoload :Msf,          'bio/appl/gcg/msf'
     autoload :Seq,          'bio/appl/gcg/seq'
+  end
+
+  module Phylip
+    autoload :PhylipFormat,   'bio/appl/phylip/alignment'
+    autoload :DistanceMatrix, 'bio/appl/phylip/distance_matrix'
   end
 
   autoload :Iprscan,        'bio/appl/iprscan/report'
