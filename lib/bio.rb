@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: bio.rb,v 1.73 2006/12/14 19:52:53 ngoto Exp $
+# $Id: bio.rb,v 1.74 2006/12/15 06:29:01 nakao Exp $
 #
 
 module Bio
@@ -234,6 +234,8 @@ module Bio
     autoload :Msf,          'bio/appl/gcg/msf'
     autoload :Seq,          'bio/appl/gcg/seq'
   end
+
+  autoload :Iprscan,        'bio/appl/iprscan/report'
 
   ### Utilities
 
