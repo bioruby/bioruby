@@ -6,7 +6,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: distance_matrix.rb,v 1.1 2006/12/15 14:36:14 ngoto Exp $
+#  $Id: distance_matrix.rb,v 1.2 2006/12/15 14:59:26 ngoto Exp $
 #
 # = About Bio::Phylip::DistanceMatrix
 #
@@ -66,15 +66,18 @@ module Bio
       attr_reader :otu_names
 
       # Generates a new phylip distance matrix formatted text as a string.
-      def self.generate(matrix, otu_names = nil)
+      def self.generate(matrix, otu_names = nil, options = {})
         if matrix.row_size != matrix.column_size then
           raise "must be a square matrix"
         end
         otus = matrix.row_size
-        data = (0...otus).collect do |i|
+        names = (0...otus).collect do |i|
           name = ((otu_names and otu_names[i]) or "OTU#{i.to_s}")
+          name
+        end
+        data = (0...otus).collect do |i|
           x = (0...otus).collect { |j|  sprintf("%9.6f", matrix[i, j]) }
-          x.unshift(sprintf("%-10s", name)[0, 10])
+          x.unshift(sprintf("%-10s", names[i])[0, 10])
 
           str = x[0, 7].join(' ') + "\n"
           7.step(otus + 1, 7) do |k|

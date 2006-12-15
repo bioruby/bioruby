@@ -6,7 +6,7 @@
 #               Daniel Amelang <dan@amelang.net>
 # License::     Ruby's
 #
-# $Id: newick.rb,v 1.5 2006/12/13 17:29:17 ngoto Exp $
+# $Id: newick.rb,v 1.6 2006/12/15 14:59:25 ngoto Exp $
 #
 
 require 'bio/tree'
@@ -205,9 +205,30 @@ module Bio
         output_newick(*arg, &block)
       when :nhx
         output_nhx(*arg, &block)
+      when :phylip_distance_matrix
+        output_phylip_distance_matrix(*arg, &block)
       else
         raise 'Unknown format'
       end
+    end
+
+    #---
+    # This method isn't suitable to written in this file?
+    #+++
+
+    # Generates phylip-style distance matrix as a string.
+    # if nodes is not given, all leaves in the tree are used.
+    # If the names of some of the given (or default) nodes
+    # are not defined or are empty, the names are automatically generated.
+    def output_phylip_distance_matrix(nodes = nil, options = {})
+      nodes = self.leaves unless nodes
+      names = nodes.collect do |x|
+        y = get_node_name(x)
+        y = sprintf("%x", x.__id__.abs) if y.empty?
+        y
+      end
+      m = self.distance_matrix(nodes)
+      Bio::Phylip::DistanceMatrix.generate(m, names, options)
     end
 
   end #class Tree
