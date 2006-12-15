@@ -2,10 +2,10 @@
 # = bio/io/sql.rb - BioSQL access module
 #
 # Copyright::  Copyright (C) 2002 Toshiaki Katayama <k@bioruby.org>
-# Copyright::  Copyright (C) 2006 Raoul Pierre Bonnal Jean <raoul.bonnal@itb.cnr.it>
+# Copyright::  Copyright (C) 2006 Raoul Jean Pierre Bonnal <raoul.bonnal@itb.cnr.it>
 # License::    Ruby's
 #
-# $Id: sql.rb,v 1.6 2006/12/15 14:24:42 k Exp $
+# $Id: sql.rb,v 1.7 2006/12/15 16:53:20 k Exp $
 #
 
 begin
