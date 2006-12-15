@@ -5,7 +5,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: tree.rb,v 1.3 2006/12/13 16:29:37 ngoto Exp $
+# $Id: tree.rb,v 1.4 2006/12/15 18:32:00 ngoto Exp $
 #
 
 require 'matrix'
@@ -693,6 +693,15 @@ module Bio
       return (r1 & r2).first
     end
 
+    # Returns total distance of all edges.
+    # It would raise error if some edges didn't contain distance values.
+    def total_distance
+      distance = 0
+      self.each_edge do |source, target, edge|
+        distance += get_edge_distance(edge)
+      end
+      distance
+    end
 
     # Calculates distance matrix of given nodes.
     # If _nodes_ is nil, or is ommited, it acts the same as
