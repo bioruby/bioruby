@@ -5,7 +5,7 @@
 #
 # License::    Ruby's
 #
-# $Id: nexus.rb,v 1.1 2006/12/19 05:09:46 czmasek Exp $
+# $Id: nexus.rb,v 1.2 2006/12/19 05:37:50 czmasek Exp $
 #
 # == Description
 #
@@ -89,9 +89,7 @@
 #
 
 require 'bio/sequence'
-require 'bio/sequence/aa'
-require 'bio/sequence/na'
-require 'bio/phylogenetictree'
+require 'bio/tree'
 require 'bio/db/newick'
 
 module Bio
