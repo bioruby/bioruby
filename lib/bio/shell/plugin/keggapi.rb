@@ -5,16 +5,19 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: keggapi.rb,v 1.10 2006/02/09 20:48:53 k Exp $
+# $Id: keggapi.rb,v 1.11 2006/12/24 08:49:12 k Exp $
 #
 
 module Bio::Shell
 
   module Private
+
+    module_function
+
     def keggapi_definition2tab(list)
       ary = []
       list.each do |entry|
-        ary << "#{entry.entry_id}:\t#{entry.definition}"
+        ary << "#{entry.entry_id}\t#{entry.definition}"
       end
       return ary
     end
@@ -49,17 +52,20 @@ module Bio::Shell
     if block_given?
       yield result
     else
+      puts result
       return result
     end
   end
 
   def btit(str)
     result = keggapi.btit(str)
+    puts result
     return result
   end
 
   def bconv(str)
     result = keggapi.bconv(str)
+    puts result
     return result
   end
 
@@ -67,25 +73,26 @@ module Bio::Shell
 
   def keggdbs
     list = keggapi.list_databases
-    result = Bio::Shell.keggapi_definition2tab(list).join("\n")
+    result = Bio::Shell::Private.keggapi_definition2tab(list).join("\n")
     puts result
     return list.map {|x| x.entry_id}
   end
 
   def keggorgs
     list = keggapi.list_organisms
-    result = Bio::Shell.keggapi_definition2tab(list).sort.join("\n")
+    result = Bio::Shell::Private.keggapi_definition2tab(list).sort.join("\n")
     puts result
     return list.map {|x| x.entry_id}
   end
 
   def keggpathways(org = "map")
     list = keggapi.list_pathways(org)
-    result = Bio::Shell.keggapi_definition2tab(list).join("\n")
+    result = Bio::Shell::Private.keggapi_definition2tab(list).join("\n")
     puts result
     return list.map {|x| x.entry_id}
   end
 
+  # use KEGG DAS insetad
   def kegggenomeseq(org)
     result = ""
     require 'net/ftp'
