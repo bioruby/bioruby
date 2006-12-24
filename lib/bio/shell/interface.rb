@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: interface.rb,v 1.14 2006/02/27 09:36:35 k Exp $
+# $Id: interface.rb,v 1.15 2006/12/24 08:36:45 k Exp $
 #
 
 module Bio::Shell
@@ -15,20 +15,22 @@ module Bio::Shell
   ### work space
 
   def ls
-    list = eval("local_variables", conf.workspace.binding).reject { |x|
-      eval(x, conf.workspace.binding).nil?
+    bind = Bio::Shell.cache[:binding]
+    list = eval("local_variables", bind).reject { |x|
+      eval(x, bind).nil?
     }
     puts list.inspect
     return list
   end
 
   def rm(name)
-    list = eval("local_variables", conf.workspace.binding).reject { |x|
-      eval(x, conf.workspace.binding).nil?
+    bind = Bio::Shell.cache[:binding]
+    list = eval("local_variables", bind).reject { |x|
+      eval(x, bind).nil?
     }
     begin
       if list.include?(name.to_s)
-        eval("#{name} = nil", conf.workspace.binding)
+        eval("#{name} = nil", bind)
       else
         raise
       end
