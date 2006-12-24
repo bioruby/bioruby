@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: seq.rb,v 1.18 2006/09/19 06:20:38 k Exp $
+# $Id: seq.rb,v 1.19 2006/12/24 08:50:18 k Exp $
 #
 
 module Bio::Shell
@@ -17,7 +17,7 @@ module Bio::Shell
     if str.kind_of?(Bio::Sequence)
       seq = str
     else
-      seq = seq(str)
+      seq = getseq(str)
     end
 
     if seq.is_a?(Bio::Sequence::AA)
@@ -42,7 +42,7 @@ module Bio::Shell
 
 
   def sixtrans(str)
-    seq = seq(str)
+    seq = getseq(str)
     [ 1, 2, 3, -1, -2, -3 ].each do |frame|
       title = "Translation #{frame.to_s.rjust(2)}"
       puts seq.translate(frame).to_fasta(title, 60)
@@ -53,7 +53,7 @@ module Bio::Shell
   # Displays some basic properties of the sequence.
   def seqstat(str)
     max = 150
-    seq = seq(str)
+    seq = getseq(str)
     rep = "\n* * * Sequence statistics * * *\n\n"
     if seq.respond_to?(:complement)
       fwd = seq
@@ -132,12 +132,12 @@ module Bio::Shell
   # Displays a DNA sequence by ascii art in B-type double helix.
   # Argument need to be at least 16 bases in length.
   def doublehelix(str)
-    seq = seq(str)
-    if str.length < 16
+    seq = getseq(str)
+    if seq.length < 16
       warn "Error: Sequence must be longer than 16 bases."
       return
     end
-    if ! seq.respond_to?(:complement)
+    if seq.moltype != Bio::Sequence::NA
       warn "Error: Sequence must be a DNA sequence."
       return
     end

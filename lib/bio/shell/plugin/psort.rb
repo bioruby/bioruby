@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: psort.rb,v 1.1 2006/07/25 18:42:09 k Exp $
+# $Id: psort.rb,v 1.2 2006/12/24 08:50:18 k Exp $
 #
 
 module Bio::Shell
@@ -13,7 +13,7 @@ module Bio::Shell
   private
 
   def psort1(str)
-    seq = seq(str)
+    seq = getseq(str)
     if seq.is_a?(Bio::Sequence::NA)
       seq = seq.translate
     end
@@ -29,7 +29,7 @@ module Bio::Shell
   end
 
   def psort2(str)
-    seq = seq(str)
+    seq = getseq(str)
     if seq.is_a?(Bio::Sequence::NA)
       seq = seq.translate
     end

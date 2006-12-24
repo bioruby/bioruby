@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: blast.rb,v 1.1 2006/07/25 18:43:17 k Exp $
+# $Id: blast.rb,v 1.2 2006/12/24 08:50:18 k Exp $
 #
 
 module Bio::Shell
@@ -20,10 +20,10 @@ module Bio::Shell
     if query[/^>/]
       data = Bio::FastaFormat.new(query)
       desc = data.definition
-      tmp = seq(data.seq)
+      tmp = getseq(data.seq)
     else
       desc = "query"
-      tmp = seq(query)
+      tmp = getseq(query)
     end
     
     if tmp.respond_to?(:translate)

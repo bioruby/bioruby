@@ -5,12 +5,21 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: entry.rb,v 1.8 2006/02/27 09:37:14 k Exp $
+# $Id: entry.rb,v 1.9 2006/12/24 08:50:18 k Exp $
 #
 
 module Bio::Shell
 
   private
+
+  # Read a text file and collect the first word of each line in array
+  def readlist(filename)
+    list = []
+    File.open(filename).each do |line|
+      list << line[/^\S+/]
+    end
+    return list
+  end
 
   # Obtain a Bio::Sequence::NA (DNA) or a Bio::Sequence::AA (Amino Acid)
   # sequence from
@@ -18,15 +27,14 @@ module Bio::Shell
   #   * IO         -- io = IO.popen("gzip -dc db.gz") (first entry only)
   #   * "filename" -- "gbvrl.gbk" (first entry only)
   #   * "db:entry" -- "embl:BUM"  (entry is retrieved by the ent method)
-  def seq(arg)
+  def getseq(arg)
     seq = ""
     if arg.kind_of?(Bio::Sequence)
       seq = arg
     elsif arg.respond_to?(:gets) or File.exists?(arg)
       ent = flatauto(arg)
     elsif arg[/:/]
-      str = ent(arg)
-      ent = flatparse(str)
+      ent = getobj(arg)
     else
       tmp = arg
     end
@@ -34,13 +42,16 @@ module Bio::Shell
     if ent.respond_to?(:seq)
       tmp = ent.seq
     elsif ent.respond_to?(:naseq)
-      seq = ent.naseq
+      #seq = ent.naseq
+      tmp = ent.naseq
     elsif ent.respond_to?(:aaseq)
-      seq = ent.aaseq
+      #seq = ent.aaseq
+      tmp = ent.aaseq
     end
 
     if tmp and tmp.is_a?(String) and not tmp.empty?
-      seq = Bio::Sequence.auto(tmp).seq
+      #seq = Bio::Sequence.auto(tmp).seq
+      seq = Bio::Sequence.auto(tmp)
     end
     return seq
   end
@@ -49,7 +60,7 @@ module Bio::Shell
   #   * IO          -- IO object (first entry only)
   #   * "filename"  -- local file (first entry only)
   #   * "db:entry"  -- local BioFlat, OBDA, EMBOSS, KEGG API
-  def ent(arg)
+  def getent(arg)
     entry = ""
     db, entry_id = arg.to_s.strip.split(/:/)
 
@@ -86,8 +97,8 @@ module Bio::Shell
   end
 
   # Obtain a parsed object from sources that ent() supports.
-  def obj(arg)
-    str = ent(arg)
+  def getobj(arg)
+    str = getent(arg)
     flatparse(str)
   end
 
