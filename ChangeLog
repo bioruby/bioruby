@@ -1,3 +1,29 @@
+2006-12-24  Toshiaki Katayama <k@bioruby.org>
+
+	* bin/bioruby, lib/bio/shell/, lib/bio/shell/rails/
+
+	  Web functionallity of the BioRuby shell is completely rewrited
+	  to utilize generator of the Ruby on Rails. This means we don't
+	  need to have a copy of the rails installation in our code base
+	  any more. The shell now run in threads so user does not need
+	  to run 2 processes as before (drb and webrick). Most importantly,
+	  the shell is extended to have textarea to input any code and
+	  the evaluated result is returned with AJAX having various neat
+	  visual effects.
+
+2006-12-19  Christian Zmasek <czmasek@burnham.org>
+
+	* lib/bio/db/nexus.rb
+
+	  Bio::Nexus is newly developed during the Phyloinformatics hackathon.
+
+2006-12-16  Toshiaki Katayama <k@birouby.org>
+
+	* lib/bio/io/sql.rb
+
+	  Updated to follow recent BioSQL schema contributed by
+	  Raoul Jean Pierre Bonnal.
+
 2006-12-15  Mitsuteru Nakao <n@bioruby.org>
 
 	* lib/bio/appl/iprscan/report.rb
