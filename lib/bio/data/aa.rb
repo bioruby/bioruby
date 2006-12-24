@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: aa.rb,v 0.18 2006/07/25 18:50:01 k Exp $
+# $Id: aa.rb,v 0.19 2006/12/24 10:06:07 k Exp $
 #
 
 module Bio
@@ -68,12 +68,12 @@ class AminoAcid
       'Val' => 'valine',
       'Trp' => 'tryptophan',
       'Tyr' => 'tyrosine',
-      'Asx' => 'asparagine/aspartic acid',
-      'Glx' => 'glutamine/glutamic acid',
-      'Xle' => 'isoleucine/leucine',
+      'Asx' => 'asparagine/aspartic acid [DN]',
+      'Glx' => 'glutamine/glutamic acid [EQ]',
+      'Xle' => 'isoleucine/leucine [IL]',
       'Sec' => 'selenocysteine',
       'Pyl' => 'pyrrolysine',
-      'Xaa' => 'unknown',
+      'Xaa' => 'unknown [A-Z]',
 
     }
 
