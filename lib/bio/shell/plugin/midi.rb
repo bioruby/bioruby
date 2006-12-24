@@ -6,7 +6,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: midi.rb,v 1.7 2006/02/09 20:48:53 k Exp $
+# $Id: midi.rb,v 1.8 2006/12/24 08:50:37 k Exp $
 #
 
 #--
@@ -420,11 +420,11 @@ if $0 == __FILE__
 
   seq_file = ARGV.shift
   mid_file = ARGV.shift
-  style    = ARGV.shift
 
   Bio::FlatFile.auto(seq_file) do |ff|
     ff.each do |f|
-      midi(f.naseq[0..1000], mid_file, style)
+      midifile(mid_file, f.naseq[0..1000])
     end
   end
 end
+
