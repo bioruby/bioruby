@@ -5,12 +5,12 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: bio.rb,v 1.75 2006/12/15 15:02:27 ngoto Exp $
+# $Id: bio.rb,v 1.76 2006/12/24 10:04:51 k Exp $
 #
 
 module Bio
 
-  BIORUBY_VERSION = [1, 0, 0].extend(Comparable)
+  BIORUBY_VERSION = [1, 1, 0].extend(Comparable)
 
   ### Basic data types
 
@@ -117,6 +117,7 @@ module Bio
   autoload :NBRF,           'bio/db/nbrf'
 
   autoload :Newick,         'bio/db/newick'
+  autoload :Nexus,          'bio/db/nexus'
 
   ### IO interface modules
 
@@ -249,6 +250,19 @@ module Bio
 
   ### Service libraries
   autoload :Command,        'bio/command'
+
+  ### Provide BioRuby shell 'command' also as 'Bio.command' (like ChemRuby)
+
+  def self.method_missing(*args)
+    require 'bio/shell'
+    extend Bio::Shell
+    public_class_method(*Bio::Shell.private_instance_methods)
+    if Bio.respond_to?(args.first)
+      Bio.send(*args)
+    else
+      raise NameError
+    end
+  end
 
 end
 
