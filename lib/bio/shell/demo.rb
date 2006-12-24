@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: demo.rb,v 1.2 2006/03/26 00:38:10 k Exp $
+# $Id: demo.rb,v 1.3 2006/12/24 08:40:43 k Exp $
 #
 
 module Bio::Shell
@@ -24,7 +24,7 @@ module Bio::Shell
   class Demo
 
     def initialize
-      @bind = IRB.conf[:MAIN_CONTEXT].workspace.binding
+      @bind = Bio::Shell.cache[:binding]
     end
 
     def all
@@ -38,8 +38,11 @@ module Bio::Shell
     def tutorial
     end
 
+    def aldh2
+    end
+
     def mito
-      run(%q[entry = ent("data/kumamushi.gb")], "Load kumamushi gene from GenBank database entry ...", false) &&
+      run(%q[entry = getent("data/kumamushi.gb")], "Load kumamushi gene from GenBank database entry ...", false) &&
       run(%q[disp entry], "Check the contents ...", false) &&
       run(%q[kuma = flatparse(entry)], "Parse the database entry ...", true) &&
       run(%q[web], "Start BioRuby on Rails...", false) &&
@@ -61,7 +64,7 @@ module Bio::Shell
     end
 
     def sequence
-      run(%q[dna = seq("atgc" * 100)], "Generating DNA sequence ...", true) &&
+      run(%q[dna = getseq("atgc" * 100)], "Generating DNA sequence ...", true) &&
       run(%q[doublehelix dna], "Double helix representation", false) &&
       run(%q[protein = dna.translate], "Translate DNA into Protein ...", true) &&
       run(%q[protein.molecular_weight], "Calculating molecular weight ...", true) &&
@@ -70,7 +73,7 @@ module Bio::Shell
     end
 
     def entry
-      run(%q[kuma = obj("gb:AF237819")], "Obtain an entry from GenBank database", false) &&
+      run(%q[kuma = getobj("gb:AF237819")], "Obtain an entry from GenBank database", false) &&
       run(%q[kuma.definition], "Definition of the entry", true) &&
       run(%q[kuma.naseq], "Sequence of the entry", true) &&
       run(%q[kuma.naseq.translate], "Translate the sequence to protein", true) &&
@@ -81,12 +84,12 @@ module Bio::Shell
     def shell
       run(%q[pwd], "Show current working directory ...", false) &&
       run(%q[dir], "Show directory contents ...", false) &&
-      run(%q[dir "session"], "Show directory contents ...", false) &&
+      run(%q[dir "shell/session"], "Show directory contents ...", false) &&
       true
     end
 
     def pdb
-      run(%q[ent_1bl8 = ent("pdb:1bl8")], "Retrieving PDB entry 1BL8 ...", false) &&
+      run(%q[ent_1bl8 = getent("pdb:1bl8")], "Retrieving PDB entry 1BL8 ...", false) &&
       run(%q[head ent_1bl8], "Head part of the entry ...", false) &&
       run(%q[savefile("1bl8.pdb", ent_1bl8)], "Saving the original entry in file ...", false) &&
       run(%q[disp "data/1bl8.pdb"], "Look through the entire entry ...", false) &&
