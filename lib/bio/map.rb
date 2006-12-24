@@ -1,55 +1,45 @@
 #
 # = bio/map.rb - biological mapping class
 #
-# Copyright::   Copyright (C) 2006
-#               Jan Aerts <jan.aerts@bbsrc.ac.uk>
+# Copyright::   Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # Licence::     Ruby's
 #
-# $Id: map.rb,v 1.8 2006/06/27 12:40:15 aerts Exp $
+# $Id: map.rb,v 1.9 2006/12/24 10:10:08 k Exp $
+
 require 'bio/location'
 
 module Bio
 
-  # Add a method to Bio::Locations class
-  class Locations
-    def equals?(other)
-      if ! other.kind_of?(Bio::Locations)
-        return nil
-      end
-      if self.sort == other.sort
-        return true
-      else
-        return false
-      end
-    end
-  end
-
-  # = DESCRIPTION
-  # The Bio::Module contains classes that describe mapping information and can
-  # be used to contain linkage maps, radiation-hybrid maps, etc.
-  # As the same marker can be mapped to more than one map, and a single map
-  # typically contains more than one marker, the link between the markers and
-  # maps is handled by Bio::Map::Mapping objects. Therefore, to link a map to
-  # a marker, a Bio::Mapping object is added to that Bio::Map. See usage below.
+  # == Description
   #
-  # Not only maps in the strict sense have map-like features (and similarly
-  # not only markers in the strict sense have marker-like features). For example,
-  # a microsatellite is something that can be mapped on a linkage map (and
-  # hence becomes a 'marker'), but a clone can also be mapped to a cytogenetic
-  # map. In that case, the clone acts as a marker and has marker-like properties.
-  # That same clone can also be considered a 'map' when BAC-end sequences are
-  # mapped to it. To reflect this flexibility, the modules Bio::Map::ActsLikeMap
-  # and Bio::Map::ActsLikeMarker define methods that are typical for maps and
-  # markers.
+  # The Bio::Map contains classes that describe mapping information
+  # and can be used to contain linkage maps, radiation-hybrid maps,
+  # etc.  As the same marker can be mapped to more than one map, and a
+  # single map typically contains more than one marker, the link
+  # between the markers and maps is handled by Bio::Map::Mapping
+  # objects. Therefore, to link a map to a marker, a Bio::Map::Mapping
+  # object is added to that Bio::Map. See usage below.
+  #
+  # Not only maps in the strict sense have map-like features (and
+  # similarly not only markers in the strict sense have marker-like
+  # features). For example, a microsatellite is something that can be
+  # mapped on a linkage map (and hence becomes a 'marker'), but a
+  # clone can also be mapped to a cytogenetic map. In that case, the
+  # clone acts as a marker and has marker-like properties.  That same
+  # clone can also be considered a 'map' when BAC-end sequences are
+  # mapped to it. To reflect this flexibility, the modules
+  # Bio::Map::ActsLikeMap and Bio::Map::ActsLikeMarker define methods
+  # that are typical for maps and markers.
   # 
   #--
-  # In a certain sense, a biological sequence also has map- and marker-like
-  # properties: things can be mapped to it at certain locations, and the sequence
-  # itself can be mapped to something else (e.g. the BAC-end sequence example
-  # above, or a BLAST-result).
+  # In a certain sense, a biological sequence also has map- and
+  # marker-like properties: things can be mapped to it at certain
+  # locations, and the sequence itself can be mapped to something else
+  # (e.g. the BAC-end sequence example above, or a BLAST-result).
   #++
   # 
-  # = USAGE
+  # == Usage
+  #
   #  my_marker1 = Bio::Map::Marker.new('marker1')
   #  my_marker2 = Bio::Map::Marker.new('marker2')
   #  my_marker3 = Bio::Map::Marker.new('marker3')
@@ -61,42 +51,63 @@ module Bio
   #  my_map1.add_mapping_as_map(Bio::Map::Marker.new('marker2'), '5')
   #  my_marker3.add_mapping_as_marker(my_map1, '9')
   #  
-  #  puts "Does my_map1 contain marker3? => " + my_map1.contains_marker?(my_marker3).to_s
-  #  puts "Does my_map2 contain marker3? => " + my_map2.contains_marker?(my_marker3).to_s
+  #  print "Does my_map1 contain marker3? => "
+  #  puts my_map1.contains_marker?(my_marker3).to_s
+  #  print "Does my_map2 contain marker3? => "
+  #  puts my_map2.contains_marker?(my_marker3).to_s
   #  
   #  my_map1.mappings_as_map.sort.each do |mapping|
-  #    puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location.from.to_s + ".." + mapping.location.to.to_s
+  #    puts [ mapping.map.name,
+  #           mapping.marker.name,
+  #           mapping.location.from.to_s,
+  #           mapping.location.to.to_s ].join("\t")
   #  end
   #  puts my_map1.mappings_as_map.min.marker.name
+  #
   #  my_map2.mappings_as_map.each do |mapping|
-  #    puts mapping.map.name + "\t" + mapping.marker.name + "\t" + mapping.location.from.to_s + ".." + mapping.location.to.to_s
+  #    puts [ mapping.map.name,
+  #           mapping.marker.name,
+  #           mapping.location.from.to_s,
+  #           mapping.location.to.to_s ].join("\t")
   #  end
+  #
   module Map
-  # = DESCRIPTION
-  # The Bio::Map::ActsLikeMap module contains methods that are typical for
-  # map-like things:
-  # * add markers with their locations (through Bio::Map::Mappings)
-  # * check if a given marker is mapped to it
-  # , and can be mixed into other classes (e.g. Bio::Map::SimpleMap)
-  # 
-  # Classes that include this mixin should provide an array property called mappings_as_map.
-  # For example:
-  #   class MyMapThing
-  #     include Bio::Map::ActsLikeMap
-  #     
-  #     def initialize (name)
-  #       @name = name
-  #       @mappings_as_maps = Array.new
-  #     end
-  #     attr_accessor :name, :mappings_as_map
-  #    end
+
+    # == Description
+    #
+    # The Bio::Map::ActsLikeMap module contains methods that are typical for
+    # map-like things:
+    #
+    # * add markers with their locations (through Bio::Map::Mappings)
+    # * check if a given marker is mapped to it,
+    #   and can be mixed into other classes (e.g. Bio::Map::SimpleMap)
+    # 
+    # Classes that include this mixin should provide an array property
+    # called mappings_as_map.
+    #
+    # For example:
+    #
+    #   class MyMapThing
+    #     include Bio::Map::ActsLikeMap
+    #     
+    #     def initialize (name)
+    #       @name = name
+    #       @mappings_as_maps = Array.new
+    #     end
+    #     attr_accessor :name, :mappings_as_map
+    #    end
+    #
     module ActsLikeMap
-      # = DESCRIPTION
+
+      # == Description
+      #
       # Adds a Bio::Map::Mappings object to its array of mappings.
       # 
-      # = USAGE
+      # == Usage
+      #
       #   # suppose we have a Bio::Map::SimpleMap object called my_map
       #   my_map.add_mapping_as_map(Bio::Map::Marker.new('marker_a'), '5')
+      #
       # ---
       # *Arguments*:
       # * _marker_ (required): Bio::Map::Marker object
@@ -125,8 +136,10 @@ module Bio
 
         return self
       end
-      
-      # Checks whether a Bio::Map::Marker is mapped to this Bio::Map::SimpleMap.
+
+      # Checks whether a Bio::Map::Marker is mapped to this
+      # Bio::Map::SimpleMap.
+      #
       # ---
       # *Arguments*:
       # * _marker_: a Bio::Map::Marker object
@@ -145,17 +158,22 @@ module Bio
         return contains
       end
       
-    end #ActsLikeMap
+    end # ActsLikeMap
 
-    # = DESCRIPTION
-    # The Bio::Map::ActsLikeMarker module contains methods that are typical for
-    # marker-like things:
+    # == Description
+    #
+    # The Bio::Map::ActsLikeMarker module contains methods that are
+    # typical for marker-like things:
+    #
     # * map it to one or more maps
     # * check if it's mapped to a given map
-    # , and can be mixed into other classes (e.g. Bio::Map::Marker)
+    #   and can be mixed into other classes (e.g. Bio::Map::Marker)
     # 
-    # Classes that include this mixin should provide an array property called mappings_as_marker.
+    # Classes that include this mixin should provide an array property
+    # called mappings_as_marker.
+    #
     # For example:
+    #
     #   class MyMarkerThing
     #     include Bio::Map::ActsLikeMarker
     #     
@@ -165,13 +183,18 @@ module Bio
     #     end
     #     attr_accessor :name, :mappings_as_marker
     #    end
+    #
     module ActsLikeMarker
-      # = DESCRIPTION
+
+      # == Description
+      #
       # Adds a Bio::Map::Mappings object to its array of mappings.
       # 
-      # = USAGE
+      # == Usage
+      #
       #   # suppose we have a Bio::Map::Marker object called marker_a
       #   marker_a.add_mapping_as_marker(Bio::Map::SimpleMap.new('my_map'), '5')
+      #
       # ---
       # *Arguments*:
       # * _map_ (required): Bio::Map::SimpleMap object
@@ -241,13 +264,15 @@ module Bio
       end
       
 
-    end #ActsLikeMarker
+    end # ActsLikeMarker
 	  
-    # = DESCRIPTION
+    # == Description
+    #
     # Creates a new Bio::Map::Mapping object, which links Bio::Map::ActsAsMap-
     # and Bio::Map::ActsAsMarker-like objects. This class is typically not
     # accessed directly, but through map- or marker-like objects.
     class Mapping
+
       include Comparable
       
       # Creates a new Bio::Map::Mapping object
@@ -282,16 +307,20 @@ module Bio
       end
     end # Mapping
     
-    # = DESCRIPTION
-    # This class handles the essential storage of name, type and units of a map.
-    # It includes Bio::Map::ActsLikeMap, and therefore supports the methods of
-    # that module.
+    # == Description
+    #
+    # This class handles the essential storage of name, type and units
+    # of a map.  It includes Bio::Map::ActsLikeMap, and therefore
+    # supports the methods of that module.
     # 
-    # = USAGE
+    # == Usage
+    #
     #   my_map1 = Bio::Map::SimpleMap.new('RH_map_ABC (2006)', 'RH', 'cR')
     #   my_map1.add_marker(Bio::Map::Marker.new('marker_a', '17')
     #   my_map1.add_marker(Bio::Map::Marker.new('marker_b', '5')
+    #
     class SimpleMap
+
       include Bio::Map::ActsLikeMap
     
       # Builds a new Bio::Map::SimpleMap object
@@ -323,15 +352,19 @@ module Bio
       
     end # SimpleMap
     
-    # = DESCRIPTION
-    # This class handles markers that are anchored to a Bio::Map::SimpleMap. It
-    # includes Bio::Map::ActsLikeMarker, and therefore supports the methods of
-    # that module.
+    # == Description
+    #
+    # This class handles markers that are anchored to a Bio::Map::SimpleMap.
+    # It includes Bio::Map::ActsLikeMarker, and therefore supports the
+    # methods of that module.
     # 
-    # = USAGE
+    # == Usage
+    #
     #   marker_a = Bio::Map::Marker.new('marker_a')
     #   marker_b = Bio::Map::Marker.new('marker_b')
+    #
     class Marker
+
       include Bio::Map::ActsLikeMarker
       
       # Builds a new Bio::Map::Marker object
@@ -351,5 +384,7 @@ module Bio
       attr_accessor :mappings_as_marker
       
     end # Marker
+
   end # Map
+
 end # Bio
