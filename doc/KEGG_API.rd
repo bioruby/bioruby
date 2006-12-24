@@ -1,6 +1,6 @@
 =begin
 
-  $Id: KEGG_API.rd,v 1.2 2006/02/23 04:51:23 k Exp $
+  $Id: KEGG_API.rd,v 1.3 2006/12/24 10:14:19 k Exp $
 
     Copyright (C) 2003-2006 Toshiaki Katayama <k@bioruby.org>
 
@@ -80,76 +80,92 @@ page at GenomeNet:
     * ((<Definition>)), ((<ArrayOfDefinition>))
     * ((<LinkDBRelation>)), ((<ArrayOfLinkDBRelation>))
     * ((<PathwayElement>)), ((<ArrayOfPathwayElement>))
+    * ((<PathwayElementRelation>)), ((<ArrayOfPathwayElementRelation>))
+      * ((<Subtype>)), ((<ArrayOfSubtype>))
+    * ((<StructureAlignment>)), ((<ArrayOfStructureAlignment>))
   * ((<Methods>))
     * ((<Meta information>))
-      * ((<list_databases>)),
-        ((<list_organisms>)),
-        ((<list_pathways>))
+      * ((<list_databases>))
+      * ((<list_organisms>))
+      * ((<list_pathways>))
     * ((<DBGET>))
-      * ((<binfo>)),
-        ((<bfind>)),
-        ((<bget>)),
-        ((<btit>)),
-        ((<bconv>))
+      * ((<binfo>))
+      * ((<bfind>))
+      * ((<bget>))
+      * ((<btit>))
+      * ((<bconv>))
     * ((<LinkDB>))
-      * ((<get_linkdb_by_entry>))
-      * ((<get_genes_by_enzyme>)),
-        ((<get_enzymes_by_gene>))
-      * ((<get_enzymes_by_compound>)),
-        ((<get_enzymes_by_glycan>)),
-        ((<get_enzymes_by_reaction>)),
-        ((<get_compounds_by_enzyme>)),
-        ((<get_compounds_by_reaction>)),
-        ((<get_glycans_by_enzyme>)),
-        ((<get_glycans_by_reaction>)),
-        ((<get_reactions_by_enzyme>)),
-        ((<get_reactions_by_compound>)),
-        ((<get_reactions_by_glycan>))
+      * ((<Database cross references>))
+        * ((<get_linkdb_by_entry>))
+        * ((<get_linkdb_between_databases>))
+      * ((<Relation among genes and enzymes>))
+        * ((<get_genes_by_enzyme>))
+        * ((<get_enzymes_by_gene>))
+      * ((<Relation among enzymes, compounds and reactions>))
+        * ((<get_enzymes_by_compound>))
+        * ((<get_enzymes_by_glycan>))
+        * ((<get_enzymes_by_reaction>))
+        * ((<get_compounds_by_enzyme>))
+        * ((<get_compounds_by_reaction>))
+        * ((<get_glycans_by_enzyme>))
+        * ((<get_glycans_by_reaction>))
+        * ((<get_reactions_by_enzyme>))
+        * ((<get_reactions_by_compound>))
+        * ((<get_reactions_by_glycan>))
     * ((<SSDB>))
-      * ((<get_best_best_neighbors_by_gene>)),
-        ((<get_best_neighbors_by_gene>)),
-        ((<get_reverse_best_neighbors_by_gene>)),
-        ((<get_paralogs_by_gene>))
-#     * ((<get_neighbors_by_gene>)),
-#       ((<get_similarity_between_genes>))
+      * ((<get_best_best_neighbors_by_gene>))
+      * ((<get_best_neighbors_by_gene>))
+      * ((<get_reverse_best_neighbors_by_gene>))
+      * ((<get_paralogs_by_gene>))
     * ((<Motif>))
-      * ((<get_motifs_by_gene>)),
-        ((<get_genes_by_motifs>))
-    * ((<KO, OC, PC>))
-      * ((<get_ko_by_gene>)),
-        ((<get_ko_by_ko_class>)),
-        ((<get_genes_by_ko_class>)),
-        ((<get_genes_by_ko>)),
-        ((<get_oc_members_by_gene>)),
-        ((<get_pc_members_by_gene>))
-#       ((<get_ko_members>)),
+      * ((<get_motifs_by_gene>))
+      * ((<get_genes_by_motifs>))
+    * ((<KO>))
+      * ((<get_ko_by_gene>))
+      * ((<get_ko_by_ko_class>))
+      * ((<get_genes_by_ko_class>))
+      * ((<get_genes_by_ko>))
     * ((<PATHWAY>))
-      * ((<mark_pathway_by_objects>)),
-        ((<color_pathway_by_objects>)),
-        ((<color_pathway_by_elements>)),
-        ((<get_html_of_marked_pathway_by_objects>)),
-        ((<get_html_of_colored_pathway_by_objects>)),
-        ((<get_html_of_colored_pathway_by_elements>))
-      * ((<get_elements_by_pathway>)),
-        ((<get_genes_by_pathway>)),
-        ((<get_enzymes_by_pathway>)),
-        ((<get_compounds_by_pathway>)),
-        ((<get_glycans_by_pathway>)),
-        ((<get_reactions_by_pathway>)),
-        ((<get_kos_by_pathway>))
-      * ((<get_pathways_by_genes>)),
-        ((<get_pathways_by_enzymes>)),
-        ((<get_pathways_by_compounds>)),
-        ((<get_pathways_by_glycans>)),
-        ((<get_pathways_by_reactions>)),
-        ((<get_pathways_by_kos>))
-      * ((<get_linked_pathways>))
+      * ((<Coloring pathways>))
+        * ((<mark_pathway_by_objects>))
+        * ((<color_pathway_by_objects>))
+        * ((<color_pathway_by_elements>))
+        * ((<get_html_of_marked_pathway_by_objects>))
+        * ((<get_html_of_colored_pathway_by_objects>))
+        * ((<get_html_of_colored_pathway_by_elements>))
+      * ((<Relations of objects on the pathway>))
+        * ((<get_element_relations_by_pathway>))
+      * ((<Objects on the pathway>))
+        * ((<get_elements_by_pathway>))
+        * ((<get_genes_by_pathway>))
+        * ((<get_enzymes_by_pathway>))
+        * ((<get_compounds_by_pathway>))
+        * ((<get_glycans_by_pathway>))
+        * ((<get_reactions_by_pathway>))
+        * ((<get_kos_by_pathway>))
+      * ((<Pathways by objects>))
+        * ((<get_pathways_by_genes>))
+        * ((<get_pathways_by_enzymes>))
+        * ((<get_pathways_by_compounds>))
+        * ((<get_pathways_by_glycans>))
+        * ((<get_pathways_by_reactions>))
+        * ((<get_pathways_by_kos>))
+      * ((<Relation among pathways>))
+        * ((<get_linked_pathways>))
     * ((<GENES>))
       * ((<get_genes_by_organism>))
     * ((<GENOME>))
       * ((<get_number_of_genes_by_organism>))
     * ((<LIGAND>))
       * ((<convert_mol_to_kcf>))
+      * ((<search_compounds_by_name>))
+      * ((<search_glycans_by_name>))
+      * ((<search_compounds_by_composition>))
+      * ((<search_glycans_by_composition>))
+      * ((<search_compounds_by_mass>))
+      * ((<search_glycans_by_mass>))
+      * ((<search_compounds_by_subcomp>))
+      * ((<search_glycans_by_kcam>))
 
 == Introduction
 
@@ -165,12 +181,12 @@ are shown.  After understanding the first exsample, try other APIs.
 Firstly, you have to install the SOAP related libraries for the
 programming language of your choice.
 
-
 === Quick Start with Perl
 
 In the case of Perl, you need to install the following packages:
 
-  * ((<SOAP Lite|URL:http://soaplite.com/>))
+  * ((<SOAP Lite|URL:http://www.soaplite.com/>)) (tested with 0.60)
+    * Note: SOAP Lite > 0.60 is reported to have errors in some methods for now.
   * ((<MIME-Base64|URL:http://search.cpan.org/author/GAAS/MIME-Base64/>))
   * ((<LWP|URL:http://search.cpan.org/author/GAAS/libwww-perl/>))
   * ((<URI|URL:http://search.cpan.org/author/GAAS/URI/>))
@@ -185,10 +201,10 @@ Here's a first example in Perl language.
   
   $serv = SOAP::Lite->service($wsdl);
   
-  $start = 1;
-  $max_results = 5;
+  $offset = 1;
+  $limit = 5;
   
-  $top5 = $serv->get_best_neighbors_by_gene('eco:b0002', $start, $max_results);
+  $top5 = $serv->get_best_neighbors_by_gene('eco:b0002', $offset, $limit);
   
   foreach $hit (@{$top5}) {
     print "$hit->{genes_id1}\t$hit->{genes_id2}\t$hit->{sw_score}\n";
@@ -250,7 +266,13 @@ and b2388 on a Glycolysis pathway of E. coli (path:eco00010).
 
   print $result;	# URL of the generated image
 
-==== Perl FAQ
+=== Perl FAQ
+
+If you use the KEGG API methods which requires arguments in
+ArrayOfstring datatype, you must need following modifications
+depending on the version of SOAP::Lite.
+
+==== SOAP::Lite version <= 0.60
 
 As you see in the above example, you always need to convert a Perl's array
 into a SOAP object expicitly in SOAP::Lite by
@@ -258,6 +280,61 @@ into a SOAP object expicitly in SOAP::Lite by
   SOAP::Data->type(array => [value1, value2, .. ])
 
 when you pass an array as the argument for any KEGG API method.
+
+==== SOAP::Lite version > 0.60
+
+You should use version >= 0.69 as the versions between 0.61-0.68 contain bugs.
+
+You need to add following code to your program to pass the array of
+string and/or int data to the SOAP server.
+
+  sub SOAP::Serializer::as_ArrayOfstring{
+    my ($self, $value, $name, $type, $attr) = @_;
+    return [$name, {'xsi:type' => 'array', %$attr}, $value];
+  }
+
+  sub SOAP::Serializer::as_ArrayOfint{
+    my ($self, $value, $name, $type, $attr) = @_;
+    return [$name, {'xsi:type' => 'array', %$attr}, $value];
+  }
+
+By adding the above, you can write
+
+  $genes = ["eco:b1002", "eco:b2388"];
+
+instead of the following (writing as follows is also permitted).
+
+  $genes = SOAP::Data->type(array => ["eco:b1002", "eco:b2388"]);
+
+==== Sample program
+
+You can test with the following script for the SOAP::Lite v0.69.
+If it works, a URL of the generated image will be returned.
+
+  #!/usr/bin/env perl
+  
+  use SOAP::Lite +trace => [qw(debug)];
+
+  print "SOAP::Lite = ", $SOAP::Lite::VERSION, "\n";
+
+  my $serv = SOAP::Lite -> service("http://soap.genome.jp/KEGG.wsdl");
+
+  my $genes = ["eco:b1002", "eco:b2388"];
+
+  my $result = $serv->mark_pathway_by_objects("path:eco00010", $genes);
+  print $result, "\n";
+
+  # sub routines implicitly used in the above code
+
+  sub SOAP::Serializer::as_ArrayOfstring{
+    my ($self, $value, $name, $type, $attr) = @_;
+    return [$name, {'xsi:type' => 'array', %$attr}, $value];
+  }
+
+  sub SOAP::Serializer::as_ArrayOfint{
+    my ($self, $value, $name, $type, $attr) = @_;
+    return [$name, {'xsi:type' => 'array', %$attr}, $value];
+  }
 
 === Quick Start with Ruby
 
@@ -284,40 +361,40 @@ first example shown above.
   require 'soap/wsdlDriver'
 
   wsdl = "http://soap.genome.jp/KEGG.wsdl"
-  serv = SOAP::WSDLDriverFactory.new(wsdl).createDriver
+  serv = SOAP::WSDLDriverFactory.new(wsdl).create_rpc_driver
   serv.generate_explicit_type = true
   # if uncommented, you can see transactions for debug
   #serv.wiredump_dev = STDERR
   
-  start = 1
-  max_results = 5
+  offset = 1
+  limit = 5
 
-  top5 = serv.get_best_neighbors_by_gene('eco:b0002', start, max_results)
+  top5 = serv.get_best_neighbors_by_gene('eco:b0002', offset, limit)
   top5.each do |hit|
     print hit.genes_id1, "\t", hit.genes_id2, "\t", hit.sw_score, "\n"
   end
 
-You may need to iterate to obtain all the results by increasing start
-and/or max_results.
+You may need to iterate to obtain all the results by increasing offset
+and/or limit.
 
   #!/usr/bin/env ruby
   
   require 'soap/wsdlDriver'
   
   wsdl = "http://soap.genome.jp/KEGG.wsdl"
-  serv = SOAP::WSDLDriverFactory.new(wsdl).create_driver
+  serv = SOAP::WSDLDriverFactory.new(wsdl).create_rpc_driver
   serv.generate_explicit_type = true
 
-  start = 1
-  max_results = 100
+  offset = 1
+  limit = 100
   
   loop do
-    results = serv.get_best_neighbors_by_gene('eco:b0002', start, max_results)
+    results = serv.get_best_neighbors_by_gene('eco:b0002', offset, limit)
     break unless results
     results.each do |hit|
       print hit.genes_id1, "\t", hit.genes_id2, "\t", hit.sw_score, "\n"
     end
-    start += max_results
+    offset += limit
   end
 
 It is automatically done by using ((<BioRuby|URL:http://bioruby.org/>))
@@ -379,7 +456,6 @@ and equivalent for the last example is as follows.
 
   print result		# URL of the generated image
 
-
 === Quick Start with Python
 
 In the case of Python, you have to install
@@ -401,7 +477,6 @@ Here's a sample code using KEGG API with Python.
 
   results = serv.get_genes_by_pathway('path:eco00020')
   print results
-
 
 === Quick Start with Java
 
@@ -500,7 +575,6 @@ For the other cases, consult the javadoc pages generated by WSDL2Java.
 
   * ((<URL:http://www.genome.jp/kegg/soap/doc/keggapi_javadoc/>))
 
-
 == KEGG API Reference
 
 === WSDL file
@@ -573,15 +647,18 @@ the KEGG API can be found at:
 
     * ((<URL:http://www.genome.jp/dbget-bin/get_htext?KO>))
 
-  * 'start' and 'max_result' are both an integer and used to control the 
+  * 'offset' and 'limit' are both an integer and used to control the 
     number of the results returned at once.  Methods having these arguments
-    will return first 'max_result' results starting from 'start'th.
+    will return first 'limit' results starting from 'offset'th.
 
   * 'fg_color_list' is a list of colors for the foreground (corresponding
     to the texts and borders of the objects on the KEGG pathway map).
 
   * 'bg_color_list' is a list of colors for the background (corresponding
     to the inside of the objects on the KEGG pathway map).
+
+Related site:
+  * ((<URL:http://www.genome.jp/kegg/kegg3.html>))
 
 === Returned values
 
@@ -614,21 +691,6 @@ SSDBRelation data type contains the following fields:
   length1           amino acid length of the genes_id1 (int)
   length2           amino acid length of the genes_id2 (int)
 
-Notice (26 Nov, 2004):
-
-We found a serious bug with the 'best_flag_1to2' and 'best_flag_2to1'
-fields in the SSDBRelation data type.  The methods returning the
-SSDBRelation (and ArrayOfSSDBRelation) data type had returned the
-opposite values of the intended results with the both fields.
-The following methods had been affected by this bug:
-
-# * get_neighbors_by_gene
-  * get_best_neighbors_by_gene
-  * get_reverse_best_neighbors_by_gene
-  * get_paralogs_by_gene
-# * get_similarity_between_genes
-
-This problem is fixed in the KEGG API version 3.2.
 
 + ArrayOfSSDBRelation
 
@@ -679,6 +741,7 @@ ArrayOfLinkDBRelation data type is a list of the LinkDBRelation data type.
 
 + PathwayElement
 
+PathwayElement represents the object on the KEGG PATHWAY map.
 PathwayElement data type contains the following fields:
 
   element_id        unique identifier of the object on the pathway (int)
@@ -690,6 +753,50 @@ PathwayElement data type contains the following fields:
 
 ArrayOfPathwayElement data type is a list of the PathwayElement data type.
 
++ PathwayElementRelation
+
+PathwayElementRelation represents the relationship between PathwayElements.
+PathwayElementRelation data type contains the following fields:
+
+  element_id1       unique identifier of the object on the pathway (int)
+  element_id2       unique identifier of the object on the pathway (int)
+  type              type of relation ("ECrel", "maplink" etc.) (string)
+  subtypes          array of objects involved in the relation (ArrayOfSubtype)
+
++ ArrayOfPathwayElementRelation
+
+ArrayOfPathwayElementRelation data type is a list of
+the PathwayElementRelation data type.
+
+++ Subtype
+
+Subtype is used in the PathwayElementRelation data type to represent
+the object involved in the relation.
+Subtype data type contains the following fields:
+
+  element_id        unique identifier of the object on the pathway (int)
+  relation          kind of relation ("compound", "inhibition" etc.) (string)
+  type              type of relation ("+p", "--|" etc.) (string)
+
+++ ArrayOfSubtype
+
+ArrayOfSubtype data type is a list of the Subtype data type.
+
++ StructureAlignment
+
+StructureAlignment represents structural alignment of nodes between
+two molecules with score.
+StructureAlignment data type contains the following fields:
+
+  target_id         entry_id of the target (string)
+  score             alignment score (float)
+  query_nodes       indices of aligned nodes in the query molecule (ArrayOfint)
+  target_nodes      indices of aligned nodes in the target molecule (ArrayOfint)
+
++ ArrayOfStructureAlignment
+
+ArrayOfStructureAlignment data type is a list of the StructureAlignment
+data type.
 
 === Methods
 
@@ -706,6 +813,10 @@ is returned.
 Return value:
   ArrayOfDefinition (db, definition)
 
+Related site:
+  * ((<URL:http://www.genome.jp/dbget/>))
+  * ((<URL:http://www.genome.jp/about_genomenet/service.html>)) (section 2.2)
+
 --- list_organisms
 
 List up the organisms in the KEGG/GENES database. 'org' code and the
@@ -714,7 +825,11 @@ organism's full name is returned in the Definition data type.
 Return value:
   ArrayOfDefinition (org, definition)
 
---- list_pathways(org)
+Related site:
+  * ((<URL:http://www.genome.jp/kegg/catalog/org_list.html>))
+  * ((<URL:http://www.genome.jp/dbget-bin/get_htext?Organisms+-n>))
+
+--- list_pathways(string:org)
 
 List up the pathway maps of the given organism in the KEGG/PATHWAY database.
 Passing the string "map" as its argument, this method returns a list of the 
@@ -723,14 +838,19 @@ reference pathways.
 Return value:
   ArrayOfDefinition (pathway_id, definition)
 
+Related site:
+  * ((<URL:http://www.genome.jp/kegg/pathway.html>))
+
 ==== DBGET
 
 This section describes the wrapper methods for DBGET system developed
 at the GenomeNet.  For more details on DBGET system, see:
 
-* ((<URL:http://www.genome.jp/dbget/dbget_manual.html>))
+Related site:
+  * ((<URL:http://www.genome.jp/dbget/dbget_manual.html>))
+  * ((<URL:http://www.genome.jp/dbget-bin/binfo>))
 
---- binfo(string)
+--- binfo(string:db)
 
 Show the version information of the specified database.
 Passing the string "all" as its argument, this method returns the version 
@@ -743,7 +863,7 @@ Example:
   # Show the information of the latest GenBank database.
   binfo("gb")
 
---- bfind(string)
+--- bfind(string:str)
 
 Wrapper method for bfind command. bfind is used for searching entries by 
 keywords. User need to specify a database from those which are supported 
@@ -758,7 +878,7 @@ Example:
   # including the word 'E-cadherin' and 'human' from GenBank.
   bfind("gb E-cadherin human")
 
---- bget(string)
+--- bget(string:str)
 
 The bget command is used for retrieving database entries specified by a list
 of 'entry_id'.  This method accepts all the bget command line options as
@@ -775,7 +895,7 @@ Example:
   # retrieve amino acid sequence in a FASTA format
   bget("-f -n a eco:b0002")
 
---- btit(string)
+--- btit(string:str)
 
 Wrapper method for btit command. btit is used for retrieving the definitions
 by given database entries.  Number of entries given at a time is restricted
@@ -789,11 +909,22 @@ Example:
   # "mmu:13478", "dme:CG5287-PA" and cel:Y60A3A.14".
   btit("hsa:1798 mmu:13478 dme:CG5287-PA cel:Y60A3A.14")
 
---- bconv(string)
+--- bconv(string:str)
 
-The bconv command converts external IDs (NCBI GI, NCBI GeneID, GenBank ID,
-and UniProt ID) to KEGG IDs.  The result is the tab separated pair of the
-given ID and the converted ID in each line.
+The bconv command converts external IDs to KEGG IDs.
+Currently, following external databases are available.
+
+  External database  Database prefix
+  -----------------  ---------------
+  NCBI GI            ncbi-gi:
+  NCBI GeneID        ncbi-geneid:
+  GenBank            genbank:
+  UniGene            unigene:
+  UniProt            uniprot:
+  OMIM               omim:
+
+The result is a tab separated pair of the given ID and the converted ID
+in each line.
 
 Return value:
   string
@@ -802,9 +933,14 @@ Example:
   # Convert NCBI GI and NCBI GeneID to KEGG genes_id
   serv.bconv("ncbi-gi:10047086 ncbi-gi:10047090 ncbi-geneid:14751")
 
+Related site:
+  * ((<URL:http://www.genome.jp/kegg/genes.html>)) (Gene name conversion section)
+
 ==== LinkDB
 
---- get_linkdb_by_entry(entry_id, db, start, max_results)
++ Database cross references
+
+--- get_linkdb_by_entry(string:entry_id, string:db, int:offset, int:limit)
 
 Retrieve the database entries linked from the user specified database entry.
 It can also be specified the targeted database.
@@ -817,9 +953,36 @@ Example:
   get_linkdb_by_entry('eco:b0002', 'pathway', 1, 10)
   get_linkdb_by_entry('eco:b0002', 'pathway', 11, 10)
 
+Related site:
+  * ((<URL:http://www.genome.jp/dbget-bin/www_linkdb>)) (Single entry to database)
+
+--- get_linkdb_between_databases(string:from_db, string:to_db, int:offset, int:limit)
+
+Retrieve all links between entries among the given two databases.
+
+Return value:
+  ArrayOfLinkDBRelation
+
+Example:
+  # Get all links from "eco" (KEGG GENES) to "pathway" (KEGG PATHWAY)
+  # databases.
+  get_linkdb_between_databases("eco", "pathway", 1, 100)
+
+  # Print the contents of obtained links in Ruby language
+  links = get_linkdb_between_databases("eco", "pathway", 1, 100)
+  links.each do |link|
+    puts link.entry_id1  # => "eco:b0084"
+    puts link.entry_id2  # => "path:map00550"
+    puts link.type       # => "indirect"
+    puts link.path       # => "eco->ec->path"
+  end
+
+Related site:
+  * ((<URL:http://www.genome.jp/dbget-bin/www_linkdb>)) (Database to database)
+
 + Relation among genes and enzymes
 
---- get_genes_by_enzyme(enzyme_id, org)
+--- get_genes_by_enzyme(string:enzyme_id, string:org)
 
 Retrieve all genes of the given organism.
 
@@ -831,7 +994,7 @@ Example:
   # EC number ec:1.2.1.1
   get_genes_by_enzyme('ec:1.2.1.1', 'eco')
 
---- get_enzymes_by_gene(genes_id)
+--- get_enzymes_by_gene(string:genes_id)
 
 Retrieve all the EC numbers which are assigned to the given gene.
 
@@ -845,7 +1008,7 @@ Example:
 
 + Relation among enzymes, compounds and reactions
 
---- get_enzymes_by_compound(compound_id)
+--- get_enzymes_by_compound(string:compound_id)
 
 Retrieve all enzymes which have a link to the given compound_id.
 
@@ -857,7 +1020,7 @@ Example:
   # 'cpd:C00345'
   get_enzymes_by_compound('cpd:C00345')
 
---- get_enzymes_by_glycan(glycan_id)
+--- get_enzymes_by_glycan(string:glycan_id)
 
 Retrieve all enzymes which have a link to the given glycan_id.
 
@@ -869,7 +1032,7 @@ Example
   # 'gl:G00001'
   get_enzymes_by_glycan('gl:G00001')
 
---- get_enzymes_by_reaction(reaction_id)
+--- get_enzymes_by_reaction(string:reaction_id)
 
 Retrieve all enzymes which have a link to the given reaction_id.
 
@@ -881,7 +1044,7 @@ Example:
   # 'rn:R00100'.
   get_enzymes_by_reaction('rn:R00100')
 
---- get_compounds_by_enzyme(enzyme_id)
+--- get_compounds_by_enzyme(string:enzyme_id)
 
 Retrieve all compounds which have a link to the given enzyme_id.
 
@@ -905,7 +1068,7 @@ Example:
   # 'rn:R00100'
   get_compounds_by_reaction('rn:R00100')
 
---- get_glycans_by_enzyme(enzyme_id)
+--- get_glycans_by_enzyme(string:enzyme_id)
 
 Retrieve all glycans which have a link to the given enzyme_id.
 
@@ -917,7 +1080,7 @@ Example
   # 'ec:2.4.1.141'
   get_glycans_by_enzyme('ec:2.4.1.141')
 
---- get_glycans_by_reaction(reaction_id)
+--- get_glycans_by_reaction(string:reaction_id)
 
 Retrieve all glycans which have a link to the given reaction_id.
 
@@ -929,7 +1092,7 @@ Example
   # 'rn:R06164'
   get_glycans_by_reaction('rn:R06164')
 
---- get_reactions_by_enzyme(enzyme_id)
+--- get_reactions_by_enzyme(string:enzyme_id)
 
 Retrieve all reactions which have a link to the given enzyme_id.
 
@@ -941,7 +1104,7 @@ Example:
   # 'ec:2.7.1.12'
   get_reactions_by_enzyme('ec:2.7.1.12')
 
---- get_reactions_by_compound(compound_id)
+--- get_reactions_by_compound(string:compound_id)
 
 Retrieve all reactions which have a link to the given compound_id.
 
@@ -953,7 +1116,7 @@ Example:
   # 'cpd:C00199'
   get_reactions_by_compound('cpd:C00199')
 
---- get_reactions_by_glycan(glycan_id)
+--- get_reactions_by_glycan(string:glycan_id)
 
 Retrieve all reactions which have a link to the given glycan_id.
 
@@ -965,7 +1128,6 @@ Example
   # 'gl:G00001'
   get_reactions_by_glycan('gl:G00001')
 
-
 ==== SSDB
 
 This section describes the APIs for SSDB database.  For more details
@@ -973,22 +1135,8 @@ on SSDB, see:
 
   * ((<URL:http://www.genome.jp/kegg/ssdb/>))
 
-#--- get_neighbors_by_gene(genes_id, org, start, max_results)
-#
-#Search homologous genes of the user specified 'genes_id' from specified
-#organism (or from all organisms if 'all' is given as org).
-#
-#Return value:
-#  ArrayOfSSDBRelation
-#
-#Examples:
-#  # This will search all homologous genes of E. coli gene 'b0002'
-#  # in the SSDB and returns the first ten results.
-#  get_neighbors_by_gene('eco:b0002', 'all', 1, 10)
-#  # Next ten results.
-#  get_neighbors_by_gene('eco:b0002', 'all', 11, 10)
 
---- get_best_best_neighbors_by_gene(genes_id, start, max_results)
+--- get_best_best_neighbors_by_gene(string:genes_id, int:offset, int:limit)
 
 Search best-best neighbor of the gene in all organisms.
 
@@ -1000,7 +1148,7 @@ Example:
   get_best_best_neighbors_by_gene('eco:b0002', 1, 10)
   get_best_best_neighbors_by_gene('eco:b0002', 11, 10)
 
---- get_best_neighbors_by_gene(genes_id, start, max_results)
+--- get_best_neighbors_by_gene(string:genes_id, int:offset, int:limit)
 
 Search best neighbors in all organism.
 
@@ -1012,7 +1160,7 @@ Example:
   get_best_neighbors_by_gene('eco:b0002', 1, 10)
   get_best_neighbors_by_gene('eco:b0002', 11, 10)
 
---- get_reverse_best_neighbors_by_gene(genes_id, start, max_results)
+--- get_reverse_best_neighbors_by_gene(string:genes_id, int:offset, int:limit)
 
 Search reverse best neighbors in all organisms.
 
@@ -1024,7 +1172,7 @@ Example:
   get_reverse_best_neighbors_by_gene('eco:b0002', 1, 10)
   get_reverse_best_neighbors_by_gene('eco:b0002', 11, 10)
 
---- get_paralogs_by_gene(genes_id, start, max_results)
+--- get_paralogs_by_gene(string:genes_id, int:offset, int:limit)
 
 Search paralogous genes of the given gene in the same organism.
 
@@ -1036,21 +1184,10 @@ Example:
   get_paralogs_by_gene('eco:b0002', 1, 10)
   get_paralogs_by_gene('eco:b0002', 11, 10)
 
-#--- get_similarity_between_genes(genes_id1, genes_id2)
-#
-#Returns data containing Smith-Waterman score and alignment positions
-#between the two genes.
-#
-#Return value:
-#  SSDBRelation
-#
-#Example:
-#  # Returns a 'sw_score' between two E. coli genes 'b0002' and 'b3940'
-#  get_similarity_between_genes('eco:b0002', 'eco:b3940')
 
 ==== Motif
 
---- get_motifs_by_gene(genes_id, db)
+--- get_motifs_by_gene(string:genes_id, string:db)
 
 Search motifs in the specified gene. As for 'db', 
 user can specify one of the four database; Pfam, TIGRFAM, PROSITE pattern,
@@ -1064,7 +1201,7 @@ Example:
   # Returns the all pfam motifs in the E. coli gene 'b0002'
   get_motifs_by_gene('eco:b0002', 'pfam')
 
---- get_genes_by_motifs(motif_id_list, start, max_results)
+--- get_genes_by_motifs([string]:motif_id_list, int:offset, int:limit)
 
 Search all genes which contains all of the specified motifs.
 
@@ -1077,10 +1214,9 @@ Example:
   get_genes_by_motifs(list, 1, 10)
   get_genes_by_motifs(list, 11, 10)
 
+==== KO
 
-==== KO, OC, PC
-
---- get_ko_by_gene(genes_id)
+--- get_ko_by_gene(string:genes_id)
 
 Search all KOs to which given genes_id belongs.
 
@@ -1091,18 +1227,8 @@ Example:
   # Returns ko_ids to which GENES entry 'eco:b0002' belongs.
   get_ko_by_gene('eco:b0002')
 
-#--- get_ko_members(ko_id)
-#
-#Returns all genes assigned to the given KO entry.
-#
-#Return value:
-#  ArrayOfstring (genes_id)
-#
-#Example
-#  # Returns genes_ids those which belong to KO entry 'ko:K02598'.
-#  get_ko_members('ko:K02598')
 
---- get_ko_by_ko_class(ko_class_id)
+--- get_ko_by_ko_class(string:ko_class_id)
 
 Return all KOs which belong to the given ko_class_id.
 
@@ -1113,7 +1239,7 @@ Example:
   # Returns ko_ids which belong to the KO class '01196'.
   get_ko_by_ko_class('01196')
 
---- get_genes_by_ko_class(ko_class_id, org, start, max_results)
+--- get_genes_by_ko_class(string:ko_class_id, string:org, int:offset, int:limit)
 
 Retrieve all genes of the specified organism which are classified
 under the given ko_class_id.
@@ -1125,7 +1251,7 @@ Example:
   # Returns first 100 human genes which belong to the KO class '00930'
   get_genes_by_ko_class('00903', 'hsa' , 1, 100)
 
---- get_genes_by_ko(ko_id, org)
+--- get_genes_by_ko(string:ko_id, string:org)
 
 Retrieve all genes of the specified organism which belong to the
 given ko_id.
@@ -1140,31 +1266,6 @@ Example
   # Returns genes of all organisms which are assigned to the KO 'K00010'
   get_genes_by_ko('ko:K00010', 'all')
 
---- get_oc_members_by_gene(genes_id, start, max_results)
-
-Search all members of the same OC (KEGG Ortholog Cluster) to which given
-genes_id belongs.
-
-Return value:
-  ArrayOfstring (genes_id)
-
-Example
-  # Returns genes belonging to the same OC with eco:b0002 gene.
-  get_oc_members_by_gene('eco:b0002', 1, 10)
-  get_oc_members_by_gene('eco:b0002', 11, 10)
-
---- get_pc_members_by_gene(genes_id, start, max_results)
-
-Search all members of the same PC (KEGG Paralog Cluster) to which given
-genes_id belongs.
-
-Return value:
-  ArrayOfstring (genes_id)
-
-Example
-  # Returns genes belonging to the same PC with eco:b0002 gene.
-  get_pc_members_by_gene('eco:b0002', 1, 10)
-  get_pc_members_by_gene('eco:b0002', 11, 10)
 
 
 ==== PATHWAY
@@ -1176,7 +1277,10 @@ on PATHWAY database, see:
 
 + Coloring pathways
 
---- mark_pathway_by_objects(pathway_id, object_id_list)
+Related site:
+  * ((<URL:http://www.genome.jp/kegg/tool/color_pathway.html>))
+
+--- mark_pathway_by_objects(string:pathway_id, [string]:object_id_list)
 
 Mark the given objects on the given pathway map and return the URL of the
 generated image.
@@ -1190,7 +1294,7 @@ Example:
   obj_list = ['eco:b0002', 'cpd:C00263']
   mark_pathway_by_objects('path:eco00260', obj_list)
 
---- color_pathway_by_objects(pathway_id, object_id_list, fg_color_list, bg_color_list)
+--- color_pathway_by_objects(string:pathway_id, [string]:object_id_list, [string]:fg_color_list, [string]:bg_color_list)
 
 Color the given objects on the pathway map with the specified colors 
 and return the URL of the colored image.  In the KEGG pathway maps,
@@ -1212,7 +1316,7 @@ Example:
   bg_list  = ['#ffff00', 'yellow']
   color_pathway_by_objects('path:eco00260', obj_list, fg_list, bg_list)
 
---- color_pathway_by_elements(pathway_id, element_id_list, fg_color_list, bg_color_list)
+--- color_pathway_by_elements(string:pathway_id, [int]:element_id_list, [string]:fg_color_list, [string]:bg_color_list)
 
 Color the objects (rectangles and circles on a pathway map) corresponding
 to the given 'element_id_list' with the specified colors and return the
@@ -1248,7 +1352,7 @@ Example:
   bg_list  = [ '#ffff00', '#ffff00', '#ffcc00', '#ffcc00' ]
   color_pathway_by_elements('path:bsu00010', element_id_list, fg_list, bg_list)
 
---- get_html_of_marked_pathway_by_objects(pathway_id, object_id_list)
+--- get_html_of_marked_pathway_by_objects(string:pathway_id, [string]:object_id_list)
 
 HTML version of the 'mark_pathway_by_objects' method.
 Mark the given objects on the given pathway map and return the URL of the
@@ -1265,7 +1369,7 @@ Example:
   obj_list = ['eco:b4258', 'cpd:C00135', 'ko:K01881']
   get_html_of_marked_pathway_by_objects('path:eco00970', obj_list)
 
---- get_html_of_colored_pathway_by_objects(pathway_id, object_id_list, fg_color_list, bg_color_list)
+--- get_html_of_colored_pathway_by_objects(string:pathway_id, [string]:object_id_list, [string]:fg_color_list, [string]:bg_color_list)
 
 HTML version of the 'color_pathway_by_object' method.
 Color the given objects on the pathway map with the specified colors 
@@ -1285,7 +1389,7 @@ Example:
   bg_list  = ['#ff0000', 'yellow', 'orange']
   get_html_of_colored_pathway_by_objects('path:eco00970', obj_list, fg_list, bg_list)
 
---- get_html_of_colored_pathway_by_elements(pathway_id, element_id_list, fg_color_list, bg_color_list)
+--- get_html_of_colored_pathway_by_elements(string:pathway_id, [int]:element_id_list, [string]:fg_color_list, [string]:bg_color_list)
 
 HTML version of the 'color_pathway_by_elements' method.
 Color the objects corresponding to the given 'element_id_list' on the pathway
@@ -1307,9 +1411,34 @@ Example:
   bg_list  = [ '#ffff00', '#ffff00', '#ffcc00', '#ffcc00' ]
   get_html_of_colored_pathway_by_elements('path:bsu00010', element_id_list, fg_list, bg_list)
 
++ Relations of objects on the pathway
+
+--- get_element_relations_by_pathway(string:pathway_id)
+
+Search all relations of the objects on the specified pathway.
+
+Return value:
+  ArrayOfPathwayElementRelation
+
+Example:
+  # Returns list of PathwayElementRelation on the pathway map 'path:bsu00010'
+  relations = get_element_relations_by_pathway('path:bsu00010')
+
+  # Print the contents of obtained relations in Ruby language
+  relations.each do |rel|
+    puts rel.element_id1
+    puts rel.element_id2
+    puts rel.type
+    rel.subtypes.each do |sub|
+      puts sub.element_id
+      puts sub.relation
+      puts sub.type
+    end  
+  end
+
 + Objects on the pathway
 
---- get_elements_by_pathway(pathway_id)
+--- get_elements_by_pathway(string:pathway_id)
 
 Search all objects on the specified pathway.  This method will be used in
 combination with the color_pathway_by_elements method to distingish graphical
@@ -1334,7 +1463,7 @@ Example:
     end
   end
 
---- get_genes_by_pathway(pathway_id)
+--- get_genes_by_pathway(string:pathway_id)
 
 Search all genes on the specified pathway.  Organism name is given by
 the name of the pathway map.
@@ -1346,7 +1475,7 @@ Example:
   # Returns all E. coli genes on the pathway map '00020'.
   get_genes_by_pathway('path:eco00020')
 
---- get_enzymes_by_pathway(pathway_id)
+--- get_enzymes_by_pathway(string:pathway_id)
 
 Search all enzymes on the specified pathway.
 
@@ -1357,7 +1486,7 @@ Example:
   # Returns all E. coli enzymes on the pathway map '00020'.
   get_enzymes_by_pathway('path:eco00020')
 
---- get_compounds_by_pathway(pathway_id)
+--- get_compounds_by_pathway(string:pathway_id)
 
 Search all compounds on the specified pathway.
 
@@ -1368,7 +1497,7 @@ Example:
   # Returns all E. coli compounds on the pathway map '00020'.
   get_compounds_by_pathway('path:eco00020')
 
---- get_glycans_by_pathway(pathway_id)
+--- get_glycans_by_pathway(string:pathway_id)
 
 Search all glycans on the specified pathway.
 
@@ -1379,7 +1508,7 @@ Example
   # Returns all E. coli glycans on the pathway map '00510'
   get_glycans_by_pathway('path:eco00510')
 
---- get_reactions_by_pathway(pathway_id)
+--- get_reactions_by_pathway(string:pathway_id)
 
 Retrieve all reactions on the specified pathway.
 
@@ -1390,7 +1519,7 @@ Example:
   # Returns all E. coli reactions on the pathway map '00260'
   get_reactions_by_pathway('path:eco00260')
 
---- get_kos_by_pathway(pathway_id)
+--- get_kos_by_pathway(string:pathway_id)
 
 Retrieve all KOs on the specified pathway.
 
@@ -1401,10 +1530,12 @@ Example:
   # Returns all ko_ids on the pathway map 'path:hsa00010'
   get_kos_by_pathway('path:hsa00010')
 
-
 + Pathways by objects
 
---- get_pathways_by_genes(genes_id_list)
+Related site:
+  * ((<URL:http://www.genome.jp/kegg/tool/search_pathway.html>))
+
+--- get_pathways_by_genes([string]:genes_id_list)
 
 Search all pathways which include all the given genes.  How to pass the
 list of genes_id will depend on the language specific implementations.
@@ -1416,7 +1547,7 @@ Example:
   # Returns all pathways including E. coli genes 'b0077' and 'b0078'
   get_pathways_by_genes(['eco:b0077' , 'eco:b0078'])
 
---- get_pathways_by_enzymes(enzyme_id_list)
+--- get_pathways_by_enzymes([string]:enzyme_id_list)
 
 Search all pathways which include all the given enzymes.
 
@@ -1427,7 +1558,7 @@ Example:
   # Returns all pathways including an enzyme '1.3.99.1'
   get_pathways_by_enzymes(['ec:1.3.99.1'])
 
---- get_pathways_by_compounds(compound_id_list)
+--- get_pathways_by_compounds([string]:compound_id_list)
 
 Search all pathways which include all the given compounds.
 
@@ -1438,7 +1569,7 @@ Example:
   # Returns all pathways including compounds 'C00033' and 'C00158'
   get_pathways_by_compounds(['cpd:C00033', 'cpd:C00158'])
 
---- get_pathways_by_glycans(glycan_id_list)
+--- get_pathways_by_glycans([string]:glycan_id_list)
 
 Search all pathways which include all the given glycans.
  
@@ -1449,7 +1580,7 @@ Example
   # Returns all pathways including glycans 'G00009' and 'G00011'
   get_pathways_by_glycans(['gl:G00009', 'gl:G00011'])
 
---- get_pathways_by_reactions(reaction_id_list)
+--- get_pathways_by_reactions([string]:reaction_id_list)
 
 Retrieve all pathways which include all the given reaction_ids.
 
@@ -1461,7 +1592,7 @@ Example:
   # 'rn:R00960' and 'rn:R01786'
   get_pathways_by_reactions(['rn:R00959', 'rn:R02740', 'rn:R00960', 'rn:R01786'])
 
---- get_pathways_by_kos(ko_id_list, org)
+--- get_pathways_by_kos([string]:ko_id_list, string:org)
 
 Retrieve all pathways of the organisms which include all the given KO IDs.
 
@@ -1475,10 +1606,9 @@ Example:
   # Returns pathways of all organisms including 'ko:K00016' and 'ko:K00382'
   get_pathways_by_kos(['ko:K00016', 'ko:K00382'], 'all')
 
-
 + Relation among pathways
 
---- get_linked_pathways(pathway_id)
+--- get_linked_pathways(string:pathway_id)
 
 Retrieve all pathways which are linked from a given pathway_id.
 
@@ -1489,7 +1619,6 @@ Example:
   # Returns IDs of PATHWAY entries linked from 'path:eco00620'.
   get_linked_pathways('path:eco00620')
 
-
 ==== GENES
 
 This section describes the APIs for GENES database. For more details
@@ -1497,7 +1626,7 @@ on GENES database, see:
 
   * ((<URL:http://www.genome.jp/kegg/kegg2.html#genes>))
 
---- get_genes_by_organism(org, start, max_results)
+--- get_genes_by_organism(string:org, int:offset, int:limit)
 
 Retrieve all genes of the specified organism.
 
@@ -1509,7 +1638,6 @@ Example:
   get_genes_by_organism('hin', 1, 100)
   get_genes_by_organism('hin', 101, 100)
 
-
 ==== GENOME
 
 This section describes the APIs for GENOME database. For more details
@@ -1517,7 +1645,7 @@ on GENOME database, see:
 
   * ((<URL:http://www.genome.jp/kegg/kegg2.html#genome>))
 
---- get_number_of_genes_by_organism(org)
+--- get_number_of_genes_by_organism(string:org)
 
 Get the number of genes coded in the specified organism's genome. 
 
@@ -1528,12 +1656,14 @@ Example:
   # Get the number of the genes on the E.coli genome.
   get_number_of_genes_by_organism('eco')
 
-
 ==== LIGAND
 
 This section describes the APIs for LIGAND database.
 
---- convert_mol_to_kcf(mol_text)
+Related site:
+  * ((<URL:http://www.genome.jp/kegg/ligand.html>))
+
+--- convert_mol_to_kcf(string:mol)
 
 Convert a MOL format into the KCF format.
 
@@ -1543,10 +1673,112 @@ Return value:
 Example:
   convert_mol_to_kcf(mol_str)
 
+--- search_compounds_by_name(string:name)
+
+Returns a list of compounds having the specified name.
+
+Return value:
+  ArrayOfstring (compound_id)
+
+Example:
+  search_compounds_by_name("shikimic acid")
+
+--- search_glycans_by_name(string:name)
+
+Returns a list of glycans having the specified name.
+
+Return value:
+  ArrayOfstring (glycan_id)
+
+Example:
+  search_glycans_by_name("Paragloboside")
+
+--- search_compounds_by_composition(string:composition)
+
+Returns a list of compounds containing elements indicated by the composition.
+Order of the elements is insensitive.
+
+Return value:
+  ArrayOfstring (compound_id)
+
+Example:
+  search_compounds_by_composition("C7H10O5")
+
+--- search_glycans_by_composition(string:composition)
+
+Returns a list of glycans containing sugars indicated by the composition.
+Order of the sugars (in parenthesis with number) is insensitive.
+
+Return value:
+  ArrayOfstring (glycan_id)
+
+Example:
+  search_glycans_by_composition("(Man)4 (GalNAc)1")
+
+--- search_compounds_by_mass(float:mass, float:range)
+
+Returns a list of compounds having the molecular weight around 'mass'
+with some ambiguity (range).
+
+Return value:
+  ArrayOfstring (compound_id)
+
+Example:
+  search_compounds_by_mass(174.05, 0.1)
+
+--- search_glycans_by_mass(float:mass, float:range)
+
+Returns a list of glycans having a molecular weight around 'mass'
+with some ambiguity (range).
+
+Return value:
+  ArrayOfstring (glycan_id)
+
+Example:
+  search_glycans_by_mass(174.05, 0.1)
+
+--- search_compounds_by_subcomp(string:mol, int:offset, int:limit)
+
+Returns a list of compounds with the alignment having common sub-structure
+calculated by the subcomp program.
+
+You can obtain a MOL formatted structural data of matched compounds
+using bget method with the "-f m" option to confirm the alignment.
+
+Return value:
+  ArrayOfStructureAlignment
+
+Example:
+  mol = bget("-f m cpd:C00111")
+  search_compounds_by_subcomp(mol, 1, 5)
+
+Related site:
+  * ((<URL:http://www.genome.jp/ligand-bin/search_compound>))
+
+--- search_glycans_by_kcam(string:kcf, string:program, string:option, int:offset, int:limit)
+
+Returns a list of glycans with the alignment having common sub-structure
+calculated by the KCaM program.
+
+The argument 'program' can be 'gapped' or 'ungaped'.
+The next argument 'option' can be 'global' or 'local'.
+
+You can obtain a KCF formatted structural data of matched glycans
+using bget method with the "-f k" option to confirm the alignment.
+
+Return value:
+  ArrayOfStructureAlignment
+
+Example:
+  kcf = bget("-f k gl:G12922")
+  search_glycans_by_kcam(kcf, "gapped", "local", 1, 5)
+
+Related site:
+  * ((<URL:http://www.genome.jp/ligand-bin/search_glycan.cgi>))
+  * ((<URL:http://www.genome.jp/ligand/kcam/>))
 
 == Notes
 
-Last updated: Feb 17, 2006
+Last updated: November 20, 2006
 
 =end
-
