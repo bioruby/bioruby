@@ -6,12 +6,12 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: bioruby,v 1.17 2006/12/24 08:32:08 k Exp $
+# $Id: bioruby,v 1.18 2006/12/24 14:55:53 k Exp $
 #
 
 begin
   require 'rubygems'
-  require_gem 'bio', '~> 0.7'
+  require_gem 'bio', '>= 1.1.0'
 rescue LoadError
 end
 require 'bio/shell'
