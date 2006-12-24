@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: seq.rb,v 1.19 2006/12/24 08:50:18 k Exp $
+# $Id: seq.rb,v 1.20 2006/12/24 09:30:22 k Exp $
 #
 
 module Bio::Shell
@@ -55,7 +55,7 @@ module Bio::Shell
     max = 150
     seq = getseq(str)
     rep = "\n* * * Sequence statistics * * *\n\n"
-    if seq.respond_to?(:complement)
+    if seq.moltype == Bio::Sequence::NA
       fwd = seq
       rev = seq.complement
       if seq.length > max

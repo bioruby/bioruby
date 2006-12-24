@@ -5,7 +5,7 @@
 #               Mitsuteru Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: test_seq.rb,v 1.7 2006/02/27 09:40:13 nakao Exp $
+# $Id: test_seq.rb,v 1.8 2006/12/24 09:30:23 k Exp $
 #
 
 require 'pathname'
@@ -40,17 +40,17 @@ END
 
     def test_naseq
       str = 'ACGT'
-      assert_equal(Bio::Sequence::NA, seq(str).class)
-      assert_equal(Bio::Sequence::NA.new(str), seq(str))
-      assert_equal('acgt', seq(str))
+      assert_equal(Bio::Sequence, getseq(str).class)
+      assert_equal(Bio::Sequence::NA, getseq(str).moltype)
+      assert_equal('acgt', getseq(str).seq)
     end
 
 
     def test_aaseq
       str = 'WD'
-      assert_equal(Bio::Sequence::AA, seq(str).class)
-      assert_equal(Bio::Sequence::AA.new('WD'), seq(str))
-      assert_equal('WD', seq(str))
+      assert_equal(Bio::Sequence, getseq(str).class)
+      assert_equal(Bio::Sequence::AA, getseq(str).moltype)
+      assert_equal('WD', getseq(str).seq)
     end
 
 
