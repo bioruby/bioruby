@@ -5,7 +5,7 @@
 # 		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: kgml.rb,v 1.5 2006/09/19 05:55:38 k Exp $
+# $Id: kgml.rb,v 1.6 2006/12/24 09:18:43 k Exp $
 #
 
 autoload :REXML, 'rexml/document'
@@ -21,7 +21,8 @@ class KEGG
 #
 # <entry>
 #  :id -> :entry_id
-#  :type -> :entry_type
+#  :type -> :category
+#  :map -> :pathway
 #  names()
 #  <graphics>
 #  :name -> :label
@@ -38,7 +39,7 @@ class KEGG
 #
 # === Examples
 #
-#  file = ARGF.read("kgml/hsa/hsa00010.xml")
+#  file = File.read("kgml/hsa/hsa00010.xml")
 #  kgml = Bio::KEGG::KGML.new(file)
 #
 #  # <pathway> attributes
@@ -53,10 +54,10 @@ class KEGG
 #    # <entry> attributes
 #    puts entry.entry_id
 #    puts entry.name
-#    puts entry.entry_type
+#    puts entry.category
 #    puts entry.link
 #    puts entry.reaction
-#    puts entry.map
+#    puts entry.pathway
 #    # <graphics> attributes
 #    puts entry.label	      # name
 #    puts entry.shape         # type
@@ -121,7 +122,7 @@ class KGML
   attr_accessor :entries, :relations, :reactions
 
   class Entry
-    attr_accessor :entry_id, :name, :entry_type, :link, :reaction, :map
+    attr_accessor :entry_id, :name, :category, :link, :reaction, :pathway
     attr_accessor :label, :shape, :x, :y, :width, :height, :fgcolor, :bgcolor
     attr_accessor :components
     def names
@@ -161,13 +162,13 @@ class KGML
     dom.elements.each("/pathway/entry") { |node|
       attr = node.attributes
       entry = Entry.new
-      entry.entry_id   = attr["id"].to_i
-      entry.name       = attr["name"]
-      entry.entry_type = attr["type"]
+      entry.entry_id = attr["id"].to_i
+      entry.name     = attr["name"]
+      entry.category = attr["type"]
       # implied
-      entry.link       = attr["link"]
-      entry.reaction   = attr["reaction"]
-      entry.map        = attr["map"]
+      entry.link     = attr["link"]
+      entry.reaction = attr["reaction"]
+      entry.pathway  = attr["map"]
 
       node.elements.each("graphics") { |graphics|
         attr = graphics.attributes
