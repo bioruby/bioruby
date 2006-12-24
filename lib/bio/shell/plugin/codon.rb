@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: codon.rb,v 1.14 2006/09/19 06:17:19 k Exp $
+# $Id: codon.rb,v 1.15 2006/12/24 08:46:50 k Exp $
 #
 
 module Bio::Shell
@@ -35,17 +35,17 @@ module Bio::Shell
     attr_reader :table
 
     def setup_colors
-      esc_seq = Bio::Shell.esc_seq
+      c = Bio::Shell.colors
 
       @colors = {
-        :text		=> esc_seq[:none],
-        :aa		=> esc_seq[:green],
-        :start		=> esc_seq[:red],
-        :stop		=> esc_seq[:red],
-        :basic		=> esc_seq[:cyan],
-        :polar		=> esc_seq[:blue],
-        :acidic		=> esc_seq[:magenta],
-        :nonpolar	=> esc_seq[:yellow],
+        :text		=> c[:none],
+        :aa		=> c[:green],
+        :start		=> c[:red],
+        :stop		=> c[:red],
+        :basic		=> c[:cyan],
+        :polar		=> c[:blue],
+        :acidic		=> c[:magenta],
+        :nonpolar	=> c[:yellow],
       }
     end
 
