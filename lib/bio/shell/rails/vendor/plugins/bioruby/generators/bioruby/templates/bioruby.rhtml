@@ -1,0 +1,36 @@
+<html>
+<head>
+<title>BioRuby shell on Rails</title>
+<%= stylesheet_link_tag "bioruby.css" %>
+<%= javascript_include_tag :defaults %>
+</head>
+<body>
+
+<div id="side">
+ <img src="/images/bioruby.png"><br>
+
+ <div class="title">Project</div>
+  <ul>
+   <li><%= project_workdir %>
+  </ul>
+
+ <div class="title">Functions</div>
+ <ul>
+   <li><%= link_to "Console", :action => "index" %></li>
+   <li><%= link_to "History", :action => "history" %></li>
+   <li><%= link_to "Commands", :action => "commands" %></li>
+ </ul>
+
+ <div class="title">Local variables</div>
+ <%= render :partial => "variables" %>
+</div>
+
+
+<div id="main">
+
+<h1>BioRuby shell on Rails</h1>
+<%= yield %>
+
+</div>
+
+</body>

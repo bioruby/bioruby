@@ -1,0 +1,16 @@
+<div id="console">
+<%= form_remote_tag(:url => {:action => "evaluate"}, :position => "top") %>
+<b>BioRuby script</b>
+<input type="submit" value="Evaluate">
+<input type="reset" value="Clear">
+&nbsp;&nbsp;
+Show [
+<%= link_to_remote "All",      :url => {:action => "results", :limit => 0} %> |
+<%= link_to_remote "Last 5",   :url => {:action => "results", :limit => 5} %> |
+<%= link_to_remote "Previous", :url => {:action => "results", :limit => 1} %>
+] or [
+<%= link_to "Clear", :action => "index" %>
+] results<br>
+<textarea id="script" name="script" rows=10 cols=80></textarea><br>
+<%= end_form_tag %>
+</div>
