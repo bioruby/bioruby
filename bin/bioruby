@@ -6,7 +6,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: bioruby,v 1.16 2006/07/25 18:16:28 k Exp $
+# $Id: bioruby,v 1.17 2006/12/24 08:32:08 k Exp $
 #
 
 begin
@@ -14,147 +14,30 @@ begin
   require_gem 'bio', '~> 0.7'
 rescue LoadError
 end
-
-
-### BioRuby shell setup
-
 require 'bio/shell'
 
+# required to run commands (getseq, ls etc.)
 include Bio::Shell
 
-# command line argument (working directory or bioruby shell script file)
-workdir = nil
-script = nil
-if arg = ARGV.shift
-  if File.directory?(arg)
-    # directory or symlink to directory
-    workdir = arg
-    Dir.chdir(workdir)
-  elsif File.exists?(arg)
-    # BioRuby shell script (load script after the previous session is restored)
-    workdir = File.dirname(arg)
-    script = File.basename(arg)
-    Dir.chdir(workdir)
-  else
-    workdir = arg
-    Dir.mkdir(workdir)
-    Dir.chdir(workdir)
-  end
-else
-  unless File.exists?(Bio::Shell.history)
-    message = "Are you sure to start new session in this directory? [y/n] "
-    unless Bio::Shell.ask_yes_or_no(message)
-      exit
-    end
-  end
-end
-
-# loading configuration and plugins
-Bio::Shell.setup
-
-
-### IRB setup
-
-require 'irb'
-begin
-  require 'irb/completion'
-  Bio::Shell.cache[:readline] = true
-rescue LoadError
-  Bio::Shell.cache[:readline] = false
-end
-
-IRB.setup(nil)
-
-# set application name
-IRB.conf[:AP_NAME] = 'bioruby'
-
-# change prompt for bioruby
-$_ = Bio::Shell.esc_seq
-IRB.conf[:PROMPT][:BIORUBY_COLOR] = {
-  :PROMPT_I => "bio#{$_[:ruby]}ruby#{$_[:none]}> ",
-  :PROMPT_S => "bio#{$_[:ruby]}ruby#{$_[:none]}%l ",
-  :PROMPT_C => "bio#{$_[:ruby]}ruby#{$_[:none]}+ ",
-  :RETURN   => "  ==> %s\n"
-}
-IRB.conf[:PROMPT][:BIORUBY] = {
-  :PROMPT_I => "bioruby> ",
-  :PROMPT_S => "bioruby%l ",
-  :PROMPT_C => "bioruby+ ",
-  :RETURN   => "  ==> %s\n"
-}
-if Bio::Shell.config[:color]
-  IRB.conf[:PROMPT_MODE] = :BIORUBY_COLOR
-else
-  IRB.conf[:PROMPT_MODE] = :BIORUBY
-end
-IRB.conf[:ECHO] = Bio::Shell.config[:echo] || false
-
-# irb/input-method.rb >= v1.5 (not in 1.8.2)
-#IRB.conf[:SAVE_HISTORY] = 100000
-
-# not beautifully works
-#IRB.conf[:AUTO_INDENT] = true
-
-
-### Start IRB
-
-irb = IRB::Irb.new
-
-# needed for method completion
-IRB.conf[:MAIN_CONTEXT] = irb.context
+# setup command line options, working directory, and irb configurations
+Bio::Shell::Setup.new
 
 # loading workspace and command history
 Bio::Shell.load_session
 
-if script
-  load script
-  exit
-end
-
-Bio::Shell.create_save_dir
-
-$history_file = File.open(Bio::Shell.history, "a")
-$history_file.sync = true
-
-# overwrite gets to store history with time stamp
-io = IRB.conf[:MAIN_CONTEXT].io
-
-io.class.class_eval do
-  alias_method :irb_original_gets, :gets
-end
-
-def io.gets
-  line = irb_original_gets
-  $history_file.puts "#{Time.now}\t#{line}" if line
-  line
-end
-
 # main loop
-Signal.trap("SIGINT") do
-  irb.signal_handle
-end
-
-catch(:IRB_EXIT) do
-  irb.eval_input
-end
-
-$history_file.close if $history_file
-
-# shut down the rails server
-if $web_server
-  $web_server.each do |io|
-    io.close
+if Bio::Shell.cache[:rails]
+  Bio::Shell.cache[:rails].join
+else
+  Signal.trap("SIGINT") do
+    Bio::Shell.cache[:irb].signal_handle
   end
-  $web_access_log.close if $web_access_log
-  $web_error_log.close if $web_error_log
+
+  catch(:IRB_EXIT) do
+    Bio::Shell.cache[:irb].eval_input
+  end
 end
 
 # saving workspace, command history and configuration before exit
 Bio::Shell.save_session
-
-if workdir
-  puts "Leaving directory '#{workdir}'."
-  puts "History is saved in '#{workdir}/#{Bio::Shell.history}'."
-end
-
 

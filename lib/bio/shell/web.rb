@@ -6,84 +6,89 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: web.rb,v 1.1 2006/02/27 09:22:42 k Exp $
+# $Id: web.rb,v 1.2 2006/12/24 08:32:08 k Exp $
 #
 
 
 module Bio::Shell
 
+  class Web
+
+    def initialize
+      Bio::Shell.cache[:binding] = binding
+      Bio::Shell.cache[:results] ||= Results.new
+      install_rails
+      setup_rails
+      start_rails
+    end
+
+    private
+
+    def setup_rails
+      puts
+      puts ">>>"
+      puts ">>>  open http://localhost:3000/bioruby"
+      puts ">>>"
+      puts
+      puts '(port # may differ if opts for rails are given "bioruby --web proj -- -p port")'
+      puts
+    end
+
+    def install_rails
+      unless File.exist?("script/generate")
+        puts "Installing Rails application for BioRuby shell ... "
+        system("rails .")
+        puts "done"
+      end
+      unless File.exist?("app/controllers/bioruby_controller.rb")
+        basedir = File.dirname(__FILE__)
+        puts "Installing Rails plugin for BioRuby shell ... "
+        FileUtils.cp_r("#{basedir}/rails/.", ".")
+        system("./script/generate bioruby shell")
+        puts "done"
+      end
+    end
+
+    def start_rails
+      begin
+        Bio::Shell.cache[:rails] = Thread.new {
+          require './config/boot'
+          require 'commands/server'
+        }
+      end
+    end
+
+    class Results
+      attr_accessor :number, :script, :result, :output
+
+      def initialize
+        @number = 0
+        @script = []
+        @result = []
+        @output = []
+      end
+
+      def store(script, result, output)
+        @number += 1
+        @script[@number] = script
+        @result[@number] = result
+        @output[@number] = output
+        return @number
+      end
+
+      def restore(number)
+        return @script[number], @result[number], @output[number]
+      end
+    end
+
+  end
+
   private
 
-  def rails_directory_setup
-    server = "script/server"
-    unless File.exists?(server)
-      require 'fileutils'
-      basedir = File.dirname(__FILE__)
-      print "Copying web server files ... "
-      FileUtils.cp_r("#{basedir}/rails/.", ".")
-      puts "done"
-    end
-  end
+  # *TODO* stop irb and start rails?
+  #def web
+  #end
 
-  def rails_server_setup
-    require 'open3'
-    $web_server = Open3.popen3(server)
-
-    $web_error_log = File.open("log/web-error.log", "a")
-    $web_server[2].reopen($web_error_log)
-
-    while line = $web_server[1].gets
-      if line[/druby:\/\/localhost/]
-        uri = line.chomp
-        puts uri if $DEBUG
-        break
-      end
-    end
-
-    $web_access_log = File.open("log/web-access.log", "a")
-    $web_server[1].reopen($web_access_log)
-
-    return uri
-  end
-
-  def web
-    return if $web_server
-
-    require 'drb/drb'
-    # $SAFE = 1   # disable eval() and friends
-
-    rails_directory_setup
-    #uri = rails_server_setup
-    uri = 'druby://localhost:81064' # baioroji-
-
-    $drb_server = DRbObject.new_with_uri(uri)
-    $drb_server.puts_remote("Connected")
-
-    puts "Connected to server #{uri}"
-    puts "Open http://localhost:3000/shell/"
-
-    io = IRB.conf[:MAIN_CONTEXT].io
-
-    io.class.class_eval do
-      alias_method :shell_original_gets, :gets
-    end
-
-    def io.gets
-      bind = IRB.conf[:MAIN_CONTEXT].workspace.binding
-      vars = eval("local_variables", bind)
-      vars.each do |var|
-        next if var == "_"
-        if val = eval("#{var}", bind)
-          $drb_server[var] = val
-        else
-          $drb_server.delete(var)
-        end
-      end
-      line = shell_original_gets
-      line
-    end
-  end
-  
 end
 
 

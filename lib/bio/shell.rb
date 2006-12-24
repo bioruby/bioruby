@@ -5,20 +5,24 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License:      Ruby's
 #
-# $Id: shell.rb,v 1.16 2006/07/25 18:45:27 k Exp $
+# $Id: shell.rb,v 1.17 2006/12/24 08:32:08 k Exp $
 #
 
 require 'bio'
 require 'yaml'
 require 'open-uri'
+require 'fileutils'
 require 'pp'
 
 module Bio::Shell
 
+  require 'bio/shell/setup'
+  require 'bio/shell/irb'
+  require 'bio/shell/web'
+  require 'bio/shell/script'
   require 'bio/shell/core'
   require 'bio/shell/interface'
   require 'bio/shell/object'
-  require 'bio/shell/web'
   require 'bio/shell/demo'
   require 'bio/shell/plugin/entry'
   require 'bio/shell/plugin/seq'
@@ -32,7 +36,6 @@ module Bio::Shell
   require 'bio/shell/plugin/psort'
 
   extend Ghost
-  extend Private
 
 end
 
