@@ -3,7 +3,7 @@
 Copyright::  Copyright (C) 2005, 2006 Toshiaki Katayama <k@bioruby.org>
 Copyright::  Copyright (C) 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
 
-  $Id: README.DEV,v 1.11 2006/09/19 05:39:05 k Exp $
+  $Id: README.DEV,v 1.12 2006/12/24 10:11:11 k Exp $
 
 = HOW TO CONTRIBUTE TO THE BIORUBY PROJECT?
 
@@ -77,7 +77,7 @@ The header should be formatted as follows:
   # = bio/db/hoge.rb - Hoge database parser classes
   #
   # Copyright::  Copyright (C) 2001, 2003-2005 Bio R. Hacker <brh@example.org>,
-  # Copyright::  Copyright (C) 2006            Chem R. Hacker <crh@example.org>
+  # Copyright::  Copyright (C) 2006 Chem R. Hacker <crh@example.org>
   #
   # License::    Ruby's
   #
@@ -108,7 +108,7 @@ The header should be formatted as follows:
 In the above sample, the '$ I d : $' (without spaces) will be automatically
 changed into something like
 
-  $Id: README.DEV,v 1.11 2006/09/19 05:39:05 k Exp $
+  $Id: README.DEV,v 1.12 2006/12/24 10:11:11 k Exp $
 
 when commiting to the CVS repository for the first time.
 
@@ -149,12 +149,12 @@ following example (from lib/bio/sequence.rb):
     # Create a new Bio::Sequence object
     #
     #   s = Bio::Sequence.new('atgc')
-    #   puts s                                  #=> 'atgc'
+    #   puts s                                  # => 'atgc'
     #
     # Note that this method does not intialize the contained sequence
     # as any kind of bioruby object, only as a simple string
     #
-    #   puts s.seq.class                        #=> String
+    #   puts s.seq.class                        # => String
     #
     # See Bio::Sequence#na, Bio::Sequence#aa, and Bio::Sequence#auto 
     # for methods to transform the basic String of a just created 
