@@ -1,23 +1,10 @@
 #
 # test/unit/bio/sequence/test_compat.rb - Unit test for Bio::Sequencce::Compat
 #
-#   Copyright (C) 2006 Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::   Copyright (C) 2006 Mitsuteru C. Nakao <n@bioruby.org>
+# License::     Ruby's
 #
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#  $Id: test_compat.rb,v 1.1 2006/02/05 17:39:27 nakao Exp $
+#  $Id: test_compat.rb,v 1.2 2006/12/24 17:19:05 nakao Exp $
 #
 
 require 'pathname'

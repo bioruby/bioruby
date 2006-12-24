@@ -1,8 +1,8 @@
 #
 # test/unit/bio/test_alignment.rb - Unit test for Bio::Alignment
 #
-#   Copyright (C) 2004 Moses Hohman <mmhohman@northwestern.edu>
-#                 2005 Naohisa Goto <ng@bioruby.org>
+# Copyright::  Copyright (C) 2004 Moses Hohman <mmhohman@northwestern.edu>
+#              Copyright (C) 2005 Naohisa Goto <ng@bioruby.org>
 #
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -18,7 +18,7 @@
 #  License along with this library; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 #
-#  $Id: test_alignment.rb,v 1.8 2006/12/14 14:10:57 ngoto Exp $
+#  $Id: test_alignment.rb,v 1.9 2006/12/24 17:19:04 nakao Exp $
 #
 
 require 'pathname'
