@@ -5,20 +5,19 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: core.rb,v 1.21 2006/02/27 09:09:57 k Exp $
+# $Id: core.rb,v 1.22 2006/12/24 08:36:00 k Exp $
 #
 
+module Bio::Shell::Core
 
-module Bio::Shell::Ghost
-
-  SAVEDIR = "session/"
+  SAVEDIR = "shell/session/"
   CONFIG  = "config"
   OBJECT  = "object"
   HISTORY = "history"
-  SCRIPT  = "script.rb"
-  PLUGIN  = "plugin/"
+  SCRIPT  = "shell/script.rb"
+  PLUGIN  = "shell/plugin/"
   DATADIR = "data/"
-  BIOFLAT = "bioflat/"
+  BIOFLAT = "data/bioflat/"
 
   MARSHAL = [ Marshal::MAJOR_VERSION, Marshal::MINOR_VERSION ]
 
@@ -36,86 +35,24 @@ module Bio::Shell::Ghost
     :n => "\e[00m",  :none    => "\e[00m",  :reset => "\e[00m",
   }
 
-  def history
-    SAVEDIR + HISTORY
+  def colors
+    ESC_SEQ
   end
 
   def datadir
     DATADIR
   end
 
-  def esc_seq
-    ESC_SEQ
+  def script_dir
+    File.dirname(SCRIPT)
   end
 
-  ### save/restore the environment
-
-  def setup
-    @config = {}
-    @cache  = {}
-    check_version
-    check_marshal
-    load_config
-    load_plugin
-  end
- 
-  # A hash to store persistent configurations
-  attr_accessor :config
-
-  # A hash to store temporal (per session) configurations
-  attr_accessor :cache
-
-  def load_session
-    load_object
-    load_history
-    opening_splash
+  def object_file
+    SAVEDIR + OBJECT
   end
 
-  def save_session
-    closing_splash
-    if create_save_dir_ask
-      #save_history	# changed to use our own...
-      save_object
-      save_config
-    end
-  end
-
-  ### setup
-
-  def check_version
-    if RUBY_VERSION < "1.8.2"
-      raise "BioRuby shell runs on Ruby version >= 1.8.2"
-    end
-  end
-
-  def check_marshal
-    if @config[:marshal] and @config[:marshal] != MARSHAL
-      raise "Marshal version mismatch"
-    end
-  end
-
-  def create_save_dir
-    create_real_dir(SAVEDIR)
-    create_real_dir(DATADIR)
-    create_real_dir(PLUGIN)
-  end
-
-  def create_save_dir_ask
-    if File.directory?(SAVEDIR)
-      @cache[:save] = true
-    end
-    if @cache[:save].nil?
-      if ask_yes_or_no("Save session in '#{SAVEDIR}' directory? [y/n] ")
-        create_real_dir(SAVEDIR)
-        create_real_dir(DATADIR)
-        create_real_dir(PLUGIN)
-#       create_real_dir(BIOFLAT)
-        @cache[:save] = true
-      else
-        @cache[:save] = false
-      end
-    end
-    return @cache[:save]
+  def history_file
+    SAVEDIR + HISTORY
   end
 
   def ask_yes_or_no(message)
@@ -135,11 +72,79 @@ module Bio::Shell::Ghost
     end
   end
 
+end
+
+
+module Bio::Shell::Ghost
+
+  include Bio::Shell::Core
+
+  # A hash to store persistent configurations
+  attr_accessor :config
+
+  # A hash to store temporal (per session) configurations
+  attr_accessor :cache
+
+  ### save/restore the environment
+
+  def configure
+    @config = {}
+    @cache  = {}
+    create_save_dir
+    load_config
+    load_plugin
+  end
+ 
+  def load_session
+    load_object
+    load_history
+    opening_splash
+    open_history
+  end
+
+  def save_session
+    close_history
+    closing_splash
+    if create_save_dir_ask
+      #save_history	# changed to use our own...
+      save_object
+      save_config
+    end
+    puts "Leaving directory '#{@cache[:workdir]}'"
+    puts "History is saved in '#{@cache[:workdir]}/#{SAVEDIR + HISTORY}'"
+  end
+
+  ### directories
+
+  def create_save_dir
+    create_real_dir(SAVEDIR)
+    create_real_dir(DATADIR)
+    create_real_dir(PLUGIN)
+  end
+
+  def create_save_dir_ask
+    if File.directory?(SAVEDIR)
+      @cache[:save] = true
+    end
+    if @cache[:save].nil?
+      if ask_yes_or_no("Save session in '#{SAVEDIR}' directory? [y/n] ")
+        create_real_dir(SAVEDIR)
+        create_real_dir(PLUGIN)
+        create_real_dir(DATADIR)
+        create_real_dir(BIOFLAT)
+        @cache[:save] = true
+      else
+        @cache[:save] = false
+      end
+    end
+    return @cache[:save]
+  end
+
   def create_real_dir(dir)
     unless File.directory?(dir)
       begin
         print "Creating directory (#{dir}) ... "
-        Dir.mkdir(dir)
+        FileUtils.mkdir_p(dir)
         puts "done"
       rescue
         warn "Error: Failed to create directory (#{dir}) : #{$!}"
@@ -151,11 +156,8 @@ module Bio::Shell::Ghost
 
   def create_flat_dir(dbname)
     dir = BIOFLAT + dbname.to_s.strip
-    unless File.directory?(BIOFLAT)
-      Dir.mkdir(BIOFLAT)
-    end
     unless File.directory?(dir)
-      Dir.mkdir(dir)
+      FileUtils.mkdir_p(dir)
     end
     return dir
   end
@@ -208,7 +210,7 @@ module Bio::Shell::Ghost
   end
 
   def config_echo
-    bind = IRB.conf[:MAIN_CONTEXT].workspace.binding
+    bind = Bio::Shell.cache[:binding]
     flag = ! @config[:echo]
     @config[:echo] = IRB.conf[:ECHO] = flag
     eval("conf.echo = #{flag}", bind)
@@ -216,7 +218,7 @@ module Bio::Shell::Ghost
   end
 
   def config_color
-    bind = IRB.conf[:MAIN_CONTEXT].workspace.binding
+    bind = Bio::Shell.cache[:binding]
     flag = ! @config[:color]
     @config[:color] = flag
     if flag
@@ -263,15 +265,26 @@ module Bio::Shell::Ghost
 
   ### object
 
+  def check_marshal
+    if @config[:marshal] and @config[:marshal] != MARSHAL
+      raise "Marshal version mismatch"
+    end
+  end
+
   def load_object
-    load_object_file(SAVEDIR + OBJECT)
+    begin
+      check_marshal
+      load_object_file(SAVEDIR + OBJECT)
+    rescue
+      warn "Error: Load aborted : #{$!}"
+    end
   end
 
   def load_object_file(file)
     if File.exists?(file)
       print "Loading object (#{file}) ... "
       begin
-        bind = IRB.conf[:MAIN_CONTEXT].workspace.binding
+        bind = Bio::Shell.cache[:binding]
         hash = Marshal.load(File.read(file))
         hash.each do |k, v|
           begin
@@ -287,7 +300,7 @@ module Bio::Shell::Ghost
       puts "done"
     end
   end
-  
+
   def save_object
     save_object_file(SAVEDIR + OBJECT)
   end
@@ -295,36 +308,48 @@ module Bio::Shell::Ghost
   def save_object_file(file)
     begin
       print "Saving object (#{file}) ... "
+      File.rename(file, "#{file}.old") if File.exist?(file)
       File.open(file, "w") do |f|
-        begin
-          bind = IRB.conf[:MAIN_CONTEXT].workspace.binding
-          list = eval("local_variables", bind)
-          list -= ["_"]
-          hash = {}
-          list.each do |elem|
-            value = eval(elem, bind)
-            if value
-              begin
-                Marshal.dump(value)
-                hash[elem] = value
-              rescue
-                # value could not be dumped.
-              end
+        bind = Bio::Shell.cache[:binding]
+        list = eval("local_variables", bind)
+        list -= ["_"]
+        hash = {}
+        list.each do |elem|
+          value = eval(elem, bind)
+          if value
+            begin
+              Marshal.dump(value)
+              hash[elem] = value
+            rescue
+              # value could not be dumped.
             end
           end
-          Marshal.dump(hash, f)
-          @config[:marshal] = MARSHAL
-        rescue
-          warn "Error: Failed to dump (#{file}) : #{$!}"
         end
+        Marshal.dump(hash, f)
+        @config[:marshal] = MARSHAL
       end
       puts "done"
     rescue
+      File.rename("#{file}.old", file) if File.exist?("#{file}.old")
       warn "Error: Failed to save (#{file}) : #{$!}"
     end
   end
 
   ### history
+
+  def open_history
+    @cache[:histfile] = File.open(SAVEDIR + HISTORY, "a")
+    @cache[:histfile].sync = true
+  end
+
+  def store_history(line)
+    Bio::Shell.cache[:histfile].puts "# #{Time.now}"
+    Bio::Shell.cache[:histfile].puts line
+  end
+
+  def close_history
+    @cache[:histfile].close if @cache[:histfile]
+  end
 
   def load_history
     if @cache[:readline]
@@ -336,14 +361,15 @@ module Bio::Shell::Ghost
     if File.exists?(file)
       print "Loading history (#{file}) ... "
       File.open(file).each do |line|
-        #Readline::HISTORY.push line.chomp
-	date, hist = line.chomp.split("\t")
-        Readline::HISTORY.push hist if hist
+        unless line[/^# /]
+          Readline::HISTORY.push line.chomp
+        end
       end
       puts "done"
     end
   end
   
+  # not used (use open_history/close_history instead)
   def save_history
     if @cache[:readline]
       save_history_file(SAVEDIR + HISTORY)
@@ -439,8 +465,8 @@ module Bio::Shell::Ghost
 
   def splash_message_color
     str = splash_message
-    ruby = ESC_SEQ[:ruby]
-    none = ESC_SEQ[:none]
+    ruby = colors[:ruby]
+    none = colors[:none]
     return str.sub(/R u b y/) { "#{ruby}R u b y#{none}" }
   end
 
@@ -464,7 +490,7 @@ module Bio::Shell::Ghost
   def splash_message_action_color(message = nil)
     s = message || splash_message
     l = s.length
-    c = ESC_SEQ
+    c = colors
     x = " "
     0.step(l,2) do |i|
       l1 = l-i;  l2 = l1/2;  l4 = l2/2
