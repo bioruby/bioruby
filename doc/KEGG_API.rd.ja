@@ -1,6 +1,6 @@
 =begin
 
-   $Id: KEGG_API.rd.ja,v 1.10 2006/12/27 13:32:40 k Exp $
+   $Id: KEGG_API.rd.ja,v 1.11 2006/12/27 13:40:45 k Exp $
 
        Copyright (C) 2003-2006 Toshiaki Katayama <k@bioruby.org>
 
@@ -68,20 +68,14 @@ KEGG API を使う方法を説明します。後半のリファレンスで KEGG API の全機能を
       * ((<get_best_neighbors_by_gene>))
       * ((<get_reverse_best_neighbors_by_gene>))
       * ((<get_paralogs_by_gene>))
-#     * ((<get_neighbors_by_gene>))
-#     * ((<get_similarity_between_genes>))
     * ((<Motif>))
       * ((<get_motifs_by_gene>))
       * ((<get_genes_by_motifs>))
-#   * ((<KO, OC, PC>))
     * ((<KO>))
       * ((<get_ko_by_gene>))
       * ((<get_ko_by_ko_class>))
       * ((<get_genes_by_ko_class>))
       * ((<get_genes_by_ko>))
-#     * ((<get_oc_members_by_gene>))
-#     * ((<get_pc_members_by_gene>))
-#     * ((<get_ko_members>))
     * ((<PATHWAY>))
       * ((<パスウェイへの色づけ>))
         * ((<mark_pathway_by_objects>))
@@ -1135,20 +1129,6 @@ SSDB データベースについて詳しくは以下のページを参照してください。
 
   * ((<URL:http://www.genome.jp/kegg/ssdb/>))
 
-#--- get_neighbors_by_gene(string:genes_id, string:org, int:offset, int:limit)
-#
-#指定した genes_id の遺伝子にホモロジーのある全遺伝子を指定した生物から
-#検索します。また org に 'all' を指定すると全生物種から検索します。
-#
-#戻値：
-#  ArrayOfSSDBRelation
-#
-#例：
-#  # 大腸菌の遺伝子 b0002 に相同性のある遺伝子を全て検索して、結果の１番
-#  # から１０番目までを返します
-#  get_neighbors_by_gene('eco:b0002', 'all' 1, 10)
-#  # 次の１０個を offset = offset + limit として取ります
-#  get_neighbors_by_gene('eco:b0002', 'all' 11, 10)
   
 --- get_best_best_neighbors_by_gene(string:genes_id, int:offset, int:limit)
 
@@ -1198,16 +1178,6 @@ SSDB データベースについて詳しくは以下のページを参照してください。
   get_paralogs_by_gene('eco:b0002', 1, 10)
   get_paralogs_by_gene('eco:b0002', 11, 10)
 
-#--- get_similarity_between_genes(string:genes_id1, string:genes_id2)
-#
-#指定した２つの遺伝子間の Smith-Waterman スコアを含むデータを返します。
-#
-#戻値：
-#  SSDBRelation
-#
-#例：
-#  # 大腸菌の b0002 遺伝子と b3940 遺伝子間のスコアやアライメント領域を得る
-#  get_similarity_between_genes('eco:b0002', 'eco:b3940')
 
 ==== Motif
 
@@ -1254,16 +1224,6 @@ OC と PC は機械的にクラスタリングされた相同性のある遺伝子群のデータベースです。
   # eco:b0002 遺伝子にアサインされている KO のリスト
   get_ko_by_gene('eco:b0002')
 
-#--- get_ko_members(string:ko_id)
-#
-#指定した ko_id の KO エントリに含まれる遺伝子のリストを返します。
-#
-#戻値：
-#  ArrayOfstring (genes_id)
-#
-#例：
-#  # KO 番号 K02208 のアサインされている遺伝子のリスト
-#  get_ko_by_gene('ko:K02598')
 
 --- get_ko_by_ko_class(string:ko_class_id)
 
@@ -1302,29 +1262,7 @@ OC と PC は機械的にクラスタリングされた相同性のある遺伝子群のデータベースです。
   # KO 番号 'K00010' に含まれる全生物種の遺伝子リスト
   get_genes_by_ko('ko:K00010', 'all')
 
-#--- get_oc_members_by_gene(string:genes_id, int:offset, int:limit)
-#
-#指定した遺伝子と同じ OC に属する遺伝子のリストを返します。
-#
-#戻値：
-#  ArrayOfstring (genes_id)
-#
-#例：
-#  # eco:b0002 遺伝子と同じオーソログクラスターに含まれる遺伝子のリスト
-#  get_oc_members_by_gene('eco:b0002', 1, 10)
-#  get_oc_members_by_gene('eco:b0002', 11, 10)
 
-#--- get_pc_members_by_gene(string:genes_id, int:offset, int:limit)
-#
-#指定した遺伝子と同じ PC に属する遺伝子のリストを返します。
-#
-#戻値：
-#  ArrayOfstring (genes_id)
-#
-#例：
-#  # eco:b0002 遺伝子と同じパラログクラスターに含まれる遺伝子のリスト
-#  get_pc_members_by_gene('eco:b0002', 1, 10)
-#  get_pc_members_by_gene('eco:b0002', 11, 10)
 
 ==== PATHWAY
 

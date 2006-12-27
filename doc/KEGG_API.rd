@@ -1,6 +1,6 @@
 =begin
 
-  $Id: KEGG_API.rd,v 1.4 2006/12/27 13:32:39 k Exp $
+  $Id: KEGG_API.rd,v 1.5 2006/12/27 13:40:45 k Exp $
 
     Copyright (C) 2003-2006 Toshiaki Katayama <k@bioruby.org>
 
@@ -117,20 +117,14 @@ page at GenomeNet:
       * ((<get_best_neighbors_by_gene>))
       * ((<get_reverse_best_neighbors_by_gene>))
       * ((<get_paralogs_by_gene>))
-#     * ((<get_neighbors_by_gene>))
-#     * ((<get_similarity_between_genes>))
     * ((<Motif>))
       * ((<get_motifs_by_gene>))
       * ((<get_genes_by_motifs>))
-#   * ((<KO, OC, PC>))
     * ((<KO>))
       * ((<get_ko_by_gene>))
       * ((<get_ko_by_ko_class>))
       * ((<get_genes_by_ko_class>))
       * ((<get_genes_by_ko>))
-#     * ((<get_oc_members_by_gene>))
-#     * ((<get_pc_members_by_gene>))
-#     * ((<get_ko_members>))
     * ((<PATHWAY>))
       * ((<Coloring pathways>))
         * ((<mark_pathway_by_objects>))
@@ -705,21 +699,6 @@ SSDBRelation data type contains the following fields:
   length1           amino acid length of the genes_id1 (int)
   length2           amino acid length of the genes_id2 (int)
 
-#Notice (26 Nov, 2004):
-#
-#We found a serious bug with the 'best_flag_1to2' and 'best_flag_2to1'
-#fields in the SSDBRelation data type.  The methods returning the
-#SSDBRelation (and ArrayOfSSDBRelation) data type had returned the
-#opposite values of the intended results with the both fields.
-#The following methods had been affected by this bug:
-#
-## * get_neighbors_by_gene
-#  * get_best_neighbors_by_gene
-#  * get_reverse_best_neighbors_by_gene
-#  * get_paralogs_by_gene
-## * get_similarity_between_genes
-#
-#This problem is fixed in the KEGG API version 3.2.
 
 + ArrayOfSSDBRelation
 
@@ -1164,20 +1143,6 @@ on SSDB, see:
 
   * ((<URL:http://www.genome.jp/kegg/ssdb/>))
 
-#--- get_neighbors_by_gene(string:genes_id, string:org, int:offset, int:limit)
-#
-#Search homologous genes of the user specified 'genes_id' from specified
-#organism (or from all organisms if 'all' is given as org).
-#
-#Return value:
-#  ArrayOfSSDBRelation
-#
-#Examples:
-#  # This will search all homologous genes of E. coli gene 'b0002'
-#  # in the SSDB and returns the first ten results.
-#  get_neighbors_by_gene('eco:b0002', 'all', 1, 10)
-#  # Next ten results.
-#  get_neighbors_by_gene('eco:b0002', 'all', 11, 10)
 
 --- get_best_best_neighbors_by_gene(string:genes_id, int:offset, int:limit)
 
@@ -1227,17 +1192,6 @@ Example:
   get_paralogs_by_gene('eco:b0002', 1, 10)
   get_paralogs_by_gene('eco:b0002', 11, 10)
 
-#--- get_similarity_between_genes(string:genes_id1, string:genes_id2)
-#
-#Returns data containing Smith-Waterman score and alignment positions
-#between the two genes.
-#
-#Return value:
-#  SSDBRelation
-#
-#Example:
-#  # Returns a 'sw_score' between two E. coli genes 'b0002' and 'b3940'
-#  get_similarity_between_genes('eco:b0002', 'eco:b3940')
 
 ==== Motif
 
@@ -1281,16 +1235,6 @@ Example:
   # Returns ko_ids to which GENES entry 'eco:b0002' belongs.
   get_ko_by_gene('eco:b0002')
 
-#--- get_ko_members(string:ko_id)
-#
-#Returns all genes assigned to the given KO entry.
-#
-#Return value:
-#  ArrayOfstring (genes_id)
-#
-#Example
-#  # Returns genes_ids those which belong to KO entry 'ko:K02598'.
-#  get_ko_members('ko:K02598')
 
 --- get_ko_by_ko_class(string:ko_class_id)
 
@@ -1330,31 +1274,7 @@ Example
   # Returns genes of all organisms which are assigned to the KO 'K00010'
   get_genes_by_ko('ko:K00010', 'all')
 
-#--- get_oc_members_by_gene(string:genes_id, int:offset, int:limit)
-#
-#Search all members of the same OC (KEGG Ortholog Cluster) to which given
-#genes_id belongs.
-#
-#Return value:
-#  ArrayOfstring (genes_id)
-#
-#Example
-#  # Returns genes belonging to the same OC with eco:b0002 gene.
-#  get_oc_members_by_gene('eco:b0002', 1, 10)
-#  get_oc_members_by_gene('eco:b0002', 11, 10)
 
-#--- get_pc_members_by_gene(string:genes_id, int:offset, int:limit)
-#
-#Search all members of the same PC (KEGG Paralog Cluster) to which given
-#genes_id belongs.
-#
-#Return value:
-#  ArrayOfstring (genes_id)
-#
-#Example
-#  # Returns genes belonging to the same PC with eco:b0002 gene.
-#  get_pc_members_by_gene('eco:b0002', 1, 10)
-#  get_pc_members_by_gene('eco:b0002', 11, 10)
 
 ==== PATHWAY
 
