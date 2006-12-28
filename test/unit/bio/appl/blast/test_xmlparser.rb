@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # License::    Ruby's
 #
-#  $Id: test_xmlparser.rb,v 1.5 2006/12/24 17:19:04 nakao Exp $
+#  $Id: test_xmlparser.rb,v 1.6 2006/12/28 06:25:21 nakao Exp $
 #
 
 require 'pathname'
@@ -25,8 +25,8 @@ module Bio
     end
 
     def self.output
-#      File.open(File.join(TestDataBlast, 'b0002.faa.m7')).read 
-      File.open(File.join(TestDataBlast, '2.2.15.blastp.m7')).read 
+      File.open(File.join(TestDataBlast, 'b0002.faa.m7')).read 
+#      File.open(File.join(TestDataBlast, '2.2.15.blastp.m7')).read 
     end
   end
 
