@@ -183,6 +183,8 @@ instead of a Hash of a entry ID string.
 
 --- Bio::Alignment
 
+In 0.7.0:
+
 * Old Bio::Alignment class is renamed to Bio::Alignment::OriginalAlignment.
   Now, new Bio::Alignment is a module. However, you don't mind so much
   because most of the class methods previously existed are defined
@@ -198,6 +200,11 @@ instead of a Hash of a entry ID string.
   Note that consensus_iupac now does not return u and invalid letters
   not defined in IUPAC standard even if all bases are equal.
 * There are more and more changes to be written...
+
+In 1.1.0:
+
+* Bio::Alignment::ClustalWFormatter is removed and methods in this module
+  are renemed and moved to Bio::Alignment::Output.
 
 --- Bio::PDB
 
@@ -239,6 +246,16 @@ In 0.7.1:
   a nucleic acid sequence.
 * There are more and more changes to be written...
 
+In 1.1.0:
+
+* In Bio::PDB::ATOM#name, #resName, #iCode, and #charge, whitespaces are
+  stripped during initializing.
+* In Bio::PDB::ATOM#segID, whitespaces are right-stripped during initializing.
+* In Bio::PDB::ATOM#element, whitespaces are left-stripped during initializing.
+* Bio::PDB::HETATM#name, #resName, #iCode, #charge, #segID, and #element
+  are also subject to the above changes, because Bio::PDB::HETATM inherits
+  Bio::PDB::ATOM.
+
 --- Bio::FlatFile
 
 In 0.7.2:
@@ -261,10 +278,25 @@ In 0.7.2:
 * Internal structure is now completely changed. Codes depend on the internal
   structure (which is not recommended) would not work.
 
-In 1.0.1:
+In 1.1.0:
 
 * Bio::FlatFile#entry_start_pos and #entry_ended_pos are enabled
   only when Bio::FlatFile#entry_pos_flag is true.
+
+--- Bio::ClustalW, Bio::MAFFT, Bio::Sim4
+
+In 1.1.0:
+
+* Bio::(ClustalW|MAFFT|Sim4)#option is changed to #options.
+* Bio::ClustalW::errorlog and Bio::(MAFFT|Sim4)#log are removed.
+  No replacements/alternatives are available.
+
+--- Bio::MAFFT::Report
+
+In 1.1.0:
+
+* Bio::MAFFT::Report#initialize is changed to get a string of multi-fasta
+  formmatted text instead of Array.
 
 === Deleted files
 
