@@ -1,3 +1,13 @@
+#
+# test/unit/bio/util/restriction_enzyme/analysis/test_calculated_cuts.rb - Unit test for Bio::RestrictionEnzyme::Analysis::CalculatedCuts
+#
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
+#
+#  $Id: test_calculated_cuts.rb,v 1.2 2006/12/31 18:46:15 trevor Exp $
+#
+
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 6, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
@@ -9,9 +19,9 @@ require 'bio/util/restriction_enzyme/analysis/horizontal_cut_range'
 require 'bio/util/restriction_enzyme/analysis/vertical_cut_range'
 require 'bio/util/restriction_enzyme/analysis/cut_ranges'
 
-module Bio
+module Bio #:nodoc:
 
-class TestAnalysisCalculatedCuts < Test::Unit::TestCase
+class TestAnalysisCalculatedCuts < Test::Unit::TestCase #:nodoc:
 
   def setup
     @t = Bio::RestrictionEnzyme::Analysis::CalculatedCuts

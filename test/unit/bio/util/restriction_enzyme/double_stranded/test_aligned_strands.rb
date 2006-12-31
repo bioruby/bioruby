@@ -1,3 +1,13 @@
+#
+# test/unit/bio/util/restriction_enzyme/double_stranded/test_aligned_strands.rb - Unit test for Bio::RestrictionEnzyme::DoubleStranded::AlignedStrands
+#
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
+#
+#  $Id: test_aligned_strands.rb,v 1.2 2006/12/31 18:46:15 trevor Exp $
+#
+
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 6, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
@@ -6,9 +16,9 @@ require 'test/unit'
 require 'bio/util/restriction_enzyme/double_stranded/aligned_strands'
 require 'bio/util/restriction_enzyme/double_stranded'
 
-module Bio
+module Bio #:nodoc:
 
-class TestDoubleStrandedAlignedStrands < Test::Unit::TestCase
+class TestDoubleStrandedAlignedStrands < Test::Unit::TestCase #:nodoc:
 
   def setup
     @t = Bio::RestrictionEnzyme::DoubleStranded::AlignedStrands

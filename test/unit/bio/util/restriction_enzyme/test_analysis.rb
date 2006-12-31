@@ -1,3 +1,13 @@
+#
+# test/unit/bio/util/restriction_enzyme/test_analysis.rb - Unit test for Bio::RestrictionEnzyme::Analysis
+#
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
+#
+#  $Id: test_analysis.rb,v 1.4 2006/12/31 18:46:14 trevor Exp $
+#
+
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
@@ -5,9 +15,9 @@ $:.unshift(libpath) unless $:.include?(libpath)
 require 'test/unit'
 require 'bio/util/restriction_enzyme/analysis'
 
-module Bio
+module Bio #:nodoc:
 
-class TestAnalysis < Test::Unit::TestCase
+class TestAnalysis < Test::Unit::TestCase #:nodoc:
 
   def setup
     @enz = Bio::RestrictionEnzyme

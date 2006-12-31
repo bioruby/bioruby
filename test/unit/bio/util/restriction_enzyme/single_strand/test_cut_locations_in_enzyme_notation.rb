@@ -1,3 +1,13 @@
+#
+# test/unit/bio/util/restriction_enzyme/single_strand/test_cut_locations_in_enzyme_notation.rb - Unit test for Bio::RestrictionEnzyme::SingleStrand::CutLocationsInEnzymeNotation
+#
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
+#
+#  $Id: test_cut_locations_in_enzyme_notation.rb,v 1.2 2006/12/31 18:46:15 trevor Exp $
+#
+
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 6, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
@@ -5,9 +15,9 @@ $:.unshift(libpath) unless $:.include?(libpath)
 require 'test/unit'
 require 'bio/util/restriction_enzyme/single_strand/cut_locations_in_enzyme_notation'
 
-module Bio
+module Bio #:nodoc:
 
-class TestSingleStrandCutLocationsInEnzymeNotation < Test::Unit::TestCase
+class TestSingleStrandCutLocationsInEnzymeNotation < Test::Unit::TestCase #:nodoc:
 
   def setup
     @t = Bio::RestrictionEnzyme::SingleStrand::CutLocationsInEnzymeNotation
