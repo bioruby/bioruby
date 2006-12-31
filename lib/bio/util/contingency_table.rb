@@ -1,12 +1,23 @@
 #
-# = bio/util/contingency_table.rb - Statistical contingency table analysis for aligned sequences
+# bio/util/contingency_table.rb - Statistical contingency table analysis for aligned sequences
 #
-# Copyright::  Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
-# License::    LGPL
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
 #
-#  $Id: contingency_table.rb,v 1.4 2006/02/27 13:23:01 k Exp $
+#  $Id: contingency_table.rb,v 1.5 2006/12/31 20:02:20 trevor Exp $
 #
-# == Synopsis
+
+module Bio #:nodoc:
+
+#
+# bio/util/contingency_table.rb - Statistical contingency table analysis for aligned sequences
+#
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
+#
+# = Description
 # 
 # The Bio::ContingencyTable class provides basic statistical contingency table
 # analysis for two positions within aligned sequences.
@@ -33,19 +44,18 @@
 # correlation.
 # 
 # 
-# == Further Reading
+# = Further Reading
 # 
 # * http://en.wikipedia.org/wiki/Contingency_table
 # * http://www.physics.csbsju.edu/stats/exact.details.html
 # * Numerical Recipes in C by Press, Flannery, Teukolsky, and Vetterling
-# # 
-# == Usage
+#  
+# = Usage
 # 
 # What follows is an example of ContingencyTable in typical usage
 # analyzing results from a clustal alignment.
 # 
 #   require 'bio'
-#   require 'bio/contingency_table'
 # 
 #   seqs = {}
 #   max_length = 0
@@ -78,9 +88,8 @@
 #   File.new('results.yml', 'a+') { |f| f.puts correlations.to_yaml }
 # 
 # 
-# == Tutorial
-# 
-
+# = Tutorial
+#
 # ContingencyTable returns the statistical significance of change
 # between two positions in an alignment.  If you would like to see how
 # every possible combination of positions in your alignment compares
@@ -209,15 +218,13 @@
 # with statistics, is to increase the sample size.
 # 
 # 
-# == A Note on Efficiency
+# = A Note on Efficiency
 # 
-
 # ContingencyTable is slow.  It involves many calculations for even a
 # seemingly small five-string data set.  Even worse, it's very
 # dependent on matrix traversal, and this is done with two dimensional
 # hashes which dashes any hope of decent speed.
 # 
-
 # Finally, half of the matrix is redundant and positions could be
 # summed with their companion position to reduce calculations.  For
 # example the positions (5,2) and (2,5) could both have their values
@@ -229,30 +236,8 @@
 # is short and to the point in aims of achieving that purpose.  If the
 # BioRuby project moves towards C extensions in the future a
 # professional caliber version will likely be created.
-# 
-# 
-#--
 #
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
-#
-#
-
-module Bio
-
+  
 class ContingencyTable
   # Since we're making this math-notation friendly here is the layout of @table:
   # * @table[row][column]
@@ -337,7 +322,6 @@ class ContingencyTable
     Math.sqrt(c_s / (table_sum_all + c_s) )
   end
 
-end
-
+end # ContingencyTable
 end # Bio
 
