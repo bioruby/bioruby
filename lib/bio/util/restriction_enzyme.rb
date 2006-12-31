@@ -1,17 +1,34 @@
 #
-# = bio/util/restriction_enzyme.rb - Digests DNA based on restriction enzyme cut patterns
+# bio/util/restriction_enzyme.rb - Digests DNA based on restriction enzyme cut patterns
 #
-# Copyright::  Copyright (C) 2006 Trevor Wennblom <trevor@corevx.com>
-# License::    LGPL
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
 #
-#  $Id: restriction_enzyme.rb,v 1.4 2006/02/28 21:45:56 trevor Exp $
+#  $Id: restriction_enzyme.rb,v 1.5 2006/12/31 21:50:31 trevor Exp $
 #
+
+require 'bio/db/rebase'
+require 'bio/util/restriction_enzyme/double_stranded'
+require 'bio/util/restriction_enzyme/single_strand'
+require 'bio/util/restriction_enzyme/cut_symbol'
+require 'bio/util/restriction_enzyme/analysis'
+
+module Bio #:nodoc:
+
+#
+# bio/util/restriction_enzyme.rb - Digests DNA based on restriction enzyme cut patterns
+#
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
 #
 # NOTE: This documentation and the module are still very much under
 # development.  It has been released as it is relatively stable and
 # comments would be appreciated.
 # 
-# == Synopsis
+#
+# = Description
 # 
 # Bio::RestrictionEnzyme allows you to fragment a DNA strand using one
 # or more restriction enzymes.  Bio::RestrictionEnzyme is aware that
@@ -19,13 +36,15 @@
 # returns the various possible fragmentation patterns that result in
 # such circumstances.
 # 
-
-# Using Bio::RestrictionEnzyme you may simply use the name of common
-# enzymes to cut with or you may construct your own unique enzymes to use.
+# When using Bio::RestrictionEnzyme you may simply use the name of common
+# enzymes to cut your sequence or you may construct your own unique enzymes 
+# to use.
 # 
 # 
-# == Basic Usage
+# = Usage
 # 
+# == Basic
+#
 #   # EcoRI cut pattern:
 #   #   G|A A T T C
 #   #    +-------+
@@ -34,7 +53,7 @@
 #   # This can also be written as:
 #   #   G^AATTC
 # 
-#   require 'bio/restriction_enzyme'
+#   require 'bio'
 #   require 'pp'
 # 
 #   seq = Bio::Sequence::NA.new('gaattc')
@@ -65,10 +84,9 @@
 #   p cuts.primary                        # ["aattc", "aattcggg", "g"]
 #   p cuts.complement                     # ["g", "gcccttaa", "cttaa"]
 # 
+# == Advanced
 # 
-# == Advanced Usage
-# 
-#   require 'bio/restriction_enzyme'
+#   require 'bio'
 #   require 'pp'
 #   enzyme_1 = Bio::RestrictionEnzyme.new('anna', [1,1], [3,3])
 #   enzyme_2 = Bio::RestrictionEnzyme.new('gg', [1,1])
@@ -159,52 +177,23 @@
 #      @tags={}>}
 # 
 # 
-# == Todo
+# = Currently under development
 # 
-# Currently under development:
-# 
-# * Optimizations in restriction_enzyme/analysis.rb to cut down on
-#   factorial growth of computation space.
 # * Circular DNA cutting
-# * Tagging of sequence data
-# * Much more documentation
-# 
-# 
-#--
 #
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
-#
-#
-
-
-require 'bio/db/rebase'
-require 'bio/util/restriction_enzyme/double_stranded'
-require 'bio/util/restriction_enzyme/single_strand'
-require 'bio/util/restriction_enzyme/cut_symbol'
-require 'bio/util/restriction_enzyme/analysis'
-
-
-module Bio
-
+  
 class Bio::RestrictionEnzyme
     include CutSymbol
     extend CutSymbol
 
+    # [+users_enzyme_or_rebase_or_pattern+] One of three possible parameters:  The name of an enzyme, a REBASE::EnzymeEntry object, or a nucleotide pattern with a cut mark.
+    # [+cut_locations+] The cut locations in enzyme index notation.
+    #
+    # See Bio::RestrictionEnzyme::DoubleStranded.new for more information.
+    #
+    #--
     # Factory for DoubleStranded
+    #++
     def self.new(users_enzyme_or_rebase_or_pattern, *cut_locations)
       DoubleStranded.new(users_enzyme_or_rebase_or_pattern, *cut_locations)
     end
@@ -213,19 +202,23 @@ class Bio::RestrictionEnzyme
     #
     # Returns a Bio::REBASE object loaded with all of the enzyme data on file.
     #
-    #def self.rebase(enzymes_yaml = '/home/trevor/tmp5/bioruby/lib/bio/util/restriction_enzyme/enzymes.yaml')
+    #--
+    # FIXME: Use File.join
+    #++
     def self.rebase(enzymes_yaml = File.dirname(__FILE__) + '/restriction_enzyme/enzymes.yaml')
+      #def self.rebase(enzymes_yaml = '/home/trevor/tmp5/bioruby/lib/bio/util/restriction_enzyme/enzymes.yaml')
+
       @@rebase_enzymes ||= Bio::REBASE.load_yaml(enzymes_yaml)
       @@rebase_enzymes
     end
 
     # Primitive way of determining if a string is an enzyme name.
     #
-    # Should work just fine thanks to dumb luck.  A nucleotide or nucleotide
+    # A nucleotide or nucleotide
     # set can't ever contain an 'i'.  Restriction enzymes always end in 'i'.
     #
     #--
-    # Could also look for cut symbols.
+    # FIXME: Change this to actually look up the enzyme name to see if it's valid.
     #++
     #
     def self.enzyme_name?( str )
@@ -237,6 +230,5 @@ class Bio::RestrictionEnzyme
       Bio::RestrictionEnzyme::Analysis.cut( sequence, enzymes )
     end
 
-end
-
+end # RestrictionEnzyme
 end # Bio

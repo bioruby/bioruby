@@ -1,3 +1,12 @@
+#
+# bio/util/restriction_enzyme/single_strand/cut_locations_in_enzyme_notation.rb - The cut locations, in enzyme notation
+#
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
+#
+#  $Id: cut_locations_in_enzyme_notation.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
@@ -13,49 +22,24 @@ class SingleStrand < Bio::Sequence::NA
 #
 # bio/util/restriction_enzyme/single_strand/cut_locations_in_enzyme_notation.rb - The cut locations, in enzyme notation
 #
-# Copyright::  Copyright (C) 2006 Trevor Wennblom <trevor@corevx.com>
-# License::    LGPL
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
 #
-#  $Id: cut_locations_in_enzyme_notation.rb,v 1.1 2006/02/01 07:34:12 trevor Exp $
-#
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
-#
-
-=begin rdoc
-bio/util/restriction_enzyme/single_strand/cut_locations_in_enzyme_notation.rb - The cut locations, in enzyme notation
-
-Stores the cut location in thier enzyme index notation
-
-May be initialized with a series of cuts or an enzyme pattern marked
-with cut symbols.
-
-Enzyme index notation:: 1.._n_, value before 1 is -1
-
-Notes:
-* <code>0</code> is invalid as it does not refer to any index 
-* +nil+ is not allowed here as it has no meaning
-* +nil+ values are kept track of in DoubleStranded::CutLocations as they
-  need a reference point on the correlating strand.  +nil+ represents no
-  cut or a partial digestion.
-
-=end
+# Stores the cut location in thier enzyme index notation
+# 
+# May be initialized with a series of cuts or an enzyme pattern marked
+# with cut symbols.
+# 
+# Enzyme index notation:: 1.._n_, value before 1 is -1
+# 
+# Notes:
+# * <code>0</code> is invalid as it does not refer to any index 
+# * +nil+ is not allowed here as it has no meaning
+# * +nil+ values are kept track of in DoubleStranded::CutLocations as they
+#   need a reference point on the correlating strand.  +nil+ represents no
+#   cut or a partial digestion.
+# 
 class CutLocationsInEnzymeNotation < Array
   include CutSymbol
   extend CutSymbol
@@ -131,8 +115,6 @@ class CutLocationsInEnzymeNotation < Array
     end
 
   end
-
-end
-
-end
-end
+end # CutLocationsInEnzymeNotation
+end # SingleStrand
+end # Bio::RestrictionEnzyme

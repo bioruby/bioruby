@@ -1,3 +1,12 @@
+#
+# bio/util/restrction_enzyme/double_stranded.rb - DoubleStranded restriction enzyme sequence
+#
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
+#
+#  $Id: double_stranded.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
@@ -15,45 +24,20 @@ module Bio; end
 class Bio::RestrictionEnzyme
 
 #
-# bio/util/restriction_enzyme/double_stranded.rb - DoubleStranded restriction enzyme sequence
+# bio/util/restrction_enzyme/double_stranded.rb - DoubleStranded restriction enzyme sequence
 #
-# Copyright::  Copyright (C) 2006 Trevor Wennblom <trevor@corevx.com>
-# License::    LGPL
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
 #
-#  $Id: double_stranded.rb,v 1.1 2006/02/01 07:34:11 trevor Exp $
-#
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
-#
-
-=begin rdoc
-bio/util/restriction_enzyme/double_stranded.rb - DoubleStranded restriction enzyme sequence
-
-A pair of +SingleStrand+ and +SingleStrandComplement+ objects with methods to
-add utility to their relation.
-
-== Notes
- * This is created by Bio::RestrictionEnzyme.new for convenience.
- * The two strands accessible are +primary+ and +complement+.
- * SingleStrand methods may be used on DoubleStranded and they will be passed to +primary+.
-
-=end
+# A pair of +SingleStrand+ and +SingleStrandComplement+ objects with methods to
+# add utility to their relation.
+# 
+# = Notes
+#  * This is created by Bio::RestrictionEnzyme.new for convenience.
+#  * The two strands accessible are +primary+ and +complement+.
+#  * SingleStrand methods may be used on DoubleStranded and they will be passed to +primary+.
+# 
 class DoubleStranded
   include CutSymbol
   extend CutSymbol
@@ -72,8 +56,8 @@ class DoubleStranded
   # Cut locations in enzyme index notation, DoubleStranded::CutLocationsInEnzymeNotation object
   attr_reader :cut_locations_in_enzyme_notation
 
-  # +erp+:: Enzyme or Rebase or Pattern.  One of three:  The name of an enzyme.  A REBASE::EnzymeEntry object.  A nucleotide pattern.
-  # +raw_cut_pairs+:: The cut locations in enzyme index notation.
+  # [+erp+] One of three possible parameters:  The name of an enzyme, a REBASE::EnzymeEntry object, or a nucleotide pattern with a cut mark.
+  # [+raw_cut_pairs+] The cut locations in enzyme index notation.
   #
   # Enzyme index notation:: 1.._n_, value before 1 is -1
   #
@@ -93,6 +77,7 @@ class DoubleStranded
   #   p, [p,  c], [p, c],   p
   #
   def initialize(erp, *raw_cut_pairs)
+    # 'erp' : 'E'nzyme / 'R'ebase / 'P'attern
     k = erp.class
 
     if k == Bio::REBASE::EnzymeEntry
@@ -216,6 +201,5 @@ class DoubleStranded
     initialize_with_pattern_and_cut_locations( e.pattern, p_cl.zip(c_cl) )
   end
 
-end
-
-end
+end # DoubleStranded
+end # Bio::RestrictionEnzyme

@@ -1,3 +1,13 @@
+#
+# bio/util/restrction_enzyme/analysis/calculated_cuts.rb - 
+#
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
+#
+#  $Id: calculated_cuts.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#
+
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
@@ -10,48 +20,22 @@ class Bio::RestrictionEnzyme
 class Analysis
 
 #
-# bio/util/restriction_enzyme/analysis/calculated_cuts.rb - 
+# bio/util/restrction_enzyme/analysis/calculated_cuts.rb - 
 #
-# Copyright::  Copyright (C) 2006 Trevor Wennblom <trevor@corevx.com>
-# License::    LGPL
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
+# 
+#    1 2 3 4 5 6 7
+#    G A|T T A C A
+#       +-----+
+#    C T A A T|G T
+#    1 2 3 4 5 6 7
+# 
+# Primary cut = 2
+# Complement cut = 5
+# Horizontal cuts = 3, 4, 5
 #
-#  $Id: calculated_cuts.rb,v 1.1 2006/02/01 07:34:11 trevor Exp $
-#
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
-#
-#
-
-=begin rdoc
-bio/util/restriction_enzyme/analysis/calculated_cuts.rb - 
-
-
-   1 2 3 4 5 6 7
-   G A|T T A C A
-      +-----+
-   C T A A T|G T
-   1 2 3 4 5 6 7
-
-Primary cut = 2
-Complement cut = 5
-Horizontal cuts = 3, 4, 5
-=end
 class CalculatedCuts
   include CutSymbol
   include StringFormatting
@@ -213,8 +197,6 @@ class CalculatedCuts
     [@vc_primary, @vc_complement, @hc_between_strands].collect { |a| a.delete(nil); a.uniq!; a.sort! }
   end
 
-
-end
-
-end
-end
+end # CalculatedCuts
+end # Analysis
+end # Bio::RestrictionEnzyme

@@ -1,3 +1,12 @@
+#
+# bio/util/restriction_enzyme/string_formatting.rb - Useful functions for string manipulation
+#
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
+#
+#  $Id: string_formatting.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
@@ -10,33 +19,10 @@ class Bio::RestrictionEnzyme
 #
 # bio/util/restriction_enzyme/string_formatting.rb - Useful functions for string manipulation
 #
-# Copyright::  Copyright (C) 2006 Trevor Wennblom <trevor@corevx.com>
-# License::    LGPL
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
 #
-#  $Id: string_formatting.rb,v 1.1 2006/02/01 07:34:11 trevor Exp $
-#
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
-#
-=begin rdoc
-bio/util/restriction_enzyme/string_formatting.rb - Useful functions for string manipulation
-=end
 module StringFormatting
   include CutSymbol
   extend CutSymbol
@@ -102,8 +88,5 @@ module StringFormatting
     ret = $&
     ret ? ret : ''  # Don't pass nil values
   end
-
-
-end
-
-end
+end # StringFormatting
+end # Bio::RestrictionEnzyme

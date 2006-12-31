@@ -1,16 +1,28 @@
+#
+# bio/util/restrction_enzyme/analysis.rb - Does the work of fragmenting the DNA from the enzymes
+#
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
+#
+#  $Id: analysis.rb,v 1.6 2006/12/31 21:50:31 trevor Exp $
+#
+
+#--
 #if RUBY_VERSION[0..2] == '1.9' or RUBY_VERSION == '2.0'
 #  err = "This class makes use of 'include' on ranges quite a bit.  Possibly unstable in development Ruby.  2005/12/20."
 #  err += "http://blade.nagaokaut.ac.jp/cgi-bin/vframe.rb/ruby/ruby-talk/167182?167051-169742"
 #  raise err
 #end
+#++
 
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'bio'
-
 class Bio::Sequence::NA
+  # See Bio::RestrictionEnzyme::Analysis.cut
   def cut_with_enzyme(*args)
     Bio::RestrictionEnzyme::Analysis.cut(self, *args)
   end
@@ -23,38 +35,14 @@ require 'bio/util/restriction_enzyme'
 require 'bio/util/restriction_enzyme/analysis/sequence_range.rb'
 
 class Bio::RestrictionEnzyme
+
 #
 # bio/util/restrction_enzyme/analysis.rb - Does the work of fragmenting the DNA from the enzymes
 #
-# Copyright::  Copyright (C) 2006 Trevor Wennblom <trevor@corevx.com>
-# License::    LGPL
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis.rb,v 1.5 2006/03/01 01:40:00 trevor Exp $
-#
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
-#
-#
-
-=begin rdoc
-bio/util/restrction_enzyme/analysis.rb - Does the work of fragmenting the DNA from the enzymes
-=end
 class Analysis
 
   def self.cut( sequence, *args )
@@ -374,5 +362,5 @@ puts "EA.right: #{enzyme_action.right}"
     enzyme_action
   end
 
-end
-end
+end # Analysis
+end # Bio::RestrictionEnzyme
