@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: bio.rb,v 1.78 2006/12/31 20:11:00 trevor Exp $
+# $Id: bio.rb,v 1.79 2006/12/31 20:54:25 trevor Exp $
 #
 
 module Bio
@@ -249,6 +249,7 @@ module Bio
   autoload :SiRNA,          'bio/util/sirna'
   autoload :ColorScheme,    'bio/util/color_scheme'
   autoload :ContingencyTable, 'bio/util/contingency_table'
+  autoload :RestrictionEnzyme, 'bio/util/restriction_enzyme'
 
   ### Service libraries
   autoload :Command,        'bio/command'
