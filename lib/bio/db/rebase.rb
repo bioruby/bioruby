@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: rebase.rb,v 1.5 2006/12/31 20:44:21 trevor Exp $
+#  $Id: rebase.rb,v 1.6 2006/12/31 23:22:03 trevor Exp $
 #
 
 autoload :YAML, 'yaml'
@@ -141,9 +141,14 @@ class REBASE
     end
   end
 
-  # Iterate over each entry
+  # Calls _block_ once for each element in <tt>@data</tt> hash, passing that element as a parameter.
+  #
+  # ---
+  # *Arguments*
+  # * Accepts a block
+  # *Returns*:: results of _block_ operations
   def each
-    @data.each { |v| yield v }
+    @data.each { |item| yield item }
   end
 
   # Make the instantiated class act like a Hash on @data
@@ -157,10 +162,15 @@ class REBASE
     Hash.instance_method(method_id).bind(@data).call(*args)
   end
 
-  # [+enzyme_lines+] contents of EMBOSS formatted enzymes file (_required_)
-  # [+reference_lines+] contents of EMBOSS formatted references file (_optional_)
-  # [+supplier_lines+] contents of EMBOSS formatted suppliers files (_optional_)
-  # [+yaml+] enzyme_lines, reference_lines, and supplier_lines are read as YAML if set to true (_default_ +false+)
+  # Constructor
+  #
+  # ---
+  # *Arguments*
+  # * +enzyme_lines+: (_required_) contents of EMBOSS formatted enzymes file 
+  # * +reference_lines+: (_optional_) contents of EMBOSS formatted references file 
+  # * +supplier_lines+: (_optional_) contents of EMBOSS formatted suppliers files 
+  # * +yaml+: (_optional_, _default_ +false+) enzyme_lines, reference_lines, and supplier_lines are read as YAML if set to true 
+  # *Returns*:: Bio::REBASE
   def initialize( enzyme_lines, reference_lines = nil, supplier_lines = nil, yaml = false )
     # All your REBASE are belong to us.
 
@@ -179,6 +189,11 @@ class REBASE
   end
 
   # List the enzymes available
+  #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: +Array+ sorted enzyme names
   def enzymes
     @data.keys.sort
   end
@@ -187,16 +202,31 @@ class REBASE
   #  rebase.save_yaml( 'enz.yaml' )
   #  rebase.save_yaml( 'enz.yaml', 'ref.yaml' )
   #  rebase.save_yaml( 'enz.yaml', 'ref.yaml', 'sup.yaml' )
+  #
+  # ---
+  # *Arguments*
+  # * +f_enzyme+: (_required_) Filename to save YAML formatted output of enzyme data
+  # * +f_reference+: (_optional_) Filename to save YAML formatted output of reference data
+  # * +f_supplier+: (_optional_) Filename to save YAML formatted output of supplier data  
+  # *Returns*:: nothing
   def save_yaml( f_enzyme, f_reference=nil, f_supplier=nil )
     File.open(f_enzyme, 'w') { |f| f.puts YAML.dump(@enzyme_data) }
     File.open(f_reference, 'w') { |f| f.puts YAML.dump(@reference_data) } if f_reference
     File.open(f_supplier, 'w') { |f| f.puts YAML.dump(@supplier_data) } if f_supplier
+    return
   end
 
   # Read REBASE EMBOSS-formatted files
   #  rebase = Bio::REBASE.read( 'emboss_e' )
   #  rebase = Bio::REBASE.read( 'emboss_e', 'emboss_r' )
   #  rebase = Bio::REBASE.read( 'emboss_e', 'emboss_r', 'emboss_s' )
+  #
+  # ---
+  # *Arguments*
+  # * +f_enzyme+: (_required_) Filename to read enzyme data
+  # * +f_reference+: (_optional_) Filename to read reference data
+  # * +f_supplier+: (_optional_) Filename to read supplier data  
+  # *Returns*:: Bio::REBASE object
   def self.read( f_enzyme, f_reference=nil, f_supplier=nil )
     e = IO.readlines(f_enzyme)
     r = f_reference ? IO.readlines(f_reference) : nil
@@ -208,6 +238,13 @@ class REBASE
   #  rebase = Bio::REBASE.load_yaml( 'enz.yaml' )
   #  rebase = Bio::REBASE.load_yaml( 'enz.yaml', 'ref.yaml' )
   #  rebase = Bio::REBASE.load_yaml( 'enz.yaml', 'ref.yaml', 'sup.yaml' )
+  #
+  # ---
+  # *Arguments*
+  # * +f_enzyme+: (_required_) Filename to read YAML-formatted enzyme data
+  # * +f_reference+: (_optional_) Filename to read YAML-formatted reference data
+  # * +f_supplier+: (_optional_) Filename to read YAML-formatted supplier data  
+  # *Returns*:: Bio::REBASE object
   def self.load_yaml( f_enzyme, f_reference=nil, f_supplier=nil )
     e = YAML.load_file(f_enzyme)
     r = f_reference ? YAML.load_file(f_reference) : nil
