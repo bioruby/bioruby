@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: contingency_table.rb,v 1.5 2006/12/31 20:02:20 trevor Exp $
+#  $Id: contingency_table.rb,v 1.6 2006/12/31 23:04:04 trevor Exp $
 #
 
 module Bio #:nodoc:
@@ -248,6 +248,11 @@ class ContingencyTable
 
   # Create a ContingencyTable that has characters_in_sequence.size rows and
   # characters_in_sequence.size columns for each row
+  #
+  # ---
+  # *Arguments*
+  # * +characters_in_sequences+: (_optional_) The allowable characters that will be present in the aligned sequences.
+  # *Returns*:: +ContingencyTable+ object to be filled with values and calculated upon
   def initialize(characters_in_sequences = nil)
     @characters = ( characters_in_sequences or %w{a c d e f g h i k l m n p q r s t v w y - x u} )
     tmp = Hash[*@characters.collect { |v| [v, 0] }.flatten]
@@ -255,6 +260,11 @@ class ContingencyTable
   end
   
   # Report the sum of all values in a given row
+  #
+  # ---
+  # *Arguments*
+  # * +i+: Row to sum
+  # *Returns*:: +Integer+ sum of row
   def row_sum(i)
     total = 0
     @table[i].each { |k, v| total += v }
@@ -262,6 +272,11 @@ class ContingencyTable
   end
 
   # Report the sum of all values in a given column
+  #
+  # ---
+  # *Arguments*
+  # * +j+: Column to sum
+  # *Returns*:: +Integer+ sum of column
   def column_sum(j)
     total = 0
     @table.each { |row_key, column| total += column[j] }
@@ -272,6 +287,10 @@ class ContingencyTable
   #
   # * This is the same thing as asking for the sum of all values in the table.
   #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: +Integer+ sum of all columns
   def column_sum_all
     total = 0
     @characters.each { |j| total += column_sum(j) }
@@ -282,6 +301,10 @@ class ContingencyTable
   #
   # * This is the same thing as asking for the sum of all values in the table.
   #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: +Integer+ sum of all rows
   def row_sum_all
     total = 0
     @characters.each { |i| total += row_sum(i) }
@@ -289,14 +312,23 @@ class ContingencyTable
   end
   alias table_sum_all row_sum_all
 
+  # Calculate _e_, the _expected_ value.
   #
-  #   e(sub:ij) = (r(sub:i)/N) * (c(sub:j))
-  #
+  # ---
+  # *Arguments*
+  # * +i+: row
+  # * +j+: column
+  # *Returns*:: +Float+ e(sub:ij) = (r(sub:i)/N) * (c(sub:j))
   def expected(i, j)
     (row_sum(i).to_f / table_sum_all) * column_sum(j)
   end
 
   # Report the chi square of the entire table
+  #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: +Float+ chi square value
   def chi_square
     total = 0
     c = @characters
@@ -309,7 +341,13 @@ class ContingencyTable
     total
   end
 
-  # Report the chi square relation of two elements in the table
+  # Report the chi-square relation of two elements in the table
+  #
+  # ---
+  # *Arguments*
+  # * +i+: row
+  # * +j+: column
+  # *Returns*:: +Float+ chi-square of an intersection
   def chi_square_element(i, j)
     eij = expected(i, j)
     return 0 if eij == 0
@@ -317,6 +355,11 @@ class ContingencyTable
   end
 
   # Report the contingency coefficient of the table
+  #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: +Float+ contingency_coefficient of the table
   def contingency_coefficient
     c_s = chi_square
     Math.sqrt(c_s / (table_sum_all + c_s) )
