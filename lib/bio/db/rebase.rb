@@ -1,19 +1,33 @@
 #
-# = bio/db/rebase.rb - Interface for EMBOSS formatted REBASE files
+# bio/db/rebase.rb - Interface for EMBOSS formatted REBASE files
 #
-# Copyright::  Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
-# License::    LGPL
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
 #
-#  $Id: rebase.rb,v 1.4 2006/02/28 21:21:03 trevor Exp $
+#  $Id: rebase.rb,v 1.5 2006/12/31 20:44:21 trevor Exp $
+#
+
+autoload :YAML, 'yaml'
+
+module Bio #:nodoc:
+
+autoload :Reference, 'bio/reference'
+
+#
+# bio/db/rebase.rb - Interface for EMBOSS formatted REBASE files
+#
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
 #
 #
-# == Synopsis
+# = Description
 # 
 # Bio::REBASE provides utilties for interacting with REBASE data in EMBOSS
 # format.  REBASE is the Restriction Enzyme Database, more information
 # can be found here:
 # 
-
 # * http://rebase.neb.com
 # 
 # EMBOSS formatted files located at:
@@ -30,9 +44,9 @@
 #   % wget ftp://ftp.neb.com/pub/rebase/emboss*
 # 
 # 
-# == Usage
+# = Usage
 # 
-#   require 'bio/db/rebase'
+#   require 'bio'
 #   require 'pp'
 # 
 #   enz = File.read('emboss_e')
@@ -92,37 +106,11 @@
 #   rebase.each do |name, info|
 #     pp "#{name}:  #{info.methylation}" unless info.methylation.empty?
 #   end
-# 
-# 
-#--
 #
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
-#
-
-autoload :YAML, 'yaml'
-
-module Bio
-
-  autoload :Reference, 'bio/reference'
-
 
 class REBASE
 
-  class DynamicMethod_Hash < Hash
+  class DynamicMethod_Hash < Hash #:nodoc:
     # Define a writer or reader
     # * Allows hash[:kay]= to be accessed like hash.key=
     # * Allows hash[:key] to be accessed like hash.key
@@ -142,7 +130,7 @@ class REBASE
     end
   end
 
-  class EnzymeEntry < DynamicMethod_Hash
+  class EnzymeEntry < DynamicMethod_Hash #:nodoc:
     @@supplier_data = {}
     def self.supplier_data=(d); @@supplier_data = d; end
 
@@ -153,6 +141,7 @@ class REBASE
     end
   end
 
+  # Iterate over each entry
   def each
     @data.each { |v| yield v }
   end
@@ -161,15 +150,20 @@ class REBASE
   # Does the equivalent and more of this:
   #  def []( key ); @data[ key ]; end
   #  def size; @data.size; end
-  def method_missing(method_id, *args)
+  def method_missing(method_id, *args) #:nodoc:
     self.class.class_eval do
       define_method(method_id) { |a| Hash.instance_method(method_id).bind(@data).call(a) }
     end
     Hash.instance_method(method_id).bind(@data).call(*args)
   end
 
-  # All your REBASE are belong to us.
+  # [+enzyme_lines+] contents of EMBOSS formatted enzymes file (_required_)
+  # [+reference_lines+] contents of EMBOSS formatted references file (_optional_)
+  # [+supplier_lines+] contents of EMBOSS formatted suppliers files (_optional_)
+  # [+yaml+] enzyme_lines, reference_lines, and supplier_lines are read as YAML if set to true (_default_ +false+)
   def initialize( enzyme_lines, reference_lines = nil, supplier_lines = nil, yaml = false )
+    # All your REBASE are belong to us.
+
     if yaml
       @enzyme_data = enzyme_lines
       @reference_data = reference_lines
@@ -409,5 +403,4 @@ class REBASE
   end
 
 end # REBASE
-
 end # Bio
