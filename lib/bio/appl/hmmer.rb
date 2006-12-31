@@ -3,9 +3,9 @@
 # 
 # Copyright::   Copyright (C) 2002 
 #               Toshiaki Katayama <k@bioruby.org>
-# Lisence::     Ruby's
+# License::     Ruby's
 #
-# $Id: hmmer.rb,v 1.7 2006/09/19 06:29:37 k Exp $
+# $Id: hmmer.rb,v 1.8 2006/12/31 21:54:49 trevor Exp $
 #
 
 require 'bio/command'

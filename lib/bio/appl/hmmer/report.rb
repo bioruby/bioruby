@@ -5,9 +5,9 @@
 #               Hiroshi Suga <suga@biophys.kyoto-u.ac.jp>,
 # Copyright::   Copyright (C) 2005 
 #               Masashi Fujita <fujita@kuicr.kyoto-u.ac.jp>
-# Lisence::     LGPL
+# License::     LGPL
 #
-# $Id: report.rb,v 1.10 2006/02/02 17:08:36 nakao Exp $
+# $Id: report.rb,v 1.11 2006/12/31 21:53:32 trevor Exp $
 #
 # == Description
 #

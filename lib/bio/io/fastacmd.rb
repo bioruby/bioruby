@@ -6,9 +6,9 @@
 #              Toshiaki Katayama <k@bioruby.org>,
 #              Mitsuteru C. Nakao <n@bioruby.org>,
 #              Jan Aerts <jan.aerts@bbsrc.ac.uk>
-# Lisence::    LGPL
+# License::    LGPL
 #
-# $Id: fastacmd.rb,v 1.13 2006/07/25 18:18:21 k Exp $
+# $Id: fastacmd.rb,v 1.14 2006/12/31 21:54:49 trevor Exp $
 #
 #--
 #

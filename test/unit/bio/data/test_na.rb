@@ -2,9 +2,9 @@
 # test/unit/bio/data/test_na.rb - Unit test for Bio::NucleicAcid
 #
 # Copyright::  Copyright (C) 2005,2006 Mitsuteru Nakao <n@bioruby.org>
-# Lisence::    Ruby's
+# License::    Ruby's
 #
-#  $Id: test_na.rb,v 1.6 2006/02/08 13:57:01 nakao Exp $
+#  $Id: test_na.rb,v 1.7 2006/12/31 21:54:49 trevor Exp $
 #
 
 require 'pathname'
