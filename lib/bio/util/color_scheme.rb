@@ -1,121 +1,98 @@
-module Bio
+#
+# bio/util/color_scheme.rb - Popular color codings for nucleic and amino acids
+#
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
+#
+#  $Id: color_scheme.rb,v 1.3 2006/12/31 19:47:35 trevor Exp $
+#
+
+module Bio #:nodoc:
 
 #
 # bio/util/color_scheme.rb - Popular color codings for nucleic and amino acids
 #
-# Copyright::  Copyright (C) 2005 Trevor Wennblom <trevor@corevx.com>
-# License::    LGPL
-#
-#  $Id: color_scheme.rb,v 1.2 2005/12/13 14:58:07 trevor Exp $
-#
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
+# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
+# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
+# License::   Distributes under the same terms as Ruby
 #
 #
+# = Description
+# 
+# The Bio::ColorScheme module contains classes that return popular color codings
+# for nucleic and amino acids in RGB hex format suitable for HTML code.
+# 
+# The current schemes supported are:
+# * Buried - Buried index
+# * Helix - Helix propensity
+# * Hydropathy - Hydrophobicity
+# * Nucleotide - Nucelotide color coding
+# * Strand - Strand propensity
+# * Taylor - Taylor color coding
+# * Turn - Turn propensity
+# * Zappo - Zappo color coding
+# 
+# Planned color schemes include:
+# * BLOSUM62
+# * ClustalX
+# * Percentage Identity (PID)
+# 
+# Color schemes BLOSUM62, ClustalX, and Percentage Identity are all dependent
+# on the alignment consensus.
+# 
+# This data is currently referenced from the JalView alignment editor.
+# Clamp, M., Cuff, J., Searle, S. M. and Barton, G. J. (2004), 
+# "The Jalview Java Alignment Editor," Bioinformatics, 12, 426-7
+# http://www.jalview.org
+# 
+# Currently the score data for things such as hydropathy, helix, turn, etc. are contained
+# here but should be moved to bio/data/aa once a good reference is found for these
+# values.
+# 
+# 
+# = Usage
+# 
+#   require 'bio'
+# 
+#   seq = 'gattaca'
+#   scheme = Bio::ColorScheme::Zappo
+#   postfix = '</span>'
+#   html = ''
+#   seq.each_byte do |c|
+#     color = scheme[c.chr]
+#     prefix = %Q(<span style="background:\##{color};">)
+#     html += prefix + c.chr + postfix
+#   end
+# 
+#   puts html
+# 
+# 
+# == Accessing colors
+# 
+#   puts Bio::ColorScheme::Buried['A']  # 00DC22
+#   puts Bio::ColorScheme::Buried[:c]   # 00BF3F
+#   puts Bio::ColorScheme::Buried[nil]  # nil
+#   puts Bio::ColorScheme::Buried['-']  # FFFFFF
+#   puts Bio::ColorScheme::Buried[7]    # FFFFFF
+#   puts Bio::ColorScheme::Buried['junk']  # FFFFFF
+#   puts Bio::ColorScheme::Buried['t']  # 00CC32
+# 
 
-=begin rdoc
-bio/util/color_scheme.rb - Popular color codings for nucleic and amino acids
-
-== Synopsis
-
-The Bio::ColorScheme module contains classes that return popular color codings
-for nucleic and amino acids in RGB hex format suitable for HTML code.
-
-The current schemes supported are:
-* Buried - Buried index
-* Helix - Helix propensity
-* Hydropathy - Hydrophobicity
-* Nucleotide - Nucelotide color coding
-* Strand - Strand propensity
-* Taylor - Taylor color coding
-* Turn - Turn propensity
-* Zappo - Zappo color coding
-
-Planned color schemes include:
-* BLOSUM62
-* ClustalX
-* Percentage Identity (PID)
-
-Color schemes BLOSUM62, ClustalX, and Percentage Identity are all dependent
-on the alignment consensus.
-
-This data is currently referenced from the JalView alignment editor.
-Clamp, M., Cuff, J., Searle, S. M. and Barton, G. J. (2004), 
-"The Jalview Java Alignment Editor," Bioinformatics, 12, 426-7
-http://www.jalview.org
-
-Currently the score data for things such as hydropathy, helix, turn, etc. are contained
-here but should be moved to bio/data/aa once a good reference is found for these
-values.
-
-
-== Usage
-
-  require 'bio/util/color_scheme'
-
-  seq = 'gattaca'
-  scheme = Bio::ColorScheme::Zappo
-  postfix = '</span>'
-  html = ''
-  seq.each_byte do |c|
-    color = scheme[c.chr]
-    prefix = %Q(<span style="background:\##{color};">)
-    html += prefix + c.chr + postfix
-  end
-
-  puts html
-
-
-=== Accessing colors
-
-  puts Bio::ColorScheme::Buried['A']  # 00DC22
-  puts Bio::ColorScheme::Buried[:c]   # 00BF3F
-  puts Bio::ColorScheme::Buried[nil]  # nil
-  puts Bio::ColorScheme::Buried['-']  # FFFFFF
-  puts Bio::ColorScheme::Buried[7]    # FFFFFF
-  puts Bio::ColorScheme::Buried['junk']  # FFFFFF
-  puts Bio::ColorScheme::Buried['t']  # 00CC32
-
-
-== Author
-Trevor Wennblom <trevor@corevx.com>
-
-
-== Copyright
-Copyright (C) 2005 Trevor Wennblom
-Licensed under the same terms as BioRuby.
-
-=end
 module ColorScheme
-  cs_location = 'bio/util/color_scheme'
+  cs_location = File.join(File.dirname(File.expand_path(__FILE__)), 'color_scheme')
 
   # Score sub-classes
-  autoload :Buried, "#{cs_location}/buried"
-  autoload :Helix, "#{cs_location}/helix"
-  autoload :Hydropathy, "#{cs_location}/hydropathy"
-  autoload :Strand, "#{cs_location}/strand"
-  autoload :Turn, "#{cs_location}/turn"
+  autoload :Buried,     File.join(cs_location, 'buried')
+  autoload :Helix,      File.join(cs_location, 'helix')
+  autoload :Hydropathy, File.join(cs_location, 'hydropathy')
+  autoload :Strand,     File.join(cs_location, 'strand')
+  autoload :Turn,       File.join(cs_location, 'turn')
 
   # Simple sub-classes
-  autoload :Nucleotide, "#{cs_location}/nucleotide"
-  autoload :Taylor, "#{cs_location}/taylor"
-  autoload :Zappo, "#{cs_location}/zappo"
+  autoload :Nucleotide, File.join(cs_location, 'nucleotide')
+  autoload :Taylor,     File.join(cs_location, 'taylor')
+  autoload :Zappo,      File.join(cs_location, 'zappo')
 
   # Consensus sub-classes
   # NOTE todo
@@ -124,7 +101,7 @@ module ColorScheme
   # PID
 
   # A very basic class template for color code referencing.
-  class Simple
+  class Simple #:nodoc:
     def self.[](x)
       return if x.nil?
       # accept symbols and any case
@@ -148,7 +125,7 @@ module ColorScheme
   # A class template for color code referencing of color schemes
   # that are score based.  This template is expected to change
   # when the scores are moved into bio/data/aa
-  class Score
+  class Score #:nodoc:
     def self.[](x)
       return if x.nil?
       # accept symbols and any case
@@ -206,8 +183,8 @@ module ColorScheme
   end
 
 
-  # NOTE todo
-  class Consensus
+  # TODO
+  class Consensus #:nodoc:
   end
 
 end  # module ColorScheme
