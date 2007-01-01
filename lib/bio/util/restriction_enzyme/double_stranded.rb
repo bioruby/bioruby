@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: double_stranded.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#  $Id: double_stranded.rb,v 1.3 2007/01/01 05:07:04 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
@@ -30,13 +30,13 @@ class Bio::RestrictionEnzyme
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-# A pair of +SingleStrand+ and +SingleStrandComplement+ objects with methods to
+# A pair of SingleStrand and SingleStrandComplement objects with methods to
 # add utility to their relation.
 # 
 # = Notes
-#  * This is created by Bio::RestrictionEnzyme.new for convenience.
-#  * The two strands accessible are +primary+ and +complement+.
-#  * SingleStrand methods may be used on DoubleStranded and they will be passed to +primary+.
+# * This is created by Bio::RestrictionEnzyme.new for convenience.
+# * The two strands accessible are +primary+ and +complement+.
+# * SingleStrand methods may be used on DoubleStranded and they will be passed to +primary+.
 # 
 class DoubleStranded
   include CutSymbol

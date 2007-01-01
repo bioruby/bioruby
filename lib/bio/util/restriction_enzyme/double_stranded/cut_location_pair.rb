@@ -1,11 +1,11 @@
 #
-# bio/util/restrction_enzyme/double_stranded/cut_location_pair.rb - 
+# bio/util/restrction_enzyme/double_stranded/cut_location_pair.rb - Stores a cut location pair in 0-based index notation
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: cut_location_pair.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#  $Id: cut_location_pair.rb,v 1.3 2007/01/01 05:07:04 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
@@ -19,31 +19,43 @@ class Bio::RestrictionEnzyme
 class DoubleStranded
   
 #
-# bio/util/restrction_enzyme/double_stranded/cut_location_pair.rb - 
+# bio/util/restrction_enzyme/double_stranded/cut_location_pair.rb - Stores a cut location pair in 0-based index notation
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-# Stores a cut location pair in 0-based index notation
-# 
-# Input:
-# +pair+:: May be two values represented as an Array, a Range, or a
-#          combination of Integer and nil values.  The first value
-#          represents a cut on the primary strand, the second represents
-#          a cut on the complement strand.
-# 
-# Example:
-#   clp = CutLocationPair.new(3,2)
-#   clp.primary                    # 3
-#   clp.complement                 # 2
-# 
-# Notes:
-# * a value of +nil+ is an explicit representation of 'no cut'
+# Stores a single cut location pair in 0-based index notation for use with
+# DoubleStranded enzyme sequences.
 #
 class CutLocationPair < Array
-  attr_reader :primary, :complement
+  # Location of the cut on the primary strand.
+  # Corresponds - or 'pairs' - to the complement cut.
+  # A value of +nil+ is an explicit representation of 'no cut'.
+  attr_reader :primary
+  
+  # Location of the cut on the complementary strand.
+  # Corresponds - or 'pairs' - to the primary cut.
+  # A value of +nil+ is an explicit representation of 'no cut'.
+  attr_reader :complement
 
+  # CutLocationPair constructor.
+  #
+  # Stores a single cut location pair in 0-based index notation for use with
+  # DoubleStranded enzyme sequences.
+  # 
+  # Example:
+  #   clp = CutLocationPair.new(3,2)
+  #   clp.primary                    # 3
+  #   clp.complement                 # 2
+  #
+  # ---
+  # *Arguments*
+  # * +pair+: May be two values represented as an Array, a Range, or a
+  #   combination of Integer and nil values.  The first value
+  #   represents a cut on the primary strand, the second represents
+  #   a cut on the complement strand.
+  # *Returns*:: nothing
   def initialize( *pair )
     a = b = nil
 
@@ -63,6 +75,7 @@ class CutLocationPair < Array
     super( [a,b] )
     @primary = a
     @complement = b
+    return
   end
 
   #########
@@ -84,11 +97,7 @@ class CutLocationPair < Array
   end
 
   def validate_2( a, b )
-    if a != nil and a.negative?
-      raise ArgumentError, "0-based index notation only.  Negative values are illegal."
-    end
-
-    if b != nil and b.negative?
+    if (a != nil and a.negative?) or (b != nil and b.negative?)
       raise ArgumentError, "0-based index notation only.  Negative values are illegal."
     end
 

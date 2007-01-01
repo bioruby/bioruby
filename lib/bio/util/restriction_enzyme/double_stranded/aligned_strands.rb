@@ -1,11 +1,11 @@
 #
-# bio/util/restrction_enzyme/double_stranded/aligned_strands.rb - 
+# bio/util/restrction_enzyme/double_stranded/aligned_strands.rb - Align two SingleStrand objects
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: aligned_strands.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#  $Id: aligned_strands.rb,v 1.3 2007/01/01 05:07:04 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
@@ -20,13 +20,13 @@ class Bio::RestrictionEnzyme
 class DoubleStranded
 
 #
-# bio/util/restrction_enzyme/double_stranded/aligned_strands.rb - 
+# bio/util/restrction_enzyme/double_stranded/aligned_strands.rb - Align two SingleStrand objects
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-# Align two SingleStrand::Pattern objects and return a Result
+# Align two SingleStrand objects and return a Result
 # object with +primary+ and +complement+ accessors.
 #
 class AlignedStrands
@@ -36,19 +36,26 @@ class AlignedStrands
   # The object returned for alignments
   Result = Struct.new(:primary, :complement)
 
-  # Pad and align two String objects.
+  # Pad and align two String objects without cut symbols.
   #
-  # +a+:: First String
-  # +b+:: Second String
+  # This will look for the sub-sequence without left and right 'n' padding
+  # and re-apply 'n' padding to both strings on both sides equal to the 
+  # maximum previous padding on that side.
   #
-  # Example invocation:
-  #   AlignedStrands.align('nngattacannnnn', 'nnnnnctaatgtnn')
+  # The sub-sequences stripped of left and right 'n' padding must be of equal
+  # length.
   #
-  # Example return value:
-  #   #<struct Bio::RestrictionEnzyme::DoubleStranded::AlignedStrands::Result
-  #    primary="nnnnngattacannnnn",
-  #    complement="nnnnnctaatgtnnnnn">
+  # Example:
+  #   AlignedStrands.align('nngattacannnnn', 'nnnnnctaatgtnn') # => 
+  #    <struct Bio::RestrictionEnzyme::DoubleStranded::AlignedStrands::Result
+  #      primary="nnnnngattacannnnn",
+  #      complement="nnnnnctaatgtnnnnn">
   #
+  # ---
+  # *Arguments*
+  # * +a+: Primary strand
+  # * +b+: Complementary strand
+  # *Returns*:: +Result+ object with equal padding on both strings
   def self.align(a, b)
     a = a.to_s
     b = b.to_s
@@ -63,25 +70,28 @@ class AlignedStrands
 
   # Pad and align two String objects with cut symbols.
   #
-  # +a+:: First String
-  # +b+:: Second String
-  # +a_cuts+:: First strand cut locations in 0-based index notation
-  # +b_cuts+:: Second strand cut locations in 0-based index notation
-  #
-  # Example invocation:
-  #   AlignedStrands.with_cuts('nngattacannnnn', 'nnnnnctaatgtnn', [0, 10, 12], [0, 2, 12])
-  #
-  # Example return value:
-  #   #<struct Bio::RestrictionEnzyme::DoubleStranded::AlignedStrands::Result
-  #    primary="n n n n^n g a t t a c a n n^n n^n",
-  #    complement="n^n n^n n c t a a t g t n^n n n n">
+  # Example:
+  #   AlignedStrands.with_cuts('nngattacannnnn', 'nnnnnctaatgtnn', [0, 10, 12], [0, 2, 12]) # => 
+  #     <struct Bio::RestrictionEnzyme::DoubleStranded::AlignedStrands::Result
+  #       primary="n n n n^n g a t t a c a n n^n n^n",
+  #       complement="n^n n^n n c t a a t g t n^n n n n">
   #
   # Notes:
   # * To make room for the cut symbols each nucleotide is spaced out.
   # * This is meant to be able to handle multiple cuts and completely
   #   unrelated cutsites on the two strands, therefore no biological
-  #   shortcuts are made.
+  #   algorithm assumptions (shortcuts) are made.
   #
+  # The sequences stripped of left and right 'n' padding must be of equal
+  # length.
+  #
+  # ---
+  # *Arguments*
+  # * +a+: Primary sequence
+  # * +b+: Complementary sequence
+  # * +a_cuts+: Primary strand cut locations in 0-based index notation
+  # * +b_cuts+: Complementary strand cut locations in 0-based index notation
+  # *Returns*:: +Result+ object with equal padding on both strings and spacing between bases
   def self.align_with_cuts(a,b,a_cuts,b_cuts)
     a = a.to_s
     b = b.to_s

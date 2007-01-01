@@ -1,11 +1,11 @@
 #
-# bio/util/restrction_enzyme/double_stranded/cut_location_pair_in_enzyme_notation.rb - 
+# bio/util/restrction_enzyme/double_stranded/cut_location_pair_in_enzyme_notation.rb - Inherits from DoubleStranded::CutLocationPair
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: cut_location_pair_in_enzyme_notation.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#  $Id: cut_location_pair_in_enzyme_notation.rb,v 1.3 2007/01/01 05:07:04 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
@@ -19,13 +19,14 @@ class Bio::RestrictionEnzyme
 class DoubleStranded
 
 #
-# bio/util/restrction_enzyme/double_stranded/cut_location_pair_in_enzyme_notation.rb - 
+# bio/util/restrction_enzyme/double_stranded/cut_location_pair_in_enzyme_notation.rb - Inherits from DoubleStranded::CutLocationPair
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-# See CutLocationPair
+# Inherits from DoubleStranded::CutLocationPair , stores the cut location pair in
+# enzyme notation instead of 0-based.
 #
 class CutLocationPairInEnzymeNotation < CutLocationPair
 
@@ -34,11 +35,7 @@ class CutLocationPairInEnzymeNotation < CutLocationPair
   #########
 
   def validate_2( a, b )
-    if a == 0
-      raise ArgumentError, "Enzyme index notation only.  0 values are illegal."
-    end
-
-    if b == 0
+    if (a == 0) or (b == 0)
       raise ArgumentError, "Enzyme index notation only.  0 values are illegal."
     end
 

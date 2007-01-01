@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: calculated_cuts.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#  $Id: calculated_cuts.rb,v 1.3 2007/01/01 05:07:04 trevor Exp $
 #
 
 require 'pathname'
@@ -134,9 +134,9 @@ class CalculatedCuts
 
   def strands_for_display(str1 = nil, str2 = nil, vcp=nil, vcc=nil, hc=nil)
     return @strands_for_display if @strands_for_display_current
-    vcs = '|'
-    hcs = '-'
-    vhcs = '+'
+    vcs = '|'   # Vertical cut symbol
+    hcs = '-'   # Horizontal cut symbol
+    vhcs = '+'  # Intersection of vertical and horizontal cut symbol
       
     num_txt_repeat = lambda { num_txt = '0123456789'; (num_txt * ( @size / num_txt.size.to_f ).ceil)[0..@size-1] }
     (str1 == nil) ? a = num_txt_repeat.call : a = str1.dup
@@ -173,22 +173,6 @@ class CalculatedCuts
     @strands_for_display = [s_a, s_bet, s_b]
   end
 
-=begin
-  def vc_primary_add(c)
-    @vc_primary << c
-    @current = false
-  end
-
-  def vc_complement_add(c)
-    @vc_complement << c
-    @current = false
-  end
-
-  def hc_between_strands_add(c)
-    @hc_between_strands << c
-    @current = false
-  end
-=end
   #########
   protected
   #########

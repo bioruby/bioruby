@@ -1,11 +1,11 @@
 #
-# bio/util/restrction_enzyme/double_stranded/cut_locations_in_enzyme_notation.rb - 
+# bio/util/restrction_enzyme/double_stranded/cut_locations_in_enzyme_notation.rb - Inherits from DoubleStrand::CutLocations
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: cut_locations_in_enzyme_notation.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#  $Id: cut_locations_in_enzyme_notation.rb,v 1.3 2007/01/01 05:07:04 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
@@ -19,22 +19,47 @@ class Bio::RestrictionEnzyme
 class DoubleStranded
 
 #
-# bio/util/restrction_enzyme/double_stranded/cut_locations_in_enzyme_notation.rb - 
+# bio/util/restrction_enzyme/double_stranded/cut_locations_in_enzyme_notation.rb - Inherits from DoubleStrand::CutLocations
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
+# Inherits from DoubleStranded::CutLocations.  Contains CutLocationPairInEnzymeNotation objects.
+# Adds helper methods to convert from enzyme index notation to 0-based array index notation.
+#
 class CutLocationsInEnzymeNotation < CutLocations
 
+  # Returns +Array+ of locations of cuts on the primary 
+  # strand in 0-based array index notation.
+  #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: +Array+ of locations of cuts on the primary strand in 0-based array index notation.
   def primary_to_array_index
     helper_for_to_array_index(self.primary)
   end
 
+  # Returns +Array+ of locations of cuts on the complementary 
+  # strand in 0-based array index notation.
+  #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: +Array+ of locations of cuts on the complementary strand in 0-based array index notation.
   def complement_to_array_index
     helper_for_to_array_index(self.complement)
   end
 
+  # Returns the contents of the present CutLocationsInEnzymeNotation object as
+  # a CutLocations object with the contents converted from enzyme notation 
+  # to 0-based array index notation.
+  #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: +CutLocations+
   def to_array_index
     unless self.primary_to_array_index.size == self.complement_to_array_index.size
       err = "Primary and complement strand cut locations are not available in equal numbers.\n"
