@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: rebase.rb,v 1.6 2006/12/31 23:22:03 trevor Exp $
+#  $Id: rebase.rb,v 1.7 2007/01/01 00:12:54 trevor Exp $
 #
 
 autoload :YAML, 'yaml'
@@ -79,6 +79,7 @@ autoload :Reference, 'bio/reference'
 #   rebase = Bio::REBASE.load_yaml( 'enz.yaml', 'ref.yaml', 'sup.yaml' )
 # 
 #   pp rebase.enzymes[0..4]                     # ["AarI", "AasI", "AatI", "AatII", "Acc16I"]
+#   pp rebase.enzyme_name?('aasi')              # true
 #   pp rebase['AarI'].pattern                   # "CACCTGC"
 #   pp rebase['AarI'].blunt?                    # false
 #   pp rebase['AarI'].organism                  # "Arthrobacter aurescens SS2-322"
@@ -196,6 +197,19 @@ class REBASE
   # *Returns*:: +Array+ sorted enzyme names
   def enzymes
     @data.keys.sort
+  end
+  
+  # Check if supplied name is the name of an available enzyme
+  #
+  # ---
+  # *Arguments*
+  # * +name+: Enzyme name
+  # *Returns*:: +true/false+
+  def enzyme_name?(name)
+    enzymes.each do |e|
+      return true if e.downcase == name.downcase
+    end
+    return false
   end
 
   # Save the current data

@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: test_rebase.rb,v 1.3 2006/12/31 18:46:14 trevor Exp $
+#  $Id: test_rebase.rb,v 1.4 2007/01/01 00:12:54 trevor Exp $
 #
 
 require 'pathname'
@@ -89,6 +89,11 @@ END
 
       assert_equal(a['AatI'].supplier_names, ['Toyobo Biochemicals'])
       assert_equal(a['AatI'].suppliers, ['O'])
+      
+      assert_equal(a.enzyme_name?('aasi'), true)
+      assert_equal(a.enzyme_name?('AarI'), true)
+      assert_equal(a.enzyme_name?('Aari'), true)
+      assert_equal(a.enzyme_name?('AbrI'), false)
     end
 
   end

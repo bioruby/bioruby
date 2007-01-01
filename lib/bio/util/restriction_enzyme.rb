@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: restriction_enzyme.rb,v 1.5 2006/12/31 21:50:31 trevor Exp $
+#  $Id: restriction_enzyme.rb,v 1.6 2007/01/01 00:12:54 trevor Exp $
 #
 
 require 'bio/db/rebase'
@@ -202,27 +202,26 @@ class Bio::RestrictionEnzyme
     #
     # Returns a Bio::REBASE object loaded with all of the enzyme data on file.
     #
-    #--
-    # FIXME: Use File.join
-    #++
-    def self.rebase(enzymes_yaml = File.dirname(__FILE__) + '/restriction_enzyme/enzymes.yaml')
-      #def self.rebase(enzymes_yaml = '/home/trevor/tmp5/bioruby/lib/bio/util/restriction_enzyme/enzymes.yaml')
-
-      @@rebase_enzymes ||= Bio::REBASE.load_yaml(enzymes_yaml)
+    # ---
+    # *Arguments*
+    # * _none_
+    # *Returns*:: Bio::REBASE
+    def self.rebase
+      enzymes_yaml_file = File.join(File.dirname(File.expand_path(__FILE__)), 'restriction_enzyme', 'enzymes.yaml')
+      @@rebase_enzymes ||= Bio::REBASE.load_yaml(enzymes_yaml_file)
       @@rebase_enzymes
     end
 
-    # Primitive way of determining if a string is an enzyme name.
+    # Check if supplied name is the name of an available enzyme
     #
-    # A nucleotide or nucleotide
-    # set can't ever contain an 'i'.  Restriction enzymes always end in 'i'.
+    # See Bio::REBASE.enzyme_name?
     #
-    #--
-    # FIXME: Change this to actually look up the enzyme name to see if it's valid.
-    #++
-    #
-    def self.enzyme_name?( str )
-      str[-1].chr.downcase == 'i'
+    # ---
+    # *Arguments*
+    # * +name+: Enzyme name
+    # *Returns*:: +true/false+
+    def self.enzyme_name?( name )
+      self.rebase.enzyme_name?(name)
     end
 
     # See Bio::RestrictionEnzyme::Analysis.cut

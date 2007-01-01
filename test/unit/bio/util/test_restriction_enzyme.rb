@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: test_restriction_enzyme.rb,v 1.1 2006/12/31 23:50:34 trevor Exp $
+#  $Id: test_restriction_enzyme.rb,v 1.2 2007/01/01 00:12:54 trevor Exp $
 #
 
 require 'pathname'
@@ -34,7 +34,7 @@ class TestRestrictionEnzyme < Test::Unit::TestCase #:nodoc:
     assert_equal(@t.enzyme_name?('atgc'), false)
     assert_equal(@t.enzyme_name?('aari'), true)
     assert_equal(@t.enzyme_name?('EcoRI'), true)
-    assert_equal(@t.enzyme_name?('EcoooRI'), true) # FIXME should actually be false
+    assert_equal(@t.enzyme_name?('EcoooRI'), false)
   end
 
 end
