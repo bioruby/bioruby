@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: sequence_range.rb,v 1.4 2007/01/01 02:31:22 trevor Exp $
+#  $Id: sequence_range.rb,v 1.5 2007/01/01 23:47:28 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
@@ -86,13 +86,9 @@ Special Case: Horizontal cuts at beginning or end of strand
     # if it's circular we should start at the beginning of a cut for orientation
     # scan for it, hack off the first set of hcuts and move them to the back
     else
-#      last_index = @size - 1
       p_cut.unshift(-1) unless p_cut.include?(-1)
-#      p_cut.push(last_index) unless p_cut.include?(last_index)
       c_cut.unshift(-1) unless c_cut.include?(-1)
-#      c_cut.push(last_index) unless c_cut.include?(last_index)
     end
-
 
     if @circular
       largest_bin = 0
@@ -113,7 +109,6 @@ Special Case: Horizontal cuts at beginning or end of strand
     end
 
     -1.upto(@size-1) do |idx|
-
       # if bins are out of sync but the strands are attached
       if p_bin != c_bin and h.include?(idx) == false
         bins.delete( [p_bin, c_bin].sort.last )
@@ -133,17 +128,12 @@ Special Case: Horizontal cuts at beginning or end of strand
         c_bin = largest_bin + 1
         x.call(c_bin)
       end
-
     end
 
     # Easy way to indicate the start of a strand just in case
     # there is a horizontal cut at position 0
     bins.delete(-1) unless @circular
 
-#    require 'pp'
-#    pp bins
-
-#NOTE
     str1 = nil
     str2 = nil
 
@@ -157,10 +147,6 @@ Special Case: Horizontal cuts at beginning or end of strand
       fragment = Fragment.new( bin.p, bin.c )
       fragments << fragment
     end
-
-#pp fragments.for_display
-#    pp fragments
-#    exit
 
     @__fragments = fragments
     return fragments

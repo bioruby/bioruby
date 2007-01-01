@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: horizontal_cut_range.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#  $Id: horizontal_cut_range.rb,v 1.3 2007/01/01 23:47:28 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
@@ -35,8 +35,19 @@ class HorizontalCutRange < CutRange
 
     # The 'range' here is actually off by one on the left
     # side in relation to a normal CutRange, so using the normal
-    # variables from CutRange would result in unpredictable
-    # behavior.
+    # variables from CutRange would result in bad behavior.
+    #
+    # See below - the first horizontal cut is the primary cut plus one.
+    #
+    #    1 2 3 4 5 6 7
+    #    G A|T T A C A
+    #       +-----+
+    #    C T A A T|G T
+    #    1 2 3 4 5 6 7
+    # 
+    # Primary cut = 2
+    # Complement cut = 5
+    # Horizontal cuts = 3, 4, 5
 
     @p_cut_left = nil
     @p_cut_right = nil
@@ -49,6 +60,13 @@ class HorizontalCutRange < CutRange
     @hcuts = (left..right)
   end
 
+  # Check if a location falls within the minimum or maximum values of this
+  # range.
+  #
+  # ---
+  # *Arguments*
+  # * +i+: Location to check if it is included in the range
+  # *Returns*:: +true+ _or_ +false+
   def include?(i)
     @range.include?(i)
   end

@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: calculated_cuts.rb,v 1.3 2007/01/01 05:07:04 trevor Exp $
+#  $Id: calculated_cuts.rb,v 1.4 2007/01/01 23:47:28 trevor Exp $
 #
 
 require 'pathname'
@@ -26,6 +26,10 @@ class Analysis
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 # 
+# cc = CalculatedCuts.new(@size)
+# cc.add_cuts_from_cut_ranges(@cut_ranges)
+# cc.remove_incomplete_cuts
+#
 #    1 2 3 4 5 6 7
 #    G A|T T A C A
 #       +-----+
@@ -40,17 +44,27 @@ class CalculatedCuts
   include CutSymbol
   include StringFormatting
 
-  # Vertical cuts on the primary strand
+  # +Array+ of vertical cuts on the primary strand in 0-based index notation
   attr_reader :vc_primary
   
-  # Vertical cuts on the complement strand
+  # +Array+ of vertical cuts on the complementary strand in 0-based index notation
   attr_reader :vc_complement
 
-  # Horizontal cuts
+  # +Array+ of horizontal cuts between strands in 0-based index notation
   attr_reader :hc_between_strands
 
   # Set to +true+ if the fragment CalculatedCuts is working on is circular
   attr_accessor :circular
+  
+  # An +Array+ with the primary strand with vertical cuts, the horizontal cuts, and the complementary strand with vertical cuts.
+  attr_reader :strands_for_display
+  
+  # If +false+ the strands_for_display method needs to be called to update the contents
+  # of @strands_for_display.  Becomes out of date whenever add_cuts_from_cut_ranges is called.
+  attr_reader :strands_for_display_current
+
+  # Size of the sequence being digested.
+  attr_reader :size
 
   def initialize(size=nil, circular=false)
     @size = size
@@ -60,6 +74,10 @@ class CalculatedCuts
     @hc_between_strands = []
   end
 
+  # ---
+  # *Arguments*
+  # * +cut_ranges+: An +Array+ of HorizontalCutRange or VerticalCutRange objects
+  # *Returns*:: nothing
   def add_cuts_from_cut_ranges(cut_ranges)
     @strands_for_display_current = false
 
@@ -67,6 +85,8 @@ class CalculatedCuts
       @vc_primary += [cut_range.p_cut_left, cut_range.p_cut_right]
       @vc_complement += [cut_range.c_cut_left, cut_range.c_cut_right]
 
+      # Add horizontal cut ranges.  This may happen from cuts made inbetween a
+      # VerticalCutRange or may be specifically defined by a HorizontalCutRange.
       if cut_range.class == VerticalCutRange
         ( cut_range.min + 1 ).upto( cut_range.max ){|i| @hc_between_strands << i} if cut_range.min < cut_range.max
       elsif cut_range.class == HorizontalCutRange
@@ -74,8 +94,37 @@ class CalculatedCuts
       end
     end
     clean_all
+    #return
   end
 
+  # There may be incomplete cuts made, this method removes the cuts that don't
+  # create sub-sequences for easier processing.
+  #
+  # For example, stray horizontal cuts that do not end with a left 
+  # and right separation:
+  #
+  #   G A T T A C A
+  #      +--  ---
+  #   C T|A A T G T
+  #
+  # Or stray vertical cuts:
+  #
+  #   G A T T A C A
+  #      +--   +
+  #   C T|A A T|G T
+  #
+  # However note that for non-circular sequences this would be a successful 
+  # cut which would result in a floating 'GT' sub-sequence:
+  #
+  #   G A T T A C A
+  #            +---
+  #   C T A A T|G T
+  #
+  # Blunt cuts are also complete cuts.
+  # ---
+  # *Arguments*
+  # * +size+: (_optional_) Size of the sequence being digested.  Defined here or during initalization of CalculatedCuts.
+  # *Returns*:: nothing
   def remove_incomplete_cuts(size=nil)
     @strands_for_display_current = false
     @size = size if size
@@ -89,7 +138,7 @@ class CalculatedCuts
 
     if @circular
     # NOTE
-    # if it's circular we should start at the beginning of a cut for orientation
+    # if it's circular we should start at the beginning of a cut for orientation,
     # scan for it, hack off the first set of hcuts and move them to the back
     else
       vcuts.unshift(-1) unless vcuts.include?(-1)
@@ -132,6 +181,17 @@ class CalculatedCuts
     clean_all
   end
 
+  # Sets @strands_for_display_current to +true+ and populates @strands_for_display.
+  #
+  # ---
+  # *Arguments*
+  # * +str1+: (_optional_) For displaying a primary strand.  If +nil+ a numbered sequence will be used in place.
+  # * +str2+: (_optional_) For displaying a complementary strand.  If +nil+ a numbered sequence will be used in place.
+  # * +vcp+: (_optional_) An array of vertical cut locations on the primary strand.  If +nil+ the contents of @vc_primary is used.
+  # * +vcc+: (_optional_) An array of vertical cut locations on the complementary strand.  If +nil+ the contents of @vc_complementary is used.
+  # * +hc+: (_optional_) An array of horizontal cut locations between strands.  If +nil+ the contents of @hc_between_strands is used.
+  # *Returns*:: +Array+ An array with the primary strand with vertical cuts, the horizontal cuts, and the complementary strand with vertical cuts.
+  #
   def strands_for_display(str1 = nil, str2 = nil, vcp=nil, vcc=nil, hc=nil)
     return @strands_for_display if @strands_for_display_current
     vcs = '|'   # Vertical cut symbol
@@ -177,6 +237,8 @@ class CalculatedCuts
   protected
   #########
 
+  # remove nil values, remove duplicate values, and 
+  # sort @vc_primary, @vc_complement, and @hc_between_strands
   def clean_all
     [@vc_primary, @vc_complement, @hc_between_strands].collect { |a| a.delete(nil); a.uniq!; a.sort! }
   end

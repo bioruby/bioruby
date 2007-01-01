@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: double_stranded.rb,v 1.3 2007/01/01 05:07:04 trevor Exp $
+#  $Id: double_stranded.rb,v 1.4 2007/01/01 23:47:27 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
@@ -13,6 +13,8 @@ $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'bio/db/rebase'
 require 'bio/util/restriction_enzyme'
+require 'bio/util/restriction_enzyme/analysis/sequence_range'
+
 require 'bio/util/restriction_enzyme/cut_symbol'
 require 'bio/util/restriction_enzyme/single_strand'
 require 'bio/util/restriction_enzyme/single_strand_complement'
@@ -95,6 +97,7 @@ class DoubleStranded
 
       # Decide if this String is an enzyme name or a pattern
       if Bio::RestrictionEnzyme.enzyme_name?( erp )
+        # FIXME we added this to rebase...
         # Check if it's a known name
         known_enzyme = false
         known_enzyme = true if Bio::RestrictionEnzyme.rebase[ erp ]
@@ -155,6 +158,95 @@ class DoubleStranded
   # Returns +true+ if the cut pattern creates sticky fragments
   def sticky?
     !blunt?
+  end
+  
+  # Takes a RestrictionEnzyme object and a numerical offset to the sequence and 
+  # returns an EnzymeAction
+  #
+  # +restriction_enzyme+:: RestrictionEnzyme
+  # +offset+:: Numerical offset of where the enzyme action occurs on the seqeunce
+  def create_action_at( offset )
+  #def enzyme_to_enzyme_action( restriction_enzyme, offset )
+    enzyme_action = EnzymeAction.new( offset, 
+                                      offset + @primary.size-1, 
+                                      offset, 
+                                      offset + @complement.size-1)
+
+    @cut_locations.each do |cut_location_pair|
+      # cut_pair is a DoubleStranded::CutLocationPair
+      p, c = cut_location_pair.primary, cut_location_pair.complement
+      if c >= p
+        enzyme_action.add_cut_range(offset+p, nil, nil, offset+c)
+      else
+        enzyme_action.add_cut_range(nil, offset+p, offset+c, nil)
+      end
+    end
+
+    enzyme_action
+  end
+  
+  # An EnzymeAction is a way of representing a potential effect that a
+  # RestrictionEnzyme may have on a nucleotide sequence, an 'action'.
+  #
+  # Multiple cuts in multiple locations on a sequence may occur in one
+  # 'action' if it is done by a single enzyme.
+  #
+  # An EnzymeAction is a series of locations that represents where the restriction
+  # enzyme will bind on the sequence, as well as what ranges are cut on the
+  # sequence itself.  The complexity is due to the fact that our virtual
+  # restriction enzyme may create multiple segments from its cutting action, 
+  # on which another restriction enzyme may operate upon.
+  #
+  # For example, the DNA sequence:
+  # 
+  #   5' - G A A T A A A C G A - 3'
+  #   3' - C T T A T T T G C T - 5'
+  #
+  # When mixed with the restriction enzyme with the following cut pattern:
+  #
+  #   5' -   A|A T A A A C|G   - 3'
+  #           +-+         +  
+  #   3' -   T T|A T T T G|C   - 5'
+  #
+  # And also mixed with the restriction enzyme of the following cut pattern:
+  #
+  #   5' -         A A|A C     - 3'
+  #                 +-+  
+  #   3' -         T|T T G     - 5'
+  #
+  # Would result in a DNA sequence with these cuts:
+  # 
+  #   5' - G A|A T A A|A C|G A - 3'
+  #           +-+   +-+   +
+  #   3' - C T T|A T|T T G|C T - 5'
+  #
+  # Or these separate "free-floating" sequences:
+  #
+  #   5' - G A   - 3'
+  #   3' - C T T - 5'
+  #
+  #   5' - A T A A - 3'
+  #   3' -   A T   - 5'
+  #
+  #   5' -   A C - 3'
+  #   3' - T T G - 5'
+  #  
+  #   5' - G A - 3'
+  #   3' - C T - 5'
+  #
+  # This would be represented by two EnzymeActions - one for each
+  # RestrictionEnzyme.
+  #
+  # To initialize an EnzymeAction you must first instantiate it with the
+  # beginning and ending locations of where it will operate on a nucleotide
+  # sequence.
+  #
+  # Next the ranges of cu
+  #
+  # An EnzymeAction is
+  # Defines a single enzyme action, in this case being a range that correlates
+  # to the DNA sequence that may contain it's own internal cuts.
+  class EnzymeAction < Bio::RestrictionEnzyme::Analysis::SequenceRange
   end
 
   #########
