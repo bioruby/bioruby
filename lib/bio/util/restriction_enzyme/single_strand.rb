@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: single_strand.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#  $Id: single_strand.rb,v 1.3 2007/01/01 03:36:37 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
@@ -16,6 +16,7 @@ require 'bio/util/restriction_enzyme/cut_symbol'
 require 'bio/util/restriction_enzyme/string_formatting'
 require 'bio/sequence'
 
+module Bio; end
 class Bio::RestrictionEnzyme
 
 #
@@ -36,24 +37,32 @@ class SingleStrand < Bio::Sequence::NA
   include StringFormatting
 
   # The cut locations in enzyme notation. Contains a 
-  # CutLocationsInEnzymeNotation object.
+  # CutLocationsInEnzymeNotation object set when the SingleStrand
+  # object is initialized.
   attr_reader :cut_locations_in_enzyme_notation
 
   # The cut locations transformed from enzyme index notation to 0-based 
-  # array index notation.  Contains an Array
+  # array index notation.  Contains an Array.
   attr_reader :cut_locations
 
   # Orientation of the strand, 5' to 3'
   def orientation; [5,3]; end
 
-  # +sequence+:: The enzyme sequence.
-  # +c+:: Cut locations in enzyme notation.  See CutLocationsInEnzymeNotation.
+  # Constructor for a Bio::RestrictionEnzyme::StingleStrand object.
   #
-  # * +sequence+ is required, +c+ is optional
-  # * You cannot provide a sequence with cut symbols and provide cut locations.
-  # * If +c+ is omitted, +input_pattern+ must contain a cut symbol.
-  # * +sequence+ cannot contain adjacent cut symbols.
+  # A single strand of restriction enzyme sequence pattern with a 5' to 3' orientation.
+  #
+  # ---
+  # *Arguments*
+  # * +sequence+: (_required_) The enzyme sequence.
+  # * +c+: (_optional_) Cut locations in enzyme notation.  
+  #   See Bio::RestrictionEnzyme::SingleStrand::CutLocationsInEnzymeNotation
+  #
+  # *Constraints*
+  # * +sequence+ cannot contain immediately adjacent cut symbols (ex. atg^^c).
   # * +c+ is in enzyme index notation and therefore cannot contain a 0.
+  # * If +c+ is omitted, +sequence+ must contain a cut symbol.
+  # * You cannot provide both a sequence with cut symbols and provide cut locations - ambiguous.
   #
   # +sequence+ must be a kind of:
   # * String
@@ -61,10 +70,11 @@ class SingleStrand < Bio::Sequence::NA
   # * Bio::RestrictionEnzyme::SingleStrand
   #
   # +c+ must be a kind of:
+  # * Bio::RestrictionEnzyme::SingleStrand::CutLocationsInEnzymeNotation
   # * Integer, one or more
   # * Array
-  # * CutLocationsInEnzymeNotation
   #
+  # *Returns*:: nothing
   def initialize( sequence, *c )
     c.flatten! # if an array was supplied as an argument
     validate_args(sequence, c)
@@ -79,6 +89,7 @@ class SingleStrand < Bio::Sequence::NA
     @stripped = Bio::Sequence::NA.new( strip_cuts_and_padding( sequence ) )
     super( pattern )
     @cut_locations = @cut_locations_in_enzyme_notation.to_array_index
+    return
   end
 
   # Returns true if this enzyme is palindromic with its reverse complement.
@@ -93,16 +104,25 @@ class SingleStrand < Bio::Sequence::NA
   #     5' - ATGCGTA - 3'
   #          TACGCAT
   #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: +true+ _or_ +false+
   def palindromic?
     @stripped.reverse_complement == @stripped
   end
 
-  # Pattern with no cut symbols and no 'n' padding.
-  # * <code>SingleStrand.new('garraxt', [-2, 1, 7]).stripped  # "garraxt"</code>
+  # Sequence pattern with no cut symbols and no 'n' padding.
+  # * <code>SingleStrand.new('garraxt', [-2, 1, 7]).stripped  # => "garraxt"</code>
   attr_reader :stripped
 
   # The sequence with 'n' padding and cut symbols.
   # * <code>SingleStrand.new('garraxt', [-2, 1, 7]).with_cut_symbols  # => "n^ng^arraxt^n"</code>
+  #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: The sequence with 'n' padding and cut symbols.
   def with_cut_symbols
     s = pattern
     @cut_locations_in_enzyme_notation.to_array_index.sort.reverse.each { |c| s.insert(c+1, cut_symbol) }
@@ -111,29 +131,30 @@ class SingleStrand < Bio::Sequence::NA
 
   # The sequence with 'n' padding on the left and right for cuts larger than the sequence.
   # * <code>SingleStrand.new('garraxt', [-2, 1, 7]).pattern  # => "nngarraxtn"</code>
+  #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: The sequence with 'n' padding on the left and right for cuts larger than the sequence.
   def pattern
     return stripped if @cut_locations_in_enzyme_notation.min == nil
     left = (@cut_locations_in_enzyme_notation.min.negative? ? 'n' * @cut_locations_in_enzyme_notation.min.abs : '')
 
     # Add one more 'n' if a cut is at the last position 
-    right = (@cut_locations_in_enzyme_notation.max >= @stripped.length ? 'n' * (@cut_locations_in_enzyme_notation.max - @stripped.length + 1) : '')
+    right = ( (@cut_locations_in_enzyme_notation.max >= @stripped.length) ? ('n' * (@cut_locations_in_enzyme_notation.max - @stripped.length + 1)) : '')
     [left, stripped, right].to_s
   end
 
   # The sequence with 'n' pads, cut symbols, and spacing for alignment.
   # * <code>SingleStrand.new('garraxt', [-2, 1, 7]).with_spaces # => "n^n g^a r r a x t^n"</code>
+  #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: The sequence with 'n' pads, cut symbols, and spacing for alignment.
   def with_spaces
     add_spacing( with_cut_symbols )
   end
-
-# FIXME recheck this
-  # NOTE: BEING WORKED ON, BUG EXISTS IN Bio::NucleicAcid
-=begin  
-  to_re - important
-  example z = [agc]
-  z must match [agcz]
-  not just [agc]
-=end
 
   #########
   protected
@@ -141,7 +162,7 @@ class SingleStrand < Bio::Sequence::NA
 
   def validate_args( input_pattern, input_cut_locations )
     unless input_pattern.kind_of?(String)
-      err = "input_pattern is not a String, Bio::Sequence::NA, or Bio::RestrictionEnzyme::SingleStrand::Sequence object\n"
+      err = "input_pattern is not a String, Bio::Sequence::NA, or Bio::RestrictionEnzyme::SingleStrand object\n"
       err += "pattern: #{input_pattern}\n"
       err += "class: #{input_pattern.class}"
       raise ArgumentError, err

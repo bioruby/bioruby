@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: cut_locations_in_enzyme_notation.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#  $Id: cut_locations_in_enzyme_notation.rb,v 1.3 2007/01/01 03:36:37 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
@@ -32,25 +32,47 @@ class SingleStrand < Bio::Sequence::NA
 # with cut symbols.
 # 
 # Enzyme index notation:: 1.._n_, value before 1 is -1
+#
+# example:: [-3][-2][-1][1][2][3][4][5]
+#
+# Negative values are used to indicate when a cut may occur at a specified
+# distance before the sequence begins.  This would be padded with 'n'
+# nucleotides to represent wildcards.
 # 
 # Notes:
 # * <code>0</code> is invalid as it does not refer to any index 
 # * +nil+ is not allowed here as it has no meaning
 # * +nil+ values are kept track of in DoubleStranded::CutLocations as they
-#   need a reference point on the correlating strand.  +nil+ represents no
-#   cut or a partial digestion.
+#   need a reference point on the correlating strand.  In 
+#   DoubleStranded::CutLocations +nil+ represents no cut or a partial 
+#   digestion.
 # 
 class CutLocationsInEnzymeNotation < Array
   include CutSymbol
   extend CutSymbol
 
-  attr_reader :min, :max
+  # First cut, in enzyme-index notation
+  attr_reader :min
+  
+  # Last cut, in enzyme-index notation
+  attr_reader :max
 
+  # Constructor for CutLocationsInEnzymeNotation
+  #
+  # ---
+  # *Arguments*
+  # * +a+: Locations of cuts represented as a string with cuts or an array of values
+  # Examples:
+  # * n^ng^arraxt^n
+  # * 2
+  # * -1, 5
+  # * [-1, 5]
+  # *Returns*:: nothing
   def initialize(*a)
     a.flatten! # in case an array was passed as an argument
 
     if a.size == 1 and a[0].kind_of? String and a[0] =~ re_cut_symbol
-    # Initialize with a cut symbol pattern such as 'n^ng^arraxt^n'
+      # Initialize with a cut symbol pattern such as 'n^ng^arraxt^n'
       s = a[0]
       a = []
       i = -( s.tr(cut_symbol, '') =~ %r{[^n]} )  # First character that's not 'n'
@@ -77,6 +99,10 @@ class CutLocationsInEnzymeNotation < Array
   #   [ -1, 1, 2 ] -> [ 0, 1, 2 ]
   #   [ -2, 1, 3 ] -> [ 0, 2, 4 ]
   #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: +Array+ of cuts in 0-based index notation
   def to_array_index
     return [] if @min == nil
     if @min.negative?

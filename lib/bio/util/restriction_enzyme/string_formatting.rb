@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: string_formatting.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#  $Id: string_formatting.rb,v 1.3 2007/01/01 03:36:37 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
@@ -32,11 +32,19 @@ module StringFormatting
   #
   # Example:
   #   pattern = 'n^ng^arraxt^n'
-  #   add_spacing( pattern )
+  #   add_spacing( pattern )      # => "n^n g^a r r a x t^n"
   #
-  # Returns:
-  #   "n^n g^a r r a x t^n"
+  # ---
+  # *Arguments*
+  # * +seq+: sequence with cut symbols
+  # * +cs+: (_optional_) Cut symbol along the string.  The reason this is
+  #   definable outside of CutSymbol is that this is a utility function used
+  #   to form vertical and horizontal cuts such as:
   #
+  #     a|t g c
+  #      +---+
+  #     t a c|g
+  # *Returns*:: +String+ sequence with single character distance between bases
   def add_spacing( seq, cs = cut_symbol )
     str = ''
     flag = false
@@ -57,6 +65,11 @@ module StringFormatting
 
   # Remove extraneous nucleic acid wildcards ('n' padding) from the
   # left and right sides
+  #
+  # ---
+  # *Arguments*
+  # * +s+: sequence with extraneous 'n' padding
+  # *Returns*:: +String+ sequence without 'n' padding on the sides
   def strip_padding( s )
     if s[0].chr == 'n'
       s =~ %r{(n+)(.+)}
@@ -71,11 +84,21 @@ module StringFormatting
 
   # Remove extraneous nucleic acid wildcards ('n' padding) from the
   # left and right sides and remove cut symbols
+  #
+  # ---
+  # *Arguments*
+  # * +s+: sequence with extraneous 'n' padding and cut symbols
+  # *Returns*:: +String+ sequence without 'n' padding on the sides or cut symbols
   def strip_cuts_and_padding( s )
     strip_padding( s.tr(cut_symbol, '') )
   end
 
   # Return the 'n' padding on the left side of the strand
+  #
+  # ---
+  # *Arguments*
+  # * +s+: sequence with extraneous 'n' padding on the left side of the strand
+  # *Returns*:: +String+ the 'n' padding from the left side
   def left_padding( s )
     s =~ %r{^n+}
     ret = $&
@@ -83,6 +106,11 @@ module StringFormatting
   end
 
   # Return the 'n' padding on the right side of the strand
+  #
+  # ---
+  # *Arguments*
+  # * +s+: sequence with extraneous 'n' padding on the right side of the strand
+  # *Returns*:: +String+ the 'n' padding from the right side
   def right_padding( s )
     s =~ %r{n+$}
     ret = $&
