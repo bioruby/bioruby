@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: sequence_range.rb,v 1.3 2007/01/01 02:16:05 trevor Exp $
+#  $Id: sequence_range.rb,v 1.4 2007/01/01 02:31:22 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
@@ -36,7 +36,6 @@ class SequenceRange
 
   attr_reader :left, :right
   attr_reader :size
-  attr_reader :tags
   attr_reader :cut_ranges
 
   def initialize( p_left = nil, p_right = nil, c_left = nil, c_right = nil )
@@ -61,7 +60,6 @@ class SequenceRange
 
     @size = (@right - @left) + 1 unless @left == nil or @right == nil
 
-    @tags = Tags.new
     @cut_ranges = CutRanges.new
   end
 
@@ -157,7 +155,6 @@ Special Case: Horizontal cuts at beginning or end of strand
 
     bins.sort.each do |k, bin|
       fragment = Fragment.new( bin.p, bin.c )
-      @tags.each { |k,v| fragment.add_tag(k,v) if (ts.left..ts.right).include?(k) }
       fragments << fragment
     end
 
@@ -167,13 +164,6 @@ Special Case: Horizontal cuts at beginning or end of strand
 
     @__fragments = fragments
     return fragments
-  end
-  
-  def add_tag( index, info=nil )
-    @__fragments_current = false
-
-    raise IndexError unless index >= @left and index <= @right
-    @tags[index] = info
   end
 
 # Cut occurs immediately after the index supplied.

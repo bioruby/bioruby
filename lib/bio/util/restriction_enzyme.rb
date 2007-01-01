@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: restriction_enzyme.rb,v 1.7 2007/01/01 02:16:05 trevor Exp $
+#  $Id: restriction_enzyme.rb,v 1.8 2007/01/01 02:31:22 trevor Exp $
 #
 
 require 'bio/db/rebase'
@@ -221,7 +221,7 @@ class Bio::RestrictionEnzyme
     # ---
     # *Arguments*
     # * +name+: Enzyme name
-    # *Returns*:: +true/false+
+    # *Returns*:: +true+ _or_ +false+
     def self.enzyme_name?( name )
       self.rebase.enzyme_name?(name)
     end

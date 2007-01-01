@@ -5,13 +5,12 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: fragment.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#  $Id: fragment.rb,v 1.3 2007/01/01 02:31:22 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
 
-require 'bio/util/restriction_enzyme/analysis/tags'
 require 'bio/util/restriction_enzyme/analysis/cut_ranges'
 require 'bio/util/restriction_enzyme/analysis/horizontal_cut_range'
 require 'bio'
@@ -30,17 +29,11 @@ class Analysis
 class Fragment
 
   attr_reader :size
-#  attr_reader :tags
 
   def initialize( primary_bin, complement_bin )
-#    @tags = []
     @primary_bin = primary_bin
     @complement_bin = complement_bin
   end
-
-#  def add_tag( index, info=nil )
-#    @tags[index] = info
-#  end
 
   DisplayFragment = Struct.new(:primary, :complement)
 
