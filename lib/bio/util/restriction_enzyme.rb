@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: restriction_enzyme.rb,v 1.6 2007/01/01 00:12:54 trevor Exp $
+#  $Id: restriction_enzyme.rb,v 1.7 2007/01/01 02:16:05 trevor Exp $
 #
 
 require 'bio/db/rebase'
@@ -186,11 +186,13 @@ class Bio::RestrictionEnzyme
     include CutSymbol
     extend CutSymbol
 
-    # [+users_enzyme_or_rebase_or_pattern+] One of three possible parameters:  The name of an enzyme, a REBASE::EnzymeEntry object, or a nucleotide pattern with a cut mark.
-    # [+cut_locations+] The cut locations in enzyme index notation.
-    #
     # See Bio::RestrictionEnzyme::DoubleStranded.new for more information.
     #
+    # ---
+    # *Arguments*
+    # * +users_enzyme_or_rebase_or_pattern+: One of three possible parameters:  The name of an enzyme, a REBASE::EnzymeEntry object, or a nucleotide pattern with a cut mark.
+    # * +cut_locations+: The cut locations in enzyme index notation.
+    # *Returns*:: Bio::RestrictionEnzyme::DoubleStranded
     #--
     # Factory for DoubleStranded
     #++

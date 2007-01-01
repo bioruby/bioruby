@@ -4,7 +4,7 @@ libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cle
 $:.unshift(libpath) unless $:.include?(libpath)
 
 #require 'bio/util/restriction_enzyme/analysis/shared_information'
-require 'bio'
+#require 'bio'
 
 module Bio; end
 class Bio::RestrictionEnzyme

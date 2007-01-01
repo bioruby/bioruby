@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis.rb,v 1.6 2006/12/31 21:50:31 trevor Exp $
+#  $Id: analysis.rb,v 1.7 2007/01/01 02:16:05 trevor Exp $
 #
 
 #--
@@ -32,7 +32,7 @@ end
 require 'pp'
 
 require 'bio/util/restriction_enzyme'
-require 'bio/util/restriction_enzyme/analysis/sequence_range.rb'
+require 'bio/util/restriction_enzyme/analysis/sequence_range'
 
 class Bio::RestrictionEnzyme
 

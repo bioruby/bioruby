@@ -1,57 +1,115 @@
 #
-# bio/util/restrction_enzyme/cut_symbol.rb - 
+# bio/util/restrction_enzyme/cut_symbol.rb - Defines the symbol used to mark a cut in an enzyme sequence
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: cut_symbol.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#  $Id: cut_symbol.rb,v 1.3 2007/01/01 02:16:05 trevor Exp $
 #
 
-nil # separate file-level rdoc from following statement
+nil # to separate file-level rdoc from following statement # !> useless use of nil in void context
 
 module Bio; end
 class Bio::RestrictionEnzyme
 
 #
-# bio/util/restrction_enzyme/cut_symbol.rb - 
+# bio/util/restrction_enzyme/cut_symbol.rb - Defines the symbol used to mark a cut in an enzyme sequence
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
+# = Usage
+#
+#   #require 'bio/util/restriction_enzyme/cut_symbol'
+#   require 'cut_symbol'
+#   include Bio::RestrictionEnzyme::CutSymbol
+#   
+#   cut_symbol                            # => "^"
+#   set_cut_symbol('|')                   # => "|"
+#   cut_symbol                            # => "|"
+#   escaped_cut_symbol                    # => "\\|"
+#   re_cut_symbol                         # => /\|/
+#   set_cut_symbol('^')                   # => "^"
+#   "abc^de" =~ re_cut_symbol             # => 3
+#   "abc^de" =~ re_cut_symbol_adjacent    # => nil
+#   "abc^^de" =~ re_cut_symbol_adjacent   # => 3
+#   "a^bc^^de" =~ re_cut_symbol_adjacent  # => 4
+#   "a^bc^de" =~ re_cut_symbol_adjacent   # => nil
+#
 module CutSymbol
 
-  require 'singleton'
-
-  class CutSymbol__
-    include Singleton
-    attr_accessor :cut_symbol
-    attr_accessor :escaped_cut_symbol
+  # Set the token to be used as the cut symbol in a restriction enzyme sequece
+  #
+  # Starts as +^+ character
+  #
+  # ---
+  # *Arguments*
+  # * +glyph+: The single character to be used as the cut symbol in an enzyme sequence
+  # *Returns*:: +glyph+
+  def set_cut_symbol(glyph)
+    CutSymbol__.cut_symbol = glyph
   end
 
-  # NOTE verify this sometime
-  def cut_symbol=(c)
-    CutSymbol__.instance.cut_symbol = c
-  end
+  # Get the token that's used as the cut symbol in a restriction enzyme sequece
+  #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: +glyph+
+  def cut_symbol; CutSymbol__.cut_symbol; end
 
-  def cut_symbol
-    CutSymbol__.instance.cut_symbol ||= '^'
-  end
+  # Get the token that's used as the cut symbol in a restriction enzyme sequece with
+  # a back-slash preceding it.
+  #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: +\glyph+
+  def escaped_cut_symbol; CutSymbol__.escaped_cut_symbol; end
 
-  def escaped_cut_symbol
-    CutSymbol__.instance.escaped_cut_symbol ||= "\\#{cut_symbol}"  # \^
-  end
-
-  # Used to check if multiple cut symbols are next to each other
+  # Used to check if multiple cut symbols are next to each other.
+  #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: +RegExp+
   def re_cut_symbol_adjacent
     %r"#{escaped_cut_symbol}{2}"
   end
 
-  # A Regexp of the cut_symbol.  Convenience method.
+  # A Regexp of the cut_symbol.
+  #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: +RegExp+
   def re_cut_symbol
     %r"#{escaped_cut_symbol}"
   end
 
+  #########
+  protected
+  #########
+  
+  require 'singleton'
+  
+  # Class to keep state
+  class CutSymbol__
+    include Singleton
+
+    @cut_symbol = '^'
+    
+    def self.cut_symbol; @cut_symbol; end
+    
+    def self.cut_symbol=(glyph);
+      raise ArgumentError if glyph.size != 1
+      @cut_symbol = glyph
+    end
+    
+    def self.escaped_cut_symbol; "\\" + self.cut_symbol; end
+  end
+  
 end # CutSymbol
 end # Bio::RestrictionEnzyme

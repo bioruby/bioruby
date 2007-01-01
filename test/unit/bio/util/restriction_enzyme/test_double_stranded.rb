@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: test_double_stranded.rb,v 1.2 2006/12/31 18:46:14 trevor Exp $
+#  $Id: test_double_stranded.rb,v 1.3 2007/01/01 02:16:05 trevor Exp $
 #
 
 require 'pathname'
@@ -103,10 +103,6 @@ class TestDoubleStranded < Test::Unit::TestCase #:nodoc:
     assert_raise(ArgumentError) { @t.new('garraxt', [3,2,9,11]) }
     assert_raise(ArgumentError) { @t.new(Bio::RestrictionEnzyme.rebase['ecorii'] )}
     assert_raise(ArgumentError) { @t.new(Bio::RestrictionEnzyme.rebase['EzzRII']) }
-  end
-
-  def test_index_error
-    assert_raise(IndexError) { @t.new('EzzRII') }
   end
 
   # NOTE
