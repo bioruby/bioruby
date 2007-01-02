@@ -5,11 +5,11 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: calculated_cuts.rb,v 1.4 2007/01/01 23:47:28 trevor Exp $
+#  $Id: calculated_cuts.rb,v 1.1 2007/01/02 00:13:07 trevor Exp $
 #
 
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
+libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 6, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'bio/util/restriction_enzyme/cut_symbol'
@@ -17,7 +17,8 @@ require 'bio/util/restriction_enzyme/string_formatting'
 
 module Bio; end
 class Bio::RestrictionEnzyme
-class Analysis
+class Range
+class SequenceRange
 
 #
 # bio/util/restrction_enzyme/analysis/calculated_cuts.rb - 
@@ -244,5 +245,6 @@ class CalculatedCuts
   end
 
 end # CalculatedCuts
-end # Analysis
+end # SequenceRange
+end # Range
 end # Bio::RestrictionEnzyme

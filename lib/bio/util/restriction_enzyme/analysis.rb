@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis.rb,v 1.8 2007/01/01 23:47:27 trevor Exp $
+#  $Id: analysis.rb,v 1.9 2007/01/02 00:13:07 trevor Exp $
 #
 
 #--
@@ -63,14 +63,14 @@ class Analysis
     hash_of_sequence_ranges_with_cuts = {}
 
     if permutations.empty?
-      sr_with_cuts = SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
+      sr_with_cuts = Bio::RestrictionEnzyme::Range::SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
       initial_cuts.each { |key, enzyme_action| enzyme_action.cut_ranges.each { |cut_range| sr_with_cuts.add_cut_range(cut_range) } }
       hash_of_sequence_ranges_with_cuts[0] = sr_with_cuts
     end
 
     permutations.each do |permutation|
       previous_cut_ranges = []
-      sr_with_cuts = SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
+      sr_with_cuts = Bio::RestrictionEnzyme::Range::SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
       initial_cuts.each { |enzyme_action| enzyme_action.cut_ranges.each { |cut_range| sr_with_cuts.add_cut_range(cut_range) } }
 
       permutation.each do |id|
@@ -85,7 +85,7 @@ class Analysis
         # note that the enzyme action may fall in the middle of a previous enzyme action
         # so all cut locations must be checked that would fall underneath.
         previous_cut_ranges.each do |cut_range|
-          next unless cut_range.class == VerticalCutRange  # we aren't concerned with horizontal cuts
+          next unless cut_range.class == Bio::RestrictionEnzyme::Range::VerticalCutRange  # we aren't concerned with horizontal cuts
           previous_cut_left = cut_range.range.first 
           previous_cut_right = cut_range.range.last
 

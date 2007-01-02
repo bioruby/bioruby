@@ -5,15 +5,16 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: fragments.rb,v 1.2 2006/12/31 21:50:31 trevor Exp $
+#  $Id: fragments.rb,v 1.1 2007/01/02 00:13:07 trevor Exp $
 #
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
+libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 6, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
 
 module Bio; end
 class Bio::RestrictionEnzyme
-class Analysis
+class Range
+class SequenceRange
 
 #
 # bio/util/restrction_enzyme/analysis/fragments.rb - 
@@ -42,5 +43,6 @@ class Fragments < Array
     pretty_fragments
   end
 end # Fragments
-end # Analysis
+end # SequenceRange
+end # Range
 end # Bio::RestrictionEnzyme

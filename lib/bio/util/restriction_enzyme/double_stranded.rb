@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: double_stranded.rb,v 1.4 2007/01/01 23:47:27 trevor Exp $
+#  $Id: double_stranded.rb,v 1.5 2007/01/02 00:13:07 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
@@ -13,7 +13,7 @@ $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'bio/db/rebase'
 require 'bio/util/restriction_enzyme'
-require 'bio/util/restriction_enzyme/analysis/sequence_range'
+require 'bio/util/restriction_enzyme/range/sequence_range'
 
 require 'bio/util/restriction_enzyme/cut_symbol'
 require 'bio/util/restriction_enzyme/single_strand'
@@ -246,7 +246,7 @@ class DoubleStranded
   # An EnzymeAction is
   # Defines a single enzyme action, in this case being a range that correlates
   # to the DNA sequence that may contain it's own internal cuts.
-  class EnzymeAction < Bio::RestrictionEnzyme::Analysis::SequenceRange
+  class EnzymeAction < Bio::RestrictionEnzyme::Range::SequenceRange
   end
 
   #########

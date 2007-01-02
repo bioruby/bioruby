@@ -1,24 +1,24 @@
 #
-# bio/util/restrction_enzyme/analysis/vertical_cut_range.rb - 
+# bio/util/restrction_enzyme/range/vertical_cut_range.rb - 
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: vertical_cut_range.rb,v 1.3 2007/01/01 23:47:28 trevor Exp $
+#  $Id: vertical_cut_range.rb,v 1.1 2007/01/02 00:13:07 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
 
-require 'bio/util/restriction_enzyme/analysis/cut_range'
+require 'bio/util/restriction_enzyme/range/cut_range'
 
 module Bio; end
 class Bio::RestrictionEnzyme
-class Analysis
+class Range
 
 #
-# bio/util/restrction_enzyme/analysis/vertical_cut_range.rb - 
+# bio/util/restrction_enzyme/range/vertical_cut_range.rb - 
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
@@ -81,5 +81,5 @@ class VerticalCutRange < CutRange
     @range.include?(i)
   end
 end # VerticalCutRange
-end # Analysis
+end # Range
 end # Bio::RestrictionEnzyme

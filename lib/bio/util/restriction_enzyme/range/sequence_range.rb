@@ -1,29 +1,29 @@
 #
-# bio/util/restrction_enzyme/analysis/sequence_range.rb - 
+# bio/util/restrction_enzyme/range/sequence_range.rb - 
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: sequence_range.rb,v 1.5 2007/01/01 23:47:28 trevor Exp $
+#  $Id: sequence_range.rb,v 1.1 2007/01/02 00:13:07 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
 
-require 'bio/util/restriction_enzyme/analysis/cut_ranges'
-require 'bio/util/restriction_enzyme/analysis/horizontal_cut_range'
-require 'bio/util/restriction_enzyme/analysis/vertical_cut_range'
-require 'bio/util/restriction_enzyme/analysis/calculated_cuts'
-require 'bio/util/restriction_enzyme/analysis/fragments'
-require 'bio/util/restriction_enzyme/analysis/fragment'
+require 'bio/util/restriction_enzyme/range/cut_ranges'
+require 'bio/util/restriction_enzyme/range/horizontal_cut_range'
+require 'bio/util/restriction_enzyme/range/vertical_cut_range'
+require 'bio/util/restriction_enzyme/range/sequence_range/calculated_cuts'
+require 'bio/util/restriction_enzyme/range/sequence_range/fragments'
+require 'bio/util/restriction_enzyme/range/sequence_range/fragment'
 require 'bio'
 
 module Bio; end
 class Bio::RestrictionEnzyme
-class Analysis
+class Range
 #
-# bio/util/restrction_enzyme/analysis/sequence_range.rb - 
+# bio/util/restrction_enzyme/range/sequence_range.rb - 
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
@@ -73,7 +73,7 @@ Special Case: Horizontal cuts at beginning or end of strand
     return @__fragments if @__fragments_current == true
     @__fragments_current = true
 
-    cc = CalculatedCuts.new(@size)
+    cc = Bio::RestrictionEnzyme::Range::SequenceRange::CalculatedCuts.new(@size)
     cc.add_cuts_from_cut_ranges(@cut_ranges)
     cc.remove_incomplete_cuts
 
@@ -182,5 +182,5 @@ Special Case: Horizontal cuts at beginning or end of strand
     @cut_ranges << HorizontalCutRange.new( left, right )
   end
 end # SequenceRange
-end # Analysis
+end # Range
 end # Bio::RestrictionEnzyme
