@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis.rb,v 1.9 2007/01/02 00:13:07 trevor Exp $
+#  $Id: analysis.rb,v 1.10 2007/01/02 06:18:38 trevor Exp $
 #
 
 #--
@@ -39,8 +39,7 @@ class Analysis
 
   def cut( sequence, *args )
     return nil if !sequence.kind_of?(String) or sequence.empty?
-    hash_of_sequence_ranges_with_cuts = cut_and_return_by_permutations( sequence, *args )
-    unique_fragments_for_display( hash_of_sequence_ranges_with_cuts )
+    unique_fragments_for_display( cut_and_return_by_permutations( sequence, *args ) )
   end
 
   #########
@@ -50,73 +49,82 @@ class Analysis
   def cut_and_return_by_permutations( sequence, *args )
     return {} if !sequence.kind_of?(String) or sequence.empty?
     sequence = Bio::Sequence::NA.new( sequence )
+    sequence.freeze
+    
+    # +Hash+ Key is permutation ID, value is SequenceRange
+    my_hash = {}
+    
     enzyme_actions, initial_cuts = create_enzyme_actions( sequence, *args )
-    return {} if enzyme_actions.empty? and initial_cuts.empty?
+    return my_hash if enzyme_actions.empty? and initial_cuts.empty?
 
     if enzyme_actions.size > 1
       permutations = permute(enzyme_actions.size)
-    else
-      permutations = []
-    end
+      
+      permutations.each do |permutation|
+        previous_cut_ranges = []
+        sequence_range = Bio::RestrictionEnzyme::Range::SequenceRange.new(  0, 
+                                                                            0, 
+                                                                            sequence.size-1, 
+                                                                            sequence.size-1 )
+                                                                            
+        initial_cuts.each { |enzyme_action|
+          raise initial_cuts.inspect
+           
+                            enzyme_action.cut_ranges.each { |cut_range| 
+                                                            sequence_range.add_cut_range(cut_range) } }
 
-    # Indexed by permutation.
-    hash_of_sequence_ranges_with_cuts = {}
+        permutation.each do |id|
+          enzyme_action = enzyme_actions[id]
 
-    if permutations.empty?
-      sr_with_cuts = Bio::RestrictionEnzyme::Range::SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
-      initial_cuts.each { |key, enzyme_action| enzyme_action.cut_ranges.each { |cut_range| sr_with_cuts.add_cut_range(cut_range) } }
-      hash_of_sequence_ranges_with_cuts[0] = sr_with_cuts
-    end
+          # conflict is false if the current enzyme action may cut in it's range.
+          # conflict is true if it cannot due to a previous enzyme action making
+          # a cut where this enzyme action needs a whole recognition site.
+          conflict = false
 
-    permutations.each do |permutation|
-      previous_cut_ranges = []
-      sr_with_cuts = Bio::RestrictionEnzyme::Range::SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
-      initial_cuts.each { |enzyme_action| enzyme_action.cut_ranges.each { |cut_range| sr_with_cuts.add_cut_range(cut_range) } }
+          # If current size of enzyme_action overlaps with previous cut_range, don't cut
+          # note that the enzyme action may fall in the middle of a previous enzyme action
+          # so all cut locations must be checked that would fall underneath.
+          previous_cut_ranges.each do |cut_range|
+            next unless cut_range.class == Bio::RestrictionEnzyme::Range::VerticalCutRange  # we aren't concerned with horizontal cuts
+            previous_cut_left = cut_range.range.first 
+            previous_cut_right = cut_range.range.last
 
-      permutation.each do |id|
-        enzyme_action = enzyme_actions[id]
-
-        # conflict is false if the current enzyme action may cut in it's range.
-        # conflict is true if it cannot do to a previous enzyme action making
-        # a cut where this enzyme action needs a whole recognition site.
-        conflict = false
-
-        # If current size of enzyme_action overlaps with previous cut_range, don't cut
-        # note that the enzyme action may fall in the middle of a previous enzyme action
-        # so all cut locations must be checked that would fall underneath.
-        previous_cut_ranges.each do |cut_range|
-          next unless cut_range.class == Bio::RestrictionEnzyme::Range::VerticalCutRange  # we aren't concerned with horizontal cuts
-          previous_cut_left = cut_range.range.first 
-          previous_cut_right = cut_range.range.last
-
-          # Keep in mind: 
-          # * The cut location is to the immediate right of the base located at the index.
-          #   ex: at^gc -- the cut location is at index 1
-          # * The enzyme action location is located at the base of the index.
-          #   ex: atgc -- 0 => 'a', 1 => 't', 2 => 'g', 3 => 'c'
-          if (enzyme_action.right <= previous_cut_left) or
-             (enzyme_action.left > previous_cut_right) or
-             (enzyme_action.left > previous_cut_left and enzyme_action.right <= previous_cut_right) # in between cuts
-            # no conflict
-          else
-            conflict = true
+            # Keep in mind: 
+            # * The cut location is to the immediate right of the base located at the index.
+            #   ex: at^gc -- the cut location is at index 1
+            # * The enzyme action location is located at the base of the index.
+            #   ex: atgc -- 0 => 'a', 1 => 't', 2 => 'g', 3 => 'c'
+            if (enzyme_action.right <= previous_cut_left) or
+               (enzyme_action.left > previous_cut_right) or
+               (enzyme_action.left > previous_cut_left and enzyme_action.right <= previous_cut_right) # in between cuts
+              # no conflict
+            else
+              conflict = true
+            end
           end
+
+          next if conflict == true
+          enzyme_action.cut_ranges.each { |cut_range| sequence_range.add_cut_range(cut_range) }
+          previous_cut_ranges += enzyme_action.cut_ranges        
         end
 
-        next if conflict == true
-        enzyme_action.cut_ranges.each { |cut_range| sr_with_cuts.add_cut_range(cut_range) }
-        previous_cut_ranges += enzyme_action.cut_ranges
+        sequence_range.fragments.primary = sequence
+        sequence_range.fragments.complement = sequence.forward_complement
+        my_hash[permutation] = sequence_range
       end
+      
+    else # !if enzyme_actions.size > 1
+      sequence_range = Bio::RestrictionEnzyme::Range::SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
 
-      hash_of_sequence_ranges_with_cuts[permutation] = sr_with_cuts
+      #initial_cuts.each { |key, enzyme_action| enzyme_action.cut_ranges.each { |cut_range| sequence_range.add_cut_range(cut_range) } }
+      initial_cuts.each { |enzyme_action| enzyme_action.cut_ranges.each { |cut_range| sequence_range.add_cut_range(cut_range) } }
+
+      sequence_range.fragments.primary = sequence
+      sequence_range.fragments.complement = sequence.forward_complement
+      my_hash[0] = sequence_range
     end
 
-    hash_of_sequence_ranges_with_cuts.each do |permutation, sr_with_cuts|
-      sr_with_cuts.fragments.primary = sequence
-      sr_with_cuts.fragments.complement = sequence.forward_complement
-    end
-
-    hash_of_sequence_ranges_with_cuts
+    my_hash
   end
 
   def permute(count, permutations = [[0]])

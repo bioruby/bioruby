@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: test_double_stranded.rb,v 1.3 2007/01/01 02:16:05 trevor Exp $
+#  $Id: test_double_stranded.rb,v 1.4 2007/01/02 06:18:07 trevor Exp $
 #
 
 require 'pathname'
@@ -34,7 +34,7 @@ class TestDoubleStranded < Test::Unit::TestCase #:nodoc:
     @obj_6 = @t.new('garraxt', @cl.new(3,2))
     @obj_7 = @t.new('garraxt', @cl.new(3,2), @cl.new(9,11))
 
-    @obj_8 = @t.new('garraxt', 3..2, 9..11)
+#    @obj_8 = @t.new('garraxt', 3..2, 9..11)
     @obj_9 = @t.new('garraxt', [3,2], [9,11])
 
     @obj_10 = @t.new('garraxt', [3,2], [9,11])
@@ -56,7 +56,7 @@ class TestDoubleStranded < Test::Unit::TestCase #:nodoc:
     assert_equal('gar^raxt', @obj_6.primary.with_cut_symbols)
     assert_equal('gar^raxtnn^n', @obj_7.primary.with_cut_symbols)
 
-    assert_equal('gar^raxtnn^n', @obj_8.primary.with_cut_symbols)
+#    assert_equal('gar^raxtnn^n', @obj_8.primary.with_cut_symbols)
     assert_equal('gar^raxtnn^n', @obj_9.primary.with_cut_symbols)
 
     assert_equal('gar^raxtnn^n', @obj_10.primary.with_cut_symbols)
@@ -74,7 +74,7 @@ class TestDoubleStranded < Test::Unit::TestCase #:nodoc:
     assert_equal('ct^yytxa', @obj_6.complement.with_cut_symbols)
     assert_equal('ct^yytxannnn^n', @obj_7.complement.with_cut_symbols)
 
-    assert_equal('ct^yytxannnn^n', @obj_8.complement.with_cut_symbols)
+#    assert_equal('ct^yytxannnn^n', @obj_8.complement.with_cut_symbols)
     assert_equal('ct^yytxannnn^n', @obj_9.complement.with_cut_symbols)
 
     assert_equal('ct^yytxannnn^n', @obj_10.complement.with_cut_symbols)

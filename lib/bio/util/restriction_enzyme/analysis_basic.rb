@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis_basic.rb,v 1.2 2007/01/02 00:13:07 trevor Exp $
+#  $Id: analysis_basic.rb,v 1.3 2007/01/02 06:18:38 trevor Exp $
 #
 
 #--
@@ -80,59 +80,52 @@ class Analysis
     sequence = Bio::Sequence::NA.new( sequence )
 
     tmp = create_enzyme_actions( sequence, *args )
-    enzyme_actions = tmp[0].merge(tmp[1])
+    #enzyme_actions = tmp[0].merge(tmp[1])
+    enzyme_actions = tmp[0] + tmp[1]
 
-    sr_with_cuts = Bio::RestrictionEnzyme::Range::SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
-    enzyme_actions.each do |id, enzyme_action|
+    sequence_range = Bio::RestrictionEnzyme::Range::SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
+    enzyme_actions.each do |enzyme_action|
       enzyme_action.cut_ranges.each do |cut_range|
-        sr_with_cuts.add_cut_range(cut_range)
+        sequence_range.add_cut_range(cut_range)
       end
     end
 
-    sr_with_cuts.fragments.primary = sequence
-    sr_with_cuts.fragments.complement = sequence.forward_complement
-    unique_fragments_for_display( {0 => sr_with_cuts} )
+    sequence_range.fragments.primary = sequence
+    sequence_range.fragments.complement = sequence.forward_complement
+    unique_fragments_for_display( {0 => sequence_range} )
   end
 
+  UniqueFragment = Struct.new(:primary, :complement)
+  
+  class UniqueFragments < Array
+    def primary; strip_and_sort(:primary); end
+    def complement; strip_and_sort(:complement); end
+    
+    protected
+    
+    def strip_and_sort( sym_strand )
+      self.map {|uf| uf.send( sym_strand ).tr(' ', '') }.sort
+    end
+  end
+  
   #########
   protected
   #########
-  
-  UniqueFragment = Struct.new(:primary, :complement)
-  class UniqueFragments < Array
-    def primary
-      tmp = []
-      self.each { |uf| tmp << uf.primary }
-      tmp.sort.map { |e| e.tr(' ', '') }
-    end
-    def complement
-      tmp = []
-      self.each { |uf| tmp << uf.complement }
-      tmp.sort.map { |e| e.tr(' ', '') }
-    end
-  end
 
-  def unique_fragments_for_display( hash_of_sequence_ranges_with_cuts )
+
+  # * +hsh+: +Hash+  Key is a permutation ID, if any.  Value is SequenceRange object that has cuts.
+  # 
+  def unique_fragments_for_display( hsh )
     uf_ary = UniqueFragments.new
-    return uf_ary if hash_of_sequence_ranges_with_cuts == nil or hash_of_sequence_ranges_with_cuts.empty?
+    return uf_ary if hsh == nil
 
-    hash_of_sequence_ranges_with_cuts.each do |permutation, sr_with_cuts|
-      sr_with_cuts.fragments.for_display.each do |fragment|
-        uf = UniqueFragment.new
-        uf.primary = fragment.primary
-        uf.complement = fragment.complement
-
-        duplicate = false
-        uf_ary.each do |element|
-          if (uf.primary == element.primary) and (uf.complement == element.complement)
-            duplicate = true
-            break
-          end
-        end
-
-        uf_ary << uf unless duplicate
+    hsh.each do |permutation_id, sequence_range|
+      sequence_range.fragments.for_display.each do |fragment|
+        # NOTE might not need tr here
+        uf_ary << UniqueFragment.new(fragment.primary.tr(' ', ''), fragment.complement.tr(' ', ''))
       end
     end
+    uf_ary.uniq!
     uf_ary
   end
 
@@ -141,54 +134,77 @@ class Analysis
   # +sequence+:: The string of DNA to match the enzyme recognition sites against
   # +args+:: The enzymes to use.
   def create_enzyme_actions( sequence, *args )
-    id = 0
-    enzyme_actions_that_sometimes_cut = {}
-    enzyme_actions_that_always_cut = {}
-    indicies_of_sometimes_cut = []
-
+    require 'set'
+    always_cut = []
+    indicies_of_sometimes_cut = Set.new
+    
     args.each do |enzyme|
       enzyme = Bio::RestrictionEnzyme.new(enzyme) unless enzyme.class == Bio::RestrictionEnzyme::DoubleStranded
+
       find_match_locations( sequence, enzyme.primary.to_re ).each do |offset|
-        #enzyme_actions_that_always_cut[id] = enzyme_to_enzyme_action( enzyme, offset )
-        enzyme_actions_that_always_cut[id] = enzyme.create_action_at( offset )
-        id += 1
+        always_cut << enzyme.create_action_at( offset )
       end
     end
+    
+    # VerticalCutRange should really be called VerticalAndHorizontalCutRange
+    
+    # * always_cut is now full of EnzymeActions at specific locations across 
+    #   the sequence.
+    # * always_cut will now be examined to see if any EnzymeActions may
+    #   conflict with one another, and if they do they'll be made note of in
+    #   indicies_of_sometimes_cut.  They will then be remove FIXME
+    # * a conflict occurs if another enzyme's bind site is compromised do due
+    #   to another enzyme's cut.  Enzyme's bind sites may overlap and not be
+    #   competitive, however neither bind site may be part of the other
+    #   enzyme's cut or else they do become competitive.
+    # * note that a small enzyme may possibly cut inbetween two cuts far apart
+    #   made by a larger enzyme, this would be a "sometimes" cut since it's
+    #   not guaranteed that the larger enzyme will cut first, therefore there
+    #   is competition.
+    
+dirty = Set.new
 
+=begin
+    always_cut.each_with_index do |ea, index|
+      
+    end
+=end
     # enzyme_actions_that_always_cut may lose members, the members to be lost are recorded in indicies_of_sometimes_cut
 
-    max = enzyme_actions_that_always_cut.size - 1
-    0.upto(max) do |i|
-      enzyme_action = enzyme_actions_that_always_cut[i]
+    always_cut.each_with_index do |ea, index1|
       conflict = false
       other_cut_ranges = {}
-      enzyme_actions_that_always_cut.each { |key,i_ea| next if i == key; other_cut_ranges[key] = i_ea.cut_ranges }
 
+      always_cut.each_with_index do |i_ea, index2|
+        next if index1 == index2
+        other_cut_ranges[index2] = i_ea.cut_ranges 
+      end
+      
       other_cut_ranges.each do |key, cut_ranges|
+        
         cut_ranges.each do |cut_range|
           next unless cut_range.class == Bio::RestrictionEnzyme::Range::VerticalCutRange  # we aren't concerned with horizontal cuts
-          previous_cut_left = cut_range.range.first 
-          previous_cut_right = cut_range.range.last
+          previous_cut_left, previous_cut_right = cut_range.min, cut_range.max
 
-          if (enzyme_action.right <= previous_cut_left) or
-             (enzyme_action.left > previous_cut_right) or
-             (enzyme_action.left > previous_cut_left and enzyme_action.right <= previous_cut_right) # in between cuts
+          if (ea.right <= previous_cut_left) or
+             (ea.left > previous_cut_right) or
+             (ea.left > previous_cut_left and ea.right <= previous_cut_right) # in-between cuts
             # no conflict
           else
             conflict = true
           end
-
-          indicies_of_sometimes_cut += [i, key] if conflict == true
+          indicies_of_sometimes_cut += [index1, key] if conflict == true
         end
       end
     end
+    
+    sometimes_cut = always_cut.values_at( *indicies_of_sometimes_cut )
+    always_cut.delete_if {|x| sometimes_cut.include? x }
 
-    indicies_of_sometimes_cut.uniq.each do |i|
-      enzyme_actions_that_sometimes_cut[i] = enzyme_actions_that_always_cut[i]
-      enzyme_actions_that_always_cut.delete(i)
-    end
-
-    [enzyme_actions_that_sometimes_cut, enzyme_actions_that_always_cut]
+#puts "Sometimes cut: #{sometimes_cut.size}"
+#puts "Always cut: #{always_cut.size}"
+#puts
+    [sometimes_cut, always_cut]
   end
 
   # Returns an +Array+ of the match indicies of a RegExp to a string.

@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: test_analysis.rb,v 1.4 2006/12/31 18:46:14 trevor Exp $
+#  $Id: test_analysis.rb,v 1.5 2007/01/02 06:18:07 trevor Exp $
 #
 
 require 'pathname'
@@ -30,6 +30,8 @@ class TestAnalysis < Test::Unit::TestCase #:nodoc:
     e1 = @enz.new('atgcatgc', [3,3])
     @obj_4 = @t.cut('atgcatgcatgc', e1)
 
+    @obj_4bd = @t.cut('atgcatgcatgccccc', e1, 'cc^c')
+
     e2 = @enz.new('atgcatgc', [3,5])
     @obj_5 = @t.cut('atgcatgcatgc', e2)
 
@@ -38,6 +40,9 @@ class TestAnalysis < Test::Unit::TestCase #:nodoc:
     @obj_6 = @t.cut('agga', e3, e4)
 
     @obj_7 = @t.cut('gaccaggaaaaagaccaggaaagcctggaaaagttaac', 'EcoRII')
+    @obj_7b = @t.cut('gaccaggaaaaagaccaggaaagcctggaaaagttaaccc', 'EcoRII', 'HincII', 'cc^c')
+    @obj_7bd = @t.cut_without_permutations('gaccaggaaaaagaccaggaaagcctggaaaagttaaccc', 'EcoRII', 'HincII', 'cc^c')
+    
     @obj_8 = @t.cut('gaccaggaaaaagaccaggaaagcctggaaaagttaac', 'EcoRII', 'HincII')
 
     @obj_9 = @t.cut('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'EcoRII')
@@ -75,10 +80,27 @@ class TestAnalysis < Test::Unit::TestCase #:nodoc:
     assert_equal(["ag"], @obj_2.primary)
     assert_equal(["ag", "agt", "cag"], @obj_3.primary)
     assert_equal(["atg", "atgcatg", "catg", "catgc"], @obj_4.primary)
+=begin
+    A T G^C A T G C
+    
+    A T G C A T G C A T G C
+    
+    A T G^C A T G^C A T G C
+    
+    A T G C A T G^C A T G C
+=end
+    
+    
+    e1 = @enz.new('atgcatgc', [3,3])
+    @obj_4 = @t.cut('atgcatgcatgc', e1)
+    
     assert_equal(["atg", "atgcatg", "catgc", "catgcatgc"], @obj_5.primary)
     assert_equal(["a", "ag", "g", "ga"], @obj_6.primary)
     assert_equal(["ccaggaaaaaga", "ccaggaaag", "cctggaaaagttaac", "ga"], @obj_7.primary)
     assert_equal(["aac", "ccaggaaaaaga", "ccaggaaag", "cctggaaaagtt", "ga"], @obj_8.primary)
+        
+    assert_equal(["atg", "atgcatg", "c", "catg", "catgcc", "catgccc", "cc", "cc"], @obj_4bd.primary)
+    assert_equal(["gg", "gg", "ggg", "gtac", "gtacg", "gtacgg", "tac", "tacgtac"], @obj_4bd.complement)
   end
 
   def test_cut_without_permutations

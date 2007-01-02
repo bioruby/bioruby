@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: horizontal_cut_range.rb,v 1.1 2007/01/02 00:13:07 trevor Exp $
+#  $Id: horizontal_cut_range.rb,v 1.2 2007/01/02 06:18:38 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
@@ -53,9 +53,10 @@ class HorizontalCutRange < CutRange
     @p_cut_right = nil
     @c_cut_left = nil
     @c_cut_right = nil
-    @min = nil
-    @max = nil
-    @range = nil
+    @min = left  # NOTE this used to be 'nil', make sure all tests work
+    @max = right # NOTE this used to be 'nil', make sure all tests work
+    @range = (@min..@max) unless @min == nil or @max == nil # NOTE this used to be 'nil', make sure all tests work
+    
 
     @hcuts = (left..right)
   end
