@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: test_analysis.rb,v 1.5 2007/01/02 06:18:07 trevor Exp $
+#  $Id: test_analysis.rb,v 1.6 2007/01/02 07:33:46 trevor Exp $
 #
 
 require 'pathname'
@@ -30,7 +30,7 @@ class TestAnalysis < Test::Unit::TestCase #:nodoc:
     e1 = @enz.new('atgcatgc', [3,3])
     @obj_4 = @t.cut('atgcatgcatgc', e1)
 
-    @obj_4bd = @t.cut('atgcatgcatgccccc', e1, 'cc^c')
+    @obj_4bd = @t.cut('atgcatgcatgccc', e1, 'cc^c') # mix of always cut and sometimes cut
 
     e2 = @enz.new('atgcatgc', [3,5])
     @obj_5 = @t.cut('atgcatgcatgc', e2)
@@ -90,17 +90,33 @@ class TestAnalysis < Test::Unit::TestCase #:nodoc:
     A T G C A T G^C A T G C
 =end
     
-    
-    e1 = @enz.new('atgcatgc', [3,3])
-    @obj_4 = @t.cut('atgcatgcatgc', e1)
-    
     assert_equal(["atg", "atgcatg", "catgc", "catgcatgc"], @obj_5.primary)
     assert_equal(["a", "ag", "g", "ga"], @obj_6.primary)
     assert_equal(["ccaggaaaaaga", "ccaggaaag", "cctggaaaagttaac", "ga"], @obj_7.primary)
     assert_equal(["aac", "ccaggaaaaaga", "ccaggaaag", "cctggaaaagtt", "ga"], @obj_8.primary)
-        
-    assert_equal(["atg", "atgcatg", "c", "catg", "catgcc", "catgccc", "cc", "cc"], @obj_4bd.primary)
-    assert_equal(["gg", "gg", "ggg", "gtac", "gtacg", "gtacgg", "tac", "tacgtac"], @obj_4bd.complement)
+    
+=begin
+    e1 = @enz.new('atgcatgc', [3,3])
+    @obj_4bd = @t.cut('atgcatgcatgccc', e1, 'cc^c') # mix of sometimes cut and always cut
+
+    [#<struct Bio::RestrictionEnzyme::Analysis::UniqueFragment
+      primary="atgcatg",
+      complement="tacgtac">,
+     #<struct Bio::RestrictionEnzyme::Analysis::UniqueFragment
+      primary="catgcc",
+      complement="gtacg ">,
+     #<struct Bio::RestrictionEnzyme::Analysis::UniqueFragment
+      primary=" c",
+      complement="gg">,
+     #<struct Bio::RestrictionEnzyme::Analysis::UniqueFragment
+      primary="atg",
+      complement="tac">,
+     #<struct Bio::RestrictionEnzyme::Analysis::UniqueFragment
+      primary="catg",
+      complement="gtac">]
+=end
+    assert_equal(["atg", "atgcatg", "c", "catg", "catgcc"], @obj_4bd.primary)    
+    assert_equal(["gg", "gtac", "gtacg", "tac", "tacgtac"], @obj_4bd.complement)
   end
 
   def test_cut_without_permutations

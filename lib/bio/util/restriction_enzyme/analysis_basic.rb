@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis_basic.rb,v 1.3 2007/01/02 06:18:38 trevor Exp $
+#  $Id: analysis_basic.rb,v 1.4 2007/01/02 07:33:46 trevor Exp $
 #
 
 #--
@@ -121,8 +121,7 @@ class Analysis
 
     hsh.each do |permutation_id, sequence_range|
       sequence_range.fragments.for_display.each do |fragment|
-        # NOTE might not need tr here
-        uf_ary << UniqueFragment.new(fragment.primary.tr(' ', ''), fragment.complement.tr(' ', ''))
+        uf_ary << UniqueFragment.new(fragment.primary, fragment.complement)
       end
     end
     uf_ary.uniq!
@@ -135,22 +134,21 @@ class Analysis
   # +args+:: The enzymes to use.
   def create_enzyme_actions( sequence, *args )
     require 'set'
-    always_cut = []
-    indicies_of_sometimes_cut = Set.new
+    all_enzyme_actions = []
     
     args.each do |enzyme|
       enzyme = Bio::RestrictionEnzyme.new(enzyme) unless enzyme.class == Bio::RestrictionEnzyme::DoubleStranded
 
       find_match_locations( sequence, enzyme.primary.to_re ).each do |offset|
-        always_cut << enzyme.create_action_at( offset )
+        all_enzyme_actions << enzyme.create_action_at( offset )
       end
     end
     
     # VerticalCutRange should really be called VerticalAndHorizontalCutRange
     
-    # * always_cut is now full of EnzymeActions at specific locations across 
+    # * all_enzyme_actions is now full of EnzymeActions at specific locations across 
     #   the sequence.
-    # * always_cut will now be examined to see if any EnzymeActions may
+    # * all_enzyme_actions will now be examined to see if any EnzymeActions may
     #   conflict with one another, and if they do they'll be made note of in
     #   indicies_of_sometimes_cut.  They will then be remove FIXME
     # * a conflict occurs if another enzyme's bind site is compromised do due
@@ -162,48 +160,41 @@ class Analysis
     #   not guaranteed that the larger enzyme will cut first, therefore there
     #   is competition.
     
-dirty = Set.new
+    # Take current EnzymeAction's entire bind site and compare it to all other
+    # EzymeAction's cut ranges.  Only look for vertical cuts as boundaries
+    # since trailing horizontal cuts would have no influence on the bind site.
+    #
+    # If example Enzyme A makes this cut pattern (cut range 2..5):
+    #
+    # 0 1 2|3 4 5 6 7
+    #      +-----+
+    # 0 1 2 3 4 5|6 7
+    #
+    # Then the bind site (and EnzymeAction range) for Enzyme B would need it's
+    # right side to be 2 or less, or it's left side to be 6 or greater.
+    
+    competition_indexes = Set.new
 
-=begin
-    always_cut.each_with_index do |ea, index|
+    all_enzyme_actions[0..-2].each_with_index do |current_enzyme_action, i|
+      next if competition_indexes.include? i
       
-    end
-=end
-    # enzyme_actions_that_always_cut may lose members, the members to be lost are recorded in indicies_of_sometimes_cut
+      all_enzyme_actions[i+1..-1].each_with_index do |comparison_enzyme_action, j|
+        j += (i + 1)
+        next if competition_indexes.include? j
 
-    always_cut.each_with_index do |ea, index1|
-      conflict = false
-      other_cut_ranges = {}
-
-      always_cut.each_with_index do |i_ea, index2|
-        next if index1 == index2
-        other_cut_ranges[index2] = i_ea.cut_ranges 
-      end
-      
-      other_cut_ranges.each do |key, cut_ranges|
-        
-        cut_ranges.each do |cut_range|
-          next unless cut_range.class == Bio::RestrictionEnzyme::Range::VerticalCutRange  # we aren't concerned with horizontal cuts
-          previous_cut_left, previous_cut_right = cut_range.min, cut_range.max
-
-          if (ea.right <= previous_cut_left) or
-             (ea.left > previous_cut_right) or
-             (ea.left > previous_cut_left and ea.right <= previous_cut_right) # in-between cuts
-            # no conflict
-          else
-            conflict = true
-          end
-          indicies_of_sometimes_cut += [index1, key] if conflict == true
+        if (current_enzyme_action.right <= comparison_enzyme_action.cut_ranges.min_vertical) or
+           (current_enzyme_action.left > comparison_enzyme_action.cut_ranges.max_vertical)
+          # no conflict
+        else
+          competition_indexes += [i, j] # merge both indexes into the flat set
         end
       end
     end
-    
-    sometimes_cut = always_cut.values_at( *indicies_of_sometimes_cut )
+        
+    sometimes_cut = all_enzyme_actions.values_at( *competition_indexes )
+    always_cut = all_enzyme_actions
     always_cut.delete_if {|x| sometimes_cut.include? x }
 
-#puts "Sometimes cut: #{sometimes_cut.size}"
-#puts "Always cut: #{always_cut.size}"
-#puts
     [sometimes_cut, always_cut]
   end
 

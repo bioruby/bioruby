@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis.rb,v 1.10 2007/01/02 06:18:38 trevor Exp $
+#  $Id: analysis.rb,v 1.11 2007/01/02 07:33:46 trevor Exp $
 #
 
 #--
@@ -68,7 +68,7 @@ class Analysis
                                                                             sequence.size-1 )
                                                                             
         initial_cuts.each { |enzyme_action|
-          raise initial_cuts.inspect
+          #raise initial_cuts.inspect
            
                             enzyme_action.cut_ranges.each { |cut_range| 
                                                             sequence_range.add_cut_range(cut_range) } }
