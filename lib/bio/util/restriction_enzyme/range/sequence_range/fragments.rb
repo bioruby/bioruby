@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: fragments.rb,v 1.1 2007/01/02 00:13:07 trevor Exp $
+#  $Id: fragments.rb,v 1.2 2007/01/02 00:19:06 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 6, 'lib')).cleanpath.to_s
@@ -17,7 +17,7 @@ class Range
 class SequenceRange
 
 #
-# bio/util/restrction_enzyme/analysis/fragments.rb - 
+# bio/util/restrction_enzyme/range/sequence_range/fragments.rb - 
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)

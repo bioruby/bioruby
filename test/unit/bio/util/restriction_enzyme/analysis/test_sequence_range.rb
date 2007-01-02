@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: test_sequence_range.rb,v 1.2 2006/12/31 18:46:15 trevor Exp $
+#  $Id: test_sequence_range.rb,v 1.3 2007/01/02 00:22:27 trevor Exp $
 #
 
 require 'pathname'
@@ -13,26 +13,26 @@ libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 6, 'lib')).cle
 $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'test/unit'
-require 'bio/util/restriction_enzyme/analysis/sequence_range'
-require 'bio/util/restriction_enzyme/analysis/fragments'
+require 'bio/util/restriction_enzyme/range/sequence_range'
+require 'bio/util/restriction_enzyme/range/sequence_range/fragments'
 
-require 'bio/util/restriction_enzyme/analysis/cut_range'
-require 'bio/util/restriction_enzyme/analysis/horizontal_cut_range'
-require 'bio/util/restriction_enzyme/analysis/vertical_cut_range'
-require 'bio/util/restriction_enzyme/analysis/cut_ranges'
+require 'bio/util/restriction_enzyme/range/cut_range'
+require 'bio/util/restriction_enzyme/range/horizontal_cut_range'
+require 'bio/util/restriction_enzyme/range/vertical_cut_range'
+require 'bio/util/restriction_enzyme/range/cut_ranges'
 
 module Bio #:nodoc:
 
 class TestAnalysisSequenceRange < Test::Unit::TestCase #:nodoc:
 
   def setup
-    @t = Bio::RestrictionEnzyme::Analysis::SequenceRange
-    @fs = Bio::RestrictionEnzyme::Analysis::Fragments
+    @t = Bio::RestrictionEnzyme::Range::SequenceRange
+    @fs = Bio::RestrictionEnzyme::Range::SequenceRange::Fragments
     #a.add_cut_range(p_cut_left, p_cut_right, c_cut_left, c_cut_right )
 
-    @vcr = Bio::RestrictionEnzyme::Analysis::VerticalCutRange
-    @crs = Bio::RestrictionEnzyme::Analysis::CutRanges
-    @hcr = Bio::RestrictionEnzyme::Analysis::HorizontalCutRange
+    @vcr = Bio::RestrictionEnzyme::Range::VerticalCutRange
+    @crs = Bio::RestrictionEnzyme::Range::CutRanges
+    @hcr = Bio::RestrictionEnzyme::Range::HorizontalCutRange
 
     @obj_1 = @t.new(0,5)
     @obj_1.add_cut_range(0,nil,nil,3)
