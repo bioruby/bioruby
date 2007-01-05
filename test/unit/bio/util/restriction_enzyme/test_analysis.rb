@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: test_analysis.rb,v 1.6 2007/01/02 07:33:46 trevor Exp $
+#  $Id: test_analysis.rb,v 1.7 2007/01/05 05:33:15 trevor Exp $
 #
 
 require 'pathname'
@@ -74,12 +74,13 @@ class TestAnalysis < Test::Unit::TestCase #:nodoc:
     assert_equal(["ag", "cag"], @obj_1.primary)
     assert_equal(["gtc", "tc"], @obj_1.complement)
     assert_equal(2, @obj_1.size)
-    assert_equal(Bio::RestrictionEnzyme::Analysis::UniqueFragments, @obj_1.class)
-    assert_equal(Bio::RestrictionEnzyme::Analysis::UniqueFragment, @obj_1[0].class)
+    assert_equal(Bio::RestrictionEnzyme::Analysis::Fragments, @obj_1.class)
+    assert_equal(Bio::RestrictionEnzyme::Analysis::Fragment, @obj_1[0].class)
 
     assert_equal(["ag"], @obj_2.primary)
     assert_equal(["ag", "agt", "cag"], @obj_3.primary)
     assert_equal(["atg", "atgcatg", "catg", "catgc"], @obj_4.primary)
+
 =begin
     A T G^C A T G C
     

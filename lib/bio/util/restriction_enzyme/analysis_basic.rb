@@ -5,16 +5,8 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis_basic.rb,v 1.4 2007/01/02 07:33:46 trevor Exp $
+#  $Id: analysis_basic.rb,v 1.5 2007/01/05 05:33:29 trevor Exp $
 #
-
-#--
-#if RUBY_VERSION[0..2] == '1.9' or RUBY_VERSION == '2.0'
-#  err = "This class makes use of 'include' on ranges quite a bit.  Possibly unstable in development Ruby.  2005/12/20."
-#  err += "http://blade.nagaokaut.ac.jp/cgi-bin/vframe.rb/ruby/ruby-talk/167182?167051-169742"
-#  raise err
-#end
-#++
 
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
@@ -33,6 +25,8 @@ class Bio::Sequence::NA
   #   cuts = seq.cut_with_enzyme('g^aattc')
   # ---
   # See Bio::RestrictionEnzyme::Analysis.cut
+  # 
+  # NOTE: move this into Bio::Sequence::NA
   def cut_with_enzyme(*args)
     Bio::RestrictionEnzyme::Analysis.cut(self, *args)
   end
@@ -41,6 +35,7 @@ end
 
 require 'pp'
 
+require 'set'  # for method create_enzyme_actions
 require 'bio/util/restriction_enzyme'
 require 'bio/util/restriction_enzyme/range/sequence_range'
 
@@ -56,48 +51,99 @@ class Bio::RestrictionEnzyme
 class Analysis
 
   def self.cut( sequence, *args )
-#    self.new.cut( sequence, *args )
+    # Just a placeholder, actually defined in bio/util/restriction_enzyme/analysis.rb
+    #self.new.cut( sequence, *args )
   end
 
+  # See cut_without_permutations instance method
   def self.cut_without_permutations( sequence, *args )
     self.new.cut_without_permutations( sequence, *args )
   end
 
+  # See main documentation for Bio::RestrictionEnzyme
+  #
+  # Bio::RestrictionEnzyme.cut is preferred over this!
+  #
+  # USE AT YOUR OWN RISK
+  #
+  # This is a simpler version of method +cut+.  +cut+ takes into account
+  # permutations of cut variations based on competitiveness of enzymes for an
+  # enzyme cutsite or enzyme bindsite on a sequence.  This does not take into
+  # account those possibilities and is therefore faster, but less likely to be
+  # accurate.
+  #
+  # This code is mainly included as an example for those interested to study
+  # without having to wade through the extra layer of complexity added by the
+  # permutations.
+  # 
   # Example:
   #
-  #   Analysis.cut_without_permutations('gaattc', 'EcoRI')
+  # FIXME add output
+  #
+  #   Bio::RestrictionEnzyme::Analysis.cut_without_permutations('gaattc', 'EcoRI')
   #
   # _same as:_
   #
-  #   Analysis.cut_without_permutations('gaattc', 'g^aattc')
+  #   Bio::RestrictionEnzyme::Analysis.cut_without_permutations('gaattc', 'g^aattc')
   # ---
   # *Arguments*
-  # * +sequence+: +String+ kind of object that will be used as a nucleic acid sequence
-  # * +args+: Series of 
-  # *Returns*:: +Hash+ ?(array?) of Bio::RestrictionEnzyme::Analysis::UniqueFragment objects
+  # * +sequence+: +String+ kind of object that will be used as a nucleic acid sequence.
+  # * +args+: Series of enzyme names, enzymes sequences with cut marks, or RestrictionEnzyme objects.
+  # *Returns*:: Fragments object populated with Fragment objects.
   def cut_without_permutations( sequence, *args )
-    return {} if !sequence.kind_of?(String) or sequence.empty?
+    return fragments_for_display( {} ) if !sequence.kind_of?(String) or sequence.empty?
     sequence = Bio::Sequence::NA.new( sequence )
 
-    tmp = create_enzyme_actions( sequence, *args )
-    #enzyme_actions = tmp[0].merge(tmp[1])
-    enzyme_actions = tmp[0] + tmp[1]
-
+    # create_enzyme_actions returns two seperate array elements, they're not
+    # needed separated here so we put them into one array
+    enzyme_actions = create_enzyme_actions( sequence, *args ).flatten
+    return fragments_for_display( {} ) if enzyme_actions.empty?
+    
+    # Primary and complement strands are both measured from '0' to 'sequence.size-1' here
     sequence_range = Bio::RestrictionEnzyme::Range::SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
+    
+    # Add the cuts to the sequence_range from each enzyme_action
     enzyme_actions.each do |enzyme_action|
       enzyme_action.cut_ranges.each do |cut_range|
         sequence_range.add_cut_range(cut_range)
       end
     end
 
+    # Fill in the source sequence for sequence_range so it knows what bases
+    # to use
     sequence_range.fragments.primary = sequence
     sequence_range.fragments.complement = sequence.forward_complement
-    unique_fragments_for_display( {0 => sequence_range} )
+    
+    # Format the fragments for the user
+    fragments_for_display( {0 => sequence_range} )
   end
 
-  UniqueFragment = Struct.new(:primary, :complement)
+  # A Fragment is a sequence fragment composed of a primary and 
+  # complementary that would be found floating in solution after a full
+  # sequence is digested by a RestrictionEnzyme.
+  #
+  # You will notice that either the primary or complement strand will be
+  # padded with spaces to make them line up according to the original DNA
+  # configuration before being cut.
+  #
+  # Example:
+  #
+  #   primary =    "gattaca"
+  #   complement = "   atga"
+  # 
+  # View these with the 'primary' and 'complement' methods.
+  # 
+  # Fragment is a simple +Struct+ object.
+  Fragment = Struct.new(:primary, :complement)
   
-  class UniqueFragments < Array
+  # Fragments inherits from +Array+.
+  #
+  # Fragments is a container for Fragment objects.  It adds the
+  # methods +primary+ and +complement+ which returns an +Array+ of all
+  # respective strands from it's Fragment members.  Note that it will
+  # not return duplicate items and does not return the spacing that you would
+  # find by accessing the members directly.
+  class Fragments < Array
     def primary; strip_and_sort(:primary); end
     def complement; strip_and_sort(:complement); end
     
@@ -113,19 +159,24 @@ class Analysis
   #########
 
 
-  # * +hsh+: +Hash+  Key is a permutation ID, if any.  Value is SequenceRange object that has cuts.
+  # Take the fragments from SequenceRange objects generated from add_cut_range
+  # and return unique results as a Fragment object.
   # 
-  def unique_fragments_for_display( hsh )
-    uf_ary = UniqueFragments.new
-    return uf_ary if hsh == nil
+  # ---
+  # *Arguments*
+  # * +hsh+: +Hash+  Keys are a permutation ID, if any.  Values are SequenceRange objects that have cuts applied.
+  # *Returns*:: Fragments object populated with Fragment objects.
+  def fragments_for_display( hsh )
+    ary = Fragments.new
+    return ary unless hsh
 
     hsh.each do |permutation_id, sequence_range|
       sequence_range.fragments.for_display.each do |fragment|
-        uf_ary << UniqueFragment.new(fragment.primary, fragment.complement)
+        ary << Fragment.new(fragment.primary, fragment.complement)
       end
     end
-    uf_ary.uniq!
-    uf_ary
+    ary.uniq!
+    ary
   end
 
   # Creates an array of EnzymeActions based on the DNA sequence and supplied enzymes.
@@ -133,7 +184,6 @@ class Analysis
   # +sequence+:: The string of DNA to match the enzyme recognition sites against
   # +args+:: The enzymes to use.
   def create_enzyme_actions( sequence, *args )
-    require 'set'
     all_enzyme_actions = []
     
     args.each do |enzyme|
@@ -144,7 +194,7 @@ class Analysis
       end
     end
     
-    # VerticalCutRange should really be called VerticalAndHorizontalCutRange
+    # FIXME VerticalCutRange should really be called VerticalAndHorizontalCutRange
     
     # * all_enzyme_actions is now full of EnzymeActions at specific locations across 
     #   the sequence.
@@ -155,11 +205,7 @@ class Analysis
     #   to another enzyme's cut.  Enzyme's bind sites may overlap and not be
     #   competitive, however neither bind site may be part of the other
     #   enzyme's cut or else they do become competitive.
-    # * note that a small enzyme may possibly cut inbetween two cuts far apart
-    #   made by a larger enzyme, this would be a "sometimes" cut since it's
-    #   not guaranteed that the larger enzyme will cut first, therefore there
-    #   is competition.
-    
+    #
     # Take current EnzymeAction's entire bind site and compare it to all other
     # EzymeAction's cut ranges.  Only look for vertical cuts as boundaries
     # since trailing horizontal cuts would have no influence on the bind site.
@@ -171,7 +217,7 @@ class Analysis
     # 0 1 2 3 4 5|6 7
     #
     # Then the bind site (and EnzymeAction range) for Enzyme B would need it's
-    # right side to be 2 or less, or it's left side to be 6 or greater.
+    # right side to be at index 2 or less, or it's left side to be 6 or greater.
     
     competition_indexes = Set.new
 
@@ -198,7 +244,11 @@ class Analysis
     [sometimes_cut, always_cut]
   end
 
-  # Returns an +Array+ of the match indicies of a RegExp to a string.
+  # Returns an +Array+ of the match indicies of a +RegExp+ to a string.
+  #
+  # Example:
+  #
+  #   find_match_locations('abccdefeg', /[ce]/) # => [2,3,5,7]
   #
   # ---
   # *Arguments*
