@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis_basic.rb,v 1.7 2007/01/05 06:11:15 trevor Exp $
+#  $Id: analysis_basic.rb,v 1.8 2007/01/05 06:33:01 trevor Exp $
 #
 
 require 'pathname'
@@ -50,11 +50,6 @@ class Bio::RestrictionEnzyme
 #
 class Analysis
 
-  def self.cut( sequence, *args )
-    # Just a placeholder, actually defined in bio/util/restriction_enzyme/analysis.rb
-    #self.new.cut( sequence, *args )
-  end
-
   # See cut_without_permutations instance method
   def self.cut_without_permutations( sequence, *args )
     self.new.cut_without_permutations( sequence, *args )
@@ -72,7 +67,7 @@ class Analysis
   # account those possibilities and is therefore faster, but less likely to be
   # accurate.
   #
-  # This code is mainly included as an example for those interested to study
+  # This code is mainly included as an academic example
   # without having to wade through the extra layer of complexity added by the
   # permutations.
   # 
@@ -89,7 +84,7 @@ class Analysis
   # *Arguments*
   # * +sequence+: +String+ kind of object that will be used as a nucleic acid sequence.
   # * +args+: Series of enzyme names, enzymes sequences with cut marks, or RestrictionEnzyme objects.
-  # *Returns*:: Bio::RestrictionEnzyme::Fragments object populated with Bio::RestrictionEnzyme::Fragment objects. (Note: unrelated to SequenceRange::Fragments)
+  # *Returns*:: Bio::RestrictionEnzyme::Fragments object populated with Bio::RestrictionEnzyme::Fragment objects. (Note: unrelated to Bio::RestrictionEnzyme::Range::SequenceRange::Fragments)
   def cut_without_permutations( sequence, *args )
     return fragments_for_display( {} ) if !sequence.kind_of?(String) or sequence.empty?
     sequence = Bio::Sequence::NA.new( sequence )
@@ -117,13 +112,10 @@ class Analysis
     # Format the fragments for the user
     fragments_for_display( {0 => sequence_range} )
   end
-
-
   
   #########
   protected
   #########
-
 
   # Take the fragments from SequenceRange objects generated from add_cut_range
   # and return unique results as a Bio::RestrictionEnzyme::Analysis::Fragment object.

@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: double_stranded.rb,v 1.6 2007/01/05 06:03:22 trevor Exp $
+#  $Id: double_stranded.rb,v 1.7 2007/01/05 06:33:01 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
@@ -147,7 +147,8 @@ class DoubleStranded
     AlignedStrands.align_with_cuts(@primary.pattern, @complement.pattern, @primary.cut_locations, @complement.cut_locations)
   end
 
-  # Returns +true+ if the cut pattern creates blunt fragments
+  # Returns +true+ if the cut pattern creates blunt fragments.
+  # (opposite of sticky)
   def blunt?
     as = aligned_strands_with_cuts
     ary = [as.primary, as.complement]
@@ -157,7 +158,8 @@ class DoubleStranded
     ary[0] == ary[1]
   end
 
-  # Returns +true+ if the cut pattern creates sticky fragments
+  # Returns +true+ if the cut pattern creates sticky fragments.
+  # (opposite of blunt)
   def sticky?
     !blunt?
   end
@@ -238,6 +240,12 @@ class DoubleStranded
   #
   # This would be represented by two EnzymeActions - one for each
   # RestrictionEnzyme.
+  # 
+  # This is, however, subject to competition.  If the second enzyme reaches
+  # the target first, the the first enzyme will not be able to find the
+  # appropriate bind site.
+  # 
+  # FIXME complete these docs
   #
   # To initialize an EnzymeAction you must first instantiate it with the
   # beginning and ending locations of where it will operate on a nucleotide
@@ -261,7 +269,6 @@ class DoubleStranded
 
     # * Reflect cuts that are in enzyme notation
     # * 0 is not a valid enzyme index, decrement 0 and all negative
-#    c_cl = p_cl.collect { |n| s.length - n }.collect { |n| n <= 0 ? n - 1 : n } #wrong.
     c_cl = p_cl.collect {|n| (n >= s.length or n < 1) ? ((s.length - n) - 1) : (s.length - n)}
 
     create_cut_locations( p_cl.zip(c_cl) )
