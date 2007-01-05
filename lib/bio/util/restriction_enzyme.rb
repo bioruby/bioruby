@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: restriction_enzyme.rb,v 1.9 2007/01/05 06:03:22 trevor Exp $
+#  $Id: restriction_enzyme.rb,v 1.10 2007/01/05 06:11:15 trevor Exp $
 #
 
 require 'bio/db/rebase'
@@ -232,5 +232,44 @@ class Bio::RestrictionEnzyme
       Bio::RestrictionEnzyme::Analysis.cut( sequence, enzymes )
     end
 
+    # A Fragment is a sequence fragment composed of a primary and 
+    # complementary that would be found floating in solution after a full
+    # sequence is digested by a RestrictionEnzyme.
+    #
+    # You will notice that either the primary or complement strand will be
+    # padded with spaces to make them line up according to the original DNA
+    # configuration before being cut.
+    #
+    # Example:
+    #
+    #   primary =    "gattaca"
+    #   complement = "   atga"
+    # 
+    # View these with the 'primary' and 'complement' methods.
+    # 
+    # Bio::RestrictionEnzyme::Analysis::Fragment is a simple +Struct+ object.
+    # 
+    # *Note: unrelated to SequenceRange::Fragment*
+    Fragment = Struct.new(:primary, :complement)
+
+    # Fragments inherits from +Array+.
+    #
+    # Fragments is a container for Fragment objects.  It adds the
+    # methods +primary+ and +complement+ which returns an +Array+ of all
+    # respective strands from it's Fragment members.  Note that it will
+    # not return duplicate items and does not return the spacing that you would
+    # find by accessing the members directly.
+    #
+    # *Note: unrelated to SequenceRange::Fragments*
+    class Fragments < Array
+      def primary; strip_and_sort(:primary); end
+      def complement; strip_and_sort(:complement); end
+
+      protected
+
+      def strip_and_sort( sym_strand )
+        self.map {|uf| uf.send( sym_strand ).tr(' ', '') }.sort
+      end
+    end
 end # RestrictionEnzyme
 end # Bio

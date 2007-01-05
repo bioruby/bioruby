@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis.rb,v 1.13 2007/01/05 06:03:22 trevor Exp $
+#  $Id: analysis.rb,v 1.14 2007/01/05 06:11:15 trevor Exp $
 #
 
 require 'pathname'
@@ -50,7 +50,7 @@ class Analysis
   # *Arguments*
   # * +sequence+: +String+ kind of object that will be used as a nucleic acid sequence.
   # * +args+: Series of enzyme names, enzymes sequences with cut marks, or RestrictionEnzyme objects.
-  # *Returns*:: Bio::RestrictionEnzyme::Analysis::Fragments object populated with Bio::RestrictionEnzyme::Analysis::Fragment objects.   (Note: unrelated to SequenceRange::Fragments)
+  # *Returns*:: Bio::RestrictionEnzyme::Fragments object populated with Bio::RestrictionEnzyme::Fragment objects.   (Note: unrelated to SequenceRange::Fragments)
   def cut( sequence, *args )
     return fragments_for_display( {} ) if !sequence.kind_of?(String) or sequence.empty?
     # Format the fragments for the user
