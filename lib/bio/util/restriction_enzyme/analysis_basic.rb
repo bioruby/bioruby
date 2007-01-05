@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis_basic.rb,v 1.5 2007/01/05 05:33:29 trevor Exp $
+#  $Id: analysis_basic.rb,v 1.6 2007/01/05 06:03:22 trevor Exp $
 #
 
 require 'pathname'
@@ -89,7 +89,7 @@ class Analysis
   # *Arguments*
   # * +sequence+: +String+ kind of object that will be used as a nucleic acid sequence.
   # * +args+: Series of enzyme names, enzymes sequences with cut marks, or RestrictionEnzyme objects.
-  # *Returns*:: Fragments object populated with Fragment objects.
+  # *Returns*:: Bio::RestrictionEnzyme::Analysis::Fragments object populated with Bio::RestrictionEnzyme::Analysis::Fragment objects. (Note: unrelated to SequenceRange::Fragments)
   def cut_without_permutations( sequence, *args )
     return fragments_for_display( {} ) if !sequence.kind_of?(String) or sequence.empty?
     sequence = Bio::Sequence::NA.new( sequence )
@@ -133,7 +133,9 @@ class Analysis
   # 
   # View these with the 'primary' and 'complement' methods.
   # 
-  # Fragment is a simple +Struct+ object.
+  # Bio::RestrictionEnzyme::Analysis::Fragment is a simple +Struct+ object.
+  # 
+  # *Note: unrelated to SequenceRange::Fragment*
   Fragment = Struct.new(:primary, :complement)
   
   # Fragments inherits from +Array+.
@@ -143,6 +145,8 @@ class Analysis
   # respective strands from it's Fragment members.  Note that it will
   # not return duplicate items and does not return the spacing that you would
   # find by accessing the members directly.
+  #
+  # *Note: unrelated to SequenceRange::Fragments*
   class Fragments < Array
     def primary; strip_and_sort(:primary); end
     def complement; strip_and_sort(:complement); end
@@ -160,12 +164,12 @@ class Analysis
 
 
   # Take the fragments from SequenceRange objects generated from add_cut_range
-  # and return unique results as a Fragment object.
+  # and return unique results as a Bio::RestrictionEnzyme::Analysis::Fragment object.
   # 
   # ---
   # *Arguments*
   # * +hsh+: +Hash+  Keys are a permutation ID, if any.  Values are SequenceRange objects that have cuts applied.
-  # *Returns*:: Fragments object populated with Fragment objects.
+  # *Returns*:: Bio::RestrictionEnzyme::Analysis::Fragments object populated with Bio::RestrictionEnzyme::Analysis::Fragment objects.
   def fragments_for_display( hsh )
     ary = Fragments.new
     return ary unless hsh
@@ -181,8 +185,11 @@ class Analysis
 
   # Creates an array of EnzymeActions based on the DNA sequence and supplied enzymes.
   #
-  # +sequence+:: The string of DNA to match the enzyme recognition sites against
-  # +args+:: The enzymes to use.
+  # ---
+  # *Arguments*
+  # * +sequence+: The string of DNA to match the enzyme recognition sites against
+  # * +args+:: The enzymes to use.
+  # *Returns*:: +Array+ with the first element being an array of EnzymeAction objects that +sometimes_cut+, and are subject to competition.  The second is an array of EnzymeAction objects that +always_cut+ and are not subject to competition.
   def create_enzyme_actions( sequence, *args )
     all_enzyme_actions = []
     

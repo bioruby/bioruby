@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: restriction_enzyme.rb,v 1.8 2007/01/01 02:31:22 trevor Exp $
+#  $Id: restriction_enzyme.rb,v 1.9 2007/01/05 06:03:22 trevor Exp $
 #
 
 require 'bio/db/rebase'
@@ -27,6 +27,7 @@ module Bio #:nodoc:
 # development.  It has been released as it is relatively stable and
 # comments would be appreciated.
 # 
+# FIXME needs better docs
 #
 # = Description
 # 

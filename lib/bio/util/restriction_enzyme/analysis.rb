@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis.rb,v 1.12 2007/01/05 05:33:29 trevor Exp $
+#  $Id: analysis.rb,v 1.13 2007/01/05 06:03:22 trevor Exp $
 #
 
 require 'pathname'
@@ -50,7 +50,7 @@ class Analysis
   # *Arguments*
   # * +sequence+: +String+ kind of object that will be used as a nucleic acid sequence.
   # * +args+: Series of enzyme names, enzymes sequences with cut marks, or RestrictionEnzyme objects.
-  # *Returns*:: Fragments object populated with Fragment objects.
+  # *Returns*:: Bio::RestrictionEnzyme::Analysis::Fragments object populated with Bio::RestrictionEnzyme::Analysis::Fragment objects.   (Note: unrelated to SequenceRange::Fragments)
   def cut( sequence, *args )
     return fragments_for_display( {} ) if !sequence.kind_of?(String) or sequence.empty?
     # Format the fragments for the user
@@ -115,6 +115,7 @@ class Analysis
             #   ex: at^gc -- the cut location is at index 1
             # * The enzyme action location is located at the base of the index.
             #   ex: atgc -- 0 => 'a', 1 => 't', 2 => 'g', 3 => 'c'
+            # method create_enzyme_actions has similar commentary if interested
             if (enzyme_action.right <= previous_cut_left) or
                (enzyme_action.left > previous_cut_right) or
                (enzyme_action.left > previous_cut_left and enzyme_action.right <= previous_cut_right) # in between cuts
@@ -127,16 +128,17 @@ class Analysis
           next if conflict == true
           enzyme_action.cut_ranges.each { |cut_range| sequence_range.add_cut_range(cut_range) }
           previous_cut_ranges += enzyme_action.cut_ranges        
-        end
+        end # permutation.each
 
         # Fill in the source sequence for sequence_range so it knows what bases
         # to use
         sequence_range.fragments.primary = sequence
         sequence_range.fragments.complement = sequence.forward_complement
         my_hash[permutation] = sequence_range
-      end
+      end # permutations.each
       
-    else # !if enzyme_actions.size > 1
+    else # if enzyme_actions.size == 1
+      # no permutations, just do it
       sequence_range = Bio::RestrictionEnzyme::Range::SequenceRange.new( 0, 0, sequence.size-1, sequence.size-1 )
       initial_cuts.each { |enzyme_action| enzyme_action.cut_ranges.each { |cut_range| sequence_range.add_cut_range(cut_range) } }
       sequence_range.fragments.primary = sequence
@@ -147,6 +149,44 @@ class Analysis
     my_hash
   end
 
+
+  # Returns permutation orders for a given number of elements.
+  #
+  # Examples:
+  #   permute(0) # => [[0]]
+  #   permute(1) # => [[0]]
+  #   permute(2) # => [[1, 0], [0, 1]]
+  #   permute(3) # => [[2, 1, 0], [2, 0, 1], [1, 2, 0], [0, 2, 1], [1, 0, 2], [0, 1, 2]]
+  #   permute(4) # => [[3, 2, 1, 0],
+  #                    [3, 2, 0, 1],
+  #                    [3, 1, 2, 0],
+  #                    [3, 0, 2, 1],
+  #                    [3, 1, 0, 2],
+  #                    [3, 0, 1, 2],
+  #                    [2, 3, 1, 0],
+  #                    [2, 3, 0, 1],
+  #                    [1, 3, 2, 0],
+  #                    [0, 3, 2, 1],
+  #                    [1, 3, 0, 2],
+  #                    [0, 3, 1, 2],
+  #                    [2, 1, 3, 0],
+  #                    [2, 0, 3, 1],
+  #                    [1, 2, 3, 0],
+  #                    [0, 2, 3, 1],
+  #                    [1, 0, 3, 2],
+  #                    [0, 1, 3, 2],
+  #                    [2, 1, 0, 3],
+  #                    [2, 0, 1, 3],
+  #                    [1, 2, 0, 3],
+  #                    [0, 2, 1, 3],
+  #                    [1, 0, 2, 3],
+  #                    [0, 1, 2, 3]]
+  #   
+  # ---
+  # *Arguments*
+  # * +count+: +Number+ of different elements to be permuted
+  # * +permutations+: ignore - for the recursive algorithm
+  # *Returns*:: +Array+ of +Array+ objects with different possible permutation orders.  See examples.
   def permute(count, permutations = [[0]])
     return permutations if count <= 1
     new_arrays = []
