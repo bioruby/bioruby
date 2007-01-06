@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: sequence_range.rb,v 1.4 2007/01/06 05:52:52 trevor Exp $
+#  $Id: sequence_range.rb,v 1.5 2007/01/06 06:13:22 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
@@ -73,23 +73,38 @@ class SequenceRange
     @__fragments_current = false
   end
 
+
+  # If the first object is HorizontalCutRange or VerticalCutRange, that is
+  # added to the SequenceRange.  Otherwise this method
+  # builds a VerticalCutRange object and adds it to the SequenceRange.
+  # 
+  # Note:
   # Cut occurs immediately after the index supplied.
   # For example, a cut at '0' would mean a cut occurs between bases 0 and 1.
+  #
+  # ---
+  # *Arguments*
+  # * +p_cut_left+: (_optional_) Left-most cut on the primary strand *or* a CutRange object.  +nil+ to skip
+  # * +p_cut_right+: (_optional_) Right-most cut on the primary strand.  +nil+ to skip
+  # * +c_cut_left+: (_optional_) Left-most cut on the complementary strand.  +nil+ to skip
+  # * +c_cut_right+: (_optional_) Right-most cut on the complementary strand.  +nil+ to skip
+  # *Returns*:: nothing
   def add_cut_range( p_cut_left=nil, p_cut_right=nil, c_cut_left=nil, c_cut_right=nil )
     @__fragments_current = false
-
-    if p_cut_left.kind_of? CutRange
+    if p_cut_left.kind_of? CutRange # shortcut
       @cut_ranges << p_cut_left
     else
-      (raise IndexError unless p_cut_left >= @left and p_cut_left <= @right) unless p_cut_left == nil
-      (raise IndexError unless p_cut_right >= @left and p_cut_right <= @right) unless p_cut_right == nil
-      (raise IndexError unless c_cut_left >= @left and c_cut_left <= @right) unless c_cut_left == nil
-      (raise IndexError unless c_cut_right >= @left and c_cut_right <= @right) unless c_cut_right == nil
-
+      [p_cut_left, p_cut_right, c_cut_left, c_cut_right].each { |n| (raise IndexError unless n >= @left and n <= @right) unless n == nil }
       @cut_ranges << VerticalCutRange.new( p_cut_left, p_cut_right, c_cut_left, c_cut_right )
     end
   end
 
+  # Add a series of CutRange objects (HorizontalCutRange or VerticalCutRange).
+  #
+  # ---
+  # *Arguments*
+  # * +cut_ranges+: A series of CutRange objects
+  # *Returns*:: nothing
   def add_cut_ranges(*cut_ranges)
     cut_ranges.flatten.each do |cut_range|
       raise TypeError, "Not of type CutRange" unless cut_range.kind_of? CutRange
@@ -97,6 +112,13 @@ class SequenceRange
     end
   end
 
+  # Builds a HorizontalCutRange object and adds it to the SequenceRange.
+  #
+  # ---
+  # *Arguments*
+  # * +left+: Left-most cut
+  # * +right+: (_optional_) Right side - by default this equals the left side, default is recommended.
+  # *Returns*:: nothing
   def add_horizontal_cut_range( left, right=left )
     @__fragments_current = false
     @cut_ranges << HorizontalCutRange.new( left, right )
