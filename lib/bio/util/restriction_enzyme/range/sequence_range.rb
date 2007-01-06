@@ -1,11 +1,11 @@
 #
-# bio/util/restrction_enzyme/range/sequence_range.rb - 
+# bio/util/restrction_enzyme/range/sequence_range.rb - A defined range over a nucleotide sequence
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: sequence_range.rb,v 1.3 2007/01/06 05:35:04 trevor Exp $
+#  $Id: sequence_range.rb,v 1.4 2007/01/06 05:52:52 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
@@ -23,47 +23,58 @@ module Bio; end
 class Bio::RestrictionEnzyme
 class Range
 #
-# bio/util/restrction_enzyme/range/sequence_range.rb - 
+# bio/util/restrction_enzyme/range/sequence_range.rb - A defined range over a nucleotide sequence
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
+#
+# A defined range over a nucleotide sequence.
+#
+# This class accomadates having cuts defined on a sequence and returning the
+# fragments made by those cuts.
 class SequenceRange
 
-  attr_reader :p_left, :p_right
-  attr_reader :c_left, :c_right
+  # Left-most index of primary strand
+  attr_reader :p_left
+  
+  # Right-most index of primary strand
+  attr_reader :p_right
+  
+  # Left-most index of complementary strand
+  attr_reader :c_left
+  
+  # Right-most index of complementary strand
+  attr_reader :c_right
 
-  attr_reader :left, :right
+  # Left-most index of DNA sequence
+  attr_reader :left
+  
+  # Right-most index of DNA sequence
+  attr_reader :right
+  
+  # Size of DNA sequence
   attr_reader :size
+  
+  # CutRanges in this SequenceRange
   attr_reader :cut_ranges
 
   def initialize( p_left = nil, p_right = nil, c_left = nil, c_right = nil )
-    @__fragments_current = false
     raise ArgumentError if p_left == nil and c_left == nil
     raise ArgumentError if p_right == nil and c_right == nil
     (raise ArgumentError unless p_left <= p_right) unless p_left == nil or p_right == nil
     (raise ArgumentError unless c_left <= c_right) unless c_left == nil or c_right == nil
 
-    @p_left  = p_left
-    @p_right = p_right
-    @c_left  = c_left
-    @c_right = c_right
-
-    tmp = [p_left, c_left]
-    tmp.delete(nil)
-    @left = tmp.sort.first
-
-    tmp = [p_right, c_right]
-    tmp.delete(nil)
-    @right = tmp.sort.last
-
+    @p_left, @p_right, @c_left, @c_right = p_left, p_right, c_left, c_right
+    @left = [p_left, c_left].compact.sort.first
+    @right = [p_right, c_right].compact.sort.last
     @size = (@right - @left) + 1 unless @left == nil or @right == nil
-
     @cut_ranges = CutRanges.new
+    @__fragments_current = false
   end
 
   # Cut occurs immediately after the index supplied.
-  # For example, a cut at '0' would mean a cut occurs between 0 and 1.
+  # For example, a cut at '0' would mean a cut occurs between bases 0 and 1.
   def add_cut_range( p_cut_left=nil, p_cut_right=nil, c_cut_left=nil, c_cut_right=nil )
     @__fragments_current = false
 
@@ -80,8 +91,7 @@ class SequenceRange
   end
 
   def add_cut_ranges(*cut_ranges)
-    cut_ranges.flatten!
-    cut_ranges.each do |cut_range|
+    cut_ranges.flatten.each do |cut_range|
       raise TypeError, "Not of type CutRange" unless cut_range.kind_of? CutRange
       self.add_cut_range( cut_range )
     end
@@ -92,8 +102,37 @@ class SequenceRange
     @cut_ranges << HorizontalCutRange.new( left, right )
   end
   
+  # A Bio::RestrictionEnzyme::Range::SequenceRange::Bin holds an +Array+ of 
+  # indexes for the primary and complement strands (+p+ and +c+ accessors).
+  # 
+  # Example hash with Bin values:
+  #   {0=>#<struct Bio::RestrictionEnzyme::Range::SequenceRange::Bin c=[0, 1], p=[0]>,
+  #    2=>#<struct Bio::RestrictionEnzyme::Range::SequenceRange::Bin c=[], p=[1, 2]>,
+  #    3=>#<struct Bio::RestrictionEnzyme::Range::SequenceRange::Bin c=[2, 3], p=[]>,
+  #    4=>#<struct Bio::RestrictionEnzyme::Range::SequenceRange::Bin c=[4, 5], p=[3, 4, 5]>}
   Bin = Struct.new(:c, :p)
 
+  # Calculates the fragments over this sequence range as defined after using
+  # the methods add_cut_range, add_cut_ranges, and/or add_horizontal_cut_range
+  #
+  # Example return value:
+  #   [#<Bio::RestrictionEnzyme::Range::SequenceRange::Fragment:0x277bdc
+  #     @complement_bin=[0, 1],
+  #     @primary_bin=[0]>,
+  #    #<Bio::RestrictionEnzyme::Range::SequenceRange::Fragment:0x277bc8
+  #     @complement_bin=[],
+  #     @primary_bin=[1, 2]>,
+  #    #<Bio::RestrictionEnzyme::Range::SequenceRange::Fragment:0x277bb4
+  #     @complement_bin=[2, 3],
+  #     @primary_bin=[]>,
+  #    #<Bio::RestrictionEnzyme::Range::SequenceRange::Fragment:0x277ba0
+  #     @complement_bin=[4, 5],
+  #     @primary_bin=[3, 4, 5]>]
+  #
+  # ---
+  # *Arguments*
+  # * _none_
+  # *Returns*:: Bio::RestrictionEnzyme::Range::SequenceRange::Fragments
   def fragments
     return @__fragments if @__fragments_current == true
     @__fragments_current = true
