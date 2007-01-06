@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: calculated_cuts.rb,v 1.2 2007/01/02 00:19:06 trevor Exp $
+#  $Id: calculated_cuts.rb,v 1.3 2007/01/06 05:35:05 trevor Exp $
 #
 
 require 'pathname'
@@ -75,6 +75,9 @@ class CalculatedCuts
     @hc_between_strands = []
   end
 
+  # Accepts an +Array+ of CutRange type objects and applies them to 
+  # @vc_complement, @vc_primary, and @hc_between_strands.
+  #
   # ---
   # *Arguments*
   # * +cut_ranges+: An +Array+ of HorizontalCutRange or VerticalCutRange objects

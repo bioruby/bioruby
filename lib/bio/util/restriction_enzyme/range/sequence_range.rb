@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: sequence_range.rb,v 1.2 2007/01/05 06:03:22 trevor Exp $
+#  $Id: sequence_range.rb,v 1.3 2007/01/06 05:35:04 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
@@ -28,8 +28,6 @@ class Range
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
-#
-# FIXME algorithm heavy, needs better docs
 class SequenceRange
 
   attr_reader :p_left, :p_right
@@ -64,95 +62,8 @@ class SequenceRange
     @cut_ranges = CutRanges.new
   end
 
-  # NOTE Special Case: Horizontal cuts at beginning or end of strand
-
-  Bin = Struct.new(:c, :p)
-
-  def fragments
-    return @__fragments if @__fragments_current == true
-    @__fragments_current = true
-
-    cc = Bio::RestrictionEnzyme::Range::SequenceRange::CalculatedCuts.new(@size)
-    cc.add_cuts_from_cut_ranges(@cut_ranges)
-    cc.remove_incomplete_cuts
-
-    p_cut = cc.vc_primary
-    c_cut = cc.vc_complement
-    h = cc.hc_between_strands 
-
-    if @circular
-    # NOTE
-    # if it's circular we should start at the beginning of a cut for orientation
-    # scan for it, hack off the first set of hcuts and move them to the back
-    else
-      p_cut.unshift(-1) unless p_cut.include?(-1)
-      c_cut.unshift(-1) unless c_cut.include?(-1)
-    end
-
-    if @circular
-      largest_bin = 0
-    else
-      largest_bin = -1
-    end
-    p_bin = largest_bin
-    c_bin = largest_bin
-    bins = { largest_bin => Bin.new }  # bin_id, bin
-    bins[ largest_bin ].p = []
-    bins[ largest_bin ].c = []
-
-    x = lambda do |bin_id|
-      largest_bin += 1
-      bins[ bin_id ] = Bin.new
-      bins[ bin_id ].p = []
-      bins[ bin_id ].c = []
-    end
-
-    -1.upto(@size-1) do |idx|
-      # if bins are out of sync but the strands are attached
-      if p_bin != c_bin and h.include?(idx) == false
-        bins.delete( [p_bin, c_bin].sort.last )
-        p_bin = c_bin = [p_bin, c_bin].sort.first
-        largest_bin -= 1
-      end
-
-      bins[ p_bin ].p << idx
-      bins[ c_bin ].c << idx
-
-      if p_cut.include? idx
-        p_bin = largest_bin + 1
-        x.call(p_bin)
-      end
-
-      if c_cut.include? idx
-        c_bin = largest_bin + 1
-        x.call(c_bin)
-      end
-    end
-
-    # Easy way to indicate the start of a strand just in case
-    # there is a horizontal cut at position 0
-    bins.delete(-1) unless @circular
-
-    str1 = nil
-    str2 = nil
-
-    num_txt_repeat = lambda { num_txt = '0123456789'; (num_txt * ( @size / num_txt.size.to_f ).ceil)[0..@size-1] }
-    (str1 == nil) ? a = num_txt_repeat.call : a = str1.dup
-    (str2 == nil) ? b = num_txt_repeat.call : b = str2.dup
-
-    fragments = Fragments.new(a,b)
-
-    bins.sort.each do |k, bin|
-      fragment = Fragment.new( bin.p, bin.c )
-      fragments << fragment
-    end
-
-    @__fragments = fragments
-    return fragments
-  end
-
-# Cut occurs immediately after the index supplied.
-# For example, a cut at '0' would mean a cut occurs between 0 and 1.
+  # Cut occurs immediately after the index supplied.
+  # For example, a cut at '0' would mean a cut occurs between 0 and 1.
   def add_cut_range( p_cut_left=nil, p_cut_right=nil, c_cut_left=nil, c_cut_right=nil )
     @__fragments_current = false
 
@@ -180,6 +91,105 @@ class SequenceRange
     @__fragments_current = false
     @cut_ranges << HorizontalCutRange.new( left, right )
   end
+  
+  Bin = Struct.new(:c, :p)
+
+  def fragments
+    return @__fragments if @__fragments_current == true
+    @__fragments_current = true
+    
+    num_txt = '0123456789'
+    num_txt_repeat = (num_txt * ( @size / num_txt.size.to_f ).ceil)[0..@size-1]
+    fragments = Fragments.new(num_txt_repeat, num_txt_repeat)
+
+    cc = Bio::RestrictionEnzyme::Range::SequenceRange::CalculatedCuts.new(@size)
+    cc.add_cuts_from_cut_ranges(@cut_ranges)
+    cc.remove_incomplete_cuts
+    
+    create_bins(cc).sort.each { |k, bin| fragments << Fragment.new( bin.p, bin.c ) }
+    @__fragments = fragments
+    return fragments
+  end
+  
+  #########
+  protected
+  #########
+  
+  # Example:
+  #   cc = Bio::RestrictionEnzyme::Range::SequenceRange::CalculatedCuts.new(@size)
+  #   cc.add_cuts_from_cut_ranges(@cut_ranges)
+  #   cc.remove_incomplete_cuts
+  #   bins = create_bins(cc)
+  # 
+  # Example return value:
+  #   {0=>#<struct Bio::RestrictionEnzyme::Range::SequenceRange::Bin c=[0, 1], p=[0]>,
+  #    2=>#<struct Bio::RestrictionEnzyme::Range::SequenceRange::Bin c=[], p=[1, 2]>,
+  #    3=>#<struct Bio::RestrictionEnzyme::Range::SequenceRange::Bin c=[2, 3], p=[]>,
+  #    4=>#<struct Bio::RestrictionEnzyme::Range::SequenceRange::Bin c=[4, 5], p=[3, 4, 5]>}
+  #
+  # ---
+  # *Arguments*
+  # * +cc+: Bio::RestrictionEnzyme::Range::SequenceRange::CalculatedCuts
+  # *Returns*:: +Hash+ Keys are unique, values are Bio::RestrictionEnzyme::Range::SequenceRange::Bin objects filled with indexes of the sequence locations they represent.
+  def create_bins(cc)
+    p_cut = cc.vc_primary
+    c_cut = cc.vc_complement
+    h_cut = cc.hc_between_strands
+    
+    if @circular
+      # NOTE
+      # if it's circular we should start at the beginning of a cut for orientation
+      # scan for it, hack off the first set of hcuts and move them to the back
+  
+      unique_id = 0
+    else
+      p_cut.unshift(-1) unless p_cut.include?(-1)
+      c_cut.unshift(-1) unless c_cut.include?(-1)
+      unique_id = -1
+    end
+
+    p_bin_id = c_bin_id = unique_id
+    bins = {}
+    setup_new_bin(bins, unique_id)
+
+    -1.upto(@size-1) do |idx| # NOTE - circular, for the future - should '-1' be replace with 'unique_id'?
+      
+      # if bin_ids are out of sync but the strands are attached
+      if (p_bin_id != c_bin_id) and !h_cut.include?(idx)
+        min_id, max_id = [p_bin_id, c_bin_id].sort
+        bins.delete(max_id)
+        p_bin_id = c_bin_id = min_id
+      end
+
+      bins[ p_bin_id ].p << idx
+      bins[ c_bin_id ].c << idx
+      
+      if p_cut.include? idx
+        p_bin_id = (unique_id += 1)
+        setup_new_bin(bins, p_bin_id)
+      end
+
+      if c_cut.include? idx             # repetition
+        c_bin_id = (unique_id += 1)     # repetition
+        setup_new_bin(bins, c_bin_id)   # repetition
+      end                               # repetition
+       
+    end
+  
+    # Bin "-1" is an easy way to indicate the start of a strand just in case
+    # there is a horizontal cut at position 0
+    bins.delete(-1) unless @circular
+    bins
+  end
+  
+  # Modifies bins in place by creating a new element with key bin_id and
+  # initializing the bin.
+  def setup_new_bin(bins, bin_id)
+    bins[ bin_id ] = Bin.new
+    bins[ bin_id ].p = []
+    bins[ bin_id ].c = []
+  end
+  
 end # SequenceRange
 end # Range
 end # Bio::RestrictionEnzyme
