@@ -6,13 +6,13 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: test_newick.rb,v 1.2 2006/12/13 16:29:37 ngoto Exp $
+# $Id: test_newick.rb,v 1.3 2007/01/11 14:35:32 ngoto Exp $
 #
 
 require 'test/unit'
 
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), [".."] * 3, "lib")).cleanpath.to_s
+libpath = Pathname.new(File.join(File.dirname(__FILE__), [".."] * 4, "lib")).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'bio'
