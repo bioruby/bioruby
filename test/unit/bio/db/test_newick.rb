@@ -6,7 +6,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: test_newick.rb,v 1.3 2007/01/11 14:35:32 ngoto Exp $
+# $Id: test_newick.rb,v 1.4 2007/01/12 16:19:24 ngoto Exp $
 #
 
 require 'test/unit'
@@ -45,7 +45,7 @@ module Bio
       assert_equal(3, tree.children(tree.root).size)
       assert_equal(9, tree.descendents(tree.root).size)
       assert_equal(6, tree.leaves.size)
-      leaf = tree.nodes.find { |x| x.name == 'HexFLZ83' }
+      leaf = tree.get_node_by_name('HexFLZ83')
       assert_equal(3, tree.ancestors(leaf).size)
       assert_equal(tree.path(tree.root, leaf)[1], tree.ancestors(leaf)[1])
       assert_equal(0.00217, tree.get_edge(leaf, tree.parent(leaf)).distance)
