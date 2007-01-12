@@ -5,7 +5,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: tree.rb,v 1.6 2006/12/15 18:45:17 ngoto Exp $
+# $Id: tree.rb,v 1.7 2007/01/12 16:10:28 ngoto Exp $
 #
 
 require 'matrix'
@@ -24,9 +24,6 @@ module Bio
 
     # Error when there are no path between specified nodes
     class NoPathError < RuntimeError; end
-
-    # Error when the two nodes are not adjacent.
-    class NotAdjacentNodesError < RuntimeError; end
 
     # Edge object of each node.
     # By default, the object doesn't contain any node information.
@@ -411,6 +408,7 @@ module Bio
       @pathway.graph[node].each_key do |k|
         @pathway.graph[k].delete(node)
       end
+      @pathway.graph[node].clear
       self
     end
 
@@ -439,11 +437,16 @@ module Bio
     end
 
     # Removes an edge between source and target.
+    # Returns self.
+    # If the edge does not exist, raises IndexError.
     #---
     # If two or more edges exists between source and target,
     # all of them are removed.
     #+++
     def remove_edge(source, target)
+      unless self.get_edge(source, target) then
+        raise IndexError, 'edge not found'
+      end
       fwd = [ source, target ]
       rev = [ target, source ]
       @pathway.relations.delete_if do |rel|
@@ -814,14 +817,14 @@ module Bio
     # <code>tree.get_edge(node1, node2).distance - new_distance</code>.
     #
     # Returns self.
-    # If node1 and node2 are not adjacent, raises NotAdjacentNodesError.
+    # If node1 and node2 are not adjacent, raises IndexError.
     #
     # If new_node already exists in the tree, the tree would become
     # circular. In addition, if the edge between new_node and
     # node1 (or node2) already exists, it will be erased.
     def insert_node(node1, node2, new_node, new_distance = nil)
       unless edge = self.get_edge(node1, node2) then
-        raise NotAdjacentNodesError, 'node1 and node2 are not adjacent.'
+        raise IndexError, 'nodes not found or two nodes are not adjacent'
       end
       new_edge = Edge.new(new_distance)
       self.remove_edge(node1, node2)
