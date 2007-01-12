@@ -5,7 +5,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     Ruby's
 #
-# $Id: test_tree.rb,v 1.3 2006/12/13 16:29:37 ngoto Exp $
+# $Id: test_tree.rb,v 1.4 2007/01/12 16:12:05 ngoto Exp $
 #
 
 require 'test/unit'
@@ -261,6 +261,9 @@ module Bio
                    @tree.adjacent_nodes(@primates).sort(&@by_id))
       assert_equal([ @rodents, @primates ].sort(&@by_id),
                    @tree.adjacent_nodes(@mammals).sort(&@by_id))
+    end
+
+    def test_adjacent_nodes_nonexistent
       # test for not existed nodes
       assert_equal([], @tree.adjacent_nodes(Bio::Tree::Node.new))
     end
@@ -274,7 +277,9 @@ module Bio
                    @tree.out_edges(@human))
       assert_equal([[ @chimpanzee, @primates, @edge_primates_chimpanzee ]],
                    @tree.out_edges(@chimpanzee))
+    end
 
+    def test_out_edges_rodents
       adjacents = [ @mouse, @rat, @mammals ]
       edges = [ @edge_rodents_mouse, @edge_rodents_rat, @edge_mammals_rodents ]
       @tree.out_edges(@rodents).each do |a|
@@ -286,7 +291,9 @@ module Bio
       end
       assert_equal(true, adjacents.empty?)
       assert_equal(true, edges.empty?)
+    end
 
+    def test_out_edges_primates
       adjacents = [ @human, @chimpanzee, @mammals ]
       edges = [ @edge_primates_human, @edge_primates_chimpanzee,
         @edge_mammals_primates ]
@@ -299,7 +306,9 @@ module Bio
       end
       assert_equal(true, adjacents.empty?)
       assert_equal(true, edges.empty?)
+    end
 
+    def test_out_edges_mammals
       adjacents = [ @rodents, @primates ]
       edges = [ @edge_mammals_rodents, @edge_mammals_primates ]
       @tree.out_edges(@mammals).each do |a|
@@ -311,7 +320,9 @@ module Bio
       end
       assert_equal(true, adjacents.empty?)
       assert_equal(true, edges.empty?)
+    end
 
+    def test_out_edges_nonexistent
       # test for not existed nodes
       assert_equal([], @tree.out_edges(Bio::Tree::Node.new))
     end
@@ -326,7 +337,9 @@ module Bio
       end
       assert_equal(@tree, r)
       assert_equal(true, flag)
+    end
 
+    def test_each_out_edge_rat
       flag = nil
       r =  @tree.each_out_edge(@rat) do |src, tgt, edge|
         assert_equal(@rat, src)
@@ -336,7 +349,9 @@ module Bio
       end
       assert_equal(@tree, r)
       assert_equal(true, flag)
+    end
 
+    def test_each_out_edge_human
       flag = nil
       r = @tree.each_out_edge(@human) do |src, tgt, edge|
         assert_equal(@human, src)
@@ -346,7 +361,9 @@ module Bio
       end
       assert_equal(@tree, r)
       assert_equal(true, flag)
+    end
 
+    def test_each_out_edge_chimpanzee
       flag = nil
       r = @tree.each_out_edge(@chimpanzee) do |src, tgt, edge|
         assert_equal(@chimpanzee, src)
@@ -356,7 +373,9 @@ module Bio
       end
       assert_equal(@tree, r)
       assert_equal(true, flag)
+    end
 
+    def test_each_out_edge_rodents
       adjacents = [ @mouse, @rat, @mammals ]
       edges = [ @edge_rodents_mouse, @edge_rodents_rat, @edge_mammals_rodents ]
       @tree.each_out_edge(@rodents) do |src, tgt, edge|
@@ -368,7 +387,9 @@ module Bio
       end
       assert_equal(true, adjacents.empty?)
       assert_equal(true, edges.empty?)
+    end
 
+    def test_each_out_edge_primates
       adjacents = [ @human, @chimpanzee, @mammals ]
       edges = [ @edge_primates_human, @edge_primates_chimpanzee,
         @edge_mammals_primates ]
@@ -381,7 +402,9 @@ module Bio
       end
       assert_equal(true, adjacents.empty?)
       assert_equal(true, edges.empty?)
+    end
 
+    def test_each_out_edge_mammals
       adjacents = [ @rodents, @primates ]
       edges = [ @edge_mammals_rodents, @edge_mammals_primates ]
       @tree.each_out_edge(@mammals) do |src, tgt, edge|
@@ -393,7 +416,9 @@ module Bio
       end
       assert_equal(true, adjacents.empty?)
       assert_equal(true, edges.empty?)
+    end
 
+    def test_each_out_edge_nonexistent
       # test for not existed nodes
       flag = nil
       node = Bio::Tree::Node.new
@@ -404,6 +429,164 @@ module Bio
       assert_equal(nil, flag)
     end
 
+    def test_out_degree
+      assert_equal(1, @tree.out_degree(@mouse))
+      assert_equal(1, @tree.out_degree(@rat))
+      assert_equal(3, @tree.out_degree(@rodents))
+      assert_equal(1, @tree.out_degree(@human))
+      assert_equal(1, @tree.out_degree(@chimpanzee))
+      assert_equal(3, @tree.out_degree(@primates))
+      assert_equal(2, @tree.out_degree(@mammals))
+    end
+
+    def test_out_degree_nonexistent
+      assert_equal(0, @tree.out_degree(Bio::Tree::Node.new))
+    end
+
+    def test_get_edge
+      assert_not_nil(@tree.get_edge(@rodents, @mouse))
+      assert_not_nil(@tree.get_edge(@mouse, @rodents))
+      assert_equal(@edge_rodents_mouse, @tree.get_edge(@rodents, @mouse))
+      assert_equal(@edge_rodents_mouse, @tree.get_edge(@mouse, @rodents))
+
+      assert_not_nil(@tree.get_edge(@rodents, @rat))
+      assert_not_nil(@tree.get_edge(@rat, @rodents))
+      assert_equal(@edge_rodents_rat, @tree.get_edge(@rodents, @rat))
+      assert_equal(@edge_rodents_rat, @tree.get_edge(@rat, @rodents))
+
+      assert_not_nil(@tree.get_edge(@mammals, @rodents))
+      assert_not_nil(@tree.get_edge(@rodents, @mammals))
+      assert_equal(@edge_mammals_rodents, @tree.get_edge(@mammals, @rodents))
+      assert_equal(@edge_mammals_rodents, @tree.get_edge(@rodents, @mammals))
+
+      assert_not_nil(@tree.get_edge(@primates, @human))
+      assert_not_nil(@tree.get_edge(@human, @primates))
+      assert_equal(@edge_primates_human, @tree.get_edge(@primates, @human))
+      assert_equal(@edge_primates_human, @tree.get_edge(@human, @primates))
+
+      assert_not_nil(@tree.get_edge(@primates, @chimpanzee))
+      assert_not_nil(@tree.get_edge(@chimpanzee, @primates))
+      assert_equal(@edge_primates_chimpanzee, @tree.get_edge(@primates, @chimpanzee))
+      assert_equal(@edge_primates_chimpanzee, @tree.get_edge(@chimpanzee, @primates))
+
+      assert_not_nil(@tree.get_edge(@mammals, @primates))
+      assert_not_nil(@tree.get_edge(@primates, @mammals))
+      assert_equal(@edge_mammals_primates, @tree.get_edge(@mammals, @primates))
+      assert_equal(@edge_mammals_primates, @tree.get_edge(@primates, @mammals))
+    end
+
+    def test_get_edge_indirect
+      assert_nil(@tree.get_edge(@mouse, @rat))
+      assert_nil(@tree.get_edge(@human, @chimpanzee))
+    end
+
+    def test_get_edge_nonexistent
+      assert_nil(@tree.get_edge(@mouse, Bio::Tree::Node.new))
+    end
+
+    def test_get_node_by_name
+      assert_not_nil(@tree.get_node_by_name('mouse'))
+      assert_not_nil(@tree.get_node_by_name('rat'))
+      assert_not_nil(@tree.get_node_by_name('human'))
+      assert_not_nil(@tree.get_node_by_name('chimpanzee'))
+      assert_equal(@mouse, @tree.get_node_by_name('mouse'))
+      assert_equal(@rat, @tree.get_node_by_name('rat'))
+      assert_equal(@human, @tree.get_node_by_name('human'))
+      assert_equal(@chimpanzee, @tree.get_node_by_name('chimpanzee'))
+    end
+
+    def test_get_node_by_name_noexistent
+      assert_nil(@tree.get_node_by_name('frog'))
+    end
+
+    def test_add_edge
+      amphibian = Bio::Tree::Node.new('amphibian')
+      edge = Bio::Tree::Edge.new(0.3123)
+      assert_equal(edge, @tree.add_edge(@mammals, amphibian, edge))
+
+      frog = Bio::Tree::Node.new('frog')
+      newt = Bio::Tree::Node.new('newt')
+      assert_instance_of(Bio::Tree::Edge, @tree.add_edge(frog, newt))
+    end
+
+    def test_add_node
+      frog = Bio::Tree::Node.new('frog')
+      # the node does not exist
+      assert_nil(@tree.get_node_by_name('frog'))
+      assert_equal(false, @tree.include?(frog))
+      # add node
+      assert_equal(@tree, @tree.add_node(frog))
+      # the node exists
+      assert_equal(frog, @tree.get_node_by_name('frog'))
+      assert_equal(true, @tree.include?(frog))
+    end
+
+    def test_include?
+      assert_equal(true, @tree.include?(@mouse))
+      assert_equal(true, @tree.include?(@rat))
+      assert_equal(true, @tree.include?(@rodents))
+      assert_equal(true, @tree.include?(@human))
+      assert_equal(true, @tree.include?(@chimpanzee))
+      assert_equal(true, @tree.include?(@primates))
+      assert_equal(true, @tree.include?(@mammals))
+    end
+      
+    def test_include_nonexistent
+      assert_equal(false, @tree.include?(Bio::Tree::Node.new))
+    end
+
+    def test_clear_node
+      assert_equal(2, @tree.out_degree(@mammals))
+      # clear node
+      assert_equal(@tree, @tree.clear_node(@mammals))
+      # checks
+      assert_equal(true, @tree.include?(@mammals))
+      assert_equal(0, @tree.out_degree(@mammals))
+      assert_equal(2, @tree.out_degree(@rodents))
+      assert_equal(2, @tree.out_degree(@primates))
+    end
+
+    def test_clear_node_nonexistent
+      assert_raise(IndexError) { @tree.clear_node(Bio::Tree::Node.new) }
+    end
+
+    def test_remove_node
+      assert_equal(2, @tree.out_degree(@mammals))
+      # remove node
+      assert_equal(@tree, @tree.remove_node(@mammals))
+      # checks
+      assert_equal(false, @tree.include?(@mammals))
+      assert_equal(0, @tree.out_degree(@mammals))
+      assert_equal(2, @tree.out_degree(@rodents))
+      assert_equal(2, @tree.out_degree(@primates))
+    end
+
+    def test_remove_node_nonexistent
+      assert_raise(IndexError) { @tree.remove_node(Bio::Tree::Node.new) }
+    end
+
+    def test_remove_node_if
+      assert_equal(@tree, @tree.remove_node_if { |node| node == @mouse })
+      assert_equal(false, @tree.include?(@mouse))
+    end
+
+    def test_remove_node_if_false
+      ary = []
+      assert_equal(@tree, @tree.remove_node_if { |node| ary << node; false })
+      nodes = @nodes.sort(&@by_id)
+      assert_equal(nodes, ary.sort(&@by_id))
+      assert_equal(nodes, @tree.nodes.sort(&@by_id))
+    end
+
+    def test_remove_edge
+      assert_not_nil(@tree.get_edge(@mouse, @rodents))
+      assert_equal(@tree, @tree.remove_edge(@mouse, @rodents))
+      assert_nil(@tree.get_edge(@mouse, @rodents))
+    end
+
+    def test_remove_edge_nonexistent
+      assert_raise(IndexError) { @tree.remove_edge(@mouse, @rat) }
+    end
   end #class TestTree2
 
 end #module Bio
