@@ -1,10 +1,10 @@
 #
 # = bio/db/kegg/genome.rb - KEGG/GENOME database class
 #
-# Copyright::  Copyright (C) 2001, 2002 Toshiaki Katayama <k@bioruby.org>
+# Copyright::  Copyright (C) 2001, 2002, 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    Ruby's
 #
-# $Id: genome.rb,v 0.15 2006/09/19 05:52:45 k Exp $
+# $Id: genome.rb,v 0.16 2007/01/15 04:37:29 k Exp $
 #
 
 require 'bio/db'
@@ -71,6 +71,21 @@ class GENOME < KEGGDB
     taxonomy['lineage']
   end
 
+  # DATA_SOURCE -- Returns contents of the DATA_SOURCE record as a String.
+  def data_source
+    field_fetch('DATA_SOURCE')
+  end
+
+  # ORIGINAL_DB -- Returns contents of the ORIGINAL_DB record as a String.
+  def original_db
+    field_fetch('ORIGINAL_DB')
+  end
+
+  # DISEASE -- Returns contents of the COMMENT record as a String.
+  def disease
+    field_fetch('DISEASE')
+  end
+
   # COMMENT -- Returns contents of the COMMENT record as a String.
   def comment
     field_fetch('COMMENT')
@@ -98,8 +113,8 @@ class GENOME < KEGGDB
             if journal =~ /(.*) (\d+):(\d+)-(\d+) \((\d+)\) \[UI:(\d+)\]$/
               hash['journal']	= $1
               hash['volume']	= $2
-              hash['pages']		= $3
-              hash['year']		= $5
+              hash['pages']	= $3
+              hash['year']	= $5
               hash['medline']	= $6
             else
               hash['journal'] = journal
@@ -144,21 +159,6 @@ class GENOME < KEGGDB
     @data['PLASMID']
   end
 
-  # SCAFFOLD -- Returns contents of the SCAFFOLD records as an Array of Hash.
-  def scaffolds
-    unless @data['SCAFFOLD']
-      @data['SCAFFOLD'] = []
-      toptag2array(get('SCAFFOLD')).each do |chr|
-        hash = Hash.new('')
-        subtag2array(chr).each do |field|
-          hash[tag_get(field)] = truncate(tag_cut(field))
-        end
-        @data['SCAFFOLD'].push(hash)
-      end
-    end
-    @data['SCAFFOLD']
-  end
-
   # STATISTICS -- Returns contents of the STATISTICS record as a Hash.
   def statistics
     unless @data['STATISTICS']
@@ -166,13 +166,11 @@ class GENOME < KEGGDB
       get('STATISTICS').each_line do |line|
         case line
         when /nucleotides:\s+(\d+)/
-          hash['nalen'] = $1.to_i
+          hash['num_nuc'] = $1.to_i
         when /protein genes:\s+(\d+)/
           hash['num_gene'] = $1.to_i
         when /RNA genes:\s+(\d+)/
           hash['num_rna'] = $1.to_i
-        when /G\+C content:\s+(\d+.\d+)/
-          hash['gc'] = $1.to_f
         end
       end
       @data['STATISTICS'] = hash
@@ -182,7 +180,7 @@ class GENOME < KEGGDB
 
   # Returns number of nucleotides from the STATISTICS record as a Fixnum.
   def nalen
-    statistics['nalen']
+    statistics['num_nuc']
   end
   alias length nalen
 
@@ -194,16 +192,6 @@ class GENOME < KEGGDB
   # Returns number of rna from the STATISTICS record as a Fixnum.
   def num_rna
     statistics['num_rna']
-  end
-
-  # Returns G+C content from the STATISTICS record as a Float.
-  def gc
-    statistics['gc']
-  end
-
-  # GENOMEMAP -- Returns contents of the GENOMEMAP record as a String.
-  def genomemap
-    field_fetch('GENOMEMAP')
   end
 
 end # GENOME
@@ -238,9 +226,7 @@ if __FILE__ == $0
       %w( REFERENCE references ),
       %w( CHROMOSOME chromosomes ),
       %w( PLASMID plasmids ),
-      %w( SCAFFOLD plasmids ),
-      %w( STATISTICS statistics nalen num_gene num_rna gc ),
-      %w( GENOMEMAP genomemap ),
+      %w( STATISTICS statistics nalen num_gene num_rna ),
     ].each do |x|
       puts "### " + x.shift
       x.each do |m|
