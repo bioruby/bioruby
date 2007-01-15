@@ -5,7 +5,7 @@
 #              Toshiaki Katayama <k@bioruby.org>
 # License::    Ruby's
 #
-# $Id: db.rb,v 0.35 2006/09/19 06:14:18 k Exp $
+# $Id: db.rb,v 0.36 2007/01/15 04:33:52 k Exp $
 #
 # == On-demand parsing and cache
 #
@@ -220,12 +220,27 @@ class DB
 
   # Returns an Array containing each line of the field without a tag.
   # lines_fetch also stores the result in the @data hash.
-  def lines_fetch(tag) 
-    unless @data[tag]  
-      @data[tag] = get(tag).split(/\n/).map{ |l| tag_cut(l) }  
-    end  
-    @data[tag]  
-  end 
+  def lines_fetch(tag)
+    unless @data[tag]
+      list = []
+      lines = get(tag).split(/\n/)
+      lines.each do |line|
+        data = tag_cut(line)
+        if data[/^\S/]                  # next sub field
+          list << data
+        else                            # continued sub field
+          data.strip!
+          if list.last[/\-$/]           # folded
+            list[-1] += data
+          else
+            list[-1] += " #{data}"     # rest of list
+          end
+        end
+      end
+      @data[tag] = list
+    end
+    @data[tag]
+  end
 
 end # class DB
 
