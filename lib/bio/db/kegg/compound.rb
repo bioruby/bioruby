@@ -1,10 +1,10 @@
 #
 # = bio/db/kegg/compound.rb - KEGG COMPOUND database class
 #
-# Copyright::  Copyright (C) 2001, 2002, 2004 Toshiaki Katayama <k@bioruby.org>
+# Copyright::  Copyright (C) 2001, 2002, 2004, 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    Ruby's
 #
-# $Id: compound.rb,v 0.12 2006/09/19 05:51:29 k Exp $
+# $Id: compound.rb,v 0.13 2007/01/15 04:34:32 k Exp $
 #
 
 require 'bio/db'
@@ -89,6 +89,11 @@ class COMPOUND < KEGGDB
   # ATOM, BOND
   def kcf
     return "#{get('ATOM')}#{get('BOND')}"
+  end
+
+  # COMMENT
+  def comment
+    field_fetch('COMMENT')
   end
 
 end # COMPOUND
