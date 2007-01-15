@@ -1,10 +1,10 @@
 #
 # = bio/db/kegg/enzyme.rb - KEGG/ENZYME database class
 #
-# Copyright::  Copyright (C) 2001, 2002 Toshiaki Katayama <k@bioruby.org>
+# Copyright::  Copyright (C) 2001, 2002, 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    Ruby's
 #
-# $Id: enzyme.rb,v 0.9 2006/09/19 05:52:05 k Exp $
+# $Id: enzyme.rb,v 0.10 2007/01/15 04:50:05 k Exp $
 #
 
 require 'bio/db'
@@ -22,16 +22,25 @@ class ENZYME < KEGGDB
   end
 
   # ENTRY
-  def entry_id
+  def entry
     field_fetch('ENTRY')
+  end
+
+  def entry_id
+    entry[/EC (\S+)/, 1]
+  end
+
+  def obsolete?
+    entry[/Obsolete/] ? true : false
   end
 
   # NAME
   def names
-    lines_fetch('NAME')
+    field_fetch('NAME').split(/\s*;\s*/)
   end
+
   def name
-    names[0]
+    names.first
   end
 
   # CLASS
@@ -44,24 +53,47 @@ class ENZYME < KEGGDB
     field_fetch('SYSNAME')
   end
 
-  # REACTION ';'
+  # REACTION
   def reaction
     field_fetch('REACTION')
+  end
+
+  # ALL_REAC ';'
+  def all_reac
+    field_fetch('ALL_REAC')
+  end
+
+  def iubmb_reactions
+    all_reac.sub(/;\s*\(other\).*/, '').split(/\s*;\s*/)
+  end
+
+  def kegg_reactions
+    reac = all_reac
+    if reac[/\(other\)/]
+      reac.sub(/.*\(other\)\s*/, '').split(/\s*;\s*/)
+    else
+      []
+    end
   end
   
   # SUBSTRATE
   def substrates
-    lines_fetch('SUBSTRATE')
+    field_fetch('SUBSTRATE').split(/\s*;\s*/)
   end
 
   # PRODUCT
   def products
-    lines_fetch('PRODUCT')
+    field_fetch('PRODUCT').split(/\s*;\s*/)
+  end
+
+  # INHIBITOR
+  def inhibitors
+    field_fetch('INHIBITOR').split(/\s*;\s*/)
   end
 
   # COFACTOR
   def cofactors
-    lines_fetch('COFACTOR')
+    field_fetch('COFACTOR').split(/\s*;\s*/)
   end
 
   # COMMENT
@@ -72,6 +104,11 @@ class ENZYME < KEGGDB
   # PATHWAY
   def pathways
     lines_fetch('PATHWAY')
+  end
+
+  # ORTHOLOG
+  def orthologs
+    lines_fetch('ORTHOLOG')
   end
 
   # GENES
@@ -92,11 +129,12 @@ class ENZYME < KEGGDB
   # STRUCTURES
   def structures
     unless @data['STRUCTURES']
-      @data['STRUCTURES'] =
-        fetch('STRUCTURES').sub(/(PDB: )*/,'').split(/\s+/)
+      @data['STRUCTURES'] = fetch('STRUCTURES').sub(/(PDB: )*/,'').split(/\s+/)
     end
     @data['STRUCTURES']
   end
+
+  # REFERENCE
 
   # DBLINKS
   def dblinks
