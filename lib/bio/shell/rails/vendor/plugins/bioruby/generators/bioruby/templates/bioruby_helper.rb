@@ -1,9 +1,5 @@
 module BiorubyHelper
 
-  HIDE_VARIABLES = [
-    "_", "irb", "_erbout",
-  ]
-
   include Bio::Shell
 
   def project_workdir
@@ -15,7 +11,16 @@ module BiorubyHelper
   end
 
   def local_variables
-    eval("local_variables", Bio::Shell.cache[:binding]) - HIDE_VARIABLES
+    eval("local_variables", Bio::Shell.cache[:binding]) -
+      BiorubyController::HIDE_VARIABLES
+  end
+
+  def render_log(page)
+    page.insert_html :top, :logs, :partial => "log"
+    page.replace_html "variables", :partial => "variables"
+    page.hide "methods_#{@number}"
+    page.hide "classes_#{@number}"
+    page.hide "modules_#{@number}"
   end
 
   def reference_link(class_or_module)
@@ -35,3 +40,4 @@ module BiorubyHelper
   end
 
 end
+

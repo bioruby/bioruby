@@ -1,4 +1,9 @@
 [ <%= @class %> ]
-<% @methods.sort.each do |x| %>
-<%= x %>
-<% end %>
+<table id="list_methods">
+<tr>
+<%- step = @methods.size / 4 + 1 -%>
+<%- 0.step(@methods.size, step) do |i| -%>
+<td><%= @methods.sort[i, step].join("<br>") %></td>
+<%- end -%>
+</tr>
+</table>

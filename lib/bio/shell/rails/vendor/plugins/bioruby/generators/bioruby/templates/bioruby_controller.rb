@@ -1,9 +1,21 @@
 class BiorubyController < ApplicationController
 
-  HIDE_METHODS = Object.methods
+  HIDE_METHODS = Object.methods + [ "singleton_method_added" ]
 
   HIDE_MODULES = [
+    ActiveSupport::CoreExtensions::String::Iterators,
+    ActiveSupport::CoreExtensions::String::StartsEndsWith,
+    ActiveSupport::CoreExtensions::String::Inflections,
+    ActiveSupport::CoreExtensions::String::Conversions,
+    ActiveSupport::CoreExtensions::String::Access,
+    ActiveSupport::CoreExtensions::Numeric::Bytes,
+    ActiveSupport::CoreExtensions::Numeric::Time,
     WEBrick, Base64::Deprecated, Base64, PP::ObjectMixin,
+    Bio::Shell
+  ]
+
+  HIDE_VARIABLES = [
+    "_", "irb", "_erbout",
   ]
 
   def evaluate
@@ -26,16 +38,13 @@ class BiorubyController < ApplicationController
     @number = Bio::Shell.cache[:results].store(@script, @result, @output)
 
     render :update do |page|
-      page.insert_html :after, "console", :partial => "result"
-      page.replace_html "variables", :partial => "variables"
-      page.hide "methods_#{@number}"
-      page.hide "classes_#{@number}"
-      page.hide "modules_#{@number}"
+      render_log(page)
     end
   end
 
   def list_methods
     number = params[:number].to_i
+
     script, result, output = Bio::Shell.cache[:results].restore(number)
     @class = result.class
     @methods = result.methods - HIDE_METHODS
@@ -48,6 +57,7 @@ class BiorubyController < ApplicationController
 
   def list_classes
     number = params[:number].to_i
+
     script, result, output = Bio::Shell.cache[:results].restore(number)
     class_name = result.class
     @class = class_name
@@ -69,6 +79,7 @@ class BiorubyController < ApplicationController
 
   def list_modules
     number = params[:number].to_i
+
     script, result, output = Bio::Shell.cache[:results].restore(number)
     @class = result.class
     @modules = result.class.included_modules - HIDE_MODULES
@@ -76,6 +87,16 @@ class BiorubyController < ApplicationController
     render :update do |page|
       page.replace_html "modules_#{number}", :partial => "modules"
       page.visual_effect :toggle_blind, "modules_#{number}", :duration => 0.5
+    end
+  end
+
+  def reload_script
+    number = params[:number].to_i
+
+    script, result, output = Bio::Shell.cache[:results].restore(number)
+
+    render :update do |page|
+      page.replace_html :script, script
     end
   end
 
@@ -88,19 +109,17 @@ class BiorubyController < ApplicationController
 
       render :update do |page|
         # delete all existing results in the current DOM for clean up
-        page.select(".evaluate").each do |element|
+        page.select(".log").each do |element|
+          #page.hide element
           page.remove element
         end
 
         # add selected results to the current DOM
         min_num.upto(max_num) do |@number|
+          #page.show "log_#{@number}"
           @script, @result, @output = Bio::Shell.cache[:results].restore(@number)
           if @script
-            page.insert_html :after, "console", :partial => "result"
-            page.replace_html "variables", :partial => "variables"
-            page.hide "methods_#{@number}"
-            page.hide "classes_#{@number}"
-            page.hide "modules_#{@number}"
+            render_log(page)
           end
         end
       end

@@ -25,38 +25,38 @@ pre {
 	overflow: auto;
 }
 
-div.evaluate div.input pre.script {
+div.log div.input pre.script {
 	background-color: #ffffeb;
 	border-style: solid;
 }
 
-div.evaluate div.output div.methods {
+div.log div.output div.methods {
 	padding: 5px;
 	background-color: #ffffdd;
 	border: 1px solid #ffcc00;
 }
 
-div.evaluate div.output div.classes {
+div.log div.output div.classes {
 	padding: 5px;
 	background-color: #ccffcc;
 	border: 1px solid #00ff00;
 }
 
-div.evaluate div.output div.modules {
+div.log div.output div.modules {
 	padding: 5px;
 	background-color: #ffcccc;
 	border: 1px solid #ff0000;
 }
 
-div.evaluate div.output pre.result {
+div.log div.output pre.result {
 	border-style: dashed;
 }
 
-div.evaluate div.output pre.output {
+div.log div.output pre.output {
 	border-style: dashed;
 }
 
-div.evaluate hr.evaluate {
+div.log hr.result {
 	border-style: dotted none none none;
 	border-top-width: 1px;
 	border-color: #6e8377;
@@ -193,17 +193,24 @@ ul {
 
 /* table */
 
+table#list_methods {
+	width: 680px;
+}
+
 th {
 	vertical-align: top;
+	padding: 5px;
 }
 
 td {
 	vertical-align: top;
+	padding: 5px;
 }
 
 /* textarea */
 
 textarea {
+	font-family: monospace;
 	overflow: auto;
 }
 
