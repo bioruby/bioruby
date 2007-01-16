@@ -1,7 +1,7 @@
-<div id="evaluate" class="evaluate">
-<hr class="evaluate">
+<div id="log_<%= @number %>" class="log">
+<hr class="log">
 <div class="input">
-Input: [<%= @number %>]
+Input: [<%= link_to_remote @number, :url => {:action => "reload_script", :number => @number} %>]
 <pre class="script">
 <%=h @script %>
 </pre>

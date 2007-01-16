@@ -12,7 +12,7 @@ class BiorubyGenerator < Rails::Generator::Base
       m.file '_methods.rhtml',        'app/views/bioruby/_methods.rhtml'
       m.file '_classes.rhtml',        'app/views/bioruby/_classes.rhtml'
       m.file '_modules.rhtml',        'app/views/bioruby/_modules.rhtml'
-      m.file '_result.rhtml',         'app/views/bioruby/_result.rhtml'
+      m.file '_log.rhtml',            'app/views/bioruby/_log.rhtml'
       m.file '_variables.rhtml',      'app/views/bioruby/_variables.rhtml'
       m.file 'commands.rhtml',        'app/views/bioruby/commands.rhtml'
       m.file 'history.rhtml',         'app/views/bioruby/history.rhtml'
