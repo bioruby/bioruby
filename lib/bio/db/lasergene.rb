@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2007 Center for Biomedical Research Informatics, University of Minnesota (http://cbri.umn.edu)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: lasergene.rb,v 1.1 2007/01/08 06:39:14 trevor Exp $
+#  $Id: lasergene.rb,v 1.2 2007/02/01 05:23:01 trevor Exp $
 #
 
 module Bio #:nodoc:
@@ -123,9 +123,7 @@ class Lasergene
 
   def initialize(lines)
     process(lines)
-  end
-  # * +cut_locations+: The cut locations in enzyme index notation.
-  
+  end  
   
   # Is the comment header recognized as standard Lasergene format?
   #
