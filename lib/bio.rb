@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: bio.rb,v 1.80 2007/01/08 06:38:38 trevor Exp $
+# $Id: bio.rb,v 1.81 2007/02/02 06:13:10 trevor Exp $
 #
 
 module Bio
@@ -116,6 +116,7 @@ module Bio
   autoload :PDB,            'bio/db/pdb'
   autoload :NBRF,           'bio/db/nbrf'
   autoload :REBASE,         'bio/db/rebase'
+  autoload :SOFT,           'bio/db/soft'
   autoload :Lasergene,      'bio/db/lasergene'
 
   autoload :Newick,         'bio/db/newick'
