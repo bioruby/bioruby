@@ -1,0 +1,92 @@
+^DATABASE = Geo
+!Database_name = Gene Expression Omnibus (GEO)
+!Database_institute = NCBI NLM NIH
+!Database_web_link = http://www.ncbi.nlm.nih.gov/projects/geo
+!Database_email = geo@ncbi.nlm.nih.gov
+!Database_ref = Nucleic Acids Res. 2005 Jan 1;33 Database Issue:D562-6
+^DATASET = GDS100
+!dataset_title = UV exposure time course (ecoli_8.0)
+!dataset_description = Time course of UV-responsive genes and their role in cellular recovery. lexA SOS-deficient strains analyzed.
+!dataset_type = gene expression array-based
+!dataset_pubmed_id = 11333217
+!dataset_platform = GPL18
+!dataset_platform_organism = Escherichia coli
+!dataset_platform_technology_type = spotted DNA/cDNA
+!dataset_feature_count = 5764
+!dataset_sample_organism = Escherichia coli
+!dataset_sample_type = RNA
+!dataset_channel_count = 2
+!dataset_sample_count = 8
+!dataset_value_type = log ratio
+!dataset_reference_series = GSE9
+!dataset_order = none
+!dataset_update_date = Apr 06 2003
+^SUBSET = GDS100_1
+!subset_dataset_id = GDS100
+!subset_description = irradiated
+!subset_sample_id = GSM544,GSM545,GSM546,GSM547,GSM548
+!subset_type = protocol
+^SUBSET = GDS100_2
+!subset_dataset_id = GDS100
+!subset_description = not irradiated
+!subset_sample_id = GSM542,GSM543,GSM549
+!subset_type = protocol
+^SUBSET = GDS100_3
+!subset_dataset_id = GDS100
+!subset_description = 5 minute
+!subset_sample_id = GSM547
+!subset_type = time
+^SUBSET = GDS100_4
+!subset_dataset_id = GDS100
+!subset_description = 10 minute
+!subset_sample_id = GSM544
+!subset_type = time
+^SUBSET = GDS100_5
+!subset_dataset_id = GDS100
+!subset_description = 20 minute
+!subset_sample_id = GSM545,GSM542
+!subset_type = time
+^SUBSET = GDS100_6
+!subset_dataset_id = GDS100
+!subset_description = 40 minute
+!subset_sample_id = GSM546
+!subset_type = time
+^SUBSET = GDS100_7
+!subset_dataset_id = GDS100
+!subset_description = 60 minute
+!subset_sample_id = GSM548,GSM543
+!subset_type = time
+^SUBSET = GDS100_8
+!subset_dataset_id = GDS100
+!subset_description = 0 minute
+!subset_sample_id = GSM549
+!subset_type = time
+^DATASET = GDS100
+#ID_REF = Platform reference identifier
+#IDENTIFIER = identifier
+#GSM549 = Value for GSM549: lexA vs. wt, before UV treatment, MG1655; src: 0' wt, before UV treatment, 25 ug total RNA, 2 ug pdN6; src: 0' lexA, before UV 25 ug total RNA, 2 ug pdN6
+#GSM542 = Value for GSM542: lexA 20' after NOuv vs. 0', MG1655; src: 0', before UV treatment, 25 ug total RNA, 2 ug pdN6; src: lexA 20 min after NOuv, 25 ug total RNA, 2 ug pdN6
+#GSM543 = Value for GSM543: lexA 60' after NOuv vs. 0', MG1655; src: 0', before UV treatment, 25 ug total RNA, 2 ug pdN6; src: lexA 60 min after NOuv, 25 ug total RNA, 2 ug pdN6
+#GSM547 = Value for GSM547: lexA 5' after UV vs. 0', MG1655; src: 0', before UV treatment, 25 ug total RNA, 2 ug pdN6; src: lexA 5 min after UV treatment, 25 ug total RNA, 2 ug pdN6
+#GSM544 = Value for GSM544: lexA 10' after UV vs. 0', MG1655; src: 0', before UV treatment, 25 ug total RNA, 2 ug pdN6; src: lexA 10 min after UV treatment, 25 ug total RNA, 2 ug pdN6
+#GSM545 = Value for GSM545: lexA 20' after UV vs. 0', MG1655; src: 0', before UV treatment, 25 ug total RNA, 2 ug pdN6; src: lexA 20 min after UV treatment, 25 ug total RNA, 2 ug pdN6
+#GSM546 = Value for GSM546: lexA 40' after UV vs. 0', MG1655; src: 0', before UV treatment, 25 ug total RNA, 2 ug pdN6; src: lexA 40 min after UV treatment, 25 ug total RNA, 2 ug pdN6
+#GSM548 = Value for GSM548: lexA 60' after UV vs. 0', MG1655; src: 0', before UV treatment, 25 ug total RNA, 2 ug pdN6; src: lexA 60 min after UV treatment, 25 ug total RNA, 2 ug pdN6
+!dataset_table_begin
+ID_REF	IDENTIFIER	GSM549	GSM542	GSM543	GSM547	GSM544	GSM545	GSM546	GSM548
+1	EMPTY	0.211	0.240	0.306	0.098	0.101	0.208	0.167	0.190
+2	EMPTY	0.045	0.097	0.142	0.107	0.074	0.202	0.019	0.266
+3	EMPTY	0.191	0.243	0.312	0.023	0.158	0.261	0.255	0.128
+4	EMPTY	-0.013	-0.041	0.112	-0.028	0.175	0.111	0.139	0.137
+5	EMPTY	0.046	0.101	0.183	0.052	0.115	0.225	0.092	0.051
+6	EMPTY	0.097	0.217	0.242	0.067	0.104	0.162	0.104	0.154
+7	EMPTY	0.699	1.789	null	null	null	null	null	null
+8	EMPTY	1.026	1.509	-0.585	0.813	0.105	-0.280	1.242	0.336
+9	EMPTY	0.816	null	-1.322	null	1.327	null	1.242	null
+10	EMPTY	-0.756	null	2.585	-0.234	2.564	-3.087	0.444	null
+11	EMPTY	0.157	-1.036	2.000	1.877	-0.813	3.115	null	0.599
+12	EMPTY	-1.084	2.608	null	1.614	-1.033	1.138	1.564	1.599
+13	EMPTY	null	null	0.166	null	null	1.322	-0.758	null
+14	EMPTY	-0.406	null	0.628	null	-3.802	null	0.757	1.216
+15	EMPTY	null	-1.714	1.794	null	null	1.858	2.049	0.932
+!dataset_table_end
