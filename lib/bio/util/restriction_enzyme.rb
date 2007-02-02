@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: restriction_enzyme.rb,v 1.11 2007/01/05 06:33:01 trevor Exp $
+#  $Id: restriction_enzyme.rb,v 1.12 2007/02/02 06:42:14 trevor Exp $
 #
 
 require 'bio/db/rebase'
@@ -23,12 +23,6 @@ module Bio #:nodoc:
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-# NOTE: This documentation and the module are still very much under
-# development.  It has been released as it is relatively stable and
-# comments would be appreciated.
-# 
-# FIXME needs better docs
-#
 # = Description
 # 
 # Bio::RestrictionEnzyme allows you to fragment a DNA strand using one
@@ -40,145 +34,92 @@ module Bio #:nodoc:
 # When using Bio::RestrictionEnzyme you may simply use the name of common
 # enzymes to cut your sequence or you may construct your own unique enzymes 
 # to use.
-# 
+#
+# Visit the documentaion for individual classes for more information.
+#
+# An examination of the unit tests will also reveal several interesting uses
+# for the curious programmer.
 # 
 # = Usage
 # 
 # == Basic
 #
-#   # EcoRI cut pattern:
-#   #   G|A A T T C
-#   #    +-------+
-#   #   C T T A A|G
-#   #
-#   # This can also be written as:
-#   #   G^AATTC
+# EcoRI cut pattern:
+#   G|A A T T C
+#    +-------+
+#   C T T A A|G
+# 
+# This can also be written as:
+#   G^AATTC
+#
+# Note that to use the method +cut_with_enzyme+ from a Bio::Sequence object 
+# you currently must +require+ +bio/util/restriction_enzyme+ directly.  If
+# instead you're going to directly call Bio::RestrictionEnzyme::Analysis
+# then only +bio+ needs to be +required+.
 # 
 #   require 'bio'
-#   require 'pp'
-# 
+#   require 'bio/util/restriction_enzyme'
+#   
 #   seq = Bio::Sequence::NA.new('gaattc')
 #   cuts = seq.cut_with_enzyme('EcoRI')
-#   p cuts.primary                        # ["aattc", "g"]
-#   p cuts.complement                     # ["g", "cttaa"]
-#   pp cuts                               # ==>
-#     # [#<struct Bio::RestrictionEnzyme::Analysis::UniqueFragment primary="g    ", complement="cttaa">,
-#     #  #<struct Bio::RestrictionEnzyme::Analysis::UniqueFragment primary="aattc", complement="    g">]
-# 
+#   cuts.primary                        # => ["aattc", "g"]
+#   cuts.complement                     # => ["cttaa", "g"]
+#   cuts.inspect                        # => "[#<struct Bio::RestrictionEnzyme::Fragment primary=\"g    \", complement=\"cttaa\">, #<struct Bio::RestrictionEnzyme::Fragment primary=\"aattc\", complement=\"    g\">]"
+#   
 #   seq = Bio::Sequence::NA.new('gaattc')
 #   cuts = seq.cut_with_enzyme('g^aattc')
-#   p cuts.primary                        # ["aattc", "g"]
-#   p cuts.complement                     # ["g", "cttaa"]
-# 
+#   cuts.primary                        # => ["aattc", "g"]
+#   cuts.complement                     # => ["cttaa", "g"]
+#   
 #   seq = Bio::Sequence::NA.new('gaattc')
 #   cuts = seq.cut_with_enzyme('g^aattc', 'gaatt^c')
-#   p cuts.primary                        # ["c", "aattc", "g", "gaatt"]
-#   p cuts.complement                     # ["g", "c", "cttaa", "ttaag"]
-# 
+#   cuts.primary                        # => ["aattc", "c", "g", "gaatt"]
+#   cuts.complement                     # => ["c", "cttaa", "g", "ttaag"]
+#   
 #   seq = Bio::Sequence::NA.new('gaattcgaattc')
 #   cuts = seq.cut_with_enzyme('EcoRI')
-#   p cuts.primary                        # ["aattc", "aattcg", "g"]
-#   p cuts.complement                     # ["g", "gcttaa", "cttaa"]
-# 
+#   cuts.primary                        # => ["aattc", "aattcg", "g"]
+#   cuts.complement                     # => ["cttaa", "g", "gcttaa"]
+#   
 #   seq = Bio::Sequence::NA.new('gaattcgggaattc')
 #   cuts = seq.cut_with_enzyme('EcoRI')
-#   p cuts.primary                        # ["aattc", "aattcggg", "g"]
-#   p cuts.complement                     # ["g", "gcccttaa", "cttaa"]
-# 
+#   cuts.primary                        # => ["aattc", "aattcggg", "g"]
+#   cuts.complement                     # => ["cttaa", "g", "gcccttaa"]
+#   
+#   cuts[0].inspect                     # => "#<struct Bio::RestrictionEnzyme::Fragment primary=\"g    \", complement=\"cttaa\">"
+#   
+#   cuts[0].primary                     # => "g    "
+#   cuts[0].complement                  # => "cttaa"
+#   
+#   cuts[1].primary                     # => "aattcggg    "
+#   cuts[1].complement                  # => "    gcccttaa"
+#   
+#   cuts[2].primary                     # => "aattc"
+#   cuts[2].complement                  # => "    g"
+#   
 # == Advanced
-# 
+#
 #   require 'bio'
-#   require 'pp'
+#   
 #   enzyme_1 = Bio::RestrictionEnzyme.new('anna', [1,1], [3,3])
 #   enzyme_2 = Bio::RestrictionEnzyme.new('gg', [1,1])
 #   a = Bio::RestrictionEnzyme::Analysis.cut('agga', enzyme_1, enzyme_2)
-#   p a.primary # ["a", "ag", "g", "ga"]
-# 
-#   b = Bio::RestrictionEnzyme::Analysis.cut_and_return_by_permutations('agga', enzyme_1, enzyme_2)
-#   pp b
+#   a.primary                           # => ["a", "ag", "g", "ga"]
+#   a.complement                        # => ["c", "ct", "t", "tc"]
 #   
+#   a[0].primary                        # => "ag"
+#   a[0].complement                     # => "tc"
+#   
+#   a[1].primary                        # => "ga"
+#   a[1].complement                     # => "ct"
+#   
+#   a[2].primary                        # => "a"
+#   a[2].complement                     # => "t"
+#   
+#   a[3].primary                        # => "g"
+#   a[3].complement                     # => "c"
 # 
-# Output (NOTE: to be cleaned):
-# 
-#   {[1, 0]=>
-#     #<Bio::RestrictionEnzyme::Analysis::SequenceRange:0x2971d0
-#      @__fragments=
-#       [#<Bio::RestrictionEnzyme::Analysis::Fragment:0x296750
-#         @complement_bin=[0, 1],
-#         @primary_bin=[0, 1]>,
-#        #<Bio::RestrictionEnzyme::Analysis::Fragment:0x296738
-#         @complement_bin=[2, 3],
-#         @primary_bin=[2, 3]>],
-#      @__fragments_current=true,
-#      @c_left=3,
-#      @c_right=3,
-#      @cut_ranges=
-#       [#<Bio::RestrictionEnzyme::Analysis::VerticalCutRange:0x2973e0
-#         @c_cut_left=nil,
-#         @c_cut_right=1,
-#         @max=1,
-#         @min=1,
-#         @p_cut_left=1,
-#         @p_cut_right=nil,
-#         @range=1..1>],
-#      @left=0,
-#      @p_left=0,
-#      @p_right=0,
-#      @right=3,
-#      @size=4,
-#      @tags={}>,
-#    [0, 1]=>
-#     #<Bio::RestrictionEnzyme::Analysis::SequenceRange:0x2973f8
-#      @__fragments=
-#       [#<Bio::RestrictionEnzyme::Analysis::Fragment:0x2958e0
-#         @complement_bin=[0],
-#         @primary_bin=[0]>,
-#        #<Bio::RestrictionEnzyme::Analysis::Fragment:0x2958c8
-#         @complement_bin=[1],
-#         @primary_bin=[1]>,
-#        #<Bio::RestrictionEnzyme::Analysis::Fragment:0x2958b0
-#         @complement_bin=[2],
-#         @primary_bin=[2]>,
-#        #<Bio::RestrictionEnzyme::Analysis::Fragment:0x295898
-#         @complement_bin=[3],
-#         @primary_bin=[3]>],
-#      @__fragments_current=true,
-#      @c_left=3,
-#      @c_right=3,
-#      @cut_ranges=
-#       [#<Bio::RestrictionEnzyme::Analysis::VerticalCutRange:0x297638
-#         @c_cut_left=nil,
-#         @c_cut_right=0,
-#         @max=0,
-#         @min=0,
-#         @p_cut_left=0,
-#         @p_cut_right=nil,
-#         @range=0..0>,
-#        #<Bio::RestrictionEnzyme::Analysis::VerticalCutRange:0x297620
-#         @c_cut_left=nil,
-#         @c_cut_right=2,
-#         @max=2,
-#         @min=2,
-#         @p_cut_left=2,
-#         @p_cut_right=nil,
-#         @range=2..2>,
-#        #<Bio::RestrictionEnzyme::Analysis::VerticalCutRange:0x2973e0
-#         @c_cut_left=nil,
-#         @c_cut_right=1,
-#         @max=1,
-#         @min=1,
-#         @p_cut_left=1,
-#         @p_cut_right=nil,
-#         @range=1..1>],
-#      @left=0,
-#      @p_left=0,
-#      @p_right=0,
-#      @right=3,
-#      @size=4,
-#      @tags={}>}
-# 
-# 
-# = Currently under development
+# = Todo / under development
 # 
 # * Circular DNA cutting
 #
