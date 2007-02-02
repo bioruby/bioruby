@@ -1,5 +1,11 @@
 2007-02-02  Trevor Wennblom <trevor@corevx.com>
 
+	* lib/bio/util/restriction_enzyme*
+
+	  Bio::RestrictionEnzyme stabilized.
+	
+2007-02-02  Trevor Wennblom <trevor@corevx.com>
+
 	* lib/bio/db/lasergene.rb
 
 	  Bio::Lasergene Interface for DNAStar Lasergene sequence file format
