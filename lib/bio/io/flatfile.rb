@@ -5,7 +5,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: flatfile.rb,v 1.54 2007/02/12 02:15:45 k Exp $
+#  $Id: flatfile.rb,v 1.55 2007/02/12 09:59:37 ngoto Exp $
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
@@ -578,8 +578,14 @@ module Bio
       @stream.path
     end
 
+    # Exception class to be raised when data format hasn't been specified.
+    class UnknownDataFormatError < IOError
+    end
+
     # Get next entry.
     def next_entry
+      raise UnknownDataFormatError, 
+      'file format auto-detection failed?' unless @dbclass
       if @skip_leader_mode and
           ((@firsttime_flag and @skip_leader_mode == :firsttime) or
              @skip_leader_mode == :everytime)
