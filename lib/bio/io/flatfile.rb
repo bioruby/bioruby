@@ -5,7 +5,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: flatfile.rb,v 1.53 2006/12/15 16:54:25 ngoto Exp $
+#  $Id: flatfile.rb,v 1.54 2007/02/12 02:15:45 k Exp $
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
@@ -1155,7 +1155,7 @@ module Bio
             /^ENTRY       .+ Reaction\s*/
           ],
           genes    = RuleRegexp[ 'Bio::KEGG::GENES',
-            /^ENTRY       .+ (CDS|gene|.*RNA) / ],
+            /^ENTRY       .+ (CDS|gene|.*RNA|Contig) / ],
           genome   = RuleRegexp[ 'Bio::KEGG::GENOME',
             /^ENTRY       [a-z]+$/ ],
 
