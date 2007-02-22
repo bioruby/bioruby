@@ -65,10 +65,10 @@ ProfileScan    PS50109        HIS_KIN                                 T[237-446]
 
 InterPro       IPR009082      Histidine kinase, homodimeric
 method         AccNumber      shortName                               location
-superfamily    SSF47384       Homodimeric domain of signal transducing histidine kinaseT[220-292] 2.7e-11
+superfamily    SSF47384       Homodimeric domain of signal transducing histidine kinase  T[220-292] 2.7e-11
 
 InterPro       NULL           NULL
 method         AccNumber      shortName                               location
 Seg            seg            seg                                     ?[44-55] ?[108-120] ?[160-173] ?[308-319] ?[400-424]
-superfamily    SSF55874       ATPase domain of HSP90 chaperone/DNA topoisomerase II/histidine kinaseT[295-444] 4.6e-30
+superfamily    SSF55874       ATPase domain of HSP90 chaperone/DNA topoisomerase II/histidine kinase  T[295-444] 4.6e-30
 

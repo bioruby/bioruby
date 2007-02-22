@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <mn@kazusa.or.jp>
 # License::     Ruby's
 #
-#  $Id: report.rb,v 1.2 2007/02/22 07:53:49 nakao Exp $
+#  $Id: report.rb,v 1.3 2007/02/22 08:44:34 nakao Exp $
 #
 # == Report classes for the iprscan program.
 # 
@@ -126,16 +126,26 @@ module Bio
       #    report
       #  end
       def self.reports_in_txt(io)
-        io.each(/\n\/\/\n/m) do |entry|
+        io.each("\n\nSequence") do |entry|
+          if entry =~ /Sequence$/
+            entry = entry.sub(/Sequence$/, '')
+          end
+          unless entry =~ /^Sequence/
+            entry = 'Sequence' + entry
+          end
           yield self.parse_in_txt(entry)
         end
       end
+
 
 
       # Parser method for a txt formated entry. Returns a Bio::Iprscan::Report
       # object.
       #
       def self.parse_in_txt(str)
+        unless str =~ /^Sequence /
+          raise Exception, "Invalid format: \n\n#{str}"
+        end
         header, *matches = str.split(/\n\n/)
         report = self.new
         report.query_id = if header =~ /Sequence \"(.+)\" / then $1 else '' end
@@ -170,6 +180,19 @@ module Bio
         end
         return report
       end 
+
+
+      # Splits entry stream.
+      # 
+      # == Usage
+      #  Bio::Iprscan::Report.reports_in_ptxt(File.open("merged.txt")) do |report|
+      #    report
+      #  end
+      def self.reports_in_ptxt(io)
+        io.each(/\n\/\/\n/m) do |entry|
+          yield self.parse_in_ptxt(entry)
+        end
+      end
 
       # Parser method for a pseudo-txt formated entry. Retruns a Bio::Iprscan::Report 
       # object.

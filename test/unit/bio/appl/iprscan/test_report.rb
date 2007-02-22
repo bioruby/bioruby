@@ -3,7 +3,7 @@
 #
 #   Copyright (C) 2006 Mitsuteru Nakao <n@bioruby.org>
 #
-#  $Id: test_report.rb,v 1.2 2007/02/22 07:53:49 nakao Exp $
+#  $Id: test_report.rb,v 1.3 2007/02/22 08:44:34 nakao Exp $
 #
 
 require 'pathname'
@@ -94,9 +94,7 @@ END
   end # TestIprscanPTxtReport
 
 
-
-
-  class TestIprscanTxtReport < Test::Unit::TestCase
+  class TestIprscanTxtEntry < Test::Unit::TestCase
     def setup
       test_txt = Bio::TestIprscanData.txt_format.read.split(/\n\nSequence/)[0]
       @obj = Bio::Iprscan::Report.parse_in_txt(test_txt)
@@ -157,10 +155,23 @@ END
              ["Biological Process", "protein biosynthesis", "GO:0006412"]]
       assert_equal(ary, @obj.matches.first.go_terms)
     end
+  end # TestIprscanTxtEntry
+
+
+
+  class TestIprscanTxtReport < Test::Unit::TestCase
+    def setup
+      @test_txt = Bio::TestIprscanData.txt_format
+    end 
+
+    def test_reports_in_txt 
+      Bio::Iprscan::Report.reports_in_txt(@test_txt) do |report|
+        assert_equal(Bio::Iprscan::Report, report.class)
+      end
+    end
 
 
   end # TestIprscanTxtReport
-
 
 
 
