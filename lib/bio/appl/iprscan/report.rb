@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <mn@kazusa.or.jp>
 # License::     Ruby's
 #
-#  $Id: report.rb,v 1.3 2007/02/22 08:44:34 nakao Exp $
+#  $Id: report.rb,v 1.4 2007/02/22 10:15:01 nakao Exp $
 #
 # == Report classes for the iprscan program.
 # 
@@ -119,12 +119,14 @@ module Bio
         NotImplementedError
       end
 
-      # Splits entry stream.
+      # Splits the entry stream.
       # 
       # == Usage
+      #
       #  Bio::Iprscan::Report.reports_in_txt(File.open("merged.txt")) do |report|
-      #    report
+      #    report.class #=> Bio::Iprscan::Report
       #  end
+      #
       def self.reports_in_txt(io)
         io.each("\n\nSequence") do |entry|
           if entry =~ /Sequence$/
@@ -144,7 +146,7 @@ module Bio
       #
       def self.parse_in_txt(str)
         unless str =~ /^Sequence /
-          raise Exception, "Invalid format: \n\n#{str}"
+          raise ArgumentError, "Invalid format:  \n\n#{str}"
         end
         header, *matches = str.split(/\n\n/)
         report = self.new
@@ -171,6 +173,7 @@ module Bio
                                             :accession   => match[1],
                                             :description => match[2], 
                                             :evalue      => pos_score[3],
+                                            :status      => pos_score[0],
                                             :match_start => pos_score[1].to_i,
                                             :match_end   => pos_score[2].to_i,
                                             :go_terms => go_annotation)
@@ -245,7 +248,7 @@ module Bio
         NotImplementedError
       end
       
-      def to_ebihtml
+      def to_ebixml
         NotImplementedError        
       end
       
@@ -254,21 +257,58 @@ module Bio
       end
       
       def to_raw
-        NotImplementedError        
+        @matches.map { |match|
+          [self.query_id,
+                self.crc64,
+                self.query_length,
+                match.method,
+                match.accession,
+                match.description,
+                match.match_start,
+                match.match_end,
+                match.evalue,
+                match.status,
+                match.date,
+                match.ipr_id,
+                match.ipr_description,
+                match.go_terms.map {|x| x[0] + ': ' + x[1] + ' (' + x[2] + ')' }.join(', ')
+          ].join("\t")
+        }.join("\n")
       end
       
       def to_gff3
         NotImplementedError        
       end
 
-      # == DESCRIPTION
+
+      # Returns a Hash (key as an interpro id and value as index key for 
+      # matches (Array).
+      #
+      #   report.list_of_interpro.each do |ipr_id, indexes|
+      #     indexes.each do |index|
+      #       report.matches[index].ipr_id == ipr_id #=> true
+      #     end
+      #   end
+      #
+      def list_of_interpro
+        @ipr_ids = {} unless @ipr_ids
+        @matches.each_with_index do |match, i|
+          @ipr_ids[match.ipr_id] = [] unless @ipr_ids[match.ipr_id]
+          @ipr_ids[match.ipr_id] << i
+        end
+        @ipr_ids
+      end
+
+
+
+      # == Description
       # Container class for InterProScan matches.
       #
-      # == USAGE
+      # == Usage
       #  match = Match.new(:query_id => ...)
       #
       #  match.ipr_id = 'IPR001234'
-      #  match.ipr_id #=> 'IPR1234'
+      #  match.ipr_id #=> 'IPR001234'
       #
       class Match
         def initialize(hash)
@@ -305,7 +345,7 @@ module Bio
         # the start of the domain match.
         def match_start;     @data[:match_start];     end
         # the descriotion of the InterPro entry.
-        def ipr_description; @data[:ipr_description]; end
+        def ipr_odescription; @data[:ipr_description]; end
 
         def method_missing(name, arg = nil)
           if arg

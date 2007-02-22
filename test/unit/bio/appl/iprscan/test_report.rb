@@ -3,7 +3,7 @@
 #
 #   Copyright (C) 2006 Mitsuteru Nakao <n@bioruby.org>
 #
-#  $Id: test_report.rb,v 1.3 2007/02/22 08:44:34 nakao Exp $
+#  $Id: test_report.rb,v 1.4 2007/02/22 10:15:01 nakao Exp $
 #
 
 require 'pathname'
@@ -140,6 +140,14 @@ END
       assert_equal('1.5e-17', @obj.matches.first.evalue)
     end
 
+    def test_match_status
+      assert_equal('T', @obj.matches.first.status)
+    end
+
+    def test_match_date
+      assert_equal(nil, @obj.matches.first.date)
+    end
+
     def test_match_match_start
       assert_equal(6, @obj.matches.first.match_start)
     end
@@ -157,6 +165,29 @@ END
     end
   end # TestIprscanTxtEntry
 
+
+  class TestIprscanTxtEntryList < Test::Unit::TestCase
+    def setup
+      test_txt = Bio::TestIprscanData.txt_format.read.split(/\n\nSequence/)[0]
+      @obj = Bio::Iprscan::Report.parse_in_txt(test_txt)
+    end 
+    
+    def test_list_of_interpro
+      hsh = {"IPR008994"=>[12, 13, 14], 
+             "IPR000110"=>[0, 1, 2], 
+             "IPR003029"=>[3, 4, 5, 6, 7, 8, 9, 10, 11], 
+             "NULL"=>[15]}
+      assert_equal(hsh, @obj.list_of_interpro)
+    end
+
+    def test_list_of_interpro_match?
+      @obj.list_of_interpro.each do |ipr_id, indexes|
+        indexes.each do |index|
+          assert_equal(ipr_id, @obj.matches[index].ipr_id)
+        end
+      end
+    end
+  end # TestIprscanTxtEntryList
 
 
   class TestIprscanTxtReport < Test::Unit::TestCase
@@ -265,4 +296,17 @@ END
     end
 
   end
+
+  class TestIprscanReport < Test::Unit::TestCase
+    def setup
+      test_txt = Bio::TestIprscanData.txt_format.read.split(/\n\nSequence/)[0]
+      @obj = Bio::Iprscan::Report.parse_in_txt(test_txt)
+    end 
+
+    def test_to_raw
+#      puts @obj.to_raw
+    end
+
+  end # TestIprscanReport
+
 end
