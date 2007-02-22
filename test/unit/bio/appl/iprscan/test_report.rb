@@ -3,7 +3,7 @@
 #
 #   Copyright (C) 2006 Mitsuteru Nakao <n@bioruby.org>
 #
-#  $Id: test_report.rb,v 1.1 2006/12/14 16:22:12 nakao Exp $
+#  $Id: test_report.rb,v 1.2 2007/02/22 07:53:49 nakao Exp $
 #
 
 require 'pathname'
@@ -21,10 +21,15 @@ module Bio
     def self.raw_format
       File.open(File.join(TestDataIprscan, "merged.raw"))
     end
+
+    def self.txt_format
+      File.open(File.join(TestDataIprscan, "merged.txt"))
+    end
+
   end
   
   
-  class TestIprscanTxtReport < Test::Unit::TestCase
+  class TestIprscanPTxtReport < Test::Unit::TestCase
 
     def setup
       test_entry=<<-END
@@ -38,7 +43,7 @@ InterPro\tNULL\tNULL
 ProfileScan\tPS50310\tALA_RICH\t10.224\t805-856
 //
 END
-      @obj = Bio::Iprscan::Report.parse_in_txt(test_entry)
+      @obj = Bio::Iprscan::Report.parse_in_ptxt(test_entry)
     end 
    
  
@@ -86,7 +91,78 @@ END
       assert_equal(370, @obj.matches.first.match_end)
     end
 
+  end # TestIprscanPTxtReport
+
+
+
+
+  class TestIprscanTxtReport < Test::Unit::TestCase
+    def setup
+      test_txt = Bio::TestIprscanData.txt_format.read.split(/\n\nSequence/)[0]
+      @obj = Bio::Iprscan::Report.parse_in_txt(test_txt)
+    end 
+
+    def test_iprscan_report_class
+      assert_equal(Bio::Iprscan::Report, @obj.class)
+    end
+ 
+    def test_query_id
+      assert_equal('Q9RHD9', @obj.query_id)
+    end
+
+    def test_query_length
+      assert_equal(267, @obj.query_length)
+    end
+
+    def test_matches_size
+      assert_equal(16, @obj.matches.size)
+    end
+    
+    def test_match_ipr_id
+      assert_equal('IPR000110', @obj.matches.first.ipr_id)
+    end
+
+    def test_match_ipr_description
+      assert_equal('Ribosomal protein S1', @obj.matches.first.ipr_description)
+    end
+
+    def test_match_method
+      assert_equal('FPrintScan', @obj.matches.first.method)
+    end
+
+    def test_match_accession
+      assert_equal('PR00681', @obj.matches.first.accession)
+    end
+
+    def test_match_description
+      assert_equal('RIBOSOMALS1', @obj.matches.first.description)
+    end
+
+    def test_match_evalue
+      assert_equal('1.5e-17', @obj.matches.first.evalue)
+    end
+
+    def test_match_match_start
+      assert_equal(6, @obj.matches.first.match_start)
+    end
+
+    def test_match_match_end
+      assert_equal(27, @obj.matches.first.match_end)
+    end
+
+    def test_match_go_terms
+      ary = [["Molecular Function", "RNA binding", "GO:0003723"], 
+             ["Molecular Function", "structural constituent of ribosome", "GO:0003735"], 
+             ["Cellular Component", "ribosome", "GO:0005840"], 
+             ["Biological Process", "protein biosynthesis", "GO:0006412"]]
+      assert_equal(ary, @obj.matches.first.go_terms)
+    end
+
+
   end # TestIprscanTxtReport
+
+
+
 
   class TestIprscanRawReport < Test::Unit::TestCase
     def setup

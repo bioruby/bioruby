@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <mn@kazusa.or.jp>
 # License::     Ruby's
 #
-#  $Id: report.rb,v 1.1 2006/12/14 16:22:12 nakao Exp $
+#  $Id: report.rb,v 1.2 2007/02/22 07:53:49 nakao Exp $
 #
 # == Report classes for the iprscan program.
 # 
@@ -23,7 +23,7 @@ module Bio
     # 
     # == USAGE
     #  # Read a marged.txt and split each entry.
-    #  Bio::Iprscan::Report.reports_in_txt(File.read("marged.txt") do |report| 
+    #  Bio::Iprscan::Report.reports_in_txt(File.read("marged.txt")) do |report| 
     #    report.query_id
     #    report.matches.size
     #    report.matches.each do |match|
@@ -40,7 +40,7 @@ module Bio
     #    # report.to_html
     #  end
     #
-    #  Bio::Iprscan::Report.reports_in_raw(File.read("marged.raw") do |report| 
+    #  Bio::Iprscan::Report.reports_in_raw(File.read("marged.raw")) do |report| 
     #    report.class #=> Bio::Iprscan::Report
     #  end
     #
@@ -54,6 +54,9 @@ module Bio
 
       # Qeury sequence length.
       attr_accessor :query_length
+
+      # CRC64 checksum of query sequence.
+      attr_accessor :crc64
 
       # Matched InterPro motifs in Hash. Each InterPro motif have :name, 
       # :definition, :accession and :motifs keys. And :motifs key contains
@@ -128,16 +131,56 @@ module Bio
         end
       end
 
-      # Parser method for a txt formated entry. Retruns a Bio::Iprscan::Report 
+
+      # Parser method for a txt formated entry. Returns a Bio::Iprscan::Report
+      # object.
+      #
+      def self.parse_in_txt(str)
+        header, *matches = str.split(/\n\n/)
+        report = self.new
+        report.query_id = if header =~ /Sequence \"(.+)\" / then $1 else '' end
+        report.query_length = if header =~ /length: (\d+) aa./ then $1.to_i else nil end
+        report.crc64 = if header =~ /crc64 checksum: (\S+) / then $1 else nil end
+        ipr_line = ''
+        go_annotation = ''
+        matches.each do |m|
+          m = m.split(/\n/).map {|x| x.split(/  +/) }
+          m.each do |match|
+            case match[0]
+            when 'method'
+            when /(Molecular Function|Cellular Component|Biological Process):/
+              go_annotation = match[0].scan(/([MCB]\w+ \w+): (\S.+?\S) \((GO:\d+)\),*/)
+            when 'InterPro'
+              ipr_line = match
+            else
+              pos_scores = match[3].scan(/(\S)\[(\d+)-(\d+)\] (\S+) */)
+              pos_scores.each do |pos_score|
+                report.matches << Match.new(:ipr_id          => ipr_line[1],
+                                            :ipr_description => ipr_line[2],
+                                            :method      => match[0], 
+                                            :accession   => match[1],
+                                            :description => match[2], 
+                                            :evalue      => pos_score[3],
+                                            :match_start => pos_score[1].to_i,
+                                            :match_end   => pos_score[2].to_i,
+                                            :go_terms => go_annotation)
+              end
+            end
+          end
+        end
+        return report
+      end 
+
+      # Parser method for a pseudo-txt formated entry. Retruns a Bio::Iprscan::Report 
       # object.
       # 
       # == Usage
       #
       #  File.read("marged.txt").each(Bio::Iprscan::Report::RS) do |e| 
-      #    report = Bio::Iprscan::Report.parse_in_txt(e)
+      #    report = Bio::Iprscan::Report.parse_in_ptxt(e)
       #  end
       #
-      def self.parse_in_txt(str)
+      def self.parse_in_ptxt(str)
         report = self.new
         ipr_line = ''
         str.split(/\n/).each do |line|
@@ -167,6 +210,7 @@ module Bio
       def initialize
         @query_id = nil
         @query_length = nil
+        @crc64 = nil
         @matches = []
       end
 

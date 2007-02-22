@@ -1,0 +1,74 @@
+Sequence "Q9RHD9" crc64 checksum: D44DAE8C544CB7C1 length: 267 aa.
+
+InterPro       IPR000110      Ribosomal protein S1
+Molecular Function: RNA binding (GO:0003723), Molecular Function: structural constituent of ribosome (GO:0003735), Cellular Component: ribosome (GO:0005840), Biological Process: protein biosynthesis (GO:0006412)
+method         AccNumber      shortName                               location
+FPrintScan     PR00681        RIBOSOMALS1                             T[6-27] 1.5e-17 T[85-104] 1.5e-17 T[125-143] 1.5e-17
+
+InterPro       IPR003029      RNA binding S1
+Molecular Function: RNA binding (GO:0003723)
+method         AccNumber      shortName                               location
+HMMPfam        PF00575        S1                                      T[1-55] 1.3e-08 T[68-142] 1.6e-21 T[155-228] 6.8e-22
+HMMSmart       SM00316        S1                                      T[3-55] 1.2e-06 T[70-142] 1.4e-19 T[157-228] 2.6e-21
+ProfileScan    PS50126        S1                                      T[1-55] 14.869 T[72-142] 20.809 T[159-228] 22.541
+
+InterPro       IPR008994      Nucleic acid-binding OB-fold
+method         AccNumber      shortName                               location
+superfamily    SSF50249       Nucleic acid-binding proteins           T[147-257] 2.5e-24 T[59-145] 2.4e-22 T[3-58] 9.2e-14
+
+InterPro       NULL           NULL
+method         AccNumber      shortName                               location
+Coil           coil           coiled-coil                             ?[225-246]
+Seg            seg            seg                                     ?[29-40] ?[84-98] ?[222-237]
+
+Sequence "RS16_ECOLI" crc64 checksum: F94D07049A6D489D length: 82 aa.
+
+InterPro       IPR000307      Ribosomal protein S16
+Molecular Function: structural constituent of ribosome (GO:0003735), Cellular Component: intracellular (GO:0005622), Cellular Component: ribosome (GO:0005840), Biological Process: protein biosynthesis (GO:0006412)
+method         AccNumber      shortName                               location
+BlastProDom    PD003791       sp_RS16_ECOLI_P02372;                   T[1-77] 3e-38
+HMMPfam        PF00886        Ribosomal_S16                           T[8-68] 1.1e-35
+HMMTigr        TIGR00002      S16                                     T[2-81] 8.8e-33
+ScanRegExp     PS00732        RIBOSOMAL_S16                           T[2-11] 8e-5
+superfamily    SSF54565       Ribosomal protein S16                   T[1-79] 9.4e-28
+
+Sequence "Y902_MYCTU" crc64 checksum: CD84A335CCFFE6D7 length: 446 aa.
+
+InterPro       IPR003594      ATP-binding region, ATPase-like
+Molecular Function: ATP binding (GO:0005524)
+method         AccNumber      shortName                               location
+HMMPfam        PF02518        HATPase_c                               T[338-445] 9.6e-29
+HMMSmart       SM00387        HATPase_c                               T[338-446] 5e-24
+
+InterPro       IPR003660      Histidine kinase, HAMP region
+Molecular Function: signal transducer activity (GO:0004871), Biological Process: signal transduction (GO:0007165), Cellular Component: membrane (GO:0016020)
+method         AccNumber      shortName                               location
+HMMPfam        PF00672        HAMP                                    T[151-219] 4.3e-11
+HMMSmart       SM00304        HAMP                                    T[170-222] 3.1e-06
+ProfileScan    PS50885        HAMP                                    T[170-222] 7.777
+
+InterPro       IPR003661      Histidine kinase A, N-terminal
+Molecular Function: two-component sensor molecule activity (GO:0000155), Biological Process: signal transduction (GO:0007165), Cellular Component: membrane (GO:0016020)
+method         AccNumber      shortName                               location
+HMMPfam        PF00512        HisKA                                   T[230-296] 9.2e-14
+HMMSmart       SM00388        HisKA                                   T[230-296] 2.4e-12
+
+InterPro       IPR004358      Bacterial sensor protein, C-terminal
+Molecular Function: two-component sensor molecule activity (GO:0000155), Biological Process: signal transduction (GO:0007165)
+method         AccNumber      shortName                               location
+FPrintScan     PR00344        BCTRLSENSOR                             T[374-388] 2e-12 T[392-402] 2e-12 T[406-424] 2e-12 T[430-443] 2e-12
+
+InterPro       IPR005467      Histidine kinase
+Biological Process: signal transduction (GO:0007165), Molecular Function: kinase activity (GO:0016301)
+method         AccNumber      shortName                               location
+ProfileScan    PS50109        HIS_KIN                                 T[237-446] 34.449
+
+InterPro       IPR009082      Histidine kinase, homodimeric
+method         AccNumber      shortName                               location
+superfamily    SSF47384       Homodimeric domain of signal transducing histidine kinaseT[220-292] 2.7e-11
+
+InterPro       NULL           NULL
+method         AccNumber      shortName                               location
+Seg            seg            seg                                     ?[44-55] ?[108-120] ?[160-173] ?[308-319] ?[400-424]
+superfamily    SSF55874       ATPase domain of HSP90 chaperone/DNA topoisomerase II/histidine kinaseT[295-444] 4.6e-30
+
