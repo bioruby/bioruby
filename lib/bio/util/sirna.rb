@@ -5,7 +5,7 @@
 #               Itoshi NIKAIDO <dritoshi@gmail.com>
 # License::     Ruby's
 #
-# $Id: sirna.rb,v 1.8 2007/02/22 17:29:55 ngoto Exp $
+# $Id: sirna.rb,v 1.9 2007/02/22 17:38:41 ngoto Exp $
 #
 # == Bio::SiRNA - Designing siRNA.
 #
@@ -96,8 +96,8 @@ module Bio
       one_third  = target.size * 1 / 3
       start_pos  = @target_size - one_third - 1
       remain_seq = target.subseq(start_pos, @target_size - 2)
-      gc_number  = remain_seq.scan(/[AU]/i).size
-      return false if gc_number < 5
+      au_number  = remain_seq.scan(/[AU]/i).size
+      return false if au_number < 5
   
       return true
     end
