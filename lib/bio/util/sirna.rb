@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2004, 2005
 #               Itoshi NIKAIDO <dritoshi@gmail.com>
-# License::     LGPL
+# License::     Ruby's
 #
-# $Id: sirna.rb,v 1.7 2005/12/27 17:27:38 k Exp $
+# $Id: sirna.rb,v 1.8 2007/02/22 17:29:55 ngoto Exp $
 #
 # == Bio::SiRNA - Designing siRNA.
 #
