@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003 Toshiaki Katayama <k@bioruby.org>
 # Copyright::  Copyright (C) 2003 Masumi Itoh <m@bioruby.org>
 #
-# $Id: orthology.rb,v 1.6 2006/09/19 05:56:14 k Exp $
+# $Id: orthology.rb,v 1.7 2007/03/08 00:20:21 k Exp $
 #
 
 require 'bio/db'
