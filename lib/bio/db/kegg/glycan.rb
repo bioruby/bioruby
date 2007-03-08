@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
 # License::    Ruby's
 #
-# $Id: glycan.rb,v 1.3 2006/09/19 05:53:13 k Exp $
+# $Id: glycan.rb,v 1.4 2007/03/08 00:14:16 k Exp $
 #
 
 require 'bio/db'
@@ -63,23 +63,6 @@ class GLYCAN < KEGGDB
     field_fetch('CLASS') 
   end
 
-  # BINDING
-  def bindings
-    unless @data['BINDING']
-      ary = Array.new
-      lines = lines_fetch('BINDING')
-      lines.each do |line|
-        if /^\S/.match(line)
-          ary << line
-        else
-          ary.last << " #{line.strip}"
-        end
-      end
-      @data['BINDING'] = ary
-    end
-    @data['BINDING']
-  end
-
   # COMPOUND
   def compounds
     unless @data['COMPOUND']
@@ -117,18 +100,19 @@ class GLYCAN < KEGGDB
   # ORTHOLOG
   def orthologs
     unless @data['ORTHOLOG']
-      ary = Array.new
-      lines = lines_fetch('ORTHOLOG')
-      lines.each do |line|
-        if /^\S/.match(line)
-          ary << line
-        else
-          ary.last << " #{line.strip}"
-        end
-      end
-      @data['ORTHOLOG'] = ary
+      @data['ORTHOLOG'] = lines_fetch('ORTHOLOG')
     end
     @data['ORTHOLOG']
+  end
+
+  # COMMENT
+  def comment
+    field_fetch('COMMENT')
+  end
+
+  # REMARK
+  def remark
+    field_fetch('REMARK')
   end
 
   # REFERENCE
@@ -151,16 +135,7 @@ class GLYCAN < KEGGDB
   # DBLINKS
   def dblinks
     unless @data['DBLINKS']
-      ary = Array.new
-      lines = lines_fetch('DBLINKS')
-      lines.each do |line|
-        if /^\S/.match(line)
-          ary << line
-        else
-          ary.last << " #{line.strip}"
-        end
-      end
-      @data['DBLINKS'] = ary
+      @data['DBLINKS'] = lines_fetch('DBLINKS')
     end
     @data['DBLINKS']
   end
