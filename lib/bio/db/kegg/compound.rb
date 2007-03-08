@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2001, 2002, 2004, 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    Ruby's
 #
-# $Id: compound.rb,v 0.13 2007/01/15 04:34:32 k Exp $
+# $Id: compound.rb,v 0.14 2007/03/08 00:10:05 k Exp $
 #
 
 require 'bio/db'
@@ -31,10 +31,11 @@ class COMPOUND < KEGGDB
 
   # NAME
   def names
-    lines_fetch('NAME') 
+    field_fetch('NAME').split(/\s*;\s*/)
   end
+
   def name
-    names[0]
+    names.first
   end
 
   # FORMULA
@@ -45,6 +46,14 @@ class COMPOUND < KEGGDB
   # MASS
   def mass
     field_fetch('MASS').to_f
+  end
+
+  # GLYCAN
+  def glycans
+    unless @data['GLYCAN']
+      @data['GLYCAN'] = fetch('GLYCAN').split(/\s+/)
+    end
+    @data['GLYCAN']
   end
 
   # REACTION
