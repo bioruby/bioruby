@@ -135,12 +135,12 @@ a:hover {
 /* header */
 
 h1 {
-	font-size: 200%;
+	font-size: 180%;
 	color: #ffffff;
 	background-color: #6e8377;
 	line-height: 64px;
-	text-align: right;
-	padding-right: 20px;
+	text-align: left;
+	padding-left: 20px;
 }
 
 h2 {
@@ -211,6 +211,7 @@ td {
 
 textarea {
 	font-family: monospace;
+	font-size: 100%;
 	overflow: auto;
 }
 
