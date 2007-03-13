@@ -1,0 +1,63 @@
+ID   AB090716; SV 1; linear; genomic DNA; STD; VRT; 166 BP.
+XX
+AC   AB090716;
+XX
+DT   25-OCT-2002 (Rel. 73, Created)
+DT   14-NOV-2006 (Rel. 89, Last updated, Version 3)
+XX
+DE   Haplochromis sp. 'muzu, rukwa' LWS gene for long wavelength-sensitive
+DE   opsin, partial cds, specimen_voucher:specimen No. HT-9361.
+XX
+KW   .
+XX
+OS   Haplochromis sp. 'muzu, rukwa'
+OC   Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi;
+OC   Actinopterygii; Neopterygii; Teleostei; Euteleostei; Neoteleostei;
+OC   Acanthomorpha; Acanthopterygii; Percomorpha; Perciformes; Labroidei;
+OC   Cichlidae; African cichlids; Pseudocrenilabrinae; Haplochromini;
+OC   Haplochromis.
+XX
+RN   [1]
+RP   1-166
+RA   Terai Y., Mayer W.E., Klein J., Tichy H., Okada N.;
+RT   ;
+RL   Submitted (26-AUG-2002) to the EMBL/GenBank/DDBJ databases.
+RL   Yohey Terai, Tokyo Institute of Technology, Graduate School of Bioscience
+RL   and Biotechnology; 4259 Nagatsuta-cho, Midori-ku, Yokohama, Kanagawa
+RL   226-8501, Japan (E-mail:yterai@bio.titech.ac.jp, Tel:81-45-924-5744,
+RL   Fax:81-45-924-5835)
+XX
+RN   [2]
+RX   DOI; 10.1073/pnas.232561099.
+RX   PUBMED; 12438648.
+RA   Terai Y., Mayer W.E., Klein J., Tichy H., Okada N.;
+RT   "The effect of selection on a long wavelength-sensitive (LWS) opsin gene of
+RT   Lake Victoria cichlid fishes";
+RL   Proc. Natl. Acad. Sci. U.S.A. 99(24):15501-15506(2002).
+XX
+FH   Key             Location/Qualifiers
+FH
+FT   source          1..166
+FT                   /organism="Haplochromis sp. 'muzu, rukwa'"
+FT                   /mol_type="genomic DNA"
+FT                   /specimen_voucher="specimen No. HT-9361"
+FT                   /tissue_type="piece of fin"
+FT                   /db_xref="taxon:205497"
+FT   CDS             <1..>166
+FT                   /codon_start=2
+FT                   /gene="LWS"
+FT                   /product="long wavelength-sensitive opsin"
+FT                   /db_xref="UniProtKB/TrEMBL:Q8AUS6"
+FT                   /protein_id="BAC22028.1"
+FT                   /translation="FWPHGLKTSCGPDVFSGSEDPGVQSYMIVLMITCCFIPLAIIILC
+FT                   YLAVWMAIRA"
+FT   exon            1..166
+FT                   /gene="LWS"
+FT                   /product="long wavelength-sensitive opsin"
+FT                   /number=4
+XX
+SQ   Sequence 166 BP; 29 A; 42 C; 41 G; 54 T; 0 other;
+     gttctggcct catggactga agacttcctg tggacctgat gtgttcagtg gaagtgaaga        60
+     ccctggagta cagtcctaca tgattgttct catgattact tgctgtttca tccccctggc       120
+     tatcatcatc ctgtgctacc ttgctgtgtg gatggccatc cgtgct                      166
+//

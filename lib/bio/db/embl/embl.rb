@@ -2,10 +2,10 @@
 # = bio/db/embl/embl.rb - EMBL database class
 #
 # 
-# Copyright::   Copyright (C) 2001-2006 Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::   Copyright (C) 2001-2007 Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: embl.rb,v 1.27 2006/04/14 05:49:30 nakao Exp $
+# $Id: embl.rb,v 1.28 2007/03/13 17:03:55 nakao Exp $
 #
 # == Description
 #
@@ -40,7 +40,7 @@ class EMBL < EMBLDB
   # * Bio::EMBL#id_line -> <ID Hash>
   # where <ID Hash> is:
   #  {'ENTRY_NAME' => String, 'MOLECULE_TYPE' => String, 'DIVISION' => String,
-  #   'SEQUENCE_LENGTH' => Int}
+  #   'SEQUENCE_LENGTH' => Int, 'SEQUENCE_VERSION' => Int}
   #
   # ID Line
   #  "ID  ENTRY_NAME DATA_CLASS; MOLECULE_TYPE; DIVISION; SEQUENCE_LENGTH BP."
@@ -69,14 +69,31 @@ class EMBL < EMBLDB
   #  UNC (Unclassified)
   #  VRL (Viruses)
   #
+  # Rel 89-
+  # ID   CD789012; SV 4; linear; genomic DNA; HTG; MAM; 500 BP.
+  # ID <1>; SV <2>; <3>; <4>; <5>; <6>; <7> BP.
+  # 1. Primary accession number
+  # 2. Sequence version number
+  # 3. Topology: 'circular' or 'linear'
+  # 4. Molecule type (see note 1 below)
+  # 5. Data class (see section 3.1)
+  # 6. Taxonomic division (see section 3.2)
+  # 7. Sequence length (see note 2 below)
   def id_line(key=nil)
     unless @data['ID']
       tmp = Hash.new
       idline = fetch('ID').split(/; +/)         
-      tmp['ENTRY_NAME'], tmp['DATA_CLASS'] = idline[0].split(/ +/)
-      tmp['MOLECULE_TYPE'] = idline[1]
-      tmp['DIVISION'] = idline[2]
-      tmp['SEQUENCE_LENGTH'] = idline[3].strip.split(' ').first.to_i
+      tmp['ENTRY_NAME'], tmp['DATA_CLASS'] = idline.shift.split(/ +/)
+      if idline.first =~ /^SV/
+        tmp['SEQUENCE_VERSION'] = idline.shift.split(' ').last
+        tmp['TOPOLOGY'] = idline.shift
+        tmp['MOLECULE_TYPE'] = idline.shift
+        tmp['DATA_CLASS'] = idline.shift
+      else
+        tmp['MOLECULE_TYPE'] = idline.shift
+      end
+      tmp['DIVISION'] = idline.shift
+      tmp['SEQUENCE_LENGTH'] = idline.shift.strip.split(' ').first.to_i
 
       @data['ID'] = tmp
     end
@@ -128,10 +145,14 @@ class EMBL < EMBLDB
   # SV Line; sequence version (1/entry)
   #  SV    Accession.Version
   def sv
-    field_fetch('SV').sub(/;/,'')
+    if (v = field_fetch('SV').sub(/;/,'')) == ""
+      [id_line['ENTRY_NAME'], id_line['SEQUENCE_VERSION']].join('.') 
+    else
+      v
+    end  
   end
   def version
-    sv.split(".")[1].to_i
+    (sv.split(".")[1] || id_line['SEQUENCE_VERSION']).to_i
   end
 
   
