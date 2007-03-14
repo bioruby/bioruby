@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: irb.rb,v 1.1 2006/12/24 08:32:08 k Exp $
+# $Id: irb.rb,v 1.2 2007/03/14 19:54:51 k Exp $
 #
 
 module Bio::Shell
@@ -46,6 +46,12 @@ module Bio::Shell
           Bio::Shell.store_history(line)
         end
         return line
+      end
+
+      if File.exists?("./config/boot.rb")
+        require "./config/boot"
+        require "./config/environment"
+        #require 'commands/console'
       end
     end
 
