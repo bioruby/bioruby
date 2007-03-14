@@ -6,7 +6,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: web.rb,v 1.2 2006/12/24 08:32:08 k Exp $
+# $Id: web.rb,v 1.3 2007/03/14 19:55:10 k Exp $
 #
 
 
@@ -30,7 +30,7 @@ module Bio::Shell
       puts ">>>  open http://localhost:3000/bioruby"
       puts ">>>"
       puts
-      puts '(port # may differ if opts for rails are given "bioruby --web proj -- -p port")'
+      puts '(You can change the port number by adding "-- -p 4000" option)'
       puts
     end
 
