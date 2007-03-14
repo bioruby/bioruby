@@ -10,9 +10,10 @@ class BiorubyController < ApplicationController
     ActiveSupport::CoreExtensions::String::Access,
     ActiveSupport::CoreExtensions::Numeric::Bytes,
     ActiveSupport::CoreExtensions::Numeric::Time,
-    WEBrick, Base64::Deprecated, Base64, PP::ObjectMixin,
+    Base64::Deprecated, Base64, PP::ObjectMixin,
     Bio::Shell
   ]
+  HIDE_MODULES << WEBrick if defined?(WEBrick)
 
   HIDE_VARIABLES = [
     "_", "irb", "_erbout",
