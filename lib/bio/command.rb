@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-#  $Id: command.rb,v 1.12 2006/07/14 14:23:47 ngoto Exp $
+#  $Id: command.rb,v 1.13 2007/03/26 17:09:45 ngoto Exp $
 #
 
 require 'open3'
@@ -115,7 +115,13 @@ module Command
         yield io
       else
         # child
-        Kernel.exec(*cmd)
+        begin
+          Kernel.exec(*cmd)
+        rescue Errno::ENOENT, Errno::EACCES
+          Process.exit!(127)
+        rescue Exception
+        end
+        Process.exit!(1)
       end
     end
   end
@@ -178,7 +184,13 @@ module Command
         io.read
       else
         # child
-        Kernel.exec(*cmd)
+        begin
+          Kernel.exec(*cmd)
+        rescue Errno::ENOENT, Errno::EACCES
+          Process.exit!(127)
+        rescue Exception
+        end
+        Process.exit!(1)
       end
     end
   end
