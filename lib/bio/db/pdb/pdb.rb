@@ -6,7 +6,7 @@
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 # License:: LGPL
 #
-#  $Id: pdb.rb,v 1.16 2006/06/27 14:23:45 ngoto Exp $
+#  $Id: pdb.rb,v 1.17 2007/03/27 16:29:32 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -1010,12 +1010,55 @@ module Bio
           self
         end
 
-        def to_s
+        def justify_atomname
           atomname = self.name.to_s
-          elem = self.element.to_s.strip
-          if elem.length == 1 and atomname.lstrip[0, 1] == elem then
-            atomname = ' ' + atomname
+          return atomname[0, 4] if atomname.length >= 4
+          case atomname.length
+          when 0
+            return '    '
+          when 1
+            return ' ' + atomname + '  '
+          when 2
+            if /\A[0-9]/ =~ atomname then
+              return sprintf('%-4s', atomname)
+            elsif /[0-9]\z/ =~ atomname then
+              return sprintf(' %-3s', atomname)
+            end
+          when 3
+            if /\A[0-9]/ =~ atomname then
+              return sprintf('%-4s', atomname)
+            end
           end
+          # ambiguous case for two- or three-letter name
+          elem = self.element.to_s.strip
+          if elem.size > 0 and i = atomname.index(elem) then
+            if i == 0 and elem.size == 1 then
+              return sprintf(' %-3s', atomname)
+            else
+              return sprintf('%-4s', atomname)
+            end
+          end
+          if self.class == HETATM then
+            if /\A(B[^AEHIKR]|C[^ADEFLMORSU]|F[^EMR]|H[^EFGOS]|I[^NR]|K[^R]|N[^ABDEIOP]|O[^S]|P[^ABDMORTU]|S[^BCEGIMNR]|V|W|Y[^B])/ =~
+                atomname then
+              return sprintf(' %-3s', atomname)
+            else
+              return sprintf('%-4s', atomname)
+            end
+          else # ATOM
+            if /\A[CHONS]/ =~ atomname then
+              return sprintf(' %-3s', atomname)
+            else
+              return sprintf('%-4s', atomname)
+            end
+          end
+          # could not be reached here
+          raise 'bug!'
+        end
+        private :justify_atomname
+
+        def to_s
+          atomname = justify_atomname
           sprintf("%-6s%5d %-4s%-1s%3s %-1s%4d%-1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %-4s%2s%-2s\n",
                   self.record_name,
                   self.serial, 
