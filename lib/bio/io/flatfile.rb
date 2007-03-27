@@ -5,7 +5,7 @@
 #
 # License:: Ruby's
 #
-#  $Id: flatfile.rb,v 1.56 2007/03/08 00:27:18 k Exp $
+#  $Id: flatfile.rb,v 1.57 2007/03/27 09:26:03 ngoto Exp $
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
@@ -1119,8 +1119,9 @@ module Bio
             /^UI  \- [0-9]+$/ ],
           embl     = RuleRegexp[ 'Bio::EMBL',
             /^ID   .+\; .*(DNA|RNA|XXX)\;/ ],
-          sptr     = RuleRegexp[ 'Bio::SPTR',
-            /^ID   .+\; *PRT\;/ ],
+          sptr     = RuleRegexp2[ 'Bio::SPTR',
+            /^ID   .+\; *PRT\;/,
+            /^ID   [-A-Za-z0-9_\.]+ .+\; *[0-9]+ *AA\./ ],
           prosite  = RuleRegexp[ 'Bio::PROSITE',
             /^ID   [-A-Za-z0-9_\.]+\; (PATTERN|RULE|MATRIX)\.$/ ],
           transfac = RuleRegexp[ 'Bio::TRANSFAC',
