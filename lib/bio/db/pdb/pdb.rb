@@ -6,7 +6,7 @@
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 # License:: LGPL
 #
-#  $Id: pdb.rb,v 1.17 2007/03/27 16:29:32 ngoto Exp $
+#  $Id: pdb.rb,v 1.18 2007/03/27 16:37:33 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -354,7 +354,7 @@ module Bio
       # need to call it .
       #
       def do_parse
-        return self if @parsed
+        return self if @parsed or !@str
         str = @str
         each_symbol do |key, klass, ranges|
           #If we only have one range then pull that out
@@ -990,7 +990,7 @@ module Bio
         end
 
         def do_parse
-          return self if @parsed
+          return self if @parsed or !@str
           self.serial     = @str[6..10].to_i
           self.name       = @str[12..15].strip
           self.altLoc     = @str[16..16]
