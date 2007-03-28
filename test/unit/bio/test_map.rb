@@ -111,7 +111,7 @@ module Bio
     end
   end
 	
-  class CloneActsLikeMap
+  class CloneToActLikeMap
     include Bio::Map::ActsLikeMap
     def initialize
       @mappings_as_map = Array.new
@@ -121,17 +121,17 @@ module Bio
 	
   class TestActsLikeMap < Test::Unit::TestCase
     def setup
-      @clone = CloneActsLikeMap.new
+      @clone = CloneToActLikeMap.new
     end
     def test_mixin
-      assert_instance_of(CloneActsLikeMap, @clone)
+      assert_instance_of(CloneToActLikeMap, @clone)
       assert_respond_to(@clone, 'contains_marker?')
       assert_respond_to(@clone, 'add_mapping_as_map')
       assert_equal(0, @clone.mappings_as_map.length)
     end
   end
 
-  class CloneActsLikeMarker
+  class CloneToActLikeMarker
     include Bio::Map::ActsLikeMarker
     def initialize
       @mappings_as_marker = Array.new
@@ -141,17 +141,17 @@ module Bio
 
   class TestActsLikeMarker < Test::Unit::TestCase
     def setup
-      @clone = CloneActsLikeMarker.new
+      @clone = CloneToActLikeMarker.new
     end
     
     def test_mixin
-      assert_instance_of(CloneActsLikeMarker, @clone)
+      assert_instance_of(CloneToActLikeMarker, @clone)
       assert_respond_to(@clone, 'mapped_to?')
       assert_respond_to(@clone, 'add_mapping_as_marker')
     end
   end
 
-  class CloneActsLikeMapAndMarker
+  class CloneToActLikeMapAndMarker
     include Bio::Map::ActsLikeMap
     include Bio::Map::ActsLikeMarker
     def initialize
@@ -163,13 +163,13 @@ module Bio
 
   class TestActsLikeMapAndMarker < Test::Unit::TestCase
     def setup
-      @clone_a = CloneActsLikeMapAndMarker.new
-      @clone_b = CloneActsLikeMapAndMarker.new
+      @clone_a = CloneToActLikeMapAndMarker.new
+      @clone_b = CloneToActLikeMapAndMarker.new
       @clone_a.add_mapping_as_map(@clone_b, nil)
     end
     
     def test_mixin
-      assert_instance_of(CloneActsLikeMapAndMarker, @clone_a)
+      assert_instance_of(CloneToActLikeMapAndMarker, @clone_a)
       assert_respond_to(@clone_a, 'contains_marker?')
       assert_respond_to(@clone_a, 'add_mapping_as_map')
       assert_respond_to(@clone_a, 'mapped_to?')
@@ -181,17 +181,4 @@ module Bio
       assert_equal(1, @clone_b.mappings_as_marker.length)
     end
   end
-  
-  class Clone
-    include Bio::Map::ActsLikeMap
-    include Bio::Map::ActsLikeMarker
-    
-    def initialize(name)
-      @name = name
-      @mappings_as_map = Array.new
-      @mappings_as_marker = Array.new
-    end
-    attr_accessor :name, :mappings_as_map, :mappings_as_marker
-  end
-  
 end
