@@ -19,20 +19,33 @@ class BiorubyController < ApplicationController
     "_", "irb", "_erbout",
   ]
 
+  SECURITY_NOTICE = "For security purposes, this functionality is only available to local requests."
+
+  def index
+    unless local_request?
+      flash[:notice] = SECURITY_NOTICE
+    end
+  end
+
   def evaluate
-    begin
-      @script = params[:script].strip
+    if local_request?
+      begin
+        @script = params[:script].strip
 
-      # write out to history
-      Bio::Shell.store_history(@script)
+        # write out to history
+        Bio::Shell.store_history(@script)
 
-      # evaluate ruby script
-      @result = eval(@script, Bio::Shell.cache[:binding])
+        # evaluate ruby script
+        @result = eval(@script, Bio::Shell.cache[:binding])
 
-      # *TODO* need to handle with output of print/puts/p/pp etc. here
-      @output = nil
-    rescue
-      @result = $!
+        # *TODO* need to handle with output of print/puts/p/pp etc. here
+        @output = nil
+      rescue
+        @result = $!
+        @output = nil
+      end
+    else
+      @result = SECURITY_NOTICE
       @output = nil
     end
 

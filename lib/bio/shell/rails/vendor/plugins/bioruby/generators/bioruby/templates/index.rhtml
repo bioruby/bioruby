@@ -1,4 +1,7 @@
 <div id="console">
+<%- if flash[:notice] -%>
+<div id="notice"><p><%= flash[:notice] %></p></div><br>
+<%- end -%>
 <%= form_remote_tag(:url => {:action => "evaluate"}, :position => "top") %>
 <b>BioRuby script</b>
 <input type="submit" value="Evaluate">

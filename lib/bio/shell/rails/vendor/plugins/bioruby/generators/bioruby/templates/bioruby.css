@@ -15,6 +15,15 @@ div#main {
 	padding-left: 10px;
 }
 
+div#notice {
+	background-color: #fcc;
+	border: 1px solid #f00;
+}
+div#notice p {
+	margin: 0;
+	padding: 10px;
+}
+
 pre {
 	color: #6e8377;
 	background-color: #eaedeb;
@@ -193,8 +202,14 @@ ul {
 
 /* table */
 
+table {
+	border: 1px solid #cccccc;
+	border-collapse: collapse;
+}
+
 table#list_methods {
 	width: 680px;
+	border: none;
 }
 
 th {
@@ -207,13 +222,16 @@ td {
 	padding: 5px;
 }
 
+
 /* textarea */
 
 textarea {
 	font-family: monospace;
 	font-size: 100%;
 	overflow: auto;
+	width: 80%;
 }
+
 
 /* blockquote */
 
