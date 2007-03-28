@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: core.rb,v 1.22 2006/12/24 08:36:00 k Exp $
+# $Id: core.rb,v 1.23 2007/03/28 20:14:14 k Exp $
 #
 
 module Bio::Shell::Core
@@ -57,7 +57,7 @@ module Bio::Shell::Core
 
   def ask_yes_or_no(message)
     loop do
-      print "#{message}"
+      STDERR.print "#{message}"
       answer = gets
       if answer.nil?
         # readline support might be broken
@@ -97,21 +97,25 @@ module Bio::Shell::Ghost
  
   def load_session
     load_object
-    load_history
-    opening_splash
-    open_history
+    unless @cache[:mode] == :script
+      load_history
+      opening_splash
+      open_history
+    end
   end
 
   def save_session
-    close_history
-    closing_splash
+    unless @cache[:mode] == :script
+      close_history
+      closing_splash
+    end
     if create_save_dir_ask
       #save_history	# changed to use our own...
       save_object
       save_config
     end
-    puts "Leaving directory '#{@cache[:workdir]}'"
-    puts "History is saved in '#{@cache[:workdir]}/#{SAVEDIR + HISTORY}'"
+    STDERR.puts "Leaving directory '#{@cache[:workdir]}'"
+    STDERR.puts "History is saved in '#{@cache[:workdir]}/#{SAVEDIR + HISTORY}'"
   end
 
   ### directories
@@ -143,9 +147,9 @@ module Bio::Shell::Ghost
   def create_real_dir(dir)
     unless File.directory?(dir)
       begin
-        print "Creating directory (#{dir}) ... "
+        STDERR.print "Creating directory (#{dir}) ... "
         FileUtils.mkdir_p(dir)
-        puts "done"
+        STDERR.puts "done"
       rescue
         warn "Error: Failed to create directory (#{dir}) : #{$!}"
       end
@@ -179,11 +183,11 @@ module Bio::Shell::Ghost
 
   def load_config_file(file)
     if File.exists?(file)
-      print "Loading config (#{file}) ... "
+      STDERR.print "Loading config (#{file}) ... "
       if hash = YAML.load(File.read(file))
         @config.update(hash)
       end
-      puts "done"
+      STDERR.puts "done"
     end
   end
 
@@ -193,11 +197,11 @@ module Bio::Shell::Ghost
 
   def save_config_file(file)
     begin
-      print "Saving config (#{file}) ... "
+      STDERR.print "Saving config (#{file}) ... "
       File.open(file, "w") do |f|
         f.puts @config.to_yaml
       end
-      puts "done"
+      STDERR.puts "done"
     rescue
       warn "Error: Failed to save (#{file}) : #{$!}"
     end
@@ -205,7 +209,7 @@ module Bio::Shell::Ghost
 
   def config_show
     @config.each do |k, v|
-      puts "#{k}\t= #{v.inspect}"
+      STDERR.puts "#{k}\t= #{v.inspect}"
     end
   end
 
@@ -214,7 +218,7 @@ module Bio::Shell::Ghost
     flag = ! @config[:echo]
     @config[:echo] = IRB.conf[:ECHO] = flag
     eval("conf.echo = #{flag}", bind)
-    puts "Echo #{flag ? 'on' : 'off'}"
+    STDERR.puts "Echo #{flag ? 'on' : 'off'}"
   end
 
   def config_color
@@ -237,7 +241,7 @@ module Bio::Shell::Ghost
   def config_splash
     flag = ! @config[:splash]
     @config[:splash] = flag
-    puts "Splash #{flag ? 'on' : 'off'}"
+    STDERR.puts "Splash #{flag ? 'on' : 'off'}"
     opening_splash
   end
 
@@ -256,9 +260,9 @@ module Bio::Shell::Ghost
   def load_plugin_dir(dir)
     if File.directory?(dir)
       Dir.glob("#{dir}/*.rb").sort.each do |file|
-        print "Loading plugin (#{file}) ... "
+        STDERR.print "Loading plugin (#{file}) ... "
         load file
-        puts "done"
+        STDERR.puts "done"
       end
     end
   end
@@ -282,7 +286,7 @@ module Bio::Shell::Ghost
 
   def load_object_file(file)
     if File.exists?(file)
-      print "Loading object (#{file}) ... "
+      STDERR.print "Loading object (#{file}) ... "
       begin
         bind = Bio::Shell.cache[:binding]
         hash = Marshal.load(File.read(file))
@@ -291,13 +295,13 @@ module Bio::Shell::Ghost
             Thread.current[:restore_value] = v
             eval("#{k} = Thread.current[:restore_value]", bind)
           rescue
-            puts "Warning: object '#{k}' couldn't be loaded : #{$!}"
+            STDERR.puts "Warning: object '#{k}' couldn't be loaded : #{$!}"
           end
         end
       rescue
         warn "Error: Failed to load (#{file}) : #{$!}"
       end
-      puts "done"
+      STDERR.puts "done"
     end
   end
 
@@ -307,7 +311,7 @@ module Bio::Shell::Ghost
 
   def save_object_file(file)
     begin
-      print "Saving object (#{file}) ... "
+      STDERR.print "Saving object (#{file}) ... "
       File.rename(file, "#{file}.old") if File.exist?(file)
       File.open(file, "w") do |f|
         bind = Bio::Shell.cache[:binding]
@@ -328,7 +332,7 @@ module Bio::Shell::Ghost
         Marshal.dump(hash, f)
         @config[:marshal] = MARSHAL
       end
-      puts "done"
+      STDERR.puts "done"
     rescue
       File.rename("#{file}.old", file) if File.exist?("#{file}.old")
       warn "Error: Failed to save (#{file}) : #{$!}"
@@ -359,13 +363,13 @@ module Bio::Shell::Ghost
 
   def load_history_file(file)
     if File.exists?(file)
-      print "Loading history (#{file}) ... "
+      STDERR.print "Loading history (#{file}) ... "
       File.open(file).each do |line|
         unless line[/^# /]
           Readline::HISTORY.push line.chomp
         end
       end
-      puts "done"
+      STDERR.puts "done"
     end
   end
   
@@ -378,11 +382,11 @@ module Bio::Shell::Ghost
 
   def save_history_file(file)
     begin
-      print "Saving history (#{file}) ... "
+      STDERR.print "Saving history (#{file}) ... "
       File.open(file, "w") do |f|
         f.puts Readline::HISTORY.to_a
       end
-      puts "done"
+      STDERR.puts "done"
     rescue
       warn "Error: Failed to save (#{file}) : #{$!}"
     end
@@ -412,12 +416,12 @@ module Bio::Shell::Ghost
   end
 
   def script_begin
-    puts "-- 8< -- 8< -- 8< --  Script  -- 8< -- 8< -- 8< --"
+    STDERR.puts "-- 8< -- 8< -- 8< --  Script  -- 8< -- 8< -- 8< --"
     @script_begin = Readline::HISTORY.size
   end
 
   def script_end
-    puts "-- >8 -- >8 -- >8 --  Script  -- >8 -- >8 -- >8 --"
+    STDERR.puts "-- >8 -- >8 -- >8 --  Script  -- >8 -- >8 -- >8 --"
     @script_end = Readline::HISTORY.size - 2
   end
 
@@ -431,25 +435,25 @@ module Bio::Shell::Ghost
       if ask_yes_or_no(message)
         save_script_file(SCRIPT)
       else
-        puts " ... save aborted."
+        STDERR.puts " ... save aborted."
       end 
     elsif @script_begin and @script_end and @script_begin - @script_end == 1
-      puts " ... script aborted."
+      STDERR.puts " ... script aborted."
     else
-      puts "Error: Script range #{@script_begin}..#{@script_end} is invalid"
+      STDERR.puts "Error: Script range #{@script_begin}..#{@script_end} is invalid"
     end
   end
 
   def save_script_file(file)
     begin
-      print "Saving script (#{file}) ... "
+      STDERR.print "Saving script (#{file}) ... "
         File.open(file, "w") do |f|
         f.puts "#!/usr/bin/env bioruby"
         f.puts
         f.puts Readline::HISTORY.to_a[@script_begin..@script_end]
         f.puts
       end
-      puts "done"
+      STDERR.puts "done"
     rescue
       @script_begin = nil
       warn "Error: Failed to save (#{file}) : #{$!}"
@@ -506,7 +510,7 @@ module Bio::Shell::Ghost
   end
 
   def opening_splash
-    puts
+    STDERR.puts
     if @config[:splash]
       if @config[:color]
         splash_message_action_color
@@ -515,28 +519,28 @@ module Bio::Shell::Ghost
       end
     end
     if @config[:color]
-      print splash_message_color
+      STDERR.print splash_message_color
     else
-      print splash_message
+      STDERR.print splash_message
     end
-    puts
-    puts
-    print "  Version : BioRuby #{Bio::BIORUBY_VERSION.join(".")}"
-    print " / Ruby #{RUBY_VERSION}"
-    puts
-    puts
+    STDERR.puts
+    STDERR.puts
+    STDERR.print "  Version : BioRuby #{Bio::BIORUBY_VERSION.join(".")}"
+    STDERR.print " / Ruby #{RUBY_VERSION}"
+    STDERR.puts
+    STDERR.puts
   end
 
   def closing_splash
-    puts
-    puts
+    STDERR.puts
+    STDERR.puts
     if @config[:color]
-      print splash_message_color
+      STDERR.print splash_message_color
     else
-      print splash_message
+      STDERR.print splash_message
     end
-    puts
-    puts
+    STDERR.puts
+    STDERR.puts
   end
 
 end
