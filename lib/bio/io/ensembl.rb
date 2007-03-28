@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: ensembl.rb,v 1.4 2007/03/28 10:31:48 k Exp $
+# $Id: ensembl.rb,v 1.5 2007/03/28 12:01:48 nakao Exp $
 #
 # == Description
 #
@@ -13,11 +13,11 @@
 #
 # == Examples
 #
-#  seq = Bio::Ensembl::Human.exportview(1, 1000, 100000)
-#  gff = Bio::Ensembl::Human.exportview(1, 1000, 100000, ['gene'])
+#  seq = Bio::Ensembl.human.exportview(1, 1000, 100000)
+#  gff = Bio::Ensembl.human.exportview(1, 1000, 100000, ['gene'])
 #
-#  seq = Bio::Ensembl::Mouse.exportview(1, 1000, 100000)
-#  gff = Bio::Ensembl::Mouse.exportview(1, 1000, 100000, ['gene', 'variation', 'genscan'])
+#  seq = Bio::Ensembl.mouse.exportview(1, 1000, 100000)
+#  gff = Bio::Ensembl.mouse.exportview(1, 1000, 100000, ['gene', 'variation', 'genscan'])
 #
 #  
 # == References
@@ -58,13 +58,17 @@ module Bio
 #   http://www.gramene.org/
 #
 class Ensembl
-
+  
   ENSEMBL_URL = 'http://www.ensembl.org'
+
+  attr_reader :server
+
+  attr_reader :organism
 
   def initialize(organism, server = nil)
     @server = server || ENSEMBL_URL
     @organism = organism
-    @uri = [ server.chomp('/'), @organism ].join('/')
+    @uri = [ @server.chomp('/'), @organism ].join('/')
   end
 
   def self.human
