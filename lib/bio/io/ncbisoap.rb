@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: ncbisoap.rb,v 1.1 2006/09/19 05:41:45 k Exp $
+# $Id: ncbisoap.rb,v 1.2 2007/03/28 09:11:02 k Exp $
 #
 
 require 'bio/io/soapwsdl'
@@ -66,6 +66,9 @@ class NCBI
 class SOAP < Bio::SOAPWSDL
 
   BASE_URI = "http://www.ncbi.nlm.nih.gov/entrez/eutils/soap/"
+
+  # set default to EUtils
+  SERVER_URI = BASE_URI + "eutils.wsdl"
 
   def initialize(wsdl = nil)
     super(wsdl || self.class::SERVER_URI)

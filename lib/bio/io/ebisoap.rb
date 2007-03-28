@@ -5,7 +5,7 @@
 #              Toshiaki Katayama <k@bioruby.org>
 # License::    Ruby's
 #
-# $Id: ebisoap.rb,v 1.1 2006/09/19 05:41:45 k Exp $
+# $Id: ebisoap.rb,v 1.2 2007/03/28 09:11:02 k Exp $
 #
 
 require 'bio/io/soapwsdl'
@@ -16,6 +16,9 @@ class EBI
 class SOAP < Bio::SOAPWSDL
 
   BASE_URI = "http://www.ebi.ac.uk/Tools/webservices/wsdl/"
+
+  # set default to Dbfetch
+  SERVER_URI = BASE_URI + "WSDbfetch.wsdl"
 
   def initialize(wsdl = nil)
     super(wsdl || self.class::SERVER_URI)

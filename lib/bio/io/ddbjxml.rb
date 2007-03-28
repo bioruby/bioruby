@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: ddbjxml.rb,v 1.12 2006/09/19 05:44:41 k Exp $
+# $Id: ddbjxml.rb,v 1.13 2007/03/28 09:11:02 k Exp $
 #
 
 require 'bio/io/soapwsdl'
@@ -26,6 +26,9 @@ class DDBJ
 class XML < Bio::SOAPWSDL
 
   BASE_URI = "http://xml.nig.ac.jp/wsdl/"
+
+  # set default to GetEntry
+  SERVER_URI = BASE_URI + "GetEntry.wsdl"
 
   def initialize(wsdl = nil)
     super(wsdl || self.class::SERVER_URI)
