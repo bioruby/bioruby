@@ -6,7 +6,7 @@
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 # License:: LGPL
 #
-#  $Id: pdb.rb,v 1.18 2007/03/27 16:37:33 ngoto Exp $
+#  $Id: pdb.rb,v 1.19 2007/03/28 10:25:17 ngoto Exp $
 #
 #--
 #  This library is free software; you can redistribute it and/or
@@ -1038,7 +1038,7 @@ module Bio
               return sprintf('%-4s', atomname)
             end
           end
-          if self.class == HETATM then
+          if self.kind_of?(HETATM) then
             if /\A(B[^AEHIKR]|C[^ADEFLMORSU]|F[^EMR]|H[^EFGOS]|I[^NR]|K[^R]|N[^ABDEIOP]|O[^S]|P[^ABDMORTU]|S[^BCEGIMNR]|V|W|Y[^B])/ =~
                 atomname then
               return sprintf(' %-3s', atomname)
@@ -1046,7 +1046,7 @@ module Bio
               return sprintf('%-4s', atomname)
             end
           else # ATOM
-            if /\A[CHONS]/ =~ atomname then
+            if /\A[CHONSP]/ =~ atomname then
               return sprintf(' %-3s', atomname)
             else
               return sprintf('%-4s', atomname)
