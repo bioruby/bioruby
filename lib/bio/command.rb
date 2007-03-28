@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-#  $Id: command.rb,v 1.14 2007/03/28 12:31:03 k Exp $
+#  $Id: command.rb,v 1.15 2007/03/28 16:54:11 k Exp $
 #
 
 require 'open3'
@@ -271,20 +271,41 @@ module Command
   # +uri+ must be a URI object, +params+ must be a hash, and
   # +header+ must be a hash.
   #
-  def post_form(uri, params, header = {})
+  def post_form(uri, params = nil, header = {})
     unless uri.is_a?(URI)
       uri = URI.parse(uri)
     end
-    data = params.map do |key, val|
-      "#{URI.escape(key.to_s)}=#{URI.escape(val.to_s)}" 
-    end.join('&')
-    h = {
+
+    data = ""
+
+    case params
+    when Hash
+      data = params.map do |key, val|
+        "#{URI.escape(key.to_s)}=#{URI.escape(val.to_s)}" 
+      end.join('&')
+    when Array
+      case params.first
+      when Hash, Array
+        data = params.map do |key, val|
+          "#{URI.escape(key.to_s)}=#{URI.escape(val.to_s)}" 
+        end.join('&')
+      when String
+        data = params.map do |str|
+          URI.escape(str.strip)
+        end.join('&')
+      end
+    when String
+      data = URI.escape(params.strip)
+    end
+
+    hash = {
       'Content-Type'   => 'application/x-www-form-urlencoded',
       'Content-Length' => data.length.to_s
     }
-    h.update(header)
+    hash.update(header)
+
     start_http(uri.host, uri.port) do |http|
-      http.post(uri.path, data, h)
+      http.post(uri.path, data, hash)
     end
   end
 
