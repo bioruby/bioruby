@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: test_ensembl.rb,v 1.3 2007/03/28 12:01:00 nakao Exp $
+# $Id: test_ensembl.rb,v 1.4 2007/03/28 12:24:30 nakao Exp $
 #
 
 require 'pathname'
@@ -42,6 +42,14 @@ class TestEnsembl_v14 < Test::Unit::TestCase
     organism = 'Mus_musculus'
     obj = Bio::Ensembl.mouse
     assert_equal(organism, obj.organism)
+  end
+
+  def test_new_with_2_args
+    organism = 'Oryza_sativa'
+    server_url = 'http://www.gramene.org'
+    obj = Bio::Ensembl.new(organism, server_url)
+    assert_equal(organism, obj.organism)
+    assert_equal(server_url, obj.server)
   end
 end
 
