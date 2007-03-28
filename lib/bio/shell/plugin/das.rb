@@ -5,13 +5,13 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: das.rb,v 1.1 2007/03/28 16:52:20 k Exp $
+# $Id: das.rb,v 1.2 2007/03/28 19:50:28 k Exp $
 #
 
 module Bio
 
   class DAS
-    def list(serv = nil)
+    def list_sequences
       result = ""
       self.get_dsn.each do |dsn|
         src = dsn.source_id
@@ -22,16 +22,6 @@ module Bio
         end
       end
       return result
-    end
-
-    def dna(dsn, entry_point, start, stop)
-      seg = Bio::DAS::SEGMENT.region(entry_point, start, stop)
-      self.get_dna(dsn, seg).first.sequence
-    end
-
-    def features(dsn, entry_point, start, stop)
-      seg = Bio::DAS::SEGMENT.region(entry_point, start, stop)
-      self.get_features(dsn, seg)
     end
   end
 
