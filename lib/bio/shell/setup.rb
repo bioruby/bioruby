@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: setup.rb,v 1.1 2006/12/24 08:32:08 k Exp $
+# $Id: setup.rb,v 1.2 2007/03/28 20:21:26 k Exp $
 #
 
 require 'getoptlong'
@@ -22,14 +22,14 @@ class Bio::Shell::Setup
     setup_workdir
 
     # load configuration and plugins
-    Dir.chdir(@workdir)
+    Dir.chdir(@workdir) if @workdir
     Bio::Shell.configure
     Bio::Shell.cache[:workdir] = @workdir
 
     # set default to irb mode
-    @mode ||= :irb
+    Bio::Shell.cache[:mode] = @mode || :irb
 
-    case @mode
+    case Bio::Shell.cache[:mode]
     when :web
       # setup rails server
       Bio::Shell::Web.new
@@ -86,8 +86,8 @@ class Bio::Shell::Setup
       @workdir = arg
     elsif File.file?(arg)
       # run file as a bioruby shell script
-      @workdir = File.join(File.dirname(arg), "..")
-      @script = File.basename(arg)
+      @workdir = nil
+      @script = arg
       @mode = :script
     else
       # run in new directory

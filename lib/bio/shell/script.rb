@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     Ruby's
 #
-# $Id: script.rb,v 1.1 2006/12/24 08:32:08 k Exp $
+# $Id: script.rb,v 1.2 2007/03/28 20:21:26 k Exp $
 #
 
 module Bio::Shell
@@ -15,7 +15,7 @@ module Bio::Shell
     def initialize(script)
       Bio::Shell.cache[:binding] = TOPLEVEL_BINDING
       Bio::Shell.load_session
-      eval(File.read(File.join(Bio::Shell.script_dir, script)), TOPLEVEL_BINDING)
+      eval(File.read(script), TOPLEVEL_BINDING)
       exit
     end
 
