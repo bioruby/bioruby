@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: test_analysis.rb,v 1.8 2007/01/05 06:11:39 trevor Exp $
+#  $Id: test_analysis.rb,v 1.9 2007/03/28 19:45:27 trevor Exp $
 #
 
 require 'pathname'
@@ -136,8 +136,35 @@ class TestAnalysis < Test::Unit::TestCase #:nodoc:
     assert_equal(["ag", "cag"], Bio::Sequence::NA.new('cagagag').cut_with_enzymes('ag^ag').primary )
     assert_equal(["ag", "cag"], Bio::Sequence::NA.new('cagagag').cut_with_enzymes('ag^ag', 'EcoRII').primary )
 
-    # NOTE: investigate where the '' is coming from
-    assert_equal(["", "ag", "ag", "cag", "ccagg"], Bio::Sequence::NA.new('cagagagccagg').cut_with_enzymes('ag^ag', 'EcoRII').primary )
+    # Note how EcoRII needs extra padding on the beginning and ending of the
+    # sequence 'ccagg' to make the match since the cut must occur between 
+    # two nucleotides and can not occur on the very end of the sequence.
+    #   
+    #   EcoRII:
+    #     :blunt: "0"
+    #     :c2: "5"
+    #     :c4: "0"
+    #     :c1: "-1"
+    #     :pattern: CCWGG
+    #     :len: "5"
+    #     :name: EcoRII
+    #     :c3: "0"
+    #     :ncuts: "2"
+    #   
+    #        -1 1 2 3 4 5
+    #   5' - n^c c w g g n - 3'
+    #   3' - n g g w c c^n - 5'
+    #   
+    #   (w == [at])
+
+    assert_equal(["ag", "agccagg", "cag"], Bio::Sequence::NA.new('cagagagccagg').cut_with_enzymes('ag^ag', 'EcoRII').primary )
+    assert_equal(["ag", "agccagg", "cag"], Bio::Sequence::NA.new('cagagagccagg').cut_with_enzymes('ag^ag').primary )
+    assert_equal([], Bio::Sequence::NA.new('cagagagccagg').cut_with_enzymes('EcoRII').primary )
+
+    assert_equal(["ag", "ag", "cag", "ccaggt"], Bio::Sequence::NA.new('cagagagccaggt').cut_with_enzymes('ag^ag', 'EcoRII').primary )
+    assert_equal(["ag", "agccaggt", "cag"], Bio::Sequence::NA.new('cagagagccaggt').cut_with_enzymes('ag^ag').primary )
+    assert_equal(["cagagag", "ccaggt"], Bio::Sequence::NA.new('cagagagccaggt').cut_with_enzymes('EcoRII').primary )
+    assert_equal(["a", "gtctctcggtcc"], Bio::Sequence::NA.new('cagagagccaggt').cut_with_enzymes('EcoRII').complement )  
   end
 
 end

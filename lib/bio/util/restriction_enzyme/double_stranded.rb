@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: double_stranded.rb,v 1.7 2007/01/05 06:33:01 trevor Exp $
+#  $Id: double_stranded.rb,v 1.8 2007/03/28 19:45:27 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
@@ -170,11 +170,37 @@ class DoubleStranded
   # +restriction_enzyme+:: RestrictionEnzyme
   # +offset+:: Numerical offset of where the enzyme action occurs on the seqeunce
   def create_action_at( offset )
-  #def enzyme_to_enzyme_action( restriction_enzyme, offset )
-    enzyme_action = EnzymeAction.new( offset, 
-                                      offset + @primary.size-1, 
-                                      offset, 
-                                      offset + @complement.size-1)
+    # x is the size of the fully aligned sequence with maximum padding needed
+    # to make a match on the primary and complement strand.
+    #
+    # For example -
+    # Note how EcoRII needs extra padding on the beginning and ending of the
+    # sequence 'ccagg' to make the match since the cut must occur between 
+    # two nucleotides and can not occur on the very end of the sequence.
+    #   
+    #   EcoRII:
+    #     :blunt: "0"
+    #     :c2: "5"
+    #     :c4: "0"
+    #     :c1: "-1"
+    #     :pattern: CCWGG
+    #     :len: "5"
+    #     :name: EcoRII
+    #     :c3: "0"
+    #     :ncuts: "2"
+    #   
+    #        -1 1 2 3 4 5
+    #   5' - n^c c w g g n - 3'
+    #   3' - n g g w c c^n - 5'
+    #   
+    #   (w == [at])
+    
+    x = aligned_strands.primary.size
+    
+    enzyme_action = EnzymeAction.new( offset,
+                                      offset + x-1,
+                                      offset,
+                                      offset + x-1)
 
     @cut_locations.each do |cut_location_pair|
       # cut_pair is a DoubleStranded::CutLocationPair

@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis_basic.rb,v 1.8 2007/01/05 06:33:01 trevor Exp $
+#  $Id: analysis_basic.rb,v 1.9 2007/03/28 19:45:27 trevor Exp $
 #
 
 require 'pathname'
@@ -150,7 +150,16 @@ class Analysis
     args.each do |enzyme|
       enzyme = Bio::RestrictionEnzyme.new(enzyme) unless enzyme.class == Bio::RestrictionEnzyme::DoubleStranded
 
-      find_match_locations( sequence, enzyme.primary.to_re ).each do |offset|
+      # make sure pattern is the proper size
+      # for more info see the internal documentation of 
+      # Bio::RestrictionEnzyme::DoubleStranded.create_action_at
+      pattern = Bio::Sequence::NA.new(
+        Bio::RestrictionEnzyme::DoubleStranded::AlignedStrands.align(
+          enzyme.primary, enzyme.complement
+        ).primary
+      ).to_re
+      
+      find_match_locations( sequence, pattern ).each do |offset|
         all_enzyme_actions << enzyme.create_action_at( offset )
       end
     end
@@ -184,11 +193,13 @@ class Analysis
 
     all_enzyme_actions[0..-2].each_with_index do |current_enzyme_action, i|
       next if competition_indexes.include? i
+      next if current_enzyme_action.cut_ranges.empty?  # no cuts, some enzymes are like this (ex. CjuI)
       
       all_enzyme_actions[i+1..-1].each_with_index do |comparison_enzyme_action, j|
         j += (i + 1)
         next if competition_indexes.include? j
-
+        next if comparison_enzyme_action.cut_ranges.empty?  # no cuts
+        
         if (current_enzyme_action.right <= comparison_enzyme_action.cut_ranges.min_vertical) or
            (current_enzyme_action.left > comparison_enzyme_action.cut_ranges.max_vertical)
           # no conflict
