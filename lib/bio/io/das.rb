@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: das.rb,v 1.14 2007/03/28 16:51:37 k Exp $
+# $Id: das.rb,v 1.15 2007/03/28 19:51:24 k Exp $
 #
 #--
 # == TODO
@@ -32,6 +32,17 @@ class DAS
   def initialize(url = 'http://www.wormbase.org:80/db/')
     @server = url.chomp('/')
   end
+
+  def dna(dsn, entry_point, start, stop)
+    seg = Bio::DAS::SEGMENT.region(entry_point, start, stop)
+    self.get_dna(dsn, seg).first.sequence
+  end
+
+  def features(dsn, entry_point, start, stop)
+    seg = Bio::DAS::SEGMENT.region(entry_point, start, stop)
+    self.get_features(dsn, seg)
+  end
+
 
   # Returns an Array of Bio::DAS::DSN
   def get_dsn
