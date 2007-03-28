@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-#  $Id: command.rb,v 1.13 2007/03/26 17:09:45 ngoto Exp $
+#  $Id: command.rb,v 1.14 2007/03/28 12:31:03 k Exp $
 #
 
 require 'open3'
@@ -272,8 +272,11 @@ module Command
   # +header+ must be a hash.
   #
   def post_form(uri, params, header = {})
+    unless uri.is_a?(URI)
+      uri = URI.parse(uri)
+    end
     data = params.map do |key, val|
-      "#{URI.escape(key)}=#{URI.escape(val)}" 
+      "#{URI.escape(key.to_s)}=#{URI.escape(val.to_s)}" 
     end.join('&')
     h = {
       'Content-Type'   => 'application/x-www-form-urlencoded',
