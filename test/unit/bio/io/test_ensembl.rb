@@ -1,11 +1,11 @@
 #
 # = test/unit/bio/io/test_ensembl.rb - Unit test for Bio::Ensembl.
 #
-# Copyright::   Copyright (C) 2006
+# Copyright::   Copyright (C) 2006, 2007
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: test_ensembl.rb,v 1.2 2006/04/27 05:38:50 nakao Exp $
+# $Id: test_ensembl.rb,v 1.3 2007/03/28 12:01:00 nakao Exp $
 #
 
 require 'pathname'
@@ -14,6 +14,36 @@ $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'test/unit'
 require 'bio/io/ensembl'
+
+# tests for ensembl.rb,v 1.4
+class TestEnsembl_v14 < Test::Unit::TestCase
+  def test_ensembl_url
+    assert_equal('http://www.ensembl.org', Bio::Ensembl::ENSEMBL_URL)
+  end
+  
+  def test_server
+    obj = Bio::Ensembl.new('Homo_sapiens')
+    assert_equal('http://www.ensembl.org', obj.server)
+  end
+
+  def test_organism
+    organism = 'Homo_sapiens'
+    obj = Bio::Ensembl.new(organism)
+    assert_equal(organism, obj.organism)
+  end
+  
+  def test_self_human
+    organism = 'Homo_sapiens'    
+    obj = Bio::Ensembl.human
+    assert_equal(organism, obj.organism)
+  end
+
+  def test_self_mouse
+    organism = 'Mus_musculus'
+    obj = Bio::Ensembl.mouse
+    assert_equal(organism, obj.organism)
+  end
+end
 
 
 class TestEnsembl < Test::Unit::TestCase
@@ -31,6 +61,7 @@ class TestEnsembl < Test::Unit::TestCase
     assert_equal(host, Bio::Ensembl.server_uri)
   end
 end
+
 
 class TestEnsemblBase < Test::Unit::TestCase
   def test_exportview
