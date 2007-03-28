@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License:      Ruby's
 #
-# $Id: shell.rb,v 1.17 2006/12/24 08:32:08 k Exp $
+# $Id: shell.rb,v 1.18 2007/03/28 20:23:39 k Exp $
 #
 
 require 'bio'
@@ -30,6 +30,7 @@ module Bio::Shell
   require 'bio/shell/plugin/codon'
   require 'bio/shell/plugin/flatfile'
   require 'bio/shell/plugin/obda'
+  require 'bio/shell/plugin/das'
   require 'bio/shell/plugin/keggapi'
   require 'bio/shell/plugin/emboss'
   require 'bio/shell/plugin/blast'
