@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: ensembl.rb,v 1.5 2007/03/28 12:01:48 nakao Exp $
+# $Id: ensembl.rb,v 1.6 2007/03/28 12:31:48 k Exp $
 #
 # == Description
 #
@@ -13,11 +13,16 @@
 #
 # == Examples
 #
-#  seq = Bio::Ensembl.human.exportview(1, 1000, 100000)
-#  gff = Bio::Ensembl.human.exportview(1, 1000, 100000, ['gene'])
+#  human = Bio::Ensembl.new('Homo_sapiens')
+#  seq = human.exportview(1, 1000, 100000)
+#  gff = human.exportview(1, 1000, 100000, ['gene', 'variation', 'genscan'])
 #
-#  seq = Bio::Ensembl.mouse.exportview(1, 1000, 100000)
-#  gff = Bio::Ensembl.mouse.exportview(1, 1000, 100000, ['gene', 'variation', 'genscan'])
+#  human = Bio::Ensembl.human
+#  seq = human.exportview(1, 1000, 100000)
+#  gff = human.exportview(1, 1000, 100000, ['gene'])
+#
+#  seq = Bio::Ensembl.human.exportview(1, 1000, 100000)
+#  gff = Bio::Ensembl.human.exportview(1, 1000, 100000, ['gene', 'variation', 'genscan'])
 #
 #  
 # == References
@@ -27,8 +32,6 @@
 #
 
 require 'bio/command'
-require 'uri'
-require 'cgi'
 
 module Bio
 
@@ -165,7 +168,9 @@ class Ensembl
 
     params = defaults.update(options)
 
-    Bio::Command.post_form("#{@uri}/exportview", params)
+    result, = Bio::Command.post_form("#{@uri}/exportview", params)
+
+    return result.body
   end
 
 end # class Ensembl
