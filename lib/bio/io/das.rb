@@ -1,12 +1,12 @@
 #
 # = bio/io/das.rb - BioDAS access module
 #
-# Copyright::	Copyright (C) 2003, 2004
+# Copyright::	Copyright (C) 2003, 2004, 2007
 #		Shuichi Kawashima <shuichi@hgc.jp>,
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: das.rb,v 1.13 2006/07/25 19:46:43 k Exp $
+# $Id: das.rb,v 1.14 2007/03/28 16:51:37 k Exp $
 #
 #--
 # == TODO
@@ -20,8 +20,7 @@ begin
   require 'rexml/document'
 rescue LoadError
 end
-require 'uri'
-require 'net/http'
+require 'bio/command'
 require 'bio/sequence'
 
 
@@ -31,15 +30,13 @@ class DAS
 
   # Specify DAS server to connect
   def initialize(url = 'http://www.wormbase.org:80/db/')
-    schema, user, host, port, reg, path, = URI.split(url)
-    @server = Net::HTTP.new(host, port)
-    @prefix = path ? path.chomp('/') : ''
+    @server = url.chomp('/')
   end
 
   # Returns an Array of Bio::DAS::DSN
   def get_dsn
     ary = []
-    result, = @server.get(@prefix + '/das/dsn')
+    result, = Bio::Command.post_form("#{@server}/das/dsn")
     doc = REXML::Document.new(result.body)
     doc.elements.each('/descendant::DSN') do |e|
       dsn = DSN.new
@@ -70,7 +67,7 @@ class DAS
     else
       src = dsn
     end
-    result, = @server.get(@prefix + '/das/' + src + '/entry_points')
+    result, = Bio::Command.post_form("#{@server}/das/#{src}/entry_points")
     doc = REXML::Document.new(result.body)
     doc.elements.each('/descendant::ENTRY_POINTS') do |e|
       entry_point.href = e.attributes['href']
@@ -79,7 +76,7 @@ class DAS
         segment = SEGMENT.new
         segment.entry_id = e.attributes['id']
         segment.start = e.attributes['start']
-        segment.stop = e.attributes['stop']
+        segment.stop = e.attributes['stop'] || e.attributes['size']
         segment.orientation = e.attributes['orientation']
         segment.subparts = e.attributes['subparts']
         segment.description = e.text
@@ -103,9 +100,8 @@ class DAS
     segments.each do |s|
       opts << "segment=#{s.entry_id}:#{s.start},#{s.stop}"
     end
-    query = opts.join(';')
 
-    result, = @server.get(@prefix + '/das/' + dsn + '/dna?' + query)
+    result, = Bio::Command.post_form("#{@server}/das/#{dsn}/dna", opts)
     doc = REXML::Document.new(result.body)
     doc.elements.each('/descendant::SEQUENCE') do |e|
       sequence = DNA.new
@@ -136,9 +132,8 @@ class DAS
     segments.each do |s|
       opts << "segment=#{s.entry_id}:#{s.start},#{s.stop}"
     end
-    query = opts.join(';')
 
-    result, = @server.get(@prefix + '/das/' + dsn + '/sequence?' + query)
+    result, = Bio::Command.post_form("#{@server}/das/#{dsn}/sequence", opts)
     doc = REXML::Document.new(result.body)
     doc.elements.each('/descendant::SEQUENCE') do |e|
       sequence = SEQUENCE.new
@@ -174,9 +169,8 @@ class DAS
     segments.each do |s|
       opts << "segment=#{s.entry_id}:#{s.start},#{s.stop}"
     end
-    query = opts.join(';')
 
-    result, = @server.get(@prefix + '/das/' + dsn + '/types?' + query)
+    result, = Bio::Command.post_form("#{@server}/das/#{dsn}/types", opts)
     doc = REXML::Document.new(result.body)
     doc.elements.each('/descendant::GFF') do |e|
       types.version = e.attributes['version']
@@ -226,9 +220,8 @@ class DAS
     group_ids.each do |gid|
       opts << "group_id=#{gid}"
     end
-    query = opts.join(';')
 
-    result, = @server.get(@prefix + '/das/' + dsn + '/features?' + query)
+    result, = Bio::Command.post_form("#{@server}/das/#{dsn}/features", opts)
     doc = REXML::Document.new(result.body)
     doc.elements.each('/descendant::GFF') do |e|
       gff.version = e.attributes['version']
@@ -445,7 +438,7 @@ if __FILE__ == $0
   puts ">>> dsn : entry_points"
   org_list.each do |org|
     print "#{org} : "
-    list = kegg_das.get_entry_point(org)
+    list = kegg_das.get_entry_points(org)
     list.segments.each do |seg|
       print " #{seg.entry_id}"
     end
