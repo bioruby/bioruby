@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-#  $Id: test_ensembl.rb,v 1.1 2007/03/29 05:24:59 nakao Exp $
+#  $Id: test_ensembl.rb,v 1.2 2007/03/29 05:50:43 nakao Exp $
 #
 
 require 'pathname'
@@ -67,6 +67,16 @@ class FuncTestEnsemblHuman < Test::Unit::TestCase
                             :anchor1 => 1149206,
                             :anchor2 => 1149209, 
                             :options => ['gene'])
+     assert_equal(line, gff)
+   end 
+
+   def test_tab_exportview_with_named_args
+     line = "seqname\tsource\tfeature\tstart\tend\tscore\tstrand\tframe\tgene_id\ttranscript_id\texon_id\tgene_type\nchromosome:NCBI36:4:1149206:1149209:1\tEnsembl\tGene\t-839\t2747\t.\t+\t.\tENSG00000206158\tENST00000382964\tENSE00001494097\tKNOWN_protein_coding\n"
+     gff = @serv.exportview(:seq_region_name => 4,
+                            :anchor1 => 1149206,
+                            :anchor2 => 1149209, 
+                            :options => ['gene'],
+                            :format => 'tab')
      assert_equal(line, gff)
    end 
 

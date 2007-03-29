@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: ensembl.rb,v 1.7 2007/03/29 05:24:27 nakao Exp $
+# $Id: ensembl.rb,v 1.8 2007/03/29 05:50:43 nakao Exp $
 #
 # == Description
 #
@@ -154,7 +154,9 @@ class Ensembl
 
     if args.first.class == Hash
       options = args.first
-      options.update({:format => 'gff'}) if options[:options] and options[:format] != 'fasta'
+      if options[:options] and options[:format] != 'fasta' and options[:format] != 'tab' 
+        options.update({:format => 'gff'}) 
+      end
     else
       options = {
         :seq_region_name => args[0], 
