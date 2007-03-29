@@ -5,7 +5,7 @@
 #               Itoshi NIKAIDO <dritoshi@gmail.com>
 # License::     Ruby's
 #
-# $Id: sirna.rb,v 1.9 2007/02/22 17:38:41 ngoto Exp $
+# $Id: sirna.rb,v 1.10 2007/03/29 12:52:54 k Exp $
 #
 # == Bio::SiRNA - Designing siRNA.
 #
@@ -37,24 +37,6 @@
 #    
 # * Angela Reynolds et al.  Rational siRNA design for RNA interference.
 #   Nature Biotech. 2004 22: 326-330.
-#
-#--
-#
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#++
 #
 
 require 'bio/sequence'
