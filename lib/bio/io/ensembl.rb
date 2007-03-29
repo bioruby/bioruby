@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: ensembl.rb,v 1.6 2007/03/28 12:31:48 k Exp $
+# $Id: ensembl.rb,v 1.7 2007/03/29 05:24:27 nakao Exp $
 #
 # == Description
 #
@@ -64,8 +64,10 @@ class Ensembl
   
   ENSEMBL_URL = 'http://www.ensembl.org'
 
+  # Server URL (ex. 'http://www.ensembl.org')
   attr_reader :server
 
+  # Organism name. (ex. 'Homo_sapiens').
   attr_reader :organism
 
   def initialize(organism, server = nil)
@@ -137,22 +139,6 @@ class Ensembl
   #                       'gene']
   # 
   def exportview(*args)
-    if args.first.class == Hash
-      options = args.first
-    else
-      options = {
-        :seq_region_name => args[0], 
-        :anchor1 => args[1], 
-        :anchor2 => args[2],
-      }
-      case args.size
-      when 3 then 
-        options.update({:format => 'fasta'})
-      when 4 then 
-        options.update({:format => 'gff', :options => args[3]})
-      end
-    end
-    
     defaults = {
       :type1 => 'bp', 
       :type2 => 'bp', 
@@ -165,6 +151,20 @@ class Ensembl
       :output => 'txt', 
       :submit => 'Continue >>'
     }
+
+    if args.first.class == Hash
+      options = args.first
+      options.update({:format => 'gff'}) if options[:options] and options[:format] != 'fasta'
+    else
+      options = {
+        :seq_region_name => args[0], 
+        :anchor1 => args[1], 
+        :anchor2 => args[2],
+      }
+      if args.size >= 4 
+        options.update({:format => 'gff', :options => args[3]}) 
+      end
+    end
 
     params = defaults.update(options)
 
