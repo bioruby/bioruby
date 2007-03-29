@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <mn@kazusa.or.jp>
 # License::     Ruby's
 #
-#  $Id: report.rb,v 1.4 2007/02/22 10:15:01 nakao Exp $
+#  $Id: report.rb,v 1.5 2007/03/29 09:02:44 nakao Exp $
 #
 # == Report classes for the iprscan program.
 # 
@@ -192,7 +192,7 @@ module Bio
       #    report
       #  end
       def self.reports_in_ptxt(io)
-        io.each(/\n\/\/\n/m) do |entry|
+        io.each("\n\/\/\n") do |entry|
           yield self.parse_in_ptxt(entry)
         end
       end
