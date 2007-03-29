@@ -1,23 +1,11 @@
 #
-# bio/db/pdb.rb - PDB database classes
+# = bio/db/pdb.rb - PDB database classes
 #
-#   Copyright (C) 2004 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+# Copyright::	Copyright (C) 2004
+# 		GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+# License::	Ruby's
 #
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2 of the License, or (at your option) any later version.
-#
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
-#
-#  $Id: pdb.rb,v 1.6 2006/01/29 06:54:13 ngoto Exp $
+# $Id: pdb.rb,v 1.7 2007/03/29 12:50:49 k Exp $
 #
 
 require 'bio/db'
