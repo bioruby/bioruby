@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: test_ensembl.rb,v 1.4 2007/03/28 12:24:30 nakao Exp $
+# $Id: test_ensembl.rb,v 1.5 2007/03/29 14:14:17 nakao Exp $
 #
 
 require 'pathname'
@@ -95,3 +95,15 @@ class TestEnsemblMouse < Test::Unit::TestCase
     assert_equal("Mus_musculus", Bio::Ensembl::Mouse::Organism)
   end
 end
+
+
+class TestEnsemblOldStyleClient < Test::Unit::TestCase
+  class Rice < Bio::Ensembl::Base
+    Organism = 'Oryza_sativa'
+  end
+
+  def test_organism
+    assert_equal('Oryza_sativa', Rice::Organism)
+  end
+end
+  

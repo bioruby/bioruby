@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: ensembl.rb,v 1.9 2007/03/29 08:00:04 nakao Exp $
+# $Id: ensembl.rb,v 1.10 2007/03/29 14:14:17 nakao Exp $
 #
 # == Description
 #
@@ -178,7 +178,7 @@ class Ensembl
         options.update(args[3])
       end
 
-      if aqrgs[4].class == Hash
+      if args[4].class == Hash
         options.update(args[4])
       end
     end
@@ -193,5 +193,37 @@ class Ensembl
 end # class Ensembl
 
 end # module Bio
+
+
+
+# Codes for backward-compatibility.
+#
+class Bio::Ensembl
+  EBIServerURI = ENSEMBL_URL
+
+  def self.server_uri(uri = nil)
+    if uri
+      @uri = uri
+    else
+      @uri || EBIServerURI
+    end
+  end
+    
+  class Base
+    def self.exportview(*args)
+      Bio::Ensembl.new(Organism).exportview(*args)
+    end
+  end
+  
+  class Human < Base
+    Organism = Bio::Ensembl.human.organism
+  end
+  
+  class Mouse < Base
+    Organism = Bio::Ensembl.mouse.organism
+  end
+end # class Bio::Ensembl
+
+
 
 
