@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: test_soft.rb,v 1.1 2007/02/02 06:13:10 trevor Exp $
+#  $Id: test_soft.rb,v 1.2 2007/03/29 03:18:26 trevor Exp $
 #
 
 require 'pathname'
@@ -19,8 +19,13 @@ module Bio #:nodoc:
   class TestSOFT < Test::Unit::TestCase #:nodoc:
     
     def setup
-      @obj_series = Bio::SOFT.new( IO.readlines('../../../data/soft/GSE3457_family_partial.soft'))      
-      @obj_dataset = Bio::SOFT.new( IO.readlines('../../../data/soft/GDS100_partial.soft'))
+      bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4)).cleanpath.to_s
+      test_data_path = Pathname.new(File.join(bioruby_root, 'test', 'data', 'soft')).cleanpath.to_s
+      series_filename = File.join(test_data_path, 'GSE3457_family_partial.soft')
+      dataset_filename = File.join(test_data_path, 'GDS100_partial.soft')
+
+      @obj_series = Bio::SOFT.new( IO.readlines(series_filename))
+      @obj_dataset = Bio::SOFT.new( IO.readlines(dataset_filename))
     end
 
     def test_series
