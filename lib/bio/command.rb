@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-#  $Id: command.rb,v 1.15 2007/03/28 16:54:11 k Exp $
+#  $Id: command.rb,v 1.16 2007/03/29 12:14:46 k Exp $
 #
 
 require 'open3'
@@ -276,27 +276,7 @@ module Command
       uri = URI.parse(uri)
     end
 
-    data = ""
-
-    case params
-    when Hash
-      data = params.map do |key, val|
-        "#{URI.escape(key.to_s)}=#{URI.escape(val.to_s)}" 
-      end.join('&')
-    when Array
-      case params.first
-      when Hash, Array
-        data = params.map do |key, val|
-          "#{URI.escape(key.to_s)}=#{URI.escape(val.to_s)}" 
-        end.join('&')
-      when String
-        data = params.map do |str|
-          URI.escape(str.strip)
-        end.join('&')
-      end
-    when String
-      data = URI.escape(params.strip)
-    end
+    data = make_cgi_params(params)
 
     hash = {
       'Content-Type'   => 'application/x-www-form-urlencoded',
@@ -307,6 +287,49 @@ module Command
     start_http(uri.host, uri.port) do |http|
       http.post(uri.path, data, hash)
     end
+  end
+
+  def make_cgi_params(params)
+    data = ""
+    case params
+    when Hash
+      data = params.map do |key, val|
+        make_cgi_params_key_value(key, val)
+      end.join('&')
+    when Array
+      case params.first
+      when Hash
+        data = params.map do |hash|
+          hash.map do |key, val|
+            make_cgi_params_key_value(key, val)
+          end
+        end.join('&')
+      when Array
+        data = params.map do |key, val|
+          make_cgi_params_key_value(key, val)
+        end.join('&')
+      when String
+        data = params.map do |str|
+          URI.escape(str.strip)
+        end.join('&')
+      end
+    when String
+      data = URI.escape(params.strip)
+    end
+    return data
+  end
+
+  def make_cgi_params_key_value(key, value)
+    result = []
+    case value
+    when Array
+      value.each do |val|
+        result << [key, val].map {|x| URI.escape(x.to_s) }.join('=')
+      end
+    else
+      result << [key, value].map {|x| URI.escape(x.to_s) }.join('=')
+    end
+    return result
   end
 
 end # module Command

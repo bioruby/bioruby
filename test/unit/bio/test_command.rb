@@ -6,7 +6,7 @@
 # 		Naohisa Goto <ng@bioruby.org>
 # License::	Ruby's
 #
-#  $Id: test_command.rb,v 1.3 2006/07/27 03:50:36 ngoto Exp $
+#  $Id: test_command.rb,v 1.4 2007/03/29 12:14:46 k Exp $
 #
 
 require 'pathname'
@@ -128,6 +128,160 @@ module Bio
     end
 
     def test_post_form
+    end
+
+    def test_make_cgi_params_by_hash_in_symbol
+      ary = [
+             "type1=bp",
+             "type2=bp",
+             "downstream=",
+             "upstream=",
+             "format=fasta",
+             "options=similarity",
+             "options=gene",
+             "action=export",
+             "_format=Text",
+             "output=txt",
+             "submit=Continue%20%3E%3E",
+            ]
+      hash = {
+        :type1 => 'bp',
+        :type2 => 'bp',
+        :downstream => '',
+        :upstream => '',
+        :format => 'fasta',
+        :options => ['similarity', 'gene'],
+        :action => 'export',
+        :_format => 'Text',
+        :output => 'txt',
+        :submit => 'Continue >>',
+      }
+      result = Bio::Command.make_cgi_params(hash)
+      ary.each do |str|
+        assert_match(str, result)
+      end
+    end
+
+    def test_make_cgi_params_by_hash_in_string
+      ary = [
+             "type1=bp",
+             "type2=bp",
+             "downstream=",
+             "upstream=",
+             "format=fasta",
+             "options=similarity",
+             "options=gene",
+             "action=export",
+             "_format=Text",
+             "output=txt",
+             "submit=Continue%20%3E%3E",
+            ]
+      hash = {
+        "type1" => 'bp',
+        "type2" => 'bp',
+        "downstream" => '',
+        "upstream" => '',
+        "format" => 'fasta',
+        "options" => ['similarity', 'gene'],
+        "action" => 'export',
+        "_format" => 'Text',
+        "output" => 'txt',
+        "submit" => 'Continue >>',
+      }
+      result = Bio::Command.make_cgi_params(hash)
+      ary.each do |str|
+        assert_match(str, result)
+      end
+    end
+
+    def test_make_cgi_params_by_array_of_array
+      ary = [
+             "type1=bp",
+             "type2=bp",
+             "downstream=",
+             "upstream=",
+             "format=fasta",
+             "options=similarity",
+             "options=gene",
+             "action=export",
+             "_format=Text",
+             "output=txt",
+             "submit=Continue%20%3E%3E",
+            ]
+      array_of_array = [
+        ["type1", 'bp'],
+        ["type2", 'bp'], 
+        ["downstream", ''],
+        ["upstream", ''],
+        ["format", 'fasta'],
+        ["options", ['similarity', 'gene']],
+        ["action", 'export'],
+        ["_format", 'Text'],
+        ["output", 'txt'],
+        ["submit", 'Continue >>'],
+      ]
+      result = Bio::Command.make_cgi_params(array_of_array)
+      ary.each do |str|
+        assert_match(str, result)
+      end
+    end
+
+    def test_make_cgi_params_by_array_of_hash
+      ary = [
+             "type1=bp",
+             "type2=bp",
+             "downstream=",
+             "upstream=",
+             "format=fasta",
+             "options=similarity",
+             "options=gene",
+             "action=export",
+             "_format=Text",
+             "output=txt",
+             "submit=Continue%20%3E%3E",
+            ]
+      array_of_hash = [
+                       {"type1" => 'bp'},
+                       {"type2" => 'bp'},
+                       {"downstream" => ''},
+                       {"upstream" => ''},
+                       {"format" => 'fasta'},
+                       {"options" => ['similarity', 'gene']},
+                       {"action" => 'export'},
+                       {"_format" => 'Text'},
+                       {"output" => 'txt'},
+                       {"submit" => 'Continue >>'},
+                      ]
+      result = Bio::Command.make_cgi_params(array_of_hash)
+      ary.each do |str|
+        assert_match(str, result)
+      end
+    end
+
+    def test_make_cgi_params_by_array_of_string
+      str = "type1=bp&type2=bp&downstream=&upstream=&format=fasta&options=similarity&options=gene&action=export&_format=Text&output=txt&submit=Continue%20%3E%3E"
+      array_of_string = [
+                         "type1=bp",
+                         "type2=bp",
+                         "downstream=",
+                         "upstream=",
+                         "format=fasta",
+                         "options=similarity",
+                         "options=gene",
+                         "action=export",
+                         "_format=Text",
+                         "output=txt",
+                         "submit=Continue >>",
+                        ]
+      result = Bio::Command.make_cgi_params(array_of_string)
+      assert_equal(str, result)
+    end
+
+    def test_make_cgi_params_by_string
+      string = "type1=bp&type2=bp&downstream=&upstream=&format=fasta&options=similarity&options=gene&action=export&_format=Text&output=txt&submit=Continue%20%3E%3E"
+      query = " type1=bp&type2=bp&downstream=&upstream=&format=fasta&options=similarity&options=gene&action=export&_format=Text&output=txt&submit=Continue >> "
+      result = Bio::Command.make_cgi_params(query)
+      assert_equal(string, result)
     end
 
   end
