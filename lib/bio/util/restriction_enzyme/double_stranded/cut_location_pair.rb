@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: cut_location_pair.rb,v 1.4 2007/01/02 06:18:38 trevor Exp $
+#  $Id: cut_location_pair.rb,v 1.5 2007/03/29 02:48:15 trevor Exp $
 #
 require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
@@ -62,7 +62,10 @@ class CutLocationPair < Array
     if pair[0].kind_of? Array
       a,b = init_with_array( pair[0] )
 
-    elsif pair[0].kind_of? Range # FIXME This seems to be broken?  Check tests
+    # no idea why this barfs without the second half during test/runner.rb
+    # are there two Range objects running around?
+    elsif pair[0].kind_of? Range or (pair[0].class.to_s == 'Range')
+    #elsif pair[0].kind_of? Range
       a,b = init_with_array( [pair[0].first, pair[0].last] )
 
     elsif pair[0].kind_of? Integer or pair[0].kind_of? NilClass
