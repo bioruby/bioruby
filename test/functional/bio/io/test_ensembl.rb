@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-#  $Id: test_ensembl.rb,v 1.2 2007/03/29 05:50:43 nakao Exp $
+#  $Id: test_ensembl.rb,v 1.3 2007/03/29 08:00:04 nakao Exp $
 #
 
 require 'pathname'
@@ -47,6 +47,12 @@ class FuncTestEnsemblHuman < Test::Unit::TestCase
     assert_equal(seq, fna)
   end
 
+  def test_fasta_exportview_with_hash_4th_params
+    fna = @serv.exportview(4, 1149206, 1149209, :upstream => 10)
+    fna10 = @serv.exportview(4, 1149196, 1149209)
+    assert_equal(fna10, fna)
+  end
+
   def test_fna_exportview_with_named_args
     seq = ">4 dna:chromosome chromosome:NCBI36:4:1149206:1149209:1\nGAGA\n"
     fna = @serv.exportview(:seq_region_name => 4,
@@ -54,6 +60,17 @@ class FuncTestEnsemblHuman < Test::Unit::TestCase
                            :anchor2 => 1149209)
     assert_equal(seq, fna)
   end 
+
+  def test_fasta_exportview_with_named_args_and_hash_4th_params
+    fna = @serv.exportview(:seq_region_name => 4, 
+                           :anchor1 => 1149206, 
+                           :anchor2 => 1149209, 
+                           :upstream => 10)
+    fna10 = @serv.exportview(:seq_region_name => 4, 
+                             :anchor1 => 1149196, 
+                             :anchor2 => 1149209)
+    assert_equal(fna10, fna)
+  end
 
    def test_gff_exportview
      line = "chromosome:NCBI36:4:1149206:1149209:1\tEnsembl\tGene\t-839\t2747\t.\t+\t.\tgene_id=ENSG00000206158; transcript_id=ENST00000382964; exon_id=ENSE00001494097; gene_type=KNOWN_protein_coding\n"
@@ -79,6 +96,7 @@ class FuncTestEnsemblHuman < Test::Unit::TestCase
                             :format => 'tab')
      assert_equal(line, gff)
    end 
+
 
 end
 

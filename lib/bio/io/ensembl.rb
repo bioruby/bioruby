@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: ensembl.rb,v 1.8 2007/03/29 05:50:43 nakao Exp $
+# $Id: ensembl.rb,v 1.9 2007/03/29 08:00:04 nakao Exp $
 #
 # == Description
 #
@@ -109,6 +109,13 @@ class Ensembl
   #                    :options => ['similarity', 'repeat', 
   #                                 'genscan', 'variation', 'gene'])
   #   human.exportview(1, 1149206, 1150000, ['variation', 'gene'])
+  #   
+  # Feature in TAB
+  #   human.exportview(:seq_region_name => 1, 
+  #                    :anchor1 => 1149206, :anchor2 => 1150000, 
+  #                    :options => ['similarity', 'repeat', 
+  #                                 'genscan', 'variation', 'gene'],
+  #                    :format => 'tab')
   #
   # == Arguments
   #
@@ -163,8 +170,16 @@ class Ensembl
         :anchor1 => args[1], 
         :anchor2 => args[2],
       }
-      if args.size >= 4 
+
+      case args[3]
+      when Array
         options.update({:format => 'gff', :options => args[3]}) 
+      when Hash
+        options.update(args[3])
+      end
+
+      if aqrgs[4].class == Hash
+        options.update(args[4])
       end
     end
 
