@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::   Ruby's
 #
-#  $Id: mafft.rb,v 1.15 2006/12/14 16:08:46 ngoto Exp $
+#  $Id: mafft.rb,v 1.16 2007/04/02 12:55:26 ngoto Exp $
 #
 # Bio::MAFFT is a wrapper class to execute MAFFT.
 # MAFFT is a very fast multiple sequence alignment software.
@@ -142,9 +142,10 @@ module Bio
     end
 
     # Shows latest raw alignment result.
-    # Since a result of MAFFT is simply a multiple-fasta format,
-    # it returns an array of Bio::FastaFormat instances
-    # instead of raw string.
+    # Return a string. (Changed in bioruby-1.1.0).
+    # Compatibility note:
+    # If you want an array of Bio::FastaFormat instances,
+    # you should use report.data instead.
     attr_reader :output
 
     # Shows last alignment result (instance of Bio::MAFFT::Report class)
@@ -201,8 +202,7 @@ module Bio
       @output = nil
       Bio::Command.call_command(@command) do |io|
         io.close_write
-        ff = Bio::FlatFile.new(Bio::FastaFormat, io)
-        @output = ff.to_a
+        @output = io.read
       end
     end
 

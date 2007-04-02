@@ -291,6 +291,15 @@ In 1.1.0:
 * Bio::ClustalW::errorlog and Bio::(MAFFT|Sim4)#log are removed.
   No replacements/alternatives are available.
 
+--- Bio::MAFFT
+
+In 1.1.0:
+
+* Bio::MAFFT#output is changed to return a string of multi-fasta
+  formmatted text instead of Array of Bio::FastaFormat objects.
+  To get an array of Bio::FastaFormat objects, please use
+  report.data instead.
+
 --- Bio::MAFFT::Report
 
 In 1.1.0:

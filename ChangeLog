@@ -1,3 +1,12 @@
+2007-04-02  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/mafft.rb
+
+	Incompatible change: Bio::MAFFT#output is changed to return
+	a string of multi-fasta formmatted text. To get an array of
+	Bio::FastaFormat objects (as of 1.0 or before), please use
+	report.data instead.
+
 2007-03-27  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/command.rb
