@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: single_strand.rb,v 1.4 2007/04/04 18:07:43 trevor Exp $
+#  $Id: single_strand.rb,v 1.5 2007/04/04 20:05:05 trevor Exp $
 #
 
 require 'bio/util/restriction_enzyme/single_strand/cut_locations_in_enzyme_notation'
@@ -135,7 +135,7 @@ class SingleStrand < Bio::Sequence::NA
   # *Returns*:: The sequence with 'n' padding on the left and right for cuts larger than the sequence.
   def pattern
     return stripped if @cut_locations_in_enzyme_notation.min == nil
-    left = (@cut_locations_in_enzyme_notation.min.negative? ? 'n' * @cut_locations_in_enzyme_notation.min.abs : '')
+    left = (@cut_locations_in_enzyme_notation.min < 0 ? 'n' * @cut_locations_in_enzyme_notation.min.abs : '')
 
     # Add one more 'n' if a cut is at the last position 
     right = ( (@cut_locations_in_enzyme_notation.max >= @stripped.length) ? ('n' * (@cut_locations_in_enzyme_notation.max - @stripped.length + 1)) : '')

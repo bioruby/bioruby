@@ -5,11 +5,10 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: cut_locations_in_enzyme_notation.rb,v 1.4 2007/04/04 18:07:44 trevor Exp $
+#  $Id: cut_locations_in_enzyme_notation.rb,v 1.5 2007/04/04 20:05:06 trevor Exp $
 #
 
 require 'bio/util/restriction_enzyme/cut_symbol'
-require 'bio/util/restriction_enzyme/integer'
 require 'bio/sequence'
 
 module Bio; end
@@ -102,9 +101,9 @@ class CutLocationsInEnzymeNotation < Array
   # *Returns*:: +Array+ of cuts in 0-based index notation
   def to_array_index
     return [] if @min == nil
-    if @min.negative?
+    if @min < 0
       calc = lambda do |n| 
-        n -= 1 unless n.negative?
+        n -= 1 unless n < 0
         n + @min.abs
       end
     else

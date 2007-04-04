@@ -5,11 +5,10 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: cut_location_pair.rb,v 1.6 2007/04/04 18:07:44 trevor Exp $
+#  $Id: cut_location_pair.rb,v 1.7 2007/04/04 20:05:06 trevor Exp $
 #
 
 require 'bio/util/restriction_enzyme/cut_symbol'
-require 'bio/util/restriction_enzyme/integer'
 
 module Bio; end
 class Bio::RestrictionEnzyme
@@ -97,7 +96,7 @@ class CutLocationPair < Array
   end
 
   def validate_2( a, b )
-    if (a != nil and a.negative?) or (b != nil and b.negative?)
+    if (a != nil and a < 0) or (b != nil and b < 0)
       raise ArgumentError, "0-based index notation only.  Negative values are illegal."
     end
 

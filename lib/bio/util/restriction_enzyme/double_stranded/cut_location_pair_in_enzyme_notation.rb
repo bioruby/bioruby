@@ -5,11 +5,10 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: cut_location_pair_in_enzyme_notation.rb,v 1.4 2007/04/04 18:07:44 trevor Exp $
+#  $Id: cut_location_pair_in_enzyme_notation.rb,v 1.5 2007/04/04 20:05:06 trevor Exp $
 #
 
 require 'bio/util/restriction_enzyme/double_stranded/cut_location_pair'
-require 'bio/util/restriction_enzyme/integer'
 
 module Bio; end
 class Bio::RestrictionEnzyme
