@@ -5,11 +5,8 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: cut_location_pair.rb,v 1.5 2007/03/29 02:48:15 trevor Exp $
+#  $Id: cut_location_pair.rb,v 1.6 2007/04/04 18:07:44 trevor Exp $
 #
-require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
 
 require 'bio/util/restriction_enzyme/cut_symbol'
 require 'bio/util/restriction_enzyme/integer'

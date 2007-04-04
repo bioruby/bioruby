@@ -5,11 +5,8 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: fragment.rb,v 1.2 2007/01/02 00:19:06 trevor Exp $
+#  $Id: fragment.rb,v 1.3 2007/04/04 18:07:44 trevor Exp $
 #
-require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 6, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
 
 require 'bio/util/restriction_enzyme/range/cut_ranges'
 require 'bio/util/restriction_enzyme/range/horizontal_cut_range'

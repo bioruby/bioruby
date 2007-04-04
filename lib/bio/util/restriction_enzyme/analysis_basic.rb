@@ -5,12 +5,8 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis_basic.rb,v 1.9 2007/03/28 19:45:27 trevor Exp $
+#  $Id: analysis_basic.rb,v 1.10 2007/04/04 18:07:43 trevor Exp $
 #
-
-require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
 
 require 'bio'
 class Bio::Sequence::NA

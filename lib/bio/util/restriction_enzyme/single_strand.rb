@@ -5,11 +5,8 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: single_strand.rb,v 1.3 2007/01/01 03:36:37 trevor Exp $
+#  $Id: single_strand.rb,v 1.4 2007/04/04 18:07:43 trevor Exp $
 #
-require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
 
 require 'bio/util/restriction_enzyme/single_strand/cut_locations_in_enzyme_notation'
 require 'bio/util/restriction_enzyme/cut_symbol'

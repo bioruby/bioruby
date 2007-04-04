@@ -5,11 +5,8 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: vertical_cut_range.rb,v 1.2 2007/01/05 06:03:22 trevor Exp $
+#  $Id: vertical_cut_range.rb,v 1.3 2007/04/04 18:07:44 trevor Exp $
 #
-require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
 
 require 'bio/util/restriction_enzyme/range/cut_range'
 

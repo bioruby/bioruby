@@ -5,12 +5,8 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: calculated_cuts.rb,v 1.4 2007/03/29 02:48:15 trevor Exp $
+#  $Id: calculated_cuts.rb,v 1.5 2007/04/04 18:07:44 trevor Exp $
 #
-
-require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 6, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
 
 require 'bio/util/restriction_enzyme'  # test/runner.rb wont load without this
 require 'bio/util/restriction_enzyme/cut_symbol'

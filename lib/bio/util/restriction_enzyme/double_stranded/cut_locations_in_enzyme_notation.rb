@@ -5,11 +5,8 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: cut_locations_in_enzyme_notation.rb,v 1.3 2007/01/01 05:07:04 trevor Exp $
+#  $Id: cut_locations_in_enzyme_notation.rb,v 1.4 2007/04/04 18:07:44 trevor Exp $
 #
-require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
 
 require 'bio/util/restriction_enzyme/double_stranded/cut_locations'
 require 'bio/util/restriction_enzyme/double_stranded/cut_location_pair_in_enzyme_notation'
