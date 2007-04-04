@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   Distributes under the same terms as Ruby
 #
-#  $Id: analysis_basic.rb,v 1.10 2007/04/04 18:07:43 trevor Exp $
+#  $Id: analysis_basic.rb,v 1.11 2007/04/04 20:10:31 trevor Exp $
 #
 
 require 'bio'
@@ -28,8 +28,6 @@ class Bio::Sequence::NA
   end
   alias cut_with_enzymes cut_with_enzyme
 end
-
-require 'pp'
 
 require 'set'  # for method create_enzyme_actions
 require 'bio/util/restriction_enzyme'
