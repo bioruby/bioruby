@@ -3,7 +3,7 @@
 Copyright::  Copyright (C) 2005, 2006 Toshiaki Katayama <k@bioruby.org>
 Copyright::  Copyright (C) 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
 
-  $Id: README.DEV,v 1.12 2006/12/24 10:11:11 k Exp $
+  $Id: README.DEV,v 1.13 2007/04/05 15:18:51 k Exp $
 
 = HOW TO CONTRIBUTE TO THE BIORUBY PROJECT?
 
@@ -27,8 +27,8 @@ If you would like your module to be included in the BioRuby distribution,
 you need to give us right to change the license of your module to make it
 compatible with other modules in BioRuby.
 
-BioRuby was previously distributed under the GNU GPL license, but now we
-are changing the license to Ruby's. 
+BioRuby was previously distributed under the LGPL license, but now is
+distributed under the same terms as Ruby.
 
 = CODING STYLE
 
@@ -108,7 +108,7 @@ The header should be formatted as follows:
 In the above sample, the '$ I d : $' (without spaces) will be automatically
 changed into something like
 
-  $Id: README.DEV,v 1.12 2006/12/24 10:11:11 k Exp $
+  $Id: README.DEV,v 1.13 2007/04/05 15:18:51 k Exp $
 
 when commiting to the CVS repository for the first time.
 
