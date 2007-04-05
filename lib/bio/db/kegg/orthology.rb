@@ -1,10 +1,11 @@
 #
-# = bio/db/kegg/ortholog.rb - KEGG ORTHOLOG database class
+# = bio/db/kegg/orthology.rb - KEGG ORTHOLOGY database class
 #
 # Copyright::  Copyright (C) 2003-2007 Toshiaki Katayama <k@bioruby.org>
 # Copyright::  Copyright (C) 2003 Masumi Itoh <m@bioruby.org>
+# License::    The Ruby License
 #
-# $Id: orthology.rb,v 1.8 2007/04/05 15:37:50 k Exp $
+# $Id: orthology.rb,v 1.9 2007/04/05 15:42:59 k Exp $
 #
 
 require 'bio/db'
@@ -19,9 +20,9 @@ class KEGG
 # == References
 #
 # * http://www.genome.jp/dbget-bin/get_htext?KO
-# * ftp://ftp.genome.jp/pub/kegg/tarfiles/ko
+# * ftp://ftp.genome.jp/pub/kegg/genes/ko
 #
-class ORTHOLOG < KEGGDB
+class ORTHOLOGY < KEGGDB
   
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
@@ -82,7 +83,7 @@ class ORTHOLOG < KEGGDB
     @data['GENES']
   end
   
-end # KO
+end # ORTHOLOGY
     
 end # KEGG
 end # Bio
@@ -94,7 +95,7 @@ if __FILE__ == $0
   require 'bio/io/fetch'
 
   flat = Bio::Fetch.query('ko', 'K00001')
-  entry = Bio::KEGG::KO.new(flat)
+  entry = Bio::KEGG::ORTHOLOGY.new(flat)
 
   p entry.entry_id
   p entry.name

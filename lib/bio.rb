@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: bio.rb,v 1.82 2007/03/08 00:25:26 k Exp $
+# $Id: bio.rb,v 1.83 2007/04/05 15:42:59 k Exp $
 #
 
 module Bio
@@ -94,7 +94,7 @@ module Bio
     autoload :BRITE,        'bio/db/kegg/brite'
     autoload :CELL,         'bio/db/kegg/cell'
     autoload :EXPRESSION,   'bio/db/kegg/expression'
-    autoload :ORTHOLOG,     'bio/db/kegg/ortholog'
+    autoload :ORTHOLOGY,    'bio/db/kegg/orthology'
     autoload :KGML,         'bio/db/kegg/kgml'
     autoload :Keggtab,      'bio/db/kegg/keggtab'
   end
