@@ -1,10 +1,10 @@
 #
-# = bio/db/kegg/ko.rb - KO (KEGG Orthology) database class
+# = bio/db/kegg/ortholog.rb - KEGG ORTHOLOG database class
 #
-# Copyright::  Copyright (C) 2003 Toshiaki Katayama <k@bioruby.org>
+# Copyright::  Copyright (C) 2003-2007 Toshiaki Katayama <k@bioruby.org>
 # Copyright::  Copyright (C) 2003 Masumi Itoh <m@bioruby.org>
 #
-# $Id: orthology.rb,v 1.7 2007/03/08 00:20:21 k Exp $
+# $Id: orthology.rb,v 1.8 2007/04/05 15:37:50 k Exp $
 #
 
 require 'bio/db'
@@ -21,7 +21,7 @@ class KEGG
 # * http://www.genome.jp/dbget-bin/get_htext?KO
 # * ftp://ftp.genome.jp/pub/kegg/tarfiles/ko
 #
-class KO < KEGGDB
+class ORTHOLOG < KEGGDB
   
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
@@ -69,35 +69,17 @@ class KO < KEGGDB
   # Returns a Hash of Array of a database name and entry IDs in DBLINKS field.
   def dblinks
     unless @data['DBLINKS']
-      hash = {}
-      get('DBLINKS').scan(/(\S+):\s*(.*)\n/).each do |k, v|
-        hash[k] = v.split(/\s+/)
-      end
-      @data['DBLINKS'] = hash
+      @data['DBLINKS'] = lines_fetch('DBLINKS')
     end
-    @data['DBLINKS']		# Hash of DB:ID in DBLINKS
+    @data['DBLINKS']
   end
 
   # Returns a Hash of Array of the organism ID and entry IDs in GENES field.
   def genes
     unless @data['GENES']
-      hash = {}
-      k = ''
-      get('GENES').each_line do |line|
-        line.chomp!
-        line[0, @tagsize] = '' 
-        if line =~ /(\S+):/
-          k = $1
-          hash[k] = []
-        end
-        line[0, 5] = ''
-        line.gsub(/\(\S+/, '').each(' ') do |u|
-          hash[k] << u.strip
-        end
-      end
-      @data['GENES'] = hash
+      @data['GENES'] = lines_fetch('GENES')
     end
-    @data['GENES']		# Hash of DB:ID in DBLINKS
+    @data['GENES']
   end
   
 end # KO
