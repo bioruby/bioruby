@@ -6,9 +6,9 @@ module Bio
 #
 # Copyright::   Copyright (C) 2006 
 #               Mitsuteru C. Nakao <n@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: pts1.rb,v 1.4 2006/07/14 14:28:44 ngoto Exp $
+# $Id: pts1.rb,v 1.5 2007/04/05 23:35:39 trevor Exp $
 #
 
 require 'uri'

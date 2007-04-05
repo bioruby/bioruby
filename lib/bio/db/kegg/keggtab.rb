@@ -3,9 +3,9 @@
 #
 # Copyright::  Copyright (C) 2001 Mitsuteru C. Nakao <n@bioruby.org>
 #              Copyright (C) 2003, 2006 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-#  $Id: keggtab.rb,v 1.9 2006/09/19 05:54:29 k Exp $
+#  $Id: keggtab.rb,v 1.10 2007/04/05 23:35:41 trevor Exp $
 #
 
 module Bio

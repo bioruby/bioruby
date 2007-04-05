@@ -4,9 +4,9 @@
 # 
 # Copyright::   Copyright (C) 2002
 #               Naohisa Goto <ng@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: br_bioflat.rb,v 1.16 2006/02/22 07:01:05 ngoto Exp $ 
+# $Id: br_bioflat.rb,v 1.17 2007/04/05 23:35:39 trevor Exp $ 
 # 
 
 require 'bio'

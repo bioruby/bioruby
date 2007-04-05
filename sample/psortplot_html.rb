@@ -13,9 +13,9 @@
 #
 # Copyright::  Copyright (C) 2005
 #              Mitsuteru C. Nakao <n@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-#  $Id: psortplot_html.rb,v 1.2 2007/04/05 17:23:41 nakao Exp $
+#  $Id: psortplot_html.rb,v 1.3 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'bio'

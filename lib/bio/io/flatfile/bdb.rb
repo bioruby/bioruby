@@ -2,9 +2,9 @@
 # bio/io/flatfile/bdb.rb - OBDA flatfile index by Berkley DB 
 # 
 # Copyright:: Copyright (C) 2002 GOTO Naohisa <ng@bioruby.org> 
-# License::   Ruby's
+# License::   The Ruby License
 # 
-#  $Id: bdb.rb,v 1.9 2006/04/30 05:58:50 ngoto Exp $ 
+#  $Id: bdb.rb,v 1.10 2007/04/05 23:35:41 trevor Exp $ 
 # 
  
 begin 

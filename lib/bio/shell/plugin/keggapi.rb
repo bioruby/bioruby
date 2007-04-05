@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2005
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: keggapi.rb,v 1.11 2006/12/24 08:49:12 k Exp $
+# $Id: keggapi.rb,v 1.12 2007/04/05 23:35:41 trevor Exp $
 #
 
 module Bio::Shell

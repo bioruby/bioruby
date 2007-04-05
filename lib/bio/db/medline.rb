@@ -3,9 +3,9 @@
 #
 # Copyright::  Copyright (C) 2001, 2005
 #              Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: medline.rb,v 1.15 2006/09/19 06:03:51 k Exp $
+# $Id: medline.rb,v 1.16 2007/04/05 23:35:40 trevor Exp $
 #
 
 require 'bio/db'

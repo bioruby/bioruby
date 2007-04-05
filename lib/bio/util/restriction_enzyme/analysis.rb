@@ -3,9 +3,9 @@
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
-#  $Id: analysis.rb,v 1.16 2007/04/04 18:07:43 trevor Exp $
+#  $Id: analysis.rb,v 1.17 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'bio/util/restriction_enzyme/analysis_basic'
@@ -17,7 +17,7 @@ class Bio::RestrictionEnzyme
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
 class Analysis
 

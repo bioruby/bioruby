@@ -3,9 +3,9 @@
 #
 # Copyright::	Copyright (C) 2004
 # 		GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
-# License::	Ruby's
+# License::	The Ruby License
 #
-# $Id: pdb.rb,v 1.7 2007/03/29 12:50:49 k Exp $
+# $Id: pdb.rb,v 1.8 2007/04/05 23:35:40 trevor Exp $
 #
 
 require 'bio/db'

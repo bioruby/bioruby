@@ -4,9 +4,9 @@
 # Copyright::   Copyright (C) 2004-2006
 #               Naohisa Goto <ng@bioruby.org>
 #               Daniel Amelang <dan@amelang.net>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: newick.rb,v 1.6 2006/12/15 14:59:25 ngoto Exp $
+# $Id: newick.rb,v 1.7 2007/04/05 23:35:40 trevor Exp $
 #
 
 require 'bio/tree'

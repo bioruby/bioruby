@@ -2,9 +2,9 @@
 # = bio/db/kegg/drug.rb - KEGG DRUG database class
 #
 # Copyright::  Copyright (C) 2007 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: drug.rb,v 1.1 2007/03/08 00:11:49 k Exp $
+# $Id: drug.rb,v 1.2 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'bio/db'

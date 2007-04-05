@@ -4,9 +4,9 @@
 # Copyright::	Copyright (C) 2003-2006
 # 		Naohisa Goto <ng@bioruby.org>,
 #		Toshiaki Katayama <k@bioruby.org>
-# License::	Ruby's
+# License::	The Ruby License
 #
-#  $Id: command.rb,v 1.16 2007/03/29 12:14:46 k Exp $
+#  $Id: command.rb,v 1.17 2007/04/05 23:35:39 trevor Exp $
 #
 
 require 'open3'

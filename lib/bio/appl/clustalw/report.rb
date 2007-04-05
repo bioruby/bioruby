@@ -2,9 +2,9 @@
 # = bio/appl/clustalw/report.rb - CLUSTAL W format data (*.aln) class
 #
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
-# License::   Ruby's
+# License::   The Ruby License
 #
-#  $Id: report.rb,v 1.11 2006/12/14 15:22:05 ngoto Exp $
+#  $Id: report.rb,v 1.12 2007/04/05 23:35:39 trevor Exp $
 #
 # Bio::ClustalW::Report is a CLUSTAL W report (*.aln file) parser.
 # CLUSTAL W is a very popular software for multiple sequence alignment.

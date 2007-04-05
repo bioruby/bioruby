@@ -2,9 +2,9 @@
 # = bio/appl/mafft/report.rb - MAFFT report class
 #
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
-# License::   Ruby's
+# License::   The Ruby License
 #
-#  $Id: report.rb,v 1.11 2006/12/15 16:23:18 ngoto Exp $
+#  $Id: report.rb,v 1.12 2007/04/05 23:35:40 trevor Exp $
 #
 # MAFFT result parser class.
 # MAFFT is a very fast multiple sequence alignment software.

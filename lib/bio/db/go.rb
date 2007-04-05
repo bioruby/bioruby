@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2003 
 #               Mitsuteru C. Nakao <n@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-#  $Id: go.rb,v 1.10 2006/04/30 07:11:28 nakao Exp $
+#  $Id: go.rb,v 1.11 2007/04/05 23:35:40 trevor Exp $
 #
 # == Gene Ontology
 #

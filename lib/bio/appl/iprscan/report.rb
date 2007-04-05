@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2006
 #               Mitsuteru C. Nakao <mn@kazusa.or.jp>
-# License::     Ruby's
+# License::     The Ruby License
 #
-#  $Id: report.rb,v 1.5 2007/03/29 09:02:44 nakao Exp $
+#  $Id: report.rb,v 1.6 2007/04/05 23:35:40 trevor Exp $
 #
 # == Report classes for the iprscan program.
 # 

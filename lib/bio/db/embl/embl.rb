@@ -3,9 +3,9 @@
 #
 # 
 # Copyright::   Copyright (C) 2001-2007 Mitsuteru C. Nakao <n@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: embl.rb,v 1.28 2007/03/13 17:03:55 nakao Exp $
+# $Id: embl.rb,v 1.29 2007/04/05 23:35:40 trevor Exp $
 #
 # == Description
 #

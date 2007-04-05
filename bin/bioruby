@@ -4,9 +4,9 @@
 #
 # Copyright::   Copyright (C) 2005, 2006
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: bioruby,v 1.18 2006/12/24 14:55:53 k Exp $
+# $Id: bioruby,v 1.19 2007/04/05 23:35:39 trevor Exp $
 #
 
 begin

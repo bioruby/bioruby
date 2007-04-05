@@ -3,9 +3,9 @@
 #
 # Copyright::	Copyright (C) 2003, 2004
 #		Toshiaki Katayama <k@bioruby.org>
-# License::	Ruby's
+# License::	The Ruby License
 #
-# $Id: ddbjxml.rb,v 1.13 2007/03/28 09:11:02 k Exp $
+# $Id: ddbjxml.rb,v 1.14 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'bio/io/soapwsdl'

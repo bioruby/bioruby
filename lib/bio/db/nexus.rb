@@ -3,9 +3,9 @@
 #
 # Copyright::  Copyright (C) 2006        Christian M Zmasek <cmzmasek@yahoo.com>
 #
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: nexus.rb,v 1.2 2006/12/19 05:37:50 czmasek Exp $
+# $Id: nexus.rb,v 1.3 2007/04/05 23:35:40 trevor Exp $
 #
 # == Description
 #

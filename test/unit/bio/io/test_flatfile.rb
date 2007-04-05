@@ -3,9 +3,9 @@
 #
 #   Copyright (C) 2006 Naohisa Goto <ng@bioruby.org>
 #
-# License:: Ruby's
+# License:: The Ruby License
 #
-#  $Id: test_flatfile.rb,v 1.1 2006/06/15 14:28:55 ngoto Exp $
+#  $Id: test_flatfile.rb,v 1.2 2007/04/05 23:35:43 trevor Exp $
 #
 
 require 'pathname'

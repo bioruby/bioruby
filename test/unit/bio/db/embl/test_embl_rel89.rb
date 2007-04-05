@@ -2,9 +2,9 @@
 # test/unit/bio/db/embl/test_embl_rel89.rb - Unit test for Bio::EMBL
 #
 # Copyright::  Copyright (C) 2007 Mitsuteru Nakao <n@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-#  $Id: test_embl_rel89.rb,v 1.1 2007/03/13 17:03:55 nakao Exp $
+#  $Id: test_embl_rel89.rb,v 1.2 2007/04/05 23:35:43 trevor Exp $
 #
 
 require 'pathname'

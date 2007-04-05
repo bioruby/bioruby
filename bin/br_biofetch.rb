@@ -4,9 +4,9 @@
 #
 # Copyright::   Copyright (C) 2002
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: br_biofetch.rb,v 1.3 2006/02/09 16:29:41 k Exp $
+# $Id: br_biofetch.rb,v 1.4 2007/04/05 23:35:39 trevor Exp $
 #
 
 require 'bio/io/fetch'

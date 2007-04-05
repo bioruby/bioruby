@@ -4,9 +4,9 @@
 # Copyright::   Copyright (C) 2003, 2005
 #               Natsuhiro Ichinose <ichinose@genome.ist.i.kyoto-u.ac.jp>,
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: midi.rb,v 1.8 2006/12/24 08:50:37 k Exp $
+# $Id: midi.rb,v 1.9 2007/04/05 23:35:41 trevor Exp $
 #
 
 #--

@@ -2,9 +2,9 @@
 # = bio/appl/blat/report.rb - BLAT result parser
 #
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
-# License:: Ruby's
+# License:: The Ruby License
 #
-#  $Id: report.rb,v 1.12 2006/06/29 11:54:33 ngoto Exp $
+#  $Id: report.rb,v 1.13 2007/04/05 23:35:39 trevor Exp $
 #
 # BLAT result parser (psl / pslx format).
 #

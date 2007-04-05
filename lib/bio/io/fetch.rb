@@ -3,9 +3,9 @@
 #
 # Copyright::	Copyright (C) 2002, 2005 Toshiaki Katayama <k@bioruby.org>,
 #               Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
-# License::     Ruby's
+# License::     The Ruby License
 #
-#  $Id: fetch.rb,v 1.9 2006/07/14 14:28:44 ngoto Exp $
+#  $Id: fetch.rb,v 1.10 2007/04/05 23:35:41 trevor Exp $
 #
 # == DESCRIPTION
 #

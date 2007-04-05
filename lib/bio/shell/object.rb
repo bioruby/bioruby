@@ -4,9 +4,9 @@
 # Copyright::   Copyright (C) 2006
 #               Nobuya Tanaka <t@chemruby.org>,
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: object.rb,v 1.2 2006/12/24 08:40:00 k Exp $
+# $Id: object.rb,v 1.3 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'pp'

@@ -3,9 +3,9 @@
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
-#  $Id: single_strand.rb,v 1.5 2007/04/04 20:05:05 trevor Exp $
+#  $Id: single_strand.rb,v 1.6 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'bio/util/restriction_enzyme/single_strand/cut_locations_in_enzyme_notation'
@@ -21,7 +21,7 @@ class Bio::RestrictionEnzyme
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
 # A single strand of restriction enzyme sequence pattern with a 5' to 3' 
 # orientation.

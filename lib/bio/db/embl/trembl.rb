@@ -2,9 +2,9 @@
 # = bio/db/embl/trembl.rb - TrEMBL database class
 # 
 # Copyright::  Copyright (C) 2001, 2002 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: trembl.rb,v 1.6 2006/09/19 06:01:48 k Exp $
+# $Id: trembl.rb,v 1.7 2007/04/05 23:35:40 trevor Exp $
 #
 
 require 'bio/db/embl/sptr'

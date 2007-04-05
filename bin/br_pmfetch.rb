@@ -4,12 +4,12 @@
 #
 # Copyright::   Copyright (C) 2004, 2005
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: br_pmfetch.rb,v 1.6 2006/02/09 16:29:41 k Exp $
+# $Id: br_pmfetch.rb,v 1.7 2007/04/05 23:35:39 trevor Exp $
 #
 
-PROG_VER  = '$Id: br_pmfetch.rb,v 1.6 2006/02/09 16:29:41 k Exp $'
+PROG_VER  = '$Id: br_pmfetch.rb,v 1.7 2007/04/05 23:35:39 trevor Exp $'
 PROG_NAME = File.basename($0)
 
 

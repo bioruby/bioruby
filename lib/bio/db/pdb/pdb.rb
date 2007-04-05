@@ -4,9 +4,9 @@
 # Copyright:: Copyright (C) 2003-2006
 #             GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 #             Alex Gutteridge <alexg@ebi.ac.uk>
-# License::   Ruby's
+# License::   The Ruby License
 #
-#  $Id: pdb.rb,v 1.20 2007/03/29 12:50:49 k Exp $
+#  $Id: pdb.rb,v 1.21 2007/04/05 23:35:41 trevor Exp $
 #
 # = About Bio::PDB
 #

@@ -2,9 +2,9 @@
 # test/unit/bio/data/test_codontable.rb - Unit test for Bio::CodonTable
 #
 # Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-#  $Id: test_codontable.rb,v 1.5 2006/12/24 17:19:04 nakao Exp $
+#  $Id: test_codontable.rb,v 1.6 2007/04/05 23:35:43 trevor Exp $
 #
 
 require 'pathname'

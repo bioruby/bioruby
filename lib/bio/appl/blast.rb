@@ -4,9 +4,9 @@
 # Copyright::  Copyright (C) 2001       Mitsuteru C. Nakao <n@bioruby.org>
 # Copyright::  Copyright (C) 2002,2003  Toshiaki Katayama <k@bioruby.org>
 # Copyright::  Copyright (C) 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: blast.rb,v 1.32 2006/09/19 06:31:08 k Exp $
+# $Id: blast.rb,v 1.33 2007/04/05 23:35:39 trevor Exp $
 #
 
 require 'net/http'

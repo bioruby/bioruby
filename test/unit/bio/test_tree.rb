@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2006
 #               Naohisa Goto <ng@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: test_tree.rb,v 1.4 2007/01/12 16:12:05 ngoto Exp $
+# $Id: test_tree.rb,v 1.5 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'test/unit'

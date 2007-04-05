@@ -2,9 +2,9 @@
 # test/unit/bio/io/test_fastacmd.rb - Unit test for Bio::Blast::Fastacmd.
 #
 # Copyright::  Copyright (C) 2006 Mitsuteru Nakao <n@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-#  $Id: test_fastacmd.rb,v 1.2 2006/12/24 17:19:05 nakao Exp $
+#  $Id: test_fastacmd.rb,v 1.3 2007/04/05 23:35:43 trevor Exp $
 #
 
 require 'pathname'

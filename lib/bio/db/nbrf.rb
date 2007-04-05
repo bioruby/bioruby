@@ -3,9 +3,9 @@
 #
 # Copyright:: Copyright (C) 2001-2003,2006 Naohisa Goto <ng@bioruby.org>
 #             Copyright (C) 2001-2002 Toshiaki Katayama <k@bioruby.org>
-# License::   Ruby's
+# License::   The Ruby License
 #
-#  $Id: nbrf.rb,v 1.9 2006/09/19 06:03:51 k Exp $
+#  $Id: nbrf.rb,v 1.10 2007/04/05 23:35:40 trevor Exp $
 #
 # Sequence data class for NBRF/PIR flatfile format.
 #

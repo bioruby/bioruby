@@ -2,9 +2,9 @@
 # = bio/appl/blast/wublast.rb - WU-BLAST default output parser
 # 
 # Copyright::  Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: wublast.rb,v 1.8 2006/09/19 06:12:37 k Exp $
+# $Id: wublast.rb,v 1.9 2007/04/05 23:35:39 trevor Exp $
 #
 # == Description
 #

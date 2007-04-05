@@ -4,9 +4,9 @@
 # Copyright::   Copyright (C) 2001, 2006
 #               Toshiaki Katayama <k@bioruby.org>,
 #               Ryan Raaum <ryan@raaum.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: reference.rb,v 1.23 2006/12/31 21:54:49 trevor Exp $
+# $Id: reference.rb,v 1.24 2007/04/05 23:35:39 trevor Exp $
 #
 
 module Bio

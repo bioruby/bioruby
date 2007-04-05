@@ -3,9 +3,9 @@
 # 
 # Copyright::  Copyright (C) 2002, 2005 Toshiaki Katayama<k@bioruby.org>
 # Copyright::  Copyright (C) 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: emboss.rb,v 1.7 2006/09/19 06:31:08 k Exp $
+# $Id: emboss.rb,v 1.8 2007/04/05 23:35:39 trevor Exp $
 #
 
 module Bio

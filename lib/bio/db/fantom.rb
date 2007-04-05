@@ -2,9 +2,9 @@
 # bio/db/fantom.rb - RIKEN FANTOM2 database classes
 #
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org> 
-# License::   Ruby's
+# License::   The Ruby License
 #
-#  $Id: fantom.rb,v 1.13 2006/07/14 14:48:55 ngoto Exp $
+#  $Id: fantom.rb,v 1.14 2007/04/05 23:35:40 trevor Exp $
 #
 
 begin

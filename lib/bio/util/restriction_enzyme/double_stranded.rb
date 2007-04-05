@@ -3,9 +3,9 @@
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
-#  $Id: double_stranded.rb,v 1.9 2007/04/04 18:07:43 trevor Exp $
+#  $Id: double_stranded.rb,v 1.10 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'bio/db/rebase'
@@ -27,7 +27,7 @@ class Bio::RestrictionEnzyme
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
 # A pair of SingleStrand and SingleStrandComplement objects with methods to
 # add utility to their relation.

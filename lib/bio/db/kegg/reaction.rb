@@ -2,9 +2,9 @@
 # = bio/db/kegg/reaction.rb - KEGG REACTION database class
 #
 # Copyright::  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: reaction.rb,v 1.4 2006/09/19 05:56:38 k Exp $
+# $Id: reaction.rb,v 1.5 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'bio/db'

@@ -3,9 +3,9 @@
 #
 # Copyright::	Copyright (C) 2005
 # 		Toshiaki Katayama <k@bioruby.org>
-# License::	Ruby's
+# License::	The Ruby License
 #
-# $Id: kgml.rb,v 1.6 2006/12/24 09:18:43 k Exp $
+# $Id: kgml.rb,v 1.7 2007/04/05 23:35:41 trevor Exp $
 #
 
 autoload :REXML, 'rexml/document'

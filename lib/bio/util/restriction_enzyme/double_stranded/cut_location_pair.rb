@@ -3,9 +3,9 @@
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
-#  $Id: cut_location_pair.rb,v 1.7 2007/04/04 20:05:06 trevor Exp $
+#  $Id: cut_location_pair.rb,v 1.8 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'bio/util/restriction_enzyme/cut_symbol'
@@ -19,7 +19,7 @@ class DoubleStranded
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
 # Stores a single cut location pair in 0-based index notation for use with
 # DoubleStranded enzyme sequences.

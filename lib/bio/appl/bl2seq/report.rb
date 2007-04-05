@@ -2,9 +2,9 @@
 # = bio/appl/bl2seq/report.rb - bl2seq (BLAST 2 sequences) parser
 # 
 # Copyright:: Copyright (C) 2005 GOTO Naohisa <ng@bioruby.org>
-# License::   Ruby's
+# License::   The Ruby License
 #
-#  $Id: report.rb,v 1.7 2006/04/30 05:40:23 ngoto Exp $
+#  $Id: report.rb,v 1.8 2007/04/05 23:35:39 trevor Exp $
 #
 # Bio::Bl2seq::Report is a NCBI bl2seq (BLAST 2 sequences) output parser.
 #

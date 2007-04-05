@@ -3,7 +3,7 @@
 Copyright::  Copyright (C) 2005, 2006 Toshiaki Katayama <k@bioruby.org>
 Copyright::  Copyright (C) 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
 
-  $Id: README.DEV,v 1.13 2007/04/05 15:18:51 k Exp $
+  $Id: README.DEV,v 1.14 2007/04/05 23:35:39 trevor Exp $
 
 = HOW TO CONTRIBUTE TO THE BIORUBY PROJECT?
 
@@ -79,7 +79,7 @@ The header should be formatted as follows:
   # Copyright::  Copyright (C) 2001, 2003-2005 Bio R. Hacker <brh@example.org>,
   # Copyright::  Copyright (C) 2006 Chem R. Hacker <crh@example.org>
   #
-  # License::    Ruby's
+  # License::    The Ruby License
   #
   # $ I d: $
   #
@@ -108,7 +108,7 @@ The header should be formatted as follows:
 In the above sample, the '$ I d : $' (without spaces) will be automatically
 changed into something like
 
-  $Id: README.DEV,v 1.13 2007/04/05 15:18:51 k Exp $
+  $Id: README.DEV,v 1.14 2007/04/05 23:35:39 trevor Exp $
 
 when commiting to the CVS repository for the first time.
 

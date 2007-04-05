@@ -4,9 +4,9 @@
 # Copyright::  Copyright (C) 2003, 2005
 #              Toshiaki Katayama <k@bioruby.org>
 #              2006  Jan Aerts <jan.aerts@bbsrc.ac.uk>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: gff.rb,v 1.7 2006/05/08 14:31:58 k Exp $
+# $Id: gff.rb,v 1.8 2007/04/05 23:35:40 trevor Exp $
 #
 
 module Bio

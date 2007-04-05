@@ -3,9 +3,9 @@
 # 
 # Copyright:: Copyright (C) 2002
 #             GOTO Naohisa <ng@bioruby.org> 
-# License:: Ruby's
+# License:: The Ruby License
 #
-#  $Id: index.rb,v 1.18 2006/02/22 08:40:31 ngoto Exp $ 
+#  $Id: index.rb,v 1.19 2007/04/05 23:35:41 trevor Exp $ 
 #
 # = About Bio::FlatFileIndex
 #

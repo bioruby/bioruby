@@ -2,9 +2,9 @@
 # test/unit/bio/db/embl/test_sptr.rb - Unit test for Bio::SPTR
 #
 # Copyright:::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-#  $Id: test_sptr.rb,v 1.6 2006/12/31 21:54:49 trevor Exp $
+#  $Id: test_sptr.rb,v 1.7 2007/04/05 23:35:43 trevor Exp $
 #
 
 require 'pathname'

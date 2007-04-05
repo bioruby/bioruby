@@ -4,9 +4,9 @@
 # Copyright:: Copyright (C) 2003, 2005, 2006
 #             GOTO Naohisa <ng@bioruby.org>
 #
-# License:: Ruby's
+# License:: The Ruby License
 #
-#  $Id: alignment.rb,v 1.21 2006/12/14 19:52:53 ngoto Exp $
+#  $Id: alignment.rb,v 1.22 2007/04/05 23:35:39 trevor Exp $
 #
 # = About Bio::Alignment
 #

@@ -6,9 +6,9 @@
 #              Toshiaki Katayama <k@bioruby.org>,
 #              Mitsuteru C. Nakao <n@bioruby.org>,
 #              Jan Aerts <jan.aerts@bbsrc.ac.uk>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: fastacmd.rb,v 1.15 2007/03/29 12:44:25 k Exp $
+# $Id: fastacmd.rb,v 1.16 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'bio/db/fasta'

@@ -4,9 +4,9 @@
 # Copyright:: Copyright (C) 2006
 #             GOTO Naohisa <ng@bioruby.org>
 #
-# License:: Ruby's
+# License:: The Ruby License
 #
-#  $Id: alignment.rb,v 1.1 2006/12/14 22:38:53 ngoto Exp $
+#  $Id: alignment.rb,v 1.2 2007/04/05 23:35:40 trevor Exp $
 #
 # = About Bio::Phylip::PhylipFormat
 #

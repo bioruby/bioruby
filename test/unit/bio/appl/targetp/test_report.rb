@@ -2,9 +2,9 @@
 # test/unit/bio/appl/targetp/test_report.rb - Unit test for Bio::TargetP::Report
 #
 # Copyright:  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
-# License::   Ruby's
+# License::   The Ruby License
 #
-#  $Id: test_report.rb,v 1.4 2006/12/24 17:19:04 nakao Exp $
+#  $Id: test_report.rb,v 1.5 2007/04/05 23:35:43 trevor Exp $
 #
 
 require 'pathname'

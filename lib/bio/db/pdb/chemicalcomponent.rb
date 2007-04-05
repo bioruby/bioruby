@@ -3,9 +3,9 @@
 #
 # Copyright:: Copyright (C) 2006
 #             GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
-# License::   Ruby's
+# License::   The Ruby License
 #
-# $Id: chemicalcomponent.rb,v 1.2 2007/03/29 12:50:49 k Exp $
+# $Id: chemicalcomponent.rb,v 1.3 2007/04/05 23:35:41 trevor Exp $
 #
 # = About Bio::PDB::ChemicalComponent
 #

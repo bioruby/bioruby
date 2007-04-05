@@ -2,9 +2,9 @@
 # = bio/db/kegg/genome.rb - KEGG/GENOME database class
 #
 # Copyright::  Copyright (C) 2001, 2002, 2007 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: genome.rb,v 0.16 2007/01/15 04:37:29 k Exp $
+# $Id: genome.rb,v 0.17 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'bio/db'

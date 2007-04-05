@@ -5,9 +5,9 @@
 #               Hiroshi Suga <suga@biophys.kyoto-u.ac.jp>,
 # Copyright::   Copyright (C) 2005 
 #               Masashi Fujita <fujita@kuicr.kyoto-u.ac.jp>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: report.rb,v 1.12 2007/03/30 22:26:15 k Exp $
+# $Id: report.rb,v 1.13 2007/04/05 23:35:40 trevor Exp $
 #
 # == Description
 #

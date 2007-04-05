@@ -2,9 +2,9 @@
 # = bio/db/kegg/brite.rb - KEGG/BRITE database class
 #
 # Copyright::  Copyright (C) 2001 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: brite.rb,v 0.7 2006/09/19 05:50:45 k Exp $
+# $Id: brite.rb,v 0.8 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'bio/db'

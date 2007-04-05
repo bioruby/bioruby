@@ -4,9 +4,9 @@
 # Copyright:    Copyright (C) 2001
 #               Toshiaki Katayama <k@bioruby.org>,
 #               Shuichi Kawashima <shuichi@hgc.jp>
-# License::     Ruby's
+# License::     The Ruby License
 #
-#  $Id: pathway.rb,v 1.35 2006/07/25 18:21:26 k Exp $
+#  $Id: pathway.rb,v 1.36 2007/04/05 23:35:39 trevor Exp $
 #
 
 require 'matrix'

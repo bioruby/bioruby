@@ -3,9 +3,9 @@
 #
 # Copyright::	Copyright (C) 2001
 #		Shuichi Kawashima <shuichi@hgc.jp>
-# License::	Ruby's
+# License::	The Ruby License
 #
-# $Id: transfac.rb,v 1.11 2007/03/29 12:46:58 k Exp $
+# $Id: transfac.rb,v 1.12 2007/04/05 23:35:40 trevor Exp $
 #
 
 require "bio/db"

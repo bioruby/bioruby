@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2006
 #               Naohisa Goto <ng@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: tree.rb,v 1.7 2007/01/12 16:10:28 ngoto Exp $
+# $Id: tree.rb,v 1.8 2007/04/05 23:35:39 trevor Exp $
 #
 
 require 'matrix'

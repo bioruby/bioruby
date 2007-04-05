@@ -3,9 +3,9 @@
 #
 # Copyright::  Copyright (C) 2006 
 #              Mitsuteru C. Nakao <n@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: test_reference.rb,v 1.2 2006/12/31 21:54:49 trevor Exp $
+# $Id: test_reference.rb,v 1.3 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'pathname'

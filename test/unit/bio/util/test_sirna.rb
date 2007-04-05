@@ -2,9 +2,9 @@
 # test/unit/bio/util/test_sirna.rb - Unit test for Bio::SiRNA.
 #
 # Copyright::  Copyright (C) 2005 Mitsuteru C. Nakap <n@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-#  $Id: test_sirna.rb,v 1.3 2006/12/24 17:19:05 nakao Exp $
+#  $Id: test_sirna.rb,v 1.4 2007/04/05 23:35:44 trevor Exp $
 #
 
 require 'pathname'

@@ -3,9 +3,9 @@
 #
 # Copyright::  Copyright (C) 2001, 2002, 2005
 #              Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: db.rb,v 0.36 2007/01/15 04:33:52 k Exp $
+# $Id: db.rb,v 0.37 2007/04/05 23:35:39 trevor Exp $
 #
 # == On-demand parsing and cache
 #

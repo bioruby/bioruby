@@ -2,9 +2,9 @@
 # = bio/appl/fasta.rb - FASTA wrapper
 #
 # Copyright::  Copyright (C) 2001, 2002 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: fasta.rb,v 1.23 2006/09/19 06:28:56 k Exp $
+# $Id: fasta.rb,v 1.24 2007/04/05 23:35:39 trevor Exp $
 #
 
 require 'net/http'

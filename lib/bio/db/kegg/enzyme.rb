@@ -2,9 +2,9 @@
 # = bio/db/kegg/enzyme.rb - KEGG/ENZYME database class
 #
 # Copyright::  Copyright (C) 2001, 2002, 2007 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: enzyme.rb,v 0.10 2007/01/15 04:50:05 k Exp $
+# $Id: enzyme.rb,v 0.11 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'bio/db'

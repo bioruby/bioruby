@@ -2,9 +2,9 @@
 # = bio/io/flatfile/indexer.rb - OBDA flatfile indexer
 # 
 # Copyright:: Copyright (C) 2002 GOTO Naohisa <ng@bioruby.org> 
-# License::   Ruby's
+# License::   The Ruby License
 # 
-#  $Id: indexer.rb,v 1.24 2006/03/22 10:19:22 ngoto Exp $ 
+#  $Id: indexer.rb,v 1.25 2007/04/05 23:35:41 trevor Exp $ 
 # 
 
 require 'bio/io/flatfile/index'

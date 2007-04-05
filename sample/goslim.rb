@@ -12,14 +12,14 @@
 #
 # Copyright::  Copyright (C) 2003
 #              Mitsuteru C. Nakao <n@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-#  $Id: goslim.rb,v 1.4 2007/04/05 17:22:14 nakao Exp $
+#  $Id: goslim.rb,v 1.5 2007/04/05 23:35:42 trevor Exp $
 #
 
 
 
-SCRIPT_VERSION = '$Id: goslim.rb,v 1.4 2007/04/05 17:22:14 nakao Exp $'
+SCRIPT_VERSION = '$Id: goslim.rb,v 1.5 2007/04/05 23:35:42 trevor Exp $'
 
 USAGE = "${__FILE__} - GO slim
 Usage:

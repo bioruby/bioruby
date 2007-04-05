@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2006
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: generic.rb,v 1.4 2006/03/26 02:27:59 k Exp $
+# $Id: generic.rb,v 1.5 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'bio/sequence/common'

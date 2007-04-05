@@ -3,9 +3,9 @@
 #
 # Copyright::  Copyright (C) 2001 Toshiaki Katayama <k@bioruby.org>
 # Copyright::  Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: pubmed.rb,v 1.15 2006/09/19 05:47:52 k Exp $
+# $Id: pubmed.rb,v 1.16 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'net/http'

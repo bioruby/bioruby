@@ -2,9 +2,9 @@
 # = bio/appl/clustalw.rb - CLUSTAL W wrapper class
 #
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
-# License::   Ruby's
+# License::   The Ruby License
 #
-#  $Id: clustalw.rb,v 1.17 2006/12/14 16:08:46 ngoto Exp $
+#  $Id: clustalw.rb,v 1.18 2007/04/05 23:35:39 trevor Exp $
 #
 # Bio::ClustalW is a CLUSTAL W execution wrapper class.
 # Its object is also called an alignment factory.

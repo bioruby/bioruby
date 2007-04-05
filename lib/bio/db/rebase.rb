@@ -3,9 +3,9 @@
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
-#  $Id: rebase.rb,v 1.7 2007/01/01 00:12:54 trevor Exp $
+#  $Id: rebase.rb,v 1.8 2007/04/05 23:35:40 trevor Exp $
 #
 
 autoload :YAML, 'yaml'
@@ -19,7 +19,7 @@ autoload :Reference, 'bio/reference'
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
 #
 # = Description

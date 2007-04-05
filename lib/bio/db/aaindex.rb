@@ -5,9 +5,9 @@
 #              KAWASHIMA Shuichi <s@bioruby.org>
 # Copyright::  Copyright (C) 2006
 #              Mitsuteru C. Nakao <n@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: aaindex.rb,v 1.19 2006/05/08 14:34:52 k Exp $
+# $Id: aaindex.rb,v 1.20 2007/04/05 23:35:40 trevor Exp $
 #
 # == Description
 #

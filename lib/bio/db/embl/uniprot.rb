@@ -2,9 +2,9 @@
 # = bio/db/embl/uniprot.rb - UniProt database class
 # 
 # Copyright::  Copyright (C) 2005 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-#  $Id: uniprot.rb,v 1.4 2006/09/19 06:01:48 k Exp $
+#  $Id: uniprot.rb,v 1.5 2007/04/05 23:35:40 trevor Exp $
 #
 
 require 'bio/db/embl/sptr'

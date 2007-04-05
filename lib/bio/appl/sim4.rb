@@ -2,9 +2,9 @@
 # = bio/appl/sim4.rb - sim4 wrapper class
 #
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
-# License::   Ruby's
+# License::   The Ruby License
 #
-#  $Id: sim4.rb,v 1.9 2006/12/14 15:59:21 ngoto Exp $
+#  $Id: sim4.rb,v 1.10 2007/04/05 23:35:39 trevor Exp $
 #
 # The sim4 execution wrapper class.
 #

@@ -4,9 +4,9 @@
 # Copyright::   Copyright (C) 2006
 #               Nobuya Tanaka <t@chemruby.org>,
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: web.rb,v 1.3 2007/03/14 19:55:10 k Exp $
+# $Id: web.rb,v 1.4 2007/04/05 23:35:41 trevor Exp $
 #
 
 

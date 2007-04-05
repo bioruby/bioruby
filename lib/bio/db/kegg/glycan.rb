@@ -2,9 +2,9 @@
 # = bio/db/kegg/glycan.rb - KEGG GLYCAN database class
 #
 # Copyright::  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: glycan.rb,v 1.4 2007/03/08 00:14:16 k Exp $
+# $Id: glycan.rb,v 1.5 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'bio/db'

@@ -2,9 +2,9 @@
 # test/unit/bio/io/test_ddbjxml.rb - Unit test for DDBJ XML.
 #
 # Copyright:: Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
-# License::   Ruby's
+# License::   The Ruby License
 #
-#  $Id: test_ddbjxml.rb,v 1.3 2007/03/28 11:21:20 nakao Exp $ 
+#  $Id: test_ddbjxml.rb,v 1.4 2007/04/05 23:35:43 trevor Exp $ 
 #
 
 require 'pathname'

@@ -2,9 +2,9 @@
 # test/unit/bio/test_shell.rb - Unit test for Bio::Shell
 #
 # Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-#  $Id: test_shell.rb,v 1.6 2006/12/24 17:19:04 nakao Exp $
+#  $Id: test_shell.rb,v 1.7 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'pathname'

@@ -3,9 +3,9 @@
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
-#  $Id: restriction_enzyme.rb,v 1.12 2007/02/02 06:42:14 trevor Exp $
+#  $Id: restriction_enzyme.rb,v 1.13 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'bio/db/rebase'
@@ -21,7 +21,7 @@ module Bio #:nodoc:
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
 # = Description
 # 

@@ -3,9 +3,9 @@
 #
 # Copyright::	Copyright (C) 2001, 2005
 #		Toshiaki Katayama <k@bioruby.org>
-# License::	Ruby's
+# License::	The Ruby License
 #
-# $Id: na.rb,v 0.21 2007/04/05 23:10:09 trevor Exp $
+# $Id: na.rb,v 0.22 2007/04/05 23:35:40 trevor Exp $
 #
 # == Synopsis
 #

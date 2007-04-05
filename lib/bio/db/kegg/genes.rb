@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2001, 2002, 2006
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: genes.rb,v 0.24 2007/03/08 00:10:50 k Exp $
+# $Id: genes.rb,v 0.25 2007/04/05 23:35:41 trevor Exp $
 #
 #
 # == KEGG GENES parser

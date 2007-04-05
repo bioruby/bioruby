@@ -2,9 +2,9 @@
 # = bio/appl/sim4/report.rb - sim4 result parser
 #
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
-# License::   Ruby's
+# License::   The Ruby License
 #
-#  $Id: report.rb,v 1.8 2006/04/30 05:50:19 ngoto Exp $
+#  $Id: report.rb,v 1.9 2007/04/05 23:35:40 trevor Exp $
 #
 # The sim4 report parser classes.
 #

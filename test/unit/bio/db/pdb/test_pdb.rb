@@ -4,9 +4,9 @@
 # Copyright:: Copyright (C) 2006
 #             Naohisa Goto <ng@bioruby.org>
 #
-# License:: Ruby's
+# License:: The Ruby License
 #
-#  $Id: test_pdb.rb,v 1.2 2006/06/27 14:25:40 ngoto Exp $
+#  $Id: test_pdb.rb,v 1.3 2007/04/05 23:35:43 trevor Exp $
 #
 
 require 'pathname'

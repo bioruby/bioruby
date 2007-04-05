@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2004 
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: soapwsdl.rb,v 1.6 2006/09/19 05:43:06 k Exp $
+# $Id: soapwsdl.rb,v 1.7 2007/04/05 23:35:41 trevor Exp $
 #
 begin
   require 'soap/wsdlDriver'

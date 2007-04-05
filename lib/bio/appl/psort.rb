@@ -5,9 +5,9 @@ module Bio
 #
 # Copyright::   Copyright (C) 2003-2006
 #               Mitsuteru C. Nakao <n@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: psort.rb,v 1.12 2006/09/19 06:30:42 k Exp $
+# $Id: psort.rb,v 1.13 2007/04/05 23:35:39 trevor Exp $
 #
 
 require 'bio/appl/psort/report'

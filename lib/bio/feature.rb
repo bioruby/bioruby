@@ -3,9 +3,9 @@
 #
 # Copyright::	Copyright (c) 2002, 2005  Toshiaki Katayama <k@bioruby.org>
 #                             2006        Jan Aerts <jan.aerts@bbsrc.ac.uk>
-# License::	Ruby's
+# License::	The Ruby License
 #
-# $Id: feature.rb,v 1.12 2006/05/09 11:52:30 aerts Exp $
+# $Id: feature.rb,v 1.13 2007/04/05 23:35:39 trevor Exp $
 
 require 'bio/location'
 

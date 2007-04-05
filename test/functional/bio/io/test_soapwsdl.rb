@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2005,2007
 #               Mitsuteru C. Nakao <n@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-#  $Id: test_soapwsdl.rb,v 1.3 2007/03/28 20:48:11 nakao Exp $ 
+#  $Id: test_soapwsdl.rb,v 1.4 2007/04/05 23:35:42 trevor Exp $ 
 #
 
 require 'pathname'

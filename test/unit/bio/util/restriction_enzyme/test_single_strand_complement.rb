@@ -3,9 +3,9 @@
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
-#  $Id: test_single_strand_complement.rb,v 1.2 2006/12/31 18:46:14 trevor Exp $
+#  $Id: test_single_strand_complement.rb,v 1.3 2007/04/05 23:35:44 trevor Exp $
 #
 
 require 'pathname'

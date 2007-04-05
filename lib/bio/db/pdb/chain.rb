@@ -4,9 +4,9 @@
 # Copyright:: Copyright (C) 2004, 2006
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 #             Naohisa Goto <ng@bioruby.org>
-# License::   Ruby's
+# License::   The Ruby License
 # 
-# $Id: chain.rb,v 1.7 2007/03/29 12:50:49 k Exp $
+# $Id: chain.rb,v 1.8 2007/04/05 23:35:41 trevor Exp $
 #
 # = Bio::PDB::Chain
 # 

@@ -4,9 +4,9 @@
 # Copyright::	Copyright (C) 2001-2003, 2005
 #		Shuichi Kawashima <shuichi@hgc.jp>,
 #		Toshiaki Katayama <k@bioruby.org>
-# License::	Ruby's
+# License::	The Ruby License
 #
-# $Id: expression.rb,v 1.10 2006/05/08 14:25:25 k Exp $
+# $Id: expression.rb,v 1.11 2007/04/05 23:35:41 trevor Exp $
 #
 
 require "bio/db"

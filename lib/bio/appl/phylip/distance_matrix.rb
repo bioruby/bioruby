@@ -4,9 +4,9 @@
 # Copyright:: Copyright (C) 2006
 #             GOTO Naohisa <ng@bioruby.org>
 #
-# License:: Ruby's
+# License:: The Ruby License
 #
-#  $Id: distance_matrix.rb,v 1.2 2006/12/15 14:59:26 ngoto Exp $
+#  $Id: distance_matrix.rb,v 1.3 2007/04/05 23:35:40 trevor Exp $
 #
 # = About Bio::Phylip::DistanceMatrix
 #

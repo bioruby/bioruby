@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2006
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: setup.rb,v 1.2 2007/03/28 20:21:26 k Exp $
+# $Id: setup.rb,v 1.3 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'getoptlong'

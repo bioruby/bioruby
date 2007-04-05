@@ -4,9 +4,9 @@
 # Copyright::  Copyright (C) 2004
 #              Moses Hohman <mmhohman@northwestern.edu>
 #              2005 Naohisa Goto <ng@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-#  $Id: test_alignment.rb,v 1.10 2007/04/05 17:12:00 nakao Exp $
+#  $Id: test_alignment.rb,v 1.11 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'pathname'

@@ -2,9 +2,9 @@
 # = bio/db/genbank/genpept.rb - GenPept database class
 #
 # Copyright::  Copyright (C) 2002-2004 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: genpept.rb,v 1.11 2006/09/19 05:59:34 k Exp $
+# $Id: genpept.rb,v 1.12 2007/04/05 23:35:40 trevor Exp $
 #
 
 require 'bio/db/genbank/common'

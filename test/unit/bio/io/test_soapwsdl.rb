@@ -2,9 +2,9 @@
 # test/unit/bio/io/test_soapwsdl.rb - Unit test for SOAP/WSDL
 #
 # Copytight::   Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-#  $Id: test_soapwsdl.rb,v 1.2 2006/06/05 02:51:59 nakao Exp $ 
+#  $Id: test_soapwsdl.rb,v 1.3 2007/04/05 23:35:43 trevor Exp $ 
 #
 
 require 'pathname'

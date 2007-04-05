@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2005
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: emboss.rb,v 1.2 2006/02/09 20:48:53 k Exp $
+# $Id: emboss.rb,v 1.3 2007/04/05 23:35:41 trevor Exp $
 #
 
 module Bio::Shell

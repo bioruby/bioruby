@@ -3,9 +3,9 @@
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
-#  $Id: aligned_strands.rb,v 1.4 2007/04/04 18:07:44 trevor Exp $
+#  $Id: aligned_strands.rb,v 1.5 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'bio/util/restriction_enzyme/single_strand'
@@ -21,7 +21,7 @@ class DoubleStranded
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
 # Align two SingleStrand objects and return a Result
 # object with +primary+ and +complement+ accessors.

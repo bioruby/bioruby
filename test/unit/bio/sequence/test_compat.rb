@@ -2,9 +2,9 @@
 # test/unit/bio/sequence/test_compat.rb - Unit test for Bio::Sequencce::Compat
 #
 # Copyright::   Copyright (C) 2006 Mitsuteru C. Nakao <n@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-#  $Id: test_compat.rb,v 1.2 2006/12/24 17:19:05 nakao Exp $
+#  $Id: test_compat.rb,v 1.3 2007/04/05 23:35:44 trevor Exp $
 #
 
 require 'pathname'

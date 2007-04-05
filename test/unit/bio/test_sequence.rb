@@ -4,9 +4,9 @@
 # Copyright::  Copyright (C) 2004
 #              Moses Hohman <mmhohman@northwestern.edu>
 #              2006 Mitsuteru C. Nakao <n@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-#  $Id: test_sequence.rb,v 1.8 2007/04/05 23:10:09 trevor Exp $
+#  $Id: test_sequence.rb,v 1.9 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'pathname'

@@ -2,9 +2,9 @@
 # = bio/db/kegg/compound.rb - KEGG COMPOUND database class
 #
 # Copyright::  Copyright (C) 2001, 2002, 2004, 2007 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: compound.rb,v 0.14 2007/03/08 00:10:05 k Exp $
+# $Id: compound.rb,v 0.15 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'bio/db'

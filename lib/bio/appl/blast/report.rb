@@ -2,9 +2,9 @@
 # = bio/appl/blast/report.rb - BLAST Report class
 # 
 # Copyright::  Copyright (C) 2003 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: report.rb,v 1.10 2006/09/19 06:09:20 k Exp $
+# $Id: report.rb,v 1.11 2007/04/05 23:35:39 trevor Exp $
 #
 
 require 'bio/appl/blast'

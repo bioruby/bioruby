@@ -7,9 +7,9 @@
 #               Naohisa Goto <ng@bioruby.org>,
 #               Ryan Raaum <ryan@raaum.org>,
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: sequence.rb,v 0.57 2006/03/26 02:27:59 k Exp $
+# $Id: sequence.rb,v 0.58 2007/04/05 23:35:39 trevor Exp $
 #
 
 require 'bio/sequence/compat'

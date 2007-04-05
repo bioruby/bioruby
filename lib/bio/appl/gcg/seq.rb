@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2003, 2006
 #               Naohisa Goto <ng@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: seq.rb,v 1.2 2006/12/14 19:55:10 ngoto Exp $
+# $Id: seq.rb,v 1.3 2007/04/05 23:35:39 trevor Exp $
 #
 # = About Bio::GCG::Seq
 #

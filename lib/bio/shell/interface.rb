@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2005
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: interface.rb,v 1.15 2006/12/24 08:36:45 k Exp $
+# $Id: interface.rb,v 1.16 2007/04/05 23:35:41 trevor Exp $
 #
 
 module Bio::Shell

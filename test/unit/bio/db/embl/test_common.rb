@@ -2,9 +2,9 @@
 # test/unit/bio/db/embl/common.rb - Unit test for Bio::EMBL::COMMON module
 #
 # Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-#  $Id: test_common.rb,v 1.3 2006/12/24 17:19:04 nakao Exp $
+#  $Id: test_common.rb,v 1.4 2007/04/05 23:35:43 trevor Exp $
 #
 
 require 'pathname'

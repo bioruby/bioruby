@@ -2,9 +2,9 @@
 # = bio/db/genbank/genbank.rb - GenBank database class
 #
 # Copyright::  Copyright (C) 2000-2005 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: genbank.rb,v 0.39 2006/09/19 05:59:07 k Exp $
+# $Id: genbank.rb,v 0.40 2007/04/05 23:35:40 trevor Exp $
 #
 
 require 'bio/db'

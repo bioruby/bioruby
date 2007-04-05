@@ -5,9 +5,9 @@
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # Copyright::  Copyright (C) 2003 
 #              Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: xmlparser.rb,v 1.16 2006/12/31 21:54:49 trevor Exp $
+# $Id: xmlparser.rb,v 1.17 2007/04/05 23:35:39 trevor Exp $
 #
 # == Description
 # 

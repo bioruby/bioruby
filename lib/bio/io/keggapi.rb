@@ -2,9 +2,9 @@
 # = bio/io/keggapi.rb - KEGG API access class
 #
 # Copyright::  Copyright (C) 2003, 2004 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: keggapi.rb,v 1.13 2006/09/19 05:45:48 k Exp $
+# $Id: keggapi.rb,v 1.14 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'bio/io/soapwsdl'

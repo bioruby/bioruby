@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2006
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: psort.rb,v 1.2 2006/12/24 08:50:18 k Exp $
+# $Id: psort.rb,v 1.3 2007/04/05 23:35:41 trevor Exp $
 #
 
 module Bio::Shell

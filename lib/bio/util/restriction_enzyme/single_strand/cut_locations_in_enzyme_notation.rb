@@ -3,9 +3,9 @@
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
-#  $Id: cut_locations_in_enzyme_notation.rb,v 1.5 2007/04/04 20:05:06 trevor Exp $
+#  $Id: cut_locations_in_enzyme_notation.rb,v 1.6 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'bio/util/restriction_enzyme/cut_symbol'
@@ -20,7 +20,7 @@ class SingleStrand < Bio::Sequence::NA
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
 # Stores the cut location in thier enzyme index notation
 # 

@@ -3,9 +3,9 @@
 #
 # Copyright::  Copyright (C) 2002 Toshiaki Katayama <k@bioruby.org>
 # Copyright::  Copyright (C) 2006 Raoul Jean Pierre Bonnal <raoul.bonnal@itb.cnr.it>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: sql.rb,v 1.7 2006/12/15 16:53:20 k Exp $
+# $Id: sql.rb,v 1.8 2007/04/05 23:35:41 trevor Exp $
 #
 
 begin

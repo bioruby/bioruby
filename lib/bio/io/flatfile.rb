@@ -3,9 +3,9 @@
 #
 #   Copyright (C) 2001-2006 Naohisa Goto <ng@bioruby.org>
 #
-# License:: Ruby's
+# License:: The Ruby License
 #
-#  $Id: flatfile.rb,v 1.57 2007/03/27 09:26:03 ngoto Exp $
+#  $Id: flatfile.rb,v 1.58 2007/04/05 23:35:41 trevor Exp $
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.

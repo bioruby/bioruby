@@ -2,9 +2,9 @@
 # = bio/appl/blast/format0.rb - BLAST default output (-m 0) parser
 # 
 # Copyright::  Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: format0.rb,v 1.19 2006/09/19 06:12:37 k Exp $
+# $Id: format0.rb,v 1.20 2007/04/05 23:35:39 trevor Exp $
 #
 # == Description
 #

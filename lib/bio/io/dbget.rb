@@ -4,9 +4,9 @@
 # Copyright::	Copyright (C) 2000, 2001
 #		Mitsuteru C. Nakao <n@bioruby.org>,
 #		Toshiaki Katayama <k@bioruby.org>
-# License::	Ruby's
+# License::	The Ruby License
 #
-# $Id: dbget.rb,v 1.12 2006/05/08 14:29:58 k Exp $
+# $Id: dbget.rb,v 1.13 2007/04/05 23:35:41 trevor Exp $
 #
 # == DBGET
 #

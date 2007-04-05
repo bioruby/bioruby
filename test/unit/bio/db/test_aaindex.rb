@@ -3,9 +3,9 @@
 #
 # Copyright::  Copyright (C) 2006 
 #              Mitsuteru C. Nakao <n@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: test_aaindex.rb,v 1.3 2006/02/22 07:35:19 nakao Exp $
+# $Id: test_aaindex.rb,v 1.4 2007/04/05 23:35:43 trevor Exp $
 #
 
 require 'pathname'

@@ -4,9 +4,9 @@
 # Copyright::  Copyright (C) 2004, 2006
 #              Alex Gutteridge <alexg@ebi.ac.uk>
 #              Naohisa Goto <ng@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: residue.rb,v 1.11 2007/03/29 12:50:49 k Exp $
+# $Id: residue.rb,v 1.12 2007/04/05 23:35:41 trevor Exp $
 #
 # = Bio::PDB::Residue
 #

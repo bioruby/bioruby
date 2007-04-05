@@ -3,9 +3,9 @@
 #
 # Copyright::	Copyright (C) 2001, 2004
 #		Toshiaki Katayama <k@bioruby.org>
-# License::	Ruby's
+# License::	The Ruby License
 #
-# $Id: codontable.rb,v 0.17 2006/05/08 14:21:46 k Exp $
+# $Id: codontable.rb,v 0.18 2007/04/05 23:35:40 trevor Exp $
 #
 # == Data source
 #

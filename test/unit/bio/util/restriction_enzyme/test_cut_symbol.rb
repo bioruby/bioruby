@@ -3,9 +3,9 @@
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
-#  $Id: test_cut_symbol.rb,v 1.1 2007/01/01 02:16:05 trevor Exp $
+#  $Id: test_cut_symbol.rb,v 1.2 2007/04/05 23:35:44 trevor Exp $
 #
 
 require 'pathname'

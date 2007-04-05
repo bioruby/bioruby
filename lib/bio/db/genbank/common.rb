@@ -2,9 +2,9 @@
 # = bio/db/genbank/common.rb - Common methods for GenBank style database classes
 #
 # Copyright::  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
-# License::    Ruby's
+# License::    The Ruby License
 #
-# $Id: common.rb,v 1.10 2006/09/19 05:57:20 k Exp $
+# $Id: common.rb,v 1.11 2007/04/05 23:35:40 trevor Exp $
 #
 
 require 'bio/db'

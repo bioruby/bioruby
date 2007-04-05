@@ -2,9 +2,9 @@
 # = bio/appl/mafft.rb - MAFFT wrapper class
 #
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
-# License::   Ruby's
+# License::   The Ruby License
 #
-#  $Id: mafft.rb,v 1.16 2007/04/02 12:55:26 ngoto Exp $
+#  $Id: mafft.rb,v 1.17 2007/04/05 23:35:39 trevor Exp $
 #
 # Bio::MAFFT is a wrapper class to execute MAFFT.
 # MAFFT is a very fast multiple sequence alignment software.

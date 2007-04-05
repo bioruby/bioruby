@@ -2,9 +2,9 @@
 # = bio/appl/spidey/report.rb - SPIDEY result parser
 #
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
-# License::   Ruby's
+# License::   The Ruby License
 #
-#  $Id: report.rb,v 1.9 2006/02/22 08:46:15 ngoto Exp $
+#  $Id: report.rb,v 1.10 2007/04/05 23:35:40 trevor Exp $
 #
 # NCBI Spidey result parser.
 # Currently, output of default (-p 0 option) or -p 1 option are supported.

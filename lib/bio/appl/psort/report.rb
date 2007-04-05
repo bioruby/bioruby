@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2003 
 #               Mitsuteru C. Nakao <n@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-#  $Id: report.rb,v 1.14 2006/07/25 18:41:23 k Exp $
+#  $Id: report.rb,v 1.15 2007/04/05 23:35:40 trevor Exp $
 #
 # == A Report classes for PSORT Systems
 # 

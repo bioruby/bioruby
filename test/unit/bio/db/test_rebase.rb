@@ -3,9 +3,9 @@
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
-#  $Id: test_rebase.rb,v 1.4 2007/01/01 00:12:54 trevor Exp $
+#  $Id: test_rebase.rb,v 1.5 2007/04/05 23:35:43 trevor Exp $
 #
 
 require 'pathname'

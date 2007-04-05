@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2005
 #               Toshiaki Katayama <k@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: codon.rb,v 1.15 2006/12/24 08:46:50 k Exp $
+# $Id: codon.rb,v 1.16 2007/04/05 23:35:41 trevor Exp $
 #
 
 module Bio::Shell

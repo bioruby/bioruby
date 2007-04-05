@@ -3,9 +3,9 @@
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
-#  $Id: calculated_cuts.rb,v 1.5 2007/04/04 18:07:44 trevor Exp $
+#  $Id: calculated_cuts.rb,v 1.6 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'bio/util/restriction_enzyme'  # test/runner.rb wont load without this
@@ -22,7 +22,7 @@ class SequenceRange
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 # 
 # cc = CalculatedCuts.new(@size)
 # cc.add_cuts_from_cut_ranges(@cut_ranges)

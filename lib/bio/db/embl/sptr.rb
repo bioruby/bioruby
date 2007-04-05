@@ -2,9 +2,9 @@
 # = bio/db/embl/sptr.rb - UniProt/SwissProt and TrEMBL database class
 # 
 # Copyright::   Copyright (C) 2001-2006  Mitsuteru C. Nakao <n@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: sptr.rb,v 1.35 2006/10/05 07:39:29 nakao Exp $
+# $Id: sptr.rb,v 1.36 2007/04/05 23:35:40 trevor Exp $
 #
 # == Description
 # 

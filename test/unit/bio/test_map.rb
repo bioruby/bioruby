@@ -3,7 +3,7 @@
 #
 # Copyright::   Copyright (C) 2006
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
-# License::     Ruby's
+# License::     The Ruby License
 #
 # $Id:
 

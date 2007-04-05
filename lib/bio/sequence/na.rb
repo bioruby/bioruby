@@ -4,9 +4,9 @@
 # Copyright::   Copyright (C) 2006
 #               Toshiaki Katayama <k@bioruby.org>,
 #               Ryan Raaum <ryan@raaum.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: na.rb,v 1.5 2006/07/20 03:45:22 ngoto Exp $
+# $Id: na.rb,v 1.6 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'bio/sequence/common'

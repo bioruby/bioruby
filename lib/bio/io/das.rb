@@ -4,9 +4,9 @@
 # Copyright::	Copyright (C) 2003, 2004, 2007
 #		Shuichi Kawashima <shuichi@hgc.jp>,
 #		Toshiaki Katayama <k@bioruby.org>
-# License::	Ruby's
+# License::	The Ruby License
 #
-# $Id: das.rb,v 1.15 2007/03/28 19:51:24 k Exp $
+# $Id: das.rb,v 1.16 2007/04/05 23:35:41 trevor Exp $
 #
 #--
 # == TODO

@@ -3,9 +3,9 @@
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2007 Center for Biomedical Research Informatics, University of Minnesota (http://cbri.umn.edu)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
-#  $Id: lasergene.rb,v 1.2 2007/02/01 05:23:01 trevor Exp $
+#  $Id: lasergene.rb,v 1.3 2007/04/05 23:35:40 trevor Exp $
 #
 
 module Bio #:nodoc:
@@ -15,7 +15,7 @@ module Bio #:nodoc:
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2007 Center for Biomedical Research Informatics, University of Minnesota (http://cbri.umn.edu)
-# License::   Distributes under the same terms as Ruby
+# License::   The Ruby License
 #
 # = Description
 #

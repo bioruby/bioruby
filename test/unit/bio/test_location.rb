@@ -3,9 +3,9 @@
 #
 # Copyright::  Copyright (C) 2004 
 #              Moses Hohman <mmhohman@northwestern.edu>
-# License::    Ruby's
+# License::    The Ruby License
 #
-#  $Id: test_location.rb,v 1.3 2007/04/05 17:12:00 nakao Exp $
+#  $Id: test_location.rb,v 1.4 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'pathname'

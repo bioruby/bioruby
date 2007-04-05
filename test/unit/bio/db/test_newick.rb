@@ -4,9 +4,9 @@
 # Copyright::   Copyright (C) 2004-2006
 #               Daniel Amelang <dan@amelang.net>
 #               Naohisa Goto <ng@bioruby.org>
-# License::     Ruby's
+# License::     The Ruby License
 #
-# $Id: test_newick.rb,v 1.4 2007/01/12 16:19:24 ngoto Exp $
+# $Id: test_newick.rb,v 1.5 2007/04/05 23:35:43 trevor Exp $
 #
 
 require 'test/unit'
