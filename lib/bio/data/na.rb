@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	Ruby's
 #
-# $Id: na.rb,v 0.20 2006/02/08 12:15:42 k Exp $
+# $Id: na.rb,v 0.21 2007/04/05 23:10:09 trevor Exp $
 #
 # == Synopsis
 #
@@ -158,9 +158,23 @@ class NucleicAcid
     end
 
     def to_re(seq, rna = false)
+      replace = {
+        'y' => '[tcy]',
+        'r' => '[agr]',
+        'w' => '[atw]',
+        's' => '[gcw]',
+        'k' => '[tgk]',
+        'm' => '[acm]',
+        'b' => '[tgcyskb]',
+        'd' => '[atgrwkd]',
+        'h' => '[atcwmyh]',
+        'v' => '[agcmrsv]',
+        'n' => '[atgcyrwskmbdhvn]'
+      }
+
       str = seq.to_s.downcase
       str.gsub!(/[^atgcu]/) { |base|
-        NAMES[base] || '.'
+        replace[base] || base
       }
       if rna
         str.tr!("t", "u")

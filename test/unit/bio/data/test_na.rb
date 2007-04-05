@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2005,2006 Mitsuteru Nakao <n@bioruby.org>
 # License::    Ruby's
 #
-#  $Id: test_na.rb,v 1.7 2006/12/31 21:54:49 trevor Exp $
+#  $Id: test_na.rb,v 1.8 2007/04/05 23:10:09 trevor Exp $
 #
 
 require 'pathname'
@@ -40,7 +40,7 @@ module Bio
     end
 
     def test_to_re
-      re = /[tc][ag][at][gc][tg][ac][tgc][atg][agc][atgc]atgc/
+      re = /[tcy][agr][atw][gcw][tgk][acm][tgcyskb][atgrwkd][agcmrsv][atgcyrwskmbdhvn]atgc/
       str = 'yrwskmbdvnatgc'
       str0 = str.clone
       assert_equal(re, @obj.to_re(str))

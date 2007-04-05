@@ -6,7 +6,7 @@
 #              2006 Mitsuteru C. Nakao <n@bioruby.org>
 # License::    Ruby's
 #
-#  $Id: test_sequence.rb,v 1.7 2007/04/05 17:12:00 nakao Exp $
+#  $Id: test_sequence.rb,v 1.8 2007/04/05 23:10:09 trevor Exp $
 #
 
 require 'pathname'
@@ -190,11 +190,11 @@ module Bio
     # Test Sequence::NA#to_re
 
     def test_dna_to_re
-      assert_equal(/atgc[ag][tc][ac][tg][atg][atc][agc][tgc][gc][at][atgc]/, Sequence::NA.new('atgcrymkdhvbswn').to_re)
+      assert_equal(/atgc[agr][tcy][acm][tgk][atgrwkd][atcwmyh][agcmrsv][tgcyskb][gcw][atw][atgcyrwskmbdhvn]/, Sequence::NA.new('atgcrymkdhvbswn').to_re)
     end
 
     def test_rna_to_re
-      assert_equal(/augc[ag][uc][ac][ug][aug][auc][agc][ugc][gc][au][augc]/, Sequence::NA.new('augcrymkdhvbswn').to_re)
+      assert_equal(/augc[agr][ucy][acm][ugk][augrwkd][aucwmyh][agcmrsv][ugcyskb][gcw][auw][augcyrwskmbdhvn]/, Sequence::NA.new('augcrymkdhvbswn').to_re)
     end
 
     # Test Sequence::NA#names

@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     Ruby's
 #
-# $Id: test_na.rb,v 1.3 2006/12/31 21:54:49 trevor Exp $
+# $Id: test_na.rb,v 1.4 2007/04/05 23:10:10 trevor Exp $
 #
 
 require 'pathname'
@@ -141,7 +141,7 @@ module Bio
       @obj[3,1] = 's'
       @obj[4,1] = 'y'
       @obj[5,1] = 'w'
-      assert_equal(/a[atgc][ag][gc][tc][at]gcatgcatgcaaaa/, @obj.to_re)
+      assert_equal(/a[atgcyrwskmbdhvn][agr][gcw][tcy][atw]gcatgcatgcaaaa/, @obj.to_re)
     end
 
     def test_names
