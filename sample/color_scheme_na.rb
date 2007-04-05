@@ -13,19 +13,11 @@
 #   % ruby color_scheme_na.rb seq.fna > colored-seq-fna.html
 #
 #
-# Copyright (C) 2005 Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::  Copyright (C) 2005
+#              Mitsuteru C. Nakao <n@bioruby.org>
+# License::    Ruby's
 #
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  $Id: color_scheme_na.rb,v 1.1 2005/10/31 07:39:13 nakao Exp $
+#  $Id: color_scheme_na.rb,v 1.2 2007/04/05 17:26:29 nakao Exp $
 #
 
 require 'bio'
