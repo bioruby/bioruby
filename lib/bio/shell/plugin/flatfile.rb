@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2005
 #               Toshiaki Katayama <k@bioruby.org>
-# License:      Ruby's
+# License::     The Ruby License
 #
-# $Id: flatfile.rb,v 1.12 2006/02/09 20:48:53 k Exp $
+# $Id: flatfile.rb,v 1.13 2007/04/05 23:45:11 trevor Exp $
 #
 
 module Bio::Shell

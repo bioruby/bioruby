@@ -2,9 +2,9 @@
 # = bio/map.rb - biological mapping class
 #
 # Copyright::   Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
-# Licence::     Ruby's
+# License::     The Ruby License
 #
-# $Id: map.rb,v 1.9 2006/12/24 10:10:08 k Exp $
+# $Id: map.rb,v 1.10 2007/04/05 23:45:10 trevor Exp $
 
 require 'bio/location'
 

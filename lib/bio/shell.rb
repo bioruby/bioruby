@@ -3,9 +3,9 @@
 #
 # Copyright::   Copyright (C) 2005, 2006
 #               Toshiaki Katayama <k@bioruby.org>
-# License:      Ruby's
+# License::     The Ruby License
 #
-# $Id: shell.rb,v 1.18 2007/03/28 20:23:39 k Exp $
+# $Id: shell.rb,v 1.19 2007/04/05 23:45:10 trevor Exp $
 #
 
 require 'bio'
