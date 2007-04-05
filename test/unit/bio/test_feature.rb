@@ -1,10 +1,11 @@
 #
 # test/unit/bio/test_feature.rb - Unit test for Features/Feature classes
 #
-# Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
+# Copyright::  Copyright (C) 2005 
+#              Mitsuteru Nakao <n@bioruby.org>
 # License::    Ruby's
 #
-#  $Id: test_feature.rb,v 1.3 2006/12/24 17:19:04 nakao Exp $
+#  $Id: test_feature.rb,v 1.4 2007/04/05 17:12:00 nakao Exp $
 #
 
 require 'pathname'
