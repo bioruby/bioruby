@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id: na.rb,v 0.22 2007/04/05 23:35:40 trevor Exp $
+# $Id: na.rb,v 0.23 2007/04/06 04:41:28 k Exp $
 #
 # == Synopsis
 #
@@ -171,10 +171,11 @@ class NucleicAcid
         'v' => '[agcmrsv]',
         'n' => '[atgcyrwskmbdhvn]'
       }
+      replace.default = '.'
 
       str = seq.to_s.downcase
-      str.gsub!(/[^atgcu]/) { |base|
-        replace[base] || base
+      str.gsub!(/[^atgcu]/) { |na|
+        replace[na]
       }
       if rna
         str.tr!("t", "u")

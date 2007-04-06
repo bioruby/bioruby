@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id: aa.rb,v 0.20 2007/04/05 23:35:40 trevor Exp $
+# $Id: aa.rb,v 0.21 2007/04/06 04:41:28 k Exp $
 #
 
 module Bio
@@ -217,10 +217,18 @@ class AminoAcid
     end
 
     def to_re(seq)
+      replace = {
+        'B' => '[DNB]',
+        'Z' => '[EQZ]',
+        'J' => '[ILJ]',
+        'X' => '[ACDEFGHIKLMNPQRSTVWYUO]',
+      }
+      replace.default = '.'
+
       str = seq.to_s.upcase
-      str.gsub!(/[^BZACDEFGHIKLMNPQRSTVWYU]/, ".")
-      str.gsub!("B", "[DN]")
-      str.gsub!("Z", "[EQ]")
+      str.gsub!(/[^ACDEFGHIKLMNPQRSTVWYUO]/) { |aa|
+        replace[aa]
+      }
       Regexp.new(str)
     end
 
