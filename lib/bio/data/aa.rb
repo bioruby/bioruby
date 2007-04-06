@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id: aa.rb,v 0.21 2007/04/06 04:41:28 k Exp $
+# $Id: aa.rb,v 0.22 2007/04/06 04:44:51 k Exp $
 #
 
 module Bio
@@ -221,7 +221,7 @@ class AminoAcid
         'B' => '[DNB]',
         'Z' => '[EQZ]',
         'J' => '[ILJ]',
-        'X' => '[ACDEFGHIKLMNPQRSTVWYUO]',
+        'X' => '[ACDEFGHIKLMNPQRSTVWYUOX]',
       }
       replace.default = '.'
 
