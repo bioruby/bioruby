@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_aa.rb,v 1.6 2007/04/05 23:35:43 trevor Exp $
+#  $Id: test_aa.rb,v 1.7 2007/04/06 04:46:36 k Exp $
 #
 
 require 'pathname'
@@ -84,7 +84,7 @@ module Bio
     end
     
     def test_to_re
-      assert_equal(/[DN][EQ]ACDEFGHIKLMNPQRSTVWYU/, @obj.to_re('BZACDEFGHIKLMNPQRSTVWYU'))
+      assert_equal(/[DNB][EQZ]ACDEFGHIKLMNPQRSTVWYU/, @obj.to_re('BZACDEFGHIKLMNPQRSTVWYU'))
     end
   end
 end
