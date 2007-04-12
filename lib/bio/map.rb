@@ -4,7 +4,7 @@
 # Copyright::   Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: map.rb,v 1.10 2007/04/05 23:45:10 trevor Exp $
+# $Id: map.rb,v 1.11 2007/04/12 12:19:16 aerts Exp $
 
 require 'bio/location'
 
@@ -262,6 +262,26 @@ module Bio
         
         return positions
       end
+
+      # Return all mappings of this marker on a given map.
+      # ---
+      # *Arguments*:
+      # * _map_: an object that mixes in Bio::Map::ActsLikeMap
+      # *Returns*:: array of Bio::Map::Mapping objects
+      def mappings_on(map)
+        unless map.class.include?(Bio::Map::ActsLikeMap)
+          raise "[Error] map is not object that implements Bio::Map::ActsLikeMap"
+        end
+        
+        m = Array.new
+        self.mappings_as_marker.each do |mapping|
+          if mapping.map == map
+            m.push(mapping)
+          end
+        end
+        
+        return m
+      end
       
 
     end # ActsLikeMarker
@@ -303,7 +323,7 @@ module Bio
           raise "[Error] maps have to be the same"
         end
 
-        return self.location.<=>(other.location)
+        return self.location[0].<=>(other.location[0])
       end
     end # Mapping
     
