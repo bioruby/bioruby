@@ -5,7 +5,7 @@
 #
 # License:: The Ruby License
 #
-#  $Id: flatfile.rb,v 1.58 2007/04/05 23:35:41 trevor Exp $
+#  $Id: flatfile.rb,v 1.59 2007/04/14 02:29:45 k Exp $
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
@@ -1145,7 +1145,7 @@ module Bio
             /^CODE        [0-9]+$/ ],
           brite    = RuleRegexp[ 'Bio::KEGG::BRITE',
             /^Entry           [A-Z0-9]+/ ],
-          ortholog = RuleRegexp[ 'Bio::KEGG::ORTHOLOG',
+          orthology = RuleRegexp[ 'Bio::KEGG::ORTHOLOGY',
             /^ENTRY       .+ KO\s*/ ],
           drug     = RuleRegexp[ 'Bio::KEGG::DRUG',
             /^ENTRY       .+ Drug\s*/ ],
@@ -1249,8 +1249,8 @@ module Bio
         # KEGG
         #aaindex.is_prior_to litdb
         #litdb.is_prior_to brite
-        brite.is_prior_to ortholog
-        ortholog.is_prior_to drug
+        brite.is_prior_to orthology
+        orthology.is_prior_to drug
         drug.is_prior_to glycan
         glycan.is_prior_to enzyme
         enzyme.is_prior_to compound
