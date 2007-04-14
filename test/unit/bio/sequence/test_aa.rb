@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: test_aa.rb,v 1.3 2007/04/05 23:35:44 trevor Exp $
+# $Id: test_aa.rb,v 1.4 2007/04/14 05:09:23 k Exp $
 #
 
 require 'pathname'
@@ -67,7 +67,7 @@ module Bio
       re = /RRLEHTFVFLRNFSLMLLRY/
       assert_equal(re, @obj.to_re)
       @obj[1, 1] = 'B'
-      re = /R[DN]LEHTFVFLRNFSLMLLRY/
+      re = /R[DNB]LEHTFVFLRNFSLMLLRY/
       assert_equal(re, @obj.to_re)
     end
 
