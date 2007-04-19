@@ -6,7 +6,7 @@
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 # License::   The Ruby License
 #
-#  $Id: pdb.rb,v 1.21 2007/04/05 23:35:41 trevor Exp $
+#  $Id: pdb.rb,v 1.22 2007/04/19 13:59:29 ngoto Exp $
 #
 # = About Bio::PDB
 #
@@ -1535,6 +1535,7 @@ module Bio
 
         when 'MODEL'
           c_atom = nil
+          cChain = nil
           if cModel.model_serial or cModel.chains.size > 0 then
             self.addModel(cModel)
           end
