@@ -307,6 +307,20 @@ In 1.1.0:
 * Bio::MAFFT::Report#initialize is changed to get a string of multi-fasta
   formmatted text instead of Array.
 
+--- Bio::BLAST::Default::Report, Bio::BLAST::Default::Report::Hit,
+    Bio::BLAST::Default::Report::HSP, Bio::BLAST::WU::Report,
+    Bio::BLAST::WU::Report::Hit, Bio::BLAST::WU::Report::HSP
+
+In 1.1.0:
+
+* Hit#evalue, HSP#evalue, WU::Hit#pvalue, and WU::HSP#pvalue are
+  changed to return a Float object instead of a String object.
+* Report#expect, Hit#bit_score, and HSP#bit_score are changed to return
+  a Float object or nil instead of a String object or nil.
+* Following methods are changed to return an integer value or nil
+  instead of a string or nil: score, percent_identity, percent_positive,
+  percent_gaps.
+
 === Deleted files
 
 : lib/bio/db/genbank.rb
