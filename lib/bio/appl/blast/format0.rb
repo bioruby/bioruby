@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format0.rb,v 1.20 2007/04/05 23:35:39 trevor Exp $
+# $Id: format0.rb,v 1.21 2007/04/21 08:25:13 ngoto Exp $
 #
 # == Description
 #
@@ -327,7 +327,9 @@ module Bio
               sc.skip(/\s*/)
               while sc.rest?
                 if sc.match?(/Number of sequences better than +([e\-\.\d]+) *\: *(.+)/) then
-                  @expect = sc[1]
+                  ev = sc[1]
+                  ev = '1' + ev if ev[0] == ?e
+                  @expect = ev.to_f
                   @num_hits = sc[2].tr(',', '').to_i
                 end
                 if sc.skip(/([\-\,\.\'\(\)\#\w ]+)\: *(.*)/) then
@@ -658,7 +660,8 @@ module Bio
                     h = Hit.new([ z.pop.to_s.sub(/\.+\z/, '') ])
                     bs = z.pop.to_s
                     ev = z.pop.to_s
-                    #ev = '1' + ev if ev[0] == ?e
+                    ev = '1' + ev if ev[0] == ?e
+                    ev = (ev.empty? ? (1.0/0.0) : ev.to_f)
                     h.instance_eval { @bit_score = bs; @evalue = ev }
                     @hits << h
                   end
@@ -949,8 +952,9 @@ module Bio
               while sc.rest?
                 sc.skip(/\s*/)
                 if sc.skip(/Expect(?:\(\d\))? *\= *([e\-\.\d]+)/) then
-                  @evalue = sc[1]
-                  #@evalue = '1' + @evalue if @evalue[0] == ?e
+                  ev = sc[1].to_s
+                  ev = '1' + ev if ev[0] == ?e
+                  @evalue = ev.to_f
                 elsif sc.skip(/Score *\= *([e\-\.\d]+) *bits *\( *([e\-\.\d]+) *\)/) then
                   @bit_score = sc[1]
                   @score = sc[2]
@@ -1000,11 +1004,15 @@ module Bio
                 elsif sc.skip(/P *\= * ([e\-\.\d]+)/) then
                   #WU-BLAST
                   @p_sum_n = nil
-                  @pvalue = sc[1]
+                  pv = sc[1]
+                  pv = '1' + pv if pv[0] == ?e
+                  @pvalue = pv.to_f
                 elsif sc.skip(/Sum +P *\( *(\d+) *\) *\= *([e\-\.\d]+)/) then
                   #WU-BLAST
                   @p_sum_n = sc[1].to_i
-                  @pvalue = sc[2]
+                  pv = sc[2]
+                  pv = '1' + pv if pv[0] == ?e
+                  @pvalue = pv.to_f
                 else
                   raise ScanError
                 end

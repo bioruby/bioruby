@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: wublast.rb,v 1.9 2007/04/05 23:35:39 trevor Exp $
+# $Id: wublast.rb,v 1.10 2007/04/21 08:25:13 ngoto Exp $
 #
 # == Description
 #
@@ -137,6 +137,10 @@ module Bio
                 end
               end
             end
+            if ev = @parameters['E'] then
+              ev = '1' + ev if ev[0] == ?e
+              @parameters['E'] = ev.to_f
+            end
             @parse_parameters = true
           end
         end
@@ -250,8 +254,9 @@ module Bio
                   z.pop if flag_tblast #ignore Reading Frame
                   scr = z.pop.to_s
                   pval = z.pop.to_s
+                  pval = '1' + pval if pval[0] == ?e
+                  pval = (pval.empty? ? (1.0/0.0) : pval.to_f)
                   nnum = z.pop.to_i
-                  #ev = '1' + ev if ev[0] == ?e
                   h.instance_eval {
                     @score = scr
                     @pvalue = pval
