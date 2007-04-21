@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: wublast.rb,v 1.10 2007/04/21 08:25:13 ngoto Exp $
+# $Id: wublast.rb,v 1.11 2007/04/21 08:58:17 ngoto Exp $
 #
 # == Description
 #
@@ -252,7 +252,8 @@ module Bio
                     @hits[i] = h
                   end
                   z.pop if flag_tblast #ignore Reading Frame
-                  scr = z.pop.to_s
+                  scr = z.pop
+                  scr = (scr ? scr.to_i : nil)
                   pval = z.pop.to_s
                   pval = '1' + pval if pval[0] == ?e
                   pval = (pval.empty? ? (1.0/0.0) : pval.to_f)

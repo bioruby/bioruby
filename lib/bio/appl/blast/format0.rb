@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format0.rb,v 1.21 2007/04/21 08:25:13 ngoto Exp $
+# $Id: format0.rb,v 1.22 2007/04/21 08:58:17 ngoto Exp $
 #
 # == Description
 #
@@ -659,6 +659,8 @@ module Bio
                     z.each { |y| y.reverse! }
                     h = Hit.new([ z.pop.to_s.sub(/\.+\z/, '') ])
                     bs = z.pop.to_s
+                    bs = '1' + bs if bs[0] == ?e
+                    bs = (bs.empty? ? nil : bs.to_f)
                     ev = z.pop.to_s
                     ev = '1' + ev if ev[0] == ?e
                     ev = (ev.empty? ? (1.0/0.0) : ev.to_f)
@@ -956,8 +958,10 @@ module Bio
                   ev = '1' + ev if ev[0] == ?e
                   @evalue = ev.to_f
                 elsif sc.skip(/Score *\= *([e\-\.\d]+) *bits *\( *([e\-\.\d]+) *\)/) then
-                  @bit_score = sc[1]
-                  @score = sc[2]
+                  bs = sc[1]
+                  bs = '1' + bs if bs[0] == ?e
+                  @bit_score = bs.to_f
+                  @score = sc[2].to_i
                 elsif sc.skip(/(Identities|Positives|Gaps) *\= (\d+) *\/ *(\d+) *\(([\.\d]+) *\% *\)/) then
                   alen = sc[3].to_i
                   @align_len = alen unless defined?(@align_len)
@@ -965,13 +969,13 @@ module Bio
                   case sc[1]
                   when 'Identities'
                     @identity = sc[2].to_i
-                    @percent_identity = sc[4]
+                    @percent_identity = sc[4].to_i
                   when 'Positives'
                     @positive = sc[2].to_i
-                    @percent_positive = sc[4]
+                    @percent_positive = sc[4].to_i
                   when 'Gaps'
                     @gaps = sc[2].to_i
-                    @percent_gaps = sc[4]
+                    @percent_gaps = sc[4].to_i
                   else
                     raise ScanError
                   end
@@ -999,8 +1003,10 @@ module Bio
                   end
                 elsif sc.skip(/Score *\= *([e\-\.\d]+) +\(([e\-\.\d]+) *bits *\)/) then
                   #WU-BLAST
-                  @score = sc[1]
-                  @bit_score = sc[2]
+                  @score = sc[1].to_i
+                  bs = sc[2]
+                  bs = '1' + bs if bs[0] == ?e
+                  @bit_score = bs.to_f
                 elsif sc.skip(/P *\= * ([e\-\.\d]+)/) then
                   #WU-BLAST
                   @p_sum_n = nil
