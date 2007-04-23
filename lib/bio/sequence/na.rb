@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: na.rb,v 1.6 2007/04/05 23:35:41 trevor Exp $
+# $Id: na.rb,v 1.7 2007/04/23 16:43:51 trevor Exp $
 #
 
 require 'bio/sequence/common'
@@ -466,6 +466,22 @@ class NA < String
     self.index('u')
   end
   protected :rna?
+
+  # Example:
+  #
+  #   seq = Bio::Sequence::NA.new('gaattc')
+  #   cuts = seq.cut_with_enzyme('EcoRI')
+  #
+  # _or_
+  #
+  #   seq = Bio::Sequence::NA.new('gaattc')
+  #   cuts = seq.cut_with_enzyme('g^aattc')
+  # ---
+  # See Bio::RestrictionEnzyme::Analysis.cut
+  def cut_with_enzyme(*args)
+    Bio::RestrictionEnzyme::Analysis.cut(self, *args)
+  end
+  alias cut_with_enzymes cut_with_enzyme
 
 end # NA
 

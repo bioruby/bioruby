@@ -5,29 +5,10 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: analysis_basic.rb,v 1.12 2007/04/05 23:35:42 trevor Exp $
+#  $Id: analysis_basic.rb,v 1.13 2007/04/23 16:43:51 trevor Exp $
 #
 
 require 'bio'
-class Bio::Sequence::NA
-  # Example:
-  #
-  #   seq = Bio::Sequence::NA.new('gaattc')
-  #   cuts = seq.cut_with_enzyme('EcoRI')
-  #
-  # _or_
-  #
-  #   seq = Bio::Sequence::NA.new('gaattc')
-  #   cuts = seq.cut_with_enzyme('g^aattc')
-  # ---
-  # See Bio::RestrictionEnzyme::Analysis.cut
-  # 
-  # NOTE: move this into Bio::Sequence::NA
-  def cut_with_enzyme(*args)
-    Bio::RestrictionEnzyme::Analysis.cut(self, *args)
-  end
-  alias cut_with_enzymes cut_with_enzyme
-end
 
 require 'set'  # for method create_enzyme_actions
 require 'bio/util/restriction_enzyme'
