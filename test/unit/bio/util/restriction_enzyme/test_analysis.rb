@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: test_analysis.rb,v 1.10 2007/04/05 23:35:44 trevor Exp $
+#  $Id: test_analysis.rb,v 1.11 2007/04/23 19:42:55 trevor Exp $
 #
 
 require 'pathname'
@@ -159,7 +159,7 @@ class TestAnalysis < Test::Unit::TestCase #:nodoc:
 
     assert_equal(["ag", "agccagg", "cag"], Bio::Sequence::NA.new('cagagagccagg').cut_with_enzymes('ag^ag', 'EcoRII').primary )
     assert_equal(["ag", "agccagg", "cag"], Bio::Sequence::NA.new('cagagagccagg').cut_with_enzymes('ag^ag').primary )
-    assert_equal([], Bio::Sequence::NA.new('cagagagccagg').cut_with_enzymes('EcoRII').primary )
+    assert_equal(:no_cuts_found, Bio::Sequence::NA.new('cagagagccagg').cut_with_enzymes('EcoRII') )
 
     assert_equal(["ag", "ag", "cag", "ccaggt"], Bio::Sequence::NA.new('cagagagccaggt').cut_with_enzymes('ag^ag', 'EcoRII').primary )
     assert_equal(["ag", "agccaggt", "cag"], Bio::Sequence::NA.new('cagagagccaggt').cut_with_enzymes('ag^ag').primary )

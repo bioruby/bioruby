@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: analysis.rb,v 1.17 2007/04/05 23:35:42 trevor Exp $
+#  $Id: analysis.rb,v 1.18 2007/04/23 19:42:55 trevor Exp $
 #
 
 require 'bio/util/restriction_enzyme/analysis_basic'
@@ -46,11 +46,12 @@ class Analysis
   # *Arguments*
   # * +sequence+: +String+ kind of object that will be used as a nucleic acid sequence.
   # * +args+: Series of enzyme names, enzymes sequences with cut marks, or RestrictionEnzyme objects.
-  # *Returns*:: Bio::RestrictionEnzyme::Fragments object populated with Bio::RestrictionEnzyme::Fragment objects.   (Note: unrelated to Bio::RestrictionEnzyme::Range::SequenceRange::Fragments)
+  # *Returns*:: Bio::RestrictionEnzyme::Fragments object populated with Bio::RestrictionEnzyme::Fragment objects.   (Note: unrelated to Bio::RestrictionEnzyme::Range::SequenceRange::Fragments) or a +Symbol+ containing an error code
   def cut( sequence, *args )
-    return fragments_for_display( {} ) if !sequence.kind_of?(String) or sequence.empty?
+    res = cut_and_return_by_permutations( sequence, *args )
+    return res if res.class == Symbol
     # Format the fragments for the user
-    fragments_for_display( cut_and_return_by_permutations( sequence, *args ) )
+    fragments_for_display( res )
   end
 
   #########
@@ -63,15 +64,51 @@ class Analysis
   # *Arguments*
   # * +sequence+: +String+ kind of object that will be used as a nucleic acid sequence.
   # * +args+: Series of enzyme names, enzymes sequences with cut marks, or RestrictionEnzyme objects.
+  # May also supply a +Hash+ with the key ":max_permutations" to specificy how many permutations are allowed - a value of 0 indicates no permutations are allowed.
   # *Returns*:: +Hash+ Keys are a permutation ID, values are SequenceRange objects that have cuts applied.
+  # _also_ may return the +Symbol+ ':sequence_empty', ':no_cuts_found', or ':too_many_permutations'
   def cut_and_return_by_permutations( sequence, *args )
     my_hash = {}
+    maximum_permutations = nil
+
+    hashes_in_args = args.select { |i| i.class == Hash }
+    args.delete_if { |i| i.class == Hash }
+    hashes_in_args.each do |hsh|
+      hsh.each do |key, value|
+        case key
+        when :max_permutations, 'max_permutations', :maximum_permutations, 'maximum_permutations'
+          maximum_permutations = value.to_i unless value == nil
+        else
+          raise ArgumentError, "Received key #{key.inspect} in argument - I only know the key ':max_permutations' currently.  Hash passed: #{hsh.inspect}"
+        end
+      end
+    end
     
-    return my_hash if !sequence.kind_of?(String) or sequence.empty?
+    if !sequence.kind_of?(String) or sequence.empty?
+      logger.warn "The supplied sequence is empty." if defined?(logger)
+      return :sequence_empty
+    end
     sequence = Bio::Sequence::NA.new( sequence )
     
     enzyme_actions, initial_cuts = create_enzyme_actions( sequence, *args )
-    return my_hash if enzyme_actions.empty? and initial_cuts.empty?
+
+    if enzyme_actions.empty? and initial_cuts.empty?
+      logger.warn "This enzyme does not make any cuts on this sequence." if defined?(logger)
+      return :no_cuts_found
+    end
+
+    # * When enzyme_actions.size is equal to '1' that means there are no permutations.
+    # * If enzyme_actions.size is equal to '2' there is one
+    #   permutation ("[0, 1]")
+    # * If enzyme_actions.size is equal to '3' there are two
+    #   permutations ("[0, 1, 2]")
+    # * and so on..
+    if maximum_permutations and enzyme_actions.size > 1
+      if (enzyme_actions.size - 1) > maximum_permutations.to_i
+        logger.warn "More permutations than maximum, skipping.  Found: #{enzyme_actions.size-1}  Max: #{maximum_permutations.to_i}" if defined?(logger)
+        return :too_many_permutations
+      end
+    end
     
     if enzyme_actions.size > 1
       permutations = permute(enzyme_actions.size)
