@@ -6,7 +6,7 @@
 #              Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: residue.rb,v 1.12 2007/04/05 23:35:41 trevor Exp $
+# $Id: residue.rb,v 1.13 2007/04/23 16:03:25 ngoto Exp $
 #
 # = Bio::PDB::Residue
 #
@@ -65,9 +65,9 @@ module Bio
       # Now, Residue#id is an alias of residue_id.
       alias id residue_id
 
-      #Keyed access to atoms based on element e.g. ["CA"]
+      #Keyed access to atoms based on atom name e.g. ["CA"]
       def [](key)
-        atom = @atoms.find{ |atom| key == atom.element }
+        atom = @atoms.find{ |atom| key == atom.name }
       end
 
       # Updates residue id. This is a private method.

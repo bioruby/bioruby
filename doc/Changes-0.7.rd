@@ -255,6 +255,9 @@ In 1.1.0:
 * Bio::PDB::HETATM#name, #resName, #iCode, #charge, #segID, and #element
   are also subject to the above changes, because Bio::PDB::HETATM inherits
   Bio::PDB::ATOM.
+* Bio::PDB::Residue#[] and Bio::PDB::Heterogen#[] are changed to use the
+  name field for selecting atoms, because the element field is not useful
+  for selecting atoms and is not used in many pdb files.
 
 --- Bio::FlatFile
 
