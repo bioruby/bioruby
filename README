@@ -1,6 +1,4 @@
-=begin
-
-  $Id: README,v 1.15 2007/04/05 15:18:51 k Exp $
+  $Id: README,v 1.16 2007/04/23 20:05:34 trevor Exp $
 
   Copyright (C) 2001-2006 Toshiaki Katayama <k@bioruby.org>
 
@@ -176,7 +174,3 @@ Note that, install.rb included in the BioRuby package comes from
 
 Current staffs of the BioRuby project can be reached by sending e-mail
 to <staff@bioruby.org>.
-
-
-=end
-
