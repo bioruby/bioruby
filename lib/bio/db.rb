@@ -5,7 +5,7 @@
 #              Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: db.rb,v 0.37 2007/04/05 23:35:39 trevor Exp $
+# $Id: db.rb,v 0.38 2007/05/08 17:02:13 nakao Exp $
 #
 # == On-demand parsing and cache
 #
@@ -313,12 +313,12 @@ class EMBLDB < DB
 
   # Returns the contents of the entry as a Hash.
   def entry2hash(entry)
-    hash = Hash.new('')
+    hash = Hash.new { |h,k| h[k] = '' }
     entry.each_line do |line|
       tag = tag_get(line)
       next if tag == 'XX'
       tag = 'R' if tag =~ /^R./	# Reference lines
-      hash[tag] += line
+      hash[tag].concat line
     end
     return hash
   end
