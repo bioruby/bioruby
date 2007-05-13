@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: restriction_enzyme.rb,v 1.14 2007/05/13 01:25:25 trevor Exp $
+#  $Id: restriction_enzyme.rb,v 1.15 2007/05/13 04:08:02 trevor Exp $
 #
 
 require 'bio/db/rebase'
@@ -196,7 +196,7 @@ class Bio::RestrictionEnzyme
   # Bio::RestrictionEnzyme::Fragment is a simple +Struct+ object.
   # 
   # Note: unrelated to Bio::RestrictionEnzyme::Range::SequenceRange::Fragment
-  Fragment = Struct.new(:primary, :complement)
+  Fragment = Struct.new(:primary, :complement, :p_left, :p_right, :c_left, :c_right)
 
   # Bio::RestrictionEnzyme::Fragments inherits from +Array+.
   #

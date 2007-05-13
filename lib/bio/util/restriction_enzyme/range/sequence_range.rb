@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: sequence_range.rb,v 1.7 2007/04/05 23:35:42 trevor Exp $
+#  $Id: sequence_range.rb,v 1.8 2007/05/13 04:08:02 trevor Exp $
 #
 
 require 'bio/util/restriction_enzyme/range/cut_ranges'
@@ -129,6 +129,12 @@ class SequenceRange
   #    2=>#<struct Bio::RestrictionEnzyme::Range::SequenceRange::Bin c=[], p=[1, 2]>,
   #    3=>#<struct Bio::RestrictionEnzyme::Range::SequenceRange::Bin c=[2, 3], p=[]>,
   #    4=>#<struct Bio::RestrictionEnzyme::Range::SequenceRange::Bin c=[4, 5], p=[3, 4, 5]>}
+  #
+  # Note that the bin cannot be easily stored as a range since there may be
+  # nucleotides excised in the middle of a range.
+  #
+  # TODO: Perhaps store the bins as one-or-many ranges since missing
+  # nucleotides due to enzyme cutting is a special case.
   Bin = Struct.new(:c, :p)
 
   # Calculates the fragments over this sequence range as defined after using

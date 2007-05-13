@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: analysis_basic.rb,v 1.14 2007/04/23 17:11:11 trevor Exp $
+#  $Id: analysis_basic.rb,v 1.15 2007/05/13 04:08:02 trevor Exp $
 #
 
 require 'set'  # for method create_enzyme_actions
@@ -97,16 +97,22 @@ class Analysis
   # *Arguments*
   # * +hsh+: +Hash+  Keys are a permutation ID, if any.  Values are SequenceRange objects that have cuts applied.
   # *Returns*:: Bio::RestrictionEnzyme::Analysis::Fragments object populated with Bio::RestrictionEnzyme::Analysis::Fragment objects.
-  def fragments_for_display( hsh )
+  def fragments_for_display( hsh, view_ranges=false )
     ary = Fragments.new
     return ary unless hsh
 
     hsh.each do |permutation_id, sequence_range|
       sequence_range.fragments.for_display.each do |fragment|
-        ary << Bio::RestrictionEnzyme::Fragment.new(fragment.primary, fragment.complement)
+        if view_ranges
+          ary << Bio::RestrictionEnzyme::Fragment.new(fragment.primary, fragment.complement, fragment.p_left, fragment.p_right, fragment.c_left, fragment.c_right)
+        else
+          ary << Bio::RestrictionEnzyme::Fragment.new(fragment.primary, fragment.complement)
+        end
       end
     end
-    ary.uniq!
+    
+    ary.uniq! unless view_ranges
+    
     ary
   end
 

@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: fragment.rb,v 1.4 2007/04/05 23:35:42 trevor Exp $
+#  $Id: fragment.rb,v 1.5 2007/05/13 04:08:02 trevor Exp $
 #
 
 require 'bio/util/restriction_enzyme/range/cut_ranges'
@@ -33,7 +33,7 @@ class Fragment
     @complement_bin = complement_bin
   end
 
-  DisplayFragment = Struct.new(:primary, :complement)
+  DisplayFragment = Struct.new(:primary, :complement, :p_left, :p_right, :c_left, :c_right)
 
   def for_display(p_str=nil, c_str=nil)
     df = DisplayFragment.new
@@ -45,6 +45,11 @@ class Fragment
       @primary_bin.include?(item) ? df.primary << p_str[item] : df.primary << ' '
       @complement_bin.include?(item) ? df.complement << c_str[item] : df.complement << ' '
     end
+    
+    df.p_left  = @primary_bin.first
+    df.p_right = @primary_bin.last
+    df.c_left  = @complement_bin.first
+    df.c_right = @complement_bin.last
 
     df
   end

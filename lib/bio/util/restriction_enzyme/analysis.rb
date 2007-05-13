@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: analysis.rb,v 1.18 2007/04/23 19:42:55 trevor Exp $
+#  $Id: analysis.rb,v 1.19 2007/05/13 04:08:02 trevor Exp $
 #
 
 require 'bio/util/restriction_enzyme/analysis_basic'
@@ -48,10 +48,23 @@ class Analysis
   # * +args+: Series of enzyme names, enzymes sequences with cut marks, or RestrictionEnzyme objects.
   # *Returns*:: Bio::RestrictionEnzyme::Fragments object populated with Bio::RestrictionEnzyme::Fragment objects.   (Note: unrelated to Bio::RestrictionEnzyme::Range::SequenceRange::Fragments) or a +Symbol+ containing an error code
   def cut( sequence, *args )
+    view_ranges = false
+    
+    args.select { |i| i.class == Hash }.each do |hsh|
+      hsh.each do |key, value|
+        if key == :view_ranges
+          unless ( value.kind_of?(TrueClass) or value.kind_of?(FalseClass) )
+            raise ArgumentError, "view_ranges must be set to true or false, currently #{value.inspect}."
+          end
+          view_ranges = value
+        end
+      end
+    end
+    
     res = cut_and_return_by_permutations( sequence, *args )
     return res if res.class == Symbol
     # Format the fragments for the user
-    fragments_for_display( res )
+    fragments_for_display( res, view_ranges )
   end
 
   #########
@@ -78,8 +91,9 @@ class Analysis
         case key
         when :max_permutations, 'max_permutations', :maximum_permutations, 'maximum_permutations'
           maximum_permutations = value.to_i unless value == nil
+        when :view_ranges
         else
-          raise ArgumentError, "Received key #{key.inspect} in argument - I only know the key ':max_permutations' currently.  Hash passed: #{hsh.inspect}"
+          raise ArgumentError, "Received key #{key.inspect} in argument - I only know the key ':max_permutations' and ':view_ranges' currently.  Hash passed: #{hsh.inspect}"
         end
       end
     end

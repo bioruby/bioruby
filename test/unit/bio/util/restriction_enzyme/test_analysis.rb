@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: test_analysis.rb,v 1.11 2007/04/23 19:42:55 trevor Exp $
+#  $Id: test_analysis.rb,v 1.12 2007/05/13 04:08:02 trevor Exp $
 #
 
 require 'pathname'
@@ -68,6 +68,8 @@ class TestAnalysis < Test::Unit::TestCase #:nodoc:
     @obj_98 = @t.cut('', 'EcoRII', 'HincII')
     @obj_99 = @t.cut_without_permutations('', 'EcoRII', 'HincII')
 
+    @obj_vr1 = @t.cut('gaccaggaaaaagaccaggaaagcctggaaaagttaac', 'EcoRII', {:view_ranges => true})
+    @obj_vr2 = @t.cut('cagagag', {:view_ranges => true}, 'ag^ag')
   end
 
   def test_cut
@@ -166,6 +168,77 @@ class TestAnalysis < Test::Unit::TestCase #:nodoc:
     assert_equal(["cagagag", "ccaggt"], Bio::Sequence::NA.new('cagagagccaggt').cut_with_enzymes('EcoRII').primary )
     assert_equal(["a", "gtctctcggtcc"], Bio::Sequence::NA.new('cagagagccaggt').cut_with_enzymes('EcoRII').complement )  
   end
+  
+  def test_view_ranges
+    assert_equal(["ccaggaaaaaga", "ccaggaaag", "cctggaaaagttaac", "ga"], @obj_vr1.primary)
+    assert_equal(["ctggtcc", "tttcggacc", "ttttcaattg", "tttttctggtcc"], @obj_vr1.complement)
+
+    a0 = @obj_vr1[0]
+    assert_equal('ga     ', a0.primary)
+    assert_equal('ctggtcc', a0.complement)
+    assert_equal(0, a0.p_left)
+    assert_equal(1, a0.p_right)
+    assert_equal(0, a0.c_left)
+    assert_equal(6, a0.c_right)
+    
+    a1 = @obj_vr1[1]
+    assert_equal('ccaggaaaaaga     ', a1.primary)
+    assert_equal('     tttttctggtcc', a1.complement)
+    assert_equal(2,  a1.p_left)
+    assert_equal(13, a1.p_right)
+    assert_equal(7,  a1.c_left)
+    assert_equal(18, a1.c_right)     
+
+    a2 = @obj_vr1[2]
+    assert_equal('ccaggaaag     ', a2.primary)
+    assert_equal('     tttcggacc', a2.complement)
+    assert_equal(14, a2.p_left)
+    assert_equal(22, a2.p_right)
+    assert_equal(19, a2.c_left)
+    assert_equal(27, a2.c_right)
+
+    a3 = @obj_vr1[3]
+    assert_equal('cctggaaaagttaac', a3.primary)
+    assert_equal('     ttttcaattg', a3.complement)
+    assert_equal(23, a3.p_left)
+    assert_equal(37, a3.p_right)
+    assert_equal(28, a3.c_left)
+    assert_equal(37, a3.c_right)
+    
+    a4 = @obj_vr1[4]
+    assert_equal(nil, a4)
+    
+    assert_equal(["ag", "ag", "cag"], @obj_vr2.primary)
+    assert_equal(["gtc", "tc", "tc"], @obj_vr2.complement)
+
+    a0 = @obj_vr2[0]
+    assert_equal('cag', a0.primary)
+    assert_equal('gtc', a0.complement)
+    assert_equal(0, a0.p_left)
+    assert_equal(2, a0.p_right)
+    assert_equal(0, a0.c_left)
+    assert_equal(2, a0.c_right)
+    
+    a1 = @obj_vr2[1]
+    assert_equal('ag', a1.primary)
+    assert_equal('tc', a1.complement)
+    assert_equal(3, a1.p_left)
+    assert_equal(4, a1.p_right)
+    assert_equal(3, a1.c_left)
+    assert_equal(4, a1.c_right)
+    
+    a2 = @obj_vr2[2]
+    assert_equal('ag', a2.primary)
+    assert_equal('tc', a2.complement)
+    assert_equal(5, a2.p_left)
+    assert_equal(6, a2.p_right)
+    assert_equal(5, a2.c_left)
+    assert_equal(6, a2.c_right)
+    
+    a3 = @obj_vr2[3]
+    assert_equal(nil, a3)
+  end
+  
 
 end
 
