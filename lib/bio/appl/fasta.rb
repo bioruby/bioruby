@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2001, 2002 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: fasta.rb,v 1.24 2007/04/05 23:35:39 trevor Exp $
+# $Id: fasta.rb,v 1.25 2007/05/18 15:22:52 k Exp $
 #
 
 require 'net/http'
@@ -114,7 +114,8 @@ class Fasta
 
   def exec_local(query)
     cmd = [ @program, *@options ]
-    cmd.concat([ '@', @db, @ktup ])
+    cmd.concat([ '@', @db ])
+    cmd.push(@ktup) if @ktup
 
     report = nil
 
