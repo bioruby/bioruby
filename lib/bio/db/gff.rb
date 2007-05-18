@@ -6,7 +6,7 @@
 #              2006  Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-# $Id: gff.rb,v 1.8 2007/04/05 23:35:40 trevor Exp $
+# $Id: gff.rb,v 1.9 2007/05/18 15:23:42 k Exp $
 #
 
 module Bio
@@ -138,6 +138,17 @@ class GFF
   # http://flybase.bio.indiana.edu/annot/gff3.html
   class GFF3 < GFF
     VERSION = 3
+
+    private
+
+    def parse_attributes(attributes)
+      hash = Hash.new
+      attributes.split(/[^\\];/).each do |atr|
+        key, value = atr.split('=', 2)
+        hash[key] = value
+      end
+      return hash
+    end
   end
 
 end # class GFF
