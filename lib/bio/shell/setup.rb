@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: setup.rb,v 1.3 2007/04/05 23:35:41 trevor Exp $
+# $Id: setup.rb,v 1.4 2007/06/20 17:26:56 k Exp $
 #
 
 require 'getoptlong'
@@ -96,13 +96,17 @@ class Bio::Shell::Setup
   end
 
   def current_workdir
+=begin
     unless File.exists?(Bio::Shell.datadir)
       message = "Are you sure to start new session in this directory? [y/n] "
       unless Bio::Shell.ask_yes_or_no(message)
         exit
       end
     end
-    return '.'
+=end
+    savedir = "#{ENV['HOME']}/.bioruby"
+    Dir.mkdir(savedir) unless File.directory?(savedir)
+    return savedir
   end
 
   def install_workdir(workdir)
