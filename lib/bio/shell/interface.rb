@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: interface.rb,v 1.16 2007/04/05 23:35:41 trevor Exp $
+# $Id: interface.rb,v 1.17 2007/06/20 17:24:54 k Exp $
 #
 
 module Bio::Shell
@@ -198,18 +198,18 @@ module Bio::Shell
       files = Dir.glob("*")
     end
     if files
-      str  = "   UGO  Date                                 Byte  File\n"
-      str << "------  ----------------------------  -----------  ------------\n"
+      str  = "   UGO  Date                                   Byte  File\n"
+      str << "------  ------------------------------  -----------  ------------\n"
       files.sort.each { |f|
         stat = File.lstat(f)
         mode = format("%6o", stat.mode)
         date = stat.mtime
         byte = stat.size
         name = f.inspect
-        str << format("%s  %s%13d  %s\n", mode, date, byte, name)
+        str << format("%s  %30s%13d  %s\n", mode, date, byte, name)
       }
       puts str
-      return str
+      return files.sort
     end
   end
 
