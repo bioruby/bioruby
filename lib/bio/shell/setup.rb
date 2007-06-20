@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: setup.rb,v 1.4 2007/06/20 17:26:56 k Exp $
+# $Id: setup.rb,v 1.5 2007/06/20 23:48:58 k Exp $
 #
 
 require 'getoptlong'
@@ -105,7 +105,7 @@ class Bio::Shell::Setup
     end
 =end
     savedir = "#{ENV['HOME']}/.bioruby"
-    Dir.mkdir(savedir) unless File.directory?(savedir)
+    FileUtils.mkdir_p(savedir)
     return savedir
   end
 
