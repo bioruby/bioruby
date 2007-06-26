@@ -6,7 +6,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: web.rb,v 1.4 2007/04/05 23:35:41 trevor Exp $
+# $Id: web.rb,v 1.5 2007/06/26 08:38:38 k Exp $
 #
 
 
@@ -35,26 +35,33 @@ module Bio::Shell
     end
 
     def install_rails
-      unless File.exist?("script/generate")
+      savedir = Bio::Shell.cache[:savedir]
+      path = File.join(savedir, "script", "generate")
+      unless File.exist?(path)
         puts "Installing Rails application for BioRuby shell ... "
-        system("rails .")
+        system("rails #{savedir}")
         puts "done"
       end
-      unless File.exist?("app/controllers/bioruby_controller.rb")
+      path = File.join(savedir, "app", "controllers", "bioruby_controller.rb")
+      unless File.exist?(path)
         basedir = File.dirname(__FILE__)
         puts "Installing Rails plugin for BioRuby shell ... "
-        FileUtils.cp_r("#{basedir}/rails/.", ".")
-        system("./script/generate bioruby shell")
+        FileUtils.cp_r("#{basedir}/rails/.", savedir)
+        Dir.chdir(savedir) do 
+          system("./script/generate bioruby shell")
+        end
         puts "done"
       end
     end
 
     def start_rails
       begin
-        Bio::Shell.cache[:rails] = Thread.new {
-          require './config/boot'
-          require 'commands/server'
-        }
+        Bio::Shell.cache[:rails] = Thread.new do
+          Dir.chdir(Bio::Shell.cache[:savedir]) do
+            require './config/boot'
+            require 'commands/server'
+          end
+        end
       end
     end
 

@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: setup.rb,v 1.6 2007/06/26 01:43:24 k Exp $
+# $Id: setup.rb,v 1.7 2007/06/26 08:38:38 k Exp $
 #
 
 require 'getoptlong'
@@ -79,11 +79,11 @@ class Bio::Shell::Setup
 
     if arg.nil?
       # run in the current directory
-      workdir = "#{ENV['HOME']}/.bioruby"
+      workdir = File.join(ENV['HOME'].to_s, ".bioruby")
       install_workdir(workdir)
     elsif File.directory?(arg)
       # run in the existing directory
-      workdir = arg
+      workdir = File.join(Dir.pwd, arg)
     elsif File.file?(arg)
       # run file as a bioruby shell script (slightly tricky)
       workdir = File.join(File.dirname(arg), "..")
@@ -91,7 +91,7 @@ class Bio::Shell::Setup
       @mode = :script
     else
       # run in new directory
-      workdir = arg
+      workdir = File.join(Dir.pwd, arg)
       install_workdir(workdir)
     end
 

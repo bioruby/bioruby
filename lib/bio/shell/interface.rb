@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: interface.rb,v 1.17 2007/06/20 17:24:54 k Exp $
+# $Id: interface.rb,v 1.18 2007/06/26 08:38:38 k Exp $
 #
 
 module Bio::Shell
@@ -149,7 +149,7 @@ module Bio::Shell
   ### file save
 
   def savefile(file, *objs)
-    datadir = Bio::Shell.datadir
+    datadir = Bio::Shell.data_dir
     message = "Save file '#{file}' in '#{datadir}' directory? [y/n] "
     if ! file[/^#{datadir}/] and Bio::Shell.ask_yes_or_no(message)
       file = datadir + file
