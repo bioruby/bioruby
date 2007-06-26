@@ -11,7 +11,7 @@
 
  <div class="title">Project</div>
   <ul>
-   <li><%= project_workdir %>
+   <li><%= link_to "#{File.basename(project_workdir)}", "file://#{project_workdir}" %>
   </ul>
 
  <div class="title">Functions</div>
