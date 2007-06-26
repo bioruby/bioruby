@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: setup.rb,v 1.5 2007/06/20 23:48:58 k Exp $
+# $Id: setup.rb,v 1.6 2007/06/26 01:43:24 k Exp $
 #
 
 require 'getoptlong'
@@ -19,12 +19,11 @@ class Bio::Shell::Setup
     getoptlong
 
     # setup working directory
-    setup_workdir
+    workdir = setup_workdir
 
     # load configuration and plugins
-    Dir.chdir(@workdir) if @workdir
-    Bio::Shell.configure
-    Bio::Shell.cache[:workdir] = @workdir
+    #Dir.chdir(workdir) if workdir # changed not chdir
+    Bio::Shell.configure(workdir)
 
     # set default to irb mode
     Bio::Shell.cache[:mode] = @mode || :irb
@@ -77,41 +76,30 @@ class Bio::Shell::Setup
       ARGV.unshift arg
       arg = nil
     end
-    
+
     if arg.nil?
-      # run in current directory
-      @workdir = current_workdir
+      # run in the current directory
+      workdir = "#{ENV['HOME']}/.bioruby"
+      install_workdir(workdir)
     elsif File.directory?(arg)
-      # run in existing directory
-      @workdir = arg
+      # run in the existing directory
+      workdir = arg
     elsif File.file?(arg)
-      # run file as a bioruby shell script
-      @workdir = nil
+      # run file as a bioruby shell script (slightly tricky)
+      workdir = File.join(File.dirname(arg), "..")
       @script = arg
       @mode = :script
     else
       # run in new directory
-      @workdir = install_workdir(arg)
+      workdir = arg
+      install_workdir(workdir)
     end
-  end
 
-  def current_workdir
-=begin
-    unless File.exists?(Bio::Shell.datadir)
-      message = "Are you sure to start new session in this directory? [y/n] "
-      unless Bio::Shell.ask_yes_or_no(message)
-        exit
-      end
-    end
-=end
-    savedir = "#{ENV['HOME']}/.bioruby"
-    FileUtils.mkdir_p(savedir)
-    return savedir
+    return workdir
   end
 
   def install_workdir(workdir)
     FileUtils.mkdir_p(workdir)
-    return workdir
   end
 
 end # Setup

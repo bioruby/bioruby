@@ -5,11 +5,13 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: core.rb,v 1.24 2007/04/05 23:35:41 trevor Exp $
+# $Id: core.rb,v 1.25 2007/06/26 01:41:33 k Exp $
 #
 
 module Bio::Shell::Core
 
+  # chdir
+  # change to File.join for / ended dirs
   SAVEDIR = "shell/session/"
   CONFIG  = "config"
   OBJECT  = "object"
@@ -40,7 +42,7 @@ module Bio::Shell::Core
   end
 
   def datadir
-    DATADIR
+    File.join(@cache[:workdir], DATADIR)
   end
 
   def script_dir
@@ -48,11 +50,11 @@ module Bio::Shell::Core
   end
 
   def object_file
-    SAVEDIR + OBJECT
+    File.join(@cache[:workdir], SAVEDIR, OBJECT)
   end
 
   def history_file
-    SAVEDIR + HISTORY
+    File.join(@cache[:workdir], SAVEDIR, HISTORY)
   end
 
   def ask_yes_or_no(message)
@@ -87,9 +89,13 @@ module Bio::Shell::Ghost
 
   ### save/restore the environment
 
-  def configure
+  def configure(workdir)
+    savedir = File.join(Dir.pwd, workdir)
     @config = {}
-    @cache  = {}
+    @cache  = {
+      :workdir => workdir,
+      :savedir => savedir,
+    }
     create_save_dir
     load_config
     load_plugin
@@ -114,7 +120,7 @@ module Bio::Shell::Ghost
       save_object
       save_config
     end
-    STDERR.puts "Leaving directory '#{@cache[:workdir]}'"
+    #STDERR.puts "Leaving directory '#{@cache[:workdir]}'"
     STDERR.puts "History is saved in '#{@cache[:workdir]}/#{SAVEDIR + HISTORY}'"
   end
 
@@ -127,11 +133,13 @@ module Bio::Shell::Ghost
   end
 
   def create_save_dir_ask
-    if File.directory?(SAVEDIR)
-      @cache[:save] = true
+    Dir.chdir(@cache[:workdir]) do |path|
+      if File.directory?(SAVEDIR)
+        @cache[:save] = true
+      end
     end
-    if @cache[:save].nil?
-      if ask_yes_or_no("Save session in '#{SAVEDIR}' directory? [y/n] ")
+    unless @cache[:save]
+      if ask_yes_or_no("Save session in '#{@cache[:workdir]}/#{SAVEDIR}' directory? [y/n] ")
         create_real_dir(SAVEDIR)
         create_real_dir(PLUGIN)
         create_real_dir(DATADIR)
@@ -145,13 +153,15 @@ module Bio::Shell::Ghost
   end
 
   def create_real_dir(dir)
-    unless File.directory?(dir)
-      begin
-        STDERR.print "Creating directory (#{dir}) ... "
-        FileUtils.mkdir_p(dir)
-        STDERR.puts "done"
-      rescue
-        warn "Error: Failed to create directory (#{dir}) : #{$!}"
+    Dir.chdir(@cache[:workdir]) do |path|
+      unless File.directory?(dir)
+        begin
+          STDERR.print "Creating directory (#{path}/#{dir}) ... "
+          FileUtils.mkdir_p(dir)
+          STDERR.puts "done"
+        rescue
+          warn "Error: Failed to create directory (#{path}/#{dir}) : #{$!}"
+        end
       end
     end
   end
@@ -159,20 +169,28 @@ module Bio::Shell::Ghost
   ### bioflat
 
   def create_flat_dir(dbname)
-    dir = BIOFLAT + dbname.to_s.strip
-    unless File.directory?(dir)
-      FileUtils.mkdir_p(dir)
+    flatdb = ""
+    Dir.chdir(@cache[:workdir]) do |path|
+      dir = BIOFLAT + dbname.to_s.strip
+      unless File.directory?(dir)
+        FileUtils.mkdir_p(dir)
+      end
+      flatdb = "#{path}/#{dir}"
     end
-    return dir
+    return flatdb
   end
 
   def find_flat_dir(dbname)
-    dir = BIOFLAT + dbname.to_s.strip
-    if File.exists?(dir)
-      return dir
-    else
-      return nil
+    flatdb = ""
+    Dir.chdir(@cache[:workdir]) do |path|
+      dir = BIOFLAT + dbname.to_s.strip
+      if File.exists?(dir)
+        flatdb = "#{path}/#{dir}"
+      else
+        flatdb = nil
+      end
     end
+    return flatdb
   end
 
   ### config
@@ -182,12 +200,14 @@ module Bio::Shell::Ghost
   end
 
   def load_config_file(file)
-    if File.exists?(file)
-      STDERR.print "Loading config (#{file}) ... "
-      if hash = YAML.load(File.read(file))
-        @config.update(hash)
+    Dir.chdir(@cache[:workdir]) do |path|
+      if File.exists?(file)
+        STDERR.print "Loading config (#{path}/#{file}) ... "
+        if hash = YAML.load(File.read(file))
+          @config.update(hash)
+        end
+        STDERR.puts "done"
       end
-      STDERR.puts "done"
     end
   end
 
@@ -196,14 +216,16 @@ module Bio::Shell::Ghost
   end
 
   def save_config_file(file)
-    begin
-      STDERR.print "Saving config (#{file}) ... "
-      File.open(file, "w") do |f|
-        f.puts @config.to_yaml
+    Dir.chdir(@cache[:workdir]) do |path|
+      begin
+        STDERR.print "Saving config (#{path}/#{file}) ... "
+        File.open(file, "w") do |f|
+          f.puts @config.to_yaml
+        end
+        STDERR.puts "done"
+      rescue
+        warn "Error: Failed to save (#{path}/#{file}) : #{$!}"
       end
-      STDERR.puts "done"
-    rescue
-      warn "Error: Failed to save (#{file}) : #{$!}"
     end
   end
 
@@ -258,11 +280,13 @@ module Bio::Shell::Ghost
   end
 
   def load_plugin_dir(dir)
-    if File.directory?(dir)
-      Dir.glob("#{dir}/*.rb").sort.each do |file|
-        STDERR.print "Loading plugin (#{file}) ... "
-        load file
-        STDERR.puts "done"
+    Dir.chdir(@cache[:workdir]) do |path|
+      if File.directory?(dir)
+        Dir.glob("#{dir}/*.rb").sort.each do |file|
+          STDERR.print "Loading plugin (#{path}/#{file}) ... "
+          load file
+          STDERR.puts "done"
+        end
       end
     end
   end
@@ -285,23 +309,25 @@ module Bio::Shell::Ghost
   end
 
   def load_object_file(file)
-    if File.exists?(file)
-      STDERR.print "Loading object (#{file}) ... "
-      begin
-        bind = Bio::Shell.cache[:binding]
-        hash = Marshal.load(File.read(file))
-        hash.each do |k, v|
-          begin
-            Thread.current[:restore_value] = v
-            eval("#{k} = Thread.current[:restore_value]", bind)
-          rescue
-            STDERR.puts "Warning: object '#{k}' couldn't be loaded : #{$!}"
+    Dir.chdir(@cache[:workdir]) do |path|
+      if File.exists?(file)
+        STDERR.print "Loading object (#{path}/#{file}) ... "
+        begin
+          bind = Bio::Shell.cache[:binding]
+          hash = Marshal.load(File.read(file))
+          hash.each do |k, v|
+            begin
+              Thread.current[:restore_value] = v
+              eval("#{k} = Thread.current[:restore_value]", bind)
+            rescue
+              STDERR.puts "Warning: object '#{k}' couldn't be loaded : #{$!}"
+            end
           end
+        rescue
+          warn "Error: Failed to load (#{path}/#{file}) : #{$!}"
         end
-      rescue
-        warn "Error: Failed to load (#{file}) : #{$!}"
+        STDERR.puts "done"
       end
-      STDERR.puts "done"
     end
   end
 
@@ -310,39 +336,43 @@ module Bio::Shell::Ghost
   end
 
   def save_object_file(file)
-    begin
-      STDERR.print "Saving object (#{file}) ... "
-      File.rename(file, "#{file}.old") if File.exist?(file)
-      File.open(file, "w") do |f|
-        bind = Bio::Shell.cache[:binding]
-        list = eval("local_variables", bind)
-        list -= ["_"]
-        hash = {}
-        list.each do |elem|
-          value = eval(elem, bind)
-          if value
-            begin
-              Marshal.dump(value)
-              hash[elem] = value
-            rescue
-              # value could not be dumped.
+    Dir.chdir(@cache[:workdir]) do |path|
+      begin
+        STDERR.print "Saving object (#{path}/#{file}) ... "
+        File.rename(file, "#{file}.old") if File.exist?(file)
+        File.open(file, "w") do |f|
+          bind = Bio::Shell.cache[:binding]
+          list = eval("local_variables", bind)
+          list -= ["_"]
+          hash = {}
+          list.each do |elem|
+            value = eval(elem, bind)
+            if value
+              begin
+                Marshal.dump(value)
+                hash[elem] = value
+              rescue
+                # value could not be dumped.
+              end
             end
           end
+          Marshal.dump(hash, f)
+          @config[:marshal] = MARSHAL
         end
-        Marshal.dump(hash, f)
-        @config[:marshal] = MARSHAL
+        STDERR.puts "done"
+      rescue
+        File.rename("#{file}.old", file) if File.exist?("#{file}.old")
+        warn "Error: Failed to save (#{file}) : #{$!}"
       end
-      STDERR.puts "done"
-    rescue
-      File.rename("#{file}.old", file) if File.exist?("#{file}.old")
-      warn "Error: Failed to save (#{file}) : #{$!}"
     end
   end
 
   ### history
 
   def open_history
-    @cache[:histfile] = File.open(SAVEDIR + HISTORY, "a")
+    Dir.chdir(@cache[:workdir]) do |path|
+      @cache[:histfile] = File.open(SAVEDIR + HISTORY, "a")
+    end
     @cache[:histfile].sync = true
   end
 
@@ -362,11 +392,13 @@ module Bio::Shell::Ghost
   end
 
   def load_history_file(file)
-    if File.exists?(file)
-      STDERR.print "Loading history (#{file}) ... "
-      File.open(file).each do |line|
-        unless line[/^# /]
-          Readline::HISTORY.push line.chomp
+    Dir.chdir(@cache[:workdir]) do |path|
+      if File.exists?(file)
+        STDERR.print "Loading history (#{path}/#{file}) ... "
+        File.open(file).each do |line|
+          unless line[/^# /]
+            Readline::HISTORY.push line.chomp
+          end
         end
       end
       STDERR.puts "done"
@@ -381,14 +413,16 @@ module Bio::Shell::Ghost
   end
 
   def save_history_file(file)
-    begin
-      STDERR.print "Saving history (#{file}) ... "
-      File.open(file, "w") do |f|
-        f.puts Readline::HISTORY.to_a
+    Dir.chdir(@cache[:workdir]) do |path|
+      begin
+        STDERR.print "Saving history (#{path}/#{file}) ... "
+        File.open(file, "w") do |f|
+          f.puts Readline::HISTORY.to_a
+        end
+        STDERR.puts "done"
+      rescue
+        warn "Error: Failed to save (#{path}/#{file}) : #{$!}"
       end
-      STDERR.puts "done"
-    rescue
-      warn "Error: Failed to save (#{file}) : #{$!}"
     end
   end
 
@@ -427,16 +461,18 @@ module Bio::Shell::Ghost
 
   def save_script
     if @script_begin and @script_end and @script_begin <= @script_end
-      if File.exists?(SCRIPT)
-        message = "Overwrite script file (#{SCRIPT})? [y/n] "
-      else
-        message = "Save script file (#{SCRIPT})? [y/n] "
+      Dir.chdir(@cache[:workdir]) do |path|
+        if File.exists?(SCRIPT)
+          message = "Overwrite script file (#{path}/#{SCRIPT})? [y/n] "
+        else
+          message = "Save script file (#{path}/#{SCRIPT})? [y/n] "
+        end
+        if ask_yes_or_no(message)
+          save_script_file(SCRIPT)
+        else
+          STDERR.puts " ... save aborted."
+        end 
       end
-      if ask_yes_or_no(message)
-        save_script_file(SCRIPT)
-      else
-        STDERR.puts " ... save aborted."
-      end 
     elsif @script_begin and @script_end and @script_begin - @script_end == 1
       STDERR.puts " ... script aborted."
     else
@@ -445,18 +481,20 @@ module Bio::Shell::Ghost
   end
 
   def save_script_file(file)
-    begin
-      STDERR.print "Saving script (#{file}) ... "
+    Dir.chdir(@cache[:workdir]) do |path|
+      begin
+        STDERR.print "Saving script (#{path}/#{file}) ... "
         File.open(file, "w") do |f|
-        f.puts "#!/usr/bin/env bioruby"
-        f.puts
-        f.puts Readline::HISTORY.to_a[@script_begin..@script_end]
-        f.puts
+          f.puts "#!/usr/bin/env bioruby"
+          f.puts
+          f.puts Readline::HISTORY.to_a[@script_begin..@script_end]
+          f.puts
+        end
+        STDERR.puts "done"
+      rescue
+        @script_begin = nil
+        warn "Error: Failed to save (#{path}/#{file}) : #{$!}"
       end
-      STDERR.puts "done"
-    rescue
-      @script_begin = nil
-      warn "Error: Failed to save (#{file}) : #{$!}"
     end
   end
 
