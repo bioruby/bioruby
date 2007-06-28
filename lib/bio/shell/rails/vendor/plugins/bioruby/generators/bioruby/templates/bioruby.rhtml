@@ -7,12 +7,13 @@
 <body>
 
 <div id="side">
- <img src="/images/bioruby.png"><br>
+ <img src="/images/bioruby.png">
+ <br>
 
  <div class="title">Project</div>
-  <ul>
-   <li><%= link_to "#{File.basename(project_workdir)}", "file://#{project_workdir}" %>
-  </ul>
+ <ul>
+  <li><%= link_to "#{File.basename(project_workdir)}", "file://#{project_workdir}" %>
+ </ul>
 
  <div class="title">Functions</div>
  <ul>
@@ -23,12 +24,16 @@
 
  <div class="title">Local variables</div>
  <%= render :partial => "variables" %>
+
+ <br>
+ <a href="http://bioruby.org/"><img src="/images/bioruby.gif" border=0></a>
 </div>
 
 
 <div id="main">
 
 <h1>BioRuby shell on Rails</h1>
+
 <%= yield %>
 
 </div>

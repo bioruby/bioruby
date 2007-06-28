@@ -3,7 +3,11 @@ module BiorubyHelper
   include Bio::Shell
 
   def project_workdir
-    Bio::Shell.cache[:workdir]
+    if Bio::Shell.cache[:savedir].match(/\.bioruby$/)
+      Bio::Shell.cache[:workdir]
+    else
+      Bio::Shell.cache[:savedir]
+    end
   end
 
   def have_results

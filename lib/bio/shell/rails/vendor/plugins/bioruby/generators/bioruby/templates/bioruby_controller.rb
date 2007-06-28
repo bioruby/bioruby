@@ -8,6 +8,7 @@ class BiorubyController < ApplicationController
     ActiveSupport::CoreExtensions::String::Inflections,
     ActiveSupport::CoreExtensions::String::Conversions,
     ActiveSupport::CoreExtensions::String::Access,
+    ActiveSupport::CoreExtensions::String::Unicode,
     ActiveSupport::CoreExtensions::Numeric::Bytes,
     ActiveSupport::CoreExtensions::Numeric::Time,
     Base64::Deprecated, Base64, PP::ObjectMixin,
