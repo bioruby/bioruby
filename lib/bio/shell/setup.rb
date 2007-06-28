@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: setup.rb,v 1.7 2007/06/26 08:38:38 k Exp $
+# $Id: setup.rb,v 1.8 2007/06/28 11:21:40 k Exp $
 #
 
 require 'getoptlong'
@@ -19,11 +19,10 @@ class Bio::Shell::Setup
     getoptlong
 
     # setup working directory
-    workdir = setup_workdir
+    savedir = setup_savedir
 
     # load configuration and plugins
-    #Dir.chdir(workdir) if workdir # changed not chdir
-    Bio::Shell.configure(workdir)
+    Bio::Shell.configure(savedir)
 
     # set default to irb mode
     Bio::Shell.cache[:mode] = @mode || :irb
@@ -66,7 +65,7 @@ class Bio::Shell::Setup
     end
   end
 
-  def setup_workdir
+  def setup_savedir
     arg = ARGV.shift
 
     # Options after the '--' argument are not parsed by GetoptLong and
@@ -79,27 +78,32 @@ class Bio::Shell::Setup
 
     if arg.nil?
       # run in the current directory
-      workdir = File.join(ENV['HOME'].to_s, ".bioruby")
-      install_workdir(workdir)
-    elsif File.directory?(arg)
-      # run in the existing directory
-      workdir = File.join(Dir.pwd, arg)
+      if File.exist?(Bio::Shell::Core::HISTORY)
+        savedir = Dir.pwd
+      else
+        savedir = File.join(ENV['HOME'].to_s, ".bioruby")
+        install_savedir(savedir)
+      end
     elsif File.file?(arg)
-      # run file as a bioruby shell script (slightly tricky)
-      workdir = File.join(File.dirname(arg), "..")
+      # run file as a bioruby shell script
+      savedir = File.join(File.dirname(arg), "..")
       @script = arg
       @mode = :script
     else
-      # run in new directory
-      workdir = File.join(Dir.pwd, arg)
-      install_workdir(workdir)
+      # run in new or existing directory
+      if arg[/^#{File::SEPARATOR}/]
+        savedir = arg
+      else
+        savedir = File.join(Dir.pwd, arg)
+      end
+      install_savedir(savedir)
     end
 
-    return workdir
+    return savedir
   end
 
-  def install_workdir(workdir)
-    FileUtils.mkdir_p(workdir)
+  def install_savedir(savedir)
+    FileUtils.makedirs(savedir)
   end
 
 end # Setup

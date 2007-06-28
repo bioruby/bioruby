@@ -5,16 +5,11 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: core.rb,v 1.26 2007/06/26 08:38:38 k Exp $
+# $Id: core.rb,v 1.27 2007/06/28 11:21:40 k Exp $
 #
 
 module Bio::Shell::Core
 
-  # TODO:
-  # * load history from current and savedir
-  # * don'nt show history saved when exit 'no save' mode
-  # * replace File to Pathname
-  
   SHELLDIR = "shell"
   DATADIR  = "data"
   SESSION  = File.join(SHELLDIR, "session")
@@ -117,17 +112,11 @@ module Bio::Shell::Ghost
 
   ### save/restore the environment
 
-  def configure(workdir)
-    if workdir == File.join(ENV['HOME'].to_s, ".bioruby")
-      savedir = workdir
-      workdir = Dir.pwd
-    else
-      savedir = workdir
-    end
+  def configure(savedir)
     @config = {}
     @cache  = {
-      :workdir => workdir,
       :savedir => savedir,
+      :workdir => Dir.pwd,
     }
     create_save_dir
     load_config
@@ -145,16 +134,15 @@ module Bio::Shell::Ghost
 
   def save_session
     unless @cache[:mode] == :script
-      close_history
       closing_splash
     end
     if create_save_dir_ask
       #save_history	# changed to use our own...
+      close_history
       save_object
       save_config
     end
     #STDERR.puts "Leaving directory '#{@cache[:workdir]}'"
-    STDERR.puts "History is saved in '#{history_file}'"
   end
 
   ### directories
@@ -187,7 +175,7 @@ module Bio::Shell::Ghost
     unless File.directory?(dir)
       begin
         STDERR.print "Creating directory (#{dir}) ... "
-        FileUtils.mkdir_p(dir)
+        FileUtils.makedirs(dir)
         STDERR.puts "done"
       rescue
         warn "Error: Failed to create directory (#{dir}) : #{$!}"
@@ -200,7 +188,7 @@ module Bio::Shell::Ghost
   def create_flat_dir(dbname)
     dir = File.join(bioflat_dir, dbname.to_s.strip)
     unless File.directory?(dir)
-      FileUtils.mkdir_p(dir)
+      FileUtils.makedirs(dir)
     end
     return dir
   end
@@ -391,7 +379,11 @@ module Bio::Shell::Ghost
   end
 
   def close_history
-    @cache[:histfile].close if @cache[:histfile]
+    if @cache[:histfile]
+      STDERR.print "Saving history (#{history_file}) ... "
+      @cache[:histfile].close
+      STDERR.puts "done"
+    end
   end
 
   def load_history
@@ -408,8 +400,8 @@ module Bio::Shell::Ghost
           Readline::HISTORY.push line.chomp
         end
       end
+      STDERR.puts "done"
     end
-    STDERR.puts "done"
   end
   
   # not used (use open_history/close_history instead)
