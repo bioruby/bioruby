@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: drug.rb,v 1.2 2007/04/05 23:35:41 trevor Exp $
+# $Id: drug.rb,v 1.3 2007/06/28 11:27:24 k Exp $
 #
 
 require 'bio/db'
@@ -23,10 +23,7 @@ class DRUG < KEGGDB
 
   # ENTRY
   def entry_id
-    unless @data['ENTRY']
-      @data['ENTRY'] = fetch('ENTRY').split(/\s+/).first
-    end
-    @data['ENTRY']
+    field_fetch('ENTRY')[/\S+/]
   end
 
   # NAME

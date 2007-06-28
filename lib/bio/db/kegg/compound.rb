@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2001, 2002, 2004, 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: compound.rb,v 0.15 2007/04/05 23:35:41 trevor Exp $
+# $Id: compound.rb,v 0.16 2007/06/28 11:27:24 k Exp $
 #
 
 require 'bio/db'
@@ -23,10 +23,7 @@ class COMPOUND < KEGGDB
 
   # ENTRY
   def entry_id
-    unless @data['ENTRY']
-      @data['ENTRY'] = fetch('ENTRY').split(/\s+/).first
-    end
-    @data['ENTRY']
+    field_fetch('ENTRY')[/\S+/]
   end
 
   # NAME

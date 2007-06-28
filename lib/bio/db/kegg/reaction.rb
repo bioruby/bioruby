@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: reaction.rb,v 1.5 2007/04/05 23:35:41 trevor Exp $
+# $Id: reaction.rb,v 1.6 2007/06/28 11:27:24 k Exp $
 #
 
 require 'bio/db'
@@ -23,7 +23,7 @@ class REACTION < KEGGDB
 
   # ENTRY
   def entry_id
-    field_fetch('ENTRY')
+    field_fetch('ENTRY')[/\S+/]
   end
 
   # NAME
