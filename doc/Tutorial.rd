@@ -2,16 +2,13 @@
 
 See the document in the CVS repository ./doc/((<Tutorial.rd|URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/bioruby/doc/Tutorial.rd?rev=HEAD&cvsroot=bioruby&content-type=text/plain>)) - for a potentially more up-to-date edition. This one was updated:
 
-  $Id: Tutorial.rd,v 1.12 2006/02/17 14:59:26 pjotr Exp $
+  $Id: Tutorial.rd,v 1.13 2007/07/09 12:28:07 pjotr Exp $
 
 Translated into English: Naohisa Goto <ng@bioruby.org>
 
 Editor:                  PjotrPrins <p@bioruby.org>
 
-Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>, 2005-2006 all
-others
-
-NOTE: This page is a work in progress at this point
+Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>, 2005-2007 Pjotr Prins, Naohisa Goto and others
 
 IMPORTANT NOTICE: This page is maintained in the BioRuby CVS
 repository. Please edit the file there otherwise changes may get
@@ -38,7 +35,7 @@ version it has with the
 
 command. Showing something like:
 
-  ruby 1.8.2 (2005-04-11) [powerpc-linux]
+  ruby 1.8.5 (2006-08-25) [powerpc-linux]
 
 
 == Trying Bioruby
@@ -95,6 +92,9 @@ defined in codontable.rb).
     p seq.translate.molecular_weight    # calculating molecular weight (Float)
 
     puts seq.complement.translate       # translation of complemental strand
+
+		counts = {'a'=>seq.count('a'),'c'=>seq.count('c'),'g'=>seq.count('g'),'t'=>seq.count('t')}
+    p randomseq = Bio::Sequence::NA.randomize(counts)  # reshuffle sequence with same freq.
 
 The p, print and puts methods are standard Ruby ways of outputting to
 the screen. If you want to know more about standard Ruby commands you
@@ -461,6 +461,40 @@ Array and BioPerl's Bio::SimpleAlign.  A very simple example is:
   # clustalw command must be installed.
   factory = Bio::ClustalW.new
   a2 = a.do_align(factory)
+
+== Restriction Enzymes (Bio::RE)
+
+BioRuby has extensive support for restriction enzymes (REs). It contains a full
+library of commonly used REs (from REBASE) which can be used to cut single
+stranded RNA or dubbel stranded DNA into fragments. To list all enzymes:
+
+  rebase = Bio::RestrictionEnzyme.rebase
+	rebase.each do |enzyme_name, info|
+		p enzyme_name
+  end
+
+and cut a sequence with an enzyme follow up with:
+
+   res = seq.cut_with_enzyme('EcoRII', {:max_permutations => 0}, {:view_ranges => true})
+   if res.kind_of? Symbol #error
+      err = Err.find_by_code(res.to_s)
+      unless err
+        err = Err.new(:code => res.to_s)
+      end
+   end
+	 res.each do |frag|
+	    em = EnzymeMatch.new
+
+      em.p_left = frag.p_left
+      em.p_right = frag.p_right
+      em.c_left = frag.c_left
+      em.c_right = frag.c_right
+
+      em.err = nil
+      em.enzyme = ar_enz
+      em.sequence = ar_seq
+			p em
+    end
 
 
 == Sequence homology search by using the FASTA program (Bio::Fasta)
@@ -1123,14 +1157,17 @@ Please refer to KEGG_API.rd.ja (TRANSLATOR'S NOTE: English version: ((<URL:http:
 
   * ((<URL:http://www.genome.jp/kegg/soap/>))
 
+== Comparing BioProjects
+
+For a quick functional comparison of BioRuby, BioPerl, BioPython and Bioconductor (R) see ((<http://sciruby.codeforpeople.com/sr.cgi/BioProjects>))
+
 == Using BioRuby with R
 
-The R libraries can be accessed from Ruby using the @@FIXME
-package. This allows at least use of the standard R library
-functions. Unfortunately there is no binding for dynamic R - so at
-this point you'll have to create some command line interface.
+Using Ruby with R Pjotr wrote a section on SciRuby. See ((<ULR:http://sciruby.codeforpeople.com/sr.cgi/RubyWithRlang>))
 
-== Using BioPerl from Ruby
+== Using BioPerl or BioPython from Ruby
+
+At the moment there is no easy way of accessing BioPerl from Ruby. The best way, perhaps, is to create a Perl server that gets accessed through XML/RPC or SOAP.
 
 == Installing required external library
 
