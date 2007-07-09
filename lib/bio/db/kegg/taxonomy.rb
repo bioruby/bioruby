@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: taxonomy.rb,v 1.1 2007/07/09 08:48:03 k Exp $
+#  $Id: taxonomy.rb,v 1.2 2007/07/09 10:29:16 k Exp $
 #
 
 module Bio
@@ -24,11 +24,17 @@ class KEGG
 class Taxonomy
 
   def initialize(filename, orgs = [])
+    # Stores the taxonomic tree as a linked list (implemented in Hash), so
+    # every node need to have unique name (key) to work correctly
     @tree = Hash.new
+
+    # Also stores the taxonomic tree as a list of arrays (full path)
     @path = Array.new
+
+    # Also stores all leaf nodes (organism codes) of every intermediate nodes
     @leaves = Hash.new
 
-    # ルートノードを Genes とする
+    # tentative name for the root node (use accessor to change)
     @root = 'Genes'
 
     hier = Array.new
@@ -38,33 +44,37 @@ class Taxonomy
     File.open(filename).each do |line|
       next if line.strip.empty?
 
-      # タクソノミー階層行 - # の個数で階層をインデントする処理
+      # line for taxonomic hierarchy (indent according to the number of # marks)
       if line[/^#/]
 	level = line[/^#+/].length
 	label = line[/[A-z].*/]
 	hier[level] = sanitize(label)
 
-      # 生物種リスト行 - 生物種コードとストレイン違いをまとめる処理
+      # line for organims name (unify different strains of a species)
       else
 	tax, org, name, desc = line.chomp.split("\t")
         if orgs.nil? or orgs.empty? or orgs.include?(org)
           species, strain, = name.split('_')
-          # (0) species 名が直前の行のものと同じ場合、そのグループに追加
-          #  Gamma/enterobacteria など括りが大まかで種数の多いグループを
-          #  同じ種名（ストレイン違い）ごとにサブグループ化するのが目的
-          #   ex. E.coli, H.influenzae など
-          # トリッキーな部分：
-          #  もし species 名が上位中間ノード（### 行など）と同じ（既出）であれば
-          #  Tree を Hash で持つ仕様とコンフリクトするので別名が必要
-          # (1) species 名が系統の異なる上位中間ノード名と同じ場合
-          #   → とりあえず species 名に _sp をつけてコンフリクトを避ける (1-1)
-          #      すでに _sp も使われている場合は strain 名を使う (1-2)
-          #   ex. Bacteria/Proteobacteria/Beta/T.denitrificans/tbd と
+          # (0) Grouping of the strains of the same species.
+          #  If the name of species is the same as the previous line,
+          #  add the species to the same species group.
+          #   ex. Gamma/enterobacteria has a large number of organisms,
+          #       so sub grouping of strains is needed for E.coli strains etc.
+          #
+          # However, if the species name is already used, need to avoid
+          # collision of species name as the current implementation stores
+          # the tree as a Hash, which may cause the infinite loop.
+          #
+          # (1) If species name == the intermediate node of other lineage
+          #  Add '_sp' to the species name to avoid the conflict (1-1), and if
+          #  'species_sp' is already taken, use 'species_strain' instead (1-2).
+          #   ex. Bacteria/Proteobacteria/Beta/T.denitrificans/tbd
           #       Bacteria/Proteobacteria/Epsilon/T.denitrificans_ATCC33889/tdn
-          #    -> Bacteria/Proteobacteria/Beta/T.denitrificans/tbd と
+          #    -> Bacteria/Proteobacteria/Beta/T.denitrificans/tbd
           #       Bacteria/Proteobacteria/Epsilon/T.denitrificans_sp/tdn
-          # (2) species 名が上記中間ノード名と同じ場合
-          #   → とりあえず species 名に _sp をつけてコンフリクトを避ける
+          #
+          # (2) If species name == the intermediate node of the same lineage
+          #  Add '_sp' to the species name to avoid the conflict.
           #   ex. Bacteria/Cyanobacgteria/Cyanobacteria_CYA/cya
           #       Bacteria/Cyanobacgteria/Cyanobacteria_CYB/cya
           #       Bacteria/Proteobacteria/Magnetococcus/Magnetococcus_MC1/mgm
@@ -89,10 +99,10 @@ class Taxonomy
               species = sp_group
             end
           end
-          # hier は [nil, Eukaryotes, Fungi, Ascomycetes, Saccharomycetes] に
-          # species と org の [S_cerevisiae, sce] を加えた形式
-          hier[level+1] = species
-          #hier[level+1] = sanitize(species)
+          # 'hier' is an array of the taxonomic tree + species and strain name.
+          #  ex. [nil, Eukaryotes, Fungi, Ascomycetes, Saccharomycetes] +
+          #      [S_cerevisiae, sce]
+          hier[level+1] = species	# sanitize(species)
           hier[level+2] = org
           ary = hier[1, level+2]
           warn ary.inspect if $DEBUG
@@ -114,8 +124,8 @@ class Taxonomy
     @leaves[group]
   end
 
-  # root ノードの下に [node, subnode, subsubnode, ..., leaf] なパスを追加
-  # 各中間ノードが子要素をハッシュで保持
+  # Add a new path [node, subnode, subsubnode, ..., leaf] under the root node
+  # and every intermediate nodes stores their child nodes as a Hash.
   def add_to_tree(ary)
     parent = @root
     ary.each do |node|
@@ -125,7 +135,8 @@ class Taxonomy
     end
   end
 
-  # 各中間ノードに対応するリーフのリストを保持
+  # Add a new path [node, subnode, subsubnode, ..., leaf] under the root node
+  # and stores leaf nodes to the every intermediate nodes as an Array.
   def add_to_leaves(ary)
     leaf = ary.last
     ary.each do |node|
@@ -134,80 +145,82 @@ class Taxonomy
     end
   end
 
-  # 各中間ノードまでのパスを保持
+  # Add a new path [node, subnode, subsubnode, ..., leaf] under the root node
+  # and stores the path itself in an Array.
   def add_to_path(ary)
     @path << ary
   end
 
-  # 親ノードから見て子ノードが孫ノードを１つしか持っていない場合、
-  # 孫ノードの子供（ひ孫）を、子ノードの子（孫）とする
-  #
-  # ex.
-  #  Plants / Monocotyledons / grass family / osa --> Plants / Monocotyledons / osa
+  # Compaction of intermediate nodes of the resulted taxonomic tree.
+  #  - If child node has only one child node (grandchild), make the child of
+  #    grandchild as a grandchild.
+  #  ex.
+  #    Plants / Monocotyledons / grass family / osa
+  #    --> Plants / Monocotyledons / osa
   #
   def compact(node = root)
-    # 子ノードがあり
+    # if the node has children
     if subnodes = @tree[node]
-      # それぞれの子ノードについて
+      # obtain grandchildren for each child
       subnodes.keys.each do |subnode|
-        # 孫ノードを取得
         if subsubnodes = @tree[subnode]
-          # 孫ノードの数が 1 つの場合
+          # if the number of grandchild node is 1
           if subsubnodes.keys.size == 1
-            # 孫ノードの名前を取得
+            # obtain the name of the grandchild node
             subsubnode = subsubnodes.keys.first
-            # 孫ノードの子供を取得
+            # obtain the child of the grandchlid node
             if subsubsubnodes = @tree[subsubnode]
-              # 孫ノードの子供を子ノードの子供にすげかえ
+              # make the child of grandchild node as a chlid of child node
               @tree[subnode] = subsubsubnodes
-              # 孫ノードを削除
+              # delete grandchild node
               @tree[subnode].delete(subsubnode)
               warn "--- compact: #{subsubnode} is replaced by #{subsubsubnodes}" if $DEBUG
-              # 新しい孫ノードでも compact が必要かもしれないため繰り返す
+              # retry until new grandchild also needed to be compacted.
               retry
             end
           end
         end
-        # 子ノードを親ノードとして再帰
+        # repeat recurseively
         compact(subnode)
       end
     end
   end
 
-  # リーフノードが１つの場合、親ノードをリーフノードにすげかえる
-  #
-  # ex.
-  #  Plants / Monocotyledons / osa --> Plants / osa
+  # Reduction of the leaf node of the resulted taxonomic tree.
+  #  - If the parent node have only one leaf node, replace parent node
+  #    with the leaf node.
+  #  ex.
+  #   Plants / Monocotyledons / osa
+  #   --> Plants / osa
   #
   def reduce(node = root)
-    # 子ノードがあり
+    # if the node has children
     if subnodes = @tree[node]
-      # それぞれの子ノードについて
+      # obtain grandchildren for each child
       subnodes.keys.each do |subnode|
-        # 孫ノードを取得
         if subsubnodes = @tree[subnode]
-          # 孫ノードの数が 1 つの場合
+          # if the number of grandchild node is 1
           if subsubnodes.keys.size == 1
-            # 孫ノードの名前を取得
+            # obtain the name of the grandchild node
             subsubnode = subsubnodes.keys.first
-            # 孫ノードがリーフの場合
+            # if the grandchild node is a leaf node
             unless @tree[subsubnode]
-              # 孫ノードを子ノードにすげかえ
+              # make the grandchild node as a child node
               @tree[node].update(subsubnodes)
-              # 子ノードを削除
+              # delete child node
               @tree[node].delete(subnode)
               warn "--- reduce: #{subnode} is replaced by #{subsubnode}" if $DEBUG
             end
           end
         end
-        # 子ノードを親ノードとして再帰
+        # repeat recursively
         reduce(subnode)
       end
     end
   end
 
-  # 与えられたノードと、子ノードのリスト（Hash）をうけとり、
-  # 子ノードについてイテレーションする
+  # Traverse the taxonomic tree by the depth first search method
+  # under the given (root or intermediate) node.
   def dfs(parent, &block)
     if children = @tree[parent]
       yield parent, children
@@ -217,7 +230,8 @@ class Taxonomy
     end
   end
 
-  # 現在の階層の深さもイテレーションに渡す
+  # Similar to the dfs method but also passes the current level of the nest
+  # to the iterator.
   def dfs_with_level(parent, &block)
     @level ||= 0
     if children = @tree[parent]
@@ -230,24 +244,24 @@ class Taxonomy
     end
   end
 
-  # ツリー構造をアスキーアートで表示する
+  # Convert the taxonomic tree structure to a simple ascii art.
   def to_s
     result = "#{@root}\n"
     @tree[@root].keys.each do |node|
-      result += subtree(node, "  ")
+      result += ascii_tree(node, "  ")
     end
     return result
   end
 
   private
 
-  # 上記 to_s 用の下請けメソッド
-  def subtree(node, indent)
+  # Helper method for the to_s method.
+  def ascii_tree(node, indent)
     result = "#{indent}+- #{node}\n"
     indent += "  "
     @tree[node].keys.each do |child|
       if @tree[child]
-        result += subtree(child, indent)
+        result += ascii_tree(child, indent)
       else
         result += "#{indent}+- #{child}\n"
       end
