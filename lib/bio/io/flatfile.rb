@@ -5,7 +5,7 @@
 #
 # License:: The Ruby License
 #
-#  $Id: flatfile.rb,v 1.59 2007/04/14 02:29:45 k Exp $
+#  $Id: flatfile.rb,v 1.60 2007/07/09 14:08:34 ngoto Exp $
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
@@ -505,6 +505,20 @@ module Bio
       else
         stream = BufferedInputStream.open_uri(uri, *arg)
         self.new(nil, stream)
+      end
+    end
+
+    # Executes the block for every entry in the stream.
+    # Same as FlatFile.open(*arg) { |ff| ff.each { |entry| ... }}.
+    # 
+    # * Example
+    #     Bio::FlatFile.foreach('test.fst') { |e| puts e.definition }
+    #
+    def self.foreach(*arg)
+      self.open(*arg) do |flatfileobj|
+        flatfileobj.each do |entry|
+          yield entry
+        end
       end
     end
 
