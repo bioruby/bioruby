@@ -1,15 +1,57 @@
 /* body */
 
 body {
-	color: #6e8377;
-	background-color: #ffffff;
-	font-family: verdana, arial, helvetica, sans-serif;
+	margin: 0;
+	color: #555555;
+	background: url("/images/bg.gif") repeat-y center;
+	font-family: "trebuchet ms", verdana, arial, helvetica, sans-serif;
+	font-size: 12px;
+}
+
+div#content {
+	width: 750px;
+	height: auto;
+	margin: 0 auto 0 auto;
+	text-align: left;
+}
+
+/* title */
+
+div#title {
+	width: 550px;
+	padding-right: 200px;
+	margin-bottom: 20px;
+	text-align: left;
+	background: url("/images/bioruby.png") no-repeat left bottom;
+}
+
+div#title .titletop {
+	color: #736451;
+	font-size: 30px;
+	font-weight: normal;
+	text-align: left;
+	text-indent: 70px;
+	margin: 0;
+	padding: 0;
+	padding-top: 20px;
+	margin-bottom: 10px;
+}
+
+div#title .titlesub {
+	color: #000000;
+	font-size: 15px;
+	font-weight: normal;
+	text-align: left;
+	text-indent: 70px;
+	margin: 0;
+	padding: 0;
+	border-bottom: 1px solid #eeeeee;
 }
 
 /* main */
 
 div#main {
-	width: 700px;
+	width: 550px;
 	background-color: #ffffff;
 	padding-top: 0px;
 	padding-left: 10px;
@@ -19,6 +61,7 @@ div#notice {
 	background-color: #fcc;
 	border: 1px solid #f00;
 }
+
 div#notice p {
 	margin: 0;
 	padding: 10px;
@@ -31,7 +74,15 @@ pre {
 	border-style: dashed;
 	border-width: 1px;
 	padding: 5px;
+	width: 500px;
 	overflow: auto;
+}
+
+div.log {
+	width: 500px;
+	margin-top: 15px;
+	padding-top: 5px;
+	border-top: 1px dotted #333333;
 }
 
 div.log div.input pre.script {
@@ -65,10 +116,11 @@ div.log div.output pre.output {
 	border-style: dashed;
 }
 
-div.log hr.result {
+div.log hr.log {
 	border-style: dotted none none none;
 	border-top-width: 1px;
 	border-color: #6e8377;
+	width: 200px;
 	height: 1px;
 }
 
@@ -76,14 +128,43 @@ div.log hr.result {
 
 div#side {
 	width: 150px;
-	background-color: #ffffff;
-	position: absolute;
-	top: 10px;
-	left: 10px;
+	float: right;
+	margin-top: 20px;
+	text-align: left;
+	font-size: 12px;
+	color: #e44268;
 }
 
 div#side div.title {
+	font-weight: normal;
+	color: #e44268;
+	text-align: left;
 	border-width: 0px 0px 1px 0px;
+	border-bottom: 1px solid #e44268;
+}
+
+div#side a:link {
+	color: #ffffff;
+	text-decoration: none;
+}
+
+div#side a:visited {
+	color: #ffffff;
+	text-decoration: none;
+}
+
+div#side a:hover {
+	color: #cccccc;
+	text-decoration: underline;
+}
+
+div#side ol,ul {
+	margin: 10px;
+	padding-left: 10px;
+}
+
+div#side li {
+	color: #e44268;
 }
 
 div#side img {
@@ -92,7 +173,8 @@ div#side img {
 
 /* history */
 
-div#history { 
+div#history {
+	width: 500px;
 }
 
 div#history div.histtime {
@@ -107,6 +189,12 @@ div#history div.histline {
 	white-space: pre;
 }
 
+/* command */
+
+div#command {
+	width: 500px;
+}
+
 /* image */
 
 img {
@@ -114,6 +202,7 @@ img {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
+	border: 0px;
 }
 
 /* em */
@@ -207,11 +296,6 @@ table {
 	border-collapse: collapse;
 }
 
-table#list_methods {
-	width: 680px;
-	border: none;
-}
-
 th {
 	vertical-align: top;
 	padding: 5px;
@@ -222,14 +306,42 @@ td {
 	padding: 5px;
 }
 
+div#method_list table {
+	border: none;
+}
+
+
+/* form */
+
+input {
+	background-color: #FFFFFF;
+	padding: 2px;
+	font-size: 10px;
+	color: #666666;
+	border: 1px solid #611022;
+	margin-bottom: 2px;
+}
+
+input[type=submit] {
+	background-color: #FFFFFF;
+	padding: 2px;
+	font-size: 10px;
+	color: #ffffff;
+	border: 1px solid #611022;
+	background-color: #E44268;
+	margin-bottom: 2px;
+}
 
 /* textarea */
 
 textarea {
+	background: url("/images/console.png") no-repeat center;
+	background-color: #eaedeb;
 	font-family: monospace;
-	font-size: 100%;
+	font-size: 12px;
 	overflow: auto;
-	width: 80%;
+	width: 500px;
+	padding: 5px;
 }
 
 
@@ -251,7 +363,7 @@ blockquote {
 }
 
 @media screen {
-	div#main	{ margin-left: 150px; }
+	div#main	{ margin-left: 0px; }
 	div#side	{ display: block; }
 }
 

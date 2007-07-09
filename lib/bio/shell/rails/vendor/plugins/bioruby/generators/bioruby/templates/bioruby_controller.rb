@@ -3,16 +3,7 @@ class BiorubyController < ApplicationController
   HIDE_METHODS = Object.methods + [ "singleton_method_added" ]
 
   HIDE_MODULES = [
-    ActiveSupport::CoreExtensions::String::Iterators,
-    ActiveSupport::CoreExtensions::String::StartsEndsWith,
-    ActiveSupport::CoreExtensions::String::Inflections,
-    ActiveSupport::CoreExtensions::String::Conversions,
-    ActiveSupport::CoreExtensions::String::Access,
-    ActiveSupport::CoreExtensions::String::Unicode,
-    ActiveSupport::CoreExtensions::Numeric::Bytes,
-    ActiveSupport::CoreExtensions::Numeric::Time,
-    Base64::Deprecated, Base64, PP::ObjectMixin,
-    Bio::Shell
+    Base64::Deprecated, Base64, PP::ObjectMixin, Bio::Shell,
   ]
   HIDE_MODULES << WEBrick if defined?(WEBrick)
 
@@ -62,7 +53,7 @@ class BiorubyController < ApplicationController
 
     script, result, output = Bio::Shell.cache[:results].restore(number)
     @class = result.class
-    @methods = result.methods - HIDE_METHODS
+    @methods = (result.methods - HIDE_METHODS).sort
 
     render :update do |page|
       page.replace_html "methods_#{number}", :partial => "methods"

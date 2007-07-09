@@ -3,7 +3,8 @@
 <div id="notice"><p><%= flash[:notice] %></p></div><br>
 <%- end -%>
 <%= form_remote_tag(:url => {:action => "evaluate"}, :position => "top") %>
-<b>BioRuby script</b>
+<b>BioRuby script:</b>
+<textarea id="script" name="script" rows=10 cols=80></textarea><br>
 <input type="submit" value="Evaluate">
 <input type="reset" value="Clear">
 &nbsp;&nbsp;
@@ -11,10 +12,9 @@ Show [
 <%= link_to_remote "All",      :url => {:action => "results", :limit => 0} %> |
 <%= link_to_remote "Last 5",   :url => {:action => "results", :limit => 5} %> |
 <%= link_to_remote "Previous", :url => {:action => "results", :limit => 1} %>
-] or [
-<%= link_to "Clear", :action => "index" %>
-] results<br>
-<textarea id="script" name="script" rows=10 cols=80></textarea><br>
+] or
+<%= link_to "Hide", :action => "index" %>
+results<br>
 <%= end_form_tag %>
 </div>
 <div id="logs">
