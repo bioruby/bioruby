@@ -18,10 +18,10 @@ class BiorubyGenerator < Rails::Generator::Base
       m.file 'history.rhtml',         'app/views/bioruby/history.rhtml'
       m.file 'index.rhtml',           'app/views/bioruby/index.rhtml'
       m.file 'bioruby.rhtml',         'app/views/layouts/bioruby.rhtml'
-      m.file 'bioruby.png',           'public/images/bioruby.png'
-      m.file 'bioruby.gif',           'public/images/bioruby.gif'
-      m.file 'bg.gif',                'public/images/bg.gif'
-      m.file 'console.png',           'public/images/console.png'
+      m.file 'bioruby-gem.png',       'public/images/bioruby-gem.png'
+      m.file 'bioruby-link.gif',      'public/images/bioruby-link.gif'
+      m.file 'bioruby-bg.gif',        'public/images/bioruby-bg.gif'
+      m.file 'bioruby-console.png',   'public/images/bioruby-console.png'
       m.file 'bioruby.css',           'public/stylesheets/bioruby.css'
     end
   end

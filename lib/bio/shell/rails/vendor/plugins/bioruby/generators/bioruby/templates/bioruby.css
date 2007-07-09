@@ -3,7 +3,7 @@
 body {
 	margin: 0;
 	color: #555555;
-	background: url("/images/bg.gif") repeat-y center;
+	background: url("/images/bioruby-bg.gif") repeat-y center;
 	font-family: "trebuchet ms", verdana, arial, helvetica, sans-serif;
 	font-size: 12px;
 }
@@ -22,7 +22,7 @@ div#title {
 	padding-right: 200px;
 	margin-bottom: 20px;
 	text-align: left;
-	background: url("/images/bioruby.png") no-repeat left bottom;
+	background: url("/images/bioruby-gem.png") no-repeat left bottom;
 }
 
 div#title .titletop {
@@ -335,7 +335,7 @@ input[type=submit] {
 /* textarea */
 
 textarea {
-	background: url("/images/console.png") no-repeat center;
+	background: url("/images/bioruby-console.png") no-repeat center;
 	background-color: #eaedeb;
 	font-family: monospace;
 	font-size: 12px;
