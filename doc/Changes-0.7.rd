@@ -258,6 +258,8 @@ In 1.1.0:
 * Bio::PDB::Residue#[] and Bio::PDB::Heterogen#[] are changed to use the
   name field for selecting atoms, because the element field is not useful
   for selecting atoms and is not used in many pdb files.
+* Bio::PDB#record is changed to return an empty array instead of nil
+  for a nonexistent record.
 
 --- Bio::FlatFile
 

@@ -6,7 +6,7 @@
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 # License::   The Ruby License
 #
-#  $Id: pdb.rb,v 1.22 2007/04/19 13:59:29 ngoto Exp $
+#  $Id: pdb.rb,v 1.23 2007/07/10 10:44:46 ngoto Exp $
 #
 # = About Bio::PDB
 #
@@ -119,7 +119,7 @@ module Bio
           m
         end
         def self.new(str)
-          String.new(str)
+          String.new(str.to_s)
         end
       end
 
@@ -1674,7 +1674,7 @@ module Bio
     # p pdb.record['HETATM']
     #
     def record(name = nil)
-      name ? @hash[name] : @hash
+      name ? (@hash[name] || []) : @hash
     end
 
     #--
@@ -1837,12 +1837,13 @@ module Bio
 
     # Classification in "HEADER".
     def classification
-      self.record('HEADER').first.classification
+      f = self.record('HEADER').first
+      f ? f.classification : nil
     end
 
     # Get authors in "AUTHOR".
     def authors
-      self.record('AUTHOR').first.authorList
+      self.record('AUTHOR').collect { |f| f.authorList }.flatten
     end
 
     #--
@@ -1851,7 +1852,10 @@ module Bio
 
     # PDB identifier written in "HEADER". (e.g. 1A00)
     def entry_id
-      @id = self.record('HEADER').first.idCode unless @id
+      unless @id
+        f = self.record('HEADER').first
+        @id = f ? f.idCode : nil
+      end
       @id
     end
 
@@ -1862,12 +1866,14 @@ module Bio
 
     # Title of this entry in "TITLE".
     def definition
-      self.record('TITLE').first.title
+      f = self.record('TITLE').first
+      f ? f.title : nil
     end
 
     # Current modification number in "REVDAT".
     def version
-      self.record('REVDAT').first.modNum
+      f = self.record('REVDAT').first
+      f ? f.modNum : nil
     end
 
   end #class PDB

@@ -1,5 +1,23 @@
 2007-07-09  Naohisa Goto <ng@bioruby.org>
 
+	* lib/bio/db/pdb/pdb.rb
+
+	Pdb_LString.new is changed not to raise error for nil.
+
+	Fixed a bug when below records does not exist in a PDB entry:
+	REMARK (remark), JRNL (jrnl), HELIX (helix),
+	TURN (turn), SHEET (sheet), SSBOND (ssbond), SEQRES (seqres),
+	DBREF (dbref), KEYWDS (keywords), AUTHOR (authors),
+	HEADER (entry_id, accession, classification),
+	TITLE (definition), and REVDAT (version) records (methods).
+
+	Incompatible change: Bio::PDB#record is changed to return
+	an empty array for nonexistent record.
+
+	(reported by Mikael Borg)
+
+2007-07-09  Naohisa Goto <ng@bioruby.org>
+
 	* lib/bio/io/flatfile.rb
 
 	Bio::FlatFile.foreach is added (which is suggested by IO.foreach).
