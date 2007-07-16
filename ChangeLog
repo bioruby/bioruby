@@ -1,3 +1,33 @@
+2007-07-16  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/mafft/report.rb
+
+	For generic multi-fasta formatted sequence alignment,
+	Bio::Alignment::MultiFastaFormat is newly added based on
+	Bio::MAFFT::Report class, and Bio::MAFFT::Report is
+	changed to inherit the new class.
+	Tests are added in test/unit/bio/appl/mafft/test_report.rb.
+
+	* lib/bio/alignment.rb
+
+	New modules and classes Bio::Alignment::FactoryTemplate::* are added.
+	They are used by following three new classes.
+	
+	* lib/bio/appl/muscle.rb
+	* lib/bio/appl/probcons.rb
+	* lib/bio/appl/tcoffee.rb
+
+	New classess Bio::Muscle, Bio::Probcons, and Bio::Tcoffee are added
+	for MUSCLE, ProbCons, and T-Coffee multiple alignment programs.
+	Contributed by Jeffrey Blakeslee and colleagues.
+
+	* lib/bio/appl/clustalw.rb
+	* lib/bio/appl/mafft.rb
+
+	Interfaces of Bio::ClustalW and Bio::MAFFT are added/modified
+	to follow Bio::Alignment::FactoryTemplate (but not yet changed to
+	use it).
+
 2007-07-09  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/db/pdb/pdb.rb

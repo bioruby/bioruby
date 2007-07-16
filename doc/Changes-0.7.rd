@@ -296,6 +296,18 @@ In 1.1.0:
 * Bio::ClustalW::errorlog and Bio::(MAFFT|Sim4)#log are removed.
   No replacements/alternatives are available.
 
+--- Bio::ClustalW, Bio::MAFFT
+
+In 1.1.0:
+
+* Bio::(ClustalW|MAFFT)#query_align, #query_string, #query_by_filename
+  are changed not to get second (and third, ...) arguments.
+* Bio::(ClustalW|MAFFT)#query, #query_string, #query_by_filename
+  are changed not trying to guess whether given data is nucleotide or protein.
+* Return value of Bio::(ClustalW|MAFFT)#query with no arguments is changed.
+  If the program exists normally (exit status is 0), returns true.
+  Otherwise, returns false.
+
 --- Bio::MAFFT
 
 In 1.1.0:
