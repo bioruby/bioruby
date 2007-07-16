@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id: bio.rb,v 1.85 2007/07/09 08:49:15 k Exp $
+# $Id: bio.rb,v 1.86 2007/07/16 12:26:28 ngoto Exp $
 #
 
 module Bio
@@ -225,6 +225,10 @@ module Bio
   #class MAFFT
   #  autoload :Report,       'bio/appl/mafft/report'
   #end
+
+  autoload :Tcoffee,        'bio/appl/tcoffee'
+  autoload :Muscle,         'bio/appl/muscle'
+  autoload :Probcons,       'bio/appl/probcons'
 
   autoload :Sim4,           'bio/appl/sim4'
   ## below are described in bio/appl/sim4.rb
