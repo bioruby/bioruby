@@ -6,7 +6,7 @@
 #
 # License:: The Ruby License
 #
-#  $Id: alignment.rb,v 1.22 2007/04/05 23:35:39 trevor Exp $
+#  $Id: alignment.rb,v 1.23 2007/07/16 12:21:39 ngoto Exp $
 #
 # = About Bio::Alignment
 #
@@ -21,6 +21,8 @@
 # http://doc.bioperl.org/releases/bioperl-1.4/Bio/SimpleAlign.html
 #
 
+require 'tempfile'
+require 'bio/command'
 require 'bio/sequence'
 
 #---
@@ -69,6 +71,8 @@ module Bio
 # = Compatibility from older BioRuby
 # 
   module Alignment
+
+    autoload :MultiFastaFormat, 'bio/appl/mafft/report'
 
     # Bio::Alignment::PropertyMethods is a set of methods to treat
     # the gap character and so on.
@@ -2194,6 +2198,318 @@ module Bio
     def self.readfiles(*files)
       OriginalAlignment.readfiles(*files)
     end
+
+    #---
+    # Service classes for multiple alignment applications
+    #+++
+    #---
+    # Templates of alignment application factory
+    #+++
+
+    # Namespace for templates for alignment application factory
+    module FactoryTemplate
+
+      # Template class for alignment application factory.
+      # The program acts:
+      # input: stdin or file, format = fasta format
+      # output: stdout (parser should be specified by DEFAULT_PARSER)
+      class Simple
+
+        # Creates a new alignment factory
+        def initialize(program = self.class::DEFAULT_PROGRAM, options = [])
+          @program = program
+          @options = options
+          @command = nil
+          @output = nil
+          @report = nil
+          @exit_status = nil
+          @data_stdout = nil
+        end
+
+        # program name
+        attr_accessor :program
+
+        # options
+        attr_accessor :options
+
+        # Last command-line string. Returns nil or an array of String.
+        # Note that filenames described in the command-line may already
+        # be removed because these files may be temporary files.
+        attr_reader :command
+
+        # Last raw result of the program.
+        # Return a string (or nil).
+        attr_reader :output
+
+        # Last result object performed by the factory.
+        attr_reader :report
+
+        # Last exit status
+        attr_reader :exit_status
+
+        # Last output to the stdout.
+        attr_accessor :data_stdout
+
+        # Clear the internal data and status, except program and options.
+        def reset
+          @command = nil
+          @output = nil
+          @report = nil
+          @exit_status = nil
+          @data_stdout = nil
+        end
+
+        # Executes the program.
+        # If +seqs+ is not nil, perform alignment for seqs.
+        # If +seqs+ is nil, simply executes the program.
+        #
+        # Compatibility note: When seqs is nil,
+        # returns true if the program exits normally, and
+        # returns false if the program exits abnormally.
+        def query(seqs)
+          if seqs then
+            query_alignment(seqs)
+          else
+            exec_local(@options)
+            @exit_status.exitstatus == 0 ? true : false
+          end
+        end
+
+        # Performs alignment for seqs.
+        # +seqs+ should be Bio::Alignment or Array of sequences or nil.
+        def query_alignment(seqs)
+          unless seqs.respond_to?(:output_fasta) then
+            seqs = Bio::Alignment.new(seqs)
+          end
+          query_string(seqs.output_fasta(:width => 70))
+        end
+
+        # alias of query_alignment.
+        #
+        # Compatibility Note: query_align will renamed to query_alignment.
+        def query_align(seqs)
+          #warn 'query_align is renamed to query_alignment.'
+          query_alignment(seqs)
+        end
+
+        # Performs alignment for +str+.
+        # The +str+ should be a string that can be recognized by the program.
+        def query_string(str)
+          _query_string(str, @options)
+          @report
+        end
+
+        # Performs alignment of sequences in the file named +fn+.
+        def query_by_filename(filename_in)
+          _query_local(filename_in, @options)
+          @report
+        end
+
+        private
+        # Executes a program in the local machine.
+        def exec_local(opt, data_stdin = nil)
+          @exit_status = nil
+          @command = [ @program, *opt ]
+          #STDERR.print "DEBUG: ", @command.join(" "), "\n"
+          @data_stdout = Bio::Command.query_command(@command, data_stdin)
+          @exit_status = $?
+        end
+
+        # prepare temporary file
+        def _prepare_tempfile(str = nil)
+          tf_in = Tempfile.open(str ? 'alignment_i' :'alignment_o')
+          tf_in.print str if str
+          tf_in.close(false)
+          tf_in
+        end
+
+        # generates options specifying input/output filename.
+        # nil for filename means stdin or stdout.
+        # +options+ must not contain specify filenames.
+        # returns an array of string.
+        def _generate_options(infile, outfile, options)
+          options +
+            (infile ? _option_input_file(infile) : _option_input_stdin) +
+            (outfile ? _option_output_file(outfile) : _option_output_stdout)
+        end
+
+        # generates options specifying input filename.
+        # returns an array of string
+        def _option_input_file(fn)
+          [ fn ]
+        end
+
+        # generates options specifying output filename.
+        # returns an array of string
+        def _option_output_file(fn)
+          raise 'can not specify output file: always stdout'
+        end
+
+        # generates options specifying that input is taken from stdin.
+        # returns an array of string
+        def _option_input_stdin
+          []
+        end
+
+        # generates options specifying output to stdout.
+        # returns an array of string
+        def _option_output_stdout
+          []
+        end
+      end #class Simple
+
+      # mix-in module
+      module WrapInputStdin
+        private
+        # Performs alignment for +str+.
+        # The +str+ should be a string that can be recognized by the program.
+        def _query_string(str, opt)
+          _query_local(nil, opt, str)
+        end
+      end #module WrapInputStdin
+
+      # mix-in module
+      module WrapInputTempfile
+        private
+        # Performs alignment for +str+.
+        # The +str+ should be a string that can be recognized by the program.
+        def _query_string(str, opt)
+          begin
+            tf_in = _prepare_tempfile(str)
+            ret = _query_local(tf_in.path, opt, nil)
+          ensure
+            tf_in.close(true) if tf_in
+          end
+          ret
+        end
+      end #module WrapInputTempfile
+
+      # mix-in module
+      module WrapOutputStdout
+        private
+        # Performs alignment by specified filenames
+        def _query_local(fn_in, opt, data_stdin = nil)
+          opt = _generate_options(fn_in, nil, opt)
+          exec_local(opt, data_stdin)
+          @output = @data_stdout
+          @report = self.class::DEFAULT_PARSER.new(@output)
+          @report
+        end
+      end #module WrapOutputStdout
+
+      # mix-in module
+      module WrapOutputTempfile
+        private
+        # Performs alignment
+        def _query_local(fn_in, opt, data_stdin = nil)
+          begin
+            tf_out = _prepare_tempfile()
+            opt = _generate_options(fn_in, tf_out.path, opt)
+            exec_local(opt, data_stdin)
+            tf_out.open
+            @output = tf_out.read
+          ensure
+            tf_out.close(true) if tf_out
+          end
+          @report = self.class::DEFAULT_PARSER.new(@output)
+          @report
+        end
+      end #module WrapOutputTempfile
+
+      # Template class for alignment application factory.
+      # The program needs:
+      # input: file (cannot accept stdin), format = fasta format
+      # output: stdout (parser should be specified by DEFAULT_PARSER)
+      class FileInStdoutOut < Simple
+        include Bio::Alignment::FactoryTemplate::WrapInputTempfile
+        include Bio::Alignment::FactoryTemplate::WrapOutputStdout
+
+        private
+        # generates options specifying that input is taken from stdin.
+        # returns an array of string
+        def _option_input_stdin
+          raise 'input is always a file'
+        end
+      end #class FileInStdoutOut
+
+      # Template class for alignment application factory.
+      # The program needs:
+      # input: stdin or file, format = fasta format
+      # output: file (parser should be specified by DEFAULT_PARSER)
+      class StdinInFileOut < Simple
+        include Bio::Alignment::FactoryTemplate::WrapInputStdin
+        include Bio::Alignment::FactoryTemplate::WrapOutputTempfile
+
+        private
+        # generates options specifying output to stdout.
+        # returns an array of string
+        def _option_output_stdout
+          raise 'output is always a file'
+        end
+      end #class StdinInFileOut
+
+      # Template class for alignment application factory.
+      # The program needs:
+      # input: file (cannot accept stdin), format = fasta format
+      # output: file (parser should be specified by DEFAULT_PARSER)
+      class FileInFileOut < Simple
+        include Bio::Alignment::FactoryTemplate::WrapInputTempfile
+        include Bio::Alignment::FactoryTemplate::WrapOutputTempfile
+
+        private
+        # generates options specifying that input is taken from stdin.
+        # returns an array of string
+        def _option_input_stdin
+          raise 'input is always a file'
+        end
+
+        # generates options specifying output to stdout.
+        # returns an array of string
+        def _option_output_stdout
+          raise 'output is always a file'
+        end
+      end #class FileInFileOut
+
+      # Template class for alignment application factory.
+      # The program needs:
+      # input: file (cannot accept stdin), format = fasta format
+      # output: file (parser should be specified by DEFAULT_PARSER)
+      # Tree (*.dnd) output is also supported.
+      class FileInFileOutWithTree < FileInFileOut
+
+        # alignment guide tree generated by the program (*.dnd file)
+        attr_reader :output_dnd
+
+        def reset
+          @output_dnd = nil
+          super
+        end
+
+        private
+        # Performs alignment
+        def _query_local(fn_in, opt, data_stdin = nil)
+          begin
+            tf_dnd = _prepare_tempfile()
+            opt = opt + _option_output_dndfile(tf_dnd.path)
+            ret = super(fn_in, opt, data_stdin)
+            tf_dnd.open
+            @output_dnd = tf_dnd.read
+          ensure
+            tf_dnd.close(true) if tf_dnd
+          end
+          ret
+        end
+
+        # generates options specifying output tree file (*.dnd).
+        # returns an array of string
+        def _option_output_dndfile
+          raise NotImplementedError
+        end
+      end #class FileInFileOutWithTree
+
+    end #module FactoryTemplate
+
+
   end #module Alignment
 
 end #module Bio
