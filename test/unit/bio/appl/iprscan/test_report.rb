@@ -3,7 +3,7 @@
 #
 #   Copyright (C) 2006 Mitsuteru Nakao <n@bioruby.org>
 #
-#  $Id: test_report.rb,v 1.4 2007/02/22 10:15:01 nakao Exp $
+#  $Id: test_report.rb,v 1.5 2007/07/16 19:21:33 nakao Exp $
 #
 
 require 'pathname'
@@ -212,19 +212,20 @@ END
       entry = ''
       @obj = []
       while line = test_raw.gets
-        if entry != '' and entry.split("\t").first == line.split("\t").first
+        if entry.split("\t").first == line.split("\t").first
           entry << line
-        elsif entry != ''
+        elsif entry != '' and entry.split("\t").first != line.split("\t").first
           @obj << Bio::Iprscan::Report.parse_in_raw(entry)
-          entry = line
+          entry = ''
         else
           entry << line
         end
       end
+      @obj << Bio::Iprscan::Report.parse_in_raw(entry)
     end
     
     def test_obj
-      assert_equal(2, @obj.size)
+      assert_equal(3, @obj.size)
     end
     
     def test_query_id
@@ -292,7 +293,10 @@ END
     end
 
     def test_match_go_terms
-      assert_equal(["Molecular Function:RNA binding (GO:0003723)"], @obj.first.matches.first.go_terms)
+      ary = ["Biological Process:phosphorylation (GO:0016310)", 
+             "Molecular Function:transferase activity, transferring phosphorus-containing groups (GO:0016772)"]
+      assert_equal(ary,
+                   @obj.last.matches.last.go_terms)
     end
 
   end

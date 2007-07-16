@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <mn@kazusa.or.jp>
 # License::     The Ruby License
 #
-#  $Id: report.rb,v 1.6 2007/04/05 23:35:40 trevor Exp $
+#  $Id: report.rb,v 1.7 2007/07/16 19:21:32 nakao Exp $
 #
 # == Report classes for the iprscan program.
 # 
@@ -104,7 +104,7 @@ module Bio
             report.matches.last.ipr_id = line[11]
             report.matches.last.ipr_description = line[12]
           end
-          report.matches.last.go_terms = line[13].split(', ') if line[13]          
+          report.matches.last.go_terms = line[13].scan(/(\w+ \w+\:.+? \(GO:\d+\))/).flatten if line[13]          
         end
         report.query_id = report.matches.first.query_id
         report.query_length = report.matches.first.query_length
