@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::   The Ruby License
 #
-#  $Id: mafft.rb,v 1.17 2007/04/05 23:35:39 trevor Exp $
+#  $Id: mafft.rb,v 1.18 2007/07/16 12:27:29 ngoto Exp $
 #
 # Bio::MAFFT is a wrapper class to execute MAFFT.
 # MAFFT is a very fast multiple sequence alignment software.
@@ -105,15 +105,17 @@ module Bio
     # Creates a new alignment factory.
     # +program+ is the name of the program.
     # +opt+ is options of the program.
-    def initialize(program, opt)
+    def initialize(program = 'mafft', opt = [])
       @program = program
       @options = opt
       @command = nil
       @output = nil
       @report = nil
+      @data_stdout = nil
+      @exit_status = nil
     end
 
-    # program name
+    # program name (usually 'mafft' in UNIX)
     attr_accessor :program
 
     # options
@@ -121,7 +123,7 @@ module Bio
 
     # option is deprecated. Instead, please use options.
     def option
-      warn "option is deprecated. Please use options."
+      warn "Bio::MAFFT#option is deprecated. Please use options."
       options
     end
 
@@ -137,7 +139,7 @@ module Bio
 
     #log is deprecated (no replacement) and returns empty string.
     def log
-      warn "log is deprecated (no replacement) and returns empty string."
+      warn "Bio::MAFFT#log is deprecated (no replacement) and returns empty string."
       ''
     end
 
@@ -152,29 +154,67 @@ module Bio
     # performed by the factory.
     attr_reader :report
 
+    # Last exit status
+    attr_reader :exit_status
+
+    # Last output to the stdout.
+    attr_accessor :data_stdout
+    
+    # Clear the internal data and status, except program and options.
+    def reset
+      @command = nil
+      @output = nil
+      @report = nil
+      @exit_status = nil
+      @data_stdout = nil
+    end
+
     # Executes the program.
     # If +seqs+ is not nil, perform alignment for seqs.
     # If +seqs+ is nil, simply executes the program.
+    #
+    # Compatibility note: When seqs is nil,
+    # returns true if the program exits normally, and
+    # returns false if the program exits abnormally.
     def query(seqs)
       if seqs then
         query_align(seqs)
       else
         exec_local(@options)
+        @exit_status.exitstatus == 0 ? true : false
       end
     end
 
+    # Note that this method will be renamed to query_alignment.
+    #
     # Performs alignment for seqs.
     # +seqs+ should be Bio::Alignment or Array of sequences or nil.
+    #
+    # Compatibility Note: arg is deprecated and ignored.
     def query_align(seqs, *arg)
+      if arg.size > 0 then
+        warn '2nd and other arguments of Bio::MAFFT#query_align is ignored'
+      end
       unless seqs.is_a?(Bio::Alignment)
-        seqs = Bio::Alignment.new(seqs, *arg)
+        seqs = Bio::Alignment.new(seqs)
       end
       query_string(seqs.output_fasta(:width => 70))
     end
 
+    # Performs alignment for seqs.
+    # +seqs+ should be Bio::Alignment or Array of sequences or nil.
+    def query_alignment(seqs)
+      query_align(seqs)
+    end
+
     # Performs alignment for +str+.
     # Str should be a string that can be recognized by the program.
+    #
+    # Compatibility Note: arg is deprecated and ignored.
     def query_string(str, *arg)
+      if arg.size > 0 then
+        warn '2nd and other arguments of Bio::MAFFT#query_string is ignored'
+      end
       begin
         tf_in = Tempfile.open('align')
         tf_in.print str
@@ -187,10 +227,15 @@ module Bio
     end
 
     # Performs alignment of sequences in the file named +fn+.
-    def query_by_filename(fn, seqtype = nil)
+    #
+    # Compatibility Note: 2nd argument (seqtype) is deprecated and ignored.
+    def query_by_filename(fn, *arg)
+      if arg.size > 0 then
+        warn '2nd argument of Bio::MAFFT#query_filename is ignored'
+      end
       opt = @options + [ fn ]
       exec_local(opt)
-      @report = Report.new(@output, seqtype)
+      @report = Report.new(@output)
       @report
     end
 
@@ -199,11 +244,14 @@ module Bio
     def exec_local(opt)
       @command = [ @program, *opt ]
       #STDERR.print "DEBUG: ", @command.join(" "), "\n"
-      @output = nil
+      @data_stdout = nil
+      @exit_status = nil
       Bio::Command.call_command(@command) do |io|
         io.close_write
-        @output = io.read
+        @data_stdout = io.read
       end
+      @output = @data_stdout
+      @exit_status = $?
     end
 
   end #class MAFFT

@@ -4,10 +4,10 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::   The Ruby License
 #
-#  $Id: clustalw.rb,v 1.18 2007/04/05 23:35:39 trevor Exp $
+#  $Id: clustalw.rb,v 1.19 2007/07/16 12:27:29 ngoto Exp $
 #
 # Bio::ClustalW is a CLUSTAL W execution wrapper class.
-# Its object is also called an alignment factory.
+# It can also be called as an alignment factory.
 # CLUSTAL W is a very popular software for multiple sequence alignment.
 #
 # == References
@@ -44,7 +44,9 @@ module Bio
       @command = nil
       @output = nil
       @report = nil
-      @log = nil
+      @data_stdout = nil
+      @exit_status = nil
+      @output_dnd = nil
     end
 
     # name of the program (usually 'clustalw' in UNIX)
@@ -55,7 +57,7 @@ module Bio
 
     # option is deprecated. Instead, please use options.
     def option
-      warn "option is deprecated. Please use options."
+      warn "Bio::ClustalW#option is deprecated. Please use options."
       options
     end
 
@@ -65,63 +67,99 @@ module Bio
     # Returns an array.
     attr_reader :command
 
+    # This method will be deprecated.
+    #
     # Returns last messages of CLUSTAL W execution.
-    attr_reader :log
+    def log
+      #warn 'Bio::ClustalW#log will be deprecated.'
+      @data_stdout
+    end
 
-    # Returns last raw alignment result (String).
+    # Returns last raw alignment result (String or nil).
     attr_reader :output
 
     # Returns last alignment result.
     # Returns a Bio::ClustalW::Report object.
     attr_reader :report
 
+    # Last exit status
+    attr_reader :exit_status
+
+    # Last output to the stdout.
+    attr_accessor :data_stdout
+    
+    # Clear the internal data and status, except program and options.
+    def reset
+      @command = nil
+      @output = nil
+      @report = nil
+      @exit_status = nil
+      @data_stdout = nil
+      @output_dnd = nil
+    end
+
     # Executes the program(clustalw).
     # If +seqs+ is not nil, perform alignment for seqs.
     # If +seqs+ is nil, simply executes CLUSTAL W.
+    #
+    # Compatibility note: When seqs is nil,
+    # returns true if the program exits normally, and
+    # returns false if the program exits abnormally.
     def query(seqs)
       if seqs then
         query_align(seqs)
       else
         exec_local(@options)
+        @exit_status.exitstatus == 0 ? true : false
       end
+    end
+
+    # Note that this method will be renamed to query_alignment.
+    #
+    # Performs alignment for +seqs+.
+    # +seqs+ should be Bio::Alignment or Array of sequences or nil.
+    #
+    # Compatibility Note: Nucleic or amino is not determined by this method.
+    def query_align(seqs)
+      unless seqs.is_a?(Bio::Alignment)
+        seqs = Bio::Alignment.new(seqs)
+      end
+      query_string(seqs.output_fasta(:width => 70,
+                                     :avoid_same_name => true))
     end
 
     # Performs alignment for +seqs+.
     # +seqs+ should be Bio::Alignment or Array of sequences or nil.
-    def query_align(seqs)
-      seqtype = nil
-      unless seqs.is_a?(Bio::Alignment)
-        seqs = Bio::Alignment.new(seqs)
-      end
-      seqs.each do |s|
-        if    s.is_a?(Bio::Sequence::AA) then
-          seqtype = 'PROTEIN'
-        elsif s.is_a?(Bio::Sequence::NA) then
-          seqtype = 'DNA'
-        end
-        break if seqtype
-      end
-      query_string(seqs.output_fasta(:width => 70,
-                                     :avoid_same_name => true), seqtype)
+    def query_alignment(seqs)
+      query_align(seqs)
     end
 
     # Performs alignment for +str+.
     # +str+ should be a string that can be recognized by CLUSTAL W.
+    #
+    # Compatibility Note: 2nd argument is deprecated and ignored.
     def query_string(str, *arg)
+      if arg.size > 0 then
+        warn '2nd argument of Bio::ClustalW#query_string is ignored'
+      end
       begin
         tf_in = Tempfile.open('align')
         tf_in.print str
       ensure
         tf_in.close(false)
       end
-      r = query_by_filename(tf_in.path, *arg)
+      r = query_by_filename(tf_in.path)
       tf_in.close(true)
       r
     end
 
     # Performs alignment of sequences in the file named +path+.
-    def query_by_filename(path, seqtype = nil)
-      require 'bio/appl/clustalw/report'
+    #
+    # Compatibility Note: 2nd argument (seqtype) is deprecated and ignored.
+    def query_by_filename(path, *arg)
+      if arg.size > 0 then
+        warn '2nd argument of Bio::ClustalW#query_by_filename is ignored'
+      end
 
       tf_out = Tempfile.open('clustalout')
       tf_out.close(false)
@@ -134,7 +172,7 @@ module Bio
         "-newtree=#{tf_dnd.path}",
         "-outorder=input"
       ]
-      opt << "-type=#{seqtype}" if seqtype
+      #opt << "-type=#{seqtype}" if seqtype
       opt.concat(@options)
       exec_local(opt)
       tf_out.open
@@ -143,7 +181,7 @@ module Bio
       tf_dnd.open
       @output_dnd = tf_dnd.read
       tf_dnd.close(true)
-      @report = Report.new(@output, seqtype)
+      @report = Report.new(@output)
       @report
     end
 
@@ -165,13 +203,14 @@ module Bio
     def exec_local(opt)
       @command = [ @program,  *opt ]
       #STDERR.print "DEBUG: ", @command.join(" "), "\n"
-      @log = nil
+      @data_stdout = nil
+      @exit_status = nil
 
       Bio::Command.call_command(@command) do |io|
         io.close_write
-        @log = io.read
+        @data_stdout = io.read
       end
-      @log
+      @exit_status = $?
     end
 
   end #class ClustalW
