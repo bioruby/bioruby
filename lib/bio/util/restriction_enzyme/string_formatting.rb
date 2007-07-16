@@ -5,21 +5,14 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: string_formatting.rb,v 1.5 2007/04/05 23:35:42 trevor Exp $
+#  $Id: string_formatting.rb,v 1.6 2007/07/16 19:28:48 k Exp $
 #
 
-require 'bio/util/restriction_enzyme/cut_symbol'
+require 'bio/util/restriction_enzyme'
 
-module Bio; end
-class Bio::RestrictionEnzyme
+module Bio
+class RestrictionEnzyme
 
-#
-# bio/util/restriction_enzyme/string_formatting.rb - Useful functions for string manipulation
-#
-# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
-# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   The Ruby License
-#
 module StringFormatting
   include CutSymbol
   extend CutSymbol
@@ -114,4 +107,5 @@ module StringFormatting
     ret ? ret : ''  # Don't pass nil values
   end
 end # StringFormatting
-end # Bio::RestrictionEnzyme
+end # RestrictionEnzyme
+end # Bio

@@ -1,36 +1,33 @@
 #
-# bio/util/restrction_enzyme/range/sequence_range.rb - A defined range over a nucleotide sequence
+# bio/util/restriction_enzyme/range/sequence_range.rb - A defined range over a nucleotide sequence
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: sequence_range.rb,v 1.8 2007/05/13 04:08:02 trevor Exp $
+#  $Id: sequence_range.rb,v 1.9 2007/07/16 19:28:48 k Exp $
 #
 
-require 'bio/util/restriction_enzyme/range/cut_ranges'
-require 'bio/util/restriction_enzyme/range/horizontal_cut_range'
-require 'bio/util/restriction_enzyme/range/vertical_cut_range'
-require 'bio/util/restriction_enzyme/range/sequence_range/calculated_cuts'
-require 'bio/util/restriction_enzyme/range/sequence_range/fragments'
-require 'bio/util/restriction_enzyme/range/sequence_range/fragment'
-require 'bio'
+require 'bio/util/restriction_enzyme'
 
-module Bio; end
-class Bio::RestrictionEnzyme
+module Bio
+class RestrictionEnzyme
 class Range
-#
-# bio/util/restrction_enzyme/range/sequence_range.rb - A defined range over a nucleotide sequence
-#
-# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
-# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   The Ruby License
-#
+
+  autoload :CutRange,                'bio/util/restriction_enzyme/range/cut_range'
+  autoload :CutRanges,               'bio/util/restriction_enzyme/range/cut_ranges'
+  autoload :HorizontalCutRange,      'bio/util/restriction_enzyme/range/horizontal_cut_range'
+  autoload :VerticalCutRange,        'bio/util/restriction_enzyme/range/vertical_cut_range'
+
 # A defined range over a nucleotide sequence.
 #
 # This class accomadates having cuts defined on a sequence and returning the
 # fragments made by those cuts.
 class SequenceRange
+
+  autoload :Fragment,                'bio/util/restriction_enzyme/range/sequence_range/fragment'
+  autoload :Fragments,               'bio/util/restriction_enzyme/range/sequence_range/fragments'
+  autoload :CalculatedCuts,          'bio/util/restriction_enzyme/range/sequence_range/calculated_cuts'
 
   # Left-most index of primary strand
   attr_reader :p_left
@@ -256,4 +253,5 @@ class SequenceRange
   
 end # SequenceRange
 end # Range
-end # Bio::RestrictionEnzyme
+end # RestrictionEnzyme
+end # Bio

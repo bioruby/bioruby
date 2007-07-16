@@ -1,26 +1,19 @@
 #
-# bio/util/restrction_enzyme/double_stranded/cut_locations.rb - Contains an Array of CutLocationPair objects
+# bio/util/restriction_enzyme/double_stranded/cut_locations.rb - Contains an Array of CutLocationPair objects
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: cut_locations.rb,v 1.5 2007/04/05 23:35:42 trevor Exp $
+#  $Id: cut_locations.rb,v 1.6 2007/07/16 19:28:48 k Exp $
 #
 
-require 'bio/util/restriction_enzyme/double_stranded/cut_location_pair'
+require 'bio/util/restriction_enzyme'
 
-module Bio; end
-class Bio::RestrictionEnzyme
+module Bio
+class RestrictionEnzyme
 class DoubleStranded
 
-#
-# bio/util/restrction_enzyme/double_stranded/cut_locations.rb - Contains an Array of CutLocationPair objects
-#
-# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
-# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   The Ruby License
-#
 # Contains an +Array+ of CutLocationPair objects.
 #
 class CutLocations < Array
@@ -79,4 +72,5 @@ class CutLocations < Array
   end
 end # CutLocations
 end # DoubleStranded
-end # Bio::RestrictionEnzyme
+end # RestrictionEnzyme
+end # Bio

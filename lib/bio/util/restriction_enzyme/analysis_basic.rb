@@ -1,26 +1,19 @@
 #
-# bio/util/restrction_enzyme/analysis_basic.rb - Does the work of fragmenting the DNA from the enzymes
+# bio/util/restriction_enzyme/analysis_basic.rb - Does the work of fragmenting the DNA from the enzymes
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: analysis_basic.rb,v 1.15 2007/05/13 04:08:02 trevor Exp $
+#  $Id: analysis_basic.rb,v 1.16 2007/07/16 19:28:48 k Exp $
 #
 
 require 'set'  # for method create_enzyme_actions
 require 'bio/util/restriction_enzyme'
-require 'bio/util/restriction_enzyme/range/sequence_range'
 
-class Bio::RestrictionEnzyme
+module Bio
+class RestrictionEnzyme
 
-#
-# bio/util/restrction_enzyme/analysis_basic.rb - Does the work of fragmenting the DNA from the enzymes
-#
-# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
-# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   The Ruby License
-#
 class Analysis
 
   # See cut_without_permutations instance method
@@ -220,4 +213,5 @@ class Analysis
   end
   
 end # Analysis
-end # Bio::RestrictionEnzyme
+end # RestrictionEnzyme
+end # Bio

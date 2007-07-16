@@ -1,26 +1,19 @@
 #
-# bio/util/restrction_enzyme/double_stranded/cut_location_pair.rb - Stores a cut location pair in 0-based index notation
+# bio/util/restriction_enzyme/double_stranded/cut_location_pair.rb - Stores a cut location pair in 0-based index notation
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: cut_location_pair.rb,v 1.8 2007/04/05 23:35:42 trevor Exp $
+#  $Id: cut_location_pair.rb,v 1.9 2007/07/16 19:28:48 k Exp $
 #
 
-require 'bio/util/restriction_enzyme/cut_symbol'
+require 'bio/util/restriction_enzyme'
 
-module Bio; end
-class Bio::RestrictionEnzyme
+module Bio
+class RestrictionEnzyme
 class DoubleStranded
   
-#
-# bio/util/restrction_enzyme/double_stranded/cut_location_pair.rb - Stores a cut location pair in 0-based index notation
-#
-# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
-# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   The Ruby License
-#
 # Stores a single cut location pair in 0-based index notation for use with
 # DoubleStranded enzyme sequences.
 #
@@ -106,4 +99,5 @@ class CutLocationPair < Array
   end
 end # CutLocationPair
 end # DoubleStranded
-end # Bio::RestrictionEnzyme
+end # RestrictionEnzyme
+end # Bio

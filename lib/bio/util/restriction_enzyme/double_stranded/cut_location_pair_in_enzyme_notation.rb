@@ -1,26 +1,19 @@
 #
-# bio/util/restrction_enzyme/double_stranded/cut_location_pair_in_enzyme_notation.rb - Inherits from DoubleStranded::CutLocationPair
+# bio/util/restriction_enzyme/double_stranded/cut_location_pair_in_enzyme_notation.rb - Inherits from DoubleStranded::CutLocationPair
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: cut_location_pair_in_enzyme_notation.rb,v 1.6 2007/04/05 23:35:42 trevor Exp $
+#  $Id: cut_location_pair_in_enzyme_notation.rb,v 1.7 2007/07/16 19:28:48 k Exp $
 #
 
-require 'bio/util/restriction_enzyme/double_stranded/cut_location_pair'
+require 'bio/util/restriction_enzyme'
 
-module Bio; end
-class Bio::RestrictionEnzyme
+module Bio
+class RestrictionEnzyme
 class DoubleStranded
 
-#
-# bio/util/restrction_enzyme/double_stranded/cut_location_pair_in_enzyme_notation.rb - Inherits from DoubleStranded::CutLocationPair
-#
-# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
-# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   The Ruby License
-#
 # Inherits from DoubleStranded::CutLocationPair , stores the cut location pair in
 # enzyme notation instead of 0-based.
 #
@@ -41,4 +34,5 @@ class CutLocationPairInEnzymeNotation < CutLocationPair
   end
 end # CutLocationPair
 end # DoubleStranded
-end # Bio::RestrictionEnzyme
+end # RestrictionEnzyme
+end # Bio

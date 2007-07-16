@@ -5,24 +5,15 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: single_strand.rb,v 1.6 2007/04/05 23:35:42 trevor Exp $
+#  $Id: single_strand.rb,v 1.7 2007/07/16 19:28:48 k Exp $
 #
 
-require 'bio/util/restriction_enzyme/single_strand/cut_locations_in_enzyme_notation'
-require 'bio/util/restriction_enzyme/cut_symbol'
-require 'bio/util/restriction_enzyme/string_formatting'
+require 'bio/util/restriction_enzyme'
 require 'bio/sequence'
 
-module Bio; end
-class Bio::RestrictionEnzyme
+module Bio
+class RestrictionEnzyme
 
-#
-# bio/util/restriction_enzyme/single_strand.rb - Single strand of a restriction enzyme sequence
-#
-# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
-# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   The Ruby License
-#
 # A single strand of restriction enzyme sequence pattern with a 5' to 3' 
 # orientation.
 #  
@@ -30,6 +21,9 @@ class Bio::RestrictionEnzyme
 # create the sequence pattern with cuts on both strands.
 #
 class SingleStrand < Bio::Sequence::NA
+
+  autoload :CutLocationsInEnzymeNotation, 'bio/util/restriction_enzyme/single_strand/cut_locations_in_enzyme_notation'
+
   include CutSymbol
   include StringFormatting
 
@@ -201,4 +195,5 @@ class SingleStrand < Bio::Sequence::NA
   once :pattern, :with_cut_symbols, :with_spaces, :to_re
 
 end # SingleStrand
-end # Bio::RestrictionEnzyme
+end # RestrictionEnzyme
+end # Bio

@@ -1,29 +1,20 @@
 #
-# bio/util/restrction_enzyme/range/sequence_range/calculated_cuts.rb - 
+# bio/util/restriction_enzyme/range/sequence_range/calculated_cuts.rb - 
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: calculated_cuts.rb,v 1.6 2007/04/05 23:35:42 trevor Exp $
+#  $Id: calculated_cuts.rb,v 1.7 2007/07/16 19:28:48 k Exp $
 #
 
-require 'bio/util/restriction_enzyme'  # test/runner.rb wont load without this
-require 'bio/util/restriction_enzyme/cut_symbol'
-require 'bio/util/restriction_enzyme/string_formatting'
+require 'bio/util/restriction_enzyme'
 
-module Bio; end
-class Bio::RestrictionEnzyme
+module Bio
+class RestrictionEnzyme
 class Range
 class SequenceRange
 
-#
-# bio/util/restrction_enzyme/range/sequence_range/calculated_cuts.rb - 
-#
-# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
-# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   The Ruby License
-# 
 # cc = CalculatedCuts.new(@size)
 # cc.add_cuts_from_cut_ranges(@cut_ranges)
 # cc.remove_incomplete_cuts
@@ -247,4 +238,5 @@ class CalculatedCuts
 end # CalculatedCuts
 end # SequenceRange
 end # Range
-end # Bio::RestrictionEnzyme
+end # RestrictionEnzyme
+end # Bio

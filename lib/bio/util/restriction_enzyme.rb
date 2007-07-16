@@ -5,24 +5,13 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: restriction_enzyme.rb,v 1.15 2007/05/13 04:08:02 trevor Exp $
+#  $Id: restriction_enzyme.rb,v 1.16 2007/07/16 19:28:48 k Exp $
 #
-
-require 'bio/db/rebase'
-require 'bio/util/restriction_enzyme/double_stranded'
-require 'bio/util/restriction_enzyme/single_strand'
-require 'bio/util/restriction_enzyme/cut_symbol'
-require 'bio/util/restriction_enzyme/analysis'
 
 module Bio #:nodoc:
 
-#
-# bio/util/restriction_enzyme.rb - Digests DNA based on restriction enzyme cut patterns
-#
-# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
-# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   The Ruby License
-#
+  autoload :REBASE, 'bio/db/rebase'
+
 # = Description
 # 
 # Bio::RestrictionEnzyme allows you to fragment a DNA strand using one
@@ -123,8 +112,19 @@ module Bio #:nodoc:
 # 
 # * Circular DNA cutting
 #
-  
-class Bio::RestrictionEnzyme
+
+class RestrictionEnzyme
+
+  #require 'bio/util/restriction_enzyme/cut_symbol'
+
+  autoload :CutSymbol,               'bio/util/restriction_enzyme/cut_symbol'
+  autoload :StringFormatting,        'bio/util/restriction_enzyme/string_formatting'
+  autoload :SingleStrand,            'bio/util/restriction_enzyme/single_strand'
+  autoload :SingleStrandComplement,  'bio/util/restriction_enzyme/single_strand_complement'
+  autoload :DoubleStranded,          'bio/util/restriction_enzyme/double_stranded'
+  autoload :Analysis,                'bio/util/restriction_enzyme/analysis'
+  autoload :Range,                   'bio/util/restriction_enzyme/range/sequence_range'
+
   include CutSymbol
   extend CutSymbol
 

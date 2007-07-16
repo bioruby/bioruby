@@ -1,24 +1,19 @@
 #
-# bio/util/restrction_enzyme/range/cut_ranges.rb - Container for many CutRange objects or CutRange child objects.
+# bio/util/restriction_enzyme/range/cut_ranges.rb - Container for many CutRange objects or CutRange child objects.
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: cut_ranges.rb,v 1.4 2007/04/05 23:35:42 trevor Exp $
+#  $Id: cut_ranges.rb,v 1.5 2007/07/16 19:28:48 k Exp $
 #
 
-module Bio; end
-class Bio::RestrictionEnzyme
+require 'bio/util/restriction_enzyme'
+
+module Bio
+class RestrictionEnzyme
 class Range
   
-#
-# bio/util/restrction_enzyme/range/cut_ranges.rb - Container for many CutRange objects or CutRange child objects.
-#
-# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
-# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   The Ruby License
-#
 # Container for many CutRange objects or CutRange child objects.  Inherits from array.
 #
 class CutRanges < Array
@@ -48,4 +43,5 @@ class CutRanges < Array
     
 end # CutRanges
 end # Range
-end # Bio::RestrictionEnzyme
+end # RestrictionEnzyme
+end # Bio

@@ -1,25 +1,20 @@
 #
-# bio/util/restrction_enzyme/analysis/fragments.rb - 
+# bio/util/restriction_enzyme/analysis/fragments.rb - 
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: fragments.rb,v 1.4 2007/04/05 23:35:42 trevor Exp $
+#  $Id: fragments.rb,v 1.5 2007/07/16 19:28:48 k Exp $
 #
 
-module Bio; end
-class Bio::RestrictionEnzyme
+require 'bio/util/restriction_enzyme'
+
+module Bio
+class RestrictionEnzyme
 class Range
 class SequenceRange
 
-#
-# bio/util/restrction_enzyme/range/sequence_range/fragments.rb - 
-#
-# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
-# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   The Ruby License
-#
 class Fragments < Array
   
   attr_accessor :primary
@@ -42,4 +37,5 @@ class Fragments < Array
 end # Fragments
 end # SequenceRange
 end # Range
-end # Bio::RestrictionEnzyme
+end # RestrictionEnzyme
+end # Bio

@@ -1,26 +1,19 @@
 #
-# bio/util/restrction_enzyme/range/horizontal_cut_range.rb - 
+# bio/util/restriction_enzyme/range/horizontal_cut_range.rb - 
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: horizontal_cut_range.rb,v 1.4 2007/04/05 23:35:42 trevor Exp $
+#  $Id: horizontal_cut_range.rb,v 1.5 2007/07/16 19:28:48 k Exp $
 #
 
-require 'bio/util/restriction_enzyme/range/cut_range'
+require 'bio/util/restriction_enzyme'
 
-module Bio; end
-class Bio::RestrictionEnzyme
+module Bio
+class RestrictionEnzyme
 class Range
 
-#
-# bio/util/restrction_enzyme/range/horizontal_cut_range.rb - 
-#
-# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
-# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   The Ruby License
-#
 class HorizontalCutRange < CutRange
   attr_reader :p_cut_left, :p_cut_right
   attr_reader :c_cut_left, :c_cut_right
@@ -70,4 +63,5 @@ class HorizontalCutRange < CutRange
   end
 end # HorizontalCutRange
 end # Range
-end # Bio::RestrictionEnzyme
+end # RestrictionEnzyme
+end # Bio

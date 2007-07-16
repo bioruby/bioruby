@@ -1,25 +1,16 @@
 #
-# bio/util/restrction_enzyme/cut_symbol.rb - Defines the symbol used to mark a cut in an enzyme sequence
+# bio/util/restriction_enzyme/cut_symbol.rb - Defines the symbol used to mark a cut in an enzyme sequence
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: cut_symbol.rb,v 1.5 2007/04/05 23:35:42 trevor Exp $
+#  $Id: cut_symbol.rb,v 1.6 2007/07/16 19:28:48 k Exp $
 #
 
-nil # to separate file-level rdoc from following statement # !> useless use of nil in void context
+module Bio
+class RestrictionEnzyme
 
-module Bio; end
-class Bio::RestrictionEnzyme
-
-#
-# bio/util/restrction_enzyme/cut_symbol.rb - Defines the symbol used to mark a cut in an enzyme sequence
-#
-# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
-# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   The Ruby License
-#
 # = Usage
 #
 #   #require 'bio/util/restriction_enzyme/cut_symbol'
@@ -112,4 +103,5 @@ module CutSymbol
   end
   
 end # CutSymbol
-end # Bio::RestrictionEnzyme
+end # RestrictionEnzyme
+end # Bio

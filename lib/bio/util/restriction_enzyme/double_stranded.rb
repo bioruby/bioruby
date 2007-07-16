@@ -1,34 +1,18 @@
 #
-# bio/util/restrction_enzyme/double_stranded.rb - DoubleStranded restriction enzyme sequence
+# bio/util/restriction_enzyme/double_stranded.rb - DoubleStranded restriction enzyme sequence
 #
 # Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: double_stranded.rb,v 1.10 2007/04/05 23:35:42 trevor Exp $
+#  $Id: double_stranded.rb,v 1.11 2007/07/16 19:28:48 k Exp $
 #
 
-require 'bio/db/rebase'
 require 'bio/util/restriction_enzyme'
-require 'bio/util/restriction_enzyme/range/sequence_range'
 
-require 'bio/util/restriction_enzyme/cut_symbol'
-require 'bio/util/restriction_enzyme/single_strand'
-require 'bio/util/restriction_enzyme/single_strand_complement'
-require 'bio/util/restriction_enzyme/double_stranded/aligned_strands'
-require 'bio/util/restriction_enzyme/double_stranded/cut_locations'
-require 'bio/util/restriction_enzyme/double_stranded/cut_locations_in_enzyme_notation'
+module Bio
+class RestrictionEnzyme
 
-module Bio; end
-class Bio::RestrictionEnzyme
-
-#
-# bio/util/restrction_enzyme/double_stranded.rb - DoubleStranded restriction enzyme sequence
-#
-# Author::    Trevor Wennblom  <mailto:trevor@corevx.com>
-# Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
-# License::   The Ruby License
-#
 # A pair of SingleStrand and SingleStrandComplement objects with methods to
 # add utility to their relation.
 # 
@@ -40,6 +24,13 @@ class Bio::RestrictionEnzyme
 # 
 # FIXME needs better docs
 class DoubleStranded
+
+  autoload :AlignedStrands,  'bio/util/restriction_enzyme/double_stranded/aligned_strands'
+  autoload :CutLocations,    'bio/util/restriction_enzyme/double_stranded/cut_locations'
+  autoload :CutLocationPair, 'bio/util/restriction_enzyme/double_stranded/cut_location_pair'
+  autoload :CutLocationsInEnzymeNotation,    'bio/util/restriction_enzyme/double_stranded/cut_locations_in_enzyme_notation'
+  autoload :CutLocationPairInEnzymeNotation, 'bio/util/restriction_enzyme/double_stranded/cut_location_pair_in_enzyme_notation'
+
   include CutSymbol
   extend CutSymbol
   include StringFormatting
@@ -326,4 +317,5 @@ class DoubleStranded
   end
 
 end # DoubleStranded
-end # Bio::RestrictionEnzyme
+end # RestrictionEnzyme
+end # Bio
