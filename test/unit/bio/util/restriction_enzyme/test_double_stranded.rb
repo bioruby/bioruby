@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: test_double_stranded.rb,v 1.5 2007/04/05 23:35:44 trevor Exp $
+#  $Id: test_double_stranded.rb,v 1.6 2007/07/16 19:29:32 k Exp $
 #
 
 require 'pathname'
@@ -14,6 +14,7 @@ $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'test/unit'
 require 'bio/util/restriction_enzyme/double_stranded'
+require 'bio/sequence'
 
 module Bio #:nodoc:
 

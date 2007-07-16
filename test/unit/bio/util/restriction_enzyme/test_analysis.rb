@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: test_analysis.rb,v 1.12 2007/05/13 04:08:02 trevor Exp $
+#  $Id: test_analysis.rb,v 1.13 2007/07/16 19:29:32 k Exp $
 #
 
 require 'pathname'
@@ -14,6 +14,7 @@ $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'test/unit'
 require 'bio/util/restriction_enzyme/analysis'
+require 'bio/sequence'
 
 module Bio #:nodoc:
 
