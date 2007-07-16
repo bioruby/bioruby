@@ -6,7 +6,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id: das.rb,v 1.16 2007/04/05 23:35:41 trevor Exp $
+# $Id: das.rb,v 1.17 2007/07/16 18:06:12 k Exp $
 #
 #--
 # == TODO
@@ -58,7 +58,7 @@ class DAS
           dsn.source_id = e.attributes['id']
           dsn.source_version = e.attributes['version']
         when 'MAPMASTER'
-          dsn.mapmaster = e.name
+          dsn.mapmaster = e.text
         when 'DESCRIPTION'
           dsn.description = e.text
           dsn.description_href = e.attributes['href']
