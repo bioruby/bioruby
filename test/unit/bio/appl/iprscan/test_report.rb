@@ -3,7 +3,7 @@
 #
 #   Copyright (C) 2006 Mitsuteru Nakao <n@bioruby.org>
 #
-#  $Id: test_report.rb,v 1.5 2007/07/16 19:21:33 nakao Exp $
+#  $Id: test_report.rb,v 1.6 2007/07/17 14:16:50 nakao Exp $
 #
 
 require 'pathname'
@@ -222,6 +222,18 @@ END
         end
       end
       @obj << Bio::Iprscan::Report.parse_in_raw(entry)
+    end
+
+    def test_self_reports_in_raw
+      io = File.open(File.join(Bio::TestIprscanData::TestDataIprscan, 
+                               "merged.raw"))
+      result = []
+      Bio::Iprscan::Report.reports_in_raw(io) {|x| result << x }
+      assert_equal(@obj.size, result.size)
+      assert_equal(@obj.first.query_id, result.first.query_id)      
+      assert_equal(@obj.first.query_id, result.first.query_id)            
+      assert_equal(@obj[2].query_id, result[2].query_id)      
+      assert_equal(@obj.last.query_id, result.last.query_id)      
     end
     
     def test_obj

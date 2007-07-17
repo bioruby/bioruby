@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <mn@kazusa.or.jp>
 # License::     The Ruby License
 #
-#  $Id: report.rb,v 1.7 2007/07/16 19:21:32 nakao Exp $
+#  $Id: report.rb,v 1.8 2007/07/17 14:16:50 nakao Exp $
 #
 # == Report classes for the iprscan program.
 # 
@@ -81,6 +81,7 @@ module Bio
             entry << line
           end
         end
+        yield Bio::Iprscan::Report.parse_in_raw(entry) if entry != ''
       end
     
       # Parser method for a raw formated entry. Retruns a Bio::Iprscan::Report 
@@ -259,19 +260,19 @@ module Bio
       def to_raw
         @matches.map { |match|
           [self.query_id,
-                self.crc64,
-                self.query_length,
-                match.method,
-                match.accession,
-                match.description,
-                match.match_start,
-                match.match_end,
-                match.evalue,
-                match.status,
-                match.date,
-                match.ipr_id,
-                match.ipr_description,
-                match.go_terms.map {|x| x[0] + ': ' + x[1] + ' (' + x[2] + ')' }.join(', ')
+           self.crc64,
+           self.query_length,
+           match.method,
+           match.accession,
+           match.description,
+           match.match_start,
+           match.match_end,
+           match.evalue,
+           match.status,
+           match.date,
+           match.ipr_id,
+           match.ipr_description,
+           match.go_terms.map {|x| x[0] + ': ' + x[1] + ' (' + x[2] + ')' }.join(', ')
           ].join("\t")
         }.join("\n")
       end
