@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::   The Ruby License
 #
-#  $Id: report.rb,v 1.12 2007/04/05 23:35:39 trevor Exp $
+#  $Id: report.rb,v 1.13 2007/07/18 08:47:39 ngoto Exp $
 #
 # Bio::ClustalW::Report is a CLUSTAL W report (*.aln file) parser.
 # CLUSTAL W is a very popular software for multiple sequence alignment.
@@ -91,16 +91,22 @@ module Bio
       # Gets an multiple alignment.
       # Returns a Bio::Alignment object.
       def align
-        warn "align method will be deprecated. Please use \'alignment\'."
+        warn "Bio::ClustalW#align will be deprecated. Please use \'alignment\'."
         alignment
       end
 
+      # This will be deprecated. Instead, please use alignment.output_fasta.
+      #
       # Gets an fasta-format string of the sequences.
       # Returns a string.
       def to_fasta(*arg)
-        alignment.to_fasta(*arg)
+        warn "Bio::ClustalW::report#to_fasta is deprecated. Please use \'alignment.output_fasta\'"
+        alignment.output_fasta(*arg)
       end
 
+      # Compatibility note: Behavior of the method will be changed
+      # in the future.
+      #
       # Gets an array of the sequences.
       # Returns an array of Bio::FastaFormat objects.
       def to_a
