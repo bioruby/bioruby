@@ -1,85 +1,329 @@
+2007-07-17  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/das.rb
+
+	  Fixed that mapmaster method to return correct value (mapmaseter's
+	  URL). This bug is reported and fixed by Dave Thorne.
+
 2007-07-16  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/mafft/report.rb
 
-	For generic multi-fasta formatted sequence alignment,
-	Bio::Alignment::MultiFastaFormat is newly added based on
-	Bio::MAFFT::Report class, and Bio::MAFFT::Report is
-	changed to inherit the new class.
-	Tests are added in test/unit/bio/appl/mafft/test_report.rb.
+	  For generic multi-fasta formatted sequence alignment,
+	  Bio::Alignment::MultiFastaFormat is newly added based on
+	  Bio::MAFFT::Report class, and Bio::MAFFT::Report is
+	  changed to inherit the new class.
+	  Tests are added in test/unit/bio/appl/mafft/test_report.rb.
 
 	* lib/bio/alignment.rb
 
-	New modules and classes Bio::Alignment::FactoryTemplate::* are added.
-	They are used by following three new classes.
+	  New modules and classes Bio::Alignment::FactoryTemplate::* are added.
+	  They are used by following three new classes.
 	
 	* lib/bio/appl/muscle.rb
 	* lib/bio/appl/probcons.rb
 	* lib/bio/appl/tcoffee.rb
 
-	New classess Bio::Muscle, Bio::Probcons, and Bio::Tcoffee are added
-	for MUSCLE, ProbCons, and T-Coffee multiple alignment programs.
-	Contributed by Jeffrey Blakeslee and colleagues.
+	  New classess Bio::Muscle, Bio::Probcons, and Bio::Tcoffee are added
+	  for MUSCLE, ProbCons, and T-Coffee multiple alignment programs.
+	  Contributed by Jeffrey Blakeslee and colleagues.
 
 	* lib/bio/appl/clustalw.rb
 	* lib/bio/appl/mafft.rb
 
-	Interfaces of Bio::ClustalW and Bio::MAFFT are added/modified
-	to follow Bio::Alignment::FactoryTemplate (but not yet changed to
-	use it).
+	  Interfaces of Bio::ClustalW and Bio::MAFFT are added/modified
+	  to follow Bio::Alignment::FactoryTemplate (but not yet changed to
+	  use it).
+
+2007-07-09  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby shell on Rails has new CSS theme
+
+	  Completely new design for BioRuby shell on Rails translated from
+	  the 'DibdoltRed' theme on www.openwebdesign.org which is created by
+	  Darjan Panic and Brian Green as a public domain work!
+
+2007-07-09  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/db/kegg/taxonomy.rb
+
+	  Newly added KEGG taxonomy file parser which treats taxonomic tree
+	  structure of the KEGG organisms. The file is available at
+	    ftp://ftp.genome.jp/pub/kegg/genes/taxonomy
+	  and is a replacement of the previously used keggtab file (obsoleted).
+
+	* lib/bio/db/kegg/keggtab.rb
+
+	  Bio::KEGG::Keggtab is obsoleted as the file is no longer provided.
+	  Use Bio::KEGG::Taxonomy (lib/bio/db/kegg/taxonomy.rb) instead.
+
+	* lib/bio/shell/plugin/soap.rb
+
+	  Newly added web service plugins for BioRuby shell which supports
+	  NCBI SOAP, EBI SOAP and DDBJ XML in addition to the KEGG API.
 
 2007-07-09  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/db/pdb/pdb.rb
 
-	Pdb_LString.new is changed not to raise error for nil.
+	  Pdb_LString.new is changed not to raise error for nil.
 
-	Fixed a bug when below records does not exist in a PDB entry:
-	REMARK (remark), JRNL (jrnl), HELIX (helix),
-	TURN (turn), SHEET (sheet), SSBOND (ssbond), SEQRES (seqres),
-	DBREF (dbref), KEYWDS (keywords), AUTHOR (authors),
-	HEADER (entry_id, accession, classification),
-	TITLE (definition), and REVDAT (version) records (methods).
+	  Fixed a bug when below records does not exist in a PDB entry:
+	  REMARK (remark), JRNL (jrnl), HELIX (helix),
+	  TURN (turn), SHEET (sheet), SSBOND (ssbond), SEQRES (seqres),
+	  DBREF (dbref), KEYWDS (keywords), AUTHOR (authors),
+	  HEADER (entry_id, accession, classification),
+	  TITLE (definition), and REVDAT (version) records (methods).
 
-	Incompatible change: Bio::PDB#record is changed to return
-	an empty array for nonexistent record.
+	  Incompatible change: Bio::PDB#record is changed to return
+	  an empty array for nonexistent record.
 
-	(reported by Mikael Borg)
+	  (reported by Mikael Borg)
 
 2007-07-09  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/io/flatfile.rb
 
-	Bio::FlatFile.foreach is added (which is suggested by IO.foreach).
+	  Bio::FlatFile.foreach is added (which is suggested by IO.foreach).
+
+2007-06-28  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/shell/setup.rb, core.rb
+
+	  Changed not to use Dir.chdir by caching full path of the save
+	  directory at a start up time, so that user can freely change
+	  the work directory without affecting object/history saving
+	  functionality.
+
+	  Bio::Shell.cache[:savedir] stores the session saving directory
+	  (session means shell/session/{config,history,object} files),
+	  Bio::Shell.cache[:workdir] stores the working directory at a start
+	  up time (can be same directory with the :savedir) and both are
+	  converted and stored as full path allowing user to use Dir.chdir
+	  in the shell session).
+
+	  If --rails (-r) option is applied, 'bioruby' command will run in
+	  the Rails server mode, and the server will start in the :savedir.
+
+	  (A) IRB mode
+
+	  1. run in the current directory and the session will be saved
+	     in the ~/.bioruby directory
+
+	       % bioruby
+
+	  2. run in the current directory and the session will be saved
+	     in the foo/bar directory
+
+	       % bioruby foo/bar
+
+	  3. run in the current directory and the session will be saved
+	     in the /tmp/foo/bar directory
+
+	       % bioruby /tmp/foo/bar
+
+	  (B) Rails mode
+
+	  4. run in the ~/.bioruby directory and the session will also be saved
+	     in the ~/.bioruby directory
+
+	       % bioruby -r
+
+	  5. run in the foo/bar directory and the session will also be saved
+	     in the foo/bar directory
+
+	       % bioruby -r foo/bar
+
+	  6. run in the /tmp/foo/bar directory and the session will also be
+	     saved in the /tmp/foo/bar directory
+
+	       % bioruby -r /tmp/foo/bar
+
+	  (C) Script mode
+
+	  7. run in the current directory using the session saved
+	     in the ~/.bioruby directory
+
+	       % bioruby ~/.bioruby/shell/script.rb
+
+	  8. run in the current directory using the session saved
+	     in the foo/bar directory
+
+	       % bioruby foo/bar/shell/script.rb
+
+	  9. run in the current directory using the session saved
+	     in the /tmp/foo/bar directory
+
+	       % bioruby /tmp/foo/bar/shell/script.rb
+
+2007-06-21  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/shell/setup.rb
+
+	  If no directory is specified to the bioruby command,
+	  use ~/.bioruby directory as the default save directory
+	  instead of the current directory, as suggested by Jun Sese.
+
+	  User can use 'bioruby' command without botherd by directories
+	  and files previously created by the 'bioruby' command
+	  in the current directory even when not needed.
+
+2007-05-19  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/appl/fasta.rb
+
+	  Bug fixed that exec_local fails to exec when @ktup is nil.
+	  This problem is reported and fixed by Fredrik Johansson.
+
+	* lib/bio/db/gff.rb
+
+	  parser_attributes method in GFF3 class is modified to use
+	  '=' char as a separator instead of ' ' (which is used in
+	  GFF2 spec).
+
+2007-04-06  Toshiaki Katayama <k@bioruby.org>
+
+	* COPYING, COPYING.LIB are removed
+
+	  BioRuby is now distributed under the same terms as Ruby.
+
+	  On behalf of the BioRuby developer, I have asked all authors of
+	  the BioRuby code to change BioRuby's license from LGPL to Ruby's.
+	  And we have finished to change license of all modules in the BioRuby
+	  library. This means that Ruby user can freely use BioRuby library
+	  without being annoyed by licensing issues.
+
+	* lib/bio/db/kegg/ko.rb is renamed to lib/bio/db/kegg/ortholog.rb
+
+	  KEGG KO database is renamed to KEGG ORTHOLOG database, thus we
+	  follow the change. Bio::KEGG::KO is renamed to Bio::KEGG::ORTHOLOG.
+	  
+	  Bio::KEGG::ORTHOLOG#genes, dblinks methods are rewrited to use
+	  lines_fetch method.
+
+	* lib/bio/data/aa.rb
+
+	  to_re method is changed that the generated regexp to include
+	  ambiguous amino acid itself - replacement of amino acid X should
+	  include X itself.
+
+2007-04-05  Trevor Wennblom <trevor@corevx.com>
+
+	* License headers are completely rewrited to Ruby's.
 
 2007-04-02  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/mafft.rb
 
-	Incompatible change: Bio::MAFFT#output is changed to return
-	a string of multi-fasta formmatted text. To get an array of
-	Bio::FastaFormat objects (as of 1.0 or before), please use
-	report.data instead.
+	  Incompatible change: Bio::MAFFT#output is changed to return
+	  a string of multi-fasta formmatted text. To get an array of
+	  Bio::FastaFormat objects (as of 1.0 or before), please use
+	  report.data instead.
+
+2007-03-29  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/db/kegg/cell.rb
+
+	  Obsoleted as the KEGG CELL database is not publically available
+	  any more.
+
+2007-03-28  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/shell/rails/.../bioruby_controller.rb
+
+	  BioRuby shell on Rails access is changed to be limited only from
+	  the localhost for security reason (if local_request?).
+
+	* lib/bio/command.rb
+
+	  The post_form method is modified to accept URL as a string and
+	  extended to accept params as
+	    array of string
+	    array of hash
+	    array of array
+	     or
+	    string
+	  in addition to hash (also can be ommited if not needed - defaults
+	  to nil).
+
+	  Keys and parameters of params are forced to use to_s for sure.
+
+	* lib/bio/io/ensembl.rb
+
+	  Re-designed to allows user to use Bio::Ensembl.new without
+	  creating inherited sub class.
+
+	  Changed to use Bio::Command.post_form
+
+	* lib/bio/das.rb
+
+	  Changed to use Bio::Command
+
+	* lib/bio/shell/plugin/das.rb
+
+	  Newly added BioDAS client plugin for BioRuby shell.
+
+	    das.list_sequences
+	    das.dna
+	    das.features
+
+2007-03-15  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/shell/irb.rb
+
+	  Changed to load Rails environment when bioruby shell is invoked
+	  in the Rails project directory. This means that user can use
+	  'bioruby' command as a better './script/console' which has
+	  persistent objects and shared history.
+
+2007-03-08  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/db/kegg/drug.rb
+
+	  Newly added KEGG DRUG database parser.
+
+	* lib/bio/db/kegg/glycan.rb
+
+	  Bio::KEGG::GLYCAN#bindings method is removed.
+	  Bio::KEGG::GLYCAN#comment, remarks methods are added.
+	  Bio::KEGG::GLYCAN#orthologs and dblinks methods are changed to use
+	  lines_fetch method.
+
+	* lib/bio/kegg/compound.rb
+
+	  Bio::KEGG::COMPOUND#glycans method is added
+	  Bio::KEGG::COMPOUND#names method is changed to return an array
+	  of stripped strings.
+
+	* lib/bio/db/kegg/genes.rb
+
+	  Bio::KEGG::GENES#orthologs method is added.
 
 2007-03-27  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/command.rb
 
-	Bio::Command.call_command_fork and query_command_fork methods
-	are changed to handle all Ruby exceptions in the child process.
+	  Bio::Command.call_command_fork and query_command_fork methods
+	  are changed to handle all Ruby exceptions in the child process.
 
 	* lib/bio/io/flatfile.rb
 
-	UniProt format autodetection was changed to follow the change of
-	UniProtKB release 9.0 of 31-Oct-2006.
+	  UniProt format autodetection was changed to follow the change of
+	  UniProtKB release 9.0 of 31-Oct-2006.
 
 2007-02-12  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/io/flatfile.rb
 
-	Exception class UnknownDataFormatError is added.
-	It will be raised before reading data from IO when data format
-	hasn't been specified due to failure of file format autodetection.
+	  Exception class UnknownDataFormatError is added.
+	  It will be raised before reading data from IO when data format
+	  hasn't been specified due to failure of file format autodetection.
+
+2007-02-12  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/flatfile.rb
+
+	  Added support for KEGG EGENES.
 
 2007-02-02  Trevor Wennblom <trevor@corevx.com>
 
@@ -99,9 +343,63 @@
 
 	  Bio::SOFT for reading SOFT formatted NCBI GEO files.
 
+2007-01-16  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby shell on Rails new features and fixes
+
+	  New features:
+	  * Input [#] is linked to action for filling textarea from history
+	  * [methods] is separated into columns for readability
+
+	  Fixes and improvements:
+	  * HIDE_VARIABLES is moved from helper to controller to avoid warning
+	    "already initialized constant - HIDE_VARIABLES" repeated on reload.
+	  * <div id="evaluate"> is renamed to "log_#" with number for future
+	    extention.
+	  * <div id="log_#"> are inserted in the <div id="logs">
+
+2007-01-15  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/db.rb
+
+	  lines_fetch method (internally used various bio/db/*.rb modules)
+	  is rewrited to concatenate indented sub field.
+
+	* lib/bio/db/kegg/compound.rb
+
+	  Bio::KEGG::COMPOUND#comment method which returns contents of
+	  the COMMENT line is added
+
+	* lib/bio/db/kegg/enzyme.rb
+
+	  Bio::KEGG::ENZYME#entry_id is changed to return EC number only.
+	  Previous version of entry_id method is renamed to entry method
+	  which returns a "EC x.x.x.x   Enzyme" style string.
+
+	  Bio::KEGG::ENZYME#obsolete? method is added which returns boolean
+	  value (true or false) according to the ENTRY line contains
+	  a string 'Obsolete' or not.
+
+	  Bio::KEGG::ENZYME#all_reac, iubmb_reactions, kegg_reactions methods
+	  are added to support newly added ALL_REAC field.
+	
+	  Bio::KEGG::ENZYME#inhibitors and orthologs methods are added.
+
+	  Bio::KEGG::ENZYME#substrates, products, inhibitors, cofactors,
+	  pathways, orthologs, diseases, motifs methods are rewrited to
+	  utilizes new lines_fetch method in db.rb to process continuous
+	  sub field.
+
+	* lib/bio/db/kegg/genome.rb
+
+	  Bio::KEGG::GENOME#scaffolds, gc, genomemap methods are obsoleted.
+	  Bio::KEGG::GENOME#distance, data_source, original_db methods are
+	  added.
+
 2006-12-24  Toshiaki Katayama <k@bioruby.org>
 
 	* bin/bioruby, lib/bio/shell/, lib/bio/shell/rails/
+	  (lib/bio/shell/rails/vendor/plugins/generators/)
 
 	  Web functionallity of the BioRuby shell is completely rewrited
 	  to utilize generator of the Ruby on Rails. This means we don't
@@ -111,6 +409,25 @@
 	  the shell is extended to have textarea to input any code and
 	  the evaluated result is returned with AJAX having various neat
 	  visual effects.
+
+	* lib/bio/.rb
+
+	  Extended to have Bio.command where command can be any BioRuby
+	  shell methods.
+	    ex. puts Bio.getseq("atgc" * 10).randomize.translate
+
+	* lib/bio/shell/plugin/entry.rb, seq.rb
+
+	  seq, ent, obj commands are renamed to getseq, getent, getobj
+	  respectively. This getseq is also changed to return Bio::Sequence
+	  with @moltype = Bio::Sequence::NA object instead of Bio::Sequence::NA
+	  object.
+
+	* lib/bio/db/kegg/kgml.rb
+
+	  Some method names are changed to avoid confusion:
+	  * entry_type is renamed to category (<entry type="">)
+	  * map is renamed to pathway (<entry map="">)
 
 2006-12-19  Christian Zmasek <czmasek@burnham.org>
 
@@ -176,6 +493,10 @@
 	  lib/bio/phylogenetictree.rb is renamed to lib/bio/tree.rb.
 	  NHX (New Hampshire eXtended) parser/writer support are added.
 
+2006-12-13  Toshiaki Katayama <k@bioruby.org>
+
+	* doc/Desing.rd.ja, doc/TODO.rd.ja, doc/BioRuby.rd.ja are obsoletd.
+
 2006-10-05  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/db/newick.rb
@@ -187,6 +508,103 @@
 
 	  Bio::PhylogeneticTree for phylogenetic tree data structure
 	  is newly added.
+
+2006-09-19  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/soapwsdl.rb
+	* lib/bio/io/ebisoap.rb
+	* lib/bio/io/ncbisoap.rb
+
+	  Newly added web service modules.
+
+	* lib/bio/db/kegg/kgml.rb
+
+	  Accessor for the <component> attribute is added.
+
+	* lib/bio/shell/plugin/codon.rb
+
+	  Support for Pyrrolysine and Selenocysteine are added in the
+	  BioRuby shell.
+
+	* lib/bio/sshell/plugin/seq.rb
+
+	  sixtrans, skip, step methods are added in the BioRuby shell.
+	    bioruby> seqtrans(seq)
+
+	    bioruby> seq.step(window_size) {|subseq|
+	      # do something on subseq
+	    }
+
+	    bioruby> seq.skip(window_sizep, step_size) {|subseq|
+	      # do something on subseq
+	    }
+
+2006-07-26  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/data/aa.rb
+
+	  Amino acids J (Xle: I/L), O (Pyl: pyrrolysine) and X (unknown)
+	  are added (now we have consumed 26 alphabets!).
+
+	* lib/bio/io/fastacmd.rb
+
+	  Fixed that new version of fastacmd (in BLAST package) changed
+	  the option from '-D T' to '-D 1', contributed by the author
+	  of this module Shuji Shigenobu.
+
+	* lib/bio/shell/plugin/psort.rb
+
+	  Newly added BioRuby shell plugin for PSORT
+
+	* lib/bio/shell/plugin/blast.rb
+
+	  Newly added BioRuby shell plugin for BLAST search against KEGG GENES
+
+	* lib/bio/db/prosite.rb
+
+	  PROSITE#re instance method is added to translate PATTERN of
+	  the entry to Regexp using PROSITE.pa2re class method.
+
+	* lib/bio/db/kegg/genes.rb
+
+	  Bio::KEGG::GENES#keggclass method is renamed to pathway
+	  Bio::KEGG::GENES#splinks method is removed
+	  Bio::KEGG::GENES#motifs method is added
+	  these reflect changes made in the original KEGG GENES database.
+
+	  Bio::KEGG::GENES#locations method is added to return Bio::Locations
+	  Bio::KEGG::GENES#codon_usage is renamed cu_list (returns as Array)
+	  Bio::KEGG::GENES#cu is renamed to codon_usage (returns as Hash)
+	  Bio::KEGG::GENES#aalen, nalen methods are changed to return
+	  the number written in the entry (use seq.length to obtain calculated
+	  number as before).
+
+	* lib/bio/db/kegg/kgml.rb
+
+	  Names of some accessors have been changed (including bug fixes)
+	  and instance variable @dom is obsoleted. Here's a list of
+	  incompatible attribute names with KGML tags by this change:
+	    <entry>
+	      :id -> :entry_id
+	      :type -> :entry_type 
+	      names()
+	    <graphics>
+	      :name -> :label
+	      :type -> :shape
+	    <relation>
+	      :entry1 -> :node1
+	      :entry2 -> :node2
+	      :type -> :rel
+	    <subtype>
+	      edge()
+	    <reaction>
+	      :name -> :entry_id
+	      :type -> :direction
+
+	* lib/bio/io/das.rb
+
+	  Bug fixed that the value of segment.stop was overwritten by
+	  segment.orientation.
 
 2006-07-14  Naohisa Goto <ng@bioruby.org>
 
@@ -233,6 +651,13 @@
         * lib/bio/io/flatfile.rb
 
 	  Bug fix: Bio::FlatFile.open(klass, filename) didn't work.
+
+2006-05-30  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/soapwsdl.rb
+
+	  Generic list_methods method which extracts web service methods
+	  defined in the WSDL file is added.
 
 2006-05-02  Mitsuteru Nakao <n@bioruby.org>
 
