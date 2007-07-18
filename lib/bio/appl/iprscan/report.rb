@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <mn@kazusa.or.jp>
 # License::     The Ruby License
 #
-#  $Id: report.rb,v 1.8 2007/07/17 14:16:50 nakao Exp $
+#  $Id: report.rb,v 1.9 2007/07/18 11:11:57 nakao Exp $
 #
 # == Report classes for the iprscan program.
 # 
@@ -23,7 +23,7 @@ module Bio
     # 
     # == USAGE
     #  # Read a marged.txt and split each entry.
-    #  Bio::Iprscan::Report.reports_in_txt(File.read("marged.txt")) do |report| 
+    #  Bio::Iprscan::Report.parse_txt(File.read("marged.txt")) do |report| 
     #    report.query_id
     #    report.matches.size
     #    report.matches.each do |match|
@@ -40,7 +40,7 @@ module Bio
     #    # report.to_html
     #  end
     #
-    #  Bio::Iprscan::Report.reports_in_raw(File.read("marged.raw")) do |report| 
+    #  Bio::Iprscan::Report.parse_raw(File.read("marged.raw")) do |report| 
     #    report.class #=> Bio::Iprscan::Report
     #  end
     #
@@ -65,28 +65,28 @@ module Bio
       attr_accessor :matches
       
       # == USAGE
-      #  Bio::Iprscan::Report.reports_in_raw(File.open("merged.raw")) do |report|
+      #  Bio::Iprscan::Report.parse_raw(File.open("merged.raw")) do |report|
       #    report
       #  end
       #
-      def self.reports_in_raw(io)
+      def self.parse_raw(io)
         entry = ''
         while line = io.gets
           if entry != '' and entry.split("\t").first == line.split("\t").first
             entry << line
           elsif entry != ''
-            yield Bio::Iprscan::Report.parse_in_raw(entry)
+            yield Bio::Iprscan::Report.parse_raw_entry(entry)
             entry = line
           else
             entry << line
           end
         end
-        yield Bio::Iprscan::Report.parse_in_raw(entry) if entry != ''
+        yield Bio::Iprscan::Report.parse_raw_entry(entry) if entry != ''
       end
     
       # Parser method for a raw formated entry. Retruns a Bio::Iprscan::Report 
       # object.
-      def self.parse_in_raw(str)
+      def self.parse_raw_entry(str)
         report = self.new
         str.split(/\n/).each do |line|
           line = line.split("\t")
@@ -116,19 +116,18 @@ module Bio
 
       # Parser method for a xml formated entry. Retruns a Bio::Iprscan::Report 
       # object.
-      def self.parse_in_xml(str)
-        NotImplementedError
-      end
+#      def self.parse_xml(str)
+#      end
 
       # Splits the entry stream.
       # 
       # == Usage
       #
-      #  Bio::Iprscan::Report.reports_in_txt(File.open("merged.txt")) do |report|
+      #  Bio::Iprscan::Report.reports_txt(File.open("merged.txt")) do |report|
       #    report.class #=> Bio::Iprscan::Report
       #  end
       #
-      def self.reports_in_txt(io)
+      def self.parse_txt(io)
         io.each("\n\nSequence") do |entry|
           if entry =~ /Sequence$/
             entry = entry.sub(/Sequence$/, '')
@@ -136,7 +135,7 @@ module Bio
           unless entry =~ /^Sequence/
             entry = 'Sequence' + entry
           end
-          yield self.parse_in_txt(entry)
+          yield self.parse_txt_entry(entry)
         end
       end
 
@@ -145,7 +144,7 @@ module Bio
       # Parser method for a txt formated entry. Returns a Bio::Iprscan::Report
       # object.
       #
-      def self.parse_in_txt(str)
+      def self.parse_txt_entry(str)
         unless str =~ /^Sequence /
           raise ArgumentError, "Invalid format:  \n\n#{str}"
         end
@@ -189,12 +188,12 @@ module Bio
       # Splits entry stream.
       # 
       # == Usage
-      #  Bio::Iprscan::Report.reports_in_ptxt(File.open("merged.txt")) do |report|
+      #  Bio::Iprscan::Report.parse_ptxt(File.open("merged.txt")) do |report|
       #    report
       #  end
-      def self.reports_in_ptxt(io)
+      def self.parse_ptxt(io)
         io.each("\n\/\/\n") do |entry|
-          yield self.parse_in_ptxt(entry)
+          yield self.parse_ptxt_entry(entry)
         end
       end
 
@@ -204,10 +203,10 @@ module Bio
       # == Usage
       #
       #  File.read("marged.txt").each(Bio::Iprscan::Report::RS) do |e| 
-      #    report = Bio::Iprscan::Report.parse_in_ptxt(e)
+      #    report = Bio::Iprscan::Report.parse_ptxt_entry(e)
       #  end
       #
-      def self.parse_in_ptxt(str)
+      def self.parse_ptxt_entry(str)
         report = self.new
         ipr_line = ''
         str.split(/\n/).each do |line|
@@ -241,28 +240,35 @@ module Bio
         @matches = []
       end
 
-      def to_html
-        NotImplementedError
+
+      # Output interpro matches in the format_type.
+      def output(format_type)
+        case format_type
+        when 'raw', :raw
+          format_raw
+        else
+          raise NameError, "Invalid format_type."
+        end
       end
+
+#      def format_html
+#      end
       
-      def to_xml
-        NotImplementedError
-      end
+#      def format_xml
+#      end
       
-      def to_ebixml
-        NotImplementedError        
-      end
+#      def format_ebixml
+#      end
       
-      def to_txt
-        NotImplementedError        
-      end
+#      def format_txt
+#      end
       
-      def to_raw
+      def format_raw
         @matches.map { |match|
           [self.query_id,
            self.crc64,
            self.query_length,
-           match.method,
+           match.method_name,
            match.accession,
            match.description,
            match.match_start,
@@ -277,27 +283,29 @@ module Bio
         }.join("\n")
       end
       
-      def to_gff3
-        NotImplementedError        
-      end
+#      def format_gff3
+#      end
 
 
-      # Returns a Hash (key as an interpro id and value as index key for 
-      # matches (Array).
+      # Returns a Hash (key as an Interpro ID and value as a Match).
       #
-      #   report.list_of_interpro.each do |ipr_id, indexes|
-      #     indexes.each do |index|
-      #       report.matches[index].ipr_id == ipr_id #=> true
+      #   report.to_hash.each do |ipr_id, matches|
+      #     matches.each do |match|
+      #       report.matches.ipr_id == ipr_id #=> true
       #     end
       #   end
       #
-      def list_of_interpro
-        @ipr_ids = {} unless @ipr_ids
-        @matches.each_with_index do |match, i|
-          @ipr_ids[match.ipr_id] = [] unless @ipr_ids[match.ipr_id]
-          @ipr_ids[match.ipr_id] << i
+      def to_hash
+        unless @ipr_ids
+          @ipr_ids = {} 
+          @matches.each_with_index do |match, i|
+            @ipr_ids[match.ipr_id] ||= []
+            @ipr_ids[match.ipr_id] << match
+          end
+          return @ipr_ids
+        else
+          return @ipr_ids
         end
-        @ipr_ids
       end
 
 
@@ -332,8 +340,8 @@ module Bio
         # the length of the sequence in AA.
         def length;          @data[:length];          end
         # the analysis method launched.
-        def method;          @data[:method];          end  # Object#metod overrided by Match#method
-        # the Gene Ontology description for the InterPro entry, in "Aspect:term (ID)" format.
+        def method_name;          @data[:method];          end
+        # the Gene Ontology description for the InterPro entry, in "Aspect :term (ID)" format.
         def go_terms;        @data[:go_terms];        end
         # Id of the input sequence.
         def query_id;        @data[:query_id];        end

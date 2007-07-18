@@ -3,7 +3,7 @@
 #
 #   Copyright (C) 2006 Mitsuteru Nakao <n@bioruby.org>
 #
-#  $Id: test_report.rb,v 1.6 2007/07/17 14:16:50 nakao Exp $
+#  $Id: test_report.rb,v 1.7 2007/07/18 11:11:57 nakao Exp $
 #
 
 require 'pathname'
@@ -43,7 +43,7 @@ InterPro\tNULL\tNULL
 ProfileScan\tPS50310\tALA_RICH\t10.224\t805-856
 //
 END
-      @obj = Bio::Iprscan::Report.parse_in_ptxt(test_entry)
+      @obj = Bio::Iprscan::Report.parse_ptxt_entry(test_entry)
     end 
    
  
@@ -68,7 +68,7 @@ END
     end
 
     def test_match_method
-      assert_equal('BlastProDom', @obj.matches.first.method)
+      assert_equal('BlastProDom', @obj.matches.first.method_name)
     end
 
     def test_match_accession
@@ -97,7 +97,7 @@ END
   class TestIprscanTxtEntry < Test::Unit::TestCase
     def setup
       test_txt = Bio::TestIprscanData.txt_format.read.split(/\n\nSequence/)[0]
-      @obj = Bio::Iprscan::Report.parse_in_txt(test_txt)
+      @obj = Bio::Iprscan::Report.parse_txt_entry(test_txt)
     end 
 
     def test_iprscan_report_class
@@ -125,7 +125,7 @@ END
     end
 
     def test_match_method
-      assert_equal('FPrintScan', @obj.matches.first.method)
+      assert_equal('FPrintScan', @obj.matches.first.method_name)
     end
 
     def test_match_accession
@@ -169,21 +169,22 @@ END
   class TestIprscanTxtEntryList < Test::Unit::TestCase
     def setup
       test_txt = Bio::TestIprscanData.txt_format.read.split(/\n\nSequence/)[0]
-      @obj = Bio::Iprscan::Report.parse_in_txt(test_txt)
+      @obj = Bio::Iprscan::Report.parse_txt_entry(test_txt)
     end 
     
-    def test_list_of_interpro
-      hsh = {"IPR008994"=>[12, 13, 14], 
-             "IPR000110"=>[0, 1, 2], 
-             "IPR003029"=>[3, 4, 5, 6, 7, 8, 9, 10, 11], 
-             "NULL"=>[15]}
-      assert_equal(hsh, @obj.list_of_interpro)
+    def test_to_hash
+      hsh = {"IPR008994" => [12, 13, 14].map {|x| @obj.matches[x] },
+             "IPR000110" => [0, 1, 2].map {|x| @obj.matches[x] },
+             "IPR003029" => [3, 4, 5, 6, 7, 8, 9, 10, 11].map {|x| @obj.matches[x] },
+             "NULL" => [15].map {|x| @obj.matches[x] }}
+      assert_equal(hsh.keys.sort, @obj.to_hash.keys.sort)
+      assert_equal(hsh, @obj.to_hash)
     end
 
-    def test_list_of_interpro_match?
-      @obj.list_of_interpro.each do |ipr_id, indexes|
-        indexes.each do |index|
-          assert_equal(ipr_id, @obj.matches[index].ipr_id)
+    def test_to_hash_match?
+      @obj.to_hash.each do |ipr_id, matches|
+        matches.each do |match|
+          assert_equal(ipr_id, match.ipr_id)
         end
       end
     end
@@ -195,8 +196,8 @@ END
       @test_txt = Bio::TestIprscanData.txt_format
     end 
 
-    def test_reports_in_txt 
-      Bio::Iprscan::Report.reports_in_txt(@test_txt) do |report|
+    def test_parse_txt 
+      Bio::Iprscan::Report.parse_txt(@test_txt) do |report|
         assert_equal(Bio::Iprscan::Report, report.class)
       end
     end
@@ -215,20 +216,20 @@ END
         if entry.split("\t").first == line.split("\t").first
           entry << line
         elsif entry != '' and entry.split("\t").first != line.split("\t").first
-          @obj << Bio::Iprscan::Report.parse_in_raw(entry)
+          @obj << Bio::Iprscan::Report.parse_raw_entry(entry)
           entry = ''
         else
           entry << line
         end
       end
-      @obj << Bio::Iprscan::Report.parse_in_raw(entry)
+      @obj << Bio::Iprscan::Report.parse_raw_entry(entry)
     end
 
     def test_self_reports_in_raw
       io = File.open(File.join(Bio::TestIprscanData::TestDataIprscan, 
                                "merged.raw"))
       result = []
-      Bio::Iprscan::Report.reports_in_raw(io) {|x| result << x }
+      Bio::Iprscan::Report.parse_raw(io) {|x| result << x }
       assert_equal(@obj.size, result.size)
       assert_equal(@obj.first.query_id, result.first.query_id)      
       assert_equal(@obj.first.query_id, result.first.query_id)            
@@ -265,7 +266,7 @@ END
     end
     
     def test_match_method
-      assert_equal('HMMPfam', @obj.first.matches.first.method)
+      assert_equal('HMMPfam', @obj.first.matches.first.method_name)
     end
     
     def test_match_accession
@@ -315,12 +316,21 @@ END
 
   class TestIprscanReport < Test::Unit::TestCase
     def setup
-      test_txt = Bio::TestIprscanData.txt_format.read.split(/\n\nSequence/)[0]
-      @obj = Bio::Iprscan::Report.parse_in_txt(test_txt)
+      @test_txt = Bio::TestIprscanData.txt_format.read.split(/\n\nSequence/)[0]
+      @obj = Bio::Iprscan::Report.parse_txt_entry(@test_txt)
+      @test_raw = Bio::TestIprscanData.raw_format.read.split("RS16_ECOLI")[0]
     end 
 
     def test_to_raw
-#      puts @obj.to_raw
+#      assert_equal(@test_raw.split("\n").sort, 
+#                   @obj.format_raw.split("\n").sort)      
+    end
+
+    def test_output_raw
+#      assert_equal(@test_raw.split("\n").sort, 
+#                   @obj.output(:raw).split("\n").sort)      
+#      assert_equal(@test_raw.split("\n").sort, 
+#                   @obj.output('raw').split("\n").sort)      
     end
 
   end # TestIprscanReport
