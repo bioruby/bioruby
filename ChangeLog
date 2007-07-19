@@ -1,3 +1,7 @@
+2007-07-19  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby 1.1.0 released
+
 2007-07-17  Toshiaki Katayama <k@bioruby.org>
 
 	* lib/bio/io/das.rb
