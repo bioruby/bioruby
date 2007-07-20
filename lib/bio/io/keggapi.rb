@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003, 2004 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: keggapi.rb,v 1.14 2007/04/05 23:35:41 trevor Exp $
+# $Id: keggapi.rb,v 1.15 2007/07/20 21:56:45 k Exp $
 #
 
 require 'bio/io/soapwsdl'
@@ -331,6 +331,7 @@ class API < Bio::SOAPWSDL
   def add_filter(results)
     if results.is_a?(Array)
       results.each do |result|
+	next if result.is_a?(Fixnum)
         def result.filter(fields)
           fields.collect { |field| self.send(field) }
         end
