@@ -2,19 +2,25 @@
 #
 # = BioRuby shell - command line interface for the BioRuby library
 #
-# Copyright::   Copyright (C) 2005, 2006
+# Copyright::   Copyright (C) 2005, 2006, 2007
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: bioruby,v 1.19 2007/04/05 23:35:39 trevor Exp $
+# $Id: bioruby,v 1.20 2007/07/26 10:40:39 k Exp $
 #
 
 begin
   require 'rubygems'
-  require_gem 'bio', '>= 1.1.0'
+  gem 'bio', '>= 1.1.0'
 rescue LoadError
+  require 'bio'
 end
 require 'bio/shell'
+
+# utilize existing rails application
+if File.exists?("./config/environment.rb")
+  load("./config/environment.rb")
+end
 
 # required to run commands (getseq, ls etc.)
 include Bio::Shell
@@ -36,6 +42,11 @@ else
   catch(:IRB_EXIT) do
     Bio::Shell.cache[:irb].eval_input
   end
+end
+
+# utilize existing rails application
+if File.exists?("./config/environment.rb")
+  load("./config/environment.rb")
 end
 
 # saving workspace, command history and configuration before exit
