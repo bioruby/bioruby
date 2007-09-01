@@ -335,7 +335,6 @@ input[type=submit] {
 /* textarea */
 
 textarea {
-	background: url("/images/bioruby-console.png") no-repeat center;
 	background-color: #eaedeb;
 	font-family: monospace;
 	font-size: 12px;

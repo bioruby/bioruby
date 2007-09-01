@@ -21,7 +21,6 @@ class BiorubyGenerator < Rails::Generator::Base
       m.file 'bioruby-gem.png',       'public/images/bioruby-gem.png'
       m.file 'bioruby-link.gif',      'public/images/bioruby-link.gif'
       m.file 'bioruby-bg.gif',        'public/images/bioruby-bg.gif'
-      m.file 'bioruby-console.png',   'public/images/bioruby-console.png'
       m.file 'bioruby.css',           'public/stylesheets/bioruby.css'
     end
   end
