@@ -22,6 +22,7 @@ class BiorubyGenerator < Rails::Generator::Base
       m.file 'bioruby-link.gif',      'public/images/bioruby-link.gif'
       m.file 'bioruby-bg.gif',        'public/images/bioruby-bg.gif'
       m.file 'bioruby.css',           'public/stylesheets/bioruby.css'
+      m.file 'spinner.gif',           'public/images/spinner.gif'
     end
   end
 end

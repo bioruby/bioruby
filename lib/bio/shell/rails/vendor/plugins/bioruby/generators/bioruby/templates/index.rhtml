@@ -2,8 +2,12 @@
 <%- if flash[:notice] -%>
 <div id="notice"><p><%= flash[:notice] %></p></div><br>
 <%- end -%>
-<%= form_remote_tag(:url => {:action => "evaluate"}, :position => "top") %>
+<%= form_remote_tag :url => {:action => "evaluate"}, :position => "top",
+      :before => %(Element.show('spinner')),
+      :success => %(Element.hide('spinner')) %>
+<img id="spinner" src="/images/spinner.gif" style="display:none">
 <b>BioRuby script:</b>
+<br/>
 <textarea id="script" name="script" rows=10 cols=80></textarea><br>
 <input type="submit" value="Evaluate">
 <input type="reset" value="Clear">
