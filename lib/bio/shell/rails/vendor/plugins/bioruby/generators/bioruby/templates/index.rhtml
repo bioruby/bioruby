@@ -4,8 +4,8 @@
 <%- end -%>
 <%= form_remote_tag :url => {:action => "evaluate"}, :position => "top",
       :before => %(Element.show('spinner')),
-      :success => %(Element.hide('spinner')) %>
-<img id="spinner" src="/images/spinner.gif" style="display:none">
+      :complete => %(Element.hide('spinner')) %>
+<img id="spinner" src="/images/bioruby/spinner.gif" style="display:none">
 <b>BioRuby script:</b>
 <br/>
 <textarea id="script" name="script" rows=10 cols=80></textarea><br>

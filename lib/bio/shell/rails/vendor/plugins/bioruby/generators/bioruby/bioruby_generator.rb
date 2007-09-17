@@ -5,7 +5,7 @@ class BiorubyGenerator < Rails::Generator::Base
       m.directory 'app/helpers'
       m.directory 'app/views/bioruby'
       m.directory 'app/views/layouts'
-      m.directory 'public/images'
+      m.directory 'public/images/bioruby'
       m.directory 'public/stylesheets'
       m.file 'bioruby_controller.rb', 'app/controllers/bioruby_controller.rb'
       m.file 'bioruby_helper.rb',     'app/helpers/bioruby_helper.rb'
@@ -18,11 +18,11 @@ class BiorubyGenerator < Rails::Generator::Base
       m.file 'history.rhtml',         'app/views/bioruby/history.rhtml'
       m.file 'index.rhtml',           'app/views/bioruby/index.rhtml'
       m.file 'bioruby.rhtml',         'app/views/layouts/bioruby.rhtml'
-      m.file 'bioruby-gem.png',       'public/images/bioruby-gem.png'
-      m.file 'bioruby-link.gif',      'public/images/bioruby-link.gif'
-      m.file 'bioruby-bg.gif',        'public/images/bioruby-bg.gif'
+      m.file 'spinner.gif',           'public/images/bioruby/spinner.gif'
+      m.file 'bioruby-gem.png',       'public/images/bioruby/gem.png'
+      m.file 'bioruby-link.gif',      'public/images/bioruby/link.gif'
+      m.file 'bioruby-bg.gif',        'public/images/bioruby/bg.gif'
       m.file 'bioruby.css',           'public/stylesheets/bioruby.css'
-      m.file 'spinner.gif',           'public/images/spinner.gif'
     end
   end
 end
