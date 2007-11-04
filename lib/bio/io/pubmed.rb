@@ -5,7 +5,7 @@
 # Copyright::  Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-# $Id: pubmed.rb,v 1.16 2007/04/05 23:35:41 trevor Exp $
+# $Id: pubmed.rb,v 1.17 2007/11/04 11:50:59 aerts Exp $
 #
 
 require 'net/http'
@@ -74,8 +74,8 @@ class PubMed
   # * _id_: query string (required)
   # *Returns*:: array of PubMed IDs
   def self.search(str)
-    host = "www.ncbi.nlm.nih.gov"
-    path = "/entrez/query.fcgi?tool=bioruby&cmd=Search&doptcmdl=MEDLINE&db=PubMed&term="
+    host = 'www.ncbi.nlm.nih.gov'
+    path = "sites/entrez?tool=bioruby&cmd=Text&dopt=MEDLINE&db=PubMed&uid="
 
     http = Bio::Command.new_http(host)
     response, = http.get(path + CGI.escape(str))
