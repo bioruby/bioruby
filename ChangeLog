@@ -1,3 +1,10 @@
+2007-11-10  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/pubmed.rb:
+
+	  Fixed search, query methods (but use of esearch and efetch is
+	  strongly recommended).
+
 2007-07-19  Toshiaki Katayama <k@bioruby.org>
 
 	* BioRuby 1.1.0 released
@@ -414,7 +421,7 @@
 	  the evaluated result is returned with AJAX having various neat
 	  visual effects.
 
-	* lib/bio/.rb
+	* lib/bio.rb
 
 	  Extended to have Bio.command where command can be any BioRuby
 	  shell methods.
