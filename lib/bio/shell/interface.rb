@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: interface.rb,v 1.18 2007/06/26 08:38:38 k Exp $
+# $Id: interface.rb,v 1.19 2007/11/15 07:08:49 k Exp $
 #
 
 module Bio::Shell
@@ -152,7 +152,7 @@ module Bio::Shell
     datadir = Bio::Shell.data_dir
     message = "Save file '#{file}' in '#{datadir}' directory? [y/n] "
     if ! file[/^#{datadir}/] and Bio::Shell.ask_yes_or_no(message)
-      file = datadir + file
+      file = File.join(datadir, file)
     end
     if File.exists?(file)
       message = "Overwrite existing '#{file}' file? [y/n] "
