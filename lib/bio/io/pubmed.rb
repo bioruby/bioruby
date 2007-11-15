@@ -5,7 +5,7 @@
 # Copyright::  Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-# $Id: pubmed.rb,v 1.19 2007/11/15 07:23:39 k Exp $
+# $Id: pubmed.rb,v 1.20 2007/11/15 07:40:27 k Exp $
 #
 
 require 'bio/command'
@@ -150,6 +150,7 @@ class PubMed
     http = Bio::Command.new_http(host)
     response, = http.get(path + list)
     result = response.body
+    result = result.split(/\n\n+/)
     return result
   end
 
@@ -169,6 +170,10 @@ class PubMed
 
     response, = Bio::Command.post_form(serv, opts)
     result = response.body
+    if opts["retmode"] == "text"
+      result = result.split(/\n\n+/)
+    end
+
     return result
   end
 
