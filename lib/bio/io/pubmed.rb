@@ -1,11 +1,11 @@
 #
 # = bio/io/pubmed.rb - NCBI Entrez/PubMed client module
 #
-# Copyright::  Copyright (C) 2001 Toshiaki Katayama <k@bioruby.org>
+# Copyright::  Copyright (C) 2001, 2007 Toshiaki Katayama <k@bioruby.org>
 # Copyright::  Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-# $Id: pubmed.rb,v 1.20 2007/11/15 07:40:27 k Exp $
+# $Id: pubmed.rb,v 1.21 2007/11/20 15:22:03 k Exp $
 #
 
 require 'bio/command'
@@ -70,6 +70,24 @@ module Bio
 #  
 class PubMed
 
+  # Run retrieval scripts on weekends or between 9 pm and 5 am Eastern Time
+  # weekdays for any series of more than 100 requests.
+  # -> Not implemented yet in BioRuby
+
+  # Make no more than one request every 3 seconds.
+  NCBI_INTERVAL = 3
+  @@last_access = nil
+
+  def self.ncbi_access_wait(wait = NCBI_INTERVAL)
+    if @@last_access
+      duration = Time.now - @@last_access
+      if wait > duration
+        sleep wait - duration
+      end
+    end
+    @@last_access = Time.now
+  end
+
   # Search the PubMed database by given keywords using E-Utils and returns 
   # an array of PubMed IDs.
   # 
@@ -89,28 +107,8 @@ class PubMed
   # * _rettype_
   # *Returns*:: array of PubMed IDs or a number of results
   def self.esearch(str, hash = {})
-    hash['retmax'] = 100 unless hash['retmax']
+    return nil if str.empty?
 
-    opts = []
-    hash.each do |k, v|
-      opts << "#{k}=#{v}"
-    end
-
-    host = "eutils.ncbi.nlm.nih.gov"
-    path = "/entrez/eutils/esearch.fcgi?tool=bioruby&db=pubmed&#{opts.join('&')}&term="
-
-    http = Bio::Command.new_http(host)
-    response, = http.get(path + CGI.escape(str))
-    result = response.body
-    if hash['rettype'] == 'count'
-      result = result.scan(/<Count>(.*?)<\/Count>/m).flatten.first.to_i
-    else
-      result = result.scan(/<Id>(.*?)<\/Id>/m).flatten
-    end
-    return result
-  end
-
-  def self.esearch2(str, hash = {})
     serv = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
     opts = {
       "retmax" => 100,
@@ -119,6 +117,8 @@ class PubMed
       "term"   => str
     }
     opts.update(hash)
+
+    self.ncbi_access_wait
 
     response, = Bio::Command.post_form(serv, opts)
     result = response.body
@@ -133,29 +133,13 @@ class PubMed
   # Retrieve PubMed entry by PMID and returns MEDLINE formatted string using
   # entrez efetch. Multiple PubMed IDs can be provided:
   #   Bio::PubMed.efetch(123)
-  #   Bio::PubMed.efetch(123,456,789)
   #   Bio::PubMed.efetch([123,456,789])
   # ---
   # *Arguments*:
   # * _ids_: list of PubMed IDs (required)
-  # *Returns*:: MEDLINE formatted String
-  def self.efetch(*ids)
-    return [] if ids.empty?
-
-    host = "eutils.ncbi.nlm.nih.gov"
-    path = "/entrez/eutils/efetch.fcgi?tool=bioruby&db=pubmed&retmode=text&rettype=medline&id="
-
-    list = ids.join(",")
-
-    http = Bio::Command.new_http(host)
-    response, = http.get(path + list)
-    result = response.body
-    result = result.split(/\n\n+/)
-    return result
-  end
-
-  def self.efetch2(ids, hash = {})
-    return "" if ids.empty?
+  # *Returns*:: Array of MEDLINE formatted String
+  def self.efetch(ids, hash = {})
+    return nil if ids.to_s.empty?
     ids = ids.join(",") if ids === Array
 
     serv = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
@@ -168,12 +152,13 @@ class PubMed
     }
     opts.update(hash)
 
+    self.ncbi_access_wait
+
     response, = Bio::Command.post_form(serv, opts)
     result = response.body
     if opts["retmode"] == "text"
       result = result.split(/\n\n+/)
     end
-
     return result
   end
 
@@ -253,15 +238,30 @@ end # Bio
 if __FILE__ == $0
 
   puts "--- Search PubMed by E-Utils ---"
-  puts Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics)", {"rettype" => "count"})
-
-  Bio::PubMed.esearch2("(genome AND analysis) OR bioinformatics)").each do |x|
-    p x
+  opts = {"rettype" => "count"}
+  puts Time.now
+  puts Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics)", opts)
+  puts Time.now
+  puts Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics)", opts)
+  puts Time.now
+  puts Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics)", opts)
+  puts Time.now
+  Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics)").each do |x|
+    puts x
   end
 
   puts "--- Retrieve PubMed entry by E-Utils ---"
-  puts Bio::PubMed.efetch("10592173", "14693808")
-  puts Bio::PubMed.efetch2(["10592173", "14693808"], {"retmode" => "xml"})
+  puts Time.now
+  puts Bio::PubMed.efetch(16381885)
+  puts Time.now
+  puts Bio::PubMed.efetch("16381885")
+  puts Time.now
+  puts Bio::PubMed.efetch("16381885")
+  puts Time.now
+  opts = {"retmode" => "xml"}
+  puts Bio::PubMed.efetch([10592173, 14693808], opts)
+  puts Time.now
+  puts Bio::PubMed.efetch(["10592173", "14693808"], opts)
 
   puts "--- Search PubMed by Entrez CGI ---"
   Bio::PubMed.search("(genome AND analysis) OR bioinformatics)").each do |x|
@@ -269,10 +269,10 @@ if __FILE__ == $0
   end
 
   puts "--- Retrieve PubMed entry by Entrez CGI ---"
-  puts Bio::PubMed.query("10592173")
+  puts Bio::PubMed.query("16381885")
 
 
   puts "--- Retrieve PubMed entry by PMfetch ---"
-  puts Bio::PubMed.pmfetch("10592173")
+  puts Bio::PubMed.pmfetch("16381885")
 
 end
