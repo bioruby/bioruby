@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2001, 2002, 2004, 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: compound.rb,v 0.16 2007/06/28 11:27:24 k Exp $
+# $Id: compound.rb,v 0.17 2007/11/27 07:09:43 k Exp $
 #
 
 require 'bio/db'
@@ -43,6 +43,11 @@ class COMPOUND < KEGGDB
   # MASS
   def mass
     field_fetch('MASS').to_f
+  end
+
+  # REMARK
+  def remark
+    field_fetch('REMARK')
   end
 
   # GLYCAN
