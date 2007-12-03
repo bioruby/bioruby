@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: test_aa.rb,v 1.4 2007/04/14 05:09:23 k Exp $
+# $Id: test_aa.rb,v 1.5 2007/12/03 06:19:12 nakao Exp $
 #
 
 require 'pathname'
@@ -19,8 +19,8 @@ require 'bio/sequence/aa'
 
 module Bio
 
-
   class TestSequenceAANew < Test::Unit::TestCase
+
     def test_new
       str = "RRLEHTFVFL RNFSLMLLRY"
       assert(Bio::Sequence::AA.new(str))
@@ -86,6 +86,7 @@ module Bio
              "leucine", "leucine", "arginine", "tyrosine"]
       assert_equal(ary, @obj.names)
     end
+
   end
 
 

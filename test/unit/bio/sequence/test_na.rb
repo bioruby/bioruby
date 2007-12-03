@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: test_na.rb,v 1.5 2007/04/05 23:35:44 trevor Exp $
+# $Id: test_na.rb,v 1.6 2007/12/03 06:19:12 nakao Exp $
 #
 
 require 'pathname'
@@ -174,6 +174,68 @@ module Bio
     end
 
   end
+
+  class TestSequenceCommon < Test::Unit::TestCase
+
+    def setup
+      @obj  = Bio::Sequence::NA.new('atgcatgcatgcatgcaaaa')
+    end
+
+    def test_to_s
+      assert_equal('atgcatgcatgcatgcaaaa', @obj.to_s)
+    end
+
+    def test_to_str
+      assert_equal('atgcatgcatgcatgcaaaa', @obj.to_str)
+    end
+
+    def test_seq
+      str = "atgcatgcatgcatgcaaaa"
+      assert_equal(str, @obj.seq)
+    end
+
+    # <<(*arg)
+    def test_push
+      str = "atgcatgcatgcatgcaaaaa"
+      assert_equal(str, @obj << "A")
+    end
+
+    # concat(*arg)
+    def test_concat
+      str = "atgcatgcatgcatgcaaaaa"
+      assert_equal(str, @obj.concat("A"))
+    end
+
+    # +(*arg)
+    def test_sum 
+      str = "atgcatgcatgcatgcaaaaatgcatgcatgcatgcaaaa"
+      assert_equal(str, @obj + @obj)
+    end
+
+    # window_search(window_size, step_size = 1)
+    def test_window_search
+      @obj.window_search(4) do |subseq|
+        assert_equal(20, @obj.size)
+      end
+    end
+
+    #total(hash)
+    def test_total
+      hash = {'a' => 1, 'c' => 2, 'g' => 4, 't' => 3}
+      assert_equal(44.0, @obj.total(hash))
+    end
+
+    def test_composition
+      composition = {"a"=>8, "c"=>4, "g"=>4, "t"=>4}
+      assert_equal(composition, @obj.composition)
+    end
+    
+    def test_splicing
+      #(position)
+      assert_equal("atgcatgc", @obj.splicing("join(1..4, 13..16)"))
+    end
+  end
+
 
   class TestSequenceNATranslation < Test::Unit::TestCase
     def setup

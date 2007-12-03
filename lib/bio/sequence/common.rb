@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: common.rb,v 1.4 2007/04/05 23:35:41 trevor Exp $
+# $Id: common.rb,v 1.5 2007/12/03 06:19:12 nakao Exp $
 #
 
 module Bio
@@ -91,10 +91,13 @@ module Common
   #   puts s                                  #=> "atgcatgcatgcatgc"
   # ---
   # *Returns*:: current Bio::Sequence::NA/AA object (modified)
-  def <<(*arg)
+  def concat(*arg)
     super(self.class.new(*arg))
   end
-  alias concat <<
+
+  def <<(*arg)
+    concat(*arg)
+  end
 
   # Create a new sequence by adding to an existing sequence.
   # The existing sequence is not modified.

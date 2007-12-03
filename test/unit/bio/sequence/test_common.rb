@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2006 Mitsuteru C. Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_common.rb,v 1.4 2007/04/05 23:35:44 trevor Exp $
+#  $Id: test_common.rb,v 1.5 2007/12/03 06:19:12 nakao Exp $
 #
 
 require 'pathname'
@@ -31,16 +31,25 @@ module Bio
       assert_equal('atgcatgcatgcatgcaaaa', @obj.to_s)
     end
 
+    def test_to_str
+      assert_equal('atgcatgcatgcatgcaaaa', @obj.to_str)
+    end
+
     def test_seq
       str = "atgcatgcatgcatgcaaaa"
       assert_equal(str, @obj.seq)
     end
 
-
     # <<(*arg)
     def test_push
       str = "atgcatgcatgcatgcaaaaA"
       assert_equal(str, @obj << "A")
+    end
+
+    # concat(*arg)
+    def test_concat
+      str = "atgcatgcatgcatgcaaaaA"
+      assert_equal(str, @obj.concat("A"))
     end
 
     # +(*arg)
