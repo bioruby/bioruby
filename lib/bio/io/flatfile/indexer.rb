@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2002 GOTO Naohisa <ng@bioruby.org> 
 # License::   The Ruby License
 # 
-#  $Id: indexer.rb,v 1.25 2007/04/05 23:35:41 trevor Exp $ 
+#  $Id: indexer.rb,v 1.26 2007/12/11 15:13:32 ngoto Exp $ 
 # 
 
 require 'bio/io/flatfile/index'
@@ -714,7 +714,7 @@ module Bio
 
     ##############################################################
     def self.formatstring2class(format_string)
-      case format
+      case format_string
       when /genbank/i
         dbclass = Bio::GenBank
       when /genpept/i
