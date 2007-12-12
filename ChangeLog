@@ -1,3 +1,18 @@
+2007-12-12  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/newick.rb:
+
+	  Changed to be compliant with the Gary Olsen's Interpretation of
+	  the "Newick's 8:45" Tree Format Standard.
+
+	* test/unit/bio/db/test_newick.rb
+
+	  More tests are added.
+
+	* lib/bio/io/flatfile/indexer.rb
+
+	  Fixed a misspelling in Bio::FlatFileIndex.formatstring2class.
+
 2007-11-10  Toshiaki Katayama <k@bioruby.org>
 
 	* lib/bio/io/pubmed.rb:

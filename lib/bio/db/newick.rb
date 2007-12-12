@@ -6,9 +6,19 @@
 #               Daniel Amelang <dan@amelang.net>
 # License::     The Ruby License
 #
-# $Id: newick.rb,v 1.7 2007/04/05 23:35:40 trevor Exp $
+# $Id: newick.rb,v 1.8 2007/12/12 16:06:22 ngoto Exp $
+#
+# == Description
+#
+# This file contains parser and formatter of Newick and NHX.
+#
+# == References
+#
+# * http://evolution.genetics.washington.edu/phylip/newick_doc.html
+# * http://www.phylosoft.org/forester/NHX.html
 #
 
+require 'strscan'
 require 'bio/tree'
 
 module Bio
@@ -18,6 +28,7 @@ module Bio
     # newick output
     #+++
 
+    # default options
     DEFAULT_OPTIONS =
       { :indent => '  ' }
 
@@ -32,10 +43,26 @@ module Bio
     end
     private :__get_option
 
+
+    # formats Newick label (unquoted_label or quoted_label)
+    def __to_newick_format_label(str, options)
+      if __get_option(:parser, options) == :naive then
+        return str.to_s
+      end
+      str = str.to_s
+      if /([\(\)\,\:\[\]\_\'\x00-\x1f\x7f])/ =~ str then
+        # quoted_label
+        return "\'" + str.gsub(/\'/, "\'\'") + "\'"
+      end
+      # unquoted_label
+      return str.gsub(/ /, '_')
+    end
+    private :__to_newick_format_label
+
     # formats leaf
     def __to_newick_format_leaf(node, edge, options)
 
-      label = get_node_name(node).to_s
+      label = __to_newick_format_label(get_node_name(node), options)
 
       dist = get_edge_distance_string(edge)
 
@@ -62,7 +89,7 @@ module Bio
     # formats leaf for NHX
     def __to_newick_format_leaf_NHX(node, edge, options)
 
-      label = get_node_name(node).to_s
+      label = __to_newick_format_label(get_node_name(node), options)
 
       dist = get_edge_distance_string(edge)
 
@@ -165,11 +192,14 @@ module Bio
     # Returns a newick formatted string.
     # If block is given, the order of the node is sorted
     # (as the same manner as Enumerable#sort).
-    # Description about options.
-    #  :indent : indent string; set false to disable (default: '  ')
-    #  :bootstrap_style : :disabled    disables bootstrap representations
-    #                     :traditional traditional style
-    #                     :molphy      Molphy style (default)
+    #
+    # Available options:
+    # <tt>:indent</tt>::
+    #     indent string; set false to disable (default: '  ')
+    # <tt>:bootstrap_style</tt>::
+    #     <tt>:disabled</tt> disables bootstrap representations.
+    #     <tt>:traditional</tt> for traditional style.
+    #     <tt>:molphy</tt> for Molphy style (default).
     def output_newick(options = {}, &block) #:yields: node1, node2
       root = @root
       root ||= self.nodes.first
@@ -185,8 +215,11 @@ module Bio
     # Returns a NHX (New Hampshire eXtended) formatted string.
     # If block is given, the order of the node is sorted
     # (as the same manner as Enumerable#sort).
-    # Description about options.
-    #  :indent        : indent string; set false to disable (default: '  ')
+    #
+    # Available options:
+    # <tt>:indent</tt>::
+    #     indent string; set false to disable (default: '  ')
+    #
     def output_nhx(options = {}, &block) #:yields: node1, node2
       root = @root
       root ||= self.nodes.first
@@ -257,13 +290,28 @@ module Bio
     # Creates a new Newick object.
     # _options_ for parsing can be set.
     #
-    # Note: molphy-style bootstrap values may be parsed, even if
-    # the options[:bootstrap_style] is set to :traditional or :disabled.
-    # Note: By default, if all of the internal node's names are numeric
+    # Available options:
+    # <tt>:bootstrap_style</tt>::
+    #     <tt>:traditional</tt> for traditional bootstrap style,
+    #     <tt>:molphy</tt> for molphy style,
+    #     <tt>:disabled</tt> to ignore bootstrap strings.
+    #     For details of default actions, please read the notes below.
+    # <tt>:parser</tt>::
+    #     <tt>:naive</tt> for using naive parser, compatible with
+    #     BioRuby 1.1.0, which ignores quoted strings and
+    #     do not convert underscores to spaces. 
+    #
+    # Notes for bootstrap style:
+    # Molphy-style bootstrap values may always be parsed, even if
+    # the <tt>options[:bootstrap_style]</tt> is set to
+    # <tt>:traditional</tt> or <tt>:disabled</tt>.
+    #
+    # Note for default or traditional bootstrap style:
+    # By default, if all of the internal node's names are numeric
     # and there are no NHX and no molphy-style boostrap values,
     # the names of internal nodes are regarded as bootstrap values.
-    # options[:bootstrap_style] = :disabled or :molphy to disable the feature
-    # (or at least one NHX tag exists).
+    # <tt>options[:bootstrap_style] = :disabled</tt> or <tt>:molphy</tt>
+    # to disable the feature (or at least one NHX tag exists).
     def initialize(str, options = nil)
       str = str.sub(/\;(.*)/m, ';')
       @original_string = str
@@ -308,57 +356,66 @@ module Bio
     end
 
     # Parses newick formatted leaf (or internal node) name.
-    def __parse_newick_leaf(str, node, edge, options)
-      case str
-      when /(.*)\:(.*)\[(.*)\]/
-        node.name = $1
-        edge.distance_string = $2 if $2 and !($2.strip.empty?)
-        # bracketted string into bstr
-        bstr = $3
-      when /(.*)\[(.*)\]/
-        node.name = $1
-        # bracketted string into bstr
-        bstr = $2
-      when /(.*)\:(.*)/
-        node.name = $1
-        edge.distance_string = $2 if $2 and !($2.strip.empty?)
-      else
-        node.name = str
+    def __parse_newick_leaf(leaf_tokens, node, edge, options)
+      t = leaf_tokens.shift
+      if !t.kind_of?(Symbol) then
+        node.name = t
+        t = leaf_tokens.shift
       end
 
-      # determines NHX or Molphy-style bootstrap
-      if bstr and !(bstr.strip.empty?)
+      if t == :':' then
+        t = leaf_tokens.shift
+        if !t.kind_of?(Symbol) then
+          edge.distance_string = t if t and !(t.strip.empty?)
+          t = leaf_tokens.shift
+        end
+      end
+
+      if t == :'[' then
+        btokens = leaf_tokens
         case __get_option(:original_format, options)
         when :nhx
           # regarded as NHX string which might be broken
-          __parse_nhx(bstr, node, edge)
+          __parse_nhx(btokens, node, edge)
         when :traditional
           # simply ignored
         else
-          case bstr
+          case btokens[0].to_s.strip
+          when ''
+            # not automatically determined
           when /\A\&\&NHX/
             # NHX string
             # force to set NHX mode
             @options[:original_format] = :nhx
-            __parse_nhx(bstr, node, edge)
+            __parse_nhx(btokens, node, edge)
           else
             # Molphy-style boostrap values
             # let molphy mode if nothing determined
             @options[:original_format] ||= :molphy
+            bstr = ''
+            while t = btokens.shift and t != :']'
+              bstr.concat t.to_s
+            end
             node.bootstrap_string = bstr
-          end #case bstr
+          end #case btokens[0]
         end
       end
+
+      if !btokens and !leaf_tokens.empty? then
+        # syntax error?
+      end
+      node.name ||= '' # compatibility for older BioRuby
 
       # returns true
       true
     end
 
     # Parses NHX (New Hampshire eXtended) string
-    def __parse_nhx(bstr, node, edge)
-      a = bstr.split(/\:/)
-      a.shift if a[0] == '&&NHX'
-      a.each do |str|
+    def __parse_nhx(btokens, node, edge)
+      btokens.shift if btokens[0] == '&&NHX'
+      btokens.each do |str|
+        break if str == :']'
+        next if str.kind_of?(Symbol)
         tag, val = str.split(/\=/, 2)
         case tag
         when 'B'
@@ -391,6 +448,97 @@ module Bio
       true
     end
 
+    # splits string to tokens
+    def __parse_newick_tokenize(str, options)
+      str = str.chop if str[-1..-1] == ';'
+      # http://evolution.genetics.washington.edu/phylip/newick_doc.html
+      # quoted_label ==> ' string_of_printing_characters '
+      # single quote in quoted_label is '' (two single quotes)
+      #
+
+      if __get_option(:parser, options) == :naive then
+        ary = str.split(/([\(\)\,\:\[\]])/)
+        ary.collect! { |x| x.strip!; x.empty? ? nil : x }
+        ary.compact!
+        ary.collect! do |x|
+          if /\A([\(\)\,\:\[\]])\z/ =~ x then
+            x.intern
+          else
+            x
+          end
+        end
+        return ary
+      end
+
+      tokens = []
+      ss = StringScanner.new(str)
+
+      while !(ss.eos?)
+        if ss.scan(/\s+/) then
+          # do nothing
+
+        elsif ss.scan(/[\(\)\,\:\[\]]/) then
+          # '(' or ')' or ',' or ':' or '[' or ']'
+          t = ss.matched
+          tokens.push t.intern
+
+        elsif ss.scan(/\'/) then
+          # quoted_label
+          t = ''
+          while true
+            if ss.scan(/([^\']*)\'/) then
+              t.concat ss[1]
+              if  ss.scan(/\'/) then
+                # single quote in quoted_label
+                t.concat ss.matched
+              else
+                break
+              end
+            else
+              # incomplete quoted_label?
+              break
+            end
+          end #while true
+          unless ss.match?(/\s*[\(\)\,\:\[\]]/) or ss.match?(/\s*\z/) then
+            # label continues? (illegal, but try to rescue)
+            if ss.scan(/[^\(\)\,\:\[\]]+/) then
+              t.concat ss.matched.lstrip
+            end
+          end
+          tokens.push t
+
+        elsif ss.scan(/[^\(\)\,\:\[\]]+/) then
+          # unquoted_label
+          t = ss.matched.strip
+          t.gsub!(/[\r\n]/, '')
+          # unquoted underscore should be converted to blank
+          t.gsub!(/\_/, ' ')
+          tokens.push t unless t.empty?
+
+        else
+          # unquoted_label in end of string
+          t = ss.rest.strip
+          t.gsub!(/[\r\n]/, '')
+          # unquoted underscore should be converted to blank
+          t.gsub!(/\_/, ' ')
+          tokens.push t unless t.empty?
+          ss.terminate
+
+        end
+      end #while !(ss.eos?)
+
+      tokens
+    end
+
+    # get tokens for a leaf
+    def __parse_newick_get_tokens_for_leaf(ary)
+      r = []
+      while t = ary[0] and t != :',' and t != :')' and t != :'('
+        r.push ary.shift
+      end
+      r
+    end
+
     # Parses newick formatted string.
     def __parse_newick(str, options = {})
       # initializing
@@ -401,40 +549,37 @@ module Bio
       internal_nodes = []
       node_stack = []
       # preparation of tokens
-      str = str.chop if str[-1..-1] == ';'
-      ary = str.split(/([\(\)\,])/)
-      ary.collect! { |x| x.strip!; x.empty? ? nil : x }
-      ary.compact!
+      ary = __parse_newick_tokenize(str, options)
       previous_token = nil
       # main loop
       while token = ary.shift
         #p token
         case token
-        when ','
-          if previous_token == ',' or previous_token == '(' then
+        when :','
+          if previous_token == :',' or previous_token == :'(' then
             # there is a leaf whose name is empty.
             ary.unshift(token)
             ary.unshift('')
             token = nil
           end
-        when '('
+        when :'('
           node = Node.new
           nodes << node
           internal_nodes << node
           node_stack.push(cur_node)
           cur_node = node
-        when ')'
-          if previous_token == ',' or previous_token == '(' then
+        when :')'
+          if previous_token == :',' or previous_token == :'(' then
             # there is a leaf whose name is empty.
             ary.unshift(token)
             ary.unshift('')
             token = nil
           else
             edge = Edge.new
-            next_token = ary[0]
-            if next_token and next_token != ',' and next_token != ')' then
-              __parse_newick_leaf(next_token, cur_node, edge, options)
-              ary.shift
+            leaf_tokens = __parse_newick_get_tokens_for_leaf(ary)
+            token = nil
+            if leaf_tokens.size > 0 then
+              __parse_newick_leaf(leaf_tokens, cur_node, edge, options)
             end
             parent = node_stack.pop
             raise ParseError, 'unmatched parentheses' unless parent
@@ -444,7 +589,10 @@ module Bio
         else
           leaf = Node.new
           edge = Edge.new
-          __parse_newick_leaf(token, leaf, edge, options)
+          ary.unshift(token)
+          leaf_tokens = __parse_newick_get_tokens_for_leaf(ary)
+          token = nil
+          __parse_newick_leaf(leaf_tokens, leaf, edge, options)
           nodes << leaf
           edges << Bio::Relation.new(cur_node, leaf, edge)
         end #case
