@@ -5,7 +5,7 @@
 # Copyright::  Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-# $Id: pubmed.rb,v 1.22 2007/11/28 06:34:33 k Exp $
+# $Id: pubmed.rb,v 1.23 2007/12/12 13:53:26 k Exp $
 #
 
 require 'bio/command'
@@ -51,11 +51,11 @@ module Bio
 #   require 'bio'
 #
 #   # If you don't know the pubmed ID:
-#   Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics)").each do |x|
+#   Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics").each do |x|
 #     p x
 #   end
 #
-#   Bio::PubMed.search("(genome AND analysis) OR bioinformatics)").each do |x|
+#   Bio::PubMed.search("(genome AND analysis) OR bioinformatics").each do |x|
 #     p x
 #   end
 #   
@@ -273,13 +273,13 @@ if __FILE__ == $0
   puts "--- Search PubMed by E-Utils ---"
   opts = {"rettype" => "count"}
   puts Time.now
-  puts pubmed.esearch("(genome AND analysis) OR bioinformatics)", opts)
+  puts pubmed.esearch("(genome AND analysis) OR bioinformatics", opts)
   puts Time.now
-  puts pubmed.esearch("(genome AND analysis) OR bioinformatics)", opts)
+  puts pubmed.esearch("(genome AND analysis) OR bioinformatics", opts)
   puts Time.now
-  puts pubmed.esearch("(genome AND analysis) OR bioinformatics)", opts)
+  puts pubmed.esearch("(genome AND analysis) OR bioinformatics", opts)
   puts Time.now
-  pubmed.esearch("(genome AND analysis) OR bioinformatics)").each do |x|
+  pubmed.esearch("(genome AND analysis) OR bioinformatics").each do |x|
     puts x
   end
 
@@ -297,7 +297,7 @@ if __FILE__ == $0
   puts pubmed.efetch(["10592173", "14693808"], opts)
 
   puts "--- Search PubMed by Entrez CGI ---"
-  pubmed.search("(genome AND analysis) OR bioinformatics)").each do |x|
+  pubmed.search("(genome AND analysis) OR bioinformatics").each do |x|
     p x
   end
 
@@ -315,13 +315,13 @@ if __FILE__ == $0
   puts "--- Search PubMed by E-Utils ---"
   opts = {"rettype" => "count"}
   puts Time.now
-  puts Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics)", opts)
+  puts Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics", opts)
   puts Time.now
-  puts Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics)", opts)
+  puts Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics", opts)
   puts Time.now
-  puts Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics)", opts)
+  puts Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics", opts)
   puts Time.now
-  Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics)").each do |x|
+  Bio::PubMed.esearch("(genome AND analysis) OR bioinformatics").each do |x|
     puts x
   end
 
@@ -339,7 +339,7 @@ if __FILE__ == $0
   puts Bio::PubMed.efetch(["10592173", "14693808"], opts)
 
   puts "--- Search PubMed by Entrez CGI ---"
-  Bio::PubMed.search("(genome AND analysis) OR bioinformatics)").each do |x|
+  Bio::PubMed.search("(genome AND analysis) OR bioinformatics").each do |x|
     p x
   end
 
