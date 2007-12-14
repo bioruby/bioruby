@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: glycan.rb,v 1.6 2007/06/28 11:27:24 k Exp $
+# $Id: glycan.rb,v 1.7 2007/12/14 16:20:38 k Exp $
 #
 
 require 'bio/db'
@@ -94,12 +94,12 @@ class GLYCAN < KEGGDB
     @data['ENZYME']
   end
 
-  # ORTHOLOG
+  # ORTHOLOGY
   def orthologs
-    unless @data['ORTHOLOG']
-      @data['ORTHOLOG'] = lines_fetch('ORTHOLOG')
+    unless @data['ORTHOLOGY']
+      @data['ORTHOLOGY'] = lines_fetch('ORTHOLOGY')
     end
-    @data['ORTHOLOG']
+    @data['ORTHOLOGY']
   end
 
   # COMMENT

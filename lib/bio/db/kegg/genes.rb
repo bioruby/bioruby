@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: genes.rb,v 0.25 2007/04/05 23:35:41 trevor Exp $
+# $Id: genes.rb,v 0.26 2007/12/14 16:20:38 k Exp $
 #
 #
 # == KEGG GENES parser
@@ -137,7 +137,7 @@ class GENES < KEGGDB
   end
 
   def orthologs
-    lines_fetch('ORTHOLOG')
+    lines_fetch('ORTHOLOGY')
   end
 
   def pathway

@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2001, 2002, 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: enzyme.rb,v 0.11 2007/04/05 23:35:41 trevor Exp $
+# $Id: enzyme.rb,v 0.12 2007/12/14 16:20:38 k Exp $
 #
 
 require 'bio/db'
@@ -106,9 +106,9 @@ class ENZYME < KEGGDB
     lines_fetch('PATHWAY')
   end
 
-  # ORTHOLOG
+  # ORTHOLOGY
   def orthologs
-    lines_fetch('ORTHOLOG')
+    lines_fetch('ORTHOLOGY')
   end
 
   # GENES
