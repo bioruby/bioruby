@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format0.rb,v 1.23 2007/12/14 16:09:36 k Exp $
+# $Id: format0.rb,v 1.24 2007/12/14 16:12:17 k Exp $
 #
 # == Description
 #
@@ -860,7 +860,7 @@ module Bio
           # Returns definition of the hit.
           def definition; parse_hitname; @definition; end
 
-          def target_id; definition[/^\s*(\S+)/]; end
+          def target_id; definition[/^\s*(\S+)/, 1]; end
 
           #--
           # Aliases to keep compatibility with Bio::Fasta::Report::Hit.
