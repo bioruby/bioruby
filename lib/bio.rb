@@ -1,16 +1,16 @@
 #
 # = bio.rb - Loading all BioRuby modules
 #
-# Copyright::	Copyright (C) 2001-2006
+# Copyright::	Copyright (C) 2001-2007
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id: bio.rb,v 1.86 2007/07/16 12:26:28 ngoto Exp $
+# $Id: bio.rb,v 1.87 2007/12/14 16:04:54 k Exp $
 #
 
 module Bio
 
-  BIORUBY_VERSION = [1, 1, 0].extend(Comparable)
+  BIORUBY_VERSION = [1, 2, 0].extend(Comparable)
 
   ### Basic data types
 
