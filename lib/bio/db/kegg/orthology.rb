@@ -5,7 +5,7 @@
 # Copyright::  Copyright (C) 2003 Masumi Itoh <m@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: orthology.rb,v 1.9 2007/04/05 15:42:59 k Exp $
+# $Id: orthology.rb,v 1.10 2007/12/14 16:19:54 k Exp $
 #
 
 require 'bio/db'
@@ -67,7 +67,7 @@ class ORTHOLOGY < KEGGDB
     keggclass.scan(/\[PATH:(.*?)\]/).flatten
   end
   
-  # Returns a Hash of Array of a database name and entry IDs in DBLINKS field.
+  # Returns an Array of a database name and entry IDs in DBLINKS field.
   def dblinks
     unless @data['DBLINKS']
       @data['DBLINKS'] = lines_fetch('DBLINKS')
@@ -75,12 +75,36 @@ class ORTHOLOGY < KEGGDB
     @data['DBLINKS']
   end
 
-  # Returns a Hash of Array of the organism ID and entry IDs in GENES field.
+  # Returns a Hash of the DB name and an Array of entry IDs in DBLINKS field.
+  def dblinks_as_hash
+    hash = {}
+    dblinks.each do |line|
+      name, *list = line.split(/\s+/)
+      db = name.downcase.sub(/:/, '')
+      hash[db] = list
+    end
+    return hash
+  end
+
+  # Returns an Array of the organism ID and entry IDs in GENES field.
   def genes
     unless @data['GENES']
       @data['GENES'] = lines_fetch('GENES')
     end
     @data['GENES']
+  end
+
+  # Returns a Hash of the organism ID and an Array of entry IDs in GENES field.
+  def genes_as_hash
+    hash = {}
+    genes.each do |line|
+      name, *list = line.split(/\s+/)
+      org = name.downcase.sub(/:/, '')
+      genes = list.map {|x| x.sub(/\(.*\)/, '')}
+      #names = list.map {|x| x.scan(/.*\((.*)\)/)}
+      hash[org] = genes
+    end
+    return hash
   end
   
 end # ORTHOLOGY
