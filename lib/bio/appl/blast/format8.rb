@@ -1,10 +1,10 @@
 #
 # = bio/appl/blast/format8.rb - BLAST tab-delimited output (-m 8) parser
 # 
-# Copyright::  Copyright (C) 2002, 2003 Toshiaki Katayama <k@bioruby.org>
+# Copyright::  Copyright (C) 2002, 2003, 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format8.rb,v 1.7 2007/04/05 23:35:39 trevor Exp $
+# $Id: format8.rb,v 1.8 2007/12/14 16:15:20 k Exp $
 #
 # == Note
 #
@@ -22,6 +22,7 @@ module Bio
         @iterations.push(iteration)
         @query_id = @query_def = data[/\S+/]
 
+        query_prev = ''
         target_prev = ''
         hit_num = 1
         hsp_num = 1
@@ -29,7 +30,7 @@ module Bio
         data.each do |line|
           ary = line.chomp.split("\t")
           query_id, target_id, hsp = tab_parse_hsp(ary)
-          if target_prev != target_id
+          if query_prev != query_id or target_prev != target_id
             hit = Hit.new
             hit.num = hit_num
             hit_num += 1
@@ -41,6 +42,7 @@ module Bio
           hsp.num = hsp_num
           hsp_num += 1
           hit.hsps.push(hsp)
+          query_prev = query_id
           target_prev = target_id
         end
       end
