@@ -6,7 +6,7 @@
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 # License::   The Ruby License
 #
-#  $Id: pdb.rb,v 1.23 2007/07/10 10:44:46 ngoto Exp $
+#  $Id: pdb.rb,v 1.24 2007/12/18 13:48:42 ngoto Exp $
 #
 # = About Bio::PDB
 #
@@ -1874,6 +1874,12 @@ module Bio
     def version
       f = self.record('REVDAT').first
       f ? f.modNum : nil
+    end
+
+    # returns a string containing human-readable representation
+    # of this object.
+    def inspect
+      "#<#{self.class.to_s} entry_id=#{entry_id.inspect}>"
     end
 
   end #class PDB

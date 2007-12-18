@@ -6,7 +6,7 @@
 #              Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: residue.rb,v 1.13 2007/04/23 16:03:25 ngoto Exp $
+# $Id: residue.rb,v 1.14 2007/12/18 13:48:42 ngoto Exp $
 #
 # = Bio::PDB::Residue
 #
@@ -127,6 +127,12 @@ module Bio
       # Stringifies each atom
       def to_s
         @atoms.join('')
+      end
+
+      # returns a string containing human-readable representation
+      # of this object.
+      def inspect
+        "#<#{self.class.to_s} resName=#{resName.inspect} id=#{residue_id.inspect} chain.id=#{(chain ? chain.id : nil).inspect} resSeq=#{resSeq.inspect} iCode=#{iCode.inspect} atoms.size=#{atoms.size}>"
       end
 
       # Always returns false.

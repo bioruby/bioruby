@@ -6,7 +6,7 @@
 #             Naohisa Goto <ng@bioruby.org>
 # License::   The Ruby License
 # 
-# $Id: chain.rb,v 1.8 2007/04/05 23:35:41 trevor Exp $
+# $Id: chain.rb,v 1.9 2007/12/18 13:48:42 ngoto Exp $
 #
 # = Bio::PDB::Chain
 # 
@@ -170,6 +170,12 @@ module Bio
       # Stringifies each residue
       def to_s
         @residues.join('') + "TER\n" + @heterogens.join('')
+      end
+
+      # returns a string containing human-readable representation
+      # of this object.
+      def inspect
+        "#<#{self.class.to_s} id=#{chain_id.inspect} model.serial=#{(model ? model.serial : nil).inspect} residues.size=#{residues.size} heterogens.size=#{heterogens.size} aaseq=#{aaseq.inspect}>"
       end
 
       # gets an amino acid sequence of this chain from ATOM records

@@ -6,7 +6,7 @@
 #             Naohisa Goto <ng@bioruby.org>
 # License::   The Ruby License
 #
-# $Id: model.rb,v 1.9 2007/04/05 23:35:41 trevor Exp $
+# $Id: model.rb,v 1.10 2007/12/18 13:48:42 ngoto Exp $
 #
 # = Bio::PDB::Model
 #
@@ -133,6 +133,12 @@ module Bio
           string << "ENDMDL\n"
         end
         return string
+      end
+
+      # returns a string containing human-readable representation
+      # of this object.
+      def inspect
+        "#<#{self.class.to_s} serial=#{serial.inspect} chains.size=#{chains.size}>"
       end
       
     end #class Model
