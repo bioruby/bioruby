@@ -1,3 +1,23 @@
+2007-12-18  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/pdb/pdb.rb
+
+	Bio::PDB#inspect is added to prevent memory exhaust problem.
+	([BioRuby] Parse big PDB use up all memory)
+
+	* lib/bio/db/pdb/model.rb
+
+	Bio::PDB::Model#inspect is added.
+
+	* lib/bio/db/pdb/chain.rb
+
+	Bio::PDB::Chain#inspect is added.
+
+	* lib/bio/db/pdb/residue.rb
+
+	Bio::PDB::Residue#inspect is added.
+	This also affects Bio::PDB::Heterogen#inspect.
+
 2007-12-15  Toshiaki Katayama <k@bioruby.org>
 
 	* BioRuby 1.2.0 released
