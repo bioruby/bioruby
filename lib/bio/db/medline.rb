@@ -5,7 +5,7 @@
 #              Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: medline.rb,v 1.16 2007/04/05 23:35:40 trevor Exp $
+# $Id: medline.rb,v 1.17 2007/12/21 05:12:41 k Exp $
 #
 
 require 'bio/db'
@@ -25,7 +25,6 @@ module Bio
 #
 class MEDLINE < NCBIDB
 
-  # 
   def initialize(entry)
     @pubmed = Hash.new('')
 
@@ -37,6 +36,7 @@ class MEDLINE < NCBIDB
       @pubmed[tag] += line[6..-1] if line.length > 6
     end
   end
+  attr_reader :pubmed
 
 
   # returns a Reference object.
@@ -187,12 +187,18 @@ class MEDLINE < NCBIDB
   end
   alias affiliations ad
 
-
-  ### Other MEDLINE tags
-
   # AID  - Article Identifier
   #   Article ID values may include the pii (controlled publisher identifier)
   #   or doi (Digital Object Identifier).
+  def doi
+    @pubmed['AID'][/(\S+) \[doi\]/, 1]
+  end
+
+  def pii
+    @pubmed['AID'][/(\S+) \[pii\]/, 1]
+  end
+
+  ### Other MEDLINE tags
 
   # CI   - Copyright Information
   #   Copyright statement.
