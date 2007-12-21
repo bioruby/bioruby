@@ -1,3 +1,9 @@
+2007-12-21  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/db/medline.rb
+
+	  Added doi and pii methods to extract DOI and PII number from AID field
+
 2007-12-18  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/db/pdb/pdb.rb
