@@ -18,7 +18,6 @@
 	    class A < Array; end; A[ 1, 2, 3, ]
 	  raises syntax error in Ruby 1.9.)
 
-	
 2007-12-21  Toshiaki Katayama <k@bioruby.org>
 
 	* lib/bio/db/medline.rb
