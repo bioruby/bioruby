@@ -6,7 +6,7 @@
 #              2005 Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_alignment.rb,v 1.11 2007/04/05 23:35:42 trevor Exp $
+#  $Id: test_alignment.rb,v 1.12 2007/12/26 13:55:40 ngoto Exp $
 #
 
 require 'pathname'
@@ -426,7 +426,7 @@ module Bio
         Sequence::AA.new('MNSA'),
         Sequence::AA.new('MHTL'),
         Sequence::AA.new('MQNV'),
-        Sequence::AA.new('MKKW'),
+        Sequence::AA.new('MKKW')
       ]
       assert_equal('*:. ', a.match_line)
       assert_equal('*:. ', a.match_line(:type => :aa))
