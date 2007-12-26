@@ -6,7 +6,7 @@
 #
 # License:: The Ruby License
 #
-#  $Id: alignment.rb,v 1.23 2007/07/16 12:21:39 ngoto Exp $
+#  $Id: alignment.rb,v 1.24 2007/12/26 14:08:02 ngoto Exp $
 #
 # = About Bio::Alignment
 #
@@ -93,21 +93,21 @@ module Bio
 
       # Returns regular expression for checking gap.
       def gap_regexp
-        @gap_regexp or GAP_REGEXP
+        ((defined? @gap_regexp) ? @gap_regexp : nil) or GAP_REGEXP
       end
       # regular expression for checking gap
       attr_writer :gap_regexp
 
       # Gap character.
       def gap_char
-        @gap_char or GAP_CHAR
+        ((defined? @gap_char) ? @gap_char : nil) or GAP_CHAR
       end
       # gap character
       attr_writer :gap_char
 
       # Character if the site is missing or unknown.
       def missing_char
-        @missing_char or MISSING_CHAR
+        ((defined? @missing_char) ? @missing_char : nil) or MISSING_CHAR
       end
       # Character if the site is missing or unknown.
       attr_writer :missing_char
@@ -118,7 +118,7 @@ module Bio
       # Otherwise, returns the first sequence's class.
       # If no sequences are found, returns nil.
       def seqclass
-        @seqclass or String
+        ((defined? @seqclass) ? @seqclass : nil) or String
       end
 
       # The class of the sequence.
@@ -347,7 +347,7 @@ module Bio
       # Otherwise, returns the first sequence's class.
       # If no sequences are found, returns nil.
       def seqclass
-        if @seqclass then
+        if (defined? @seqclass) and @seqclass then
           @seqclass
         else
           klass = nil
@@ -481,11 +481,12 @@ module Bio
       def each_window(window_size, step_size = 1)
         return nil if window_size < 0
         if step_size >= 0 then
-          i = nil
+          last_step = nil
           0.step(alignment_length - window_size, step_size) do |i|
             yield alignment_window(i, window_size)
+            last_step = i
           end
-          alignment_window((i+window_size)..-1)
+          alignment_window((last_step + window_size)..-1)
         else
           i = alignment_length - window_size
           while i >= 0
@@ -1820,8 +1821,9 @@ module Bio
       # Returns the key for a given sequence. If not found, returns nil.
       def index(seq)
         #(Hash-like)
-        k = nil
+        last_key = nil
         self.each_pair do |k, s|
+          last_key = k
           if s.class == seq.class then
             r = (s == seq)
           else
@@ -1829,7 +1831,7 @@ module Bio
           end
           break if r
         end
-        k
+        last_key
       end
 
       # Sequences in the alignment are duplicated.
