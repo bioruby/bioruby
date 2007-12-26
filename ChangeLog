@@ -1,3 +1,24 @@
+2007-12-26  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/alignment.rb
+
+	  Ruby 1.9 compliant: in EnumerableExtension#each_window and
+	  OriginalAlignment#index methods, local variable names outside the
+	  iterator loops are changed not to be shadowed by iterator
+	  variables.
+	  
+	  Warning messages for uninitialized instance variables of
+	  @gap_regexp, @gap_char, @missing_char, and @seqclass
+	  are suppressed.
+
+	* test/unit/bio/test_alignment.rb
+
+	  Ruby 1.9 compliant: Ruby 1.9 compliant: The last comma in Array.[]
+	  is no longer allowed. (For example,
+	    class A < Array; end; A[ 1, 2, 3, ]
+	  raises syntax error in Ruby 1.9.)
+
+	
 2007-12-21  Toshiaki Katayama <k@bioruby.org>
 
 	* lib/bio/db/medline.rb
