@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: common.rb,v 1.5 2007/12/03 06:19:12 nakao Exp $
+# $Id: common.rb,v 1.6 2007/12/27 17:36:02 ngoto Exp $
 #
 
 module Bio
@@ -177,11 +177,12 @@ module Common
   # * (optional) _step_size_: Fixnum (default 1)
   # *Returns*:: new Bio::Sequence::NA/AA object
   def window_search(window_size, step_size = 1)
-    i = 0
+    last_step = 0
     0.step(self.length - window_size, step_size) do |i| 
       yield self[i, window_size]                        
+      last_step = i
     end                          
-    return self[i + window_size .. -1] 
+    return self[last_step + window_size .. -1] 
   end
 
   # Returns a float total value for the sequence given a hash of
