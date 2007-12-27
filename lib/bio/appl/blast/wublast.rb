@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: wublast.rb,v 1.11 2007/04/21 08:58:17 ngoto Exp $
+# $Id: wublast.rb,v 1.12 2007/12/27 17:28:57 ngoto Exp $
 #
 # == Description
 #
@@ -70,10 +70,11 @@ module Bio
         # Splits headers.
         def format0_split_headers(data)
           @f0header = data.shift
+          @f0references = []
           while r = data.first
             case r
             when /^Reference\: /
-              @f0reference = data.shift
+              @f0references.push data.shift
             when /^Copyright /
               @f0copyright = data.shift
             when /^Notice\: /

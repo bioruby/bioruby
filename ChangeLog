@@ -1,3 +1,18 @@
+2007-12-28  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/report/format0.rb
+
+	Fixed parse error when compisition-based statistics were enabled.
+	In addition, Bio::Blast::Default::Report#references and
+	Bio::Blast::Default::Report::HSP#stat_method methods are added.
+	In NCBI BLAST 2.2.17, default option of composition-based
+	statistics for blastp or tblastn are changed to be enabled
+	by default.
+
+	* lib/bio/appl/blast/report/wublast.rb
+
+	Changed to follow the above changes in format0.rb.
+
 2007-12-26  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/alignment.rb

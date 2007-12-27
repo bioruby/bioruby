@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format0.rb,v 1.24 2007/12/14 16:12:17 k Exp $
+# $Id: format0.rb,v 1.25 2007/12/27 17:28:57 ngoto Exp $
 #
 # == Description
 #
@@ -223,11 +223,22 @@ module Bio
         end
 
         # Returns the bibliography reference of the BLAST software. 
+        # Note that this method shows only the first reference.
+        # When you want to get additional references,
+        # you can use <tt>references</tt> method.
         def reference
-          unless defined?(@reference)
-            @reference = @f0reference.to_s.gsub(/\s+/, ' ').strip
+          references[0]
+        end
+
+        # Returns the bibliography references of the BLAST software. 
+        # Returns an array of strings.
+        def references
+          unless defined?(@references)
+            @references = @f0references.collect do |x|
+              x.to_s.gsub(/\s+/, ' ').strip
+            end
           end #unless
-          @reference
+          @references
         end
 
         # Returns the name (filename or title) of the database.
@@ -276,7 +287,10 @@ module Bio
         # database line.
         def format0_split_headers(data)
           @f0header = data.shift
-          @f0reference = data.shift
+          @f0references = []
+          while data[0] and /\AQuery\=/ !~ data[0]
+            @f0references.push data.shift
+          end
           @f0query = data.shift
           @f0database = data.shift
         end
@@ -1020,6 +1034,10 @@ module Bio
                   pv = sc[2]
                   pv = '1' + pv if pv[0] == ?e
                   @pvalue = pv.to_f
+                elsif sc.skip(/Method\:\s*(.+)/) then
+                  # signature of composition-based statistics method
+                  # for example, "Method: Composition-based stats."
+                  @stat_method = sc[1]
                 else
                   raise ScanError
                 end
@@ -1088,6 +1106,13 @@ module Bio
           # strand of the hit ("Plus" or "Minus" or nil)
           attr_reader              :hit_strand if false #dummy
           method_after_parse_score :hit_strand
+
+          # statistical method for calculating evalue and/or score
+          # (nil or a string)
+          # (note that composition-based statistics for blastp or tblastn
+          # were enabled by default after NCBI BLAST 2.2.17)
+          attr_reader              :stat_method if false #dummy
+          method_after_parse_score :stat_method
 
           # Parses alignments.
           def parse_alignment
