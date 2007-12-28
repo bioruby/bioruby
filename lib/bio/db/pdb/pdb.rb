@@ -6,7 +6,7 @@
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 # License::   The Ruby License
 #
-#  $Id: pdb.rb,v 1.26 2007/12/28 14:31:06 ngoto Exp $
+#  $Id: pdb.rb,v 1.27 2007/12/28 14:43:44 ngoto Exp $
 #
 # = About Bio::PDB
 #
@@ -1393,11 +1393,15 @@ module Bio
         end
         case t
         when :JRNL
-          d = Jrnl::Definition[str[12..15].to_s.strip]
+          ts = str[12..15].to_s.strip
+          ts = ts.intern unless ts.empty?
+          d = Jrnl::Definition[ts]
         when :REMARK
           case str[7..9].to_i
           when 1
-            d = Remark1::Definition[str[12..15].to_s.strip]
+            ts = str[12..15].to_s.strip
+            ts = ts.intern unless ts.empty?
+            d = Remark1::Definition[ts]
           when 2
             if str[28..37] == 'ANGSTROMS.' then
               d = Remark2::ANGSTROMS
