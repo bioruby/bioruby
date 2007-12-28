@@ -13,6 +13,18 @@
 
 	Changed to follow the above changes in format0.rb.
 
+	* lib/bio/sequence/common.rb
+
+	Ruby 1.9 compliant: in window_search method, a local variable name
+	outside the iterator loop is changed not to be shadowed by the
+	iterator variable.
+
+	* lib/bio/db/pdb/pdb.rb
+
+	Ruby 1.9 compliant: changed to avoid "RuntimeError: implicit
+	argument passing of super from method defined by define_method()
+	is not supported. Specify all arguments explicitly." error.
+
 2007-12-26  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/alignment.rb
