@@ -6,7 +6,7 @@
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 # License::   The Ruby License
 #
-#  $Id: pdb.rb,v 1.25 2007/12/28 13:35:30 ngoto Exp $
+#  $Id: pdb.rb,v 1.26 2007/12/28 14:31:06 ngoto Exp $
 #
 # = About Bio::PDB
 #
@@ -437,7 +437,8 @@ module Bio
       def self.create_definition_hash
         hash = {}
         constants.each do |x|
-          hash[x] =  const_get(x) if /\A[A-Z][A-Z0-9]+\z/ =~ x
+          x = x.intern # keep compatibility both Ruby 1.8 and 1.9
+          hash[x] = const_get(x) if /\A[A-Z][A-Z0-9]+\z/ =~ x.to_s
         end
         if x = const_get(:Default) then
           hash.default = x
@@ -1380,19 +1381,20 @@ module Bio
       End = 
         def_rec([  2,  1, Pdb_Integer, :serial ]) # dummy field (always 0)
 
-      Definition['END'] = End
+      Definition['END'.intern] = End
 
       # Basically just look up the class in Definition hash
       # do some munging for JRNL and REMARK
       def self.get_record_class(str)
         t = fetch_record_name(str)
+        t = t.intern unless t.empty?
         if d = Definition[t] then
           return d
         end
         case t
-        when 'JRNL'
+        when :JRNL
           d = Jrnl::Definition[str[12..15].to_s.strip]
-        when 'REMARK'
+        when :REMARK
           case str[7..9].to_i
           when 1
             d = Remark1::Definition[str[12..15].to_s.strip]
@@ -1417,13 +1419,21 @@ module Bio
 
     Coordinate_fileds = {
       'MODEL'  => true,
+      :MODEL   => true,
       'ENDMDL' => true,
+      :ENDMDL  => true,
       'ATOM'   => true,
+      :ATOM    => true,
       'HETATM' => true,
+      :HETATM  => true,
       'SIGATM' => true,
+      :SIGATM  => true,
       'SIGUIJ' => true,
+      :SIGUIJ  => true,
       'ANISOU' => true,
+      :ANISOU  => true,
       'TER'    => true,
+      :TER     => true,
     }
 
     # Creates a new Bio::PDB object from given <em>str</em>.

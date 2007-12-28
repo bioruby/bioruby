@@ -25,6 +25,12 @@
 	argument passing of super from method defined by define_method()
 	is not supported. Specify all arguments explicitly." error.
 
+	Ruby 1.9 compliant: Bio::PDB::Record.get_record_class and
+	Bio::PDB::Record.create_definition_hash (Note: they should only
+	be internally used by PDB parser and users should not call them)
+	are changed to follow the change of Module#constants which
+	returns an array of Symbol instead of String.
+
 2007-12-26  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/alignment.rb
