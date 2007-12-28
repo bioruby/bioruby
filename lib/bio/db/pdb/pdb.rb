@@ -6,7 +6,7 @@
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 # License::   The Ruby License
 #
-#  $Id: pdb.rb,v 1.24 2007/12/18 13:48:42 ngoto Exp $
+#  $Id: pdb.rb,v 1.25 2007/12/28 13:35:30 ngoto Exp $
 #
 # = About Bio::PDB
 #
@@ -233,7 +233,7 @@ module Bio
         }
         klass.module_eval {
           symbolary.each do |x|
-            define_method(x) { do_parse; super }
+            define_method(x) { do_parse; super() }
           end
         }
         klass
@@ -267,7 +267,7 @@ module Bio
         }
         klass.module_eval {
           define_method(:initialize_from_string) { |str|
-            r = super
+            r = super(str)
             do_parse
             r
           }
