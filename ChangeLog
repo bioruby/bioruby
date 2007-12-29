@@ -1,35 +1,41 @@
+2007-12-30  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby 1.2.1 released
+
+	  This version is not Ruby 1.9 (released few days ago) compliant yet.
+
 2007-12-28  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/blast/report/format0.rb
 
-	Fixed parse error when compisition-based statistics were enabled.
-	In addition, Bio::Blast::Default::Report#references and
-	Bio::Blast::Default::Report::HSP#stat_method methods are added.
-	In NCBI BLAST 2.2.17, default option of composition-based
-	statistics for blastp or tblastn are changed to be enabled
-	by default.
+	  Fixed parse error when compisition-based statistics were enabled.
+	  In addition, Bio::Blast::Default::Report#references and
+	  Bio::Blast::Default::Report::HSP#stat_method methods are added.
+	  In NCBI BLAST 2.2.17, default option of composition-based
+	  statistics for blastp or tblastn are changed to be enabled
+	  by default.
 
 	* lib/bio/appl/blast/report/wublast.rb
 
-	Changed to follow the above changes in format0.rb.
+	  Changed to follow the above changes in format0.rb.
 
 	* lib/bio/sequence/common.rb
 
-	Ruby 1.9 compliant: in window_search method, a local variable name
-	outside the iterator loop is changed not to be shadowed by the
-	iterator variable.
+	  Ruby 1.9 compliant: in window_search method, a local variable name
+	  outside the iterator loop is changed not to be shadowed by the
+	  iterator variable.
 
 	* lib/bio/db/pdb/pdb.rb
 
-	Ruby 1.9 compliant: changed to avoid "RuntimeError: implicit
-	argument passing of super from method defined by define_method()
-	is not supported. Specify all arguments explicitly." error.
+	  Ruby 1.9 compliant: changed to avoid "RuntimeError: implicit
+	  argument passing of super from method defined by define_method()
+	  is not supported. Specify all arguments explicitly." error.
 
-	Ruby 1.9 compliant: Bio::PDB::Record.get_record_class and
-	Bio::PDB::Record.create_definition_hash (Note: they should only
-	be internally used by PDB parser and users should not call them)
-	are changed to follow the change of Module#constants which
-	returns an array of Symbol instead of String.
+	  Ruby 1.9 compliant: Bio::PDB::Record.get_record_class and
+	  Bio::PDB::Record.create_definition_hash (Note: they should only
+	  be internally used by PDB parser and users should not call them)
+	  are changed to follow the change of Module#constants which
+	  returns an array of Symbol instead of String.
 
 2007-12-26  Naohisa Goto <ng@bioruby.org>
 
@@ -61,21 +67,21 @@
 
 	* lib/bio/db/pdb/pdb.rb
 
-	Bio::PDB#inspect is added to prevent memory exhaust problem.
-	([BioRuby] Parse big PDB use up all memory)
+	  Bio::PDB#inspect is added to prevent memory exhaust problem.
+	  ([BioRuby] Parse big PDB use up all memory)
 
 	* lib/bio/db/pdb/model.rb
 
-	Bio::PDB::Model#inspect is added.
+	  Bio::PDB::Model#inspect is added.
 
 	* lib/bio/db/pdb/chain.rb
 
-	Bio::PDB::Chain#inspect is added.
+	  Bio::PDB::Chain#inspect is added.
 
 	* lib/bio/db/pdb/residue.rb
 
-	Bio::PDB::Residue#inspect is added.
-	This also affects Bio::PDB::Heterogen#inspect.
+	  Bio::PDB::Residue#inspect is added.
+	  This also affects Bio::PDB::Heterogen#inspect.
 
 2007-12-15  Toshiaki Katayama <k@bioruby.org>
 

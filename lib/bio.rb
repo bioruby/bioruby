@@ -5,12 +5,12 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id: bio.rb,v 1.87 2007/12/14 16:04:54 k Exp $
+# $Id: bio.rb,v 1.88 2007/12/29 19:19:07 k Exp $
 #
 
 module Bio
 
-  BIORUBY_VERSION = [1, 2, 0].extend(Comparable)
+  BIORUBY_VERSION = [1, 2, 1].extend(Comparable)
 
   ### Basic data types
 
