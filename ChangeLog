@@ -1,3 +1,10 @@
+2008-01-10  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/hinv.rb
+
+	  Bio::Hinv to access the H-invitational DB (http://h-invitational.jp/)
+	  web service in REST mode is added.
+
 2007-12-30  Toshiaki Katayama <k@bioruby.org>
 
 	* BioRuby 1.2.1 released
