@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id: bio.rb,v 1.88 2007/12/29 19:19:07 k Exp $
+# $Id: bio.rb,v 1.89 2008/01/09 17:18:17 k Exp $
 #
 
 module Bio
@@ -144,6 +144,7 @@ module Bio
   autoload :DBGET,          'bio/io/dbget'
 
   autoload :Ensembl,        'bio/io/ensembl'
+  autoload :Hinv,           'bio/io/hinv'
 
   ## below are described in bio/appl/blast.rb
   #class Blast
