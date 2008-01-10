@@ -5,7 +5,7 @@
 # Copyright::  Copyright (C) 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-# $Id: emboss.rb,v 1.8 2007/04/05 23:35:39 trevor Exp $
+# $Id: emboss.rb,v 1.9 2008/01/10 03:51:06 ngoto Exp $
 #
 
 module Bio
@@ -35,22 +35,34 @@ module Bio
 #
 #  # Suppose that you could get the sequence for XLRHODOP by running
 #  # the EMBOSS command +seqret embl:xlrhodop+ on the command line.
-#  # Then you can get the output of that command in a Bio::EMBOSS object
-#  # by creating a new Bio::EMBOSS object and subsequently executing it.
-#  xlrhodop = Bio::EMBOSS.new('seqret embl:xlrhodop')
-#  puts xlrhodop.exec
+#  # Then you can get the output of that command in a String object
+#  # by using  Bio::EMBOSS.run method.
+#  xlrhodop = Bio::EMBOSS.run('seqret', 'embl:xlrhodop')
+#  puts xlrhodop
 #
 #  # Or all in one go:
-#  puts Bio::EMBOSS.new('seqret embl:xlrhodop').exec
+#  puts Bio::EMBOSS.run('seqret', 'embl:xlrhodop')
 #
 #  # Similarly:
-#  puts Bio::EMBOSS.new('transeq -sbegin 110 -send 1171 embl:xlrhodop')
-#  puts Bio::EMBOSS.new('showfeat embl:xlrhodop').exec
-#  puts Bio::EMBOSS.new('seqret embl:xlrhodop -osformat acedb').exec
+#  puts Bio::EMBOSS.run('transeq', '-sbegin', '110','-send', '1171',
+#                       'embl:xlrhodop')
+#  puts Bio::EMBOSS.run('showfeat', 'embl:xlrhodop')
+#  puts Bio::EMBOSS.run('seqret', 'embl:xlrhodop', '-osformat', 'acedb')
 #
 #  # A shortcut exists for this two-step process for +seqret+ and +entret+.
 #  puts Bio::EMBOSS.seqret('embl:xlrhodop')
 #  puts Bio::EMBOSS.entret('embl:xlrhodop')
+#
+#  # You can use %w() syntax.
+#  puts Bio::EMBOSS.run(*%w( transeq -sbegin 110 -send 1171 embl:xlrhodop ))
+#
+#  # You can also use Shellwords.shellwords.
+#  require 'shellwords'
+#  str = 'transeq -sbegin 110 -send 1171 embl:xlrhodop'
+#  cmd = Shellwords.shellwords(str)
+#  puts Bio::EMBOSS.run(*cmd)
+#
+
 #
 # == Pre-requisites
 #
@@ -76,8 +88,8 @@ class EMBOSS
   #  puts object.exec
   # ---
   # *Arguments*:
-  # * (required) _command_: emboss command
-  # *Returns*:: Bio::EMBOSS object
+  # * (required) _arg_: argument given to the emboss seqret command
+  # *Returns*:: String
   def self.seqret(arg)
     str = self.retrieve('seqret', arg)
   end
@@ -92,12 +104,16 @@ class EMBOSS
   #  puts object.exec
   # ---
   # *Arguments*:
-  # * (required) _command_: emboss command
-  # *Returns*:: Bio::EMBOSS object
+  # * (required) _arg_: argument given to the emboss entret command
+  # *Returns*:: String
   def self.entret(arg)
     str = self.retrieve('entret', arg)
   end
 
+  # WARNING: Bio::EMBOSS.new will be changed in the future because
+  # Bio::EMBOSS.new(cmd_line) is inconvenient and potential security hole.
+  # Using Bio::EMBOSS.run(program, options...) is strongly recommended.
+  #
   # Initializes a new Bio::EMBOSS object. This provides a holder that can
   # subsequently be executed (see Bio::EMBOSS.exec). The object does _not_
   # hold any actual data when initialized.
@@ -114,6 +130,7 @@ class EMBOSS
   # * (required) _command_: emboss command
   # *Returns*:: Bio::EMBOSS object
   def initialize(cmd_line)
+    warn 'Bio::EMBOSS.new(cmd_line) is inconvenient and potential security hole. Using Bio::EMBOSS.run(program, options...) is strongly recommended.'
     @cmd_line = cmd_line + ' -stdout -auto'
   end
 
@@ -141,6 +158,38 @@ class EMBOSS
   
   # Result of the executed command
   attr_reader :result
+
+  # Runs an emboss program and get the result as string.
+  # Note that "-auto -stdout" are automatically added to the options.
+  #
+  # Example 1:
+  #
+  #   result = Bio::EMBOSS.run('seqret', 'embl:xlrhodop')
+  #
+  # Example 2:
+  #
+  #   result = Bio::EMBOSS.run('water',
+  #                             '-asequence', 'swissprot:slpi_human',
+  #                             '-bsequence', 'swissprot:slpi_mouse')
+  #
+  # Example 3:
+  #   options = %w( -asequence swissprot:slpi_human
+  #                 -bsequence swissprot:slpi_mouse )
+  #   result = Bio::EMBOSS.run('needle', *options)
+  #
+  # For an overview of commands that can be used with this method, see the
+  # emboss website.
+  # ---
+  # *Arguments*:
+  # * (required) _program_: command name, or filename of an emboss program
+  # * _options_: options given to the emboss program
+  # *Returns*:: String
+  def self.run(program, *options)
+    cmd = [ program, *options ]
+    cmd.push '-auto'
+    cmd.push '-stdout'
+    return Bio::Command.query_command(cmd)
+  end
 
   private
 
