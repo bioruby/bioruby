@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_blast.rb,v 1.5 2007/04/05 23:35:43 trevor Exp $
+#  $Id: test_blast.rb,v 1.6 2008/01/30 17:43:33 nakao Exp $
 #
 
 require 'pathname'
@@ -81,6 +81,12 @@ module Bio
       assert_equal('-m 7 -p T', @blast.option) 
     end
 
+    def test_option_set_m0
+      @blast.option = '-m 0'
+      assert_equal('-m 0', @blast.option) 
+    end
+
+
     def test_server
       assert_equal(@server, @blast.server) 
     end
@@ -125,6 +131,17 @@ module Bio
        Bio::Blast.reports(TestBlastData.output) do |report|
          assert(report)
        end
+     end
+     
+     def test_make_command_line
+       @blast = Bio::Blast.new(@program, @db, '-m 7 -F F')
+       assert_equal(["blastall", "-p", "blastp", "-d", "test", "-m", "7", "-F", "F"], 
+                    @blast.instance_eval { make_command_line })
+     end
+     def test_make_command_line_2
+       @blast = Bio::Blast.new(@program, @db, '-m 0 -F F')
+       assert_equal(["blastall", "-p", "blastp", "-d", "test", "-m", "0", "-F",  "F"], 
+                    @blast.instance_eval { make_command_line })
      end
 
      def test_parse_result

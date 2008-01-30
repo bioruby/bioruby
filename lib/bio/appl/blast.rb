@@ -1,12 +1,12 @@
 #
 # = bio/appl/blast.rb - BLAST wrapper
 # 
-# Copyright::  Copyright (C) 2001       Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::  Copyright (C) 2001,2008  Mitsuteru C. Nakao <n@bioruby.org>
 # Copyright::  Copyright (C) 2002,2003  Toshiaki Katayama <k@bioruby.org>
 # Copyright::  Copyright (C) 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-# $Id: blast.rb,v 1.33 2007/04/05 23:35:39 trevor Exp $
+# $Id: blast.rb,v 1.34 2008/01/30 17:43:34 nakao Exp $
 #
 
 require 'net/http'
@@ -181,22 +181,11 @@ module Bio
 
       @output   = ''
       @parser   = nil
+      @format   = 0
 
-      begin
-        a = opt.to_ary
-      rescue NameError #NoMethodError
-        # backward compatibility
-        a = Shellwords.shellwords(opt)
-      end
-      unless a.find { |x| /\A\-m/ =~ x.to_s } then
-        if defined?(XMLParser) or defined?(REXML)
-          @format = 7
-        else
-          @format = 8
-        end
-      end
-      @options = [ *a ]
-    end
+      set_options(opt)
+    end      
+
 
     # This method submits a sequence to a BLAST factory, which performs the
     # actual BLAST.
@@ -224,8 +213,27 @@ module Bio
       @options = Shellwords.shellwords(str)
     end
 
-
     private
+
+    def set_options(opt = nil)
+      opt = @options unless opt
+      begin
+        a = opt.to_ary
+      rescue NameError #NoMethodError
+        # backward compatibility
+        a = Shellwords.shellwords(opt)
+      end
+      unless a.find { |x| /\A\-m/ =~ x.to_s } then
+        if defined?(XMLParser) or defined?(REXML)
+          @format = 7
+        else
+          @format = 8
+        end
+      else
+        @format = a[a.index('-m') + 1].to_i
+      end
+      @options = [ *a ]
+    end
 
 
     def parse_result(data)
@@ -233,13 +241,33 @@ module Bio
     end
 
 
-    def exec_local(query)
+    def make_command_line
+      set_options
       cmd = [ @blastall, '-p', @program, '-d', @db ]
-      cmd.concat([ '-M', @matrix ]) if @matrix
-      cmd.concat([ '-F', @filter ]) if @filter
-      cmd.concat([ '-m', @format.to_s ]) if @format
+      if @matrix
+        cmd.concat([ '-M', @matrix ]) 
+        i = @options.index('-M')
+        @options.delete_at(i)
+        @options.delete_at(i)
+      end
+      if @filter
+        cmd.concat([ '-F', @filter ]) 
+        i = @options.index('-F')
+        @options.delete_at(i)
+        @options.delete_at(i)
+      end
+      if @format
+        cmd.concat([ '-m', @format.to_s ])
+        i = @options.index('-m')
+        @options.delete_at(i)
+        @options.delete_at(i)
+      end
       cmd.concat(@options) if @options
+    end
 
+
+    def exec_local(query)
+      cmd = make_command_line
       report = nil
 
       @output = Bio::Command.query_command(cmd, query)
@@ -248,10 +276,12 @@ module Bio
       return report
     end
 
+
     def exec_genomenet_tab(query)
       @format = 8
       exec_genomenet(query)
     end
+
 
     def exec_genomenet(query)
       host = "blast.genome.jp"
