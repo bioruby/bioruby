@@ -2,39 +2,40 @@
 #
 # A possible test run could be from rdtool:
 #
-#   ruby -I lib ./bin/rd2 ~/izip/cvs/opensource/bioruby/doc/Tutorial.rd
+#   ruby -I lib ./bin/rd2 ~/cvs/opensource/bioruby/doc/Tutorial.rd
+#
+# or with style sheet:
+#
+#   ruby -I lib ./bin/rd2 -r rd/rd2html-lib.rb --with-c
+ss=bioruby.css ~/cvs/opensource/bioruby/doc/Tutorial.rd > ~/bioruby.html
 #
 # A common problem is tabs in the text file!
 
 =begin
 
-See the document in the CVS repository ./doc/((<Tutorial.rd|URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/bioruby/doc/Tutorial.rd?rev=HEAD&cvsroot=bioruby&content-type=text/plain>)) - for a potentially more up-to-date edition. This one was updated:
-
-  $Id: Tutorial.rd,v 1.14 2008/02/02 13:03:23 pjotr Exp $
-
-Translated into English: Naohisa Goto <ng .at. bioruby.org>
-
-Editor:                  PjotrPrins <p .at. bioruby.org>
-
-Copyright (C) 2001-2003 KATAYAMA Toshiaki <k .at. bioruby.org>, 2005-2008 Pjotr Prins, Naohisa Goto and others
-
-IMPORTANT NOTICE: This page is maintained in the BioRuby CVS
-repository. Please edit the file there otherwise changes may get
-lost. See ((<BioRuby Developer Information>)) for CVS and mailing list
-access.
-
 = BioRuby Tutorial
+
+Editor: PjotrPrins <p .at. bioruby.org>
+
+* Copyright (C) 2001-2003 KATAYAMA Toshiaki <k .at. bioruby.org>
+* Copyright (C) 2005-2008 Pjotr Prins, Naohisa Goto and others
+
+The latest version resides in the CVS repository ./doc/((<Tutorial.rd|URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/bioruby/doc/Tutorial.rd?rev=HEAD&cvsroot=bioruby&content-type=text/plain>)). This one was updated:
+
+  $Id: Tutorial.rd,v 1.15 2008/02/02 14:01:54 pjotr Exp $ 
+
+in preparation for the ((<BioHackathlon 2008|URL:http://hackathon.dbcls.jp/>))
 
 == Introduction
 
-This is a tutorial for using Bioruby. For BioRuby you need to install
-Ruby and the BioRuby package on your computer. For each following the
-instruction on the respective websites. (EDITOR's NOTE: include URL's)
+This is a tutorial for using Bioruby. A basic knowledge of Ruby is required.
+If you want to know more about the programming langauge Ruby we recommend the
+excellent book ((<Programming Ruby|URL:http://www.pragprog.com/titles/ruby>))
+by Dave Thomas and Andy Hunt - some of it is online
+((<here|URL:http://www.rubycentral.com/pickaxe/>)).
 
-(EDITOR's NOTE: describe rdoc use for individual classes)
-
-For further information on the Ruby language see the section 'Further
-reading' at the end.
+For BioRuby you need to install
+Ruby and the BioRuby package on your computer.
 
 You can check whether Ruby is installed on your computer and what
 version it has with the
@@ -45,13 +46,24 @@ command. Showing something like:
 
   ruby 1.8.5 (2006-08-25) [powerpc-linux]
 
+If you see no such thing you'll have to install Ruby using your installation
+manager. For more information see the
+((<Ruby|URL:http://www.ruby-lang.org/en/>)) website.
+
+Once Ruby is works download and install Bioruby using the links on the
+((<Bioruby|URL:http://bioruby.org/>)) website.
+
+A lot of BioRuby's documentation exists in the source code and unit tests. To
+really dive in you will need the latest source code tree. The embedded rdoc
+documentation can be viewed online at
+((<bioruby's rdoc|URL:http://bioruby.org/rdoc/>)). But first lets start!
 
 == Trying Bioruby
 
 Bioruby comes with its own shell. After unpacking the sources run the
 following command
 
-  $BIORUBY/bin/bioruby
+  ./bin/bioruby
 
 and you should see a prompt
 
@@ -92,7 +104,8 @@ defined in codontable.rb).
 
     puts seq.translate                  # translation (Bio::Sequence::AA object)
     puts seq.translate(2)               # translation from frame 2 (default is frame 1)
-    puts seq.translate(1,11)            # using codon table No.11 (see http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)
+    puts seq.translate(1,11)            # using codon table No.11 
+                                        # (see http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)
 
     p seq.translate.codes               # shows three-letter codes (Array)
     p seq.translate.names               # shows amino acid names (Array)
@@ -113,9 +126,9 @@ Windows). For example
   % ri p
   % ri File.open
 
-Nucleic acid sequence is an object of +Bio::Sequence::NA+ class, and
-amino acid sequence is an object of +Bio::Sequence::AA+ class.  Shared
-methods are in the parent +Bio::Sequence+ class.
+Nucleic acid sequence is an object of Bio::Sequence::NA class, and
+amino acid sequence is an object of Bio::Sequence::AA class.  Shared
+methods are in the parent Bio::Sequence class.
 
 As Bio::Sequence class inherits Ruby's String class, you can use
 String class methods. For example, to get a subsequence, you can
@@ -296,9 +309,6 @@ Again another option is to use the Bio::DB.open class:
       puts gb.naseq.to_fasta(definition, 60)
     end
 
-(TRANSLATOR'S NOTE: Bio::DB.open have not been used so well.)
-(EDITOR's NOTE: Test code)
-
 Next, we are going to parse the GenBank 'features', which is normally
 very complicated:
 
@@ -381,8 +391,8 @@ You can also use the splicing method for amino acid sequences
 === More databases
 
 Databases in BioRuby are essentially accessed like that of GenBank
-with classes like Bio::GenBank, Bio::KEGG::GENES,
-(EDITOR's NOTE: include complete list)
+with classes like Bio::GenBank, Bio::KEGG::GENES. A full list can be found in 
+the ./lib/bio/db directory of the BioRuby source tree.
 
 In many cases the Bio::DatabaseClass acts as a factory pattern
 and recognises the database type automatically - returning a
@@ -1150,12 +1160,11 @@ included - with output)
 
 == Further reading
 
-See the BioRuby in anger Wiki and the class documentation for more
-information on BioRuby.
+See the BioRuby in anger Wiki.  A lot of BioRuby's documentation exists in the
+source code and unit tests. To really dive in you will need the latest source
+code tree. The embedded rdoc documentation can be viewed online at
+((<URL:http://bioruby.org/rdoc/>)).
 
-The best book to get for understanding and getting productive with the
-Ruby language is 'Programming Ruby' by Dave Thomas and Andy
-Hunt. Strongly recommended!
 
 = APPENDIX
 
@@ -1187,5 +1196,12 @@ At this point installing third party Ruby packages can be a bit
 painful, as the gem standard for packages evolved late and some still
 force you to copy things by hand. Therefore read the README's
 carefully that come with each package.
+
+== Modifying this page
+
+IMPORTANT NOTICE: This page is maintained in the BioRuby CVS
+repository. Please edit the file there otherwise changes may get
+lost. See ((<BioRuby Developer Information>)) for CVS and mailing list
+access.
 
 =end
