@@ -1,5 +1,13 @@
 2008-01-10  Toshiaki Katayama <k@bioruby.org>
 
+	* lib/bio/shell/rails/vendor/plugins/
+
+	  The 'generators' directory is moved under the 'bioruby' subdirectory
+	  so that 'bioruby --rails' command can work with Rails 2.x series
+	  in addition to the Rails 1.2.x series.
+
+2008-01-10  Toshiaki Katayama <k@bioruby.org>
+
 	* lib/bio/io/hinv.rb
 
 	  Bio::Hinv to access the H-invitational DB (http://h-invitational.jp/)
