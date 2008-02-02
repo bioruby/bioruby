@@ -22,7 +22,7 @@ Editor: PjotrPrins <p .at. bioruby.org>
 
 The latest version resides in the CVS repository ./doc/((<Tutorial.rd|URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/bioruby/doc/Tutorial.rd?rev=HEAD&cvsroot=bioruby&content-type=text/plain>)). This one was updated:
 
-  $Id: Tutorial.rd,v 1.15 2008/02/02 14:01:54 pjotr Exp $ 
+  $Id: Tutorial.rd,v 1.16 2008/02/02 14:15:08 pjotr Exp $ 
 
 in preparation for the ((<BioHackathlon 2008|URL:http://hackathon.dbcls.jp/>))
 
@@ -114,8 +114,10 @@ defined in codontable.rb).
 
     puts seq.complement.translate       # translation of complemental strand
 
-    counts = {'a'=>seq.count('a'),'c'=>seq.count('c'),'g'=>seq.count('g'),'t'=>seq.count('t')}
-    p randomseq = Bio::Sequence::NA.randomize(counts)  # reshuffle sequence with same freq.
+    # reshuffle sequence with same frequencies:
+    counts = {'a'=>seq.count('a'),'c'=>seq.count('c'),
+              'g'=>seq.count('g'),'t'=>seq.count('t')}
+    p randomseq = Bio::Sequence::NA.randomize(counts)  
 
 The p, print and puts methods are standard Ruby ways of outputting to
 the screen. If you want to know more about standard Ruby commands you
@@ -264,7 +266,8 @@ the data:
 
       print ">#{gb.accession} "         # Accession
       puts gb.definition                # Definition
-      puts gb.naseq                     # Nucleic acid sequence (Bio::Sequence::NA object)
+      puts gb.naseq                     # Nucleic acid sequence 
+                                        # (Bio::Sequence::NA object)
     end
 
 But that has the disadvantage the code is tied to GenBank input. A more
@@ -386,7 +389,6 @@ You can also use the splicing method for amino acid sequences
 
     aaseq.splicing('21..119')
 
-(EDITOR's NOTE: why use STRINGs here?)
 
 === More databases
 
@@ -493,7 +495,8 @@ stranded RNA or dubbel stranded DNA into fragments. To list all enzymes:
 
 and cut a sequence with an enzyme follow up with:
 
-   res = seq.cut_with_enzyme('EcoRII', {:max_permutations => 0}, {:view_ranges => true})
+   res = seq.cut_with_enzyme('EcoRII', {:max_permutations => 0}, 
+     {:view_ranges => true})
    if res.kind_of? Symbol #error
       err = Err.find_by_code(res.to_s)
       unless err
@@ -528,21 +531,21 @@ local machine.
 Install the fasta program on your machine (the command name looks like
 fasta34. FASTA can be downloaded from ftp://ftp.virginia.edu/pub/fasta/).
 First, you must prepare your FASTA-formatted database sequence file
-target.pep and FASTA-formatted query.pep.  (TRANSLATOR'S NOTE: I think
-we should provide sample data to readers.)
+target.pep and FASTA-formatted query.pep. 
 
     #!/usr/bin/env ruby
 
     require 'bio'
 
-    # Creates FASTA factory object ("ssearch" instead of "fasta34" can also work)
+    # Creates FASTA factory object ("ssearch" instead of 
+    # "fasta34" can also work)
     factory = Bio::Fasta.local('fasta34', ARGV.pop)
     (EDITOR's NOTE: not consistent pop command)
 
-    # Reads FASTA-formatted files (TRANSLATOR'S NOTE: something wrong in Japanese text)
     ff = Bio::FlatFile.new(Bio::FastaFormat, ARGF)
 
-    # Iterates over each entry. the variable "entry" is a Bio::FastaFormat object.
+    # Iterates over each entry. the variable "entry" is a 
+    # Bio::FastaFormat object:
     ff.each do |entry|
       # shows definition line (begins with '>') to the standard error output
       $stderr.puts "Searching ... " + entry.definition
@@ -554,7 +557,8 @@ we should provide sample data to readers.)
       report.each do |hit|
         # If E-value is smaller than 0.0001
         if hit.evalue < 0.0001
-          # shows identifier of query and hit, E-value, start and end positions of homologous region (TRANSLATOR'S NOTE: should I change Japanese document?)
+          # shows identifier of query and hit, E-value, start and 
+          # end positions of homologous region 
           print "#{hit.query_id} : evalue #{hit.evalue}\t#{hit.target_id} at "
           p hit.lap_at
         end
@@ -568,7 +572,6 @@ We named above script as f_search.rb. You can execute as follows:
 In above script, the variable "factory" is a factory object for executing
 FASTA many times easily. Instead of using Fasta#query method,
 Bio::Sequence#fasta method can be used.
-(TRANSLATOR'S NOTE: Bio::Sequence#fasta are not so frequently used.)
 
     seq = ">test seq\nYQVLEEIGRGSFGSVRKVIHIPTKKLLVRKDIKYGHMNSKE"
     seq.fasta(factory)
@@ -584,7 +587,6 @@ Bio::Fasta#query returns Bio::Fasta::Report object.
 We can get almost all information described in FASTA report text
 with the Report object. For example, getting information for hits:
 
-
     report.each do |hit|
       puts hit.evalue           # E-value
       puts hit.sw               # Smith-Waterman score (*)
@@ -593,15 +595,19 @@ with the Report object. For example, getting information for hits:
       puts hit.query_id         # identifier of query sequence
       puts hit.query_def        # definition(comment line) of query sequence
       puts hit.query_len        # length of query sequence
-      puts hit.query_seq        # query sequence (TRANSLATOR'S NOTE: sequence of homologous region of query sequence)
+      puts hit.query_seq        # sequence of homologous region
       puts hit.target_id        # identifier of hit sequence
       puts hit.target_def       # definition(comment line) of hit sequence
       puts hit.target_len       # length of hit sequence
-      puts hit.target_seq       # hit sequence (TRANSLATOR'S NOTE: sequence of homologous region of hit sequence)
-      puts hit.query_start      # start position of homologous region in query sequence
-      puts hit.query_end        # end position of homologous region in query sequence
-      puts hit.target_start     # start posiotion of homologous region in hit(target) sequence
-      puts hit.target_end       # end position of homologous region in hit(target) sequence
+      puts hit.target_seq       # hit of homologous region of hit sequence
+      puts hit.query_start      # start position of homologous 
+                                # region in query sequence
+      puts hit.query_end        # end position of homologous region 
+                                # in query sequence
+      puts hit.target_start     # start posiotion of homologous region 
+                                # in hit(target) sequence
+      puts hit.target_end       # end position of homologous region 
+                                # in hit(target) sequence
       puts hit.lap_at           # array of above four numbers
     end
 
@@ -694,25 +700,25 @@ There are some additional BLAST methods, for example, bit_score and
 midline.
 
     report.each do |hit|
-      puts hit.bit_score        # bit score (*)
-      puts hit.query_seq        # query sequence (TRANSLATOR'S NOTE: sequence of homologous region of query sequence)
-      puts hit.midline          # middle line string of alignment of homologous region (*)
-      puts hit.target_seq       # hit sequence (TRANSLATOR'S NOTE: sequence of homologous region of query sequence)
+      puts hit.bit_score       
+      puts hit.query_seq       
+      puts hit.midline         
+      puts hit.target_seq      
 
-      puts hit.evalue           # E-value
-      puts hit.identity         # % identity
-      puts hit.overlap          # length of overlapping region
-      puts hit.query_id         # identifier of query sequence
-      puts hit.query_def        # definition(comment line) of query sequence
-      puts hit.query_len        # length of query sequence
-      puts hit.target_id        # identifier of hit sequence
-      puts hit.target_def       # definition(comment line) of hit sequence
-      puts hit.target_len       # length of hit sequence
-      puts hit.query_start      # start position of homologous region in query sequence
-      puts hit.query_end        # end position of homologous region in query sequence
-      puts hit.target_start     # start position of homologous region in hit(target) sequence
-      puts hit.target_end       # end position of homologous region in hit(target) sequence
-      puts hit.lap_at           # array of above four numbers
+      puts hit.evalue          
+      puts hit.identity        
+      puts hit.overlap         
+      puts hit.query_id        
+      puts hit.query_def       
+      puts hit.query_len       
+      puts hit.target_id       
+      puts hit.target_def      
+      puts hit.target_len      
+      puts hit.query_start     
+      puts hit.query_end       
+      puts hit.target_start    
+      puts hit.target_end      
+      puts hit.lap_at          
     end
 
 For simplicity and API compatibility, some information such as score
@@ -1170,7 +1176,7 @@ code tree. The embedded rdoc documentation can be viewed online at
 
 == KEGG API
 
-Please refer to KEGG_API.rd.ja (TRANSLATOR'S NOTE: English version: ((<URL:http://www.genome.jp/kegg/soap/doc/keggapi_manual.html>)) ) and
+Please refer to KEGG_API.rd.ja (English version: ((<URL:http://www.genome.jp/kegg/soap/doc/keggapi_manual.html>)) ) and
 
   * ((<URL:http://www.genome.jp/kegg/soap/>))
 
