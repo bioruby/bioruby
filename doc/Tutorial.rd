@@ -1,14 +1,22 @@
+# This document is generated with a version of rd2html (part of Hiki)
+#
+# A possible test run could be from rdtool:
+#
+#   ruby -I lib ./bin/rd2 ~/izip/cvs/opensource/bioruby/doc/Tutorial.rd
+#
+# A common problem is tabs in the text file!
+
 =begin
 
 See the document in the CVS repository ./doc/((<Tutorial.rd|URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/bioruby/doc/Tutorial.rd?rev=HEAD&cvsroot=bioruby&content-type=text/plain>)) - for a potentially more up-to-date edition. This one was updated:
 
-  $Id: Tutorial.rd,v 1.13 2007/07/09 12:28:07 pjotr Exp $
+  $Id: Tutorial.rd,v 1.14 2008/02/02 13:03:23 pjotr Exp $
 
-Translated into English: Naohisa Goto <ng@bioruby.org>
+Translated into English: Naohisa Goto <ng .at. bioruby.org>
 
-Editor:                  PjotrPrins <p@bioruby.org>
+Editor:                  PjotrPrins <p .at. bioruby.org>
 
-Copyright (C) 2001-2003 KATAYAMA Toshiaki <k@bioruby.org>, 2005-2007 Pjotr Prins, Naohisa Goto and others
+Copyright (C) 2001-2003 KATAYAMA Toshiaki <k .at. bioruby.org>, 2005-2008 Pjotr Prins, Naohisa Goto and others
 
 IMPORTANT NOTICE: This page is maintained in the BioRuby CVS
 repository. Please edit the file there otherwise changes may get
@@ -31,7 +39,7 @@ reading' at the end.
 You can check whether Ruby is installed on your computer and what
 version it has with the
 
-	% ruby -v
+  % ruby -v
 
 command. Showing something like:
 
@@ -54,7 +62,7 @@ Now test the following:
   bioruby> seq = Bio::Sequence::NA.new("atgcatgcaaaa")
   bioruby> puts seq
   atgcatgcaaaa
-  bioruby> puts seq.complement 
+  bioruby> puts seq.complement
   ttttgcatgcat
 
 == Working with nucleic / amino acid sequences (Bio::Sequence class)
@@ -93,7 +101,7 @@ defined in codontable.rb).
 
     puts seq.complement.translate       # translation of complemental strand
 
-		counts = {'a'=>seq.count('a'),'c'=>seq.count('c'),'g'=>seq.count('g'),'t'=>seq.count('t')}
+    counts = {'a'=>seq.count('a'),'c'=>seq.count('c'),'g'=>seq.count('g'),'t'=>seq.count('t')}
     p randomseq = Bio::Sequence::NA.randomize(counts)  # reshuffle sequence with same freq.
 
 The p, print and puts methods are standard Ruby ways of outputting to
@@ -158,7 +166,7 @@ subsequence. This allows for example
 
 * Divide a genome sequence into sections of 10000bp and
   output FASTA formatted sequences. The 1000bp at the start and end of
-	each subsequence overlapped. At the 3' end of the sequence the
+  each subsequence overlapped. At the 3' end of the sequence the
   leftover subsequence shorter than 10000bp is also added
 
     i = 1
@@ -251,9 +259,9 @@ generic method is to use Bio::FlatFile which allows you to use different
 input formats:
 
     #!/usr/bin/env ruby
-  
+
     require 'bio'
-    
+
     ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
     ff.each_entry do |gb|
       definition = "#{gb.accession} #{gb.definition}"
@@ -469,8 +477,8 @@ library of commonly used REs (from REBASE) which can be used to cut single
 stranded RNA or dubbel stranded DNA into fragments. To list all enzymes:
 
   rebase = Bio::RestrictionEnzyme.rebase
-	rebase.each do |enzyme_name, info|
-		p enzyme_name
+  rebase.each do |enzyme_name, info|
+    p enzyme_name
   end
 
 and cut a sequence with an enzyme follow up with:
@@ -482,8 +490,8 @@ and cut a sequence with an enzyme follow up with:
         err = Err.new(:code => res.to_s)
       end
    end
-	 res.each do |frag|
-	    em = EnzymeMatch.new
+   res.each do |frag|
+      em = EnzymeMatch.new
 
       em.p_left = frag.p_left
       em.p_right = frag.p_right
@@ -493,7 +501,7 @@ and cut a sequence with an enzyme follow up with:
       em.err = nil
       em.enzyme = ar_enz
       em.sequence = ar_seq
-			p em
+      p em
     end
 
 
@@ -1159,11 +1167,11 @@ Please refer to KEGG_API.rd.ja (TRANSLATOR'S NOTE: English version: ((<URL:http:
 
 == Comparing BioProjects
 
-For a quick functional comparison of BioRuby, BioPerl, BioPython and Bioconductor (R) see ((<http://sciruby.codeforpeople.com/sr.cgi/BioProjects>))
+For a quick functional comparison of BioRuby, BioPerl, BioPython and Bioconductor (R) see ((<URL:http://sciruby.codeforpeople.com/sr.cgi/BioProjects>))
 
 == Using BioRuby with R
 
-Using Ruby with R Pjotr wrote a section on SciRuby. See ((<ULR:http://sciruby.codeforpeople.com/sr.cgi/RubyWithRlang>))
+Using Ruby with R Pjotr wrote a section on SciRuby. See ((<URL:http://sciruby.codeforpeople.com/sr.cgi/RubyWithRlang>))
 
 == Using BioPerl or BioPython from Ruby
 
@@ -1181,4 +1189,3 @@ force you to copy things by hand. Therefore read the README's
 carefully that come with each package.
 
 =end
-
