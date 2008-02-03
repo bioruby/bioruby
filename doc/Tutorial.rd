@@ -12,6 +12,7 @@ ss=bioruby.css ~/cvs/opensource/bioruby/doc/Tutorial.rd > ~/bioruby.html
 # A common problem is tabs in the text file!
 
 =begin
+#doctest Testing bioruby
 
 = BioRuby Tutorial
 
@@ -22,7 +23,7 @@ Editor: PjotrPrins <p .at. bioruby.org>
 
 The latest version resides in the CVS repository ./doc/((<Tutorial.rd|URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/bioruby/doc/Tutorial.rd?rev=HEAD&cvsroot=bioruby&content-type=text/plain>)). This one was updated:
 
-  $Id: Tutorial.rd,v 1.16 2008/02/02 14:15:08 pjotr Exp $ 
+  $Id: Tutorial.rd,v 1.17 2008/02/03 17:17:48 pjotr Exp $ 
 
 in preparation for the ((<BioHackathlon 2008|URL:http://hackathon.dbcls.jp/>))
 
@@ -63,7 +64,8 @@ documentation can be viewed online at
 Bioruby comes with its own shell. After unpacking the sources run the
 following command
 
-  ./bin/bioruby
+  ./bin/bioruby  or
+  ruby -I lib bin/bioruby
 
 and you should see a prompt
 
@@ -72,10 +74,10 @@ and you should see a prompt
 Now test the following:
 
   bioruby> seq = Bio::Sequence::NA.new("atgcatgcaaaa")
-  bioruby> puts seq
-  atgcatgcaaaa
-  bioruby> puts seq.complement
-  ttttgcatgcat
+  ==> "atgcatgcaaaa"
+
+  bioruby> seq.complement
+  ==> "ttttgcatgcat"
 
 == Working with nucleic / amino acid sequences (Bio::Sequence class)
 
@@ -88,36 +90,48 @@ calculated, and so on. When translating into amino acid sequences the
 frame can be specified and optionally the condon table selected (as
 defined in codontable.rb).
 
+  bioruby> seq = Bio::Sequence::NA.new("atgcatgcaaaa")
+  ==> "atgcatgcaaaa"
 
-    #!/usr/bin/env ruby
+  # complemental sequence (Bio::Sequence::NA object)
+  bioruby> seq.complement
+  ==> "ttttgcatgcat"
 
-    require 'bio'
+  bioruby> seq.subseq(3,8) # gets subsequence of positions 3 to 8
+  ==> "gcatgc"
+  bioruby> seq.gc_percent 
+  ==> 33
+  bioruby> seq.composition 
+  ==> {"a"=>6, "c"=>2, "g"=>2, "t"=>2}
+  bioruby> seq.translate 
+  ==> "MHAK"
+  bioruby> seq.translate(2)        # translate from frame 2
+  ==> "CMQ"
+  bioruby> seq.translate(1,11)     # codon table 11
+  ==> "MHAK"
+  bioruby> seq.translate.codes
+  ==> ["Met", "His", "Ala", "Lys"]
+  bioruby> seq.translate.names
+  ==> ["methionine", "histidine", "alanine", "lysine"]
+  bioruby>  seq.translate.composition
+  ==> {"K"=>1, "A"=>1, "M"=>1, "H"=>1}
+  bioruby> seq.translate.molecular_weight
+  ==> 485.605
+  bioruby> seq.complement.translate
+  ==> "FCMH"
 
-    seq = Bio::Sequence::NA.new("atgcatgcaaaa")
+get a random sequence with the same NA count:
 
-    puts seq                            # original sequence
-    puts seq.complement                 # complemental sequence (Bio::Sequence::NA object)
-    puts seq.subseq(3,8)                # gets subsequence of positions 3 to 8
+  bioruby> counts = {'a'=>seq.count('a'),'c'=>seq.count('c'),'g'=>seq.count('g'),'t'=>seq.count('t')}
+  ==> {"a"=>6, "c"=>2, "g"=>2, "t"=>2}
+  bioruby!> randomseq = Bio::Sequence::NA.randomize(counts) 
+  ==!> "aaacatgaagtc"
 
-    p seq.gc_percent                    # GC percent (BioRuby 0.6.X: Float, BioRuby 0.7 or later: Integer)
-    p seq.composition                   # nucleic acid compositions (Hash)
+  bioruby!> print counts
+a6c2g2t2  
+  bioruby!> p counts
+{"a"=>6, "c"=>2, "g"=>2, "t"=>2}
 
-    puts seq.translate                  # translation (Bio::Sequence::AA object)
-    puts seq.translate(2)               # translation from frame 2 (default is frame 1)
-    puts seq.translate(1,11)            # using codon table No.11 
-                                        # (see http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi)
-
-    p seq.translate.codes               # shows three-letter codes (Array)
-    p seq.translate.names               # shows amino acid names (Array)
-    p seq.translate.composition         # amino acid compositions (Hash)
-    p seq.translate.molecular_weight    # calculating molecular weight (Float)
-
-    puts seq.complement.translate       # translation of complemental strand
-
-    # reshuffle sequence with same frequencies:
-    counts = {'a'=>seq.count('a'),'c'=>seq.count('c'),
-              'g'=>seq.count('g'),'t'=>seq.count('t')}
-    p randomseq = Bio::Sequence::NA.randomize(counts)  
 
 The p, print and puts methods are standard Ruby ways of outputting to
 the screen. If you want to know more about standard Ruby commands you
@@ -139,15 +153,12 @@ not only use subseq(from, to) but also String#[].
 Please take note that the Ruby's string's are base 0 - i.e. the first letter
 has index 0, for example:
 
-  s = 'abc'
-  puts s[0].chr
-
-  >a
-
-  puts s[0..1]
-
-  >ab
-
+  bioruby> s = 'abc'
+  ==> "abc"
+  bioruby> s[0].chr
+  ==> "a"
+  bioruby> s[0..1]
+  ==> "ab"
 
 So when using String methods, you should subtract 1 from positions
 conventionally used in biology.  (subseq method will throw an exception if you
@@ -159,12 +170,14 @@ way of writing concise and clear code using 'closures'. Each sliding
 window creates a subsequence which is supplied to the enclosed block
 through a variable named +s+.
 
-* Shows average percentage of GC content for 100 bases (stepping
-the default one base at a time)
+* Shows average percentage of GC content for 20 bases (stepping the default one base at a time)
 
-    seq.window_search(100) do |s|
-      puts s.gc_percent
-    end
+bioruby> seq = Bio::Sequence::NA.new("atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa")
+  ==> "atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa"
+
+  bioruby>  seq.window_search(20) { |s| print s.gc_percent,',' } 
+30,35,40,40,35,35,35,30,25,30,30,30,35,35,35,35,35,40,45,45,45,45,40,35,40,40,40,40,40,35,35,35,30,30,30,  ==> ""
+ 
 
 Since the class of each subsequence is the same as original sequence
 (Bio::Sequence::NA or Bio::Sequence::AA or Bio::Sequence), you can
@@ -1163,6 +1176,17 @@ to be written...
 
 (EDITOR's NOTE: I would like some examples automatically
 included - with output)
+
+== Unit testing and doctests
+
+BioRuby comes with an extensive testing framework with over 1300 tests and 2700
+assertions. To run the unit tests:
+
+  cd test
+  ruby runner.rb
+
+We have also started with doctest for Ruby. We are porting the examples
+in this tutorial to doctest - more info upcoming.
 
 == Further reading
 
