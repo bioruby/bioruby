@@ -23,7 +23,7 @@ Editor: PjotrPrins <p .at. bioruby.org>
 
 The latest version resides in the CVS repository ./doc/((<Tutorial.rd|URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/bioruby/doc/Tutorial.rd?rev=HEAD&cvsroot=bioruby&content-type=text/plain>)). This one was updated:
 
-  $Id: Tutorial.rd,v 1.17 2008/02/03 17:17:48 pjotr Exp $ 
+  $Id: Tutorial.rd,v 1.18 2008/02/05 12:01:16 pjotr Exp $ 
 
 in preparation for the ((<BioHackathlon 2008|URL:http://hackathon.dbcls.jp/>))
 
@@ -128,9 +128,9 @@ get a random sequence with the same NA count:
   ==!> "aaacatgaagtc"
 
   bioruby!> print counts
-a6c2g2t2  
+  a6c2g2t2  
   bioruby!> p counts
-{"a"=>6, "c"=>2, "g"=>2, "t"=>2}
+  {"a"=>6, "c"=>2, "g"=>2, "t"=>2}
 
 
 The p, print and puts methods are standard Ruby ways of outputting to
@@ -172,13 +172,12 @@ through a variable named +s+.
 
 * Shows average percentage of GC content for 20 bases (stepping the default one base at a time)
 
-bioruby> seq = Bio::Sequence::NA.new("atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa")
+  bioruby> seq = Bio::Sequence::NA.new("atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa")
   ==> "atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa"
 
   bioruby>  seq.window_search(20) { |s| print s.gc_percent,',' } 
-30,35,40,40,35,35,35,30,25,30,30,30,35,35,35,35,35,40,45,45,45,45,40,35,40,40,40,40,40,35,35,35,30,30,30,  ==> ""
+  30,35,40,40,35,35,35,30,25,30,30,30,35,35,35,35,35,40,45,45,45,45,40,35,40,40,40,40,40,35,35,35,30,30,30,  ==> ""
  
-
 Since the class of each subsequence is the same as original sequence
 (Bio::Sequence::NA or Bio::Sequence::AA or Bio::Sequence), you can
 use all methods on the subsequence. For example,
