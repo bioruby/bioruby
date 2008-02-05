@@ -15,11 +15,10 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: gb2fasta.rb,v 0.5 2002/07/23 04:51:24 k Exp $
+#  $Id: gb2fasta.rb,v 0.6 2008/02/05 12:11:11 pjotr Exp $
 #
 
-require 'bio/io/flatfile'
-require 'bio/db/genbank'
+require 'bio'
 
 include Bio
 
