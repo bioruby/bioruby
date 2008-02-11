@@ -32,7 +32,7 @@ Editor: PjotrPrins <p .at. bioruby.org>
 
 The latest version resides in the CVS repository ./doc/((<Tutorial.rd|URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/bioruby/doc/Tutorial.rd?rev=HEAD&cvsroot=bioruby&content-type=text/plain>)). This one was updated:
 
-  $Id: Tutorial.rd,v 1.19 2008/02/11 07:08:46 pjotr Exp $ 
+  $Id: Tutorial.rd,v 1.20 2008/02/11 08:03:27 pjotr Exp $ 
 
 in preparation for the ((<BioHackathlon 2008|URL:http://hackathon.dbcls.jp/>))
 
@@ -496,25 +496,25 @@ Array and BioPerl's Bio::SimpleAlign.  A very simple example is:
   # creates alignment object
   bioruby> a = Bio::Alignment.new(seqs)
   bioruby> a.consensus 
-  ==> "xa?gc?"
+  ==> "a?gc?"
   # shows IUPAC consensus
-  p a.consensus_iupac       # ==> "ahgcr"
-
+  a.consensus_iupac 
+  ==> "ahgcr"
   # iterates over each seq
   a.each { |x| p x }
-    # ==>
-    #    "atgca"
-    #    "aagca"
-    #    "acgca"
-    #    "acgcg"
+  # ==>
+  #    "atgca"
+  #    "aagca"
+  #    "acgca"
+  #    "acgcg"
   # iterates over each site
   a.each_site { |x| p x }
-    # ==>
-    #    ["a", "a", "a", "a"]
-    #    ["t", "a", "c", "c"]
-    #    ["g", "g", "g", "g"]
-    #    ["c", "c", "c", "c"]
-    #    ["a", "a", "a", "g"]
+  # ==>
+  #    ["a", "a", "a", "a"]
+  #    ["t", "a", "c", "c"]
+  #    ["g", "g", "g", "g"]
+  #    ["c", "c", "c", "c"]
+  #    ["a", "a", "a", "g"]
 
   # doing alignment by using CLUSTAL W.
   # clustalw command must be installed.
