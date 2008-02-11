@@ -1,6 +1,6 @@
 # This document is generated with a version of rd2html (part of Hiki)
 #
-# A possible test run could be from rdtool:
+# A possible test run could be from rdtool (on Debian package rdtool)
 #
 #   ruby -I lib ./bin/rd2 ~/cvs/opensource/bioruby/doc/Tutorial.rd
 #
@@ -9,7 +9,16 @@
 #   ruby -I lib ./bin/rd2 -r rd/rd2html-lib.rb --with-c
 ss=bioruby.css ~/cvs/opensource/bioruby/doc/Tutorial.rd > ~/bioruby.html
 #
-# A common problem is tabs in the text file!
+# in Debian:
+#
+#   rd2 -r rd/rd2html-lib  --with-css="/home/wrk/izip/cvs/opensource/bioruby/lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby.css" Tutorial.rd > index.html
+#
+# A common problem is tabs in the text file! TABs are not allowed.
+#
+# To add tests run Toshiaki's bioruby shell and paste in the query plus
+# results.
+#
+# To run the embedded Ruby doctests you can get the doctest.rb from Pjotr.
 
 =begin
 #doctest Testing bioruby
@@ -23,7 +32,7 @@ Editor: PjotrPrins <p .at. bioruby.org>
 
 The latest version resides in the CVS repository ./doc/((<Tutorial.rd|URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/bioruby/doc/Tutorial.rd?rev=HEAD&cvsroot=bioruby&content-type=text/plain>)). This one was updated:
 
-  $Id: Tutorial.rd,v 1.18 2008/02/05 12:01:16 pjotr Exp $ 
+  $Id: Tutorial.rd,v 1.19 2008/02/11 07:08:46 pjotr Exp $ 
 
 in preparation for the ((<BioHackathlon 2008|URL:http://hackathon.dbcls.jp/>))
 
@@ -35,8 +44,7 @@ excellent book ((<Programming Ruby|URL:http://www.pragprog.com/titles/ruby>))
 by Dave Thomas and Andy Hunt - some of it is online
 ((<here|URL:http://www.rubycentral.com/pickaxe/>)).
 
-For BioRuby you need to install
-Ruby and the BioRuby package on your computer.
+For BioRuby you need to install Ruby and the BioRuby package on your computer
 
 You can check whether Ruby is installed on your computer and what
 version it has with the
@@ -78,6 +86,10 @@ Now test the following:
 
   bioruby> seq.complement
   ==> "ttttgcatgcat"
+
+See the the Bioruby shell section below for more tweaking. If you have trouble running
+examples also check the section below on trouble shooting. You can also post a 
+question to the mailing list. BioRuby developers usually try to help.
 
 == Working with nucleic / amino acid sequences (Bio::Sequence class)
 
@@ -170,13 +182,15 @@ way of writing concise and clear code using 'closures'. Each sliding
 window creates a subsequence which is supplied to the enclosed block
 through a variable named +s+.
 
-* Shows average percentage of GC content for 20 bases (stepping the default one base at a time)
+* Show average percentage of GC content for 20 bases (stepping the default one base at a time)
 
   bioruby> seq = Bio::Sequence::NA.new("atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa")
   ==> "atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa"
 
-  bioruby>  seq.window_search(20) { |s| print s.gc_percent,',' } 
-  30,35,40,40,35,35,35,30,25,30,30,30,35,35,35,35,35,40,45,45,45,45,40,35,40,40,40,40,40,35,35,35,30,30,30,  ==> ""
+  bioruby> a=[]; seq.window_search(20) { |s| a.push s.gc_percent } 
+  bioruby> a
+  ==> [30, 35, 40, 40, 35, 35, 35, 30, 25, 30, 30, 30, 35, 35, 35, 35, 35, 40, 45, 45, 45, 45, 40, 35, 40, 40, 40, 40, 40, 35, 35, 35, 30, 30, 30]
+
  
 Since the class of each subsequence is the same as original sequence
 (Bio::Sequence::NA or Bio::Sequence::AA or Bio::Sequence), you can
@@ -184,24 +198,31 @@ use all methods on the subsequence. For example,
 
 * Shows translation results for 15 bases shifting a codon at a time
 
-    seq.window_search(15, 3) do |s|
-      puts s.translate
-    end
+  bioruby> a = []
+  bioruby> seq.window_search(15, 3) do |s|
+  bioruby>   a.push s.translate
+  bioruby> end
+  bioruby> a
+  ==> ["MHAIK", "HAIKL", "AIKLI", "IKLIP", "KLIPI", "LIPIR", "IPIRS", "PIRSS", "IRSSR", "RSSRS", "SSRSS", "SRSSK", "RSSKK", "SSKKK"]
+
 
 Finally, the window_search method returns the last leftover
 subsequence. This allows for example
 
 * Divide a genome sequence into sections of 10000bp and
-  output FASTA formatted sequences. The 1000bp at the start and end of
-  each subsequence overlapped. At the 3' end of the sequence the
-  leftover subsequence shorter than 10000bp is also added
+  output FASTA formatted sequences (line width 60 chars). The 1000bp at the
+  start and end of each subsequence overlapped. At the 3' end of the sequence
+  the leftover is also added:
 
     i = 1
+    textwidth=60
     remainder = seq.window_search(10000, 9000) do |s|
-      puts s.to_fasta("segment #{i}", 60)
+      puts s.to_fasta("segment #{i}", textwidth)
       i += 1
     end
-    puts remainder.to_fasta("segment #{i}", 60)
+    if remainder
+      puts remainder.to_fasta("segment #{i}", textwidth) 
+    end
 
 If you don't want the overlapping window, set window size and stepping
 size to equal values.
@@ -210,16 +231,22 @@ Other examples
 
 * Count the codon usage
 
-    codon_usage = Hash.new(0)
-    seq.window_search(3, 3) do |s|
-      codon_usage[s] += 1
-    end
+  bioruby> codon_usage = Hash.new(0)
+  bioruby> seq.window_search(3, 3) do |s|
+  bioruby>   codon_usage[s] += 1
+  bioruby> end
+  bioruby> codon_usage
+  ==> {"cat"=>1, "aaa"=>3, "cca"=>1, "att"=>2, "aga"=>1, "atc"=>1, "cta"=>1, "gca"=>1, "cga"=>1, "tca"=>3, "aag"=>1, "tcc"=>1, "atg"=>1}
+
 
 * Calculate molecular weight for each 10-aa peptide (or 10-nt nucleic acid)
 
-    seq.window_search(10, 10) do |s|
-      puts s.molecular_weight
-    end
+  bioruby> a = []
+  bioruby> seq.window_search(10, 10) do |s|
+  bioruby>   a.push s.molecular_weight
+  bioruby> end
+  bioruby> a
+  ==> [3096.2062, 3086.1962, 3056.1762, 3023.1262, 3073.2262]
 
 In most cases, sequences are read from files or retrieved from databases.
 For example:
@@ -245,6 +272,10 @@ For example, translates my_naseq.txt:
 
     % ruby na2aa.rb my_naseq.txt
 
+or use a pipe!
+
+    % cat my_naseq.txt|ruby na2aa.rb
+
 Outputs
 
     VAIFPKAMTGAKNQSSDICLMPHVGLIRRGQRRIRHLVQMSDAA*
@@ -253,8 +284,9 @@ You can also write this, a bit fanciful, as a one-liner script.
 
     % ruby -r bio -e 'p Bio::Sequence::NA.new($<.read).translate' my_naseq.txt
 
-In the next section we will retrieve data from databases instead of
-using raw sequence files.
+In the next section we will retrieve data from databases instead of using raw
+sequence files. One generic example of the above can be found in
+./sample/na2aa.rb.
 
 == Parsing GenBank data (Bio::GenBank class)
 
@@ -459,17 +491,12 @@ multiple Bio::Reference objects as an Array. And some classes have a
 Bio::Alignment class in bio/alignment.rb is a container class like Ruby's Hash,
 Array and BioPerl's Bio::SimpleAlign.  A very simple example is:
 
-  require 'bio'
-
-  seqs = [ 'atgca', 'aagca', 'acgca', 'acgcg' ]
-  seqs = seqs.collect{ |x| Bio::Sequence::NA.new(x) }
-
+  bioruby> seqs = [ 'atgca', 'aagca', 'acgca', 'acgcg' ]
+  bioruby> seqs = seqs.collect{ |x| Bio::Sequence::NA.new(x) }
   # creates alignment object
-  a = Bio::Alignment.new(seqs)
-
-  # shows consensus sequence
-  p a.consensus             # ==> "a?gc?"
-
+  bioruby> a = Bio::Alignment.new(seqs)
+  bioruby> a.consensus 
+  ==> "xa?gc?"
   # shows IUPAC consensus
   p a.consensus_iupac       # ==> "ahgcr"
 
@@ -1167,14 +1194,9 @@ to be written...
 
 == The BioRuby example programs
 
-Some sample programs are stored in samples/ directry.
-Some programs are obsolete. Since samples are not enough,
-practical and interesting samples are welcome.
+Some sample programs are stored in ./samples/ directory. Run for example:
 
-to be written...
-
-(EDITOR's NOTE: I would like some examples automatically
-included - with output)
+  ./sample/na2aa.rb test/data/fasta/example1.txt 
 
 == Unit testing and doctests
 
@@ -1194,6 +1216,28 @@ source code and unit tests. To really dive in you will need the latest source
 code tree. The embedded rdoc documentation can be viewed online at
 ((<URL:http://bioruby.org/rdoc/>)).
 
+== BioRuby Shell
+
+The BioRuby shell implementation you find in ./lib/bio/shell. It is very interesting
+as it uses IRB (the Ruby intepreter) which is a powerful environment described in
+((<Programming Ruby's irb chapter|URL:http://ruby-doc.org/docs/ProgrammingRuby/html/irb.html>)). IRB commands can directly be typed in the shell, e.g.
+
+  bioruby!> IRB.conf[:PROMPT_MODE]
+  ==!> :PROMPT_C
+
+optionally you also may want to install the optional Ruby readline support -
+with Debian libreadline-ruby. To edit a previous line you may have to press
+line down (arrow down) first.
+
+= Helpful tools
+
+Apart from rdoc you may also want to use rtags - which allows jumping around
+source code by clicking on class and method names. 
+
+  cd bioruby/lib
+  rtags -R --vi
+
+For a tutorial see ((<URL:http://rtags.rubyforge.org/>))
 
 = APPENDIX
 
@@ -1225,6 +1269,15 @@ At this point installing third party Ruby packages can be a bit
 painful, as the gem standard for packages evolved late and some still
 force you to copy things by hand. Therefore read the README's
 carefully that come with each package.
+
+== Trouble shooting
+
+* Error: in `require': no such file to load -- bio (LoadError)
+
+Ruby fails to find the BioRuby libraries - add it to the RUBYLIB path, or pass
+it to the interpeter. For example:
+
+  ruby -I~/cvs/bioruby/lib yourprogram.rb
 
 == Modifying this page
 
