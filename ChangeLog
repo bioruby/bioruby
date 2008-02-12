@@ -1,3 +1,12 @@
+2008-02-12  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Fixed bugs: Failed to parse query length for long query
+	  (>= 10000 letters) as comma is inserted for digit separator
+	  by blastall; Failed to parse e-value for some BLASTX results.
+	  Thanks to Shuji Shigenobu who reported the bugs and sent patches.
+
 2008-02-02  Toshiaki Katayama <k@bioruby.org>
 
 	* lib/bio/shell/rails/vendor/plugins/
