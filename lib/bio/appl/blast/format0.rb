@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format0.rb,v 1.25 2007/12/27 17:28:57 ngoto Exp $
+# $Id: format0.rb,v 1.26 2008/02/12 02:13:31 ngoto Exp $
 #
 # == Description
 #
@@ -264,8 +264,8 @@ module Bio
               begin
                 q << sc.scan(/.*/)
                 sc.skip(/\s*^ ?/)
-              end until !sc.rest or r = sc.skip(/ *\( *(\d+) *letters *\)\s*\z/)
-              @query_len = sc[1].to_i if r
+              end until !sc.rest or r = sc.skip(/ *\( *([\,\d]+) *letters *\)\s*\z/)
+              @query_len = sc[1].delete(',').to_i if r
               @query_def = q.join(' ')
             end
           end
@@ -968,7 +968,7 @@ module Bio
               sc = StringScanner.new(@f0score)
               while sc.rest?
                 sc.skip(/\s*/)
-                if sc.skip(/Expect(?:\(\d\))? *\= *([e\-\.\d]+)/) then
+                if sc.skip(/Expect(?:\(\d+\))? *\= *([e\-\.\d]+)/) then
                   ev = sc[1].to_s
                   ev = '1' + ev if ev[0] == ?e
                   @evalue = ev.to_f
