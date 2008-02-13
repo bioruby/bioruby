@@ -32,7 +32,7 @@ Editor: PjotrPrins <p .at. bioruby.org>
 
 The latest version resides in the CVS repository ./doc/((<Tutorial.rd|URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/bioruby/doc/Tutorial.rd?rev=HEAD&cvsroot=bioruby&content-type=text/plain>)). This one was updated:
 
-  $Id: Tutorial.rd,v 1.20 2008/02/11 08:03:27 pjotr Exp $ 
+  $Id: Tutorial.rd,v 1.21 2008/02/13 08:04:30 pjotr Exp $ 
 
 in preparation for the ((<BioHackathlon 2008|URL:http://hackathon.dbcls.jp/>))
 
@@ -182,7 +182,7 @@ way of writing concise and clear code using 'closures'. Each sliding
 window creates a subsequence which is supplied to the enclosed block
 through a variable named +s+.
 
-* Show average percentage of GC content for 20 bases (stepping the default one base at a time)
+Show average percentage of GC content for 20 bases (stepping the default one base at a time)
 
   bioruby> seq = Bio::Sequence::NA.new("atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa")
   ==> "atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa"
@@ -196,7 +196,7 @@ Since the class of each subsequence is the same as original sequence
 (Bio::Sequence::NA or Bio::Sequence::AA or Bio::Sequence), you can
 use all methods on the subsequence. For example,
 
-* Shows translation results for 15 bases shifting a codon at a time
+Shows translation results for 15 bases shifting a codon at a time
 
   bioruby> a = []
   bioruby> seq.window_search(15, 3) do |s|
@@ -209,10 +209,10 @@ use all methods on the subsequence. For example,
 Finally, the window_search method returns the last leftover
 subsequence. This allows for example
 
-* Divide a genome sequence into sections of 10000bp and
-  output FASTA formatted sequences (line width 60 chars). The 1000bp at the
-  start and end of each subsequence overlapped. At the 3' end of the sequence
-  the leftover is also added:
+Divide a genome sequence into sections of 10000bp and
+output FASTA formatted sequences (line width 60 chars). The 1000bp at the
+start and end of each subsequence overlapped. At the 3' end of the sequence
+the leftover is also added:
 
     i = 1
     textwidth=60
@@ -229,7 +229,7 @@ size to equal values.
 
 Other examples
 
-* Count the codon usage
+Count the codon usage
 
   bioruby> codon_usage = Hash.new(0)
   bioruby> seq.window_search(3, 3) do |s|
@@ -239,7 +239,7 @@ Other examples
   ==> {"cat"=>1, "aaa"=>3, "cca"=>1, "att"=>2, "aga"=>1, "atc"=>1, "cta"=>1, "gca"=>1, "cga"=>1, "tca"=>3, "aag"=>1, "tcc"=>1, "atg"=>1}
 
 
-* Calculate molecular weight for each 10-aa peptide (or 10-nt nucleic acid)
+Calculate molecular weight for each 10-aa peptide (or 10-nt nucleic acid)
 
   bioruby> a = []
   bioruby> seq.window_search(10, 10) do |s|
@@ -398,12 +398,12 @@ very complicated:
       end
     end
 
-* Note: In this example Feature#assoc method makes a Hash from a
-  feature object. It is useful because you can get data from the hash
-  by using qualifiers as keys.
-  (But there is a risk some information is lost when two or more
-  qualifiers are the same. Therefore an Array is returned by
-  Feature#feature)
+Note: In this example Feature#assoc method makes a Hash from a
+feature object. It is useful because you can get data from the hash
+by using qualifiers as keys.
+(But there is a risk some information is lost when two or more
+qualifiers are the same. Therefore an Array is returned by
+Feature#feature)
 
 Bio::Sequence#splicing splices subsequence from nucleic acid sequence
 according to location information used in GenBank, EMBL and DDBJ.
@@ -417,11 +417,11 @@ feature style location text but also Bio::Locations object. For more
 information about location format and Bio::Locations class, see
 bio/location.rb.
 
-* Splice according to location string used in a GenBank entry
+Splice according to location string used in a GenBank entry
 
     naseq.splicing('join(2035..2050,complement(1775..1818),13..345')
 
-* Generate Bio::Locations object and pass the splicing method
+Generate Bio::Locations object and pass the splicing method
 
     locs = Bio::Locations.new('join((8298.8300)..10206,1..855)')
     naseq.splicing(locs)
@@ -429,7 +429,7 @@ bio/location.rb.
 You can also use the splicing method for amino acid sequences
 (Bio::Sequence::AA objects).
 
-* Splicing peptide from a protein (e.g. signal peptide)
+Splicing peptide from a protein (e.g. signal peptide)
 
     aaseq.splicing('21..119')
 
