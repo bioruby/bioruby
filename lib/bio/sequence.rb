@@ -9,7 +9,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: sequence.rb,v 0.58 2007/04/05 23:35:39 trevor Exp $
+# $Id: sequence.rb,v 0.58.2.1 2008/02/13 10:28:16 ngoto Exp $
 #
 
 require 'bio/sequence/compat'
@@ -332,6 +332,25 @@ class Sequence
   def aa
     @seq = AA.new(@seq)
     @moltype = AA
+  end
+
+  # Create a new Bio::Sequence object from a formatted string
+  # (GenBank, EMBL, fasta format, etc.)
+  #
+  #   s = Bio::Sequence.read(str)
+  # ---
+  # *Arguments*:
+  # * (required) _str_: string
+  # * (optional) _format_: format specification (class or nil)
+  # *Returns*:: Bio::Sequence object
+  def self.read(str, format = nil)
+    if format then
+      klass = format
+    else
+      klass = Bio::FlatFile::AutoDetect.default.guess(str)
+    end
+    obj = klass.new(str)
+    obj.to_biosequence
   end
   
 end # Sequence
