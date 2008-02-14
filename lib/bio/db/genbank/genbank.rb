@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2000-2005 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: genbank.rb,v 0.40 2007/04/05 23:35:40 trevor Exp $
+# $Id: genbank.rb,v 0.40.2.1 2008/02/14 08:51:45 ngoto Exp $
 #
 
 require 'bio/db'
@@ -123,6 +123,34 @@ class GenBank < NCBIDB
 
   def seq_len
     seq.length
+  end
+
+  # converts Bio::GenBank to Bio::Sequence
+  # ---
+  # *Arguments*: 
+  # *Returns*:: Bio::Sequence object
+  def to_biosequence
+    sequence = Bio::Sequence.new(seq)
+    sequence.entry_id = self.entry_id
+
+    sequence.primary_accession = self.accession
+    sequence.secondary_accessions = self.accessions - [ self.accession ]
+
+    sequence.molecule_type = self.natype
+    sequence.division = self.division
+    sequence.topology = self.circular
+
+    sequence.sequence_version = self.version
+    seq.date_created = nil #????
+    sequence.date_modified = self.date
+
+    sequence.keywords = self.keywords
+    sequence.species = self.organism
+    sequence.classification = self.taxonomy
+    sequence.organnella = nil # not used
+    sequence.comments = self.comment
+    sequence.references = self.references
+    return sequence
   end
 
 end # GenBank
