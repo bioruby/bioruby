@@ -11,13 +11,11 @@
 #
 # porting from N. Goto's feature-output.rb on BioRuby list.
 #
-# $Id: format.rb,v 1.4 2007/04/05 23:35:41 trevor Exp $
+# $Id: format.rb,v 1.4.2.1 2008/02/14 03:13:46 ngoto Exp $
 #
 
 
 module Bio
-
-  autoload :Sequence, 'bio/sequence'
 
 class Sequence
 
@@ -126,25 +124,26 @@ module Format
   end
 
   def format_qualifiers(qualifiers, indent, width)
-    qualifiers.each do |qualifier|
+    qualifiers.collect do |qualifier|
       q = qualifier.qualifier
       v = qualifier.value.to_s
 
       if v == true
         lines = wrap('/' + q, width)
       elsif q == 'translation'
-        lines = fold('/' + q + '=' + val, width)
+        lines = fold('/' + q + '=' + v, width)
       else
         if v[/\D/]
           #v.delete!("\x00-\x1f\x7f-\xff")
           v.gsub!(/"/, '""')
           v = '"' + v + '"'
         end
-        lines = wrap('/' + q + '=' + val, width)
+        lines = wrap('/' + q + '=' + v, width)
       end
 
-      return lines.gsub(/^/, indent)
-    end
+      lines.gsub!(/^/, indent)
+      lines
+    end.join
   end
 
   def fold(str, width)

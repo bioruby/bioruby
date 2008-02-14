@@ -9,7 +9,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: sequence.rb,v 0.58.2.1 2008/02/13 10:28:16 ngoto Exp $
+# $Id: sequence.rb,v 0.58.2.2 2008/02/14 03:13:46 ngoto Exp $
 #
 
 require 'bio/sequence/compat'
@@ -70,6 +70,7 @@ class Sequence
   autoload :AA,      'bio/sequence/aa'
   autoload :Generic, 'bio/sequence/generic'
   autoload :Format,  'bio/sequence/format'
+  include Format
 
   # Create a new Bio::Sequence object
   #
@@ -148,7 +149,6 @@ class Sequence
   # * (required) _style_: :fasta, :genbank, *or* :embl
   # *Returns*:: String object
   def output(style)
-    extend Bio::Sequence::Format
     case style
     when :fasta
       format_fasta
