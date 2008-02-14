@@ -11,7 +11,7 @@
 #
 # porting from N. Goto's feature-output.rb on BioRuby list.
 #
-# $Id: format.rb,v 1.4.2.1 2008/02/14 03:13:46 ngoto Exp $
+# $Id: format.rb,v 1.4.2.2 2008/02/14 03:32:14 ngoto Exp $
 #
 
 
@@ -169,7 +169,9 @@ module Format
       result << line
     end
     result << left if left
-    return result.join("\n")
+    result_string = result.join("\n")
+    result_string << "\n" unless result_string.empty?
+    return result_string
   end
 
 end # Format
