@@ -11,7 +11,7 @@
 #
 # porting from N. Goto's feature-output.rb on BioRuby list.
 #
-# $Id: format.rb,v 1.4.2.2 2008/02/14 03:32:14 ngoto Exp $
+# $Id: format.rb,v 1.4.2.3 2008/02/15 02:18:21 ngoto Exp $
 #
 
 
@@ -156,7 +156,7 @@ module Format
     while left and left.length > width
       line = nil
       width.downto(1) do |i|
-        if left[i..i] == ' ' or /[,;]/ =~ left[(i-1)..(i-1)]  then
+        if left[i..i] == ' ' or /[\,\;]/ =~ left[(i-1)..(i-1)]  then
           line = left[0..(i-1)].sub(/ +\z/, '')
           left = left[i..-1].sub(/\A +/, '')
           break
