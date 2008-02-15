@@ -9,9 +9,10 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: sequence.rb,v 0.58.2.4 2008/02/15 03:33:51 ngoto Exp $
+# $Id: sequence.rb,v 0.58.2.5 2008/02/15 04:49:37 aerts Exp $
 #
 
+require 'erb'
 require 'bio/sequence/compat'
 
 module Bio
@@ -71,6 +72,8 @@ class Sequence
   autoload :Generic, 'bio/sequence/generic'
   autoload :Format,  'bio/sequence/format'
   include Format
+
+  attr_accessor :sequence_version, :topology, :molecule_type, :data_class, :division, :primary_accession, :secondary_accessions, :date_created, :date_modified, :species, :classification
 
   # Create a new Bio::Sequence object
   #
@@ -164,19 +167,11 @@ class Sequence
   # Symbol(http://www.ruby-doc.org/core/classes/Symbol.html)
   # ---
   # *Arguments*: 
-  # * (required) _style_: :fasta, :genbank, *or* :embl
+  # * (required) _format_: :fasta, :genbank, *or* :embl
   # *Returns*:: String object
-  def output(style)
-    case style
-    when :fasta
-      format_fasta
-    when :gff
-      format_gff
-    when :genbank
-      format_genbank
-    when :embl
-      format_embl
-    end
+  def output(format = :fasta)
+    record_template = ERB.new(File.read(File.dirname(__FILE__) + "/db/#{format.to_s}/format.erb"))
+    record_template.result(binding)
   end
 
   # Guess the type of sequence, Amino Acid or Nucleic Acid, and create a 
@@ -371,6 +366,11 @@ class Sequence
     obj.to_biosequence
   end
   
+  
+  def accessions
+    return [@primary_accession, @secondary_accessions].flatten
+  end
+  
 end # Sequence
 
 
@@ -379,133 +379,27 @@ end # Bio
 
 if __FILE__ == $0
 
-  puts "== Test Bio::Sequence::NA.new"
-  p Bio::Sequence::NA.new('')
-  p na = Bio::Sequence::NA.new('atgcatgcATGCATGCAAAA')
-  p rna = Bio::Sequence::NA.new('augcaugcaugcaugcaaaa')
+  require 'bio'
+  seq = Bio::Sequence.new('aattaaaacgccacgcaaggcgattctaggaaatcaaaacgacacgaaatgtggggtgggtgtttgggtaggaaagacagttgtcaacatcagggatttggattgaatcaaaaaaaaagtccttagatttcataaaagctaatcacgcctcaaaactggggcctatctcttcttttttgtcgcttcctgtcggtccttctctatttcttctccaacccctcatttttgaatatttacataacaaaccgttttactttctttggtcaaaattagacccaaaattctatattagtttaagatatgtggtctgtaatttattgttgtattgatataaaaattagttataagcgattatatttttatgctcaagtaactggtgttagttaactatattccaccacgataacctgattacataaaatatgattttaatcattttagtaaaccatatcgcacgttggatgattaattttaacggtttaataacacgtgattaaattatttttagaatgattatttacaaacggaaaagctatatgtgacacaataactcgtgcagtattgttagtttgaaaagtgtatttggtttcttatatttggcctcgattttcagtttatgtgctttttacaaagttttattttcgttatctgtttaacgcgacatttgttgtatggctttaccgatttgagaataaaatcatattacctttatgtagccatgtgtggtgtaatatataataatggtccttctacgaaaaaagcagatcacaattgaaataaagggtgaaatttggtgtcccttttcttcgtcgaaataacagaactaaataaaagaaagtgttatagtatattacgtccgaagaataatccatattcctgaaatacagtcaacatattatatatttagtactttatataaagttaggaattaaatcatatgttttatcgaccatattaagtcacaactttatcataaattaatctgtaattagaattccaagttcgccaccgaatttcgtaacctaatctacatataatagataaaatatatatatgtagagtaattatgatatctatgtatgtagtcatggtatatgaattttgaaattggcaaggtaacattgacggatcgtaacccaacaaataatattaattacaaaatgggtgggcgggaatagtatacaactcataattccactcactttttgtattattaggatatgaaataagagtaatcaacatgcataataaagatgtataatttcttcatcttaaaaaacataactacatggtttaatacacaattttaccttttatcaaaaaagtatttcacaattcactcgcaaattacgaaatgatggctagtgcttcaactccaaatttcgaatattttaaatcacgatgtgtagaaccttttatttactggatactaatcactagtttattgagccaaccaattagttaaatagaacaatcaatattatagccagatattttttcctttaaaaatatttaaaagaggggccagaaaagaaccagagagggaggccatgagacattattatcactagtcaaaaacaacaaaccctccttttgctttttcatataaattattatattttattttgcaggtttcttctcttcttcttcttcttcttcttcttcttcctcttggctgctttctttcatcatccataaagtgaaagctaacgcatagagagagccatatcgtcccaaaaaaagcaaaagtccaaaaaaaaacaactccaaaacattctctcttagctctttactctttagtttctctctctctctctgcctttctctttgttgaagttcatggatgctacgaagtggactcaggtacgtaaaaagatatctctctgctatatctgtttgtttgtagcttctccccgactctcacgctctctctctctctctctctctctttgtgtatctctctactcacataaatatatacatgtgtgtgtatgcatgtttatatgtatgtatgaaaccagtagtggttatacagatagtctatatagagatatcaatatgatgtgttttaatttagactttttatatatccgtttgaaacttccgaagttctcgaatggagttaaggaagttttgttctctacaagttcaatttttcttgtcattaattataaaactctgataactaatggataaaaaaggtatgctttgttagttaccttttgttcttggtgctcaggtcttaccatttttttcctaaattttaattagtctcctttctttaattaattttatgttaacgcactgacgatttaacgttaacaaaaaaacctagattctttttcttttcaatagagcataattattacttcaatttcatttatctcacactaaaccctaatcttggcgaaattccttttatatatataaatttaattaatttttccacaatcttggcggaattcaggactcggttttgcttgttattgttctctcttttaatttgacatggttagggaatacttaaagtatgtcttaattttatagggttttcaagaaatgataaacgtaaagccaatggagcaaatgatttctagcaccaacaacaacacaccgcaacaacaaccaacattcatcgccaccaacacaaggccaaacgccaccgcatccaatggtggctccggaggaaataccaacaacacggctacgatggaaactagaaaggcgaggccacaagagaaagtaaattgtccaagatgcaactcaacaaacacaaagttctgttattacaacaactacagtctcacgcaaccaagatacttctgcaaaggttgtcgaaggtattggaccgaaggtggctctcttcgtaacgtcccagtcggaggtagctcaagaaagaacaagagatcctctacacctttagcttcaccttctaatcccaaacttccagatctaaacccaccgattcttttctcaagccaaatccctaataagtcaaataaagatctcaacttgctatctttcccggtcatgcaagatcatcatcatcatggtatgtctcatttttttcatatgcccaagatagagaacaacaatacttcatcctcaatctatgcttcatcatctcctgtctcagctcttgagcttctaagatccaatggagtctcttcaagaggcatgaacacgttcttgcctggtcaaatgatggattcaaactcagtcctgtactcatctttagggtttccaacaatgcctgattacaaacagagtaataacaacctttcattctccattgatcatcatcaagggattggacataacaccatcaacagtaaccaaagagctcaagataacaatgatgacatgaatggagcaagtagggttttgttccctttttcagacatgaaagagctttcaagcacaacccaagagaagagtcatggtaataatacatattggaatgggatgttcagtaatacaggaggatcttcatggtgaaaaaaggttaaaaagagctcatgaactatcagctttcttctctttttctgtttttttctcctattttattatagtttttactttgatgatcttttgttttttctcacatggggaactttacttaaagttgtcagaacttagtttacagattgtctttttattccttctttctggttttccttttttcctttttttatcagtctttttaaaatatgtatttcataattgggtttgatcattcatatttattagtatcaaaatagagtctatgttcatgagggagtgttaaggggtgtgagggtagaagaataagtgaatacgggggcccg')
+  seq.entry_id = 'AJ224122'
+  seq.sequence_version = 3
+  seq.topology = 'linear'
+  seq.molecule_type = 'genomic DNA'
+  seq.data_class = 'STD'
+  seq.division = 'PLN'
+  seq.primary_accession = 'AJ224122'
+  seq.secondary_accessions = []
+  seq.date_created = '27-FEB-1998 (Rel. 54, Created)'
+  seq.date_modified = '14-NOV-2006 (Rel. 89, Last updated, Version 6)'
+  seq.definition = 'Arabidopsis thaliana DAG1 gene'
+  seq.keywords = ['BBFa gene', 'transcription factor']
+  seq.species = 'Arabidopsis thaliana (thale cress)'
+  seq.classification = ['Eukaryota', 'Viridiplantae', 'Streptophyta', 'Embryophyta', 'Tracheophyta',
+    'Spermatophyta', 'Magnoliophyta', 'eudicotyledons', 'core eudicotyledons', 'rosids',
+    'eurosids II', 'Brassicales', 'Brassicaceae', 'Arabidopsis']
 
-  puts "\n== Test Bio::Sequence::AA.new"
-  p Bio::Sequence::AA.new('')
-  p aa = Bio::Sequence::AA.new('ACDEFGHIKLMNPQRSTVWYU')
-
-  puts "\n== Test Bio::Sequence#to_s"
-  p na.to_s
-  p aa.to_s
-
-  puts "\n== Test Bio::Sequence#subseq(2,6)"
-  p na
-  p na.subseq(2,6)
-
-  puts "\n== Test Bio::Sequence#[2,6]"
-  p na
-  p na[2,6]
-
-  puts "\n== Test Bio::Sequence#to_fasta('hoge', 8)"
-  puts na.to_fasta('hoge', 8)
-
-  puts "\n== Test Bio::Sequence#window_search(15)"
-  p na
-  na.window_search(15) {|x| p x}
-
-  puts "\n== Test Bio::Sequence#total({'a'=>0.1,'t'=>0.2,'g'=>0.3,'c'=>0.4})"
-  p na.total({'a'=>0.1,'t'=>0.2,'g'=>0.3,'c'=>0.4})
-
-  puts "\n== Test Bio::Sequence#composition"
-  p na
-  p na.composition
-  p rna
-  p rna.composition
-
-  puts "\n== Test Bio::Sequence::NA#splicing('complement(join(1..5,16..20))')"
-  p na
-  p na.splicing("complement(join(1..5,16..20))")
-  p rna
-  p rna.splicing("complement(join(1..5,16..20))")
-
-  puts "\n== Test Bio::Sequence::NA#complement"
-  p na.complement
-  p rna.complement
-  p Bio::Sequence::NA.new('tacgyrkmhdbvswn').complement
-  p Bio::Sequence::NA.new('uacgyrkmhdbvswn').complement
-
-  puts "\n== Test Bio::Sequence::NA#translate"
-  p na
-  p na.translate
-  p rna
-  p rna.translate
-
-  puts "\n== Test Bio::Sequence::NA#gc_percent"
-  p na.gc_percent
-  p rna.gc_percent
-
-  puts "\n== Test Bio::Sequence::NA#illegal_bases"
-  p na.illegal_bases
-  p Bio::Sequence::NA.new('tacgyrkmhdbvswn').illegal_bases
-  p Bio::Sequence::NA.new('abcdefghijklmnopqrstuvwxyz-!%#$@').illegal_bases
-
-  puts "\n== Test Bio::Sequence::NA#molecular_weight"
-  p na
-  p na.molecular_weight
-  p rna
-  p rna.molecular_weight
-
-  puts "\n== Test Bio::Sequence::NA#to_re"
-  p Bio::Sequence::NA.new('atgcrymkdhvbswn')
-  p Bio::Sequence::NA.new('atgcrymkdhvbswn').to_re
-  p Bio::Sequence::NA.new('augcrymkdhvbswn')
-  p Bio::Sequence::NA.new('augcrymkdhvbswn').to_re
-
-  puts "\n== Test Bio::Sequence::NA#names"
-  p na.names
-
-  puts "\n== Test Bio::Sequence::NA#pikachu"
-  p na.pikachu
-
-  puts "\n== Test Bio::Sequence::NA#randomize"
-  print "Orig  : "; p na
-  print "Rand  : "; p na.randomize
-  print "Rand  : "; p na.randomize
-  print "Rand  : "; p na.randomize.randomize
-  print "Block : "; na.randomize do |x| print x end; puts
-
-  print "Orig  : "; p rna
-  print "Rand  : "; p rna.randomize
-  print "Rand  : "; p rna.randomize
-  print "Rand  : "; p rna.randomize.randomize
-  print "Block : "; rna.randomize do |x| print x end; puts
-
-  puts "\n== Test Bio::Sequence::NA.randomize(counts)"
-  print "Count : "; p counts = {'a'=>10,'c'=>20,'g'=>30,'t'=>40}
-  print "Rand  : "; p Bio::Sequence::NA.randomize(counts)
-  print "Count : "; p counts = {'a'=>10,'c'=>20,'g'=>30,'u'=>40}
-  print "Rand  : "; p Bio::Sequence::NA.randomize(counts)
-  print "Block : "; Bio::Sequence::NA.randomize(counts) {|x| print x}; puts
-
-  puts "\n== Test Bio::Sequence::AA#codes"
-  p aa
-  p aa.codes
-
-  puts "\n== Test Bio::Sequence::AA#names"
-  p aa
-  p aa.names
-
-  puts "\n== Test Bio::Sequence::AA#molecular_weight"
-  p aa.subseq(1,20)
-  p aa.subseq(1,20).molecular_weight
-
-  puts "\n== Test Bio::Sequence::AA#randomize"
-  aaseq = 'MRVLKFGGTSVANAERFLRVADILESNARQGQVATVLSAPAKITNHLVAMIEKTISGQDA'
-  s = Bio::Sequence::AA.new(aaseq)
-  print "Orig  : "; p s
-  print "Rand  : "; p s.randomize
-  print "Rand  : "; p s.randomize
-  print "Rand  : "; p s.randomize.randomize
-  print "Block : "; s.randomize {|x| print x}; puts
-
-  puts "\n== Test Bio::Sequence::AA.randomize(counts)"
-  print "Count : "; p counts = s.composition
-  print "Rand  : "; puts Bio::Sequence::AA.randomize(counts)
-  print "Block : "; Bio::Sequence::AA.randomize(counts) {|x| print x}; puts
+#  puts seq.output(:embl)
+  puts seq.output(:fasta)
 
 end
 

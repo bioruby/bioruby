@@ -2,10 +2,12 @@
 # = bio/db/embl/embl.rb - EMBL database class
 #
 # 
-# Copyright::   Copyright (C) 2001-2007 Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::   Copyright (C) 2001-2007
+#               Mitsuteru C. Nakao <n@bioruby.org>
+#               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: embl.rb,v 1.29 2007/04/05 23:35:40 trevor Exp $
+# $Id: embl.rb,v 1.29.2.1 2008/02/15 04:49:37 aerts Exp $
 #
 # == Description
 #
@@ -120,6 +122,10 @@ class EMBL < EMBLDB
   end
   alias molecule_type molecule
 
+  def topology
+    id_line('TOPOLOGY')
+  end
+  
   # returns DIVISION in the ID line.
   # * Bio::EMBL#division -> String
   def division
@@ -221,8 +227,8 @@ class EMBL < EMBLDB
   # RN RC RP RX RA RT RL
   #
   # Bio::EMBLDB#ref
-
-
+  
+  
   ##
   # DR Line; defabases cross-regerence (>=0)
   # "DR  database_identifier; primary_identifier; secondary_identifier."
@@ -355,13 +361,33 @@ class EMBL < EMBLDB
   # @orig[''] as sequence
   # bb Line; (blanks) sequence data (>=1)
   def seq
-    Sequence::NA.new( fetch('').gsub(/ /,'').gsub(/\d+/,'') )
+    Bio::Sequence::NA.new( fetch('').gsub(/ /,'').gsub(/\d+/,'') )
   end
   alias naseq seq
   alias ntseq seq
-
+  
   # // Line; termination line (end; 1/entry)
 
+  def to_biosequence
+    bio_seq = Bio::Sequence.new(self.seq)
+    bio_seq.entry_id = self.entry_id
+    bio_seq.primary_accession = self.accessions[0]
+    bio_seq.secondary_accessions = self.accessions[1,-1]
+    bio_seq.molecule_type = self.molecule_type
+    bio_seq.definition = self.description
+    bio_seq.topology = self.topology
+    bio_seq.date_created = self.dt['created']
+    bio_seq.date_modified = self.dt['updated']
+    bio_seq.division = self.division
+    bio_seq.sequence_version = self.version
+    bio_seq.keywords = self.keywords
+    bio_seq.species = self.os(0)[0]['os'] + ' ' + self.os(0)[0]['name']
+    bio_seq.classification = self.oc
+    bio_seq.references = self.references
+    bio_seq.features = self.ft
+    
+    return bio_seq
+  end
 
   ### private methods
 
@@ -400,3 +426,18 @@ class EMBL < EMBLDB
 end # class EMBL
 
 end # module Bio
+
+if __FILE__ == $0
+  require '../../../bio'
+  require 'yaml'
+  
+  prefix = 'FT   '
+  indent = prefix + ' ' * 16
+  fwidth = 80 - indent.length
+  
+  parser = Bio::FlatFile.auto('/home/aertsj/LocalDocuments/hackathon/aj224122.embl')
+  parser.each do |entry|
+#    entry.ref
+    puts entry.to_biosequence.output(:embl)
+  end
+end
