@@ -9,7 +9,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: sequence.rb,v 0.58.2.5 2008/02/15 04:49:37 aerts Exp $
+# $Id: sequence.rb,v 0.58.2.6 2008/02/15 05:29:50 ngoto Exp $
 #
 
 require 'erb'
@@ -360,7 +360,7 @@ class Sequence
     if format then
       klass = format
     else
-      klass = Bio::FlatFile::AutoDetect.default.guess(str)
+      klass = Bio::FlatFile::AutoDetect.default.autodetect(str)
     end
     obj = klass.new(str)
     obj.to_biosequence
