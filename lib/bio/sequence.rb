@@ -9,7 +9,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: sequence.rb,v 0.58.2.2 2008/02/14 03:13:46 ngoto Exp $
+# $Id: sequence.rb,v 0.58.2.3 2008/02/15 03:23:23 ngoto Exp $
 #
 
 require 'bio/sequence/compat'
@@ -96,7 +96,25 @@ class Sequence
   # Pass any unknown method calls to the wrapped sequence object.  see
   # http://www.rubycentral.com/book/ref_c_object.html#Object.method_missing
   def method_missing(sym, *args, &block) #:nodoc:
-    @seq.send(sym, *args, &block)
+    begin
+      @seq.__send__(sym, *args, &block)
+    rescue NoMethodError => evar
+      lineno = __LINE__ - 2
+      file = __FILE__
+      bt_here = [ "#{file}:#{lineno}:in \`__send__\'",
+                  "#{file}:#{lineno}:in \`method_missing\'"
+                ]
+      if bt_here == evar.backtrace[0, 2] then
+        bt = evar.backtrace[2..-1]
+        evar = NoMethodError.new("undefined method \`#{sym.to_s}\' for #{self.inspect}")
+        evar.set_backtrace(bt)
+      end
+      #p lineno
+      #p file
+      #p bt_here
+      #p evar.backtrace
+      raise(evar)
+    end
   end
   
   # The sequence identifier.  For example, for a sequence
