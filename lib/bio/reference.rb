@@ -1,12 +1,13 @@
 #
 # = bio/reference.rb - Journal reference classes
 #
-# Copyright::   Copyright (C) 2001, 2006
+# Copyright::   Copyright (C) 2001, 2006, 2008
 #               Toshiaki Katayama <k@bioruby.org>,
-#               Ryan Raaum <ryan@raaum.org>
+#               Ryan Raaum <ryan@raaum.org>,
+#               Jan Aerts <jandot@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: reference.rb,v 1.24 2007/04/05 23:35:39 trevor Exp $
+# $Id: reference.rb,v 1.24.2.1 2008/02/18 15:44:39 aerts Exp $
 #
 
 module Bio
@@ -78,6 +79,12 @@ module Bio
 
     # Affiliations in an Array.
     attr_reader :affiliations
+    
+    # Sequence number in EMBL/GenBank records
+    attr_reader :embl_gb_record_number
+    
+    # Position in a sequence that this reference refers to
+    attr_reader :sequence_position
 
     # Create a new Bio::Reference object from a Hash of values. 
     # Data is extracted from the values for keys:
@@ -129,6 +136,10 @@ module Bio
       @abstract = hash['abstract']
       @url      = hash['url']
       @mesh     = hash['mesh']
+      @embl_gb_record_number = hash['embl_gb_record_number'] || nil
+      @sequence_position = hash['sequence_position'] || []
+      @comments = hash['comments'] || []
+      @xrefs    = hash['xrefs'] || []
       @affiliations = hash['affiliations']
       @authors = [] if @authors.empty?
       @mesh    = [] if @mesh.empty?
@@ -170,6 +181,8 @@ module Bio
     # *Returns*:: String
     def format(style = nil, option = nil)
       case style
+      when 'embl'
+        return embl
       when 'endnote'
         return endnote
       when 'bibitem'
@@ -242,6 +255,42 @@ module Bio
         lines << "%K #{term}"
       end
       lines << "%+ #{@affiliations.join(' ')}" unless @affiliations.empty?
+      return lines.join("\n")
+    end
+
+    # Returns reference formatted in the EMBL style.
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.embl
+    #
+    #     RP   1-1859
+    #     RX   PUBMED; 1907511.
+    #     RA   Oxtoby E., Dunn M.A., Pancoro A., Hughes M.A.;
+    #     RT   "Nucleotide and derived amino acid sequence of the cyanogenic
+    #     RT   beta-glucosidase (linamarase) from white clover (Trifolium repens L.)";
+    #     RL   Plant Mol. Biol. 17(2):209-219(1991).
+    def embl
+      lines = Array.new
+      if ! @embl_gb_record_number.nil?
+        lines << "RN   [#{@embl_gb_record_number}]"
+      end
+      if @comments != []
+        @comments.each do |c|
+          lines << "RC   #{c}"
+        end
+      end
+      if @sequence_position != ''
+        lines << "RP   #{@sequence_position}"
+      end
+      if ! @xrefs.nil?
+        @xrefs.each do |x|
+          lines << "RX   #{x}"
+        end
+      end
+      lines << @authors.join(', ').wrap(80, 'RA   ') + ';' unless @authors.nil?
+      lines << (@title == '' ? 'RT   ;' : ('"' + @title + '"').wrap(80, 'RT   ') + ';')
+      lines << @journal.wrap(80, 'RL   ') unless @journal == ''
+      lines << "XX"
       return lines.join("\n")
     end
 
@@ -541,7 +590,8 @@ module Bio
   #   end
   #
   class References
-
+    include Enumerable
+    
     # Array of Bio::Reference objects
     attr_accessor :references
 
