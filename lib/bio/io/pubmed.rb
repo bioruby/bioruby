@@ -1,13 +1,14 @@
 #
 # = bio/io/pubmed.rb - NCBI Entrez/PubMed client module
 #
-# Copyright::  Copyright (C) 2001, 2007 Toshiaki Katayama <k@bioruby.org>
+# Copyright::  Copyright (C) 2001, 2007, 2008 Toshiaki Katayama <k@bioruby.org>
 # Copyright::  Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-# $Id: pubmed.rb,v 1.23 2007/12/12 13:53:26 k Exp $
+# $Id: pubmed.rb,v 1.24 2008/02/19 03:36:52 k Exp $
 #
 
+require 'bio/io/ncbirest'
 require 'bio/command'
 require 'cgi' unless defined?(CGI)
 
@@ -68,29 +69,7 @@ module Bio
 #   manuscript = Bio::PubMed.query("10592173")
 #   medline = Bio::MEDLINE.new(manuscript)
 #  
-class PubMed
-
-  # Run retrieval scripts on weekends or between 9 pm and 5 am Eastern Time
-  # weekdays for any series of more than 100 requests.
-  # -> Not implemented yet in BioRuby
-
-  # Make no more than one request every 3 seconds.
-  NCBI_INTERVAL = 3
-  @@last_access = nil
-
-  private
-
-  def ncbi_access_wait(wait = NCBI_INTERVAL)
-    if @@last_access
-      duration = Time.now - @@last_access
-      if wait > duration
-        sleep wait - duration
-      end
-    end
-    @@last_access = Time.now
-  end
-
-  public
+class PubMed < Bio::NCBI::REST
 
   # Search the PubMed database by given keywords using E-Utils and returns 
   # an array of PubMed IDs.
@@ -99,39 +78,22 @@ class PubMed
   # http://eutils.ncbi.nlm.nih.gov/entrez/query/static/esearch_help.html#PubMed
   # ---
   # *Arguments*:
-  # * _id_: query string (required)
-  # * _field_
-  # * _reldate_
-  # * _mindate_
-  # * _maxdate_
-  # * _datetype_
-  # * _retstart_
-  # * _retmax_ (default 100)
-  # * _retmode_
-  # * _rettype_
+  # * _str_: query string (required)
+  # * _hash_: hash of E-Utils options
+  #   * _retmode_: "xml", "html", ...
+  #   * _rettype_: "medline", ...
+  #   * _retmax_: integer (default 100)
+  #   * _retstart_: integer
+  #   * _field_
+  #   * _reldate_
+  #   * _mindate_
+  #   * _maxdate_
+  #   * _datetype_
   # *Returns*:: array of PubMed IDs or a number of results
   def esearch(str, hash = {})
-    return nil if str.empty?
-
-    serv = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
-    opts = {
-      "retmax" => 100,
-      "tool"   => "bioruby",
-      "db"     => "pubmed",
-      "term"   => str
-    }
+    opts = { "db" => "pubmed" }
     opts.update(hash)
-
-    ncbi_access_wait
-
-    response, = Bio::Command.post_form(serv, opts)
-    result = response.body
-    if opts['rettype'] == 'count'
-      result = result.scan(/<Count>(.*?)<\/Count>/m).flatten.first.to_i
-    else
-      result = result.scan(/<Id>(.*?)<\/Id>/m).flatten
-    end
-    return result
+    super(str, opts)
   end
 
   # Retrieve PubMed entry by PMID and returns MEDLINE formatted string using
@@ -141,29 +103,21 @@ class PubMed
   # ---
   # *Arguments*:
   # * _ids_: list of PubMed IDs (required)
+  # * _hash_: hash of E-Utils options
+  #   * _retmode_: "xml", "html", ...
+  #   * _rettype_: "medline", ...
+  #   * _retmax_: integer (default 100)
+  #   * _retstart_: integer
+  #   * _field_
+  #   * _reldate_
+  #   * _mindate_
+  #   * _maxdate_
+  #   * _datetype_
   # *Returns*:: Array of MEDLINE formatted String
   def efetch(ids, hash = {})
-    return nil if ids.to_s.empty?
-    ids = ids.join(",") if ids === Array
-
-    serv = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
-    opts = {
-      "tool"     => "bioruby",
-      "db"       => "pubmed",
-      "retmode"  => "text",
-      "rettype"  => "medline",
-      "id"       => ids,
-    }
+    opts = { "db" => "pubmed", "rettype"  => "medline" }
     opts.update(hash)
-
-    ncbi_access_wait
-
-    response, = Bio::Command.post_form(serv, opts)
-    result = response.body
-    if opts["retmode"] == "text"
-      result = result.split(/\n\n+/)
-    end
-    return result
+    super(ids, opts)
   end
 
   # Search the PubMed database by given keywords using entrez query and returns
