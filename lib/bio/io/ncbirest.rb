@@ -1,10 +1,10 @@
 #
-# = bio/io/ncbrest.rb - NCBI Entrez client module
+# = bio/io/ncbirest.rb - NCBI Entrez client module
 #
 # Copyright::  Copyright (C) 2008 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: ncbirest.rb,v 1.1 2008/02/19 03:36:52 k Exp $
+# $Id: ncbirest.rb,v 1.2 2008/02/19 04:49:35 k Exp $
 #
 
 require 'bio/command'
@@ -15,13 +15,13 @@ module Bio
 #
 # The Bio::NCBI::REST class provides REST client for the NCBI E-Utilities
 #
-# * Entrez utilities index:
-#      http://www.ncbi.nlm.nih.gov/entrez/utils/utils_index.html
-# * How to link:
-#     http://www.ncbi.nlm.nih.gov/books/bv.fcgi?rid=helplinks.chapter.linkshelp
+# Entrez utilities index:
+#
+# * http://www.ncbi.nlm.nih.gov/entrez/utils/utils_index.html
 #
 # == Usage
 #
+#  Bio::NCBI::REST.esearch("tardigrada", {"db"=>"nuccore", "rettype"=>"count"})
 #  Bio::NCBI::REST.esearch("tardigrada", {"db"=>"nuccore", "rettype"=>"gb"})
 #  Bio::NCBI::REST.esearch("yeast kinase", {"db"=>"nuccore", "rettype"=>"gb", "retmode"=>"xml", "retmax"=>5})
 #  Bio::NCBI::REST.efetch("185041", {"db"=>"nuccore", "rettype"=>"gb"})
@@ -63,8 +63,8 @@ class REST
   # *Arguments*:
   # * _str_: query string (required)
   # * _hash_: hash of E-Utils option {"db" => "nuccore", "rettype" => "gb"}
-  #   * _db_: "nuccore", "pubmed", ...
-  #   * _retmode_: "xml", "html", ...
+  #   * _db_: "nuccore", "nucleotide", "protein", "pubmed", ...
+  #   * _retmode_: "text", "xml", "html", ...
   #   * _rettype_: "gb", "medline", "count", ...
   #   * _retmax_: integer (default 100)
   #   * _retstart_: integer
@@ -99,12 +99,17 @@ class REST
 
   # Retrieve a database entry by given ID and using E-Utils (efetch) and
   # returns an array of entry string. Multiple IDs can be supplied.
+  #
+  # For information on the possible arguments, see
+  #
+  # * http://eutils.ncbi.nlm.nih.gov/entrez/query/static/efetch_help.html
+  #
   # ---
   # *Arguments*:
   # * _ids_: list of NCBI entry IDs (required)
   # * _hash_: hash of E-Utils option {"db" => "nuccore", "rettype" => "gb"}
-  #   * _db_: "nuccore", "pubmed", ...
-  #   * _retmode_: "xml", "html", ...
+  #   * _db_: "nuccore", "nucleotide", "protein", "pubmed", ...
+  #   * _retmode_: "text", "xml", "html", ...
   #   * _rettype_: "gb", "medline", "count",...
   #   * _retmax_: integer (default 100)
   #   * _retstart_: integer
