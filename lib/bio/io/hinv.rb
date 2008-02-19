@@ -1,10 +1,10 @@
 #
 # = bio/io/hinv.rb - H-invDB web service (REST) client module
 #
-# Copyright::  Copyright (C) 2007 Toshiaki Katayama <k@bioruby.org>
+# Copyright::  Copyright (C) 2008 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: hinv.rb,v 1.1 2008/01/09 17:18:18 k Exp $
+# $Id: hinv.rb,v 1.2 2008/02/19 04:42:14 k Exp $
 #
 
 require 'bio/command'
@@ -136,7 +136,7 @@ module Bio
       include Common
 
       def initialize
-        @url = BASE_URI + "hit2acc.php?hit="
+        @url = BASE_URI + "hit2acc.php"
       end
 
       # <?xml version='1.0' encoding='UTF-8'?>
