@@ -1,0 +1,24 @@
+ID   <%= entry_id %>; SV <%= sequence_version %>; <%= topology %>; <%= molecule_type %>; <%= data_class %>; <%= division %>; <%= seq.length %> BP.
+XX
+AC   <%= accessions.reject{|a| a.nil?}.join('; ') + ';' %>
+XX
+DT   <%= date_created %>
+DT   <%= date_modified %>
+XX
+DE   <%= definition %>
+XX
+KW   <%= keywords.join('; ') %>.
+XX
+OS   <%= species %>
+<%= classification.join('; ').wrap(80, 'OC   ') %>.
+XX   
+<%= references.collect{|ref| ref.format('embl')}.join("\n") %>
+XX
+FH   Key             Location/Qualifiers
+FH
+<%  prefix = 'FT   '
+    indent = prefix + ' ' * 16
+    fwidth = 80 - indent.length %><%= format_features(prefix, indent, fwidth) %>XX
+SQ   Sequence <%= seq.length %> BP; <%= seq.composition.collect{|k,v| "#{v} #{k.upcase}"}.join('; ') + '; ' + (seq.gsub(/[ACTGactg]/, '').length.to_s ) + ' other;' %>
+<%= seq.format_embl %>
+//

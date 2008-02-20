@@ -7,7 +7,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: embl.rb,v 1.29.2.1 2008/02/15 04:49:37 aerts Exp $
+# $Id: embl.rb,v 1.29.2.2 2008/02/20 09:56:22 aerts Exp $
 #
 # == Description
 #
@@ -122,6 +122,10 @@ class EMBL < EMBLDB
   end
   alias molecule_type molecule
 
+  def data_class
+    id_line('DATA_CLASS')
+  end
+  
   def topology
     id_line('TOPOLOGY')
   end
@@ -253,7 +257,6 @@ class EMBL < EMBLDB
   def ft
     unless @data['FT']
       @data['FT'] = Array.new
-      ary = Array.new
       in_quote = false
       @orig['FT'].each_line do |line|
         next if line =~ /^FEATURES/
@@ -261,16 +264,16 @@ class EMBL < EMBLDB
         head = line[0,20].strip  # feature key (source, CDS, ...)
         body = line[20,60].chomp # feature value (position, /qualifier=)
         if line =~ /^FT {3}(\S+)/
-          ary.push([ $1, body ]) # [ feature, position, /q="data", ... ]
+          @data['FT'].push([ $1, body ]) # [ feature, position, /q="data", ... ]
         elsif body =~ /^ \// and not in_quote
-          ary.last.push(body)    # /q="data..., /q=data, /q
+          @data['FT'].last.push(body)    # /q="data..., /q=data, /q
 
           if body =~ /=" / and body !~ /"$/
             in_quote = true
           end
 
         else
-          ary.last.last << body # ...data..., ...data..."
+          @data['FT'].last.last << body # ...data..., ...data..."
 
           if body =~ /"$/
             in_quote = false
@@ -278,11 +281,10 @@ class EMBL < EMBLDB
         end
       end
 
-      ary.map! do |subary|
+      @data['FT'].map! do |subary|
         parse_qualifiers(subary)
       end
 
-      @data['FT'] = Features.new(ary)
     end
     if block_given?
       @data['FT'].each do |feature|
@@ -372,8 +374,9 @@ class EMBL < EMBLDB
     bio_seq = Bio::Sequence.new(self.seq)
     bio_seq.entry_id = self.entry_id
     bio_seq.primary_accession = self.accessions[0]
-    bio_seq.secondary_accessions = self.accessions[1,-1]
+    bio_seq.secondary_accessions = self.accessions[1,-1] || []
     bio_seq.molecule_type = self.molecule_type
+    bio_seq.data_class = self.data_class
     bio_seq.definition = self.description
     bio_seq.topology = self.topology
     bio_seq.date_created = self.dt['created']
@@ -381,7 +384,7 @@ class EMBL < EMBLDB
     bio_seq.division = self.division
     bio_seq.sequence_version = self.version
     bio_seq.keywords = self.keywords
-    bio_seq.species = self.os(0)[0]['os'] + ' ' + self.os(0)[0]['name']
+    bio_seq.species = self.fetch('OS')
     bio_seq.classification = self.oc
     bio_seq.references = self.references
     bio_seq.features = self.ft
@@ -434,7 +437,8 @@ if __FILE__ == $0
   prefix = 'FT   '
   indent = prefix + ' ' * 16
   fwidth = 80 - indent.length
-  
+
+#  parser = Bio::FlatFile.auto('/home/aertsj/LocalDocuments/bioruby_biohackathon/bioruby/test/data/embl/AB090716.embl')
   parser = Bio::FlatFile.auto('/home/aertsj/LocalDocuments/hackathon/aj224122.embl')
   parser.each do |entry|
 #    entry.ref

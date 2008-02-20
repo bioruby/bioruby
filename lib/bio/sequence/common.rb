@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: common.rb,v 1.6 2007/12/27 17:36:02 ngoto Exp $
+# $Id: common.rb,v 1.6.2.1 2008/02/20 09:56:22 aerts Exp $
 #
 
 module Bio
@@ -37,7 +37,7 @@ class Sequence
 #   # Create a random sequence with the composition of a current sequence
 #   puts dna.randomize
 module Common
-
+  
   # Return sequence as 
   # String[http://corelib.rubyonrails.org/classes/String.html].
   # The original sequence is unchanged.
@@ -65,6 +65,23 @@ module Common
   def seq
     self.class.new(self)
   end
+  
+  def format_embl
+    output_lines = Array.new
+    counter = 0
+    remainder = self.window_search(60,60) do |subseq|
+      counter += 60
+      subseq.gsub!(/(.{10})/, '\1 ')
+      output_lines.push(' '*5 + subseq + counter.to_s.rjust(9))
+    end
+    counter += remainder.length
+    remainder = (remainder.to_s + ' '*(60-remainder.length))
+    remainder.gsub!(/(.{10})/, '\1 ')
+    output_lines.push(' '*5 + remainder + counter.to_s.rjust(9))
+    return output_lines.join("\n")
+  end
+
+
 
   # Normalize the current sequence, removing all whitespace and 
   # transforming all positions to uppercase if the sequence is AA or

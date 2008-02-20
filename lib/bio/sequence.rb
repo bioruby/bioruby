@@ -9,7 +9,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: sequence.rb,v 0.58.2.6 2008/02/15 05:29:50 ngoto Exp $
+# $Id: sequence.rb,v 0.58.2.7 2008/02/20 09:56:22 aerts Exp $
 #
 
 require 'erb'
@@ -370,7 +370,7 @@ class Sequence
   def accessions
     return [@primary_accession, @secondary_accessions].flatten
   end
-  
+
 end # Sequence
 
 

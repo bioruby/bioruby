@@ -11,7 +11,7 @@
 #
 # porting from N. Goto's feature-output.rb on BioRuby list.
 #
-# $Id: format.rb,v 1.4.2.3 2008/02/15 02:18:21 ngoto Exp $
+# $Id: format.rb,v 1.4.2.4 2008/02/20 09:56:22 aerts Exp $
 #
 
 
@@ -30,78 +30,6 @@ class Sequence
 #   puts s.output(:genbank)
 #   puts s.output(:embl)
 module Format
-
-  # INTERNAL USE ONLY, YOU SHOULD NOT CALL THIS METHOD. (And in any
-  # case, it would be difficult to successfully call this method outside
-  # its expected context).
-  #
-  # Output the FASTA format string of the sequence.  
-  #
-  # UNFORTUNATLY, the current implementation of Bio::Sequence is incapable of 
-  # using either the header or width arguments.  So something needs to be
-  # changed...
-  #
-  # Currently, this method is used in Bio::Sequence#output like so,
-  #
-  #   s = Bio::Sequence.new('atgc')
-  #   puts s.output(:fasta)                   #=> "> \natgc\n"
-  # ---
-  # *Arguments*:
-  # * (optional) _header_: String (default nil)
-  # * (optional) _width_: Fixnum (default nil)
-  # *Returns*:: String object
-  def format_fasta(header = nil, width = nil)
-    header ||= "#{@entry_id} #{@definition}"
-
-    ">#{header}\n" +
-    if width
-      @seq.to_s.gsub(Regexp.new(".{1,#{width}}"), "\\0\n")
-    else
-      @seq.to_s + "\n"
-    end
-  end
-
-  # Not yet implemented :)
-  # Remove the nodoc command after implementation!
-  # ---
-  # *Returns*:: String object
-  def format_gff #:nodoc:
-    raise NotImplementedError
-  end
-
-  # INTERNAL USE ONLY, YOU SHOULD NOT CALL THIS METHOD. (And in any
-  # case, it would be difficult to successfully call this method outside
-  # its expected context).
-  #
-  # Output the Genbank format string of the sequence.  
-  # Used in Bio::Sequence#output.
-  # ---
-  # *Returns*:: String object
-  def format_genbank
-    prefix = ' ' * 5
-    indent = prefix + ' ' * 16
-    fwidth = 79 - indent.length
-
-    format_features(prefix, indent, fwidth)
-  end
-
-  # INTERNAL USE ONLY, YOU SHOULD NOT CALL THIS METHOD. (And in any
-  # case, it would be difficult to successfully call this method outside
-  # its expected context).
-  #
-  # Output the EMBL format string of the sequence.  
-  # Used in Bio::Sequence#output.
-  # ---
-  # *Returns*:: String object
-  def format_embl
-    prefix = 'FT   '
-    indent = prefix + ' ' * 16
-    fwidth = 80 - indent.length
-
-    format_features(prefix, indent, fwidth)
-  end
-
-
   private
 
   def format_features(prefix, indent, width)
@@ -113,12 +41,12 @@ module Format
       #position = feature.locations.to_s
 
       head = ''
-      wrap(position, width).each_line do |line|
+      (position).wrap(width).each_line do |line|
         result << head << line
         head = indent
       end
 
-      result << format_qualifiers(feature.qualifiers, width)
+      result << format_qualifiers(feature.qualifiers, indent, width)
     end
     return result
   end
@@ -129,16 +57,16 @@ module Format
       v = qualifier.value.to_s
 
       if v == true
-        lines = wrap('/' + q, width)
+        lines =('/' + q).wrap(width)
       elsif q == 'translation'
-        lines = fold('/' + q + '=' + v, width)
+        lines = ('/' + q + '="' + v + '"').fold(width)
       else
         if v[/\D/]
           #v.delete!("\x00-\x1f\x7f-\xff")
           v.gsub!(/"/, '""')
           v = '"' + v + '"'
         end
-        lines = wrap('/' + q + '=' + v, width)
+        lines = ('/' + q + '=' + v).wrap(width)
       end
 
       lines.gsub!(/^/, indent)
@@ -146,33 +74,6 @@ module Format
     end.join
   end
 
-  def fold(str, width)
-    str.gsub(Regexp.new("(.{1,#{width}})"), "\\1\n")
-  end
-
-  def wrap(str, width)
-    result = []
-    left = str.dup
-    while left and left.length > width
-      line = nil
-      width.downto(1) do |i|
-        if left[i..i] == ' ' or /[\,\;]/ =~ left[(i-1)..(i-1)]  then
-          line = left[0..(i-1)].sub(/ +\z/, '')
-          left = left[i..-1].sub(/\A +/, '')
-          break
-        end
-      end
-      if line.nil? then
-        line = left[0..(width-1)]
-        left = left[width..-1]
-      end
-      result << line
-    end
-    result << left if left
-    result_string = result.join("\n")
-    result_string << "\n" unless result_string.empty?
-    return result_string
-  end
 
 end # Format
 

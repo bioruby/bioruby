@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id: bio.rb,v 1.89 2008/01/09 17:18:17 k Exp $
+# $Id: bio.rb,v 1.89.2.1 2008/02/20 09:56:22 aerts Exp $
 #
 
 module Bio
@@ -277,3 +277,34 @@ module Bio
 
 end
 
+class String
+  def fold(width = 80)
+    self.gsub(Regexp.new("(.{1,#{width}})"), "\\1\n")
+  end
+  
+  def wrap(width = 80, prefix = '')
+    actual_width = width - prefix.length
+    result = []
+    left = self.dup
+    while left and left.length > actual_width
+      line = nil
+      actual_width.downto(1) do |i|
+        if left[i..i] == ' ' or /[,;]/ =~ left[(i-1)..(i-1)]  then
+          line = left[0..(i-1)].sub(/ +\z/, '')
+          left = left[i..-1].sub(/\A +/, '')
+          break
+        end
+      end
+      if line.nil? then
+        line = left[0..(actual_width-1)]
+        left = left[actual_width..-1]
+      end
+      result << line
+    end
+    result << left if left
+    result_string = result.join("\n#{prefix}")
+    result_string = prefix + result_string unless result_string.empty?
+#    result_string << "\n" unless result_string.empty?
+    return result_string
+  end
+end

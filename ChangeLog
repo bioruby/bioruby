@@ -1,3 +1,28 @@
+2008-02-20  Jan Aerts <jandot@bioruby.org>
+        * lib/bio/db/fasta.rb
+        * lib/bio/db/fasta/format.erb
+        * test/unit/bio/db/test_fasta.rb
+
+          Renamed #to_seq to #to_biosequence to reflect that same method in
+          embl.rb, genbank.rb and others.
+
+2008-02-20  Jan Aerts <jandot@bioruby.org>
+        * lib/bio.rb
+        * lib/bio/db/embl/common.rb
+        * lib/bio/db/embl/embl.rb
+        * lib/bio/db/embl/format.erb
+        * lib/bio/sequence/common.rb
+        * lib/bio/sequence/format.rb
+        * test/unit/bio/db/embl/test_embl_to_bioseq.rb
+
+        Fixed some bugs in importing EMBL files and added functionality to
+        export a Bio::Sequence to EMBL format.
+
+2008-02-18  Jan Aerts <jandot@bioruby.org>
+        * lib/bio/reference.rb
+
+          Added export method to EMBL format.
+
 2008-02-12  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/blast/format0.rb
