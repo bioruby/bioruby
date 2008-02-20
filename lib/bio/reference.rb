@@ -7,7 +7,7 @@
 #               Jan Aerts <jandot@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: reference.rb,v 1.24.2.1 2008/02/18 15:44:39 aerts Exp $
+# $Id: reference.rb,v 1.24.2.2 2008/02/20 17:04:47 ngoto Exp $
 #
 
 module Bio
@@ -579,9 +579,15 @@ module Bio
 
   # = DESCRIPTION
   #
+  # This class is OBSOLETED, and will soon be removed.
+  # Instead of this class, an array is to be used.
+  #
+  # 
   # A container class for Bio::Reference objects.
   #
   # = USAGE
+  #
+  # This class should NOT be used.
   #
   #   refs = Bio::References.new
   #   refs.append(Bio::Reference.new(hash))
@@ -590,8 +596,44 @@ module Bio
   #   end
   #
   class References
-    include Enumerable
-    
+
+    # module to keep backward compatibility with obsoleted Bio::References
+    module BackwardCompatibilityForBioReferences #:nodoc:
+
+      # Backward compatibility with Bio::References#references.
+      # Now, references are stored in an array, and
+      # you should change your code not to use this method.
+      def references
+        warn 'Bio::References is obsoleted. Now, references are stored in an array.'
+        self
+      end
+
+      # Backward compatibility with Bio::References#append.
+      # Now, references are stored in an array, and
+      # you should change your code not to use this method.
+      def append(reference)
+        warn 'Bio::References is obsoleted. Now, references are stored in an array.'
+        self.push(reference) if reference.is_a? Reference
+        self
+      end
+    end #module BackwardCompatibilityForBioReferences
+
+    # This method should not be used.
+    # Only for backward compatibility of existing code.
+    #
+    # Since Bio::References is obsoleted,
+    # Bio::References.new not returns Bio::References object,
+    # but modifies given _ary_ and returns the _ary_.
+    #
+    # *Arguments*:
+    # * (optional) __: Array of Bio::Reference objects
+    # *Returns*:: the given array
+    def self.new(ary = [])
+      warn 'Bio::References is obsoleted. Some methods are added to given array to keep backward compatibility.'
+      ary.extend(BackwardCompatibilityForBioReferences)
+      ary
+    end
+
     # Array of Bio::Reference objects
     attr_accessor :references
 
