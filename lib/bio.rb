@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id: bio.rb,v 1.89.2.1 2008/02/20 09:56:22 aerts Exp $
+# $Id: bio.rb,v 1.89.2.2 2008/02/20 13:54:19 aerts Exp $
 #
 
 module Bio
@@ -279,7 +279,7 @@ end
 
 class String
   def fold(width = 80)
-    self.gsub(Regexp.new("(.{1,#{width}})"), "\\1\n")
+    self.gsub(Regexp.new("(.{1,#{width}})"), "\\1\n").sub(/\n$/, '')
   end
   
   def wrap(width = 80, prefix = '')

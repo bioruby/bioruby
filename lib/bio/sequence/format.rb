@@ -11,7 +11,7 @@
 #
 # porting from N. Goto's feature-output.rb on BioRuby list.
 #
-# $Id: format.rb,v 1.4.2.4 2008/02/20 09:56:22 aerts Exp $
+# $Id: format.rb,v 1.4.2.5 2008/02/20 13:54:19 aerts Exp $
 #
 
 
@@ -46,7 +46,9 @@ module Format
         head = indent
       end
 
+      result << "\n"
       result << format_qualifiers(feature.qualifiers, indent, width)
+      result << "\n"
     end
     return result
   end
@@ -61,7 +63,7 @@ module Format
       elsif q == 'translation'
         lines = ('/' + q + '="' + v + '"').fold(width)
       else
-        if v[/\D/]
+        if ( v[/\D/] or q == 'chromosome' )
           #v.delete!("\x00-\x1f\x7f-\xff")
           v.gsub!(/"/, '""')
           v = '"' + v + '"'
@@ -71,7 +73,7 @@ module Format
 
       lines.gsub!(/^/, indent)
       lines
-    end.join
+    end.join("\n")
   end
 
 
