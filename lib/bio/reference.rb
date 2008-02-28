@@ -7,7 +7,7 @@
 #               Jan Aerts <jandot@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: reference.rb,v 1.24.2.2 2008/02/20 17:04:47 ngoto Exp $
+# $Id: reference.rb,v 1.24.2.3 2008/02/28 05:51:03 ngoto Exp $
 #
 
 module Bio
@@ -137,7 +137,7 @@ module Bio
       @url      = hash['url']
       @mesh     = hash['mesh']
       @embl_gb_record_number = hash['embl_gb_record_number'] || nil
-      @sequence_position = hash['sequence_position'] || []
+      @sequence_position = hash['sequence_position'] || nil
       @comments = hash['comments'] || []
       @xrefs    = hash['xrefs'] || []
       @affiliations = hash['affiliations']
@@ -279,7 +279,7 @@ module Bio
           lines << "RC   #{c}"
         end
       end
-      if @sequence_position != ''
+      if ! @sequence_position.nil?
         lines << "RP   #{@sequence_position}"
       end
       if ! @xrefs.nil?
