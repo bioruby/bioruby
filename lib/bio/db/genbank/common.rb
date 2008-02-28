@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: common.rb,v 1.11 2007/04/05 23:35:40 trevor Exp $
+# $Id: common.rb,v 1.11.2.1 2008/02/28 05:54:51 ngoto Exp $
 #
 
 require 'bio/db'
@@ -140,6 +140,11 @@ module Common
         hash = Hash.new('')
         subtag2array(ref).each do |field|
           case tag_get(field)
+          when /^\s*REFERENCE\s+(\d+)(\s+\(bases\s+(\d+)\s+to\s+(\d+)\))?/
+            hash['embl_gb_record_number'] = $1.to_i
+            if $2 then
+              hash['sequence_position'] = "#{$3}-#{$4}"
+            end
           when /AUTHORS/
             authors = truncate(tag_cut(field))
             authors = authors.split(/, /)
