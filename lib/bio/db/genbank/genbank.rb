@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2000-2005 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: genbank.rb,v 0.40.2.1 2008/02/14 08:51:45 ngoto Exp $
+# $Id: genbank.rb,v 0.40.2.2 2008/03/03 18:30:50 ngoto Exp $
 #
 
 require 'bio/db'
@@ -141,15 +141,16 @@ class GenBank < NCBIDB
     sequence.topology = self.circular
 
     sequence.sequence_version = self.version
-    seq.date_created = nil #????
+    #sequence.date_created = nil #????
     sequence.date_modified = self.date
 
     sequence.keywords = self.keywords
     sequence.species = self.organism
-    sequence.classification = self.taxonomy
-    sequence.organnella = nil # not used
+    sequence.classification = self.taxonomy.to_s.sub(/\.\z/, '').split(/\s*\;\s*/)
+    #sequence.organnella = nil # not used
     sequence.comments = self.comment
     sequence.references = self.references
+    sequence.features = self.features
     return sequence
   end
 

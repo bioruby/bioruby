@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: common.rb,v 1.11.2.1 2008/02/28 05:54:51 ngoto Exp $
+# $Id: common.rb,v 1.11.2.2 2008/03/03 18:30:50 ngoto Exp $
 #
 
 require 'bio/db'
@@ -44,7 +44,7 @@ module Common
 
   # ACCESSION -- Returns contents of the ACCESSION record as an Array.
   def accessions
-    accession.split(/\s+/)
+    field_fetch('ACCESSION').strip.split(/\s+/)
   end
 
 
@@ -140,10 +140,16 @@ module Common
         hash = Hash.new('')
         subtag2array(ref).each do |field|
           case tag_get(field)
-          when /^\s*REFERENCE\s+(\d+)(\s+\(bases\s+(\d+)\s+to\s+(\d+)\))?/
-            hash['embl_gb_record_number'] = $1.to_i
-            if $2 then
-              hash['sequence_position'] = "#{$3}-#{$4}"
+          when /REFERENCE/
+            if /(\d+)(\s*\((.+)\))?/m =~ tag_cut(field) then
+              hash['embl_gb_record_number'] = $1.to_i
+              if $3 and $3 != 'sites' then
+                seqpos = $3
+                seqpos.sub!(/\A\s*bases\s+/, '')
+                seqpos.gsub!(/(\d+)\s+to\s+(\d+)/, "\\1-\\2")
+                seqpos.gsub!(/\s*\;\s*/, ', ')
+                hash['sequence_position'] = seqpos
+              end
             end
           when /AUTHORS/
             authors = truncate(tag_cut(field))
