@@ -7,7 +7,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: embl.rb,v 1.29.2.2 2008/02/20 09:56:22 aerts Exp $
+# $Id: embl.rb,v 1.29.2.3 2008/03/04 10:56:42 ngoto Exp $
 #
 # == Description
 #
@@ -256,7 +256,7 @@ class EMBL < EMBLDB
   # FT Line; feature table data (>=0)
   def ft
     unless @data['FT']
-      @data['FT'] = Array.new
+      ary = Array.new
       in_quote = false
       @orig['FT'].each_line do |line|
         next if line =~ /^FEATURES/
@@ -264,16 +264,16 @@ class EMBL < EMBLDB
         head = line[0,20].strip  # feature key (source, CDS, ...)
         body = line[20,60].chomp # feature value (position, /qualifier=)
         if line =~ /^FT {3}(\S+)/
-          @data['FT'].push([ $1, body ]) # [ feature, position, /q="data", ... ]
+          ary.push([ $1, body ]) # [ feature, position, /q="data", ... ]
         elsif body =~ /^ \// and not in_quote
-          @data['FT'].last.push(body)    # /q="data..., /q=data, /q
+          ary.last.push(body)    # /q="data..., /q=data, /q
 
           if body =~ /=" / and body !~ /"$/
             in_quote = true
           end
 
         else
-          @data['FT'].last.last << body # ...data..., ...data..."
+          ary.last.last << body # ...data..., ...data..."
 
           if body =~ /"$/
             in_quote = false
@@ -281,10 +281,11 @@ class EMBL < EMBLDB
         end
       end
 
-      @data['FT'].map! do |subary|
+      ary.map! do |subary|
         parse_qualifiers(subary)
       end
 
+      @data['FT'] = ary.extend(Bio::Features::BackwardCompatibility)
     end
     if block_given?
       @data['FT'].each do |feature|
