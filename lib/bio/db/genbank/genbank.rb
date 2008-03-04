@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2000-2005 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: genbank.rb,v 0.40.2.2 2008/03/03 18:30:50 ngoto Exp $
+# $Id: genbank.rb,v 0.40.2.3 2008/03/04 09:22:35 ngoto Exp $
 #
 
 require 'bio/db'
@@ -144,6 +144,7 @@ class GenBank < NCBIDB
     #sequence.date_created = nil #????
     sequence.date_modified = self.date
 
+    sequence.definition = self.definition
     sequence.keywords = self.keywords
     sequence.species = self.organism
     sequence.classification = self.taxonomy.to_s.sub(/\.\z/, '').split(/\s*\;\s*/)
