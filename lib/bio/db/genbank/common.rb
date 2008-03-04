@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: common.rb,v 1.11.2.2 2008/03/03 18:30:50 ngoto Exp $
+# $Id: common.rb,v 1.11.2.3 2008/03/04 10:32:55 ngoto Exp $
 #
 
 require 'bio/db'
@@ -178,7 +178,7 @@ module Common
         end
         ary.push(Reference.new(hash))
       end
-      @data['REFERENCE'] = References.new(ary)
+      @data['REFERENCE'] = ary.extend(Bio::References::BackwardCompatibility)
     end
     if block_given?
       @data['REFERENCE'].each do |r|
@@ -196,8 +196,8 @@ module Common
   end
 
 
-  # FEATURES -- Returns contents of the FEATURES record as a Bio::Features
-  # object.
+  # FEATURES -- Returns contents of the FEATURES record as an array of
+  # Bio::Feature objects.
   def features
     unless @data['FEATURES']
       ary = []
@@ -239,7 +239,7 @@ module Common
         parse_qualifiers(subary)
       end
 
-      @data['FEATURES'] = Features.new(ary)
+      @data['FEATURES'] = ary.extend(Bio::Features::BackwardCompatibility)
     end
     if block_given?
       @data['FEATURES'].each do |f|
