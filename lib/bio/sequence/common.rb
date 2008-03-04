@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: common.rb,v 1.6.2.1 2008/02/20 09:56:22 aerts Exp $
+# $Id: common.rb,v 1.6.2.2 2008/03/04 11:14:03 ngoto Exp $
 #
 
 module Bio
@@ -66,23 +66,6 @@ module Common
     self.class.new(self)
   end
   
-  def format_embl
-    output_lines = Array.new
-    counter = 0
-    remainder = self.window_search(60,60) do |subseq|
-      counter += 60
-      subseq.gsub!(/(.{10})/, '\1 ')
-      output_lines.push(' '*5 + subseq + counter.to_s.rjust(9))
-    end
-    counter += remainder.length
-    remainder = (remainder.to_s + ' '*(60-remainder.length))
-    remainder.gsub!(/(.{10})/, '\1 ')
-    output_lines.push(' '*5 + remainder + counter.to_s.rjust(9))
-    return output_lines.join("\n")
-  end
-
-
-
   # Normalize the current sequence, removing all whitespace and 
   # transforming all positions to uppercase if the sequence is AA or
   # transforming all positions to lowercase if the sequence is NA.
