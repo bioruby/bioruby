@@ -7,7 +7,7 @@
 #               Jan Aerts <jandot@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: reference.rb,v 1.24.2.4 2008/03/04 10:07:49 ngoto Exp $
+# $Id: reference.rb,v 1.24.2.5 2008/03/04 11:31:45 ngoto Exp $
 #
 
 module Bio
@@ -40,6 +40,8 @@ module Bio
   #    ref.bibtex
   #
   class Reference
+
+    include Bio::Sequence::Format::INSDFeatureHelper
 
     # Author names in an Array, [ "Hoge, J.P.", "Fuga, F.B." ].
     attr_reader :authors
@@ -287,9 +289,9 @@ module Bio
           lines << "RX   #{x}"
         end
       end
-      lines << @authors.join(', ').wrap(80, 'RA   ') + ';' unless @authors.nil?
-      lines << (@title == '' ? 'RT   ;' : ('"' + @title + '"').wrap(80, 'RT   ') + ';')
-      lines << @journal.wrap(80, 'RL   ') unless @journal == ''
+      lines << wrap(@authors.join(', '), 80, 'RA   ') + ';' unless @authors.nil?
+      lines << (@title == '' ? 'RT   ;' : wrap('"' + @title + '"', 80, 'RT   ') + ';')
+      lines << wrap(@journal, 80, 'RL   ') unless @journal == ''
       lines << "XX"
       return lines.join("\n")
     end
