@@ -9,10 +9,9 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: sequence.rb,v 0.58.2.7 2008/02/20 09:56:22 aerts Exp $
+# $Id: sequence.rb,v 0.58.2.8 2008/03/04 11:10:28 ngoto Exp $
 #
 
-require 'erb'
 require 'bio/sequence/compat'
 
 module Bio
@@ -155,25 +154,6 @@ class Sequence
   # but could be a simple String
   attr_accessor :seq
   
-  # Using Bio::Sequence::Format, return a String with the Bio::Sequence
-  # object formatted in the given style.
-  #
-  # Formats currently implemented are: 'fasta', 'genbank', and 'embl'
-  #
-  #   s = Bio::Sequence.new('atgc')
-  #   puts s.output(:fasta)                   #=> "> \natgc\n"
-  #
-  # The style argument is given as a Ruby 
-  # Symbol(http://www.ruby-doc.org/core/classes/Symbol.html)
-  # ---
-  # *Arguments*: 
-  # * (required) _format_: :fasta, :genbank, *or* :embl
-  # *Returns*:: String object
-  def output(format = :fasta)
-    record_template = ERB.new(File.read(File.dirname(__FILE__) + "/db/#{format.to_s}/format.erb"))
-    record_template.result(binding)
-  end
-
   # Guess the type of sequence, Amino Acid or Nucleic Acid, and create a 
   # new sequence object (Bio::Sequence::AA or Bio::Sequence::NA) on the basis
   # of this guess.  This method will change the current Bio::Sequence object.
