@@ -6,7 +6,7 @@
 #                             2008        Naohisa Goto <ng@bioruby.org>
 # License::	The Ruby License
 #
-# $Id: features.rb,v 1.1.2.1 2008/03/04 10:12:22 ngoto Exp $
+# $Id: features.rb,v 1.1.2.2 2008/03/10 13:42:26 ngoto Exp $
 #
 # == Description
 #
@@ -96,7 +96,7 @@ class Features
   # * (optional) __: Array of Bio::Feature objects
   # *Returns*:: the given array
   def self.new(ary = [])
-    warn 'Bio::Feature is obsoleted. Some methods are added to given array to keep backward compatibility.'
+    warn 'Bio::Features is obsoleted. Some methods are added to given array to keep backward compatibility.'
     ary.extend(BackwardCompatibility)
     ary
   end
