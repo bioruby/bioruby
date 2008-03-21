@@ -7,7 +7,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: embl.rb,v 1.29.2.3 2008/03/04 10:56:42 ngoto Exp $
+# $Id: embl.rb,v 1.29.2.4 2008/03/21 06:24:42 ngoto Exp $
 #
 # == Description
 #
@@ -33,6 +33,8 @@
 
 require 'bio/db'
 require 'bio/db/embl/common'
+require 'bio/compat/features'
+require 'bio/compat/references'
 
 module Bio
 class EMBL < EMBLDB
@@ -431,18 +433,3 @@ end # class EMBL
 
 end # module Bio
 
-if __FILE__ == $0
-  require '../../../bio'
-  require 'yaml'
-  
-  prefix = 'FT   '
-  indent = prefix + ' ' * 16
-  fwidth = 80 - indent.length
-
-#  parser = Bio::FlatFile.auto('/home/aertsj/LocalDocuments/bioruby_biohackathon/bioruby/test/data/embl/AB090716.embl')
-  parser = Bio::FlatFile.auto('/home/aertsj/LocalDocuments/hackathon/aj224122.embl')
-  parser.each do |entry|
-#    entry.ref
-    puts entry.to_biosequence.output(:embl)
-  end
-end
