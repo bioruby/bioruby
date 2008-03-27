@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2008 Jan Aerts <jandot@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format_embl.rb,v 1.1.2.1 2008/03/04 11:16:57 ngoto Exp $
+# $Id: format_embl.rb,v 1.1.2.2 2008/03/27 13:38:31 ngoto Exp $
 #
 
 require 'bio/sequence/format'
@@ -55,11 +55,11 @@ XX
 OS   <%= species %>
 <%= embl_wrap('OC   ', classification.join('; ') + '.') %>
 XX   
-<%= references.collect{|ref| ref.format('embl')}.join("\n") %>
+<%= (references || []).collect{|ref| ref.format('embl')}.join("\n") %>
 XX
 FH   Key             Location/Qualifiers
 FH
-<%= format_features_embl(features) %>XX
+<%= format_features_embl(features || []) %>XX
 SQ   Sequence <%= seq.length %> BP; <%= seq.composition.collect{|k,v| "#{v} #{k.upcase}"}.join('; ') + '; ' + (seq.gsub(/[ACTGactg]/, '').length.to_s ) + ' other;' %>
 <%= seq_format_embl(seq) %>
 //
