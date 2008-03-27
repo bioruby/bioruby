@@ -9,7 +9,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: sequence.rb,v 0.58.2.8 2008/03/04 11:10:28 ngoto Exp $
+# $Id: sequence.rb,v 0.58.2.9 2008/03/27 13:07:19 ngoto Exp $
 #
 
 require 'bio/sequence/compat'
@@ -71,8 +71,6 @@ class Sequence
   autoload :Generic, 'bio/sequence/generic'
   autoload :Format,  'bio/sequence/format'
   include Format
-
-  attr_accessor :sequence_version, :topology, :molecule_type, :data_class, :division, :primary_accession, :secondary_accessions, :date_created, :date_modified, :species, :classification
 
   # Create a new Bio::Sequence object
   #
@@ -153,7 +151,47 @@ class Sequence
   # The sequence object, usually Bio::Sequence::NA/AA, 
   # but could be a simple String
   attr_accessor :seq
+
+  #---
+  # Attributes below have been added during BioHackathon2008
+  #+++
   
+  # Version number of the sequence (String).
+  attr_accessor :sequence_version
+
+  # Topology (String). "circular" or "linear".
+  attr_accessor :topology
+
+  # molecular type (String). "DNA" or "RNA" for nucleotide sequence.
+  attr_accessor :molecule_type
+
+  # Data Class defined by EMBL (String)
+  # See http://www.ebi.ac.uk/embl/Documentation/User_manual/usrman.html#3_1
+  attr_accessor :data_class
+
+  # Taxonomic Division defined by EMBL/GenBank/DDBJ (String)
+  # See http://www.ebi.ac.uk/embl/Documentation/User_manual/usrman.html#3_2
+  attr_accessor :division
+
+  # Primary accession number (String)
+  attr_accessor :primary_accession
+
+  # Secondary accession numbers (Array of String)
+  attr_accessor :secondary_accessions
+
+  # Created date of the sequence entry (String)
+  attr_accessor :date_created
+
+  # Last modified date of the sequence entry (String)
+  attr_accessor :date_modified
+
+  # Organism species (String). For example, "Escherichia coli".
+  attr_accessor :species
+
+  # Organism classification, taxonomic classification of the source organism.
+  # (Array of String)
+  attr_accessor :classification
+
   # Guess the type of sequence, Amino Acid or Nucleic Acid, and create a 
   # new sequence object (Bio::Sequence::AA or Bio::Sequence::NA) on the basis
   # of this guess.  This method will change the current Bio::Sequence object.
