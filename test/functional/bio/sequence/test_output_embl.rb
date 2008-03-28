@@ -5,7 +5,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-#  $Id: test_output_embl.rb,v 1.1.2.1 2008/03/27 13:38:31 ngoto Exp $
+#  $Id: test_output_embl.rb,v 1.1.2.2 2008/03/28 00:56:27 ngoto Exp $
 #
 
 require 'pathname'
@@ -38,7 +38,7 @@ def setup
 end
 
 def test_output_embl
-  assert_nothing_raised { puts @seq.output(:embl) }
+  assert_nothing_raised { @seq.output(:embl) }
 end
 
 def test_output_fasta
