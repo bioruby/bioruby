@@ -6,7 +6,7 @@
 #             Alex Gutteridge <alexg@ebi.ac.uk>
 # License::   The Ruby License
 #
-#  $Id: pdb.rb,v 1.27 2007/12/28 14:43:44 ngoto Exp $
+#  $Id: pdb.rb,v 1.28 2008/04/01 10:36:44 ngoto Exp $
 #
 # = About Bio::PDB
 #
@@ -1497,6 +1497,9 @@ module Bio
               cChain = newChain
               chain = newChain
             end
+            # chain might be changed, clearing cResidue and cLigand
+            cResidue = nil
+            cLigand = nil
           end
         end
 
@@ -1550,6 +1553,8 @@ module Bio
         when 'MODEL'
           c_atom = nil
           cChain = nil
+          cResidue = nil
+          cLigand = nil
           if cModel.model_serial or cModel.chains.size > 0 then
             self.addModel(cModel)
           end
@@ -1809,13 +1814,17 @@ module Bio
               #aa is three letter code: i.e. ALA
               #need to look up with Ala
               aa = aa.capitalize
-              (Bio::AminoAcid.three2one(aa) or 'X')
+              (begin
+                 Bio::AminoAcid.three2one(aa)
+               rescue ArgumentError
+                 nil
+               end || 'X')
             end
             seq = Bio::Sequence::AA.new(a.to_s)
           else
             # nucleic acid sequence
             a.collect! do |na|
-              na = na.strip
+              na = na.delete('^a-zA-Z')
               na.size == 1 ? na : 'n'
             end
             seq = Bio::Sequence::NA.new(a.to_s)

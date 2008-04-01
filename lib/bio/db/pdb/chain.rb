@@ -6,7 +6,7 @@
 #             Naohisa Goto <ng@bioruby.org>
 # License::   The Ruby License
 # 
-# $Id: chain.rb,v 1.9 2007/12/18 13:48:42 ngoto Exp $
+# $Id: chain.rb,v 1.10 2008/04/01 10:36:44 ngoto Exp $
 #
 # = Bio::PDB::Chain
 # 
@@ -189,7 +189,11 @@ module Bio
               x.times { string << 'X' }
             end
             tlc = residue.resName.capitalize
-            olc = (Bio::AminoAcid.three2one(tlc) or 'X')
+            olc = (begin
+                     Bio::AminoAcid.three2one(tlc)
+                   rescue ArgumentError
+                     nil
+                   end || 'X')
             string << olc
           end
           @aaseq = Bio::Sequence::AA.new(string)
