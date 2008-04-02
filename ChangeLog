@@ -1,3 +1,19 @@
+2008-04-01  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Fixed a bug: Failed to parse database name in some cases.
+	  Thanks to Tomoaki Nishiyama who reported the bug and sent patches
+	  ([BioRuby-ja] BLAST format0 parser fails header parsing output
+	  of specific databases).
+
+	* lib/bio/db/pdb/chain.rb, lib/bio/db/pdb/pdb.rb
+
+	  Fixed bugs: Bio::PDB::Chain#aaseq failed for nucleotide chain;
+	  Failed to parse chains for some entries (e.g. 1B2M).
+	  Thanks to Semin Lee who reported the bugs and sent patches
+	  ([BioRuby] Bio::PDB parsing problem (1B2M)).
+
 2008-02-12  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/blast/format0.rb
