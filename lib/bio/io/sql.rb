@@ -24,7 +24,7 @@ module Bio
       #configurations is an hash similar what YAML returns.
       #{:database=>"biorails_development", :adapter=>"postgresql", :username=>"rails", :password=>nil}
       configurations.assert_valid_keys('development', 'production','test')
-      configurations[env].assert_valid_keys('database','adapter','username','password')
+      configurations[env].assert_valid_keys('hostname','database','adapter','username','password')
       DummyBase.configurations = configurations
       DummyBase.establish_connection "#{env}"
     end
@@ -40,6 +40,10 @@ module Bio
     
     def self.exists_accession(accession)
       Bio::SQL::Bioentry.find_by_accession(accession.upcase).nil? ? false : true
+    end
+    
+    def self.exists_database(name)
+      Bio::SQL::Biodatabase.find_by_name(name).nil? ? false : true
     end
     
     def self.list_entries
@@ -116,7 +120,7 @@ if __FILE__ == $0
   #  pp connection = Bio::SQL.establish_connection('bio/io/biosql/config/database.yml','development')
   pp connection = Bio::SQL.establish_connection({'development'=>{'database'=>"biorails_development", 'adapter'=>"postgresql", 'username'=>"rails", 'password'=>nil}},'development')
   #pp YAML::load(ERB.new(IO.read('bio/io/biosql/config/database.yml')).result)
-  
+  pp Bio::SQL.list_entries
   if nil
     pp Bio::SQL.list_entries
     bioseq = Bio::SQL.fetch_accession('AJ224122')   
