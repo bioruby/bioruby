@@ -12,7 +12,7 @@ module Bio
 				has_many :object_bioentry_relationships, :class_name=>"BioentryRelationship", :foreign_key=>"object_bioentry_id" #non mi convince molto credo non funzioni nel modo corretto
 				has_many :subject_bioentry_relationships, :class_name=>"BioentryRelationship", :foreign_key=>"subject_bioentry_id" #non mi convince molto credo non funzioni nel modo corretto
 
-				has_many :cdsfeatures, :class_name=>"Seqfeature", :foreign_key =>"bioentry_id", :conditions=>["terms.name='CDS'"], :include=>"typeterm"
+				has_many :cdsfeatures, :class_name=>"Seqfeature", :foreign_key =>"bioentry_id", :conditions=>["term.name='CDS'"], :include=>"type_term"
         
         has_many :terms, :through=>:bioentry_qualifier_values
         #NOTE: added order_by for multiple hit and manage ranks correctly
