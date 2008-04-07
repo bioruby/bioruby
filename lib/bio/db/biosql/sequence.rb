@@ -673,8 +673,8 @@ if __FILE__ == $0
   databases = Bio::SQL.list_databases
   
   #  parser = Bio::FlatFile.auto('/home/febo/Desktop/aj224122.embl')
-  #  parser = Bio::FlatFile.auto('/home/febo/Desktop/aj224122.gb')
-  parser = Bio::FlatFile.auto('/home/febo/Desktop/aj224122.fasta')
+  parser = Bio::FlatFile.auto('/home/febo/Desktop/aj224122.gb')
+  #parser = Bio::FlatFile.auto('/home/febo/Desktop/aj224122.fasta')
   
   parser.each do |entry|
     biosequence = entry.to_biosequence
@@ -685,6 +685,7 @@ if __FILE__ == $0
     else
       #      pp "Sequence"
       puts result.to_biosequence.output(:genbank) #:embl
+      result.delete
     end   
   end
   #NOTE: ho sistemato le features e le locations, mancano le references e i comments. poi credo che il tutto sia a posto.
