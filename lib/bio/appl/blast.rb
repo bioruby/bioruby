@@ -6,7 +6,7 @@
 # Copyright::  Copyright (C) 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-# $Id: blast.rb,v 1.34 2008/01/30 17:43:34 nakao Exp $
+# $Id: blast.rb,v 1.35 2008/04/15 13:54:39 ngoto Exp $
 #
 
 require 'net/http'
@@ -72,6 +72,7 @@ module Bio
     autoload :Default,      'bio/appl/blast/format0'
     autoload :WU,           'bio/appl/blast/wublast'
     autoload :Bl2seq,       'bio/appl/bl2seq/report'
+    autoload :RPSBlast,     'bio/appl/blast/rpsblast'
 
     # This is a shortcut for Bio::Blast.new:
     #  Bio::Blast.local(program, database, options)

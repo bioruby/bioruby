@@ -1,3 +1,9 @@
+2008-04-15  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/rpsblast.rb
+
+	  Newly added RPS-Blast default (-m 0) output parser.
+
 2008-04-01  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/blast/format0.rb
