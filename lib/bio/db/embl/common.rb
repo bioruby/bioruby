@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: common.rb,v 1.12.2.1 2008/02/20 09:56:22 aerts Exp $
+# $Id: common.rb,v 1.12.2.2 2008/04/23 17:34:15 ngoto Exp $
 #
 # == Description
 #
@@ -240,67 +240,27 @@ module Common
   # * RN RC RP RX RA RT RL RG
   def ref
     unless @data['R']
-      @data['R'] = Array.new
-      # Get the different references as 'blurbs' (the lines together)
-      reference_blurbs = get('R').split(/\nRN   /)
-      reference_blurbs.each_index do |i|
-        reference_blurbs[i] = 'RN   ' + reference_blurbs[i] unless reference_blurbs[i] =~ /^RN   /
-      end
-      
-      # For each reference, we'll first create a hash that looks like below.
-      # Suppose the input is:
-      #   RA   name1, name2, name3
-      #   RA   name4
-      #   RT   some part of the title that
-      #   RT   did not fit on one line
-      # Then the hash looks like:
-      #   h = {
-      #         'RA' => ["name1, name2, name3", "name4"],
-      #         'RT' => ["some part of the title that", "did not fit on one line"]
-      #       }
-      reference_blurbs.each do |rb|
-        line_based_data = Hash.new
-        rb.split(/\n/).each do |line|
-          key, value = line.scan(/^(R[A-Z])   "?(\[?.*[A-Za-z0-9]\]?)/)[0]
-          if line_based_data[key].nil?
-            line_based_data[key] = Array.new
-          end
-          line_based_data[key].push(value)
-        end
-
-        # Now we have to sanitize the hash: the authors should be kept in an 
-        # array, the title should be 1 string, ... So the hash should look like:
-        #  h = {
-        #        'RA' => ["name1", "name2", "name3", "name4"],
-        #        'RT' => 'some part of the title that did not fit on one line'
-        #      }
-        line_based_data.keys.each do |key|
-          if ['RC', 'RP', 'RT', 'RL'].include?(key)
-            line_based_data[key] = line_based_data[key].join(' ')
-          elsif ['RA', 'RX'].include?(key)
-            sanitized_data = Array.new
-            line_based_data[key].each do |v|
-              sanitized_data.push(v.split(/\s*,\s*/))
-            end
-            line_based_data[key] = sanitized_data.flatten
-          elsif key == 'RN'
-            line_based_data[key] = line_based_data[key][0].sub(/^\[/,'').sub(/\]$/,'').to_i
+      ary = Array.new
+      get('R').split(/\nRN   /).each do |str|
+        raw = {'RN' => '', 'RC' => '', 'RP' => '', 'RX' => '', 
+               'RA' => '', 'RT' => '', 'RL' => '', 'RG' => ''}
+        str = 'RN   ' + str unless /^RN   / =~ str
+        str.split("\n").each do |line|
+          if /^(R[NPXARLCTG])   (.+)/ =~ line
+            raw[$1] += $2 + ' '
+          else
+            raise "Invalid format in R lines, \n[#{line}]\n"
           end
         end
-        
-        # And put it in @data. @data in the end looks like this:
-        #  data = [
-        #           {
-        #             'RA' => ["name1", "name2", "name3", "name4"],
-        #             'RT' => 'some part of the title that did not fit on one line'
-        #           },
-        #           {
-        #             'RA' => ["name1", "name2", "name3", "name4"],
-        #             'RT' => 'some part of the title that did not fit on one line'
-        #           }
-        #         ]
-        @data['R'].push(line_based_data)
+        raw.each_value {|v| 
+          v.strip! 
+          v.sub!(/^"/,'')
+          v.sub!(/;$/,'')
+          v.sub!(/"$/,'')
+        }
+        ary.push(raw)
       end
+      @data['R'] = ary
     end
     @data['R']
   end
@@ -309,37 +269,38 @@ module Common
   # * Bio::EMBLDB::Common#ref -> Bio::References
   def references
     unless @data['references']
-      @data['references'] = Array.new
-      self.ref.each do |ref|
-        hash = Hash.new
-        ref.each do |key, value|
+      ary = self.ref.map {|ent|
+        hash = Hash.new('')
+        ent.each {|key, value|
           case key
-          when 'RN'
-            hash['embl_gb_record_number'] = value
-          when 'RC'
-            hash['comments'] = value
-          when 'RX'
-            hash['xrefs'] = value
-          when 'RP'
-            hash['sequence_position'] = value
           when 'RA'
-            hash['authors'] = value
+            hash['authors'] = value.split(/, /)
           when 'RT'
             hash['title'] = value
           when 'RL'
-            hash['journal'] = value
+            if /(.*) (\d+) *(\(([^\)]+)\))?(\, |\:)([a-zA-Z\d]+\-[a-zA-Z\d]+) *\((\d+)\)\.?\z/ =~ value.to_s
+              hash['journal'] = $1.rstrip
+              hash['volume']  = $2
+              hash['issue']   = $4
+              hash['pages']   = $6
+              hash['year']    = $7
+            else
+              hash['journal'] = value
+            end
           when 'RX'  # PUBMED, MEDLINE
-            value.each {|item|
-              tag, xref = item.split(/; /).map {|i| i.strip }
+            value.split(/\. /).each {|item|
+              tag, xref = item.split(/\; /).map {|i| i.strip.sub(/\.\z/, '') }
               hash[ tag.downcase ]  = xref
             }
           end
-        end
-        @data['references'].push(Reference.new(hash))
-      end
+        }
+        Reference.new(hash)
+      }
+      @data['references'] = References.new(ary)
     end
     @data['references']
   end
+
 
   # returns contents in the DR line.
   # * Bio::EMBLDB::Common#dr  -> [ <Database cross-reference Hash>* ]
