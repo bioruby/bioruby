@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: common.rb,v 1.12 2007/04/05 23:35:40 trevor Exp $
+# $Id: common.rb,v 1.13 2008/04/23 16:48:25 ngoto Exp $
 #
 # == Description
 #
@@ -278,18 +278,18 @@ module Common
           when 'RT'
             hash['title'] = value
           when 'RL'
-            if value =~ /(.*) (\d+) \((\d+)\), (\d+-\d+) \((\d+)\)$/
-              hash['journal'] = $1
+            if /(.*) (\d+) *(\(([^\)]+)\))?(\, |\:)([a-zA-Z\d]+\-[a-zA-Z\d]+) *\((\d+)\)\.?\z/ =~ value.to_s
+              hash['journal'] = $1.rstrip
               hash['volume']  = $2
-              hash['issue']   = $3
-              hash['pages']   = $4
-              hash['year']    = $5
+              hash['issue']   = $4
+              hash['pages']   = $6
+              hash['year']    = $7
             else
               hash['journal'] = value
             end
           when 'RX'  # PUBMED, MEDLINE
-            value.split('.').each {|item|
-              tag, xref = item.split(/; /).map {|i| i.strip }
+            value.split(/\. /).each {|item|
+              tag, xref = item.split(/\; /).map {|i| i.strip.sub(/\.\z/, '') }
               hash[ tag.downcase ]  = xref
             }
           end
