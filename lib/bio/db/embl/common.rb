@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: common.rb,v 1.12.2.2 2008/04/23 17:34:15 ngoto Exp $
+# $Id: common.rb,v 1.12.2.3 2008/04/23 18:04:51 ngoto Exp $
 #
 # == Description
 #
@@ -73,6 +73,7 @@
 
 require 'bio/db'
 require 'bio/reference'
+require 'bio/compat/references'
 
 module Bio
 class EMBLDB
@@ -273,8 +274,16 @@ module Common
         hash = Hash.new('')
         ent.each {|key, value|
           case key
+          when 'RN'
+            if /\[(\d+)\]/ =~ value.to_s
+              hash['embl_gb_record_number'] = $1.to_i
+            end
+          when 'RC'
+            hash['comment'] = value
+          when 'RP'
+            hash['sequence_position'] = value
           when 'RA'
-            hash['authors'] = value.split(/, /)
+            hash['authors'] = value.split(/\, /)
           when 'RT'
             hash['title'] = value
           when 'RL'
@@ -287,7 +296,7 @@ module Common
             else
               hash['journal'] = value
             end
-          when 'RX'  # PUBMED, MEDLINE
+          when 'RX'  # PUBMED, DOI, (AGRICOLA)
             value.split(/\. /).each {|item|
               tag, xref = item.split(/\; /).map {|i| i.strip.sub(/\.\z/, '') }
               hash[ tag.downcase ]  = xref
@@ -296,7 +305,7 @@ module Common
         }
         Reference.new(hash)
       }
-      @data['references'] = References.new(ary)
+      @data['references'] = ary.extend(Bio::References::BackwardCompatibility)
     end
     @data['references']
   end
