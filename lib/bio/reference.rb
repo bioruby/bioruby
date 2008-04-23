@@ -7,7 +7,7 @@
 #               Jan Aerts <jandot@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: reference.rb,v 1.24.2.5 2008/03/04 11:31:45 ngoto Exp $
+# $Id: reference.rb,v 1.24.2.6 2008/04/23 18:52:18 ngoto Exp $
 #
 
 module Bio
@@ -41,8 +41,6 @@ module Bio
   #
   class Reference
 
-    include Bio::Sequence::Format::INSDFeatureHelper
-
     # Author names in an Array, [ "Hoge, J.P.", "Fuga, F.B." ].
     attr_reader :authors
 
@@ -69,6 +67,9 @@ module Bio
 
     # medline identifier (typically Fixnum)
     attr_reader :medline
+
+    # DOI identifier (typically String, e.g. "10.1126/science.1110418")
+    attr_reader :doi
     
     # Abstract text in String.
     attr_reader :abstract
@@ -87,6 +88,9 @@ module Bio
     
     # Position in a sequence that this reference refers to
     attr_reader :sequence_position
+
+    # Comments for the reference (typically Array of String, or nil)
+    attr_reader :comments
 
     # Create a new Bio::Reference object from a Hash of values. 
     # Data is extracted from the values for keys:
@@ -125,27 +129,23 @@ module Bio
     # * (required) _hash_: Hash
     # *Returns*:: Bio::Reference object
     def initialize(hash)
-      hash.default = ''
-      @authors  = hash['authors'] # [ "Hoge, J.P.", "Fuga, F.B." ]
-      @title    = hash['title']   # "Title of the study."
-      @journal  = hash['journal'] # "Theor. J. Hoge"
-      @volume   = hash['volume']  # 12
-      @issue    = hash['issue']   # 3
-      @pages    = hash['pages']   # 123-145
-      @year     = hash['year']    # 2001
-      @pubmed   = hash['pubmed']  # 12345678
-      @medline  = hash['medline'] # 98765432
-      @abstract = hash['abstract']
+      @authors  = hash['authors'] || [] # [ "Hoge, J.P.", "Fuga, F.B." ]
+      @title    = hash['title']   || '' # "Title of the study."
+      @journal  = hash['journal'] || '' # "Theor. J. Hoge"
+      @volume   = hash['volume']  || '' # 12
+      @issue    = hash['issue']   || '' # 3
+      @pages    = hash['pages']   || '' # 123-145
+      @year     = hash['year']    || '' # 2001
+      @pubmed   = hash['pubmed']  || '' # 12345678
+      @medline  = hash['medline'] || '' # 98765432
+      @doi      = hash['doi']
+      @abstract = hash['abstract'] || '' 
       @url      = hash['url']
-      @mesh     = hash['mesh']
+      @mesh     = hash['mesh'] || []
       @embl_gb_record_number = hash['embl_gb_record_number'] || nil
       @sequence_position = hash['sequence_position'] || nil
-      @comments = hash['comments'] || []
-      @xrefs    = hash['xrefs'] || []
-      @affiliations = hash['affiliations']
-      @authors = [] if @authors.empty?
-      @mesh    = [] if @mesh.empty?
-      @affiliations = [] if @affiliations.empty?
+      @comments  = hash['comments']
+      @affiliations = hash['affiliations'] || []
     end
 
     # Formats the reference in a given style.
@@ -272,28 +272,10 @@ module Bio
     #     RT   beta-glucosidase (linamarase) from white clover (Trifolium repens L.)";
     #     RL   Plant Mol. Biol. 17(2):209-219(1991).
     def embl
-      lines = Array.new
-      if ! @embl_gb_record_number.nil?
-        lines << "RN   [#{@embl_gb_record_number}]"
-      end
-      if @comments != []
-        @comments.each do |c|
-          lines << "RC   #{c}"
-        end
-      end
-      if ! @sequence_position.nil?
-        lines << "RP   #{@sequence_position}"
-      end
-      if ! @xrefs.nil?
-        @xrefs.each do |x|
-          lines << "RX   #{x}"
-        end
-      end
-      lines << wrap(@authors.join(', '), 80, 'RA   ') + ';' unless @authors.nil?
-      lines << (@title == '' ? 'RT   ;' : wrap('"' + @title + '"', 80, 'RT   ') + ';')
-      lines << wrap(@journal, 80, 'RL   ') unless @journal == ''
-      lines << "XX"
-      return lines.join("\n")
+      r = self
+      Bio::Sequence::Format::NucFormatter::Embl.new('').instance_eval {
+        reference_format_embl(r)
+      }
     end
 
     # Returns reference formatted in the bibitem style

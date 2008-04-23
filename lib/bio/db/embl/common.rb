@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: common.rb,v 1.12.2.3 2008/04/23 18:04:51 ngoto Exp $
+# $Id: common.rb,v 1.12.2.4 2008/04/23 18:52:18 ngoto Exp $
 #
 # == Description
 #
@@ -279,7 +279,10 @@ module Common
               hash['embl_gb_record_number'] = $1.to_i
             end
           when 'RC'
-            hash['comment'] = value
+            unless value.to_s.strip.empty?
+              hash['comments'] ||= []
+              hash['comments'].push value
+            end
           when 'RP'
             hash['sequence_position'] = value
           when 'RA'
