@@ -9,7 +9,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: sequence.rb,v 0.58.2.10 2008/03/27 13:38:31 ngoto Exp $
+# $Id: sequence.rb,v 0.58.2.11 2008/04/24 14:28:25 ngoto Exp $
 #
 
 require 'bio/sequence/compat'
@@ -368,13 +368,13 @@ class Sequence
   # Create a new Bio::Sequence object from a formatted string
   # (GenBank, EMBL, fasta format, etc.)
   #
-  #   s = Bio::Sequence.read(str)
+  #   s = Bio::Sequence.input(str)
   # ---
   # *Arguments*:
   # * (required) _str_: string
   # * (optional) _format_: format specification (class or nil)
   # *Returns*:: Bio::Sequence object
-  def self.read(str, format = nil)
+  def self.input(str, format = nil)
     if format then
       klass = format
     else
@@ -383,10 +383,17 @@ class Sequence
     obj = klass.new(str)
     obj.to_biosequence
   end
-  
-  
+
+  # alias of Bio::Sequence.input
+  def self.read(str, format = nil)
+    input(str, format)
+  end
+
+  # accession numbers of the sequence
+  #
+  # *Returns*:: Array of String
   def accessions
-    return [@primary_accession, @secondary_accessions].flatten
+    [ @primary_accession, @secondary_accessions ].flatten.compact
   end
 
 end # Sequence
