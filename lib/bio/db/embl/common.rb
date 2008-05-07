@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: common.rb,v 1.12.2.4 2008/04/23 18:52:18 ngoto Exp $
+# $Id: common.rb,v 1.12.2.5 2008/05/07 12:22:10 ngoto Exp $
 #
 # == Description
 #
@@ -271,7 +271,7 @@ module Common
   def references
     unless @data['references']
       ary = self.ref.map {|ent|
-        hash = Hash.new('')
+        hash = Hash.new
         ent.each {|key, value|
           case key
           when 'RN'
@@ -286,7 +286,11 @@ module Common
           when 'RP'
             hash['sequence_position'] = value
           when 'RA'
-            hash['authors'] = value.split(/\, /)
+            a = value.split(/\, /)
+            a.each do |x|
+              x.sub!(/( [^ ]+)\z/, ",\\1")
+            end
+            hash['authors'] = a
           when 'RT'
             hash['title'] = value
           when 'RL'
