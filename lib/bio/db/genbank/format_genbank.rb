@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2008 Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format_genbank.rb,v 1.1.2.1 2008/03/04 11:19:16 ngoto Exp $
+# $Id: format_genbank.rb,v 1.1.2.2 2008/05/07 06:17:52 ngoto Exp $
 #
 
 require 'bio/sequence/format'
@@ -63,11 +63,11 @@ SOURCE      <%= genbank_wrap(species) %>
       else
         pos = " (bases #{pos})"
       end
-      journal = ref.journal.to_s
-      volissue = ref.volume.to_s
+      volissue = "#{ref.volume.to_s}"
       volissue += " (#{ref.issue})" unless ref.issue.to_s.empty? 
-      journal += " #{volissue}," unless volissue.empty? 
-      journal += " #{ref.pages}" unless ref.pages.to_s.empty?
+      journal = "#{ref.journal.to_s}"
+      journal += " #{volissue}" unless volissue.empty? 
+      journal += ", #{ref.pages}" unless ref.pages.to_s.empty?
       journal += " (#{ref.year})" unless ref.year.to_s.empty?
 
       alist = ref.authors.collect { |x| x.gsub(/\, /, ',') }
