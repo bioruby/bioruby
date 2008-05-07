@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: common.rb,v 1.11.2.3 2008/03/04 10:32:55 ngoto Exp $
+# $Id: common.rb,v 1.11.2.4 2008/05/07 12:25:42 ngoto Exp $
 #
 
 require 'bio/db'
@@ -137,7 +137,7 @@ module Common
     unless @data['REFERENCE']
       ary = []
       toptag2array(get('REFERENCE')).each do |ref|
-        hash = Hash.new('')
+        hash = Hash.new
         subtag2array(ref).each do |field|
           case tag_get(field)
           when /REFERENCE/
@@ -174,6 +174,9 @@ module Common
             hash['medline']	= truncate(tag_cut(field))
           when /PUBMED/
             hash['pubmed']	= truncate(tag_cut(field))
+          when /REMARK/
+            hash['comments'] ||= []
+            hash['comments'].push truncate(tag_cut(field))
           end
         end
         ary.push(Reference.new(hash))
