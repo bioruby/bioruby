@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2008 Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format_genbank.rb,v 1.1.2.2 2008/05/07 06:17:52 ngoto Exp $
+# $Id: format_genbank.rb,v 1.1.2.3 2008/05/07 12:28:56 ngoto Exp $
 #
 
 require 'bio/sequence/format'
@@ -32,6 +32,74 @@ module Bio::Sequence::Format::NucFormatter
       genbank_wrap(str)
     end
 
+    # Given words (an Array of String) are wrapping with EMBL style.
+    # Each word is never splitted inside the word.
+    def genbank_wrap_words(array)
+      width = 67
+      result = []
+      str = nil
+      array.each do |x|
+        if str then
+          if str.length + 1 + x.length > width then
+            str = nil
+          else
+            str.concat ' '
+            str.concat x
+          end
+        end
+        unless str then
+          str = "#{x}"
+          result.push str
+        end
+      end
+      result.join("\n" + " " * 12)
+    end
+
+    # formats references
+    def reference_format_genbank(ref, num)
+      pos = ref.sequence_position.to_s.gsub(/\s/, '')
+      pos.gsub!(/(\d+)\-(\d+)/, "\\1 to \\2")
+      pos.gsub!(/\s*\,\s*/, '; ')
+      if pos.empty?
+        pos = ''
+      else
+        pos = " (bases #{pos})"
+      end
+      volissue = "#{ref.volume.to_s}"
+      volissue += " (#{ref.issue})" unless ref.issue.to_s.empty? 
+      journal = "#{ref.journal.to_s}"
+      journal += " #{volissue}" unless volissue.empty? 
+      journal += ", #{ref.pages}" unless ref.pages.to_s.empty?
+      journal += " (#{ref.year})" unless ref.year.to_s.empty?
+
+      alist = ref.authors.collect do |x|
+        y = x.to_s.strip.split(/\, *([^\,]+)\z/)
+        y[1].gsub!(/\. +/, '.') if y[1]
+        y.join(',')
+      end
+      lastauthor = alist.pop
+      last2author = alist.pop
+      alist.each { |x| x.concat ',' }
+      alist.push last2author if last2author
+      alist.push "and" unless alist.empty?
+      alist.push lastauthor.to_s
+      result = <<__END_OF_REFERENCE__
+REFERENCE   #{ genbank_wrap(sprintf('%-2d%s', num, pos))}
+  AUTHORS   #{ genbank_wrap_words(alist) }
+  TITLE     #{ genbank_wrap(ref.title.to_s) }
+  JOURNAL   #{ genbank_wrap(journal) }
+__END_OF_REFERENCE__
+      unless ref.pubmed.to_s.empty? then
+        result.concat "   PUBMED   #{ genbank_wrap(ref.pubmed) }\n"
+      end
+      if ref.comments and !(ref.comments.empty?) then
+        ref.comments.each do |c|
+          result.concat "  REMARK    #{ genbank_wrap(c) }\n"
+        end
+      end
+      result
+    end
+
     # formats sequence lines as GenBank
     def each_genbank_seqline(str) #:yields: counter, seqline
       i = 1
@@ -55,34 +123,7 @@ SOURCE      <%= genbank_wrap(species) %>
     n = 0
     (references or []).each do |ref|
       n += 1
-      pos = ref.sequence_position.to_s.gsub(/\s/, '')
-      pos.gsub!(/(\d+)\-(\d+)/, "\\1 to \\2")
-      pos.gsub!(/\s*\,\s*/, '; ')
-      if pos.empty?
-        pos = ''
-      else
-        pos = " (bases #{pos})"
-      end
-      volissue = "#{ref.volume.to_s}"
-      volissue += " (#{ref.issue})" unless ref.issue.to_s.empty? 
-      journal = "#{ref.journal.to_s}"
-      journal += " #{volissue}" unless volissue.empty? 
-      journal += ", #{ref.pages}" unless ref.pages.to_s.empty?
-      journal += " (#{ref.year})" unless ref.year.to_s.empty?
-
-      alist = ref.authors.collect { |x| x.gsub(/\, /, ',') }
-      lastauthor = alist.pop
-      authorsline = alist.join(', ')
-      authorsline.concat(" and ") unless alist.empty?
-      authorsline.concat lastauthor.to_s
-      
-%>REFERENCE   <%= genbank_wrap(sprintf('%-2d%s', n, pos)) %>
-  AUTHORS   <%= genbank_wrap(authorsline) %>
-  TITLE     <%= genbank_wrap(ref.title.to_s) %>
-  JOURNAL   <%= genbank_wrap(journal) %>
-<%   unless ref.pubmed.to_s.empty?
- %>  PUBMED    <%= ref.pubmed %>
-<%   end
+%><%= reference_format_genbank(ref, n) %><%
     end
 %>FEATURES             Location/Qualifiers
 <%= format_features_genbank(features || [])
