@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2008 Jan Aerts <jandot@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format_embl.rb,v 1.1.2.3 2008/04/23 18:52:18 ngoto Exp $
+# $Id: format_embl.rb,v 1.1.2.4 2008/05/07 12:24:26 ngoto Exp $
 #
 
 require 'bio/sequence/format'
@@ -20,8 +20,32 @@ module Bio::Sequence::Format::NucFormatter
     
     private
 
+    # wrapping with EMBL style
     def embl_wrap(prefix, str)
       wrap(str.to_s, 80, prefix)
+    end
+
+    # Given words (an Array of String) are wrapping with EMBL style.
+    # Each word is never splitted inside the word.
+    def embl_wrap_words(prefix, array)
+      width = 80
+      result = []
+      str = nil
+      array.each do |x|
+        if str then
+          if str.length + 1 + x.length > width then
+            str = nil
+          else
+            str.concat ' '
+            str.concat x
+          end
+        end
+        unless str then
+          str = prefix + x
+          result.push str
+        end
+      end
+      result.join("\n")
     end
 
     # format reference
@@ -52,8 +76,16 @@ module Bio::Sequence::Format::NucFormatter
       unless ref.pubmed.to_s.empty? then
         lines << embl_wrap("RX   ",   "PUBMED; #{ref.pubmed}.")
       end
-      unless ref.authors.empty?
-        lines << embl_wrap('RA   ', ref.authors.join(', ') + ';')
+      unless ref.authors.empty? then
+        auth = ref.authors.collect do |x|
+          y = x.to_s.strip.split(/\, *([^\,]+)\z/)
+          y[1].gsub!(/\. +/, '.') if y[1]
+          y.join(' ')
+        end
+        lastauth = auth.pop
+        auth.each { |x| x.concat ',' }
+        auth.push(lastauth.to_s + ';')
+        lines << embl_wrap_words('RA   ', auth)
       end
       lines << embl_wrap('RT   ',
                          (ref.title.to_s.empty? ? '' :
