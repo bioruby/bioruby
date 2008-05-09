@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_xmlparser.rb,v 1.7 2007/04/05 23:35:43 trevor Exp $
+#  $Id: test_xmlparser.rb,v 1.7.2.1 2008/05/09 02:32:44 ngoto Exp $
 #
 
 require 'pathname'
@@ -15,7 +15,7 @@ require 'test/unit'
 require 'bio/appl/blast'
 
 
-module Bio
+module Bio::TestBlastXMLParser
   class TestBlastFormat7XMLParserData
     bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
     TestDataBlast = Pathname.new(File.join(bioruby_root, 'test', 'data', 'blast')).cleanpath.to_s
@@ -35,7 +35,7 @@ module Bio
     require 'bio/appl/blast/report'
 
     def setup
-      @report = Bio::Blast::Report.new(Bio::TestBlastFormat7XMLParserData.output)
+      @report = Bio::Blast::Report.new(TestBlastFormat7XMLParserData.output)
     end
     
     def test_iterations
@@ -187,7 +187,7 @@ module Bio
 
   class TestBlastReportHit < Test::Unit::TestCase
     def setup
-      data = Bio::TestBlastFormat7XMLParserData.output
+      data = TestBlastFormat7XMLParserData.output
       report = Bio::Blast::Report.new(data)
       @hit = report.hits.first
     end
@@ -292,7 +292,7 @@ module Bio
 
   class TestBlastReportHsp < Test::Unit::TestCase
     def setup
-      data = Bio::TestBlastFormat7XMLParserData.output
+      data = TestBlastFormat7XMLParserData.output
       report = Bio::Blast::Report.new(data)
       @hsp = report.hits.first.hsps.first
     end
