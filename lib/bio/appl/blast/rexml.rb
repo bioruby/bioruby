@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2002, 2003 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: rexml.rb,v 1.12 2007/04/05 23:35:39 trevor Exp $
+# $Id: rexml.rb,v 1.13 2008/05/12 13:11:45 ngoto Exp $
 #
 # == Note
 # 
@@ -37,9 +37,7 @@ module Bio
           case name
           when 'BlastOutput_param'
             e.elements["Parameters"].each_element_with_text do |p|
-              k = p.name.sub(/Parameters_/, '')
-              v = p.text =~ /\D/ ? p.text : p.text.to_i
-              @parameters[k] = v
+              xml_set_parameter(p.name, p.text)
             end
           else
             hash[name] = text if text.strip.size > 0

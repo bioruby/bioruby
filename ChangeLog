@@ -1,3 +1,24 @@
+2008-05-12  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/xmlparser.rb, lib/bio/appl/blast/rexml.rb
+
+	  Bug fix: unit test sometime fails due to improper treatment of some
+	  Blast parameters and difference between rexml and xmlparser.
+	  To fix the bug, types of some parameters may be changed, e.g.
+	  Bio::Blast::Report#expect is changed to return Float or nil.
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Bug fix: Bio::Blast::Default::Report#eff_space returns wrong value 
+	  ("Effective length of database"). It should return the value of
+	  "Effective search space".
+
+	* test/unit/bio/appl/blast/test_xmlparser.rb
+
+	  Bug fix: tests in test/unit/bio/appl/blast/test_report.rb were
+	  ignored because of conflicts of the names of test classes.
+	  Class name in test_xmlparser.rb is changed to fix the bug.
+
 2008-04-15  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/blast/rpsblast.rb
