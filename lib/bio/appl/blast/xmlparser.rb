@@ -7,7 +7,7 @@
 #              Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: xmlparser.rb,v 1.17 2007/04/05 23:35:39 trevor Exp $
+# $Id: xmlparser.rb,v 1.17.2.1 2008/05/12 13:19:32 ngoto Exp $
 #
 # == Description
 # 
@@ -115,26 +115,35 @@ class Blast
       end
     end
 
-    def xmlparser_parse_parameters(hash)
-      labels = { 
-        'matrix'       => 'Parameters_matrix',
-        'expect'       => 'Parameters_expect',
-        'include'      => 'Parameters_include',
-        'sc-match'     => 'Parameters_sc-match',
-        'sc-mismatch'  => 'Parameters_sc-mismatch',
-        'gap-open'     => 'Parameters_gap-open',
-        'gap-extend'   => 'Parameters_gap-extend',
-        'filter'       => 'Parameters_filter',
-        'pattern'      => 'Parameters_pattern',
-        'entrez-query' => 'Parameters_entrez-query',
-      }
-      labels.each do |k,v|
+    # set parameter of the key as val
+    def xml_set_parameter(key, val)
+      #labels = { 
+      #  'matrix'       => 'Parameters_matrix',
+      #  'expect'       => 'Parameters_expect',
+      #  'include'      => 'Parameters_include',
+      #  'sc-match'     => 'Parameters_sc-match',
+      #  'sc-mismatch'  => 'Parameters_sc-mismatch',
+      #  'gap-open'     => 'Parameters_gap-open',
+      #  'gap-extend'   => 'Parameters_gap-extend',
+      #  'filter'       => 'Parameters_filter',
+      #  'pattern'      => 'Parameters_pattern',
+      #  'entrez-query' => 'Parameters_entrez-query',
+      #}
+      k = key.sub(/\AParameters\_/, '')
+      @parameters[k] =
         case k
-        when 'filter', 'matrix'
-          @parameters[k] = hash[v].to_s
+        when 'expect', 'include'
+          val.to_f
+        when /\Agap\-/, /\Asc\-/
+          val.to_i
         else
-          @parameters[k] = hash[v].to_i
+          val
         end
+    end
+
+    def xmlparser_parse_parameters(hash)
+      hash.each do |k, v|
+        xml_set_parameter(k, v)
       end
     end
 
