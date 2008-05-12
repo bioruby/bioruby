@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format0.rb,v 1.26 2008/02/12 02:13:31 ngoto Exp $
+# $Id: format0.rb,v 1.26.2.1 2008/05/12 09:52:15 ngoto Exp $
 #
 # == Description
 #
@@ -293,6 +293,11 @@ module Bio
           end
           @f0query = data.shift
           @f0database = data.shift
+          # In special case, a void line is inserted after database name.
+          if /\A +[\d\,]+ +sequences\; +[\d\,]+ total +letters\s*\z/ =~ data[0] then
+            @f0database.concat "\n"
+            @f0database.concat data.shift
+          end
         end
 
         # Splits the statistical parameters.
