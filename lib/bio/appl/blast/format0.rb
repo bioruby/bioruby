@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format0.rb,v 1.27 2008/04/01 06:31:35 ngoto Exp $
+# $Id: format0.rb,v 1.28 2008/05/12 11:25:55 ngoto Exp $
 #
 # == Description
 #
@@ -387,7 +387,7 @@ module Bio
               end
               #@db_num = @hash['Number of Sequences'] unless defined?(@db_num)
               #@db_len = @hash['length of database']  unless defined?(@db_len)
-              if val = @hash['effective length of database'] then
+              if val = @hash['effective search space'] then
                 @eff_space = val.tr(',', '').to_i
               end
               @parse_params = true
