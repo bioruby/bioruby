@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format0.rb,v 1.26.2.2 2008/05/12 11:16:17 ngoto Exp $
+# $Id: format0.rb,v 1.26.2.3 2008/05/13 11:19:42 ngoto Exp $
 #
 # == Description
 #
@@ -722,13 +722,13 @@ module Bio
                   sc.skip(/ */)
                 end
                 if gapped then
-                  @gapped_lambda = h['Lambda']
-                  @gapped_kappa = h['K']
-                  @gapped_entropy = h['H']
+                  @gapped_lambda = (v = h['Lambda']) ? v.to_f : nil
+                  @gapped_kappa = (v = h['K']) ? v.to_f : nil
+                  @gapped_entropy = (v = h['H']) ? v.to_f : nil
                 else
-                  @lambda = h['Lambda']
-                  @kappa = h['K']
-                  @entropy = h['H']
+                  @lambda = (v = h['Lambda']) ? v.to_f : nil
+                  @kappa = (v = h['K']) ? v.to_f : nil
+                  @entropy = (v = h['H']) ? v.to_f : nil
                 end
               end #each
               @parse_stat = true
