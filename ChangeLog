@@ -1,3 +1,13 @@
+2008-05-14  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Bug fix: Possibly because of the output format changes of PHI-BLAST,
+	  Bio::Blast::Default::Report::Iteration#eff_space (and the shortcut
+	  method in the Report class) failed for PHI-BLAST (blastpgp) results,
+	  and Iteration#pattern and #pattern_positions (and the
+	  shortcut methods in the Report class) returned incorrect values.
+
 2008-05-12  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/blast/xmlparser.rb, lib/bio/appl/blast/rexml.rb
