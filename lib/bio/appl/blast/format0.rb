@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format0.rb,v 1.26.2.3 2008/05/13 11:19:42 ngoto Exp $
+# $Id: format0.rb,v 1.26.2.4 2008/05/14 13:39:41 ngoto Exp $
 #
 # == Description
 #
@@ -534,7 +534,7 @@ module Bio
                   @hits << Hit.new(data)
                   r = data.first
                   break unless r
-                  if /^Significant alignments for pattern/ =~ r
+                  while /^Significant alignments for pattern/ =~ r
                     data.shift
                     r = data.first
                   end
@@ -589,9 +589,9 @@ module Bio
               @pattern_positions = []
               @f0message.each do |r|
                 sc = StringScanner.new(r)
-                if sc.skip_until(/^ *pattern +(.+)$/) then
+                if sc.skip_until(/^ *pattern +([^\s]+)/) then
                   @pattern = sc[1] unless @pattern
-                  sc.skip_until(/^ at position +(\d+)/)
+                  sc.skip_until(/(?:^ *| +)at position +(\d+) +of +query +sequence/)
                   @pattern_positions << sc[1].to_i
                 end
               end
