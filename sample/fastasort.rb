@@ -2,7 +2,8 @@
 #
 # fastasort: Sorts a FASTA file (in fact it can use any flat file input supported
 #            by BIORUBY) while modifying the definition of each record in the
-#            process.
+#            process so it is suitable for processing with (for example) pal2nal
+#            and PAML.
 #
 #   Copyright (C) 2008 KATAYAMA Toshiaki <k@bioruby.org> & Pjotr Prins
 #
@@ -16,7 +17,7 @@
 #  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #  GNU General Public License for more details.
 #
-#  $Id: fastasort.rb,v 1.1 2008/05/19 11:23:56 pjotr Exp $
+#  $Id: fastasort.rb,v 1.2 2008/05/19 12:22:05 pjotr Exp $
 #
 
 require 'bio'
@@ -26,11 +27,22 @@ include Bio
 table = Hash.new   # table to sort objects
 ARGV.each do | fn |
   Bio::FlatFile.auto(fn).each do | item |
+    # Some procession of the definition for external programs (just
+    # an example):
+
     # strip JALView extension from definition e.g. .../1-212
     if item.definition =~ /\/\d+-\d+$/
       item.definition = $`
     end
-    table[item.definition] = item.data
+    # substitute slashes:
+    definition = item.definition.gsub(/\//,'-')
+    # substitute quotes and ampersands:
+    definition = item.definition.gsub(/['"&]/,'x')
+    # prefix letters if the first position is a number:
+    definition = 'seq'+definition if definition =~ /^\d/
+
+    # Now add the data to the sort table
+    table[definition] = item.data
   end
 end
 
