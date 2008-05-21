@@ -7,7 +7,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: embl.rb,v 1.29.2.4 2008/03/21 06:24:42 ngoto Exp $
+# $Id: embl.rb,v 1.29.2.5 2008/05/21 12:27:33 ngoto Exp $
 #
 # == Description
 #
@@ -370,9 +370,15 @@ class EMBL < EMBLDB
   end
   alias naseq seq
   alias ntseq seq
-  
-  # // Line; termination line (end; 1/entry)
 
+  #--
+  # // Line; termination line (end; 1/entry)
+  #++
+
+  # converts the entry to Bio::Sequence object
+  # ---
+  # *Arguments*::
+  # *Returns*:: Bio::Sequence object
   def to_biosequence
     bio_seq = Bio::Sequence.new(self.seq)
     bio_seq.entry_id = self.entry_id
