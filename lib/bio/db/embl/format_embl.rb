@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2008 Jan Aerts <jandot@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format_embl.rb,v 1.1.2.4 2008/05/07 12:24:26 ngoto Exp $
+# $Id: format_embl.rb,v 1.1.2.5 2008/05/28 13:38:07 ngoto Exp $
 #
 
 require 'bio/sequence/format'
@@ -105,18 +105,23 @@ module Bio::Sequence::Format::NucFormatter
     end
 
     def seq_format_embl(seq)
-      output_lines = Array.new
       counter = 0
-      remainder = seq.window_search(60,60) do |subseq|
-        counter += 60
-        subseq.gsub!(/(.{10})/, '\1 ')
-        output_lines.push(' '*5 + subseq + counter.to_s.rjust(9))
+      result = seq.gsub(/.{1,60}/) do |x|
+        counter += x.length
+        x = x.gsub(/.{10}/, '\0 ')
+        sprintf("     %-66s%9d\n", x, counter)
       end
-      counter += remainder.length
-      remainder = (remainder.to_s + ' '*(60-remainder.length))
-      remainder.gsub!(/(.{10})/, '\1 ')
-      output_lines.push(' '*5 + remainder + counter.to_s.rjust(9))
-      return output_lines.join("\n")
+      result.chomp!
+      result
+    end
+
+    def seq_composition(seq)
+      { :a => seq.count('aA'),
+        :c => seq.count('cC'),
+        :g => seq.count('gG'),
+        :t => seq.count('tTuU'),
+        :other => seq.count('^aAcCgGtTuU')
+      }
     end
 
     # Erb template of EMBL format for Bio::Sequence
@@ -139,7 +144,7 @@ XX
 <% end %>FH   Key             Location/Qualifiers
 FH   
 <%= format_features_embl(features || []) %>XX   
-SQ   Sequence <%= seq.length %> BP; <%= seq.composition.collect{|k,v| "#{v} #{k.upcase}"}.join('; ') + '; ' + (seq.gsub(/[ACTGactg]/, '').length.to_s ) + ' other;' %>
+SQ   Sequence <%= seq.length %> BP; <% c = seq_composition(seq) %><%= c[:a] %> A; <%= c[:c] %> C; <%= c[:g] %> G; <%= c[:t] %> T; <%= c[:other] %> other;
 <%= seq_format_embl(seq) %>
 //
 __END_OF_TEMPLATE__
