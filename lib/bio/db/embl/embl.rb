@@ -7,7 +7,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: embl.rb,v 1.29.2.5 2008/05/21 12:27:33 ngoto Exp $
+# $Id: embl.rb,v 1.29.2.6 2008/05/28 13:09:03 ngoto Exp $
 #
 # == Description
 #
@@ -383,7 +383,7 @@ class EMBL < EMBLDB
     bio_seq = Bio::Sequence.new(self.seq)
     bio_seq.entry_id = self.entry_id
     bio_seq.primary_accession = self.accessions[0]
-    bio_seq.secondary_accessions = self.accessions[1,-1] || []
+    bio_seq.secondary_accessions = self.accessions[1..-1] || []
     bio_seq.molecule_type = self.molecule_type
     bio_seq.data_class = self.data_class
     bio_seq.definition = self.description
