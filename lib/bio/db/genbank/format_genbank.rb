@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2008 Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format_genbank.rb,v 1.1.2.3 2008/05/07 12:28:56 ngoto Exp $
+# $Id: format_genbank.rb,v 1.1.2.4 2008/05/28 13:26:33 ngoto Exp $
 #
 
 require 'bio/sequence/format'
@@ -101,12 +101,15 @@ __END_OF_REFERENCE__
     end
 
     # formats sequence lines as GenBank
-    def each_genbank_seqline(str) #:yields: counter, seqline
+    def seq_format_genbank(str)
       i = 1
-      a = str.scan(/.{1,60}/) do |s|
-        yield i, s.gsub(/(.{1,10})/, " \\1")
+      result = str.gsub(/.{1,60}/) do |s|
+        s = s.gsub(/.{1,10}/, ' \0')
+        y = sprintf("%9d%s\n", i, s)
         i += 60
+        y
       end
+      result
     end
 
     # Erb template of GenBank format for Bio::Sequence
@@ -128,9 +131,8 @@ SOURCE      <%= genbank_wrap(species) %>
 %>FEATURES             Location/Qualifiers
 <%= format_features_genbank(features || [])
  %>ORIGIN
-<% each_genbank_seqline(seq) do |i, s|
- %><%= sprintf('%9d', i) %><%= s %>
-<% end %>//
+<%= seq_format_genbank(seq)
+ %>//
 __END_OF_TEMPLATE__
 
   end #class Genbank
