@@ -5,7 +5,7 @@
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: test_reference.rb,v 1.3 2007/04/05 23:35:42 trevor Exp $
+# $Id: test_reference.rb,v 1.4 2008/05/31 09:36:56 pjotr Exp $
 #
 
 require 'pathname'
@@ -90,7 +90,7 @@ module Bio
     end
 
     def test_format_endnote
-      str = "%0 Journal Article\n%A Hoge, J.P.\n%A Fuga, F.B.\n%D 2001\n%T Title of the study.\n%J Theor. J. Hoge\n%V 12\n%N 3\n%P 123-145\n%M 12345678\n%U http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&dopt=Citation&list_uids=12345678\n%X Hoge fuga. hoge fuga.\n%K Hoge\n%+ Tokyo"
+      str = "%0 Journal Article\n%A Hoge, J.P.\n%A Fuga, F.B.\n%D 2001\n%T Title of the study.\n%J Theor. J. Hoge\n%V 12\n%N 3\n%P 123-145\n%M 12345678\n%U http://example.com\n%X Hoge fuga. hoge fuga.\n%K Hoge\n%+ Tokyo"
       assert_equal(str, @obj.format('endnote'))
       assert_equal(str, @obj.endnote)
     end
@@ -102,17 +102,8 @@ module Bio
     end
 
     def test_format_bibtex
-      str =<<END
-        @article{PMID:12345678,
-          author  = {Hoge, J.P. and Fuga, F.B.},
-          title   = {Title of the study.},
-          journal = {Theor. J. Hoge},
-          year    = {2001},
-          volume  = {12},
-          number  = {3},
-          pages   = {123--145},
-        }
-END
+      str = "@article{PMID:12345678,\n  author       = {Hoge, J.P. and Fuga, F.B.},\n  title        = {Title of the study},\n  journal      = {Theor. J. Hoge},\n  year         = {2001},\n  volume       = {12},\n  number       = {3},\n  pages        = {123-145},\n  url          = {http://example.com},\n}\n"
+
       assert_equal(str, @obj.format('bibtex'))
       assert_equal(str, @obj.bibtex)
     end

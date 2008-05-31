@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: reference.rb,v 1.25 2008/05/29 11:25:44 pjotr Exp $
+# $Id: reference.rb,v 1.26 2008/05/31 09:36:55 pjotr Exp $
 #
 
 module Bio
@@ -76,6 +76,9 @@ module Bio
     # Affiliations in an Array.
     attr_reader :affiliations
 
+    # An URL String.
+    attr_reader :url
+
     # Create a new Bio::Reference object from a Hash of values. 
     # Data is extracted from the values for keys:
     #
@@ -124,6 +127,7 @@ module Bio
       @pubmed   = hash['pubmed']  # 12345678
       @medline  = hash['medline'] # 98765432
       @abstract = hash['abstract']
+      @url      = hash['url']
       @mesh     = hash['mesh']
       @affiliations = hash['affiliations']
       @authors = [] if @authors.empty?
@@ -502,6 +506,7 @@ module Bio
     #
     # *Returns*:: String
     def url
+      return @url if @url and @url != ''
       if @pubmed != ''
         cgi = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi"
         opts = "cmd=Retrieve&db=PubMed&dopt=Citation&list_uids"
