@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: reference.rb,v 1.26 2008/05/31 09:36:55 pjotr Exp $
+# $Id: reference.rb,v 1.27 2008/06/02 09:33:48 ngoto Exp $
 #
 
 module Bio
@@ -70,14 +70,14 @@ module Bio
     # Abstract text in String.
     attr_reader :abstract
 
+    # An URL String.
+    attr_reader :url
+
     # MeSH terms in an Array.
     attr_reader :mesh
 
     # Affiliations in an Array.
     attr_reader :affiliations
-
-    # An URL String.
-    attr_reader :url
 
     # Create a new Bio::Reference object from a Hash of values. 
     # Data is extracted from the values for keys:
@@ -231,7 +231,12 @@ module Bio
       lines << "%N #{@issue}" unless @issue.to_s.empty?
       lines << "%P #{@pages}" unless @pages.empty?
       lines << "%M #{@pubmed}" unless @pubmed.to_s.empty?
-      lines << "%U #{url}" unless url.empty?
+      if @pubmed
+        cgi = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi"
+        opts = "cmd=Retrieve&db=PubMed&dopt=Citation&list_uids"
+        @url = "#{cgi}?#{opts}=#{@pubmed}"
+      end
+      lines << "%U #{@url}" unless @url.empty?
       lines << "%X #{@abstract}" unless @abstract.empty?
       @mesh.each do |term|
         lines << "%K #{term}"
@@ -293,30 +298,22 @@ module Bio
     # ---
     # *Arguments*:
     # * (optional) _section_: BiBTeX section as String
-    # * (optional) _keywords_: Array of additional keywords, e.g. ['abstract']
     # *Returns*:: String
-    def bibtex(section = nil, add_keywords = [])
+    def bibtex(section = nil)
       section = "article" unless section
       authors = authors_join(' and ', ' and ')
       pages   = @pages.sub('-', '--')
-      keywords = "author title journal year volume number pages url".split(/ /)
-      bib = "@#{section}{PMID:#{@pubmed},\n"
-      (keywords+add_keywords).each do | kw |
-        if kw == 'author'
-          ref = authors
-        elsif kw == 'title'
-          # strip final dot from title
-          ref = @title.sub(/\.$/,'')
-        elsif kw == 'number'
-          ref = @issue
-        elsif kw == 'url'
-          ref = url
-        else
-          ref = eval('@'+kw)
-        end
-        bib += "  #{kw.ljust(12)} = {#{ref}},\n" if ref != ''
-      end
-      bib+"}\n"
+      return <<-"END".gsub(/\t/, '')
+        @#{section}{PMID:#{@pubmed},
+          author  = {#{authors}},
+          title   = {#{@title}},
+          journal = {#{@journal}},
+          year    = {#{@year}},
+          volume  = {#{@volume}},
+          number  = {#{@issue}},
+          pages   = {#{pages}},
+        }
+      END
     end
 
     # Returns reference formatted in a general/generic style.
@@ -502,18 +499,6 @@ module Bio
       "#{authors} (#{@year}) #{@title} #{@journal} #{@volume}, #{@pages}"
     end
 
-    # Returns a valid URL for pubmed records
-    #
-    # *Returns*:: String
-    def url
-      return @url if @url and @url != ''
-      if @pubmed != ''
-        cgi = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi"
-        opts = "cmd=Retrieve&db=PubMed&dopt=Citation&list_uids"
-        return "#{cgi}?#{opts}=#{@pubmed}"
-      end
-      ''
-    end
 
     private
 
@@ -540,7 +525,6 @@ module Bio
       end
       return name
     end
-
 
   end
 
