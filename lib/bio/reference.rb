@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: reference.rb,v 1.27 2008/06/02 09:33:48 ngoto Exp $
+# $Id: reference.rb,v 1.28 2008/06/02 09:47:08 ngoto Exp $
 #
 
 module Bio
@@ -231,12 +231,8 @@ module Bio
       lines << "%N #{@issue}" unless @issue.to_s.empty?
       lines << "%P #{@pages}" unless @pages.empty?
       lines << "%M #{@pubmed}" unless @pubmed.to_s.empty?
-      if @pubmed
-        cgi = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi"
-        opts = "cmd=Retrieve&db=PubMed&dopt=Citation&list_uids"
-        @url = "#{cgi}?#{opts}=#{@pubmed}"
-      end
-      lines << "%U #{@url}" unless @url.empty?
+      url = @url.empty? ? pubmed_url : @url
+      lines << "%U #{url}" unless url.empty?
       lines << "%X #{@abstract}" unless @abstract.empty?
       @mesh.each do |term|
         lines << "%K #{term}"
@@ -499,6 +495,17 @@ module Bio
       "#{authors} (#{@year}) #{@title} #{@journal} #{@volume}, #{@pages}"
     end
 
+    # Returns a valid URL for pubmed records
+    #
+    # *Returns*:: String
+    def pubmed_url
+      unless @pubmed.to_s.empty?
+        cgi = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi"
+        opts = "cmd=Retrieve&db=PubMed&dopt=Citation&list_uids"
+        return "#{cgi}?#{opts}=#{@pubmed}"
+      end
+      ''
+    end
 
     private
 
