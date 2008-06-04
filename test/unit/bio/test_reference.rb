@@ -5,7 +5,7 @@
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: test_reference.rb,v 1.4 2008/05/31 09:36:56 pjotr Exp $
+# $Id: test_reference.rb,v 1.5 2008/06/04 14:58:08 ngoto Exp $
 #
 
 require 'pathname'
@@ -102,10 +102,45 @@ module Bio
     end
 
     def test_format_bibtex
-      str = "@article{PMID:12345678,\n  author       = {Hoge, J.P. and Fuga, F.B.},\n  title        = {Title of the study},\n  journal      = {Theor. J. Hoge},\n  year         = {2001},\n  volume       = {12},\n  number       = {3},\n  pages        = {123-145},\n  url          = {http://example.com},\n}\n"
-
+      str =<<__END__
+@article{PMID:12345678,
+  author       = {Hoge, J.P. and Fuga, F.B.},
+  title        = {Title of the study.},
+  journal      = {Theor. J. Hoge},
+  year         = {2001},
+  volume       = {12},
+  number       = {3},
+  pages        = {123--145},
+  url          = {http://example.com},
+}
+__END__
       assert_equal(str, @obj.format('bibtex'))
       assert_equal(str, @obj.bibtex)
+    end
+
+    def test_format_bibtex_with_arguments
+      str =<<__END__
+@inproceedings{YourArticle,
+  author       = {Hoge, J.P. and Fuga, F.B.},
+  title        = {Title of the study.},
+  year         = {2001},
+  volume       = {12},
+  number       = {3},
+  pages        = {123--145},
+  booktitle    = {Theor. J. Hoge},
+  month        = {December},
+}
+__END__
+      assert_equal(str, @obj.format('bibtex', 'inproceedings', 'YourArticle',
+                                    { 'journal'   => false,
+                                      'url' => false,
+                                      'booktitle' => @obj.journal,
+                                      'month' => 'December'}))
+      assert_equal(str, @obj.bibtex('inproceedings', 'YourArticle',
+                                    { 'journal'   => false,
+                                      'url' => false,
+                                      'booktitle' => @obj.journal,
+                                      'month' => 'December'}))
     end
 
     def test_format_rd
