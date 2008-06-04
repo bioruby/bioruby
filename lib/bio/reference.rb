@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: reference.rb,v 1.28 2008/06/02 09:47:08 ngoto Exp $
+# $Id: reference.rb,v 1.29 2008/06/04 14:56:37 ngoto Exp $
 #
 
 module Bio
@@ -166,20 +166,20 @@ module Bio
     # ---
     # *Arguments*:
     # * (optional) _style_: String with style identifier
-    # * (optional) _option_: Option for styles accepting one
+    # * (optional) _options_: Options for styles accepting one
     # *Returns*:: String
-    def format(style = nil, option = nil)
+    def format(style = nil, *options)
       case style
       when 'endnote'
         return endnote
       when 'bibitem'
-        return bibitem(option)
+        return bibitem(*options)
       when 'bibtex'
-        return bibtex(option)
+        return bibtex(*options)
       when 'rd'
-        return rd(option)
+        return rd(*options)
       when /^nature$/i
-        return nature(option)
+        return nature(*options)
       when /^science$/i
         return science
       when /^genome\s*_*biol/i
@@ -294,22 +294,48 @@ module Bio
     # ---
     # *Arguments*:
     # * (optional) _section_: BiBTeX section as String
+    # * (optional) _label_: Label string cited by LaTeX documents.
+    #                       Default is <tt>"PMID:#{pubmed}"</tt>.
+    # * (optional) _keywords_: Hash of additional keywords,
+    #                          e.g. { 'abstract' => 'This is abstract.' }.
+    #                          You can also override default keywords.
+    #                          To disable default keywords, specify false as
+    #                          value, e.g. { 'url' => false, 'year' => false }.
     # *Returns*:: String
-    def bibtex(section = nil)
+    def bibtex(section = nil, label = nil, keywords = {})
       section = "article" unless section
       authors = authors_join(' and ', ' and ')
-      pages   = @pages.sub('-', '--')
-      return <<-"END".gsub(/\t/, '')
-        @#{section}{PMID:#{@pubmed},
-          author  = {#{authors}},
-          title   = {#{@title}},
-          journal = {#{@journal}},
-          year    = {#{@year}},
-          volume  = {#{@volume}},
-          number  = {#{@issue}},
-          pages   = {#{pages}},
-        }
-      END
+      thepages = pages.to_s.empty? ? nil : pages.sub(/\-/, '--')
+      unless label then
+        label = "PMID:#{pubmed}"
+      end
+      theurl = if !(url.to_s.empty?) then
+                 url
+               elsif pmurl = pubmed_url and !(pmurl.to_s.empty?) then
+                 pmurl
+               else
+                 nil
+               end
+      hash = {
+        'author'  => authors.empty?    ? nil : authors,
+        'title'   => title.to_s.empty? ? nil : title,
+        'number'  => issue.to_s.empty? ? nil : issue,
+        'pages'   => thepages,
+        'url'     => theurl
+      }
+      keys = %w( author title journal year volume number pages url )
+      keys.each do |k|
+        hash[k] = self.__send__(k.intern) unless hash.has_key?(k)
+      end
+      hash.merge!(keywords) { |k, v1, v2| v2.nil? ? v1 : v2 }
+      bib = [ "@#{section}{#{label}," ]
+      keys.concat((hash.keys - keys).sort)
+      keys.each do |kw|
+        ref = hash[kw]
+        bib.push "  #{kw.ljust(12)} = {#{ref}}," if ref
+      end
+      bib.push "}\n"
+      return bib.join("\n")
     end
 
     # Returns reference formatted in a general/generic style.
