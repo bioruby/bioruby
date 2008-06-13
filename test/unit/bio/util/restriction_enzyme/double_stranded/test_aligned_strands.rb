@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: test_aligned_strands.rb,v 1.3 2007/04/05 23:35:44 trevor Exp $
+#  $Id: test_aligned_strands.rb,v 1.4 2008/06/13 11:37:25 ngoto Exp $
 #
 
 require 'pathname'
@@ -13,6 +13,7 @@ libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 6, 'lib')).cle
 $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'test/unit'
+require 'bio/sequence'
 require 'bio/util/restriction_enzyme/double_stranded/aligned_strands'
 require 'bio/util/restriction_enzyme/double_stranded'
 
