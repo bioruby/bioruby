@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: reference.rb,v 1.29 2008/06/04 14:56:37 ngoto Exp $
+# $Id: reference.rb,v 1.30 2008/06/13 11:20:23 ngoto Exp $
 #
 
 module Bio
@@ -251,6 +251,8 @@ module Bio
     #     Title of the study.,
     #     {\em Theor. J. Hoge}, 12(3):123--145, 2001.
     # ---
+    # *Arguments*:
+    # * (optional) _item_: label string (default: <tt>"PMID:#{pubmed}"</tt>).
     # *Returns*:: String
     def bibitem(item = nil)
       item  = "PMID:#{@pubmed}" unless item
