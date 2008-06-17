@@ -7,7 +7,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: embl.rb,v 1.29.2.6 2008/05/28 13:09:03 ngoto Exp $
+# $Id: embl.rb,v 1.29.2.7 2008/06/17 16:04:36 ngoto Exp $
 #
 # == Description
 #
@@ -31,10 +31,13 @@
 #   http://www.ebi.ac.uk/embl/Documentation/User_manual/usrman.html
 #
 
+require 'date'
 require 'bio/db'
 require 'bio/db/embl/common'
 require 'bio/compat/features'
 require 'bio/compat/references'
+require 'bio/sequence'
+require 'bio/sequence/dblink'
 
 module Bio
 class EMBL < EMBLDB
@@ -322,9 +325,9 @@ class EMBL < EMBLDB
   #
   # CC Line; comments of notes (>=0)
   def cc
-    get('CC')
+    get('CC').to_s.gsub(/^CC   /, '')
   end
-
+  alias comment cc
 
   ##
   # XX Line; spacer line (many)
@@ -375,12 +378,68 @@ class EMBL < EMBLDB
   # // Line; termination line (end; 1/entry)
   #++
 
+  # modified date. Returns Date object, String or nil.
+  def date_modified
+    parse_date(self.dt['updated'])
+  end
+
+  # created date. Returns Date object, String or nil.
+  def date_created
+    parse_date(self.dt['created'])
+  end
+
+  # release number when last updated
+  def release_modified
+    parse_release_version(self.dt['updated'])[0]
+  end
+
+  # release number when created
+  def release_created
+    parse_release_version(self.dt['created'])[0]
+  end
+
+  # entry version number numbered by EMBL
+  def entry_version
+    parse_release_version(self.dt['updated'])[1]
+  end
+
+  # parse date string. Returns Date object.
+  def parse_date(str)
+    begin
+      Date.parse(str)
+    rescue ArgumentError, TypeError, NoMethodError, NameError
+      str
+    end
+  end
+  private :parse_date
+
+  # extracts release and version numbers from DT line
+  def parse_release_version(str)
+    return [ nil, nil ] unless str
+    a = str.split(/[\(\,\)]/)
+    dstr = a.shift
+    rel = nil
+    ver = nil
+    a.each do |x|
+      case x
+      when /Rel\.\s*(.+)/
+        rel = $1.strip
+      when /Version\s*(.+)/
+        ver = $1.strip
+      end
+    end
+    [ rel, ver ]
+  end
+  private :parse_release_version
+
   # converts the entry to Bio::Sequence object
   # ---
   # *Arguments*::
   # *Returns*:: Bio::Sequence object
   def to_biosequence
     bio_seq = Bio::Sequence.new(self.seq)
+
+    bio_seq.id_namespace = 'EMBL'
     bio_seq.entry_id = self.entry_id
     bio_seq.primary_accession = self.accessions[0]
     bio_seq.secondary_accessions = self.accessions[1..-1] || []
@@ -388,16 +447,24 @@ class EMBL < EMBLDB
     bio_seq.data_class = self.data_class
     bio_seq.definition = self.description
     bio_seq.topology = self.topology
-    bio_seq.date_created = self.dt['created']
-    bio_seq.date_modified = self.dt['updated']
+    bio_seq.date_created = self.date_created
+    bio_seq.date_modified = self.date_modified
+    bio_seq.release_created = self.release_created
+    bio_seq.release_modified = self.release_modified
+    bio_seq.entry_version = self.entry_version
     bio_seq.division = self.division
     bio_seq.sequence_version = self.version
     bio_seq.keywords = self.keywords
     bio_seq.species = self.fetch('OS')
     bio_seq.classification = self.oc
+    # bio_seq.organelle = self.fetch('OG') # unsupported yet
     bio_seq.references = self.references
     bio_seq.features = self.ft
-    
+    bio_seq.comments = self.cc
+    bio_seq.dblinks = get('DR').split(/\n/).collect { |x|
+      Bio::Sequence::DBLink.parse_embl_DR_line(x)
+    }
+
     return bio_seq
   end
 
