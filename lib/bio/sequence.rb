@@ -9,7 +9,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: sequence.rb,v 0.58.2.11 2008/04/24 14:28:25 ngoto Exp $
+# $Id: sequence.rb,v 0.58.2.12 2008/06/17 15:25:22 ngoto Exp $
 #
 
 require 'bio/sequence/compat'
@@ -117,34 +117,30 @@ class Sequence
     end
   end
   
-  # The sequence identifier.  For example, for a sequence
-  # of Genbank origin, this is the accession number.
+  # The sequence identifier (String).  For example, for a sequence
+  # of Genbank origin, this is the locus name.
+  # For a sequence of EMBL origin, this is the primary accession number.
   attr_accessor :entry_id
   
-  # A String with a description of the sequence
+  # A String with a description of the sequence (String)
   attr_accessor :definition
   
-  # An Array of Bio::Feature objects
+  # Features (An Array of Bio::Feature objects)
   attr_accessor :features
   
-  # An Array of Bio::Reference objects
+  # References (An Array of Bio::Reference objects)
   attr_accessor :references
   
-  # A comment String
+  # Comments (String or an Array of String)
   attr_accessor :comments
   
-  # Date from sequence source. Often date of deposition.
-  attr_accessor :date
-  
-  # An Array of Strings
+  # Keywords (An Array of String)
   attr_accessor :keywords
   
-  # An Array of Strings; links to other database entries.
+  # Links to other database entries.
+  # (An Array of Bio::Sequence::DBLink objects)
   attr_accessor :dblinks
-  
-  # A taxonomy String
-  attr_accessor :taxonomy
-  
+
   # Bio::Sequence::NA/AA
   attr_accessor :moltype
   
@@ -156,11 +152,19 @@ class Sequence
   # Attributes below have been added during BioHackathon2008
   #+++
   
-  # Version number of the sequence (String).
+  # Version number of the sequence (String or Integer).
+  # Unlike <tt>entry_version</tt>, <tt>sequence_version</tt> will be changed
+  # when the submitter of the sequence updates the entry.
+  # Normally, the same entry taken from different databases (EMBL, GenBank,
+  # and DDBJ) may have the same sequence_version.
   attr_accessor :sequence_version
 
-  # Topology (String). "circular" or "linear".
+  # Topology (String). "circular", "linear", or nil.
   attr_accessor :topology
+
+  # Strandedness (String). "single" (single-stranded),
+  # "double" (double-stranded), "mixed" (mixed-stranded), or nil.
+  attr_accessor :strandedness
 
   # molecular type (String). "DNA" or "RNA" for nucleotide sequence.
   attr_accessor :molecule_type
@@ -179,11 +183,26 @@ class Sequence
   # Secondary accession numbers (Array of String)
   attr_accessor :secondary_accessions
 
-  # Created date of the sequence entry (String)
+  # Created date of the sequence entry (Date, DateTime, Time, or String)
   attr_accessor :date_created
 
-  # Last modified date of the sequence entry (String)
+  # Last modified date of the sequence entry (Date, DateTime, Time, or String)
   attr_accessor :date_modified
+
+  # Release information when created (String)
+  attr_accessor :release_created
+
+  # Release information when last-modified (String)
+  attr_accessor :release_modified
+
+  # Version of the entry (String or Integer).
+  # Unlike <tt>sequence_version</tt>, <tt>entry_version</tt> is a database
+  # maintainer's internal version number.
+  # The version number will be changed when the database maintainer
+  # modifies the entry.
+  # The same enrty in EMBL, GenBank, and DDBJ may have different
+  # entry_version.
+  attr_accessor :entry_version
 
   # Organism species (String). For example, "Escherichia coli".
   attr_accessor :species
@@ -191,6 +210,23 @@ class Sequence
   # Organism classification, taxonomic classification of the source organism.
   # (Array of String)
   attr_accessor :classification
+  alias taxonomy classification
+
+  # (not well supported) Organelle information (String).
+  attr_accessor :organelle
+
+  # Namespace of the sequence IDs described in entry_id, primary_accession,
+  # and secondary_accessions methods (String).
+  # For example, 'EMBL', 'GenBank', 'DDBJ', 'RefSeq'.
+  attr_accessor :id_namespace
+
+  # Sequence identifiers which are not described in entry_id,
+  # primary_accession,and secondary_accessions methods
+  # (Array of Bio::Sequence::DBLink objects).
+  # For example, NCBI GI number can be stored.
+  # Note that only identifiers of the entry itself should be stored.
+  # For database cross references, <tt>dblinks</tt> should be used.
+  attr_accessor :other_seqids
 
   # Guess the type of sequence, Amino Acid or Nucleic Acid, and create a 
   # new sequence object (Bio::Sequence::AA or Bio::Sequence::NA) on the basis
