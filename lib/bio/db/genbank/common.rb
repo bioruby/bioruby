@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: common.rb,v 1.11.2.4 2008/05/07 12:25:42 ngoto Exp $
+# $Id: common.rb,v 1.11.2.5 2008/06/17 15:53:21 ngoto Exp $
 #
 
 require 'bio/db'
@@ -195,7 +195,10 @@ module Common
 
   # COMMENT -- Returns contents of the COMMENT record as a String.
   def comment
-    field_fetch('COMMENT')
+    str = get('COMMENT').to_s.sub(/\ACOMMENT     /, '')
+    str.gsub!(/^ {12}/, '')
+    str.chomp!
+    str
   end
 
 
