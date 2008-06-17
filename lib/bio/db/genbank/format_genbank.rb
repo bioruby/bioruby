@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2008 Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format_genbank.rb,v 1.1.2.4 2008/05/28 13:26:33 ngoto Exp $
+# $Id: format_genbank.rb,v 1.1.2.5 2008/06/17 15:59:24 ngoto Exp $
 #
 
 require 'bio/sequence/format'
@@ -100,6 +100,17 @@ __END_OF_REFERENCE__
       result
     end
 
+    # formats comments lines as GenBank
+    def comments_format_genbank(cmnts)
+      return '' if !cmnts or cmnts.empty?
+      cmnts = [ cmnts ] unless cmnts.kind_of?(Array)
+      a = []
+      cmnts.each do |str|
+        a.push "COMMENT     #{ genbank_wrap(str) }\n"
+      end
+      a.join('')
+    end
+
     # formats sequence lines as GenBank
     def seq_format_genbank(str)
       i = 1
@@ -112,12 +123,47 @@ __END_OF_REFERENCE__
       result
     end
 
+    # formats date
+    def date_format_genbank
+      date_modified || date_created || null_date
+    end
+
+    # moleculue type
+    def mol_type_genbank
+      if /(DNA|(t|r|m|u|sn|sno)?RNA)/i =~ molecule_type.to_s then
+        $1.sub(/[DR]NA/) { |x| x.upcase }
+      else
+        'NA'
+      end
+    end
+
+    # NCBI GI number
+    def ncbi_gi_number
+      ids = other_seqids
+      if ids and r = ids.find { |x| x.database == 'GI' } then
+        r.id
+      else
+        nil
+      end
+    end
+
+    # strandedness
+    def strandedness_genbank
+      return nil unless strandedness
+      case strandedness
+      when 'single'; 'ss-'; 
+      when 'double'; 'ds-'; 
+      when 'mixed';  'ms-'; 
+      else; nil
+      end
+    end
+
     # Erb template of GenBank format for Bio::Sequence
     erb_template <<'__END_OF_TEMPLATE__'
-LOCUS       <%= sprintf("%-16s", entry_id) %> <%= sprintf("%11d", length) %> bp <%= sprintf("%3s", '') %><%= sprintf("%-6s", molecule_type) %>  <%= sprintf("%-8s", topology) %><%= sprintf("%4s", division) %> <%= sprintf("%-11s", date_modified) %>
+LOCUS       <%= sprintf("%-16s", entry_id) %> <%= sprintf("%11d", length) %> bp <%= sprintf("%3s", strandedness_genbank) %><%= sprintf("%-6s", mol_type_genbank) %>  <%= sprintf("%-8s", topology) %><%= sprintf("%4s", division) %> <%= date_format_genbank %>
 DEFINITION  <%= genbank_wrap_dot(definition.to_s) %>
 ACCESSION   <%= genbank_wrap(([ primary_accession ] + (secondary_accessions or [])).join(" ")) %>
-VERSION     <%= primary_accession %>.<%= sequence_version %><% unless true or gi_number.to_s.empty? %>GI:<%= gi_number %><% end %>
+VERSION     <%= primary_accession %>.<%= sequence_version %><% if gi = ncbi_gi_number then %>  GI:<%= gi %><% end %>
 KEYWORDS    <%= genbank_wrap_dot((keywords or []).join('; ')) %>
 SOURCE      <%= genbank_wrap(species) %>
   ORGANISM  <%= genbank_wrap(species) %>
@@ -128,6 +174,7 @@ SOURCE      <%= genbank_wrap(species) %>
       n += 1
 %><%= reference_format_genbank(ref, n) %><%
     end
+%><%= comments_format_genbank(comments)
 %>FEATURES             Location/Qualifiers
 <%= format_features_genbank(features || [])
  %>ORIGIN
