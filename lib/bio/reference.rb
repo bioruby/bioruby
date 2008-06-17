@@ -7,7 +7,7 @@
 #               Jan Aerts <jandot@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: reference.rb,v 1.24.2.6 2008/04/23 18:52:18 ngoto Exp $
+# $Id: reference.rb,v 1.24.2.7 2008/06/17 12:23:49 ngoto Exp $
 #
 
 module Bio
@@ -179,22 +179,22 @@ module Bio
     # ---
     # *Arguments*:
     # * (optional) _style_: String with style identifier
-    # * (optional) _option_: Option for styles accepting one
+    # * (optional) _options_: Options for styles accepting one
     # *Returns*:: String
-    def format(style = nil, option = nil)
+    def format(style = nil, *options)
       case style
       when 'embl'
         return embl
       when 'endnote'
         return endnote
       when 'bibitem'
-        return bibitem(option)
+        return bibitem(*options)
       when 'bibtex'
-        return bibtex(option)
+        return bibtex(*options)
       when 'rd'
-        return rd(option)
+        return rd(*options)
       when /^nature$/i
-        return nature(option)
+        return nature(*options)
       when /^science$/i
         return science
       when /^genome\s*_*biol/i
@@ -246,12 +246,8 @@ module Bio
       lines << "%N #{@issue}" unless @issue.to_s.empty?
       lines << "%P #{@pages}" unless @pages.empty?
       lines << "%M #{@pubmed}" unless @pubmed.to_s.empty?
-      if @pubmed
-        cgi = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi"
-        opts = "cmd=Retrieve&db=PubMed&dopt=Citation&list_uids"
-        @url = "#{cgi}?#{opts}=#{@pubmed}"
-      end
-      lines << "%U #{@url}" unless @url.empty?
+      u = @url.empty? ? pubmed_url : @url
+      lines << "%U #{u}" unless u.empty?
       lines << "%X #{@abstract}" unless @abstract.empty?
       @mesh.each do |term|
         lines << "%K #{term}"
@@ -288,6 +284,8 @@ module Bio
     #     Title of the study.,
     #     {\em Theor. J. Hoge}, 12(3):123--145, 2001.
     # ---
+    # *Arguments*:
+    # * (optional) _item_: label string (default: <tt>"PMID:#{pubmed}"</tt>).
     # *Returns*:: String
     def bibitem(item = nil)
       item  = "PMID:#{@pubmed}" unless item
@@ -331,22 +329,48 @@ module Bio
     # ---
     # *Arguments*:
     # * (optional) _section_: BiBTeX section as String
+    # * (optional) _label_: Label string cited by LaTeX documents.
+    #                       Default is <tt>"PMID:#{pubmed}"</tt>.
+    # * (optional) _keywords_: Hash of additional keywords,
+    #                          e.g. { 'abstract' => 'This is abstract.' }.
+    #                          You can also override default keywords.
+    #                          To disable default keywords, specify false as
+    #                          value, e.g. { 'url' => false, 'year' => false }.
     # *Returns*:: String
-    def bibtex(section = nil)
+    def bibtex(section = nil, label = nil, keywords = {})
       section = "article" unless section
       authors = authors_join(' and ', ' and ')
-      pages   = @pages.sub('-', '--')
-      return <<-"END".gsub(/\t/, '')
-        @#{section}{PMID:#{@pubmed},
-          author  = {#{authors}},
-          title   = {#{@title}},
-          journal = {#{@journal}},
-          year    = {#{@year}},
-          volume  = {#{@volume}},
-          number  = {#{@issue}},
-          pages   = {#{pages}},
-        }
-      END
+      thepages = pages.to_s.empty? ? nil : pages.sub(/\-/, '--')
+      unless label then
+        label = "PMID:#{pubmed}"
+      end
+      theurl = if !(url.to_s.empty?) then
+                 url
+               elsif pmurl = pubmed_url and !(pmurl.to_s.empty?) then
+                 pmurl
+               else
+                 nil
+               end
+      hash = {
+        'author'  => authors.empty?    ? nil : authors,
+        'title'   => title.to_s.empty? ? nil : title,
+        'number'  => issue.to_s.empty? ? nil : issue,
+        'pages'   => thepages,
+        'url'     => theurl
+      }
+      keys = %w( author title journal year volume number pages url )
+      keys.each do |k|
+        hash[k] = self.__send__(k.intern) unless hash.has_key?(k)
+      end
+      hash.merge!(keywords) { |k, v1, v2| v2.nil? ? v1 : v2 }
+      bib = [ "@#{section}{#{label}," ]
+      keys.concat((hash.keys - keys).sort)
+      keys.each do |kw|
+        ref = hash[kw]
+        bib.push "  #{kw.ljust(12)} = {#{ref}}," if ref
+      end
+      bib.push "}\n"
+      return bib.join("\n")
     end
 
     # Returns reference formatted in a general/generic style.
@@ -532,6 +556,17 @@ module Bio
       "#{authors} (#{@year}) #{@title} #{@journal} #{@volume}, #{@pages}"
     end
 
+    # Returns a valid URL for pubmed records
+    #
+    # *Returns*:: String
+    def pubmed_url
+      unless @pubmed.to_s.empty?
+        cgi = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi"
+        opts = "cmd=Retrieve&db=PubMed&dopt=Citation&list_uids"
+        return "#{cgi}?#{opts}=#{@pubmed}"
+      end
+      ''
+    end
 
     private
 
