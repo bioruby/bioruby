@@ -5,7 +5,7 @@
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: test_reference.rb,v 1.3.2.1 2008/05/08 05:38:01 ngoto Exp $
+# $Id: test_reference.rb,v 1.3.2.2 2008/06/17 12:24:41 ngoto Exp $
 #
 
 require 'pathname'
@@ -91,7 +91,7 @@ module Bio
     end
 
     def test_format_endnote
-      str = "%0 Journal Article\n%A Hoge, J.P.\n%A Fuga, F.B.\n%D 2001\n%T Title of the study.\n%J Theor. J. Hoge\n%V 12\n%N 3\n%P 123-145\n%M 12345678\n%U http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?cmd=Retrieve&db=PubMed&dopt=Citation&list_uids=12345678\n%X Hoge fuga. hoge fuga.\n%K Hoge\n%+ Tokyo"
+      str = "%0 Journal Article\n%A Hoge, J.P.\n%A Fuga, F.B.\n%D 2001\n%T Title of the study.\n%J Theor. J. Hoge\n%V 12\n%N 3\n%P 123-145\n%M 12345678\n%U http://example.com\n%X Hoge fuga. hoge fuga.\n%K Hoge\n%+ Tokyo"
       assert_equal(str, @obj.format('endnote'))
       assert_equal(str, @obj.endnote)
     end
@@ -103,19 +103,45 @@ module Bio
     end
 
     def test_format_bibtex
-      str =<<END
-        @article{PMID:12345678,
-          author  = {Hoge, J.P. and Fuga, F.B.},
-          title   = {Title of the study.},
-          journal = {Theor. J. Hoge},
-          year    = {2001},
-          volume  = {12},
-          number  = {3},
-          pages   = {123--145},
-        }
-END
+      str =<<__END__
+@article{PMID:12345678,
+  author       = {Hoge, J.P. and Fuga, F.B.},
+  title        = {Title of the study.},
+  journal      = {Theor. J. Hoge},
+  year         = {2001},
+  volume       = {12},
+  number       = {3},
+  pages        = {123--145},
+  url          = {http://example.com},
+}
+__END__
       assert_equal(str, @obj.format('bibtex'))
       assert_equal(str, @obj.bibtex)
+    end
+
+    def test_format_bibtex_with_arguments
+      str =<<__END__
+@inproceedings{YourArticle,
+  author       = {Hoge, J.P. and Fuga, F.B.},
+  title        = {Title of the study.},
+  year         = {2001},
+  volume       = {12},
+  number       = {3},
+  pages        = {123--145},
+  booktitle    = {Theor. J. Hoge},
+  month        = {December},
+}
+__END__
+      assert_equal(str, @obj.format('bibtex', 'inproceedings', 'YourArticle',
+                                    { 'journal'   => false,
+                                      'url' => false,
+                                      'booktitle' => @obj.journal,
+                                      'month' => 'December'}))
+      assert_equal(str, @obj.bibtex('inproceedings', 'YourArticle',
+                                    { 'journal'   => false,
+                                      'url' => false,
+                                      'booktitle' => @obj.journal,
+                                      'month' => 'December'}))
     end
 
     def test_format_rd
