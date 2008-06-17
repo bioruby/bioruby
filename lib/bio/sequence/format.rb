@@ -12,7 +12,7 @@
 #
 # porting from N. Goto's feature-output.rb on BioRuby list.
 #
-# $Id: format.rb,v 1.4.2.7 2008/03/04 11:10:28 ngoto Exp $
+# $Id: format.rb,v 1.4.2.8 2008/06/17 15:50:05 ngoto Exp $
 #
 
 require 'erb'
@@ -284,23 +284,27 @@ module INSDFeatureHelper
 
   def wrap_and_split_lines(str, width)
     result = []
-    left = str.dup
-    while left and left.length > width
-      line = nil
-      width.downto(1) do |i|
-        if left[i..i] == ' ' or /[\,\;]/ =~ left[(i-1)..(i-1)]  then
-          line = left[0..(i-1)].sub(/ +\z/, '')
-          left = left[i..-1].sub(/\A +/, '')
-          break
+    lefts = str.chomp.split(/(?:\r\n|\r|\n)/)
+    lefts.each do |left|
+      left.rstrip!
+      while left and left.length > width
+        line = nil
+        width.downto(1) do |i|
+          if left[i..i] == ' ' or /[\,\;]/ =~ left[(i-1)..(i-1)]  then
+            line = left[0..(i-1)].sub(/ +\z/, '')
+            left = left[i..-1].sub(/\A +/, '')
+            break
+          end
         end
+        if line.nil? then
+          line = left[0..(width-1)]
+          left = left[width..-1]
+        end
+        result << line
+        left = nil if  left.to_s.empty?
       end
-      if line.nil? then
-        line = left[0..(width-1)]
-        left = left[width..-1]
-      end
-      result << line
+      result << left if left
     end
-    result << left if left and !(left.to_s.empty?)
     return result
   end
 
@@ -317,6 +321,31 @@ module INSDFeatureHelper
     result_string = result.join("\n#{prefix}")
     result_string = prefix + result_string unless result_string.empty?
     return result_string
+  end
+
+  #--
+  # internal use only
+  MonthStr = [ nil, 
+               'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+               'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
+             ].collect { |x| x.freeze }.freeze
+  #++
+
+  # formats a date from Date, DateTime, or Time object, or String.
+  def format_date(d)
+    begin
+      yy = d.year
+      mm = d.month
+      dd = d.day
+    rescue NoMethodError, NameError, ArgumentError, TypeError
+      return sprintf("%-11s", d)
+    end
+    sprintf("%02d-%-3s-%04d", dd, MonthStr[mm], yy)
+  end
+
+  # null date
+  def null_date
+    Date.new(0, 1, 1)
   end
 
 end #module INSDFeatureHelper
