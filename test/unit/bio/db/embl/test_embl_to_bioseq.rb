@@ -6,7 +6,7 @@
 #                 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-#  $Id: test_embl_to_bioseq.rb,v 1.1.2.1 2008/02/20 09:56:22 aerts Exp $
+#  $Id: test_embl_to_bioseq.rb,v 1.1.2.2 2008/06/17 16:09:53 ngoto Exp $
 #
 
 require 'pathname'
@@ -52,9 +52,26 @@ module Bio
       assert_equal('linear', @bio_seq.topology)
     end
     
-    def test_dates
-      assert_equal('25-OCT-2002 (Rel. 73, Created)', @bio_seq.date_created)
-      assert_equal('14-NOV-2006 (Rel. 89, Last updated, Version 3)', @bio_seq.date_modified)
+    def test_date_created
+      # '25-OCT-2002 (Rel. 73, Created)'
+      assert_equal(Date.parse('25-OCT-2002'), @bio_seq.date_created)
+    end
+
+    def test_date_modified
+      # '14-NOV-2006 (Rel. 89, Last updated, Version 3)'
+      assert_equal(Date.parse('14-NOV-2006'), @bio_seq.date_modified)
+    end
+
+    def test_release_created
+      assert_equal('73', @bio_seq.release_created)
+    end
+
+    def test_release_modified
+      assert_equal('89', @bio_seq.release_modified)
+    end
+
+    def test_entry_version
+      assert_equal('3', @bio_seq.entry_version)
     end
     
     def test_division
@@ -128,9 +145,26 @@ module Bio
       assert_equal('linear', @bio_seq_2.topology)
     end
     
-    def test_dates
-      assert_equal('25-OCT-2002 (Rel. 73, Created)', @bio_seq_2.date_created)
-      assert_equal('14-NOV-2006 (Rel. 89, Last updated, Version 3)', @bio_seq_2.date_modified)
+    def test_date_created
+      # '25-OCT-2002 (Rel. 73, Created)'
+      assert_equal(Date.parse('25-OCT-2002'), @bio_seq_2.date_created)
+    end
+
+    def test_date_modified
+      # '14-NOV-2006 (Rel. 89, Last updated, Version 3)'
+      assert_equal(Date.parse('14-NOV-2006'), @bio_seq_2.date_modified)
+    end
+
+    def test_release_created
+      assert_equal('73', @bio_seq_2.release_created)
+    end
+
+    def test_release_modified
+      assert_equal('89', @bio_seq_2.release_modified)
+    end
+
+    def test_entry_version
+      assert_equal('3', @bio_seq_2.entry_version)
     end
     
     def test_division
