@@ -1,10 +1,12 @@
 #
 # = bio/db/embl/format_embl.rb - EMBL format generater
 #
-# Copyright::  Copyright (C) 2008 Jan Aerts <jandot@bioruby.org>
+# Copyright::  Copyright (C) 2008
+#              Jan Aerts <jandot@bioruby.org>,
+#              Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format_embl.rb,v 1.1.2.5 2008/05/28 13:38:07 ngoto Exp $
+# $Id: format_embl.rb,v 1.1.2.6 2008/06/17 16:06:04 ngoto Exp $
 #
 
 require 'bio/sequence/format'
@@ -124,14 +126,42 @@ module Bio::Sequence::Format::NucFormatter
       }
     end
 
+    # moleculue type
+    def mol_type_embl
+      if mt = molecule_type then
+        mt
+      elsif f = (features or []).find { |f| f.feature == 'source' } and
+          q = f.qualifiers.find { |q| q.qualifier == 'mol_type' } then
+        q.value
+      else
+        'NA'
+      end
+    end
+
+    # CC line. Comments.
+    def comments_format_embl(cmnts)
+      return '' if !cmnts or cmnts.empty?
+      cmnts = [ cmnts ] unless cmnts.kind_of?(Array)
+      a = []
+      cmnts.each do |str|
+        a.push embl_wrap('CC   ', str)
+      end
+      unless a.empty? then
+        a.push "XX   "
+        a.push '' # dummy to put "\n" at the end of the string
+      end
+      a.join("\n")
+    end
+
+
     # Erb template of EMBL format for Bio::Sequence
     erb_template <<'__END_OF_TEMPLATE__'
-ID   <%= entry_id %>; SV <%= sequence_version %>; <%= topology %>; <%= molecule_type %>; <%= data_class %>; <%= division %>; <%= seq.length %> BP.
+ID   <%= primary_accession || entry_id %>; SV <%= sequence_version %>; <%= topology %>; <%= mol_type_embl %>; <%= data_class %>; <%= division %>; <%= seq.length %> BP.
 XX   
 <%= embl_wrap('AC   ', accessions.reject{|a| a.nil?}.join('; ') + ';') %>
 XX   
-DT   <%= date_created %>
-DT   <%= date_modified %>
+DT   <%= format_date(date_created || null_date) %> (Rel. <%= release_created || 0 %>, Created)
+DT   <%= format_date(date_modified || null_date) %> (Rel. <%= release_modified || 0 %>, Last updated, Version <%= entry_version || 0 %>)
 XX   
 <%= embl_wrap('DE   ', definition) %>
 XX   
@@ -141,7 +171,12 @@ OS   <%= species %>
 <%= embl_wrap('OC   ', classification.join('; ') + '.') %>
 XX   
 <% hash = {}; (references || []).each do |ref| %><%= reference_format_embl(ref, hash) %>
-<% end %>FH   Key             Location/Qualifiers
+<% end %><% (dblinks || []).each do |r|
+%>DR   <%= r.database %>; <%= r.id %><% unless r.secondary_ids.empty? %>; <%= r.secondary_ids[0] %><% end %>.
+<% end %><% if dblinks and !dblinks.empty? then
+ %>XX   
+<% end %><%= comments_format_embl(comments)
+%>FH   Key             Location/Qualifiers
 FH   
 <%= format_features_embl(features || []) %>XX   
 SQ   Sequence <%= seq.length %> BP; <% c = seq_composition(seq) %><%= c[:a] %> A; <%= c[:c] %> C; <%= c[:g] %> G; <%= c[:t] %> T; <%= c[:other] %> other;
