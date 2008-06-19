@@ -6,7 +6,7 @@
 #              Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format_embl.rb,v 1.1.2.6 2008/06/17 16:06:04 ngoto Exp $
+# $Id: format_embl.rb,v 1.1.2.7 2008/06/19 12:45:15 ngoto Exp $
 #
 
 require 'bio/sequence/format'
@@ -165,10 +165,10 @@ DT   <%= format_date(date_modified || null_date) %> (Rel. <%= release_modified |
 XX   
 <%= embl_wrap('DE   ', definition) %>
 XX   
-<%= embl_wrap('KW   ', keywords.join('; ') + '.') %>
+<%= embl_wrap('KW   ', (keywords || []).join('; ') + '.') %>
 XX   
 OS   <%= species %>
-<%= embl_wrap('OC   ', classification.join('; ') + '.') %>
+<%= embl_wrap('OC   ', (classification || []).join('; ') + '.') %>
 XX   
 <% hash = {}; (references || []).each do |ref| %><%= reference_format_embl(ref, hash) %>
 <% end %><% (dblinks || []).each do |r|
