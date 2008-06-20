@@ -2,11 +2,11 @@
 # = bio/db/fasta.rb - FASTA format class
 #
 # Copyright::  Copyright (C) 2001, 2002
-#              GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>,
+#              Naohisa Goto <ng@bioruby.org>,
 #              Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: fasta.rb,v 1.28.2.1 2008/06/20 13:22:31 ngoto Exp $
+# $Id: fasta.rb,v 1.28.2.2 2008/06/20 13:30:14 ngoto Exp $
 # 
 # == Description
 # 
@@ -44,7 +44,7 @@ module Bio
   #
   # === Examples
   #
-  #   f_str = <<END
+  #   f_str = <<END_OF_STRING
   #   >sce:YBR160W  CDC28, SRM5; cyclin-dependent protein kinase catalytic subunit [EC:2.7.1.-] [SP:CC28_YEAST]
   #   MSGELANYKRLEKVGEGTYGVVYKALDLRPGQGQRVVALKKIRLESEDEG
   #   VPSTAIREISLLKELKDDNIVRLYDIVHSDAHKLYLVFEFLDLDLKRYME
@@ -64,7 +64,7 @@ module Bio
   #   CNELVKRHLQFNPNKLTKFYTLQPMDVLLPILEKALNLSQIRVKPDLFAN
   #   FERLCELLGYDNVFPLIINIKTKSNGGYQLCGSISIIKIEEELKSVGFER
   #   KTGDPLEWRRLFKKISTICRDIILIPN
-  #   END
+  #   END_OF_STRING
   #
   #   f = Bio::FastaFormat.new(f_str)
   #   puts "### FastaFormat"
