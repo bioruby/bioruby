@@ -6,7 +6,7 @@
 #              Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: fasta.rb,v 1.28.2.2 2008/06/20 13:30:14 ngoto Exp $
+# $Id: fasta.rb,v 1.28.2.3 2008/06/20 13:43:36 ngoto Exp $
 # 
 # == Description
 # 
@@ -27,6 +27,7 @@
 
 require 'bio/db'
 require 'bio/sequence'
+require 'bio/sequence/dblink'
 require 'bio/db/fasta/defline'
 
 module Bio
@@ -216,12 +217,28 @@ module Bio
     # might also be changed (but not always be changed)
     # because of efficiency.
     # 
-    def to_seq
+    def to_biosequence
       seq
       obj = Bio::Sequence.new(@seq)
-      obj.definition = self.definition
+      d = self.identifiers
+      # accessions
+      obj.primary_accession = d.accessions.first
+      obj.secondary_accessions = d.accessions[1..-1]
+      # entry_id
+      obj.entry_id = d.locus unless d.locus.to_s.empty?
+      # GI
+      other = []
+      other.push Bio::Sequence::DBLink.new('GI', d.gi) if d.gi
+      obj.other_seqids = other unless other.empty?
+      # definition
+      if d.accessions.empty? and other.empty? then
+        obj.definition = self.definition
+      else
+        obj.definition = d.description
+      end
       obj
     end
+    alias to_seq to_biosequence
 
     # Parsing FASTA Defline, and extract IDs.
     # IDs are NSIDs (NCBI standard FASTA sequence identifiers)
