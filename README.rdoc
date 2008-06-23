@@ -1,6 +1,5 @@
-  $Id: README,v 1.17 2007/12/07 02:00:42 k Exp $
-
-  Copyright (C) 2001-2007 Toshiaki Katayama <k@bioruby.org>
+Copyright (C) 2001-2007 Toshiaki Katayama <k@bioruby.org>
+              2008      Jan Aerts <jandot@bioruby.org>
 
 = BioRuby
 
@@ -43,13 +42,24 @@ The stable release is freely available from the BioRuby website.
 
   * ((<URL:http://bioruby.org/archive/>))
 
+--- git
+
+If you need the latest development version, this is provided at
+
+  * ((<URL:http://github.com/bioruby/bioruby>))
+
+and can be obtained by the following procedure:
+
+  % git clone git://github.com/bioruby/bioruby.git
+
 --- CVS
 
-If you need the latest development version, anonymous CVS is provided at
+CVS is now deprecated as source control has moved to github. Please use git 
+instead of CVS. For historical purposes: the anonymous CVS was provided at 
 
   * ((<URL:http://cvs.bioruby.org/>))
 
-and can be obtained by the following procedure.
+and could be obtained by the following procedure.
 
   % cvs -d :pserver:cvs@code.open-bio.org:/home/repository/bioruby login
   CVS password: cvs (login with a password 'cvs' for the first time)

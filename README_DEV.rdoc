@@ -1,9 +1,7 @@
 = README.DEV
 
 Copyright::  Copyright (C) 2005, 2006 Toshiaki Katayama <k@bioruby.org>
-Copyright::  Copyright (C) 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
-
-  $Id: README.DEV,v 1.14 2007/04/05 23:35:39 trevor Exp $
+Copyright::  Copyright (C) 2006, 2008 Jan Aerts <jandot@bioruby.org>
 
 = HOW TO CONTRIBUTE TO THE BIORUBY PROJECT?
 
@@ -20,6 +18,12 @@ how to contribute your code to the BioRuby distribution.
 
 We would like to include your contribution as long as the scope of
 your module meets the field of bioinformatics.
+
+== Git
+
+Bioruby is now under git source control at http://github.com/bioruby/bioruby. 
+There are two basic ways to contribute: with patches or pull requests. Both are
+explained on the bioruby wiki at http://bioruby.open-bio.org/wiki.
 
 = LICENSE
 
@@ -48,8 +52,8 @@ You will need to follow the typical coding styles of the BioRuby modules:
 
 == Comments
 
-Don't use <tt>=begin</tt> and <tt>=end</tt> blocks for comments.  If you need to add
-comments, include it in the RDoc documentation.
+Don't use <tt>=begin</tt> and <tt>=end</tt> blocks for comments.  If you need to
+add comments, include it in the RDoc documentation.
 
 == Documentation should be written in the RDoc format in the source code
 
@@ -81,8 +85,6 @@ The header should be formatted as follows:
   #
   # License::    The Ruby License
   #
-  # $ I d: $
-  #
   # == Description
   #
   # This file contains classes that implement an interface to the Hoge database.
@@ -104,13 +106,6 @@ The header should be formatted as follows:
   end  # Hoge
 
   end  # Bio
-
-In the above sample, the '$ I d : $' (without spaces) will be automatically
-changed into something like
-
-  $Id: README.DEV,v 1.14 2007/04/05 23:35:39 trevor Exp $
-
-when commiting to the CVS repository for the first time.
 
 === of classes and methods within those files
 
@@ -285,8 +280,6 @@ a new module or making changes on existing modules.
 
 = MAINTENANCE
 
-Finally, please maintain the code you've contributed.  The BioRuby
-staff is willing to give you CVS privileges if needed.
-Please let us know (on the bioruby list) before you commit, so that users
-can discuss on the change.
+Finally, please maintain the code you've contributed. Please let us know (on 
+the bioruby list) before you commit, so that users can discuss on the change.
 
