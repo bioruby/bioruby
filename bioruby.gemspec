@@ -1,6 +1,4 @@
-require 'rubygems'
-
-spec = Gem::Specification.new do |s|
+Gem::Specification.new do |s|
   s.name = 'bio'
   s.version = "1.2.1"
 
@@ -25,9 +23,3 @@ spec = Gem::Specification.new do |s|
   s.executables = ["bioruby", "br_biofetch.rb", "br_biogetseq.rb", "br_bioflat.rb", "br_pmfetch.rb"]
   s.default_executable = "bioruby"
 end
-
-if $0 == __FILE__
-  Gem::manage_gems
-  Gem::Builder.new(spec).build
-end
-
