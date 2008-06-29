@@ -109,6 +109,55 @@ END
   end # class TestGFFRecord
   
   
+  class TestGFF3Record < Test::Unit::TestCase
+    
+    def setup
+      data =<<END
+I	sgd	gene	151453	151591	.	+	.	Gene="CEN1";Note="Chromosome I Centromere"
+END
+      @obj = Bio::GFF::GFF3.new(data).records[0]
+    end
+    
+    def test_attributes
+      at = {"Note"=>'"Chromosome I Centromere"', "Gene"=>'"CEN1"'}
+      assert_equal(at, @obj.attributes)
+    end
+    
+    def test_none
+      # test blank with tab
+      data =<<END
+I	sgd	gene	151453	151591	.	+	.	
+END
+      obj = Bio::GFF::GFF3.new(data).records[0]
+      assert_nil obj.attributes
+      
+      # test blank with no tab at end
+      data =<<END
+I	sgd	gene	151453	151591	.	+	.
+END
+      obj = Bio::GFF::GFF3.new(data).records[0]
+      assert_nil obj.attributes
+    end
+    
+    def test_one
+      data =<<END
+I	sgd	gene	151453	151591	.	+	.	Gene="CEN1"
+END
+      obj = Bio::GFF::GFF3.new(data).records[0]
+      at = {"Gene"=>'"CEN1"'}
+      assert_equal  at, obj.attributes
+    end
+    
+    def test_with_spaces
+      data =<<END
+I	sgd	gene	151453	151591	.	+	.	Gene="CEN1" ; Note="Chromosome I Centromere"
+END
+      obj = Bio::GFF::GFF3.new(data).records[0]
+      at = {"Note"=>'"Chromosome I Centromere"', "Gene"=>'"CEN1"'}
+      assert_equal(at, obj.attributes)
+    end
+  end
+  
   class TestGFFRecordConstruct < Test::Unit::TestCase
 
     def setup
