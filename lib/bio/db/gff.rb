@@ -151,8 +151,8 @@ module Bio
         def parse_attributes(attributes)
           hash = Hash.new
           # parse everything except the last one
-          attributes.scan(/(.*?[^\\]);/).each {
-            key, value = $~[1].split('=', 2)
+          attributes.scan(/(.*?[^\\]);/).each {|pair|
+            key, value = pair[0].split('=', 2)
             hash[key.strip] = value.strip
           }
           # parse the last one

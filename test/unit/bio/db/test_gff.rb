@@ -156,6 +156,24 @@ END
       at = {"Note"=>'"Chromosome I Centromere"', "Gene"=>'"CEN1"'}
       assert_equal(at, obj.attributes)
     end
+    
+    def test_with_escaped_sequence
+      data =<<END
+I	sgd	gene	151453	151591	.	+	.	Gene="CEN1\\;oh" ; Note="Chromosome I Centromere"
+END
+      obj = Bio::GFF::GFF3.new(data).records[0]
+      at = {"Note"=>'"Chromosome I Centromere"', "Gene"=>'"CEN1\;oh"'}
+      assert_equal(at, obj.attributes)      
+    end
+    
+    def test_with_three
+      data =<<END
+I	sgd	gene	151453	151591	.	+	.	Hi=Bye;Gene="CEN1" ; Note="Chromosome I Centromere"
+END
+      obj = Bio::GFF::GFF3.new(data).records[0]
+      at = {"Note"=>'"Chromosome I Centromere"', "Gene"=>'"CEN1"', 'Hi'=>'Bye'}
+      assert_equal(at, obj.attributes)      
+    end
   end
   
   class TestGFFRecordConstruct < Test::Unit::TestCase
