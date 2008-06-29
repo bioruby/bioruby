@@ -181,6 +181,27 @@ END
       record = TestGFF3RecordSubclass.new('I	sgd	gene	151453	151591	.	+	.	Hi=Bye;Gene="CEN1";Note="Chromosome I Centromere"')
       assert_equal ';', record.test_unescape('%3B')
     end
+    
+    
+    def test_record_to_s
+      line = 'I	sgd	gene	151453	151591	.	+	.	Hi=Bye;Note="Chromosome I Centromere";Gene="CEN1"'
+      record = TestGFF3RecordSubclass.new(line)
+      assert_equal line, record.to_s, '3 attributes'
+      
+      line = 'I	sgd	gene	151453	151591	.	+	.	'
+      record = TestGFF3RecordSubclass.new(line)
+      assert_equal line, record.to_s, 'no attributes'
+    end
+    
+    
+    def test_gff3_records_to_s
+      data =<<END
+I	sgd	gene	151453	151591	.	+	.	Note="Chromosome I Centromere;Gene="CEN1%3Boh""
+I	sgd	gene	151453	151591	.	+	.	
+END
+      gff3 = Bio::GFF::GFF3.new(data)
+      assert_equal data, gff3.to_s
+    end
   end
   
   class TestGFFRecordConstruct < Test::Unit::TestCase

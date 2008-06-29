@@ -149,9 +149,22 @@ module Bio
           @records << GFF3::Record.new(line)
         end
       end
+      
+      def to_s
+        return '' if !@records
+        return  @records.collect{|r| r.to_s}.join("\n")+"\n"
+      end
 
       protected
       class Record < GFF::Record
+        # Return the record as a GFF3 compatible string
+        def to_s
+          [
+            @seqname, @source, @feature, @start, @end, @score, @strand, @frame,
+            attributes_to_s
+          ].join("\t")
+        end
+        
         def parse_attributes(attributes)
           hash = Hash.new
           attributes.split(';').each do |pair|
@@ -162,6 +175,15 @@ module Bio
           end
           return hash
         end # method parse_attributes
+        
+        protected
+        # Return the attributes as a string as it appears at the end of a GFF3 line
+        def attributes_to_s
+          return '' if !@attributes
+          @attributes.collect{ |key,value|
+            "#{escape(key)}=#{escape(value)}"
+          }.join(';')
+        end
         
         # According to the specification at
         # http://song.sourceforge.net/gff3.shtml
@@ -175,7 +197,10 @@ module Bio
           return string
         end
         
-        
+        # According to the specification at
+        # http://song.sourceforge.net/gff3.shtml
+        # URL escaping rules are used for tags or values containing the following characters: ",=;".
+        # Return the string corresponding to these characters escaped.
         def escape(string)
           ESCAPED_CHARACTERS.each do |char|
             string.gsub! char, CGI.escape(char)
