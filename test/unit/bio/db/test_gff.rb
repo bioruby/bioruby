@@ -14,6 +14,16 @@ $:.unshift(libpath) unless $:.include?(libpath)
 require 'test/unit'
 require 'bio/db/gff'
 
+
+# subclass of the record class so that protected methods
+# can be tested singly
+class TestGFF3RecordSubclass<Bio::GFF::GFF3::Record
+  def test_unescape(string)
+    unescape(string)
+  end
+end
+
+
 module Bio
   class TestGFF < Test::Unit::TestCase
     
@@ -148,31 +158,28 @@ END
       assert_equal  at, obj.attributes
     end
     
-    def test_with_spaces
-      data =<<END
-I	sgd	gene	151453	151591	.	+	.	Gene="CEN1" ; Note="Chromosome I Centromere"
-END
-      obj = Bio::GFF::GFF3.new(data).records[0]
-      at = {"Note"=>'"Chromosome I Centromere"', "Gene"=>'"CEN1"'}
-      assert_equal(at, obj.attributes)
-    end
-    
     def test_with_escaped_sequence
       data =<<END
-I	sgd	gene	151453	151591	.	+	.	Gene="CEN1\\;oh" ; Note="Chromosome I Centromere"
+I	sgd	gene	151453	151591	.	+	.	Gene="CEN1%3Boh";Note="Chromosome I Centromere"
 END
       obj = Bio::GFF::GFF3.new(data).records[0]
-      at = {"Note"=>'"Chromosome I Centromere"', "Gene"=>'"CEN1\;oh"'}
+      at = {"Note"=>'"Chromosome I Centromere"', "Gene"=>'"CEN1;oh"'}
       assert_equal(at, obj.attributes)      
     end
     
     def test_with_three
       data =<<END
-I	sgd	gene	151453	151591	.	+	.	Hi=Bye;Gene="CEN1" ; Note="Chromosome I Centromere"
+I	sgd	gene	151453	151591	.	+	.	Hi=Bye;Gene="CEN1";Note="Chromosome I Centromere"
 END
       obj = Bio::GFF::GFF3.new(data).records[0]
       at = {"Note"=>'"Chromosome I Centromere"', "Gene"=>'"CEN1"', 'Hi'=>'Bye'}
       assert_equal(at, obj.attributes)      
+    end
+    
+    
+    def test_unescape
+      record = TestGFF3RecordSubclass.new('I	sgd	gene	151453	151591	.	+	.	Hi=Bye;Gene="CEN1";Note="Chromosome I Centromere"')
+      assert_equal ';', record.test_unescape('%3B')
     end
   end
   
@@ -192,3 +199,5 @@ END
 
   end # class TestGFFRecordConstruct
 end
+
+

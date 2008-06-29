@@ -8,6 +8,7 @@
 #
 # $Id: gff.rb,v 1.9 2007/05/18 15:23:42 k Exp $
 #
+require 'cgi'
 
 module Bio
   # == DESCRIPTION
@@ -139,6 +140,9 @@ module Bio
     class GFF3 < GFF
       VERSION = 3
       
+      # The characters that are escaped
+      ESCAPED_CHARACTERS = [',','=',';']
+      
       def initialize(str = '')
         @records = Array.new
         str.each_line do |line|
@@ -150,22 +154,34 @@ module Bio
       class Record < GFF::Record
         def parse_attributes(attributes)
           hash = Hash.new
-          # parse everything except the last one
-          attributes.scan(/(.*?[^\\]);/).each {|pair|
-            key, value = pair[0].split('=', 2)
-            hash[key.strip] = value.strip
-          }
-          # parse the last one
-          matches = attributes.match(/(.*[^\\];)(.+)/)
-          if matches # more than 1 found, split the newest
-            key, value = matches[2].split('=', 2)
-            hash[key.strip] = value.strip     
-          else # only 1 attribute found
-            key, value = attributes.split('=', 2)
-            hash[key.strip] = value.strip
+          attributes.split(';').each do |pair|
+            key, value = pair.split('=', 2)
+            key2 = unescape(key)
+            value2 = unescape(value)
+            hash[key2] = value2
           end
           return hash
         end # method parse_attributes
+        
+        # According to the specification at
+        # http://song.sourceforge.net/gff3.shtml
+        # URL escaping rules are used for tags or values containing the following characters: ",=;".
+        # Return the string corresponding to these characters unescaped
+        def unescape(string)
+          # translate each of the characters
+          ESCAPED_CHARACTERS.each do |char|
+            string.gsub! CGI.escape(char), char
+          end
+          return string
+        end
+        
+        
+        def escape(string)
+          ESCAPED_CHARACTERS.each do |char|
+            string.gsub! char, CGI.escape(char)
+          end
+          return string
+        end
       end # class GFF3::Record
     end #class GFF3
     
