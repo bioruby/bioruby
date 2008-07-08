@@ -10,6 +10,7 @@
 #
 require 'uri'
 require 'strscan'
+require 'bio/db/fasta'
 
 module Bio
   # == DESCRIPTION
@@ -139,9 +140,13 @@ module Bio
     end
 
     # = DESCRIPTION
-    # Represents version 3 of GFF specification. Is completely implemented by the
-    # Bio::GFF class. For more information on version GFF3, see
+    # Represents version 3 of GFF specification.
+    # For more information on version GFF3, see
+    # http://song.sourceforge.net/gff3.shtml
+    #--
+    # obsolete URL:
     # http://flybase.bio.indiana.edu/annot/gff3.html
+    #++
     class GFF3 < GFF
       VERSION = 3
       
@@ -152,22 +157,213 @@ module Bio
       # *Arguments*:
       # * _str_: string in GFF format
       # *Returns*:: Bio::GFF object
-      def initialize(str = '')
-        @records = Array.new
-        str.each_line do |line|
-          @records << GFF3::Record.new(line)
-        end
+      def initialize(str = nil)
+        @gff_version = nil
+        @records = []
+        @sequence_regions = []
+        @metadata = []
+        @sequences = []
+        @in_fasta = false
+        parse(str) if str
       end
 
-      # string representation
-      def to_s
-        return '' unless @records
-        @records.collect{ |r| r.to_s }.join('')
+      # GFF3 version string (String or nil). nil means "3".
+      attr_reader :gff_version
+
+      # Metadata of "##sequence-region".
+      # Must be an array of Bio::GFF::GFF3::SequenceRegion objects.
+      attr_accessor :sequence_regions
+
+      # Metadata (except "##sequence-region", "##gff-version", "###").
+      # Must be an array of Bio::GFF::GFF3::MetaData objects.
+      attr_accessor :metadata
+
+      # Sequences bundled within GFF3.
+      # Must be an array of Bio::Sequence objects.
+      attr_accessor :sequences
+
+      # Parses a GFF3 entries, and concatenated the parsed data.
+      #
+      # Note that after "##FASTA" line is given,
+      # only fasta-formatted text is accepted.
+      # 
+      # ---
+      # *Arguments*:
+      # * _str_: string in GFF format
+      # *Returns*:: self
+      def parse(str)
+        # if already after the ##FASTA line, parses fasta format and return
+        if @in_fasta then
+          parse_fasta(str)
+          return self
+        end
+
+        if str.respond_to?(:gets) then
+          # str is a IO-like object
+          fst = nil
+        else
+          # str is a String
+          gff, sep, fst = str.split(/^(\>|##FASTA.*)/n, 2)
+          fst = sep + fst if sep == '>' and fst
+          str = gff
+        end
+
+        # parses GFF lines
+        str.each_line do |line|
+          if /^\#\#([^\s]+)/ =~ line then
+            parse_metadata($1, line)
+            parse_fasta(str) if @in_fasta
+          elsif /^\>/ =~ line then
+            @in_fasta = true
+            parse_fasta(str, line)
+          else
+            @records << GFF3::Record.new(line)
+          end
+        end
+
+        # parses fasta format when str is a String and fasta data exists
+        if fst then
+          @in_fasta = true
+          parse_fasta(fst)
+        end
+
+        self
       end
+
+      # parses fasta formatted data
+      def parse_fasta(str, line = nil)
+        str.each_line("\n>") do |seqstr|
+          if line then seqstr = line + seqstr; line = nil; end
+          x = seqstr.strip
+          next if x.empty? or x == '>'
+          fst = Bio::FastaFormat.new(seqstr)
+          seq = fst.to_seq
+          seq.entry_id =
+            unescape(fst.definition.strip.split(/\s/, 2)[0].to_s)
+          @sequences.push seq
+        end
+      end
+      private :parse_fasta
+
+      # string representation of whole entry.
+      def to_s
+        ver = @gff_version || '3'
+        if @sequences.size > 0 then
+          seqs = "##FASTA\n" +
+            @sequences.collect { |s| s.to_fasta(s.entry_id, 70) }.join('')
+        else
+          seqs = ''
+        end
+
+        ([ "##gff-version #{escape(ver)}\n" ] +
+         @metadata.collect { |m| m.to_s } +
+         @sequence_regions.collect { |m| m.to_s } +
+         @records.collect{ |r| r.to_s }).join('') + seqs
+      end
+
+      # Private methods for escaping characters.
+      # Internal only. Users should not use this module directly.
+      module Escape
+        # unsafe characters to be escaped for normal columns
+        UNSAFE = /[^-_.!~*'()a-zA-Z\d\/?:@+$\[\] "\x80-\xfd><;=,]/n
+
+        # unsafe characters to be escaped for seqid columns
+        # and target_id of the "Target" attribute
+        UNSAFE_SEQID = /[^-a-zA-Z0-9.:^*$@!+_?|]/n
+
+        # unsafe characters to be escaped for attribute columns
+        UNSAFE_ATTRIBUTE = /[^-_.!~*'()a-zA-Z\d\/?:@+$\[\] "\x80-\xfd><]/n
+
+        private
+
+        # If str is empty, returns '.'. Otherwise, returns str.
+        def column_to_s(str)
+          str = str.to_s
+          str.empty? ? '.' : str
+        end
+
+        # Return the string corresponding to these characters unescaped
+        def unescape(string)
+          URI.unescape(string)
+        end
+
+        # Escape a column according to the specification at
+        # http://song.sourceforge.net/gff3.shtml.
+        def escape(string)
+          URI.escape(string, UNSAFE)
+        end
+
+        # Escape seqid column according to the specification at
+        # http://song.sourceforge.net/gff3.shtml.
+        def escape_seqid(string)
+          URI.escape(string, UNSAFE_SEQID)
+        end
+        
+        # Escape attribute according to the specification at
+        # http://song.sourceforge.net/gff3.shtml.
+        # In addition to the normal escape rule, the following characters
+        # are escaped: ",=;".
+        # Returns the string corresponding to these characters escaped.
+        def escape_attribute(string)
+          URI.escape(string, UNSAFE_ATTRIBUTE)
+        end
+      end #module Escape
+
+      include Escape
+
+      # Stores meta-data "##sequence-region seqid start end".
+      class SequenceRegion
+        include Escape
+        
+        # creates a new SequenceRegion class
+        def initialize(seqid, start, endpos)
+          @seqid = seqid
+          @start = start ? start.to_i : nil
+          @end = endpos ? endpos.to_i : nil
+        end
+
+        # parses given string and returns SequenceRegion class
+        def self.parse(str)
+          dummy, seqid, start, endpos =
+            str.chomp.split(/\s+/, 4).collect { |x| URI.unescape(x) }
+          self.new(seqid, start, endpos)
+        end
+
+        # sequence ID
+        attr_accessor :seqid
+
+        # start position
+        attr_accessor :start
+
+        # end position
+        attr_accessor :end
+
+        # string representation
+        def to_s
+          i = escape_seqid(column_to_s(@seqid))
+          s = escape_seqid(column_to_s(@start))
+          e = escape_seqid(column_to_s(@end))
+          "##sequence-region #{i} #{s} #{e}\n"
+        end
+
+        # Returns true if self == other. Otherwise, returns false.
+        def ==(other)
+          if other.class == self.class and
+              other.seqid == self.seqid and
+              other.start == self.start and
+              other.end == self.end then
+            true
+          else
+            false
+          end
+        end
+      end #class SequenceRegion
 
       # Represents a single line of a GFF3-formatted file.
       # See Bio::GFF::GFF3 for more information.
       class Record < GFF::Record
+
+        include GFF3::Escape
 
         # aliases for Column 1 (formerly "seqname")
         alias seqid seqname
@@ -183,31 +379,66 @@ module Bio
         # aliases for Column 8
         alias phase frame
         alias phase= frame=
-        
+
+        # Parses a GFF3-formatted line and returns a new
+        # Bio::GFF::GFF3::Record object.
+        def self.parse(str)
+          self.new.parse(str)
+        end
+       
         # Creates a Bio::GFF::GFF3::Record object.
         # Is typically not called directly, but
         # is called automatically when creating a Bio::GFF::GFF3 object.
+        #
         # ---
         # *Arguments*:
         # * _str_: a tab-delimited line in GFF3 format
-        def initialize(str = nil)
-          parse(str) if str
+        # *Arguments*:
+        # * _seqid_: sequence ID (String or nil)
+        # * _source_: source (String or nil)
+        # * _feature_type_: type of feature (String)
+        # * _start_position_: start (Integer)
+        # * _end_position_: end (Integer)
+        # * _score_: score (Float or nil)
+        # * _strand_: strand (String or nil)
+        # * _phase_: phase (String or nil)
+        # * _attributes_: attributes (Hash or nil)
+        def initialize(*arg)
+          if arg.size == 1 then
+            parse(arg[0])
+          else
+            @seqname, @source, @feature,
+            start, endp, @score, @strand, frame,
+            @attributes = arg
+            @start = start ? start.to_i : nil
+            @end   = endp  ? endp.to_i : nil
+            @score = score ? score.to_f : nil
+            @frame = frame ? frame.to_i : nil
+          end
           @attributes ||= {}
         end
 
         # Parses a GFF3-formatted line and stores data from the string.
         # Note that all existing data is wiped out.
         def parse(string)
-          string, comments = string.chomp.split(/\#/, 2)
-          columns = string.split("\t")
+          if /^\s*\#/ =~ string then
+            @comments = string[/\#.*/]
+            columns = []
+          else
+            columns = string.chomp.split("\t", 10)
+            @comments = columns[9][/\#.*/] if columns[9]
+          end
+
           @seqname, @source, @feature,
-          start, endp, @score, @strand, @frame =
+          start, endp, score, @strand, frame =
             columns[0, 8].collect { |x|
             str = unescape(x)
             str == '.' ? nil : str
           }
           @start = start ? start.to_i : nil
           @end   = endp  ? endp.to_i : nil
+          @score = score ? score.to_f : nil
+          @frame = frame ? frame.to_i : nil
 
           @attributes = parse_attributes(columns[8])
         end
@@ -226,62 +457,31 @@ module Bio
            attributes_to_s(@attributes)
           ].join("\t") + "\n"
         end
-
-        # private methods for escaping characters
-        module Escape
-          # unsafe characters to be escaped for normal columns
-          UNSAFE = /[^-_.!~*'()a-zA-Z\d\/?:@+$\[\] "\x80-\xfd><;=,]/n
-
-          # unsafe characters to be escaped for seqid columns
-          # and target_id of the "Target" attribute
-          UNSAFE_SEQID = /[^-a-zA-Z0-9.:^*$@!+_?|]/n
-
-          # unsafe characters to be escaped for attribute columns
-          UNSAFE_ATTRIBUTE = /[^-_.!~*'()a-zA-Z\d\/?:@+$\[\] "\x80-\xfd><]/n
-
-          private
-
-          # If str is empty, returns '.'. Otherwise, returns str.
-          def column_to_s(str)
-            str = str.to_s
-            str.empty? ? '.' : str
-          end
-
-          # Return the string corresponding to these characters unescaped
-          def unescape(string)
-            URI.unescape(string)
-          end
-
-          # Escape a column according to the specification at
-          # http://song.sourceforge.net/gff3.shtml.
-          def escape(string)
-            URI.escape(string, UNSAFE)
-          end
-
-          # Escape seqid column according to the specification at
-          # http://song.sourceforge.net/gff3.shtml.
-          def escape_seqid(string)
-            URI.escape(string, UNSAFE_SEQID)
-          end
         
-          # Escape attribute according to the specification at
-          # http://song.sourceforge.net/gff3.shtml.
-          # In addition to the normal escape rule, the following characters
-          # are escaped: ",=;".
-          # Returns the string corresponding to these characters escaped.
-          def escape_attribute(string)
-            URI.escape(string, UNSAFE_ATTRIBUTE)
+        # Returns true if self == other. Otherwise, returns false.
+        def ==(other)
+          if self.class == other.class and
+              self.seqname == other.seqname and
+              self.source  == other.source and
+              self.feature == other.feature and
+              self.start   == other.start and
+              self.end     == other.end and
+              self.score   == other.score and
+              self.strand  == other.strand and
+              self.frame   == other.frame and
+              self.attributes == other.attributes then
+            true
+          else
+            false
           end
-        end #module Escape
-
-        include Escape
+        end
 
         # Bio:GFF::GFF3::Record::Target is a class to store
         # data of "Target" attribute.
         class Target
-          include Record::Escape
+          include GFF3::Escape
 
-          # Creates a new object.
+          # Creates a new Target object.
           def initialize(target_id, start, endpos, strand = nil)
             @target_id = target_id
             @start = start ? start.to_i : nil
@@ -313,12 +513,12 @@ module Bio
 
           # returns a string
           def to_s
-            tid = escape_seqid(column_to_s(@target_id))
-            st = escape_attribute(column_to_s(@start))
-            ed = escape_attribute(column_to_s(@end))
+            i = escape_seqid(column_to_s(@target_id))
+            s = escape_attribute(column_to_s(@start))
+            e = escape_attribute(column_to_s(@end))
             strnd = escape_attribute(@strand.to_s)
             strnd = " " + strnd unless strnd.empty?
-            "#{tid} #{st} #{ed}#{strnd}"
+            "#{i} #{s} #{e}#{strnd}"
           end
 
           # Returns true if self == other. Otherwise, returns false.
@@ -374,7 +574,7 @@ module Bio
         # Return the attributes as a string as it appears at the end of
         # a GFF3 line
         def attributes_to_s(attr)
-          return '' unless attr
+          return '.' if !attr or attr.empty?
           keys = attr.keys.sort! do |x, y|
             z = ATTRIBUTES_PRIORITY[x] <=> ATTRIBUTES_PRIORITY[y]
             z != 0 ? z : x <=> y
@@ -396,6 +596,78 @@ module Bio
         end
 
       end # class GFF3::Record
+
+      # This is a dummy record corresponding to the "###" metadata.
+      class RecordBoundary < GFF3::Record
+        def initialize(*arg)
+          super(*arg)
+          self.freeze
+        end
+
+        def to_s
+          "###\n"
+        end
+      end #class RecordBoundary
+
+      # Stores meta-data.
+      class MetaData
+        # Creates a new MetaData object
+        def initialize(directive, data = nil)
+          @directive = directive
+          @data = data
+        end
+
+        # Directive. Usually, one of "feature-ontology", "attribute-ontology",
+        # or "source-ontology".
+        attr_accessor :directive
+
+        # data of this entry
+        attr_accessor :data
+
+        # parses a line
+        def self.parse(line)
+          directive, data = line.chomp.split(/\s+/, 2)
+          directive = directive.sub(/\A\#\#/, '') if directive
+          self.new(directive, data)
+        end
+
+        # string representation of this meta-data
+        def to_s
+          d = @directive.to_s.gsub(/[\r\n]+/, ' ')
+          v = ' ' + @data.to_s.gsub(/[\r\n]+/, ' ') unless @data.to_s.empty?
+          "\#\##{d}#{v}\n"
+        end
+
+        # Returns true if self == other. Otherwise, returns false.
+        def ==(other)
+          if self.class == other.class and
+              self.directive == other.directive and
+              self.data == other.data then
+            true
+          else
+            false
+          end
+        end
+      end #class MetaData
+
+      # parses metadata
+      def parse_metadata(directive, line)
+        case directive
+        when 'gff-version'
+          @gff_version ||= line.split(/\s+/)[1]
+        when 'FASTA'
+          @in_fasta = true
+        when 'sequence-region'
+          @sequence_regions.push SequenceRegion.parse(line)
+        when '#' # "###" directive
+          @records.push RecordBoundary.new
+        else
+          @metadata.push MetaData.parse(line)
+        end
+        true
+      end
+      private :parse_metadata
+
     end #class GFF3
     
   end # class GFF
