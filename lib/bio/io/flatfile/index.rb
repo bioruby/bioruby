@@ -888,13 +888,18 @@ module Bio
           self
         end
 
-        def self.external_sort_proc(sort_program = '/usr/bin/sort')
+        def self.external_sort_proc(sort_program = [ '/usr/bin/env', 
+                                                     'LC_ALL=C',
+                                                     '/usr/bin/sort' ])
           Proc.new do |out, in1, *files|
-            system(sort_program, '-o', out, in1, *files)
+            cmd = sort_program + [ '-o', out, in1, *files ]
+            system(*cmd)
           end
         end
 
-        def self.external_merge_sort_proc(sort_program = '/usr/bin/sort')
+        def self.external_merge_sort_proc(sort_program = [ '/usr/bin/env', 
+                                                           'LC_ALL=C',
+                                                           '/usr/bin/sort' ])
           Proc.new do |out, in1, *files|
             # (in1 may be sorted)
             tf_all = []
@@ -902,21 +907,26 @@ module Bio
             files.each do |fn|
               tf = Tempfile.open('sort')
               tf.close(false)
-              system(sort_program, '-o', tf.path, fn)
+              cmd = sort_program + [ '-o', tf.path, fn ]
+              system(*cmd)
               tf_all << tf
               tfn_all << tf.path
             end
-            system(sort_program, '-m', '-o', out, in1, *tfn_all)
+            cmd_fin = sort_program + [ '-m', '-o', out, in1, *tfn_all ]
+            system(*cmd_fin)
             tf_all.each do |tf|
               tf.close(true)
             end
           end
         end
 
-        def self.external_merge_proc(sort_program = '/usr/bin/sort')
+        def self.external_merge_proc(sort_program =  [ '/usr/bin/env', 
+                                                       'LC_ALL=C',
+                                                       '/usr/bin/sort' ])
           Proc.new do |out, in1, *files|
             # files (and in1) must be sorted
-            system(sort_program, '-m', '-o', out, in1, *files)
+            cmd = sort_program + [ '-m', '-o', out, in1, *files ]
+            system(*cmd)
           end
         end
 

@@ -525,6 +525,8 @@ module Bio
       def self.addindex_flat(db, mode, need_update, parser, options)
         require 'tempfile'
         prog = options['sort_program']
+        env = options['env_program']
+        env_args = options['env_program_arguments']
 
         return false if need_update.to_a.size == 0
 
@@ -555,7 +557,7 @@ module Bio
           fileid += 1
         end
 
-        sort_proc = chose_sort_proc(prog, mode)
+        sort_proc = chose_sort_proc(prog, mode, env, env_args)
         pfile.close(false)
         DEBUG.print "sorting primary (#{parser.primary.name})...\n"
         db.primary.file.import_tsv_files(true, mode, sort_proc, pfile.path)
@@ -571,30 +573,46 @@ module Bio
         true
       end #def
 
+      # default sort program
       DEFAULT_SORT = '/usr/bin/sort'
-      def self.chose_sort_proc(prog, mode = :new)
+
+      # default env program (run a program in a modified environment)
+      DEFAULT_ENV = '/usr/bin/env'
+
+      # default arguments for env program
+      DEFAULT_ENV_ARGS = [ 'LC_ALL=C' ]
+
+      def self.chose_sort_proc(prog, mode = :new,
+                               env = nil, env_args = nil)
         case prog
         when /^builtin$/i, /^hs$/i, /^lm$/i
           DEBUG.print "sort: internal sort routine\n"
-          sort_proc = mapfile.internal_sort_proc
+          sort_proc = Flat_1::FlatMappingFile::internal_sort_proc
         when nil, ''
           if FileTest.executable?(DEFAULT_SORT)
-            DEBUG.print "sort: #{DEFAULT_SORT}\n"
-            if mode == :new then
-              sort_proc = Flat_1::FlatMappingFile::external_sort_proc(DEFAULT_SORT)
-            else
-              sort_proc = Flat_1::FlatMappingFile::external_merge_sort_proc(DEFAULT_SORT)
-            end
+            return chose_sort_proc(DEFAULT_SORT, mode, env, env_args)
           else
             DEBUG.print "sort: internal sort routine\n"
             sort_proc = Flat_1::FlatMappingFile::internal_sort_proc
           end
         else
-          DEBUG.print "sort: #{prog}\n"
+          env_args ||= DEFAULT_ENV_ARGS
+          if env == '' or env == false then # inhibit to use env program
+            prefixes = [ prog ]
+          elsif env then # uses given env program
+            prefixes = [ env ] + env_args + [ prog ]
+          else # env == nil; uses default env program if possible
+            if FileTest.executable?(DEFAULT_ENV)
+              prefixes = [ DEFAULT_ENV ] + env_args + [ prog ]
+            else
+              prefixes = [ prog ]
+            end
+          end
+          DEBUG.print "sort: #{prefixes.join(' ')}\n"
           if mode == :new then
-            sort_proc = Flat_1::FlatMappingFile::external_sort_proc(prog)
+            sort_proc = Flat_1::FlatMappingFile::external_sort_proc(prefixes)
           else
-            sort_proc = Flat_1::FlatMappingFile::external_merge_sort_proc(prog)
+            sort_proc = Flat_1::FlatMappingFile::external_merge_sort_proc(prefixes)
           end
         end
         sort_proc
