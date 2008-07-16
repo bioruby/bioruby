@@ -97,7 +97,7 @@ class Sequence
   # http://www.rubycentral.com/book/ref_c_object.html#Object.method_missing
   def method_missing(sym, *args, &block) #:nodoc:
     begin
-      @seq.__send__(sym, *args, &block)
+      seq.__send__(sym, *args, &block)
     rescue NoMethodError => evar
       lineno = __LINE__ - 2
       file = __FILE__
@@ -241,9 +241,9 @@ class Sequence
   def auto
     @moltype = guess
     if @moltype == NA
-      @seq = NA.new(@seq)
+      @seq = NA.new(seq)
     else
-      @seq = AA.new(@seq)
+      @seq = AA.new(seq)
     end
   end
 
@@ -303,7 +303,7 @@ class Sequence
   # * (optional) _index_: Fixnum (default 1)
   # *Returns*:: Bio::Sequence::NA/AA
   def guess(threshold = 0.9, length = 10000, index = 0)
-    str = @seq.to_s[index,length].to_s.extend Bio::Sequence::Common
+    str = seq.to_s[index,length].to_s.extend Bio::Sequence::Common
     cmp = str.composition
 
     bases = cmp['A'] + cmp['T'] + cmp['G'] + cmp['C'] + cmp['U'] +
@@ -376,7 +376,7 @@ class Sequence
   # ---
   # *Returns*:: Bio::Sequence::NA
   def na
-    @seq = NA.new(@seq)
+    @seq = NA.new(seq)
     @moltype = NA
   end
 
@@ -397,7 +397,7 @@ class Sequence
   # ---
   # *Returns*:: Bio::Sequence::AA
   def aa
-    @seq = AA.new(@seq)
+    @seq = AA.new(seq)
     @moltype = AA
   end
 
@@ -429,7 +429,22 @@ class Sequence
   #
   # *Returns*:: Array of String
   def accessions
-    [ @primary_accession, @secondary_accessions ].flatten.compact
+    [ primary_accession, secondary_accessions ].flatten.compact
+  end
+
+  # Normally, users should not call this method directly.
+  # Use Bio::*#to_biosequence (e.g. Bio::GenBank#to_biosequence).
+  #
+  # Creates a new Bio::Sequence object from database data with an
+  # adapter module.
+  def self.adapter(source_data, adapter_module)
+    biosequence = self.new(nil)
+    biosequence.instance_eval {
+      remove_instance_variable(:@seq)
+      @source_data = source_data
+    }
+    biosequence.extend(adapter_module)
+    biosequence
   end
 
 end # Sequence

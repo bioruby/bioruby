@@ -38,6 +38,8 @@ require 'bio/compat/features'
 require 'bio/compat/references'
 require 'bio/sequence'
 require 'bio/sequence/dblink'
+require 'bio/sequence/adapter'
+require 'bio/db/embl/embl_to_biosequence'
 
 module Bio
 class EMBL < EMBLDB
@@ -432,40 +434,32 @@ class EMBL < EMBLDB
   end
   private :parse_release_version
 
+  # database references (DR).
+  # Returns an array of Bio::Sequence::DBLink objects.
+  def dblinks
+    get('DR').split(/\n/).collect { |x|
+      Bio::Sequence::DBLink.parse_embl_DR_line(x)
+    }
+  end
+
+  # species
+  def species
+    self.fetch('OS')
+  end
+
+  # taxonomy classfication
+  alias classification oc
+
+  # features
+  alias features ft
+
+
   # converts the entry to Bio::Sequence object
   # ---
   # *Arguments*::
   # *Returns*:: Bio::Sequence object
   def to_biosequence
-    bio_seq = Bio::Sequence.new(self.seq)
-
-    bio_seq.id_namespace = 'EMBL'
-    bio_seq.entry_id = self.entry_id
-    bio_seq.primary_accession = self.accessions[0]
-    bio_seq.secondary_accessions = self.accessions[1..-1] || []
-    bio_seq.molecule_type = self.molecule_type
-    bio_seq.data_class = self.data_class
-    bio_seq.definition = self.description
-    bio_seq.topology = self.topology
-    bio_seq.date_created = self.date_created
-    bio_seq.date_modified = self.date_modified
-    bio_seq.release_created = self.release_created
-    bio_seq.release_modified = self.release_modified
-    bio_seq.entry_version = self.entry_version
-    bio_seq.division = self.division
-    bio_seq.sequence_version = self.version
-    bio_seq.keywords = self.keywords
-    bio_seq.species = self.fetch('OS')
-    bio_seq.classification = self.oc
-    # bio_seq.organelle = self.fetch('OG') # unsupported yet
-    bio_seq.references = self.references
-    bio_seq.features = self.ft
-    bio_seq.comments = self.cc
-    bio_seq.dblinks = get('DR').split(/\n/).collect { |x|
-      Bio::Sequence::DBLink.parse_embl_DR_line(x)
-    }
-
-    return bio_seq
+    Bio::Sequence.adapter(self, Bio::Sequence::Adapter::EMBL)
   end
 
   ### private methods

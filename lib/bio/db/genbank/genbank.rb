@@ -12,6 +12,8 @@ require 'bio/db'
 require 'bio/db/genbank/common'
 require 'bio/sequence'
 require 'bio/sequence/dblink'
+require 'bio/sequence/adapter'
+require 'bio/db/genbank/genbank_to_biosequence'
 
 module Bio
 
@@ -138,51 +140,26 @@ class GenBank < NCBIDB
     end
   end
 
+  # Taxonomy classfication. Returns an array of strings.
+  def classification
+    self.taxonomy.to_s.sub(/\.\z/, '').split(/\s*\;\s*/)
+  end
+
+  # Strandedness. Returns one of 'single', 'double', 'mixed', or nil.
+  def strandedness
+    case self.strand.to_s.downcase
+    when 'ss-'; 'single'
+    when 'ds-'; 'double'
+    when 'ms-'; 'mixed'
+    else nil; end
+  end
+
   # converts Bio::GenBank to Bio::Sequence
   # ---
   # *Arguments*: 
   # *Returns*:: Bio::Sequence object
   def to_biosequence
-    sequence = Bio::Sequence.new(seq)
-
-    sequence.id_namespace = 
-      if /\_/ =~ self.accession.to_s then
-        'RefSeq'
-      else
-        'GenBank'
-      end
-
-    sequence.entry_id = self.entry_id
-
-    sequence.primary_accession = self.accession
-    sequence.secondary_accessions = self.accessions - [ self.accession ]
-
-    if /GI\:(.+)/ =~ self.gi.to_s then
-      sequence.other_seqids = [ Bio::Sequence::DBLink.new('GI', $1) ]
-    end
-
-    sequence.molecule_type = self.natype
-    sequence.division = self.division
-    sequence.topology = self.circular
-    sequence.strandedness = case self.strand.to_s.downcase;
-                            when 'ss-'; 'single';
-                            when 'ds-'; 'double';
-                            when 'ms-'; 'mixed';
-                            else nil; end
-
-    sequence.sequence_version = self.version
-    #sequence.date_created = nil #????
-    sequence.date_modified = date_modified
-
-    sequence.definition = self.definition
-    sequence.keywords = self.keywords
-    sequence.species = self.organism
-    sequence.classification = self.taxonomy.to_s.sub(/\.\z/, '').split(/\s*\;\s*/)
-    #sequence.organelle = nil # yet unsupported
-    sequence.comments = self.comment
-    sequence.references = self.references
-    sequence.features = self.features
-    return sequence
+    Bio::Sequence.adapter(self, Bio::Sequence::Adapter::GenBank)
   end
 
 end # GenBank
