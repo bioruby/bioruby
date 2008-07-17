@@ -34,7 +34,7 @@ module Bio
     end
     
     def self.fetch_accession(accession)
-      accession.upcase!
+      accession = accession.upcase
       Bio::SQL::Bioentry.exists?(:accession => accession) ? Bio::SQL::Sequence.new(:entry=>Bio::SQL::Bioentry.find_by_accession(accession)) : nil			
     end
     
