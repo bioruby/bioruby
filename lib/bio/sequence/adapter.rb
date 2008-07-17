@@ -42,6 +42,13 @@ module Bio::Sequence::Adapter
     #$stderr.puts "attr_reader_lazy :#{name}"
     varname = "@#{name}".intern
     methodname = "__get__#{name}".intern
+
+    # module to reset method's behavior to normal attr_reader
+    reset = "Attr_#{name}".intern
+    const_set(reset, Module.new { attr_reader name })
+    reset_module_name = "#{self}::#{reset}"
+
+    # define attr method
     module_eval <<__END_OF_DEF__
       def #{name}
         unless defined? #{varname} then
@@ -53,7 +60,7 @@ module Bio::Sequence::Adapter
         end
         unless frozen? then
           #$stderr.puts "LAZY #{name}: finalize: attr_reader :#{name}"
-          class << self; attr_reader :#{name}; end
+          self.extend(#{reset_module_name})
         end
         val
       end
