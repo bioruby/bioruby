@@ -19,6 +19,10 @@ require 'bio/sequence'
 # 
 module Bio::Sequence::Adapter
 
+  autoload :GenBank,     'bio/db/genbank/genbank_to_biosequence'
+  autoload :EMBL,        'bio/db/embl/embl_to_biosequence'
+  autoload :FastaFormat, 'bio/db/fasta/fasta_to_biosequence'
+
   private
 
   # Defines a reader attribute method with psudo lazy evaluation/memoization.

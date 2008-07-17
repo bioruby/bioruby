@@ -70,6 +70,8 @@ class Sequence
   autoload :AA,      'bio/sequence/aa'
   autoload :Generic, 'bio/sequence/generic'
   autoload :Format,  'bio/sequence/format'
+  autoload :Adapter, 'bio/sequence/adapter'
+
   include Format
 
   # Create a new Bio::Sequence object

@@ -29,8 +29,6 @@ require 'bio/db'
 require 'bio/sequence'
 require 'bio/sequence/dblink'
 require 'bio/db/fasta/defline'
-require 'bio/sequence/adapter'
-require 'bio/db/fasta/fasta_to_biosequence'
 
 module Bio
 

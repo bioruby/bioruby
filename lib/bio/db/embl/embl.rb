@@ -38,8 +38,6 @@ require 'bio/compat/features'
 require 'bio/compat/references'
 require 'bio/sequence'
 require 'bio/sequence/dblink'
-require 'bio/sequence/adapter'
-require 'bio/db/embl/embl_to_biosequence'
 
 module Bio
 class EMBL < EMBLDB

@@ -12,8 +12,6 @@ require 'bio/db'
 require 'bio/db/genbank/common'
 require 'bio/sequence'
 require 'bio/sequence/dblink'
-require 'bio/sequence/adapter'
-require 'bio/db/genbank/genbank_to_biosequence'
 
 module Bio
 
