@@ -22,6 +22,7 @@ module Bio::Sequence::Adapter
   autoload :GenBank,     'bio/db/genbank/genbank_to_biosequence'
   autoload :EMBL,        'bio/db/embl/embl_to_biosequence'
   autoload :FastaFormat, 'bio/db/fasta/fasta_to_biosequence'
+  autoload :BioSQL,      'bio/db/biosql/biosql_to_biosequence'
 
   private
 
