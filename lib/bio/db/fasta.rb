@@ -29,6 +29,8 @@ require 'bio/db'
 require 'bio/sequence'
 require 'bio/sequence/dblink'
 require 'bio/db/fasta/defline'
+require 'bio/sequence/adapter'
+require 'bio/db/fasta/fasta_to_biosequence'
 
 module Bio
 
@@ -218,25 +220,7 @@ module Bio
     # because of efficiency.
     # 
     def to_biosequence
-      seq
-      obj = Bio::Sequence.new(@seq)
-      d = self.identifiers
-      # accessions
-      obj.primary_accession = d.accessions.first
-      obj.secondary_accessions = d.accessions[1..-1]
-      # entry_id
-      obj.entry_id = d.locus unless d.locus.to_s.empty?
-      # GI
-      other = []
-      other.push Bio::Sequence::DBLink.new('GI', d.gi) if d.gi
-      obj.other_seqids = other unless other.empty?
-      # definition
-      if d.accessions.empty? and other.empty? then
-        obj.definition = self.definition
-      else
-        obj.definition = d.description
-      end
-      obj
+      Bio::Sequence.adapter(self, Bio::Sequence::Adapter::FastaFormat)
     end
     alias to_seq to_biosequence
 
