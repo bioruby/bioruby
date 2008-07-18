@@ -64,7 +64,7 @@ class HMMER
     @output  = ''
     
     begin
-      @options = opt.to_ary
+      @options = options.to_ary
     rescue NameError #NoMethodError
       # backward compatibility
       @options = Shellwords.shellwords(options)
