@@ -282,13 +282,17 @@ module Bio
              @skip_leader_mode == :everytime)
         @splitter.skip_leader
       end
-      r = @splitter.get_entry
+      if raw then
+        r = @splitter.get_entry
+      else
+        r = @splitter.get_parsed_entry
+      end
       @firsttime_flag = false
       return nil unless r
       if raw then
 	r
       else
-	@entry = @dbclass.new(r)
+        @entry = r
         @entry
       end
     end
@@ -337,7 +341,7 @@ module Bio
     # Resets file pointer to the start of the flatfile.
     # (similar to IO#rewind)
     def rewind
-      r = @stream.rewind
+      r = (@splitter || @stream).rewind
       @firsttime_flag = true
       r
     end
@@ -399,7 +403,12 @@ module Bio
         begin
           @splitter = @dbclass.flatfile_splitter(@dbclass, @stream)
         rescue NameError, NoMethodError
-          @splitter = Splitter::Default.new(klass, @stream)
+          begin
+            splitter_class = @dbclass::FLATFILE_SPLITTER
+          rescue NameError
+            splitter_class = Splitter::Default
+          end
+          @splitter = splitter_class.new(klass, @stream)
         end
       else
 	@dbclass = nil
