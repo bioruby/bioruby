@@ -140,7 +140,13 @@ module Bio
               sp_rs = /\n\n/n
               sp_rs_orig = "\n\n"
             else
-              sp_rs = Regexp.new(Regexp.escape(io_rs, 'n'), 0, 'n')
+              begin
+                re_src = Regexp.escape(io_rs, 'n')
+              rescue ArgumentError
+                # In Ruby 1.9, $KCODE is deprecated.
+                re_src = Regexp.escape(io_rs)
+              end
+              sp_rs = Regexp.new(re_src, 0, 'n')
               sp_rs_orig = io_rs
             end
             a = @buffer.split(sp_rs, 2)
