@@ -1,7 +1,9 @@
 #
 # test/unit/bio/db/test_gff.rb - Unit test for Bio::GFF
 #
-# Copyright::   Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
+# Copyright::   Copyright (C) 2005, 2008
+#               Mitsuteru Nakao <n@bioruby.org>
+#               Naohisa Goto <ng@bioruby.org>
 # License::     The Ruby License
 #
 #  $Id: test_gff.rb,v 1.6 2007/04/05 23:35:43 trevor Exp $
@@ -128,6 +130,7 @@ test01	.	mRNA	101	280	.	+	.	ID=mrna01a;Name=testmRNAalterative;Note=test of alte
 test01	.	exon	101	160	.	+	.	ID=exon01;Name=exon01;Alias=exon 1;Parent=mrna01,mrna01a
 test01	.	exon	201	230	.	+	.	ID=exon02;Name=exon02;Alias=exon 2;Parent=mrna01
 test01	.	exon	251	280	.	+	.	ID=exon02a;Name=exon02a;Alias=exon 2a;Parent=mrna01a
+test01	.	Match	101	123	.	.	.	ID=match01;Name=match01;Target=EST101 1 21;Gap=M8 D3 M6 I1 M6
 ##FASTA
 >test01
 ACGAAGATTTGTATGACTGATTTATCCTGGACAGGCATTGGTCAGATGTCTCCTTCCGTATCGTCGTTTA
@@ -154,7 +157,7 @@ END_OF_DATA
     end
 
     def test_records
-      assert_equal(6, @gff3.records.size)
+      assert_equal(7, @gff3.records.size)
       r_test01 = Bio::GFF::GFF3::Record.new('test01',
                                             'RANDOM',
                                             'contig',
@@ -177,9 +180,21 @@ END_OF_DATA
                                               'Alias' => 'exon 1',
                                               'Parent' =>
                                               [ 'mrna01', 'mrna01a'] })
+
+      target = Bio::GFF::GFF3::Record::Target.new('EST101', 1, 21)
+      gap = Bio::GFF::GFF3::Record::Gap.new('M8 D3 M6 I1 M6')
+      r_match01 =Bio::GFF::GFF3::Record.new('test01',
+                                            nil,
+                                            'Match',
+                                            101, 123, nil, nil, nil,
+                                            { 'ID' => 'match01',
+                                              'Name' => 'match01',
+                                              'Target' => target,
+                                              'Gap' => gap })
       assert_equal(r_test01, @gff3.records[0])
       assert_equal(r_mrna01, @gff3.records[1])
       assert_equal(r_exon01, @gff3.records[3])
+      assert_equal(r_match01, @gff3.records[6])
     end
 
     def test_sequences
@@ -421,6 +436,65 @@ END_OF_DATA
     end
 
   end #class TestGFF3RecordTarget
+
+  class TestGFF3RecordGap < Test::Unit::TestCase
+    def setup
+      # examples taken from http://song.sourceforge.net/gff3.shtml
+      @gaps_src = [ 'M8 D3 M6 I1 M6',
+                    'M3 I1 M2 F1 M4',
+                    'M3 I1 M2 R1 M4' ]
+      @gaps = @gaps_src.collect { |x| Bio::GFF::GFF3::Record::Gap.new(x) }
+    end
+
+    def test_to_s
+      @gaps_src.each do |src|
+        assert_equal(src, @gaps.shift.to_s)
+      end
+    end
+
+    def test_eqeq
+      gap = Bio::GFF::GFF3::Record::Gap.new('M8 D3 M6 I1 M6')
+      assert(gap == @gaps[0])
+      assert_equal(false, gap == @gaps[1])
+    end
+
+    def test_process_sequences_na
+      ref = 'CAAGACCTAAACTGGATTCCAAT'
+      tgt = 'CAAGACCTCTGGATATCCAAT'
+      ref_aligned = 'CAAGACCTAAACTGGAT-TCCAAT'
+      tgt_aligned = 'CAAGACCT---CTGGATATCCAAT'
+      assert_equal([ ref_aligned, tgt_aligned ],
+                   @gaps[0].process_sequences_na(ref, tgt))
+    end
+
+    def test_process_sequences_na_aa
+      ref1 = 'atgaaggaggttattgaatgtcggcggt'
+      tgt1 = 'MKEVVINVGG'
+      ref1_aligned = 'atgaaggag---gttattgaatgtcggcggt'
+      tgt1_aligned = 'M  K  E  V  V  I  >N  V  G  G  '
+      assert_equal([ ref1_aligned, tgt1_aligned ],
+                   @gaps[1].process_sequences_na_aa(ref1, tgt1))
+    end
+
+    def test_process_sequences_na_aa_reverse_frameshift
+      ref2 = 'atgaaggaggttataatgtcggcggt'
+      tgt2 = 'MKEVVINVGG'
+      ref2_aligned = 'atgaaggag---gttat<aatgtcggcggt'
+      tgt2_aligned = 'M  K  E  V  V  I  N  V  G  G  '
+      assert_equal([ ref2_aligned, tgt2_aligned ],
+                   @gaps[2].process_sequences_na_aa(ref2, tgt2))
+    end
+
+    def test_process_sequences_na_aa_reverse_frameshift_more
+      gap = Bio::GFF::GFF3::Record::Gap.new("M3 R3 M3")
+      ref = 'atgaagattaatgtc'
+      tgt = 'MKIINV'
+      ref_aligned = 'atgaag<<<attaatgtc'
+      tgt_aligned = 'M  K  I  I  N  V  '
+      assert_equal([ ref_aligned, tgt_aligned ],
+                   gap.process_sequences_na_aa(ref, tgt))
+    end
+  end #class TestGFF3RecordGap
 
   class TestGFF3SequenceRegion < Test::Unit::TestCase
 

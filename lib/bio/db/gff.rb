@@ -4,6 +4,7 @@
 # Copyright::  Copyright (C) 2003, 2005
 #              Toshiaki Katayama <k@bioruby.org>
 #              2006  Jan Aerts <jan.aerts@bbsrc.ac.uk>
+#              2008  Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
 # $Id: gff.rb,v 1.9 2007/05/18 15:23:42 k Exp $
@@ -365,6 +366,16 @@ module Bio
 
         include GFF3::Escape
 
+        # shortcut to the ID attribute
+        def id
+          @attributes['ID']
+        end
+
+        # set ID attribute
+        def id=(str)
+          @attributes['ID'] = str
+        end
+
         # aliases for Column 1 (formerly "seqname")
         alias seqid seqname
         alias seqid= seqname=
@@ -534,6 +545,178 @@ module Bio
             end
           end
         end #class Target
+
+        # Bio:GFF::GFF3::Record::Gap is a class to store
+        # data of "Gap" attribute.
+        class Gap
+
+          # Code is a class to store length of single-letter code.
+          Code = Struct.new(:code, :length)
+
+          # Code is a class to store length of single-letter code.
+          class Code
+            # 1-letter code
+            attr_reader :code if false #dummy for RDoc
+
+            # length
+            attr_reader :length if false #dummy for RDoc
+ 
+            def to_s
+              "#{code}#{length}"
+            end
+          end #class code
+
+          # Creates a new Gap object.
+          # 
+          # ---
+          # *Arguments*:
+          # * _str_: a formatted string, or nil.
+          def initialize(str = nil)
+            if str then
+              @data = str.split(/ +/).collect do |x|
+                if /\A([A-Z])([0-9]+)\z/ =~ x.strip then
+                  Code.new($1, $2.to_i)
+                else
+                  warn "ignored unknown token: #{x}.inspect" if $VERBOSE
+                  nil
+                end
+              end
+              @data.compact!
+            else
+              @data = []
+            end
+          end
+
+          # Same as new(str).
+          def self.parse(str)
+            self.new(str)
+          end
+
+          # string representation
+          def to_s
+            @data.collect { |x| x.to_s }.join(" ")
+          end
+
+          def ==(other)
+            if other.class == self.class and
+                @data == other.instance_eval { @data } then
+              true
+            else
+              false
+            end
+          end
+
+          # duplicates sequences
+          def dup_seqs(*arg)
+            arg.collect do |s|
+              begin
+                s = s.seq
+              rescue NoMethodError
+              end
+              s.dup
+            end
+          end
+          private :dup_seqs
+
+          # Processes nucleotide sequences and
+          # returns gapped sequences as an array of sequences.
+          def process_sequences_na(reference, target, gap_char = '-')
+            s_ref, s_tgt = dup_seqs(reference, target)
+            p_ref = 0
+            p_tgt = 0
+            @data.each do |c|
+              case c.code
+              when 'M' # match
+                p_ref += c.length
+                p_tgt += c.length
+              when 'I' # insert a gap into the reference sequence
+                s_ref[p_ref, 0] = gap_char * c.length
+                p_ref += c.length
+                p_tgt += c.length
+              when 'D' # insert a gap into the target (delete from reference)
+                p_ref += c.length
+                s_tgt[p_tgt, 0] = gap_char * c.length
+                p_tgt += c.length
+              else
+                # Note that 'F' and 'R' is simply ignored.
+                warn "ignored #{c.to_s.inspect}" if $VERBOSE
+              end
+            end
+            if $VERBOSE and s_ref.length != s_tgt.length then
+              warn "returned sequences not equal length"
+            end
+            return s_ref, s_tgt
+          end
+
+          # Processes sequences and
+          # returns gapped sequences as an array of sequences.
+          # reference must be a nucleotide sequence, and
+          # target must be an amino acid sequence.
+          #
+          # Note for reverse frameshift:
+          # Reverse_frameshift characers are inserted in the 
+          # reference sequence.
+          # For example, alignment of "Gap=M3 R1 M2" is:
+          #     atgaagat<aatgtc
+          #     M  K  I  N  V  
+          # Alignment of "Gap=M3 R3 M3" is:
+          #     atgaag<<<attaatgtc
+          #     M  K  I  I  N  V  
+          #
+          # ---
+          # *Arguments*:
+          # * _reference_: reference sequence (nucleotide sequence)
+          # * _target_: target sequence (amino acid sequence)
+          # * <I>gap_char</I>: gap character
+          # * <I>space_char</I>: space character inserted to amino sequence for matching na-aa alignment
+          # * <I>forward_frameshift</I>: forward frameshift character
+          # * <I>reverse_frameshift</I>: reverse frameshift character
+          def process_sequences_na_aa(reference, target,
+                                      gap_char = '-',
+                                      space_char = ' ',
+                                      forward_frameshift = '>',
+                                      reverse_frameshift = '<')
+            s_ref, s_tgt = dup_seqs(reference, target)
+            s_tgt = s_tgt.gsub(/./, "\\0#{space_char}#{space_char}")
+            amino_increment = 1 + space_char.length * 2
+            amino_gap = "#{gap_char}#{space_char}#{space_char}"
+            p_ref = 0
+            p_tgt = 0
+            @data.each do |c|
+              #$stderr.puts c.inspect
+              #$stderr.puts "p_ref=#{p_ref} s_ref=#{s_ref.inspect}"
+              #$stderr.puts "p_tgt=#{p_tgt} s_tgt=#{s_tgt.inspect}"
+              case c.code
+              when 'M' # match
+                p_ref += c.length * 3
+                p_tgt += c.length * amino_increment
+              when 'I' # insert a gap into the reference sequence
+                s_ref[p_ref, 0] = gap_char * (c.length * 3)
+                p_ref += c.length * 3
+                p_tgt += c.length * amino_increment
+              when 'D' # insert a gap into the target (delete from reference)
+                s_tgt[p_tgt, 0] =  amino_gap * c.length
+                p_tgt += c.length * amino_increment
+                p_ref += c.length * 3
+              when 'F' # frameshift forward in the reference sequence
+                p_ref += c.length
+                s_tgt[p_tgt, 0] = forward_frameshift * c.length
+                p_tgt += c.length
+              when 'R' # frameshift reverse in the reference sequence
+                p_rev_frm = p_ref - c.length
+                if p_rev_frm < 0 then
+                  warn "alignment may be broken due to excess reverse frameshifts" if $VERBOSE
+                  p_rev_frm = 0
+                end
+                s_ref[p_rev_frm, 0] = reverse_frameshift * c.length
+                
+              else
+                warn "ignored #{c.to_s.inspect}" if $VERBOSE
+              end
+            end
+            return s_ref, s_tgt
+          end
+        end #class Gap
         
         private
         def parse_attributes(string)
@@ -546,6 +729,8 @@ module Bio
             case key
             when 'Target'
               values.collect! { |v| Target.parse(v) }
+            when 'Gap'
+              values.collect! { |v| Gap.parse(v) }
             else
               values.collect! { |v| unescape(v) }
             end
