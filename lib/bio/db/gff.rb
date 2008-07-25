@@ -597,9 +597,16 @@ module Bio
             @data.collect { |x| x.to_s }.join(" ")
           end
 
+          # Internal data. Users must not use it.
+          attr_reader :data
+          # @data can be read by other Gap instances
+          protected :data
+
+          # If self == other, returns true.
+          # otherwise, returns false.
           def ==(other)
             if other.class == self.class and
-                @data == other.instance_eval { @data } then
+                @data == other.data then
               true
             else
               false
@@ -618,30 +625,93 @@ module Bio
           end
           private :dup_seqs
 
-          # Processes nucleotide sequences and
-          # returns gapped sequences as an array of sequences.
-          def process_sequences_na(reference, target, gap_char = '-')
-            s_ref, s_tgt = dup_seqs(reference, target)
+          # (private method)
+          # insert gaps refers to the gap rule inside the object
+          def __process_sequences(s_ref, s_tgt,
+                                  ref_gap, tgt_gap,
+                                  ref_increment, tgt_increment,
+                                  forward_frameshift,
+                                  reverse_frameshift)
             p_ref = 0
             p_tgt = 0
             @data.each do |c|
+              #$stderr.puts c.inspect
+              #$stderr.puts "p_ref=#{p_ref} s_ref=#{s_ref.inspect}"
+              #$stderr.puts "p_tgt=#{p_tgt} s_tgt=#{s_tgt.inspect}"
               case c.code
               when 'M' # match
-                p_ref += c.length
-                p_tgt += c.length
+                p_ref += c.length * ref_increment
+                p_tgt += c.length * tgt_increment
               when 'I' # insert a gap into the reference sequence
-                s_ref[p_ref, 0] = gap_char * c.length
-                p_ref += c.length
-                p_tgt += c.length
+                begin
+                  s_ref[p_ref, 0] = ref_gap * c.length
+                rescue IndexError
+                  raise 'reference sequence too short'
+                end
+                p_ref += c.length * ref_increment
+                p_tgt += c.length * tgt_increment
               when 'D' # insert a gap into the target (delete from reference)
+                begin
+                  s_tgt[p_tgt, 0] =  tgt_gap * c.length
+                rescue IndexError
+                  raise 'target sequence too short'
+                end
+                p_ref += c.length * ref_increment
+                p_tgt += c.length * tgt_increment
+              when 'F' # frameshift forward in the reference sequence
+                begin
+                  s_tgt[p_tgt, 0] = forward_frameshift * c.length
+                rescue IndexError
+                  raise 'target sequence too short'
+                end
                 p_ref += c.length
-                s_tgt[p_tgt, 0] = gap_char * c.length
                 p_tgt += c.length
+              when 'R' # frameshift reverse in the reference sequence
+                p_rev_frm = p_ref - c.length
+                if p_rev_frm < 0 then
+                  raise 'too short reference sequence, or too many reverse frameshifts'
+                end
+                begin
+                  s_ref[p_rev_frm, 0] = reverse_frameshift * c.length
+                rescue IndexError
+                  raise 'reference sequence too short'
+                end
+                
               else
-                # Note that 'F' and 'R' is simply ignored.
                 warn "ignored #{c.to_s.inspect}" if $VERBOSE
               end
             end
+
+            if s_ref.length < p_ref then
+              raise 'reference sequence too short'
+            end
+            if s_tgt.length < p_tgt then
+              raise 'target sequence too short'
+            end
+            return s_ref, s_tgt
+          end
+          private :__process_sequences
+
+          # Processes nucleotide sequences and
+          # returns gapped sequences as an array of sequences.
+          #
+          # Note for forward/reverse frameshift:
+          # Forward/Reverse_frameshift is simply treated as
+          # gap insertion to the target/reference sequence.
+          #
+          # ---
+          # *Arguments*:
+          # * _reference_: reference sequence (nucleotide sequence)
+          # * _target_: target sequence (nucleotide sequence)
+          # * <I>gap_char</I>: gap character
+          def process_sequences_na(reference, target, gap_char = '-')
+            s_ref, s_tgt = dup_seqs(reference, target)
+
+            s_ref, s_tgt = __process_sequences(s_ref, s_tgt,
+                                               gap_char, gap_char,
+                                               1, 1,
+                                               gap_char, gap_char)
+
             if $VERBOSE and s_ref.length != s_tgt.length then
               warn "returned sequences not equal length"
             end
@@ -678,43 +748,15 @@ module Bio
                                       reverse_frameshift = '<')
             s_ref, s_tgt = dup_seqs(reference, target)
             s_tgt = s_tgt.gsub(/./, "\\0#{space_char}#{space_char}")
-            amino_increment = 1 + space_char.length * 2
-            amino_gap = "#{gap_char}#{space_char}#{space_char}"
-            p_ref = 0
-            p_tgt = 0
-            @data.each do |c|
-              #$stderr.puts c.inspect
-              #$stderr.puts "p_ref=#{p_ref} s_ref=#{s_ref.inspect}"
-              #$stderr.puts "p_tgt=#{p_tgt} s_tgt=#{s_tgt.inspect}"
-              case c.code
-              when 'M' # match
-                p_ref += c.length * 3
-                p_tgt += c.length * amino_increment
-              when 'I' # insert a gap into the reference sequence
-                s_ref[p_ref, 0] = gap_char * (c.length * 3)
-                p_ref += c.length * 3
-                p_tgt += c.length * amino_increment
-              when 'D' # insert a gap into the target (delete from reference)
-                s_tgt[p_tgt, 0] =  amino_gap * c.length
-                p_tgt += c.length * amino_increment
-                p_ref += c.length * 3
-              when 'F' # frameshift forward in the reference sequence
-                p_ref += c.length
-                s_tgt[p_tgt, 0] = forward_frameshift * c.length
-                p_tgt += c.length
-              when 'R' # frameshift reverse in the reference sequence
-                p_rev_frm = p_ref - c.length
-                if p_rev_frm < 0 then
-                  warn "alignment may be broken due to excess reverse frameshifts" if $VERBOSE
-                  p_rev_frm = 0
-                end
-                s_ref[p_rev_frm, 0] = reverse_frameshift * c.length
-                
-              else
-                warn "ignored #{c.to_s.inspect}" if $VERBOSE
-              end
-            end
-            return s_ref, s_tgt
+            ref_increment = 3
+            tgt_increment = 1 + space_char.length * 2
+            ref_gap = gap_char * 3
+            tgt_gap = "#{gap_char}#{space_char}#{space_char}"
+            return __process_sequences(s_ref, s_tgt,
+                                       ref_gap, tgt_gap,
+                                       ref_increment, tgt_increment,
+                                       forward_frameshift,
+                                       reverse_frameshift)
           end
         end #class Gap
         

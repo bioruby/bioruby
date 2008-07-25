@@ -467,6 +467,15 @@ END_OF_DATA
                    @gaps[0].process_sequences_na(ref, tgt))
     end
 
+    def test_process_sequences_na_tooshort
+      ref = 'CAAGACCTAAACTGGATTCCAA'
+      tgt = 'CAAGACCTCTGGATATCCAA'
+      assert_raise(RuntimeError) { @gaps[0].process_sequences_na(ref, tgt) }
+      ref = 'c'
+      tgt = 'c'
+      assert_raise(RuntimeError) { @gaps[0].process_sequences_na(ref, tgt) }
+    end
+
     def test_process_sequences_na_aa
       ref1 = 'atgaaggaggttattgaatgtcggcggt'
       tgt1 = 'MKEVVINVGG'
@@ -493,6 +502,20 @@ END_OF_DATA
       tgt_aligned = 'M  K  I  I  N  V  '
       assert_equal([ ref_aligned, tgt_aligned ],
                    gap.process_sequences_na_aa(ref, tgt))
+    end
+
+    def test_process_sequences_na_aa_tooshort
+      ref2 = 'atgaaggaggttataatgtcggcgg'
+      tgt2 = 'MKEVVINVG'
+      assert_raise(RuntimeError) do
+        @gaps[2].process_sequences_na_aa(ref2, tgt2)
+      end
+
+      ref2 = 'atg'
+      tgt2 = 'M'
+      assert_raise(RuntimeError) do
+        @gaps[2].process_sequences_na_aa(ref2, tgt2)
+      end
     end
   end #class TestGFF3RecordGap
 
