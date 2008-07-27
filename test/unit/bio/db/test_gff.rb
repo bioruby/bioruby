@@ -517,6 +517,26 @@ END_OF_DATA
         @gaps[2].process_sequences_na_aa(ref2, tgt2)
       end
     end
+
+    def test___scan_gap
+      str1 = 'CAAGACCT---CTGGATATCCAAT'
+      str2 = '-aaaaaaa-a-a---ggag--'
+      c = Bio::GFF::GFF3::Record::Gap::Code
+      data1 = [ c.new(:M, 8), c.new(:I, 3), c.new(:M, 13) ]
+      data2 = [ c.new(:I, 1), c.new(:M, 7), c.new(:I, 1), 
+                c.new(:M, 1), c.new(:I, 1), c.new(:M, 1),
+                c.new(:I, 3), c.new(:M, 4), c.new(:I, 2) ]
+
+      assert_equal(data1, @gaps[0].instance_eval { __scan_gap(str1) })
+      assert_equal(data2, @gaps[0].instance_eval { __scan_gap(str2) })
+    end
+
+    def test_new_from_sequences_na
+      ref_aligned = 'CAAGACCTAAACTGGAT-TCCAAT'
+      tgt_aligned = 'CAAGACCT---CTGGATATCCAAT'
+      
+      assert_equal(@gaps[0], Bio::GFF::GFF3::Record::Gap.new_from_sequences_na(ref_aligned, tgt_aligned))
+    end
   end #class TestGFF3RecordGap
 
   class TestGFF3SequenceRegion < Test::Unit::TestCase

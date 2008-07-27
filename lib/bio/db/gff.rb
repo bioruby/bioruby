@@ -555,10 +555,10 @@ module Bio
 
           # Code is a class to store length of single-letter code.
           class Code
-            # 1-letter code
+            # 1-letter code (Symbol). One of :M, :I, :D, :F, or :R is expected.
             attr_reader :code if false #dummy for RDoc
 
-            # length
+            # length (Integer)
             attr_reader :length if false #dummy for RDoc
  
             def to_s
@@ -575,7 +575,7 @@ module Bio
             if str then
               @data = str.split(/ +/).collect do |x|
                 if /\A([A-Z])([0-9]+)\z/ =~ x.strip then
-                  Code.new($1, $2.to_i)
+                  Code.new($1.intern, $2.to_i)
                 else
                   warn "ignored unknown token: #{x}.inspect" if $VERBOSE
                   nil
@@ -590,6 +590,103 @@ module Bio
           # Same as new(str).
           def self.parse(str)
             self.new(str)
+          end
+
+          def __scan_gap(str, gap_regexp = /[^a-zA-Z]/,
+                         code_i = :I, code_m = :M)
+            sc = StringScanner.new(str)
+            data = []
+            while len = sc.skip_until(gap_regexp)
+              mlen = len - sc.matched_size
+              data.push Code.new(code_m, mlen) if mlen > 0
+              g = Code.new(code_i, sc.matched_size)
+              while glen = sc.skip(gap_regexp)
+                g.length += glen
+              end
+              data.push g
+            end
+            if sc.rest_size > 0 then
+              m = Code.new(code_m, sc.rest_size)
+              data.push m
+            end
+            data
+          end
+          private :__scan_gap
+
+          def __initialize_from_sequences_na(reference, target,
+                                             gap_regexp = /[^a-zA-Z]/)
+            
+            data_ref = __scan_gap(reference, gap_regexp, :I, :M)
+            data_tgt = __scan_gap(target,    gap_regexp, :D, :M)
+            data = []
+
+            while !data_ref.empty? and !data_tgt.empty?
+              ref = data_ref.shift
+              tgt = data_tgt.shift
+              if ref.length > tgt.length then
+                x = Code.new(ref.code, ref.length - tgt.length)
+                data_ref.unshift x
+                ref.length = tgt.length
+              elsif ref.length < tgt.length then
+                x = Code.new(tgt.code, tgt.length - ref.length)
+                data_tgt.unshift x
+                tgt.length = ref.length
+              end
+              case ref.code
+              when :M
+                if tgt.code == :M then
+                  data.push ref
+                elsif tgt.code == :D then
+                  data.push tgt
+                else
+                  raise 'Bug: should not reached here.'
+                end
+              when :I
+                if tgt.code == :M then
+                  data.push ref
+                elsif tgt.code == :D then
+                  # This site is ignored,
+                  # because both reference and target are gap
+                else
+                  raise 'Bug: should not reached here.'
+                end
+              end
+            end #while
+
+            # rest of data_ref
+            len = 0
+            data_ref.each do |ref|
+              len += ref.length if ref.code == :M
+            end
+            data.push Code.new(:D, len) if len > 0
+
+            # rest of data_tgt
+            len = 0
+            data_tgt.each do |tgt|
+              len += tgt.length if tgt.code == :M
+            end
+            data.push Code.new(:I, len) if len > 0
+
+            @data = data
+            true
+          end
+          private :__initialize_from_sequences_na
+
+          # Creates a new Gap object from given sequence alignment.
+          #
+          # ---
+          # *Arguments*:
+          # * _reference_: reference sequence (nucleotide sequence)
+          # * _target_: target sequence (nucleotide sequence)
+          # * <I>gap_regexp</I>: regexp to identify gap
+          def self.new_from_sequences_na(reference, target,
+                                         gap_regexp = /[^a-zA-Z]/)
+            gap = self.new
+            gap.instance_eval { 
+              __initialize_from_sequences_na(reference, target,
+                                             gap_regexp)
+            }
+            gap
           end
 
           # string representation
@@ -639,10 +736,10 @@ module Bio
               #$stderr.puts "p_ref=#{p_ref} s_ref=#{s_ref.inspect}"
               #$stderr.puts "p_tgt=#{p_tgt} s_tgt=#{s_tgt.inspect}"
               case c.code
-              when 'M' # match
+              when :M # match
                 p_ref += c.length * ref_increment
                 p_tgt += c.length * tgt_increment
-              when 'I' # insert a gap into the reference sequence
+              when :I # insert a gap into the reference sequence
                 begin
                   s_ref[p_ref, 0] = ref_gap * c.length
                 rescue IndexError
@@ -650,7 +747,7 @@ module Bio
                 end
                 p_ref += c.length * ref_increment
                 p_tgt += c.length * tgt_increment
-              when 'D' # insert a gap into the target (delete from reference)
+              when :D # insert a gap into the target (delete from reference)
                 begin
                   s_tgt[p_tgt, 0] =  tgt_gap * c.length
                 rescue IndexError
@@ -658,7 +755,7 @@ module Bio
                 end
                 p_ref += c.length * ref_increment
                 p_tgt += c.length * tgt_increment
-              when 'F' # frameshift forward in the reference sequence
+              when :F # frameshift forward in the reference sequence
                 begin
                   s_tgt[p_tgt, 0] = forward_frameshift * c.length
                 rescue IndexError
@@ -666,7 +763,7 @@ module Bio
                 end
                 p_ref += c.length
                 p_tgt += c.length
-              when 'R' # frameshift reverse in the reference sequence
+              when :R # frameshift reverse in the reference sequence
                 p_rev_frm = p_ref - c.length
                 if p_rev_frm < 0 then
                   raise 'too short reference sequence, or too many reverse frameshifts'
