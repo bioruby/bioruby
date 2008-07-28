@@ -38,6 +38,14 @@ module Bio
     def self.example_config
       TEST_DATA + '/config.txt'
     end
+
+    def self.config_missing_tree
+      TEST_DATA + '/config.missing_tree.txt'
+    end
+
+    def self.config_missing_align
+      TEST_DATA + '/config.missing_align.txt'
+    end
   end
 
   class TestCodemlConfigGeneration < Test::Unit::TestCase
@@ -75,6 +83,30 @@ module Bio
       assert_equal(File.expand_path(loaded.options[:seqfile]), File.expand_path(TEST_DATA + '/abglobin.aa'))
       assert_equal(loaded.options[:fix_kappa], '1')
       assert_equal(loaded.options[:model], '1')
+    end
+
+  end
+
+  class TestExpectedErrorsThrown < Test::Unit::TestCase
+
+    def test_error_thrown_if_binary_does_not_exist
+      assert_raises ArgumentError do
+        Bio::CodeML.new('non_existent_file')
+      end
+    end
+
+    def test_error_thrown_if_treefile_does_not_exist
+      codeml = Bio::CodeML.new(TestCodemlData.dummy_binary)
+      assert_raises ArgumentError do
+        codeml.run(TestCodemlData.config_missing_tree)
+      end
+    end
+
+    def test_error_thrown_if_alignment_file_does_not_exist
+      codeml = Bio::CodeML.new(TestCodemlData.dummy_binary)
+      assert_raises ArgumentError do
+        codeml.run(TestCodemlData.config_missing_align)
+      end
     end
 
   end
