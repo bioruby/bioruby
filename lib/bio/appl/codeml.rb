@@ -18,9 +18,8 @@ require 'tempfile'
 require 'english'
 
 module Bio
-end
 
-class Bio::CodeML
+class CodeML
 
   DEFAULT_OPTIONS = {
     # Essential argumemts
@@ -139,4 +138,5 @@ class Bio::CodeML
     ['rates','lnf','rst','rub','rst1',self.options[:outfile]].each { |file| File.delete(file) if File.exists?(file) }
   end
 
-end
+end # End CodeML
+end # End Bio
