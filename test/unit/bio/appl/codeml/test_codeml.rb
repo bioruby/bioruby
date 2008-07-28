@@ -9,6 +9,9 @@ require 'pathname'
 libpath = Pathname.new(File.join(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib'))).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
 
+require 'test/unit'
+require 'bio/appl/codeml'
+
 module Bio
   class TestCodeML
     BIORUBY_ROOT  = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
