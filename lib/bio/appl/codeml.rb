@@ -1,3 +1,19 @@
+#
+# = bio/appl/codeml.rb - Wrapper for running codeml
+#
+# Copyright::  Copyright (C) 2008 Michael D. Barton <mail@michaelbarton.me.uk>,
+#
+# License::    The Ruby License
+#
+# == Description
+#
+# This file contains a wrapper for running the CodeML tool for estimating evolutionary rate 
+#
+# == References
+#
+# * http://abacus.gene.ucl.ac.uk/software/paml.html
+#
+
 require 'tempfile'
 require 'english'
 
