@@ -30,6 +30,14 @@ module Bio
       },test_config)
       test_config
     end
+
+    def self.dummy_binary
+      TEST_DATA + '/dummy_binary'
+    end
+
+    def self.example_config
+      TEST_DATA + '/config.txt'
+    end
   end
 
   class TestCodemlConfigGeneration < Test::Unit::TestCase
@@ -48,6 +56,25 @@ module Bio
       assert_equal(produced_config['seqfile'], TEST_DATA + '/abglobin.aa')
       assert_equal(produced_config['fix_kappa'], '1')
       assert_equal(produced_config['model'], '1')
+    end
+  end
+
+  class TestConfigFileUsage < Test::Unit::TestCase
+    
+    def loaded
+      codeml = Bio::CodeML.new(TestCodemlData.dummy_binary)
+      codeml.load_options_from_file(TestCodemlData.example_config)
+      codeml
+    end
+
+    def test_options_should_be_loaded_from_config
+      assert_not_nil(loaded.options)
+    end
+
+    def test_correct_options_should_be_loaded
+      assert_equal(File.expand_path(loaded.options[:seqfile]), File.expand_path(TEST_DATA + '/abglobin.aa'))
+      assert_equal(loaded.options[:fix_kappa], '1')
+      assert_equal(loaded.options[:model], '1')
     end
 
   end
