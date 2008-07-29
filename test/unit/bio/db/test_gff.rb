@@ -537,6 +537,67 @@ END_OF_DATA
       
       assert_equal(@gaps[0], Bio::GFF::GFF3::Record::Gap.new_from_sequences_na(ref_aligned, tgt_aligned))
     end
+
+    def test_new_from_sequences_na_aa
+      ref = 'atgaaggag---gttattgaatgtcggcggt'
+      tgt = 'M  K  E  V  V  I  >N  V  G  G  '
+      assert_equal(@gaps[1],
+                   Bio::GFF::GFF3::Record::Gap.new_from_sequences_na_aa(ref,
+                                                                        tgt))
+    end
+
+    def test_new_from_sequences_na_aa_reverse_frameshift
+      ref = 'atgaaggag---gttat<aatgtcggcggt'
+      tgt = 'M  K  E  V  V  I  N  V  G  G  '
+      assert_equal(@gaps[2],
+                   Bio::GFF::GFF3::Record::Gap.new_from_sequences_na_aa(ref,
+                                                                        tgt))
+    end
+
+    def test_new_from_sequences_na_aa_reverse_frameshift_more
+      gap = Bio::GFF::GFF3::Record::Gap.new("M3 R3 M3")
+      ref = 'atgaag<<<attaatgtc'
+      tgt = 'M  K  I  I  N  V  '
+      assert_equal(gap,
+                   Bio::GFF::GFF3::Record::Gap.new_from_sequences_na_aa(ref,
+                                                                        tgt))
+    end
+
+    def test_new_from_sequences_na_aa_boundary_gap
+      g = Bio::GFF::GFF3::Record::Gap
+
+      ref = '---atgatg'
+      tgt = 'K  M  M  '
+      assert_equal(Bio::GFF::GFF3::Record::Gap.new('I1 M2'),
+                   g.new_from_sequences_na_aa(ref, tgt))
+
+      ref = 'atgatg---'
+      tgt = 'M  M  K  '
+      assert_equal(Bio::GFF::GFF3::Record::Gap.new('M2 I1'),
+                   g.new_from_sequences_na_aa(ref, tgt))
+
+      ref = 'atgatgatg'
+      tgt = '-  M  M  '
+      assert_equal(Bio::GFF::GFF3::Record::Gap.new('D1 M2'),
+                   g.new_from_sequences_na_aa(ref, tgt))
+
+      ref = 'atgatgatg'
+      tgt = 'M  M  -  '
+      assert_equal(Bio::GFF::GFF3::Record::Gap.new('M2 D1'),
+                   g.new_from_sequences_na_aa(ref, tgt))
+    end
+
+    def test_new_from_sequences_na_aa_example
+      gap = Bio::GFF::GFF3::Record::Gap.new('M2 R1 M1 F2 M1')
+      ref1 = 'atgg-taagac-att'
+      tgt1 = 'M  V  K  -  I  '
+      ref2 = 'atggt<aagacatt'
+      tgt2 = 'M  V  K  >>I  '
+      gap1 = Bio::GFF::GFF3::Record::Gap.new_from_sequences_na_aa(ref1, tgt1)
+      assert_equal(gap, gap1)
+      gap2 = Bio::GFF::GFF3::Record::Gap.new_from_sequences_na_aa(ref2, tgt2)
+      assert_equal(gap, gap2)
+    end
   end #class TestGFF3RecordGap
 
   class TestGFF3SequenceRegion < Test::Unit::TestCase

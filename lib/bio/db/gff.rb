@@ -592,6 +592,8 @@ module Bio
             self.new(str)
           end
 
+          # (private method)
+          # Scans gaps and returns an array of Code objects
           def __scan_gap(str, gap_regexp = /[^a-zA-Z]/,
                          code_i = :I, code_m = :M)
             sc = StringScanner.new(str)
@@ -613,6 +615,9 @@ module Bio
           end
           private :__scan_gap
 
+          # (private method)
+          # Parses given reference-target sequence alignment and
+          # initializes self. Existing data will be erased.
           def __initialize_from_sequences_na(reference, target,
                                              gap_regexp = /[^a-zA-Z]/)
             
@@ -639,7 +644,7 @@ module Bio
                 elsif tgt.code == :D then
                   data.push tgt
                 else
-                  raise 'Bug: should not reached here.'
+                  raise 'Bug: should not reach here.'
                 end
               when :I
                 if tgt.code == :M then
@@ -648,7 +653,7 @@ module Bio
                   # This site is ignored,
                   # because both reference and target are gap
                 else
-                  raise 'Bug: should not reached here.'
+                  raise 'Bug: should not reach here.'
                 end
               end
             end #while
@@ -674,6 +679,9 @@ module Bio
 
           # Creates a new Gap object from given sequence alignment.
           #
+          # Note that sites of which both reference and target are gaps
+          # are silently removed.
+          #
           # ---
           # *Arguments*:
           # * _reference_: reference sequence (nucleotide sequence)
@@ -685,6 +693,208 @@ module Bio
             gap.instance_eval { 
               __initialize_from_sequences_na(reference, target,
                                              gap_regexp)
+            }
+            gap
+          end
+
+          # (private method)
+          # scans a codon or gap in reference sequence
+          def __scan_codon(sc_ref, 
+                           gap_regexp, space_regexp,
+                           forward_frameshift_regexp,
+                           reverse_frameshift_regexp)
+            chars = []
+            gap_count = 0
+            fs_count = 0
+
+            while chars.size < 3 + fs_count and char = sc_ref.scan(/./mn)
+              case char
+              when space_regexp
+                # ignored
+              when forward_frameshift_regexp
+                # next char is forward frameshift
+                fs_count += 1
+              when reverse_frameshift_regexp
+                # next char is reverse frameshift
+                fs_count -= 1
+              when gap_regexp
+                chars.push char
+                gap_count += 1
+              else
+                chars.push char
+              end
+            end #while
+            if chars.size < (3 + fs_count) then
+              gap_count += (3 + fs_count) - chars.size
+            end
+            return gap_count, fs_count
+          end
+          private :__scan_codon
+              
+          # (private method)
+          # internal use only
+          def __push_code_to_data(cur, data, code, len)
+            if cur and cur.code == code then
+              cur.length += len
+            else
+              cur = Code.new(code, len)
+              data.push cur
+            end
+            return cur
+          end
+          private :__push_code_to_data
+
+          # (private method)
+          # Parses given reference(nuc)-target(amino) sequence alignment and
+          # initializes self. Existing data will be erased.
+          def __initialize_from_sequences_na_aa(reference, target,
+                                                gap_regexp = /[^a-zA-Z]/,
+                                                space_regexp = /\s/,
+                                                forward_frameshift_regexp =
+                                                /\>/,
+                                                reverse_frameshift_regexp =
+                                                /\</)
+
+            data = []
+            sc_ref = StringScanner.new(reference)
+            sc_tgt = StringScanner.new(target)
+
+            re_one = /./mn
+
+            while !sc_tgt.eos?
+              if len = sc_tgt.skip(space_regexp) then
+                # ignored
+              elsif len = sc_tgt.skip(forward_frameshift_regexp) then
+                cur = __push_code_to_data(cur, data, :F, len)
+                len.times { sc_ref.scan(re_one) }
+
+              elsif len = sc_tgt.skip(reverse_frameshift_regexp) then
+                cur = __push_code_to_data(cur, data, :R, len)
+                pos = sc_ref.pos
+                pos -= len
+                if pos < 0 then
+                  warn "Incorrect reverse frameshift" if $VERBOSE
+                  pos = 0
+                end
+                sc_ref.pos = pos
+
+              elsif len = sc_tgt.skip(gap_regexp) then
+                len.times do
+                  ref_gaps, ref_fs = __scan_codon(sc_ref,
+                                                  gap_regexp,
+                                                  space_regexp,
+                                                  forward_frameshift_regexp,
+                                                  reverse_frameshift_regexp)
+                  case ref_gaps
+                  when 3
+                    # both ref and tgt are gap. ignored the site
+                  when 2, 1
+                    # forward frameshift inserted
+                    ref_fs += (3 - ref_gaps)
+                  when 0
+                    cur = __push_code_to_data(cur, data, :D, 1)
+                  else
+                    raise 'Bug: should not reach here'
+                  end
+                  if ref_fs < 0 then
+                    cur = __push_code_to_data(cur, data, :R, -ref_fs)
+                  elsif ref_fs > 0 then
+                    cur = __push_code_to_data(cur, data, :F, ref_fs)
+                  end
+                end #len.times
+              elsif len = sc_tgt.skip(re_one) then
+                # always 1-letter
+                ref_gaps, ref_fs = __scan_codon(sc_ref,
+                                                gap_regexp,
+                                                space_regexp,
+                                                forward_frameshift_regexp,
+                                                reverse_frameshift_regexp)
+                case ref_gaps
+                when 3
+                  cur = __push_code_to_data(cur, data, :I, 1)
+                when 2, 1, 0
+                  # reverse frameshift inserted when gaps exist
+                  ref_fs -= ref_gaps
+                  # normal site
+                  cur = __push_code_to_data(cur, data, :M, 1)
+                else
+                  raise 'Bug: should not reach here'
+                end
+                if ref_fs < 0 then
+                  cur = __push_code_to_data(cur, data, :R, -ref_fs)
+                elsif ref_fs > 0 then
+                  cur = __push_code_to_data(cur, data, :F, ref_fs)
+                end
+              else
+                raise 'Bug: should not reach here'
+              end
+            end #while
+
+            if sc_ref.rest_size > 0 then
+              rest = sc_ref.scan(/.*/mn)
+              rest.gsub!(space_regexp, '')
+              rest.gsub!(forward_frameshift_regexp, '')
+              rest.gsub!(reverse_frameshift_regexp, '')
+              rest.gsub!(gap_regexp, '')
+              len = rest.length.div(3)
+              cur = __push_code_to_data(cur, data, :D, len) if len > 0
+              len = rest.length % 3
+              cur = __push_code_to_data(cur, data, :F, len) if len > 0
+            end
+
+            @data = data
+            self
+          end
+          private :__initialize_from_sequences_na_aa
+
+          # Creates a new Gap object from given sequence alignment.
+          #
+          # Note that sites of which both reference and target are gaps
+          # are silently removed.
+          #
+          # For incorrect alignments that break 3:1 rule,
+          # gap positions will be moved inside codons,
+          # unwanted gaps will be removed, and
+          # some forward or reverse frameshift will be inserted.
+          # 
+          # For example,
+          #    atgg-taagac-att
+          #    M  V  K  -  I  
+          # is treated as:
+          #    atggt<aagacatt
+          #    M  V  K  >>I  
+          #
+          # Incorrect combination of frameshift with frameshift or gap
+          # may cause undefined behavior.
+          #
+          # Forward frameshifts are recomended to be indicated in the
+          # target sequence.
+          # Reverse frameshifts can be indicated in the reference sequence
+          # or the target sequence.
+          #
+          # Priority of regular expressions:
+          #   space > forward/reverse frameshift > gap
+          # 
+          # ---
+          # *Arguments*:
+          # * _reference_: reference sequence (nucleotide sequence)
+          # * _target_: target sequence (amino acid sequence)
+          # * <I>gap_regexp</I>: regexp to identify gap
+          # * <I>space_regexp</I>: regexp to identify space character which is completely ignored
+          # * <I>forward_frameshift_regexp</I>: regexp to identify forward frameshift
+          # * <I>reverse_frameshift_regexp</I>: regexp to identify reverse frameshift
+          def self.new_from_sequences_na_aa(reference, target,
+                                            gap_regexp = /[^a-zA-Z]/,
+                                            space_regexp = /\s/,
+                                            forward_frameshift_regexp = /\>/,
+                                            reverse_frameshift_regexp = /\</)
+            gap = self.new
+            gap.instance_eval { 
+              __initialize_from_sequences_na_aa(reference, target,
+                                                gap_regexp,
+                                                space_regexp,
+                                                forward_frameshift_regexp,
+                                                reverse_frameshift_regexp)
             }
             gap
           end
