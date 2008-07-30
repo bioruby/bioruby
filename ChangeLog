@@ -1,3 +1,59 @@
+2008-07-29  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Bug fix: fixed ScanError when bit score is in exponential notation
+	  such as 1.234e+5. Regular expressions for numerics including
+	  exponential notations are changed to get correct values.
+
+2008-07-18  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/hmmer.rb
+
+	  Bug fix: ArgumentError caused by misspelling of a variable name.
+
+2008-06-23  Jan Aerts <jan.aerts@gmail.com>
+
+	* README.rdoc
+	* README_DEV.rdoc
+	* gemspec.rb
+	
+	  Renamed README files to RDoc gets parsed on github website.
+	  (commit 34b7693f74de2358759e955d8ce36cfe15e64b54)
+	  Edited README.rdoc and README_DEV.rdoc to reflect move from CVS
+	  to git.
+	  (commit a61b16163d3ca74f3f7c8d8e8f03f5f8c68dee60)
+
+2008-06-13  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/reference.rb
+	* test/unit/bio/test_reference.rb
+
+	  * New method Bio::Reference#pubmed_url added (renamed the url method
+	    in CVS revision 1.25).
+	  * Bio::Reference#endnote is changed not to overwrite url if url is
+	    already given by user.
+	  * Improvement of Bio::Reference#bibtex method. (Idea to improve
+	    bibtex method is originally made by Pjotr Prins.)
+
+	* test/unit/bio/util/restriction_enzyme/double_stranded/test_aligned_strands.rb
+	  "require 'bio/sequence'" is needed to run the tests in this file.
+	  (commit 735e3563b723645afa65f0e4213a7c92152f68ec)
+
+2008-05-19  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* sample/fastasort.rb
+
+	  Simple example for sorting a flatfile
+	  (commit 677ac7c0707860f0478e75f72f23faa05b29dc6d)
+
+	* doc/Tutorial.rd
+	* sample/fastagrep.rb
+	* sample/fastasort.rb
+
+	  Piping FASTA files (examples and doc)
+	  (commit ecd5e04477246dcf6cac84a6fbd21fb59efa3cf0)
+
 2008-05-14  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/blast/format0.rb
@@ -29,6 +85,23 @@
 	  ignored because of conflicts of the names of test classes.
 	  Class name in test_xmlparser.rb is changed to fix the bug.
 
+2008-04-23  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/embl/common.rb
+
+	  Bug fix: Bio::EMBL#references failed to parse journal name,
+	  volume, issue, pages, and year. In addition, it might failed
+	  to parse PubMed ID.
+	  (commit c715f51729b115309a78cf29fdce7fef992da875)
+
+2008-04-18  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/embl/sptr.rb
+
+	  Bug fix: Bio::SPTR#references raises NoMethodError since
+	  lib/bio/db/embl/sptr.rb CVS version 1.34.
+	  (commit 1b3e484e19c9c547cecfe53858a646b525685e0d)
+
 2008-04-15  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/blast/rpsblast.rb
@@ -51,6 +124,26 @@
 	  Thanks to Semin Lee who reported the bugs and sent patches
 	  ([BioRuby] Bio::PDB parsing problem (1B2M)).
 
+2008-02-19  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/ncbirest.rb
+	* lib/bio/io/pubmed.rb
+
+	  NCBI E-Utilities (REST) functionality is separated to ncbirest.rb
+	  and pubmed.rb is changed to utilize the Bio::NCBI::REST class for
+	  esearch and efetch. You can now search and retrieve any database
+	  in any format that NCBI supports by E-Utilities through the
+	  Bio::NCBI::REST interface (currently, only esearch and efetch methods
+	  are implemented).
+	  (commit 0677bb69044cf6cfba453420bc1bbeb422f691c1)
+	  (commit f60e9f8153efacff0c97d12fb5c0830ebeb02edd)
+	  (commit 6e4670ab5e67ca596788f4c26a95a9687d36ce84)
+
+2008-02-13  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* doc/Tutorial.rd
+	  (commit d7ee01d86d6982f6b8aa19eba9adac95bebb08e8)
+
 2008-02-12  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/blast/format0.rb
@@ -60,6 +153,54 @@
 	  by blastall; Failed to parse e-value for some BLASTX results.
 	  Thanks to Shuji Shigenobu who reported the bugs and sent patches.
 
+2008-02-11  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* doc/Tutorial.rd
+
+	  Expanding on the Tutorial
+	  (bdc1d14f497909041fa761f659a74d98702a335a)
+	  Minor adjustments to Tutorial
+	  (72b5f4f0667a3a0c44ca31b0ab8228381e37919c)
+
+2008-02-06  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* sample/na2aa.rb
+
+	  Simple example to translate any NA to AA fasta
+	  (commit 433f974219cf04342935c1760464af24a5696c49)
+
+2008-02-05  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* sample/gb2fasta.rb
+
+	  Fixed broken require in gb2fasta example
+	  (commit b55daed0d6cff2e45155be01ef2a946925c972cf)
+
+2008-02-05  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* doc/Tutorial.rd
+
+	  Minor tweak to Tutorial.rd
+	  (commit 75416d780f99de24498a47fd22703d74f9a22329)
+
+2008-02-03  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* doc/Tutorial.rd
+
+	  More doctests in Tutorial.rd
+	  (commit 39d182bb67977956c0f22631ac596d65ccce74ff)
+
+2008-02-02  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* doc/Tutorial.rd
+
+	  Tabs in the Tutorial broke the rd parser - the Wiki will be fixed
+	  now.
+	  (commit 49078a5dea4f16f44add1882c60bf75df67ea19b)
+	  Updating tutorial.
+	  (commit f2f2005c3964f37e2d65afef0d52e63950d6bcb7)
+	  (commit d2b05581953712d0ac67ba0de1aa43853ed4e27f)
+
 2008-02-02  Toshiaki Katayama <k@bioruby.org>
 
 	* lib/bio/shell/rails/vendor/plugins/
@@ -67,6 +208,21 @@
 	  The 'generators' directory is moved under the 'bioruby' subdirectory
 	  so that 'bioruby --rails' command can work with Rails 2.x series
 	  in addition to the Rails 1.2.x series.
+
+2008-01-30  Mitsuteru Nakao <n@bioruby.org>
+
+	* lib/bio/appl/blast.rb
+
+	  Fixed the bug at building the blastall command line options ('-m 0').
+	  (commit 61443d177847825505103488573186dfc4e7568e)
+
+2008-01-10  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/emboss.rb
+
+	  Added a method Bio::EMBOSS.run(program, arguments...)
+	  and Bio::EMBOSS.new is obsoleted.
+	  (commit fa04d97b073aefe05edc34a84498ba0a57ff98d2)
 
 2008-01-10  Toshiaki Katayama <k@bioruby.org>
 
