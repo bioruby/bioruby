@@ -19,6 +19,39 @@ require 'english'
 
 module Bio
 
+  # == Description
+  #
+  # Bio::CodeML is a wrapper for estimating evolutionary rate using the CodeML 
+  # tool. The class provides methods for generating the necessary configuration 
+  # file, and running CodeML with the specified binary. CodeML output is 
+  # returned when CodeML is run. Bio::CodeML::Report and Bio::CodeML::Rates
+  # provide simple classes for parsing and accessing the CodeML report and
+  # rates files respectively.
+  #
+  # == Usage
+  #
+  #   require 'bio'
+  #
+  #   # Create a config file, setting some CodeML options
+  #   # Default options are used otherwise, see RDoc for defaults
+  #   # The names of the options correspond to those specified in the CodeML documentation
+  #   config_file = Tempfile.new('codeml_config').path
+  #   Bio::CodeML.create_config_file({
+  #     :model       => 1,
+  #     :fix_kappa   => 1,
+  #     :aaRatefile  => TEST_DATA + '/wag.dat',
+  #     :seqfile     => TEST_DATA + '/abglobin.aa',
+  #     :treefile    => TEST_DATA + '/abglobin.trees',
+  #     :outfile     => Tempfile.new('codeml_test').path,
+  #    },config_file)
+  #
+  #    # Create an instance of CodeML specifying where the codeml binary is
+  #    codeml = Bio::CodeML.new('codeml_binary')
+  #
+  #    # Run codeml using a config file
+  #    # Returns the command line output
+  #    codeml_output = codeml.run(config_file)
+  #
   class CodeML
 
     DEFAULT_OPTIONS = {
@@ -81,6 +114,8 @@ module Bio
       end
       location
     end
+
+    private
 
     def load_options_from_file(file)
       options = Hash.new
