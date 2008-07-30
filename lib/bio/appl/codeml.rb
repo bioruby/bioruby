@@ -69,18 +69,7 @@ class CodeML
     load_options_from_file(config_file)
     check_options
     output = %x[ #{@binary} #{config_file} ]
-
-    loglik  = pull_log_likelyhood(output)
-
-    if loglik == nil || ! File.exists?(self.options[:outfile])
-      raise RuntimeError.new("Error running codeml\n" + output)
-    end
-
-    result = {:log_likelyhood => loglik}
-    result[:alpha] = pull_alpha
-    result[:rates] = pull_rates
-
-    result
+    output
   end
  
   def self.create_config_file(options = Hash.new, location = Tempfile.new('codeml_config').path)
@@ -105,37 +94,6 @@ class CodeML
   def check_options
     raise ArgumentError.new("Sequence file not found") unless File.exists?(self.options[:seqfile])
     raise ArgumentError.new("Tree file not found") unless File.exists?(self.options[:treefile])
-  end
-
-  def pull_log_likelyhood(text)
-    text[/lnL  = (-?\d+(\.\d+)?)/,1].to_f
-  end
-
-  def pull_alpha
-    re = /alpha .+ =\s+(-?\d+(\.\d+)?)/
-    File.new(self.options[:outfile]).each do |line|
-      if re =~ line
-        return Regexp.last_match[1].to_f
-      end
-    end
-    # Return nil if not found
-    return nil
-  end
-
-  def pull_rates
-    re = /\s+(\d+)\s+(\d+)\s+([A-Z]+)\s+(\d+\.\d+)\s+(\d)/
-    rates = Array.new
-    File.new('rates','r').each do |line|
-      if re =~ line
-        match = Regexp.last_match
-        rates[match[1].to_i] = {:freq => match[2].to_i, :data => match[3], :rate => match[4].to_f }
-      end
-    end
-    rates
-  end
-
-  def clean_up
-    ['rates','lnf','rst','rub','rst1',self.options[:outfile]].each { |file| File.delete(file) if File.exists?(file) }
   end
 
 end # End CodeML
