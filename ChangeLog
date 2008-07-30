@@ -1,3 +1,44 @@
+2008-07-30  BioHackathon2008 participants from BioRuby project
+
+	* Branch 'biohackathon2008' is merged.
+	  See doc/Changes-1.3.rd for incompatible changes.
+
+	* lib/bio/sequence.rb, lib/bio/sequence/
+	* lib/bio/db/embl/
+	* lib/bio/db/genbank/
+	* lib/bio/db/fasta.rb, lib/bio/db/fasta/
+
+	  A new method #to_biosequence is added to Bio::EMBL, Bio::GenBank
+	  and Bio::FastaFormat. Bio::FastaFormat#to_seq is now an alias of
+	  the #to_biosequence method.
+
+	  Bio::Sequence#output is added to output formatted text.
+	  Supported formats are: EMBL, GenBank, Fasta, or raw.
+
+	  Written by Naohisa Goto and Jan Aerts.
+	
+	* lib/bio/db/biosql/
+	* lib/bio/io/sql.rb, lib/bio/io/biosql/
+
+	  New BioSQL implementation by Raoul Jean Pierre Bonnal.
+
+	* lib/bio/reference.rb
+	* lib/bio/feature.rb
+
+	  Bio::References and Bio::Features are obsoleted.
+	  For more information, see doc/Changes-1.3.rd.
+
+	* (Many changes are not listed here. See git log for details.)
+
+2008-07-30  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/gff.rb, test/unit/bio/db/test_gff.rb
+
+	  Branch 'test-gff3' in git://github.com/ngoto/bioruby is merged.
+	  Fixed gff3 attribute bug, and many improvements are added.
+	  See doc/Changes-1.3.rd for incompatible changes.
+	  Thanks to Ben Woodcroft who reported the bug and contributed codes.
+
 2008-07-29  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/blast/format0.rb
