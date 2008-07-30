@@ -1,3 +1,19 @@
+#
+# = bio/appl/codeml/rates.rb - CodeML rates report file parser
+#
+# Copyright::  Copyright (C) 2008 Michael D. Barton <mail@michaelbarton.me.uk>
+#
+# License::    The Ruby License
+#
+# == Description
+#
+# This file contains a class that implement a simple interface to CodeML rates estimation file
+#
+# == References
+#
+# * http://abacus.gene.ucl.ac.uk/software/paml.html
+#
+
 require 'delegate'
 
 module Bio

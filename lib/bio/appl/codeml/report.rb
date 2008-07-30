@@ -1,3 +1,19 @@
+#
+# = bio/appl/codeml/report.rb - CodeML report parser
+#
+# Copyright::  Copyright (C) 2008 Michael D. Barton <mail@michaelbarton.me.uk>
+#
+# License::    The Ruby License
+#
+# == Description
+#
+# This file contains a class that implement a simple interface to CodeML output file
+#
+# == References
+#
+# * http://abacus.gene.ucl.ac.uk/software/paml.html
+#
+
 module Bio
   class CodeML
     class Report
