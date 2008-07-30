@@ -12,6 +12,10 @@ $:.unshift(libpath) unless $:.include?(libpath)
 require 'test/unit'
 require 'bio/appl/codeml'
 
+# Set this method to public so that it can be tested
+Bio::CodeML.class_eval{public :load_options_from_file }
+
+
 BIORUBY_ROOT  = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4)).cleanpath.to_s
 TEST_DATA = Pathname.new(File.join(BIORUBY_ROOT, 'test', 'data', 'codeml')).cleanpath.to_s
 
