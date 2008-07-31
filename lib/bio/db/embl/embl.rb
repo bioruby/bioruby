@@ -2,10 +2,12 @@
 # = bio/db/embl/embl.rb - EMBL database class
 #
 # 
-# Copyright::   Copyright (C) 2001-2007 Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::   Copyright (C) 2001-2007
+#               Mitsuteru C. Nakao <n@bioruby.org>
+#               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: embl.rb,v 1.29 2007/04/05 23:35:40 trevor Exp $
+# $Id: embl.rb,v 1.29.2.7 2008/06/17 16:04:36 ngoto Exp $
 #
 # == Description
 #
@@ -29,8 +31,13 @@
 #   http://www.ebi.ac.uk/embl/Documentation/User_manual/usrman.html
 #
 
+require 'date'
 require 'bio/db'
 require 'bio/db/embl/common'
+require 'bio/compat/features'
+require 'bio/compat/references'
+require 'bio/sequence'
+require 'bio/sequence/dblink'
 
 module Bio
 class EMBL < EMBLDB
@@ -120,6 +127,14 @@ class EMBL < EMBLDB
   end
   alias molecule_type molecule
 
+  def data_class
+    id_line('DATA_CLASS')
+  end
+  
+  def topology
+    id_line('TOPOLOGY')
+  end
+  
   # returns DIVISION in the ID line.
   # * Bio::EMBL#division -> String
   def division
@@ -221,8 +236,8 @@ class EMBL < EMBLDB
   # RN RC RP RX RA RT RL
   #
   # Bio::EMBLDB#ref
-
-
+  
+  
   ##
   # DR Line; defabases cross-regerence (>=0)
   # "DR  database_identifier; primary_identifier; secondary_identifier."
@@ -246,7 +261,6 @@ class EMBL < EMBLDB
   # FT Line; feature table data (>=0)
   def ft
     unless @data['FT']
-      @data['FT'] = Array.new
       ary = Array.new
       in_quote = false
       @orig['FT'].each_line do |line|
@@ -276,7 +290,7 @@ class EMBL < EMBLDB
         parse_qualifiers(subary)
       end
 
-      @data['FT'] = Features.new(ary)
+      @data['FT'] = ary.extend(Bio::Features::BackwardCompatibility)
     end
     if block_given?
       @data['FT'].each do |feature|
@@ -311,9 +325,9 @@ class EMBL < EMBLDB
   #
   # CC Line; comments of notes (>=0)
   def cc
-    get('CC')
+    get('CC').to_s.gsub(/^CC   /, '')
   end
-
+  alias comment cc
 
   ##
   # XX Line; spacer line (many)
@@ -355,13 +369,96 @@ class EMBL < EMBLDB
   # @orig[''] as sequence
   # bb Line; (blanks) sequence data (>=1)
   def seq
-    Sequence::NA.new( fetch('').gsub(/ /,'').gsub(/\d+/,'') )
+    Bio::Sequence::NA.new( fetch('').gsub(/ /,'').gsub(/\d+/,'') )
   end
   alias naseq seq
   alias ntseq seq
 
+  #--
   # // Line; termination line (end; 1/entry)
+  #++
 
+  # modified date. Returns Date object, String or nil.
+  def date_modified
+    parse_date(self.dt['updated'])
+  end
+
+  # created date. Returns Date object, String or nil.
+  def date_created
+    parse_date(self.dt['created'])
+  end
+
+  # release number when last updated
+  def release_modified
+    parse_release_version(self.dt['updated'])[0]
+  end
+
+  # release number when created
+  def release_created
+    parse_release_version(self.dt['created'])[0]
+  end
+
+  # entry version number numbered by EMBL
+  def entry_version
+    parse_release_version(self.dt['updated'])[1]
+  end
+
+  # parse date string. Returns Date object.
+  def parse_date(str)
+    begin
+      Date.parse(str)
+    rescue ArgumentError, TypeError, NoMethodError, NameError
+      str
+    end
+  end
+  private :parse_date
+
+  # extracts release and version numbers from DT line
+  def parse_release_version(str)
+    return [ nil, nil ] unless str
+    a = str.split(/[\(\,\)]/)
+    dstr = a.shift
+    rel = nil
+    ver = nil
+    a.each do |x|
+      case x
+      when /Rel\.\s*(.+)/
+        rel = $1.strip
+      when /Version\s*(.+)/
+        ver = $1.strip
+      end
+    end
+    [ rel, ver ]
+  end
+  private :parse_release_version
+
+  # database references (DR).
+  # Returns an array of Bio::Sequence::DBLink objects.
+  def dblinks
+    get('DR').split(/\n/).collect { |x|
+      Bio::Sequence::DBLink.parse_embl_DR_line(x)
+    }
+  end
+
+  # species
+  def species
+    self.fetch('OS')
+  end
+
+  # taxonomy classfication
+  alias classification oc
+
+  # features
+  alias features ft
+
+
+  # converts the entry to Bio::Sequence object
+  # ---
+  # *Arguments*::
+  # *Returns*:: Bio::Sequence object
+  def to_biosequence
+    Bio::Sequence.adapter(self, Bio::Sequence::Adapter::EMBL)
+  end
 
   ### private methods
 
@@ -400,3 +497,4 @@ class EMBL < EMBLDB
 end # class EMBL
 
 end # module Bio
+

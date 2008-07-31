@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: common.rb,v 1.11 2007/04/05 23:35:40 trevor Exp $
+# $Id: common.rb,v 1.11.2.5 2008/06/17 15:53:21 ngoto Exp $
 #
 
 require 'bio/db'
@@ -44,7 +44,7 @@ module Common
 
   # ACCESSION -- Returns contents of the ACCESSION record as an Array.
   def accessions
-    accession.split(/\s+/)
+    field_fetch('ACCESSION').strip.split(/\s+/)
   end
 
 
@@ -137,9 +137,20 @@ module Common
     unless @data['REFERENCE']
       ary = []
       toptag2array(get('REFERENCE')).each do |ref|
-        hash = Hash.new('')
+        hash = Hash.new
         subtag2array(ref).each do |field|
           case tag_get(field)
+          when /REFERENCE/
+            if /(\d+)(\s*\((.+)\))?/m =~ tag_cut(field) then
+              hash['embl_gb_record_number'] = $1.to_i
+              if $3 and $3 != 'sites' then
+                seqpos = $3
+                seqpos.sub!(/\A\s*bases\s+/, '')
+                seqpos.gsub!(/(\d+)\s+to\s+(\d+)/, "\\1-\\2")
+                seqpos.gsub!(/\s*\;\s*/, ', ')
+                hash['sequence_position'] = seqpos
+              end
+            end
           when /AUTHORS/
             authors = truncate(tag_cut(field))
             authors = authors.split(/, /)
@@ -163,11 +174,14 @@ module Common
             hash['medline']	= truncate(tag_cut(field))
           when /PUBMED/
             hash['pubmed']	= truncate(tag_cut(field))
+          when /REMARK/
+            hash['comments'] ||= []
+            hash['comments'].push truncate(tag_cut(field))
           end
         end
         ary.push(Reference.new(hash))
       end
-      @data['REFERENCE'] = References.new(ary)
+      @data['REFERENCE'] = ary.extend(Bio::References::BackwardCompatibility)
     end
     if block_given?
       @data['REFERENCE'].each do |r|
@@ -181,12 +195,15 @@ module Common
 
   # COMMENT -- Returns contents of the COMMENT record as a String.
   def comment
-    field_fetch('COMMENT')
+    str = get('COMMENT').to_s.sub(/\ACOMMENT     /, '')
+    str.gsub!(/^ {12}/, '')
+    str.chomp!
+    str
   end
 
 
-  # FEATURES -- Returns contents of the FEATURES record as a Bio::Features
-  # object.
+  # FEATURES -- Returns contents of the FEATURES record as an array of
+  # Bio::Feature objects.
   def features
     unless @data['FEATURES']
       ary = []
@@ -228,7 +245,7 @@ module Common
         parse_qualifiers(subary)
       end
 
-      @data['FEATURES'] = Features.new(ary)
+      @data['FEATURES'] = ary.extend(Bio::Features::BackwardCompatibility)
     end
     if block_given?
       @data['FEATURES'].each do |f|

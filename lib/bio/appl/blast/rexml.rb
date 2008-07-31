@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2002, 2003 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: rexml.rb,v 1.13 2008/05/12 13:11:45 ngoto Exp $
+# $Id: rexml.rb,v 1.12.2.1 2008/05/12 13:19:32 ngoto Exp $
 #
 # == Note
 # 

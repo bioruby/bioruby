@@ -4,7 +4,7 @@
 # Copyright::   Copyright (C) 2001-2006  Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: sptr.rb,v 1.37 2008/04/18 15:40:36 ngoto Exp $
+# $Id: sptr.rb,v 1.36.2.1 2008/04/24 13:49:42 ngoto Exp $
 #
 # == Description
 # 
@@ -505,7 +505,7 @@ class SPTR < EMBLDB
             else
               hash['journal'] = value
             end
-          when 'RX'  # PUBMED, MEDLINE
+          when 'RX'  # PUBMED, MEDLINE, DOI
             value.each do |tag, xref|
               hash[ tag.downcase ]  = xref
             end

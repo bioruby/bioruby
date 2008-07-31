@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_report.rb,v 1.5 2007/04/05 23:35:43 trevor Exp $
+#  $Id: test_report.rb,v 1.5.2.1 2008/05/12 11:49:08 ngoto Exp $
 #
 
 require 'pathname'
@@ -16,32 +16,54 @@ require 'bio/appl/blast/report'
 
 
 module Bio
-  class TestBlastReportData
+
+  module TestBlastReportHelper
     bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
     TestDataBlast = Pathname.new(File.join(bioruby_root, 'test', 'data', 'blast')).cleanpath.to_s
 
-    def self.input
-      File.open(File.join(TestDataBlast, 'b0002.faa')).read
+    private
+
+    def get_input_data(basename = 'b0002.faa')
+      File.open(File.join(TestDataBlast, basename)).read
     end
 
-    def self.output(format = 7)
-      case format
-      when 0
-        File.open(File.join(TestDataBlast, 'b0002.faa.m0')).read 
-      when 7
-        File.open(File.join(TestDataBlast, 'b0002.faa.m7')).read 
-      when 8
-        File.open(File.join(TestDataBlast, 'b0002.faa.m8')).read 
+    def get_output_data(basename = 'b0002.faa', format = 7)
+      fn = basename + ".m#{format.to_i}"
+
+      # available filenames:
+      # 'b0002.faa.m0'
+      # 'b0002.faa.m7'
+      # 'b0002.faa.m8'
+
+      File.open(File.join(TestDataBlast, fn)).read
+    end
+
+    def create_report_object(basename = 'b0002.faa')
+      case self.class.name.to_s
+      when /XMLParser/i
+        text = get_output_data(basename, 7)
+        Bio::Blast::Report.new(text, :xmlparser)
+      when /REXML/i
+        text = get_output_data(basename, 7)
+        Bio::Blast::Report.new(text, :rexml)
+      when /Default/i
+        text = get_output_data(basename, 0)
+        Bio::Blast::Default::Report.new(text)
+      when /Tab/i
+        text = get_output_data(basename, 8)
+        Bio::Blast::Report.new(text)
+      else
+        text = get_output_data(basename, 7)
+        Bio::Blast::Report.new(text)
       end
     end
-  end
+  end #module TestBlastReportHelper
 
-    
   class TestBlastReport < Test::Unit::TestCase
-    require 'bio/appl/blast/report'
+    include TestBlastReportHelper
 
     def setup
-      @report = Bio::Blast::Report.new(Bio::TestBlastReportData.output)
+      @report = create_report_object
     end
     
     def test_iterations
@@ -96,15 +118,15 @@ module Bio
     end
 
     def test_inclusion
-      assert(@report.inclusion)
+      assert_nothing_raised { @report.inclusion }
     end
 
     def test_sc_match
-      assert(@report.sc_match)
+      assert_nothing_raised { @report.sc_match }
     end
 
     def test_sc_mismatch
-      assert(@report.sc_mismatch)
+      assert_nothing_raised { @report.sc_mismatch }
     end
 
     def test_gap_open
@@ -123,16 +145,20 @@ module Bio
       assert_equal(nil, @report.pattern)
     end
 
-    def test_extrez_query
+    def test_entrez_query
       assert_equal(nil, @report.entrez_query)
     end
 
     def test_each_iteration
-      @report.each_iteration { |itr| }
+      assert_nothing_raised {
+        @report.each_iteration { |itr| }
+      }
     end
 
     def test_each_hit
-      @report.each_hit { |hit| }
+      assert_nothing_raised {
+        @report.each_hit { |hit| }
+      }
     end
 
     def test_hits
@@ -177,9 +203,10 @@ module Bio
   end
   
   class TestBlastReportIteration < Test::Unit::TestCase
+    include TestBlastReportHelper
+
     def setup
-      data = Bio::TestBlastReportData.output
-      report = Bio::Blast::Report.new(data)
+      report = create_report_object
       @itr = report.iterations.first
     end
 
@@ -204,9 +231,10 @@ module Bio
   end
 
   class TestBlastReportHit < Test::Unit::TestCase
+    include TestBlastReportHelper
+
     def setup
-      data = Bio::TestBlastReportData.output
-      report = Bio::Blast::Report.new(data)
+      report = create_report_object
       @hit = report.hits.first
     end
 
@@ -315,9 +343,10 @@ module Bio
   end
 
   class TestBlastReportHsp < Test::Unit::TestCase
+    include TestBlastReportHelper
+
     def setup
-      data = Bio::TestBlastReportData.output
-      report = Bio::Blast::Report.new(data)
+      report = create_report_object
       @hsp = report.hits.first.hsps.first
     end
     
@@ -342,7 +371,7 @@ module Bio
     end
 
     def test_Hsp_gaps
-      assert(@hsp.gaps)
+      assert_nothing_raised { @hsp.gaps }
     end
 
     def test_Hsp_positive
@@ -382,11 +411,11 @@ module Bio
     end
 
     def test_Hsp_pattern_from
-      @hsp.pattern_from
+      assert_nothing_raised { @hsp.pattern_from }
     end
 
     def test_Hsp_pattern_to
-      @hsp.pattern_to 
+      assert_nothing_raised { @hsp.pattern_to }
     end
 
     def test_Hsp_qseq
@@ -405,13 +434,181 @@ module Bio
     end
 
     def test_Hsp_percent_identity
-      @hsp.percent_identity
+      assert_nothing_raised { @hsp.percent_identity }
     end
 
     def test_Hsp_mismatch_count
-      @hsp.mismatch_count
+      assert_nothing_raised { @hsp.mismatch_count }
     end
 
   end 
+
+  class TestBlastReportREXML < TestBlastReport
+  end
+
+  class TestBlastReportIterationREXML < TestBlastReportIteration
+  end
+
+  class TestBlastReportHitREXML < TestBlastReportHit
+  end
+
+  class TestBlastReportHspREXML < TestBlastReportHsp
+  end
+
+  if defined? XMLParser then
+
+  class TestBlastReportXMLParser < TestBlastReport
+  end
+
+  class TestBlastReportIterationXMLParser < TestBlastReportIteration
+  end
+
+  class TestBlastReportHitXMLParser < TestBlastReportHit
+  end
+
+  class TestBlastReportHspXMLParser < TestBlastReportHsp
+  end
+
+  end #if defined? XMLParser
+
+  class TestBlastReportDefault < TestBlastReport
+    undef test_entrez_query
+    undef test_filter
+    undef test_hsp_len
+    undef test_inclusion
+    undef test_parameters
+    undef test_query_id
+    undef test_statistics
+
+    def test_program
+      assert_equal('BLASTP', @report.program)
+    end
+
+    def test_reference
+      text_str = 'Reference: Altschul, Stephen F., Thomas L. Madden, Alejandro A. Schaffer, Jinghui Zhang, Zheng Zhang, Webb Miller, and David J. Lipman (1997), "Gapped BLAST and PSI-BLAST: a new generation of protein database search programs", Nucleic Acids Res. 25:3389-3402.'
+      assert_equal(text_str, @report.reference)
+    end
+
+    def test_version
+      assert_equal('BLASTP 2.2.10 [Oct-19-2004]', @report.version)
+    end
+
+    def test_kappa
+      assert_equal(0.134, @report.kappa)
+    end
+
+    def test_lambda
+      assert_equal(0.319, @report.lambda)
+    end
+
+    def test_entropy
+      assert_equal(0.383, @report.entropy)
+    end
+
+    def test_gapped_kappa
+      assert_equal(0.0410, @report.gapped_kappa)
+    end
+
+    def test_gapped_lambda
+      assert_equal(0.267, @report.gapped_lambda)
+    end
+
+    def test_gapped_entropy
+      assert_equal(0.140, @report.gapped_entropy)
+    end
+  end
+
+  class TestBlastReportIterationDefault < TestBlastReportIteration
+    undef test_statistics
+  end
+
+  class TestBlastReportHitDefault < TestBlastReportHit
+    undef test_Hit_accession
+    undef test_Hit_hit_id
+    undef test_Hit_num
+    undef test_Hit_query_def
+    undef test_Hit_query_id
+    undef test_Hit_query_len
+
+    def setup
+      @filtered_query_sequence = 'MRVLKFGGTSVANAERFLRVADILESNARQGQVATVLSAPAKITNHLVAMIEKTISGQDALPNISDAERIFAELLTGLAAAQPGFPLAQLKTFVDQEFAQIKHVLHGISLLGQCPDSINAALICRGEKMSIAIMAGVLEARGHNVTVIDPVEKLLAVGHYLESTVDIAESTRRIAASRIPADHMVLMAGFTAGNEKGELVVLGRNGSDYSAAVLAACLRADCCEIWTDVDGVYTCDPRQVPDARLLKSMSYQEAMELSYFGAKVLHPRTITPIAQFQIPCLIKNTGNPQAPGTLIGASRDEDELPVKGISNLNNMAMFSVSGPGMKGMVGMAARVFAAMSRARISVVLITQSSSEYSISFCVPQSDCVRAERAMQEEFYLELKEGLLEPLAVTERLAIISVVGDGMRTLRGISAKFFAALARANINIVAIAQGSSERSISVVVNNDDATTGVRVTHQMLFNTDQxxxxxxxxxxxxxxALLEQLKRQQSWLKNKHIDLRVCGVANSKALLTNVHGLNLENWQEELAQAKEPFNLGRLIRLVKEYHLLNPVIVDCTSSQAVADQYADFLREGFHVVTPNKKANTSSMDYYHQLRYAAEKSRRKFLYDTNVGAGLPVIENLQNLLNAGDELMKFSGILSGSLSYIFGKLDEGMSFSEATTLAREMGYTEPDPRDDLSGMDVARKLLILARETGRELELADIEIEPVLPAEFNAEGDVAAFMANLSQLDDLFAARVAKARDEGKVLRYVGNIDEDGVCRVKIAEVDGNDPLFKVKNGENALAFYSHYYQPLPLVLRGYGAGNDVTAAGVFADLLRTLSWKLGV'
+      super
+    end
+
+    def test_Hit_bit_score
+      # differs from XML because of truncation in the default format
+      assert_equal(1567.0, @hit.bit_score)
+    end
+
+    def test_Hit_identity
+      # differs from XML because filtered residues are not counted in the
+      # default format
+      assert_equal(806, @hit.identity)
+    end
+
+    def test_Hit_midline
+      # differs from XML because filtered residues are not specified in XML
+      seq = @filtered_query_sequence.gsub(/x/, ' ')
+      assert_equal(seq, @hit.midline)
+    end
+
+    def test_Hit_query_seq
+      # differs from XML because filtered residues are not specified in XML
+      seq = @filtered_query_sequence.gsub(/x/, 'X')
+      assert_equal(seq, @hit.query_seq)
+    end
+  end
+
+  class TestBlastReportHspDefault < TestBlastReportHsp
+    undef test_Hsp_density
+    undef test_Hsp_mismatch_count
+    undef test_Hsp_num
+    undef test_Hsp_pattern_from
+    undef test_Hsp_pattern_to
+
+    def setup
+      @filtered_query_sequence = 'MRVLKFGGTSVANAERFLRVADILESNARQGQVATVLSAPAKITNHLVAMIEKTISGQDALPNISDAERIFAELLTGLAAAQPGFPLAQLKTFVDQEFAQIKHVLHGISLLGQCPDSINAALICRGEKMSIAIMAGVLEARGHNVTVIDPVEKLLAVGHYLESTVDIAESTRRIAASRIPADHMVLMAGFTAGNEKGELVVLGRNGSDYSAAVLAACLRADCCEIWTDVDGVYTCDPRQVPDARLLKSMSYQEAMELSYFGAKVLHPRTITPIAQFQIPCLIKNTGNPQAPGTLIGASRDEDELPVKGISNLNNMAMFSVSGPGMKGMVGMAARVFAAMSRARISVVLITQSSSEYSISFCVPQSDCVRAERAMQEEFYLELKEGLLEPLAVTERLAIISVVGDGMRTLRGISAKFFAALARANINIVAIAQGSSERSISVVVNNDDATTGVRVTHQMLFNTDQxxxxxxxxxxxxxxALLEQLKRQQSWLKNKHIDLRVCGVANSKALLTNVHGLNLENWQEELAQAKEPFNLGRLIRLVKEYHLLNPVIVDCTSSQAVADQYADFLREGFHVVTPNKKANTSSMDYYHQLRYAAEKSRRKFLYDTNVGAGLPVIENLQNLLNAGDELMKFSGILSGSLSYIFGKLDEGMSFSEATTLAREMGYTEPDPRDDLSGMDVARKLLILARETGRELELADIEIEPVLPAEFNAEGDVAAFMANLSQLDDLFAARVAKARDEGKVLRYVGNIDEDGVCRVKIAEVDGNDPLFKVKNGENALAFYSHYYQPLPLVLRGYGAGNDVTAAGVFADLLRTLSWKLGV'
+      super
+    end
+
+    def test_Hsp_identity
+      # differs from XML because filtered residues are not counted in the
+      # default format
+      assert_equal(806, @hsp.identity)
+    end
+
+    def test_Hsp_positive
+      # differs from XML because filtered residues are not counted in the
+      # default format
+      assert_equal(806, @hsp.positive)
+    end
+
+    def test_Hsp_midline
+      # differs from XML because filtered residues are not specified in XML
+      seq = @filtered_query_sequence.gsub(/x/, ' ')
+      assert_equal(seq, @hsp.midline)
+    end
+
+    def test_Hsp_qseq
+      # differs from XML because filtered residues are not specified in XML
+      seq = @filtered_query_sequence.gsub(/x/, 'X')
+      assert_equal(seq, @hsp.qseq)
+    end
+    
+    def test_Hsp_hit_score
+      # differs from XML because of truncation in the default format
+      assert_equal(1567.0, @hsp.bit_score)
+    end
+
+    def test_Hsp_hit_frame
+      # differs from XML because not available in the default BLASTP format
+      assert_equal(nil, @hsp.hit_frame)
+    end
+
+    def test_Hsp_query_frame
+      # differs from XML because not available in the default BLASTP format
+      assert_equal(nil, @hsp.query_frame)
+    end
+  end
 
 end # module Bio

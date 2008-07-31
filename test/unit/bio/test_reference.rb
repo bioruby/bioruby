@@ -5,7 +5,7 @@
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: test_reference.rb,v 1.5 2008/06/04 14:58:08 ngoto Exp $
+# $Id: test_reference.rb,v 1.3.2.2 2008/06/17 12:24:41 ngoto Exp $
 #
 
 require 'pathname'
@@ -14,6 +14,7 @@ $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'test/unit'
 require 'bio/reference'
+require 'bio/compat/references'
 
 
 module Bio
@@ -198,13 +199,40 @@ __END__
 
   end
 
+  class NullStderr
+    def initialize
+      @log = []
+    end
+
+    def write(*arg)
+      #p arg
+      @log.push([ :write, *arg ])
+      nil
+    end
+
+    def method_missing(*arg)
+      #p arg
+      @log.push arg
+      nil
+    end
+  end
+
   class TestReferences < Test::Unit::TestCase
 
     def setup
+      # To suppress warning messages, $stderr is replaced by dummy object.
+      @stderr_orig = $stderr
+      $stderr = NullStderr.new
+
       hash = {}
       ary = [Bio::Reference.new(hash),
              Bio::Reference.new(hash)]
       @obj = Bio::References.new(ary)
+    end
+
+    def teardown
+      # bring back $stderr
+      $stderr = @stderr_orig
     end
 
     def test_append

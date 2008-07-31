@@ -7,7 +7,7 @@
 #              Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: xmlparser.rb,v 1.18 2008/05/12 13:11:45 ngoto Exp $
+# $Id: xmlparser.rb,v 1.17.2.1 2008/05/12 13:19:32 ngoto Exp $
 #
 # == Description
 # 

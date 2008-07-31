@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_embl.rb,v 1.5 2007/04/05 23:35:43 trevor Exp $
+#  $Id: test_embl.rb,v 1.5.2.1 2008/02/20 09:56:22 aerts Exp $
 #
 
 require 'pathname'
@@ -150,7 +150,7 @@ module Bio
 
     # Bio::EMBLDB::COMMON#references
     def test_references 
-      assert_equal(Bio::References, @obj.references.class)
+      assert_equal(Array, @obj.references.class)
     end
 
     # Bio::EMBLDB::COMMON#dr
@@ -163,7 +163,7 @@ module Bio
     end
 
     def test_ft
-      assert_equal(Bio::Features, @obj.ft.class)
+      assert_equal(Array, @obj.ft.class)
     end
 
     def test_ft_iterator
@@ -173,7 +173,7 @@ module Bio
     end
 
     def test_ft_accessor
-      assert_equal('CDS', @obj.ft.features[1].feature)
+      assert_equal('CDS', @obj.ft[1].feature)
     end
 
     def test_each_cds

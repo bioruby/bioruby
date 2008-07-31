@@ -5,7 +5,7 @@
 #              Mitsuteru Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_feature.rb,v 1.5 2007/04/05 23:35:42 trevor Exp $
+#  $Id: test_feature.rb,v 1.5.2.1 2008/05/08 05:38:01 ngoto Exp $
 #
 
 require 'pathname'
@@ -14,6 +14,7 @@ $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'test/unit'
 require 'bio/feature'
+require 'bio/compat/features'
 
 
 module Bio
@@ -88,9 +89,36 @@ module Bio
     end
   end
 
+  class NullStderr
+    def initialize
+      @log = []
+    end
+
+    def write(*arg)
+      #p arg
+      @log.push([ :write, *arg ])
+      nil
+    end
+
+    def method_missing(*arg)
+      #p arg
+      @log.push arg
+      nil
+    end
+  end
+
   class TestFeatures < Test::Unit::TestCase
     def setup
+      # To suppress warning messages, $stderr is replaced by dummy object.
+      @stderr_orig = $stderr
+      $stderr = NullStderr.new
+
       @obj = Bio::Features.new([Bio::Feature.new('gene', '1..615', [])])
+    end
+
+    def teardown
+      # bring back $stderr
+      $stderr = @stderr_orig
     end
     
     def test_features

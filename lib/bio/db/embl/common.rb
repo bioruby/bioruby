@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: common.rb,v 1.13 2008/04/23 16:48:25 ngoto Exp $
+# $Id: common.rb,v 1.12.2.5 2008/05/07 12:22:10 ngoto Exp $
 #
 # == Description
 #
@@ -73,6 +73,7 @@
 
 require 'bio/db'
 require 'bio/reference'
+require 'bio/compat/references'
 
 module Bio
 class EMBLDB
@@ -270,11 +271,26 @@ module Common
   def references
     unless @data['references']
       ary = self.ref.map {|ent|
-        hash = Hash.new('')
+        hash = Hash.new
         ent.each {|key, value|
           case key
+          when 'RN'
+            if /\[(\d+)\]/ =~ value.to_s
+              hash['embl_gb_record_number'] = $1.to_i
+            end
+          when 'RC'
+            unless value.to_s.strip.empty?
+              hash['comments'] ||= []
+              hash['comments'].push value
+            end
+          when 'RP'
+            hash['sequence_position'] = value
           when 'RA'
-            hash['authors'] = value.split(/, /)
+            a = value.split(/\, /)
+            a.each do |x|
+              x.sub!(/( [^ ]+)\z/, ",\\1")
+            end
+            hash['authors'] = a
           when 'RT'
             hash['title'] = value
           when 'RL'
@@ -287,7 +303,7 @@ module Common
             else
               hash['journal'] = value
             end
-          when 'RX'  # PUBMED, MEDLINE
+          when 'RX'  # PUBMED, DOI, (AGRICOLA)
             value.split(/\. /).each {|item|
               tag, xref = item.split(/\; /).map {|i| i.strip.sub(/\.\z/, '') }
               hash[ tag.downcase ]  = xref
@@ -296,7 +312,7 @@ module Common
         }
         Reference.new(hash)
       }
-      @data['references'] = References.new(ary)
+      @data['references'] = ary.extend(Bio::References::BackwardCompatibility)
     end
     @data['references']
   end

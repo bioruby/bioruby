@@ -1,12 +1,13 @@
 #
 # = bio/reference.rb - Journal reference classes
 #
-# Copyright::   Copyright (C) 2001, 2006
+# Copyright::   Copyright (C) 2001, 2006, 2008
 #               Toshiaki Katayama <k@bioruby.org>,
-#               Ryan Raaum <ryan@raaum.org>
+#               Ryan Raaum <ryan@raaum.org>,
+#               Jan Aerts <jandot@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: reference.rb,v 1.30 2008/06/13 11:20:23 ngoto Exp $
+# $Id: reference.rb,v 1.24.2.7 2008/06/17 12:23:49 ngoto Exp $
 #
 
 module Bio
@@ -66,6 +67,9 @@ module Bio
 
     # medline identifier (typically Fixnum)
     attr_reader :medline
+
+    # DOI identifier (typically String, e.g. "10.1126/science.1110418")
+    attr_reader :doi
     
     # Abstract text in String.
     attr_reader :abstract
@@ -78,6 +82,15 @@ module Bio
 
     # Affiliations in an Array.
     attr_reader :affiliations
+    
+    # Sequence number in EMBL/GenBank records
+    attr_reader :embl_gb_record_number
+    
+    # Position in a sequence that this reference refers to
+    attr_reader :sequence_position
+
+    # Comments for the reference (typically Array of String, or nil)
+    attr_reader :comments
 
     # Create a new Bio::Reference object from a Hash of values. 
     # Data is extracted from the values for keys:
@@ -116,23 +129,23 @@ module Bio
     # * (required) _hash_: Hash
     # *Returns*:: Bio::Reference object
     def initialize(hash)
-      hash.default = ''
-      @authors  = hash['authors'] # [ "Hoge, J.P.", "Fuga, F.B." ]
-      @title    = hash['title']   # "Title of the study."
-      @journal  = hash['journal'] # "Theor. J. Hoge"
-      @volume   = hash['volume']  # 12
-      @issue    = hash['issue']   # 3
-      @pages    = hash['pages']   # 123-145
-      @year     = hash['year']    # 2001
-      @pubmed   = hash['pubmed']  # 12345678
-      @medline  = hash['medline'] # 98765432
-      @abstract = hash['abstract']
+      @authors  = hash['authors'] || [] # [ "Hoge, J.P.", "Fuga, F.B." ]
+      @title    = hash['title']   || '' # "Title of the study."
+      @journal  = hash['journal'] || '' # "Theor. J. Hoge"
+      @volume   = hash['volume']  || '' # 12
+      @issue    = hash['issue']   || '' # 3
+      @pages    = hash['pages']   || '' # 123-145
+      @year     = hash['year']    || '' # 2001
+      @pubmed   = hash['pubmed']  || '' # 12345678
+      @medline  = hash['medline'] || '' # 98765432
+      @doi      = hash['doi']
+      @abstract = hash['abstract'] || '' 
       @url      = hash['url']
-      @mesh     = hash['mesh']
-      @affiliations = hash['affiliations']
-      @authors = [] if @authors.empty?
-      @mesh    = [] if @mesh.empty?
-      @affiliations = [] if @affiliations.empty?
+      @mesh     = hash['mesh'] || []
+      @embl_gb_record_number = hash['embl_gb_record_number'] || nil
+      @sequence_position = hash['sequence_position'] || nil
+      @comments  = hash['comments']
+      @affiliations = hash['affiliations'] || []
     end
 
     # Formats the reference in a given style.
@@ -170,6 +183,8 @@ module Bio
     # *Returns*:: String
     def format(style = nil, *options)
       case style
+      when 'embl'
+        return embl
       when 'endnote'
         return endnote
       when 'bibitem'
@@ -231,14 +246,32 @@ module Bio
       lines << "%N #{@issue}" unless @issue.to_s.empty?
       lines << "%P #{@pages}" unless @pages.empty?
       lines << "%M #{@pubmed}" unless @pubmed.to_s.empty?
-      url = @url.empty? ? pubmed_url : @url
-      lines << "%U #{url}" unless url.empty?
+      u = @url.empty? ? pubmed_url : @url
+      lines << "%U #{u}" unless u.empty?
       lines << "%X #{@abstract}" unless @abstract.empty?
       @mesh.each do |term|
         lines << "%K #{term}"
       end
       lines << "%+ #{@affiliations.join(' ')}" unless @affiliations.empty?
       return lines.join("\n")
+    end
+
+    # Returns reference formatted in the EMBL style.
+    #
+    #   # ref is a Bio::Reference object
+    #   puts ref.embl
+    #
+    #     RP   1-1859
+    #     RX   PUBMED; 1907511.
+    #     RA   Oxtoby E., Dunn M.A., Pancoro A., Hughes M.A.;
+    #     RT   "Nucleotide and derived amino acid sequence of the cyanogenic
+    #     RT   beta-glucosidase (linamarase) from white clover (Trifolium repens L.)";
+    #     RL   Plant Mol. Biol. 17(2):209-219(1991).
+    def embl
+      r = self
+      Bio::Sequence::Format::NucFormatter::Embl.new('').instance_eval {
+        reference_format_embl(r)
+      }
     end
 
     # Returns reference formatted in the bibitem style
@@ -559,62 +592,6 @@ module Bio
         name = "#{initial} #{name}"
       end
       return name
-    end
-
-  end
-
-  # = DESCRIPTION
-  #
-  # A container class for Bio::Reference objects.
-  #
-  # = USAGE
-  #
-  #   refs = Bio::References.new
-  #   refs.append(Bio::Reference.new(hash))
-  #   refs.each do |reference|
-  #     ...
-  #   end
-  #
-  class References
-
-    # Array of Bio::Reference objects
-    attr_accessor :references
-
-    # Create a new Bio::References object
-    # 
-    #   refs = Bio::References.new
-    # ---
-    # *Arguments*:
-    # * (optional) __: Array of Bio::Reference objects
-    # *Returns*:: Bio::References object
-    def initialize(ary = [])
-      @references = ary
-    end
-
-
-    # Add a Bio::Reference object to the container.
-    #
-    #   refs.append(reference)
-    # ---
-    # *Arguments*:
-    # * (required) _reference_: Bio::Reference object
-    # *Returns*:: current Bio::References object
-    def append(reference)
-      @references.push(reference) if reference.is_a? Reference
-      return self
-    end
-
-    # Iterate through Bio::Reference objects.
-    #
-    #   refs.each do |reference|
-    #     ...
-    #   end
-    # ---
-    # *Block*:: yields each Bio::Reference object
-    def each
-      @references.each do |reference|
-        yield reference
-      end
     end
 
   end

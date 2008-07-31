@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format0.rb,v 1.29 2008/05/14 13:30:12 ngoto Exp $
+# $Id: format0.rb,v 1.26.2.4 2008/05/14 13:39:41 ngoto Exp $
 #
 # == Description
 #
@@ -345,7 +345,7 @@ module Bio
               sc = StringScanner.new(str)
               sc.skip(/\s*/)
               while sc.rest?
-                if sc.match?(/Number of sequences better than +([e\-\.\d]+) *\: *(.+)/) then
+                if sc.match?(/Number of sequences better than +([e\+\-\.\d]+) *\: *(.+)/) then
                   ev = sc[1]
                   ev = '1' + ev if ev[0] == ?e
                   @expect = ev.to_f
@@ -369,7 +369,7 @@ module Bio
               parse_colon_separated_params(@hash, @f0params)
               #p @hash
               if val = @hash['Matrix'] then
-                if /blastn *matrix *\: *([e\-\.\d]+) +([e\-\.\d]+)/ =~ val then
+                if /blastn *matrix *\: *([e\+\-\.\d]+) +([e\+\-\.\d]+)/ =~ val then
                   @matrix = 'blastn'
                   @sc_match    = $1.to_i
                   @sc_mismatch = $2.to_i 
@@ -378,10 +378,10 @@ module Bio
                 end
               end
               if val = @hash['Gap Penalties'] then
-                if /Existence\: *([e\-\.\d]+)/ =~ val then
+                if /Existence\: *([e\+\-\.\d]+)/ =~ val then
                   @gap_open = $1.to_i
                 end
-                if /Extension\: *([e\-\.\d]+)/ =~ val then
+                if /Extension\: *([e\+\-\.\d]+)/ =~ val then
                   @gap_extend = $1.to_i
                 end
               end
@@ -716,19 +716,19 @@ module Bio
                   sc.skip(/ */)
                 end
                 sc.skip(/\s*/)
-                while r = sc.scan(/[e\.\-\d]+/)
+                while r = sc.scan(/[e\+\-\.\d]+/)
                   #p r
                   h[s0.shift] = r
                   sc.skip(/ */)
                 end
                 if gapped then
-                  @gapped_lambda = h['Lambda']
-                  @gapped_kappa = h['K']
-                  @gapped_entropy = h['H']
+                  @gapped_lambda = (v = h['Lambda']) ? v.to_f : nil
+                  @gapped_kappa = (v = h['K']) ? v.to_f : nil
+                  @gapped_entropy = (v = h['H']) ? v.to_f : nil
                 else
-                  @lambda = h['Lambda']
-                  @kappa = h['K']
-                  @entropy = h['H']
+                  @lambda = (v = h['Lambda']) ? v.to_f : nil
+                  @kappa = (v = h['K']) ? v.to_f : nil
+                  @entropy = (v = h['H']) ? v.to_f : nil
                 end
               end #each
               @parse_stat = true
@@ -973,11 +973,11 @@ module Bio
               sc = StringScanner.new(@f0score)
               while sc.rest?
                 sc.skip(/\s*/)
-                if sc.skip(/Expect(?:\(\d+\))? *\= *([e\-\.\d]+)/) then
+                if sc.skip(/Expect(?:\(\d+\))? *\= *([e\+\-\.\d]+)/) then
                   ev = sc[1].to_s
                   ev = '1' + ev if ev[0] == ?e
                   @evalue = ev.to_f
-                elsif sc.skip(/Score *\= *([e\-\.\d]+) *bits *\( *([e\-\.\d]+) *\)/) then
+                elsif sc.skip(/Score *\= *([e\+\-\.\d]+) *bits *\( *([e\+\-\.\d]+) *\)/) then
                   bs = sc[1]
                   bs = '1' + bs if bs[0] == ?e
                   @bit_score = bs.to_f
@@ -1021,19 +1021,19 @@ module Bio
                   if sc[2] then
                     @hit_frame = sc[3].to_i
                   end
-                elsif sc.skip(/Score *\= *([e\-\.\d]+) +\(([e\-\.\d]+) *bits *\)/) then
+                elsif sc.skip(/Score *\= *([e\+\-\.\d]+) +\(([e\+\-\.\d]+) *bits *\)/) then
                   #WU-BLAST
                   @score = sc[1].to_i
                   bs = sc[2]
                   bs = '1' + bs if bs[0] == ?e
                   @bit_score = bs.to_f
-                elsif sc.skip(/P *\= * ([e\-\.\d]+)/) then
+                elsif sc.skip(/P *\= * ([e\+\-\.\d]+)/) then
                   #WU-BLAST
                   @p_sum_n = nil
                   pv = sc[1]
                   pv = '1' + pv if pv[0] == ?e
                   @pvalue = pv.to_f
-                elsif sc.skip(/Sum +P *\( *(\d+) *\) *\= *([e\-\.\d]+)/) then
+                elsif sc.skip(/Sum +P *\( *(\d+) *\) *\= *([e\+\-\.\d]+)/) then
                   #WU-BLAST
                   @p_sum_n = sc[1].to_i
                   pv = sc[2]

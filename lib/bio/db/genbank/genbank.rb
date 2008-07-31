@@ -4,11 +4,14 @@
 # Copyright::  Copyright (C) 2000-2005 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: genbank.rb,v 0.40 2007/04/05 23:35:40 trevor Exp $
+# $Id: genbank.rb,v 0.40.2.4 2008/06/17 15:56:18 ngoto Exp $
 #
 
+require 'date'
 require 'bio/db'
 require 'bio/db/genbank/common'
+require 'bio/sequence'
+require 'bio/sequence/dblink'
 
 module Bio
 
@@ -121,8 +124,40 @@ class GenBank < NCBIDB
   alias naseq seq
   alias nalen length
 
+  # (obsolete???) length of the sequence
   def seq_len
     seq.length
+  end
+
+  # modified date. Returns Date object, String or nil.
+  def date_modified
+    begin
+      Date.parse(self.date)
+    rescue ArgumentError, TypeError, NoMethodError, NameError
+      self.date
+    end
+  end
+
+  # Taxonomy classfication. Returns an array of strings.
+  def classification
+    self.taxonomy.to_s.sub(/\.\z/, '').split(/\s*\;\s*/)
+  end
+
+  # Strandedness. Returns one of 'single', 'double', 'mixed', or nil.
+  def strandedness
+    case self.strand.to_s.downcase
+    when 'ss-'; 'single'
+    when 'ds-'; 'double'
+    when 'ms-'; 'mixed'
+    else nil; end
+  end
+
+  # converts Bio::GenBank to Bio::Sequence
+  # ---
+  # *Arguments*: 
+  # *Returns*:: Bio::Sequence object
+  def to_biosequence
+    Bio::Sequence.adapter(self, Bio::Sequence::Adapter::GenBank)
   end
 
 end # GenBank

@@ -1,0 +1,20 @@
+#This is the database configuration specific for BioSQL
+#User can configure it's db here
+
+development:
+  adapter: postgresql
+  database: biorails_development
+  username: rails
+  password: 
+
+test:
+  adapter: postgresql
+  database: biorails_test
+  username: rails
+  password: 
+  
+production:
+  adapter: postgresql
+  database: biorails_production
+  username: rails
+  password: 

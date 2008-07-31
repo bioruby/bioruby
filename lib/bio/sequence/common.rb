@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: common.rb,v 1.6 2007/12/27 17:36:02 ngoto Exp $
+# $Id: common.rb,v 1.6.2.2 2008/03/04 11:14:03 ngoto Exp $
 #
 
 module Bio
@@ -37,7 +37,7 @@ class Sequence
 #   # Create a random sequence with the composition of a current sequence
 #   puts dna.randomize
 module Common
-
+  
   # Return sequence as 
   # String[http://corelib.rubyonrails.org/classes/String.html].
   # The original sequence is unchanged.
@@ -65,7 +65,7 @@ module Common
   def seq
     self.class.new(self)
   end
-
+  
   # Normalize the current sequence, removing all whitespace and 
   # transforming all positions to uppercase if the sequence is AA or
   # transforming all positions to lowercase if the sequence is NA.

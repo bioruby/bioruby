@@ -46,15 +46,18 @@ module Bio
       # In Bio::Blat::Report, it it nil (1 entry 1 file).
       DELIMITER = RS = nil # 1 file 1 entry
 
+      # Splitter for Bio::FlatFile
+      FLATFILE_SPLITTER = Bio::FlatFile::Splitter::LineOriented
+
       # Creates a new Bio::Blat::Report object from BLAT result text (String).
       # You can use Bio::FlatFile to read a file.
       # Currently, results created with options -out=psl (default) or
       # -out=pslx are supported.
-      def initialize(text)
+      def initialize(text = '')
         flag = false
         head = []
         @hits = []
-        text.each do |line|
+        text.each_line do |line|
           if flag then
             @hits << Hit.new(line)
           else
@@ -71,7 +74,45 @@ module Bio
             end
           end
         end
-        @columns = parse_header(head)
+        @columns = parse_header(head) unless head.empty?
+      end
+
+      # Adds a header line if the header data is not yet given and
+      # the given line is suitable for header.
+      # Returns self if adding header line is succeeded.
+      # Otherwise, returns false (the line is not added).
+      def add_header_line(line)
+        return false if defined? @columns
+        line = line.chomp
+        case line
+        when /^\d/
+          @columns = defined? @header_lines ? parse_header(@header_lines) : []
+          return false
+        when /\A\-+\s*\z/
+          @columns = defined? @header_lines ? parse_header(@header_lines) : []
+          return self
+        else
+          @header_lines ||= []
+          @header_lines.push line
+        end
+      end
+
+      # Adds a line to the entry if the given line is regarded as
+      # a part of the current entry.
+      # If the current entry (self) is empty, or the line has the same
+      # query name, the line is added and returns self.
+      # Otherwise, returns false (the line is not added).
+      def add_line(line)
+        if /\A\s*\z/ =~ line then
+          return @hits.empty? ? self : false
+        end
+        hit = Hit.new(line.chomp)
+        if @hits.empty? or @hits.first.query.name == hit.query.name then
+          @hits.push hit
+          return self
+        else
+          return false
+        end
       end
 
       # hits of the result.

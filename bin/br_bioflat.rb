@@ -41,6 +41,10 @@ Create index options:
 Options only valid for --create (or --update) --type flat:
   --sort=/path/to/sort   use external sort program (e.g. /usr/bin/sort)
   --sort=BUILTIN         use builtin sort routine
+                         (default: /usr/bin/sort or BUILTIN)
+  --env=/path/to/env     use env program to run sort (default: /usr/bin/env)
+  --env-arg=XXXXXX       argument given to the env program (default: LC_ALL=C)
+                         (multiple --env-arg=XXXXXX can be specified)
 
 Options only valid for --update:
   --renew                re-read all flatfiles and update whole index
@@ -88,7 +92,7 @@ def do_index(mode = :create)
 
     # OBDA stuff
 
-    when /^\-\-?format/
+    when /^\-\-?format$/
       args.shift
       format = nil		# throw this f*ckin' mess for auto detect :)
     when /^\-\-?location/
@@ -119,6 +123,13 @@ def do_index(mode = :create)
       options['onmemory'] = nil
     when /^\-\-?no\-?te?mp/i
       options['onmemory'] = true
+
+    when /^\-\-?env\=(.*)/i
+      options['env_program'] = $1
+
+    when /^\-\-?env-arg(?:ument)?\=(.*)/i
+      options['env_program_arguments'] ||= []
+      options['env_program_arguments'].push $1
 
     when /^\-\-?primary.*\=(.*)/i
       options['primary_namespace'] = $1
