@@ -54,6 +54,9 @@ module Bio
   #
   class CodeML
 
+    autoload  :Report,  'bio/appl/codeml/report'
+    autoload  :Rates,   'bio/appl/codeml/rates'
+
     DEFAULT_OPTIONS = {
       # Essential argumemts
       :seqfile             => nil,
