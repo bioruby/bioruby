@@ -15,7 +15,6 @@
 #
 
 require 'tempfile'
-require 'english'
 
 module Bio
 
