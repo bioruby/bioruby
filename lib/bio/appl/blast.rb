@@ -188,7 +188,7 @@ module Bio
 
       @output   = ''
       @parser   = nil
-      @format   = 0
+      @format   = nil
 
       @options = set_options(opt)
     end
@@ -236,9 +236,9 @@ module Bio
         @format = fmt.to_i
       else
         if defined?(XMLParser) or defined?(REXML)
-          @format = 7
+          @format ||= 7
         else
-          @format = 8
+          @format ||= 8
         end
       end
 
