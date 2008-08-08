@@ -73,6 +73,7 @@ module Bio
     autoload :WU,           'bio/appl/blast/wublast'
     autoload :Bl2seq,       'bio/appl/bl2seq/report'
     autoload :RPSBlast,     'bio/appl/blast/rpsblast'
+    autoload :NCBIOptions,  'bio/appl/blast/ncbioptions'
 
     # This is a shortcut for Bio::Blast.new:
     #  Bio::Blast.local(program, database, options)
@@ -130,6 +131,11 @@ module Bio
     # Options for blastall
     attr_accessor :options
 
+    # Sets options for blastall
+    def options=(ary)
+      @options = set_options(ary)
+    end
+
     # Server to submit the BLASTs to
     attr_accessor :server
 
@@ -184,8 +190,8 @@ module Bio
       @parser   = nil
       @format   = 0
 
-      set_options(opt)
-    end      
+      @options = set_options(opt)
+    end
 
 
     # This method submits a sequence to a BLAST factory, which performs the
@@ -205,13 +211,13 @@ module Bio
     # Returns options of blastall
     def option
       # backward compatibility
-      Bio::Command.make_command_line(@options)
+      Bio::Command.make_command_line(options)
     end
 
     # Set options for blastall
     def option=(str)
       # backward compatibility
-      @options = Shellwords.shellwords(str)
+      self.options = Shellwords.shellwords(str)
     end
 
     private
@@ -224,18 +230,23 @@ module Bio
         # backward compatibility
         a = Shellwords.shellwords(opt)
       end
-      unless a.find { |x| /\A\-m/ =~ x.to_s } then
+      ncbiopt = NCBIOptions.new(a)
+
+      if fmt = ncbiopt.get('-m') then
+        @format = fmt.to_i
+      else
         if defined?(XMLParser) or defined?(REXML)
           @format = 7
         else
           @format = 8
         end
-      else
-        @format = a[a.index('-m') + 1].to_i
       end
-      @options = [ *a ]
-    end
 
+      @matrix = ncbiopt.get('-M')
+      @filter = ncbiopt.get('-F')
+      # returns an array of string containing options
+      return ncbiopt.options
+    end
 
     def parse_result(data)
       Report.new(data, @parser)
@@ -244,26 +255,20 @@ module Bio
 
     def make_command_line
       set_options
-      cmd = [ @blastall, '-p', @program, '-d', @db ]
+      cmd = [ '-p', @program, '-d', @db ]
+      if @format
+        cmd.concat([ '-m', @format.to_s ])
+      end
       if @matrix
         cmd.concat([ '-M', @matrix ]) 
-        i = @options.index('-M')
-        @options.delete_at(i)
-        @options.delete_at(i)
       end
       if @filter
         cmd.concat([ '-F', @filter ]) 
-        i = @options.index('-F')
-        @options.delete_at(i)
-        @options.delete_at(i)
       end
-      if @format
-        cmd.concat([ '-m', @format.to_s ])
-        i = @options.index('-m')
-        @options.delete_at(i)
-        @options.delete_at(i)
-      end
-      cmd.concat(@options) if @options
+      ncbiopts = NCBIOptions.new(@options)
+      cmd = ncbiopts.make_command_line_options(cmd)
+      cmd.unshift(@blastall)
+      cmd
     end
 
 
@@ -294,7 +299,7 @@ module Bio
 
       opt = []
       opt.concat([ '-m', @format.to_s ]) if @format
-      opt.concat(@options) if @options
+      opt = NCBIOptions.new(@options).make_command_line_options(opt)
 
       form = {
         'style'          => 'raw',
