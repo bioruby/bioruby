@@ -242,8 +242,10 @@ module Bio
         end
       end
 
-      @matrix = ncbiopt.get('-M')
-      @filter = ncbiopt.get('-F')
+      mtrx = ncbiopt.get('-M')
+      @matrix = mtrx if mtrx
+      fltr = ncbiopt.get('-F')
+      @filter = fltr if fltr
       # returns an array of string containing options
       return ncbiopt.options
     end
