@@ -93,6 +93,9 @@ module Bio
   
     attr_accessor :options
 
+
+    # Create a codeml instance, which will run using the specified binary location
+    # This method with throw and error if the binary cannot be found.
     def initialize(codeml_location)
       unless File.exists?(codeml_location)
         raise ArgumentError.new("File does not exist : #{codeml_location}")
@@ -100,13 +103,16 @@ module Bio
       @binary = codeml_location
     end
 
-    def run(config_file = create_config_file)
+    # Runs the codeml analysis based on the options in the passed config file
+    # An error will be thrown if required options are not specific in the config file
+    def run(config_file)
       load_options_from_file(config_file)
       check_options
       output = %x[ #{@binary} #{config_file} ]
       output
     end
- 
+
+    # Helper method for creating a codeml config file
     def self.create_config_file(options = Hash.new, location = Tempfile.new('codeml_config').path)
       options = DEFAULT_OPTIONS.merge(options)
       File.open(location,'w') do |file|
