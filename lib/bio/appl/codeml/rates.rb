@@ -23,6 +23,11 @@ module Bio
     # 
     # A simple class for parsing the codeml rates file.
     #
+    # WARNING: The order of the parsed data should be correct, however will
+    # not necessarily correspond to the position in the alignment. For instance
+    # codeml ignores columns that contains gaps, and therefore there will not
+    # be any estimated rate data.
+    #
     # == Usage
     #
     # site_rates = Bio::CodeML::Rates.new(File.open(@tmp_dir + "/rates").read)
