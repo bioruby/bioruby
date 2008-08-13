@@ -38,7 +38,7 @@ module Bio
               :rate => match[4].to_f }
           end
         end
-        array
+        array.compact
       end
 
     end
