@@ -13,15 +13,15 @@ class TestCodemlReport < Test::Unit::TestCase
   EXAMPLE_RATES = Bio::CodeML::Rates.new(File.open(TEST_DATA + '/rates').read)
 
   def test_rates_first_position
-    assert_equal(EXAMPLE_RATES[1][:data],'VVVVV')
-    assert_equal(EXAMPLE_RATES[1][:rate],0.462)
-    assert_equal(EXAMPLE_RATES[1][:freq],16)
+    assert_equal(EXAMPLE_RATES.first[:data],'VVVVV')
+    assert_equal(EXAMPLE_RATES.first[:rate],0.462)
+    assert_equal(EXAMPLE_RATES.first[:freq],16)
   end
 
   def test_rates_hundred_and_fiftieth_position
-    assert(EXAMPLE_RATES[150][:data],'VVVVI')
-    assert(EXAMPLE_RATES[150][:rate],1.406)
-    assert(EXAMPLE_RATES[150][:freq],1)
+    assert(EXAMPLE_RATES[149][:data],'VVVVI')
+    assert(EXAMPLE_RATES[149][:rate],1.406)
+    assert(EXAMPLE_RATES[149][:freq],1)
   end
   
 end
