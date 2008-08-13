@@ -18,6 +18,21 @@ require 'delegate'
 
 module Bio
   class CodeML
+
+    # == Description
+    # 
+    # A simple class for parsing the codeml rates file.
+    #
+    # == Usage
+    #
+    # site_rates = Bio::CodeML::Rates.new(File.open(@tmp_dir + "/rates").read)
+    # site_rate.first[:freq] # => Number of times that column appears
+    # site_rate.[5][:rate] # => Estimated rate of evolution
+    # site_rate.last[:data] # => The content of the column, as a string
+    #
+    # # This class delegates to an array, so will respond to all array methods
+    # site_rates.max {|x,y| x[:rate] <=> y[:rate] } # => Fastest evolving column
+    # site_rates.detect {|x| x[:freq] > 1 } # => Columns appearing more than once
     class Rates < DelegateClass(Array)
 
       def initialize(rates)
