@@ -357,7 +357,7 @@ class XML < Bio::SOAPWSDL
     SERVER_URI = BASE_URI + "RequestManager.wsdl"
 
     # RequestManager using DDBJ REST interface
-    module REST_RequestManager
+    class REST
       require 'bio/command'
 
       Uri = 'http://xml.nig.ac.jp/rest/Invoke'
@@ -372,14 +372,21 @@ class XML < Bio::SOAPWSDL
         r = Bio::Command.post_form(Uri, params)
         r.body
       end
-    end #module REST_RequestManager
+    end #class REST
+
+    unless defined? new_orig then
+      class << RequestManager
+        alias new_orig new
+        private :new_orig
+      end
+    end
 
     # creates a new driver
-    def initialize
+    def self.new(wsdl = nil)
       begin
-        super
+        new_orig(wsdl)
       rescue RuntimeError
-        self.extend(REST_RequestManager)
+        REST.new
       end
     end
   end #class RequestManager

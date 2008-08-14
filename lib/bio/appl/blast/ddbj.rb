@@ -98,7 +98,9 @@ module Bio::Blast::Remote
 
       # SOAP objects are cached
       @ddbj_remote_blast ||= Bio::DDBJ::XML::Blast.new
-      @ddbj_request_manager ||= Bio::DDBJ::XML::RequestManager.new
+      #@ddbj_request_manager ||= Bio::DDBJ::XML::RequestManager.new
+      # always use REST version to prevent warning messages
+      @ddbj_request_manager ||= Bio::DDBJ::XML::RequestManager::REST.new
 
       program = opt.delete('-p')
       db = opt.delete('-d')
@@ -119,7 +121,7 @@ module Bio::Blast::Remote
         result = @ddbj_request_manager.getAsyncResult(qid)
         case result.to_s
         when /The search and analysis service by WWW is very busy now/
-          sleeptime = 45
+          raise result.to_s.strip + '(Alternatively, wrong options may be given.)'
         when /Your job has not completed yet/
           sleeptime = 5
         else
