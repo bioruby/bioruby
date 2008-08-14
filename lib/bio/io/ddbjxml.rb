@@ -356,25 +356,30 @@ class XML < Bio::SOAPWSDL
   class RequestManager < XML
     SERVER_URI = BASE_URI + "RequestManager.wsdl"
 
+    # RequestManager using DDBJ REST interface
+    module REST_RequestManager
+      require 'bio/command'
+
+      Uri = 'http://xml.nig.ac.jp/rest/Invoke'
+      Service = 'RequestManager'
+
+      def getAsyncResult(requestId)
+        params = {
+          'service'   => Service,
+          'method'    => 'getAsyncResult',
+          'requestId' => requestId.to_s
+        }
+        r = Bio::Command.post_form(Uri, params)
+        r.body
+      end
+    end #module REST_RequestManager
+
     # creates a new driver
     def initialize
       begin
         super
       rescue RuntimeError
-        # workaround 20080814
-        require 'bio/command'
-        require 'tempfile'
-        str = Bio::Command.read_uri(SERVER_URI)
-        #str.sub!(/xmlns\:mime\=\'http\:\/\/schemas\.xmlsoap\.org\/wsdl\/mime\/\'/, '')
-        #str.sub!(/\<types\>\s*\<xsd\:schema xmlns\:xsd\=\'http\:\/\/www\.w3\.org\/2001\/XMLSchema\' targetNamespace\=\'http\:\/\/mime\/\'\/\>\s*\<\/types\>/m, '')
-        str.gsub!(/\<message name\=\'getAsyncResultMime1(In|Out)\'\>.+?\<\/message\>/m, '')
-        str.sub!(/\<operation name\=\'getAsyncResultMime\' parameterOrder\=\'requestID\'\>.+?\<\/operation\>/m, '')
-        str.sub!(/\<operation name\=\'getAsyncResultMime\'\>.+?\<\/operation\>/m, '')
-        tf = Tempfile.open('wsdl-workaround')
-        tf.print str
-        tf.close
-        super(tf.path)
-        tf.close(true)
+        self.extend(REST_RequestManager)
       end
     end
   end #class RequestManager
