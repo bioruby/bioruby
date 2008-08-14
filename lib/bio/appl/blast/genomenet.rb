@@ -172,14 +172,18 @@ module Bio::Blast::Remote
       opt_V = opt.delete('-V') || 500 # default value for GenomeNet
       opt_B = opt.delete('-B') || 250 # default value for GenomeNet
 
+      # format, not for form parameters, but included in option string
+      opt_m = opt.get('-m') || '7' # default of BioRuby GenomeNet factory
+      opt.set('-m', opt_m)
+
       optstr = Bio::Command.make_command_line_unix(opt.options)
 
       form = {
         'style'          => 'raw',
         'prog'           => program,
         'dbname'         => db,
-        'sequence'       => URI.escape(query),
-        'other_param'    => URI.escape(optstr),
+        'sequence'       => query,
+        'other_param'    => optstr,
         'matrix'         => matrix,
         'filter'         => filter,
         'V_value'        => opt_V, 
@@ -190,7 +194,7 @@ module Bio::Blast::Remote
       data = []
 
       form.each do |k, v|
-        data.push("#{k}=#{v}") if v
+        data.push("#{URI.escape(k.to_s)}=#{URI.escape(v.to_s)}") if v
       end
 
       begin
@@ -239,6 +243,16 @@ module Bio::Blast::Remote
         else
           raise 'cannot understand response'
         end
+      end
+
+      # for -m 0 (NCBI BLAST default) output, html tags are removed.
+      if opt_m.to_i == 0 then
+        #@output_bak = @output
+        txt = @output.gsub(/^\s*\<img +src\=\"\/Fig\/arrow\_top\.gif\"\>.+$\r?\n/, '')
+        txt.gsub!(/^.+\<\/form\>$/, '')
+        txt.gsub!(/^\<form *method\=\"POST\" name\=\"clust\_check\"\>.+$\r?\n/, '')
+        txt.gsub!(/\<[^\>\<]+\>/m, '')
+        @output = txt
       end
 
       return @output

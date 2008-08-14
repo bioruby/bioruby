@@ -206,13 +206,27 @@ module Bio
     # This method submits a sequence to a BLAST factory, which performs the
     # actual BLAST.
     # 
-    #   fasta_sequences = Bio::FlatFile.open(Bio::FastaFormat, 'my_sequences.fa')
-    #   report = blast_factory.query(fasta_sequences)
+    #   # example 1
+    #   seq = Bio::Sequence::NA.new('agggcattgccccggaagatcaagtcgtgctcctg')
+    #   report = blast_factory.query(seq)
+    #
+    #   # example 2
+    #   str <<END_OF_FASTA
+    #   >lcl|MySequence
+    #   MPPSAISKISNSTTPQVQSSSAPNLTMLEGKGISVEKSFRVYSEEENQNQHKAKDSLGF
+    #   KELEKDAIKNSKQDKKDHKNWLETLYDQAEQKWLQEPKKKLQDLIKNSGDNSRVILKDS
+    #   END_OF_FASTA
+    #   report = blast_factory.query(str)
+    #
+    # Bug note: When multi-FASTA is given and the format is 7 (XML) or 8 (tab),
+    # it should return an array of Bio::Blast::Report objects,
+    # but it returns a single Bio::Blast::Report object.
+    # This is a known bug and should be fixed in the future.
     # 
     # ---
     # *Arguments*:
     # * _query_ (required): single- or multiple-FASTA formatted sequence(s)
-    # *Returns*:: a Bio::Blast::Report object
+    # *Returns*:: a Bio::Blast::Report (or Bio::Blast::Default::Report) object when single query is given. When multiple sequences are given as the query, it returns an array of Bio::Blast::Report (or Bio::Blast::Default::Report) objects. If it can not parse result, nil will be returnd.
     def query(query)
       case query
       when Bio::Sequence
@@ -257,6 +271,7 @@ module Bio
       if fmt = ncbiopt.get('-m') then
         @format = fmt.to_i
       else
+        Bio::Blast::Report #dummy to load XMLParser or REXML
         if defined?(XMLParser) or defined?(REXML)
           @format ||= 7
         else
@@ -291,8 +306,22 @@ module Bio
       return ncbiopt.options
     end
 
-    def parse_result(data)
-      Report.new(data, @parser)
+    # parses result
+    def parse_result(str)
+      if @format.to_i == 0 then
+        ary = Bio::FlatFile.open(Bio::Blast::Default::Report,
+                                 StringIO.new(str)) { |ff| ff.to_a }
+        case ary.size
+        when 0
+          return nil
+        when 1
+          return ary[0]
+        else
+          return ary
+        end
+      else
+        Report.new(str, @parser)
+      end
     end
 
     # returns an array containing NCBI BLAST options
