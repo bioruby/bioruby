@@ -333,6 +333,51 @@ class XML < Bio::SOAPWSDL
     SERVER_URI = BASE_URI + "PML.wsdl"
   end
 
+  # === RequestManager
+  #
+  # Sequence Retrieving System
+  # 
+  # * http://xml.nig.ac.jp/doc/RequestManager.txt
+  # 
+  # === Examples
+  #
+  #   serv = Bio::DDBJ::XML::RequestManager.new
+  #   puts serv.getAsyncResult('20070420102828140')
+  #
+  # === WSDL Methods
+  #
+  # * getAsyncResult( requestId )
+  # * getAsyncResultMime( requestId )
+  #
+  # === Examples
+  #
+  # * http://xml.nig.ac.jp/doc/RequestManager.txt
+  #
+  class RequestManager < XML
+    SERVER_URI = BASE_URI + "RequestManager.wsdl"
+
+    # creates a new driver
+    def initialize
+      begin
+        super
+      rescue RuntimeError
+        # workaround 20080814
+        require 'bio/command'
+        require 'tempfile'
+        str = Bio::Command.read_uri(SERVER_URI)
+        #str.sub!(/xmlns\:mime\=\'http\:\/\/schemas\.xmlsoap\.org\/wsdl\/mime\/\'/, '')
+        #str.sub!(/\<types\>\s*\<xsd\:schema xmlns\:xsd\=\'http\:\/\/www\.w3\.org\/2001\/XMLSchema\' targetNamespace\=\'http\:\/\/mime\/\'\/\>\s*\<\/types\>/m, '')
+        str.gsub!(/\<message name\=\'getAsyncResultMime1(In|Out)\'\>.+?\<\/message\>/m, '')
+        str.sub!(/\<operation name\=\'getAsyncResultMime\' parameterOrder\=\'requestID\'\>.+?\<\/operation\>/m, '')
+        str.sub!(/\<operation name\=\'getAsyncResultMime\'\>.+?\<\/operation\>/m, '')
+        tf = Tempfile.open('wsdl-workaround')
+        tf.print str
+        tf.close
+        super(tf.path)
+        tf.close(true)
+      end
+    end
+  end #class RequestManager
 
   # === SRS
   #
