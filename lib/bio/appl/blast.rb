@@ -39,20 +39,6 @@ module Bio
   #
   #   # Then, to parse the report, see Bio::Blast::Report
   #
-  # === Available databases for Bio::Blast.remote
-  #
-  #  ----------+-------+---------------------------------------------------
-  #   program  | query | db (supported in GenomeNet)
-  #  ----------+-------+---------------------------------------------------
-  #   blastp   | AA    | nr-aa, genes, vgenes.pep, swissprot, swissprot-upd,
-  #  ----------+-------+ pir, prf, pdbstr
-  #   blastx   | NA    | 
-  #  ----------+-------+---------------------------------------------------
-  #   blastn   | NA    | nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss,
-  #  ----------+-------+ htgs, dbsts, embl-nonst, embnonst-upd, epd,
-  #   tblastn  | AA    | genes-nt, genome, vgenes.nuc
-  #  ----------+-------+---------------------------------------------------
-  #
   # == See also
   #
   # * Bio::Blast::Report
@@ -74,6 +60,7 @@ module Bio
     autoload :Bl2seq,       'bio/appl/bl2seq/report'
     autoload :RPSBlast,     'bio/appl/blast/rpsblast'
     autoload :NCBIOptions,  'bio/appl/blast/ncbioptions'
+    autoload :Remote,       'bio/appl/blast/remote'
 
     # This is a shortcut for Bio::Blast.new:
     #  Bio::Blast.local(program, database, options)
@@ -85,9 +72,14 @@ module Bio
     # * _db_ (required): name of the local database
     # * _options_: blastall options \
     # (see http://www.genome.jp/dbget-bin/show_man?blast2)
+    # * _blastall_: full path to blastall program (e.g. "/opt/bin/blastall"; DEFAULT: "blastall")
     # *Returns*:: Bio::Blast factory object
-    def self.local(program, db, option = '')
-      self.new(program, db, option, 'local')
+    def self.local(program, db, options = '', blastall = nil)
+      f = self.new(program, db, options, 'local')
+      if blastall then
+        f.blastall = blastall
+      end
+      f
     end
 
     # Bio::Blast.remote does exactly the same as Bio::Blast.new, but sets
@@ -129,7 +121,7 @@ module Bio
     attr_accessor :db
     
     # Options for blastall
-    attr_accessor :options
+    attr_reader :options
 
     # Sets options for blastall
     def options=(ary)
@@ -138,6 +130,23 @@ module Bio
 
     # Server to submit the BLASTs to
     attr_accessor :server
+
+    # Sets server to submit the BLASTs to.
+    # The exec_xxxx method should be defined in Bio::Blast or
+    # Bio::Blast::Remote::Xxxx class.
+    def server=(str)
+      @server = str
+      begin
+        m = Bio::Blast::Remote.const_get(@server.capitalize)
+      rescue NameError
+        m = nil
+      end
+      if m and !(self.is_a?(m)) then
+        # lazy include Bio::Blast::Remote::XXX module
+        self.class.class_eval { include m }
+      end
+      return @server
+    end
 
     # Full path for blastall. (default: 'blastall').
     attr_accessor :blastall
@@ -155,7 +164,7 @@ module Bio
     #
     # 0, pairwise; 1; 2; 3; 4; 5; 6; 7, XML Blast outpu;, 8, tabular; 
     # 9, tabular with comment lines; 10, ASN text; 11, ASN binery [intege].
-    attr_reader :format
+    attr_accessor :format
 
     #
     attr_writer :parser  # to change :xmlparser, :rexml, :tab
@@ -180,7 +189,6 @@ module Bio
     def initialize(program, db, opt = [], server = 'local')
       @program  = program
       @db       = db
-      @server   = server
 
       @blastall = 'blastall'
       @matrix   = nil
@@ -190,7 +198,8 @@ module Bio
       @parser   = nil
       @format   = nil
 
-      @options = set_options(opt)
+      @options = set_options(opt, program, db)
+      self.server = server
     end
 
 
@@ -205,7 +214,18 @@ module Bio
     # * _query_ (required): single- or multiple-FASTA formatted sequence(s)
     # *Returns*:: a Bio::Blast::Report object
     def query(query)
-      return self.send("exec_#{@server}", query.to_s)
+      case query
+      when Bio::Sequence
+        query = query.output(:fasta)
+      when Bio::Sequence::NA, Bio::Sequence::AA, Bio::Sequence::Generic
+        query = query.to_fasta('query', 70)
+      else
+        query = query.to_s
+      end
+
+      @output = self.__send__("exec_#{@server}", query)
+      report = parse_result(@output)
+      return report
     end
 
     # Returns options of blastall
@@ -222,8 +242,10 @@ module Bio
 
     private
 
-    def set_options(opt = nil)
+    def set_options(opt = nil, program = nil, db = nil)
       opt = @options unless opt
+
+      # when opt is a String, splits to an array
       begin
         a = opt.to_ary
       rescue NameError #NoMethodError
@@ -246,6 +268,25 @@ module Bio
       @matrix = mtrx if mtrx
       fltr = ncbiopt.get('-F')
       @filter = fltr if fltr
+
+      # special treatment for '-p'
+      if program then
+        @program = program
+        ncbiopt.delete('-p')
+      else
+        program = ncbiopt.get('-p')
+        @program = program if program
+      end
+
+      # special treatment for '-d'
+      if db then
+        @db = db
+        ncbiopt.delete('-d')
+      else
+        db = ncbiopt.get('-d')
+        @db = db if db
+      end
+
       # returns an array of string containing options
       return ncbiopt.options
     end
@@ -254,10 +295,16 @@ module Bio
       Report.new(data, @parser)
     end
 
-
-    def make_command_line
+    # returns an array containing NCBI BLAST options
+    def make_command_line_options
       set_options
-      cmd = [ '-p', @program, '-d', @db ]
+      cmd = []
+      if @program
+        cmd.concat([ '-p', @program ])
+      end
+      if @db
+        cmd.concat([ '-d', @db ])
+      end
       if @format
         cmd.concat([ '-m', @format.to_s ])
       end
@@ -268,88 +315,31 @@ module Bio
         cmd.concat([ '-F', @filter ]) 
       end
       ncbiopts = NCBIOptions.new(@options)
-      cmd = ncbiopts.make_command_line_options(cmd)
-      cmd.unshift(@blastall)
+      ncbiopts.make_command_line_options(cmd)
+    end
+
+    # makes command line.
+    def make_command_line
+      cmd = make_command_line_options
+      cmd.unshift @blastall
       cmd
     end
 
-
+    # Local execution of blastall
     def exec_local(query)
       cmd = make_command_line
-      report = nil
-
       @output = Bio::Command.query_command(cmd, query)
-      report = parse_result(@output)
-
-      return report
+      return @output
     end
 
-
+    # This method is obsolete.
+    #
+    # Runs genomenet with '-m 8' option.
+    # Note that the format option is overwritten.
     def exec_genomenet_tab(query)
+      warn "Bio::Blast#server=\"genomenet_tab\" is deprecated."
       @format = 8
       exec_genomenet(query)
-    end
-
-
-    def exec_genomenet(query)
-      host = "blast.genome.jp"
-      #path = "/sit-bin/nph-blast"
-      path = "/sit-bin/blast" #2005.08.12
-
-      matrix = @matrix ? @matrix : 'blosum62'
-      filter = @filter ? @filter : 'T'
-
-      opt = []
-      opt.concat([ '-m', @format.to_s ]) if @format
-      opt = NCBIOptions.new(@options).make_command_line_options(opt)
-
-      form = {
-        'style'          => 'raw',
-        'prog'           => @program,
-        'dbname'         => @db,
-        'sequence'       => CGI.escape(query),
-        'other_param'    => CGI.escape(Bio::Command.make_command_line_unix(opt)),
-        'matrix'         => matrix,
-        'filter'         => filter,
-        'V_value'        => 500, # default value for GenomeNet
-        'B_value'        => 250, # default value for GenomeNet
-        'alignment_view' => 0,
-      }
-
-      data = []
-
-      form.each do |k, v|
-        data.push("#{k}=#{v}") if v
-      end
-
-      report = nil
-
-      begin
-        http = Bio::Command.new_http(host)
-        http.open_timeout = 300
-        http.read_timeout = 600
-        result, = http.post(path, data.join('&'))
-        @output = result.body
-        # workaround 2005.08.12
-        if /\<A +HREF=\"(http\:\/\/blast\.genome\.jp(\/tmp\/[^\"]+))\"\>Show all result\<\/A\>/i =~ @output.to_s then
-          result, = http.get($2)
-          @output = result.body
-          txt = @output.to_s.split(/\<pre\>/)[1]
-          raise 'cannot understand response' unless txt
-          txt.sub!(/\<\/pre\>.*\z/m, '')
-          txt.sub!(/.*^ \-{20,}\s*/m, '')
-          @output = txt.gsub(/\&lt\;/, '<')
-          report = parse_result(@output)
-        else
-          raise 'cannot understand response'
-        end
-      end
-
-      return report
-    end
-
-    def exec_ncbi(query)
-      raise NotImplementedError
     end
 
   end # class Blast
