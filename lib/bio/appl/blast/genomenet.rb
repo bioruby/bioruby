@@ -100,7 +100,7 @@ module Bio::Blast::Remote
         key = nil
         host = Bio::Blast::Remote::Genomenet::Host
         http = Bio::Command.new_http(host)
-        result, = http.get('/')
+        result = http.get('/')
         #p result.body
         result.body.each_line do |line|
           case line
