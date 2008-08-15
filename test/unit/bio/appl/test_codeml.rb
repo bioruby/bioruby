@@ -84,7 +84,7 @@ module Bio
     end
 
     def test_correct_options_should_be_loaded
-      assert_equal(File.expand_path(loaded.options[:seqfile]), File.expand_path(TEST_DATA + '/abglobin.aa'))
+      assert_equal(File.expand_path(TEST_DATA + loaded.options[:seqfile]), File.expand_path(TEST_DATA + '/abglobin.aa'))
       assert_equal(loaded.options[:fix_kappa], '1')
       assert_equal(loaded.options[:model], '1')
     end
