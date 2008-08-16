@@ -12,28 +12,11 @@ $:.unshift(libpath) unless $:.include?(libpath)
 require 'test/unit'
 require 'bio/appl/codeml'
 
-# Set this method to public so that it can be tested
-Bio::CodeML.class_eval{public :load_options_from_file }
-
-
-BIORUBY_ROOT  = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4)).cleanpath.to_s
-TEST_DATA = Pathname.new(File.join(BIORUBY_ROOT, 'test', 'data', 'codeml')).cleanpath.to_s
-
 module Bio
-  class TestCodemlData
+  module TestCodemlData
 
-    def self.generate_config_file
-      test_config = Tempfile.new('codeml_config').path
-      Bio::CodeML.create_config_file({
-        :model       => 1,
-        :fix_kappa   => 1,
-        :aaRatefile  => TEST_DATA + '/wag.dat',
-        :seqfile     => TEST_DATA + '/abglobin.aa',
-        :treefile    => TEST_DATA + '/abglobin.trees',
-        :outfile     => Tempfile.new('codeml_test').path,
-      },test_config)
-      test_config
-    end
+    bioruby_root  = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4)).cleanpath.to_s
+    TEST_DATA = Pathname.new(File.join(bioruby_root, 'test', 'data', 'codeml')).cleanpath.to_s
 
     def self.dummy_binary
       TEST_DATA + '/dummy_binary'
@@ -54,14 +37,42 @@ module Bio
 
   class TestCodemlConfigGeneration < Test::Unit::TestCase
 
-    EXAMPLE_CONFIG = TestCodemlData.generate_config_file
+    TEST_DATA = TestCodemlData::TEST_DATA
+
+    def generate_config_file
+      @tempfile_config = Tempfile.new('codeml_config')
+      @tempfile_config.close(false)
+      @tempfile_outfile = Tempfile.new('codeml_test')
+      @tempfile_outfile.close(false)
+
+      test_config = @tempfile_config.path
+      Bio::CodeML.create_config_file({
+        :model       => 1,
+        :fix_kappa   => 1,
+        :aaRatefile  => TEST_DATA + '/wag.dat',
+        :seqfile     => TEST_DATA + '/abglobin.aa',
+        :treefile    => TEST_DATA + '/abglobin.trees',
+        :outfile     => @tempfile_outfile.path,
+      },test_config)
+      test_config
+    end
+    private :generate_config_file
+
+    def setup
+      @example_config = generate_config_file
+    end
+
+    def teardown
+      @tempfile_config.close(true)
+      @tempfile_outfile.close(true)
+    end
 
     def test_config_file_generated
-      assert_not_nil(File.size?(EXAMPLE_CONFIG))
+      assert_not_nil(File.size?(@example_config))
     end
 
     def test_expected_options_set_in_config_file
-      produced_config = File.open(EXAMPLE_CONFIG).inject(Hash.new) do |hash,line|
+      produced_config = File.open(@example_config).inject(Hash.new) do |hash,line|
         hash.store(*line.strip.split(' = '))
         hash
       end
@@ -75,7 +86,9 @@ module Bio
     
     def loaded
       codeml = Bio::CodeML.new(TestCodemlData.dummy_binary)
-      codeml.load_options_from_file(TestCodemlData.example_config)
+      codeml.instance_eval {
+        load_options_from_file(TestCodemlData.example_config)
+      }
       codeml
     end
 
@@ -84,7 +97,7 @@ module Bio
     end
 
     def test_correct_options_should_be_loaded
-      assert_equal(File.expand_path(TEST_DATA + loaded.options[:seqfile]), File.expand_path(TEST_DATA + '/abglobin.aa'))
+      assert_equal(File.expand_path(TestCodemlData::TEST_DATA + loaded.options[:seqfile]), File.expand_path(TestCodemlData::TEST_DATA + '/abglobin.aa'))
       assert_equal(loaded.options[:fix_kappa], '1')
       assert_equal(loaded.options[:model], '1')
     end

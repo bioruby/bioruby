@@ -1,3 +1,10 @@
+#
+# test/unit/bio/appl/codeml/test_rates.rb - Unit test for Bio::CodeML::Rates
+#
+# Copyright::  Copyright (C) 2008 Michael D. Barton <mail@michaelbarton.me.uk>
+# License::    The Ruby License
+#
+
 require 'pathname'
 libpath = Pathname.new(File.join(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib'))).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
@@ -5,10 +12,10 @@ $:.unshift(libpath) unless $:.include?(libpath)
 require 'test/unit'
 require 'bio/appl/codeml/rates'
 
-BIORUBY_ROOT  = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
-TEST_DATA = Pathname.new(File.join(BIORUBY_ROOT, 'test', 'data', 'codeml')).cleanpath.to_s
+class TestCodemlRates < Test::Unit::TestCase
 
-class TestCodemlReport < Test::Unit::TestCase
+  bioruby_root  = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
+  TEST_DATA = Pathname.new(File.join(bioruby_root, 'test', 'data', 'codeml')).cleanpath.to_s
 
   EXAMPLE_RATES = Bio::CodeML::Rates.new(File.open(TEST_DATA + '/rates').read)
 
