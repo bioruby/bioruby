@@ -1,5 +1,5 @@
 #
-# = bio/appl/codeml/rates.rb - CodeML rates report file parser
+# = bio/appl/paml/codeml/rates.rb - Codeml rates report file parser
 #
 # Copyright::  Copyright (C) 2008 Michael D. Barton <mail@michaelbarton.me.uk>
 #
@@ -7,7 +7,7 @@
 #
 # == Description
 #
-# This file contains a class that implement a simple interface to CodeML rates estimation file
+# This file contains a class that implement a simple interface to Codeml rates estimation file
 #
 # == References
 #
@@ -15,9 +15,10 @@
 #
 
 require 'delegate'
+require 'bio/appl/paml/codeml'
 
-module Bio
-  class CodeML
+module Bio::PAML
+  class Codeml
 
     # == Description
     # 
@@ -30,7 +31,7 @@ module Bio
     #
     # == Usage
     #
-    # site_rates = Bio::CodeML::Rates.new(File.open(@tmp_dir + "/rates").read)
+    # site_rates = Bio::PAML::Codeml::Rates.new(File.open(@tmp_dir + "/rates").read)
     # site_rate.first[:freq] # => Number of times that column appears
     # site_rate.[5][:rate] # => Estimated rate of evolution
     # site_rate.last[:data] # => The content of the column, as a string

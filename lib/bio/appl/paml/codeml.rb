@@ -1,5 +1,5 @@
 #
-# = bio/appl/codeml.rb - Wrapper for running codeml
+# = bio/appl/paml/codeml.rb - Wrapper for running PAML program codeml
 #
 # Copyright::  Copyright (C) 2008 Michael D. Barton <mail@michaelbarton.me.uk>,
 #
@@ -7,7 +7,7 @@
 #
 # == Description
 #
-# This file contains a wrapper for running the CodeML tool for estimating evolutionary rate 
+# This file contains a wrapper for running the CODEML tool for estimating evolutionary rate 
 #
 # == References
 #
@@ -17,25 +17,26 @@
 require 'tempfile'
 
 module Bio
+module PAML
 
   # == Description
   #
-  # Bio::CodeML is a wrapper for estimating evolutionary rate using the CodeML 
+  # Bio::PAML::Codeml is a wrapper for estimating evolutionary rate using the CODEML 
   # tool. The class provides methods for generating the necessary configuration 
-  # file, and running CodeML with the specified binary. CodeML output is 
-  # returned when CodeML is run. Bio::CodeML::Report and Bio::CodeML::Rates
-  # provide simple classes for parsing and accessing the CodeML report and
+  # file, and running codeml with the specified binary. Codeml output is 
+  # returned when codeml is run. Bio::PAML::Codeml::Report and Bio::PAML::Codeml::Rates
+  # provide simple classes for parsing and accessing the Codeml report and
   # rates files respectively.
   #
   # == Usage
   #
   #   require 'bio'
   #
-  #   # Create a config file, setting some CodeML options
+  #   # Create a config file, setting some Codeml options
   #   # Default options are used otherwise, see RDoc for defaults
-  #   # The names of the options correspond to those specified in the CodeML documentation
+  #   # The names of the options correspond to those specified in the Codeml documentation
   #   config_file = Tempfile.new('codeml_config').path
-  #   Bio::CodeML.create_config_file({
+  #   Bio::PAML::Codeml.create_config_file({
   #     :model       => 1,
   #     :fix_kappa   => 1,
   #     :aaRatefile  => TEST_DATA + '/wag.dat',
@@ -44,17 +45,17 @@ module Bio
   #     :outfile     => Tempfile.new('codeml_test').path,
   #    },config_file)
   #
-  #    # Create an instance of CodeML specifying where the codeml binary is
-  #    codeml = Bio::CodeML.new('codeml_binary')
+  #    # Create an instance of Codeml specifying where the codeml binary is
+  #    codeml = Bio::PAML::Codeml.new('codeml_binary')
   #
   #    # Run codeml using a config file
   #    # Returns the command line output
   #    codeml_output = codeml.run(config_file)
   #
-  class CodeML
+  class Codeml
 
-    autoload  :Report,  'bio/appl/codeml/report'
-    autoload  :Rates,   'bio/appl/codeml/rates'
+    autoload  :Report,  'bio/appl/paml/codeml/report'
+    autoload  :Rates,   'bio/appl/paml/codeml/rates'
 
     DEFAULT_OPTIONS = {
       # Essential argumemts
@@ -139,5 +140,6 @@ module Bio
       raise ArgumentError.new("Tree file not found") unless File.exists?(self.options[:treefile])
     end
 
-  end # End CodeML
-end # End Bio
+  end # End class Codeml
+end # End module PAML
+end # End module Bio

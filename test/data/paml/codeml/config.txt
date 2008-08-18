@@ -1,5 +1,5 @@
-seqfile = ../../../../test/data/codeml/abglobin.aa
-treefile = ../../../../test/data/codeml/abglobin.trees
+seqfile = abglobin.aa
+treefile = abglobin.trees
 outfile = output.txt
 clock = 0
 ncatG = 8
@@ -10,7 +10,7 @@ fix_kappa = 1
 getSE = 0
 runmode = 0
 omega = 0.4
-aaRatefile = ../../../../test/data/codeml/wag.dat
+aaRatefile = wag.dat
 method = 0
 seqtype = 2
 NSsites = 0
