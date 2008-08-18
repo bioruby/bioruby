@@ -21,7 +21,8 @@ class TestDDBJXMLConstants < Test::Unit::TestCase
 
   def test_constants
     constants = ["DDBJ", "TxSearch", "ClustalW", "PML", "Gib", "Fasta", 
-                 "BASE_URI", "SRS", "SERVER_URI", "Gtop", "GetEntry", "Blast"].sort
+                 "BASE_URI", "SRS", "SERVER_URI", "Gtop", "GetEntry",
+                 "Blast", "RequestManager"].sort
     assert_equal(constants, Bio::DDBJ::XML.constants.sort)
   end
 
@@ -67,6 +68,10 @@ class TestDDBJXMLConstants < Test::Unit::TestCase
 
   def test_txsearch_server_url
     assert_equal("http://xml.nig.ac.jp/wsdl/TxSearch.wsdl", Bio::DDBJ::XML::TxSearch::SERVER_URI)
+  end
+
+  def test_requestmanager_server_url
+    assert_equal("http://xml.nig.ac.jp/wsdl/RequestManager.wsdl", Bio::DDBJ::XML::RequestManager::SERVER_URI)
   end
 
 end
