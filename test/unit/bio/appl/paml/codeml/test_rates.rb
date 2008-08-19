@@ -23,15 +23,20 @@ class TestCodemlRates < Test::Unit::TestCase
   end
 
   def test_rates_first_position
-    assert_equal('VVVVV', @example_rates.first[:data])
-    assert_equal(0.462, @example_rates.first[:rate])
-    assert_equal(16, @example_rates.first[:freq])
+    assert_equal('***M', @example_rates.first[:data])
+    assert_equal(1, @example_rates.first[:rate])
+    assert_equal(1, @example_rates.first[:freq])
   end
 
   def test_rates_hundred_and_fiftieth_position
-    assert('VVVVI', @example_rates[149][:data])
-    assert(1.406, @example_rates[149][:rate])
-    assert(1, @example_rates[149][:freq])
+    assert('GGGG', @example_rates[149][:data])
+    assert(0.828, @example_rates[149][:rate])
+    assert(9, @example_rates[149][:freq])
   end
   
+  def test_rates_last_position
+    assert('PHPP', @example_rates.last[:data])
+    assert(1.752, @example_rates.last[:rate])
+    assert(1, @example_rates.last[:freq])
+  end
 end
