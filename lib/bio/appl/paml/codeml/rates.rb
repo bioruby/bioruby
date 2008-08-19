@@ -48,7 +48,7 @@ module Bio::PAML
       private
 
       def parse_rates(text)
-        re = /\s+(\d+)\s+(\d+)\s+([A-Z]+)\s+(\d+\.\d+)\s+(\d)/
+        re = /\s+(\d+)\s+(\d+)\s+([A-Z\*]+)\s+(\d+\.\d+)\s+(\d)/
         array = Array.new
         text.each do |line|
           if re =~ line
