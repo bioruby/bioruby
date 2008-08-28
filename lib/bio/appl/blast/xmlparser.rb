@@ -7,7 +7,7 @@
 #              Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: xmlparser.rb,v 1.17.2.1 2008/05/12 13:19:32 ngoto Exp $
+# $Id:$
 #
 # == Description
 # 
@@ -153,6 +153,14 @@ class Blast
         @iterations.last.num = hash[tag].to_i
       when 'Iteration_message'
         @iterations.last.message = hash[tag].to_s
+
+        # for new BLAST XML format
+      when 'Iteration_query-ID'
+        @iterations.last.query_id = hash[tag].to_s
+      when 'Iteration_query-def'
+        @iterations.last.query_def = hash[tag].to_s
+      when 'Iteration_query-len'
+        @iterations.last.query_len = hash[tag].to_i
       end
     end
 

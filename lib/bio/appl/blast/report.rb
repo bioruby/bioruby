@@ -4,13 +4,14 @@
 # Copyright::  Copyright (C) 2003 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: report.rb,v 1.11 2007/04/05 23:35:39 trevor Exp $
+# $Id:$
 #
 
 require 'bio/appl/blast'
 require 'bio/appl/blast/xmlparser'
 require 'bio/appl/blast/rexml'
 require 'bio/appl/blast/format8'
+require 'bio/io/flatfile'
 
 module Bio
 class Blast
@@ -64,8 +65,10 @@ class Report
     if /<?xml/.match(data[/.*/])
       if defined?(XMLParser)
         xmlparser_parse(data)
+        @reports = blastxml_split_reports
       else
         rexml_parse(data)
+        @reports = blastxml_split_reports
       end
     else
       tab_parse(data)
@@ -81,10 +84,14 @@ class Report
     case parser
     when :xmlparser		# format 7
       xmlparser_parse(data)
+      @reports = blastxml_split_reports
     when :rexml		# format 7
       rexml_parse(data)
+      @reports = blastxml_split_reports
     when :tab		# format 8
       tab_parse(data)
+    when false
+      # do not parse, creates an empty object
     else
       auto_parse(data)
     end
@@ -98,23 +105,45 @@ class Report
   # 'gap-open', 'gap-extend', 'filter'
   attr_reader :parameters
 
+  #--
   # Shortcut for BlastOutput values.
-  attr_reader :program, :version, :reference, :db, :query_id, :query_def, :query_len
+  #++
+
+  # program name (e.g. "blastp") (String)
+  attr_reader :program
+
+  # BLAST version (e.g. "blastp 2.2.18 [Mar-02-2008]") (String)
+  attr_reader :version
+
+  # reference (String)
+  attr_reader :reference
+
+  # database name or title (String)
+  attr_reader :db
+
+  # query ID (String)
+  attr_reader :query_id
+
+  # query definition line (String)
+  attr_reader :query_def
+
+  # query length (Integer)
+  attr_reader :query_len
 
   # Matrix used (-M) : shortcuts for @parameters
   def matrix;       @parameters['matrix'];           end
   # Expectation threshold (-e) : shortcuts for @parameters
-  def expect;       @parameters['expect'].to_i;      end
+  def expect;       @parameters['expect'];           end
   # Inclusion threshold (-h) : shortcuts for @parameters
-  def inclusion;    @parameters['include'].to_i;     end
+  def inclusion;    @parameters['include'];          end
   # Match score for NT (-r) : shortcuts for @parameters
-  def sc_match;     @parameters['sc-match'].to_i;    end
+  def sc_match;     @parameters['sc-match'];         end
   # Mismatch score for NT (-q) : shortcuts for @parameters
-  def sc_mismatch;  @parameters['sc-mismatch'].to_i; end
+  def sc_mismatch;  @parameters['sc-mismatch'];      end
   # Gap opening cost (-G) : shortcuts for @parameters
-  def gap_open;     @parameters['gap-open'].to_i;    end
+  def gap_open;     @parameters['gap-open'];         end
   # Gap extension cost (-E) : shortcuts for @parameters
-  def gap_extend;   @parameters['gap-extend'].to_i;  end
+  def gap_extend;   @parameters['gap-extend'];       end
   # Filtering options (-F) : shortcuts for @parameters
   def filter;       @parameters['filter'];           end
   # PHI-BLAST pattern : shortcuts for @parameters
@@ -204,7 +233,17 @@ class Report
         yield x
       end
     end
-  end
+
+    # query ID, only available for new BLAST XML format
+    attr_accessor :query_id
+
+    # query definition, only available for new BLAST XML format
+    attr_accessor :query_def
+
+    # query length, only available for new BLAST XML format
+    attr_accessor :query_len
+
+  end #class Iteration
 
 
   # Bio::Blast::Report::Hit
@@ -322,6 +361,209 @@ class Report
     # Available only for '-m 8' format outputs.
     attr_accessor :mismatch_count
   end
+
+
+  # When the report contains results for multiple query sequences,
+  # returns an array of Bio::Blast::Report objects corresponding to
+  # the multiple queries.
+  # Otherwise, returns nil.
+  #
+  # Note for "No hits found":
+  # When no hits found for a query sequence, the result for the query
+  # is completely void and no information available in the result XML,
+  # including query ID and query definition.
+  # The only trace is that iteration number is skipped.
+  # This means that if the no-hit query is the last query,
+  # the query can not be detected, because the result XML is
+  # completely the same as the result XML without the query.
+  attr_reader :reports
+ 
+  private
+  # (private method)
+  # In new BLAST XML (blastall >= 2.2.14), results of multiple queries
+  # are stored in <Iteration>. This method splits iterations into
+  # multiple Bio::Blast objects and returns them as an array.
+  def blastxml_split_reports
+    unless self.iterations.find { |iter|
+        iter.query_id || iter.query_def || iter.query_len
+      } then
+      # traditional BLAST XML format, or blastpgp result.
+      return nil
+    end
+
+    # new BLAST XML format (blastall 2.2.14 or later)
+    origin = self
+    reports = []
+    prev_iternum = 0
+    firsttime = true
+
+    orig_iters = self.iterations
+    orig_iters.each do |iter|
+      blast = self.class.new(nil, false)
+      # When no hits found, the iteration is skipped in NCBI BLAST XML.
+      # So, filled with empty report object.
+      if prev_iternum + 1 < iter.num then
+        ((prev_iternum + 1)...(iter.num)).each do |num|
+          empty_i = Iteration.new
+          empty_i.num = num
+          empty_i.instance_eval {
+            if firsttime then
+              @query_id  = origin.query_id
+              @query_def = origin.query_def
+              @query_len = origin.query_len
+              firsttime = false
+            end
+          }
+          empty = self.class.new(nil, false)
+          empty.instance_eval {
+            # queriy_* are copied from the empty_i
+            @query_id  = empty_i.query_id
+            @query_def = empty_i.query_def
+            @query_len = empty_i.query_len
+            # others are copied from the origin
+            @program   = origin.program
+            @version   = origin.version
+            @reference = origin.reference
+            @db        = origin.db
+            @parameters.update(origin.parameters)
+            # the empty_i is added to the iterations
+            @iterations.push empty_i
+          }
+          reports.push empty
+        end
+      end
+
+      blast.instance_eval {
+        if firsttime then
+          @query_id  = origin.query_id
+          @query_def = origin.query_def
+          @query_len = origin.query_len
+          firsttime = false
+        end
+        # queriy_* are copied from the iter
+        @query_id  = iter.query_id if iter.query_id
+        @query_def = iter.query_def if iter.query_def
+        @query_len = iter.query_len if iter.query_len
+        # others are copied from the origin
+        @program   = origin.program
+        @version   = origin.version
+        @reference = origin.reference
+        @db        = origin.db
+        @parameters.update(origin.parameters)
+        # rewrites hit's query_id, query_def, query_len
+        iter.hits.each do |h|
+          h.query_id  = @query_id
+          h.query_def = @query_def
+          h.query_len = @query_len
+        end
+        # the iter is added to the iterations
+        @iterations.push iter
+      }
+
+      prev_iternum = iter.num
+      reports.push blast
+    end #orig_iters.each
+
+    # This object's iterations is set as first report's iterations
+    @iterations.clear
+    if rep = reports.first then
+      @iterations = rep.iterations
+    end
+
+    return reports
+  end
+
+  # Flatfile splitter for NCBI BLAST XML format.
+  # It is internally used when reading BLAST XML.
+  # Normally, users do not need to use it directly.
+  class BlastXmlSplitter < Bio::FlatFile::Splitter::Default
+
+    # creates a new splitter object
+    def initialize(klass, bstream)
+      super(klass, bstream)
+      @parsed_entries = []
+      @raw_unsupported = false
+    end
+
+    # rewinds
+    def rewind
+      ret = super
+      @parsed_entries.clear
+      @raw_unsupported = false
+      ret
+    end
+
+    # do nothing
+    def skip_leader
+      nil
+    end
+
+    # get an entry and return the entry as a string
+    def get_entry
+      if @parsed_entries.empty? then
+        @raw_unsupported = false
+        ent = super
+        prepare_parsed_entries(ent)
+        self.parsed_entry = @parsed_entries.shift
+      else
+        raise 'not supported for new BLAST XML format'
+      end
+      ent
+    end
+
+    # get an entry as a Bio::Blast::Report object
+    def get_parsed_entry
+      if @parsed_entries.empty? then
+        ent = get_entry
+      else
+        self.parsed_entry = @parsed_entries.shift
+        self.entry = nil
+        @raw_unsupported = true
+      end
+      self.parsed_entry
+    end
+
+    # current raw entry as a String
+    def entry
+      raise 'not supported for new BLAST XML format' if @raw_unsupported
+      super
+    end
+
+    # start position of the entry
+    def entry_start_pos
+      if entry_pos_flag then
+        raise 'not supported for new BLAST XML format' if @raw_unsupported
+      end
+      super
+    end
+
+    # (end position of the entry) + 1
+    def entry_ended_pos
+      if entry_pos_flag then
+        raise 'not supported for new BLAST XML format' if @raw_unsupported
+      end
+      super
+    end
+
+    private
+    # (private method) to prepare parsed entry
+    def prepare_parsed_entries(ent)
+      if ent then
+        blast = dbclass.new(ent)
+        if blast.reports and blast.reports.size >= 1 then
+          # new blast xml using <Iteration> for multiple queries
+          @parsed_entries.concat blast.reports
+        else
+          # traditional blast xml
+          @parsed_entries.push blast
+        end
+      end
+    end
+
+  end #class BlastXmlSplitter
+
+  # splitter for Bio::FlatFile support
+  FLATFILE_SPLITTER = BlastXmlSplitter
 
 end # Report
 

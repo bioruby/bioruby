@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2002, 2003 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: rexml.rb,v 1.12.2.1 2008/05/12 13:19:32 ngoto Exp $
+# $Id:$
 #
 # == Note
 # 
@@ -70,8 +70,17 @@ module Bio
               v = s.text =~ /\D/ ? s.text.to_f : s.text.to_i
               iteration.statistics[k] = v
             end
+
+          # for new BLAST XML format
+          when 'Iteration_query-ID'
+            iteration.query_id = i.text
+          when 'Iteration_query-def'
+            iteration.query_def = i.text
+          when 'Iteration_query-len'
+            iteration.query_len = i.text.to_i
           end
-        end
+        end #case i.name
+
         return iteration
       end
 
