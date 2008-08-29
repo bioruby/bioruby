@@ -6,11 +6,9 @@
 # Copyright::  Copyright (C) 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-# $Id: blast.rb,v 1.35 2008/04/15 13:54:39 ngoto Exp $
+# $Id:$
 #
 
-require 'net/http'
-require 'cgi' unless defined?(CGI)
 require 'bio/command'
 require 'shellwords'
 
@@ -96,17 +94,40 @@ module Bio
       self.new(program, db, option, server)
     end
 
+    #--
     # the method Bio::Blast.report is moved from bio/appl/blast/report.rb.
-    # only for xml format
+    #++
+     
+    # Bio::Blast.report parses given data, 
+    # and returns an array of Bio::Blast::Report objects, or
+    # yields each Bio::Blast::Report object when a block is given.
+    #
+    # Note that it can be used only for xml format.
+    # For default (-m 0) format, consider using Bio::FlatFile.
+    #
+    # ---
+    # *Arguments*:
+    # * _input_ (required): input data
+    # * _parser_: type of parser. see Bio::Blast::Report.new
+    # *Returns*:: Undefiend when a block is given. Otherwise, an Array containing Bio::Blast::Report objects.
     def self.reports(input, parser = nil)
       ary = []
       input.each("</BlastOutput>\n") do |xml|
         xml.sub!(/[^<]*(<?)/, '\1') # skip before <?xml> tag
         next if xml.empty?          # skip trailing no hits
-        if block_given?
-          yield Report.new(xml, parser)
+        rep = Report.new(xml, parser)
+        if rep.reports then
+          if block_given?
+            rep.reports.each { |r| yield r }
+          else
+            ary.concat rep.reports
+          end
         else
-          ary << Report.new(xml, parser)
+          if block_given?
+            yield rep
+          else
+            ary.push rep
+          end
         end
       end
       return ary
