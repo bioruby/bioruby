@@ -1233,7 +1233,7 @@ module Bio
  "P11616",
  "P23275",
  "Q01338"]
-      assert_equal(data, @obj.list_truepositive)
+      assert_equal(data.sort, @obj.list_truepositive.sort)
     end
 
     def test_list_falsenegative
@@ -1301,7 +1301,7 @@ module Bio
  "P77933",
  "P34529",
  "Q00126"]
-      assert_equal(data, @obj.list_falsenegative)
+      assert_equal(data.sort, @obj.list_falsenegative.sort)
     end
     
     def test_list_falsepositive
@@ -1353,7 +1353,7 @@ module Bio
  "Q95137",
  "Q62953",
  "Q95195"]
-      assert_equal(data, @obj.list_falsepositive)
+      assert_equal(data.sort, @obj.list_falsepositive.sort)
     end
 
     def test_list_potentialhit
@@ -1405,7 +1405,7 @@ module Bio
  "Q95137",
  "Q62953",
  "Q95195"]
-      assert_equal(data, @obj.list_potentialhit)
+      assert_equal(data.sort, @obj.list_potentialhit.sort)
     end
 
     def test_list_unknown
