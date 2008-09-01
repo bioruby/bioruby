@@ -16,7 +16,7 @@ require 'test/unit'
 require 'bio/db/embl/embl'
 
 module Bio
-  class TestEMBL < Test::Unit::TestCase
+  class TestEMBL89 < Test::Unit::TestCase
     
     def setup
     bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
