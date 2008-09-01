@@ -34,12 +34,13 @@ module Bio::PAML
     # report.tree_lengh # => Estimated phylogetic tree length
     class Report
 
-      attr_reader :tree_log_likelihood, :tree_length, :alpha
+      attr_reader :tree_log_likelihood, :tree_length, :alpha, :tree
 
       def initialize(codeml_report)
         @tree_log_likelihood = pull_tree_log_likelihood(codeml_report)
         @tree_length = pull_tree_length(codeml_report)
         @alpha = pull_alpha(codeml_report)
+        @tree = pull_tree(codeml_report)
       end
 
       private
@@ -55,6 +56,10 @@ module Bio::PAML
 
       def pull_alpha(text)
         text[/alpha .+ =\s+(-?\d+(\.\d+)?)/,1].to_f
+      end
+
+      def pull_tree(text)
+        text[/([^\n]+)\n\nDetailed/m,1]
       end
 
     end # End Report
