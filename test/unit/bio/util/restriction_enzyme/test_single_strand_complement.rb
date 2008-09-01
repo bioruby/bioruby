@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: test_single_strand_complement.rb,v 1.3 2007/04/05 23:35:44 trevor Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -15,7 +15,7 @@ $:.unshift(libpath) unless $:.include?(libpath)
 require 'test/unit'
 require 'bio/util/restriction_enzyme/single_strand_complement'
 
-module Bio #:nodoc:
+module Bio; module TestRestrictionEnzyme #:nodoc:
 
 class TestSingleStrandComplement < Test::Unit::TestCase #:nodoc:
 
@@ -144,4 +144,4 @@ class TestSingleStrandComplement < Test::Unit::TestCase #:nodoc:
 
 end
 
-end
+end; end

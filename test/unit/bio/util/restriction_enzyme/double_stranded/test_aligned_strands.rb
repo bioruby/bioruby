@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: test_aligned_strands.rb,v 1.4 2008/06/13 11:37:25 ngoto Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -17,7 +17,7 @@ require 'bio/sequence'
 require 'bio/util/restriction_enzyme/double_stranded/aligned_strands'
 require 'bio/util/restriction_enzyme/double_stranded'
 
-module Bio #:nodoc:
+module Bio; module TestRestrictionEnzyme #:nodoc:
 
 class TestDoubleStrandedAlignedStrands < Test::Unit::TestCase #:nodoc:
 
@@ -98,4 +98,4 @@ class TestDoubleStrandedAlignedStrands < Test::Unit::TestCase #:nodoc:
 
 end
 
-end
+end; end

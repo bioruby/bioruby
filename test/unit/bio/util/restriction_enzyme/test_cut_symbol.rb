@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: test_cut_symbol.rb,v 1.2 2007/04/05 23:35:44 trevor Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -15,9 +15,9 @@ $:.unshift(libpath) unless $:.include?(libpath)
 require 'test/unit'
 require 'bio/util/restriction_enzyme/cut_symbol'
 
-module Bio #:nodoc:
+module Bio; module TestRestrictionEnzyme #:nodoc:
 
-class TestStringFormatting < Test::Unit::TestCase #:nodoc:
+class TestCutSymbol < Test::Unit::TestCase #:nodoc:
 
   include Bio::RestrictionEnzyme::CutSymbol
 
@@ -41,4 +41,4 @@ class TestStringFormatting < Test::Unit::TestCase #:nodoc:
   
 end
 
-end
+end; end

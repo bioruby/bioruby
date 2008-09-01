@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: test_cut_ranges.rb,v 1.2 2007/04/05 23:35:44 trevor Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -21,7 +21,7 @@ require 'bio/util/restriction_enzyme/range/horizontal_cut_range'
 require 'bio/util/restriction_enzyme/range/vertical_cut_range'
 require 'bio/util/restriction_enzyme/range/cut_ranges'
 
-module Bio #:nodoc:
+module Bio; module TestRestrictionEnzyme #:nodoc:
 
 class TestCutRanges < Test::Unit::TestCase #:nodoc:
 
@@ -100,4 +100,4 @@ class TestCutRanges < Test::Unit::TestCase #:nodoc:
     assert_equal(false, @obj_3.include?(6))  
   end
 end
-end
+end; end

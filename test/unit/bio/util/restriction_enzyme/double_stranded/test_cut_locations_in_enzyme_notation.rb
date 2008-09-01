@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: test_cut_locations_in_enzyme_notation.rb,v 1.3 2007/04/05 23:35:44 trevor Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -15,7 +15,7 @@ $:.unshift(libpath) unless $:.include?(libpath)
 require 'test/unit'
 require 'bio/util/restriction_enzyme/double_stranded/cut_locations_in_enzyme_notation'
 
-module Bio #:nodoc:
+module Bio; module TestRestrictionEnzyme #:nodoc:
 
 class TestDoubleStrandedCutLocationsInEnzymeNotation < Test::Unit::TestCase #:nodoc:
 
@@ -101,4 +101,4 @@ class TestDoubleStrandedCutLocationsInEnzymeNotation < Test::Unit::TestCase #:no
 
 end
 
-end
+end; end
