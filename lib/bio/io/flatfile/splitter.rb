@@ -1,7 +1,7 @@
 #
 # = bio/io/flatfile/splitter.rb - input data splitter for FlatFile
 #
-#   Copyright (C) 2001-2006 Naohisa Goto <ng@bioruby.org>
+#   Copyright (C) 2001-2008 Naohisa Goto <ng@bioruby.org>
 #
 # License:: The Ruby License
 #
@@ -76,30 +76,43 @@ module Bio
         # (end position of the entry) + 1
         attr_reader :entry_ended_pos
 
-        private
+        #--
+        #private
+        #
+        ## to prevent warning message "warning: private attribute?",
+        ## private attributes are explicitly declared.
+        #++
+
         # entry data class
         attr_reader :dbclass
+        private     :dbclass
 
         # input stream
         attr_reader :stream
+        private     :stream
 
         # the last entry string read from the stream
         attr_writer :entry
+        private     :entry=
 
         # the last entry as a parsed data object
         attr_writer :parsed_entry
+        private     :parsed_entry=
 
         # start position of the entry
         attr_writer :entry_start_pos
+        private     :entry_start_pos=
 
         # (end position of the entry) + 1
         attr_writer :entry_ended_pos
+        private     :entry_ended_pos=
 
         # Does stream.pos if entry_pos_flag is not nil.
         # Otherwise, returns nil.
         def stream_pos
           entry_pos_flag ? stream.pos : nil
         end
+        private :stream_pos
       end #class Template
 
       # Default splitter.
@@ -264,10 +277,14 @@ module Bio
           ret
         end
 
-        private
+        #--
+        #private methods / attributes
+        #++
 
         # flag to fetch header
         attr_accessor :flag_to_fetch_header
+        private       :flag_to_fetch_header
+        private       :flag_to_fetch_header=
 
       end #class LineOriented
 
