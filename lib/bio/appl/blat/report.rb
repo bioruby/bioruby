@@ -1,10 +1,10 @@
 #
 # = bio/appl/blat/report.rb - BLAT result parser
 #
-# Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
+# Copyright:: Copyright (C) 2004, 2006, 2008 Naohisa Goto <ng@bioruby.org>
 # License:: The Ruby License
 #
-#  $Id: report.rb,v 1.13 2007/04/05 23:35:39 trevor Exp $
+#  $Id:$
 #
 # BLAT result parser (psl / pslx format).
 #
@@ -86,10 +86,10 @@ module Bio
         line = line.chomp
         case line
         when /^\d/
-          @columns = defined? @header_lines ? parse_header(@header_lines) : []
+          @columns = (defined? @header_lines) ? parse_header(@header_lines) : []
           return false
         when /\A\-+\s*\z/
-          @columns = defined? @header_lines ? parse_header(@header_lines) : []
+          @columns = (defined? @header_lines) ? parse_header(@header_lines) : []
           return self
         else
           @header_lines ||= []
