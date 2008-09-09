@@ -7,7 +7,7 @@
 #              2008  Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: gff.rb,v 1.9 2007/05/18 15:23:42 k Exp $
+# $Id:$
 #
 require 'uri'
 require 'strscan'
@@ -102,7 +102,19 @@ module Bio
       attr_accessor :attributes
     
       # Comments for the GFF record
-      attr_accessor :comments
+      attr_accessor :comment
+
+      # "comments" is deprecated. Instead, use "comment".
+      def comments
+        #warn "#{self.class.to_s}#comments is deprecated. Instead, use \"comment\"." if $VERBOSE
+        self.comment
+      end
+
+      # "comments=" is deprecated. Instead, use "comment=".
+      def comments=(str)
+        #warn "#{self.class.to_s}#comments= is deprecated. Instead, use \"comment=\"." if $VERBOSE
+        self.comment = str
+      end
 
       # Creates a Bio::GFF::Record object. Is typically not called directly, but
       # is called automatically when creating a Bio::GFF object.
@@ -110,7 +122,7 @@ module Bio
       # *Arguments*:
       # * _str_: a tab-delimited line in GFF format
       def initialize(str)
-        @comments = str.chomp[/#.*/]
+        @comment = str.chomp[/#.*/]
         return if /^#/.match(str)
         @seqname, @source, @feature, @start, @end, @score, @strand, @frame,
           attributes, = str.chomp.split("\t")
@@ -121,9 +133,45 @@ module Bio
 
       def parse_attributes(attributes)
         hash = Hash.new
-        scanner = StringScanner.new(attributes)
-        while scanner.scan(/(.*[^\\])\;/) or scanner.scan(/(.+)/)
-          key, value = scanner[1].split(' ', 2)
+
+        sc = StringScanner.new(attributes)
+        attrs = []
+        token = ''
+        while !sc.eos?
+          if sc.scan(/[^\\\;\"]+/) then
+            token.concat sc.matched
+          elsif sc.scan(/\;/) then
+            attrs.push token unless token.empty?
+            token = ''
+          elsif sc.scan(/\"/) then
+            origtext = sc.matched
+            while !sc.eos?
+              if sc.scan(/[^\\\"]+/) then
+                origtext.concat sc.matched
+              elsif sc.scan(/\"/) then
+                origtext.concat sc.matched
+                break
+              elsif sc.scan(/\\([\"\\])/) then
+                origtext.concat sc.matched
+              elsif sc.scan(/\\/) then
+                origtext.concat sc.matched
+              else
+                raise 'Bug: should not reach here'
+              end
+            end
+            token.concat origtext
+          elsif sc.scan(/\\\;/) then
+            token.concat sc.matched
+          elsif sc.scan(/\\/) then
+            token.concat sc.matched
+          else
+            raise 'Bug: should not reach here'
+          end #if
+        end #while
+        attrs.push token unless token.empty?
+
+        attrs.each do |x|
+          key, value = x.split(' ', 2)
           key.strip!
           value.strip! if value
           hash[key] = value
@@ -134,11 +182,667 @@ module Bio
     end #Class Record
 
     # = DESCRIPTION
-    # Represents version 2 of GFF specification. Is completely implemented by the
-    # Bio::GFF class.
+    # Represents version 2 of GFF specification.
+    # Its behavior is somehow different from Bio::GFF,
+    # especially for attributes.
+    #
     class GFF2 < GFF
       VERSION = 2
-    end
+
+      # string representation of the whole entry.
+      def to_s
+        ver = @gff_version || VERSION.to_s
+        ver = ver.gsub(/[\r\n]+/, ' ')
+        ([ "##gff-version #{ver}\n" ] +
+         @metadata.collect { |m| m.to_s } +
+         @records.collect{ |r| r.to_s }).join('')
+      end
+
+      # Private methods for GFF2 escaping characters.
+      # Internal only. Users should not use this module directly.
+      module Escape
+        # unsafe characters to be escaped
+        UNSAFE_GFF2 = /[^-_.!~*'()a-zA-Z\d\/?:@+$\[\] \x80-\xfd><;=,%^&\|`]/n
+
+        # GFF2 standard identifier
+        IDENTIFIER_GFF2 = /\A[A-Za-z][A-Za-z0-9_]*\z/n
+
+        # GFF2 numeric value
+        NUMERIC_GFF2 = /\A[-+]?([0-9]+|[0-9]*\.[0-9]*)([eE][+-]?[0-9]+)?\z/n
+
+        # List of 1-letter special backslash code.
+        # The letters other than listed here are the same as
+        # those of without backslash, except for "x" and digits.
+        # (Note that \u (unicode) is not supported.)
+        BACKSLASH = {
+          't'  => "\t",
+          'n'  => "\n",
+          'r'  => "\r",
+          'f'  => "\f",
+          'b'  => "\b",
+          'a'  => "\a",
+          'e'  => "\e",
+          'v'  => "\v",
+          # 's'  => " ",
+        }.freeze
+
+        # inverted hash of BACKSLASH
+        CHAR2BACKSLASH = BACKSLASH.invert.freeze
+
+        # inverted hash of BACKSLASH, including double quote and backslash
+        CHAR2BACKSLASH_EXTENDED =
+          CHAR2BACKSLASH.merge({ '"' => '"', "\\" => "\\" }).freeze
+
+        # prohibited characters in GFF2 columns
+        PROHIBITED_GFF2_COLUMNS = /[\t\r\n\x00-\x1f\x7f\xfe\xff]/
+
+        # prohibited characters in GFF2 attribute tags
+        PROHIBITED_GFF2_TAGS = /[\s\"\;\t\r\n\x00-\x1f\x7f\xfe\xff]/
+
+        private
+        # (private) escapes GFF2 free text string
+        def escape_gff2_freetext(str)
+          '"' + str.gsub(UNSAFE_GFF2) do |x|
+            "\\" + (CHAR2BACKSLASH_EXTENDED[x] || sprintf("%03o", x[0]))
+          end + '"'
+        end
+ 
+        # (private) escapes GFF2 attribute value string
+        def escape_gff2_attribute_value(str)
+          freetext?(str) ? escape_gff2_freetext(str) : str
+        end
+
+        # (private) check if the given string is a free text to be quoted
+        # by double-qoute.
+        def freetext?(str)
+          if IDENTIFIER_GFF2 =~ str or
+              NUMERIC_GFF2 =~ str then
+            false
+          else
+            true
+          end
+        end
+
+        # (private) escapes normal columns in GFF2
+        def gff2_column_to_s(str)
+          str = str.to_s
+          str = str.empty? ? '.' : str
+          str = str.gsub(PROHIBITED_GFF2_COLUMNS) do |x|
+            "\\" + (CHAR2BACKSLASH[x] || sprintf("%03o", x[0]))
+          end
+          if str[0, 1] == '#' then
+            str[0, 1] = "\\043"
+          end
+          str
+        end
+
+        # (private) escapes GFF2 attribute tag string
+        def escape_gff2_attribute_tag(str)
+          str = str.to_s
+          str = str.empty? ? '.' : str
+          str = str.gsub(PROHIBITED_GFF2_TAGS) do |x|
+            "\\" + (CHAR2BACKSLASH[x] || sprintf("%03o", x[0]))
+          end
+          if str[0, 1] == '#' then
+            str[0, 1] = "\\043"
+          end
+          str
+        end
+
+        # (private) dummy method, will be redefined in GFF3.
+        def unescape(str)
+          str
+        end
+      end #module Escape
+
+      # Stores GFF2 record.
+      class Record < GFF::Record
+
+        include Escape
+
+        # Stores GFF2 attribute's value.
+        class Value
+
+          include Escape
+
+          # Creates a new Value object.
+          # Note that the given array _values_ is directly stored in
+          # the object.
+          #
+          # ---
+          # *Arguments*:
+          # * (optional) _values_: Array containing String objects.
+          # *Returns*:: Value object.
+          def initialize(values = [])
+            @values = values
+          end
+
+          # Returns string representation of this Value object.
+          # ---
+          # *Returns*:: String
+          def to_s
+            @values.collect do |str|
+              escape_gff2_attribute_value(str)
+            end.join(' ')
+          end
+
+          # Returns all values in this object.
+          #
+          # Note that modification of the returned array would affect
+          # original Value object.
+          # ---
+          # *Returns*:: Array
+          def values
+            @values
+          end
+          alias to_a values
+
+          # Returns true if other == self.
+          # Otherwise, returns false.
+          def ==(other)
+            return false unless other.kind_of?(self.class) or
+              self.kind_of?(other.class)
+            self.values == other.values rescue super(other)
+          end
+        end #class Value
+
+
+        # Parses a GFF2-formatted line and returns a new
+        # Bio::GFF::GFF2::Record object.
+        def self.parse(str)
+          self.new.parse(str)
+        end
+       
+        # Creates a Bio::GFF::GFF2::Record object.
+        # Is typically not called directly, but
+        # is called automatically when creating a Bio::GFF::GFF2 object.
+        #
+        # ---
+        # *Arguments*:
+        # * _str_: a tab-delimited line in GFF2 format
+        # *Arguments*:
+        # * _seqname_: seqname (String or nil)
+        # * _source_: source (String or nil)
+        # * _feature_: feature type (String)
+        # * _start_position_: start (Integer)
+        # * _end_position_: end (Integer)
+        # * _score_: score (Float or nil)
+        # * _strand_: strand (String or nil)
+        # * _frame_: frame (Integer or nil)
+        # * _attributes_: attributes (Array or nil)
+        def initialize(*arg)
+          if arg.size == 1 then
+            parse(arg[0])
+          else
+            @seqname, @source, @feature,
+            start, endp, @score, @strand, frame,
+            @attributes = arg
+            @start = start ? start.to_i : nil
+            @end   = endp  ? endp.to_i : nil
+            @score = score ? score.to_f : nil
+            @frame = frame ? frame.to_i : nil
+          end
+          @attributes ||= []
+        end
+
+        # Comment for the GFF record
+        attr_accessor :comment
+
+        # "comments" is deprecated. Instead, use "comment".
+        def comments
+          warn "#{self.class.to_s}#comments is deprecated. Instead, use \"comment\"."
+          self.comment
+        end
+
+        # "comments=" is deprecated. Instead, use "comment=".
+        def comments=(str)
+          warn "#{self.class.to_s}#comments= is deprecated. Instead, use \"comment=\"."
+          self.comment = str
+        end
+
+        # Parses a GFF2-formatted line and stores data from the string.
+        # Note that all existing data is wiped out.
+        def parse(string)
+          if /^\s*\#/ =~ string then
+            @comment = string[/\#(.*)/, 1].chomp
+            columns = []
+          else
+            columns = string.chomp.split("\t", 10)
+            @comment = columns[9][/\#(.*)/, 1].chomp if columns[9]
+          end
+
+          @seqname, @source, @feature,
+          start, endp, score, @strand, frame =
+            columns[0, 8].collect { |x|
+            str = unescape(x)
+            str == '.' ? nil : str
+          }
+          @start = start ? start.to_i : nil
+          @end   = endp  ? endp.to_i : nil
+          @score = score ? score.to_f : nil
+          @frame = frame ? frame.to_i : nil
+
+          @attributes = parse_attributes(columns[8])
+        end
+
+        # Returns true if the entry is empty except for comment.
+        # Otherwise, returns false.
+        def comment_only?
+          if !@seqname and
+              !@source and
+              !@feature and
+              !@start and
+              !@end and
+              !@score and
+              !@strand and
+              !@frame and
+              @attributes.empty? then
+            true
+          else
+            false
+          end
+        end
+
+        # Return the record as a GFF2 compatible string
+        def to_s
+          cmnt = if @comment and !@comment.to_s.strip.empty? then
+                   @comment.gsub(/[\r\n]+/, ' ')
+                 else
+                   false
+                 end
+          return "\##{cmnt}\n" if self.comment_only? and cmnt
+          [
+           gff2_column_to_s(@seqname),
+           gff2_column_to_s(@source),
+           gff2_column_to_s(@feature),
+           gff2_column_to_s(@start),
+           gff2_column_to_s(@end),
+           gff2_column_to_s(@score),
+           gff2_column_to_s(@strand),
+           gff2_column_to_s(@frame),
+           attributes_to_s(@attributes)
+          ].join("\t") + 
+            (cmnt ? "\t\##{cmnt}\n" : "\n")
+        end
+        
+        # Returns true if self == other. Otherwise, returns false.
+        def ==(other)
+          super ||
+            ((self.class == other.class and
+              self.seqname == other.seqname and
+              self.source  == other.source and
+              self.feature == other.feature and
+              self.start   == other.start and
+              self.end     == other.end and
+              self.score   == other.score and
+              self.strand  == other.strand and
+              self.frame   == other.frame and
+              self.attributes == other.attributes) ? true : false)
+        end
+
+        # Gets the attribute value for the given tag.
+        #
+        # Note that if two or more tag-value pairs with the same name found,
+        # only the first value is returned.
+        # ---
+        # *Arguments*:
+        # * (required) _tag_: String
+        # *Returns*:: String, Bio::GFF::GFF2::Record::Value object, or nil.
+        def get_attribute(tag)
+          ary = @attributes.assoc(tag)
+          ary ? ary[1] : nil
+        end
+        alias attribute get_attribute
+
+        # Gets the attribute values for the given tag.
+        # This method always returns an array.
+        # ---
+        # *Arguments*:
+        # * (required) _tag_: String
+        # *Returns*:: Array containing String or \
+        # Bio::GFF::GFF2::Record::Value objects.
+        def get_attributes(tag)
+          ary = @attributes.find_all do |x|
+            x[0] == tag
+          end
+          ary.collect! { |x| x[1] }
+          ary
+        end
+
+        # Sets value for the given tag.
+        # If the tag exists, the value of the tag is replaced with _value_.
+        # Note that if two or more tag-value pairs with the same name found,
+        # only the first tag-value pair is replaced.
+        #
+        # If the tag does not exist, the tag-value pair is newly added.
+        # ---
+        # *Arguments*:
+        # * (required) _tag_: String
+        # * (required) _value_: String or Bio::GFF::GFF2::Record::Value object.
+        # *Returns*:: _value_
+        def set_attribute(tag, value)
+          ary = @attributes.find do |x|
+            x[0] == tag
+          end
+          if ary then
+            ary[1] = value
+          else
+            ary = [ String.new(tag), value ]
+            @attributes.push ary
+          end
+          value
+        end
+
+        # Replaces values for the given tags with new values.
+        # Existing values for the tag are completely wiped out and
+        # replaced by new tag-value pairs.
+        # If the tag does not exist, the tag-value pairs are newly added.
+        #
+        # ---
+        # *Arguments*:
+        # * (required) _tag_: String
+        # * (required) _values_: String or Bio::GFF::GFF2::Record::Value objects.
+        # *Returns*:: _self_
+        def replace_attributes(tag, *values)
+          i = 0
+          @attributes.reject! do |x|
+            if x[0] == tag then
+              if i >= values.size then
+                true
+              else
+                x[1] = values[i]
+                i += 1
+                false
+              end
+            else
+              false
+            end
+          end
+          (i...(values.size)).each do |j|
+            @attributes.push [ String.new(tag), values[j] ]
+          end
+          self
+        end
+
+        # Adds a new tag-value pair.
+        # ---
+        # *Arguments*:
+        # * (required) _tag_: String
+        # * (required) _value_: String or Bio::GFF::GFF2::Record::Value object.
+        # *Returns*:: _value_
+        def add_attribute(tag, value)
+          @attributes.push([ String.new(tag), value ])
+        end
+
+        # Removes a specific tag-value pair.
+        #
+        # Note that if two or more tag-value pairs found,
+        # only the first tag-value pair is removed.
+        #
+        # ---
+        # *Arguments*:
+        # * (required) _tag_: String
+        # * (required) _value_: String or Bio::GFF::GFF2::Record::Value object.
+        # *Returns*:: if removed, _value_. Otherwise, nil.
+        def delete_attribute(tag, value)
+          removed = nil
+          if i = @attributes.index([ tag, value ]) then
+            ary = @attributes.delete_at(i)
+            removed = ary[1]
+          end
+          removed
+        end
+
+        # Removes all attributes with the specified tag.
+        #
+        # ---
+        # *Arguments*:
+        # * (required) _tag_: String
+        # *Returns*:: if removed, self. Otherwise, nil.
+        def delete_attributes(tag)
+          @attributes.reject! do |x|
+            x[0] == tag
+          end ? self : nil
+        end
+
+        # Sorts attributes order by given tag name's order.
+        # If a block is given, the argument _tags_ is ignored, and
+        # yields two tag names like Array#sort!.
+        #
+        # ---
+        # *Arguments*:
+        # * (required or optional) _tags_: Array containing String objects
+        # *Returns*:: _self_
+        def sort_attributes_by_tag!(tags = nil)
+          h = {}
+          s = @attributes.size
+          @attributes.each_with_index { |x, i|  h[x] = i }
+          if block_given? then
+            @attributes.sort! do |x, y|
+              r = yield x[0], y[0]
+              if r == 0 then
+                r = (h[x] || s) <=> (h[y] || s)
+              end
+              r
+            end
+          else
+            unless tags then
+              raise ArgumentError, 'wrong number of arguments (0 for 1) or wrong argument value'
+            end
+            @attributes.sort! do |x, y|
+              r = (tags.index(x[0]) || tags.size) <=> 
+                (tags.index(y[0]) || tags.size)
+              if r == 0 then
+                r = (h[x] || s) <=> (h[y] || s)
+              end
+              r
+            end
+          end
+          self
+        end
+
+        # Returns hash representation of attributes.
+        #
+        # Note: If two or more tag-value pairs with same tag names exist,
+        # only the first tag-value pair is used for each tag.
+        #
+        # ---
+        # *Returns*:: Hash object
+        def attributes_to_hash
+          h = {}
+          @attributes.each do |x|
+            key, val = x
+            h[key] = val unless h[key]
+          end
+          h
+        end
+
+        private
+
+        # (private) Parses attributes.
+        # Returns arrays
+        def parse_attributes(str)
+          return [] if !str or str == '.'
+          attr_pairs = parse_attributes_string(str)
+          attr_pairs.collect! do |x|
+            key = x.shift
+            val = (x.size == 1) ? x[0] : Value.new(x)
+            [ key, val ]
+          end
+          attr_pairs
+        end
+
+        # (private) Parses attributes string.
+        # Returns arrays
+        def parse_attributes_string(str)
+          sc = StringScanner.new(str)
+          attr_pairs = []
+          tokens = []
+          cur_token = ''
+          while !sc.eos?
+            if sc.scan(/[^\\\;\"\s]+/) then
+              cur_token.concat sc.matched
+            elsif sc.scan(/\s+/) then
+              tokens.push cur_token unless cur_token.empty?
+              cur_token = ''
+            elsif sc.scan(/\;/) then
+              tokens.push cur_token unless cur_token.empty?
+              cur_token = ''
+              attr_pairs.push tokens
+              tokens = []
+            elsif sc.scan(/\"/) then
+              tokens.push cur_token unless cur_token.empty?
+              cur_token = ''
+              freetext = ''
+              while !sc.eos?
+                if sc.scan(/[^\\\"]+/) then
+                  freetext.concat sc.matched
+                elsif sc.scan(/\"/) then
+                  break
+                elsif sc.scan(/\\([\"\\])/) then
+                  freetext.concat sc[1]
+                elsif sc.scan(/\\x([0-9a-fA-F][0-9a-fA-F])/n) then
+                  chr = sc[1].to_i(16).chr
+                  freetext.concat chr
+                elsif sc.scan(/\\([0-7][0-7][0-7])/n) then
+                  chr = sc[1].to_i(8).chr
+                  freetext.concat chr
+                elsif sc.scan(/\\([^x0-9])/n) then
+                  chr = Escape::BACKSLASH[sc[1]] || sc.matched
+                  freetext.concat chr
+                elsif sc.scan(/\\/) then
+                  freetext.concat sc.matched
+                else
+                  raise 'Bug: should not reach here'
+                end
+              end
+              tokens.push freetext
+              #p freetext
+            # # disabled support for \; out of freetext
+            #elsif sc.scan(/\\\;/) then
+            #  cur_token.concat sc.matched
+            elsif sc.scan(/\\/) then
+              cur_token.concat sc.matched
+            else
+              raise 'Bug: should not reach here'
+            end #if
+          end #while
+          tokens.push cur_token unless cur_token.empty?
+          attr_pairs.push tokens unless tokens.empty?
+          return attr_pairs
+        end
+
+        # (private) string representation of attributes
+        def attributes_to_s(attr)
+          attr.collect do |a|
+            tag, val = a
+            if Escape::IDENTIFIER_GFF2 !~ tag then
+              warn "Illegal GFF2 attribute tag: #{tag.inspect}" if $VERBOSE
+            end
+            tagstr = gff2_column_to_s(tag)
+            valstr = if val.kind_of?(Value) then
+                       val.to_s
+                     else
+                       escape_gff2_attribute_value(val)
+                     end
+            "#{tagstr} #{valstr}"
+          end.join(' ; ')
+        end
+      end #class Record
+
+      # Stores GFF2 meta-data.
+      class MetaData
+        # Creates a new MetaData object
+        def initialize(directive, data = nil)
+          @directive = directive
+          @data = data
+        end
+
+        # Directive. Usually, one of "feature-ontology", "attribute-ontology",
+        # or "source-ontology".
+        attr_accessor :directive
+
+        # data of this entry
+        attr_accessor :data
+
+        # parses a line
+        def self.parse(line)
+          directive, data = line.chomp.split(/\s+/, 2)
+          directive = directive.sub(/\A\#\#/, '') if directive
+          self.new(directive, data)
+        end
+
+        # string representation of this meta-data
+        def to_s
+          d = @directive.to_s.gsub(/[\r\n]+/, ' ')
+          v = ' ' + @data.to_s.gsub(/[\r\n]+/, ' ') unless @data.to_s.empty?
+          "\#\##{d}#{v}\n"
+        end
+
+        # Returns true if self == other. Otherwise, returns false.
+        def ==(other)
+          if self.class == other.class and
+              self.directive == other.directive and
+              self.data == other.data then
+            true
+          else
+            false
+          end
+        end
+      end #class MetaData
+
+      # (private) parses metadata
+      def parse_metadata(directive, line)
+        case directive
+        when 'gff-version'
+          @gff_version ||= line.split(/\s+/)[1]
+        else
+          @metadata.push MetaData.parse(line)
+        end
+        true
+      end
+      private :parse_metadata
+
+      # Creates a Bio::GFF::GFF2 object by building a collection of
+      # Bio::GFF::GFF2::Record (and metadata) objects.
+      # 
+      # ---
+      # *Arguments*:
+      # * _str_: string in GFF format
+      # *Returns*:: Bio::GFF::GFF2 object
+      def initialize(str = nil)
+        @gff_version = nil
+        @records = []
+        @metadata = []
+        parse(str) if str
+      end
+
+      # GFF2 version string (String or nil). nil means "2".
+      attr_reader :gff_version
+
+      # Metadata (except "##gff-version").
+      # Must be an array of Bio::GFF::GFF2::MetaData objects.
+      attr_accessor :metadata
+
+      # Parses a GFF2 entries, and concatenated the parsed data.
+      # 
+      # ---
+      # *Arguments*:
+      # * _str_: string in GFF format
+      # *Returns*:: self
+      def parse(str)
+        # parses GFF lines
+        str.each_line do |line|
+          if /^\#\#([^\s]+)/ =~ line then
+            parse_metadata($1, line)
+          else
+            @records << GFF2::Record.new(line)
+          end
+        end
+        self
+      end
+
+    end #class GFF2
 
     # = DESCRIPTION
     # Represents version 3 of GFF specification.
@@ -152,7 +856,7 @@ module Bio
       VERSION = 3
       
       # Creates a Bio::GFF::GFF3 object by building a collection of
-      # Bio::GFF::GFF3::Record objects.
+      # Bio::GFF::GFF3::Record (and metadata) objects.
       # 
       # ---
       # *Arguments*:
@@ -248,7 +952,7 @@ module Bio
 
       # string representation of whole entry.
       def to_s
-        ver = @gff_version || '3'
+        ver = @gff_version || VERSION.to_s
         if @sequences.size > 0 then
           seqs = "##FASTA\n" +
             @sequences.collect { |s| s.to_fasta(s.entry_id, 70) }.join('')
@@ -362,7 +1066,7 @@ module Bio
 
       # Represents a single line of a GFF3-formatted file.
       # See Bio::GFF::GFF3 for more information.
-      class Record < GFF::Record
+      class Record < GFF2::Record
 
         include GFF3::Escape
 
@@ -412,52 +1116,28 @@ module Bio
         # * _end_position_: end (Integer)
         # * _score_: score (Float or nil)
         # * _strand_: strand (String or nil)
-        # * _phase_: phase (String or nil)
-        # * _attributes_: attributes (Hash or nil)
+        # * _phase_: phase (Integer or nil)
+        # * _attributes_: attributes (Array or nil)
         def initialize(*arg)
-          if arg.size == 1 then
-            parse(arg[0])
-          else
-            @seqname, @source, @feature,
-            start, endp, @score, @strand, frame,
-            @attributes = arg
-            @start = start ? start.to_i : nil
-            @end   = endp  ? endp.to_i : nil
-            @score = score ? score.to_f : nil
-            @frame = frame ? frame.to_i : nil
-          end
-          @attributes ||= {}
+          super(*arg)
         end
 
         # Parses a GFF3-formatted line and stores data from the string.
         # Note that all existing data is wiped out.
         def parse(string)
-          if /^\s*\#/ =~ string then
-            @comments = string[/\#.*/]
-            columns = []
-          else
-            columns = string.chomp.split("\t", 10)
-            @comments = columns[9][/\#.*/] if columns[9]
-          end
-
-          @seqname, @source, @feature,
-          start, endp, score, @strand, frame =
-            columns[0, 8].collect { |x|
-            str = unescape(x)
-            str == '.' ? nil : str
-          }
-          @start = start ? start.to_i : nil
-          @end   = endp  ? endp.to_i : nil
-          @score = score ? score.to_f : nil
-          @frame = frame ? frame.to_i : nil
-
-          @attributes = parse_attributes(columns[8])
+          super
         end
 
         # Return the record as a GFF3 compatible string
         def to_s
+          cmnt = if @comment and !@comment.to_s.strip.empty? then
+                   @comment.gsub(/[\r\n]+/, ' ')
+                 else
+                   false
+                 end
+          return "\##{cmnt}\n" if self.comment_only? and cmnt
           [
-           escape(column_to_s(@seqname)),
+           escape_seqid(column_to_s(@seqname)),
            escape(column_to_s(@source)),
            escape(column_to_s(@feature)),
            escape(column_to_s(@start)),
@@ -466,27 +1146,10 @@ module Bio
            escape(column_to_s(@strand)),
            escape(column_to_s(@frame)),
            attributes_to_s(@attributes)
-          ].join("\t") + "\n"
+          ].join("\t") + 
+            (cmnt ? "\t\##{cmnt}\n" : "\n")
         end
         
-        # Returns true if self == other. Otherwise, returns false.
-        def ==(other)
-          if self.class == other.class and
-              self.seqname == other.seqname and
-              self.source  == other.source and
-              self.feature == other.feature and
-              self.start   == other.start and
-              self.end     == other.end and
-              self.score   == other.score and
-              self.strand  == other.strand and
-              self.frame   == other.frame and
-              self.attributes == other.attributes then
-            true
-          else
-            false
-          end
-        end
-
         # Bio:GFF::GFF3::Record::Target is a class to store
         # data of "Target" attribute.
         class Target
@@ -1069,8 +1732,8 @@ module Bio
         
         private
         def parse_attributes(string)
-          hash = Hash.new
-          return hash if !string or string == '.'
+          return [] if !string or string == '.'
+          attr_pairs = []
           string.split(';').each do |pair|
             key, value = pair.split('=', 2)
             key = unescape(key)
@@ -1083,41 +1746,26 @@ module Bio
             else
               values.collect! { |v| unescape(v) }
             end
-            hash[key] = (values.size <= 1 ? values[0] : values)
+            attr_pairs.concat values.collect { |v| [ key, v ] }
           end
-          return hash
+          return attr_pairs
         end # method parse_attributes
 
-        # Priority of attributes when output. 
-        # Smaller value, high priority.
-        # Default value for unlisted attribute is 999.
-        ATTRIBUTES_PRIORITY = {
-          'ID'            => 0,
-          'Name'          => 1,
-          'Alias'         => 2,
-          'Parent'        => 3,
-          'Target'        => 4,
-          'Gap'           => 5,
-          'Derives_from'  => 6,
-          'Note'          => 7,
-          'Dbxref'        => 8,
-          'Ontology_term' => 9
-        }
-        ATTRIBUTES_PRIORITY.default = 999
-        
         # Return the attributes as a string as it appears at the end of
         # a GFF3 line
         def attributes_to_s(attr)
           return '.' if !attr or attr.empty?
-          keys = attr.keys.sort! do |x, y|
-            z = ATTRIBUTES_PRIORITY[x] <=> ATTRIBUTES_PRIORITY[y]
-            z != 0 ? z : x <=> y
+          keys = []
+          hash = {}
+          attr.each do |pair|
+            key = pair[0]
+            val = pair[1]
+            keys.push key unless hash[key]
+            hash[key] ||= []
+            hash[key].push val
           end
           keys.collect do |key|
-            values = attr[key]
-            unless values.kind_of?(Array) then
-              values = [ values ]
-            end
+            values = hash[key]
             val = values.collect do |v|
               if v.kind_of?(Target) then
                 v.to_s
@@ -1143,46 +1791,8 @@ module Bio
         end
       end #class RecordBoundary
 
-      # Stores meta-data.
-      class MetaData
-        # Creates a new MetaData object
-        def initialize(directive, data = nil)
-          @directive = directive
-          @data = data
-        end
-
-        # Directive. Usually, one of "feature-ontology", "attribute-ontology",
-        # or "source-ontology".
-        attr_accessor :directive
-
-        # data of this entry
-        attr_accessor :data
-
-        # parses a line
-        def self.parse(line)
-          directive, data = line.chomp.split(/\s+/, 2)
-          directive = directive.sub(/\A\#\#/, '') if directive
-          self.new(directive, data)
-        end
-
-        # string representation of this meta-data
-        def to_s
-          d = @directive.to_s.gsub(/[\r\n]+/, ' ')
-          v = ' ' + @data.to_s.gsub(/[\r\n]+/, ' ') unless @data.to_s.empty?
-          "\#\##{d}#{v}\n"
-        end
-
-        # Returns true if self == other. Otherwise, returns false.
-        def ==(other)
-          if self.class == other.class and
-              self.directive == other.directive and
-              self.data == other.data then
-            true
-          else
-            false
-          end
-        end
-      end #class MetaData
+      # stores GFF3 MetaData
+      MetaData = GFF2::MetaData
 
       # parses metadata
       def parse_metadata(directive, line)

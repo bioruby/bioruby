@@ -6,7 +6,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     The Ruby License
 #
-#  $Id: test_gff.rb,v 1.6 2007/04/05 23:35:43 trevor Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -43,13 +43,6 @@ END_OF_DATA
     end
 
   end # class TestGFF
-
-
-  class TestGFF2 < Test::Unit::TestCase
-    def test_version
-      assert_equal(2, Bio::GFF::GFF2::VERSION)
-    end
-  end
 
   class TestGFFRecord < Test::Unit::TestCase
     
@@ -97,8 +90,8 @@ END_OF_DATA
       assert_equal(at, @obj.attributes)
     end
 
-    def test_comments
-      assert_equal(nil, @obj.comments)
+    def test_comment
+      assert_equal(nil, @obj.comment)
     end
 
   end # class TestGFFRecord
@@ -118,6 +111,514 @@ END_OF_DATA
     end
 
   end # class TestGFFRecordConstruct
+
+  class TestGFF2 < Test::Unit::TestCase
+    def setup
+      data = <<END_OF_DATA
+##gff-version 2
+##date 2008-09-22
+I	sgd	CEN	151453	151591	.	+	.	CEN "CEN1" ; Note "CEN1; Chromosome I Centromere"
+I	sgd	gene	147591	151163	.	-	.	Gene "TFC3" ; Note "transcription factor tau (TFIIIC) subunit 138"
+I	sgd	gene	147591	151163	.	-	.	Gene "FUN24" ; Note "transcription factor tau (TFIIIC) subunit 138"
+I	sgd	gene	147591	151163	.	-	.	Gene "TSV115" ; Note "transcription factor tau (TFIIIC) subunit 138"
+I	sgd	ORF	147591	151163	.	-	.	ORF "YAL001C" ; Note "TFC3; transcription factor tau (TFIIIC) subunit 138"
+I	sgd	gene	143998	147528	.	+	.	Gene "VPS8" ; Note "Vps8p is a membrane-associated hydrophilic protein which contains a C-terminal cysteine-rich region that conforms to the H2 variant of the RING finger Zn2+ binding motif."
+I	sgd	gene	143998	147528	.	+	.	Gene "FUN15" ; Note "Vps8p is a membrane-associated hydrophilic protein which contains a C-terminal cysteine-rich region that conforms to the H2 variant of the RING finger Zn2+ binding motif."
+I	sgd	gene	143998	147528	.	+	.	Gene "VPT8" ; Note "Vps8p is a membrane-associated hydrophilic protein which contains a C-terminal cysteine-rich region that conforms to the H2 variant of the RING finger Zn2+ binding motif."
+END_OF_DATA
+      @obj = Bio::GFF::GFF2.new(data)
+    end
+
+    def test_const_version
+      assert_equal(2, Bio::GFF::GFF2::VERSION)
+    end
+
+    def test_gff_version
+      assert_equal('2', @obj.gff_version)
+    end
+
+    def test_metadata_size
+      assert_equal(1, @obj.metadata.size)
+    end
+
+    def test_metadata
+      assert_equal(Bio::GFF::GFF2::MetaData.new('date', '2008-09-22'),
+                   @obj.metadata[0])
+    end
+
+    def test_records_size
+      assert_equal(8, @obj.records.size)
+    end
+
+    def test_to_s
+      str = <<END_OF_DATA
+##gff-version 2
+##date 2008-09-22
+I	sgd	CEN	151453	151591	.	+	.	CEN CEN1 ; Note "CEN1; Chromosome I Centromere"
+I	sgd	gene	147591	151163	.	-	.	Gene TFC3 ; Note "transcription factor tau (TFIIIC) subunit 138"
+I	sgd	gene	147591	151163	.	-	.	Gene FUN24 ; Note "transcription factor tau (TFIIIC) subunit 138"
+I	sgd	gene	147591	151163	.	-	.	Gene TSV115 ; Note "transcription factor tau (TFIIIC) subunit 138"
+I	sgd	ORF	147591	151163	.	-	.	ORF YAL001C ; Note "TFC3; transcription factor tau (TFIIIC) subunit 138"
+I	sgd	gene	143998	147528	.	+	.	Gene VPS8 ; Note "Vps8p is a membrane-associated hydrophilic protein which contains a C-terminal cysteine-rich region that conforms to the H2 variant of the RING finger Zn2+ binding motif."
+I	sgd	gene	143998	147528	.	+	.	Gene FUN15 ; Note "Vps8p is a membrane-associated hydrophilic protein which contains a C-terminal cysteine-rich region that conforms to the H2 variant of the RING finger Zn2+ binding motif."
+I	sgd	gene	143998	147528	.	+	.	Gene VPT8 ; Note "Vps8p is a membrane-associated hydrophilic protein which contains a C-terminal cysteine-rich region that conforms to the H2 variant of the RING finger Zn2+ binding motif."
+END_OF_DATA
+      assert_equal(str, @obj.to_s)
+    end
+  end #class TestGFF2
+
+  class TestGFF2Record < Test::Unit::TestCase
+    def setup
+      str = "seq1\tBLASTX\tsimilarity\t101\t235\t87.1\t+\t0\tTarget \"HBA_HUMAN\" 11 55 ; E_value 0.0003 ; Align 101 11 ; Align 179 36 ; Comment \"Please ignore this \\\"Comment\\\" attribute; Escape \\x1a\\037 and \\\\\\t\\r\\n\\f\\b\\a\\e\\v; This is test.\" 123 4.56e-34 \"Test for freetext\" ; Note \"\"; Misc IdString; Misc \"free text\"; Misc 5678 "
+
+      @obj = Bio::GFF::GFF2::Record.new(str)
+    end
+
+    def test_to_s
+      str = "seq1\tBLASTX\tsimilarity\t101\t235\t87.1\t+\t0\tTarget HBA_HUMAN 11 55 ; E_value 0.0003 ; Align 101 11 ; Align 179 36 ; Comment \"Please ignore this \\\"Comment\\\" attribute; Escape \\032\\037 and \\\\\\t\\r\\n\\f\\b\\a\\e\\v; This is test.\" 123 4.56e-34 \"Test for freetext\" ; Note \"\" ; Misc IdString ; Misc \"free text\" ; Misc 5678\n"
+
+      assert_equal(str, @obj.to_s)
+    end
+
+    def test_eqeq
+      obj2 = Bio::GFF::GFF2::Record.new(@obj.to_s)
+      assert_equal(true, @obj == obj2)
+    end
+
+    def test_eqeq_false
+      obj2 = Bio::GFF::GFF2::Record.new(@obj.to_s)
+      obj2.seqname = 'seq2'
+      assert_equal(false, @obj == obj2)
+    end
+
+    def test_comment_only?
+      assert_equal(false, @obj.comment_only?)
+    end
+
+    def test_seqname
+      assert_equal('seq1', @obj.seqname)
+    end
+
+    def test_source
+      assert_equal('BLASTX', @obj.source)
+    end
+
+    def test_feature
+      assert_equal('similarity', @obj.feature)
+    end
+
+    def test_start
+      assert_equal(101, @obj.start)
+    end
+
+    def test_end
+      assert_equal(235, @obj.end)
+    end
+
+    def test_score
+      assert_equal(87.1, @obj.score)
+    end
+
+    def test_strand
+      assert_equal('+', @obj.strand)
+    end
+
+    def test_frame
+      assert_equal(0, @obj.frame)
+    end
+
+    def test_attributes_to_hash
+      hash = {
+        'Target' =>
+        Bio::GFF::GFF2::Record::Value.new(['HBA_HUMAN', '11', '55']),
+        'E_value' => '0.0003',
+        'Align' =>
+        Bio::GFF::GFF2::Record::Value.new(['101', '11']),
+        'Comment' =>
+        Bio::GFF::GFF2::Record::Value.new(["Please ignore this \"Comment\" attribute; Escape \x1a\037 and \\\t\r\n\f\b\a\e\v; This is test.", "123", "4.56e-34", "Test for freetext"]),
+        'Note' => '',
+        'Misc' => 'IdString'
+      }
+      assert_equal(hash, @obj.attributes_to_hash)
+    end
+
+    def test_attributes
+      attributes =
+        [ [ 'Target',
+            Bio::GFF::GFF2::Record::Value.new(['HBA_HUMAN', '11', '55']) ],
+          [ 'E_value', '0.0003' ],
+          [ 'Align',
+            Bio::GFF::GFF2::Record::Value.new(['101', '11']) ],
+          [ 'Align',
+            Bio::GFF::GFF2::Record::Value.new(['179', '36']) ],
+          [ 'Comment',
+            Bio::GFF::GFF2::Record::Value.new(["Please ignore this \"Comment\" attribute; Escape \x1a\037 and \\\t\r\n\f\b\a\e\v; This is test.", "123", "4.56e-34", "Test for freetext"]) ],
+          [ 'Note', '' ],
+          [ 'Misc', 'IdString' ],
+          [ 'Misc', 'free text' ],
+          [ 'Misc', '5678' ]
+        ]
+      assert_equal(attributes, @obj.attributes)
+    end
+
+    def test_attribute
+      val_Target = Bio::GFF::GFF2::Record::Value.new(['HBA_HUMAN', '11', '55'])
+      assert_equal(val_Target, @obj.attribute('Target'))
+      assert_equal('0.0003', @obj.attribute('E_value'))
+      val_Align0 = Bio::GFF::GFF2::Record::Value.new(['101', '11'])
+      val_Align1 = Bio::GFF::GFF2::Record::Value.new(['179', '36'])
+      assert_equal(val_Align0, @obj.attribute('Align'))
+      val_Comment = Bio::GFF::GFF2::Record::Value.new(["Please ignore this \"Comment\" attribute; Escape \x1a\037 and \\\t\r\n\f\b\a\e\v; This is test.", "123", "4.56e-34", "Test for freetext"])
+      assert_equal(val_Comment, @obj.attribute('Comment'))
+      assert_equal('', @obj.attribute('Note'))
+      assert_equal('IdString', @obj.attribute('Misc'))
+    end
+
+    def test_attribute_nonexistent
+      assert_equal(nil, @obj.attribute('NonExistent'))
+    end
+
+    def test_get_attribute
+      val_Target = Bio::GFF::GFF2::Record::Value.new(['HBA_HUMAN', '11', '55'])
+      assert_equal(val_Target, @obj.get_attribute('Target'))
+      assert_equal('0.0003', @obj.get_attribute('E_value'))
+      val_Align0 = Bio::GFF::GFF2::Record::Value.new(['101', '11'])
+      val_Align1 = Bio::GFF::GFF2::Record::Value.new(['179', '36'])
+      assert_equal(val_Align0, @obj.get_attribute('Align'))
+      val_Comment = Bio::GFF::GFF2::Record::Value.new(["Please ignore this \"Comment\" attribute; Escape \x1a\037 and \\\t\r\n\f\b\a\e\v; This is test.", "123", "4.56e-34", "Test for freetext"])
+      assert_equal(val_Comment, @obj.get_attribute('Comment'))
+      assert_equal('', @obj.get_attribute('Note'))
+      assert_equal('IdString', @obj.get_attribute('Misc'))
+    end
+
+    def test_get_attribute_nonexistent
+      assert_equal(nil, @obj.get_attribute('NonExistent'))
+    end
+
+    def test_get_attributes
+      val_Target = Bio::GFF::GFF2::Record::Value.new(['HBA_HUMAN', '11', '55'])
+      assert_equal([ val_Target ], @obj.get_attributes('Target'))
+      assert_equal([ '0.0003' ], @obj.get_attributes('E_value'))
+      val_Align0 = Bio::GFF::GFF2::Record::Value.new(['101', '11'])
+      val_Align1 = Bio::GFF::GFF2::Record::Value.new(['179', '36'])
+      assert_equal([ val_Align0, val_Align1 ],
+                   @obj.get_attributes('Align'))
+      val_Comment = Bio::GFF::GFF2::Record::Value.new(["Please ignore this \"Comment\" attribute; Escape \x1a\037 and \\\t\r\n\f\b\a\e\v; This is test.", "123", "4.56e-34", "Test for freetext"])
+      assert_equal([ val_Comment ], @obj.get_attributes('Comment'))
+      assert_equal([ '' ], @obj.get_attributes('Note'))
+      assert_equal([ 'IdString', 'free text', '5678' ], 
+                   @obj.get_attributes('Misc'))
+    end
+
+    def test_get_attributes_nonexistent
+      assert_equal([], @obj.get_attributes('NonExistent'))
+    end
+
+    def test_set_attribute
+      assert_equal('0.0003', @obj.attribute('E_value'))
+      assert_equal('1e-10', @obj.set_attribute('E_value', '1e-10'))
+      assert_equal('1e-10', @obj.attribute('E_value'))
+    end
+
+    def test_set_attribute_multiple
+      assert_equal([ 'IdString', 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+      assert_equal('Replaced',
+                   @obj.set_attribute('Misc', 'Replaced'))
+      assert_equal([ 'Replaced', 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+    end
+
+    def test_set_attribute_nonexistent
+      assert_equal(nil, @obj.attribute('NonExistent'))
+      assert_equal('test', @obj.set_attribute('NonExistent', 'test'))
+      assert_equal('test', @obj.attribute('NonExistent'))
+    end
+
+    def test_replace_attributes
+      assert_equal([ '0.0003' ], @obj.get_attributes('E_value'))
+      assert_equal(@obj, @obj.replace_attributes('E_value', '1e-10'))
+      assert_equal([ '1e-10' ], @obj.get_attributes('E_value'))
+    end
+
+    def test_replace_attributes_single_multiple
+      assert_equal([ '0.0003' ], @obj.get_attributes('E_value'))
+      assert_equal(@obj, @obj.replace_attributes('E_value',
+                                                 '1e-10', '3.14', '2.718'))
+      assert_equal([ '1e-10', '3.14', '2.718' ],
+                   @obj.get_attributes('E_value'))
+    end
+
+    def test_replace_attributes_multiple_single
+      assert_equal([ 'IdString', 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+      assert_equal(@obj,
+                   @obj.replace_attributes('Misc', 'Replaced_All'))
+      assert_equal([ 'Replaced_All' ],
+                   @obj.get_attributes('Misc'))
+    end
+
+    def test_replace_attributes_multiple_multiple_two
+      assert_equal([ 'IdString', 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+      assert_equal(@obj,
+                   @obj.replace_attributes('Misc',
+                                           'Replaced', 'test2'))
+      assert_equal([ 'Replaced', 'test2' ],
+                   @obj.get_attributes('Misc'))
+    end
+
+    def test_replace_attributes_multiple_multiple_same
+      assert_equal([ 'IdString', 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+      assert_equal(@obj,
+                   @obj.replace_attributes('Misc',
+                                           'Replaced', 'test2', 'test3'))
+      assert_equal([ 'Replaced', 'test2', 'test3' ],
+                   @obj.get_attributes('Misc'))
+    end
+
+    def test_replace_attributes_multiple_multiple_over
+      assert_equal([ 'IdString', 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+      assert_equal(@obj,
+                   @obj.replace_attributes('Misc',
+                                           'Replaced', 'test2', 'test3', '4'))
+      assert_equal([ 'Replaced', 'test2', 'test3', '4' ],
+                   @obj.get_attributes('Misc'))
+    end
+
+    def test_replace_attributes_nonexistent
+      assert_equal(nil, @obj.attribute('NonExistent'))
+      assert_equal(@obj, @obj.replace_attributes('NonExistent', 'test'))
+      assert_equal([ 'test' ], @obj.get_attributes('NonExistent'))
+    end
+
+    def test_replace_attributes_nonexistent_multiple
+      assert_equal(nil, @obj.attribute('NonExistent'))
+      assert_equal(@obj,
+                   @obj.replace_attributes('NonExistent',
+                                           'test', 'gff2', 'attr'))
+      assert_equal([ 'test', 'gff2', 'attr' ],
+                   @obj.get_attributes('NonExistent'))
+    end
+
+    def test_delete_attribute
+      assert_equal('0.0003', @obj.attribute('E_value'))
+      assert_equal('0.0003', @obj.delete_attribute('E_value', '0.0003'))
+      assert_equal(nil, @obj.attribute('E_value'))
+    end
+
+    def test_delete_attribute_nil
+      assert_equal('0.0003', @obj.attribute('E_value'))
+      assert_equal(nil, @obj.delete_attribute('E_value', '3'))
+      assert_equal('0.0003', @obj.attribute('E_value'))
+    end
+
+    def test_delete_attribute_multiple
+      assert_equal([ 'IdString', 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+      assert_equal('free text',
+                   @obj.delete_attribute('Misc', 'free text'))
+      assert_equal([ 'IdString', '5678' ],
+                   @obj.get_attributes('Misc'))
+    end
+
+    def test_delete_attribute_multiple2
+      assert_equal([ 'IdString', 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+      assert_equal('IdString',
+                   @obj.delete_attribute('Misc', 'IdString'))
+      assert_equal([ 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+      assert_equal('5678',
+                   @obj.delete_attribute('Misc', '5678'))
+      assert_equal([ 'free text' ],
+                   @obj.get_attributes('Misc'))
+    end
+
+    def test_delete_attribute_multiple_nil
+      assert_equal([ 'IdString', 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+      assert_equal(nil,
+                   @obj.delete_attribute('Misc', 'test'))
+      assert_equal([ 'IdString', 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+    end
+
+    def test_delete_attribute_nonexistent
+      assert_equal(nil, @obj.attribute('NonExistent'))
+      assert_equal(nil, @obj.delete_attribute('NonExistent', 'test'))
+      assert_equal([], @obj.get_attributes('NonExistent'))
+    end
+
+    def test_delete_attributes
+      assert_equal('0.0003', @obj.attribute('E_value'))
+      assert_equal(@obj, @obj.delete_attributes('E_value'))
+      assert_equal(nil, @obj.attribute('E_value'))
+    end
+
+    def test_delete_attributes_multiple
+      assert_equal([ 'IdString', 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+      assert_equal(@obj, @obj.delete_attributes('Misc'))
+      assert_equal([], @obj.get_attributes('Misc'))
+    end
+
+    def test_delete_attributes_nonexistent
+      assert_equal(nil, @obj.attribute('NonExistent'))
+      assert_equal(nil, @obj.delete_attributes('NonExistent'))
+      assert_equal([], @obj.get_attributes('NonExistent'))
+    end
+
+    def test_sort_attributes_by_tag!
+      tags = %w( Comment Align E_value Note )
+      assert_equal(@obj, @obj.sort_attributes_by_tag!(tags))
+      assert_equal(%w( Comment Align Align E_value Note Target
+                       Misc Misc Misc ),
+                   @obj.attributes.collect { |x| x[0] })
+      # check if the order of 'Misc' is not changed
+      assert_equal([ 'IdString', 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+    end
+
+    def test_sort_attributes_by_tag_bang_test2
+      tags = %w( E_value Misc Note Target )
+      assert_equal(@obj, @obj.sort_attributes_by_tag!(tags))
+      assert_equal(%w( E_value Misc Misc Misc Note Target
+                       Align Align Comment ),
+                   @obj.attributes.collect { |x| x[0] })
+      # check if the order of 'Misc' is not changed
+      assert_equal([ 'IdString', 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+    end
+
+    def test_sort_attributes_by_tag_bang_with_block
+      assert_equal(@obj,
+                   @obj.sort_attributes_by_tag! { |x, y|
+                     x <=> y
+                   })
+      assert_equal(%w( Align Align Comment E_value Misc Misc Misc
+                       Note Target ),
+                   @obj.attributes.collect { |x| x[0] })
+      # check if the order of 'Misc' is not changed
+      assert_equal([ 'IdString', 'free text', '5678' ],
+                   @obj.get_attributes('Misc'))
+    end
+  end #class TestGFF2Record
+
+  class TestGFF2RecordEmpty < Test::Unit::TestCase
+    def setup
+      @obj = Bio::GFF::GFF2::Record.new('# test comment')
+    end
+
+    def test_comment_only?
+      assert_equal(true, @obj.comment_only?)
+    end
+
+    def test_comment_only_false
+      @obj.seqname = 'test'
+      assert_equal(false, @obj.comment_only?)
+    end
+
+    def test_to_s
+      assert_equal("# test comment\n", @obj.to_s)
+    end
+
+    def test_to_s_not_empty
+      @obj.seqname = 'test'
+      @obj.feature = 'region'
+      @obj.start = 1
+      @obj.end = 100
+      assert_equal("test\t.\tregion\t1\t100\t.\t.\t.\t\t# test comment\n",
+                   @obj.to_s)
+      @obj.add_attribute('Gene', 'unknown')
+      assert_equal("test\t.\tregion\t1\t100\t.\t.\t.\tGene unknown\t# test comment\n",
+                   @obj.to_s)
+    end
+
+    def test_comment
+      assert_equal(' test comment', @obj.comment)
+    end
+
+    def test_comment_eq
+      assert_equal('changed the comment',
+                   @obj.comment = 'changed the comment')
+    end
+  end #class TestGFF2RecordEmpty
+
+  class TestGFF2ComplexAttributes < Test::Unit::TestCase
+
+    # The test string comes from the Popular genome annotation from the JGI.
+    # ftp://ftp.jgi-psf.org/pub/JGI_data/Poplar/annotation/v1.1/Poptr1_1.JamboreeModels.gff.gz
+    # Thanks to Tomoaki NISHIYAMA who picks up the example line.
+    def test_attributes_case1
+      str = "LG_I\tJGI\tCDS\t11052\t11064\t.\t-\t0\tname \"grail3.0116000101\"; proteinId 639579; exonNumber 3\n"
+
+      attributes = [
+        [ "name",       "grail3.0116000101" ],
+        [ "proteinId",  "639579" ],
+        [ "exonNumber", "3" ]
+      ]
+      record = Bio::GFF::GFF2::Record.new(str)
+      assert_equal(attributes, record.attributes)
+    end
+
+    # The test string is modified from that of test_attributes_case1.
+    def test_attributes_case2
+      str = "LG_I\tJGI\tCDS\t11052\t11064\t.\t-\t0\tname \"grail3.0116000101\"; proteinId 639579; exonNumber 3; Note \"Semicolons ; and \;, and quote \\\" can be OK\"; Comment \"This is the \\\"comment\\\"\"\n"
+
+      attributes = [
+        [ "name", "grail3.0116000101" ],
+        [ "proteinId", "639579" ],
+        [ "exonNumber", "3" ],
+        [ "Note", "Semicolons ; and ;, and quote \" can be OK" ],
+        [ "Comment", "This is the \"comment\"" ]
+      ]
+      record = Bio::GFF::GFF2::Record.new(str)
+      assert_equal(attributes, record.attributes)
+    end
+
+    def test_attributes_incompatible_backslash_semicolon
+      # No special treatments for backslash-semicolon outside the free text.
+      str =<<END_OF_DATA
+I	sgd	gene	151453	151591	.	+	.	Gene "CEN1" ; Note "Chromosome I Centromere"; Semicolon a "b;c" d "e;f;g" h; Illegal a\\;b c d; Comment "a ; b"
+END_OF_DATA
+
+      attributes = [
+        [ 'Gene',      'CEN1' ],
+        [ 'Note',      'Chromosome I Centromere' ],
+        [ 'Semicolon',
+          Bio::GFF::GFF2::Record::Value.new(['a', 'b;c', 'd', 'e;f;g', 'h']) ],
+        [ 'Illegal',   "a\\" ],
+        [  'b', Bio::GFF::GFF2::Record::Value.new(['c', 'd']) ],
+        [ 'Comment',   'a ; b' ]
+      ]
+      record = Bio::GFF::GFF2::Record.new(str)
+      assert_equal(attributes, record.attributes)
+    end
+
+  end #class TestGFF2ComplexAttributes
+
+  class TestGFF2MetaData < Test::Unit::TestCase
+    def setup
+      @data =
+        Bio::GFF::GFF2::MetaData.new('date', '2008-09-22')
+    end
+
+    def test_parse
+      assert_equal(@data,
+                   Bio::GFF::GFF2::MetaData.parse('##date 2008-09-22'))
+    end
+
+    def test_directive
+      assert_equal('date', @data.directive)
+    end
+
+    def test_data
+      assert_equal('2008-09-22', @data.data)
+    end
+  end #class TestGFF2MetaData
 
   class TestGFF3 < Test::Unit::TestCase
     def setup
@@ -162,24 +663,24 @@ END_OF_DATA
                                             'RANDOM',
                                             'contig',
                                             1, 400, nil, '+', nil,
-                                            { 'ID' => 'test01',
-                                              'Note' => 'this is test' })
+                                            [ ['ID', 'test01'],
+                                              ['Note', 'this is test'] ])
       r_mrna01 = Bio::GFF::GFF3::Record.new('test01',
                                             nil,
                                             'mRNA',
                                             101, 230, nil, '+', nil,
-                                            { 'ID' => 'mrna01',
-                                              'Name' => 'testmRNA',
-                                              'Note' => 'this is test mRNA' })
+                                            [ ['ID', 'mrna01'],
+                                              ['Name', 'testmRNA'],
+                                              ['Note', 'this is test mRNA'] ])
       r_exon01 = Bio::GFF::GFF3::Record.new('test01',
                                             nil,
                                             'exon',
                                             101, 160, nil, '+', nil,
-                                            { 'ID' => 'exon01',
-                                              'Name' => 'exon01',
-                                              'Alias' => 'exon 1',
-                                              'Parent' =>
-                                              [ 'mrna01', 'mrna01a'] })
+                                            [ ['ID', 'exon01'],
+                                              ['Name', 'exon01'],
+                                              ['Alias', 'exon 1'],
+                                              ['Parent', 'mrna01'],
+                                              ['Parent', 'mrna01a'] ])
 
       target = Bio::GFF::GFF3::Record::Target.new('EST101', 1, 21)
       gap = Bio::GFF::GFF3::Record::Gap.new('M8 D3 M6 I1 M6')
@@ -187,10 +688,10 @@ END_OF_DATA
                                             nil,
                                             'Match',
                                             101, 123, nil, nil, nil,
-                                            { 'ID' => 'match01',
-                                              'Name' => 'match01',
-                                              'Target' => target,
-                                              'Gap' => gap })
+                                            [ ['ID', 'match01'],
+                                              ['Name', 'match01'],
+                                              ['Target', target],
+                                              ['Gap', gap] ])
       assert_equal(r_test01, @gff3.records[0])
       assert_equal(r_mrna01, @gff3.records[1])
       assert_equal(r_exon01, @gff3.records[3])
@@ -252,26 +753,37 @@ END_OF_DATA
     end
 
     def test_attributes
-      attr = {
-        'ID'     => 'CEN1',
-        'Name'   => 'CEN1',
-        'gene'   => 'CEN1',
-        'Alias'  => [ 'CEN1', 'test;0001' ],
-        'Note'   => 'Chromosome I centromere',
-        'dbxref' => 'SGD:S000006463',
-        'Target' =>
-        [ Bio::GFF::GFF3::Record::Target.new('test 02', 123, 456, '-'),
-          Bio::GFF::GFF3::Record::Target.new('test,03', 159, 314)
-        ],
-        'memo=test;attr' => "99.9%\tmatch",
-      }
+      attr = [
+        ['ID',     'CEN1'],
+        ['Name',   'CEN1'],
+        ['gene',   'CEN1'],
+        ['Alias',  'CEN1'],
+        ['Alias',  'test;0001'],
+        ['Note',   'Chromosome I centromere'],
+        ['dbxref', 'SGD:S000006463'],
+        ['Target',
+         Bio::GFF::GFF3::Record::Target.new('test 02', 123, 456, '-')],
+        ['Target',
+         Bio::GFF::GFF3::Record::Target.new('test,03', 159, 314)],
+        ['memo=test;attr', "99.9%\tmatch"]
+      ]
       assert_equal(attr, @obj.attributes)
     end
 
     def test_to_s
+      str =<<END_OF_DATA
+chrI	SGD	centromere	151467	151584	.	+	.	ID=CEN1;Name=CEN1;gene=CEN1;Alias=CEN1,test%3B0001;Note=Chromosome I centromere;dbxref=SGD:S000006463;Target=test%2002 123 456 -,test%2C03 159 314;memo%3Dtest%3Battr=99.9%25%09match
+END_OF_DATA
+      assert_equal(str, @obj.to_s)
+    end
+
+    def test_to_s_attr_order_changed
       str = <<END_OF_STR
 chrI	SGD	centromere	151467	151584	.	+	.	ID=CEN1;Name=CEN1;Alias=CEN1,test%3B0001;Target=test%2002 123 456 -,test%2C03 159 314;Note=Chromosome I centromere;dbxref=SGD:S000006463;gene=CEN1;memo%3Dtest%3Battr=99.9%25%09match
 END_OF_STR
+
+      keys = [ 'ID', 'Name', 'Alias', 'Target', 'Note', 'dbxref', 'gene' ]
+      @obj.sort_attributes_by_tag!(keys)
       assert_equal(str, @obj.to_s)
     end
   end #class TestGFF3Record
@@ -283,14 +795,14 @@ END_OF_STR
 I	sgd	gene	151453	151591	.	+	.	
 END_OF_DATA
       obj = Bio::GFF::GFF3::Record.new(data)
-      assert_equal({}, obj.attributes)
+      assert_equal([], obj.attributes)
       
       # test blank with no tab at end
       data =<<END_OF_DATA
 I	sgd	gene	151453	151591	.	+	.
 END_OF_DATA
       obj = Bio::GFF::GFF3::Record.new(data)
-      assert_equal({}, obj.attributes)
+      assert_equal([], obj.attributes)
     end
     
     def test_attributes_one
@@ -298,7 +810,7 @@ END_OF_DATA
 I	sgd	gene	151453	151591	.	+	.	ID=CEN1
 END_OF_DATA
       obj = Bio::GFF::GFF3::Record.new(data)
-      at = { "ID" => 'CEN1' }
+      at = [ ["ID", 'CEN1'] ]
       assert_equal(at, obj.attributes)
     end
     
@@ -307,8 +819,10 @@ END_OF_DATA
 I	sgd	gene	151453	151591	.	+	.	ID=CEN1;gene=CEN1%3Boh;Note=Chromosome I Centromere
 END_OF_DATA
       obj = Bio::GFF::GFF3::Record.new(data)
-      at = { 'ID' => 'CEN1', "Note" => 'Chromosome I Centromere',
-        "gene" => 'CEN1;oh' }
+      at = [ ['ID',   'CEN1'],
+             ["gene", 'CEN1;oh'],
+             ["Note", 'Chromosome I Centromere']
+           ]
       assert_equal(at, obj.attributes)      
     end
     
@@ -339,8 +853,8 @@ END_OF_DATA
                                        'testsrc',
                                        'exon',
                                        1, 400, nil, '+', nil,
-                                       { 'ID' => 'test01',
-                                         'Note' => 'this is test' })
+                                       [ ['ID',   'test01'],
+                                         ['Note', 'this is test'] ])
       assert_equal('test01', obj.seqid)
     end
 
