@@ -1,10 +1,10 @@
 #
 # = bio/appl/blast/wublast.rb - WU-BLAST default output parser
 # 
-# Copyright::  Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org>
+# Copyright::  Copyright (C) 2003, 2008 Naohisa GOTO <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: wublast.rb,v 1.12 2007/12/27 17:28:57 ngoto Exp $
+# $Id:$
 #
 # == Description
 #
@@ -66,7 +66,70 @@ module Bio
           @notice
         end
 
+        # (WU-BLAST) Returns record number of the query.
+        # It may only be available for reports with multiple queries.
+        # Returns an Integer or nil.
+        def query_record_number
+          format0_parse_query
+          @query_record_number
+        end
+
+        # (WU-BLAST) Returns exit code for the execution.
+        # Returns an Integer or nil.
+        def exit_code
+          if defined? @exit_code then
+            @exit_code
+          else
+            nil
+          end
+        end
+
+        # (WU-BLAST) Returns fatal error information.
+        # Returns nil or an array containing String.
+        def fatal_errors
+          if defined? @fatal_errors then
+            @fatal_errors
+          else
+            nil
+          end
+        end
+
+        # Returns the name (filename or title) of the database.
+        def db
+          unless defined?(@db)
+            if /Database *\: *(.*)/m =~ @f0database then
+              a = $1.split(/^/)
+              if a.size > 1 and /\ASearching\..+ done\s*\z/ =~ a[-1] then
+                a.pop
+              end
+              if a.size > 1 and /\A +[\d\,]+ +sequences\; +[\d\,]+ total +letters\.?\s*\z/ =~ a[-1] then
+                a.pop
+              end
+              @db = a.collect { |x| x.sub(/\s+\z/, '') }.join(' ')
+            end
+          end #unless
+          @db
+        end
+
         private
+        # Parses the query lines (begins with "Query = ").
+        def format0_parse_query
+          unless defined?(@query_def)
+            sc = StringScanner.new(@f0query)
+            sc.skip(/\s*/)
+            if sc.skip_until(/Query\= */) then
+              q = []
+              begin
+                q << sc.scan(/.*/)
+                sc.skip(/\s*^ ?/)
+              end until !sc.rest or r = sc.skip(/ *\( *([\,\d]+) *letters *(\; *record *([\,\d]+) *)?\)\s*\z/)
+              @query_len = sc[1].delete(',').to_i if r
+              @query_record_number = sc[3].delete(',').to_i if r and sc[2]
+              @query_def = q.join(' ')
+            end
+          end
+        end
+
         # Splits headers.
         def format0_split_headers(data)
           @f0header = data.shift
@@ -86,6 +149,11 @@ module Bio
             end
           end
           @f0query = data.shift
+          @f0warnings ||= []
+          while r = data.first and r =~ /^WARNING\: /
+            @f0warnings << data.shift
+          end
+          return if r = data.first and /\AParameters\:/ =~ r
           if r = data.first and !(/^Database\: / =~ r)
             @f0translate_info = data.shift
           end
@@ -94,23 +162,39 @@ module Bio
 
         # Splits search data.
         def format0_split_search(data)
+          @f0warnings ||= []
+          while r = data.first and r =~ /^WARNING\: /
+            @f0warnings << data.shift
+          end
           [ Iteration.new(data) ]
         end
 
         # Splits statistics parameters.
         def format0_split_stat_params(data)
-          @f0warnings = []
-          if r = data.first and r =~ /^WARNING\: / then
+          @f0warnings ||= []
+          while r = data.first and r =~ /^WARNING\: /
             @f0warnings << data.shift
           end
           @f0wu_params = []
           @f0wu_stats = []
-          while r = data.shift and !(r =~ /^Statistics\:/)
-            @f0wu_params << r
-          end
-          @f0wu_stats << r if r
-          while r = data.shift
-            @f0wu_stats << r
+          ary = @f0wu_params
+          while r = data.shift 
+            case r
+            when /\AStatistics\:/
+              ary = @f0wu_stats
+            when /\AEXIT CODE *(\d+)\s*$/
+              @exit_code = $1.to_i
+              r = nil
+            when /\AFATAL\: /
+              @fatal_errors ||= []
+              @fatal_errors.push r
+              r = nil
+            when /\AWARNING\: /
+              @f0warnings ||= []
+              @f0warnings << r
+              r = nil
+            end
+            ary << r if r
           end
           @f0dbstat = F0dbstat.new(@f0wu_stats)
           itr = @iterations[0]
@@ -205,8 +289,9 @@ module Bio
             @num = 1
             @f0message = []
             @f0warnings = []
-            return unless r = data.shift
-            @f0hitlist << r
+            return unless r = data.first
+            return if /\AParameters\:$/ =~ r
+            @f0hitlist << data.shift
             return unless r = data.shift
             unless /\*{3} +NONE +\*{3}/ =~ r then
               @f0hitlist << r
