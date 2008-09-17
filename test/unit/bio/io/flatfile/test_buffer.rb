@@ -109,6 +109,79 @@ module Bio::TestFlatFileBufferedInputStream
       assert_equal(@obj.gets, str)
     end
 
+    def test_gets_rs
+      rs = 'tggtg'
+      str = <<__END_OF_STR__
+aggcactagaattgagcagtgaa
+gaagatgaggaagatgaagaagaagatgaggaagaaatcaagaaagaaaaatgcgaattttctgaagatgtagacc
+gatttatatggacggttgggcaggactatggtttggatgatctggtcgtgcggcgtgctctcgccaagtacctcga
+agtggatgtttcggacatattggaaagatacaatgaactcaagcttaagaatgatggaactgctggtg
+__END_OF_STR__
+      @obj.gets(rs)
+      @obj.gets(rs)
+      assert_equal(str.chomp, @obj.gets(rs))
+    end
+
+    def test_gets_rs_equal_prefetch_gets
+      rs = 'tggtg'
+      @obj.prefetch_gets(rs)
+      str = @obj.prefetch_gets(rs)
+      @obj.prefetch_gets(rs)
+      @obj.gets(rs)
+      assert_equal(@obj.gets(rs), str)
+    end
+
+    def test_gets_rs_within_buffer
+      rs = 'tggtg'
+      a = []
+      20.times {a.push @obj.gets }
+      @obj.ungets(a.join(''))
+      
+      assert_equal(">At1g02580 mRNA (2291 bp) UTR's and CDS\naggcgagtggttaatggagaaggaaaaccatgaggacgatggtg", @obj.gets(rs))
+
+      assert_equal('ggctgaaagtgattctgtgattggtaagagacaaatctattatttgaatggtg',
+                   @obj.gets(rs).split(/\n/)[-1])
+
+      assert_equal('aggcactagaattgagcagtgaa',
+                   @obj.gets(rs).split(/\n/)[0])
+
+      assert_equal('aggcttct', @obj.gets(rs).split(/\n/)[0])
+
+      assert_equal('agacacc', @obj.gets(rs).split(/\n/)[0])
+    end
+
+    def test_gets_paragraph_mode
+      @obj.gets('')
+      @obj.gets('')
+      assert_equal('>At1g65300: mRNA 837bp (shortened at end)',
+                   @obj.gets('').split(/\n/)[0])
+    end
+
+    def test_gets_paragraph_mode_equal_prefetch_gets
+      rs = ''
+      @obj.prefetch_gets(rs)
+      str = @obj.prefetch_gets(rs)
+      @obj.prefetch_gets(rs)
+      @obj.gets(rs)
+      assert_equal(@obj.gets(rs), str)
+    end
+
+    def test_gets_paragraph_mode_within_buffer
+      @obj.gets('')
+      a = []
+      20.times {a.push @obj.gets }
+      @obj.ungets(a.join(''))
+     
+      assert_equal('>At1g65300: mRNA 837bp',
+                   @obj.gets('').split(/\n/)[0])
+
+      assert_equal('>At1g65300: mRNA 837bp (shortened at end)',
+                   @obj.gets('').split(/\n/)[0])
+
+      assert_equal('>At1g65300: mRNA 837bp (shortened from start)',
+                   @obj.gets('').split(/\n/)[0])
+    end
+
     def test_ungets
       @obj.gets
       @obj.gets

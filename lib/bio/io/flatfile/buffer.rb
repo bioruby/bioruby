@@ -130,35 +130,32 @@ module Bio
       end
 
       # Same as IO#gets.
+      #
+      # Compatibility note: the bahavior of paragraph mode (io_rs = '')
+      # may differ from that of IO#gets('').
       def gets(io_rs = $/)
         if @buffer.size > 0
           if io_rs == nil then
             r = @buffer + @io.gets(nil).to_s
             @buffer = ''
           else
-            if io_rs == '' then
-              sp_rs = /\n\n/n
-              sp_rs_orig = "\n\n"
+            if io_rs == '' then # io_rs.empty?
+              sp_rs = /((?:\r?\n){2,})/n
             else
-              begin
-                re_src = Regexp.escape(io_rs, 'n')
-              rescue ArgumentError
-                # In Ruby 1.9, $KCODE is deprecated.
-                re_src = Regexp.escape(io_rs)
-              end
-              sp_rs = Regexp.new(re_src, 0, 'n')
-              sp_rs_orig = io_rs
+              sp_rs = io_rs
             end
             a = @buffer.split(sp_rs, 2)
             if a.size > 1 then
-              r = a[0] + sp_rs_orig
-              @buffer = a[1]
+              r = a.shift
+              r += (io_rs.empty? ? a.shift : io_rs)
+              @buffer = a.shift.to_s
             else
               @buffer << @io.gets(io_rs).to_s
               a = @buffer.split(sp_rs, 2)
               if a.size > 1 then
-                r = a[0] + sp_rs_orig
-                @buffer = a[1].to_s
+                r = a.shift
+                r += (io_rs.empty? ? a.shift : io_rs)
+                @buffer = a.shift.to_s
               else
                 r = @buffer
                 @buffer = ''
