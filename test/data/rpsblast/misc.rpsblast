@@ -1,0 +1,193 @@
+RPS-BLAST 2.2.18 [Mar-02-2008]
+
+Database: Pfam.v.22.0 
+           9318 sequences; 1,769,994 total letters
+
+Searching..................................................done
+
+Query= TestSequence mixture of globin and rhodopsin (computationally
+randomly concatenated)
+         (495 letters)
+
+
+
+                                                                 Score    E
+Sequences producing significant alignments:                      (bits) Value
+
+gnl|CDD|84466 pfam00042, Globin, Globin..                             110   2e-25
+gnl|CDD|84429 pfam00001, 7tm_1, 7 transmembrane receptor (rhodop...    91   2e-19
+gnl|CDD|87195 pfam06976, DUF1300, Protein of unknown function (D...    37   0.003
+
+>gnl|CDD|84466 pfam00042, Globin, Globin..
+          Length = 110
+
+ Score =  110 bits (277), Expect = 2e-25
+ Identities = 50/110 (45%), Positives = 69/110 (62%), Gaps = 5/110 (4%)
+
+Query: 148 EKQLITGLWGKV--NVAECGAEALARLLIVYPWTQRFFASFGNLSSPTAILGNPMVRAHG 205
+           +K L+   WGKV  N  E GAE LARL   YP T+ +F  FG+LS+  A+  +P  +AHG
+Sbjct: 1   QKALVKASWGKVKGNAPEIGAEILARLFTAYPDTKAYFPKFGDLSTAEALKSSPKFKAHG 60
+
+Query: 206 KKVLTSFGDAVKNLDN---IKNTFSQLSELHCDKLHVDPENFRLLGDILI 252
+           KKVL + G+AVK+LD+   +K    +L   H  + HVDP NF+L G+ L+
+Sbjct: 61  KKVLAALGEAVKHLDDDGNLKAALKKLGARHAKRGHVDPANFKLFGEALL 110
+
+
+>gnl|CDD|84429 pfam00001, 7tm_1, 7 transmembrane receptor (rhodopsin family). This
+           family contains, amongst other G-protein-coupled
+           receptors (GCPRs), members of the opsin family, which
+           have been considered to be typical members of the
+           rhodopsin superfamily. They share several motifs, mainly
+           the seven transmembrane helices, GCPRs of the rhodopsin
+           superfamily. All opsins bind a chromophore, such as
+           11-cis-retinal. The function of most opsins other than
+           the photoisomerases is split into two steps: light
+           absorption and G-protein activation. Photoisomerases, on
+           the other hand, are not coupled to G-proteins - they are
+           thought to generate and supply the chromophore that is
+           used by visual opsins..
+          Length = 258
+
+ Score = 90.8 bits (225), Expect = 2e-19
+ Identities = 37/162 (22%), Positives = 76/162 (46%), Gaps = 10/162 (6%)
+
+Query: 299 HAIMGVAFTWVMALACAAPPLAGWSRY-IPEGLQCSCGIDYYTLKPEVNNESFVIYMFVV 357
+            A + +   WV+AL  + PPL       + EG   +C ID+          S+ +   ++
+Sbjct: 100 RAKVLILLVWVLALLLSLPPLLFSWLRTVEEGNVTTCLIDFPEESLLR---SYTLLSTLL 156
+
+Query: 358 HFTIPMIIIFFCYGQLVFTV----KEAAAQQQESATTQKAEKEVTRMVIIMVIAFLICWV 413
+            F +P+++I  CY +++ T+    +  A+  +       +E++  +M++++V+ F++CW+
+Sbjct: 157 GFVLPLLVILVCYTRILRTLRRRARSGASIARSLKRRSSSERKAAKMLLVVVVVFVLCWL 216
+
+Query: 414 PYASVAFY--IFTHQGSNFGPIFMTIPAFFAKSAAIYNPVIY 453
+           PY  V     +         P  + I  + A   +  NP+IY
+Sbjct: 217 PYHIVLLLDSLCLLSIIRVLPTALLITLWLAYVNSCLNPIIY 258
+
+
+
+ Score = 73.4 bits (180), Expect = 3e-14
+ Identities = 32/86 (37%), Positives = 47/86 (54%)
+
+Query: 55  NFLTLYVTVQHKKLRTPLNYILLNLAVADLFMVLGGFTSTLYTSLHGYFVFGPTGCNLEG 114
+           N L + V ++ K+LRTP N  LLNLAVADL  +L      LY  + G + FG   C L G
+Sbjct: 2   NLLVILVILRTKRLRTPTNIFLLNLAVADLLFLLTLPPWALYYLVGGDWPFGDALCKLVG 61
+
+Query: 115 FFATLGGEIALWSLVVLAIERYVVVC 140
+               + G  ++  L  ++I+RY+ + 
+Sbjct: 62  ALFVVNGYASILLLTAISIDRYLAIV 87
+
+
+>gnl|CDD|87195 pfam06976, DUF1300, Protein of unknown function (DUF1300). This
+           family represents a conserved region approximately 80
+           residues long within a number of proteins of unknown
+           function that seem to be specific to C. elegans. Some
+           family members contain more than one copy of this
+           region..
+          Length = 336
+
+ Score = 37.1 bits (86), Expect = 0.003
+ Identities = 32/145 (22%), Positives = 58/145 (40%), Gaps = 7/145 (4%)
+
+Query: 336 IDYYTLKPEVNNESFVIYMFV--VHFT-IPMIIIFFCYGQLVFTVKEAAAQQQESATTQK 392
+           I+Y     E+   S+ I + +  + F  IP II+      L+F +K+       S+T+  
+Sbjct: 192 IEYIIETTELFGSSYEILLLIEGILFKLIPSIILPIATILLIFQLKKNKKVSSRSSTSSS 251
+
+Query: 393 AEKEVTRMVIIMVIAFLICWVPYASVAFYIFTHQGSNFGPIFMTIPAFFAKSAAIYNPVI 452
+           +    T++V  + I+FLI  VP   +    F         + +   A      +  N  I
+Sbjct: 252 SNDRSTKLVTFVTISFLIATVPLGILYLIKFFVFEYEGLVMIIDKLAIIFTFLSTINGTI 311
+
+Query: 453 YIM----MNKQFRNCMLTTICCGKN 473
+           + +    M+ Q+RN +       K 
+Sbjct: 312 HFLICYFMSSQYRNTVREMFGRKKK 336
+
+
+Query= randomseq3
+         (1087 letters)
+
+ ***** No hits found ******
+
+
+Query= gi|6013469|gb|AAD49229.2|AF159462_1 EHEC factor for adherence
+[Escherichia coli]
+         (3223 letters)
+
+
+
+                                                                 Score    E
+Sequences producing significant alignments:                      (bits) Value
+
+gnl|CDD|86672 pfam04488, Gly_transf_sug, Glycosyltransferase sug...    84   1e-16
+gnl|CDD|84583 pfam00175, NAD_binding_1, Oxidoreductase NAD-bindi...    37   0.019
+
+>gnl|CDD|86672 pfam04488, Gly_transf_sug, Glycosyltransferase sugar-binding region
+           containing DXD motif. The DXD motif is a short conserved
+           motif found in many families of glycosyltransferases,
+           which add a range of different sugars to other sugars,
+           phosphates and proteins. DXD-containing
+           glycosyltransferases all use nucleoside diphosphate
+           sugars as donors and require divalent cations, usually
+           manganese. The DXD motif is expected to play a
+           carbohydrate binding role in sugar-nucleoside
+           diphosphate and manganese dependent
+           glycosyltransferases..
+          Length = 86
+
+ Score = 84.2 bits (208), Expect = 1e-16
+ Identities = 33/85 (38%), Positives = 40/85 (47%), Gaps = 2/85 (2%)
+
+Query: 505 RISIKDVNSLTSLSKSENNHNYQTEMLLRWNYPAA-SDLLRMYILKEHGGIYTDTDMMPA 563
+              I     L SL    N + +  EM LRW Y AA SD LR  IL ++GGIY DTD++P 
+Sbjct: 1   YDVILVTPDLESLFIDTNAYPWFQEMFLRWPYNAAASDFLRYAILYKYGGIYLDTDVIPL 60
+
+Query: 564 YSKQVIFKIMMQTN-GDNRFLEDLK 587
+            S  V+  I         R  E L 
+Sbjct: 61  KSLDVLINIEGSNFLDGERSFERLN 85
+
+
+>gnl|CDD|84583 pfam00175, NAD_binding_1, Oxidoreductase NAD-binding domain. Xanthine
+            dehydrogenases, that also bind FAD/NAD, have essentially
+            no similarity..
+          Length = 110
+
+ Score = 37.2 bits (86), Expect = 0.019
+ Identities = 16/82 (19%), Positives = 36/82 (43%), Gaps = 3/82 (3%)
+
+Query: 959  IKGFLASNPHTKINILYSNKTEHNIFIKDLFSFAVMENELRDIINNMSKDKTPENWEGRV 1018
+            +K  L     T++ ++Y N+TE ++ +++       +   R  +  +    T + W GR 
+Sbjct: 16   LKALLEDEDGTEVYLVYGNRTEDDLLLREELEELAKKYPGRLKVVAVVSR-TDDGWYGRK 74
+
+Query: 1019 MLQRYLELKMKDHLSLQSSQEA 1040
+                  +  +++HLSL    + 
+Sbjct: 75   G--YVTDALLEEHLSLIDLDDT 94
+
+
+  Database: Pfam.v.22.0
+    Posted date:  Nov 8, 2007  6:06 PM
+  Number of letters in database: 1,769,994
+  Number of sequences in database:  9318
+  
+Lambda     K      H
+   0.327    0.139    0.439 
+
+Gapped
+Lambda     K      H
+   0.267   0.0632    0.140 
+
+
+Matrix: BLOSUM62
+Gap Penalties: Existence: 11, Extension: 1
+Number of Sequences: 9318
+Number of Hits to DB: 28,279,060
+Number of extensions: 2147710
+Number of successful extensions: 3028
+Number of sequences better than 2.0e-02: 3
+Number of HSP's gapped: 3016
+Number of HSP's successfully gapped: 20
+Length of database: 1,769,994
+Neighboring words threshold: 11
+Window for multiple hits: 40
+X1: 15 ( 7.1 bits)
+X2: 38 (14.6 bits)
+X3: 64 (24.7 bits)
+S1: 40 (21.7 bits)
+S2: 77 (33.6 bits)

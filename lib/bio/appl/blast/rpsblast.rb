@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2008 Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: rpsblast.rb,v 1.1 2008/04/15 13:54:39 ngoto Exp $
+# $Id:$
 #
 # == Description
 #
@@ -23,6 +23,7 @@
 #
 
 require 'bio/appl/blast/format0'
+require 'bio/io/flatfile'
 
 module Bio
 class Blast
@@ -31,6 +32,88 @@ class Blast
   # Currently, this module is existing only for separating namespace.
   # To parse RPSBlast results, see Bio::Blast::RPSBlast::Report documents.
   module RPSBlast
+
+    # Flatfile splitter for RPS-BLAST reports.
+    # It is internally used when reading RPS-BLAST report.
+    # Normally, users do not need to use it directly.
+    #
+    # Note for Windows: RPS-BLAST results generated in Microsoft Windows
+    # may not be parsed correctly due to the line feed code problem.
+    # For a workaroud, convert line feed codes from Windows(DOS) to UNIX.
+    #
+    class RPSBlastSplitter < Bio::FlatFile::Splitter::Template
+
+      # Separator used to distinguish start of each report
+      ReportHead =  /\A\n*(RPS\-BLAST|Query\=)/
+        
+      # Delimiter used for IO#gets
+      Delimiter = "\n\n"
+
+      # creates a new splitter object
+      def initialize(klass, bstream)
+        super(klass, bstream)
+        @entry_head = nil
+      end
+
+      # Skips leader of the entry.
+      # In this class, only skips space characters.
+      def skip_leader
+        stream.skip_spaces
+        return nil
+      end
+
+      # Rewinds the stream
+      def rewind
+        @entry_head = nil
+        super
+      end
+        
+      # gets an entry
+      def get_entry
+        p0 = stream_pos()
+        pieces = []
+        flag_head = false # reached to start of header
+        flag_body = false # reached to start of body (Query=...)
+        while x = stream.gets(Delimiter)
+          if ReportHead =~ x then
+            case $1
+            when 'RPS-BLAST'
+              if pieces.empty? then
+                @entry_head = nil
+                flag_head = true
+              else
+                stream.ungets(x)
+                break
+              end
+            when 'Query='
+              if flag_body then
+                stream.ungets(x)
+                break
+              else
+                @entry_head = pieces.join('') if flag_head
+                flag_body = true
+              end
+            else
+              raise 'Bug: should not reach here'
+            end
+          end #if ReportHead...
+          pieces.push x
+        end #while
+        p1 = stream_pos()
+
+        self.entry_start_pos = p0
+        self.entry = 
+          if pieces.empty? then
+            nil
+          elsif !flag_head and @entry_head then
+            @entry_head + pieces.join('')
+          else
+            pieces.join('')
+          end
+        self.entry_ended_pos = p1
+        return self.entry
+      end
+    end #class RPSBlastSplitter
 
     # NCBI RPS Blast (Reversed Position Specific Blast)
     # default output parser.
@@ -41,30 +124,46 @@ class Blast
     # almost all methods are eqaul to Bio::Blast::Default::Report.
     # Only DELIMITER (and RS) and few methods are different.
     #
-    # Note for multi-fasta result: When parsing output of rpsblast command
-    # with multi-fasta sequences as input data,
-    # each query's result is stored as an "iteration" of PSI-Blast,
-    # because rpsblast's output with multi-fasta input is hard to split
-    # by query.
+    # By using Bio::FlatFile, (for example, Bio::FlatFile.open),
+    # rpsblast result generated from multiple query sequences is
+    # automatically splitted into multiple 
+    # Bio::BLast::RPSBlast::Report objects corresponding to
+    # query sequences.
+    #
+    # Note for multi-fasta results WITH using Bio::FlatFile:
+    # Each splitted result is concatenated with header of the
+    # result which describes RPS-BLAST version and database
+    # information, if possible.
+    #
+    # Note for multi-fasta results WITHOUT using Bio::FlatFile:
+    # When parsing an output of rpsblast command running with
+    # multi-fasta sequences WITHOUT using Bio::FlatFile,
+    # each query's result is stored as an "iteration" of PSI-Blast.
     # This behavior may be changed in the future.
     #
     # Note for nucleotide results: This class is not tested with
     # nucleotide query and/or nucleotide databases.
     #
     class Report < Bio::Blast::Default::Report
-      # Delimter of each entry for TBLAST. Bio::FlatFile uses it.
+      # Delimter of each entry for RPS-BLAST.
       DELIMITER = RS = "\nRPS-BLAST"
 
       # (Integer) excess read size included in DELIMITER.
       DELIMITER_OVERRUN = 9 # "RPS-BLAST"
 
+      # splitter for Bio::FlatFile support
+      FLATFILE_SPLITTER = RPSBlastSplitter
+
       # Creates a new Report object from a string.
       #
-      # Note for multi-fasta results: When parsing an output of rpsblast
-      # command running with multi-fasta sequences,
-      # each query's result is stored as an "iteration" of PSI-Blast,
-      # because rpsblast's output with multi-fasta input is hard to split
-      # by query.
+      # Using Bio::FlatFile.open (or some other methods)
+      # is recommended instead of using this method directly.
+      # Refer Bio::Blast::RPSBlast::Report document for more information.
+      #
+      # Note for multi-fasta results WITHOUT using Bio::FlatFile:
+      # When parsing an output of rpsblast command running with
+      # multi-fasta sequences WITHOUT using Bio::FlatFile,
+      # each query's result is stored as an "iteration" of PSI-Blast.
       # This behavior may be changed in the future.
       #
       # Note for nucleotide results: This class is not tested with
@@ -78,7 +177,9 @@ class Blast
         @entry = str
         data = str.split(/(?:^[ \t]*\n)+/)
 
-        format0_split_headers(data)
+        if data[0] and /\AQuery\=/ !~ data[0] then
+          format0_split_headers(data)
+        end
         @iterations = format0_split_search(data)
         format0_split_stat_params(data)
       end

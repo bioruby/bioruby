@@ -465,6 +465,8 @@ module Bio
             /^BLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/ ],
           tblast   = RuleRegexp[ 'Bio::Blast::Default::Report_TBlast',
             /^TBLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/ ],
+          rpsblast   = RuleRegexp[ 'Bio::Blast::RPSBlast::Report',
+            /^RPS\-BLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/ ],
 
           blat   = RuleRegexp[ 'Bio::Blat::Report',
             /^psLayout version \d+/ ],
