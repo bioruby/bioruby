@@ -5,7 +5,7 @@ Copyright (C) 2001-2007 Toshiaki Katayama <k@bioruby.org>
 
 BioRuby is an open source Ruby library for developing bioinformatics
 software.  Object oriented scripting language Ruby has many features
-suitable for bioinfomatics research, for example, clear syntax to
+suitable for bioinformatics research, for example, clear syntax to
 express complex objects, regular expressions for text handling as
 powerful as Perl's, a wide variety of libraries including web service
 etc.  As the syntax of the Ruby language is simple and very clean, we
@@ -17,19 +17,19 @@ files, internet web servers and local relational databases.  These
 database entries can be parsed to extract information you need.
 Biological sequences can be treated with the fulfilling methods of the
 Ruby's String class and with regular expressions.  Daily tools like
-Blast, Fasta, Hmmer and many other softwares for the biological
+Blast, Fasta, Hmmer and many other software packages for biological
 analysis can be executed within the BioRuby script, and the results
 can be fully parsed to extract the portion you need.  BioRuby supports
 major biological database formats and provides many ways for accessing
 them through flatfile indexing, SQL, web services etc.  Various web
-services including KEGG API can be easily utilized by the BioRuby.
+services including KEGG API can be easily utilized by BioRuby.
 
 
 == FOR MORE INFORMATION
 
 BioRuby's official website is at ((<URL:http://bioruby.org/>)).
-You will find links to the related resouces including downloads,
-mailing lists, Wiki documentations etc. in the top page.
+You will find links to related resources including downloads,
+mailing lists, Wiki documentation etc. in the top page.
 
   * ((<URL:http://bioruby.org/>))
 
@@ -143,7 +143,7 @@ If you are using RubyGems, just type
 == SETUP
 
 If you want to use the OBDA (Open Bio Database Access) to obtain database
-entries, copy a sample configtation file in the BioRuby distribution
+entries, copy a sample configuration file in the BioRuby distribution
 
   bioruby-x.x.x/etc/bioinformatics/seqdatabase.ini
 
@@ -155,8 +155,8 @@ or
 
   ~/.bioinformatics/seqdatabase.ini	(personal configuration)
 
-and chage the contens according to your preference.  For more
-informations on the OBDA, see ((<URL:http://obda.open-bio.org/>)).
+and change the contents according to your preference.  For more
+information on the OBDA, see ((<URL:http://obda.open-bio.org/>)).
 
 
 == USAGE
@@ -168,13 +168,13 @@ separate the name space.
   #!/usr/bin/env ruby
   require 'bio'
 
-Also read other documentations in the 'doc' directory.
+You can also read other documentation in the 'doc' directory.
 
   bioruby-x.x.x/doc/
 
 --- RubyGems
 
-In RubyGems, you need to load 'rubygems' library before using 'bio'.
+With RubyGems, you need to load 'rubygems' library before using 'bio'.
 
   #!/usr/bin/env ruby
   require 'rubygems'
@@ -185,12 +185,12 @@ In RubyGems, you need to load 'rubygems' library before using 'bio'.
 
 BioRuby can be freely distributed under the same terms as Ruby.
 
-Note that, install.rb included in the BioRuby package comes from
-[RAA:setup] developed by Minero Aoki, and modified by Moses Hohman.
+Note that install.rb included in the BioRuby package comes from
+[RAA:setup] developed by Minero Aoki and modified by Moses Hohman.
 
 
 == CONTACT
 
-Current staffs of the BioRuby project can be reached by sending e-mail
+Current staff of the BioRuby project can be reached by sending e-mail
 to <staff@bioruby.org>.
 
