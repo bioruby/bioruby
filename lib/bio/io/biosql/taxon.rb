@@ -5,7 +5,7 @@
 			      set_sequence_name "taxon_pk_seq"
 			      has_many :taxon_names, :class_name => "TaxonName"
             has_one :taxon_scientific_name, :class_name => "TaxonName", :conditions=>"name_class = 'scientific name'"
-			      has_one :bioentry
+			      has_one :bioentry, :class_name => "Bioentry"
 			    end		
 		end #SQL
 end #Bio
