@@ -86,53 +86,69 @@ module Bio
       def initialize(options={})
         options.assert_valid_keys(:entry, :biodatabase_id,:biosequence)
         return @entry = options[:entry] unless options[:entry].nil?
+        
         return to_biosql(options[:biosequence], options[:biodatabase_id]) unless options[:biosequence].nil? or options[:biodatabase_id].nil?
+        
       end
       
       def to_biosql(bs,biodatabase_id)
         #Transcaction works greatly!!!
-        
+
         #
         begin
           Bioentry.transaction do           
+        
             @entry = Bioentry.new(:biodatabase_id=>biodatabase_id, :name=>bs.entry_id)
+
             #            pp "primary"
             self.primary_accession = bs.primary_accession
+
             #            pp "def"
             self.definition = bs.definition unless bs.definition.nil?
+
             #            pp "seqver"
             self.sequence_version = bs.sequence_version
+
             #            pp "divi"
             self.division = bs.division unless bs.division.nil?
+
             @entry.save!
-            #            pp "secacc"
+#                        pp "secacc"
+            
             bs.secondary_accessions.each do |sa|
               #write as qualifier every secondary accession into the array
               self.secondary_accessions = sa
             end
+
+            
             #to create the sequence entry needs to exists
-            #            pp "seq"
+#                        pp "seq"
+            pp bs.seq.class
             self.seq = bs.seq unless bs.seq.nil?
-            #            pp "mol"
+#                       pp "mol"
+            
             self.molecule_type = bs.molecule_type unless bs.molecule_type.nil?
-            #            pp "dc"
+#                        pp "dc"
+
             self.data_class = bs.data_class unless bs.data_class.nil?
-            #            pp "top"
+#                        pp "top"
             self.topology = bs.topology unless bs.topology.nil?
-            #            pp "datec"
+#                        pp "datec"
             self.date_created = bs.date_created unless bs.date_created.nil?
-            #            pp "datemod"
+#                        pp "datemod"
             self.date_modified = bs.date_modified unless bs.date_modified.nil?
-            #            pp "key"
+#                        pp "key"
+            
             bs.keywords.each do |kw|
               #write as qualifier every secondary accessions into the array
               self.keywords = kw
-            end
+            end 
             #FIX: problem settinf texon_name: embl has "Arabidopsis thaliana (thale cress)" but in taxon_name table there isn't this name. I must check if there is a new version of the table
-            #pp "spec"        
+#            pp "spec"        
             self.species = bs.species unless bs.species.nil?
             #            pp "Debug: #{bs.species}"
-            #            pp "feat"
+                        pp "feat"
+            
             bs.features.each do |feat|
               self.feature=feat
             end
@@ -143,6 +159,7 @@ module Bio
           return self
         rescue Exception => e
           pp "to_biosql exception: #{e}"
+          pp $!
         end
       end #to_biosql
       
@@ -257,22 +274,40 @@ module Bio
         end
       end
       
+      #return the seqfeature mapped from BioSQL with a type_term like 'CDS'
+      def cdsfeatures
+        @entry.cdsfeatures
+      end
       
       def seq
         Bio::Sequence.auto(@entry.biosequence.seq) unless @entry.biosequence.nil?
       end	
       
       def seq=(value)
+#        pp "0"
+#        pp value.class
+#        pp "1"
+#        pp value.seq.to_s.class
         #chk which type of alphabet is, NU/NA/nil
         #value could be nil ? I think no.
         if @entry.biosequence.nil?
+#          puts "intoseq1"
           @entry.biosequence = Biosequence.new(:seq=>value)
-          @entry.biosequence.save!
+	  @entry.biosequence.save!
+#          @entry.build_biosequence(:seq=>"avagvga")
+          #@entry.biosequence.seq
+          #@entry.biosequence = Bio::SQL::Biosequence.new(:seq=>value.seq.to_s, :bioentry_id=>@entry.bioentry_id)
+          #@entry.biosequence = Bio::SQL::Biosequence.new(:seq=>value)
+          #@entry.build_sequence
+#          puts "stop"
+#          break
         else
           @entry.biosequence.seq=value
         end
-        
         self.length=value.length
+        #@entry.biosequence.length=value.length
+        #break
+        @entry.save!
       end
       
       def taxonomy
@@ -630,7 +665,26 @@ module Bio
       
       
       def to_biosequence
-        Bio::Sequence.adapter(self, Bio::Sequence::Adapter::BioSQL)
+#        bio_seq = Bio::Sequence.adapter(seq)
+#        bio_seq.entry_id = entry_id
+#        bio_seq.primary_accession = primary_accession
+#        bio_seq.secondary_accessions = secondary_accessions
+#        bio_seq.molecule_type = molecule_type
+        #TODO: identify where is stored data_class in biosql      
+#        bio_seq.data_class = data_class
+#        bio_seq.definition = description
+#        bio_seq.topology = topology
+#        bio_seq.date_created = date_created
+#        bio_seq.date_modified = date_modified
+#        bio_seq.division = division
+#        bio_seq.sequence_version = sequence_version
+#        bio_seq.keywords = keywords
+#        bio_seq.species = species
+#        bio_seq.classification = taxonomy
+#        bio_seq.references = references
+#        bio_seq.features = features       
+#        return bio_seq
+	 Bio::Sequence.adapter(self,Bio::Sequence::Adapter::BioSQL)
       end
     end #Sequence
     
