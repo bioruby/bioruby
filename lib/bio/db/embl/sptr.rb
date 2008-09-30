@@ -4,7 +4,7 @@
 # Copyright::   Copyright (C) 2001-2006  Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: sptr.rb,v 1.36.2.1 2008/04/24 13:49:42 ngoto Exp $
+# $Id:$
 #
 # == Description
 # 
@@ -960,7 +960,7 @@ class SPTR < EMBLDB
     unless key
       embl_dr
     else
-      embl_dr[key].map {|x|
+      (embl_dr[key] or []).map {|x|
         {'Accession' => x[0],
          'Version' => x[1],
          ' ' => x[2],

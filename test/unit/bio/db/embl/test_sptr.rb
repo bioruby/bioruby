@@ -4,7 +4,7 @@
 # Copyright:::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-#  $Id: test_sptr.rb,v 1.7 2007/04/05 23:35:43 trevor Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -76,6 +76,34 @@ module Bio
 
     def test_accession
       assert_equal('P04637', @obj.accession)
+    end
+
+    def test_dr
+      assert_equal(27, @obj.dr['GO'].size)
+      assert_equal([["IPR002117", "P53"],
+                    ["IPR011615", "P53_DNA_bd"],
+                    ["IPR012346", "P53_RUNT_DNA_bd"],
+                    ["IPR010991", "p53_tetrameristn"]],
+                   @obj.dr['InterPro'])
+    end
+
+    def test_dr_with_key
+      pfam = [
+              { " "=>"1",
+                "Version"=>"P53",
+                "Accession"=>"PF00870",
+                "Molecular Type"=>nil
+              },
+              {" "=>"1",
+                "Version"=>"P53_tetramer",
+                "Accession"=>"PF07710",
+                "Molecular Type"=>nil}
+             ]
+      assert_equal(pfam, @obj.dr('Pfam'))
+    end
+
+    def test_dr_with_key_empty
+      assert_equal([], @obj.dr('NOT_A_DATABASE'))
     end
 
     def test_dt
