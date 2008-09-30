@@ -5,18 +5,27 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id: bio.rb,v 1.89.2.4 2008/03/04 11:29:36 ngoto Exp $
+# $Id:$
 #
 
 module Bio
 
-  BIORUBY_VERSION = [1, 2, 1].extend(Comparable)
+  BIORUBY_VERSION = [1, 2, 2].extend(Comparable)
 
   ### Basic data types
 
   ## Sequence
 
   autoload :Sequence,       'bio/sequence'
+  ## below are described in bio/sequence.rb
+  #class Sequence
+  #  autoload :Common,  'bio/sequence/common'
+  #  autoload :NA,      'bio/sequence/na'
+  #  autoload :AA,      'bio/sequence/aa'
+  #  autoload :Generic, 'bio/sequence/generic'
+  #  autoload :Format,  'bio/sequence/format'
+  #  autoload :Adapter, 'bio/sequence/adapter'
+  #end
 
   ## Locations/Location
 
@@ -170,6 +179,7 @@ module Bio
 
   class NCBI
     autoload :SOAP,       'bio/io/ncbisoap'
+    autoload :REST,       'bio/io/ncbirest'
   end
 
 
@@ -189,6 +199,9 @@ module Bio
   #  autoload :Default,      'bio/appl/blast/format0'
   #  autoload :WU,           'bio/appl/blast/wublast'
   #  autoload :Bl2seq,       'bio/appl/bl2seq/report'
+  #  autoload :RPSBlast,     'bio/appl/blast/rpsblast'
+  #  autoload :NCBIOptions,  'bio/appl/blast/ncbioptions'
+  #  autoload :Remote,       'bio/appl/blast/remote'
   #end
 
   autoload :HMMER,          'bio/appl/hmmer'
