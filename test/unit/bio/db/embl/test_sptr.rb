@@ -79,6 +79,7 @@ module Bio
     end
 
     def test_dr
+      assert_equal(17, @obj.dr.size)
       assert_equal(27, @obj.dr['GO'].size)
       assert_equal([["IPR002117", "P53"],
                     ["IPR011615", "P53_DNA_bd"],
@@ -89,17 +90,25 @@ module Bio
 
     def test_dr_with_key
       pfam = [
-              { " "=>"1",
-                "Version"=>"P53",
-                "Accession"=>"PF00870",
-                "Molecular Type"=>nil
+              { " "              => "1",
+                "Version"        => "P53",
+                "Accession"      => "PF00870",
+                "Molecular Type" => nil
               },
-              {" "=>"1",
-                "Version"=>"P53_tetramer",
-                "Accession"=>"PF07710",
-                "Molecular Type"=>nil}
+              { " "              => "1",
+                "Version"        => "P53_tetramer",
+                "Accession"      => "PF07710",
+                "Molecular Type" => nil
+              }
              ]
       assert_equal(pfam, @obj.dr('Pfam'))
+      embl3 = {
+        " "              => "JOINED",
+        "Version"        => "AAA59987.1",
+        "Accession"      => "M13113",
+        "Molecular Type" => "Genomic_DNA"
+      }
+      assert_equal(embl3, @obj.dr('EMBL')[3])
     end
 
     def test_dr_with_key_empty
