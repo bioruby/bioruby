@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-#  $Id: test_ensembl.rb,v 1.5 2007/11/10 16:57:43 nakao Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -72,109 +72,145 @@ class FuncTestEnsemblHuman < Test::Unit::TestCase
     assert_equal(fna10, fna)
   end
 
-   def test_gff_exportview
-     line = ["chromosome:NCBI36:4:1149206:1149209:1", 
-             "Ensembl", 
-             "Gene", 
-             "-839",
-             "2747", 
-             ".", 
-             "+",
-             ".",
-             "gene_id=ENSG00000206158; transcript_id=ENST00000382964; exon_id=ENSE00001494097; gene_type=KNOWN_protein_coding\n"].join("\t")  + "\n"
-     line = ["4", 
-             "Ensembl", 
-             "Gene", 
-             "1148366", 
-             "1151952", 
-             ".", 
-             "+", 
-             "1", 
-             "gene_id=ENSG00000206158; transcript_id=ENST00000382964; exon_id=ENSE00001494097; gene_type=KNOWN_protein_coding"].join("\t") + "\n"
+   def test_gff_exportview_for_empty_result
      gff = @serv.exportview(4, 1149206, 1149209, ['gene'])
+     assert_equal('', gff)
+   end
+
+   def test_gff_exportview
+     # OR1A1 (Olfactory receptor 1A1)
+     lines = [ [ "17",
+                 "Ensembl",
+                 "Gene",
+                 "3065665",
+                 "3066594",
+                 ".",
+                 "+",
+                 "1",
+                 "gene_id=ENSG00000172146; transcript_id=ENST00000304094; exon_id=ENSE00001137815; gene_type=KNOWN_protein_coding"
+               ],
+               [ "17",
+                 "Vega",
+                 "Gene",
+                 "3065665",
+                 "3066594",
+                 ".",
+                 "+",
+                 "1",
+                 "gene_id=OTTHUMG00000090637; transcript_id=OTTHUMT00000207292; exon_id=OTTHUME00001080001; gene_type=KNOWN_protein_coding"
+               ]
+             ]
+     line = lines.collect { |x| x.join("\t") + "\n" }.join('')
+     gff = @serv.exportview(17, 3065665, 3066594, ['gene'])
      assert_equal(line, gff)
    end
 
-   def test_gff_exportview_with_named_args
-     line = ["chromosome:NCBI36:4:1149206:1149209:1",
-             "Ensembl",
-             "Gene",
-             "-839",
-             "2747",
-             ".",
-             "+",
-             ".",
-             "gene_id=ENSG00000206158; transcript_id=ENST00000382964; exon_id=ENSE00001494097; gene_type=KNOWN_protein_coding"].join("\t") + "\n"
-     line = ["4", 
-             "Ensembl", 
-             "Gene", 
-             "1148366", 
-             "1151952", 
-             ".", 
-             "+", 
-             "1", 
-             "gene_id=ENSG00000206158; transcript_id=ENST00000382964; exon_id=ENSE00001494097; gene_type=KNOWN_protein_coding"].join("\t") + "\n"
+   def test_gff_exportview_with_named_args_for_empty_result
      gff = @serv.exportview(:seq_region_name => 4,
                             :anchor1 => 1149206,
                             :anchor2 => 1149209, 
                             :options => ['gene'])
+     assert_equal('', gff)
+   end 
+
+   def test_gff_exportview_with_named_args
+     # OR1A1 (Olfactory receptor 1A1)
+     lines = [ [ "17",
+                 "Ensembl",
+                 "Gene",
+                 "3065665",
+                 "3066594",
+                 ".",
+                 "+",
+                 "1",
+                 "gene_id=ENSG00000172146; transcript_id=ENST00000304094; exon_id=ENSE00001137815; gene_type=KNOWN_protein_coding"
+               ],
+               [ "17",
+                 "Vega",
+                 "Gene",
+                 "3065665",
+                 "3066594",
+                 ".",
+                 "+",
+                 "1",
+                 "gene_id=OTTHUMG00000090637; transcript_id=OTTHUMT00000207292; exon_id=OTTHUME00001080001; gene_type=KNOWN_protein_coding"
+               ]
+             ]
+     line = lines.collect { |x| x.join("\t") + "\n" }.join('')
+     gff = @serv.exportview(:seq_region_name => 17,
+                            :anchor1 => 3065665,
+                            :anchor2 => 3066594, 
+                            :options => ['gene'])
+     assert_equal(line, gff)
+   end 
+
+   def test_tab_exportview_with_named_args_for_empty_result
+     line = ["seqname",
+             "source",
+             "feature",
+             "start",
+             "end",
+             "score",
+             "strand",
+             "frame",
+             "gene_id",
+             "transcript_id",
+             "exon_id",
+             "gene_type"].join("\t") + "\n"
+     gff = @serv.exportview(:seq_region_name => 4,
+                            :anchor1 => 1149206,
+                            :anchor2 => 1149209, 
+                            :options => ['gene'],
+                            :format => 'tab')
      assert_equal(line, gff)
    end 
 
    def test_tab_exportview_with_named_args
-     line = [["seqname",
-             "source",
-             "feature",
-             "start",
-             "end",
-             "score",
-             "strand",
-             "frame",
-             "gene_id",
-             "transcript_id",
-             "exon_id",
-             "gene_type"].join("\t"),
-             ["chromosome:NCBI36:4:1149206:1149209:1",
-              "Ensembl",
-              "Gene",
-              "-839",
-              "2747",
-              ".",
-              "+",
-              ".",
-              "ENSG00000206158",
-              "ENST00000382964",
-              "ENSE00001494097",
-              "KNOWN_protein_coding"].join("\t") + "\n"
-     ].join("\n")
-     line = [["seqname",
-             "source",
-             "feature",
-             "start",
-             "end",
-             "score",
-             "strand",
-             "frame",
-             "gene_id",
-             "transcript_id",
-             "exon_id",
-             "gene_type"].join("\t"),
-             ["4",
-              "Ensembl",
-              "Gene",
-              "1148366",
-              "1151952",
-              ".",
-              "+",
-              "1",
-              "ENSG00000206158",
-              "ENST00000382964",
-              "ENSE00001494097",
-              "KNOWN_protein_coding"].join("\t") + "\n"
-     ].join("\n")
-     gff = @serv.exportview(:seq_region_name => 4,
-                            :anchor1 => 1149206,
-                            :anchor2 => 1149209, 
+     # OR1A1 (Olfactory receptor 1A1)
+     lines = [ [ "seqname",
+                 "source",
+                 "feature",
+                 "start",
+                 "end",
+                 "score",
+                 "strand",
+                 "frame",
+                 "gene_id",
+                 "transcript_id",
+                 "exon_id",
+                 "gene_type"
+               ],
+               [ "17",
+                 "Ensembl",
+                 "Gene",
+                 "3065665",
+                 "3066594",
+                 ".",
+                 "+",
+                 "1",
+                 "ENSG00000172146",
+                 "ENST00000304094",
+                 "ENSE00001137815",
+                 "KNOWN_protein_coding"
+               ],
+               [ "17",
+                 "Vega",
+                 "Gene",
+                 "3065665",
+                 "3066594",
+                 ".",
+                 "+",
+                 "1",
+                 "OTTHUMG00000090637",
+                 "OTTHUMT00000207292",
+                 "OTTHUME00001080001",
+                 "KNOWN_protein_coding"
+               ]
+             ]
+     line = lines.collect { |x| x.join("\t") + "\n" }.join('')
+     gff = @serv.exportview(:seq_region_name => 17,
+                            :anchor1 => 3065665,
+                            :anchor2 => 3066594, 
                             :options => ['gene'],
                             :format => 'tab')
      assert_equal(line, gff)
