@@ -28,7 +28,8 @@ module Bio
         send :define_method, method_reader do
           #return an array of bioentry_qualifier_values
           begin
-            term  = Term.find_or_create_by_name(:name => synonym, :ontology=> Ontology.find_by_name('Annotation Tags'))
+	    ontology_annotation_tags = Ontology.find_or_create_by_name('Annotation Tags')
+            term  = Term.find_or_create_by_name(:name => synonym, :ontology=> ontology_annotation_tags)
             bioentry_qualifier_values = @entry.bioentry_qualifier_values.find_all_by_term_id(term)          
             bioentry_qualifier_values.map{|row| row.value} unless bioentry_qualifier_values.nil?
           rescue Exception => e 
@@ -38,7 +39,8 @@ module Bio
         
         send :define_method, method_writer_operator do |value|
           begin
-            term  = Term.find_or_create_by_name(:name => synonym, :ontology=> Ontology.find_by_name('Annotation Tags'))
+	    ontology_annotation_tags = Ontology.find_or_create_by_name('Annotation Tags')
+            term  = Term.find_or_create_by_name(:name => synonym, :ontology=> ontology_annotation_tags)
             datas = @entry.bioentry_qualifier_values.find_all_by_term_id(term.term_id)
             #add an element incrementing the rank or setting the first to 1
             @entry.bioentry_qualifier_values.create(:term_id=>term.term_id, :rank=>datas.empty? ? 1 : datas.last.rank.succ, :value=>value)
@@ -49,7 +51,8 @@ module Bio
         
         send :define_method, method_writer_modder do |value, rank|
           begin
-            term  = Term.find_or_create_by_name(:name => synonym, :ontology=> Ontology.find_by_name('Annotation Tags'))
+	    ontology_annotation_tags = Ontology.find_or_create_by_name('Annotation Tags')
+            term  = Term.find_or_create_by_name(:name => synonym, :ontology=> ontology_annotation_tags)
             data = @entry.bioentry_qualifier_values.find_by_term_id_and_rank(term.term_id, rank)
             if data.nil?
               send method_writer_operator, value
@@ -100,20 +103,20 @@ module Bio
         
             @entry = Bioentry.new(:biodatabase_id=>biodatabase_id, :name=>bs.entry_id)
 
-            #            pp "primary"
+                        puts "primary" if $DEBUG
             self.primary_accession = bs.primary_accession
 
-            #            pp "def"
+                        puts "def" if $DEBUG
             self.definition = bs.definition unless bs.definition.nil?
 
-            #            pp "seqver"
+                        puts "seqver" if $DEBUG
             self.sequence_version = bs.sequence_version
 
-            #            pp "divi"
+                        puts "divi" if $DEBUG
             self.division = bs.division unless bs.division.nil?
 
             @entry.save!
-#                        pp "secacc"
+                        puts "secacc" if $DEBUG
             
             bs.secondary_accessions.each do |sa|
               #write as qualifier every secondary accession into the array
@@ -122,45 +125,46 @@ module Bio
 
             
             #to create the sequence entry needs to exists
-#                        pp "seq"
-            pp bs.seq.class
+		puts "seq" if $DEBUG
+	            puts bs.seq if $DEBUG
             self.seq = bs.seq unless bs.seq.nil?
-#                       pp "mol"
+                       puts "mol" if $DEBUG
             
             self.molecule_type = bs.molecule_type unless bs.molecule_type.nil?
-#                        pp "dc"
+                        puts "dc" if $DEBUG
 
             self.data_class = bs.data_class unless bs.data_class.nil?
-#                        pp "top"
+                        puts "top" if $DEBUG
             self.topology = bs.topology unless bs.topology.nil?
-#                        pp "datec"
+                        puts "datec" if $DEBUG
             self.date_created = bs.date_created unless bs.date_created.nil?
-#                        pp "datemod"
+                        puts "datemod" if $DEBUG
             self.date_modified = bs.date_modified unless bs.date_modified.nil?
-#                        pp "key"
+                        puts "key" if $DEBUG
             
             bs.keywords.each do |kw|
               #write as qualifier every secondary accessions into the array
               self.keywords = kw
             end 
-            #FIX: problem settinf texon_name: embl has "Arabidopsis thaliana (thale cress)" but in taxon_name table there isn't this name. I must check if there is a new version of the table
-#            pp "spec"        
+            #FIX: problem settinf taxon_name: embl has "Arabidopsis thaliana (thale cress)" but in taxon_name table there isn't this name. I must check if there is a new version of the table
+            puts "spec" if $DEBUG
             self.species = bs.species unless bs.species.nil?
-            #            pp "Debug: #{bs.species}"
-                        pp "feat"
+                        puts "Debug: #{bs.species}" if $DEBUG
+                        puts "Debug: feat..start" if $DEBUG
             
             bs.features.each do |feat|
               self.feature=feat
             end
+			puts "Debug: feat...end" if $DEBUG
             
             #TODO: add comments and references
             
           end #transaction
           return self
         rescue Exception => e
-          pp "to_biosql exception: #{e}"
-          pp $!
-        end
+          puts "to_biosql exception: #{e}"
+          puts $!
+	end #rescue
       end #to_biosql
       
       
@@ -259,16 +263,20 @@ module Bio
       end
       
       def feature=(feat)
-        #TODO: fix ontology_id and source_term_id 
-        type_term = Term.find_or_create_by_name(:name=>feat.feature, :ontology_id=>1)
-        seqfeature = Seqfeature.new(:bioentry=>@entry, :source_term_id=>2, :type_term=>type_term, :rank=>@entry.seqfeatures.count.succ, :display_name=>'')
-        seqfeature.save!        
+	      #ToDo: avoid Ontology find here, probably more efficient create class variables
+	type_term_ontology = Ontology.find_or_create_by_name('SeqFeature Keys')
+        type_term = Term.find_or_create_by_name(:name=>feat.feature, :ontology=>type_term_ontology)
+	source_term_ontology = Ontology.find_or_create_by_name('SeqFeature Sources')
+	source_term = Term.find_or_create_by_name(:name=>'EMBLGenBankSwit',:ontology=>source_term_ontology)
+        seqfeature = Seqfeature.create(:bioentry=>@entry, :source_term=>source_term, :type_term=>type_term, :rank=>@entry.seqfeatures.count.succ, :display_name=>'')
+        #seqfeature.save!       
         feat.locations.each do |loc|
           location = Location.new(:seqfeature=>seqfeature, :start_pos=>loc.from, :end_pos=>loc.to, :strand=>loc.strand, :rank=>seqfeature.locations.count.succ)
           location.save!
         end
+	qual_term_ontology = Ontology.find_or_create_by_name('Annotation Tags')
         feat.each do |qualifier|
-          qual_term = Term.find_or_create_by_name(:name=>qualifier.qualifier, :ontology_id=>3)
+          qual_term = Term.find_or_create_by_name(:name=>qualifier.qualifier, :ontology=>qual_term_ontology)
           qual = SeqfeatureQualifierValue.new(:seqfeature=>seqfeature, :term=>qual_term, :value=>qualifier.value, :rank=>seqfeature.seqfeature_qualifier_values.count.succ)
           qual.save!          
         end
