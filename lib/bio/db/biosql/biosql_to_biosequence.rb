@@ -23,16 +23,8 @@ module Bio::Sequence::Adapter::BioSQL
 
   private
 
-  #--
-  # Because Bio::SQL::Sequence#seq internally do Bio::Sequence.new,
-  # primitive methods are used here.
-  #++
-  def_biosequence_adapter :seq do |orig|
-    Bio::Sequence::Generic.new orig.instance_eval do
-      @entry.biosequence ? @entry.biosequence.seq : ''
-    end
-  end
-
+  def_biosequence_adapter :seq 
+  
   def_biosequence_adapter :entry_id
 
   def_biosequence_adapter :primary_accession
