@@ -2,7 +2,6 @@
  module Bio
     class SQL 
 			    class Term < DummyBase
-			      set_sequence_name "term_pk_seq"
 			      belongs_to :ontology, :class_name => "Ontology"
 			      has_many :seqfeature_qualifier_values, :class_name => "SeqfeatureQualifierValue"
 			      has_many :dbxref_qualifier_values, :class_name => "DbxrefQualifierValue"
