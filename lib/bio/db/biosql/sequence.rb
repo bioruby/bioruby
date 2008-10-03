@@ -376,25 +376,6 @@ module Bio
       
       
       def to_biosequence
-#        bio_seq = Bio::Sequence.adapter(seq)
-#        bio_seq.entry_id = entry_id
-#        bio_seq.primary_accession = primary_accession
-#        bio_seq.secondary_accessions = secondary_accessions
-#        bio_seq.molecule_type = molecule_type
-        #TODO: identify where is stored data_class in biosql      
-#        bio_seq.data_class = data_class
-#        bio_seq.definition = description
-#        bio_seq.topology = topology
-#        bio_seq.date_created = date_created
-#        bio_seq.date_modified = date_modified
-#        bio_seq.division = division
-#        bio_seq.sequence_version = sequence_version
-#        bio_seq.keywords = keywords
-#        bio_seq.species = species
-#        bio_seq.classification = taxonomy
-#        bio_seq.references = references
-#        bio_seq.features = features       
-#        return bio_seq
 	 Bio::Sequence.adapter(self,Bio::Sequence::Adapter::BioSQL)
       end
     end #Sequence
