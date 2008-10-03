@@ -2,11 +2,9 @@
 module Bio
   class SQL 
     class SeqfeatureQualifierValue < DummyBase
-      set_primary_key nil
-      #s :seqfeature_id, :term_id, :rank
+      set_primary_keys  :seqfeature_id, :term_id, :rank
       set_sequence_name nil
       belongs_to :seqfeature
-      #, :class_name => "Seqfeature"
       belongs_to :term, :class_name => "Term"
       
       def self.find_cluster(query)
