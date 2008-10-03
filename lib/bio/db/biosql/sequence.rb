@@ -191,12 +191,12 @@ module Bio
       #      end
       
       def organism
-        @entry.taxon.nil? ? "" : @entry.taxon.taxon_scientific_name.name
+        @entry.taxon.nil? ? "" : "#{@entry.taxon.taxon_scientific_name.name} (#{@entry.taxon.taxon_genbank_common_name.name})"
       end
       alias species organism
       
       def organism=(value)
-        taxon_name=TaxonName.find_by_name_and_name_class(value,'scientific name')
+        taxon_name=TaxonName.find_by_name_and_name_class(value.gsub(/\s+\(.+\)/,''),'scientific name')
         if taxon_name.nil?
           puts "Error value doesn't exists in taxon_name table with scientific name constraint."
         else
