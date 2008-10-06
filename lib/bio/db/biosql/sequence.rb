@@ -286,10 +286,13 @@ module Bio
       def cdsfeatures
         @entry.cdsfeatures
       end
-      
+
+      # Returns the sequence.
+      # Returns a Bio::Sequence::Generic object.
       def seq
-        Bio::Sequence.auto(@entry.biosequence.seq) unless @entry.biosequence.nil?
-      end	
+        s = @entry.biosequence
+        Bio::Sequence::Generic.new(s ? s.seq : '')
+      end
       
       def seq=(value)
 #        pp "0"
