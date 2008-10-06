@@ -1,12 +1,12 @@
 #
 # = bio/command.rb - general methods for external command execution
 #
-# Copyright::	Copyright (C) 2003-2006
+# Copyright::	Copyright (C) 2003-2008
 # 		Naohisa Goto <ng@bioruby.org>,
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-#  $Id: command.rb,v 1.17 2007/04/05 23:35:39 trevor Exp $
+#  $Id:$
 #
 
 require 'open3'
@@ -32,6 +32,10 @@ module Command
   module_function
 
   # Escape special characters in command line string for cmd.exe on Windows.
+  # ---
+  # *Arguments*:
+  # * (required) _str_: String
+  # *Returns*:: String object
   def escape_shell_windows(str)
     str = str.to_s
     raise 'cannot escape control characters' if UNESCAPABLE_CHARS =~ str
@@ -43,6 +47,10 @@ module Command
   end
 
   # Escape special characters in command line string for UNIX shells.
+  # ---
+  # *Arguments*:
+  # * (required) _str_: String
+  # *Returns*:: String object
   def escape_shell_unix(str)
     str = str.to_s
     raise 'cannot escape control characters' if UNESCAPABLE_CHARS =~ str
@@ -50,6 +58,10 @@ module Command
   end
 
   # Escape special characters in command line string.
+  # ---
+  # *Arguments*:
+  # * (required) _str_: String
+  # *Returns*:: String object
   def escape_shell(str)
     case RUBY_PLATFORM
     when /mswin32|bccwin32/
@@ -60,6 +72,10 @@ module Command
   end
 
   # Generate command line string with special characters escaped.
+  # ---
+  # *Arguments*:
+  # * (required) _ary_: Array containing String objects
+  # *Returns*:: String object
   def make_command_line(ary)
     case RUBY_PLATFORM
     when /mswin32|bccwin32/
@@ -71,20 +87,54 @@ module Command
 
   # Generate command line string with special characters escaped
   # for cmd.exe on Windows.
+  # ---
+  # *Arguments*:
+  # * (required) _ary_: Array containing String objects
+  # *Returns*:: String object
   def make_command_line_windows(ary)
     ary.collect { |str| escape_shell_windows(str) }.join(" ")
   end
 
   # Generate command line string with special characters escaped
   # for UNIX shells.
+  # ---
+  # *Arguments*:
+  # * (required) _ary_: Array containing String objects
+  # *Returns*:: String object
   def make_command_line_unix(ary)
     ary.collect { |str| escape_shell_unix(str) }.join(" ")
+  end
+
+  # Returns an Array of command-line command and arguments
+  # that can be safely passed to Kernel.exec etc.
+  # If the given array is already safe (or empty), returns the given array.
+  # ---
+  # *Arguments*:
+  # * (required) _ary_: Array
+  # *Returns*:: Array
+  def safe_command_line_array(ary)
+    ary = ary.to_ary
+    return ary if ary.size >= 2 or ary.empty?
+    if ary.size != 1 then
+      raise 'Bug: assersion of ary.size == 1 failed'
+    end
+    arg0 = ary[0]
+    begin
+      arg0 = arg0.to_ary
+    rescue NoMethodError
+      arg0 = [ arg0, arg0 ]
+    end
+    [ arg0 ]
   end
 
   # Executes the program.  Automatically select popen for Windows
   # environment and fork for the others.
   # A block must be given. An IO object is passed to the block.
-  def call_command(cmd, &block)
+  # ---
+  # *Arguments*:
+  # * (required) _cmd_: Array containing String objects
+  # *Returns*:: (undefined)
+  def call_command(cmd, &block) #:yields: io
     case RUBY_PLATFORM
     when /mswin32|bccwin32/
       call_command_popen(cmd, &block)
@@ -95,6 +145,10 @@ module Command
 
   # Executes the program via IO.popen for OS which doesn't support fork.
   # A block must be given. An IO object is passed to the block.
+  # ---
+  # *Arguments*:
+  # * (required) _cmd_: Array containing String objects
+  # *Returns*:: (undefined)
   def call_command_popen(cmd)
     str = make_command_line(cmd)
     IO.popen(str, "w+") do |io|
@@ -108,7 +162,13 @@ module Command
   #
   # From the view point of security, this method is recommended
   # rather than call_command_popen.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _cmd_: Array containing String objects
+  # *Returns*:: (undefined)
   def call_command_fork(cmd)
+    cmd = safe_command_line_array(cmd)
     IO.popen("-", "r+") do |io|
       if io then
         # parent
@@ -130,8 +190,13 @@ module Command
   # A block must be given. IO objects are passed to the block.
   #
   # You would use this method only when you really need to get stderr.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _cmd_: Array containing String objects
+  # *Returns*:: (undefined)
   def call_command_open3(cmd)
-    cmd = cmd.collect { |x| x.to_s }
+    cmd = safe_command_line_array(cmd)
     Open3.popen3(*cmd) do |pin, pout, perr|
       yield pin, pout, perr
     end
@@ -142,6 +207,12 @@ module Command
   # standard output as a string.
   # 
   # Automatically select popen for Windows environment and fork for the others.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _cmd_: Array containing String objects
+  # * (optional) _query_: String
+  # *Returns*:: String or nil
   def query_command(cmd, query = nil)
     case RUBY_PLATFORM
     when /mswin32|bccwin32/
@@ -156,6 +227,12 @@ module Command
   # standard output as a string.
   #
   # IO.popen is used for OS which doesn't support fork.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _cmd_: Array containing String objects
+  # * (optional) _query_: String
+  # *Returns*:: String or nil
   def query_command_popen(cmd, query = nil)
     str = make_command_line(cmd)
     IO.popen(str, "w+") do |io|
@@ -174,7 +251,14 @@ module Command
   #
   # From the view point of security, this method is recommended
   # rather than query_popen.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _cmd_: Array containing String objects
+  # * (optional) _query_: String
+  # *Returns*:: String or nil
   def query_command_fork(cmd, query = nil)
+    cmd = safe_command_line_array(cmd)
     IO.popen("-", "r+") do |io|
       if io then
         # parent
@@ -199,11 +283,16 @@ module Command
   # to the stain, waits the program termination, and
   # returns the data from stdout and stderr as an array of the strings.
   #
-  # From the view point of security, this method is recommended
-  # rather than exec_local_popen.
+  # You would use this method only when you really need to get stderr.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _cmd_: Array containing String objects
+  # * (optional) _query_: String
+  # *Returns*:: Array containing 2 objects: output string (or nil) and stderr string (or nil)
   def query_command_open3(cmd, query = nil)
     errorlog = nil
-    cmd = cmd.collect { |x| x.to_s }
+    cmd = safe_command_line_array(cmd)
     Open3.popen3(*cmd) do |pin, pout, perr|
       perr.sync = true
       t = Thread.start { errorlog = perr.read }
@@ -218,7 +307,15 @@ module Command
     end
   end
 
-  # Same as OpenURI.open_uri(uri).read.
+  # Same as OpenURI.open_uri(uri).read
+  # and 
+  # it uses proxy if an environment variable (same as OpenURI.open_uri)
+  # is set.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _uri_: URI object or String
+  # *Returns*:: String
   def read_uri(uri)
     OpenURI.open_uri(uri).read
   end
@@ -229,6 +326,11 @@ module Command
   # it uses proxy if an environment variable (same as OpenURI.open_uri)
   # is set.
   #
+  # ---
+  # *Arguments*:
+  # * (required) _address_: String containing host name or IP address
+  # * (optional) _port_: port (sanme as Net::HTTP::start)
+  # *Returns*:: (same as Net::HTTP::start except for proxy support)
   def start_http(address, port = 80, &block)
     uri = URI.parse("http://#{address}:#{port}")
     # Note: URI#find_proxy is an unofficial method defined in open-uri.rb.
@@ -248,6 +350,11 @@ module Command
   # it uses proxy if an environment variable (same as OpenURI.open_uri)
   # is set.
   #
+  # ---
+  # *Arguments*:
+  # * (required) _address_: String containing host name or IP address
+  # * (optional) _port_: port (sanme as Net::HTTP::start)
+  # *Returns*:: (same as Net::HTTP.new except for proxy support)
   def new_http(address, port = 80)
     uri = URI.parse("http://#{address}:#{port}")
     # Note: URI#find_proxy is an unofficial method defined in open-uri.rb.
@@ -271,6 +378,12 @@ module Command
   # +uri+ must be a URI object, +params+ must be a hash, and
   # +header+ must be a hash.
   #
+  # ---
+  # *Arguments*:
+  # * (required) _uri_: URI object or String
+  # * (optional) _params_: Hash containing parameters
+  # * (optional) _hrader_: Hash containing header strings
+  # *Returns*:: (same as Net::HTTP::post_form)
   def post_form(uri, params = nil, header = {})
     unless uri.is_a?(URI)
       uri = URI.parse(uri)
@@ -289,6 +402,13 @@ module Command
     end
   end
 
+  # Builds parameter string for from Hash of parameters for
+  # application/x-www-form-urlencoded.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _params_: Hash containing parameters
+  # *Returns*:: String
   def make_cgi_params(params)
     data = ""
     case params
@@ -319,6 +439,14 @@ module Command
     return data
   end
 
+  # Builds parameter string for from a key string and a value (or values)
+  # for application/x-www-form-urlencoded.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _key_: String
+  # * (required) _value_: String or Array containing String
+  # *Returns*:: String
   def make_cgi_params_key_value(key, value)
     result = []
     case value

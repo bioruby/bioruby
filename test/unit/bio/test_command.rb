@@ -1,12 +1,13 @@
 #
-# test/unit/bio/test_command.rb - Unit test for external command execution methods
+# test/unit/bio/test_command.rb - Unit test for Bio::Command
 #
-# Copyright::	Copyright (C) 2005-2006
+# Copyright::	Copyright (C) 2005-2008
 #               Mitsuteru Nakao <n@bioruby.org>,
-# 		Naohisa Goto <ng@bioruby.org>
+# 		Naohisa Goto <ng@bioruby.org>,
+#		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-#  $Id: test_command.rb,v 1.5 2007/04/05 23:35:42 trevor Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -94,40 +95,28 @@ module Bio
                    Bio::Command.make_command_line_unix(ary))
     end
 
-    def test_call_command
+    def test_safe_command_line_array
+      ary1 = [ 'test' ]
+      assert_equal([ [ 'test', 'test' ] ],
+                   Bio::Command.safe_command_line_array(ary1))
+      ary1a = [ [ 'test/test1a', 'test' ] ]
+      assert_equal(ary1a,
+                   Bio::Command.safe_command_line_array(ary1a))
     end
 
-    def test_call_command_popen
-    end
-
-    def test_call_command_fork
-    end
-
-    def test_call_command_open3
-    end
-
-    def test_query_command
-    end
-
-    def test_query_command_popen
-    end
-
-    def test_query_command_fork
-    end
-
-    def test_query_command_open3
-    end
-
-    def test_read_uri
-    end
-
-    def test_start_http
-    end
-
-    def test_new_http
-    end
-
-    def test_post_form
+    def test_safe_command_line_array_passthrough
+      ary0 = []
+      assert_equal(ary0,
+                   Bio::Command.safe_command_line_array(ary0))
+      ary2 = [ 'cmd', 'arg0' ]
+      assert_equal(ary2,
+                   Bio::Command.safe_command_line_array(ary2))
+      ary2a = [ [ 'cmd', 'display name' ], 'arg0' ]
+      assert_equal(ary2a,
+                   Bio::Command.safe_command_line_array(ary2a))
+      ary3 = [ 'cmd', 'arg0', 'arg1' ]
+      assert_equal(ary3,
+                   Bio::Command.safe_command_line_array(ary3))
     end
 
     def test_make_cgi_params_by_hash_in_symbol
