@@ -72,9 +72,11 @@ module Bio
     end
 
     def test_expected_options_set_in_config_file
-      produced_config = File.open(@example_config).inject(Hash.new) do |hash,line|
-        hash.store(*line.strip.split(' = '))
-        hash
+      produced_config = File.open(@example_config) do |f|
+        f.inject(Hash.new) do |hash,line|
+          hash.store(*line.strip.split(' = '))
+          hash
+        end
       end
       assert_equal(File.join(TEST_DATA, 'abglobin.aa'),
                    produced_config['seqfile'])
