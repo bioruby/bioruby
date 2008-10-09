@@ -118,10 +118,10 @@ if __FILE__ == $0
   require 'pp'
   
   #  pp connection = Bio::SQL.establish_connection('bio/io/biosql/config/database.yml','development')
-  pp connection = Bio::SQL.establish_connection({'development'=>{'database'=>"bio_test", 'adapter'=>"postgresql", 'username'=>"rails", 'password'=>nil}},'development')
+  connection = Bio::SQL.establish_connection({'development'=>{'database'=>"bio_test", 'adapter'=>"postgresql", 'username'=>"rails", 'password'=>nil}},'development')
   #pp YAML::load(ERB.new(IO.read('bio/io/biosql/config/database.yml')).result)
   if true
-    pp Bio::SQL.list_entries
+    #Bio::SQL.list_entries
 
     puts "### FileFile.auto"
     if ARGV.size > 0
@@ -153,9 +153,9 @@ if __FILE__ == $0
     
 	    #sqlseq.to_biosequence
 	
-	sqlseq.delete
+#	sqlseq.delete
 	
-	db.destroy
+#	db.destroy
   end
   #pp  bioseq.molecule_type
   #term = Bio::SQL::Term.find_by_name('mol_type')
