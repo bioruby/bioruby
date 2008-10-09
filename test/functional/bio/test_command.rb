@@ -22,37 +22,39 @@ module Bio
     def setup
       case RUBY_PLATFORM
       when /mswin32|bccwin32/
-        @echo = "echo"
+        bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3)).cleanpath.to_s
+        cmd = File.expand_path(File.join(bioruby_root, 'test', 'data', 'command', 'echoarg2.bat'))
+        @arg = [ cmd, 'test "argument 1"', '"test" argument 2', 'arg3' ]
+        @expected = '"""test"" argument 2"'
       else
-        @echo = "/bin/echo"
-        unless FileTest.executable?(@echo) then
+        cmd = "/bin/echo"
+        @arg = [ cmd, "test (echo) command" ]
+        @expected = "test (echo) command"
+        unless FileTest.executable?(cmd) then
           raise "Unsupported environment: /bin/echo not found"
         end
       end
     end
 
     def test_call_command
-      ary = [ @echo, "test (echo) command" ]
-      ret = Bio::Command.call_command(ary) do |io|
+      ret = Bio::Command.call_command(@arg) do |io|
         io.close_write
         io.read
       end
-      assert_equal("test (echo) command", ret.to_s.strip)
+      assert_equal(@expected, ret.to_s.strip)
     end
 
     def test_call_command_popen
-      ary = [ @echo, "test (echo) command" ]
-      ret = Bio::Command.call_command_popen(ary) do |io|
+      ret = Bio::Command.call_command_popen(@arg) do |io|
         io.close_write
         io.read
       end
-      assert_equal("test (echo) command", ret.to_s.strip)
+      assert_equal(@expected, ret.to_s.strip)
     end
 
     def test_call_command_fork
-      ary = [ @echo, "test (echo) command" ]
       begin
-        ret = Bio::Command.call_command_fork(ary) do |io|
+        ret = Bio::Command.call_command_fork(@arg) do |io|
           io.close_write
           io.read
         end
@@ -60,13 +62,12 @@ module Bio
         # fork() not supported
         return
       end
-      assert_equal("test (echo) command", ret.to_s.strip)
+      assert_equal(@expected, ret.to_s.strip)
     end
 
     def test_call_command_open3
-      ary = [ @echo, "test (echo) command" ]
       begin
-        ret = Bio::Command.call_command_open3(ary) do |pin, pout, perr| 
+        ret = Bio::Command.call_command_open3(@arg) do |pin, pout, perr| 
           t = Thread.start { perr.read }
           begin
             pin.close
@@ -80,7 +81,7 @@ module Bio
         # fork() not supported
         return
       end
-      assert_equal("test (echo) command", ret.to_s.strip)
+      assert_equal(@expected, ret.to_s.strip)
     end
 
   end #class FuncTestCommandCall
@@ -147,7 +148,7 @@ module Bio
   class FuncTestCommandNet < Test::Unit::TestCase
     def test_read_uri
       assert_nothing_raised {
-        Bio::Command.read_uri("http://bioruby.org/")
+        Bio::Command.read_uri("http://bioruby.open-bio.org/")
       }
     end
 
