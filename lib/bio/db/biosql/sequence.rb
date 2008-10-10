@@ -285,7 +285,7 @@ module Bio
 	qual_term_ontology = Ontology.find_or_create_by_name('Annotation Tags')
         feat.each do |qualifier|
           qual_term = Term.find_or_create_by_name(:name=>qualifier.qualifier, :ontology=>qual_term_ontology)
-          qual = SeqfeatureQualifierValue.new(:seqfeature=>seqfeature, :term=>qual_term, :value=>qualifier.value, :rank=>seqfeature.seqfeature_qualifier_values.count.succ)
+          qual = SeqfeatureQualifierValue.new(:seqfeature=>seqfeature, :term=>qual_term, :value=>qualifier.value.to_s, :rank=>seqfeature.seqfeature_qualifier_values.count.succ)
           qual.save!          
         end
       end
