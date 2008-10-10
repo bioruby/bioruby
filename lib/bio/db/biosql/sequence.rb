@@ -266,8 +266,8 @@ module Bio
       bioentry_qualifier_anchor :secondary_accessions, :synonym=>'secondary_accession'
       
       def features
-        Bio::Features.new(@entry.seqfeatures.collect {|sf|
-          self.get_seqfeature(sf)})
+        @entry.seqfeatures.collect {|sf|
+          self.get_seqfeature(sf)}
       end
       
       def feature=(feat)
@@ -358,6 +358,7 @@ module Bio
           comment.comment_text
         end
       end
+
       
       def reference=(value)
       
