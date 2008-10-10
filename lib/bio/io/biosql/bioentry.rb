@@ -6,8 +6,7 @@ module Bio
 				has_one :biosequence
 				#, :class_name => "Biosequence", :foreign_key => "bioentry_id"
 				has_many :comments, :class_name =>"Comment", :order =>'rank'
-				has_many :seqfeatures
-				#, :class_name => "Seqfeature", :order=>'rank'
+				has_many :seqfeatures, :class_name => "Seqfeature", :order=>'rank'
 				has_many :bioentry_references, :class_name=>"BioentryReference" #, :foreign_key => "bioentry_id"
 				has_many :bioentry_dbxrefs, :class_name => "BioentryDbxref"
 				has_many :object_bioentry_relationships, :class_name=>"BioentryRelationship", :foreign_key=>"object_bioentry_id" #non mi convince molto credo non funzioni nel modo corretto
