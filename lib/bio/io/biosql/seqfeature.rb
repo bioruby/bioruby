@@ -8,7 +8,7 @@ module Bio
       belongs_to :type_term, :class_name => "Term", :foreign_key => "type_term_id"
       belongs_to :source_term, :class_name => "Term", :foreign_key =>"source_term_id"
       has_many :seqfeature_dbxrefs, :class_name => "SeqfeatureDbxref", :foreign_key => "seqfeature_id"
-      has_many :seqfeature_qualifier_values, :order=>'term_id,rank', :foreign_key => "seqfeature_id"
+      has_many :seqfeature_qualifier_values, :order=>'rank', :foreign_key => "seqfeature_id"
       #, :class_name => "SeqfeatureQualifierValue"
       has_many :locations, :class_name => "Location", :order=>'rank'
       has_many :object_seqfeature_paths, :class_name => "SeqfeaturePath", :foreign_key => "object_seqfeature_id"
