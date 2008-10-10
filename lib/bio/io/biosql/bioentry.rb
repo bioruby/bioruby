@@ -1,8 +1,6 @@
 module Bio
     class SQL
 			class Bioentry < DummyBase
-#				set_sequence_name "bioentry_pk_seq"
-				set_primary_key "bioentry_id"
 				belongs_to :biodatabase, :class_name => "Biodatabase"
 				belongs_to :taxon, :class_name => "Taxon"
 				has_one :biosequence
