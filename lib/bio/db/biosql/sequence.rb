@@ -110,7 +110,7 @@ module Bio
             self.definition = bs.definition unless bs.definition.nil?
 
                         puts "seqver" if $DEBUG
-            self.sequence_version = bs.sequence_version
+            self.sequence_version = bs.sequence_version || 0
 
                         puts "divi" if $DEBUG
             self.division = bs.division unless bs.division.nil?
@@ -121,7 +121,7 @@ module Bio
             bs.secondary_accessions.each do |sa|
               #write as qualifier every secondary accession into the array
               self.secondary_accessions = sa
-            end
+            end unless bs.secondary_accessions.nil?
 
             
             #to create the sequence entry needs to exists
@@ -145,7 +145,7 @@ module Bio
             bs.keywords.each do |kw|
               #write as qualifier every secondary accessions into the array
               self.keywords = kw
-            end 
+            end unless bs.keywords.nil?
             #FIX: problem settinf taxon_name: embl has "Arabidopsis thaliana (thale cress)" but in taxon_name table there isn't this name. I must check if there is a new version of the table
             puts "spec" if $DEBUG
             self.species = bs.species unless bs.species.nil?
@@ -154,18 +154,18 @@ module Bio
             
             bs.features.each do |feat|
               self.feature=feat
-            end
+            end unless bs.features.nil?
 			puts "Debug: feat...end" if $DEBUG
             
             #TODO: add comments and references
 	    bs.references.each do |reference|
 		 #   puts reference.inspect
               self.reference=reference
-	    end
+	    end unless bs.references.nil?
             
             bs.comments.each do |comment|
             	self.comment=comment
-            end
+            end unless bs.comments.nil?
             
           end #transaction
           return self
@@ -390,8 +390,8 @@ module Bio
       
       def save
         #I should add chks for SQL errors
-        @entry.biosequence.save
-        @entry.save
+        @entry.biosequence.save!
+        @entry.save!
       end
       def to_fasta
         #prima erano 2 print in stdout, meglio ritornare una stringa in modo che poi ci si possa fare quello che si vuole
