@@ -163,6 +163,10 @@ module Bio
               self.reference=reference
 	    end
             
+            bs.comments.each do |comment|
+            	self.comment=comment
+            end
+            
           end #transaction
           return self
         rescue Exception => e
@@ -195,7 +199,7 @@ module Bio
       #      end
       
       def organism
-        @entry.taxon.nil? ? "" : "#{@entry.taxon.taxon_scientific_name.name} (#{@entry.taxon.taxon_genbank_common_name.name})"
+        @entry.taxon.nil? ? "" : "#{@entry.taxon.taxon_scientific_name.name}"+ (@entry.taxon.taxon_genbank_common_name ? "(#{@entry.taxon.taxon_genbank_common_name.name})" : '')
       end
       alias species organism
       
@@ -370,13 +374,18 @@ module Bio
       		locations << "url=#{value.url}" unless value.url.nil?
       		locations << "mesh=#{value.mesh}" unless value.mesh.empty?      		
       		locations << "affiliations=#{value.affiliations}" unless value.affiliations.empty?
-      		
+      		location << "comments=#{value.comments.join('~')}"unless value.comments.nil?
       	      start_pos, end_pos = value.sequence_position ? value.sequence_position.gsub(/\s*/,'').split('-') : [nil,nil] 
 	      reference=Reference.find_or_create_by_title(:title=>value.title, :authors=>value.authors.join(' '), :location=>locations.join('|'))
 	      
 	      bio_reference=BioentryReference.new(:bioentry=>@entry,:reference=>reference,:rank=>value.embl_gb_record_number, :start_pos=>start_pos, :end_pos=>end_pos)
 	      bio_reference.save!
       end 
+      
+      def comment=(value)
+      		comment=Comment.new(:bioentry=>@entry, :comment_text=>value, :rank=>@entry.comments.count.succ)
+      		comment.save!
+      end
       
       def save
         #I should add chks for SQL errors
@@ -433,8 +442,6 @@ if __FILE__ == $0
       result.delete
     end   
   end
-  #NOTE: ho sistemato le features e le locations, mancano le references e i comments. poi credo che il tutto sia a posto.
-  
   
   if false
     sqlseq = Bio::SQL.fetch_accession('AJ224122')
