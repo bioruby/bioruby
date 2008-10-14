@@ -348,10 +348,12 @@ module Bio
           #TODO: solve the problem with specific comment per reference.
           #TODO: get dbxref
           #take a look when location is build up in def reference=(value)
+
           bio_ref.reference.location.split('|').each do |element|
           	key,value=element.split('=')
           	hash[key]=value
-          end
+          end unless bio_ref.reference.location.nil?
+
           hash['xrefs'] = bio_ref.reference.dbxref ? "#{bio_ref.reference.dbxref.dbname}; #{bio_ref.reference.dbxref.accession}." : ''
           Bio::Reference.new(hash)
         end        
@@ -379,7 +381,7 @@ module Bio
       		locations << "url=#{value.url}" unless value.url.nil?
       		locations << "mesh=#{value.mesh}" unless value.mesh.empty?      		
       		locations << "affiliations=#{value.affiliations}" unless value.affiliations.empty?
-      		location << "comments=#{value.comments.join('~')}"unless value.comments.nil?
+      		locations << "comments=#{value.comments.join('~')}"unless value.comments.nil?
       	      start_pos, end_pos = value.sequence_position ? value.sequence_position.gsub(/\s*/,'').split('-') : [nil,nil] 
 	      reference=Reference.find_or_create_by_title(:title=>value.title, :authors=>value.authors.join(' '), :location=>locations.join('|'))
 	      
