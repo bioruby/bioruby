@@ -294,19 +294,23 @@ module Bio
       def cdsfeatures
         @entry.cdsfeatures
       end
-
+      
       # Returns the sequence.
       # Returns a Bio::Sequence::Generic object.
+
       def seq
         s = @entry.biosequence
         Bio::Sequence::Generic.new(s ? s.seq : '')
       end
       
       def seq=(value)
+
         #chk which type of alphabet is, NU/NA/nil
         if @entry.biosequence.nil?
+#          puts "intoseq1"
           @entry.biosequence = Biosequence.new(:seq=>value)
 	  @entry.biosequence.save!
+
         else
           @entry.biosequence.seq=value
         end

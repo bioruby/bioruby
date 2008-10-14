@@ -153,9 +153,9 @@ if __FILE__ == $0
     
 	    #sqlseq.to_biosequence
 	
-#	sqlseq.delete
+	sqlseq.delete
 	
-#	db.destroy
+	db.destroy
   end
   #pp  bioseq.molecule_type
   #term = Bio::SQL::Term.find_by_name('mol_type')
