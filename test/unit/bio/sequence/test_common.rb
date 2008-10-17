@@ -1,10 +1,12 @@
 #
 # test/unit/bio/sequence/test_common.rb - Unit test for Bio::Sequencce::Common
 #
-# Copyright::  Copyright (C) 2006 Mitsuteru C. Nakao <n@bioruby.org>
+# Copyright::  Copyright (C) 2006-2008
+#              Mitsuteru C. Nakao <n@bioruby.org>,
+#              Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_common.rb,v 1.5 2007/12/03 06:19:12 nakao Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -15,7 +17,7 @@ require 'test/unit'
 require 'bio/sequence'
 require 'bio/sequence/common'
 
-module Bio
+module Bio; module TestSequenceCommon
 
   class TSequence < String
     include Bio::Sequence::Common
@@ -86,13 +88,13 @@ module Bio
   class TestSequenceCommonNormalize < Test::Unit::TestCase
     def test_no_normalize
       str = "atgcatgcatgcatgcaaaA"
-      obj = Bio::TSequence.new(str)
+      obj = TSequence.new(str)
       assert_equal("atgcatgcatgcatgcaaaA", obj)
     end
 
     def test_normalize_A
       str = "atgcatgcatgcatgcaaaA"
-      seq = Bio::TSequence.new(str)
+      seq = TSequence.new(str)
       assert_equal("atgcatgcatgcatgcaaaA", seq)
       obj = seq.normalize!
       assert_equal("atgcatgcatgcatgcaaaA", obj)
@@ -100,7 +102,7 @@ module Bio
 
     def test_normalize_a
       str = "atgcatgcatgcatgcaaa"
-      seq = Bio::TSequence.new(str)
+      seq = TSequence.new(str)
       assert_equal("atgcatgcatgcatgcaaa", seq)
       obj = seq.normalize!
       assert_equal("atgcatgcatgcatgcaaa", obj)
@@ -108,15 +110,212 @@ module Bio
   end 
 
 
-  class TestSequenceCommonRansomize < Test::Unit::TestCase
+  class TestSequenceCommonRandomize < Test::Unit::TestCase
 
-    def test_self_randomize
-      # self.randomize(*arg, &block)
+    def setup
+      @str = "attcacgcctgctattcccgtcagcctgagcttgccgcgaagctgatgaaagatgttatc"
+      @seq = TSequence.new(@str)
+      @orig = TSequence.new(@str)
     end
 
+    # test for Bio::Sequence::Common#randomize(hash = nil)
     def test_randomize
-      #randomize(hash = nil)
+      rseqs = (0..2).collect { |i| @seq.randomize }
+
+      # not breaking given seq?
+      assert_equal(@orig, @seq)
+
+      # same length?
+      rseqs.each do |rseq|
+        assert_equal(@orig.length, rseq.length)
+      end
+
+      # same composition?
+      [ 'a', 'c', 'g', 't', 'n' ].each do |chr|
+        count = @orig.count(chr)
+        rseqs.each do |rseq|
+          assert_equal(count, rseq.count(chr))
+        end
+      end
+
+      # randomized? (very simple check)
+      assert(rseqs[0] != rseqs[1])
+      assert(rseqs[0] != rseqs[2])
+      assert(rseqs[1] != rseqs[2])
     end
+
+    # testing Bio::Sequence::Common#randomize() { |x| ... }
+    def test_randomize_with_block
+      composition = Hash.new(0)
+      [ 'a', 'c', 'g', 't' ].each do |chr|
+        composition[chr] = @seq.count(chr)
+      end
+
+      rseqs = (0..2).collect do |i|
+        newcomposition = Hash.new(0)
+        newseq = ''
+        ret = @seq.randomize do |c|
+          assert_kind_of(TSequence, c)
+          newcomposition[c] += 1
+          newseq.concat c
+        end
+        # same length?
+        assert_equal(@orig.length, newseq.length)
+        # same composition?
+        assert_equal(composition, newcomposition)
+        # returned value is empty sequence?
+        assert_equal(TSequence.new(''), ret)
+        # not breaking given seq?
+        assert_equal(@orig, @seq)
+        newseq
+      end
+
+      # randomized? (very simple check)
+      assert(rseqs[0] != rseqs[1])
+      assert(rseqs[0] != rseqs[2])
+      assert(rseqs[1] != rseqs[2])
+    end
+
+    # testing Bio::Sequence::Common#randomize(hash)
+    def test_randomize_with_hash
+      hash = { 'a' => 20, 'c' => 19, 'g' => 18, 't' => 17 }
+      hash.default = 0
+      len = 0
+      hash.each_value { |v| len += v }
+
+      rseqs = (0..2).collect do |i|
+        rseq = @seq.randomize(hash)
+        # same length?
+        assert_equal(len, rseq.length)
+        # same composition?
+        [ 'a', 'c', 'g', 't', 'n' ].each do |chr|
+          assert_equal(hash[chr], rseq.count(chr))
+        end
+        # returned value is instance of TSequence?
+        assert_instance_of(TSequence, rseq)
+        # not breaking given seq?
+        assert_equal(@orig, @seq)
+        rseq
+      end
+
+      # randomized? (very simple check)
+      assert(rseqs[0] != rseqs[1])
+      assert(rseqs[0] != rseqs[2])
+      assert(rseqs[1] != rseqs[2])
+    end
+
+    # testing Bio::Sequence::Common#randomize(hash) { |x| ... }
+    def test_randomize_with_hash_block
+      hash = { 'a' => 20, 'c' => 19, 'g' => 18, 't' => 17 }
+      hash.default = 0
+      len = 0
+      hash.each_value { |v| len += v }
+
+      rseqs = (0..2).collect do |i|
+        newcomposition = Hash.new(0)
+        newseq = ''
+        ret = @seq.randomize(hash) do |c|
+          #assert_kind_of(TSequence, c)
+          assert_kind_of(String, c)
+          newcomposition[c] += 1
+          newseq.concat c
+        end
+        # same length?
+        assert_equal(len, newseq.length)
+        # same composition?
+        assert_equal(hash, newcomposition)
+        # returned value is empty TSequence?
+        assert_equal(TSequence.new(''), ret)
+        # not breaking given seq?
+        assert_equal(@orig, @seq)
+        newseq
+      end
+
+      # randomized? (very simple check)
+      assert(rseqs[0] != rseqs[1])
+      assert(rseqs[0] != rseqs[2])
+      assert(rseqs[1] != rseqs[2])
+    end
+
+    def chi2(hist, f, k)
+      chi2 = 0
+      (0...k).each do |i|
+        chi2 += ((hist[i] - f) ** 2).quo(f)
+      end
+      chi2
+    end
+    private :chi2
+
+    # chi-square test for distribution of chi2 values from
+    # distribution of index('a')
+    def randomize_equiprobability
+      # Reference: http://www.geocities.jp/m_hiroi/light/pystat04.html
+      seq = TSequence.new('ccccgggtta') # length must be 10
+      k = 10
+      hist = Array.new(k, 0)
+      iter = 200
+      # F for index('a')
+      f = iter.quo(seq.length).to_f
+
+      # chi2 distribution, degree of freedom 9
+      # Reference: http://www.geocities.jp/m_hiroi/light/pystat04.html
+      # Reference: http://keisan.casio.jp/has10/SpecExec.cgi
+      # P = 0.9, 0.8, 0.7, ... 0.1, 0
+      chi2_table = [ 14.684, 12.242, 10.656, 9.414, 8.343,
+                      7.357,  6.393,  5.380, 4.168, 0.000 ]
+
+      chi2_hist = Array.new(k, 0)
+      chi2_iter = 200
+      chi2_iter.times do
+        hist.fill(0)
+        iter.times { hist[yield(seq).index('a')] += 1 }
+        chi2 = chi2(hist, f, k)
+        idx = (0...(chi2_table.size)).find { |i| chi2 >= chi2_table[i] }
+        chi2_hist[idx] += 1
+      end
+
+      chi2_f = chi2_iter.quo(k).to_f
+      chi2_chi2 = chi2(chi2_hist, chi2_f, k)
+      #$stderr.puts chi2_chi2
+
+      ## chi-square test, freedom 9, significance level 5%
+      #assert_operator(16.919, :>, chi2_chi2, "test of chi2 < 16.919 failed (#{chi2_chi2})")
+      # chi-square test, freedom 9, significance level 1%
+      assert_operator(21.666, :>, chi2_chi2, "test of chi2 < 21.666 failed (#{chi2_chi2})")
+    end
+    private :randomize_equiprobability
+
+    def test_randomize_equiprobability
+      randomize_equiprobability { |seq| seq.randomize }
+    end
+
+    def test_randomize_with_hash_equiprobability
+      hash = { 'c' => 4, 'g' => 3, 't' => 2, 'a' => 1 }
+      randomize_equiprobability { |seq| seq.randomize(hash) }
+    end
+
+    ## disabled because it takes too long time.
+    #def test_randomize_with_block_equiprobability
+    #  randomize_equiprobability do |seq|
+    #    newseq = ''
+    #    seq.randomize do |c|
+    #      newseq.concat c
+    #    end
+    #    newseq
+    #  end
+    #end
+
+    ## disabled because it takes too long time.
+    #def test_randomize_with_hash_block_equiprobability
+    #  hash = { 'c' => 4, 'g' => 3, 't' => 2, 'a' => 1 }
+    #  randomize_equiprobability do |seq|
+    #    newseq = ''
+    #    seq.randomize(hash) do |c|
+    #      newseq.concat c
+    #    end
+    #    newseq
+    #  end
+    #end
 
   end
 
@@ -171,4 +370,4 @@ module Bio
 
   end
 
-end
+end; end #module Bio; module TestSequenceCommon
