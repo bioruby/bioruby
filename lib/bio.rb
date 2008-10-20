@@ -130,6 +130,8 @@ module Bio
   autoload :REBASE,         'bio/db/rebase'
   autoload :SOFT,           'bio/db/soft'
   autoload :Lasergene,      'bio/db/lasergene'
+  autoload :Chromatogram,    'bio/db/chromatogram' # chromatogram formats
+  autoload :Scf,            'bio/db/chromatogram/scf'
 
   autoload :Newick,         'bio/db/newick'
   autoload :Nexus,          'bio/db/nexus'
