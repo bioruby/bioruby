@@ -1,8 +1,7 @@
  module Bio
     class SQL
 			class Dbxref < DummyBase
-#delete				set_primary_key "dbxref_id"
-			      set_sequence_name "dbxref_pk_seq"
+			      #set_sequence_name "dbxref_pk_seq"
 			      has_many :dbxref_qualifier_values, :class_name => "DbxrefQualifierValue"
 			      has_many :locations, :class_name => "Location"
 			      has_many :references, :class_name=>"Reference"

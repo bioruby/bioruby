@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: test_na.rb,v 1.6 2007/12/03 06:19:12 nakao Exp $
+# $Id:$
 #
 
 require 'pathname'
@@ -175,7 +175,7 @@ module Bio
 
   end
 
-  class TestSequenceCommon < Test::Unit::TestCase
+  class TestSequenceNACommon < Test::Unit::TestCase
 
     def setup
       @obj  = Bio::Sequence::NA.new('atgcatgcatgcatgcaaaa')

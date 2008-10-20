@@ -60,6 +60,8 @@ module Bio::Sequence::Adapter::BioSQL
   def_biosequence_adapter :references
 
   def_biosequence_adapter :features
+  
+  def_biosequence_adapter :comments
 
 end #module Bio::Sequence::Adapter::BioSQL
 

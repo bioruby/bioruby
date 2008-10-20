@@ -110,7 +110,7 @@ module Bio
             self.definition = bs.definition unless bs.definition.nil?
 
                         puts "seqver" if $DEBUG
-            self.sequence_version = bs.sequence_version
+            self.sequence_version = bs.sequence_version || 0
 
                         puts "divi" if $DEBUG
             self.division = bs.division unless bs.division.nil?
@@ -121,7 +121,7 @@ module Bio
             bs.secondary_accessions.each do |sa|
               #write as qualifier every secondary accession into the array
               self.secondary_accessions = sa
-            end
+            end unless bs.secondary_accessions.nil?
 
             
             #to create the sequence entry needs to exists
@@ -145,7 +145,7 @@ module Bio
             bs.keywords.each do |kw|
               #write as qualifier every secondary accessions into the array
               self.keywords = kw
-            end 
+            end unless bs.keywords.nil?
             #FIX: problem settinf taxon_name: embl has "Arabidopsis thaliana (thale cress)" but in taxon_name table there isn't this name. I must check if there is a new version of the table
             puts "spec" if $DEBUG
             self.species = bs.species unless bs.species.nil?
@@ -154,10 +154,18 @@ module Bio
             
             bs.features.each do |feat|
               self.feature=feat
-            end
+            end unless bs.features.nil?
 			puts "Debug: feat...end" if $DEBUG
             
             #TODO: add comments and references
+	    bs.references.each do |reference|
+		 #   puts reference.inspect
+              self.reference=reference
+	    end unless bs.references.nil?
+            
+            bs.comments.each do |comment|
+            	self.comment=comment
+            end unless bs.comments.nil?
             
           end #transaction
           return self
@@ -191,7 +199,7 @@ module Bio
       #      end
       
       def organism
-        @entry.taxon.nil? ? "" : "#{@entry.taxon.taxon_scientific_name.name} (#{@entry.taxon.taxon_genbank_common_name.name})"
+        @entry.taxon.nil? ? "" : "#{@entry.taxon.taxon_scientific_name.name}"+ (@entry.taxon.taxon_genbank_common_name ? "(#{@entry.taxon.taxon_genbank_common_name.name})" : '')
       end
       alias species organism
       
@@ -258,8 +266,8 @@ module Bio
       bioentry_qualifier_anchor :secondary_accessions, :synonym=>'secondary_accession'
       
       def features
-        Bio::Features.new(@entry.seqfeatures.collect {|sf|
-          self.get_seqfeature(sf)})
+        @entry.seqfeatures.collect {|sf|
+          self.get_seqfeature(sf)}
       end
       
       def feature=(feat)
@@ -277,7 +285,7 @@ module Bio
 	qual_term_ontology = Ontology.find_or_create_by_name('Annotation Tags')
         feat.each do |qualifier|
           qual_term = Term.find_or_create_by_name(:name=>qualifier.qualifier, :ontology=>qual_term_ontology)
-          qual = SeqfeatureQualifierValue.new(:seqfeature=>seqfeature, :term=>qual_term, :value=>qualifier.value, :rank=>seqfeature.seqfeature_qualifier_values.count.succ)
+          qual = SeqfeatureQualifierValue.new(:seqfeature=>seqfeature, :term=>qual_term, :value=>qualifier.value.to_s, :rank=>seqfeature.seqfeature_qualifier_values.count.succ)
           qual.save!          
         end
       end
@@ -286,32 +294,23 @@ module Bio
       def cdsfeatures
         @entry.cdsfeatures
       end
-
+      
       # Returns the sequence.
       # Returns a Bio::Sequence::Generic object.
+
       def seq
         s = @entry.biosequence
         Bio::Sequence::Generic.new(s ? s.seq : '')
       end
       
       def seq=(value)
-#        pp "0"
-#        pp value.class
-#        pp "1"
-#        pp value.seq.to_s.class
+
         #chk which type of alphabet is, NU/NA/nil
-        #value could be nil ? I think no.
         if @entry.biosequence.nil?
 #          puts "intoseq1"
           @entry.biosequence = Biosequence.new(:seq=>value)
 	  @entry.biosequence.save!
-#          @entry.build_biosequence(:seq=>"avagvga")
-          #@entry.biosequence.seq
-          #@entry.biosequence = Bio::SQL::Biosequence.new(:seq=>value.seq.to_s, :bioentry_id=>@entry.bioentry_id)
-          #@entry.biosequence = Bio::SQL::Biosequence.new(:seq=>value)
-          #@entry.build_sequence
-#          puts "stop"
-#          break
+
         else
           @entry.biosequence.seq=value
         end
@@ -339,16 +338,23 @@ module Bio
       def references
         #return and array of hash, hash has these keys ["title", "dbxref_id", "reference_id", "authors", "crc", "location"]
         #probably would be better to d a class refrence to collect these informations
-        @entry.bioentry_references.collect do |ref|
+        @entry.bioentry_references.collect do |bio_ref|
           hash = Hash.new
-          hash['authors'] = ref.reference.authors
-          hash['title'] = ref.reference.title
-          hash['embl_gb_record_number'] = ref.reference.rank
-          #about location/journal take a look to hilmar' schema overview. 
+          hash['authors'] = bio_ref.reference.authors.gsub(/\.\s/, "\.\s\|").split(/\|/)
+
+	  hash['sequence_position'] = "#{bio_ref.start_pos}-#{bio_ref.end_pos}" if (bio_ref.start_pos and bio_ref.end_pos)
+          hash['title'] = bio_ref.reference.title
+          hash['embl_gb_record_number'] = bio_ref.rank
           #TODO: solve the problem with specific comment per reference.
           #TODO: get dbxref
-          hash['journal'] = ref.reference.location
-          hash['xrefs'] = "#{ref.reference.dbxref.dbname}; #{ref.reference.dbxref.accession}."
+          #take a look when location is build up in def reference=(value)
+
+          bio_ref.reference.location.split('|').each do |element|
+          	key,value=element.split('=')
+          	hash[key]=value
+          end unless bio_ref.reference.location.nil?
+
+          hash['xrefs'] = bio_ref.reference.dbxref ? "#{bio_ref.reference.dbxref.dbname}; #{bio_ref.reference.dbxref.accession}." : ''
           Bio::Reference.new(hash)
         end        
       end
@@ -358,12 +364,40 @@ module Bio
           comment.comment_text
         end
       end
+
       
+      def reference=(value)
+      
+      		locations=Array.new
+      		locations << "journal=#{value.journal}" unless value.journal.empty?
+      		locations << "volume=#{value.volume}" unless value.volume.empty?
+      		locations << "issue=#{value.issue}" unless value.issue.empty?
+      		locations << "pages=#{value.pages}" unless value.pages.empty?
+      		locations << "year=#{value.year}" unless value.year.empty?
+      		locations << "pubmed=#{value.pubmed}" unless value.pubmed.empty?
+      		locations << "medline=#{value.medline}" unless value.medline.empty?
+      		locations << "doi=#{value.doi}" unless value.doi.nil?
+      		locations << "abstract=#{value.abstract}" unless value.abstract.empty?
+      		locations << "url=#{value.url}" unless value.url.nil?
+      		locations << "mesh=#{value.mesh}" unless value.mesh.empty?      		
+      		locations << "affiliations=#{value.affiliations}" unless value.affiliations.empty?
+      		locations << "comments=#{value.comments.join('~')}"unless value.comments.nil?
+      	      start_pos, end_pos = value.sequence_position ? value.sequence_position.gsub(/\s*/,'').split('-') : [nil,nil] 
+	      reference=Reference.find_or_create_by_title(:title=>value.title, :authors=>value.authors.join(' '), :location=>locations.join('|'))
+	      
+	      bio_reference=BioentryReference.new(:bioentry=>@entry,:reference=>reference,:rank=>value.embl_gb_record_number, :start_pos=>start_pos, :end_pos=>end_pos)
+	      bio_reference.save!
+      end 
+      
+      def comment=(value)
+      		comment=Comment.new(:bioentry=>@entry, :comment_text=>value, :rank=>@entry.comments.count.succ)
+      		comment.save!
+      end
       
       def save
         #I should add chks for SQL errors
-        @entry.biosequence.save
-        @entry.save
+        @entry.biosequence.save!
+        @entry.save!
       end
       def to_fasta
         #prima erano 2 print in stdout, meglio ritornare una stringa in modo che poi ci si possa fare quello che si vuole
@@ -382,10 +416,6 @@ module Bio
 	 Bio::Sequence.adapter(self,Bio::Sequence::Adapter::BioSQL)
       end
     end #Sequence
-    
-    #gb=Bio::FlatcFile.open(Bio::GenBank, "/Development/Projects/Cocco/Data/Riferimenti/Genomi/NC_003098_Cocco_R6.gb")
-    #db=Biodatabase.find_by_name('fake')
-    #gb.each_entry {|entry| Sequence.new(:entry=>entry, :biodatabase=>db)}
     
     
   end #SQL
@@ -419,8 +449,6 @@ if __FILE__ == $0
       result.delete
     end   
   end
-  #NOTE: ho sistemato le features e le locations, mancano le references e i comments. poi credo che il tutto sia a posto.
-  
   
   if false
     sqlseq = Bio::SQL.fetch_accession('AJ224122')

@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: common.rb,v 1.6.2.2 2008/03/04 11:14:03 ngoto Exp $
+# $Id:$
 #
 
 module Bio
@@ -241,53 +241,30 @@ module Common
   # * (optional) _hash_: Hash object
   # *Returns*:: new Bio::Sequence::NA/AA object
   def randomize(hash = nil)
-    length = self.length
     if hash
-      length = 0
-      count = hash.clone
-      count.each_value {|x| length += x}
+      tmp = ''
+      hash.each {|k, v|
+        tmp += k * v.to_i
+      }
     else
-      count = self.composition
+      tmp = self
     end
-
-    seq = ''
-    tmp = {}
-    length.times do 
-      count.each do |k, v|
-        tmp[k] = v * rand
-      end
-      max = tmp.max {|a, b| a[1] <=> b[1]}
-      count[max.first] -= 1
-
-      if block_given?
-        yield max.first
-      else
-        seq += max.first
-      end
+    seq = self.class.new(tmp)
+    # Reference: http://en.wikipedia.org/wiki/Fisher-Yates_shuffle
+    seq.length.downto(2) do |n|
+      k = rand(n)
+      c = seq[n - 1]
+      seq[n - 1] = seq[k]
+      seq[k] = c
     end
-    return self.class.new(seq)
-  end
-
-  # Generate a new random sequence with the given frequency of bases.
-  # The sequence length is determined by their cumulative sum.
-  # (See also Bio::Sequence::Common#randomize which creates a new
-  # randomized sequence object using the base composition of an existing 
-  # sequence instance).
-  #
-  #   counts = {'R'=>1,'L'=>2,'E'=>3,'A'=>4}
-  #   puts Bio::Sequence::AA.randomize(counts)  #=> "AAEAELALRE" (for example)
-  #
-  # You may also feed the output of randomize into a block
-  #
-  #   actual_counts = {'R'=>0,'L'=>0,'E'=>0,'A'=>0}
-  #   Bio::Sequence::AA.randomize(counts) {|x| actual_counts[x] += 1}
-  #   actual_counts                     #=> {"A"=>4, "L"=>2, "E"=>3, "R"=>1}
-  # ---
-  # *Arguments*:
-  # * (optional) _hash_: Hash object
-  # *Returns*:: Bio::Sequence::NA/AA object
-  def self.randomize(*arg, &block)
-    self.new('').randomize(*arg, &block)
+    if block_given? then
+      (0...seq.length).each do |i|
+        yield seq[i, 1]
+      end
+      return self.class.new('')
+    else
+      return seq
+    end
   end
 
   # Return a new sequence extracted from the original using a GenBank style 

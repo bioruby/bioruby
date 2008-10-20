@@ -100,28 +100,36 @@ Accessing BioSQL database created by other Open Bio* libraries:
 
 == INSTALL
 
-In the bioruby source directory (such as bioruby-x.x.x/), run install.rb
+In the bioruby source directory (such as bioruby-x.x.x/), run setup.rb
 as follows:
 
-  % ruby install.rb config
-  % ruby install.rb setup
   % su
-  # ruby install.rb install
+  # ruby setup.rb
+
+These simple step installs this program under the default location of
+Ruby libraries.  You can also install files into your favorite directory
+by supplying setup.rb some options. Try "ruby setup.rb --help".
 
 If your operating system supports 'sudo' command (such as Mac OS X),
 try the following procedure instead of the above.
 
-  % ruby install.rb config
-  % ruby install.rb setup
-  % sudo ruby install.rb install
+  % sudo ruby setup.rb
+
+For older version users: "install.rb" is now renamed to "setup.rb".
+The options "config", "setup", and "install" are still available.
+
+  % ruby setup.rb config
+  % ruby setup.rb setup
+  % su
+  # ruby setup.rb install
 
 You can run tests by
 
-  % ruby install.rb test
+  % ruby setup.rb test
 
 and run
 
-  % ruby install.rb --help
+  % ruby setup.rb --help
 
 for more details.
 

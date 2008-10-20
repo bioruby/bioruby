@@ -118,30 +118,42 @@ if __FILE__ == $0
   require 'pp'
   
   #  pp connection = Bio::SQL.establish_connection('bio/io/biosql/config/database.yml','development')
-  pp connection = Bio::SQL.establish_connection({'development'=>{'database'=>"bio_test", 'adapter'=>"postgresql", 'username'=>"rails", 'password'=>nil}},'development')
+  connection = Bio::SQL.establish_connection({'development'=>{'database'=>"bio_test", 'adapter'=>"postgresql", 'username'=>"rails", 'password'=>nil}},'development')
   #pp YAML::load(ERB.new(IO.read('bio/io/biosql/config/database.yml')).result)
   if true
-    pp Bio::SQL.list_entries
+    #Bio::SQL.list_entries
+
+#  	biosequence = data.to_biosequence
+#	puts biosequence.output(:genbank)
+	db=Bio::SQL::Biodatabase.new(:name=>'JEFF', :authority=>'ME', :description=>'YOU')
+	db.save!
 
     puts "### FileFile.auto"
     if ARGV.size > 0
 	#embl = Bio::FlatFile.auto(ARGF.read)
-	embl = Bio::EMBL.new(ARGF.read)
+	Bio::FlatFile.auto(ARGF) do |ff|
+		ff.each do |data|
+			biosequence=data.to_biosequence
+			puts biosequence.output(:fasta)
+			sqlseq = Bio::SQL::Sequence.new(:biosequence=>biosequence,:biodatabase_id=>db.biodatabase_id)
+			sqlseq.save
+			sqlseq.to_biosequence.output(:fasta)
+		end
+	end
     else
 	require 'bio/io/fetch'
 	server = Bio::Fetch.new('http://www.ebi.ac.uk/cgi-bin/dbfetch')
-	embl = Bio::EMBL.new(server.fetch('embl','AJ224123'))
+	data = Bio::EMBL.new(server.fetch('embl','AJ224123'))
     end
 
-  	biosequence = embl.to_biosequence
-	puts biosequence.output(:genbank)
-	db=Bio::SQL::Biodatabase.new(:name=>'JEFF', :authority=>'ME', :description=>'YOU')
-	db.save!
 	
-	sqlseq = Bio::SQL::Sequence.new(:biosequence=>biosequence,:biodatabase_id=>db.biodatabase_id)
-	sqlseq.save
-	sqlseq_bioseq=sqlseq.to_biosequence	
-	puts sqlseq_bioseq.output(:genbank)
+#	sqlseq = Bio::SQL::Sequence.new(:biosequence=>biosequence,:biodatabase_id=>db.biodatabase_id)
+#	sqlseq.save
+#	sqlseq_bioseq=sqlseq.to_biosequence	
+#	puts sqlseq_bioseq.output(:genbank)
+
+
+
 	#    bioseq = Bio::SQL.fetch_accession('AJ224122')   
 	#    pp bioseq
 	#    pp bioseq.entry_id    
@@ -153,9 +165,9 @@ if __FILE__ == $0
     
 	    #sqlseq.to_biosequence
 	
-	sqlseq.delete
+#	sqlseq.delete
 	
-	db.destroy
+#	db.destroy
   end
   #pp  bioseq.molecule_type
   #term = Bio::SQL::Term.find_by_name('mol_type')

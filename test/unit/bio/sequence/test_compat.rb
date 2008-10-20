@@ -4,7 +4,7 @@
 # Copyright::   Copyright (C) 2006 Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-#  $Id: test_compat.rb,v 1.3 2007/04/05 23:35:44 trevor Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -15,7 +15,7 @@ require 'test/unit'
 require 'bio/sequence'
 require 'bio/sequence/compat'
 
-module Bio
+module Bio; module TestSequenceCompat
   
   class TSequence < String
     include Bio::Sequence::Common
@@ -66,4 +66,4 @@ module Bio
     end
   end
 
-end
+end; end #module Bio; module TestSequenceCompat
