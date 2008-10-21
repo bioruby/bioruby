@@ -6,7 +6,7 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: compat.rb,v 1.4 2007/04/05 23:35:41 trevor Exp $
+# $Id:$
 #
 
 
@@ -30,7 +30,7 @@ class Sequence
   # ---
   # *Returns*:: String object
   def to_s
-    String.new(@seq)
+    String.new(self.seq)
   end
   alias to_str to_s
 
