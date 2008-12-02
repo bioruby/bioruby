@@ -1,7 +1,9 @@
 #
 # = bio/appl/paml/codeml.rb - Wrapper for running PAML program codeml
 #
-# Copyright::  Copyright (C) 2008 Michael D. Barton <mail@michaelbarton.me.uk>,
+# Copyright::  Copyright (C) 2008
+#              Michael D. Barton <mail@michaelbarton.me.uk>,
+#              Naohisa Goto <ng@bioruby.org>
 #
 # License::    The Ruby License
 #
@@ -14,7 +16,7 @@
 # * http://abacus.gene.ucl.ac.uk/software/paml.html
 #
 
-require 'tempfile'
+require 'bio/appl/paml/common'
 
 module Bio
 module PAML
@@ -28,41 +30,73 @@ module PAML
   # provide simple classes for parsing and accessing the Codeml report and
   # rates files respectively.
   #
-  # == Usage
+  # == Examples
+  #
+  # Example 1:
   #
   #   require 'bio'
+  #   # Reads multi-fasta formatted file and gets a Bio::Alignment object.
+  #   alignment = Bio::FlatFile.open(Bio::Alignment::MultiFastaFormat,
+  #                                  'example.fst').alignment
+  #   # Reads newick tree from a file
+  #   tree = Bio::FlatFile.open(Bio::Newick, 'example.tree').tree
+  #   # Creates a Codeml object
+  #   codeml = Bio::PAML::Codeml.new
+  #   # Sets parameters
+  #   codeml.parameters[:runmode] = 0
+  #   codeml.parameters[:RateAncestor] = 1
+  #   # You can also set many parameters at a time.
+  #   codeml.parameters.update({ :alpha => 0.5, :fix_alpha => 0 })
+  #   # Executes codeml with the alignment and the tree
+  #   report = codeml.query(alignment, tree)
+  #       
+  # Example 2 (Obsolete usage):
   #
-  #   # Create a config file, setting some Codeml options
-  #   # Default options are used otherwise, see RDoc for defaults
-  #   # The names of the options correspond to those specified in the Codeml documentation
-  #   config_file = Tempfile.new('codeml_config').path
-  #   Bio::PAML::Codeml.create_config_file({
+  #   # Create a control file, setting some Codeml options
+  #   # Default parameters are used otherwise, see RDoc for defaults
+  #   # The names of the parameters correspond to those specified
+  #   # in the Codeml documentation
+  #   control_file = Tempfile.new('codeml_ctl')
+  #   control_file.close(false)
+  #   # Prepare output file as a temporary file
+  #   output_file = Tempfile.new('codeml_test')
+  #   output_file.close(false)
+  #   Bio::PAML::Codeml.create_control_file(config_file.path, {
   #     :model       => 1,
   #     :fix_kappa   => 1,
   #     :aaRatefile  => TEST_DATA + '/wag.dat',
   #     :seqfile     => TEST_DATA + '/abglobin.aa',
   #     :treefile    => TEST_DATA + '/abglobin.trees',
-  #     :outfile     => Tempfile.new('codeml_test').path,
-  #    },config_file)
+  #     :outfile     => output_file.path,
+  #   })
+  #   
+  #   # Create an instance of Codeml specifying where the codeml binary is
+  #   codeml = Bio::PAML::Codeml.new('/path/to/codeml')
+  #   
+  #   # Run codeml using a control file
+  #   # Returns the command line output
+  #   codeml_output = codeml.run(control_file)
   #
-  #    # Create an instance of Codeml specifying where the codeml binary is
-  #    codeml = Bio::PAML::Codeml.new('codeml_binary')
-  #
-  #    # Run codeml using a config file
-  #    # Returns the command line output
-  #    codeml_output = codeml.run(config_file)
-  #
-  class Codeml
+  class Codeml < Common
 
     autoload  :Report,  'bio/appl/paml/codeml/report'
     autoload  :Rates,   'bio/appl/paml/codeml/rates'
 
-    DEFAULT_OPTIONS = {
+    # Default program name
+    DEFAULT_PROGRAM = 'codeml'.freeze
+
+    # Default parameters when running codeml.
+    #
+    # The parameters whose values are different from the codeml defalut
+    # value (described in pamlDOC.pdf) in PAML 4.1 are:
+    #  seqfile, outfile, treefile, ndata, noisy, verbose, cleandata
+    #
+    DEFAULT_PARAMETERS = {
       # Essential argumemts
       :seqfile             => nil,
-      :treefile            => nil,
+      :outfile             => nil,
       # Optional arguments
-      :outfile             => Tempfile.new('codeml').path,
+      :treefile            => nil,
       :noisy               => 0,
       :verbose             => 1,
       :runmode             => 0,
@@ -72,7 +106,7 @@ module PAML
       :clock               => 0,
       :aaDist              => 0,
       :aaRatefile          => 'wag.dat',
-      :model               => 3,
+      :model               => 2,
       :NSsites             => 0,
       :icode               => 0,
       :Mgene               => 0,
@@ -81,63 +115,126 @@ module PAML
       :fix_omega           => 0,
       :omega               => 0.4,
       :fix_alpha           => 0,
-      :alpha               => 0.5,
+      :alpha               => 0.0,
       :Malpha              => 0,
-      :ncatG               => 8,
+      :ncatG               => 3,
+      :fix_rho             => 1,
+      :rho                 => 0.0,
       :getSE               => 0,
       :RateAncestor        => 0,
-      :Small_Diff          => 0.000005,
+      :Small_Diff          => 0.5e-6,
       :cleandata           => 1,
       :fix_blength         => 0,
       :method              => 0
     }
-  
-    attr_accessor :options
 
-
-    # Create a codeml instance, which will run using the specified binary location
-    # This method with throw and error if the binary cannot be found.
-    def initialize(codeml_location)
-      unless File.exists?(codeml_location)
-        raise ArgumentError.new("File does not exist : #{codeml_location}")
-      end
-      @binary = codeml_location
+    # OBSOLETE. This method should not be used. 
+    # Instead, use parameters.
+    def options
+      warn 'The method Codeml#options will be changed to be used for command line arguments in the future. Instead, use Codeml#parameters.'
+      parameters
     end
 
-    # Runs the codeml analysis based on the options in the passed config file
-    # An error will be thrown if required options are not specific in the config file
-    def run(config_file)
-      load_options_from_file(config_file)
-      check_options
-      output = %x[ #{@binary} #{config_file} ]
-      output
+    # OBSOLETE. This method should not be used. 
+    # Instead, use parameters=(hash).
+    def options=(hash)
+      warn 'The method Codeml#options=() will be changed to be used for command line arguments in the future. Instead, use Codeml#parameters=().'
+      self.parameters=(hash)
     end
 
-    # Helper method for creating a codeml config file
-    def self.create_config_file(options = Hash.new, location = Tempfile.new('codeml_config').path)
-      options = DEFAULT_OPTIONS.merge(options)
-      File.open(location,'w') do |file|
-        options.each do |key, value|
-          file.puts "#{key.to_s} = #{value.to_s}"
+    # Obsolete. This method will be removed in the future.
+    # Helper method for creating a codeml control file.
+    # Note that default parameters are automatically merged.
+    def self.create_control_file(parameters, filename)
+      parameters = DEFAULT_PARAMETERS.merge(parameters)
+      File.open(filename, 'w') do |file|
+        parameters.each do |key, value|
+          file.puts "#{key.to_s} = #{value.to_s}" if value
         end
       end
-      location
+      filename
+    end
+
+    # OBSOLETE. This method will soon be removed.
+    # Instead, use create_control_file(parameters, filename).
+    def self.create_config_file(parameters, filename)
+      warn "The method Codeml.create_config_file(parameters, filename) will soon be removed. Instead, use Codeml.create_control_file(filename, parameters)."
+      create_control_file(parameters, filename)
+    end
+
+
+    # Runs the program on the internal parameters with the specified
+    # sequence alignment and tree.
+    #
+    # Note that parameters[:seqfile] and parameters[:outfile]
+    # are always modified, and parameters[:treefile] and
+    # parameters[:aaRatefile] are modified when tree and aarate are
+    # specified respectively.
+    #
+    # For other important information, see the document of
+    # Bio::PAML::Common#query.
+    #
+    # ---
+    # *Arguments*:
+    # * (required) _alignment_: Bio::Alignment object or similar object
+    # * (optional) _tree_: Bio::Tree object
+    # * (optional) _aarate_: String or nil
+    # *Returns*:: Report object
+    def query(alignment, tree = nil, aarate = nil)
+      begin
+        aaratefile = prepare_aaratefile(aarate)
+        ret = super(alignment, tree)
+      ensure
+        finalize_aaratefile(aaratefile)
+      end
+      ret
+    end
+
+    # Runs the program on the internal parameters with the specified
+    # sequence alignment data string and tree data string.
+    #
+    # Note that parameters[:outfile] is always modified, and
+    # parameters[:seqfile], parameters[:treefile], and
+    # parameters[:aaRatefile] are modified when
+    # alignment, tree, and aarate are specified respectively.
+    #
+    # It raises RuntimeError if seqfile is not specified in the argument
+    # or in the parameter.
+    #
+    # For other important information, see the document of query method.
+    # 
+    # ---
+    # *Arguments*:
+    # * (optional) _alignment_: String
+    # * (optional) _tree_: String or nil
+    # * (optional) _aarate_: String or nil
+    # *Returns*:: contents of output file (String)
+    def query_by_string(alignment = nil, tree = nil, aarate = nil)
+      begin
+        aaratefile = prepare_aaratefile(aarate)
+        ret = super(alignment, tree)
+      ensure
+        finalize_aaratefile(aaratefile)
+      end
+      ret
     end
 
     private
 
-    def load_options_from_file(file)
-      options = Hash.new
-      File.readlines(file).each do |line|
-        param, value = line.strip.split(/\s+=\s+/)
-        options[param.to_sym] = value
+    # (private) prepares temporary file for aaRatefile if needed
+    def prepare_aaratefile(aarate)
+      if aarate then
+        aaratefile = Tempfile.new('codeml_aarate')
+        aaratefile.print aarate
+        aaratefile.close(false)
+        self.parameters[:aaRatefile] = aaratefile.path
       end
-      self.options = options
+      aaratefile
     end
 
-    def check_options
-      raise ArgumentError.new("Sequence file not found") unless File.exists?(self.options[:seqfile])
-      raise ArgumentError.new("Tree file not found") unless File.exists?(self.options[:treefile])
+    # (private) removes temporary file for aaRatefile if needed
+    def finalize_aaratefile(aaratefile)
+      aaratefile.close(true) if aaratefile
     end
 
   end # End class Codeml

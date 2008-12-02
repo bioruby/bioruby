@@ -265,14 +265,13 @@ module Bio
 
   autoload :Iprscan,        'bio/appl/iprscan/report'
 
-  module PAML
-    autoload :Codeml,         'bio/appl/paml/codeml'
-    ## below are described in bio/appl/paml/codeml.rb
-    #  # class Codeml
-    #      autoload :Report,       'bio/appl/paml/codeml/report'
-    #      autoload :Rates,        'bio/appl/paml/codeml/rates'
-    #  # end
-  end
+  autoload :PAML,           'bio/appl/paml/common'
+  ## below are described in bio/appl/paml/common.rb
+  # module PAML
+  #   autoload :Codeml,         'bio/appl/paml/codeml'
+  #   autoload :Baseml,         'bio/appl/paml/baseml'
+  #   autoload :Yn00,           'bio/appl/paml/yn00'
+  # end
 
   ### Utilities
 

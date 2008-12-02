@@ -22,7 +22,7 @@ module Bio::PAML
 
     # == Description
     # 
-    # A simple class for parsing the codeml rates file.
+    # A simple class for parsing the codeml rates file.
     #
     # WARNING: The order of the parsed data should be correct, however will
     # not necessarily correspond to the position in the alignment. For instance
