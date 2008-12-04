@@ -5,12 +5,16 @@
 #
 # License::     The Ruby License
 #
-# $Id: test_nexus.rb,v 1.2 2007/04/05 23:35:43 trevor Exp $
+# $Id:$
 #
 # == Description
 #
 # This file contains unit tests for Bio::Nexus.
 #
+
+require 'pathname'
+libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
+$:.unshift(libpath) unless $:.include?(libpath)
 
 require 'test/unit'
 require 'bio/db/nexus'
