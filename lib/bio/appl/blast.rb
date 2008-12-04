@@ -112,7 +112,7 @@ module Bio
     # *Returns*:: Undefiend when a block is given. Otherwise, an Array containing Bio::Blast::Report objects.
     def self.reports(input, parser = nil)
       ary = []
-      input.each("</BlastOutput>\n") do |xml|
+      input.each_line("</BlastOutput>\n") do |xml|
         xml.sub!(/[^<]*(<?)/, '\1') # skip before <?xml> tag
         next if xml.empty?          # skip trailing no hits
         rep = Report.new(xml, parser)
