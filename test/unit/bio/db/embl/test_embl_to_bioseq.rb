@@ -6,7 +6,7 @@
 #                 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-#  $Id: test_embl_to_bioseq.rb,v 1.1.2.2 2008/06/17 16:09:53 ngoto Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -194,7 +194,7 @@ module Bio
       assert_equal(Bio::Reference, @bio_seq_2.references[0].class)
     end
     
-    def test_features a
+    def test_features
       assert_equal(3, @bio_seq_2.features.length)
       assert_equal(Bio::Feature, @bio_seq_2.features[0].class)
     end
