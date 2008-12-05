@@ -11,6 +11,7 @@
 #
 require 'uri'
 require 'strscan'
+require 'enumerator'
 require 'bio/db/fasta'
 
 module Bio
@@ -243,8 +244,16 @@ module Bio
         # (private) escapes GFF2 free text string
         def escape_gff2_freetext(str)
           '"' + str.gsub(UNSAFE_GFF2) do |x|
-            "\\" + (CHAR2BACKSLASH_EXTENDED[x] || sprintf("%03o", x[0]))
+            "\\" + (CHAR2BACKSLASH_EXTENDED[x] || char2octal(x))
           end + '"'
+        end
+
+        # (private) "x" => "\\oXXX"
+        # "x" must be a letter.
+        # If "x" is consisted of two bytes or more, joined with "\\".
+        def char2octal(x)
+          x.enum_for(:each_byte).collect { |y|
+            sprintf("%03o", y) }.join("\\")
         end
  
         # (private) escapes GFF2 attribute value string
@@ -268,7 +277,7 @@ module Bio
           str = str.to_s
           str = str.empty? ? '.' : str
           str = str.gsub(PROHIBITED_GFF2_COLUMNS) do |x|
-            "\\" + (CHAR2BACKSLASH[x] || sprintf("%03o", x[0]))
+            "\\" + (CHAR2BACKSLASH[x] || char2octal(x))
           end
           if str[0, 1] == '#' then
             str[0, 1] = "\\043"
@@ -281,7 +290,7 @@ module Bio
           str = str.to_s
           str = str.empty? ? '.' : str
           str = str.gsub(PROHIBITED_GFF2_TAGS) do |x|
-            "\\" + (CHAR2BACKSLASH[x] || sprintf("%03o", x[0]))
+            "\\" + (CHAR2BACKSLASH[x] || char2octal(x))
           end
           if str[0, 1] == '#' then
             str[0, 1] = "\\043"
