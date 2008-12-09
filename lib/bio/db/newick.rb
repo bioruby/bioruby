@@ -6,7 +6,7 @@
 #               Daniel Amelang <dan@amelang.net>
 # License::     The Ruby License
 #
-# $Id: newick.rb,v 1.8 2007/12/12 16:06:22 ngoto Exp $
+# $Id:$
 #
 # == Description
 #
@@ -606,9 +606,9 @@ module Bio
         # If all of the internal node's names are numeric,
         # the names are regarded as bootstrap values.
         flag = false
-        internal_nodes.each do |node|
-          if node.name and !node.name.to_s.strip.empty? then
-            if /\A[\+\-]?\d*\.?\d*\z/ =~ node.name
+        internal_nodes.each do |inode|
+          if inode.name and !inode.name.to_s.strip.empty? then
+            if /\A[\+\-]?\d*\.?\d*\z/ =~ inode.name
               flag = true
             else
               flag = false
@@ -619,17 +619,17 @@ module Bio
         if flag then
           @options[:bootstrap_style] = :traditional
           @options[:original_format] = :traditional
-          internal_nodes.each do |node|
-            if node.name then
-              node.bootstrap_string = node.name
-              node.name = nil
+          internal_nodes.each do |inode|
+            if inode.name then
+              inode.bootstrap_string = inode.name
+              inode.name = nil
             end
           end
         end
       end
       # Sets nodes order numbers
-      nodes.each_with_index do |node, i|
-        node.order_number = i
+      nodes.each_with_index do |xnode, i|
+        xnode.order_number = i
       end
       # If the root implicitly prepared by the program is a leaf and
       # there are no additional information for the edge from the root to
