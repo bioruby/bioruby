@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2004 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: glycan.rb,v 1.7 2007/12/14 16:20:38 k Exp $
+# $Id:$
 #
 
 require 'bio/db'
@@ -46,11 +46,7 @@ class GLYCAN < KEGGDB
   # MASS
   def mass
     unless @data['MASS']
-      hash = Hash.new
-      fetch('MASS').scan(/(\S+)\s+\((\S+)\)/).each do |val, key|
-        hash[key] = val.to_f
-      end
-      @data['MASS'] = hash
+      @data['MASS'] = field_fetch('MASS')[/[\d\.]+/].to_f
     end
     @data['MASS']
   end
