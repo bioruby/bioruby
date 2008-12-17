@@ -153,7 +153,10 @@ class MEDLINE < NCBIDB
     au.split(/\n/).each do |author|
       if author =~ / /
         name = author.split(/\s+/)
-        suffix = name[-2] =~ /^[A-Z]+$/ ? name.pop : nil	# Jr etc.
+        suffix = nil
+        if name.length > 2 && name[-2] =~ /^[A-Z]+$/ # second to last are the initials
+          suffix = name.pop
+        end
         initial = name.pop.split(//).join('. ')
         author = "#{name.join(' ')}, #{initial}."
       end
