@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # License::   The Ruby License
 #
-#  $Id: test_ddbjxml.rb,v 1.4 2007/04/05 23:35:43 trevor Exp $ 
+#  $Id:$ 
 #
 
 require 'pathname'
@@ -23,7 +23,7 @@ class TestDDBJXMLConstants < Test::Unit::TestCase
     constants = ["DDBJ", "TxSearch", "ClustalW", "PML", "Gib", "Fasta", 
                  "BASE_URI", "SRS", "SERVER_URI", "Gtop", "GetEntry",
                  "Blast", "RequestManager"].sort
-    assert_equal(constants, Bio::DDBJ::XML.constants.sort)
+    assert_equal(constants, Bio::DDBJ::XML.constants.sort.collect{|x| x.to_s})
   end
 
   def test_base_url
