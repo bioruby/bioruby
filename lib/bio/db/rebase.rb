@@ -5,14 +5,13 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: rebase.rb,v 1.8 2007/04/05 23:35:40 trevor Exp $
+#  $Id:$
 #
 
-autoload :YAML, 'yaml'
+require 'yaml'
+require 'bio/reference'
 
-module Bio #:nodoc:
-
-autoload :Reference, 'bio/reference'
+module Bio
 
 #
 # bio/db/rebase.rb - Interface for EMBOSS formatted REBASE files
@@ -316,7 +315,7 @@ class REBASE
   def parse_enzymes( lines )
     data = {}
     return data if lines == nil
-    lines.each do |line|
+    lines.each_line do |line|
       next if line[0].chr == '#'
       line.chomp!
       
@@ -347,7 +346,7 @@ class REBASE
     h = {}
     references_left = 0
 
-    lines.each do |line|
+    lines.each_line do |line|
       next if line[0].chr == '#'  # Comment
       next if line[0..1] == '//'  # End of entry marker
       line.chomp!
@@ -389,7 +388,7 @@ class REBASE
   def parse_suppliers( lines )
     data = {}
     return data if lines == nil
-    lines.each do |line|
+    lines.each_line do |line|
       next if line[0].chr == '#'
       data[$1] = $2 if line =~ %r{(.+?)\s(.+)}
     end
