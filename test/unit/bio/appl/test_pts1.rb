@@ -5,7 +5,7 @@
 #               Mitsuteru Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: test_pts1.rb,v 1.3 2007/04/05 23:35:43 trevor Exp $
+# $Id:$
 #
 
 require 'pathname'
@@ -46,12 +46,6 @@ module Bio
   class TestPTS1 < Test::Unit::TestCase
 
     def setup
-      @seq =<<END
->AB000464
-MRTGGDNAGPSHSHIKRLPTSGLSTWLQGTQTCVLHLPTGTRPPAHHPLLGYSSRRSYRL
-LENPAAGCWARFSFCQGAAWDWDLEGVQWLRALAGGVSTAPSAPPGNLVFLSVSIFLCGS
-LLLETCPAYFSSLDPD*
-END
       @serv = Bio::PTS1.new
     end
 
@@ -78,63 +72,6 @@ END
     def test_function_set_number_3
       @serv.function(3)
       assert_equal("GENERAL", @serv.function)
-    end
-
-
-    def test_exec
-      report = @serv.exec(@seq)
-      assert_equal(Bio::PTS1::Report, report.class)
-    end
-
-    def test_exec_with_faa
-      report = @serv.exec(Bio::FastaFormat.new(@seq))
-      assert_equal(Bio::PTS1::Report, report.class)
-    end
-
-  end
-
-  class TestPTS1Report < Test::Unit::TestCase
-    def setup
-      serv = Bio::PTS1.new
-      seq = ">hoge\nAVSFLSMRRARL\n"
-      @report = serv.exec(seq)
-    end
-    
-
-    def test_output_size
-      assert_equal(1634, @report.output.size)
-    end
-
-    def test_entry_id
-      assert_equal("hoge", @report.entry_id)
-    end
-
-    def test_prediction
-      assert_equal("Targeted", @report.prediction)
-    end
-    
-    def test_cterm
-      assert_equal("AVSFLSMRRARL", @report.cterm)
-    end
-    
-    def test_score
-      assert_equal("7.559", @report.score)
-    end
-
-    def test_fp
-      assert_equal("2.5e-04", @report.fp)
-    end
-    
-    def test_sppta
-      assert_equal("-5.833", @report.sppta)
-    end
-    
-    def test_spptna
-      assert_equal("-1.698", @report.spptna)
-    end
-
-    def test_profile
-      assert_equal("15.091", @report.profile)
     end
   end
 end
