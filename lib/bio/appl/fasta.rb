@@ -4,11 +4,11 @@
 # Copyright::  Copyright (C) 2001, 2002 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: fasta.rb,v 1.25 2007/05/18 15:22:52 k Exp $
+# $Id:$
 #
 
 require 'net/http'
-require 'cgi' unless defined?(CGI)
+require 'uri'
 require 'bio/command'
 require 'shellwords'
 
@@ -154,16 +154,14 @@ class Fasta
       'style'        => 'raw',
       'prog'         => @program,
       'dbname'       => @db,
-      'sequence'     => CGI.escape(query),
-      'other_param'  => CGI.escape(Bio::Command.make_command_line_unix(@options)),
+      'sequence'     => query,
+      'other_param'  => Bio::Command.make_command_line_unix(@options),
       'ktup_value'   => @ktup,
       'matrix'       => @matrix,
     }
 
-    data = []
-
-    form.each do |k, v|
-      data.push("#{k}=#{v}") if v
+    form.keys.each do |k|
+      form.delete(k) unless form[k]
     end
 
     report = nil
@@ -172,7 +170,7 @@ class Fasta
       http = Bio::Command.new_http(host)
       http.open_timeout = 3000
       http.read_timeout = 6000
-      result, = http.post(path, data.join('&'))
+      result = Bio::Command.http_post_form(http, path, form)
       # workaround 2006.8.1 - fixed for new batch queuing system
       case result.code
       when "302"
@@ -191,7 +189,7 @@ class Fasta
       end
       @output = result.body.to_s
       # workaround 2005.08.12
-      re = %r{<A HREF="http://#{host}(/tmp/[^"]+)">Show all result</A>} # "
+      re = %r{<A HREF="http://#{host}(/tmp/[^"]+)">Show all result</A>}i # "
       if path = @output[re, 1]
         result, = http.get(path)
         @output = result.body

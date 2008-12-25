@@ -460,6 +460,36 @@ module Command
   end
 
   # Same as:
+  #  http = Net::HTTP.new(...); http.post_form(path, params)
+  # and 
+  # it uses proxy if an environment variable (same as OpenURI.open_uri)
+  # is set.
+  # In addition, +header+ can be set.
+  # (Note that Content-Type and Content-Length are automatically
+  # set by default.)
+  # +uri+ must be a URI object, +params+ must be a hash, and
+  # +header+ must be a hash.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _http_: Net::HTTP object or compatible object
+  # * (required) _path_: String
+  # * (optional) _params_: Hash containing parameters
+  # * (optional) _header_: Hash containing header strings
+  # *Returns*:: (same as Net::HTTP::post_form)
+  def http_post_form(http, path, params = nil, header = {})
+    data = make_cgi_params(params)
+
+    hash = {
+      'Content-Type'   => 'application/x-www-form-urlencoded',
+      'Content-Length' => data.length.to_s
+    }
+    hash.update(header)
+
+    http.post(path, data, hash)
+  end
+
+  # Same as:
   # Net::HTTP.post_form(uri, params)
   # and 
   # it uses proxy if an environment variable (same as OpenURI.open_uri)
@@ -474,7 +504,7 @@ module Command
   # *Arguments*:
   # * (required) _uri_: URI object or String
   # * (optional) _params_: Hash containing parameters
-  # * (optional) _hrader_: Hash containing header strings
+  # * (optional) _header_: Hash containing header strings
   # *Returns*:: (same as Net::HTTP::post_form)
   def post_form(uri, params = nil, header = {})
     unless uri.is_a?(URI)
