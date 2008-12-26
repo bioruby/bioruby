@@ -50,7 +50,7 @@ module Bio::PAML
       def parse_rates(text)
         re = /\s+(\d+)\s+(\d+)\s+([A-Z\*]+)\s+(\d+\.\d+)\s+(\d)/
         array = Array.new
-        text.each do |line|
+        text.each_line do |line|
           if re =~ line
             match = Regexp.last_match
             array[match[1].to_i] = {
