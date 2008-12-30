@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_blast.rb,v 1.6 2008/01/30 17:43:33 nakao Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -127,12 +127,126 @@ module Bio
        # to be tested in test/functional/bio/test_blast.rb
      end
 
-     def test_blast_reports
-       Bio::Blast.reports(TestBlastData.output) do |report|
-         assert(report)
+     def test_blast_reports_xml
+       ret = Bio::Blast.reports_xml(TestBlastData.output)
+       assert_instance_of(Array, ret)
+       count = 0
+       ret.each do |report|
+         count += 1
+         assert_instance_of(Bio::Blast::Report, report)
        end
+       assert_equal(1, count)
+     end
+
+     def test_blast_reports_xml_with_block
+       count = 0
+       Bio::Blast.reports_xml(TestBlastData.output) do |report|
+         count += 1
+         assert_instance_of(Bio::Blast::Report, report)
+       end
+       assert_equal(1, count)
+     end
+
+     def test_blast_reports_format0
+       ret = Bio::Blast.reports(TestBlastData.output('0'))
+       assert_instance_of(Array, ret)
+       count = 0
+       ret.each do |report|
+         count += 1
+         assert_instance_of(Bio::Blast::Default::Report, report)
+       end
+       assert_equal(1, count)
+     end
+
+     def test_blast_reports_format7
+       ret = Bio::Blast.reports(TestBlastData.output('7'))
+       assert_instance_of(Array, ret)
+       count = 0
+       ret.each do |report|
+         count += 1
+         assert_instance_of(Bio::Blast::Report, report)
+       end
+       assert_equal(1, count)
+     end
+
+     def test_blast_reports_format8
+       ret = Bio::Blast.reports(TestBlastData.output('8'))
+       assert_instance_of(Array, ret)
+       count = 0
+       ret.each do |report|
+         count += 1
+         assert_kind_of(Bio::Blast::Report, report)
+       end
+       assert_equal(1, count)
+     end
+
+     def test_blast_reports_format0_with_block
+       count = 0
+       Bio::Blast.reports(TestBlastData.output('0')) do |report|
+         count += 1
+         assert_instance_of(Bio::Blast::Default::Report, report)
+       end
+       assert_equal(1, count)
+     end
+
+     def test_blast_reports_format7_with_block
+       count = 0
+       Bio::Blast.reports(TestBlastData.output('7')) do |report|
+         count += 1
+         assert_instance_of(Bio::Blast::Report, report)
+       end
+       assert_equal(1, count)
+     end
+
+     def test_blast_reports_format8_with_block
+       count = 0
+       Bio::Blast.reports(TestBlastData.output('8')) do |report|
+         count += 1
+         assert_kind_of(Bio::Blast::Report, report)
+       end
+       assert_equal(1, count)
      end
      
+     def test_blast_reports_format7_with_parser
+       ret = Bio::Blast.reports(TestBlastData.output('7'), :rexml)
+       assert_instance_of(Array, ret)
+       count = 0
+       ret.each do |report|
+         count += 1
+         assert_instance_of(Bio::Blast::Report, report)
+       end
+       assert_equal(1, count)
+     end
+
+     def test_blast_reports_format8_with_parser
+       ret = Bio::Blast.reports(TestBlastData.output('8'), :tab)
+       assert_instance_of(Array, ret)
+       count = 0
+       ret.each do |report|
+         count += 1
+         assert_kind_of(Bio::Blast::Report, report)
+       end
+       assert_equal(1, count)
+     end
+
+     def test_blast_reports_format7_with_parser_with_block
+       count = 0
+       Bio::Blast.reports(TestBlastData.output('7'), :rexml) do |report|
+         count += 1
+         assert_instance_of(Bio::Blast::Report, report)
+       end
+       assert_equal(1, count)
+     end
+
+     def test_blast_reports_format8_with_parser_with_block
+       count = 0
+       Bio::Blast.reports(TestBlastData.output('8'), :tab) do |report|
+         count += 1
+         assert_kind_of(Bio::Blast::Report, report)
+       end
+       assert_equal(1, count)
+     end
+
      def test_make_command_line
        @blast = Bio::Blast.new(@program, @db, '-m 7 -F F')
        assert_equal(["blastall", "-p", "blastp", "-d", "test", "-m", "7", "-F", "F"], 

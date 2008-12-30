@@ -567,6 +567,15 @@ class Report
 
 end # Report
 
+# NCBI BLAST tabular (-m 8) output parser.
+# All methods are equal to Bio::Blast::Report.
+# Only DELIMITER (and RS) is different.
+# 
+class Report_tab < Report
+  # Delimter of each entry. Bio::FlatFile uses it. 
+  DELIMITER = RS = nil
+end #class Report_tabular
+
 end # Blast
 end # Bio
 
