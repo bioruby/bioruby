@@ -10,7 +10,7 @@
 
 module Bio
 
-  BIORUBY_VERSION = [1, 2, 2].extend(Comparable)
+  BIORUBY_VERSION = [1, 3, 0].extend(Comparable)
 
   ### Basic data types
 
