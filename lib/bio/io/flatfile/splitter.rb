@@ -132,7 +132,8 @@ module Bio
           @header = klass::FLATFILE_HEADER rescue nil
           # for specific classes' benefit
           unless header
-            if klass == Bio::GenBank or klass == Bio::GenPept
+            if (defined?(Bio::GenBank) and klass == Bio::GenBank) or
+                (defined?(Bio::GenPept) and klass == Bio::GenPept)
               @header = 'LOCUS '
             end
           end
