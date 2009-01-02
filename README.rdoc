@@ -76,7 +76,7 @@ the BioRuby package is also available for easy installation.
 == REQUIREMENTS
 
 * Ruby 1.8.2 or later -- ((<URL:http://www.ruby-lang.org/>))
-  (Ruby 1.8.4 or later is recommended)
+  (Ruby 1.8.5 or later is recommended)
 
 == OPTIONAL REQUIREMENTS
 
@@ -94,8 +94,17 @@ Creating faster flatfile index using Berkley DB:
 
 Accessing BioSQL database created by other Open Bio* libraries:
 
-  * [RAA:ruby-dbi] and at least one driver from [RAA:mysql-ruby],
-    [RAA:postgres], [RAA:oracle]
+  * ActiveRecord ((<URL:http://rubyforge.org/projects/activerecord/>))
+    and at least one driver (or adapter) from MySQL/Ruby
+    ((<URL:http://rubyforge.org/projects/mysql-ruby/>)),
+    postgres-pr ((<URL:http://rubyforge.org/projects/postgres-pr>)),
+    or ActiveRecord Oracle enhanced adapter
+    ((<URL:http://rubyforge.org/projects/oracle-enhanced/>)).
+  * For BioRuby 1.2.1 or older version, Ruby/DBI
+    ((<URL:http://rubyforge.org/projects/ruby-dbi>) and
+    at least one driver from MySQL/Ruby, postgres-pr, or
+    ruby-oci8 ((<URL:http://http://ruby-oci8.rubyforge.org/>))
+    (note that ruby-oci8 can only work with ruby-dbi 0.2.2).
 
 
 == INSTALL
@@ -185,8 +194,8 @@ With RubyGems, you need to load 'rubygems' library before using 'bio'.
 
 BioRuby can be freely distributed under the same terms as Ruby.
 
-Note that install.rb included in the BioRuby package comes from
-[RAA:setup] developed by Minero Aoki and modified by Moses Hohman.
+Note that setup.rb included in the BioRuby package comes from
+[RAA:setup] developed by Minero Aoki.
 
 
 == CONTACT
