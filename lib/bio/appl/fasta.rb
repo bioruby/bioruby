@@ -191,7 +191,7 @@ class Fasta
       # workaround 2005.08.12
       re = %r{<A HREF="http://#{host}(/tmp/[^"]+)">Show all result</A>}i # "
       if path = @output[re, 1]
-        result, = http.get(path)
+        result = http.get(path)
         @output = result.body
         txt = @output.to_s.split(/\<pre\>/)[1]
         raise 'cannot understand response' unless txt

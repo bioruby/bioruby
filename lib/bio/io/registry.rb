@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: registry.rb,v 1.19 2007/04/05 23:35:41 trevor Exp $
+# $Id:$
 #
 # == Description
 #
@@ -172,7 +172,7 @@ class Registry
   def read_remote(url)
     schema, user, host, port, reg, path, = URI.split(url)
     Bio::Command.start_http(host, port) do |http|
-      response, = http.get(path)
+      response = http.get(path)
       parse_stanza(response.body)
     end
   end

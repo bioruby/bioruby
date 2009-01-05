@@ -66,7 +66,7 @@ class REST
   def einfo
     serv = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/einfo.fcgi"
     opts = {}
-    response, = Bio::Command.post_form(serv, opts)
+    response = Bio::Command.post_form(serv, opts)
     result = response.body
     list = result.scan(/<DbName>(.*?)<\/DbName>/m).flatten
     return list
@@ -150,7 +150,7 @@ class REST
         retmax = [step, limit - i].min
         opts.update("retmax" => retmax, "retstart" => i)
         ncbi_access_wait
-        response, = Bio::Command.post_form(serv, opts)
+        response = Bio::Command.post_form(serv, opts)
         result = response.body
         list += result.scan(/<Id>(.*?)<\/Id>/m).flatten
       end
@@ -169,7 +169,7 @@ class REST
     opts.update(hash)
     opts.update("rettype" => "count")
     #ncbi_access_wait
-    response, = Bio::Command.post_form(serv, opts)
+    response = Bio::Command.post_form(serv, opts)
     result = response.body
     count = result.scan(/<Count>(.*?)<\/Count>/m).flatten.first.to_i
     return count
@@ -222,7 +222,7 @@ class REST
       opts["id"] = list[i, step].join(',')
       unless opts["id"].empty?
         ncbi_access_wait
-        response, = Bio::Command.post_form(serv, opts)
+        response = Bio::Command.post_form(serv, opts)
         result += response.body
       end
     end

@@ -151,7 +151,7 @@ class PTS1
                   'name'     => seq.definition }
     @uri = URI.parse(["http:/", @host, @cgi_path].join('/'))
 
-    result, = Bio::Command.post_form(@uri, @form_data)
+    result = Bio::Command.post_form(@uri, @form_data)
     @output = Report.new(result.body)
     
     return @output
