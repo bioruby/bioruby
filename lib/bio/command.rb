@@ -12,6 +12,7 @@
 require 'open3'
 require 'uri'
 require 'open-uri'
+require 'cgi'
 require 'net/http'
 require 'tmpdir'
 require 'fileutils'
@@ -552,7 +553,12 @@ module Command
         end.join('&')
       when String
         data = params.map do |str|
-          URI.escape(str.strip)
+          key, val = str.split(/\=/, 2)
+          if val then
+            make_cgi_params_key_value(key, val)
+          else
+            CGI.escape(str)
+          end
         end.join('&')
       end
     when String
@@ -574,10 +580,10 @@ module Command
     case value
     when Array
       value.each do |val|
-        result << [key, val].map {|x| URI.escape(x.to_s) }.join('=')
+        result << [key, val].map {|x| CGI.escape(x.to_s) }.join('=')
       end
     else
-      result << [key, value].map {|x| URI.escape(x.to_s) }.join('=')
+      result << [key, value].map {|x| CGI.escape(x.to_s) }.join('=')
     end
     return result
   end
