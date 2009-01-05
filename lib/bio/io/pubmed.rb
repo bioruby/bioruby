@@ -5,12 +5,12 @@
 # Copyright::  Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-# $Id: pubmed.rb,v 1.24 2008/02/19 03:36:52 k Exp $
+# $Id:$
 #
 
 require 'bio/io/ncbirest'
 require 'bio/command'
-require 'cgi' unless defined?(CGI)
+require 'cgi'
 
 module Bio
 
@@ -134,7 +134,7 @@ class PubMed < Bio::NCBI::REST
     ncbi_access_wait
 
     http = Bio::Command.new_http(host)
-    response, = http.get(path + CGI.escape(str))
+    response = http.get(path + CGI.escape(str))
     result = response.body
     result = result.scan(/value="(\d+)" id="UidCheckBox"/m).flatten
     return result
@@ -149,12 +149,12 @@ class PubMed < Bio::NCBI::REST
   def query(*ids)
     host = "www.ncbi.nlm.nih.gov"
     path = "/sites/entrez?tool=bioruby&cmd=Text&dopt=MEDLINE&db=PubMed&uid="
-    list = ids.join(",")
+    list = ids.collect { |x| CGI.escape(x.to_s) }.join(",")
 
     ncbi_access_wait
 
     http = Bio::Command.new_http(host)
-    response, = http.get(path + list)
+    response = http.get(path + list)
     result = response.body
     result = result.scan(/<pre>\s*(.*?)<\/pre>/m).flatten
 
@@ -183,7 +183,7 @@ class PubMed < Bio::NCBI::REST
     ncbi_access_wait
 
     http = Bio::Command.new_http(host)
-    response, = http.get(path + id.to_s)
+    response = http.get(path + CGI.escape(id.to_s))
     result = response.body
     if result =~ /#{id}\s+Error/
       raise( result )
