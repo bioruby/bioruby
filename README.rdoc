@@ -1,9 +1,15 @@
- README.rdoc - README for BioRuby
- Copyright:: Copyright (C) 2001-2007 Toshiaki Katayama <k@bioruby.org>,
-                           2008      Jan Aerts <jandot@bioruby.org>
- License:: The Ruby License
+--
+= README.rdoc - README for BioRuby
+Copyright:: Copyright (C) 2001-2007 Toshiaki Katayama <k@bioruby.org>,
+            Copyright (C) 2008      Jan Aerts <jandot@bioruby.org>
+License::   The Ruby License
+* The above statement is limited to this file. See below about BioRuby's
+  copyright and license.
+++
 
 = BioRuby
+
+Copyright (C) 2001-2009 Toshiaki Katayama <k@bioruby.org>
 
 BioRuby is an open source Ruby library for developing bioinformatics
 software.  Object oriented scripting language Ruby has many features
