@@ -1,5 +1,7 @@
-Copyright (C) 2001-2007 Toshiaki Katayama <k@bioruby.org>
-              2008      Jan Aerts <jandot@bioruby.org>
+ README.rdoc - README for BioRuby
+ Copyright:: Copyright (C) 2001-2007 Toshiaki Katayama <k@bioruby.org>,
+                           2008      Jan Aerts <jandot@bioruby.org>
+ License:: The Ruby License
 
 = BioRuby
 
@@ -27,37 +29,37 @@ services including KEGG API can be easily utilized by BioRuby.
 
 == FOR MORE INFORMATION
 
-BioRuby's official website is at ((<URL:http://bioruby.org/>)).
+BioRuby's official website is at http://bioruby.org/.
 You will find links to related resources including downloads,
 mailing lists, Wiki documentation etc. in the top page.
 
-  * ((<URL:http://bioruby.org/>))
+* http://bioruby.org/
 
 
 == WHERE TO OBTAIN
 
---- WWW
+=== WWW
 
 The stable release is freely available from the BioRuby website.
 
-  * ((<URL:http://bioruby.org/archive/>))
+* http://bioruby.org/archive/
 
---- git
+=== git
 
 If you need the latest development version, this is provided at
 
-  * ((<URL:http://github.com/bioruby/bioruby>))
+* http://github.com/bioruby/bioruby
 
 and can be obtained by the following procedure:
 
   % git clone git://github.com/bioruby/bioruby.git
 
---- CVS
+==== CVS
 
 CVS is now deprecated as source control has moved to github. Please use git 
 instead of CVS. For historical purposes: the anonymous CVS was provided at 
 
-  * ((<URL:http://cvs.bioruby.org/>))
+* http://cvs.bioruby.org/
 
 and could be obtained by the following procedure.
 
@@ -65,46 +67,46 @@ and could be obtained by the following procedure.
   CVS password: cvs (login with a password 'cvs' for the first time)
   % cvs -d :pserver:cvs@code.open-bio.org:/home/repository/bioruby co bioruby
 
---- RubyGems
+=== RubyGems
 
-((<RubyGems|URL:http://rubyforge.org/projects/rubygems/>)) version of
+RubyGems[URL:http://rubyforge.org/projects/rubygems/] version of
 the BioRuby package is also available for easy installation.
 
-  * ((<URL:http://rubyforge.org/projects/bioruby/>))
+* http://rubyforge.org/projects/bioruby/
 
 
 == REQUIREMENTS
 
-* Ruby 1.8.2 or later -- ((<URL:http://www.ruby-lang.org/>))
+* Ruby 1.8.2 or later -- http://www.ruby-lang.org/
   (Ruby 1.8.5 or later is recommended)
 
 == OPTIONAL REQUIREMENTS
 
 Some optional libraries can be utilized to extend BioRuby's functionality.
 If your needs meets the following conditions, install them from the "Ruby
-Application Archive" at ((<URL:http://raa.ruby-lang.org/>)).
+Application Archive" at http://raa.ruby-lang.org/, RubyForge at
+http://rubyforge.org/, or the following web sites.
 
 For faster parsing of the BLAST XML output format:
 
-  * [RAA:xmlparser]
+* {RAA:xmlparser}[http://raa.ruby-lang.org/project/xmlparser/]
 
 Creating faster flatfile index using Berkley DB:
 
-  * [RAA:bdb]
+* {RAA:bdb}[http://raa.ruby-lang.org/project/bdb/]
 
 Accessing BioSQL database created by other Open Bio* libraries:
 
-  * ActiveRecord ((<URL:http://rubyforge.org/projects/activerecord/>))
-    and at least one driver (or adapter) from MySQL/Ruby
-    ((<URL:http://rubyforge.org/projects/mysql-ruby/>)),
-    postgres-pr ((<URL:http://rubyforge.org/projects/postgres-pr>)),
-    or ActiveRecord Oracle enhanced adapter
-    ((<URL:http://rubyforge.org/projects/oracle-enhanced/>)).
-  * For BioRuby 1.2.1 or older version, Ruby/DBI
-    ((<URL:http://rubyforge.org/projects/ruby-dbi>) and
-    at least one driver from MySQL/Ruby, postgres-pr, or
-    ruby-oci8 ((<URL:http://http://ruby-oci8.rubyforge.org/>))
-    (note that ruby-oci8 can only work with ruby-dbi 0.2.2).
+* {RubyForge:ActiveRecord}[http://rubyforge.org/projects/activerecord/]
+  and at least one driver (or adapter) from
+  {RubyForge:MySQL/Ruby}[http://rubyforge.org/projects/mysql-ruby/],
+  {RubyForge:postgres-pr}[http://rubyforge.org/projects/postgres-pr], or
+  {RubyForge:ActiveRecord Oracle enhanced adapter}[http://rubyforge.org/projects/oracle-enhanced/].
+* For BioRuby 1.2.1 or older version,
+  {RubyForge:Ruby/DBI}[http://rubyforge.org/projects/ruby-dbi] and
+  at least one driver from MySQL/Ruby, postgres-pr, or
+  {RubyForge:ruby-oci8}[http://ruby-oci8.rubyforge.org/]
+  (note that ruby-oci8 can only work with ruby-dbi 0.2.2).
 
 
 == INSTALL
@@ -142,7 +144,7 @@ and run
 
 for more details.
 
---- RubyGems
+=== RubyGems
 
 If you are using RubyGems, just type
 
@@ -165,7 +167,7 @@ or
   ~/.bioinformatics/seqdatabase.ini	(personal configuration)
 
 and change the contents according to your preference.  For more
-information on the OBDA, see ((<URL:http://obda.open-bio.org/>)).
+information on the OBDA, see http://obda.open-bio.org/ .
 
 
 == USAGE
@@ -181,7 +183,7 @@ You can also read other documentation in the 'doc' directory.
 
   bioruby-x.x.x/doc/
 
---- RubyGems
+=== RubyGems
 
 With RubyGems, you need to load 'rubygems' library before using 'bio'.
 
@@ -195,7 +197,8 @@ With RubyGems, you need to load 'rubygems' library before using 'bio'.
 BioRuby can be freely distributed under the same terms as Ruby.
 
 Note that setup.rb included in the BioRuby package comes from
-[RAA:setup] developed by Minero Aoki.
+{RAA:setup}[http://raa.ruby-lang.org/project/setup/] developed by Minero Aoki
+(http://i.loveruby.net/en/projects/setup/).
 
 
 == CONTACT
