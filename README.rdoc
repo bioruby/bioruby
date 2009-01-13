@@ -50,6 +50,13 @@ The stable release is freely available from the BioRuby website.
 
 * http://bioruby.org/archive/
 
+=== RubyGems
+
+RubyGems[URL:http://rubyforge.org/projects/rubygems/] version of
+the BioRuby package is also available for easy installation.
+
+* http://rubyforge.org/projects/bioruby/
+
 === git
 
 If you need the latest development version, this is provided at
@@ -73,18 +80,13 @@ and could be obtained by the following procedure.
   CVS password: cvs (login with a password 'cvs' for the first time)
   % cvs -d :pserver:cvs@code.open-bio.org:/home/repository/bioruby co bioruby
 
-=== RubyGems
-
-RubyGems[URL:http://rubyforge.org/projects/rubygems/] version of
-the BioRuby package is also available for easy installation.
-
-* http://rubyforge.org/projects/bioruby/
-
 
 == REQUIREMENTS
 
 * Ruby 1.8.2 or later -- http://www.ruby-lang.org/
-  (Ruby 1.8.5 or later is recommended)
+  * Ruby 1.8.5 or later is recommended.
+  * Not yet fully ready with Ruby 1.9, although many components can now work
+    in Ruby 1.9.1.
 
 == OPTIONAL REQUIREMENTS
 
@@ -192,6 +194,13 @@ You can also read other documentation in the 'doc' directory.
 === RubyGems
 
 With RubyGems, you need to load 'rubygems' library before using 'bio'.
+
+  #!/usr/bin/env ruby
+  require 'rubygems'
+  require 'bio'
+
+With old version of RubyGems, use 'require_gem' which was deprecated in
+RubyGems 0.9.0 and removed in RubyGems 1.0.1.
 
   #!/usr/bin/env ruby
   require 'rubygems'
