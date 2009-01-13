@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.2.1"
+  s.version = "1.2.9.9001"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -13,8 +13,10 @@ Gem::Specification.new do |s|
   s.files = Dir.glob("{bin,doc,etc,lib,sample,test}/**/*").delete_if {|item| item.include?("CVS") || item.include?("rdoc")}
   s.files.concat ["README.rdoc", "README_DEV.rdoc", "ChangeLog"]
 
-  # s.rdoc_options << '--exclude' << '.'
-  # s.has_rdoc = false
+  s.has_rdoc = true
+  s.extra_rdoc_files = [ 'README.rdoc', 'README_DEV.rdoc' ]
+  s.rdoc_options << '--main' << 'README.rdoc'
+  s.rdoc_options << '--exclude' << '\.yaml\z'
 
   s.require_path = 'lib'
   s.autorequire = 'bio'
