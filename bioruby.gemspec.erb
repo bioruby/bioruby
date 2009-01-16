@@ -10,8 +10,12 @@ Gem::Specification.new do |s|
   s.description = "BioRuby is a library for bioinformatics (biology + information science)."
 
   s.platform = Gem::Platform::RUBY
-  s.files = Dir.glob("{bin,doc,etc,lib,sample,test}/**/*").delete_if {|item| item.include?("CVS") || item.include?("rdoc")}
-  s.files.concat ["README.rdoc", "README_DEV.rdoc", "ChangeLog"]
+  s.files = [
+    "README.rdoc", "README_DEV.rdoc", "ChangeLog",
+    "Rakefile", "bioruby.gemspec.erb",
+#   "bioruby.gemspec",
+    <%= Dir.glob("{bin,doc,etc,lib,sample,test}/**/*").delete_if {|item| item.include?("CVS") || item.include?("rdoc") || /\~\z/ =~ item}.collect {|x| x.dump}.join(",\n    ") %>
+  ]
 
   s.has_rdoc = true
   s.extra_rdoc_files = [ 'README.rdoc', 'README_DEV.rdoc' ]
