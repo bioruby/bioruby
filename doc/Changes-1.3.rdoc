@@ -94,6 +94,23 @@ Bio::Locations#operator is used.  When "order(...)" or "group(...)",
 the attribute is set to :order or :group, respectively.  Note that
 "group(...)" is already deprecated in EMBL/GenBank/DDBJ.
 
+=== Bio::Blast
+
+Return value of Bio::Blast#exec_* is changed to String instead of Report
+object. Parsing the string is now processed in Bio::Blast#query method.
+
+Bio::Blast#exec_genomenet_tab and Bio::Blast#server="genomenet_tab" is
+deprecated.
+
+Bio::Blast#options=() can now change the following attributes: program, db,
+format, matrix, and filter.
+
+Bio::Blast.reports now supports default (-m 0) and tabular (-m 8) formats.
+Old implementation (only supports XML) is renamed to Bio::Blast.reports_xml,
+to keep compatibility for older BLAST XML documents which might not be parsed
+by the new Bio::Blast.reports nor Bio::FlatFile, although we are not sure
+whether such documents really exist or not.
+
 === Bio::Blast::Default::Report and Bio::Blast::WU::Report
 
 Iteration#lambda, #kappa, #entropy, #gapped_lambda, #gapped_kappa,
@@ -186,6 +203,16 @@ and "##FASTA" lines.
   objects and stored to Bio::GFF::GFF3#sequence_regions as an array.
 * "###" lines are parsed to Bio::GFF::GFF3::RecordBoundary objects.
 * "##FASTA" is regarded as the beginning of bundled sequences.
+
+=== Bio::Pathway
+
+Bio::Pathway#cliquishness is changed to calculate cliquishness (clustering
+coefficient) for not only undirected graphs but also directed graphs.
+
+In Bio::Pathway#to_matrix, dump_matrix, dump_list, and depth_first_search
+methods, to avoid dependency to the order of objects in Hash#each (and
+each_keys etc.), Bio::Pathway#index is used to specify preferences of
+nodes in a graph.
 
 === Bio::SQL and BioSQL related classes
 
