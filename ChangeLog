@@ -1,8 +1,122 @@
+2009-01-21  Naohisa Goto <ng@bioruby.org>
+
+	* ChangeLog
+
+	  Added recent changes and fixed typo for recent changes.
+
+2009-01-20  Naohisa Goto <ng@bioruby.org>
+
+	* ChangeLog, doc/Changes-1.3.rdoc
+
+	  Added ChangeLog and doc/Changes-1.3.rdoc for recent changes.
+	  (commit be2254ddea152fddf51a2476eeb20d804b1e3123)
+
+	* bioruby.gemspec
+
+	  Added bioruby.gemspec created from bioruby.gemspec.erb.
+	  (commit 4c54597eaf09107c34ad06bc5f5f9cead77a0198)
+
+	* lib/bio/appl/blast/wublast.rb
+	
+	  Bug fix: parsing of exit code failed when ignoring fatal errors
+	  (commit 44ed958acebe4324a9a48e7292c4f0ad5c0fb685)
+
+	  * Bug fix: could not get exit code in WU-BLAST results executed
+	    with a command line option "-nonnegok", "-novalidctxok", or
+	    "-shortqueryok".
+	  * New methods Bio::Blast::WU::Report#exit_code_message and #notes.
+
+	* Rakefile
+
+	  Added package tasks and changed to use ERB instead of eruby.
+	  (commit 7b081c173d3b1cbc46034297ea802a4e06f85b2f)
+
+	* bioruby.gemspec.erb
+
+	  Use git-ls-files command to obtain list of files when available.
+	  (commit 5d5cb24fdd56601bc43ee78facc255ca484245c0)
+
+2009-01-17  Naohisa Goto <ng@bioruby.org>
+
+	* Rakefile
+
+	  Simple Rakefile for dynamic generation of bioruby.gemspec
+	  (commit d5161d164f3520db25bed9aececb962428b9d6bc)
+
+	* bioruby.gemspec.erb
+
+	  bioruby.gemspec is renamed to bioruby.gemspec.erb with modification.
+	  (commit bef311668e4a3be30965ce94d41e7bde4a4e17f9)
+
+	  To prevent the error "Insecure operation - glob" in GitHub,
+	  bioruby.gemspec is renamed to bioruby.gemspec.erb, and modified
+	  to generate the file list by using eruby.
+
+2009-01-15  Naohisa Goto <ng@bioruby.org>
+
+	* doc/Changes-1.3.rdoc
+
+	  Changes-1.3.rd is renamed to Changes-1.3.rdoc with format
+	  conversion, and fixed typo.
+	  (commit 1aef599650d14362ed233dcc9a7db8d3c1db1777)
+
+	  Added details about newly added classes etc.
+	  (commit eda9fd0abbb8e430810468d777d0b585e33c25d8)
+
+2009-01-13  Naohisa Goto <ng@bioruby.org>
+
+	* bioruby.gemspec
+
+	  Changed version to 1.2.9001, set has_rdoc = true and rdoc options.
+	  (commit 1f63d3d5389dd3b0316e9f312b56e62371caa253)
+
+	  * Gem version number changed to 1.2.9.9001 for testing gem.
+	  * Changed to has_rdoc = true.
+	  * README.rdoc and README_DEV.rdoc are now included to gem's rdoc,
+	    and README.rdoc is set to the main page.
+	  * *.yaml is now excluded from rdoc.
+
+2009-01-13  Jan Aerts <jan.aerts@gmail.com>
+
+	* bioruby.gemspec
+
+	  Renamed gemspec.rb to bioruby.gemspec because so github builds
+	  the gem automatically
+	  (commit 561ae16d20f73dcd6fc3d47c41c97c32f9aadb1a)
+	  (committer: Naohisa Goto)
+	  (original commit date: Wed Jun 25 11:01:03 2008 +0100)
+
+	  Edited gemspec because github returned an error while building gem.
+	  (commit f0d91e07550872c2f0d5835e496af1add7759d42)
+	  (committer: Naohisa Goto)
+	  (original commit date: Wed Jun 25 11:03:04 2008 +0100)
+
+2009-01-13  Naohisa Goto <ng@bioruby.org>
+
+	* README.rdoc
+
+	  Changed format from RD to RDoc with some additional URLs
+	  (commit cb8781d701f22cbaf16575bb237a9e0cbf8cd407)
+
+	  Clarified copyright of README.rdoc and BioRuby
+	  (commit acd9e6d6e6046281c6c9c03cff1021449b8e780f)
+
+	  Updated descriptions about RubyGems, and added Ruby 1.9 partial
+	  support
+	  (commit ff63658b255988bf0e7a9f5a2d1523d5104fe588)
+
+2009-01-09  Naohisa Goto <ng@bioruby.org>
+
+	* test/runner,rb
+
+	  Ruby 1.9.1 support: using alternatives if no Test::Unit::AutoRunner
+	  (commit 5df2a9dc0642d4f1e9a4398d6af908780d622a6e)
+
 2009-01-05  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/db/fantom.rb
 
-	  Bug fix: incomplete cgi parameter escaping, amd suppressing warnings.
+	  Bug fix: incomplete cgi parameter escaping, and suppressing warnings.
 	  (commit 754d8815255a0f0db20df9dd74f9f146605d430e)
 
 	  * Bug fix: incomplete cgi parameter escaping for ID string in
@@ -47,7 +161,7 @@
 
 	* lib/bio/appl/, lib/bio/io/ (9 files)
 
-	  Suppress warning messgae "Net::HTTP v1.1 style assignment found"
+	  Suppress warning message "Net::HTTP v1.1 style assignment found"
 	  when $VERBOSE = true.
 	  (commit a2985eb1f3aed383f1b1b391f2184317c7fd21c7)
 
@@ -215,8 +329,8 @@
 	    A bug in cliquishness depending on the subgraph bug is also fixed.
 	  * Bio::Pathway#cliquishness is changed to calculate cliquishness
 	    (clustering coefficient) for not only undirected graphs but also
-	    directed graphs. Note that prvious pending poposed specification
-	    changes written in test_pathway.rb (raises error for directed
+	    directed graphs. Note that pending proposed specification changes
+	    previously written in test_pathway.rb (raises error for directed
 	    graphs, and return 1 for a node that has only one neighbor node)
 	    are rejected.
 	  * Ruby 1.9 support: To avoid dependency to the order of objects
@@ -423,7 +537,7 @@
 	    from the original author's svn repository (svn r2637, newer than
 	    version 3.4.1, latest release version.
 	    $ svn co http://i.loveruby.net/svn/public/setup/trunk setup).
-	  * README.rdoc is modified to replect rename of install.rb to
+	  * README.rdoc is modified to follow the rename of install.rb to
 	    setup.rb.
 
 2008-10-18  Toshiaki Katayama <k@bioruby.org>
@@ -484,7 +598,7 @@
 	  (commit f701e9a71f524ee4373c94ee1bd345e87f16f6ce)
 	
 	  BugFix: ex. /focus="true" in output was /focus="t",
-	  qualifie.value.to_s fix the bug
+	  qualifier.value.to_s fix the bug
 	  (commit f6e1530f3372c87031b551e5c76e24f264891e64)
 	
 	* lib/bio/io/biosql/seqfeature.rb
@@ -578,7 +692,7 @@
 	  "Errno::EACCESS: Permission denied" because it attempts to remove
 	  the temporary file that is previously opened but not explicitly
 	  closed, and, in Windows, the opend file is automatically locked
-	  and proteced from being removed.
+	  and protected from being removed.
 
 	* lib/bio/command.rb, test/functional/bio/test_command.rb,
 	  test/unit/bio/test_command.rb
@@ -696,7 +810,7 @@
 	* lib/bio.rb
 
 	  Added autoload of Bio::NCBI::REST, and BIORUBY_VERSION incremented.
-	  (ommit d6a37b0fcf1fb2f6e134dcdb8e29e79ec2a8fea7)
+	  (commit d6a37b0fcf1fb2f6e134dcdb8e29e79ec2a8fea7)
 
           * Added autoload of Bio::NCBI::REST.
 	  * Added comments for autoloading Bio::Sequence and Bio::Blast.
@@ -732,13 +846,13 @@
 	    Record#attributes_to_hash method, though some tag-value pairs
 	    in same tag name may not be included.
 	  * Bio::GFF::Record#attribute still returns a Hash for compatibility.
-	  * New methods for getting, setting and manupulating attributes:
+	  * New methods for getting, setting and manipulating attributes:
 	    Bio::GFF::GFF2::Record#attribute, #get_attribute, #get_attributes,
 	    #set_attribute, #replace_attributes, #add_attribute,
-	    #delete_attibute, #delete_attributes, and #sort_attributes_by_tag!
+	    #delete_attribute, #delete_attributes, and #sort_attributes_by_tag!
 	    (These are also added to Bio::GFF::GFF3::Record).
 	    It is recommended to use these methods instead of directly
-	    manipulating the array returnd by Record#attributes.
+	    manipulating the array returned by Record#attributes.
 	    * Incompatible change in GFF2 attributes parser: the priority
 	    of '"' (double quote) is greater than ';' (semicolon).
 	    Special treatment of '\;' in GFF2 is now removed.
@@ -785,7 +899,7 @@
 
 	  * By using Bio::FlatFile (e.g. Bio::FlatFile.open), a rpsblast
 	    result generated from multiple query sequences is automatically
-	    splitted into multiple Bio::Blast::RPSBlast::Report objects
+	    split into multiple Bio::Blast::RPSBlast::Report objects
 	    corresponding to query sequences. For the purpose, new
 	    flatfile splitter class Bio::Blast::RPSBlast::RPSBlastSplitter
 	    is added.
@@ -945,7 +1059,7 @@
 	    is changed.
 	  * Added support for "-m 0" (default) format to the GenomeNet BLAST
 	    factory (in Bio::Blast::Remote::GenomeNet).
-	  * Bug fix: wroing example in the RDoc in Bio::Blast#query is changed.
+	  * Bug fix: wrong example in the RDoc in Bio::Blast#query is changed.
 	  * Bio::Blast#set_option (private method) is changed to determine
 	    format correctly.
 
