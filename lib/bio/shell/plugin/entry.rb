@@ -89,7 +89,7 @@ module Bio::Shell
       # KEGG API at http://www.genome.jp/kegg/soap/
       else
         case db.to_s.downcase
-        when 'genbank', 'gb', 'embl', 'emb', 'ddbj', 'dbj'
+        when 'genbank', 'gb', 'embl', 'emb', 'ddbj', 'dbj', 'insdc'
           puts "Retrieving entry from NCBI eUtils"
           entry = efetch(entry_id)
         else

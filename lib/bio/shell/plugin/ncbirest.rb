@@ -13,38 +13,36 @@ module Bio::Shell
   private
 
   # NCBI eUtils EFetch service.
-  # When two or more arguments are given, or multiple accession numbers
-  # are given it acts the same as Bio::NCBI::REST.efetch.
-  # Otherwise, assumes nucleotide or protein accessin is given, and
-  # automatically tries several databases.
+  #
+  # With 1 argument, it gets sequence(s) by using
+  # Bio::NCBI::REST::EFetch.sequence.
+  # Nucleotide or protein database is automatically selected for each id.
+  #
+  # Example:
+  #   efetch('AF237819')
+  # 
+  # With two or more arguments, and when the 2nd argument is Symbol,
+  # it calls the corresponding Bio::NCBI::REST::EFetch class method.
+  #
+  # Example:
+  #   efetch('13054692', :pubmed)
+  #   # the same as Bio::NCBI::REST::EFetch.pubmed('13054692')
+  #
+  # Otherwise, it acts the same as Bio::NCBI::REST.efetch.
   def efetch(ids, *arg)
-    if !arg.empty? or ids.kind_of?(Array) or /\,/ =~ ids then
-      return Bio::NCBI::REST.efetch(ids, *arg)
-    end
-
-    rettype = 'gb'
-    prot_dbs = [ 'protein' ]
-    nucl_dbs = [ 'nuccore', 'nucleotide', 'nucgss', 'nucest' ]
-
-    case ids
-    when /\A[A-Z][A-Z][A-Z][0-9]+(\.[0-9]+)?\z/i,
-      /\A[OPQ][A-Z0-9]+(\.[0-9]+)?\z/i
-      # protein accession
-      dbs = prot_dbs
-    when /\A[0-9]+\z/, /\A[A-Z0-9]+\_[A-Z0-9]+\z/i
-      # NCBI GI or UniProt accession (with fail-safe)
-      dbs = prot_dbs + nucl_dbs
+    if arg.empty? then
+      Bio::NCBI::REST::EFetch.sequence(ids)
+    elsif arg[0].kind_of?(Symbol)
+      meth = arg[0]
+      case meth.to_s
+      when /\A(journal|omim|pmc|pubmed|sequence|taxonomy)\z/
+        Bio::NCBI::REST::EFetch.__send__(meth, ids, *(arg[1..-1]))
+      else
+        nil
+      end
     else
-      # nucleotide accession
-      dbs = nucl_dbs
+      Bio::NCBI::REST.efetch(ids, *arg)
     end
-    result = nil
-    dbs.each do |db|
-      hash = { 'db' => db, 'rettype' => 'gb' }
-      result = Bio::NCBI::REST.efetch(ids, hash)
-      break if result and !result.empty?
-    end
-    result
   end
 
   # NCBI eUtils EInfo
