@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: entry.rb,v 1.10 2007/04/05 23:35:41 trevor Exp $
+# $Id:$
 #
 
 module Bio::Shell
@@ -88,8 +88,14 @@ module Bio::Shell
 
       # KEGG API at http://www.genome.jp/kegg/soap/
       else
-        puts "Retrieving entry from KEGG API (#{arg})"
-        entry = bget(arg)
+        case db.to_s.downcase
+        when 'genbank', 'gb', 'embl', 'emb', 'ddbj', 'dbj'
+          puts "Retrieving entry from NCBI eUtils"
+          entry = efetch(entry_id)
+        else
+          puts "Retrieving entry from KEGG API (#{arg})"
+          entry = bget(arg)
+        end
       end
     end
 
