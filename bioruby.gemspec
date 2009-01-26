@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.2.9.9001"
+  s.version = "1.2.9.9501"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -443,10 +443,13 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = [ 
     "README.rdoc",
     "README_DEV.rdoc",
-    "doc/Changes-1.3.rdoc"
+    "doc/Changes-1.3.rdoc",
+    "ChangeLog"
   ]
   s.rdoc_options << '--main' << 'README.rdoc'
+  s.rdoc_options << '--title' << 'BioRuby API documentation'
   s.rdoc_options << '--exclude' << '\.yaml\z'
+  s.rdoc_options << '--line-numbers' << '--inline-source'
 
   s.require_path = 'lib'
   s.autorequire = 'bio'
