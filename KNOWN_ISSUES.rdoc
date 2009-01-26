@@ -38,6 +38,16 @@ SOAP4R (SOAP and WSDL implementation) is no longer bundled with Ruby 1.9.
 In addition, because of the API changes in recent SOAP4R, some
 classes/modules using SOAP4R may not work.
 
+=== Problem with REXML DoS vulnerability patch before 09-Nov-2008
+
+(WONT_FIX) If you have applied a patch taken from
+http://www.ruby-lang.org/en/news/2008/08/23/dos-vulnerability-in-rexml/
+before 09 Nov 2008 12:40 +0900, because of the bug in the patch,
+parsing of Blast XML results with REXML parser may fail. The bug is already
+fixed and new patch is available on the above URL. Note that some Linux
+distributions would have incorporated the patch in their manners, and may
+have the same problem.
+
 == 2. OS and/or architecture-dependent issues
 
 === Microsoft Windows
