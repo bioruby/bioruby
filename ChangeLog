@@ -1,3 +1,45 @@
+2009-01-26  Naohisa Goto <ng@bioruby.org>
+
+	* KNOWN_ISSUES.rdoc
+
+	  Newly added KNOWN_ISSUES.rdoc that describes known issues and
+	  bugs in current BioRuby.
+	  (commit 06b10262be0bf797a3b133e4697e9b0955408944)
+
+	* lib/bio/shell/plugin/ncbirest.rb, lib/bio/shell.rb
+
+          New shell plugin lib/bio/shell/plugin/ncbirest.rb, providing
+          "efetch", "einfo", "esearch", and "esearch_count" methods.
+          They act the same as those defined in Bio::NCBI::REST, except
+          that efetch automatically selects databases if no options
+          are given and only 1 id is given.
+	  (commit c482e1864aa0dbca3727b1059d4fe3d0aefb3917)
+
+	* lib/bio/shell/plugin/entry.rb
+
+          A shell command "getobj" is changed to use "efetch" method
+          when "gb" or some variant is specified as the database.
+	  (commit c482e1864aa0dbca3727b1059d4fe3d0aefb3917)
+
+	* bioruby.gemspec.erb, bioruby.gemspec
+
+	  * Changed version to 1.2.9.9501.
+          * Changed to use "git ls-files" instead of "git-ls-files", and
+            changed not to redirect to /dev/null.
+          * Special treatment of bioruby.gemspec is removed.
+          * ChangeLog is included to RDoc.
+          * Set RDoc title to "BioRuby API documentation".
+          * Set "--line-numbers" and "--inline-source" to rdoc_options.
+	    (commit f014685090c38eeb64219603f2c7e90574849431)
+	  * added KNOWN_ISSUES.rdoc to files for no-git environment.
+	    (commit 06b10262be0bf797a3b133e4697e9b0955408944)
+	  * Ruby 1.9 support: command execution with shell can raise
+	    an error.
+	    (commit 3179de32f1dc746c8de975917b1718a523800d69)
+	  * bioruby.gemspec is generated from bioruby.gemspec.erb.
+	    (commit 4e1cd3bfb8207b357d5b71cc0fc8366f06491130)
+	    (commit 06b10262be0bf797a3b133e4697e9b0955408944)
+
 2009-01-21  Naohisa Goto <ng@bioruby.org>
 
 	* ChangeLog
