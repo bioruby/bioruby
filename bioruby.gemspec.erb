@@ -18,7 +18,8 @@ Gem::Specification.new do |s|
     # When git-ls-files isn't available, creates a list from current files.
     unless $?.success? or files.size <= 0 then
       files =
-        [ "README.rdoc", "README_DEV.rdoc", "ChangeLog",
+        [ "README.rdoc", "README_DEV.rdoc", 
+          "ChangeLog", "KNOWN_ISSUES.rdoc",
           "Rakefile", "bioruby.gemspec.erb",
           "bioruby.gemspec", "setup.rb",
           "extconf.rb", "rdoc.zsh"

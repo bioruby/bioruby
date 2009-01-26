@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.files = [
     "ChangeLog",
+    "KNOWN_ISSUES.rdoc",
     "README.rdoc",
     "README_DEV.rdoc",
     "Rakefile",
@@ -229,6 +230,7 @@ Gem::Specification.new do |s|
     "lib/bio/shell/plugin/flatfile.rb",
     "lib/bio/shell/plugin/keggapi.rb",
     "lib/bio/shell/plugin/midi.rb",
+    "lib/bio/shell/plugin/ncbirest.rb",
     "lib/bio/shell/plugin/obda.rb",
     "lib/bio/shell/plugin/psort.rb",
     "lib/bio/shell/plugin/seq.rb",
@@ -441,6 +443,7 @@ Gem::Specification.new do |s|
 
   s.has_rdoc = true
   s.extra_rdoc_files = [ 
+    "KNOWN_ISSUES.rdoc",
     "README.rdoc",
     "README_DEV.rdoc",
     "doc/Changes-1.3.rdoc",
