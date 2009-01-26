@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.2.9.9001"
+  s.version = "1.2.9.9501"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -12,8 +12,8 @@ Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.files = [
     <% ###### Below is executed in ERB environment ######
-    # Gets file list from the "git-ls-files" command.
-    files = `git-ls-files 2>/dev/null`.to_s.split(/\r?\n/)
+    # Gets file list from the "git ls-files" command.
+    files = `git ls-files`.to_s.split(/\r?\n/)
     files.delete_if { |x| x.empty? }
     # When git-ls-files isn't available, creates a list from current files.
     unless $?.success? or files.size <= 0 then
@@ -31,7 +31,6 @@ Gem::Specification.new do |s|
               end
             end
     end
-    files.push "bioruby.gemspec" unless files.include?("bioruby.gemspec")
     %><%= 
     files.collect { |x| x.dump }.join(",\n    ")
        ###### Above is executed in ERB environment ######
@@ -48,12 +47,15 @@ Gem::Specification.new do |s|
           rdoc_files = [ 'README.rdoc', 'README_DEV.rdoc',
                          'doc/Changes-1.3.rdoc' ]
         end
+        rdoc_files.push "ChangeLog" unless rdoc_files.include?("ChangeLog")
         rdoc_files.collect { |x| x.dump }.join(",\n    ")
         ###### Above is executed in ERB environment ######
     %>
   ]
   s.rdoc_options << '--main' << 'README.rdoc'
+  s.rdoc_options << '--title' << 'BioRuby API documentation'
   s.rdoc_options << '--exclude' << '\.yaml\z'
+  s.rdoc_options << '--line-numbers' << '--inline-source'
 
   s.require_path = 'lib'
   s.autorequire = 'bio'
