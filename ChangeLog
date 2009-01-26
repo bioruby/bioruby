@@ -11,15 +11,18 @@
           New shell plugin lib/bio/shell/plugin/ncbirest.rb, providing
           "efetch", "einfo", "esearch", and "esearch_count" methods.
           They act the same as those defined in Bio::NCBI::REST, except
-          that efetch automatically selects databases if no options
-          are given and only 1 id is given.
+          that "efetch" fetches entries with pre-defined databases
+	  depending on arguments.
 	  (commit c482e1864aa0dbca3727b1059d4fe3d0aefb3917)
+	  (commit 3360b8905fdbcd4ca050470fdb2f02a7387e8bb9)
 
 	* lib/bio/shell/plugin/entry.rb
 
-          A shell command "getobj" is changed to use "efetch" method
-          when "gb" or some variant is specified as the database.
+          Shell commands "getent" and "getseq" are changed to use
+	  "efetch" method when "gb" or some variant is specified as
+	  the database.
 	  (commit c482e1864aa0dbca3727b1059d4fe3d0aefb3917)
+	  (commit 3360b8905fdbcd4ca050470fdb2f02a7387e8bb9)
 
 	* bioruby.gemspec.erb, bioruby.gemspec
 
