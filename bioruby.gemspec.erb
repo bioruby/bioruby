@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.files = [
     <% ###### Below is executed in ERB environment ######
     # Gets file list from the "git ls-files" command.
-    files = `git ls-files`.to_s.split(/\r?\n/)
+    files = (`git ls-files` rescue nil).to_s.split(/\r?\n/)
     files.delete_if { |x| x.empty? }
     # When git-ls-files isn't available, creates a list from current files.
     unless $?.success? or files.size <= 0 then
