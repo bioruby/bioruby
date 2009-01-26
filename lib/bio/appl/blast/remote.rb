@@ -65,7 +65,8 @@ class Bio::Blast
 
       # Returns a list of available databases for given program.
       #
-      # Note: It parses http://blast.genome.jp/ to obtain database information.
+      # Note: It parses remote sites to obtain database information
+      # (e.g. http://blast.genome.jp/ for Bio::Blast::Remote::GenomeNet).
       # Thus, if the site is changed, this method can not return correct data.
       # Please tell BioRuby developers when the site is changed.
       #
