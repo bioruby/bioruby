@@ -1,6 +1,41 @@
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.2.9.9501"
+  s.version = "<% ###### Below is executed in ERB environment ######
+    # Version can be specified by the environment variable
+    env_ver = ENV['BIORUBY_GEM_VERSION']
+    env_ver = nil if env_ver.to_s.strip.empty?
+
+    # By default, determined from lib/bio/version.rb
+    load "./lib/bio/version.rb" unless defined?(BIO_VERSION_RB_LOADED)
+    case Bio::BIORUBY_EXTRA_VERSION
+    when nil
+      suffix = nil
+    when /\A\.(\d+)\z/
+      suffix = $1
+    when /\-alpha(\d+)/
+      decrement = true
+      suffix = 9000 + $1.to_i
+    when /\-pre(\d+)/
+      decrement = true
+      suffix = 9500 + $1.to_i
+    when /\-rc(\d+)/
+      decrement = true
+      suffix = 9900 + $1.to_i
+    else
+      suffix = "0000"
+    end
+    ver = Bio::BIORUBY_VERSION.reverse.collect do |i|
+            if decrement then
+              i -= 1
+              i < 0 ? (i += 10) : decrement = false
+            end
+            i
+          end.reverse
+    ver.push suffix if suffix
+    %><%= 
+    (env_ver || ver.join('.'))
+       ###### Above is executed in ERB environment ######
+    %>"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
