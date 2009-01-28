@@ -10,7 +10,9 @@
 
 module Bio
 
-  BIORUBY_VERSION = [1, 3, 0].extend(Comparable)
+  autoload :BIORUBY_VERSION, 'bio/version'
+  autoload :BIORUBY_EXTRA_VERSION, 'bio/version'
+  autoload :BIORUBY_VERSION_ID, 'bio/version'
 
   ### Basic data types
 
