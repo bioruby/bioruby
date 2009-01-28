@@ -11,17 +11,19 @@ require 'rake/testtask'
 require 'rake/packagetask'
 require 'rake/gempackagetask'
 require 'rake/rdoctask'
-load "./lib/bio.rb"
+
+load "./lib/bio/version.rb"
+BIO_VERSION_RB_LOADED = true
 
 # Version string for tar.gz, tar.bz2, or zip archive.
 # If nil, use the value in lib/bio.rb
 # Note that gem version is always determined from bioruby.gemspec.erb.
 version = ENV['BIORUBY_VERSION'] || Bio::BIORUBY_VERSION.join(".")
 version = nil if version.to_s.empty?
-extraversion = ENV['BIORUBY_EXTRAVERSION']
+extraversion = ENV['BIORUBY_EXTRA_VERSION'] || Bio::BIORUBY_EXTRA_VERSION
 extraversion = nil if extraversion.to_s.empty?
-version += extraversion.to_s if version and extraversion
 BIORUBY_VERSION = version
+BIORUBY_EXTRA_VERSION = extraversion
 
 task :default => "test"
 
@@ -63,7 +65,8 @@ task :regemspec do
 end
 
 desc "Update #{GEM_SPEC_FILE}"
-file GEM_SPEC_FILE => [ GEM_SPEC_TEMPLATE_FILE, 'Rakefile' ] do |t|
+file GEM_SPEC_FILE => [ GEM_SPEC_TEMPLATE_FILE, 'Rakefile',
+                        'lib/bio/version.rb' ] do |t|
   puts "creates #{GEM_SPEC_FILE}"
   File.open(t.name, 'w') do |w|
     w.print gem_spec_string
@@ -79,7 +82,7 @@ Rake::PackageTask.new("bioruby") do |pkg|
   pkg.need_tar_gz = true
   pkg.package_files.import(spec.files)
   pkg.package_files.include(*tar_additional_files)
-  pkg.version = BIORUBY_VERSION || spec.version
+  pkg.version = (BIORUBY_VERSION || spec.version) + BIORUBY_EXTRA_VERSION.to_s
 end
 
 Rake::GemPackageTask.new(spec) do |pkg|
