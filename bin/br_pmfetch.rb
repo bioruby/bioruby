@@ -6,15 +6,16 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: br_pmfetch.rb,v 1.7 2007/04/05 23:35:39 trevor Exp $
+# $Id:$
 #
 
-PROG_VER  = '$Id: br_pmfetch.rb,v 1.7 2007/04/05 23:35:39 trevor Exp $'
+require 'bio'
+
+PROG_VER  = "Powered by BioRuby #{Bio::BIORUBY_VERSION_ID}"
 PROG_NAME = File.basename($0)
 
 
 require 'getoptlong'
-require 'bio'
 
 
 ### formatting
