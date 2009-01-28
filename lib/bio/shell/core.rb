@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: core.rb,v 1.27 2007/06/28 11:21:40 k Exp $
+# $Id:$
 #
 
 module Bio::Shell::Core
@@ -556,7 +556,7 @@ module Bio::Shell::Ghost
     end
     STDERR.puts
     STDERR.puts
-    STDERR.print "  Version : BioRuby #{Bio::BIORUBY_VERSION.join(".")}"
+    STDERR.print "  Version : BioRuby #{Bio::BIORUBY_VERSION_ID}"
     STDERR.print " / Ruby #{RUBY_VERSION}"
     STDERR.puts
     STDERR.puts
