@@ -184,6 +184,7 @@ module Bio
     autoload :REST,       'bio/io/ncbirest'
   end
 
+  autoload :TogoWS,       'bio/io/togows'
 
   ### Applications
 
