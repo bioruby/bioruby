@@ -1,3 +1,73 @@
+2009-01-29  Naohisa Goto <ng@bioruby.org>
+
+	* doc/Changes-1.3.rdoc
+
+	  Added documents about Bio::TogoWS and Bio::BIORUBY_VERSION.
+
+	* lib/bio/shell/plugin/entry.rb
+
+	  getent (BioRuby shell command) is changed to use EBI Dbfetch or
+	  TogoWS in addition to NCBI or KEGG API.
+	  (commit 0e172590f60dd5a5f27a24ecd230037a7909224c)
+
+	* lib/bio/shell/plugin/togows.rb, lib/bio/shell.rb
+
+	  Added new shell plugin providing accesses to TogoWS REST services.
+	  (commit 03f6720b90e90703c23536a11b3f12c8155550ff)
+
+	* lib/bio.rb
+
+	  Added autoload of Bio::TogoWS.
+	  (commit f8605e1234164a7aa7f236b4e96a4299229753d7)
+
+	* test/functional/bio/io/test_togows.rb,
+	  test/unit/bio/io/test_togows.rb
+
+	  Newly added functional and unit tests for Bio::TogoWS::REST.
+	  (commit f04152b80d07f44f146fa3fa0729facede865aac)
+	
+	* lib/bio/io/togows.rb
+
+	  New class Bio::TogoWS::REST, a REST client for the TogoWS web
+	  service (http://togows.dbcls.jp/site/en/rest.html).
+	  (commit 652d2534163675182b9ce30cbb1dd5efff45cd60)
+
+	* bin/br_pmfetch.rb
+
+	  Changed to use Bio::BIORUBY_VERSION_ID instead of CVS version ID.
+	  (commit f69d538ffa9ded00eb68dd306e65505d03b6c656)
+
+	* lib/bio/shell/core.rb
+
+	  Changed to use BIORUBY_VERSION_ID.
+	  (commit 4ce11656a205e85cae64eca27cef7cd94eb80930)
+
+	* bioruby.gemspec.erb
+
+	  Gem version is now determined from lib/bio/version.rb or
+	  BIORUBY_GEM_VERSION environment variable.
+	  (commit 1811e845e60bc2847ea5717ef936bad93f9f2c87)
+
+	* Rakefile
+
+	  * Changed to use lib/bio/version.rb.
+	  * Environment variable BIORUBY_EXTRAVERSION is renamed to
+	    BIORUBY_EXTRA_VERSION.
+	  * Added dependency on lib/bio/version.rb to bioruby.gemspec.
+	    (commit fb27eaa584cda1bb4cb75e10085996503361c98a)
+	
+	* lib/bio.rb, lib/bio/version.rb
+
+	  Bio::BIORUBY_VERSION is split into lib/bio/version.rb.
+	  (commit 9779398c3fa0e9405a875b754a5243e0d6922c32)
+
+	  * New file lib/bio/version.rb contains BioRuby version information.
+	  * New constants: Bio::BIORUBY_EXTRA_VERSION stores extra version
+	    string (e.g. "-pre1") and Bio::BIORUBY_VERSION_ID stores BioRuby
+	    version string (e.g. "1.3.0-pre1").
+	  * Bio::BIORUBY_VERSION is changed to be frozen. Above two constants
+	    also store frozen values.
+
 2009-01-26  Naohisa Goto <ng@bioruby.org>
 
 	* KNOWN_ISSUES.rdoc
@@ -5,6 +75,7 @@
 	  Newly added KNOWN_ISSUES.rdoc that describes known issues and
 	  bugs in current BioRuby.
 	  (commit 06b10262be0bf797a3b133e4697e9b0955408944)
+	  (commit a65ad8b42613e46b0b4bb0650d6301da0dcc88c9)
 
 	* lib/bio/shell/plugin/ncbirest.rb, lib/bio/shell.rb
 

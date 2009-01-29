@@ -58,6 +58,11 @@ particular use cases.
 
 New method Bio::Locations#to_s is added to support output of features.
 
+=== Bio::TogoWS::REST
+
+TogoWS REST client class is newly added. Information about TogoWS REST service
+can be found on http://togows.dbcls.jp/site/en/rest.html.
+
 == Deprecated classes
 
 === Bio::Features
@@ -73,6 +78,18 @@ with some backward compatibility methods.  The backward compatibility methods
 will soon be removed in the future.
 
 == Incompatible changes
+
+=== Bio::BIORUBY_VERSION
+
+Definition of the constant Bio::BIORUBY_VERSION is moved from lib/bio.rb to
+lib/bio/version.rb. Normally, the autoload mechanism of Ruby correctly loads
+the version.rb, but special scripts directly using bio.rb may be needed to
+be changed.
+
+Bio::BIORUBY_VERSION is changed to be frozen.
+
+New constants Bio::BIORUBY_EXTRA_VERSION and Bio::BIORUBY_VERSION_ID are
+added. See their RDoc for details.
 
 === Bio::Sequence
 
