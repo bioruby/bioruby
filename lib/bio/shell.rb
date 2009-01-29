@@ -37,6 +37,7 @@ module Bio::Shell
   require 'bio/shell/plugin/blast'
   require 'bio/shell/plugin/psort'
   require 'bio/shell/plugin/ncbirest'
+  require 'bio/shell/plugin/togows'
 
   extend Ghost
 
