@@ -866,7 +866,7 @@ module Bio
                 d << sc.scan(/.*/)
                 sc.skip(/\s*/)
               end until !sc.rest? or r = sc.skip(/ *Length *\= *([\,\d]+)\s*\z/)
-              @len = (r ? sc[1].to_i : nil)
+              @len = (r ? sc[1].delete(',').to_i : nil)
               @definition = d.join(" ")
               @parse_hitname = true
             end
