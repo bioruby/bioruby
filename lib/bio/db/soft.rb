@@ -5,10 +5,10 @@
 # Copyright:: Copyright (c) 2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: soft.rb,v 1.2 2007/04/05 23:35:40 trevor Exp $
+#  $Id:$
 #
 
-module Bio #:nodoc:
+module Bio
 
 #
 # bio/db/soft.rb - Interface for SOFT formatted files

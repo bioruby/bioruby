@@ -5,10 +5,10 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: restriction_enzyme.rb,v 1.16 2007/07/16 19:28:48 k Exp $
+#  $Id:$
 #
 
-module Bio #:nodoc:
+module Bio
 
   autoload :REBASE, 'bio/db/rebase'
 
