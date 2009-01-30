@@ -1,5 +1,14 @@
 2009-01-30  Naohisa Goto <ng@bioruby.org>
 
+	* lib/bio/appl/blast/format0.rb
+
+	  Bug fix: incorrect parsing of hit sequence's whole length.
+	  (commit 98e6f57630b2c3394a9403f58e76b102346c56ef)
+
+	  Bug fix: Whole length of a hit sequence is mistakenly parsed when
+	  it contains ",". WU-BLAST parser is also affected in addition to
+	  NCBI BLAST parser.
+
 	* lib/bio/db/lasergene.rb, lib/bio/db/soft.rb,
 	  lib/bio/util/color_scheme.rb, lib/bio/util/contingency_table.rb,
 	  lib/bio/util/restriction_enzyme.rb
