@@ -1,3 +1,13 @@
+2009-01-30  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/lasergene.rb, lib/bio/db/soft.rb,
+	  lib/bio/util/color_scheme.rb, lib/bio/util/contingency_table.rb,
+	  lib/bio/util/restriction_enzyme.rb
+
+	  Removed ":nodoc:" in in "module Bio" which prevents RDoc of the
+	  Bio module.
+	  (commit 458db79b467d40ed02db0d085218f611e7dd5e04)
+
 2009-01-29  Naohisa Goto <ng@bioruby.org>
 
 	* doc/Changes-1.3.rdoc
