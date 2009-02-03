@@ -338,6 +338,13 @@ In 1.1.0:
   instead of a string or nil: score, percent_identity, percent_positive,
   percent_gaps.
 
+--- BioRuby Shell
+
+In 1.1.0:
+
+* Shell commands seq, ent, obj are renamed to getseq, getent, getobj,
+  respectively.
+
 === Deleted files
 
 : lib/bio/db/genbank.rb
