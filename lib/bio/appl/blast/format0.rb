@@ -292,9 +292,14 @@ module Bio
             @f0references.push data.shift
           end
           @f0query = data.shift
+          # In special case, a void line is inserted after query name.
+          if data[0] and /\A +\( *([\,\d]+) *letters *\)\s*\z/ =~ data[0] then
+            @f0query.concat "\n"
+            @f0query.concat data.shift
+          end
           @f0database = data.shift
           # In special case, a void line is inserted after database name.
-          if /\A +[\d\,]+ +sequences\; +[\d\,]+ total +letters\s*\z/ =~ data[0] then
+          if data[0] and /\A +[\d\,]+ +sequences\; +[\d\,]+ total +letters\s*\z/ =~ data[0] then
             @f0database.concat "\n"
             @f0database.concat data.shift
           end
