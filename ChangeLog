@@ -18,6 +18,11 @@
 	  Toshiaki Katayama.
 	  (commit b69dc243787525de065bdf2e6b7da68d6079ab91)
 
+	* test/runner.rb
+
+	  Added workaroud for test-unit-2.0.x.
+	  (commit 475ac6a6b38e8df30de3d9bf4c7e810759ab023d)
+
 2009-02-04  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/blast/format0.rb
