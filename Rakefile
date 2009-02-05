@@ -105,3 +105,39 @@ Rake::RDocTask.new do |r|
   r.main = main
   r.options = opts
 end
+
+# Tutorial files
+TUTORIAL_RD =    'doc/Tutorial.rd'
+TUTORIAL_RD_JA = 'doc/Tutorial.rd.ja'
+
+TUTORIAL_RD_HTML    = TUTORIAL_RD    + '.html'
+TUTORIAL_RD_JA_HTML = TUTORIAL_RD_JA + '.html'
+
+HTMLFILES_TUTORIAL = [ TUTORIAL_RD_HTML, TUTORIAL_RD_JA_HTML ]
+
+# Formatting RD to html.
+def rd2html(src, dst)
+  sh "rd2 -r rd/rd2html-lib.rb --with-css=bioruby.css #{src} > #{dst}"
+end
+
+# Tutorial.rd to Tutorial.rd.html
+file TUTORIAL_RD_HTML => TUTORIAL_RD do |t|
+  rd2html(t.prerequisites[0], t.name)
+end
+
+# Tutorial.rd.ja to Tutorial.html.ja
+file TUTORIAL_RD_JA_HTML => TUTORIAL_RD_JA do |t|
+  rd2html(t.prerequisites[0], t.name)
+end
+
+desc "Update doc/Tutorial*.html"
+task :tutorial2html => HTMLFILES_TUTORIAL
+
+desc "Force update doc/Tutorial*.html"
+task :retutorial2html do
+  # safe_unlink HTMLFILES_TUTORIAL
+  HTMLFILES_TUTORIAL.each do |x|
+    Rake::Task[x].execute
+  end
+end
+
