@@ -1,3 +1,48 @@
+2009-02-05  Naohisa Goto <ng@bioruby.org>
+
+	* Rakefile
+
+	  New task "tutorial2html" to generate html from doc/Tutorial.rd
+	  and doc/Tutorial.rd.ja.
+	  (commit 8d66fae59477f01f12b2fa3509ea34c371102725)
+
+	* doc/Tutorial.rd.html, doc/Tutorial.rd.ja.html
+
+	  Automatically generated tutorial html from RD formatted documents.
+	  (commit 90c4a23eea08b06dd758aaa0a53bea789602d252)
+
+	* doc/bioruby.css
+
+	  Newly added stylesheet for the tutorial html files. The bioruby.css
+	  have been used in http://bioruby.org/ and have been maintained by
+	  Toshiaki Katayama.
+	  (commit b69dc243787525de065bdf2e6b7da68d6079ab91)
+
+2009-02-04  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Bug fix: a null line can be inserted after query name lines.
+	  (commit bea9ce35b4177f407575ed0752c36bba8a50f502)
+
+2009-02-03  Naohisa Goto <ng@bioruby.org>
+
+	* Tutorial.rd.ja
+
+	  * Document bug: BioRuby shell commands seq, ent, obj were renamed to
+	    getseq, getent, getobj, respectively. Thanks to Hiroyuki Mishima
+	    who reports the issue ([BioRuby-ja]).
+	  * Changes of returned value of getseq are also reflected to the
+	    document.
+	  * Recommended Ruby version and installation procedure are also
+	    changed.
+	  (commit 916e96ca549db71a550e7a5d3bd49a3149614313)
+
+	* doc/Changes-0.7.rd
+
+	  Documentation forgotten in 1.1.0: rename of BioRuby shell commands.
+	  (commit 64113314caac3453b4cc3b80ece9b5fb5841e069)
+
 2009-01-30  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/blast/format0.rb
