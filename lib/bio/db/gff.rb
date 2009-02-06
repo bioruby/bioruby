@@ -1081,12 +1081,12 @@ module Bio
 
         # shortcut to the ID attribute
         def id
-          @attributes['ID']
+          get_attribute('ID')
         end
 
         # set ID attribute
         def id=(str)
-          @attributes['ID'] = str
+          set_attribute('ID', str)
         end
 
         # aliases for Column 1 (formerly "seqname")
