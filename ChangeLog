@@ -1,3 +1,14 @@
+2009-02-06  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/gff.rb, test/unit/bio/db/test_gff.rb
+
+	  * Bug fix: Bio::GFF::GFF3::Record#id and #id= should be changed
+	    to follow the previous incompatible change of @attributes.
+	    Thanks to Tomoaki NISHIYAMA who reports the bug ([BioRuby]
+	    GFF3 status (possible bug?)).
+	  * Unit tests are added.
+	  (commit 5258d88ef98a12fd7829eb86aa8664a18a672a43)
+
 2009-02-05  Naohisa Goto <ng@bioruby.org>
 
 	* Rakefile
