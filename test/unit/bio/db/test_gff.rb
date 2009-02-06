@@ -859,6 +859,7 @@ END_OF_DATA
       obj = Bio::GFF::GFF3::Record.new(data)
       assert_equal('test03', obj.id)
       assert_equal('test_id', obj.id = 'test_id')
+      assert_equal('test_id', obj.id)
     end
 
     def test_id_set
