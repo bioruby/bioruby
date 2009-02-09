@@ -877,7 +877,7 @@ END_OF_DATA
     def test_id_multiple
       # Note: Two ID attributes in a record is illegal in GFF3.
       data =<<END_OF_DATA
-ctg123	src	CDS	456	788	1e-10	-	2	ID=test03,test04
+ctg123	src	CDS	456	788	.	-	2	ID=test03,test04
 END_OF_DATA
       obj = Bio::GFF::GFF3::Record.new(data)
       assert_equal([ [ 'ID', 'test03' ], [ 'ID', 'test04' ] ],
@@ -887,14 +887,14 @@ END_OF_DATA
       assert_equal('test_id', obj.id)
       assert_equal([ [ 'ID', 'test_id' ], [ 'ID', 'test04' ] ],
                    obj.attributes)
-      str = "ctg123\tsrc\tCDS\t456\t788\t1.0e-10\t-\t2\tID=test_id,test04\n"
+      str = "ctg123\tsrc\tCDS\t456\t788\t.\t-\t2\tID=test_id,test04\n"
       assert_equal(str, obj.to_s)
     end
 
     def test_id_multiple2
       # Note: Two ID attributes in a record is illegal in GFF3.
       data =<<END_OF_DATA
-ctg123	src	CDS	456	788	1e-10	-	2	ID=test03;ID=test04
+ctg123	src	CDS	456	788	.	-	2	ID=test03;ID=test04
 END_OF_DATA
       obj = Bio::GFF::GFF3::Record.new(data)
       assert_equal([ [ 'ID', 'test03' ], [ 'ID', 'test04' ] ],
@@ -907,7 +907,7 @@ END_OF_DATA
 
       # The "XXX=test03;XXX=test04" is automatically changed to
       # "XXX=test03,test04", as defined in the GFF3 spec.
-      str = "ctg123\tsrc\tCDS\t456\t788\t1.0e-10\t-\t2\tID=test_id,test04\n"
+      str = "ctg123\tsrc\tCDS\t456\t788\t.\t-\t2\tID=test_id,test04\n"
       assert_equal(str, obj.to_s)
     end
 
