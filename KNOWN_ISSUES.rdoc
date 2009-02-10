@@ -52,15 +52,27 @@ have the same problem.
 
 === Microsoft Windows
 
-Following 4 tests failed because of the processing of file contents in the
-text mode.
+==== Text mode issues
+
+Following 4 tests failed on mswin32 (and maybe on mingw32 and bccwin32)
+because of the conversion of line feed codes in the text mode.
 
 * test_ended_pos and test_start_pos in test/unit/bio/io/test_flatfile.rb
 * test_pos in test/unit/bio/io/flatfile/test_buffer.rb
 * test_entry_pos in test/unit/bio/appl/blast/test_rpsblast.rb
 
+This indicates that br_bioflat.rb and Bio::FlatFileIndex may create
+incorrect indexes on mswin32, mingw32, and bccwin32. In addition,
+Bio::FlatFile may return incorrect data.
+
+==== Windows 95/98/98SE/ME
+
 (WONT_FIX) Some methods that call external programs may not work in
 Windows 95/98/98SE/ME because of the limitation of COMMAND.COM.
+
+=== OpenVMS, BeOS, OS/2, djgpp, Windows CE
+
+(WONT_FIX) BioRuby may not work on these platforms.
 
 == 3. Known issues and bugs in BioRuby
 
