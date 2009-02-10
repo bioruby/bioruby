@@ -1,3 +1,21 @@
+2009-02-10  Naohisa Goto <ng@bioruby.org>
+
+	* KNOWN_ISSUES.rdoc
+
+	  Added details about the text mode issue on mswin32/mingw32/bccwin32
+	  and about non-UNIX/Windows systems.
+	  (commit 342a167a23d3b078bd77b3f16f0ceb1aa071df66)
+
+2009-02-09  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/db/test_gff.rb
+
+	  Test bug fix: test_gff.rb failed in some environment (e.g. Windows)
+	  because the default formatting rule of Float#to_s depends on the
+	  libc implementation.
+	  (commit f39bf88ed6a41bd328372ee7de7a23902235f833)
+
+
 2009-02-06  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/db/gff.rb, test/unit/bio/db/test_gff.rb
@@ -8,6 +26,7 @@
 	    GFF3 status (possible bug?)).
 	  * Unit tests are added.
 	  (commit 5258d88ef98a12fd7829eb86aa8664a18a672a43)
+	  (commit c0c7708b3e91b0d2f2d0d50a4a0ba36928057cc8)
 
 2009-02-05  Naohisa Goto <ng@bioruby.org>
 
