@@ -1,3 +1,27 @@
+2009-02-20  Naohisa Goto <ng@bioruby.org>
+
+	* BioRuby 1.3.0 is released.
+
+2009-02-19  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/version.rb
+
+	  Preparation for bioruby-1.3.0 release.
+	  (commit fd7fc9f78bc5f4d9a10b3c0d457d9781c9ec2e49)
+
+	* bioruby.gemspec.erb
+
+	  Fixed a logic to determine whether in git repository, and file
+	  lists are changed to be sorted.
+	  (commit ede0c0d7aeab078b6183c4e0e7c74faec32739f7)
+
+2009-02-18  Naohisa Goto <ng@bioruby.org>
+
+	* README.rdoc
+
+	  Added list of document files bundled in the BioRuby distribution.
+	  (commit 92748f848e4708766e44c22b2f02ac662491971f)
+
 2009-02-10  Naohisa Goto <ng@bioruby.org>
 
 	* KNOWN_ISSUES.rdoc
