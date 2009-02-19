@@ -321,7 +321,7 @@ module Bio
     def test_translate_5
       assert_equal("", @obj.translate(5))
     end
-    def test_translate_5
+    def test_translate_6
       assert_equal("", @obj.translate(6))
     end
   end
