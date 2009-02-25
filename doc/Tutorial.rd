@@ -2,45 +2,41 @@
 #
 # A possible test run could be from rdtool (on Debian package rdtool)
 #
-#   ruby -I lib ./bin/rd2 ~/cvs/opensource/bioruby/doc/Tutorial.rd
+#   ruby -I lib ./bin/rd2 $BIORUBYPATH/doc/Tutorial.rd
 #
 # or with style sheet:
 #
 #   ruby -I lib ./bin/rd2 -r rd/rd2html-lib.rb --with-c
-ss=bioruby.css ~/cvs/opensource/bioruby/doc/Tutorial.rd > ~/bioruby.html
+ss=bioruby.css $BIORUBYPATH/doc/Tutorial.rd > ~/bioruby.html
 #
 # in Debian:
 #
-#   rd2 -r rd/rd2html-lib  --with-css="/home/wrk/izip/cvs/opensource/bioruby/lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby.css" Tutorial.rd > index.html
+#   rd2 -r rd/rd2html-lib  --with-css="$BIORUBYPATH/lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby.css" Tutorial.rd > index.html
 #
 # A common problem is tabs in the text file! TABs are not allowed.
 #
 # To add tests run Toshiaki's bioruby shell and paste in the query plus
 # results.
 #
-# To run the embedded Ruby doctests you can get the doctest.rb from Pjotr.
+# To run the embedded Ruby doctests you can use the rubydoctest tool.
 
 =begin
 #doctest Testing bioruby
 
 = BioRuby Tutorial
 
-Editor: PjotrPrins <p .at. bioruby.org>
+Editor: Pjotr Prins
 
 * Copyright (C) 2001-2003 KATAYAMA Toshiaki <k .at. bioruby.org>
-* Copyright (C) 2005-2008 Pjotr Prins, Naohisa Goto and others
+* Copyright (C) 2005-2009 Pjotr Prins, Naohisa Goto and others
 
-The latest version resides in the CVS repository ./doc/((<Tutorial.rd|URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/*checkout*/bioruby/doc/Tutorial.rd?rev=HEAD&cvsroot=bioruby&content-type=text/plain>)). This one was updated:
-
-  $Id: Tutorial.rd,v 1.22 2008/05/19 12:22:05 pjotr Exp $ 
-
-in preparation for the ((<BioHackathlon 2008|URL:http://hackathon.dbcls.jp/>))
+The latest version resides in the GIT source code repository:  ./doc/((<Tutorial.rd|http://github.com/bioruby/bioruby/tree/master/doc/Tutorial.rd>)).
 
 == Introduction
 
 This is a tutorial for using Bioruby. A basic knowledge of Ruby is required.
 If you want to know more about the programming langauge Ruby we recommend the
-excellent book ((<Programming Ruby|URL:http://www.pragprog.com/titles/ruby>))
+latest Ruby book ((<Programming Ruby|URL:http://www.pragprog.com/titles/ruby>))
 by Dave Thomas and Andy Hunt - some of it is online
 ((<here|URL:http://www.rubycentral.com/pickaxe/>)).
 
@@ -182,7 +178,7 @@ way of writing concise and clear code using 'closures'. Each sliding
 window creates a subsequence which is supplied to the enclosed block
 through a variable named +s+.
 
-Show average percentage of GC content for 20 bases (stepping the default one base at a time)
+* Show average percentage of GC content for 20 bases (stepping the default one base at a time)
 
   bioruby> seq = Bio::Sequence::NA.new("atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa")
   ==> "atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa"
@@ -196,7 +192,7 @@ Since the class of each subsequence is the same as original sequence
 (Bio::Sequence::NA or Bio::Sequence::AA or Bio::Sequence), you can
 use all methods on the subsequence. For example,
 
-Shows translation results for 15 bases shifting a codon at a time
+* Shows translation results for 15 bases shifting a codon at a time
 
   bioruby> a = []
   bioruby> seq.window_search(15, 3) do |s|
@@ -209,10 +205,10 @@ Shows translation results for 15 bases shifting a codon at a time
 Finally, the window_search method returns the last leftover
 subsequence. This allows for example
 
-Divide a genome sequence into sections of 10000bp and
-output FASTA formatted sequences (line width 60 chars). The 1000bp at the
-start and end of each subsequence overlapped. At the 3' end of the sequence
-the leftover is also added:
+* Divide a genome sequence into sections of 10000bp and
+  output FASTA formatted sequences (line width 60 chars). The 1000bp at the
+  start and end of each subsequence overlapped. At the 3' end of the sequence
+  the leftover is also added:
 
     i = 1
     textwidth=60
@@ -229,7 +225,7 @@ size to equal values.
 
 Other examples
 
-Count the codon usage
+* Count the codon usage
 
   bioruby> codon_usage = Hash.new(0)
   bioruby> seq.window_search(3, 3) do |s|
@@ -239,7 +235,7 @@ Count the codon usage
   ==> {"cat"=>1, "aaa"=>3, "cca"=>1, "att"=>2, "aga"=>1, "atc"=>1, "cta"=>1, "gca"=>1, "cga"=>1, "tca"=>3, "aag"=>1, "tcc"=>1, "atg"=>1}
 
 
-Calculate molecular weight for each 10-aa peptide (or 10-nt nucleic acid)
+* Calculate molecular weight for each 10-aa peptide (or 10-nt nucleic acid)
 
   bioruby> a = []
   bioruby> seq.window_search(10, 10) do |s|
@@ -398,12 +394,12 @@ very complicated:
       end
     end
 
-Note: In this example Feature#assoc method makes a Hash from a
-feature object. It is useful because you can get data from the hash
-by using qualifiers as keys.
-(But there is a risk some information is lost when two or more
-qualifiers are the same. Therefore an Array is returned by
-Feature#feature)
+* Note: In this example Feature#assoc method makes a Hash from a
+  feature object. It is useful because you can get data from the hash
+  by using qualifiers as keys.
+  (But there is a risk some information is lost when two or more
+  qualifiers are the same. Therefore an Array is returned by
+  Feature#feature)
 
 Bio::Sequence#splicing splices subsequence from nucleic acid sequence
 according to location information used in GenBank, EMBL and DDBJ.
@@ -417,11 +413,11 @@ feature style location text but also Bio::Locations object. For more
 information about location format and Bio::Locations class, see
 bio/location.rb.
 
-Splice according to location string used in a GenBank entry
+* Splice according to location string used in a GenBank entry
 
     naseq.splicing('join(2035..2050,complement(1775..1818),13..345')
 
-Generate Bio::Locations object and pass the splicing method
+* Generate Bio::Locations object and pass the splicing method
 
     locs = Bio::Locations.new('join((8298.8300)..10206,1..855)')
     naseq.splicing(locs)
@@ -429,7 +425,7 @@ Generate Bio::Locations object and pass the splicing method
 You can also use the splicing method for amino acid sequences
 (Bio::Sequence::AA objects).
 
-Splicing peptide from a protein (e.g. signal peptide)
+* Splicing peptide from a protein (e.g. signal peptide)
 
     aaseq.splicing('21..119')
 
@@ -469,7 +465,7 @@ to a FASTA file can be found in sample/any2fasta.rb. With this technique it is
 possible to write a Unix type grep/sort pipe for sequence information. One
 example using scripts in the BIORUBY sample folder:
 
-  fastagrep.rb '/At|Dm/' database.seq | fastasort.rb
+ fastagrep.rb '/At|Dm/' database.seq | fastasort.rb
 
 greps the database for Arabidopsis and Drosophila entries and sorts the output
 to FASTA.
@@ -503,25 +499,25 @@ Array and BioPerl's Bio::SimpleAlign.  A very simple example is:
   # creates alignment object
   bioruby> a = Bio::Alignment.new(seqs)
   bioruby> a.consensus 
-  ==> "a?gc?"
+  ==> "xa?gc?"
   # shows IUPAC consensus
-  a.consensus_iupac 
-  ==> "ahgcr"
+  p a.consensus_iupac       # ==> "ahgcr"
+
   # iterates over each seq
   a.each { |x| p x }
-  # ==>
-  #    "atgca"
-  #    "aagca"
-  #    "acgca"
-  #    "acgcg"
+    # ==>
+    #    "atgca"
+    #    "aagca"
+    #    "acgca"
+    #    "acgcg"
   # iterates over each site
   a.each_site { |x| p x }
-  # ==>
-  #    ["a", "a", "a", "a"]
-  #    ["t", "a", "c", "c"]
-  #    ["g", "g", "g", "g"]
-  #    ["c", "c", "c", "c"]
-  #    ["a", "a", "a", "g"]
+    # ==>
+    #    ["a", "a", "a", "a"]
+    #    ["t", "a", "c", "c"]
+    #    ["g", "g", "g", "g"]
+    #    ["c", "c", "c", "c"]
+    #    ["a", "a", "a", "g"]
 
   # doing alignment by using CLUSTAL W.
   # clustalw command must be installed.
@@ -1010,10 +1006,6 @@ BioRuby and other projects' members (2002).
 Here we give a quick overview. Check out
 ((<URL:http://obda.open-bio.org/>)) for more extensive details.
 
-The specification is stored on CVS repository at cvs.open-bio.org,
-also available via http from:
-((<URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/obda-specs/?cvsroot=obf-common>))
-
 == BioRegistry
 
 BioRegistry allows for locating retrieval methods and database
@@ -1284,13 +1276,13 @@ carefully that come with each package.
 Ruby fails to find the BioRuby libraries - add it to the RUBYLIB path, or pass
 it to the interpeter. For example:
 
-  ruby -I~/cvs/bioruby/lib yourprogram.rb
+  ruby -I$BIORUBYPATH/lib yourprogram.rb
 
 == Modifying this page
 
-IMPORTANT NOTICE: This page is maintained in the BioRuby CVS
+IMPORTANT NOTICE: This page is maintained in the BioRuby source code 
 repository. Please edit the file there otherwise changes may get
-lost. See ((<BioRuby Developer Information>)) for CVS and mailing list
+lost. See ((<BioRuby Developer Information>)) for repository and mailing list
 access.
 
 =end
