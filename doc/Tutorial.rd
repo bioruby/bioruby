@@ -6,12 +6,11 @@
 #
 # or with style sheet:
 #
-#   ruby -I lib ./bin/rd2 -r rd/rd2html-lib.rb --with-c
-ss=bioruby.css $BIORUBYPATH/doc/Tutorial.rd > ~/bioruby.html
+#   ruby -I lib ./bin/rd2 -r rd/rd2html-lib.rb --with-css=bioruby.css $BIORUBYPATH/doc/Tutorial.rd > ~/bioruby.html
 #
 # in Debian:
 #
-#   rd2 -r rd/rd2html-lib  --with-css="$BIORUBYPATH/lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby.css" Tutorial.rd > index.html
+#   rd2 -r rd/rd2html-lib  --with-css="../lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby.css" Tutorial.rd > Tutorial.rd.html
 #
 # A common problem is tabs in the text file! TABs are not allowed.
 #
@@ -25,12 +24,13 @@ ss=bioruby.css $BIORUBYPATH/doc/Tutorial.rd > ~/bioruby.html
 
 = BioRuby Tutorial
 
-Editor: Pjotr Prins
-
 * Copyright (C) 2001-2003 KATAYAMA Toshiaki <k .at. bioruby.org>
 * Copyright (C) 2005-2009 Pjotr Prins, Naohisa Goto and others
 
-The latest version resides in the GIT source code repository:  ./doc/((<Tutorial.rd|http://github.com/bioruby/bioruby/tree/master/doc/Tutorial.rd>)).
+This document was last modified: 2009/03/02
+Current editor: Pjotr Prins <p .at. bioruby.org>
+
+The latest version resides in the GIT source code repository:  ./doc/((<Tutorial.rd|URL:http://github.com/pjotrp/bioruby/raw/documentation/doc/Tutorial.rd>)).
 
 == Introduction
 
@@ -830,13 +830,30 @@ Bio::Blast::Report.new(or Bio::Blast::Default::Report.new):
 When you write above routines, please send to the BioRuby project and
 they may be included.
 
+== Gene Ontology (GO)
+
+Gene Ontologies can be fetched through the Ensembl package:
+
+   require 'ensembl'
+   Ensembl::Core::DBConnection.connect('drosophila_melanogaster')
+   infile = IO.readlines(ARGV.shift) # reading your comma-separated accession mapping file (one line per mapping)
+   infile.each do |line|
+     accs = line.split(",")          # Split the comma-sep.entries into an array
+     drosphila_acc = accs.shift      # the first entry is the Drosophila acc
+     mosq_acc = accs.shift           # the second entry is you Mosq. acc
+     gene = Ensembl::Core::Gene.find_by_stable_id(drosophila_acc)
+     print "#{mosq_acc}"
+     gene.go_terms.each do |go|
+        print ",#{go}"
+      end
+    end
+
+Prints each mosq. accession/uniq identifier and the GO terms from the Drosphila
+homologues.
+
 == Generate a reference list using PubMed (Bio::PubMed)
 
 Below script is an example which seaches PubMed and creates a reference list.
-
-    #!/usr/bin/env ruby
-
-    require 'bio'
 
     ARGV.each do |id|
       entry = Bio::PubMed.query(id)     # searches PubMed and get entry
@@ -1245,6 +1262,10 @@ For a tutorial see ((<URL:http://rtags.rubyforge.org/>))
 Please refer to KEGG_API.rd.ja (English version: ((<URL:http://www.genome.jp/kegg/soap/doc/keggapi_manual.html>)) ) and
 
   * ((<URL:http://www.genome.jp/kegg/soap/>))
+
+== ENSEMBL API
+
+See ((<URL:http://wiki.github.com/jandot/ruby-ensembl-api>))
 
 == Comparing BioProjects
 
