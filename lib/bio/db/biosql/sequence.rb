@@ -31,8 +31,8 @@ module Bio
           #return an array of bioentry_qualifier_values
           begin
 #DELETE            ontology_annotation_tags = Ontology.find_or_create({:name=>'Annotation Tags'})
-            term  = Term.first(:name=>synonym) || Term.create({:name => synonym, :ontology=> Ontology.first(:name => 'Annotation Tags')})
-            bioentry_qualifier_values = @entry.bioentry_qualifier_values.all(:term_id=>term.term_id)
+            term  = Term.first(:conditions=>["name = ?",synonym]) || Term.create({:name => synonym, :ontology=> Ontology.first(:conditions=>["name = ?",'Annotation Tags'])})
+            bioentry_qualifier_values = @entry.bioentry_qualifier_values.all(:conditions=>["term_id = ?",term.term_id])
             bioentry_qualifier_values.map{|row| row.value} unless bioentry_qualifier_values.nil?
           rescue Exception => e
             puts "Reader Error: #{synonym} #{e.message}"
@@ -42,8 +42,8 @@ module Bio
         send :define_method, method_writer_operator do |value|
           begin
 #DELETE            ontology_annotation_tags = Ontology.find_or_create({:name=>'Annotation Tags'})
-            term  = Term.first(:name=>synonym) || Term.create({:name => synonym, :ontology=> Ontology.first(:name => 'Annotation Tags')})
-            datas = @entry.bioentry_qualifier_values.all(:term_id=>term.term_id)
+            term  = Term.first(:conditions=>["name = ?",synonym]) || Term.create({:name => synonym, :ontology=> Ontology.first(:conditions=>["name = ?",'Annotation Tags'])})
+            datas = @entry.bioentry_qualifier_values.all(:conditions=>["term_id = ?",term.term_id])
             #add an element incrementing the rank or setting the first to 1
             be_qu_va=@entry.bioentry_qualifier_values.build({:term=>term, :rank=>(datas.empty? ? 1 : datas.last.rank.succ), :value=>value})
             be_qu_va.save
@@ -55,7 +55,7 @@ module Bio
         send :define_method, method_writer_modder do |value, rank|
           begin
 #DELETE            ontology_annotation_tags = Ontology.find_or_create({:name=>'Annotation Tags'})
-            term  = Term.first(:name=>synonym) || Term.create({:name => synonym, :ontology=> Ontology.first(:name => 'Annotation Tags')})
+            term  = Term.first(:conditions=>["name = ?",synonym]) || Term.create({:name => synonym, :ontology=> Ontology.first(:conditions=>["name = ?",'Annotation Tags'])})
             data = @entry.bioentry_qualifier_values.all(:term_id=>term.term_id, :rank=>rank)
             if data.nil?
               send method_writer_operator, value
@@ -208,7 +208,7 @@ module Bio
 
       def organism=(value)
         #FIX there is a shortcut
-        taxon_name=TaxonName.first(:name=>value.gsub(/\s+\(.+\)/,''),:name_class=>'scientific name')
+        taxon_name=TaxonName.first(:conditions=>["name = ? and name_class = ?",value.gsub(/\s+\(.+\)/,''),'scientific name'])
         if taxon_name.nil?
           puts "Error value doesn't exists in taxon_name table with scientific name constraint."
         else
@@ -280,10 +280,10 @@ module Bio
         #ToDo: avoid Ontology find here, probably more efficient create class variables
 #DELETE        type_term_ontology = Ontology.find_or_create({:name=>'SeqFeature Keys'})
         puts "feature:type_term = #{feat.feature}" if $DEBUG
-        type_term = Term.first(:name => feat.feature) || Term.create({:name=>feat.feature, :ontology=>Ontology.first(:name => 'SeqFeature Keys')})
+        type_term = Term.first(:conditions=>["name = ?", feat.feature]) || Term.create({:name=>feat.feature, :ontology=>Ontology.first(:conditions=>["name = ?",'SeqFeature Keys'])})
 #DELETE        source_term_ontology = Ontology.find_or_create({:name=>'SeqFeature Sources'})
         puts "feature:source_term" if $DEBUG
-        source_term = Term.first(:name =>'EMBLGenBankSwit')
+        source_term = Term.first(:conditions=>["name = ?",'EMBLGenBankSwit'])
         puts "feature:seqfeature" if $DEBUG
         seqfeature = @entry.seqfeatures.build({:source_term=>source_term, :type_term=>type_term, :rank=>@entry.seqfeatures.count.succ, :display_name=>''})
         seqfeature.save
@@ -298,7 +298,7 @@ module Bio
         puts "feature:qualifier" if $DEBUG
         feat.each do |qualifier|
 #DELETE          qual_term = Term.find_or_create({:name=>qualifier.qualifier}, {:ontology=>qual_term_ontology})
-          qual_term = Term.first(:name => qualifier.qualifier) || Term.create({:name=>qualifier.qualifier, :ontology=>Ontology.first(:name => 'Annotation Tags')})
+          qual_term = Term.first(:conditions=>["name = ?", qualifier.qualifier]) || Term.create({:name=>qualifier.qualifier, :ontology=>Ontology.first(:conditions=>["name = ?", 'Annotation Tags'])})
           qual = seqfeature.seqfeature_qualifier_values.build({:seqfeature=>seqfeature, :term=>qual_term, :value=>qualifier.value.to_s, :rank=>seqfeature.seqfeature_qualifier_values.count.succ})
           qual.save
 
@@ -398,7 +398,7 @@ module Bio
         locations << "affiliations=#{value.affiliations}" unless value.affiliations.empty?
         locations << "comments=#{value.comments.join('~')}"unless value.comments.nil?
         start_pos, end_pos = value.sequence_position ? value.sequence_position.gsub(/\s*/,'').split('-') : [nil,nil]
-        reference= Reference.first({:title=>value.title}) || Reference.create({:title=>value.title,:authors=>value.authors.join(' '), :location=>locations.join('|')})
+        reference= Reference.first(:conditions=>["title = ?",value.title]) || Reference.create({:title=>value.title,:authors=>value.authors.join(' '), :location=>locations.join('|')})
         bio_reference=@entry.bioentry_references.build({:reference=>reference,:rank=>value.embl_gb_record_number, :start_pos=>start_pos, :end_pos=>end_pos})
         bio_reference.save
       end
