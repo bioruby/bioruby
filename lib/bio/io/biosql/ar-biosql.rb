@@ -64,6 +64,7 @@ module Bio
       set_sequence_name "bieontry_relationship_pk_seq"
       belongs_to :object_bioentry, :class_name => "Bioentry"
       belongs_to :subject_bioentry, :class_name => "Bioentry"
+      belongs_to :term
     end
     class Biosequence < DummyBase
       set_primary_key "bioentry_id"
