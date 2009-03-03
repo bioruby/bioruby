@@ -67,7 +67,7 @@ module Bio
       belongs_to :term
     end
     class Biosequence < DummyBase
-      set_primary_key "bioentry_id"
+      set_primary_keys :bioentry_id, :version
       #delete				set_sequence_name "biosequence_pk_seq"
       belongs_to :bioentry, :foreign_key=>"bioentry_id"
       #has_one :bioentry
