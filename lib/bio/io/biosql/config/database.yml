@@ -2,10 +2,11 @@
 #User can configure it's db here
 
 development:
-  adapter: postgresql
-  database: biorails_development
-  username: rails
-  password: 
+  adapter: jdbcmysql
+  database: bioseq
+  username: febo
+  password:
+  hostname: localhost
 
 test:
   adapter: postgresql
