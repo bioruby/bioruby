@@ -339,11 +339,11 @@ module Bio
       #report parents and exclude info with "no rank". Now I report rank == class but ... Question ? Have to be reported taxonomy with rank=="class"?
       def taxonomy
         tax = []
-        taxon = Taxon.get!(@entry.taxon.parent_taxon_id)
+        taxon = Taxon.first(:conditions=>["taxon_id = ?",@entry.taxon.parent_taxon_id])
         while taxon and taxon.taxon_id != taxon.parent_taxon_id and taxon.node_rank!='no rank'
           tax << taxon.taxon_scientific_name.name
           #Note: I don't like this call very much, correct with a relationship in the ref class.
-          taxon = Taxon.get!(taxon.parent_taxon_id)
+          taxon = Taxon.first(:conditions=>["taxon_id = ?",taxon.parent_taxon_id])
         end
         tax.reverse
       end
