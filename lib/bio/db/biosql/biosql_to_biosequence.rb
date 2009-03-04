@@ -63,5 +63,15 @@ module Bio::Sequence::Adapter::BioSQL
   
   def_biosequence_adapter :comments
 
+  #--
+  #TODO: .to_biosequence.output(:genbank) some major and minor problems.
+  #1) Major. GI: is not exported IN(VERSION     X64011.1  GI:44010),OUT(VERSION     X64011.1)
+  #1.1) Db storage is ok, GI is saved into identifier of bioentry
+  #2) Moderate. date wrong format IN(26-SEP-2006), OUT(2006-09-26)
+  #3) Minor. Organism in output as more terms.
+  #4) Minor. Title has a dot at the end, input was without
+  #++
+  #def_biosequence_adapter :other_seqids, :identifier
+
 end #module Bio::Sequence::Adapter::BioSQL
 
