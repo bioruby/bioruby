@@ -36,17 +36,17 @@ module Bio
     autoload :Sequence, 'bio/db/biosql/sequence'
 
     def self.fetch_id(id)
-      Bio::SQL::Bioentry.get(id)
+      Bio::SQL::Bioentry.find(id)
     end
 
     def self.fetch_accession(accession)
 #     Bio::SQL::Bioentry.exists?(:accession => accession) ? Bio::SQL::Sequence.new(:entry=>Bio::SQL::Bioentry.find_by_accession(accession)) : nil
-      Bio::SQL::Sequence.new(:entry=>Bio::SQL::Bioentry.first(:accession=>accession.upcase))
+      Bio::SQL::Sequence.new(:entry=>Bio::SQL::Bioentry.find_by_accession(accession.upcase))
     end
 
     def self.exists_accession(accession)
 #      Bio::SQL::Bioentry.find_by_accession(accession.upcase).nil? ? false : true
-      !Bio::SQL::Bioentry.first(:accession=>accession.upcase).nil?
+      !Bio::SQL::Bioentry.find_by_accession(accession.upcase).nil?
     end
 
     def self.exists_database(name)
@@ -71,7 +71,7 @@ module Bio
     end
 
     def self.delete_entry_accession(accession)
-      Bio::SQL::Bioentry.first(accession.upcase).destroy!
+      Bio::SQL::Bioentry.find_by_accession(accession.upcase).destroy!
     end
 
   end #biosql
