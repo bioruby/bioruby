@@ -257,6 +257,7 @@ module Bio
       def identifier
         @entry.identifier
       end
+      alias other_seqids identifier
 
       def identifier=(value)
         @entry.identifier=value
