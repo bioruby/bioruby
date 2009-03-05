@@ -45,7 +45,9 @@ module Bio::Sequence::Adapter::BioSQL
 
   def_biosequence_adapter :date_created
 
-  def_biosequence_adapter :date_modified
+  def_biosequence_adapter :date_modified do |bs| 
+      Date.parse(bs.date_modified.to_s).strftime("%d-%b-%Y").upcase
+     end
 
   def_biosequence_adapter :division
 
