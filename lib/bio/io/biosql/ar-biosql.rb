@@ -42,7 +42,7 @@ module Bio
       has_many :subject_bioentry_paths, :class_name=>"BioentryPath", :foreign_key=>"subject_bioentry_id" #non mi convince molto credo non funzioni nel modo corretto
 
       has_many :cdsfeatures, :class_name=>"Seqfeature", :foreign_key =>"bioentry_id", :conditions=>["term.name='CDS'"], :include=>"type_term"
-        
+      has_many :references, :through=>:bioentry_references, :class_name => "Reference"
       has_many :terms, :through=>:bioentry_qualifier_values, :class_name => "Term"
       #NOTE: added order_by for multiple hit and manage ranks correctly
       has_many :bioentry_qualifier_values, :order=>"bioentry_id,term_id,rank", :class_name => "BioentryQualifierValue"
@@ -133,7 +133,8 @@ module Bio
     end
     class Reference < DummyBase
       belongs_to :dbxref, :class_name => "Dbxref"
-      has_many :bioentry_references, :class_name=>"BioentryRefernce"
+      has_many :bioentry_references, :class_name=>"BioentryReference"
+      has_many :bioentries, :through=>:bioentry_references
     end
     class SeqfeatureDbxref < DummyBase
       set_primary_keys :seqfeature_id, :dbxref_id
