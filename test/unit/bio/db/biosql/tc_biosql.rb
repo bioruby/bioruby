@@ -94,17 +94,15 @@ END
     def test_03_input_output
       bioseq = Bio::SQL.fetch_accession("X64011")
       assert_not_nil bioseq
-      puts bioseq.to_biosequence.output(:genbank)
       assert_equal(@str_genbank, bioseq.to_biosequence.output(:genbank))
     end
 
     def test_04_bioentry_data_format
-      #TODO:test export data format from bioentry_qualifier_values related to data_created, data_modified
-      assert_equal('2006-09-26', @@x.date_modified.to_s)
+      assert_equal('26-SEP-2006', @@x.date_modified.to_s)
     end
 
     def test_05_title
-      assert_equal('',@@x.references)
+      assert_equal('Cloning of a superoxide dismutase gene from Listeria ivanovii by functional complementation in Escherichia coli and characterization of the gene product',@@x.references.first.title)
     end
     def test_99_delete_bioentry
       assert_not_nil(@@x.delete)
