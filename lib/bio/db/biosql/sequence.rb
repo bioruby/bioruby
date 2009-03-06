@@ -83,6 +83,10 @@ module Bio
       attr_reader :entry
 
       def delete
+        #TODO: check is references connected to this bioentry are leaf or not.
+        #actually I think it should be more sofisticated, check if there are
+        #other bioentries connected to references; if not delete 'em
+        @entry.references.each { |ref| ref.delete if ref.bioentries.size==1}
         @entry.destroy
       end
 
