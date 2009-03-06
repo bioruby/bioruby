@@ -158,7 +158,9 @@ module Common
             authors = authors.flatten.map { |a| a.sub(/,/, ', ') }
             hash['authors']	= authors
           when /TITLE/
-            hash['title']	= truncate(tag_cut(field)) + '.'
+            hash['title']	= truncate(tag_cut(field))
+            # CHECK Actually GenBank is not demanding for dot at the end of TITLE
+            #+ '.'
           when /JOURNAL/
             journal = truncate(tag_cut(field))
             if journal =~ /(.*) (\d+) \((\d+)\), (\d+-\d+) \((\d+)\)$/
