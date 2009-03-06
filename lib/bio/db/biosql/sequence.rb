@@ -26,14 +26,23 @@ module Bio
         method_writer_modder = (sym.to_s+"_update").to_sym
         synonym = options[:synonym].nil? ? sym.to_s : options[:synonym]
 
-#DELETE        #Bio::SQL::Term.create(:name=>synonym, :ontology=> Bio::SQL::Ontology.find_by_name('Annotation Tags')) unless Bio::SQL::Term.exists?(:name =>synonym)
+        #DELETE        #Bio::SQL::Term.create(:name=>synonym, :ontology=> Bio::SQL::Ontology.find_by_name('Annotation Tags')) unless Bio::SQL::Term.exists?(:name =>synonym)
         send :define_method, method_reader do
           #return an array of bioentry_qualifier_values
           begin
-#DELETE            ontology_annotation_tags = Ontology.find_or_create({:name=>'Annotation Tags'})
+            #DELETE            ontology_annotation_tags = Ontology.find_or_create({:name=>'Annotation Tags'})
             term  = Term.first(:conditions=>["name = ?",synonym]) || Term.create({:name => synonym, :ontology=> Ontology.first(:conditions=>["name = ?",'Annotation Tags'])})
             bioentry_qualifier_values = @entry.bioentry_qualifier_values.all(:conditions=>["term_id = ?",term.term_id])
-            bioentry_qualifier_values.map{|row| row.value} unless bioentry_qualifier_values.nil?
+            data = bioentry_qualifier_values.map{|row| row.value} unless bioentry_qualifier_values.nil?
+            begin
+              # this block try to check if the data retrived is a
+              # Date or not and change it according to GenBank/EMBL format
+              # in that case return a string
+              # otherwise the []
+              Date.parse(data.to_s).strftime("%d-%b-%Y").upcase
+            rescue ArgumentError, TypeError, NoMethodError, NameError
+              data
+            end
           rescue Exception => e
             puts "Reader Error: #{synonym} #{e.message}"
           end
@@ -41,7 +50,7 @@ module Bio
 
         send :define_method, method_writer_operator do |value|
           begin
-#DELETE            ontology_annotation_tags = Ontology.find_or_create({:name=>'Annotation Tags'})
+            #DELETE            ontology_annotation_tags = Ontology.find_or_create({:name=>'Annotation Tags'})
             term  = Term.first(:conditions=>["name = ?",synonym]) || Term.create({:name => synonym, :ontology=> Ontology.first(:conditions=>["name = ?",'Annotation Tags'])})
             datas = @entry.bioentry_qualifier_values.all(:conditions=>["term_id = ?",term.term_id])
             #add an element incrementing the rank or setting the first to 1
@@ -54,7 +63,7 @@ module Bio
 
         send :define_method, method_writer_modder do |value, rank|
           begin
-#DELETE            ontology_annotation_tags = Ontology.find_or_create({:name=>'Annotation Tags'})
+            #DELETE            ontology_annotation_tags = Ontology.find_or_create({:name=>'Annotation Tags'})
             term  = Term.first(:conditions=>["name = ?",synonym]) || Term.create({:name => synonym, :ontology=> Ontology.first(:conditions=>["name = ?",'Annotation Tags'])})
             data = @entry.bioentry_qualifier_values.all(:term_id=>term.term_id, :rank=>rank)
             if data.nil?
@@ -99,78 +108,78 @@ module Bio
       end
 
       def to_biosql(bs,biodatabase)
-#DELETE        #Transcaction works greatly!!!
+        #DELETE        #Transcaction works greatly!!!
         begin
-#DELETE          Bioentry.transaction do
-            @entry = biodatabase.bioentries.build({:name=>bs.entry_id})
+          #DELETE          Bioentry.transaction do
+          @entry = biodatabase.bioentries.build({:name=>bs.entry_id})
 
-            puts "primary" if $DEBUG
-            self.primary_accession = bs.primary_accession
+          puts "primary" if $DEBUG
+          self.primary_accession = bs.primary_accession
 
-            puts "def" if $DEBUG
-            self.definition = bs.definition unless bs.definition.nil?
+          puts "def" if $DEBUG
+          self.definition = bs.definition unless bs.definition.nil?
 
-            puts "seqver" if $DEBUG
-            self.sequence_version = bs.sequence_version || 0
+          puts "seqver" if $DEBUG
+          self.sequence_version = bs.sequence_version || 0
 
-            puts "divi" if $DEBUG
-            self.division = bs.division unless bs.division.nil?
+          puts "divi" if $DEBUG
+          self.division = bs.division unless bs.division.nil?
 
-            puts "identifier" if $DEBUG
-            self.identifier = bs.other_seqids.collect{|dblink| "#{dblink.database}:#{dblink.id}"}.join(';') unless bs.other_seqids.nil?
-            @entry.save
-            puts "secacc" if $DEBUG
+          puts "identifier" if $DEBUG
+          self.identifier = bs.other_seqids.collect{|dblink| "#{dblink.database}:#{dblink.id}"}.join(';') unless bs.other_seqids.nil?
+          @entry.save
+          puts "secacc" if $DEBUG
 
-            bs.secondary_accessions.each do |sa|
-              puts "#{sa}" if $DEBUG
-              #write as qualifier every secondary accession into the array
-              self.secondary_accessions = sa
-            end unless bs.secondary_accessions.nil?
+          bs.secondary_accessions.each do |sa|
+            puts "#{sa}" if $DEBUG
+            #write as qualifier every secondary accession into the array
+            self.secondary_accessions = sa
+          end unless bs.secondary_accessions.nil?
 
 
-            #to create the sequence entry needs to exists
-            puts "seq" if $DEBUG
-            puts bs.seq if $DEBUG
-            self.seq = bs.seq unless bs.seq.nil?
-                       puts "mol" if $DEBUG
+          #to create the sequence entry needs to exists
+          puts "seq" if $DEBUG
+          puts bs.seq if $DEBUG
+          self.seq = bs.seq unless bs.seq.nil?
+          puts "mol" if $DEBUG
 
-            self.molecule_type = bs.molecule_type unless bs.molecule_type.nil?
-                        puts "dc" if $DEBUG
+          self.molecule_type = bs.molecule_type unless bs.molecule_type.nil?
+          puts "dc" if $DEBUG
 
-            self.data_class = bs.data_class unless bs.data_class.nil?
-                        puts "top" if $DEBUG
-            self.topology = bs.topology unless bs.topology.nil?
-                        puts "datec" if $DEBUG
-            self.date_created = bs.date_created unless bs.date_created.nil?
-                        puts "datemod" if $DEBUG
-            self.date_modified = bs.date_modified unless bs.date_modified.nil?
-                        puts "key" if $DEBUG
+          self.data_class = bs.data_class unless bs.data_class.nil?
+          puts "top" if $DEBUG
+          self.topology = bs.topology unless bs.topology.nil?
+          puts "datec" if $DEBUG
+          self.date_created = bs.date_created unless bs.date_created.nil?
+          puts "datemod" if $DEBUG
+          self.date_modified = bs.date_modified unless bs.date_modified.nil?
+          puts "key" if $DEBUG
 
-            bs.keywords.each do |kw|
-              #write as qualifier every secondary accessions into the array
-              self.keywords = kw
-            end unless bs.keywords.nil?
+          bs.keywords.each do |kw|
+            #write as qualifier every secondary accessions into the array
+            self.keywords = kw
+          end unless bs.keywords.nil?
 
-            puts "spec" if $DEBUG
-            #self.species = bs.species unless bs.species.nil?
-	    self.species = bs.species unless bs.species.empty?
-            puts "Debug: #{bs.species}" if $DEBUG
-            puts "Debug: feat..start" if $DEBUG
+          puts "spec" if $DEBUG
+          #self.species = bs.species unless bs.species.nil?
+          self.species = bs.species unless bs.species.empty?
+          puts "Debug: #{bs.species}" if $DEBUG
+          puts "Debug: feat..start" if $DEBUG
 
-            bs.features.each do |feat|
-              self.feature=feat
-            end unless bs.features.nil?
+          bs.features.each do |feat|
+            self.feature=feat
+          end unless bs.features.nil?
 
-            puts "Debug: feat...end" if $DEBUG
-             bs.references.each do |reference|
-              self.reference=reference
-            end unless bs.references.nil?
+          puts "Debug: feat...end" if $DEBUG
+          bs.references.each do |reference|
+            self.reference=reference
+          end unless bs.references.nil?
 
-            bs.comments.each do |comment|
-              self.comment=comment
-            end unless bs.comments.nil?
+          bs.comments.each do |comment|
+            self.comment=comment
+          end unless bs.comments.nil?
 
-#DELETE          end #transaction
+          #DELETE          end #transaction
           return self
         rescue Exception => e
           puts "to_biosql exception: #{e}"
@@ -279,10 +288,10 @@ module Bio
 
       def feature=(feat)
         #ToDo: avoid Ontology find here, probably more efficient create class variables
-#DELETE        type_term_ontology = Ontology.find_or_create({:name=>'SeqFeature Keys'})
+        #DELETE        type_term_ontology = Ontology.find_or_create({:name=>'SeqFeature Keys'})
         puts "feature:type_term = #{feat.feature}" if $DEBUG
         type_term = Term.first(:conditions=>["name = ?", feat.feature]) || Term.create({:name=>feat.feature, :ontology=>Ontology.first(:conditions=>["name = ?",'SeqFeature Keys'])})
-#DELETE        source_term_ontology = Ontology.find_or_create({:name=>'SeqFeature Sources'})
+        #DELETE        source_term_ontology = Ontology.find_or_create({:name=>'SeqFeature Sources'})
         puts "feature:source_term" if $DEBUG
         source_term = Term.first(:conditions=>["name = ?",'EMBLGenBankSwit'])
         puts "feature:seqfeature" if $DEBUG
@@ -294,11 +303,11 @@ module Bio
           location.save
         end
 
-#DELETE        qual_term_ontology = Ontology.find_or_create({:name=>'Annotation Tags'})
+        #DELETE        qual_term_ontology = Ontology.find_or_create({:name=>'Annotation Tags'})
 
         puts "feature:qualifier" if $DEBUG
         feat.each do |qualifier|
-#DELETE          qual_term = Term.find_or_create({:name=>qualifier.qualifier}, {:ontology=>qual_term_ontology})
+          #DELETE          qual_term = Term.find_or_create({:name=>qualifier.qualifier}, {:ontology=>qual_term_ontology})
           qual_term = Term.first(:conditions=>["name = ?", qualifier.qualifier]) || Term.create({:name=>qualifier.qualifier, :ontology=>Ontology.first(:conditions=>["name = ?", 'Annotation Tags'])})
           qual = seqfeature.seqfeature_qualifier_values.build({:seqfeature=>seqfeature, :term=>qual_term, :value=>qualifier.value.to_s, :rank=>seqfeature.seqfeature_qualifier_values.count.succ})
           qual.save
@@ -320,20 +329,20 @@ module Bio
       end
 
       def seq=(value)
-#TODO: revise this piece of code.
+        #TODO: revise this piece of code.
         #chk which type of alphabet is, NU/NA/nil
         if @entry.biosequence.nil?
-#DELETE          puts "intoseq1"
-         @entry.biosequence = Biosequence.new(:seq=>value)
-#          biosequence = @entry.biosequence.build({:seq=>value})
-         @entry.biosequence.save
-#          biosequence.save
+          #DELETE          puts "intoseq1"
+          @entry.biosequence = Biosequence.new(:seq=>value)
+          #          biosequence = @entry.biosequence.build({:seq=>value})
+          @entry.biosequence.save
+          #          biosequence.save
         else
           @entry.biosequence.seq=value
         end
         self.length=value.length
-#DELETE        #@entry.biosequence.length=value.length
-#DELETE        #break
+        #DELETE        #@entry.biosequence.length=value.length
+        #DELETE        #break
         @entry.save
       end
 
@@ -368,8 +377,8 @@ module Bio
           #take a look when location is build up in def reference=(value)
 
           bio_ref.reference.location.split('|').each do |element|
-          key,value=element.split('=')
-          hash[key]=value
+            key,value=element.split('=')
+            hash[key]=value
           end unless bio_ref.reference.location.nil?
 
           hash['xrefs'] = bio_ref.reference.dbxref ? "#{bio_ref.reference.dbxref.dbname}; #{bio_ref.reference.dbxref.accession}." : ''
@@ -383,7 +392,7 @@ module Bio
         end
       end
 
-      def reference=(value)
+      def reference=(value)       
         locations=Array.new
         locations << "journal=#{value.journal}" unless value.journal.empty?
         locations << "volume=#{value.volume}" unless value.volume.empty?
@@ -405,7 +414,7 @@ module Bio
       end
 
       def comment=(value)
-#DELETE        comment=Comment.new({:bioentry=>@entry, :comment_text=>value, :rank=>@entry.comments.count.succ})
+        #DELETE        comment=Comment.new({:bioentry=>@entry, :comment_text=>value, :rank=>@entry.comments.count.succ})
         comment = @entry.comments.build({:comment_text=>value, :rank=>@entry.comments.count.succ})
         comment.save
       end
