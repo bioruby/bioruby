@@ -7,7 +7,7 @@ require 'test/unit'
 require 'bio'
 
 module Bio
-  class TestBiosql < Test::Unit::TestCase
+  class TestBiosqlIO < Test::Unit::TestCase
     def setup
       @connection = Bio::SQL.establish_connection({'development'=>{'hostname'=>'localhost','database'=>"bioseq", 'adapter'=>"jdbcmysql", 'username'=>"febo", 'password'=>nil}},'development')
       @str_genbank=<<END
