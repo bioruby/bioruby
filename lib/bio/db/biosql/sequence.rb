@@ -355,7 +355,7 @@ module Bio
         tax = []
         taxon = Taxon.first(:conditions=>["taxon_id = ?",@entry.taxon.parent_taxon_id])
         while taxon and taxon.taxon_id != taxon.parent_taxon_id and taxon.node_rank!='no rank'
-          tax << taxon.taxon_scientific_name.name
+          tax << taxon.taxon_scientific_name.name if taxon.node_rank!='class'
           #Note: I don't like this call very much, correct with a relationship in the ref class.
           taxon = Taxon.first(:conditions=>["taxon_id = ?",taxon.parent_taxon_id])
         end
