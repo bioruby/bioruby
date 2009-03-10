@@ -74,7 +74,6 @@ ORIGIN
       661 ttttggaatg taattaactg ggatgaacga aataaacgct ttgacgcagc aaaataatta
       721 tcgaaaggct cacttaggtg ggtcttttta tttcta
 //
-
 END
     end
 
