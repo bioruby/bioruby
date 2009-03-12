@@ -797,6 +797,7 @@ which supports the "-m 0" default and "-m 7" XML type output format.
 
 * another example:
 
+    require 'bio'
     Bio::Blast.reports(ARGF) do |report| 
       puts "Hits for " + report.query_def + " against " + report.db
       report.each do |hit|
@@ -805,14 +806,12 @@ which supports the "-m 0" default and "-m 7" XML type output format.
     end
 
 Save the script as hits_under_0.001.rb and to process BLAST output
-files *.xml, you can
+files *.xml, you can run it with:
 
    % ruby hits_under_0.001.rb *.xml
 
-Sometimes BLAST XML output may be wrong and can not be parsed. We
-recommended to install BLAST 2.2.5 or later, and try combinations of
-the -D and -m options when you encounter problems.
-
+Sometimes BLAST XML output may be wrong and can not be parsed. Check whether 
+blast is version 2.2.5 or later. See also blast --help. 
 
 === Add remote BLAST search sites
 
