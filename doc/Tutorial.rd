@@ -17,7 +17,9 @@
 # To add tests run Toshiaki's bioruby shell and paste in the query plus
 # results.
 #
-# To run the embedded Ruby doctests you can use the rubydoctest tool.
+# To run the embedded Ruby doctests you can use the rubydoctest tool, part
+# of the bioruby-support repository at http://github.com/pjotrp/bioruby-support/
+#
 
 =begin
 #doctest Testing bioruby
