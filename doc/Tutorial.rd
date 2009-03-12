@@ -27,7 +27,7 @@
 * Copyright (C) 2001-2003 KATAYAMA Toshiaki <k .at. bioruby.org>
 * Copyright (C) 2005-2009 Pjotr Prins, Naohisa Goto and others
 
-This document was last modified: 2009/03/02
+This document was last modified: 2009/03/12
 Current editor: Pjotr Prins <p .at. bioruby.org>
 
 The latest version resides in the GIT source code repository:  ./doc/((<Tutorial.rd|URL:http://github.com/pjotrp/bioruby/raw/documentation/doc/Tutorial.rd>)).
@@ -77,6 +77,7 @@ and you should see a prompt
 
 Now test the following:
 
+  bioruby> require 'bio'
   bioruby> seq = Bio::Sequence::NA.new("atgcatgcaaaa")
   ==> "atgcatgcaaaa"
 
@@ -195,9 +196,7 @@ use all methods on the subsequence. For example,
 * Shows translation results for 15 bases shifting a codon at a time
 
   bioruby> a = []
-  bioruby> seq.window_search(15, 3) do |s|
-  bioruby>   a.push s.translate
-  bioruby> end
+  bioruby> seq.window_search(15, 3) { | s | a.push s.translate }
   bioruby> a
   ==> ["MHAIK", "HAIKL", "AIKLI", "IKLIP", "KLIPI", "LIPIR", "IPIRS", "PIRSS", "IRSSR", "RSSRS", "SSRSS", "SRSSK", "RSSKK", "SSKKK"]
 
@@ -228,9 +227,7 @@ Other examples
 * Count the codon usage
 
   bioruby> codon_usage = Hash.new(0)
-  bioruby> seq.window_search(3, 3) do |s|
-  bioruby>   codon_usage[s] += 1
-  bioruby> end
+  bioruby> seq.window_search(3, 3) { |s| codon_usage[s] += 1 }
   bioruby> codon_usage
   ==> {"cat"=>1, "aaa"=>3, "cca"=>1, "att"=>2, "aga"=>1, "atc"=>1, "cta"=>1, "gca"=>1, "cga"=>1, "tca"=>3, "aag"=>1, "tcc"=>1, "atg"=>1}
 
@@ -238,9 +235,7 @@ Other examples
 * Calculate molecular weight for each 10-aa peptide (or 10-nt nucleic acid)
 
   bioruby> a = []
-  bioruby> seq.window_search(10, 10) do |s|
-  bioruby>   a.push s.molecular_weight
-  bioruby> end
+  bioruby> seq.window_search(10, 10) { |s| a.push s.molecular_weight }
   bioruby> a
   ==> [3096.2062, 3086.1962, 3056.1762, 3023.1262, 3073.2262]
 
@@ -499,7 +494,7 @@ Array and BioPerl's Bio::SimpleAlign.  A very simple example is:
   # creates alignment object
   bioruby> a = Bio::Alignment.new(seqs)
   bioruby> a.consensus 
-  ==> "xa?gc?"
+  ==> "a?gc?"
   # shows IUPAC consensus
   p a.consensus_iupac       # ==> "ahgcr"
 
