@@ -49,7 +49,7 @@ version it has with the
 
 command. Showing something like:
 
-  ruby 1.8.5 (2006-08-25) [powerpc-linux]
+  ruby 1.8.7 (2008-08-11 patchlevel 72) [i486-linux]
 
 If you see no such thing you'll have to install Ruby using your installation
 manager. For more information see the
@@ -765,7 +765,7 @@ Check the documentation for Bio::Blast::Report to see what can be
 retrieved. For now suffice to state that Bio::Blast::Report has a
 hierarchical structure mirroring the general BLAST output stream:
 
-  * In a Bio::Blast::Report object, @iteratinos is an array of
+  * In a Bio::Blast::Report object, @iterations is an array of
     Bio::Blast::Report::Iteration objects.
     * In a Bio::Blast::Report::Iteration object, @hits is an array of
       Bio::Blast::Report::Hits objects.
@@ -787,9 +787,7 @@ which supports the "-m 0" default and "-m 7" XML type output format.
   bioruby> Bio::Blast.reports(File.new('../test/data/blast/blastp-multi.m7')) do |report|
   bioruby>   blast_version = report.version
   bioruby>   report.iterations.each do |itr|
-  bioruby>      itr.hits.each do |hit|
-  bioruby>        result.push hit.target_id
-  bioruby>      end
+  bioruby>     result += itr.hits.collect { | hit | hit.target_id } 
   bioruby>   end
   bioruby> end
   bioruby> blast_version
