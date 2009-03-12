@@ -781,13 +781,25 @@ you can directly create Bio::Blast::Report objects without the
 Bio::Blast factory object. For this purpose use Bio::Blast.reports,
 which supports the "-m 0" default and "-m 7" XML type output format.
 
-    #!/usr/bin/env ruby
+* For example: 
 
-    require 'bio'
+  bioruby> blast_version = nil; result = []
+  bioruby> Bio::Blast.reports(File.new('../test/data/blast/blastp-multi.m7')) do |report|
+  bioruby>   blast_version = report.version
+  bioruby>   report.iterations.each do |itr|
+  bioruby>      itr.hits.each do |hit|
+  bioruby>        result.push hit.target_id
+  bioruby>      end
+  bioruby>   end
+  bioruby> end
+  bioruby> blast_version
+  ==> "blastp 2.2.18 [Mar-02-2008]"
+  bioruby> result
+  ==> ["BAB38768", "BAB38768", "BAB38769", "BAB37741"]
 
-    # Iterates over each XML result.
-    # The variable "report" is a Bio::Blast::Report object.
-    Bio::Blast.reports(ARGF) do |report|
+* another example:
+
+    Bio::Blast.reports(ARGF) do |report| 
       puts "Hits for " + report.query_def + " against " + report.db
       report.each do |hit|
         print hit.target_id, "\t", hit.evalue, "\n" if hit.evalue < 0.001
