@@ -815,6 +815,10 @@ files *.xml, you can run it with:
 Sometimes BLAST XML output may be wrong and can not be parsed. Check whether 
 blast is version 2.2.5 or later. See also blast --help. 
 
+Bio::Blast loads the full XML file into memory. If this causes a problem
+you can split the BLAST XML file into smaller chunks using XML-Twig. An
+example can be found in ((<Biotools|URL:http://github.com/pjotrp/biotools/>)).
+
 === Add remote BLAST search sites
 
   Note: this section is an advanced topic
