@@ -14,7 +14,7 @@ module Bio
 
   # Extra version specifier (String or nil).
   # Existance of the value indicates pre-release version or modified version.
-  BIORUBY_EXTRA_VERSION = nil
+  BIORUBY_EXTRA_VERSION = ".5000"
 
   # Version identifier, including extra version string (String)
   # Unlike BIORUBY_VERSION, it is not comparable.
