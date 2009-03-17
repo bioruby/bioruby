@@ -61,7 +61,7 @@ task :gemspec => GEM_SPEC_FILE
 desc "Force update gem spec file"
 task :regemspec do
   #rm GEM_SPEC_FILE, :force => true
-  Rake::Task[GEM_SPEC_FILE].execute
+  Rake::Task[GEM_SPEC_FILE].execute(nil)
 end
 
 desc "Update #{GEM_SPEC_FILE}"
@@ -137,7 +137,7 @@ desc "Force update doc/Tutorial*.html"
 task :retutorial2html do
   # safe_unlink HTMLFILES_TUTORIAL
   HTMLFILES_TUTORIAL.each do |x|
-    Rake::Task[x].execute
+    Rake::Task[x].execute(nil)
   end
 end
 
