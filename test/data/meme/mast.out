@@ -1,0 +1,13 @@
+# All non-overlapping hits in all sequences.
+# sequence_name motif hit_start hit_end hit_p-value
+gi|33357914|pdb|1P85|M 6 54 74 3.70e-05
+gi|14488684|pdb|1IHO|A 2 195 215 3.12e-05
+gi|2624640|pdb|1HXQ|B 1 173 220 4.27e-05
+gi|9954928|pdb|1EYZ|A 6 7 27 2.72e-05
+gi|9954928|pdb|1EYZ|A 10 311 325 9.75e-05
+gi|28948818|pdb|1NEK|A 2 29 49 8.96e-06
+gi|85544130|pdb|2AVU|E 8 112 140 4.25e-05
+gi|83754486|pdb|2C27|A 6 42 62 2.72e-05
+gi|18655936|pdb|1KP9|A 8 92 120 3.96e-05
+gi|88192540|pdb|2C4N|A 8 178 206 5.42e-05
+gi|157831485|pdb|1IOV|A 3 130 150 6.63e-07
