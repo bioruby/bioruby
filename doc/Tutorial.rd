@@ -2,11 +2,11 @@
 #
 # A possible test run could be from rdtool (on Debian package rdtool)
 #
-#   ruby -I lib ./bin/rd2 $BIORUBYPATH/doc/Tutorial.rd
+#   rd2 $BIORUBYPATH/doc/Tutorial.rd
 #
 # or with style sheet:
 #
-#   ruby -I lib ./bin/rd2 -r rd/rd2html-lib.rb --with-css=bioruby.css $BIORUBYPATH/doc/Tutorial.rd > ~/bioruby.html
+#   rd2 -r rd/rd2html-lib.rb --with-css=bioruby.css $BIORUBYPATH/doc/Tutorial.rd > ~/bioruby.html
 #
 # in Debian:
 #
@@ -29,7 +29,7 @@
 * Copyright (C) 2001-2003 KATAYAMA Toshiaki <k .at. bioruby.org>
 * Copyright (C) 2005-2009 Pjotr Prins, Naohisa Goto and others
 
-This document was last modified: 2009/03/12
+This document was last modified: 2009/03/17
 Current editor: Pjotr Prins <p .at. bioruby.org>
 
 The latest version resides in the GIT source code repository:  ./doc/((<Tutorial.rd|URL:http://github.com/pjotrp/bioruby/raw/documentation/doc/Tutorial.rd>)).
@@ -786,7 +786,7 @@ which supports the "-m 0" default and "-m 7" XML type output format.
 * For example: 
 
   bioruby> blast_version = nil; result = []
-  bioruby> Bio::Blast.reports(File.new('../test/data/blast/blastp-multi.m7')) do |report|
+  bioruby> Bio::Blast.reports(File.new("../test/data/blast/blastp-multi.m7")) do |report|
   bioruby>   blast_version = report.version
   bioruby>   report.iterations.each do |itr|
   bioruby>     result += itr.hits.collect { | hit | hit.target_id } 
