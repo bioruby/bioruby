@@ -789,7 +789,9 @@ which supports the "-m 0" default and "-m 7" XML type output format.
   bioruby> Bio::Blast.reports(File.new("../test/data/blast/blastp-multi.m7")) do |report|
   bioruby>   blast_version = report.version
   bioruby>   report.iterations.each do |itr|
-  bioruby>     result += itr.hits.collect { | hit | hit.target_id } 
+  bioruby>     itr.hits.each do |hit|
+  bioruby>       result.push hit.target_id
+  bioruby>     end
   bioruby>   end
   bioruby> end
   bioruby> blast_version
