@@ -183,12 +183,12 @@ through a variable named +s+.
 
 * Show average percentage of GC content for 20 bases (stepping the default one base at a time)
 
-  bioruby> seq = Bio::Sequence::NA.new("atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa")
-  ==> "atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa"
+   bioruby> seq = Bio::Sequence::NA.new("atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa")
+   ==> "atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa"
 
-  bioruby> a=[]; seq.window_search(20) { |s| a.push s.gc_percent } 
-  bioruby> a
-  ==> [30, 35, 40, 40, 35, 35, 35, 30, 25, 30, 30, 30, 35, 35, 35, 35, 35, 40, 45, 45, 45, 45, 40, 35, 40, 40, 40, 40, 40, 35, 35, 35, 30, 30, 30]
+   bioruby> a=[]; seq.window_search(20) { |s| a.push s.gc_percent } 
+   bioruby> a
+   ==> [30, 35, 40, 40, 35, 35, 35, 30, 25, 30, 30, 30, 35, 35, 35, 35, 35, 40, 45, 45, 45, 45, 40, 35, 40, 40, 40, 40, 40, 35, 35, 35, 30, 30, 30]
 
  
 Since the class of each subsequence is the same as original sequence
@@ -197,10 +197,10 @@ use all methods on the subsequence. For example,
 
 * Shows translation results for 15 bases shifting a codon at a time
 
-  bioruby> a = []
-  bioruby> seq.window_search(15, 3) { | s | a.push s.translate }
-  bioruby> a
-  ==> ["MHAIK", "HAIKL", "AIKLI", "IKLIP", "KLIPI", "LIPIR", "IPIRS", "PIRSS", "IRSSR", "RSSRS", "SSRSS", "SRSSK", "RSSKK", "SSKKK"]
+   bioruby> a = []
+   bioruby> seq.window_search(15, 3) { | s | a.push s.translate }
+   bioruby> a
+   ==> ["MHAIK", "HAIKL", "AIKLI", "IKLIP", "KLIPI", "LIPIR", "IPIRS", "PIRSS", "IRSSR", "RSSRS", "SSRSS", "SRSSK", "RSSKK", "SSKKK"]
 
 
 Finally, the window_search method returns the last leftover
@@ -228,18 +228,18 @@ Other examples
 
 * Count the codon usage
 
-  bioruby> codon_usage = Hash.new(0)
-  bioruby> seq.window_search(3, 3) { |s| codon_usage[s] += 1 }
-  bioruby> codon_usage
-  ==> {"cat"=>1, "aaa"=>3, "cca"=>1, "att"=>2, "aga"=>1, "atc"=>1, "cta"=>1, "gca"=>1, "cga"=>1, "tca"=>3, "aag"=>1, "tcc"=>1, "atg"=>1}
+   bioruby> codon_usage = Hash.new(0)
+   bioruby> seq.window_search(3, 3) { |s| codon_usage[s] += 1 }
+   bioruby> codon_usage
+   ==> {"cat"=>1, "aaa"=>3, "cca"=>1, "att"=>2, "aga"=>1, "atc"=>1, "cta"=>1, "gca"=>1, "cga"=>1, "tca"=>3, "aag"=>1, "tcc"=>1, "atg"=>1}
 
 
 * Calculate molecular weight for each 10-aa peptide (or 10-nt nucleic acid)
 
-  bioruby> a = []
-  bioruby> seq.window_search(10, 10) { |s| a.push s.molecular_weight }
-  bioruby> a
-  ==> [3096.2062, 3086.1962, 3056.1762, 3023.1262, 3073.2262]
+   bioruby> a = []
+   bioruby> seq.window_search(10, 10) { |s| a.push s.molecular_weight }
+   bioruby> a
+   ==> [3096.2062, 3086.1962, 3056.1762, 3023.1262, 3073.2262]
 
 In most cases, sequences are read from files or retrieved from databases.
 For example:
@@ -664,7 +664,7 @@ method of the factory object after the "query" method.
 === using FASTA from a remote internet site
 
 * Note: Currently, only GenomeNet (fasta.genome.jp) is
-supported. check the class documentation for updates.
+  supported. check the class documentation for updates.
 
 For accessing a remote site the Bio::Fasta.remote method is used
 instead of Bio::Fasta.local.  When using a remote method, the
@@ -785,19 +785,19 @@ which supports the "-m 0" default and "-m 7" XML type output format.
 
 * For example: 
 
-  bioruby> blast_version = nil; result = []
-  bioruby> Bio::Blast.reports(File.new("../test/data/blast/blastp-multi.m7")) do |report|
-  bioruby>   blast_version = report.version
-  bioruby>   report.iterations.each do |itr|
-  bioruby>     itr.hits.each do |hit|
-  bioruby>       result.push hit.target_id
-  bioruby>     end
-  bioruby>   end
-  bioruby> end
-  bioruby> blast_version
-  ==> "blastp 2.2.18 [Mar-02-2008]"
-  bioruby> result
-  ==> ["BAB38768", "BAB38768", "BAB38769", "BAB37741"]
+   bioruby> blast_version = nil; result = []
+   bioruby> Bio::Blast.reports(File.new("../test/data/blast/blastp-multi.m7")) do |report|
+   bioruby>   blast_version = report.version
+   bioruby>   report.iterations.each do |itr|
+   bioruby>     itr.hits.each do |hit|
+   bioruby>       result.push hit.target_id
+   bioruby>     end
+   bioruby>   end
+   bioruby> end
+   bioruby> blast_version
+   ==> "blastp 2.2.18 [Mar-02-2008]"
+   bioruby> result
+   ==> ["BAB38768", "BAB38768", "BAB38769", "BAB37741"]
 
 * another example:
 
