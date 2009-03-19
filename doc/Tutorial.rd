@@ -842,27 +842,6 @@ Bio::Blast::Report.new(or Bio::Blast::Default::Report.new):
 When you write above routines, please send to the BioRuby project and
 they may be included.
 
-== Gene Ontology (GO)
-
-Gene Ontologies can be fetched through the Ensembl package:
-
-   require 'ensembl'
-   Ensembl::Core::DBConnection.connect('drosophila_melanogaster')
-   infile = IO.readlines(ARGV.shift) # reading your comma-separated accession mapping file (one line per mapping)
-   infile.each do |line|
-     accs = line.split(",")          # Split the comma-sep.entries into an array
-     drosphila_acc = accs.shift      # the first entry is the Drosophila acc
-     mosq_acc = accs.shift           # the second entry is you Mosq. acc
-     gene = Ensembl::Core::Gene.find_by_stable_id(drosophila_acc)
-     print "#{mosq_acc}"
-     gene.go_terms.each do |go|
-        print ",#{go}"
-      end
-    end
-
-Prints each mosq. accession/uniq identifier and the GO terms from the Drosphila
-homologues.
-
 == Generate a reference list using PubMed (Bio::PubMed)
 
 Below script is an example which seaches PubMed and creates a reference list.
@@ -1275,9 +1254,33 @@ Please refer to KEGG_API.rd.ja (English version: ((<URL:http://www.genome.jp/keg
 
   * ((<URL:http://www.genome.jp/kegg/soap/>))
 
-== ENSEMBL API
+== Ruby Ensembl API
 
-See ((<URL:http://wiki.github.com/jandot/ruby-ensembl-api>))
+Ruby Ensembl API is a ruby API to the Ensembl database. It is NOT currently
+included in the BioRuby archives. To install it, see
+((<URL:http://wiki.github.com/jandot/ruby-ensembl-api>))
+for more information.
+
+=== Gene Ontology (GO) through the Ruby Ensembl API
+
+Gene Ontologies can be fetched through the Ruby Ensembl API package:
+
+   require 'ensembl'
+   Ensembl::Core::DBConnection.connect('drosophila_melanogaster')
+   infile = IO.readlines(ARGV.shift) # reading your comma-separated accession mapping file (one line per mapping)
+   infile.each do |line|
+     accs = line.split(",")          # Split the comma-sep.entries into an array
+     drosphila_acc = accs.shift      # the first entry is the Drosophila acc
+     mosq_acc = accs.shift           # the second entry is you Mosq. acc
+     gene = Ensembl::Core::Gene.find_by_stable_id(drosophila_acc)
+     print "#{mosq_acc}"
+     gene.go_terms.each do |go|
+        print ",#{go}"
+     end
+   end
+
+Prints each mosq. accession/uniq identifier and the GO terms from the Drosphila
+homologues.
 
 == Comparing BioProjects
 
