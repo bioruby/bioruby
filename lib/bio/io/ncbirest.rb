@@ -147,7 +147,7 @@ class REST
 
       list = []
       0.step(limit, step) do |i|
-        retmax = [step, limit - i].min
+        retmax = hash["retmax"] || [step, limit - i].min
         opts.update("retmax" => retmax, "retstart" => i)
         ncbi_access_wait
         response = Bio::Command.post_form(serv, opts)
