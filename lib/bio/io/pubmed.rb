@@ -117,7 +117,11 @@ class PubMed < Bio::NCBI::REST
   def efetch(ids, hash = {})
     opts = { "db" => "pubmed", "rettype"  => "medline" }
     opts.update(hash)
-    super(ids, opts)
+    result = super(ids, opts)
+    if !opts["retmode"] or opts["retmode"] == "text"
+      result = result.split(/\n\n+/)
+    end
+    result
   end
 
   # Search the PubMed database by given keywords using entrez query and returns
