@@ -5,7 +5,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: msf.rb,v 1.2 2007/04/05 23:35:39 trevor Exp $
+# $Id:$
 #
 # = About Bio::GCG::Msf
 #
@@ -30,11 +30,12 @@ module Bio
       # Creates a new Msf object.
       def initialize(str)
         str = str.sub(/\A[\r\n]+/, '')
-        if /^\!\![A-Z]+\_MULTIPLE\_ALIGNMNENT/ =~ str[/.*/] then
-          @heading = str[/.*/] # '!!NA_MULTIPLE_ALIGNMENT 1.0' or like this
-          str.sub!(/.*/, '')
+        preamble, @data = str.split(/^\/\/$/)
+        if /^\!\![A-Z]+\_MULTIPLE\_ALIGNMENT/ =~ preamble[/.*/] then
+          @heading = preamble[/.*/] # '!!NA_MULTIPLE_ALIGNMENT 1.0' or like this
+          preamble.sub!(/.*/, '')
         end
-        str.sub!(/.*\.\.$/m, '')
+        preamble.sub!(/.*\.\.$/m, '')
         @description = $&.to_s.sub(/^.*\.\.$/, '').to_s
         d = $&.to_s
         if m = /(.+)\s+MSF\:\s+(\d+)\s+Type\:\s+(\w)\s+(.+)\s+(Comp)?Check\:\s+(\d+)/.match(d) then
@@ -45,10 +46,8 @@ module Bio
           @checksum = (m[6] ? m[6].to_i : nil)
         end
 
-        str.sub!(/.*\/\/$/m, '')
-        a = $&.to_s.split(/^/)
         @seq_info = []
-        a.each do |x|
+        preamble.split(/^/).each do |x|
           if /Name\: / =~ x then
             s = {}
             x.scan(/(\S+)\: +(\S*)/) { |y| s[$1] = $2 }
@@ -56,7 +55,6 @@ module Bio
           end
         end
 
-        @data = str
         @description.sub!(/\A(\r\n|\r|\n)/, '')
         @align = nil
       end
