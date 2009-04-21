@@ -26,8 +26,10 @@ class REST
   # weekdays for any series of more than 100 requests.
   # -> Not implemented yet in BioRuby
 
-  # Make no more than one request every 3 seconds.
-  NCBI_INTERVAL = 3
+  # Make no more than one request every 1 seconds.
+  # (NCBI's restriction is "Make no more than 3 requests every 1 second.",
+  # but limited to 1/sec partly because of keeping the value in integer.)
+  NCBI_INTERVAL = 1
   @@last_access = nil
 
   private
@@ -127,10 +129,10 @@ class REST
   #   * _mindate_: 2001
   #   * _maxdate_: 2002/01/01
   #   * _datetype_: "edat"
-  # * _limit_: maximum number of entries to be returned (0 for unlimited)
+  # * _limit_: maximum number of entries to be returned (0 for unlimited; nil for the "retmax" value in the hash or the internal default value (=100))
   # * _step_: maximum number of entries retrieved at a time
   # *Returns*:: array of entry IDs or a number of results
-  def esearch(str, hash = {}, limit = 100, step = 10000)
+  def esearch(str, hash = {}, limit = nil, step = 10000)
     serv = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
     opts = {
       "tool"   => "bioruby",
@@ -143,12 +145,17 @@ class REST
       count = esearch_count(str, opts)
       return count
     else
+      retstart = 0
+      retstart = hash["retstart"].to_i if hash["retstart"]
+
+      limit ||= hash["retmax"].to_i if hash["retmax"]
+      limit ||= 100 # default limit is 100
       limit = esearch_count(str, opts) if limit == 0   # unlimit
 
       list = []
       0.step(limit, step) do |i|
-        retmax = hash["retmax"] || [step, limit - i].min
-        opts.update("retmax" => retmax, "retstart" => i)
+        retmax = [step, limit - i].min
+        opts.update("retmax" => retmax, "retstart" => i + retstart)
         ncbi_access_wait
         response = Bio::Command.post_form(serv, opts)
         result = response.body
