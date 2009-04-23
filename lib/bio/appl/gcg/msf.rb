@@ -30,15 +30,13 @@ module Bio
       # Creates a new Msf object.
       def initialize(str)
         str = str.sub(/\A[\r\n]+/, '')
-        preamble, @data = str.split(/^\/\/$/)
-        if /^\!\![A-Z]+\_MULTIPLE\_ALIGNMENT/ =~ preamble[/.*/] then
-          @heading = preamble[/.*/] # '!!NA_MULTIPLE_ALIGNMENT 1.0' or like this
-          preamble.sub!(/.*/, '')
-        end
-        preamble.sub!(/.*\.\.$/m, '')
-        @description = $&.to_s.sub(/^.*\.\.$/, '').to_s
+        preamble, @data = str.split(/^\/\/$/, 2)
+        preamble.sub!(/\A\!\![A-Z]+\_MULTIPLE\_ALIGNMENT.*/, '')
+        @heading = $& # '!!NA_MULTIPLE_ALIGNMENT 1.0' or like this
+        preamble.sub!(/.*\.\.\s*$/m, '')
+        @description = $&.to_s.sub(/^.*\.\.\s*$/, '').to_s
         d = $&.to_s
-        if m = /(.+)\s+MSF\:\s+(\d+)\s+Type\:\s+(\w)\s+(.+)\s+(Comp)?Check\:\s+(\d+)/.match(d) then
+        if m = /^(?:(.+)\s+)?MSF\:\s+(\d+)\s+Type\:\s+(\w)\s+(.+)\s+(Comp)?Check\:\s+(\d+)/.match(d) then
           @entry_id = m[1].to_s.strip
           @length   = (m[2] ? m[2].to_i : nil)
           @seq_type = m[3]
@@ -47,7 +45,7 @@ module Bio
         end
 
         @seq_info = []
-        preamble.split(/^/).each do |x|
+        preamble.each_line do |x|
           if /Name\: / =~ x then
             s = {}
             x.scan(/(\S+)\: +(\S*)/) { |y| s[$1] = $2 }
@@ -131,11 +129,12 @@ module Bio
       # parsing
       def do_parse
         return if @align
-        a = @data.strip.split(/\n\n/)
+        a = @data.split(/\r?\n\r?\n/)
         @seq_data = Array.new(@seq_info.size)
         @seq_data.collect! { |x| Array.new }
         a.each do |x|
-          b = x.split(/\n/)
+          next if x.strip.empty?
+          b = x.sub(/\A[\r\n]+/, '').split(/[\r\n]+/)
           nw = 0
           if b.size > @seq_info.size then
             if /^ +/ =~ b.shift.to_s
