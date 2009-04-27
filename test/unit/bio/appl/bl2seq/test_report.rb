@@ -6,7 +6,7 @@
 #                Mitsuteru C. Nakao <n@bioruby.org>
 #  License::     The Ruby License
 #
-#  $Id: test_report.rb,v 1.3 2007/04/05 23:35:43 trevor Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -70,11 +70,11 @@ module Bio
                  'db']
       
       methods.each do |x|
-        assert_nil(@empty.methods.include?(x))
+        assert_equal(false, @empty.methods.include?(x), "undefined? : #{x}")
       end
 
       methods.each do |x|
-        assert_nil(@blastp.methods.include?(x))
+        assert_equal(false, @blastp.methods.include?(x), "undefined? : #{x}")
       end
     end
 
@@ -91,7 +91,7 @@ module Bio
     end
 
 #    TestIteration < Test::Unit::TestCase
-    def test_undefed_methods
+    def test_undefed_methods_for_iteration
       methods = ['message',
                  'pattern_in_database',
                  'pattern',
@@ -103,7 +103,7 @@ module Bio
                  'converged?']
 
       methods.each do |x|
-        assert_equal(false, @empty.iterations.first.methods.include?(x), "undifined? : #{x}")
+        assert_equal(false, @empty.iterations.first.methods.include?(x), "undefined? : #{x}")
       end
 
       methods.each do |x|
