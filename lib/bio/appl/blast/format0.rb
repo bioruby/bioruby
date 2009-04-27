@@ -1218,7 +1218,7 @@ module Bio
           method_after_parse_alignment :query_from
 
           # end position of the query (including its position)
-          attr_reader                  :query_to
+          attr_reader                  :query_to if false #dummy
           method_after_parse_alignment :query_to
 
           # start position of the hit (the first position is 1)
