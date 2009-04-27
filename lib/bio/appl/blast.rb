@@ -257,7 +257,7 @@ module Bio
     end
 
     # Server to submit the BLASTs to
-    attr_accessor :server
+    attr_reader :server
 
     # Sets server to submit the BLASTs to.
     # The exec_xxxx method should be defined in Bio::Blast or
@@ -399,7 +399,7 @@ module Bio
       if fmt = ncbiopt.get('-m') then
         @format = fmt.to_i
       else
-        Bio::Blast::Report #dummy to load XMLParser or REXML
+        dummy = Bio::Blast::Report #dummy to load XMLParser or REXML
         if defined?(XMLParser) or defined?(REXML)
           @format ||= 7
         else
