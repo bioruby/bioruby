@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: calculated_cuts.rb,v 1.7 2007/07/16 19:28:48 k Exp $
+#  $Id:$
 #
 
 require 'bio/util/restriction_enzyme'
@@ -44,9 +44,11 @@ class CalculatedCuts
 
   # Set to +true+ if the fragment CalculatedCuts is working on is circular
   attr_accessor :circular
-  
-  # An +Array+ with the primary strand with vertical cuts, the horizontal cuts, and the complementary strand with vertical cuts.
-  attr_reader :strands_for_display
+
+  #--
+  ## An +Array+ with the primary strand with vertical cuts, the horizontal cuts, and the complementary strand with vertical cuts.
+  #attr_reader :strands_for_display
+  #++
   
   # If +false+ the strands_for_display method needs to be called to update the contents
   # of @strands_for_display.  Becomes out of date whenever add_cuts_from_cut_ranges is called.
