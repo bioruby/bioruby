@@ -65,10 +65,6 @@ class PTS1
   # Output report.
   attr_reader :output
 
-  # Used function name (Integer). 
-  # function_name = Bio::PTS1::FUNCTION.find_all {|k,v| v == pts1.function }[0][0]
-  attr_reader :function
-
   # Short-cut for Bio::PTS1.new(Bio::PTS1::FUNCTION['METAZOA-specific'])
   def self.new_with_metazoa_function
     self.new('METAZOA-specific')
