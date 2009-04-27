@@ -119,7 +119,7 @@ module Bio
        assert(Bio::Blast.local(@program, @db, @option))
      end
 
-     def test_self_local
+     def test_self_remote
        assert(Bio::Blast.remote(@program, @db, @option))
      end
 
