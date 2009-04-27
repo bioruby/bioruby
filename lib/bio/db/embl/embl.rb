@@ -448,9 +448,6 @@ class EMBL < EMBLDB
   # taxonomy classfication
   alias classification oc
 
-  # features
-  alias features ft
-
 
   # converts the entry to Bio::Sequence object
   # ---
