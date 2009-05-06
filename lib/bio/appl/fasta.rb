@@ -66,6 +66,15 @@ class Fasta
   end
   attr_reader :format
 
+  # OBSOLETE. Does nothing and shows warning messages.
+  #
+  # Historically, selecting parser to use ('format6' or 'format10' were
+  # expected, but only 'format10' was available as a working parser).
+  #
+  def self.parser(parser)
+    warn 'Bio::Fasta.parser is obsoleted and will soon be removed.'
+  end
+
   # Returns a FASTA factory object (Bio::Fasta) to run FASTA search on
   # local computer.
   def self.local(program, db, option = '')

@@ -8,6 +8,7 @@
 #
 
 require 'bio/appl/fasta'
+require 'bio/io/flatfile/splitter'
 
 module Bio
 class Fasta
