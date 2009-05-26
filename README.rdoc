@@ -145,6 +145,9 @@ Accessing BioSQL database created by other Open Bio* libraries:
   {RubyForge:ruby-oci8}[http://ruby-oci8.rubyforge.org/]
   (note that ruby-oci8 can only work with ruby-dbi 0.2.2).
 
+For parsing PhyloXML format files Libxml2 library is required:
+
+* {RubyForge:libxml} [http://libxml.rubyforge.org] or
 
 == INSTALL
 

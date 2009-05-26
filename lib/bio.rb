@@ -137,6 +137,12 @@ module Bio
   autoload :Newick,         'bio/db/newick'
   autoload :Nexus,          'bio/db/nexus'
 
+  autoload :PhyloXML,       'bio/db/phyloxml/phyloxml_elements'
+  module PhyloXML
+   autoload :Parser,       'bio/db/phyloxml/phyloxml_parser'
+   autoload :Writer,       'bio/db/phyloxml/phyloxml_writer'
+ end
+
   ### IO interface modules
 
   autoload :Registry,       'bio/io/registry'
