@@ -132,6 +132,7 @@ module Bio
   autoload :Lasergene,      'bio/db/lasergene'
   autoload :Chromatogram,    'bio/db/chromatogram' # chromatogram formats
   autoload :Scf,            'bio/db/chromatogram/scf'
+  autoload :Abi,            'bio/db/chromatogram/abi'
 
   autoload :Newick,         'bio/db/newick'
   autoload :Nexus,          'bio/db/nexus'
