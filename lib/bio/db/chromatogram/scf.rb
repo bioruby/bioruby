@@ -3,7 +3,8 @@ module Bio
     # header attributes
     attr_accessor :scf, :samples, :sample_offset, :bases, :bases_left_clip, :bases_right_clip, :bases_offset, :comment_size, :comments_offset, :version, :sample_size, :code_set, :header_spare
     # sequence attributes
-    attr_accessor :atrace, :ctrace, :gtrace, :ttrace, :peak_indices, :aqual, :cqual, :gqual, :tqual, :qualities, :sequence
+    attr_accessor :aqual, :cqual, :gqual, :tqual
+    attr_accessor :comments
 
     def initialize(string)
       header = string.slice(0,128)
@@ -11,11 +12,7 @@ module Bio
       @scf, @samples, @sample_offset, @bases, @bases_left_clip, @bases_right_clip, @bases_offset, @comment_size, @comments_offset, @version, @sample_size, @code_set, @header_spare = header.unpack("a4 NNNNNNNN a4 NN N20")
       get_traces(string)
       get_bases_peakIndices_and_qualities(string)
-    end
-
-    def self.open(filename)
-      ff = Bio::FlatFile.open(self, filename)
-      ff.next_entry
+      get_comments(string)
     end
 
     private
@@ -103,16 +100,18 @@ module Bio
           @cqual << base_info[2]
           @gqual << base_info[3]
           @tqual << base_info[4]
-          @sequence += base_info[5].upcase
-          case base_info[5].upcase
-          when "A"
+          @sequence += base_info[5].downcase
+          case base_info[5].downcase
+          when "a"
             @qualities << base_info[1]
-          when "C"
+          when "c"
             @qualities << base_info[2]
-          when "G"
+          when "g"
             @qualities << base_info[3]
-          when "T"
+          when "t"
             @qualities << base_info[4]
+          else
+            @qualities << 0
           end
         end
       end
@@ -130,7 +129,7 @@ module Bio
       end
     end
     def get_v3_sequence(string,offset,length)
-      @sequence = string.slice(offset,length).unpack("a#{length}").to_s.upcase
+      @sequence = string.slice(offset,length).unpack("a#{length}").to_s.downcase
     end
 
     def convert_deltas_to_values(trace_read)
@@ -150,17 +149,29 @@ module Bio
       qualities = Array.new
       for base_pos in (0..@sequence.length-1)
         case sequence.slice(base_pos,1)
-        when "A"
+        when "a"
           qualities << @aqual[base_pos]
-        when "C"
+        when "c"
           qualities << @cqual[base_pos]
-        when "G"
+        when "g"
           qualities << @gqual[base_pos]
-        when "T"
+        when "t"
           qualities << @tqual[base_pos]
+        else
+          qualities << 0
         end
       end
       return qualities
+    end
+    def get_comments(string)
+      @comments = Hash.new
+      comment_string = string.slice(@comments_offset,@comment_size)
+      comment_string.gsub!(/\0/, "")
+      comment_array = comment_string.split("\n")
+      comment_array.each do |comment|
+        comment =~ /(\w+)=(.*)/
+        @comments[$1] = $2
+      end
     end
   end
 end
