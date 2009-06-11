@@ -1,0 +1,2225 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html 
+  PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>doc/Tutorial.rd.ja</title>
+<link href="bioruby.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+<pre>Copyright (C) 2001-2003, 2005, 2006 Toshiaki Katayama &lt;k@bioruby.org&gt;
+Copyright (C) 2005, 2006 Naohisa Goto &lt;ng@bioruby.org&gt;</pre>
+<h1><a name="label-0" id="label-0">BioRuby の使い方</a></h1><!-- RDLabel: "BioRuby の使い方" -->
+<p>BioRuby は国産の高機能オブジェクト指向スクリプト言語 Ruby のための
+オープンソースなバイオインフォマティクス用ライブラリです。</p>
+<p>Ruby 言語は Perl 言語ゆずりの強力なテキスト処理と、
+シンプルで分かりやすい文法、クリアなオブジェクト指向機能により、
+広く使われるようになりました。Ruby について詳しくは、ウェブサイト
+<a href="http://www.ruby-lang.org/">&lt;URL:http://www.ruby-lang.org/&gt;</a> や市販の書籍等を参照してください。</p>
+<h2><a name="label-1" id="label-1">はじめに</a></h2><!-- RDLabel: "はじめに" -->
+<p>BioRuby を使用するには Ruby と BioRuby をインストールする必要があります。</p>
+<h3><a name="label-2" id="label-2">Ruby のインストール</a></h3><!-- RDLabel: "Ruby のインストール" -->
+<p>Ruby は Mac OS X や最近の UNIX には通常インストールされています。
+Windows の場合も１クリックインストーラや ActiveScriptRuby などが
+用意されています。まだインストールされていない場合は</p>
+<ul>
+<li><a href="http://jp.rubyist.net/magazine/?0002-FirstProgramming">&lt;URL:http://jp.rubyist.net/magazine/?0002-FirstProgramming&gt;</a></li>
+<li><a href="http://jp.rubyist.net/magazine/?FirstStepRuby">&lt;URL:http://jp.rubyist.net/magazine/?FirstStepRuby&gt;</a></li>
+</ul>
+<p>などを参考にしてインストールしましょう。</p>
+<p>あなたのコンピュータにどのバージョンの Ruby がインストールされているかを
+チェックするには</p>
+<pre>% ruby -v</pre>
+<p>とコマンドを入力してください。すると、たとえば</p>
+<pre>ruby 1.8.2 (2004-12-25) [powerpc-darwin7.7.0]</pre>
+<p>のような感じでバージョンが表示されます。バージョン 1.8.5 以降をお勧めします。</p>
+<p>Ruby 標準装備のクラスやメソッドについては、Ruby のリファレンスマニュアルを
+参照してください。</p>
+<ul>
+<li><a href="http://www.ruby-lang.org/ja/man/">&lt;URL:http://www.ruby-lang.org/ja/man/&gt;</a></li>
+<li><a href="http://doc.okkez.net/">&lt;URL:http://doc.okkez.net/&gt;</a></li>
+</ul>
+<p>コマンドラインでヘルプを参照するには、Ruby 標準添付の ri コマンドや、
+日本語版の refe コマンドが便利です。</p>
+<ul>
+<li><a href="http://i.loveruby.net/ja/prog/refe.html">&lt;URL:http://i.loveruby.net/ja/prog/refe.html&gt;</a></li>
+</ul>
+<h3><a name="label-3" id="label-3">RubyGems のインストール</a></h3><!-- RDLabel: "RubyGems のインストール" -->
+<p>RubyGems のページから最新版をダウンロードします。</p>
+<ul>
+<li><a href="http://rubyforge.org/projects/rubygems/">&lt;URL:http://rubyforge.org/projects/rubygems/&gt;</a></li>
+</ul>
+<p>展開してインストールします。</p>
+<pre>% tar zxvf rubygems-x.x.x.tar.gz
+% cd rubygems-x.x.x
+% ruby setup.rb</pre>
+<h3><a name="label-4" id="label-4">BioRuby のインストール</a></h3><!-- RDLabel: "BioRuby のインストール" -->
+<p>BioRuby のインストール方法は <a href="http://bioruby.org/archive/">&lt;URL:http://bioruby.org/archive/&gt;</a> から
+最新版を取得して以下のように行います(※1)。同梱されている README ファイルにも
+目を通して頂きたいのですが、慣れないと１日がかりになる BioPerl と比べて
+BioRuby のインストールはすぐに終わるはずです。</p>
+<pre>% wget http://bioruby.org/archive/bioruby-x.x.x.tar.gz
+% tar zxvf bioruby-x.x.x.tar.gz
+% cd bioruby-x.x.x
+% su
+# ruby setup.rb</pre>
+<p>RubyGems が使える環境であれば</p>
+<pre>% gem install bio</pre>
+<p>だけでインストールできます。このあと README ファイルに書かれているように</p>
+<pre>bioruby-x.x.x/etc/bioinformatics/seqdatabase.ini</pre>
+<p>というファイルをホームディレクトリの ~/.bioinformatics にコピーして
+おくとよいでしょう。RubyGems の場合は</p>
+<pre>/usr/local/lib/ruby/gems/1.8/gems/bio-x.x.x/</pre>
+<p>などにあるはずです。</p>
+<pre>% mkdir ~/.bioinformatics
+% cp bioruby-x.x.x/etc/bioinformatics/seqdatabase.ini ~/.bioinformatics</pre>
+<p>また、Emacs エディタを使う人は Ruby のソースに同梱されている
+misc/ruby-mode.el をインストールしておくとよいでしょう。</p>
+<pre>% mkdir -p ~/lib/lisp/ruby
+% cp ruby-x.x.x/misc/ruby-mode.el ~/lib/lisp/ruby</pre>
+<p>などとしておいて、~/.emacs に以下の設定を書き足します。</p>
+<pre>; subdirs の設定
+(let ((default-directory "~/lib/lisp"))
+  (normal-top-level-add-subdirs-to-load-path)
+
+; ruby-mode の設定
+(autoload 'ruby-mode "ruby-mode" "Mode for editing ruby source files")
+(add-to-list 'auto-mode-alist '("\\.rb$" . rd-mode))
+(add-to-list 'interpeter-mode-alist '("ruby" . ruby-mode))</pre>
+<h2><a name="label-5" id="label-5">BioRuby シェル</a></h2><!-- RDLabel: "BioRuby シェル" -->
+<p>BioRuby バージョン 0.7 以降では、簡単な操作は BioRuby と共にインストールされる
+bioruby コマンドで行うことができます。bioruby コマンドは Ruby に内蔵されている
+インタラクティブシェル irb を利用しており、Ruby と BioRuby にできることは全て
+自由に実行することができます。</p>
+<pre>% bioruby project1</pre>
+<p>引数で指定した名前のディレクトリが作成され、その中で解析を行います。
+上記の例の場合 project1 というディレクトリが作成され、さらに以下の
+サブディレクトリやファイルが作られます。</p>
+<pre>data/           ユーザの解析ファイルを置く場所
+plugin/         必要に応じて追加のプラグインを置く場所
+session/        設定やオブジェクト、ヒストリなどが保存される場所
+session/config  ユーザの設定を保存したファイル
+session/history ユーザの入力したコマンドのヒストリを保存したファイル
+session/object  永続化されたオブジェクトの格納ファイル</pre>
+<p>このうち、data ディレクトリはユーザが自由に書き換えて構いません。
+また、session/history ファイルを見ると、いつどのような操作を行ったかを
+確認することができます。</p>
+<p>２回目以降は、初回と同様に</p>
+<pre>% bioruby project1</pre>
+<p>として起動しても構いませんし、作成されたディレクトリに移動して</p>
+<pre>% cd project1
+% bioruby</pre>
+<p>のように引数なしで起動することもできます。</p>
+<p>この他、script コマンドで作成されるスクリプトファイルや、
+web コマンドで作成される Rails のための設定ファイルなどがありますが、
+それらについては必要に応じて後述します。</p>
+<p>BioRuby シェルではデフォルトでいくつかの便利なライブラリを読み込んでいます。
+例えば readline ライブラリが使える環境では Tab キーでメソッド名や変数名が
+補完されるはずです。open-uri, pp, yaml なども最初から読み込まれています。</p>
+<h3><a name="label-6" id="label-6">塩基, アミノ酸の配列を作る</a></h3><!-- RDLabel: "塩基, アミノ酸の配列を作る" -->
+<dl>
+<dt><a name="label-7" id="label-7"><code>getseq(<var>str</var>)</code></a></dt><!-- RDLabel: "getseq" -->
+</dl>
+<p>getseq コマンド(※2)を使って文字列から塩基配列やアミノ酸配列を作ることが
+できます。塩基とアミノ酸は ATGC の含量が 90% 以上かどうかで自動判定されます。
+ここでは、できた塩基配列を dna という変数に代入します。</p>
+<pre>bioruby&gt; dna = getseq("atgcatgcaaaa")</pre>
+<p>変数の中身を確認するには Ruby の puts メソッドを使います。</p>
+<pre>bioruby&gt; puts dna
+atgcatgcaaaa</pre>
+<p>ファイル名を引数に与えると手元にあるファイルから配列を得ることもできます。
+GenBank, EMBL, UniProt, FASTA など主要な配列フォーマットは自動判別されます
+（拡張子などのファイル名ではなくエントリの中身で判定します）。
+以下は UniProt フォーマットのエントリをファイルから読み込んでいます。
+この方法では、複数のエントリがある場合最初のエントリだけが読み込まれます。</p>
+<pre>bioruby&gt; cdc2 = getseq("p04551.sp")
+bioruby&gt; puts cdc2
+MENYQKVEKIGEGTYGVVYKARHKLSGRIVAMKKIRLEDESEGVPSTAIREISLLKEVNDENNRSN...(略)</pre>
+<p>データベース名とエントリ名が分かっていれば、インターネットを通じて
+配列を自動的に取得することができます。</p>
+<pre>bioruby&gt; psaB = getseq("genbank:AB044425")
+bioruby&gt; puts psaB
+actgaccctgttcatattcgtcctattgctcacgcgatttgggatccgcactttggccaaccagca...(略)</pre>
+<p>どこのデータベースからどのような方法でエントリを取得するかは、BioPerl
+などと共通の OBDA 設定ファイル ~/.bioinformatics/seqdatabase.ini
+を用いてデータベースごとに指定することができます（後述）。
+また、EMBOSS の seqret コマンドによる配列取得にも対応していますので、
+EMBOSS の USA 表記でもエントリを取得できます。EMBOSS のマニュアルを参照し
+~/.embossrc を適切に設定してください。</p>
+<p>どの方法で取得した場合も、getseq コマンドによって返される配列は、
+汎用の配列クラス Bio::Sequence になります(※3)。</p>
+<p>配列が塩基配列とアミノ酸配列のどちらと判定されているのかは、
+moltype メソッドを用いて</p>
+<pre>bioruby&gt; p cdc2.moltype
+Bio::Sequence::AA
+
+bioruby&gt; p psaB.moltype
+Bio::Sequence::NA</pre>
+<p>のように調べることができます。自動判定が間違っている場合などには
+na, aa メソッドで強制的に変換できます。なお、これらのメソッドは
+元のオブジェクトを強制的に書き換えます。</p>
+<pre>bioruby&gt; dna.aa
+bioruby&gt; p dna.moltype
+Bio::Sequence::AA
+
+bioruby&gt; dna.na
+bioruby&gt; p dna.moltype
+Bio::Sequence::NA</pre>
+<p>または、to_naseq, to_aaseq メソッドで強制的に変換することもできます。</p>
+<pre>bioruby&gt; pep = dna.to_aaseq</pre>
+<p>to_naseq, to_aaseq メソッドの返すオブジェクトは、それぞれ、
+DNA 配列のための Bio::Sequence::NA クラス、アミノ酸配列のための
+Bio::Sequence::AA クラスのオブジェクトになります。
+配列がどちらのクラスに属するかは Ruby の class メソッドを用いて</p>
+<pre>bioruby&gt; p pep.class
+Bio::Sequence::AA</pre>
+<p>のように調べることができます。</p>
+<p>強制的に変換せずに、Bio::Sequence::NA クラスまたは Bio::sequence::AA クラス
+のどちらかのオブジェクトを得たい場合には seq メソッドを使います(※4)。</p>
+<pre>bioruby&gt; pep2 = cdc2.seq
+bioruby&gt; p pep2.class
+Bio::Sequence::AA</pre>
+<p>また、以下で解説する complement や translate などのメソッドの結果は、
+塩基配列を返すことが期待されるメソッドは Bio::Sequence::NA クラス、
+アミノ酸配列を返すことが期待されるメソッドは Bio::sequence::AA クラス
+のオブジェクトになります。</p>
+<p>塩基配列やアミノ酸配列のクラスは Ruby の文字列クラスである String を
+継承しています。また、Bio::Sequence クラスのオブジェクトは String の
+オブジェクトと見かけ上同様に働くように工夫されています。このため、
+length で長さを調べたり、+ で足し合わせたり、* で繰り返したりなど、
+Ruby の文字列に対して行える操作は全て利用可能です。
+このような特徴はオブジェクト指向の強力な側面の一つと言えるでしょう。</p>
+<pre>bioruby&gt; puts dna.length
+12
+
+bioruby&gt; puts dna + dna
+atgcatgcaaaaatgcatgcaaaa
+
+bioruby&gt; puts dna * 5
+atgcatgcaaaaatgcatgcaaaaatgcatgcaaaaatgcatgcaaaaatgcatgcaaaa</pre>
+<dl>
+<dt><a name="label-8" id="label-8">complement</a></dt><!-- RDLabel: "complement" -->
+</dl>
+<p>塩基配列の相補鎖配列を得るには塩基配列の complement メソッドを呼びます。</p>
+<pre>bioruby&gt; puts dna.complement
+ttttgcatgcat</pre>
+<dl>
+<dt><a name="label-9" id="label-9">translate</a></dt><!-- RDLabel: "translate" -->
+</dl>
+<p>塩基配列をアミノ酸配列に翻訳するには translate メソッドを使います。
+翻訳されたアミノ酸配列を pep という変数に代入してみます。</p>
+<pre>bioruby&gt; pep = dna.translate
+bioruby&gt; puts pep
+MHAK</pre>
+<p>フレームを変えて翻訳するには</p>
+<pre>bioruby&gt; puts dna.translate(2)
+CMQ
+bioruby&gt; puts dna.translate(3)
+ACK</pre>
+<p>などとします。</p>
+<dl>
+<dt><a name="label-10" id="label-10">molecular_weight</a></dt><!-- RDLabel: "molecular_weight" -->
+</dl>
+<p>分子量は molecular_weight メソッドで表示されます。</p>
+<pre>bioruby&gt; puts dna.molecular_weight
+3718.66444
+
+bioruby&gt; puts pep.molecular_weight
+485.605</pre>
+<dl>
+<dt><a name="label-11" id="label-11"><code>seqstat(<var>seq</var>)</code></a></dt><!-- RDLabel: "seqstat" -->
+</dl>
+<p>seqstat コマンドを使うと、組成などの情報も一度に表示されます。</p>
+<pre>bioruby&gt; seqstat(dna)
+
+* * * Sequence statistics * * *
+
+5'-&gt;3' sequence   : atgcatgcaaaa
+3'-&gt;5' sequence   : ttttgcatgcat
+Translation   1   : MHAK
+Translation   2   : CMQ
+Translation   3   : ACK
+Translation  -1   : FCMH
+Translation  -2   : FAC
+Translation  -3   : LHA
+Length            : 12 bp
+GC percent        : 33 %
+Composition       : a -  6 ( 50.00 %)
+                    c -  2 ( 16.67 %)
+                    g -  2 ( 16.67 %)
+                    t -  2 ( 16.67 %)
+Codon usage       :
+
+ *---------------------------------------------*
+ |       |              2nd              |     |
+ |  1st  |-------------------------------| 3rd |
+ |       |  U    |  C    |  A    |  G    |     |
+ |-------+-------+-------+-------+-------+-----|
+ | U   U |F  0.0%|S  0.0%|Y  0.0%|C  0.0%|  u  |
+ | U   U |F  0.0%|S  0.0%|Y  0.0%|C  0.0%|  c  |
+ | U   U |L  0.0%|S  0.0%|*  0.0%|*  0.0%|  a  |
+ |  UUU  |L  0.0%|S  0.0%|*  0.0%|W  0.0%|  g  |
+ |-------+-------+-------+-------+-------+-----|
+ |  CCCC |L  0.0%|P  0.0%|H 25.0%|R  0.0%|  u  |
+ | C     |L  0.0%|P  0.0%|H  0.0%|R  0.0%|  c  |
+ | C     |L  0.0%|P  0.0%|Q  0.0%|R  0.0%|  a  |
+ |  CCCC |L  0.0%|P  0.0%|Q  0.0%|R  0.0%|  g  |
+ |-------+-------+-------+-------+-------+-----|
+ |   A   |I  0.0%|T  0.0%|N  0.0%|S  0.0%|  u  |
+ |  A A  |I  0.0%|T  0.0%|N  0.0%|S  0.0%|  c  |
+ | AAAAA |I  0.0%|T  0.0%|K 25.0%|R  0.0%|  a  |
+ | A   A |M 25.0%|T  0.0%|K  0.0%|R  0.0%|  g  |
+ |-------+-------+-------+-------+-------+-----|
+ |  GGGG |V  0.0%|A  0.0%|D  0.0%|G  0.0%|  u  |
+ | G     |V  0.0%|A  0.0%|D  0.0%|G  0.0%|  c  |
+ | G GGG |V  0.0%|A 25.0%|E  0.0%|G  0.0%|  a  |
+ |  GG G |V  0.0%|A  0.0%|E  0.0%|G  0.0%|  g  |
+ *---------------------------------------------*
+
+Molecular weight  : 3718.66444
+Protein weight    : 485.605
+//</pre>
+<p>アミノ酸配列の場合は以下のようになります。</p>
+<pre>bioruby&gt; seqstat(pep)
+
+* * * Sequence statistics * * *
+
+N-&gt;C sequence     : MHAK
+Length            : 4 aa
+Composition       : A Ala - 1 ( 25.00 %) alanine
+                    H His - 1 ( 25.00 %) histidine
+                    K Lys - 1 ( 25.00 %) lysine
+                    M Met - 1 ( 25.00 %) methionine
+Protein weight    : 485.605
+//</pre>
+<dl>
+<dt><a name="label-12" id="label-12">composition</a></dt><!-- RDLabel: "composition" -->
+</dl>
+<p>seqstat の中で表示されている組成は composition メソッドで得ることができます。
+結果が文字列ではなく Hash で返されるので、とりあえず表示してみる場合には
+puts の代わりに p コマンドを使うと良いでしょう。</p>
+<pre>bioruby&gt; p dna.composition
+{"a"=&gt;6, "c"=&gt;2, "g"=&gt;2, "t"=&gt;2}</pre>
+<h4><a name="label-13" id="label-13">塩基配列、アミノ酸配列のその他のメソッド</a></h4><!-- RDLabel: "塩基配列、アミノ酸配列のその他のメソッド" -->
+<p>他にも塩基配列、アミノ酸配列に対して行える操作は色々とあります。</p>
+<dl>
+<dt><a name="label-14" id="label-14">subseq(from, to)</a></dt><!-- RDLabel: "subseq(from, to)" -->
+</dl>
+<p>部分配列を取り出すには subseq メソッドを使います。</p>
+<pre>bioruby&gt; puts dna.subseq(1, 3)
+atg</pre>
+<p>Ruby など多くのプログラミング言語の文字列は 1 文字目を 0 から数えますが、
+subseq メソッドは 1 から数えて切り出せるようになっています。</p>
+<pre>bioruby&gt; puts dna[0, 3]
+atg</pre>
+<p>Ruby の String クラスが持つ slice メソッド str[] と適宜使い分けると
+よいでしょう。</p>
+<dl>
+<dt><a name="label-15" id="label-15">window_search(len, step)</a></dt><!-- RDLabel: "window_search(len, step)" -->
+</dl>
+<p>window_search メソッドを使うと長い配列の部分配列毎の繰り返しを
+簡単に行うことができます。DNA 配列をコドン毎に処理する場合、
+３文字ずつずらしながら３文字を切り出せばよいので以下のようになります。</p>
+<pre>bioruby&gt; dna.window_search(3, 3) do |codon|
+bioruby+   puts "#{codon}\t#{codon.translate}"
+bioruby+ end
+atg     M
+cat     H
+gca     A
+aaa     K</pre>
+<p>ゲノム配列を、末端 1000bp をオーバーラップさせながら 11000bp ごとに
+ブツ切りにし FASTA フォーマットに整形する場合は以下のようになります。</p>
+<pre>bioruby&gt; seq.window_search(11000, 10000) do |subseq|
+bioruby+   puts subseq.to_fasta
+bioruby+ end</pre>
+<p>最後の 10000bp に満たない 3' 端の余り配列は返り値として得られるので、
+必要な場合は別途受け取って表示します。</p>
+<pre>bioruby&gt; i = 1
+bioruby&gt; remainder = seq.window_search(11000, 10000) do |subseq|
+bioruby+   puts subseq.to_fasta("segment #{i*10000}", 60)
+bioruby+   i += 1
+bioruby+ end
+bioruby&gt; puts remainder.to_fasta("segment #{i*10000}", 60)</pre>
+<dl>
+<dt><a name="label-16" id="label-16">splicing(position)</a></dt><!-- RDLabel: "splicing(position)" -->
+</dl>
+<p>塩基配列の GenBank 等の position 文字列による切り出しは splicing
+メソッドで行います。</p>
+<pre>bioruby&gt; puts dna
+atgcatgcaaaa
+bioruby&gt; puts dna.splicing("join(1..3,7..9)")
+atggca</pre>
+<dl>
+<dt><a name="label-17" id="label-17">randomize</a></dt><!-- RDLabel: "randomize" -->
+</dl>
+<p>randomize メソッドは、配列の組成を保存したままランダム配列を生成します。</p>
+<pre>bioruby&gt; puts dna.randomize
+agcaatagatac</pre>
+<dl>
+<dt><a name="label-18" id="label-18">to_re</a></dt><!-- RDLabel: "to_re" -->
+</dl>
+<p>to_re メソッドは、曖昧な塩基の表記を含む塩基配列を atgc だけの
+パターンからなる正規表現に変換します。</p>
+<pre>bioruby&gt; ambiguous = getseq("atgcyatgcatgcatgc")
+
+bioruby&gt; p ambiguous.to_re
+/atgc[tc]atgcatgcatgc/
+
+bioruby&gt; puts ambiguous.to_re
+(?-mix:atgc[tc]atgcatgcatgc)</pre>
+<p>seq メソッドは ATGC の含有量が 90% 以下だとアミノ酸配列とみなすので、
+曖昧な塩基が多く含まれる配列の場合は to_naseq メソッドを使って
+明示的に Bio::Sequence::NA オブジェクトに変換する必要があります。</p>
+<pre>bioruby&gt; s = getseq("atgcrywskmbvhdn").to_naseq
+bioruby&gt; p s.to_re
+/atgc[ag][tc][at][gc][tg][ac][tgc][agc][atc][atg][atgc]/
+
+bioruby&gt; puts s.to_re
+(?-mix:atgc[ag][tc][at][gc][tg][ac][tgc][agc][atc][atg][atgc])</pre>
+<dl>
+<dt><a name="label-19" id="label-19">names</a></dt><!-- RDLabel: "names" -->
+</dl>
+<p>あまり使うことはありませんが、配列を塩基名やアミノ酸名に変換する
+メソッドです。</p>
+<pre>bioruby&gt; p dna.names
+["adenine", "thymine", "guanine", "cytosine", "adenine", "thymine",
+"guanine", "cytosine", "adenine", "adenine", "adenine", "adenine"]
+
+bioruby&gt; p pep.names
+["methionine", "histidine", "alanine", "lysine"]</pre>
+<dl>
+<dt><a name="label-20" id="label-20">codes</a></dt><!-- RDLabel: "codes" -->
+</dl>
+<p>アミノ酸配列を３文字コードに変換する names と似たメソッドです。</p>
+<pre>bioruby&gt; p pep.codes
+["Met", "His", "Ala", "Lys"]</pre>
+<dl>
+<dt><a name="label-21" id="label-21">gc_percent</a></dt><!-- RDLabel: "gc_percent" -->
+</dl>
+<p>塩基配列の GC 含量は gc_percent メソッドで得られます。</p>
+<pre>bioruby&gt; p dna.gc_percent
+33</pre>
+<dl>
+<dt><a name="label-22" id="label-22">to_fasta</a></dt><!-- RDLabel: "to_fasta" -->
+</dl>
+<p>FASTA フォーマットに変換するには to_fasta メソッドを使います。</p>
+<pre>bioruby&gt; puts dna.to_fasta("dna sequence")
+&gt;dna sequence
+aaccggttacgt</pre>
+<h3><a name="label-23" id="label-23">塩基やアミノ酸のコード、コドン表をあつかう</a></h3><!-- RDLabel: "塩基やアミノ酸のコード、コドン表をあつかう" -->
+<p>アミノ酸、塩基、コドンテーブルを得るための aminoacids, nucleicacids,
+codontables, codontable コマンドを紹介します。</p>
+<dl>
+<dt><a name="label-24" id="label-24"><code>aminoacids</code></a></dt><!-- RDLabel: "aminoacids" -->
+</dl>
+<p>アミノ酸の一覧は aminoacids コマンドで表示できます。</p>
+<pre>bioruby&gt; aminoacids
+?       Pyl     pyrrolysine
+A       Ala     alanine
+B       Asx     asparagine/aspartic acid
+C       Cys     cysteine
+D       Asp     aspartic acid
+E       Glu     glutamic acid
+F       Phe     phenylalanine
+G       Gly     glycine
+H       His     histidine
+I       Ile     isoleucine
+K       Lys     lysine
+L       Leu     leucine
+M       Met     methionine
+N       Asn     asparagine
+P       Pro     proline
+Q       Gln     glutamine
+R       Arg     arginine
+S       Ser     serine
+T       Thr     threonine
+U       Sec     selenocysteine
+V       Val     valine
+W       Trp     tryptophan
+Y       Tyr     tyrosine
+Z       Glx     glutamine/glutamic acid</pre>
+<p>返り値は短い表記と対応する長い表記のハッシュになっています。</p>
+<pre>bioruby&gt; aa = aminoacids
+bioruby&gt; puts aa["G"]
+Gly
+bioruby&gt; puts aa["Gly"]
+glycine</pre>
+<dl>
+<dt><a name="label-25" id="label-25"><code>nucleicacids</code></a></dt><!-- RDLabel: "nucleicacids" -->
+</dl>
+<p>塩基の一覧は nucleicacids コマンドで表示できます。</p>
+<pre>bioruby&gt; nucleicacids
+a       a       Adenine
+t       t       Thymine
+g       g       Guanine
+c       c       Cytosine
+u       u       Uracil
+r       [ag]    puRine
+y       [tc]    pYrimidine
+w       [at]    Weak
+s       [gc]    Strong
+k       [tg]    Keto
+m       [ac]    aroMatic
+b       [tgc]   not A
+v       [agc]   not T
+h       [atc]   not G
+d       [atg]   not C
+n       [atgc]  </pre>
+<p>返り値は塩基の１文字表記と該当する塩基のハッシュになっています。</p>
+<pre>bioruby&gt; na = nucleicacids
+bioruby&gt; puts na["r"]
+[ag]</pre>
+<dl>
+<dt><a name="label-26" id="label-26"><code>codontables</code></a></dt><!-- RDLabel: "codontables" -->
+</dl>
+<p>コドンテーブルの一覧は codontables コマンドで表示できます。</p>
+<pre>bioruby&gt; codontables
+1       Standard (Eukaryote)
+2       Vertebrate Mitochondrial
+3       Yeast Mitochondorial
+4       Mold, Protozoan, Coelenterate Mitochondrial and Mycoplasma/Spiroplasma
+5       Invertebrate Mitochondrial
+6       Ciliate Macronuclear and Dasycladacean
+9       Echinoderm Mitochondrial
+10      Euplotid Nuclear
+11      Bacteria
+12      Alternative Yeast Nuclear
+13      Ascidian Mitochondrial
+14      Flatworm Mitochondrial
+15      Blepharisma Macronuclear
+16      Chlorophycean Mitochondrial
+21      Trematode Mitochondrial
+22      Scenedesmus obliquus mitochondrial
+23      Thraustochytrium Mitochondrial</pre>
+<p>返り値はテーブル番号と名前のハッシュになっています。</p>
+<pre>bioruby&gt; ct = codontables
+bioruby&gt; puts ct[3]
+Yeast Mitochondorial</pre>
+<dl>
+<dt><a name="label-27" id="label-27"><code>codontable(<var>num</var>)</code></a></dt><!-- RDLabel: "codontable" -->
+</dl>
+<p>コドン表自体は codontable コマンドで表示できます。</p>
+<pre>bioruby&gt; codontable(11)
+
+ = Codon table 11 : Bacteria
+
+   hydrophilic: H K R (basic), S T Y Q N S (polar), D E (acidic)
+   hydrophobic: F L I M V P A C W G (nonpolar)
+
+ *---------------------------------------------*
+ |       |              2nd              |     |
+ |  1st  |-------------------------------| 3rd |
+ |       |  U    |  C    |  A    |  G    |     |
+ |-------+-------+-------+-------+-------+-----|
+ | U   U | Phe F | Ser S | Tyr Y | Cys C |  u  |
+ | U   U | Phe F | Ser S | Tyr Y | Cys C |  c  |
+ | U   U | Leu L | Ser S | STOP  | STOP  |  a  |
+ |  UUU  | Leu L | Ser S | STOP  | Trp W |  g  |
+ |-------+-------+-------+-------+-------+-----|
+ |  CCCC | Leu L | Pro P | His H | Arg R |  u  |
+ | C     | Leu L | Pro P | His H | Arg R |  c  |
+ | C     | Leu L | Pro P | Gln Q | Arg R |  a  |
+ |  CCCC | Leu L | Pro P | Gln Q | Arg R |  g  |
+ |-------+-------+-------+-------+-------+-----|
+ |   A   | Ile I | Thr T | Asn N | Ser S |  u  |
+ |  A A  | Ile I | Thr T | Asn N | Ser S |  c  |
+ | AAAAA | Ile I | Thr T | Lys K | Arg R |  a  |
+ | A   A | Met M | Thr T | Lys K | Arg R |  g  |
+ |-------+-------+-------+-------+-------+-----|
+ |  GGGG | Val V | Ala A | Asp D | Gly G |  u  |
+ | G     | Val V | Ala A | Asp D | Gly G |  c  |
+ | G GGG | Val V | Ala A | Glu E | Gly G |  a  |
+ |  GG G | Val V | Ala A | Glu E | Gly G |  g  |
+ *---------------------------------------------*</pre>
+<p>返り値は Bio::CodonTable クラスのオブジェクトで、コドンとアミノ酸の
+変換ができるだけでなく、以下のようなデータも得ることができます。</p>
+<pre>bioruby&gt; ct = codontable(2)
+bioruby&gt; p ct["atg"]
+"M"</pre>
+<dl>
+<dt><a name="label-28" id="label-28">definition</a></dt><!-- RDLabel: "definition" -->
+</dl>
+<p>コドン表の定義の説明</p>
+<pre>bioruby&gt; puts ct.definition
+Vertebrate Mitochondrial</pre>
+<dl>
+<dt><a name="label-29" id="label-29">start</a></dt><!-- RDLabel: "start" -->
+</dl>
+<p>開始コドン一覧</p>
+<pre>bioruby&gt; p ct.start
+["att", "atc", "ata", "atg", "gtg"]</pre>
+<dl>
+<dt><a name="label-30" id="label-30">stop</a></dt><!-- RDLabel: "stop" -->
+</dl>
+<p>終止コドン一覧</p>
+<pre>bioruby&gt; p ct.stop
+["taa", "tag", "aga", "agg"]</pre>
+<dl>
+<dt><a name="label-31" id="label-31">revtrans</a></dt><!-- RDLabel: "revtrans" -->
+</dl>
+<p>アミノ酸をコードするコドンを調べる</p>
+<pre>bioruby&gt; p ct.revtrans("V")
+["gtc", "gtg", "gtt", "gta"]</pre>
+<h3><a name="label-32" id="label-32">フラットファイルのエントリ</a></h3><!-- RDLabel: "フラットファイルのエントリ" -->
+<p>データベースのエントリと、フラットファイルそのものを扱う方法を紹介します。
+GenBank データベースの中では、ファージのエントリが含まれる gbphg.seq の
+ファイルサイズが小さいので、このファイルを例として使います。</p>
+<pre>% wget ftp://ftp.hgc.jp/pub/mirror/ncbi/genbank/gbphg.seq.gz
+% gunzip gbphg.seq.gz</pre>
+<dl>
+<dt><a name="label-33" id="label-33"><code>getent(<var>str</var>)</code></a></dt><!-- RDLabel: "getent" -->
+</dl>
+<p>getseq コマンドは配列を取得しましたが、配列だけでなくエントリ全体を取得する
+には getent コマンド(※2)を使います。getseq コマンド同様、getent コマンドでも
+OBDA, EMBOSS, NCBI, EBI, TogoWS, KEGG API のデータベースが利用可能です(※5)。
+設定については getseq コマンドの説明を参照してください。</p>
+<pre>bioruby&gt; entry = getent("genbank:AB044425")
+bioruby&gt; puts entry
+LOCUS       AB044425                1494 bp    DNA     linear   PLN 28-APR-2001
+DEFINITION  Volvox carteri f. kawasakiensis chloroplast psaB gene for
+            photosystem I P700 chlorophyll a apoprotein A2,
+            strain:NIES-732.
+(略)</pre>
+<p>getent コマンドの引数には db:entry_id 形式の文字列、EMBOSS の USA、
+ファイル、IO が与えられ、データベースの１エントリ分の文字列が返されます。
+配列データベースに限らず、数多くのデータベースエントリに対応しています。</p>
+<dl>
+<dt><a name="label-34" id="label-34"><code>flatparse(<var>str</var>)</code></a></dt><!-- RDLabel: "flatparse" -->
+</dl>
+<p>取得したエントリをパースして欲しいデータをとりだすには flatparse
+コマンドを使います。</p>
+<pre>bioruby&gt; entry = getent("gbphg.seq")
+bioruby&gt; gb = flatparse(entry)
+bioruby&gt; puts gb.entry_id
+AB000833
+bioruby&gt; puts gb.definition
+Bacteriophage Mu DNA for ORF1, sheath protein gpL, ORF2, ORF3, complete cds.
+bioruby&gt; puts psaB.naseq
+acggtcagacgtttggcccgaccaccgggatgaggctgacgcaggtcagaaatctttgtgacgacaaccgtatcaat
+(略)</pre>
+<dl>
+<dt><a name="label-35" id="label-35"><code>getobj(<var>str</var>)</code></a></dt><!-- RDLabel: "getobj" -->
+</dl>
+<p>getobj コマンド(※2)は、getent でエントリを文字列として取得し flatparse で
+パースしたオブジェクトに変換するのと同じです。getent コマンドと同じ引数を
+受け付けます。配列を取得する時は getseq、エントリを取得する時は getent、
+パースしたオブジェクトを取得する時は getobj を使うことになります。</p>
+<pre>bioruby&gt; gb = getobj("gbphg.seq")
+bioruby&gt; puts gb.entry_id
+AB000833</pre>
+<dl>
+<dt><a name="label-36" id="label-36"><code>flatfile(<var>file</var>)</code></a></dt><!-- RDLabel: "flatfile" -->
+</dl>
+<p>getent コマンドは１エントリしか扱えないため、ローカルのファイルを開いて 
+各エントリ毎に処理を行うには flatfile コマンドを使います。</p>
+<pre>bioruby&gt; flatfile("gbphg.seq") do |entry|
+bioruby+   # do something on entry
+bioruby+ end</pre>
+<p>ブロックを指定しない場合は、ファイル中の最初のエントリを取得します。</p>
+<pre>bioruby&gt; entry = flatfile("gbphg.seq")
+bioruby&gt; gb = flatparse(entry)
+bioruby&gt; puts gb.entry_id</pre>
+<dl>
+<dt><a name="label-37" id="label-37"><code>flatauto(<var>file</var>)</code></a></dt><!-- RDLabel: "flatauto" -->
+</dl>
+<p>各エントリを flatparse と同様にパースした状態で順番に処理するためには、
+flatfile コマンドの代わりに flatauto コマンドを使います。</p>
+<pre>bioruby&gt; flatauto("gbphg.seq") do |entry|
+bioruby+   print entry.entry_id
+bioruby+   puts  entry.definition
+bioruby+ end</pre>
+<p>flatfile 同様、ブロックを指定しない場合は、ファイル中の最初のエントリを
+取得し、パースしたオブジェクトを返します。</p>
+<pre>bioruby&gt; gb = flatfile("gbphg.seq")
+bioruby&gt; puts gb.entry_id</pre>
+<h3><a name="label-38" id="label-38">フラットファイルのインデクシング</a></h3><!-- RDLabel: "フラットファイルのインデクシング" -->
+<p>EMBOSS の dbiflat に似た機能として、BioRuby, BioPerl などに共通の BioFlat
+というインデックスを作成する仕組みがあります。一度インデックスを
+作成しておくとエントリの取り出しが高速かつ容易に行えます。
+これにより自分専用のデータベースを手軽に作ることができます。</p>
+<dl>
+<dt><a name="label-39" id="label-39"><code>flatindex(<var>db_name</var>, *<var>source_file_list</var>)</code></a></dt><!-- RDLabel: "flatindex" -->
+</dl>
+<p>GenBank のファージの配列ファイル gbphg.seq に入っているエントリに対して
+mydb というデータベース名でインデックスを作成します。</p>
+<pre>bioruby&gt; flatindex("mydb", "gbphg.seq")
+Creating BioFlat index (.bioruby/bioflat/mydb) ... done</pre>
+<dl>
+<dt><a name="label-40" id="label-40"><code>flatsearch(<var>db_name</var>, <var>entry_id</var>)</code></a></dt><!-- RDLabel: "flatsearch" -->
+</dl>
+<p>作成した mydb データベースからエントリをとり出すには flatsearch コマンドを
+使います。</p>
+<pre>bioruby&gt; entry = flatsearch("mydb", "AB004561")
+bioruby&gt; puts entry
+LOCUS       AB004561                2878 bp    DNA     linear   PHG 20-MAY-1998
+DEFINITION  Bacteriophage phiU gene for integrase, complete cds, integration
+            site.
+ACCESSION   AB004561
+(略)</pre>
+<h3><a name="label-41" id="label-41">様々な DB の配列を FASTA フォーマットに変換して保存</a></h3><!-- RDLabel: "様々な DB の配列を FASTA フォーマットに変換して保存" -->
+<p>FASTA フォーマットは配列データで標準的に用いられているフォーマットです。
+「&gt;」記号ではじまる１行目に配列の説明があり、２行目以降に配列がつづきます。
+配列中の空白文字は無視されます。</p>
+<pre>&gt;entry_id definition ...
+ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT
+ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT</pre>
+<p>配列の説明行は、最初の単語が配列の ID になっていることが多いのですが、
+NCBI の BLAST 用データベースではさらに高度な構造化がおこなわれています。</p>
+<ul>
+<li><a href="ftp://ftp.ncbi.nih.gov/blast/documents/README.formatdb">&lt;URL:ftp://ftp.ncbi.nih.gov/blast/documents/README.formatdb&gt;</a></li>
+<li><a href="http://blast.wustl.edu/doc/FAQ-Indexing.html#Identifiers">&lt;URL:http://blast.wustl.edu/doc/FAQ-Indexing.html#Identifiers&gt;</a></li>
+<li>FASTA format (Wikipedia)
+  <a href="http://en.wikipedia.org/wiki/Fasta_format">&lt;URL:http://en.wikipedia.org/wiki/Fasta_format&gt;</a></li>
+</ul>
+<p>BioRuby のデータベースエントリのクラスにはエントリID、配列、定義について
+共通のメソッドが用意されています。</p>
+<ul>
+<li>entry_id - エントリ ID を取得</li>
+<li>definition - 定義文を取得</li>
+<li>seq - 配列を取得</li>
+</ul>
+<p>これらの共通メソッドを使うと、どんな配列データベースエントリでも
+FASTA フォーマットに変換できるプログラムが簡単に作れます。</p>
+<pre>entry.seq.to_fasta("#{entry.entry_id} #{entry.definition}", 60)</pre>
+<p>さらに、BioRuby では入力データベースの形式を自動判別できますので、
+GenBank, UniProt など多くの主要な配列データベースでは
+ファイル名を指定するだけで FASTA フォーマットに変換できます。</p>
+<dl>
+<dt><a name="label-42" id="label-42"><code>flatfasta(<var>fasta_file</var>, *<var>source_file_list</var>)</code></a></dt><!-- RDLabel: "flatfasta" -->
+</dl>
+<p>入力データベースのファイル名のリストから、指定した FASTA フォーマットの
+ファイルを生成するコマンドです。ここではいくつかの GenBank のファイルを
+FASTA フォーマットに変換し、myfasta.fa というファイルに保存しています。</p>
+<pre>bioruby&gt; flatfasta("myfasta.fa", "gbphg.seq", "gbvrl1.seq", "gbvrl2.seq")
+Saving fasta file (myfasta.fa) ... 
+  converting -- gbphg.gbk
+  converting -- gbvrl1.gbk
+  converting -- gbvrl2.gbk
+done</pre>
+<h3><a name="label-43" id="label-43">KEGG API</a></h3><!-- RDLabel: "KEGG API" -->
+<p>BioRuby シェルでは KEGG API のウェブサービスも簡単に利用できます。</p>
+<dl>
+<dt><a name="label-44" id="label-44"><code>keggdbs</code></a></dt><!-- RDLabel: "keggdbs" -->
+</dl>
+<p>ゲノムネットで KEGG API を通じて利用可能なデータベースのリストを表示します。</p>
+<pre>bioruby&gt; keggdbs
+nt:     Non-redundant nucleic acid sequence database
+aa:     Non-redundant protein sequence database
+gb:     GenBank nucleic acid sequence database
+(略)</pre>
+<dl>
+<dt><a name="label-45" id="label-45"><code>keggorgs</code></a></dt><!-- RDLabel: "keggorgs" -->
+</dl>
+<p>KEGG に収録されている全生物種のリストを表示します。</p>
+<pre>bioruby&gt; keggorgs
+aae:    Aquifex aeolicus
+aci:    Acinetobacter sp. ADP1
+afu:    Archaeoglobus fulgidus
+(略)</pre>
+<dl>
+<dt><a name="label-46" id="label-46"><code>keggpathways</code></a></dt><!-- RDLabel: "keggpathways" -->
+</dl>
+<p>KEGG に収録されている全パスウェイのリストを表示します。</p>
+<pre>bioruby&gt; keggpathways
+path:map00010:  Glycolysis / Gluconeogenesis - Reference pathway
+path:map00020:  Citrate cycle (TCA cycle) - Reference pathway
+path:map00030:  Pentose phosphate pathway - Reference pathway
+(略)</pre>
+<p>引数に３文字の KEGG 生物種記号をあたえると、その生物で利用できる
+パスウェイだけの一覧を返します。大腸菌 eco の場合以下のようになります。</p>
+<pre>bioruby&gt; keggpathways("eco")
+path:eco00010:  Glycolysis / Gluconeogenesis - Escherichia coli K-12 MG1655
+path:eco00020:  Citrate cycle (TCA cycle) - Escherichia coli K-12 MG1655
+path:eco00030:  Pentose phosphate pathway - Escherichia coli K-12 MG1655
+(略)</pre>
+<dl>
+<dt><a name="label-47" id="label-47"><code>keggapi</code></a></dt><!-- RDLabel: "keggapi" -->
+</dl>
+<p>これら以外の KEGG API のメソッドは、keggapi に続けて呼び出すことで
+利用できます。</p>
+<pre>bioruby&gt; p keggapi.get_genes_by_pathway("path:eco00010")
+["eco:b0114", "eco:b0115", "eco:b0116", "eco:b0356", "eco:b0688", (略)</pre>
+<p>利用可能なメソッドの一覧は KEGG API のマニュアルを参照してください。</p>
+<ul>
+<li><a href="http://www.genome.jp/kegg/soap/doc/keggapi_manual_ja.html">&lt;URL:http://www.genome.jp/kegg/soap/doc/keggapi_manual_ja.html&gt;</a></li>
+</ul>
+<h3><a name="label-48" id="label-48">DBGET</a></h3><!-- RDLabel: "DBGET" -->
+<p>ゲノムネットの DBGET のコマンドである binfo, bfind, bget, btit, bconv は
+KEGG API を利用してそのまま実行できるようになっています。</p>
+<dl>
+<dt><a name="label-49" id="label-49"><code>binfo</code></a></dt><!-- RDLabel: "binfo" -->
+</dl>
+<pre>bioruby&gt; binfo
+                         *** Last database updates ***
+Date      Database              Release              #Entries      #Residues</pre>
+<pre>--------  -------------   ------------------------  ------------  ----------------
+ 05/12/06  nr-nt                 05-12-04 (Dec 05)    63,078,043   111,609,773,616
+ 05/12/06  nr-aa                 05-12-05 (Dec 05)     2,682,790       890,953,839
+ 05/10/25  genbank                  150.0 (Oct 05)    49,152,445    53,655,236,500
+ 05/12/06  genbank-upd       150.0+/12-04 (Dec 05)     7,470,976     6,357,888,366
+ (略)</pre>
+<p>binfo コマンドに続けてデータベース名を指定することでより詳細な情報が
+表示されます。</p>
+<pre>bioruby&gt; binfo "genbank"
+genbank          GenBank nucleic acid sequence database
+gb               Release 150.0, Oct 05
+                 National Center for Biotechnology Information
+                 49,152,445 entries, 53,655,236,500 bases
+                 Last update:  05/10/25
+                 &lt;dbget&gt; &lt;fasta&gt; &lt;blast&gt;</pre>
+<dl>
+<dt><a name="label-50" id="label-50"><code>bfind(<var>keyword</var>)</code></a></dt><!-- RDLabel: "bfind" -->
+</dl>
+<p>bfind コマンドでデータベースに対するキーワードサーチを行うことができます。
+データベース名と検索したいキーワードを文字列で渡します。</p>
+<pre>bioruby&gt; list = bfind "genbank ebola human"
+bioruby&gt; puts list
+gb:BD177378 [BD177378] A monoclonal antibody recognizing ebola virus.
+gb:BD177379 [BD177379] A monoclonal antibody recognizing ebola virus.
+(略)</pre>
+<dl>
+<dt><a name="label-51" id="label-51"><code>bget(<var>entry_id</var>)</code></a></dt><!-- RDLabel: "bget" -->
+</dl>
+<p>bget コマンドで指定した db:entry_id のデータベースエントリを取得できます。</p>
+<pre>bioruby&gt; entry = bget "gb:BD177378"
+bioruby&gt; puts entry
+LOCUS       BD177378                  24 bp    DNA     linear   PAT 16-APR-2003
+DEFINITION  A monoclonal antibody recognizing ebola virus.
+(略)</pre>
+<h3><a name="label-52" id="label-52">スクリプト生成</a></h3><!-- RDLabel: "スクリプト生成" -->
+<p>作業手順をスクリプト化して保存しておくこともできます。</p>
+<pre>bioruby&gt; script
+-- 8&lt; -- 8&lt; -- 8&lt; --  Script  -- 8&lt; -- 8&lt; -- 8&lt; --
+bioruby&gt; seq = getseq("gbphg.seq")
+bioruby&gt; p seq
+bioruby&gt; p seq.translate
+bioruby&gt; script
+-- &gt;8 -- &gt;8 -- &gt;8 --  Script  -- &gt;8 -- &gt;8 -- &gt;8 --
+Saving script (script.rb) ... done</pre>
+<p>生成された script.rb は以下のようになります。</p>
+<pre>#!/usr/bin/env bioruby
+
+seq = getseq("gbphg.seq")
+p seq
+p seq.translate</pre>
+<p>このスクリプトは bioruby コマンドで実行することができます。</p>
+<pre>% bioruby script.rb</pre>
+<h3><a name="label-53" id="label-53">簡易シェル機能</a></h3><!-- RDLabel: "簡易シェル機能" -->
+<dl>
+<dt><a name="label-54" id="label-54"><code>cd(<var>dir</var>)</code></a></dt><!-- RDLabel: "cd" -->
+</dl>
+<p>カレントディレクトリを変更します。</p>
+<pre>bioruby&gt; cd "/tmp"
+"/tmp"</pre>
+<p>ホームディレクトリに戻るには引数をつけずに cd を実行します。</p>
+<pre>bioruby&gt; cd
+"/home/k"</pre>
+<dl>
+<dt><a name="label-55" id="label-55"><code>pwd</code></a></dt><!-- RDLabel: "pwd" -->
+</dl>
+<p>カレントディレクトリを表示します。</p>
+<pre>bioruby&gt; pwd
+"/home/k"</pre>
+<dl>
+<dt><a name="label-56" id="label-56"><code>dir</code></a></dt><!-- RDLabel: "dir" -->
+</dl>
+<p>カレントディレクトリのファイルを一覧表示します。</p>
+<pre>bioruby&gt; dir
+   UGO  Date                                 Byte  File
+------  ----------------------------  -----------  ------------
+ 40700  Tue Dec 06 07:07:35 JST 2005         1768  "Desktop"
+ 40755  Tue Nov 29 16:55:20 JST 2005         2176  "bin"
+100644  Sat Oct 15 03:01:00 JST 2005     42599518  "gbphg.seq"
+(略)
+
+bioruby&gt; dir "gbphg.seq"
+   UGO  Date                                 Byte  File
+------  ----------------------------  -----------  ------------
+100644  Sat Oct 15 03:01:00 JST 2005     42599518  "gbphg.seq"</pre>
+<dl>
+<dt><a name="label-57" id="label-57"><code>head(<var>file</var>, <var>lines</var> = <var>10</var>)</code></a></dt><!-- RDLabel: "head" -->
+</dl>
+<p>テキストファイルやオブジェクトの先頭 10 行を表示します。</p>
+<pre>bioruby&gt; head "gbphg.seq"
+GBPHG.SEQ            Genetic Sequence Data Bank
+                          October 15 2005
+
+                NCBI-GenBank Flat File Release 150.0
+
+                          Phage Sequences         
+
+    2713 loci,    16892737 bases, from     2713 reported sequences</pre>
+<p>表示する行数を指定することもできます。</p>
+<pre>bioruby&gt; head "gbphg.seq", 2
+GBPHG.SEQ            Genetic Sequence Data Bank
+                          October 15 2005</pre>
+<p>テキストの入っている変数の先頭を見ることもできます。</p>
+<pre>bioruby&gt; entry = getent("gbphg.seq")
+bioruby&gt; head entry, 2
+GBPHG.SEQ            Genetic Sequence Data Bank
+                          October 15 2005</pre>
+<dl>
+<dt><a name="label-58" id="label-58"><code>disp(<var>obj</var>)</code></a></dt><!-- RDLabel: "disp" -->
+</dl>
+<p>テキストファイルやオブジェクトの中身をページャーで表示します。
+ここで使用するページャーは pager コマンドで変更することができます（後述）。</p>
+<pre>bioruby&gt; disp "gbphg.seq"
+bioruby&gt; disp entry
+bioruby&gt; disp [1, 2, 3] * 4</pre>
+<h3><a name="label-59" id="label-59">変数</a></h3><!-- RDLabel: "変数" -->
+<dl>
+<dt><a name="label-60" id="label-60"><code>ls</code></a></dt><!-- RDLabel: "ls" -->
+</dl>
+<p>セッション中に作成した変数（オブジェクト）の一覧を表示します。</p>
+<pre>bioruby&gt; ls
+["entry", "seq"]
+
+bioruby&gt; a = 123
+["a", "entry", "seq"]</pre>
+<dl>
+<dt><a name="label-61" id="label-61"><code>rm(<var>symbol</var>)</code></a></dt><!-- RDLabel: "rm" -->
+</dl>
+<p>変数を消去します。</p>
+<pre>bioruby&gt; rm "a"
+
+bioruby&gt; ls
+["entry", "seq"]</pre>
+<dl>
+<dt><a name="label-62" id="label-62"><code>savefile(<var>filename</var>, <var>object</var>)</code></a></dt><!-- RDLabel: "savefile" -->
+</dl>
+<p>変数に保存されている内容をテキストファイルに保存します。</p>
+<pre>bioruby&gt; savefile "testfile.txt", entry
+Saving data (testfile.txt) ... done
+
+bioruby&gt; disp "testfile.txt"</pre>
+<h3><a name="label-63" id="label-63">各種設定</a></h3><!-- RDLabel: "各種設定" -->
+<p>永続化の仕組みとして BioRuby シェル終了時に session ディレクトリ内に
+ヒストリ、オブジェクト、個人の設定が保存され、次回起動時に自動的に
+読み込まれます。</p>
+<dl>
+<dt><a name="label-64" id="label-64"><code>config</code></a></dt><!-- RDLabel: "config" -->
+</dl>
+<p>BioRuby シェルの各種設定を表示します。</p>
+<pre>bioruby&gt; config
+message = "...BioRuby in the shell..."
+marshal = [4, 8]
+color   = false
+pager   = nil
+echo    = false</pre>
+<p>echo 表示するかどうかを切り替えます。on の場合は、puts や p などを
+つけなくても評価した値が画面に表示されます。
+irb コマンドの場合は初期設定が on になっていますが、bioruby コマンドでは
+長い配列やエントリなど長大な文字列を扱うことが多いため、初期設定では
+off にしています。</p>
+<pre>bioruby&gt; config :echo
+Echo on
+  ==&gt; nil
+
+bioruby&gt; config :echo
+Echo off</pre>
+<p>コドン表など、可能な場合にカラー表示するかどうかを切り替えます。
+カラー表示の場合、プロンプトにも色がつきますので判別できます。</p>
+<pre>bioruby&gt; config :color
+bioruby&gt; codontable
+(色付き)</pre>
+<p>実行するたびに設定が切り替わります。</p>
+<pre>bioruby&gt; config :color
+bioruby&gt; codontable
+(色なし)</pre>
+<p>BioRuby シェル起動時に表示されるスプラッシュメッセージを違う文字列に
+変更します。何の解析プロジェクト用のディレクトリかを指定しておくのも
+よいでしょう。</p>
+<pre>bioruby&gt; config :message, "Kumamushi genome project"
+
+K u m a m u s h i   g e n o m e   p r o j e c t
+
+  Version : BioRuby 0.8.0 / Ruby 1.8.4</pre>
+<p>デフォルトの文字列に戻すには、引数なしで実行します。</p>
+<pre>bioruby&gt; config :message</pre>
+<p>BioRuby シェル起動時に表示されるスプラッシュメッセ−ジを
+アニメーション表示するかどうかを切り替えます。
+こちらも実行するたびに設定が切り替わります。</p>
+<pre>bioruby&gt; config :splash
+Splash on</pre>
+<dl>
+<dt><a name="label-65" id="label-65"><code>pager(<var>command</var>)</code></a></dt><!-- RDLabel: "pager" -->
+</dl>
+<p>disp コマンドで実際に利用するページャーを切り替えます。</p>
+<pre>bioruby&gt; pager "lv"
+Pager is set to 'lv'
+
+bioruby&gt; pager "less -S"
+Pager is set to 'less -S'</pre>
+<p>ページャーを使用しない設定にする場合は引数なしで実行します。</p>
+<pre>bioruby&gt; pager
+Pager is set to 'off'</pre>
+<p>ページャーが off の時に引数なしで実行すると環境変数 PAGER の値を利用します。</p>
+<pre>bioruby&gt; pager
+Pager is set to 'less'</pre>
+<h3><a name="label-66" id="label-66">遺伝子アスキーアート</a></h3><!-- RDLabel: "遺伝子アスキーアート" -->
+<dl>
+<dt><a name="label-67" id="label-67"><code>doublehelix(<var>sequence</var>)</code></a></dt><!-- RDLabel: "doublehelix" -->
+</dl>
+<p>DNA 配列をアスキーアートで表示するオマケ機能があります。
+適当な塩基配列 seq を二重螺旋っぽく表示してみましょう。</p>
+<pre>bioruby&gt; dna = getseq("atgc" * 10).randomize
+bioruby&gt; doublehelix dna
+     ta
+    t--a
+   a---t
+  a----t
+ a----t
+t---a
+g--c
+ cg
+ gc
+a--t
+g---c
+ c----g
+  c----g
+(略)</pre>
+<h3><a name="label-68" id="label-68">遺伝子音楽</a></h3><!-- RDLabel: "遺伝子音楽" -->
+<dl>
+<dt><a name="label-69" id="label-69"><code>midifile(<var>midifile</var>, <var>sequence</var>)</code></a></dt><!-- RDLabel: "midifile" -->
+</dl>
+<p>DNA 配列を MIDI ファイルに変換するオマケ機能があります。
+適当な塩基配列 seq を使って生成した midifile.mid を
+MIDI プレイヤーで演奏してみましょう。</p>
+<pre>bioruby&gt; midifile("midifile.mid", seq)
+Saving MIDI file (midifile.mid) ... done</pre>
+<p>以上で BioRuby シェルの解説を終わり、以下では BioRuby ライブラリ自体の
+解説を行います。</p>
+<h2><a name="label-70" id="label-70">塩基・アミノ酸配列を処理する (Bio::Sequence クラス)</a></h2><!-- RDLabel: "塩基・アミノ酸配列を処理する (Bio::Sequence クラス)" -->
+<p>Bio::Sequence クラスは、配列に対する様々な操作を行うことができます。
+簡単な例として、短い塩基配列 atgcatgcaaaa を使って、相補配列への変換、
+部分配列の切り出し、塩基組成の計算、アミノ酸への翻訳、分子量計算などを
+行なってみます。アミノ酸への翻訳では、必要に応じて何塩基目から翻訳を開
+始するかフレームを指定したり、codontable.rb で定義されているコドンテー
+ブルの中から使用するものを指定したりする事ができます（コドンテーブルの
+番号は <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi">&lt;URL:http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi&gt;</a>
+を参照）。</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+seq = Bio::Sequence::NA.new("atgcatgcaaaa")
+
+puts seq                            # 元の配列
+puts seq.complement                 # 相補配列 (Bio::Sequence::NA)
+puts seq.subseq(3,8)                # 3 塩基目から 8 塩基目まで
+
+p seq.gc_percent                    # GC 塩基の割合 (Integer)
+p seq.composition                   # 全塩基組成 (Hash)
+
+puts seq.translate                  # 翻訳配列 (Bio::Sequence::AA)
+puts seq.translate(2)               # ２文字目から翻訳（普通は１から）
+puts seq.translate(1,9)             # ９番のコドンテーブルを使用
+
+p seq.translate.codes               # アミノ酸を３文字コードで表示 (Array)
+p seq.translate.names               # アミノ酸を名前で表示 (Array)
+p seq.translate.composition         # アミノ酸組成 (Hash)
+p seq.translate.molecular_weight    # 分子量を計算 (Float)
+
+puts seq.complement.translate       # 相補配列の翻訳</pre>
+<p>print, puts, p は内容を画面に表示するための Ruby 標準メソッドです。
+基本となる print と比べて、puts は改行を自動でつけてくれる、
+p は文字列や数字以外のオブジェクトも人間が見やすいように表示してくれる、
+という特徴がありますので適宜使い分けます。さらに、</p>
+<pre>require 'pp'</pre>
+<p>とすれば使えるようになる pp メソッドは、p よりも表示が見やすくなります。</p>
+<p>塩基配列は Bio::Sequence::NA クラスの、アミノ酸配列は Bio::Sequence::AA
+クラスのオブジェクトになります。それぞれ Bio::Sequence クラスを継承し
+ているため、多くのメソッドは共通です。</p>
+<p>さらに Bio::Sequence::NA, AA クラスは Ruby の String クラスを継承しているので
+String クラスが持つメソッドも使う事ができます。例えば部分配列を切り出すには
+Bio::Sequence クラスの subseq(from,to) メソッドの他に、String クラスの
+[] メソッドを使うこともできます。</p>
+<p>Ruby の文字列は 1 文字目を 0 番目として数える点には注意が必要です。たとえば、</p>
+<pre>puts seq.subseq(1, 3)
+puts seq[0, 3]</pre>
+<p>はどちらも seq の最初の３文字 atg を表示します。</p>
+<p>このように、String のメソッドを使う場合は、生物学で普通使用される 1 文字目を
+1 番目として数えた数字からは 1 を引く必要があります（subseq メソッドは
+これを内部でやっています。また、from, to のどちらかでも 0 以下の場合は
+例外が発生するようになっています）。</p>
+<p>ここまでの処理を BioRuby シェルで試すと以下のようになります。</p>
+<pre># 次の行は seq = seq("atgcatgcaaaa") でもよい
+bioruby&gt; seq = Bio::Sequence::NA.new("atgcatgcaaaa")
+# 生成した配列を表示
+bioruby&gt; puts seq
+atgcatgcaaaa
+# 相補配列を表示
+bioruby&gt; puts seq.complement
+ttttgcatgcat
+# 部分配列を表示（３塩基目から８塩基目まで）
+bioruby&gt; puts seq.subseq(3,8)
+gcatgc
+# 配列の GC% を表示
+bioruby&gt; p seq.gc_percent
+33
+# 配列の組成を表示
+bioruby&gt; p seq.composition
+{"a"=&gt;6, "c"=&gt;2, "g"=&gt;2, "t"=&gt;2}
+# アミノ酸配列への翻訳
+bioruby&gt; puts seq.translate
+MHAK
+# ２塩基を開始塩基として翻訳
+bioruby&gt; puts seq.translate(2)
+CMQ
+# ９番のコドンテーブルを使用して翻訳
+bioruby&gt; puts seq.translate(1,9)
+MHAN
+# 翻訳されたアミノ酸配列を３文字コードで表示
+bioruby&gt; p seq.translate.codes
+["Met", "His", "Ala", "Lys"]
+# 翻訳されたアミノ酸配列をアミノ酸の名前で表示
+bioruby&gt; p seq.translate.names
+["methionine", "histidine", "alanine", "lysine"]
+# 翻訳されたアミノ酸配列の組成を表示
+bioruby&gt; p seq.translate.composition
+{"K"=&gt;1, "A"=&gt;1, "M"=&gt;1, "H"=&gt;1}
+# 翻訳されたアミノ酸配列の分子量を表示
+bioruby&gt; p seq.translate.molecular_weight
+485.605
+# 相補配列を翻訳
+bioruby&gt; puts seq.complement.translate
+FCMH
+# 部分配列（１塩基目から３塩基目まで）
+bioruby&gt; puts seq.subseq(1, 3)
+atg
+# 部分配列（１塩基目から３塩基目まで）
+bioruby&gt; puts seq[0, 3]
+atg</pre>
+<p>window_search(window_size, step_size) メソッドを使うと、配列に対してウィ
+ンドウをずらしながらそれぞれの部分配列に対する処理を行うことができます。
+Ruby の特長のひとつである「ブロック」によって、「それぞれに対する処理」を
+簡潔かつ明瞭に書くことが可能です。以下の例では、subseq という変数にそれぞれ
+部分配列を代入しながらブロックを繰り返し実行することになります。</p>
+<ul>
+<li><p>100 塩基ごとに（1塩基ずつずらしながら）平均 GC% を計算して表示する</p>
+<pre>seq.window_search(100) do |subseq|
+  puts subseq.gc_percent
+end</pre></li>
+</ul>
+<p>ブロックの中で受け取る部分配列も、元と同じ Bio::Sequence::NA または 
+Bio::Sequence::AA クラスのオブジェクトなので、配列クラスの持つ全てのメ
+ソッドを実行することができます。</p>
+<p>また、２番目の引数に移動幅を指定することが出来るようになっているので、</p>
+<ul>
+<li><p>コドン単位でずらしながら 15 塩基を 5 残基のペプチドに翻訳して表示する</p>
+<pre>seq.window_search(15, 3) do |subseq|
+  puts subseq.translate
+end</pre></li>
+</ul>
+<p>といったことができます。さらに移動幅に満たない右端の部分配列をメソッド
+自体の返り値として戻すようになっているので、</p>
+<ul>
+<li><p>ゲノム配列を 10000bp ごとにブツ切りにして FASTA フォーマットに整形、
+  このとき末端 1000bp はオーバーラップさせ、10000bp に満たない 3' 端は
+  別途受け取って表示する</p>
+<pre>i = 1
+remainder = seq.window_search(10000, 9000) do |subseq|
+  puts subseq.to_fasta("segment #{i}", 60)
+  i += 1
+end
+puts remainder.to_fasta("segment #{i}", 60)</pre></li>
+</ul>
+<p>のような事もわりと簡単にできます。</p>
+<p>ウィンドウの幅と移動幅を同じにするとオーバーラップしないウィンドウサー
+チができるので、</p>
+<ul>
+<li><p>コドン頻度を数える</p>
+<pre>codon_usage = Hash.new(0)
+seq.window_search(3, 3) do |subseq|
+  codon_usage[subseq] += 1
+end</pre></li>
+<li><p>10 残基ずつ分子量を計算</p>
+<pre>seq.window_search(10, 10) do |subseq|
+  puts subseq.molecular_weight
+end</pre></li>
+</ul>
+<p>といった応用も考えられます。</p>
+<p>実際には Bio::Sequence::NA オブジェクトはファイルから読み込んだ文字列か
+ら生成したり、データベースから取得したものを使ったりします。たとえば、</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+input_seq = ARGF.read       # 引数で与えられたファイルの全行を読み込む
+
+my_naseq = Bio::Sequence::NA.new(input_seq)
+my_aaseq = my_naseq.translate
+
+puts my_aaseq</pre>
+<p>このプログラムを na2aa.rb として、以下の塩基配列</p>
+<pre>gtggcgatctttccgaaagcgatgactggagcgaagaaccaaagcagtgacatttgtctg
+atgccgcacgtaggcctgataagacgcggacagcgtcgcatcaggcatcttgtgcaaatg
+tcggatgcggcgtga</pre>
+<p>を書いたファイル my_naseq.txt を読み込んで翻訳すると</p>
+<pre>% ./na2aa.rb my_naseq.txt
+VAIFPKAMTGAKNQSSDICLMPHVGLIRRGQRRIRHLVQMSDAA*</pre>
+<p>のようになります。ちなみに、このくらいの例なら短くすると１行で書けます。</p>
+<pre>% ruby -r bio -e 'p Bio::Sequence::NA.new($&lt;.read).translate' my_naseq.txt</pre>
+<p>しかし、いちいちファイルを作るのも面倒なので、次はデータベースから必要な
+情報を取得してみます。</p>
+<h2><a name="label-71" id="label-71">GenBank のパース (Bio::GenBank クラス)</a></h2><!-- RDLabel: "GenBank のパース (Bio::GenBank クラス)" -->
+<p>GenBank 形式のファイルを用意してください（手元にない場合は、
+ftp://ftp.ncbi.nih.gov/genbank/ から .seq ファイルをダウンロードします）。</p>
+<pre>% wget ftp://ftp.hgc.jp/pub/mirror/ncbi/genbank/gbphg.seq.gz
+% gunzip gbphg.seq.gz</pre>
+<p>まずは、各エントリから ID と説明文、配列を取り出して FASTA 形式に変換して
+みましょう。</p>
+<p>Bio::GenBank::DELIMITER は GenBank クラスで定義されている定数で、
+データベースごとに異なるエントリの区切り文字（たとえば GenBank の場合は //）
+を覚えていなくても良いようになっています。</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+while entry = gets(Bio::GenBank::DELIMITER)
+  gb = Bio::GenBank.new(entry)      # GenBank オブジェクト
+
+  print "&gt;#{gb.accession} "         # ACCESSION 番号
+  puts gb.definition                # DEFINITION 行
+  puts gb.naseq                     # 塩基配列（Sequence::NA オブジェクト）
+end</pre>
+<p>しかし、この書き方では GenBank ファイルのデータ構造に依存しています。
+ファイルからのデータ入力を扱うクラス Bio::FlatFile を使用することで、
+以下のように区切り文字などを気にせず書くことができます。</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
+ff.each_entry do |gb|
+  definition = "#{gb.accession} #{gb.definition}"
+  puts gb.naseq.to_fasta(definition, 60)
+end</pre>
+<p>形式の違うデータ、たとえばFASTAフォーマットのファイルを読み込むときでも、</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+ff = Bio::FlatFile.new(Bio::FastaFormat, ARGF)
+ff.each_entry do |f|
+  puts "definition : " + f.definition
+  puts "nalen      : " + f.nalen.to_s
+  puts "naseq      : " + f.naseq
+end</pre>
+<p>のように、同じような書き方で済ませられます。</p>
+<p>さらに、各 Bio::DB クラスの open メソッドで同様のことができます。たとえば、</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+ff = Bio::GenBank.open("gbvrl1.seq")
+ff.each_entry do |gb|
+  definition = "#{gb.accession} #{gb.definition}"
+  puts gb.naseq.to_fasta(definition, 60)    
+end</pre>
+<p>などと書くことができます（ただし、この書き方はあまり使われていません)。</p>
+<p>次に、GenBank の複雑な FEATURES の中をパースして必要な情報を取り出します。
+まずは /tranlation="アミノ酸配列" という Qualifier がある場合だけ
+アミノ酸配列を抽出して表示してみます。</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
+
+# GenBank の１エントリごとに
+ff.each_entry do |gb|
+
+  # FEATURES の要素を一つずつ処理
+  gb.features.each do |feature|
+
+    # Feature に含まれる Qualifier を全てハッシュに変換
+    hash = feature.to_hash
+
+    # Qualifier に translation がある場合だけ
+    if hash['translation']
+      # エントリのアクセッション番号と翻訳配列を表示
+      puts "&gt;#{gb.accession}
+      puts hash['translation']
+    end
+  end
+end</pre>
+<p>さらに、Feature のポジションに書かれている情報からエントリの塩基配列を
+スプライシングし、それを翻訳したものと /translation= に書かれていた配列を
+両方表示して比べてみましょう。</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
+
+# GenBank の１エントリごとに
+ff.each_entry do |gb|
+
+  # ACCESSION 番号と生物種名を表示
+  puts "### #{gb.accession} - #{gb.organism}"
+
+  # FEATURES の要素を一つずつ処理
+  gb.features.each do |feature|
+
+    # Feature の position (join ...など) を取り出す
+    position = feature.position
+
+    # Feature に含まれる Qualifier を全てハッシュに変換
+    hash = feature.to_hash
+
+    # /translation= がなければスキップ
+    next unless hash['translation']
+
+    # /gene=, /product= などの Qualifier から遺伝子名などの情報を集める
+    gene_info = [
+      hash['gene'], hash['product'], hash['note'], hash['function']
+    ].compact.join(', ')
+    puts "## #{gene_info}"
+
+    # 塩基配列（position の情報によってスプライシング）
+    puts "&gt;NA splicing('#{position}')"
+    puts gb.naseq.splicing(position)
+
+    # アミノ酸配列（スプライシングした塩基配列から翻訳）
+    puts "&gt;AA translated by splicing('#{position}').translate"
+    puts gb.naseq.splicing(position).translate
+
+    # アミノ酸配列（/translation= に書かれていたのもの）
+    puts "&gt;AA original translation"
+    puts hash['translation']
+  end
+end</pre>
+<p>もし、使用されているコドンテーブルがデフォルト (universal) と違ったり、
+最初のコドンが "atg" 以外だったり、セレノシステインが含まれていたり、
+あるいは BioRuby にバグがあれば、上の例で表示される２つのアミノ酸配列は
+異なる事になります。</p>
+<p>この例で使用されている Bio::Sequence#splicing メソッドは、GenBank, EMBL,
+DDBJ フォーマットで使われている Location の表記を元に、塩基配列から
+部分配列を切り出す強力なメソッドです。</p>
+<p>この splicing メソッドの引数には GenBank 等の Location の文字列以外に
+BioRuby の Bio::Locations オブジェクトを渡すことも可能ですが、
+通常は見慣れている Location 文字列の方が分かりやすいかも知れません。
+Location 文字列のフォーマットや Bio::Locations について詳しく知りたい場合は 
+BioRuby の bio/location.rb を見てください。</p>
+<ul>
+<li><p>GenBank 形式のデータの Feature で使われていた Location 文字列の例</p>
+<pre>naseq.splicing('join(2035..2050,complement(1775..1818),13..345')</pre></li>
+<li><p>あらかじめ Locations オブジェクトに変換してから渡してもよい</p>
+<pre>locs = Bio::Locations.new('join((8298.8300)..10206,1..855)')
+naseq.splicing(locs)</pre></li>
+</ul>
+<p>ちなみに、アミノ酸配列 (Bio::Sequence::AA) についても splicing メソッド
+を使用して部分配列を取り出すことが可能です。</p>
+<ul>
+<li><p>アミノ酸配列の部分配列を切り出す（シグナルペプチドなど）</p>
+<pre>aaseq.splicing('21..119')</pre></li>
+</ul>
+<h3><a name="label-72" id="label-72">GenBank 以外のデータベース</a></h3><!-- RDLabel: "GenBank 以外のデータベース" -->
+<p>BioRuby では、GenBank 以外のデータベースについても基本的な扱い方は同じで、
+データベースの１エントリ分の文字列を対応するデータベースのクラスに渡せば、
+パースされた結果がオブジェクトになって返ってきます。</p>
+<p>データベースのフラットファイルから１エントリずつ取り出してパースされた
+オブジェクトを取り出すには、先にも出てきた Bio::FlatFile を使います。
+Bio::FlatFile.new の引数にはデータベースに対応する BioRuby でのクラス
+名 (Bio::GenBank や Bio::KEGG::GENES など) を指定します。</p>
+<pre>ff = Bio::FlatFile.new(Bio::データベースクラス名, ARGF)</pre>
+<p>しかし、すばらしいことに、実は FlatFile クラスはデータベースの自動認識が
+できますので、</p>
+<pre>ff = Bio::FlatFile.auto(ARGF)</pre>
+<p>を使うのが一番簡単です。</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+ff = Bio::FlatFile.auto(ARGF)
+
+ff.each_entry do |entry|
+  p entry.entry_id          # エントリの ID
+  p entry.definition        # エントリの説明文
+  p entry.seq               # 配列データベースの場合
+end
+
+ff.close</pre>
+<p>さらに、開いたデータベースの閉じ忘れをなくすためには Ruby のブロックを
+活用して以下のように書くのがよいでしょう。</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+Bio::FlatFile.auto(ARGF) do |ff|
+  ff.each_entry do |entry|
+    p entry.entry_id          # エントリの ID
+    p entry.definition        # エントリの説明文
+    p entry.seq               # 配列データベースの場合
+  end
+end</pre>
+<p>パースされたオブジェクトから、エントリ中のそれぞれの部分を取り出すための
+メソッドはデータベース毎に異なります。よくある項目については</p>
+<ul>
+<li>entry_id メソッド → エントリの ID 番号が返る</li>
+<li>definition メソッド → エントリの定義行が返る</li>
+<li>reference メソッド → リファレンスオブジェクトが返る</li>
+<li>organism メソッド → 生物種名</li>
+<li>seq や naseq や aaseq メソッド → 対応する配列オブジェクトが返る</li>
+</ul>
+<p>などのように共通化しようとしていますが、全てのメソッドが実装されているわ
+けではありません（共通化の指針は bio/db.rb 参照）。また、細かい部分は各
+データベースパーザ毎に異なるので、それぞれのドキュメントに従います。</p>
+<p>原則として、メソッド名が複数形の場合は、オブジェクトが配列として返ります。
+たとえば references メソッドを持つクラスは複数の Bio::Reference オブジェ
+クトを Array にして返しますが、別のクラスでは単数形の reference メソッド
+しかなく、１つの Bio::Reference オブジェクトだけを返す、といった感じです。</p>
+<h2><a name="label-73" id="label-73">PDB のパース (Bio::PDB クラス)</a></h2><!-- RDLabel: "PDB のパース (Bio::PDB クラス)" -->
+<p>Bio::PDB は、PDB 形式を読み込むためのクラスです。PDB データベースは
+PDB, mmCIF, XML (PDBML) の３種類のフォーマットで提供されていますが、
+これらのうち BioRuby で対応しているのは PDB フォーマットです。</p>
+<p>PDB フォーマットの仕様は、以下の Protein Data Bank Contents Guide を
+参照してください。</p>
+<ul>
+<li><a href="http://www.rcsb.org/pdb/file_formats/pdb/pdbguide2.2/guide2.2_frame.html">&lt;URL:http://www.rcsb.org/pdb/file_formats/pdb/pdbguide2.2/guide2.2_frame.html&gt;</a></li>
+</ul>
+<h3><a name="label-74" id="label-74">PDB データの読み込み</a></h3><!-- RDLabel: "PDB データの読み込み" -->
+<p>PDB の１エントリが 1bl8.pdb というファイルに格納されている場合は、
+Ruby のファイル読み込み機能を使って</p>
+<pre>entry = File.read("1bl8.pdb")</pre>
+<p>のようにすることで、エントリの内容を文字列として entry という変数に
+代入することができます。エントリの内容をパースするには</p>
+<pre>pdb = Bio::PDB.new(entry)</pre>
+<p>とします。これでエントリが Bio::PDB オブジェクトとなり、任意のデータを
+取り出せるようになります。</p>
+<p>PDB フォーマットは Bio::FlatFile による自動認識も可能ですが、現在は
+１ファイルに複数エントリを含む場合には対応していません。
+Bio::FlatFile を使って１エントリ分だけ読み込むには、</p>
+<pre>pdb = Bio::FlatFile.auto("1bl8.pdb") { |ff| ff.next_entry }</pre>
+<p>とします。どちらの方法でも変数 pdb には同じ結果が得られます。</p>
+<h3><a name="label-75" id="label-75">オブジェクトの階層構造</a></h3><!-- RDLabel: "オブジェクトの階層構造" -->
+<p>各 PDB エントリは、英数字４文字からなる ID が付けられています。
+Bio::PDB オブジェクトから ID を取リ出すには entry_id メソッドを使います。</p>
+<pre>p pdb.entry_id   # =&gt; "1BL8"</pre>
+<p>エントリの概要に関する情報も対応するメソッドで取り出すことができます。</p>
+<pre>p pdb.definition # =&gt; "POTASSIUM CHANNEL (KCSA) FROM STREPTOMYCES LIVIDANS"
+p pdb.keywords   # =&gt; ["POTASSIUM CHANNEL", "INTEGRAL MEMBRANE PROTEIN"]</pre>
+<p>他に、登録者や文献、実験方法などの情報も取得できます（それぞれ
+authors, jrnl, method メソッド）。</p>
+<p>PDB データは、基本的には１行が１つのレコードを形成しています。
+１行に入りきらないデータを複数行に格納する continuation という
+仕組みも用意されていますが、基本は１行１レコードです。</p>
+<p>各行の先頭６文字がその行のデータの種類を示す名前（レコード）になります。
+BioRuby では、HEADER レコードに対しては Bio::PDB::Record::HEADER クラス、
+TITLE レコードに対しては Bio::PDB::Record::TITLE クラス、というように
+基本的には各レコードに対応するクラスを１つ用意しています。
+ただし、REMARK と JRNL レコードに関しては、それぞれ複数のフォーマットが
+存在するため、複数のクラスを用意しています。</p>
+<p>各レコードにアクセスするもっとも単純な方法は record メソッドです。</p>
+<pre>pdb.record("HELIX")</pre>
+<p>のようにすると、その PDB エントリに含まれる全ての HELIX レコードを
+Bio::PDB::Record::HELIX クラスのオブジェクトの配列として取得できます。</p>
+<p>このことをふまえ、以下では、PDB エントリのメインな内容である立体構造に
+関するデータ構造の扱い方を見ていきます。</p>
+<h4><a name="label-76" id="label-76">原子: Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM クラス</a></h4><!-- RDLabel: "原子: Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM クラス" -->
+<p>PDB エントリは、タンパク質、核酸（DNA,RNA）やその他の分子の立体構造、
+具体的には原子の３次元座標を含んでいます。</p>
+<p>タンパク質または核酸の原子の座標は、ATOM レコードに格納されています。
+対応するクラスは、Bio::PDB::Record::ATOM クラスです。</p>
+<p>タンパク質・核酸以外の原子の座標は、HETATM レコードに格納されています。
+対応するクラスは、Bio::PDB::Record::HETATM クラスです。</p>
+<p>HETATM　クラスは ATOM クラスを継承しているため、ATOM と HETATM の
+メソッドの使い方はまったく同じです。</p>
+<h4><a name="label-77" id="label-77">アミノ酸残基（または塩基）: Bio::PDB::Residue クラス</a></h4><!-- RDLabel: "アミノ酸残基（または塩基）: Bio::PDB::Residue クラス" -->
+<p>１アミノ酸または１塩基単位で原子をまとめたのが Bio::PDB::Residue です。
+Bio::PDB::Residue オブジェクトは、１個以上の Bio::PDB::Record::ATOM
+オブジェクトを含みます。</p>
+<h4><a name="label-78" id="label-78">化合物: Bio::PDB::Heterogen クラス</a></h4><!-- RDLabel: "化合物: Bio::PDB::Heterogen クラス" -->
+<p>タンパク質・核酸以外の分子の原子は、基本的には分子単位で
+Bio::PDB::Heterogen にまとめられています。
+Bio::PDB::Heterogen オブジェクトは、１個以上の
+Bio::PDB::Record::HETATM オブジェクトを含みます。</p>
+<h4><a name="label-79" id="label-79">鎖（チェイン）: Bio::PDB::Chain クラス</a></h4><!-- RDLabel: "鎖（チェイン）: Bio::PDB::Chain クラス" -->
+<p>Bio::PDB::Chain は、複数の Bio::PDB::Residue オブジェクトからなる
+１個のタンパク質または核酸と、複数の Bio::PDB::Heterogen オブジェクト
+からなる１個以上のそれ以外の分子を格納するデータ構造です。</p>
+<p>なお、大半の場合は、タンパク質・核酸（Bio::PDB::Residue）か、
+それ以外の分子（Bio::PDB::Heterogen）のどちらか一種類しか持ちません。
+Chain をひとつしか含まない PDB エントリでは両方持つ場合があるようです。</p>
+<p>各 Chain には、英数字１文字の ID が付いています（Chain をひとつしか
+含まない PDB エントリの場合は空白文字のときもあります）。</p>
+<h4><a name="label-80" id="label-80">モデル: Bio::PDB::Model</a></h4><!-- RDLabel: "モデル: Bio::PDB::Model" -->
+<p>１個以上の Bio::PDB::Chain が集まったものが Bio::PDB::Model です。
+Ｘ線結晶構造の場合、Model は通常１個だけですが、NMR 構造の場合、
+複数の Model が存在することがあります。
+複数の Model が存在する場合、各 Model にはシリアル番号が付きます。</p>
+<p>そして、１個以上の Model が集まったものが、Bio::PDB オブジェクトになります。</p>
+<h3><a name="label-81" id="label-81">原子にアクセスするメソッド</a></h3><!-- RDLabel: "原子にアクセスするメソッド" -->
+<p>Bio::PDB#each_atom は全ての ATOM を順番に１個ずつ辿るイテレータです。</p>
+<pre>pdb.each_atom do |atom|
+  p atom.xyz
+end</pre>
+<p>この each_atom メソッドは Model, Chain, Residue オブジェクトに対しても
+使用することができ、それぞれ、その Model, Chain, Residue 内部のすべての
+ATOM をたどるイテレータとして働きます。</p>
+<p>Bio::PDB#atoms は全ての ATOM を配列として返すメソッドです。</p>
+<pre>p pdb.atoms.size        # =&gt; 2820 個の ATOM が含まれることがわかる</pre>
+<p>each_atom と同様に atoms メソッドも Model, Chain, Residue オブジェクト
+に対して使用可能です。</p>
+<pre>pdb.chains.each do |chain|
+  p chain.atoms.size    # =&gt; 各 Chain 毎の ATOM 数が表示される
+end</pre>
+<p>Bio::PDB#each_hetatm は、全ての HETATM を順番に１個ずつ辿るイテレータです。</p>
+<pre>pdb.each_hetatm do |hetatm|
+  p hetatm.xyz
+end</pre>
+<p>Bio::PDB#hetatms 全ての HETATM を配列として返すのは hetatms メソッドです。</p>
+<pre>p pdb.hetatms.size</pre>
+<p>これらも atoms の場合と同様に、Model, Chain, Heterogen オブジェクトに
+対して使用可能です。</p>
+<h4><a name="label-82" id="label-82">Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM クラスの使い方</a></h4><!-- RDLabel: "Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM クラスの使い方" -->
+<p>ATOM はタンパク質・核酸（DNA・RNA）を構成する原子、HETATM はそれ以外の
+原子を格納するためのクラスですが、HETATM が ATOM クラスを継承しているため
+これらのクラスでメソッドの使い方はまったく同じです。</p>
+<pre>p atom.serial       # シリアル番号
+p atom.name         # 名前
+p atom.altLoc       # Alternate location indicator
+p atom.resName      # アミノ酸・塩基名または化合物名
+p atom.chainID      # Chain の ID
+p atom.resSeq       # アミノ酸残基のシーケンス番号
+p atom.iCode        # Code for insertion of residues
+p atom.x            # X 座標
+p atom.y            # Y 座標
+p atom.z            # Z 座標
+p atom.occupancy    # Occupancy
+p atom.tempFactor   # Temperature factor
+p atom.segID        # Segment identifier
+p atom.element      # Element symbol
+p atom.charge       # Charge on the atom</pre>
+<p>これらのメソッド名は、原則として Protein Data Bank Contents Guide の
+記載に合わせています。メソッド名に resName や resSeq といった記名法
+（CamelCase）を採用しているのはこのためです。
+それぞれのメソッドの返すデータの意味は、仕様書を参考にしてください。</p>
+<p>この他にも、いくつかの便利なメソッドを用意しています。
+xyz メソッドは、座標を３次元のベクトルとして返すメソッドです。
+このメソッドは、Ruby の Vector クラスを継承して３次元のベクトルに
+特化させた Bio::PDB::Coordinate クラスのオブジェクトを返します
+（注: Vectorを継承したクラスを作成するのはあまり推奨されないようなので、
+将来、Vectorクラスのオブジェクトを返すよう仕様変更するかもしれません）。</p>
+<pre>p atom.xyz</pre>
+<p>ベクトルなので、足し算、引き算、内積などを求めることができます。</p>
+<pre># 原子間の距離を求める
+p (atom1.xyz - atom2.xyz).r  # r はベクトルの絶対値を求めるメソッド
+
+# 内積を求める
+p atom1.xyz.inner_product(atom2.xyz)</pre>
+<p>他には、その原子に対応する TER, SIGATM, ANISOU レコードを取得する
+ter, sigatm, anisou メソッドも用意されています。</p>
+<h3><a name="label-83" id="label-83">アミノ酸残基 (Residue) にアクセスするメソッド</a></h3><!-- RDLabel: "アミノ酸残基 (Residue) にアクセスするメソッド" -->
+<p>Bio::PDB#each_residue は、全ての Residue を順番に辿るイテレータです。
+each_residue メソッドは、Model, Chain オブジェクトに対しても
+使用することができ、それぞれの Model, Chain に含まれる全ての
+Residue を辿るイテレータとして働きます。</p>
+<pre>pdb.each_residue do |residue|
+  p residue.resName
+end</pre>
+<p>Bio::PDB#residues は、全ての Residue を配列として返すメソッドです。
+each_residue と同様に、Model, Chain オブジェクトに対しても使用可能です。</p>
+<pre>p pdb.residues.size</pre>
+<h3><a name="label-84" id="label-84">化合物 (Heterogen) にアクセスするメソッド</a></h3><!-- RDLabel: "化合物 (Heterogen) にアクセスするメソッド" -->
+<p>Bio::PDB#each_heterogen は全ての Heterogen を順番にたどるイテレータ、
+Bio::PDB#heterogens は全ての Heterogen を配列として返すメソッドです。</p>
+<pre>pdb.each_heterogen do |heterogeon|
+  p heterogen.resName
+end
+
+p pdb.heterogens.size</pre>
+<p>これらのメソッドも Residue と同様に Model, Chain オブジェクトに対しても
+使用可能です。</p>
+<h3><a name="label-85" id="label-85">Chain, Model にアクセスするメソッド</a></h3><!-- RDLabel: "Chain, Model にアクセスするメソッド" -->
+<p>同様に、Bio::PDB#each_chain は全ての Chain を順番にたどるイテレータ、
+Bio::PDB#chains は全ての Chain を配列として返すメソッドです。
+これらのメソッドは Model オブジェクトに対しても使用可能です。</p>
+<p>Bio::PDB#each_model は全ての Model を順番にたどるイテレータ、
+Bio::PDB#models は全ての Model を配列として返すメソッドです。</p>
+<h3><a name="label-86" id="label-86">PDB Chemical Component Dictionary のデータの読み込み</a></h3><!-- RDLabel: "PDB Chemical Component Dictionary のデータの読み込み" -->
+<p>Bio::PDB::ChemicalComponent クラスは、PDB Chemical Component Dictionary
+（旧名称 HET Group Dictionary）のパーサです。</p>
+<p>PDB Chemical Component Dictionary については以下のページを参照してください。</p>
+<ul>
+<li><a href="http://deposit.pdb.org/cc_dict_tut.html">&lt;URL:http://deposit.pdb.org/cc_dict_tut.html&gt;</a></li>
+</ul>
+<p>データは以下でダウンロードできます。</p>
+<ul>
+<li><a href="http://deposit.pdb.org/het_dictionary.txt">&lt;URL:http://deposit.pdb.org/het_dictionary.txt&gt;</a></li>
+</ul>
+<p>このクラスは、RESIDUE から始まって空行で終わる１エントリをパースします
+（PDB フォーマットにのみ対応しています）。</p>
+<p>Bio::FlatFile によるファイル形式自動判別に対応しています。
+このクラス自体は ID から化合物を検索したりする機能は持っていません。
+br_bioflat.rb によるインデックス作成には対応していますので、
+必要ならそちらを使用してください。</p>
+<pre>Bio::FlatFile.auto("het_dictionary.txt") |ff|
+  ff.each do |het|
+    p het.entry_id  # ID
+    p het.hetnam    # HETNAM レコード（化合物の名称）
+    p het.hetsyn    # HETSYM レコード（化合物の別名の配列）
+    p het.formul    # FORMUL レコード（化合物の組成式）
+    p het.conect    # CONECT レコード
+  end
+end</pre>
+<p>最後の conect メソッドは、化合物の結合を Hash として返します。
+たとえば、エタノールのエントリは次のようになりますが、</p>
+<pre>RESIDUE   EOH      9
+CONECT      C1     4 C2   O   1H1  2H1
+CONECT      C2     4 C1  1H2  2H2  3H2
+CONECT      O      2 C1   HO
+CONECT     1H1     1 C1
+CONECT     2H1     1 C1
+CONECT     1H2     1 C2
+CONECT     2H2     1 C2
+CONECT     3H2     1 C2
+CONECT      HO     1 O
+END
+HET    EOH              9
+HETNAM     EOH ETHANOL
+FORMUL      EOH    C2 H6 O1</pre>
+<p>このエントリに対して conect メソッドを呼ぶと</p>
+<pre>{ "C1"  =&gt; [ "C2", "O", "1H1", "2H1" ], 
+  "C2"  =&gt; [ "C1", "1H2", "2H2", "3H2" ], 
+  "O"   =&gt; [ "C1", "HO" ], 
+  "1H1" =&gt; [ "C1" ], 
+  "1H2" =&gt; [ "C2" ], 
+  "2H1" =&gt; [ "C1" ], 
+  "2H2" =&gt; [ "C2" ], 
+  "3H2" =&gt; [ "C2" ], 
+  "HO"  =&gt; [ "O" ] }</pre>
+<p>という Hash を返します。</p>
+<p>ここまでの処理を BioRuby シェルで試すと以下のようになります。</p>
+<pre># PDB エントリ 1bl8 をネットワーク経由で取得
+bioruby&gt; ent_1bl8 = getent("pdb:1bl8")
+# エントリの中身を確認
+bioruby&gt; head ent_1bl8
+# エントリをファイルに保存
+bioruby&gt; savefile("1bl8.pdb", ent_1bl8)
+# 保存されたファイルの中身を確認
+bioruby&gt; disp "data/1bl8.pdb"
+# PDB エントリをパース
+bioruby&gt; pdb_1bl8 = flatparse(ent_1bl8)
+# PDB のエントリ ID を表示
+bioruby&gt; pdb_1bl8.entry_id
+# getent("pdb:1bl8") して flatparse する代わりに、以下でもOK
+bioruby&gt; obj_1bl8 = getobj("pdb:1bl8")
+bioruby&gt; obj_1bl8.entry_id
+# 各 HETEROGEN ごとに残基名を表示
+bioruby&gt; pdb_1bl8.each_heterogen { |heterogen| p heterogen.resName }
+
+# PDB Chemical Component Dictionary を取得
+bioruby&gt; het_dic = open("http://deposit.pdb.org/het_dictionary.txt").read
+# 取得したファイルのバイト数を確認
+bioruby&gt; het_dic.size
+# 取得したファイルを保存
+bioruby&gt; savefile("data/het_dictionary.txt", het_dic)
+# ファイルの中身を確認
+bioruby&gt; disp "data/het_dictionary.txt"
+# 検索のためにインデックス化し het_dic というデータベースを作成
+bioruby&gt; flatindex("het_dic", "data/het_dictionary.txt")
+# ID が EOH のエタノールのエントリを検索
+bioruby&gt; ethanol = flatsearch("het_dic", "EOH")
+# 取得したエントリをパース
+bioruby&gt; osake = flatparse(ethanol)
+# 原子間の結合テーブルを表示
+bioruby&gt; sake.conect</pre>
+<h2><a name="label-87" id="label-87">アライメント (Bio::Alignment クラス)</a></h2><!-- RDLabel: "アライメント (Bio::Alignment クラス)" -->
+<p>Bio::Alignment クラスは配列のアライメントを格納するためのコンテナです。
+Ruby の Hash や Array に似た操作が可能で、BioPerl の Bio::SimpleAlign に
+似た感じになっています。以下に簡単な使い方を示します。</p>
+<pre>require 'bio'
+
+seqs = [ 'atgca', 'aagca', 'acgca', 'acgcg' ]
+seqs = seqs.collect{ |x| Bio::Sequence::NA.new(x) }
+
+# アライメントオブジェクトを作成
+a = Bio::Alignment.new(seqs)
+
+# コンセンサス配列を表示
+p a.consensus             # ==&gt; "a?gc?"
+
+# IUPAC 標準の曖昧な塩基を使用したコンセンサス配列を表示
+p a.consensus_iupac       # ==&gt; "ahgcr"
+
+# 各配列について繰り返す
+a.each { |x| p x }
+  # ==&gt;
+  #    "atgca"
+  #    "aagca"
+  #    "acgca"
+  #    "acgcg"
+
+# 各サイトについて繰り返す
+a.each_site { |x| p x }
+  # ==&gt;
+  #    ["a", "a", "a", "a"]
+  #    ["t", "a", "c", "c"]
+  #    ["g", "g", "g", "g"]
+  #    ["c", "c", "c", "c"]
+  #    ["a", "a", "a", "g"]
+
+# Clustal W を使用してアライメントを行う。
+# 'clustalw' コマンドがシステムにインストールされている必要がある。
+factory = Bio::ClustalW.new
+a2 = a.do_align(factory)</pre>
+<h2><a name="label-88" id="label-88">FASTA による相同性検索を行う（Bio::Fasta クラス）</a></h2><!-- RDLabel: "FASTA による相同性検索を行う（Bio::Fasta クラス）" -->
+<p>FASTA 形式の配列ファイル query.pep に対して、自分のマシン(ローカル)あるいは
+インターネット上のサーバ(リモート)で FASTA による相同性検索を行う方法です。
+ローカルの場合は SSEARCH なども同様に使うことができます。</p>
+<h3><a name="label-89" id="label-89">ローカルの場合</a></h3><!-- RDLabel: "ローカルの場合" -->
+<p>FASTA がインストールされていることを確認してください。以下の例では、
+コマンド名が fasta34 でパスが通ったディレクトリにインストール
+されている状況を仮定しています。</p>
+<ul>
+<li><a href="ftp://ftp.virginia.edu/pub/fasta/">&lt;URL:ftp://ftp.virginia.edu/pub/fasta/&gt;</a></li>
+</ul>
+<p>検索対象とする FASTA 形式のデータベースファイル target.pep と、FASTA
+形式の問い合わせ配列がいくつか入ったファイル query.pep を準備します。</p>
+<p>この例では、各問い合わせ配列ごとに FASTA 検索を実行し、ヒットした配列の
+evalue が 0.0001 以下のものだけを表示します。</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+# FASTA を実行する環境オブジェクトを作る（ssearch などでも良い）
+factory = Bio::Fasta.local('fasta34', ARGV.pop)
+
+# フラットファイルを読み込み、FastaFormat オブジェクトのリストにする
+ff = Bio::FlatFile.new(Bio::FastaFormat, ARGF)
+
+# １エントリずつの FastaFormat オブジェクトに対し
+ff.each do |entry|
+  # '&gt;' で始まるコメント行の内容を進行状況がわりに標準エラー出力に表示
+  $stderr.puts "Searching ... " + entry.definition
+
+  # FASTA による相同性検索を実行、結果は Fasta::Report オブジェクト
+  report = factory.query(entry)
+
+  # ヒットしたものそれぞれに対し
+  report.each do |hit|
+    # evalue が 0.0001 以下の場合
+    if hit.evalue &lt; 0.0001
+      # その evalue と、名前、オーバーラップ領域を表示
+      print "#{hit.query_id} : evalue #{hit.evalue}\t#{hit.target_id} at "
+      p hit.lap_at
+    end
+  end
+end</pre>
+<p>ここで factory は繰り返し FASTA を実行するために、あらかじめ作っておく
+実行環境です。</p>
+<p>上記のスクリプトを search.rb とすると、問い合わせ配列とデータベース配列の
+ファイル名を引数にして、以下のように実行します。</p>
+<pre>% ruby search.rb query.pep target.pep &gt; search.out</pre>
+<p>FASTA コマンドにオプションを与えたい場合、３番目の引数に FASTA の
+コマンドラインオプションを書いて渡します。ただし、ktup 値だけは
+メソッドを使って指定することになっています。
+たとえば ktup 値を 1 にして、トップ 10 位以内のヒットを得る場合の
+オプションは、以下のようになります。</p>
+<pre>factory = Bio::Fasta.local('fasta34', 'target.pep', '-b 10')
+factory.ktup = 1</pre>
+<p>Bio::Fasta#query メソッドなどの返り値は Bio::Fasta::Report オブジェクト
+です。この Report オブジェクトから、様々なメソッドで FASTA の出力結果の
+ほぼ全てを自由に取り出せるようになっています。たとえば、ヒットに関する
+スコアなどの主な情報は、</p>
+<pre>report.each do |hit|
+  puts hit.evalue           # E-value
+  puts hit.sw               # Smith-Waterman スコア (*)
+  puts hit.identity         # % identity
+  puts hit.overlap          # オーバーラップしている領域の長さ 
+  puts hit.query_id         # 問い合わせ配列の ID
+  puts hit.query_def        # 問い合わせ配列のコメント
+  puts hit.query_len        # 問い合わせ配列の長さ
+  puts hit.query_seq        # 問い合わせ配列
+  puts hit.target_id        # ヒットした配列の ID
+  puts hit.target_def       # ヒットした配列のコメント
+  puts hit.target_len       # ヒットした配列の長さ
+  puts hit.target_seq       # ヒットした配列
+  puts hit.query_start      # 相同領域の問い合わせ配列での開始残基位置
+  puts hit.query_end        # 相同領域の問い合わせ配列での終了残基位置
+  puts hit.target_start     # 相同領域のターゲット配列での開始残基位置
+  puts hit.target_end       # 相同領域のターゲット配列での終了残基位置
+  puts hit.lap_at           # 上記４位置の数値の配列
+end</pre>
+<p>などのメソッドで呼び出せます。これらのメソッドの多くは後で説明する
+Bio::Blast::Report クラスと共通にしてあります。上記以外のメソッドや
+FASTA 特有の値を取り出すメソッドが必要な場合は、Bio::Fasta::Report
+クラスのドキュメントを参照してください。</p>
+<p>もし、パースする前の手を加えていない fasta コマンドの実行結果が必要な
+場合には、</p>
+<pre>report = factory.query(entry)
+puts factory.output</pre>
+<p>のように、query メソッドを実行した後で factory オブジェクトの output
+メソッドを使って取り出すことができます。</p>
+<h3><a name="label-90" id="label-90">リモートの場合</a></h3><!-- RDLabel: "リモートの場合" -->
+<p>今のところ GenomeNet (fasta.genome.jp) での検索のみサポートしています。
+リモートの場合は使用可能な検索対象データベースが決まっていますが、それ以
+外の点については Bio::Fasta.remote と Bio::Fasta.local は同じように使う
+ことができます。</p>
+<p>GenomeNet で使用可能な検索対象データベース：</p>
+<ul>
+<li>アミノ酸配列データベース
+<ul>
+<li>nr-aa, genes, vgenes.pep, swissprot, swissprot-upd, pir, prf, pdbstr</li>
+</ul></li>
+<li>塩基配列データベース
+<ul>
+<li>nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss, htgs, dbsts,
+      embl-nonst, embnonst-upd, genes-nt, genome, vgenes.nuc</li>
+</ul></li>
+</ul>
+<p>まず、この中から検索したいデータベースを選択します。問い合わせ配列の種類
+と検索するデータベースの種類によってプログラムは決まります。</p>
+<ul>
+<li>問い合わせ配列がアミノ酸のとき
+<ul>
+<li>対象データベースがアミノ酸配列データベースの場合、program は 'fasta'</li>
+<li>対象データベースが核酸配列データベースの場合、program は 'tfasta'</li>
+</ul></li>
+<li>問い合わせ配列が核酸配列のとき
+<ul>
+<li>対象データベースが核酸配列データベースの場合、program は 'fasta'</li>
+<li>(対象データベースがアミノ酸配列データベースの場合は検索不能?)</li>
+</ul></li>
+</ul>
+<p>プログラムとデータベースの組み合せが決まったら</p>
+<pre>program = 'fasta'
+database = 'genes'
+
+factory = Bio::Fasta.remote(program, database)</pre>
+<p>としてファクトリーを作り、ローカルの場合と同じように factory.query など
+のメソッドで検索を実行します。</p>
+<h2><a name="label-91" id="label-91">BLAST による相同性検索を行う（Bio::Blast クラス）</a></h2><!-- RDLabel: "BLAST による相同性検索を行う（Bio::Blast クラス）" -->
+<p>BLAST もローカルと GenomeNet (blast.genome.jp) での検索をサポートして
+います。できるだけ Bio::Fasta と API を共通にしていますので、上記の例を 
+Bio::Blast と書き換えただけでも大丈夫な場合が多いです。</p>
+<p>たとえば、先の f_search.rb は</p>
+<pre># BLAST を実行する環境オブジェクトを作る
+factory = Bio::Blast.local('blastp', ARGV.pop) </pre>
+<p>と変更するだけで同じように実行できます。</p>
+<p>同様に、GenomeNet を使用してBLASTを行う場合には Bio::Blast.remote を使います。
+この場合、programの指定内容が FASTA と異なります。</p>
+<ul>
+<li>問い合わせ配列がアミノ酸のとき
+<ul>
+<li>対象データベースがアミノ酸配列データベースの場合、program は 'blastp'</li>
+<li>対象データベースが核酸配列データベースの場合、program は 'tblastn'</li>
+</ul></li>
+<li>問い合わせ配列が塩基配列のとき
+<ul>
+<li>対象データベースがアミノ酸配列データベースの場合、program は 'blastx'</li>
+<li>対象データベースが塩基配列データベースの場合、program は 'blastn'</li>
+<li>(問い合わせ・データベース共に6フレーム翻訳を行う場合は 'tblastx')</li>
+</ul></li>
+</ul>
+<p>をそれぞれ指定します。</p>
+<p>ところで、BLAST では "-m 7" オプションによる XML 出力フォーマッットの方が
+得られる情報が豊富なため、Bio::Blast は Ruby 用の XML ライブラリである
+XMLParser または REXML が使用可能な場合は、XML 出力を利用します。
+両方使用可能な場合、XMLParser のほうが高速なので優先的に使用されます。
+なお、Ruby 1.8.0 以降では REXML は Ruby 本体に標準添付されています。
+もし XML ライブラリがインストールされていない場合は "-m 8" のタブ区切りの
+出力形式を扱うようにしています。しかし、このフォーマットでは得られる
+データが限られるので、"-m 7" の XML 形式の出力を使うことをお勧めします。</p>
+<p>すでに見たように Bio::Fasta::Report と Bio::Blast::Report の Hit オブジェ
+クトはいくつか共通のメソッドを持っています。BLAST 固有のメソッドで良く使
+いそうなものには bit_score や midline などがあります。</p>
+<pre>report.each do |hit|
+  puts hit.bit_score        # bit スコア (*)
+  puts hit.query_seq        # 問い合わせ配列
+  puts hit.midline          # アライメントの midline 文字列 (*)
+  puts hit.target_seq       # ヒットした配列
+
+  puts hit.evalue           # E-value
+  puts hit.identity         # % identity
+  puts hit.overlap          # オーバーラップしている領域の長さ 
+  puts hit.query_id         # 問い合わせ配列の ID
+  puts hit.query_def        # 問い合わせ配列のコメント
+  puts hit.query_len        # 問い合わせ配列の長さ
+  puts hit.target_id        # ヒットした配列の ID
+  puts hit.target_def       # ヒットした配列のコメント
+  puts hit.target_len       # ヒットした配列の長さ
+  puts hit.query_start      # 相同領域の問い合わせ配列での開始残基位置
+  puts hit.query_end        # 相同領域の問い合わせ配列での終了残基位置
+  puts hit.target_start     # 相同領域のターゲット配列での開始残基位置
+  puts hit.target_end       # 相同領域のターゲット配列での終了残基位置
+  puts hit.lap_at           # 上記４位置の数値の配列
+end</pre>
+<p>FASTAとのAPI共通化のためと簡便のため、スコアなどいくつかの情報は1番目の
+Hsp (High-scoring segment pair) の値をHitで返すようにしています。</p>
+<p>Bio::Blast::Report オブジェクトは、以下に示すような、BLASTの結果出力の
+データ構造をそのまま反映した階層的なデータ構造を持っています。具体的には</p>
+<ul>
+<li>Bio::Blast::Report オブジェクトの @iteratinos に
+<ul>
+<li>Bio::Blast::Report::Iteration オブジェクトの Array が入っており
+      Bio::Blast::Report::Iteration オブジェクトの @hits に
+<ul>
+<li>Bio::Blast::Report::Hits オブジェクトの Array が入っており
+        Bio::Blast::Report::Hits オブジェクトの @hsps に
+<ul>
+<li>Bio::Blast::Report::Hsp オブジェクトの Array が入っている</li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+<p>という階層構造になっており、それぞれが内部の値を取り出すためのメソッドを
+持っています。これらのメソッドの詳細や、BLAST 実行の統計情報などの値が
+必要な場合には、 bio/appl/blast/*.rb 内のドキュメントやテストコードを
+参照してください。</p>
+<h3><a name="label-92" id="label-92">既存の BLAST 出力ファイルをパースする</a></h3><!-- RDLabel: "既存の BLAST 出力ファイルをパースする" -->
+<p>BLAST を実行した結果ファイルがすでに保存してあって、これを解析したい場合
+には（Bio::Blast オブジェクトを作らずに） Bio::Blast::Report オブジェク
+トを作りたい、ということになります。これには Bio::Blast.reports メソッド
+を使います。対応しているのは デフォルト出力フォーマット("-m 0") または
+"-m 7" オプションの XML フォーマット出力です。</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+# BLAST出力を順にパースして Bio::Blast::Report オブジェクトを返す
+Bio::Blast.reports(ARGF) do |report|
+  puts "Hits for " + report.query_def + " against " + report.db
+  report.each do |hit|
+    print hit.target_id, "\t", hit.evalue, "\n" if hit.evalue &lt; 0.001
+  end
+end</pre>
+<p>のようなスクリプト hits_under_0.001.rb を書いて、</p>
+<pre>% ./hits_under_0.001.rb *.xml</pre>
+<p>などと実行すれば、引数に与えた BLAST の結果ファイル *.xml を順番に処理で
+きます。</p>
+<p>Blast のバージョンや OS などによって出力される XML の形式が異なる可能性
+があり、時々 XML のパーザがうまく使えないことがあるようです。その場合は
+Blast 2.2.5 以降のバージョンをインストールするか -D や -m などのオプショ
+ンの組み合せを変えて試してみてください。</p>
+<h3><a name="label-93" id="label-93">リモート検索サイトを追加するには</a></h3><!-- RDLabel: "リモート検索サイトを追加するには" -->
+<p>注: このセクションは上級ユーザ向けです。可能であれば SOAP などによる
+ウェブサービスを利用する方がよいでしょう。</p>
+<p>Blast 検索は NCBI をはじめ様々なサイトでサービスされていますが、今のとこ
+ろ BioRuby では GenomeNet 以外には対応していません。これらのサイトは、</p>
+<ul>
+<li>CGI を呼び出す（コマンドラインオプションはそのサイト用に処理する）</li>
+<li>-m 8 など BioRuby がパーザを持っている出力フォーマットで blast の
+    出力を取り出す</li>
+</ul>
+<p>ことさえできれば、query を受け取って検索結果を Bio::Blast::Report.new に
+渡すようなメソッドを定義するだけで使えるようになります。具体的には、この
+メソッドを「exec_サイト名」のような名前で Bio::Blast の private メソッド
+として登録すると、４番目の引数に「サイト名」を指定して</p>
+<pre>factory = Bio::Blast.remote(program, db, option, 'サイト名')</pre>
+<p>のように呼び出せるようになっています。完成したら BioRuby プロジェクトま
+で送ってもらえれば取り込ませて頂きます。</p>
+<h2><a name="label-94" id="label-94">PubMed を引いて引用文献リストを作る (Bio::PubMed クラス)</a></h2><!-- RDLabel: "PubMed を引いて引用文献リストを作る (Bio::PubMed クラス)" -->
+<p>次は、NCBI の文献データベース PubMed を検索して引用文献リストを作成する例です。</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+ARGV.each do |id|
+  entry = Bio::PubMed.query(id)     # PubMed を取得するクラスメソッド
+  medline = Bio::MEDLINE.new(entry) # Bio::MEDLINE オブジェクト
+  reference = medline.reference     # Bio::Reference オブジェクト
+  puts reference.bibtex             # BibTeX フォーマットで出力
+end</pre>
+<p>このスクリプトを pmfetch.rb など好きな名前で保存し、</p>
+<pre>% ./pmfetch.rb 11024183 10592278 10592173</pre>
+<p>など引用したい論文の PubMed ID (PMID) を引数に並べると NCBI にアクセスし
+て MEDLINE フォーマットをパースし BibTeX フォーマットに変換して出力して
+くれるはずです。</p>
+<p>他に、キーワードで検索する機能もあります。</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+# コマンドラインで与えたキーワードのリストを１つの文字列にする
+keywords = ARGV.join(' ')
+
+# PubMed をキーワードで検索
+entries = Bio::PubMed.search(keywords)
+
+entries.each do |entry|
+  medline = Bio::MEDLINE.new(entry) # Bio::MEDLINE オブジェクト
+  reference = medline.reference     # Bio::Reference オブジェクト
+  puts reference.bibtex             # BibTeX フォーマットで出力
+end</pre>
+<p>このスクリプトを pmsearch.rb など好きな名前で保存し</p>
+<pre>% ./pmsearch.rb genome bioinformatics</pre>
+<p>など検索したいキーワードを引数に並べて実行すると、PubMed をキーワード
+検索してヒットした論文のリストを BibTeX フォーマットで出力します。</p>
+<p>最近では、NCBI は E-Utils というウェブアプリケーションを使うことが
+推奨されているので、今後は Bio::PubMed.esearch メソッドおよび
+Bio::PubMed.efetch メソッドを使う方が良いでしょう。</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+keywords = ARGV.join(' ')
+
+options = {
+  'maxdate' =&gt; '2003/05/31',
+  'retmax' =&gt; 1000,
+}
+
+entries = Bio::PubMed.esearch(keywords, options)
+
+Bio::PubMed.efetch(entries).each do |entry|
+  medline = Bio::MEDLINE.new(entry)
+  reference = medline.reference
+  puts reference.bibtex
+end</pre>
+<p>このスクリプトでは、上記の pmsearch.rb とほぼ同じように動きます。さらに、
+NCBI E-Utils を活用することにより、検索対象の日付や最大ヒット件数などを
+指定できるようになっているので、より高機能です。オプションに与えられる
+引数については <a href="http://eutils.ncbi.nlm.nih.gov/entrez/query/static/eutils_help.html">E-Utils のヘルプページ</a> を参照してください。</p>
+<p>ちなみに、ここでは bibtex メソッドで BibTeX フォーマットに変換しています
+が、後述のように bibitem メソッドも使える他、（強調やイタリックなど
+文字の修飾はできませんが）nature メソッドや nar など、いくつかの雑誌の
+フォーマットにも対応しています。</p>
+<h3><a name="label-95" id="label-95">BibTeX の使い方のメモ</a></h3><!-- RDLabel: "BibTeX の使い方のメモ" -->
+<p>上記の例で集めた BibTeX フォーマットのリストを TeX で使う方法を簡単にま
+とめておきます。引用しそうな文献を</p>
+<pre>% ./pmfetch.rb 10592173 &gt;&gt; genoinfo.bib
+% ./pmsearch.rb genome bioinformatics &gt;&gt; genoinfo.bib</pre>
+<p>などとして genoinfo.bib ファイルに集めて保存しておき、</p>
+<pre>\documentclass{jarticle}
+\begin{document}
+\bibliographystyle{plain}
+ほにゃらら KEGG データベース~\cite{PMID:10592173}はふがほげである。
+\bibliography{genoinfo}
+\end{document}</pre>
+<p>というファイル hoge.tex を書いて、</p>
+<pre>% platex hoge
+% bibtex hoge   # → genoinfo.bib の処理
+% platex hoge   # → 文献リストの作成
+% platex hoge   # → 文献番号</pre>
+<p>とすると無事 hoge.dvi ができあがります。</p>
+<h3><a name="label-96" id="label-96">bibitem の使い方のメモ</a></h3><!-- RDLabel: "bibitem の使い方のメモ" -->
+<p>文献用に別の .bib ファイルを作りたくない場合は Reference#bibitem メソッ
+ドの出力を使います。上記の pmfetch.rb や pmsearch.rb の</p>
+<pre>puts reference.bibtex</pre>
+<p>の行を</p>
+<pre>puts reference.bibitem</pre>
+<p>に書き換えるなどして、出力結果を</p>
+<pre>\documentclass{jarticle}
+\begin{document}
+ほにゃらら KEGG データベース~\cite{PMID:10592173}はふがほげである。
+
+\begin{thebibliography}{00}
+
+\bibitem{PMID:10592173}
+Kanehisa, M., Goto, S.
+KEGG: kyoto encyclopedia of genes and genomes.,
+{\em Nucleic Acids Res}, 28(1):27--30, 2000.
+
+\end{thebibliography}
+\end{document}</pre>
+<p>のように \begin{thebibliography} で囲みます。これを hoge.tex とすると</p>
+<pre>% platex hoge   # → 文献リストの作成
+% platex hoge   # → 文献番号</pre>
+<p>と２回処理すればできあがりです。</p>
+<h1><a name="label-97" id="label-97">OBDA</a></h1><!-- RDLabel: "OBDA" -->
+<p>OBDA (Open Bio Database Access) とは、Open Bioinformatics Foundation
+によって制定された、配列データベースへの共通アクセス方法です。これは、
+2002 年の1月と2月に Arizona と Cape Town にて開催された BioHackathon
+において、BioPerl, BioJava, BioPython, BioRuby などの各プロジェクトの
+メンバーが参加して作成されました。</p>
+<ul>
+<li>BioRegistry (Directory)
+<ul>
+<li>データベース毎に配列をどこにどのように取りに行くかを指定する仕組み</li>
+</ul></li>
+<li>BioFlat
+<ul>
+<li>フラットファイルの 2 分木または BDB を使ったインデックス作成</li>
+</ul></li>
+<li>BioFetch
+<ul>
+<li>HTTP 経由でデータベースからエントリを取得するサーバとクライアント</li>
+</ul></li>
+<li>BioSQL
+<ul>
+<li>MySQL や PostgreSQL などの関係データベースに配列データを格納する
+    ための schema と、エントリを取り出すためのメソッド</li>
+</ul></li>
+</ul>
+<p>詳細は <a href="http://obda.open-bio.org/">&lt;URL:http://obda.open-bio.org/&gt;</a> を参照してください。
+それぞれの仕様書は cvs.open-bio.org の CVSレポジトリに置いてあります。
+または、<a href="http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/obda-specs/?cvsroot=obf-common">&lt;URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/obda-specs/?cvsroot=obf-common&gt;</a> から参照できます。</p>
+<h2><a name="label-98" id="label-98">BioRegistry</a></h2><!-- RDLabel: "BioRegistry" -->
+<p>BioRegistryとは、設定ファイルによって各データベースのエントリ取得方法を
+指定することにより、どんな方法を使っているかをほとんど意識せずデータを
+取得することを可能とするための仕組みです。
+設定ファイルの優先順位は</p>
+<ul>
+<li>(メソッドのパラメータで)指定したファイル</li>
+<li>~/.bioinformatics/seqdatabase.ini</li>
+<li>/etc/bioinformatics/seqdatabase.ini</li>
+<li>http://www.open-bio.org/registry/seqdatabase.ini</li>
+</ul>
+<p>最後の open-bio.org の設定は、ローカルな設定ファイルが見つからない場合に
+だけ参照します。</p>
+<p>BioRuby の現在の実装では、すべてのローカルな設定ファイルを読み込み、
+同じ名前の設定が複数存在した場合は、最初に見つかった設定だけが使用されます。
+これを利用すると、たとえば、システム管理者が /etc/bioinformatics/ に置いた
+設定のうち個人的に変更したいものだけ ~/.bioinformatics/ で上書きすることが
+できます。サンプルの seqdatabase.ini ファイルが bioruby のソースに含まれて
+いますので参照してください。</p>
+<p>設定ファイルの中身は stanza フォーマットと呼ばれる書式で記述します。</p>
+<pre>[データベース名]
+protocol=プロトコル名
+location=サーバ名</pre>
+<p>このようなエントリを各データベースについて記述することになります。
+データベース名は、自分が使用するためのラベルなので分かりやすいものを
+つければ良く、実際のデータベースの名前と異なっていても構わないようです。
+同じ名前のデータベースが複数あるときは最初に書かれているものから順に
+接続を試すように仕様書では提案されていますが、今のところ BioRuby では
+それには対応していません。</p>
+<p>また、プロトコルの種類によっては location 以外にも（MySQL のユーザ名など）
+追加のオプションを記述する必要があります。現在のところ、仕様書で規定され
+ている protocol としては以下のものがあります。</p>
+<ul>
+<li>index-flat</li>
+<li>index-berkeleydb</li>
+<li>biofetch</li>
+<li>biosql</li>
+<li>bsane-corba</li>
+<li>xembl</li>
+</ul>
+<p>今のところ BioRuby で使用可能なのは index-flat, index-berkleydb, biofetch
+と biosql だけです。また、BioRegistryや各プロトコルの仕様は変更されること
+がありますが、BioRubyはそれに追従できていないかもしれません。</p>
+<p>BioRegistry を使うには、まず Bio::Registryオブジェクトを作成します。
+すると、設定ファイルが読み込まれます。</p>
+<pre>reg = Bio::Registry.new
+
+# 設定ファイルに書いたデータベース名でサーバへ接続
+serv = reg.get_database('genbank')
+
+# ID を指定してエントリを取得
+entry = serv.get_by_id('AA2CG')</pre>
+<p>ここで serv は設定ファイルの [genbank] の欄で指定した protocol プロトコ
+ルに対応するサーバオブジェクトで、Bio::SQL や Bio::Fetch などのインスタ
+ンスが返っているはずです（データベース名が見つからなかった場合は nil）。</p>
+<p>あとは OBDA 共通のエントリ取得メソッド get_by_id を呼んだり、サーバオ
+ブジェクト毎に固有のメソッドを呼ぶことになりますので、以下の BioFetch や
+BioSQL の解説を参照してください。</p>
+<h2><a name="label-99" id="label-99">BioFlat</a></h2><!-- RDLabel: "BioFlat" -->
+<p>BioFlat はフラットファイルに対してインデックスを作成し、エントリを高速に
+取り出す仕組みです。インデックスの種類は、RUbyの拡張ライブラリに依存しない
+index-flat と Berkeley DB (bdb) を使った index-berkeleydb の2種類が存在
+します。なお、index-berkeleydb を使用するには、BDB という Ruby の拡張
+ライブラリを別途インストールする必要があります。インデックスの作成には
+bioruby パッケージに付属する br_bioflat.rb コマンドを使って、</p>
+<pre>% br_bioflat.rb --makeindex データベース名 [--format クラス名] ファイル名</pre>
+<p>のようにします。BioRubyはデータフォーマットの自動認識機能を搭載している
+ので --format オプションは省略可能ですが、万一うまく認識しなかった場合は
+BioRuby の各データベースのクラス名を指定してください。検索は、</p>
+<pre>% bioflat データベース名 エントリID</pre>
+<p>とします。具体的に GenBank の gbbct*.seq ファイルにインデックスを作成し
+て検索する場合、</p>
+<pre>% bioflat --makeindex my_bctdb --format GenBank gbbct*.seq
+% bioflat my_bctdb A16STM262</pre>
+<p>のような感じになります。</p>
+<p>Ruby の bdb 拡張モジュール(詳細は http://raa.ruby-lang.org/project/bdb/ 参照)
+がインストールされている場合は Berkeley DB を利用してインデックスを作成する
+ことができます。この場合、</p>
+<pre>% bioflat --makeindex-bdb データベース名 [--format クラス名] ファイル名</pre>
+<p>のように "--makeindex" のかわりに "--makeindex-bdb" を指定します。</p>
+<h2><a name="label-100" id="label-100">BioFetch</a></h2><!-- RDLabel: "BioFetch" -->
+<p>BioFetch は CGI を経由してサーバからデータベースのエントリを取得する仕様
+で、サーバが受け取る CGI のオプション名、エラーコードなどが決められてい
+ます。クライアントは HTTP を使ってデータベース、ID、フォーマットなどを指
+定し、エントリを取得します。</p>
+<p>BioRuby プロジェクトでは GenomeNet の DBGET システムをバックエンドとした
+BioFetch サーバを実装しており、bioruby.org で運用しています。このサーバの
+ソースコードは BioRuby の sample/ ディレクトリに入っています。現在のところ
+BioFetch サーバはこの bioruby.org のものと EBI の二か所しかありません。</p>
+<p>BioFetch を使ってエントリを取得するには、いくつかの方法があります。</p>
+<ol>
+<li><p>ウェブブラウザから検索する方法（以下のページを開く）</p>
+<pre>http://bioruby.org/cgi-bin/biofetch.rb</pre></li>
+<li><p>BioRuby付属の br_biofetch.rb コマンドを用いる方法</p>
+<pre>% br_biofetch.rb db_name entry_id</pre></li>
+<li><p>スクリプトの中から Bio::Fetch クラスを直接使う方法</p>
+<pre>serv = Bio::Fetch.new(server_url)
+entry = serv.fetch(db_name, entry_id)</pre></li>
+<li><p>スクリプトの中で BioRegistry 経由で Bio::Fetch クラスを間接的に使う方法</p>
+<pre>reg = Bio::Registry.new
+serv = reg.get_database('genbank')
+entry = serv.get_by_id('AA2CG')</pre></li>
+</ol>
+<p>もし (4) を使いたい場合は seqdatabase.ini で</p>
+<pre>[genbank]
+protocol=biofetch
+location=http://bioruby.org/cgi-bin/biofetch.rb
+biodbname=genbank</pre>
+<p>などと指定しておく必要があります。</p>
+<h3><a name="label-101" id="label-101">BioFetch と Bio::KEGG::GENES, Bio::AAindex1 を組み合わせた例</a></h3><!-- RDLabel: "BioFetch と Bio::KEGG::GENES, Bio::AAindex1 を組み合わせた例" -->
+<p>次のプログラムは、BioFetch を使って KEGG の GENES データベースから古細菌
+Halobacterium のバクテリアロドプシン遺伝子 (VNG1467G) を取ってきて、同じ
+ようにアミノ酸指標データベースである AAindex から取得したαヘリックスの
+指標 (BURA740101) を使って、幅 15 残基のウィンドウサーチをする例です。</p>
+<pre>#!/usr/bin/env ruby
+
+require 'bio'
+
+entry = Bio::Fetch.query('hal', 'VNG1467G')
+aaseq = Bio::KEGG::GENES.new(entry).aaseq
+
+entry = Bio::Fetch.query('aax1', 'BURA740101')
+helix = Bio::AAindex1.new(entry).index
+
+position = 1
+win_size = 15
+
+aaseq.window_search(win_size) do |subseq|
+  score = subseq.total(helix)
+  puts [ position, score ].join("\t")
+  position += 1
+end</pre>
+<p>ここで使っているクラスメソッド Bio::Fetch.query は暗黙に bioruby.org の
+BioFetch サーバを使う専用のショートカットです。（このサーバは内部的には
+ゲノムネットからデータを取得しています。KEGG/GENES データベースの hal や 
+AAindex データベース aax1 のエントリは、他の BioFetch サーバでは取得でき
+ないこともあって、あえて query メソッドを使っています。）</p>
+<h2><a name="label-102" id="label-102">BioSQL</a></h2><!-- RDLabel: "BioSQL" -->
+<p>to be written...</p>
+<h2><a name="label-103" id="label-103">BioRuby のサンプルプログラムの使い方</a></h2><!-- RDLabel: "BioRuby のサンプルプログラムの使い方" -->
+<p>BioRuby のパッケージには samples/ ディレクトリ以下にいくつかのサンプルプ
+ログラムが含まれています。古いものも混じっていますし、量もとても十分とは
+言えないので、実用的で面白いサンプルの提供は歓迎です。</p>
+<p>to be written...</p>
+<h2><a name="label-104" id="label-104">さらなる情報</a></h2><!-- RDLabel: "さらなる情報" -->
+<p>他のチュートリアル的なドキュメントとしては、BioRuby Wikiに置いてある
+BioRuby in Anger があります。</p>
+<h2><a name="label-105" id="label-105">脚注</a></h2><!-- RDLabel: "脚注" -->
+<ul>
+<li><p>(※1) BioRuby 1.2.1 以前のバージョンでは、setup.rb のかわりに install.rb
+  を使用します。また、以下のように3段階を踏む必要があります。</p>
+<pre>% ruby install.rb config
+% ruby install.rb setup
+# ruby install.rb install</pre></li>
+<li>(※2) BioRuby 1.0.0 以前のバージョンでは、getseq, getent, getobj
+  の各コマンドのかわりに、seq, ent, obj の各コマンドを使用してください。</li>
+<li><p>(※3) BioRuby 0.7.1 以前のバージョンでは、Bio::Sequence::NA クラスか、
+  Bio::sequence::AA クラスのどちらかのオブジェクトになります。
+  配列がどちらのクラスに属するかは Ruby の class メソッドを用いて</p>
+<pre>bioruby&gt; p cdc2.class
+Bio::Sequence::AA
+
+bioruby&gt; p psaB.class
+Bio::Sequence::NA</pre>
+<p>のように調べることができます。自動判定が間違っている場合などには
+to_naseq, to_aaseq メソッドで強制的に変換できます。</p></li>
+<li>(※4) seq メソッドは、読み込んだデータの種類によっては、塩基・アミノ酸の
+  どちらにも当てはまらない配列のための Bio::Sequence::Generic クラスや
+  String クラスのオブジェクトを返す場合があるかもしれません。</li>
+<li>(※5) NCBI, EBI, TogoWS が特別な設定無しに getseq, getent, getobj コマンド
+  から利用可能となったのは BioRuby 1.3.0 以降です。</li>
+</ul>
+
+</body>
+</html>

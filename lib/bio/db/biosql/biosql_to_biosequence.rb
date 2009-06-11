@@ -46,6 +46,9 @@ module Bio::Sequence::Adapter::BioSQL
   def_biosequence_adapter :date_created
 
   def_biosequence_adapter :date_modified
+  #do |bs|
+   #   Date.parse(bs.date_modified.to_s).strftime("%d-%b-%Y").upcase
+    # end
 
   def_biosequence_adapter :division
 
@@ -62,6 +65,13 @@ module Bio::Sequence::Adapter::BioSQL
   def_biosequence_adapter :features
   
   def_biosequence_adapter :comments
+
+  def_biosequence_adapter :other_seqids do |orig|
+    orig.identifier.split(',').collect do |dblink|
+      database, id = dblink.split(':')
+      Bio::Sequence::DBLink.new(database,id)
+    end
+  end
 
 end #module Bio::Sequence::Adapter::BioSQL
 

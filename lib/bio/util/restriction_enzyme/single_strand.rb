@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: single_strand.rb,v 1.7 2007/07/16 19:28:48 k Exp $
+#  $Id:$
 #
 
 require 'bio/util/restriction_enzyme'
@@ -133,7 +133,7 @@ class SingleStrand < Bio::Sequence::NA
 
     # Add one more 'n' if a cut is at the last position 
     right = ( (@cut_locations_in_enzyme_notation.max >= @stripped.length) ? ('n' * (@cut_locations_in_enzyme_notation.max - @stripped.length + 1)) : '')
-    [left, stripped, right].to_s
+    [left, stripped, right].join('')
   end
 
   # The sequence with 'n' pads, cut symbols, and spacing for alignment.
@@ -183,14 +183,15 @@ class SingleStrand < Bio::Sequence::NA
   def self.once(*ids)
     for id in ids
       module_eval <<-"end;"
-        alias_method :__#{id.to_i}__, :#{id.to_s}
-        private :__#{id.to_i}__
+        alias_method :__#{id.__id__}__, :#{id.to_s}
+        private :__#{id.__id__}__
         def #{id.to_s}(*args, &block)
-          (@__#{id.to_i}__ ||= [__#{id.to_i}__(*args, &block)])[0]
+          (@__#{id.__id__}__ ||= [__#{id.__id__}__(*args, &block)])[0]
         end
       end;
     end
   end
+  private_class_method :once
 
   once :pattern, :with_cut_symbols, :with_spaces, :to_re
 

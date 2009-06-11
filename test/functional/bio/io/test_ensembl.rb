@@ -40,6 +40,13 @@ class FuncTestEnsemblHuman < Test::Unit::TestCase
   def test_server
     assert_equal("http://www.ensembl.org", @serv.server)
   end
+end
+
+class FuncTestEnsemblHumanExportView < Test::Unit::TestCase
+  def setup
+    @serv = Bio::Ensembl.new('Homo_sapiens',
+                             'http://jul2008.archive.ensembl.org')
+  end
 
   def test_fna_exportview
     seq = ">4 dna:chromosome chromosome:NCBI36:4:1149206:1149209:1\nGAGA\n"

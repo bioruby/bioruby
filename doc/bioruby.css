@@ -1,0 +1,281 @@
+/* body */
+
+body {
+	color: #000000;
+	background-color: #ffffff;
+	margin-left: 5%;
+	margin-right: 5%;
+	font-family: verdana, arial;
+}
+
+em {
+	font-weight: bold;
+	font-style: normal;
+}
+
+/* link */
+
+a:link {
+	color: #00ca65;
+	text-decoration: none;
+}
+a:visited {
+	color: #49ba18;
+	text-decoration: none;
+}
+a:hover, a:focus {
+	color: #c2fe20;
+	background-color: #ffffff;
+	text-decoration: underline;
+}
+
+
+/* header */
+
+h1 {     
+	color: #000000;
+	background-color: transparent;
+	border-color: #49ba18; 
+/*	border-width: 1px 0px 1px 0px;*/
+	border-width: 0px 0px 5px 0px;
+	border-style: solid;
+	padding-bottom: 3px;
+	padding-right: 10%;
+	text-align: left;
+}
+h2 {
+	color: #000000;
+/*	background-color: transparent;*/
+	background-color: #b0ffb0;
+	border-color: #b0ffb0;
+	border-style: none;
+	border-width: 1px 0px 1px 0px;
+	margin-bottom: 0px;
+	margin-top: 1em;
+	padding: 3px;
+}
+h3 {
+	padding-top: 2px;
+	padding-left: 5px;
+	font-weight: bold;
+	border-style: solid;
+	border-color: #d8ffd8;
+/*	border-width: 2px 0px 0px 10px;*/
+	border-width: 2px 0px 0px 2px;
+}
+h4 {
+	padding-bottom: 1px;
+	padding-left: 5px;
+	font-weight: bold;
+	font-weight: bold;
+	border-style: solid;
+	border-color: #b0ffb0;
+	border-width: 0px 0px 2px 0px;
+/*	margin: 1.5em 10px 0px*/
+}
+h5 {
+	padding-top: 2px;
+	padding-left: 5px;
+	font-weight: bold;
+	border-style: dotted;
+	border-color: #d8ffd8;
+	border-width: 2px 0px 0px 2px;
+/*	margin: 1.5em 20px 0px*/
+}
+h6 {
+	padding-left: 5px;
+	font-weight: bold;
+	border-style: solid;
+	border-color: #b0ffb0;
+	border-width: 0px 0px 0px 5px;
+/*	margin: 1.5em 20px 0px*/
+}
+
+
+/* paragraph */
+
+p {
+	margin-left: 0em! important;
+	text-indent: 0em
+}
+
+
+/* line */
+
+hr {
+	border-style: solid;
+	border-color: #00ca65;
+	border-width: 1px;
+}
+
+
+/* list */
+
+dl {
+}
+dt {
+	padding-left: 5px;
+	font-size: 110%;
+	border-style: solid;
+	border-color: #B0FFB0;
+	border-width: 0px 0px 0px 5px;
+	font-weight: bold;
+}
+dd {
+}
+li {
+	/* list-style-type: disc; */
+}
+ul,ol{
+}
+
+
+/* table */
+
+th {
+	padding: 5px;
+	text-align: left;
+}
+td {
+	padding: 5px;
+}
+
+/* quote */
+
+pre {
+	color: #000000;
+	background-color: #d8ffd8;
+	margin-left: 20px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #b0ffb0;
+	border-width: 1px 5px 1px 5px;
+	white-space: pre;
+}
+blockquote {
+	color: #008080;
+	background-color: #ffffff;
+	margin-left: 20px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #38c868;
+	border-width: 3px 1px 3px 1px;
+}
+
+
+/* image */
+
+img {
+	border-width: 0px;
+}
+
+
+/* form */
+
+input, select {
+	color: #000000;
+	background-color: transparent;
+	padding: 2px;
+	border-style: solid;
+	border-color: #71e63e;
+	border-width: 1px;
+}
+textarea {
+	color: #000000;
+	background-color: #ffffff;
+	border-style: solid;
+	border-color: #00ca65;
+	border-width: 1px;
+	font-family: monospace;
+}
+
+/* reviz */
+
+table.reviz {
+	width: 100%;
+}
+th.file {
+	background-color: #008080;
+	width: 15%;
+}
+th.rev, th.age, th.author {
+	background-color: #38c868;
+	width: 10%;
+}
+th.log {
+	background-color: #c2fe20;
+}
+
+td.dir {
+	background-color: #b0ffb0;
+	background-image: url(reviz/dir.gif);
+	background-position: center left;
+	background-repeat: no-repeat;
+	text-indent: 15px;
+}
+td.file {
+	background-color: #b0ffb0;
+	background-image: url(reviz/file.gif);
+	background-position: center left;
+	background-repeat: no-repeat;
+	text-indent: 15px;
+}
+td.rev, td.age, td.author, td.log {
+	background-color: #d8ffd8;
+}
+
+
+/* rwiki */
+
+.navi {
+	text-align: right;
+}
+.headerURL {
+	text-align: right;
+	font-size: 10pt;
+}
+address {
+	color: gray;
+	text-align: right;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: normal;
+}
+
+/* hiki */
+
+ins.added {
+	font-weight: bold;
+}
+del.deleted {
+	text-decoration: line-through;
+}
+form.update textarea.keyword {
+	width: 15em;
+	height: 3em;
+}
+div.adminmenu {
+	text-align: right;
+}
+div.caption {
+	text-align: right;
+}
+div.footer {
+	text-align: right;
+}
+
+
+/* top */
+
+span.title {
+	font-size: +2
+}
+span.lead {
+	text-decoration: underline
+}
+span.expire {
+	color: #c04040
+}
+span.ruby {
+	font-weight: bold
+}

@@ -6,7 +6,7 @@
 #               Shuichi Kawashima <shuichi@hgc.jp>
 # License::     The Ruby License
 #
-#  $Id: pathway.rb,v 1.36 2007/04/05 23:35:39 trevor Exp $
+#  $Id:$
 #
 
 require 'matrix'
@@ -184,6 +184,15 @@ class Pathway
   # object.  If the first argument was assigned, the matrix will be
   # filled with the given value.  The second argument indicates the
   # value of the diagonal constituents of the matrix besides the above.
+  #
+  # The result of this method depends on the order of Hash#each
+  # (and each_key, etc.), which may be variable with Ruby version
+  # and Ruby interpreter variations (JRuby, etc.).
+  # For a workaround to remove such dependency, you can use @index 
+  # to set order of Hash keys. Note that this behavior might be
+  # changed in the future. Be careful that @index is overwritten by
+  # this method.
+  # 
   def to_matrix(default_value = nil, diagonal_value = nil)
 
     #--
@@ -206,9 +215,31 @@ class Pathway
       end
     end
 
-    # assign index number for each node
-    @graph.keys.each_with_index do |k, i|
-      @index[k] = i
+    # assign index number
+    if @index.empty? then
+      # assign index number for each node
+      @graph.keys.each_with_index do |k, i|
+        @index[k] = i
+      end
+    else
+      # begin workaround removing depencency to order of Hash#each
+      # assign index number from the preset @index
+      indices = @index.to_a
+      indices.sort! { |i0, i1| i0[1] <=> i1[1] }
+      indices.collect! { |i0| i0[0] }
+      @index.clear
+      v = 0
+      indices.each do |k, i|
+        if @graph[k] and !@index[k] then
+          @index[k] = v; v += 1
+        end
+      end
+      @graph.each_key do |k|
+        unless @index[k] then
+          @index[k] = v; v += 1
+        end
+      end
+      # end workaround removing depencency to order of Hash#each
     end
 
     if @relations.empty?		# only used after clear_relations!
@@ -236,6 +267,10 @@ class Pathway
   # The dump_matrix method accepts the same arguments as to_matrix.
   # Useful when you want to check the internal state of the matrix
   # (for debug purpose etc.) easily.
+  #
+  # This method internally calls to_matrix method.
+  # Read documents of to_matrix for important informations.
+  #
   def dump_matrix(*arg)
     matrix = self.to_matrix(*arg)
     sorted = @index.sort {|a,b| a[1] <=> b[1]}
@@ -245,13 +280,43 @@ class Pathway
 
   # Pretty printer of the adjacency list.
   # 
-  # The dump_matrix method accepts the same arguments as to_matrix.
   # Useful when you want to check the internal state of the adjacency
   # list (for debug purpose etc.) easily.
+  #
+  # The result of this method depends on the order of Hash#each
+  # (and each_key, etc.), which may be variable with Ruby version
+  # and Ruby interpreter variations (JRuby, etc.).
+  # For a workaround to remove such dependency, you can use @index 
+  # to set order of Hash keys. Note that this behavior might be
+  # changed in the future. 
+  # 
   def dump_list
+    # begin workaround removing depencency to order of Hash#each
+    if @index.empty? then
+      pref = nil
+      enum = @graph
+    else
+      pref = {}.merge(@index)
+      i = pref.values.max
+      @graph.each_key do |node|
+        pref[node] ||= (i += 1)
+      end
+      graph_to_a = @graph.to_a
+      graph_to_a.sort! { |x, y| pref[x[0]] <=> pref[y[0]] }
+      enum = graph_to_a
+    end
+    # end workaround removing depencency to order of Hash#each
+
     list = ""
-    @graph.each do |from, hash|
+    enum.each do |from, hash|
       list << "#{from} => "
+      # begin workaround removing depencency to order of Hash#each
+      if pref then
+        ary = hash.to_a
+        ary.sort! { |x,y| pref[x[0]] <=> pref[y[0]] }
+        hash = ary
+      end
+      # end workaround removing depencency to order of Hash#each
       a = []
       hash.each do |to, relation|
         a.push("#{to} (#{relation})")
@@ -285,6 +350,7 @@ class Pathway
     sub_graph = Pathway.new([], @undirected)
     @graph.each do |from, hash|
       next unless @label[from]
+      sub_graph.graph[from] ||= {}
       hash.each do |to, relation|
         next unless @label[to]
         sub_graph.append(Relation.new(from, to, relation))
@@ -310,14 +376,23 @@ class Pathway
   #
   # Calculates the value of cliquishness around the 'node'.  This value
   # indicates completeness of the edge density among the surrounded nodes.
+  #
+  # Note: cliquishness (clustering coefficient) for a directed graph
+  # is also calculated.
+  # Reference: http://en.wikipedia.org/wiki/Clustering_coefficient
+  # 
+  # Note: Cliquishness (clustering coefficient) for a node that has
+  # only one neighbor node is undefined. Currently, it returns NaN,
+  # but the behavior may be changed in the future.
+  #
   def cliquishness(node)
     neighbors = @graph[node].keys
     sg = subgraph(neighbors)
     if sg.graph.size != 0
-      edges = sg.edges / 2.0
-      nodes = sg.nodes
-      complete = (nodes * (nodes - 1)) / 2.0
-      return edges/complete
+      edges = sg.edges
+      nodes = neighbors.size
+      complete = (nodes * (nodes - 1))
+      return edges.quo(complete)
     else
       return 0.0
     end
@@ -396,6 +471,13 @@ class Pathway
   # of the search.
   # 
   # The weight of the edges are not considered in this method.
+  #
+  # Note: The result of this method depends on the order of Hash#each
+  # (and each_key, etc.), which may be variable with Ruby version
+  # and Ruby interpreter variations (JRuby, etc.).
+  # For a workaround to remove such dependency, you can use @index 
+  # to set order of Hash keys. Note that this bahavior might be
+  # changed in the future.
   def depth_first_search
     visited = {}
     timestamp = {}
@@ -405,10 +487,28 @@ class Pathway
     forward_edges = {}
     count = 0
 
+    # begin workaround removing depencency to order of Hash#each
+    if @index.empty? then
+      preference_of_nodes = nil
+    else
+      preference_of_nodes = {}.merge(@index)
+      i = preference_of_nodes.values.max
+      @graph.each_key do |node0|
+        preference_of_nodes[node0] ||= (i += 1)
+      end
+    end
+    # end workaround removing depencency to order of Hash#each
+
     dfs_visit = Proc.new { |from|
       visited[from] = true
       timestamp[from] = [count += 1]
-      @graph[from].each_key do |to|
+      ary = @graph[from].keys
+      # begin workaround removing depencency to order of Hash#each
+      if preference_of_nodes then
+        ary = ary.sort_by { |node0| preference_of_nodes[node0] }
+      end
+      # end workaround removing depencency to order of Hash#each
+      ary.each do |to|
         if visited[to]
           if timestamp[to].size > 1
             if timestamp[from].first < timestamp[to].first
@@ -435,7 +535,13 @@ class Pathway
       timestamp[from].push(count += 1)
     }
 
-    @graph.each_key do |node|
+    ary = @graph.keys
+    # begin workaround removing depencency to order of Hash#each
+    if preference_of_nodes then
+      ary = ary.sort_by { |node0| preference_of_nodes[node0] }
+    end
+    # end workaround removing depencency to order of Hash#each
+    ary.each do |node|
       unless visited[node]
         dfs_visit.call(node)
       end
@@ -543,8 +649,8 @@ class Pathway
         end
       end
     end
-    index.sort{|x, y| y<=>x}.each do |i|
-      rel[i, 1] = []
+    index.sort{|x, y| y<=>x}.each do |idx|
+      rel[idx, 1] = []
     end
     mst = []
     seen = Hash.new()

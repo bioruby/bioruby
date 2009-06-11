@@ -10,7 +10,9 @@
 
 module Bio
 
-  BIORUBY_VERSION = [1, 2, 2].extend(Comparable)
+  autoload :BIORUBY_VERSION, 'bio/version'
+  autoload :BIORUBY_EXTRA_VERSION, 'bio/version'
+  autoload :BIORUBY_VERSION_ID, 'bio/version'
 
   ### Basic data types
 
@@ -185,6 +187,7 @@ module Bio
     autoload :REST,       'bio/io/ncbirest'
   end
 
+  autoload :TogoWS,       'bio/io/togows'
 
   ### Applications
 
@@ -268,14 +271,13 @@ module Bio
 
   autoload :Iprscan,        'bio/appl/iprscan/report'
 
-  module PAML
-    autoload :Codeml,         'bio/appl/paml/codeml'
-    ## below are described in bio/appl/paml/codeml.rb
-    #  # class Codeml
-    #      autoload :Report,       'bio/appl/paml/codeml/report'
-    #      autoload :Rates,        'bio/appl/paml/codeml/rates'
-    #  # end
-  end
+  autoload :PAML,           'bio/appl/paml/common'
+  ## below are described in bio/appl/paml/common.rb
+  # module PAML
+  #   autoload :Codeml,         'bio/appl/paml/codeml'
+  #   autoload :Baseml,         'bio/appl/paml/baseml'
+  #   autoload :Yn00,           'bio/appl/paml/yn00'
+  # end
 
   ### Utilities
 

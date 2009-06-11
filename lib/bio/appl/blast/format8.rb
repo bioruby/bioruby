@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2002, 2003, 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format8.rb,v 1.8 2007/12/14 16:15:20 k Exp $
+# $Id:$
 #
 # == Note
 #
@@ -27,7 +27,7 @@ module Bio
         hit_num = 1
         hsp_num = 1
         hit = ''
-        data.each do |line|
+        data.each_line do |line|
           ary = line.chomp.split("\t")
           query_id, target_id, hsp = tab_parse_hsp(ary)
           if query_prev != query_id or target_prev != target_id

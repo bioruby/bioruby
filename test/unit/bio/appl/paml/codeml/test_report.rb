@@ -12,6 +12,7 @@ $:.unshift(libpath) unless $:.include?(libpath)
 require 'test/unit'
 require 'bio/appl/paml/codeml/report'
 
+module Bio; module TestPAMLCodeml
 class TestCodemlReport < Test::Unit::TestCase
 
   bioruby_root  = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 6)).cleanpath.to_s
@@ -40,3 +41,5 @@ class TestCodemlReport < Test::Unit::TestCase
   end
 
 end
+
+end; end #module TestPAMLCodeml; module Bio

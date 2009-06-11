@@ -1,11 +1,19 @@
-Copyright (C) 2001-2007 Toshiaki Katayama <k@bioruby.org>
-              2008      Jan Aerts <jandot@bioruby.org>
+--
+= README.rdoc - README for BioRuby
+Copyright:: Copyright (C) 2001-2007 Toshiaki Katayama <k@bioruby.org>,
+            Copyright (C) 2008      Jan Aerts <jandot@bioruby.org>
+License::   The Ruby License
+* The above statement is limited to this file. See below about BioRuby's
+  copyright and license.
+++
 
 = BioRuby
 
+Copyright (C) 2001-2009 Toshiaki Katayama <k@bioruby.org>
+
 BioRuby is an open source Ruby library for developing bioinformatics
 software.  Object oriented scripting language Ruby has many features
-suitable for bioinfomatics research, for example, clear syntax to
+suitable for bioinformatics research, for example, clear syntax to
 express complex objects, regular expressions for text handling as
 powerful as Perl's, a wide variety of libraries including web service
 etc.  As the syntax of the Ruby language is simple and very clean, we
@@ -17,47 +25,83 @@ files, internet web servers and local relational databases.  These
 database entries can be parsed to extract information you need.
 Biological sequences can be treated with the fulfilling methods of the
 Ruby's String class and with regular expressions.  Daily tools like
-Blast, Fasta, Hmmer and many other softwares for the biological
+Blast, Fasta, Hmmer and many other software packages for biological
 analysis can be executed within the BioRuby script, and the results
 can be fully parsed to extract the portion you need.  BioRuby supports
 major biological database formats and provides many ways for accessing
 them through flatfile indexing, SQL, web services etc.  Various web
-services including KEGG API can be easily utilized by the BioRuby.
+services including KEGG API can be easily utilized by BioRuby.
 
 
 == FOR MORE INFORMATION
 
-BioRuby's official website is at ((<URL:http://bioruby.org/>)).
-You will find links to the related resouces including downloads,
-mailing lists, Wiki documentations etc. in the top page.
+=== Documents in this distribution
 
-  * ((<URL:http://bioruby.org/>))
+==== General information
+
+README.rdoc:: This file. General information and installation procedure.
+KNOWN_ISSUES.rdoc:: Known issues and bugs in BioRuby.
+doc/Changes-1.3.rdoc:: News and incompatible changes from 1.2.1 to 1.3.0.
+doc/Changes-0.7.rd:: News and incompatible changes from 0.6.4 to 1.2.1.
+
+==== Tutorials and other useful information
+
+doc/Tutorial.rd:: BioRuby Tutorial.
+doc/Tutorial.rd.html:: HTML version of Tutorial.rd.
+doc/KEGG_API.rd:: Documents about KEGG API, including usage of Bio::KEGG::API.
+
+==== BioRuby development
+
+ChangeLog:: History of changes.
+README_DEV.rdoc:: Describes ways to contribute to the BioRuby project, including coding styles and documentation guidelines.
+
+==== Documents written in Japanese
+
+doc/Tutorial.rd.ja:: BioRuby Tutorial written in Japanese.
+doc/Tutorial.rd.ja.html:: HTML version of Tutorial.rd.ja.
+doc/KEGG_API.rd.ja:: Japanese translation of KEGG_API.rd.
+
+
+=== WWW
+
+BioRuby's official website is at http://bioruby.org/.
+You will find links to related resources including downloads,
+mailing lists, Wiki documentation etc. in the top page.
+
+* http://bioruby.org/
 
 
 == WHERE TO OBTAIN
 
---- WWW
+=== WWW
 
 The stable release is freely available from the BioRuby website.
 
-  * ((<URL:http://bioruby.org/archive/>))
+* http://bioruby.org/archive/
 
---- git
+=== RubyGems
+
+RubyGems[URL:http://rubyforge.org/projects/rubygems/] version of
+the BioRuby package is also available for easy installation.
+
+* http://rubyforge.org/projects/bioruby/
+
+=== git
 
 If you need the latest development version, this is provided at
 
-  * ((<URL:http://github.com/bioruby/bioruby>))
+* http://github.com/bioruby/bioruby
 
 and can be obtained by the following procedure:
 
   % git clone git://github.com/bioruby/bioruby.git
 
---- CVS
+==== CVS
 
 CVS is now deprecated as source control has moved to github. Please use git 
 instead of CVS. For historical purposes: the anonymous CVS was provided at 
 
-  * ((<URL:http://cvs.bioruby.org/>))
+* http://cvs.bioruby.org/
 
 and could be obtained by the following procedure.
 
@@ -65,37 +109,41 @@ and could be obtained by the following procedure.
   CVS password: cvs (login with a password 'cvs' for the first time)
   % cvs -d :pserver:cvs@code.open-bio.org:/home/repository/bioruby co bioruby
 
---- RubyGems
-
-((<RubyGems|URL:http://rubyforge.org/projects/rubygems/>)) version of
-the BioRuby package is also available for easy installation.
-
-  * ((<URL:http://rubyforge.org/projects/bioruby/>))
-
 
 == REQUIREMENTS
 
-* Ruby 1.8.2 or later -- ((<URL:http://www.ruby-lang.org/>))
-  (Ruby 1.8.4 or later is recommended)
+* Ruby 1.8.2 or later -- http://www.ruby-lang.org/
+  * Ruby 1.8.5 or later is recommended.
+  * Not yet fully ready with Ruby 1.9, although many components can now work
+    in Ruby 1.9.1.
 
 == OPTIONAL REQUIREMENTS
 
 Some optional libraries can be utilized to extend BioRuby's functionality.
 If your needs meets the following conditions, install them from the "Ruby
-Application Archive" at ((<URL:http://raa.ruby-lang.org/>)).
+Application Archive" at http://raa.ruby-lang.org/, RubyForge at
+http://rubyforge.org/, or the following web sites.
 
 For faster parsing of the BLAST XML output format:
 
-  * [RAA:xmlparser]
+* {RAA:xmlparser}[http://raa.ruby-lang.org/project/xmlparser/]
 
 Creating faster flatfile index using Berkley DB:
 
-  * [RAA:bdb]
+* {RAA:bdb}[http://raa.ruby-lang.org/project/bdb/]
 
 Accessing BioSQL database created by other Open Bio* libraries:
 
-  * [RAA:ruby-dbi] and at least one driver from [RAA:mysql-ruby],
-    [RAA:postgres], [RAA:oracle]
+* {RubyForge:ActiveRecord}[http://rubyforge.org/projects/activerecord/]
+  and at least one driver (or adapter) from
+  {RubyForge:MySQL/Ruby}[http://rubyforge.org/projects/mysql-ruby/],
+  {RubyForge:postgres-pr}[http://rubyforge.org/projects/postgres-pr], or
+  {RubyForge:ActiveRecord Oracle enhanced adapter}[http://rubyforge.org/projects/oracle-enhanced/].
+* For BioRuby 1.2.1 or older version,
+  {RubyForge:Ruby/DBI}[http://rubyforge.org/projects/ruby-dbi] and
+  at least one driver from MySQL/Ruby, postgres-pr, or
+  {RubyForge:ruby-oci8}[http://ruby-oci8.rubyforge.org/]
+  (note that ruby-oci8 can only work with ruby-dbi 0.2.2).
 
 
 == INSTALL
@@ -133,7 +181,7 @@ and run
 
 for more details.
 
---- RubyGems
+=== RubyGems
 
 If you are using RubyGems, just type
 
@@ -143,7 +191,7 @@ If you are using RubyGems, just type
 == SETUP
 
 If you want to use the OBDA (Open Bio Database Access) to obtain database
-entries, copy a sample configtation file in the BioRuby distribution
+entries, copy a sample configuration file in the BioRuby distribution
 
   bioruby-x.x.x/etc/bioinformatics/seqdatabase.ini
 
@@ -155,8 +203,8 @@ or
 
   ~/.bioinformatics/seqdatabase.ini	(personal configuration)
 
-and chage the contens according to your preference.  For more
-informations on the OBDA, see ((<URL:http://obda.open-bio.org/>)).
+and change the contents according to your preference.  For more
+information on the OBDA, see http://obda.open-bio.org/ .
 
 
 == USAGE
@@ -168,13 +216,20 @@ separate the name space.
   #!/usr/bin/env ruby
   require 'bio'
 
-Also read other documentations in the 'doc' directory.
+You can also read other documentation in the 'doc' directory.
 
   bioruby-x.x.x/doc/
 
---- RubyGems
+=== RubyGems
 
-In RubyGems, you need to load 'rubygems' library before using 'bio'.
+With RubyGems, you need to load 'rubygems' library before using 'bio'.
+
+  #!/usr/bin/env ruby
+  require 'rubygems'
+  require 'bio'
+
+With old version of RubyGems, use 'require_gem' which was deprecated in
+RubyGems 0.9.0 and removed in RubyGems 1.0.1.
 
   #!/usr/bin/env ruby
   require 'rubygems'
@@ -185,12 +240,13 @@ In RubyGems, you need to load 'rubygems' library before using 'bio'.
 
 BioRuby can be freely distributed under the same terms as Ruby.
 
-Note that, install.rb included in the BioRuby package comes from
-[RAA:setup] developed by Minero Aoki, and modified by Moses Hohman.
+Note that setup.rb included in the BioRuby package comes from
+{RAA:setup}[http://raa.ruby-lang.org/project/setup/] developed by Minero Aoki
+(http://i.loveruby.net/en/projects/setup/).
 
 
 == CONTACT
 
-Current staffs of the BioRuby project can be reached by sending e-mail
+Current staff of the BioRuby project can be reached by sending e-mail
 to <staff@bioruby.org>.
 

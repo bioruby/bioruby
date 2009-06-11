@@ -4,6 +4,7 @@
 # Copyright::  Copyright (C) 2001,2008  Mitsuteru C. Nakao <n@bioruby.org>
 # Copyright::  Copyright (C) 2002,2003  Toshiaki Katayama <k@bioruby.org>
 # Copyright::  Copyright (C) 2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
+# Copyright::  Copyright (C) 2008       Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
 # $Id:$
@@ -11,6 +12,8 @@
 
 require 'bio/command'
 require 'shellwords'
+require 'stringio'
+require 'bio/io/flatfile'
 
 module Bio
 
@@ -53,6 +56,7 @@ module Bio
 
     autoload :Fastacmd,     'bio/io/fastacmd'
     autoload :Report,       'bio/appl/blast/report'
+    autoload :Report_tab,   'bio/appl/blast/report'
     autoload :Default,      'bio/appl/blast/format0'
     autoload :WU,           'bio/appl/blast/wublast'
     autoload :Bl2seq,       'bio/appl/bl2seq/report'
@@ -94,25 +98,128 @@ module Bio
       self.new(program, db, option, server)
     end
 
+ 
+    # Bio::Blast.report parses given data, 
+    # and returns an array of report 
+    # (Bio::Blast::Report or Bio::Blast::Default::Report) objects,
+    # or yields each report object when a block is given.
+    #
+    # Supported formats: NCBI default (-m 0), XML (-m 7), tabular (-m 8).
+    #
+    # ---
+    # *Arguments*:
+    # * _input_ (required): input data
+    # * _parser_: type of parser. see Bio::Blast::Report.new
+    # *Returns*:: Undefiend when a block is given. Otherwise, an Array containing report (Bio::Blast::Report or Bio::Blast::Default::Report) objects.
+    def self.reports(input, parser = nil)
+      begin
+        istr = input.to_str
+      rescue NoMethodError
+        istr = nil
+      end
+      if istr then
+        input = StringIO.new(istr)
+      end
+      raise 'unsupported input data type' unless input.respond_to?(:gets)
+
+      # if proper parser is given, emulates old behavior.
+      case parser
+      when :xmlparser, :rexml
+        ff = Bio::FlatFile.new(Bio::Blast::Report, input)
+        if block_given? then
+          ff.each do |e|
+            yield e
+          end
+          return []
+        else
+          return ff.to_a
+        end
+      when :tab
+        istr = input.read unless istr
+        rep = Report.new(istr, parser)
+        if block_given? then
+          yield rep
+          return []
+        else
+          return [ rep ]
+        end
+      end
+
+      # preparation of the new format autodetection rule if needed
+      if !defined?(@@reports_format_autodetection_rule) or
+          !@@reports_format_autodetection_rule then
+        regrule = Bio::FlatFile::AutoDetect::RuleRegexp
+        blastxml = regrule[ 'Bio::Blast::Report',
+                            /\<\!DOCTYPE BlastOutput PUBLIC / ]
+        blast    = regrule[ 'Bio::Blast::Default::Report',
+                            /^BLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/ ]
+        tblast   = regrule[ 'Bio::Blast::Default::Report_TBlast',
+                            /^TBLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/ ]
+        tab      = regrule[ 'Bio::Blast::Report_tab',
+                            /^([^\t]*\t){11}[^\t]*$/ ]
+        auto = Bio::FlatFile::AutoDetect[ blastxml,
+                                          blast,
+                                          tblast,
+                                          tab
+                                        ]
+        # sets priorities
+        blastxml.is_prior_to blast
+        blast.is_prior_to tblast
+        tblast.is_prior_to tab
+        # rehash
+        auto.rehash
+        @@report_format_autodetection_rule = auto
+      end
+
+      # Creates a FlatFile object with dummy class
+      ff = Bio::FlatFile.new(Object, input)
+      ff.dbclass = nil
+
+      # file format autodetection
+      3.times do
+        break if ff.eof? or
+          ff.autodetect(31, @@report_format_autodetection_rule)
+      end
+      # If format detection failed, assumed to be tabular (-m 8)
+      ff.dbclass = Bio::Blast::Report_tab unless ff.dbclass
+
+      if block_given? then
+        ff.each do |entry|
+          yield entry
+        end
+        ret = []
+      else
+        ret = ff.to_a
+      end
+      ret
+    end
+
     #--
-    # the method Bio::Blast.report is moved from bio/appl/blast/report.rb.
+    # the method Bio::Blast.reports is moved from bio/appl/blast/report.rb.
     #++
      
-    # Bio::Blast.report parses given data, 
+    # Note that this is the old implementation of Bio::Blast.reports.
+    # The aim of this method is keeping compatibility for older BLAST
+    # XML documents which might not be parsed by the new
+    # Bio::Blast.reports nor Bio::FlatFile.
+    # (Though we are not sure whether such documents exist or not.)
+    #
+    # Bio::Blast.reports_xml parses given data, 
     # and returns an array of Bio::Blast::Report objects, or
     # yields each Bio::Blast::Report object when a block is given.
     #
-    # Note that it can be used only for xml format.
-    # For default (-m 0) format, consider using Bio::FlatFile.
+    # It can be used only for XML format.
+    # For default (-m 0) format, consider using Bio::FlatFile, or
+    # Bio::Blast.reports.
     #
     # ---
     # *Arguments*:
     # * _input_ (required): input data
     # * _parser_: type of parser. see Bio::Blast::Report.new
     # *Returns*:: Undefiend when a block is given. Otherwise, an Array containing Bio::Blast::Report objects.
-    def self.reports(input, parser = nil)
+    def self.reports_xml(input, parser = nil)
       ary = []
-      input.each("</BlastOutput>\n") do |xml|
+      input.each_line("</BlastOutput>\n") do |xml|
         xml.sub!(/[^<]*(<?)/, '\1') # skip before <?xml> tag
         next if xml.empty?          # skip trailing no hits
         rep = Report.new(xml, parser)
@@ -150,7 +257,7 @@ module Bio
     end
 
     # Server to submit the BLASTs to
-    attr_accessor :server
+    attr_reader :server
 
     # Sets server to submit the BLASTs to.
     # The exec_xxxx method should be defined in Bio::Blast or
@@ -292,7 +399,7 @@ module Bio
       if fmt = ncbiopt.get('-m') then
         @format = fmt.to_i
       else
-        Bio::Blast::Report #dummy to load XMLParser or REXML
+        dummy = Bio::Blast::Report #dummy to load XMLParser or REXML
         if defined?(XMLParser) or defined?(REXML)
           @format ||= 7
         else

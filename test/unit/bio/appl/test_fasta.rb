@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-#  $Id: test_fasta.rb,v 1.3 2007/04/05 23:35:43 trevor Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -94,7 +94,7 @@ module Bio
     end
     
     def test_option
-      option = ['-M'].to_s
+      option = ['-M'].join(' ')
       assert(@obj.option = option)
       assert_equal(option, @obj.option)
     end

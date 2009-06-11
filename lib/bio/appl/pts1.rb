@@ -8,7 +8,7 @@ module Bio
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: pts1.rb,v 1.5 2007/04/05 23:35:39 trevor Exp $
+# $Id:$
 #
 
 require 'uri'
@@ -65,10 +65,6 @@ class PTS1
   # Output report.
   attr_reader :output
 
-  # Used function name (Integer). 
-  # function_name = Bio::PTS1::FUNCTION.find_all {|k,v| v == pts1.function }[0][0]
-  attr_reader :function
-
   # Short-cut for Bio::PTS1.new(Bio::PTS1::FUNCTION['METAZOA-specific'])
   def self.new_with_metazoa_function
     self.new('METAZOA-specific')
@@ -116,7 +112,7 @@ class PTS1
   #  serv.function #=> "METAZOA-specific"
   # 
   def function(func = nil)
-    return @function.keys.to_s if func == nil
+    return @function.keys.join('') if func == nil
 
     if FUNCTION.values.include?(func)
       @function = Hash[*FUNCTION.find {|x| x[1] == func}]
@@ -146,12 +142,12 @@ class PTS1
   def exec(query)
     seq = set_sequence_in_fastaformat(query)
     
-    @form_data = {'function' => @function.values.to_s,
+    @form_data = {'function' => @function.values.join(''),
                   'sequence' => seq.seq,
                   'name'     => seq.definition }
     @uri = URI.parse(["http:/", @host, @cgi_path].join('/'))
 
-    result, = Bio::Command.post_form(@uri, @form_data)
+    result = Bio::Command.post_form(@uri, @form_data)
     @output = Report.new(result.body)
     
     return @output
@@ -229,7 +225,7 @@ class PTS1
     private
 
     def parse
-      @output.each do |line|
+      @output.each_line do |line|
         case line
         when /Name<\/td><td>(\S.+)<\/td><\/tr>/
           @entry_id = $1

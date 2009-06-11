@@ -5,7 +5,7 @@
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: report.rb,v 1.8 2007/04/05 23:35:40 trevor Exp $
+#  $Id:$
 #
 # == Description
 #
@@ -13,6 +13,8 @@
 # == Example
 # == References
 #
+
+require 'enumerator'
 
 module Bio
 
@@ -81,6 +83,13 @@ module Bio
 
       #
       def initialize(entry = nil)
+        begin
+          str = entry.to_str
+        rescue NoMethodError
+        end
+        if str then
+          entry = str.enum_for(:each_line)
+        end
         parse_header(entry)
         @tmhs = parse_tmhs(entry)
       end

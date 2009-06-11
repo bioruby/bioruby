@@ -5,10 +5,10 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: contingency_table.rb,v 1.7 2007/04/05 23:35:41 trevor Exp $
+#  $Id:$
 #
 
-module Bio #:nodoc:
+module Bio
 
 #
 # bio/util/contingency_table.rb - Statistical contingency table analysis for aligned sequences

@@ -84,6 +84,30 @@ module Bio
           end
         end
 
+        # (WU-BLAST) Returns the message bundled with the exit code output.
+        # The message will be shown when WU-BLAST ignores a fatal error
+        # due to the command line option "-nonnegok", "-novalidctxok",
+        # or "-shortqueryok".
+        # 
+        # Returns a String or nil.
+        def exit_code_message
+          if defined? @exit_code_message then
+            @exit_code_message
+          else
+            nil
+          end
+        end
+
+        # (WU-BLAST) Returns "NOTE:" information.
+        # Returns nil or an array containing String.
+        def notes
+          if defined? @notes then
+            @notes
+          else
+            nil
+          end
+        end
+
         # (WU-BLAST) Returns fatal error information.
         # Returns nil or an array containing String.
         def fatal_errors
@@ -150,10 +174,18 @@ module Bio
           end
           @f0query = data.shift
           @f0warnings ||= []
-          while r = data.first and r =~ /^WARNING\: /
-            @f0warnings << data.shift
+          while r = data.first
+            case r
+            when /^WARNING\: /
+              @f0warnings << data.shift
+            when /^NOTE\: /
+              @notes ||= []
+              @notes << data.shift
+            else
+              break #from the above "while"
+            end
           end
-          return if r = data.first and /\AParameters\:/ =~ r
+          return if r = data.first and /\A(Parameters\:|EXIT CODE *\d+)/ =~ r
           if r = data.first and !(/^Database\: / =~ r)
             @f0translate_info = data.shift
           end
@@ -182,8 +214,11 @@ module Bio
             case r
             when /\AStatistics\:/
               ary = @f0wu_stats
-            when /\AEXIT CODE *(\d+)\s*$/
+            when /\AEXIT CODE *(\d+)\s*(.*)$/
               @exit_code = $1.to_i
+              if $2 and !$2.empty? then
+                @exit_code_message = r.sub(/\AEXIT CODE *(\d+)\s*/, '')
+              end
               r = nil
             when /\AFATAL\: /
               @fatal_errors ||= []
@@ -291,6 +326,7 @@ module Bio
             @f0warnings = []
             return unless r = data.first
             return if /\AParameters\:$/ =~ r
+            return if /\AEXIT CODE *\d+/ =~ r
             @f0hitlist << data.shift
             return unless r = data.shift
             unless /\*{3} +NONE +\*{3}/ =~ r then

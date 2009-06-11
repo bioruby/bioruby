@@ -5,7 +5,7 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: tree.rb,v 1.8 2007/04/05 23:35:39 trevor Exp $
+# $Id:$
 #
 
 require 'matrix'
@@ -176,7 +176,9 @@ module Bio
         else
           str = sprintf('(Node:%x', (self.__id__ << 1) & 0xffffffff)
         end
-        str += " bootstrap=#{@bootstrap.inspect}" if @bootstrap
+        if defined?(@bootstrap) and @bootstrap then
+          str += " bootstrap=#{@bootstrap.inspect}"
+        end
         str += ")"
         str
       end

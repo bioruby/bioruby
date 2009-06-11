@@ -5,10 +5,10 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: color_scheme.rb,v 1.4 2007/04/05 23:35:41 trevor Exp $
+#  $Id:$
 #
 
-module Bio #:nodoc:
+module Bio
 
 #
 # bio/util/color_scheme.rb - Popular color codings for nucleic and amino acids

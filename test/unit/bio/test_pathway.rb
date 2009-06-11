@@ -5,68 +5,17 @@
 #              Moses Hohman <mmhohman@northwestern.edu>
 # License::    The Ruby License
 #
-#  $Id: test_pathway.rb,v 1.5 2007/04/05 23:35:42 trevor Exp $
+#  $Id:$
 #
 
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), [".."]*2, "lib")).cleanpath.to_s
+libpath = Pathname.new(File.join(File.dirname(__FILE__), [".."]*3, "lib")).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
 
 require 'test/unit'
 require 'bio/pathway'
 
-class Float
-    NaN = 0/0.0
-    Infinity = 1/0.0
-end
-
-class Array
-    def sum
-	inject { | sum, val | sum += val }
-    end
-end
-
 module Bio
-    class Pathway
-	# bug in subgraph: does not include nodes w/o edges
-	def subgraph(list = nil)
-	    if list
-		@label.clear
-		list.each { |node| @label[node] = true }
-	    end
-	    sub_graph = Pathway.new([], @undirected)
-	    @graph.each do |from, hash|
-		next unless @label[from]
-		sub_graph.graph[from] = {}
-		hash.each do |to, relation|
-		  next unless @label[to]
-		  sub_graph.graph[from][to] = relation
-		end
-	    end
-	    sub_graph
-	end
-
-	# bug in cliquishness: subgraph of neighbors does not include nodes w/o edges
-	def subgraph_adjacency_matrix(nodes)
-	    adjacency_matrix = to_matrix(0).to_a
-	    node_indices = nodes.collect { |x| @index[x] }
-	    subgraph = adjacency_matrix.values_at(*(node_indices))
-	    subgraph.collect! { |row| row.values_at(*(node_indices)) }
-	end
-
-	# bug in cliquishness: subgraph of neighbors does not include nodes w/o edges
-	# Throws exception if graph is directed
-	def cliquishness(node)
-	    raise "Cannot calculate cliquishness in directed graph" if not undirected?
-	    neighbors = @graph[node].keys
-	    return Float::NaN if neighbors.size==0
-	    return 1 if neighbors.size==1
-	    # divide by two to avoid double-counting
-	    num_neighbor_edges = subgraph_adjacency_matrix(neighbors).flatten.sum/2
-	    num_complete_edges = neighbors.size*(neighbors.size-1)/2
-	    num_neighbor_edges.to_f / num_complete_edges.to_f
-	end
-    end
 
     class TestMyGraph < Test::Unit::TestCase
 	def test_cliquishness
@@ -82,7 +31,10 @@ module Bio
 	    assert_equal(0, graph.cliquishness(1), "1's cliquishness wrong")
 	    assert_equal(1, graph.cliquishness(2), "2's cliquishness wrong")
 	    assert_in_delta(0.33, graph.cliquishness(3), 0.01, "3's cliquishness wrong")
-	    assert_equal(1, graph.cliquishness(4), "4's cliquishness wrong")
+	    # Because cliquishness (clustering coefficient) for a node
+	    # that has only one neighbor node is undefined, test for
+	    # node 4 is commented out.
+	    #assert_equal(1, graph.cliquishness(4), "4's cliquishness wrong")
 	    assert_equal(0, graph.cliquishness(5), "5's cliquishness wrong")
 	    assert_in_delta(0.16, graph.cliquishness(6), 0.01, "6's cliquishness wrong")
 	end
@@ -104,6 +56,8 @@ module Bio
     end
 
     class TestSampleGraph < Test::Unit::TestCase
+
+      TheInfinity = 1/0.0
 	    
 	# Sample Graph :
 	#                  +----------------+
@@ -139,6 +93,54 @@ module Bio
 	end
 
 	def test_to_matrix
+          matrix = @graph.to_matrix(0)
+          index = @graph.index
+          # expected values
+          source_matrix =
+            [
+             #v  w  x  y  z  q  r  s  t  u 
+             [0, 1, 0, 0, 0, 0, 0, 0, 0, 0], #v
+             [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], #w
+             [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], #x
+             [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], #y
+             [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], #z
+             [0, 1, 0, 0, 0, 0, 0, 1, 1, 0], #q
+             [0, 0, 0, 1, 0, 0, 0, 0, 0, 1], #r
+             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0], #s
+             [0, 0, 1, 1, 0, 0, 0, 0, 0, 0], #t
+             [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]  #u
+            ]
+          source_index = {
+            "v"=>0, "w"=>1, "x"=>2, "y"=>3, "z"=>4,
+            "q"=>5, "r"=>6, "s"=>7, "t"=>8, "u"=>9
+          }
+          # test index size
+          assert_equal(10, source_index.size)
+          # test index keys
+          assert_equal(source_index.keys.sort, index.keys.sort)
+          # test index values
+          assert_equal(source_index.values.sort, index.values.sort)
+          # prepare expected matrix
+          ary = Array.new(index.size)
+          ary.collect! { |a| Array.new(index.size) }
+          index.each do |row_k, row_v|
+            src_row = source_index[row_k]
+            index.each do |col_k, col_v|
+              src_col = source_index[col_k]
+              ary[row_v][col_v] = source_matrix[src_row][src_col]
+            end
+          end
+          expected_matrix = Matrix.rows(ary)
+          # test the matrix
+          assert_equal(expected_matrix, matrix, "matrix wrong")
+	end
+
+	def test_to_matrix_fixed_index
+	    # begin workaround removing depencency to order of Hash#each
+	    %w( v w x y z q r s t u ).each_with_index do |x, i|
+		@graph.index[x] = i
+	    end
+	    # end workaround removing depencency to order of Hash#each
 	    assert_equal(Matrix[
 		    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
 		    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
@@ -155,6 +157,11 @@ module Bio
 	end
 
 	def test_dump_matrix
+	    # begin workaround removing depencency to order of Hash#each
+	    %w( v w x y z q r s t u ).each_with_index do |x, i|
+		@graph.index[x] = i
+	    end
+	    # end workaround removing depencency to order of Hash#each
 	    dumped = "[" +
 		"# v, w, x, y, z, q, r, s, t, u\n" +
 		" [0, 1, 0, 0, 0, 0, 0, 0, 0, 0],\n" + # v
@@ -171,6 +178,11 @@ module Bio
 	end
 
 	def test_dump_list
+	    # begin workaround removing depencency to order of Hash#each
+	    %w( v w x y z q r s t u ).each_with_index do |x, i|
+		@graph.index[x] = i
+	    end
+	    # end workaround removing depencency to order of Hash#each
 	    dumped = "v => w (1)\n" +
 		"w => s (1)\n" +
 		"x => z (1)\n" +
@@ -187,22 +199,34 @@ module Bio
 	def test_extract_subgraph_by_label
 	    hash = { 'q' => "L1", 's' => "L2", 'v' => "L3", 'w' => "L4" }
 	    @graph.label = hash
+	    subgraph = @graph.subgraph
+	    # begin workaround removing depencency to order of Hash#each
+	    %w( v w q s ).each_with_index do |x, i|
+		subgraph.index[x] = i
+	    end
+	    # end workaround removing depencency to order of Hash#each
 	    dumped = 
 		"v => w (1)\n" +
 		"w => s (1)\n" +
 		"q => w (1), s (1)\n" +
 		"s => v (1)\n"
-	    assert_equal(dumped, @graph.subgraph.dump_list)
+	    assert_equal(dumped, subgraph.dump_list)
 	end
 
 	def test_extract_subgraph_by_list
+	    subgraph = @graph.subgraph(['q', 't', 'x', 'y', 'z'])
+	    # begin workaround removing depencency to order of Hash#each
+	    %w( x y z q t ).each_with_index do |x, i|
+		subgraph.index[x] = i
+	    end
+	    # end workaround removing depencency to order of Hash#each
 	    dumped =  
 		"x => z (1)\n" +
 		"y => q (1)\n" +
 		"z => x (1)\n" +
 		"q => t (1)\n" +
 		"t => x (1), y (1)\n"
-	    assert_equal(dumped, @graph.subgraph(['q', 't', 'x', 'y', 'z']).dump_list)
+	    assert_equal(dumped, subgraph.dump_list)
 	end
 
 	def test_extract_subgraph_retains_disconnected_nodes
@@ -220,10 +244,6 @@ module Bio
 	#   |        |     |     |     |
 	#   v        |     |     v     |
 	#  (v)----->(w)<---+    (z)----+
-
-	def test_cliquishness_raises_exception_for_directed_graph
-	    assert_raises (RuntimeError) { @graph.cliquishness('q') }
-	end
 
 	def test_undirected_cliquishness
 	    @graph.undirected
@@ -277,7 +297,13 @@ module Bio
 	end
 
 	def test_depth_first_search
-	    timestamp, tree, back, cross, forward = @graph.depth_first_search
+	    # fixing node order to aviod dependency of Hash#each_key
+	    %w( v w x y z q r s t u ).each_with_index do |x, i|
+		@graph.index[x] = i
+	    end
+	    # exec dfs
+	    timestamp, tree, back, cross, forward =
+            @graph.depth_first_search
 	    assert_equal({
 		"v"=>[1, 6],
 		"w"=>[2, 5],
@@ -329,10 +355,10 @@ module Bio
 		"y"=>2,
 		"z"=>3,
 		"q"=>0,
-		"r"=>Float::Infinity,
+		"r"=>TheInfinity,
 		"s"=>1,
 		"t"=>1,
-		"u"=>Float::Infinity}, distances, "distances wrong")
+		"u"=>TheInfinity}, distances, "distances wrong")
 	    assert_equal({
 		"v"=>"s",
 		"w"=>"q",
@@ -355,10 +381,10 @@ module Bio
 		"y"=>2,
 		"z"=>3,
 		"q"=>0,
-		"r"=>Float::Infinity,
+		"r"=>TheInfinity,
 		"s"=>1,
 		"t"=>1,
-		"u"=>Float::Infinity}, distances, "distances wrong")
+		"u"=>TheInfinity}, distances, "distances wrong")
 	    assert_equal({
 		"v"=>"s",
 		"w"=>"q",

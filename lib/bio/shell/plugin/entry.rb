@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: entry.rb,v 1.10 2007/04/05 23:35:41 trevor Exp $
+# $Id:$
 #
 
 module Bio::Shell
@@ -86,10 +86,39 @@ module Bio::Shell
         puts "Retrieving entry from EMBOSS (#{arg})"
         entry = str
 
-      # KEGG API at http://www.genome.jp/kegg/soap/
+      # via Internet
       else
-        puts "Retrieving entry from KEGG API (#{arg})"
-        entry = bget(arg)
+        case db.to_s.downcase
+        when 'genbank', 'gb', 'nuccore', 'indsc'
+          # NCBI
+          puts "Retrieving entry from NCBI eUtils"
+          entry = efetch(entry_id)
+
+        when 'embl', 'emb', /\Aembl/, /\Auni/, 'sp', /\Aensembl/
+          # EBI
+          puts "Retrieving entry from EBI Dbfetch"
+          db = 'embl' if db == 'emb'
+          db = 'uniprotkb' if db == 'uniprot' or db == 'sp'
+          entry = biofetch(db, entry_id)
+
+        when 'ddbj', 'dbj', 'dad'
+          # TogoWS REST
+          puts "Retrieving entry from TogoWS"
+          db = 'ddbj' if db == 'dbj'
+          entry = togowsentry(db, entry_id)
+
+        else
+          togodblist = Bio::TogoWS::REST.entry_database_list rescue []
+          if togodblist.include?(db) then
+            # TogoWS REST
+            puts "Retrieving entry from TogoWS"
+            entry = togowsentry(db, entry_id)
+          else
+            # KEGG API at http://www.genome.jp/kegg/soap/
+            puts "Retrieving entry from KEGG API (#{arg})"
+            entry = bget(arg)
+          end
+        end
       end
     end
 

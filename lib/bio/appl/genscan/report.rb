@@ -5,7 +5,7 @@
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: report.rb,v 1.10 2007/04/05 23:35:39 trevor Exp $
+#  $Id:$
 #
 # == Description
 #
@@ -75,7 +75,7 @@ class Genscan
       @isochore   = nil
       @matrix     = nil
 
-      report.each("\n") do |line|
+      report.each_line("\n") do |line|
         case line
         when /^GENSCAN/
           parse_headline(line)
@@ -94,7 +94,7 @@ class Genscan
 
       # genes/exons
       genes_region = report[i...j]
-      genes_region.each("\n") do |line|
+      genes_region.each_line("\n") do |line|
         if /Init|Intr|Term|PlyA|Prom|Sngl/ =~ line
           gn, en = line.strip.split(" +")[0].split(/\./).map {|i| i.to_i }
           add_exon(gn, en, line)

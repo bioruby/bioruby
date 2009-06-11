@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2006 Mitsuteru Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_report.rb,v 1.3 2007/04/05 23:35:43 trevor Exp $
+#  $Id:$
 #
 
 require 'pathname'
@@ -41,7 +41,7 @@ module Bio
       assert_equal(Array, ary.class)
     end
 
-    def test_reports_ary
+    def test_reports_ary_contents
       Bio::HMMER.reports(Bio::TestHMMERReportData.output).each do |report|
         assert_equal(Bio::HMMER::Report, report.class)
       end

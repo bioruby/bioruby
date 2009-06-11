@@ -4,10 +4,11 @@
 # Copyright::  Copyright (C) 2002 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format10.rb,v 1.7 2007/04/06 12:04:05 k Exp $
+# $Id:$
 #
 
 require 'bio/appl/fasta'
+require 'bio/io/flatfile/splitter'
 
 module Bio
 class Fasta
@@ -15,14 +16,94 @@ class Fasta
 # Summarized results of the fasta execution results.
 class Report
 
+  # Splitter for Bio::FlatFile
+  class FastaFormat10Splitter < Bio::FlatFile::Splitter::Template
+
+    # creates a new splitter object
+    def initialize(klass, bstream)
+      super(klass, bstream)
+      @delimiter = '>>>'
+      @real_delimiter = /^\s*\d+\>\>\>\z/
+    end
+
+    # do nothing and returns nil
+    def skip_leader
+      nil
+    end
+
+    # gets an entry
+    def get_entry
+      p0 = stream_pos()
+      pieces = []
+      overrun = nil
+      first = true
+      while e = stream.gets(@delimiter)
+        pieces.push e
+        if @real_delimiter =~ e then
+          if first then
+            first = nil
+          else
+            overrun = $&
+            break
+          end
+        end
+      end
+
+      ent = (pieces.empty? ? nil : pieces.join(''))
+      if ent and overrun then
+        ent[-overrun.length, overrun.length] = ''
+        stream.ungets(overrun)
+      end
+
+      p1 = stream_pos()
+      self.entry_start_pos = p0
+      self.entry = ent
+      self.entry_ended_pos = p1
+      return ent
+    end
+  end #FastaFormat10Splitter
+
+  # Splitter for Bio::FlatFile
+  FLATFILE_SPLITTER = FastaFormat10Splitter
+
   def initialize(data)
+    # Split outputs containing multiple query sequences' results
+    chunks = data.split(/^(\s*\d+\>\>\>.*)/, 3)
+    if chunks.size >= 3 then
+      if chunks[0].strip.empty? then
+        qdef_line = chunks[1]
+        data = chunks[1..2].join('')
+        overruns = chunks[3..-1]
+      elsif /^\>\>\>/ =~ chunks[0] then
+        qdef_line = nil
+        data = chunks.shift
+        overruns = chunks
+      else
+        qdef_line = chunks[1]
+        data = chunks[0..2].join('')
+        overruns = chunks[3..-1]
+      end
+      @entry_overrun = overruns.join('')
+      if qdef_line and
+          /^ *\d+\>\>\>([^ ]+) .+ \- +(\d+) +(nt|aa)\s*$/ =~ qdef_line then
+        @query_def = $1
+        @query_len = $2.to_i
+      end
+    end
+
     # header lines - brief list of the hits
-    if data.sub!(/.*\nThe best scores are/m, '')
+    if list_start = data.index("\nThe best scores are") then
+      data = data[(list_start + 1)..-1]
       data.sub!(/(.*)\n\n>>>/m, '')
-      @list = "The best scores are" + $1
+      @list = $1
     else
-      data.sub!(/.*\n!!\s+/m, '')
-      data.sub!(/.*/) { |x| @list = x; '' }
+      if list_start = data.index(/\n!!\s+/) then
+        data = data[list_start..-1]
+        data.sub!(/\n!!\s+/, '')
+        data.sub!(/.*/) { |x| @list = x; '' }
+      else
+        data = data.sub(/.*/) { |x| @list = x; '' }
+      end
     end
 
     # body lines - fasta execution result
@@ -41,7 +122,16 @@ class Report
       @hits.push(Hit.new(x))
     end
   end
-  
+
+  # piece of next entry. Bio::FlatFile uses it.
+  attr_reader :entry_overrun
+
+  # Query definition. For older reports, the value may be nil.
+  attr_reader :query_def
+
+  # Query sequence length. For older reports, the value may be nil.
+  attr_reader :query_len
+
   # Returns the 'The best scores are' lines as a String.
   attr_reader :list
 

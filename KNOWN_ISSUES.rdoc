@@ -1,0 +1,88 @@
+= KNOWN_ISSUES.rdoc - Known issues and bugs in BioRuby
+Copyright:: Copyright (C) 2009 Naohisa Goto <ng@bioruby.org>
+License::   The Ruby License
+
+= Known issues and bugs in BioRuby
+
+Below are known issues and bugs in BioRuby. They will be fixed in the future,
+except items with (WONT_FIX) tags.
+
+== 1. Ruby version specific issues
+
+=== Ruby 1.9.1 or later
+
+Some classes/modules/methods still may not work or may return incorrect
+results in Ruby 1.9.1, especially those not covered by the unit tests.
+
+==== String encodings
+
+Currently, BioRuby do not care string encodings. In some cases,
+Encoding::CompatibilityError may be raised.
+
+=== Ruby 1.9.0
+
+(WONT_FIX) Ruby 1.9.0 is NOT supported because it isn't a stable release.
+Use Ruby 1.9.1 or later.
+
+=== Ruby 1.8.2 or earlier
+
+(WONT_FIX) In some cases, temporary files and directories may not be
+removed because of the lack of FileUtils.remove_entry_secure.
+
+(WONT_FIX) We will soon end support for Ruby 1.8.2. Note that Ruby
+1.8.1 or earlier is no longer supported, as described in README.rdoc.
+
+=== Issues about SOAP/WSDL
+
+SOAP4R (SOAP and WSDL implementation) is no longer bundled with Ruby 1.9.
+In addition, because of the API changes in recent SOAP4R, some
+classes/modules using SOAP4R may not work.
+
+=== Problem with REXML DoS vulnerability patch before 09-Nov-2008
+
+(WONT_FIX) If you have applied a patch taken from
+http://www.ruby-lang.org/en/news/2008/08/23/dos-vulnerability-in-rexml/
+before 09 Nov 2008 12:40 +0900, because of the bug in the patch,
+parsing of Blast XML results with REXML parser may fail. The bug is already
+fixed and new patch is available on the above URL. Note that some Linux
+distributions would have incorporated the patch in their manners, and may
+have the same problem.
+
+== 2. OS and/or architecture-dependent issues
+
+=== Microsoft Windows
+
+==== Text mode issues
+
+Following 4 tests failed on mswin32 (and maybe on mingw32 and bccwin32)
+because of the conversion of line feed codes in the text mode.
+
+* test_ended_pos and test_start_pos in test/unit/bio/io/test_flatfile.rb
+* test_pos in test/unit/bio/io/flatfile/test_buffer.rb
+* test_entry_pos in test/unit/bio/appl/blast/test_rpsblast.rb
+
+This indicates that br_bioflat.rb and Bio::FlatFileIndex may create
+incorrect indexes on mswin32, mingw32, and bccwin32. In addition,
+Bio::FlatFile may return incorrect data.
+
+==== Windows 95/98/98SE/ME
+
+(WONT_FIX) Some methods that call external programs may not work in
+Windows 95/98/98SE/ME because of the limitation of COMMAND.COM.
+
+=== OpenVMS, BeOS, OS/2, djgpp, Windows CE
+
+(WONT_FIX) BioRuby may not work on these platforms.
+
+== 3. Known issues and bugs in BioRuby
+
+=== Bio::Ensembl
+
+Due to the renewal of Ensembl web site, Bio::Ensembl does not work for
+the latest Ensembl. For a workaround, use an archive server. For example,
+"jul2008.archive.ensembl.org" seems to be the last server before the renewal.
+  human = Bio::Ensembl.new("Homo_sapiens", "jul2008.archive.ensembl.org")
+
+Alternatively, consider using Ruby Ensembl API.
+* http://github.com/jandot/ruby-ensembl-api
+

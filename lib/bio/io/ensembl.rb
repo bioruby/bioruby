@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: ensembl.rb,v 1.11 2007/04/05 23:35:41 trevor Exp $
+# $Id:$
 #
 # == Description
 #
@@ -185,7 +185,7 @@ class Ensembl
 
     params = defaults.update(options)
 
-    result, = Bio::Command.post_form("#{@uri}/exportview", params)
+    result = Bio::Command.post_form("#{@uri}/exportview", params)
 
     return result.body
   end

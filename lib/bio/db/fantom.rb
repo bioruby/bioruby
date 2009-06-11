@@ -4,13 +4,11 @@
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ng@bioruby.org> 
 # License::   The Ruby License
 #
-#  $Id: fantom.rb,v 1.14 2007/04/05 23:35:40 trevor Exp $
+#  $Id:$
 #
 
-begin
-  require 'rexml/document'
-  rescue LoadError
-end
+require 'rexml/document'
+require 'cgi'
 require 'uri'
 require 'net/http'
 
@@ -32,17 +30,17 @@ module Bio
     def get_by_id(idstr, http_proxy = nil)
       addr = 'fantom.gsc.riken.go.jp'
       port = 80
-      path = "/db/maxml/maxmlseq.cgi?masterid=#{URI.escape(idstr.to_s)}&style=xml"
+      path = "/db/maxml/maxmlseq.cgi?masterid=#{CGI.escape(idstr.to_s)}&style=xml"
       xml = ''
       if http_proxy then
         proxy = URI.parse(http_proxy.to_s)
         Net::HTTP.start(addr, port, proxy.host, proxy.port) do |http|
-          response, = http.get(path)
+          response = http.get(path)
           xml = response.body
         end
       else
         Bio::Command.start_http(addr, port) do |http|
-          response, = http.get(path)
+          response = http.get(path)
           xml = response.body
         end
       end

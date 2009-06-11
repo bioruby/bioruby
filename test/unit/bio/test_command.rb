@@ -22,9 +22,9 @@ module Bio
   class TestCommand < Test::Unit::TestCase
     
     def test_command_constants
-      Bio::Command::UNSAFE_CHARS_UNIX
-      Bio::Command::QUOTE_CHARS_WINDOWS
-      Bio::Command::UNESCAPABLE_CHARS
+      assert(Bio::Command::UNSAFE_CHARS_UNIX)
+      assert(Bio::Command::QUOTE_CHARS_WINDOWS)
+      assert(Bio::Command::UNESCAPABLE_CHARS)
     end
 
     def test_escape_shell_windows
@@ -131,7 +131,8 @@ module Bio
              "action=export",
              "_format=Text",
              "output=txt",
-             "submit=Continue%20%3E%3E",
+             "submit=Continue+%3E%3E",
+             "ab%3Dcd%26ef%3Dgh%23ij=pq%3D12%26rs%3D34%23tu",
             ]
       hash = {
         :type1 => 'bp',
@@ -144,11 +145,27 @@ module Bio
         :_format => 'Text',
         :output => 'txt',
         :submit => 'Continue >>',
+        :"ab=cd&ef=gh#ij" => 'pq=12&rs=34#tu',
       }
       result = Bio::Command.make_cgi_params(hash)
       ary.each do |str|
-        assert_match(str, result)
+        assert_match(Regexp.new(Regexp.escape(str)), result)
       end
+
+      # round-trip test
+      result_hash = {}
+      CGI.parse(result).each do |k, v|
+        v = case v.size
+            when 0
+              ''
+            when 1
+              v[0]
+            else
+              v
+            end
+        result_hash[k.intern] = v
+      end
+      assert_equal(hash, result_hash)
     end
 
     def test_make_cgi_params_by_hash_in_string
@@ -163,7 +180,8 @@ module Bio
              "action=export",
              "_format=Text",
              "output=txt",
-             "submit=Continue%20%3E%3E",
+             "submit=Continue+%3E%3E",
+             "ab%3Dcd%26ef%3Dgh%23ij=pq%3D12%26rs%3D34%23tu",
             ]
       hash = {
         "type1" => 'bp',
@@ -176,11 +194,27 @@ module Bio
         "_format" => 'Text',
         "output" => 'txt',
         "submit" => 'Continue >>',
+        'ab=cd&ef=gh#ij' => 'pq=12&rs=34#tu',
       }
       result = Bio::Command.make_cgi_params(hash)
       ary.each do |str|
-        assert_match(str, result)
+        assert_match(Regexp.new(Regexp.escape(str)), result)
       end
+
+      # round-trip test
+      result_hash = {}
+      CGI.parse(result).each do |k, v|
+        v = case v.size
+            when 0
+              ''
+            when 1
+              v[0]
+            else
+              v
+            end
+        result_hash[k] = v
+      end
+      assert_equal(hash, result_hash)
     end
 
     def test_make_cgi_params_by_array_of_array
@@ -195,7 +229,8 @@ module Bio
              "action=export",
              "_format=Text",
              "output=txt",
-             "submit=Continue%20%3E%3E",
+             "submit=Continue+%3E%3E",
+             "ab%3Dcd%26ef%3Dgh%23ij=pq%3D12%26rs%3D34%23tu",
             ]
       array_of_array = [
         ["type1", 'bp'],
@@ -208,11 +243,26 @@ module Bio
         ["_format", 'Text'],
         ["output", 'txt'],
         ["submit", 'Continue >>'],
+        [ 'ab=cd&ef=gh#ij', 'pq=12&rs=34#tu' ],
       ]
       result = Bio::Command.make_cgi_params(array_of_array)
-      ary.each do |str|
-        assert_match(str, result)
+      # When array of array, order is guaranteed.
+      assert_equal(ary.join('&'), result)
+
+      # round-trip test
+      result_array = []
+      CGI.parse(result).each do |k, v|
+        v = case v.size
+            when 0
+              ''
+            when 1
+              v[0]
+            else
+              v
+            end
+        result_array.push([ k, v ])
       end
+      assert_equal(array_of_array.sort, result_array.sort)
     end
 
     def test_make_cgi_params_by_array_of_hash
@@ -227,7 +277,8 @@ module Bio
              "action=export",
              "_format=Text",
              "output=txt",
-             "submit=Continue%20%3E%3E",
+             "submit=Continue+%3E%3E",
+             "ab%3Dcd%26ef%3Dgh%23ij=pq%3D12%26rs%3D34%23tu",
             ]
       array_of_hash = [
                        {"type1" => 'bp'},
@@ -240,15 +291,31 @@ module Bio
                        {"_format" => 'Text'},
                        {"output" => 'txt'},
                        {"submit" => 'Continue >>'},
+                       {'ab=cd&ef=gh#ij' => 'pq=12&rs=34#tu'},
                       ]
       result = Bio::Command.make_cgi_params(array_of_hash)
-      ary.each do |str|
-        assert_match(str, result)
+      # When array of hash, order is guaranteed.
+      assert_equal(ary.join('&'), result)
+
+      # round-trip test
+      result_array = []
+      CGI.parse(result).each do |k, v|
+        v = case v.size
+            when 0
+              ''
+            when 1
+              v[0]
+            else
+              v
+            end
+        result_array.push({ k => v })
       end
+      assert_equal(array_of_hash.sort { |x,y| x.keys[0] <=> y.keys[0] },
+                   result_array.sort { |x,y| x.keys[0] <=> y.keys[0] })
     end
 
     def test_make_cgi_params_by_array_of_string
-      str = "type1=bp&type2=bp&downstream=&upstream=&format=fasta&options=similarity&options=gene&action=export&_format=Text&output=txt&submit=Continue%20%3E%3E"
+      str = "type1=bp&type2=bp&downstream=&upstream=&format=fasta&options=similarity&options=gene&action=export&_format=Text&output=txt&submit=Continue+%3E%3E&ab=cd%26ef%3Dgh%23ij%3Dpq%3D12%26rs%3D34%23tu"
       array_of_string = [
                          "type1=bp",
                          "type2=bp",
@@ -261,6 +328,10 @@ module Bio
                          "_format=Text",
                          "output=txt",
                          "submit=Continue >>",
+                         # In the following case, 'ab' is regarded as
+                         # the form key, and rest of the string is
+                         # regarded as the value.
+                         'ab=cd&ef=gh#ij=pq=12&rs=34#tu',
                         ]
       result = Bio::Command.make_cgi_params(array_of_string)
       assert_equal(str, result)
@@ -268,6 +339,7 @@ module Bio
 
     def test_make_cgi_params_by_string
       string = "type1=bp&type2=bp&downstream=&upstream=&format=fasta&options=similarity&options=gene&action=export&_format=Text&output=txt&submit=Continue%20%3E%3E"
+      # In this case, only URI escaping is performed.
       query = " type1=bp&type2=bp&downstream=&upstream=&format=fasta&options=similarity&options=gene&action=export&_format=Text&output=txt&submit=Continue >> "
       result = Bio::Command.make_cgi_params(query)
       assert_equal(string, result)

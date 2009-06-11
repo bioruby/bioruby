@@ -7,8 +7,10 @@
 #               Jan Aerts <jandot@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: reference.rb,v 1.24.2.7 2008/06/17 12:23:49 ngoto Exp $
+# $Id:$
 #
+
+require 'enumerator'
 
 module Bio
 
@@ -290,7 +292,7 @@ module Bio
     def bibitem(item = nil)
       item  = "PMID:#{@pubmed}" unless item
       pages = @pages.sub('-', '--')
-      return <<-"END".collect {|line| line.strip}.join("\n")
+      return <<-"END".enum_for(:each_line).collect {|line| line.strip}.join("\n")
         \\bibitem{#{item}}
         #{@authors.join(', ')}
         #{@title},

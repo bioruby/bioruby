@@ -2,10 +2,11 @@
 # = bio/location.rb - Locations/Location class (GenBank location format)
 #
 # Copyright::	Copyright (C) 2001, 2005 Toshiaki Katayama <k@bioruby.org>
-# Copyright::   Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
+#                             2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
+#                             2008       Naohisa Goto <ng@bioruby.org>
 # License::	The Ruby License
 #
-# $Id: location.rb,v 0.28 2007/04/05 23:35:39 trevor Exp $
+# $Id:$
 #
 
 module Bio
@@ -69,7 +70,8 @@ class Location
     when /^[<>]?(\d+)\^[<>]?(\d+)$/			# (C, I) n^m
       s = $1.to_i
       e = $2.to_i
-      if e - s != 1
+      carat = true
+      if e - s != 1 or e != 1 # assert n^n+1 or n^1
 #       raise "Error: invalid range : #{location}"
         $stderr.puts "[Warning] invalid range : #{location}" if $DEBUG
       end
@@ -90,11 +92,38 @@ class Location
     @lt         = lt            # true if the position contains '<'
     @gt         = gt            # true if the position contains '>'
     @xref_id    = xref_id       # link to the external entry as GenBank ID
+    @carat      = carat         # true if the location indicates the site
+                                # between two adjoining nucleotides
   end
 
-  attr_accessor :from, :to, :strand, :sequence, :lt, :gt, :xref_id
+  # (Integer) start position of the location
+  attr_accessor :from
+  # (Integer) end position of the location
+  attr_accessor :to
 
-  # Complements the sequence (i.e. alternates the strand).
+  # (Integer) strand direction of the location
+  # (forward => 1 or complement => -1)
+  attr_accessor :strand
+
+  # (String) literal sequence of the location
+  attr_accessor :sequence
+
+  # (true, false or nil) true if the position contains '<'
+  attr_accessor :lt
+
+  # (true, false or nil) true if the position contains '>'
+  attr_accessor :gt
+
+  # (String) link to the external entry as GenBank ID
+  attr_accessor :xref_id
+
+  # (true, false or nil) true if the location indicates the site
+  # between two adjoining nucleotides
+  attr_accessor :carat
+
+  # Complements the sequence location (i.e. alternates the strand).
+  # Note that it is destructive method (i.e. modifies itself),
+  # but it does not modify the "sequence" attribute.
   # ---
   # *Returns*:: the Bio::Location object
   def complement
@@ -293,6 +322,7 @@ class Locations
   # * (required) _str_: GenBank style position string
   # *Returns*:: Bio::Locations object
   def initialize(position)
+    @operator = nil
     if position.is_a? Array
       @locations = position
     else
@@ -301,8 +331,12 @@ class Locations
     end
   end
 
-  # An Array of Bio::Location objects
+  # (Array) An Array of Bio::Location objects
   attr_accessor :locations
+
+  # (Symbol or nil) Operator.
+  # nil (means :join), :order, or :group (obsolete).
+  attr_accessor :operator
 
   # Evaluate equality of Bio::Locations object.
   def equals?(other)
@@ -427,13 +461,71 @@ class Locations
   end
 
 
+  # String representation.
+  #
+  # Note: In some cases, it fails to detect whether
+  # "complement(join(...))" or "join(complement(..))", and whether
+  # "complement(order(...))" or "order(complement(..))".
+  # 
+  # ---
+  # *Returns*:: String
+  def to_s
+    return '' if @locations.empty?
+    complement_join = false
+    locs = @locations
+    if locs.size >= 2 and locs.inject(true) do |flag, loc|
+        # check if each location is complement
+        (flag && (loc.strand == -1) && !loc.xref_id)
+      end and locs.inject(locs[0].from) do |pos, loc|
+        if pos then
+          (pos >= loc.from) ? loc.from : false
+        else
+          false
+        end
+      end then
+      locs = locs.reverse
+      complement_join = true
+    end
+    locs = locs.collect do |loc|
+      lt = loc.lt ? '<' : ''
+      gt = loc.gt ? '>' : ''
+      str = if loc.from == loc.to then
+              "#{lt}#{gt}#{loc.from.to_i}"
+            elsif loc.carat then
+              "#{lt}#{loc.from.to_i}^#{gt}#{loc.to.to_i}"
+            else
+              "#{lt}#{loc.from.to_i}..#{gt}#{loc.to.to_i}"
+            end
+      if loc.xref_id and !loc.xref_id.empty? then
+        str = "#{loc.xref_id}:#{str}"
+      end
+      if loc.strand == -1 and !complement_join then
+        str = "complement(#{str})"
+      end
+      if loc.sequence then
+        str = "replace(#{str},\"#{loc.sequence}\")"
+      end
+      str
+    end
+    if locs.size >= 2 then
+      op = (self.operator || 'join').to_s
+      result = "#{op}(#{locs.join(',')})"
+    else
+      result = locs[0]
+    end
+    if complement_join then
+      result = "complement(#{result})"
+    end
+    result
+  end
+
   private
 
 
   # Preprocessing to clean up the position notation.
   def gbl_cleanup(position)
     # sometimes position contains white spaces...
-    position.gsub!(/\s+/, '')
+    position = position.gsub(/\s+/, '')
 
     # select one base					# (D) n.m
     #               ..         n          m           :
@@ -456,8 +548,8 @@ class Locations
       end
     end
 
-    # substitute order(), group() by join()		# (F) group(), order()
-    position.gsub!(/(order|group)/, 'join')
+    ## substitute order(), group() by join()		# (F) group(), order()
+    #position.gsub!(/(order|group)/, 'join')
 
     return position
   end
@@ -469,8 +561,11 @@ class Locations
 
     case position
 
-    when /^join\((.*)\)$/				# (F) join()
-      position = $1
+    when /^(join|order|group)\((.*)\)$/				# (F) join()
+      if $1 != "join" then
+        @operator = $1.intern
+      end
+      position = $2
 
       join_list = []		# sub positions to join
       bracket   = []		# position with bracket

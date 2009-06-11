@@ -1,6 +1,6 @@
 =begin
 
-  $Id: Tutorial.rd.ja,v 1.20 2006/02/27 09:12:18 k Exp $
+#  $Id:$
 
   Copyright (C) 2001-2003, 2005, 2006 Toshiaki Katayama <k@bioruby.org>
   Copyright (C) 2005, 2006 Naohisa Goto <ng@bioruby.org>
@@ -39,12 +39,13 @@ Windows の場合も１クリックインストーラや ActiveScriptRuby などが
 
   ruby 1.8.2 (2004-12-25) [powerpc-darwin7.7.0]
 
-のような感じでバージョンが表示されます。バージョン 1.8.2 以降をお勧めします。
+のような感じでバージョンが表示されます。バージョン 1.8.5 以降をお勧めします。
 
 Ruby 標準装備のクラスやメソッドについては、Ruby のリファレンスマニュアルを
 参照してください。
 
 * ((<URL:http://www.ruby-lang.org/ja/man/>))
+* ((<URL:http://doc.okkez.net/>))
 
 コマンドラインでヘルプを参照するには、Ruby 標準添付の ri コマンドや、
 日本語版の refe コマンドが便利です。
@@ -66,16 +67,15 @@ RubyGems のページから最新版をダウンロードします。
 === BioRuby のインストール
 
 BioRuby のインストール方法は ((<URL:http://bioruby.org/archive/>)) から
-最新版を取得して以下のように行います。同梱されている README ファイルにも
+最新版を取得して以下のように行います(※1)。同梱されている README ファイルにも
 目を通して頂きたいのですが、慣れないと１日がかりになる BioPerl と比べて
 BioRuby のインストールはすぐに終わるはずです。
 
   % wget http://bioruby.org/archive/bioruby-x.x.x.tar.gz
   % tar zxvf bioruby-x.x.x.tar.gz
   % cd bioruby-x.x.x
-  % ruby install.rb config
-  % ruby install.rb setup
-  # ruby install.rb install
+  % su
+  # ruby setup.rb
 
 RubyGems が使える環境であれば
 
@@ -157,13 +157,13 @@ BioRuby シェルではデフォルトでいくつかの便利なライブラリを読み込んでいます。
 
 === 塩基, アミノ酸の配列を作る
 
---- seq(str)
+--- getseq(str)
 
-seq コマンドを使って文字列から塩基配列やアミノ酸配列を作ることができます。
-塩基とアミノ酸は ATGC の含量が 90% 以上かどうかで自動判定されます。
+getseq コマンド(※2)を使って文字列から塩基配列やアミノ酸配列を作ることが
+できます。塩基とアミノ酸は ATGC の含量が 90% 以上かどうかで自動判定されます。
 ここでは、できた塩基配列を dna という変数に代入します。
 
-  bioruby> dna = seq("atgcatgcaaaa")
+  bioruby> dna = getseq("atgcatgcaaaa")
 
 変数の中身を確認するには Ruby の puts メソッドを使います。
 
@@ -176,14 +176,14 @@ GenBank, EMBL, UniProt, FASTA など主要な配列フォーマットは自動判別されます
 以下は UniProt フォーマットのエントリをファイルから読み込んでいます。
 この方法では、複数のエントリがある場合最初のエントリだけが読み込まれます。
 
-  bioruby> cdc2 = seq("p04551.sp")
+  bioruby> cdc2 = getseq("p04551.sp")
   bioruby> puts cdc2
   MENYQKVEKIGEGTYGVVYKARHKLSGRIVAMKKIRLEDESEGVPSTAIREISLLKEVNDENNRSN...(略)
 
 データベース名とエントリ名が分かっていれば、インターネットを通じて
 配列を自動的に取得することができます。
 
-  bioruby> psaB = seq("genbank:AB044425")
+  bioruby> psaB = getseq("genbank:AB044425")
   bioruby> puts psaB
   actgaccctgttcatattcgtcctattgctcacgcgatttgggatccgcactttggccaaccagca...(略)
 
@@ -194,28 +194,61 @@ GenBank, EMBL, UniProt, FASTA など主要な配列フォーマットは自動判別されます
 EMBOSS の USA 表記でもエントリを取得できます。EMBOSS のマニュアルを参照し
 ~/.embossrc を適切に設定してください。
 
-どの方法で取得した場合も、seq コマンドによって返される配列は、
-DNA 配列のための Bio::Sequence::NA クラスか、アミノ酸配列のための
-Bio::sequence::AA クラスのどちらかのオブジェクトになります。
+どの方法で取得した場合も、getseq コマンドによって返される配列は、
+汎用の配列クラス Bio::Sequence になります(※3)。
 
-配列がどちらのクラスに属するかは Ruby の class メソッドを用いて
+配列が塩基配列とアミノ酸配列のどちらと判定されているのかは、
+moltype メソッドを用いて
 
-  bioruby> p cdc2.class
+  bioruby> p cdc2.moltype
   Bio::Sequence::AA
 
-  bioruby> p psaB.class
+  bioruby> p psaB.moltype
   Bio::Sequence::NA
 
 のように調べることができます。自動判定が間違っている場合などには
-to_naseq, to_aaseq メソッドで強制的に変換できます。
+na, aa メソッドで強制的に変換できます。なお、これらのメソッドは
+元のオブジェクトを強制的に書き換えます。
+
+  bioruby> dna.aa
+  bioruby> p dna.moltype
+  Bio::Sequence::AA
+
+  bioruby> dna.na
+  bioruby> p dna.moltype
+  Bio::Sequence::NA
+
+または、to_naseq, to_aaseq メソッドで強制的に変換することもできます。
 
   bioruby> pep = dna.to_aaseq
+
+to_naseq, to_aaseq メソッドの返すオブジェクトは、それぞれ、
+DNA 配列のための Bio::Sequence::NA クラス、アミノ酸配列のための
+Bio::Sequence::AA クラスのオブジェクトになります。
+配列がどちらのクラスに属するかは Ruby の class メソッドを用いて
+
   bioruby> p pep.class
   Bio::Sequence::AA
 
+のように調べることができます。
+
+強制的に変換せずに、Bio::Sequence::NA クラスまたは Bio::sequence::AA クラス
+のどちらかのオブジェクトを得たい場合には seq メソッドを使います(※4)。
+
+  bioruby> pep2 = cdc2.seq
+  bioruby> p pep2.class
+  Bio::Sequence::AA
+
+また、以下で解説する complement や translate などのメソッドの結果は、
+塩基配列を返すことが期待されるメソッドは Bio::Sequence::NA クラス、
+アミノ酸配列を返すことが期待されるメソッドは Bio::sequence::AA クラス
+のオブジェクトになります。
+
 塩基配列やアミノ酸配列のクラスは Ruby の文字列クラスである String を
-継承していますので、length で長さを調べたり、+ で足し合わせたり、* で
-繰り返したりなど、Ruby の文字列に対して行える操作は全て利用可能です。
+継承しています。また、Bio::Sequence クラスのオブジェクトは String の
+オブジェクトと見かけ上同様に働くように工夫されています。このため、
+length で長さを調べたり、+ で足し合わせたり、* で繰り返したりなど、
+Ruby の文字列に対して行える操作は全て利用可能です。
 このような特徴はオブジェクト指向の強力な側面の一つと言えるでしょう。
 
   bioruby> puts dna.length
@@ -414,7 +447,7 @@ randomize メソッドは、配列の組成を保存したままランダム配列を生成します。
 to_re メソッドは、曖昧な塩基の表記を含む塩基配列を atgc だけの
 パターンからなる正規表現に変換します。
 
-  bioruby> ambiguous = seq("atgcyatgcatgcatgc")
+  bioruby> ambiguous = getseq("atgcyatgcatgcatgc")
 
   bioruby> p ambiguous.to_re
   /atgc[tc]atgcatgcatgc/
@@ -426,7 +459,7 @@ seq メソッドは ATGC の含有量が 90% 以下だとアミノ酸配列とみなすので、
 曖昧な塩基が多く含まれる配列の場合は to_naseq メソッドを使って
 明示的に Bio::Sequence::NA オブジェクトに変換する必要があります。
 
-  bioruby> s = seq("atgcrywskmbvhdn").to_naseq
+  bioruby> s = getseq("atgcrywskmbvhdn").to_naseq
   bioruby> p s.to_re
   /atgc[ag][tc][at][gc][tg][ac][tgc][agc][atc][atg][atgc]/
 
@@ -650,14 +683,14 @@ GenBank データベースの中では、ファージのエントリが含まれる gbphg.seq の
   % wget ftp://ftp.hgc.jp/pub/mirror/ncbi/genbank/gbphg.seq.gz
   % gunzip gbphg.seq.gz
 
---- ent(str)
+--- getent(str)
 
-seq コマンドは配列を取得しましたが、配列だけでなくエントリ全体を取得するには
-ent コマンドを使います。seq コマンド同様、ent コマンドでも OBDA, EMBOSS,
-KEGG API のデータベースが利用可能です。設定については seq コマンドの説明を
-参照してください。
+getseq コマンドは配列を取得しましたが、配列だけでなくエントリ全体を取得する
+には getent コマンド(※2)を使います。getseq コマンド同様、getent コマンドでも
+OBDA, EMBOSS, NCBI, EBI, TogoWS, KEGG API のデータベースが利用可能です(※5)。
+設定については getseq コマンドの説明を参照してください。
 
-  bioruby> entry = ent("genbank:AB044425")
+  bioruby> entry = getent("genbank:AB044425")
   bioruby> puts entry
   LOCUS       AB044425                1494 bp    DNA     linear   PLN 28-APR-2001
   DEFINITION  Volvox carteri f. kawasakiensis chloroplast psaB gene for
@@ -665,7 +698,7 @@ KEGG API のデータベースが利用可能です。設定については seq コマンドの説明を
               strain:NIES-732.
   (略)
 
-ent コマンドの引数には db:entry_id 形式の文字列、EMBOSS の USA、
+getent コマンドの引数には db:entry_id 形式の文字列、EMBOSS の USA、
 ファイル、IO が与えられ、データベースの１エントリ分の文字列が返されます。
 配列データベースに限らず、数多くのデータベースエントリに対応しています。
 
@@ -674,7 +707,7 @@ ent コマンドの引数には db:entry_id 形式の文字列、EMBOSS の USA、
 取得したエントリをパースして欲しいデータをとりだすには flatparse
 コマンドを使います。
 
-  bioruby> entry = ent("gbphg.seq")
+  bioruby> entry = getent("gbphg.seq")
   bioruby> gb = flatparse(entry)
   bioruby> puts gb.entry_id
   AB000833
@@ -684,20 +717,20 @@ ent コマンドの引数には db:entry_id 形式の文字列、EMBOSS の USA、
   acggtcagacgtttggcccgaccaccgggatgaggctgacgcaggtcagaaatctttgtgacgacaaccgtatcaat
   (略)
 
---- obj(str)
+--- getobj(str)
 
-obj コマンドは、ent でエントリを文字列として取得し flatparse でパースした
-オブジェクトに変換するのと同じです。ent コマンドと同じ引数を受け付けます。
-配列を取得する時は seq、エントリを取得する時は ent、パースしたオブジェクトを
-取得する時は obj を使うことになります。
+getobj コマンド(※2)は、getent でエントリを文字列として取得し flatparse で
+パースしたオブジェクトに変換するのと同じです。getent コマンドと同じ引数を
+受け付けます。配列を取得する時は getseq、エントリを取得する時は getent、
+パースしたオブジェクトを取得する時は getobj を使うことになります。
 
-  bioruby> gb = obj("gbphg.seq")
+  bioruby> gb = getobj("gbphg.seq")
   bioruby> puts gb.entry_id
   AB000833
 
 --- flatfile(file)
 
-ent コマンドは１エントリしか扱えないため、ローカルのファイルを開いて 
+getent コマンドは１エントリしか扱えないため、ローカルのファイルを開いて 
 各エントリ毎に処理を行うには flatfile コマンドを使います。
 
   bioruby> flatfile("gbphg.seq") do |entry|
@@ -911,7 +944,7 @@ bget コマンドで指定した db:entry_id のデータベースエントリを取得できます。
 
   bioruby> script
   -- 8< -- 8< -- 8< --  Script  -- 8< -- 8< -- 8< --
-  bioruby> seq = seq("gbphg.seq")
+  bioruby> seq = getseq("gbphg.seq")
   bioruby> p seq
   bioruby> p seq.translate
   bioruby> script
@@ -922,7 +955,7 @@ bget コマンドで指定した db:entry_id のデータベースエントリを取得できます。
 
   #!/usr/bin/env bioruby
   
-  seq = seq("gbphg.seq")
+  seq = getseq("gbphg.seq")
   p seq
   p seq.translate
 
@@ -990,7 +1023,7 @@ bget コマンドで指定した db:entry_id のデータベースエントリを取得できます。
 
 テキストの入っている変数の先頭を見ることもできます。
 
-  bioruby> entry = ent("gbphg.seq")
+  bioruby> entry = getent("gbphg.seq")
   bioruby> head entry, 2
   GBPHG.SEQ            Genetic Sequence Data Bank
                             October 15 2005
@@ -1125,7 +1158,7 @@ disp コマンドで実際に利用するページャーを切り替えます。
 DNA 配列をアスキーアートで表示するオマケ機能があります。
 適当な塩基配列 seq を二重螺旋っぽく表示してみましょう。
 
-  bioruby> dna = seq("atgc" * 10).randomize
+  bioruby> dna = getseq("atgc" * 10).randomize
   bioruby> doublehelix dna
        ta
       t--a
@@ -1915,7 +1948,7 @@ br_bioflat.rb によるインデックス作成には対応していますので、
 ここまでの処理を BioRuby シェルで試すと以下のようになります。
 
   # PDB エントリ 1bl8 をネットワーク経由で取得
-  bioruby> ent_1bl8 = ent("pdb:1bl8")
+  bioruby> ent_1bl8 = getent("pdb:1bl8")
   # エントリの中身を確認
   bioruby> head ent_1bl8
   # エントリをファイルに保存
@@ -1926,8 +1959,8 @@ br_bioflat.rb によるインデックス作成には対応していますので、
   bioruby> pdb_1bl8 = flatparse(ent_1bl8)
   # PDB のエントリ ID を表示
   bioruby> pdb_1bl8.entry_id
-  # ent("pdb:1bl8") して flatparse する代わりに、以下でもOK
-  bioruby> obj_1bl8 = obj("pdb:1bl8")
+  # getent("pdb:1bl8") して flatparse する代わりに、以下でもOK
+  bioruby> obj_1bl8 = getobj("pdb:1bl8")
   bioruby> obj_1bl8.entry_id
   # 各 HETEROGEN ごとに残基名を表示
   bioruby> pdb_1bl8.each_heterogen { |heterogen| p heterogen.resName }
@@ -2635,6 +2668,39 @@ to be written...
 
 他のチュートリアル的なドキュメントとしては、BioRuby Wikiに置いてある
 BioRuby in Anger があります。
+
+
+== 脚注
+
+* (※1) BioRuby 1.2.1 以前のバージョンでは、setup.rb のかわりに install.rb
+  を使用します。また、以下のように3段階を踏む必要があります。
+
+    % ruby install.rb config
+    % ruby install.rb setup
+    # ruby install.rb install
+
+* (※2) BioRuby 1.0.0 以前のバージョンでは、getseq, getent, getobj
+  の各コマンドのかわりに、seq, ent, obj の各コマンドを使用してください。
+
+* (※3) BioRuby 0.7.1 以前のバージョンでは、Bio::Sequence::NA クラスか、
+  Bio::sequence::AA クラスのどちらかのオブジェクトになります。
+  配列がどちらのクラスに属するかは Ruby の class メソッドを用いて
+
+    bioruby> p cdc2.class
+    Bio::Sequence::AA
+
+    bioruby> p psaB.class
+    Bio::Sequence::NA
+
+  のように調べることができます。自動判定が間違っている場合などには
+  to_naseq, to_aaseq メソッドで強制的に変換できます。
+
+* (※4) seq メソッドは、読み込んだデータの種類によっては、塩基・アミノ酸の
+  どちらにも当てはまらない配列のための Bio::Sequence::Generic クラスや
+  String クラスのオブジェクトを返す場合があるかもしれません。
+
+* (※5) NCBI, EBI, TogoWS が特別な設定無しに getseq, getent, getobj コマンド
+  から利用可能となったのは BioRuby 1.3.0 以降です。
 
 =end
 

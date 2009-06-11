@@ -5,10 +5,10 @@
 # Copyright:: Copyright (c) 2007 Center for Biomedical Research Informatics, University of Minnesota (http://cbri.umn.edu)
 # License::   The Ruby License
 #
-#  $Id: lasergene.rb,v 1.3 2007/04/05 23:35:40 trevor Exp $
+#  $Id:$
 #
 
-module Bio #:nodoc:
+module Bio
 
 #
 # bio/db/lasergene.rb - Interface for DNAStar Lasergene sequence file format

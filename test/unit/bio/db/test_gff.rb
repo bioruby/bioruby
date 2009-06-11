@@ -770,6 +770,10 @@ END_OF_DATA
       assert_equal(attr, @obj.attributes)
     end
 
+    def test_id
+      assert_equal('CEN1', @obj.id)
+    end
+
     def test_to_s
       str =<<END_OF_DATA
 chrI	SGD	centromere	151467	151584	.	+	.	ID=CEN1;Name=CEN1;gene=CEN1;Alias=CEN1,test%3B0001;Note=Chromosome I centromere;dbxref=SGD:S000006463;Target=test%2002 123 456 -,test%2C03 159 314;memo%3Dtest%3Battr=99.9%25%09match
@@ -846,6 +850,65 @@ END_OF_DATA
       obj.phase = 1
       assert_equal(1, obj.phase)
       assert_equal(1, obj.frame)
+    end
+
+    def test_id_replace
+      data =<<END_OF_DATA
+ctg123	src	CDS	456	788	1e-10	-	2	ID=test03
+END_OF_DATA
+      obj = Bio::GFF::GFF3::Record.new(data)
+      assert_equal('test03', obj.id)
+      assert_equal('test_id', obj.id = 'test_id')
+      assert_equal('test_id', obj.id)
+    end
+
+    def test_id_set
+      data =<<END_OF_DATA
+ctg123	src	CDS	456	788	1e-10	-	2	NAME=test03
+END_OF_DATA
+      obj = Bio::GFF::GFF3::Record.new(data)
+      assert_nil(obj.id)
+      assert_equal('test_id', obj.id = 'test_id')
+      assert_equal('test_id', obj.id)
+      assert_equal('next_test', obj.id = 'next_test')
+      assert_equal('next_test', obj.id)
+    end
+
+    def test_id_multiple
+      # Note: Two ID attributes in a record is illegal in GFF3.
+      data =<<END_OF_DATA
+ctg123	src	CDS	456	788	.	-	2	ID=test03,test04
+END_OF_DATA
+      obj = Bio::GFF::GFF3::Record.new(data)
+      assert_equal([ [ 'ID', 'test03' ], [ 'ID', 'test04' ] ],
+                   obj.attributes)
+      assert_equal('test03', obj.id)
+      assert_equal('test_id', obj.id = 'test_id')
+      assert_equal('test_id', obj.id)
+      assert_equal([ [ 'ID', 'test_id' ], [ 'ID', 'test04' ] ],
+                   obj.attributes)
+      str = "ctg123\tsrc\tCDS\t456\t788\t.\t-\t2\tID=test_id,test04\n"
+      assert_equal(str, obj.to_s)
+    end
+
+    def test_id_multiple2
+      # Note: Two ID attributes in a record is illegal in GFF3.
+      data =<<END_OF_DATA
+ctg123	src	CDS	456	788	.	-	2	ID=test03;ID=test04
+END_OF_DATA
+      obj = Bio::GFF::GFF3::Record.new(data)
+      assert_equal([ [ 'ID', 'test03' ], [ 'ID', 'test04' ] ],
+                   obj.attributes)
+      assert_equal('test03', obj.id)
+      assert_equal('test_id', obj.id = 'test_id')
+      assert_equal('test_id', obj.id)
+      assert_equal([ [ 'ID', 'test_id' ], [ 'ID', 'test04' ] ],
+                   obj.attributes)
+
+      # The "XXX=test03;XXX=test04" is automatically changed to
+      # "XXX=test03,test04", as defined in the GFF3 spec.
+      str = "ctg123\tsrc\tCDS\t456\t788\t.\t-\t2\tID=test_id,test04\n"
+      assert_equal(str, obj.to_s)
     end
 
     def test_initialize_9

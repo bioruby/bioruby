@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2003, 2004 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: keggapi.rb,v 1.15 2007/07/20 21:56:45 k Exp $
+# $Id:$
 #
 
 require 'bio/io/soapwsdl'
@@ -269,7 +269,7 @@ class API < Bio::SOAPWSDL
     filename ||= File.basename(path)
 
     http = Bio::Command.new_http(host, port)
-    response, = http.get(path)
+    response = http.get(path)
     File.open(filename, "w+") do |f|
       f.print response.body
     end

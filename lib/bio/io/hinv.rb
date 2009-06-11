@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2008 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: hinv.rb,v 1.2 2008/02/19 04:42:14 k Exp $
+# $Id:$
 #
 
 require 'bio/command'
@@ -25,7 +25,7 @@ module Bio
 
     module Common
       def query(options = nil)
-        response, = Bio::Command.post_form(@url, options)
+        response = Bio::Command.post_form(@url, options)
         @result = response.body
         @xml = REXML::Document.new(@result)
       end

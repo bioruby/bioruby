@@ -4,11 +4,11 @@
 # Copyright::  Copyright (C) 2001, 2002 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: fasta.rb,v 1.25 2007/05/18 15:22:52 k Exp $
+# $Id:$
 #
 
 require 'net/http'
-require 'cgi' unless defined?(CGI)
+require 'uri'
 require 'bio/command'
 require 'shellwords'
 
@@ -16,7 +16,7 @@ module Bio
 
 class Fasta
 
-  #autoload :Report, 'bio/appl/fasta/format10'
+  autoload :Report, 'bio/appl/fasta/format10'
   #autoload :?????,  'bio/appl/fasta/format6'
 
   # Returns a FASTA factory object (Bio::Fasta).
@@ -66,14 +66,13 @@ class Fasta
   end
   attr_reader :format
 
-  # Select parser to use ('format6' and 'format10' is acceptable for now)
+  # OBSOLETE. Does nothing and shows warning messages.
   #
-  # This method will import Bio::Fasta::Report class by requiring specified
-  # parser and will be useful when you already have fasta output files and
-  # want to use appropriate Report class for parsing.
+  # Historically, selecting parser to use ('format6' or 'format10' were
+  # expected, but only 'format10' was available as a working parser).
   #
   def self.parser(parser)
-    require "bio/appl/fasta/#{parser}"
+    warn 'Bio::Fasta.parser is obsoleted and will soon be removed.'
   end
 
   # Returns a FASTA factory object (Bio::Fasta) to run FASTA search on
@@ -102,12 +101,6 @@ class Fasta
 
 
   def parse_result(data)
-    case @format
-    when 6
-      require 'bio/appl/fasta/format6'
-    when 10
-      require 'bio/appl/fasta/format10'
-    end
     Report.new(data)
   end
 
@@ -154,16 +147,14 @@ class Fasta
       'style'        => 'raw',
       'prog'         => @program,
       'dbname'       => @db,
-      'sequence'     => CGI.escape(query),
-      'other_param'  => CGI.escape(Bio::Command.make_command_line_unix(@options)),
+      'sequence'     => query,
+      'other_param'  => Bio::Command.make_command_line_unix(@options),
       'ktup_value'   => @ktup,
       'matrix'       => @matrix,
     }
 
-    data = []
-
-    form.each do |k, v|
-      data.push("#{k}=#{v}") if v
+    form.keys.each do |k|
+      form.delete(k) unless form[k]
     end
 
     report = nil
@@ -172,7 +163,7 @@ class Fasta
       http = Bio::Command.new_http(host)
       http.open_timeout = 3000
       http.read_timeout = 6000
-      result, = http.post(path, data.join('&'))
+      result = Bio::Command.http_post_form(http, path, form)
       # workaround 2006.8.1 - fixed for new batch queuing system
       case result.code
       when "302"
@@ -191,9 +182,9 @@ class Fasta
       end
       @output = result.body.to_s
       # workaround 2005.08.12
-      re = %r{<A HREF="http://#{host}(/tmp/[^"]+)">Show all result</A>} # "
+      re = %r{<A HREF="http://#{host}(/tmp/[^"]+)">Show all result</A>}i # "
       if path = @output[re, 1]
-        result, = http.get(path)
+        result = http.get(path)
         @output = result.body
         txt = @output.to_s.split(/\<pre\>/)[1]
         raise 'cannot understand response' unless txt

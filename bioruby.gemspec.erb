@@ -1,0 +1,117 @@
+Gem::Specification.new do |s|
+  s.name = 'bio'
+  s.version = "<% ###### Below is executed in ERB environment ######
+    # Version can be specified by the environment variable
+    env_ver = ENV['BIORUBY_GEM_VERSION']
+    env_ver = nil if env_ver.to_s.strip.empty?
+
+    # By default, determined from lib/bio/version.rb
+    load "./lib/bio/version.rb" unless defined?(BIO_VERSION_RB_LOADED)
+    case Bio::BIORUBY_EXTRA_VERSION
+    when nil
+      suffix = nil
+    when /\A\.(\d+)\z/
+      suffix = $1
+    when /\-alpha(\d+)/
+      decrement = true
+      suffix = 9000 + $1.to_i
+    when /\-pre(\d+)/
+      decrement = true
+      suffix = 9500 + $1.to_i
+    when /\-rc(\d+)/
+      decrement = true
+      suffix = 9900 + $1.to_i
+    else
+      suffix = "0000"
+    end
+    ver = Bio::BIORUBY_VERSION.reverse.collect do |i|
+            if decrement then
+              i -= 1
+              i < 0 ? (i += 10) : decrement = false
+            end
+            i
+          end.reverse
+    ver.push suffix if suffix
+    %><%= 
+    (env_ver || ver.join('.'))
+       ###### Above is executed in ERB environment ######
+    %>"
+
+  s.author = "BioRuby project"
+  s.email = "staff@bioruby.org"
+  s.homepage = "http://bioruby.org/"
+  s.rubyforge_project = "bioruby"
+  s.summary = "Bioinformatics library"
+  s.description = "BioRuby is a library for bioinformatics (biology + information science)."
+
+  s.platform = Gem::Platform::RUBY
+  s.files = [
+    <% ###### Below is executed in ERB environment ######
+    # Gets file list from the "git ls-files" command.
+    files = (`git ls-files` rescue nil).to_s.split(/\r?\n/)
+    files.delete_if { |x| x.empty? }
+    # When git-ls-files isn't available, creates a list from current files.
+    if !($?.success?) or files.size <= 0 then
+      files =
+        [ "README.rdoc", "README_DEV.rdoc", 
+          "ChangeLog", "KNOWN_ISSUES.rdoc",
+          "Rakefile", "bioruby.gemspec.erb",
+          "bioruby.gemspec", "setup.rb",
+          "extconf.rb", "rdoc.zsh"
+        ] + Dir.glob("{bin,doc,etc,lib,sample,test}/**/*").delete_if do |item|
+              case item
+              when /(\A|\/)CVS(\z|\/)/, /(\A|\/)rdoc(\z|\/)/, /\~\z/
+                true
+              else
+                false
+              end
+            end
+    end
+    %><%= 
+    files.sort.collect { |x| x.dump }.join(",\n    ")
+       ###### Above is executed in ERB environment ######
+    %>
+  ]
+
+  s.has_rdoc = true
+  s.extra_rdoc_files = [ 
+    <%= ###### Below is executed in ERB environment ######
+        # Files whose suffix are .rdoc are selected.
+        rdoc_files = files.find_all { |item| /\.rdoc\z/ =~ item }
+        # Fail safe settings
+        if rdoc_files.empty? then
+          rdoc_files = [ 'README.rdoc', 'README_DEV.rdoc',
+                         'doc/Changes-1.3.rdoc' ]
+        end
+        rdoc_files.push "ChangeLog" unless rdoc_files.include?("ChangeLog")
+        rdoc_files.sort.collect { |x| x.dump }.join(",\n    ")
+        ###### Above is executed in ERB environment ######
+    %>
+  ]
+  s.rdoc_options << '--main' << 'README.rdoc'
+  s.rdoc_options << '--title' << 'BioRuby API documentation'
+  s.rdoc_options << '--exclude' << '\.yaml\z'
+  s.rdoc_options << '--line-numbers' << '--inline-source'
+
+  s.require_path = 'lib'
+  s.autorequire = 'bio'
+
+  s.bindir = "bin"
+  s.executables = [
+    <%= ###### Below is executed in ERB environment ######
+        # Files in bin/ directory are selected.
+        exec_files = files.find_all { |item| /\Abin\// =~ item }
+        # Non-executable files are removed from the list.
+        exec_files.delete_if { |item| !File.executable?(item) }
+        # strip "bin/"
+        exec_files.collect! { |item| item.sub(/\Abin\//, '') }
+        # Fail safe settings
+        if exec_files.empty? then
+            exec_files = [ "bioruby", "br_biofetch.rb", "br_biogetseq.rb", "br_bioflat.rb", "br_pmfetch.rb" ]
+        end
+        exec_files.sort.collect { |x| x.dump }.join(",\n    ")
+        ###### Above is executed in ERB environment ######
+    %>
+  ]
+  s.default_executable = "bioruby"
+end

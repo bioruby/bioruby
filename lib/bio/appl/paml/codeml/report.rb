@@ -25,14 +25,14 @@ module Bio::PAML
     #
     # WARNING: This data is parsed using a regex from the output file, and
     # so will take the first result found. If using multiple tree's, your
-    # milage may vary. See the source for the regular expressions.
+    # milage may vary. See the source for the regular expressions.
     #
     # require 'bio'
     #
     # report = Bio::PAML::Codeml::Report.new(File.open(codeml_output_file).read)
     # report.gene_rate  # => Rate of gene evolution as defined be alpha
     # report.tree_lengh # => Estimated phylogetic tree length
-    class Report
+    class Report < Bio::PAML::Common::Report
 
       attr_reader :tree_log_likelihood, :tree_length, :alpha, :tree
 

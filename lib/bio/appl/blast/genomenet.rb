@@ -191,19 +191,15 @@ module Bio::Blast::Remote
         'alignment_view' => 0,
       }
 
-      data = []
-
-      form.each do |k, v|
-        data.push("#{URI.escape(k.to_s)}=#{URI.escape(v.to_s)}") if v
+      form.keys.each do |k|
+        form.delete(k) unless form[k]
       end
 
       begin
         http = Bio::Command.new_http(host)
         http.open_timeout = 300
         http.read_timeout = 600
-        result = http.post(path, data.join('&'),
-                           { 'Content-Type' =>
-                             'application/x-www-form-urlencoded' })
+        result = Bio::Command.http_post_form(http, path, form)
         @output = result.body
 
         # workaround 2008.8.13

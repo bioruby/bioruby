@@ -5,7 +5,7 @@
 #               Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-#  $Id: fetch.rb,v 1.10 2007/04/05 23:35:41 trevor Exp $
+#  $Id:$
 #
 # == DESCRIPTION
 #
@@ -26,6 +26,7 @@
 # 
 
 require 'uri'
+require 'cgi'
 require 'bio/command'
 
 module Bio
@@ -102,11 +103,12 @@ module Bio
     # * _style_: [raw|html] (default = 'raw')
     # * _format_: name of output format (see Bio::Fetch#formats)
     def fetch(db, id, style = 'raw', format = nil)
-      query = [ "db=#{db}", "id=#{id}", "style=#{style}" ]
-      query.push("format=#{format}") if format
-      query = query.join('&')
+      query = [ [ 'db',    db ],
+                [ 'id',    id ],
+                [ 'style', style ] ]
+      query.push([ 'format', format ]) if format
   
-      Bio::Command.read_uri(@url + '?' + URI.escape(query))
+      _get(query)
     end
   
     # Shortcut for using BioRuby's BioFetch server. You can fetch an entry
@@ -139,9 +141,7 @@ module Bio
     # ---
     # *Returns*:: array of database names
     def databases
-      query = "info=dbs"
-
-      Bio::Command.read_uri(@url + '?' + URI.escape(query)).strip.split(/\s+/)
+      _get_single('info', 'dbs').strip.split(/\s+/)
     end
   
     # Lists the formats that are available for a given database. Like the
@@ -156,9 +156,9 @@ module Bio
     # *Returns*:: array of formats
     def formats(database = @database)
       if database
-        query = "info=formats;db=#{database}"
-
-        Bio::Command.read_uri(@url + '?' + URI.escape(query)).strip.split(/\s+/)
+        query = [ [ 'info', 'formats' ],
+                  [ 'db',   database  ] ]
+        _get(query).strip.split(/\s+/)
       end
     end
   
@@ -170,11 +170,25 @@ module Bio
     # *Arguments*: none
     # *Returns*:: number
     def maxids
-      query = "info=maxids"
-
-      Bio::Command.read_uri(@url + '?' + URI.escape(query)).to_i
+      _get_single('info', 'maxids').to_i
     end
-  
+
+    private
+    # (private) query to the server.
+    # ary must be nested array, e.g. [ [ key0, val0 ], [ key1, val1 ], ... ]
+    def _get(ary)
+      query = ary.collect do |a|
+        "#{CGI.escape(a[0])}=#{CGI.escape(a[1])}"
+      end.join('&')
+      Bio::Command.read_uri(@url + '?' + query)
+    end
+
+    # (private) query with single parameter
+    def _get_single(key, val)
+      query = "#{CGI.escape(key)}=#{CGI.escape(val)}"
+      Bio::Command.read_uri(@url + '?' + query)
+    end
+
   end
 
 end # module Bio
