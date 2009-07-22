@@ -52,6 +52,9 @@
 #  # DBLINKS
 #  p entry.dblinks     # => Hash of Array
 # 
+#  # STRUCTURE
+#  p entry.structure   # => Array
+#
 #  # CODON_USAGE
 #  p entry.codon_usage # => Hash
 #  p entry.cu_list     # => Array
@@ -201,6 +204,15 @@ class GENES < KEGGDB
       @data['DBLINKS'] = hash
     end
     @data['DBLINKS']		# Hash of Array of IDs in DBLINKS
+  end
+
+  def structure
+    unless @data['STRUCTURE']
+      ary = Array.new
+      ary = fetch('STRUCTURE').split("PDB: ")[1].split(/\s/).map {|x| "PDB:#{x}" }
+      @data['STRUCTURE'] = ary
+    end      
+    @data['STRUCTURE'] # ['PDB:1A9X', ...]
   end
 
   def codon_usage(codon = nil)
