@@ -1,3 +1,465 @@
+2009-05-06  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/fasta.rb, lib/bio/appl/fasta/format10.rb
+
+	  Restored Bio::Fasta.parser for keeping compatibility, and added
+	  forgotten require.
+	  (commit 97b9284109c9a4431b92eab208509e1df6069b4b)
+
+2009-05-02  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/fasta.rb
+
+	  * Bug fix: Bio::Fasta::Report should be autoloaded.
+	  * Removed useless method Bio::Fasta::Report.parser because
+	    only the "format10" parser is available for a long time
+	    and dynamic require is a potential security hole.
+	  * Removed "require" lines in Bio::Fasta#parse_result.
+	  (commit 3d3edc44127f4fd97abcc17a859e36623facdc7c)
+
+2009-05-02  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/fasta/format10.rb
+
+	  Bug Fix: stack overflow problem, and added support for multiple
+	  query sequences.
+	
+	  * Bug fix: stack overflow problem. Thanks to Fredrik Johansson who
+            reports the bug ([BioRuby] Made a change in format10.rb).
+	  * Changed to set @entry_overrun when a report containing multiple
+	    query sequences' results is given.
+	  * New methods Bio::Fasta::Report#query_def and query_len.
+	  * To support reading a search result with multiple query sequences
+	    by using Bio::FlatFile, a flatfile splitter class
+	    Bio::Fasta::Report::FastaFormat10Splitter is newly added.
+	  (commit e57349594427ad1a51979c9d4e0c3efcffd160c2)
+
+2009-04-27  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/test_feature.rb, test/unit/bio/test_reference.rb
+
+	  class name conflict of NullStderr
+	  (commit 1607b60d905eb8cb5ca289e357cbb2cbb7a118ff)
+
+	* test/unit/bio/appl/test_blast.rb
+	
+	  Bug fix: method redefined: TestBlast#test_self_local
+	  (commit 9caa4c9d94126b3568c439878876062c84afbdec)
+
+	* test/unit/bio/appl/hmmer/test_report.rb
+	  Bug fix: method name conflict:
+	  TestHMMERReportClassMethods#test_reports_ary
+	  (commit cc3e1b85cf885736a7b1293c7e0951e099cd7e6b) 
+
+	* test/unit/bio/appl/bl2seq/test_report.rb
+
+	  * Bug fix: method redefined: TestBl2seqReport#test_undefed_methods.
+	    To fix the bug, the second "test_undefed_methods" is renamed to
+	    "test_undefed_methods_for_iteration".
+	  * Assertions are changed in the first "test_undefed_methods".
+	  * Fixed typo.
+	  (commit 7e1a550de3dffde3fd8808803e44f35072e4d40b)
+
+2009-04-27  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/util/restriction_enzyme/range/sequence_range/calculated_cuts.rb
+	  Bug fix: attribute "strands_for_display" is disabled because the
+	  method definition with the same name overwrites the attribute
+	  definition.
+	  (commit af07e2784faacc51366ddfab5bedd45841734f53)
+
+	* lib/bio/db/embl/embl.rb
+
+	  Bug fix: removed duplicated alias
+	  (commit 65c360f39580322b5eee64b7c2d8274ff7b8dfff)
+
+	* lib/bio/appl/pts1.rb
+
+	  Bug fix: removed unused attribute "function" in Bio::PTS1
+	  because method definition with the same name appeared later
+	  wipes out the attribute definition.
+	  (commit 81cbe9da55217d186e6dc9c1bfb56a39fba73590)
+
+2009-04-27  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Bug fix: forgotten "if false #dummy" in the attribute "query_to".
+	  (commit 7c2e8d0d11baf8cb9e25207ba5b27d4e9d756054)
+
+	* lib/bio/appl/blast.rb
+
+	  Bug fix: suppressing warning messages when $VERBOSE=true.
+
+	  * To suppress warining message "lib/bio/appl/blast.rb:402: warning:
+	    useless use of :: in void context", a dummy variable is added.
+	  * The attribute "server" is changed to attr_reader because "server="
+	    is defined later.
+	  (commit f9404276d2ddcf15966cab74c419733ccd748af2)
+
+2009-04-27  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/test_sequence.rb
+
+	  Fixed test name overwriting another test name in TestSequence.
+	  Fixed by Andrew Grimm at git://github.com/agrimm/bioruby.git
+	  in Thu Feb 19 22:30:26 2009 +1100.
+	  (commit a6c39a719b284a43fe8c67edc1f2826d2941647f)
+
+2009-04-26  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/appl/gcg/test_msf.rb,
+	  test/data/gcg/pileup-aa.msf
+
+	  Newly added unit tests for Bio::GCG::Msf with test data
+	  (commit a1819cd3b772300ef5bea2ebb63376e5b9fc64da)
+
+2009-04-23  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/gcg/msf.rb
+
+	  * Bug fix: incorrect parsing of GCG clustalw+ results.
+	  * Small refactoring of codes
+	  (commit 2eae8f722aa888c85d54aa958eb117d49ce42f8b)
+
+2009-04-21  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/gcg/msf.rb
+
+	  * Bug fix: Bio::GCG::Msf fails parsing when two dots are appeared
+	    at the end of a line. Thanks to Fredrik Johansson who reports the
+	    bug and send the patch ([BioRuby] Parsing MSF alignment file).
+	  * bug fix: misspelling of "ALIGNMENT".
+	  (commit 44ca52443e0249f54c43f92d08cf083cdd12c692)
+
+2009-04-21  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/io/pubmed.rb
+
+	  Bug fix: Bio::PubMed#efetch should return an array of string
+	  objects. Thanks to Masahide Kikkawa and Fredrik Johansson
+	  who report the bug (in "[BioRuby] Bio::PubMed.efetch, bug?"
+	  and "[BioRuby] PubMed.efetch error").
+	  (commit a48a9a35b87dead069fe328ba7086977304af995)
+
+	* test/functional/bio/io/test_pubmed.rb
+
+	  Newly added functional test for Bio::PubMed.
+	  (commit bf5ba6d4503f3ddb0ca31673882f5b396a932bbe)
+
+2009-04-21  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/io/ncbirest.rb
+
+	  * Bug fix: Bio::NCBI::REST#esearch ignores hash["retstart"].
+	  * In Bio::NCBI::REST#esearch, the priority of limit and
+	    hash["retmax"] is clarified: limit is used unless it is nil.
+	    In addition, default value of limit is changed to nil. If both
+	    limit and hash["retmax"] are nil, default value 100 is used.
+	  * Bio::NCBI::REST::NCBI_INTERVAL is changed to 1.
+	  (commit fc0339fe8a42cd00199cfdc938590ae9626551bc)
+
+2009-03-19  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/io/ncbirest.rb
+
+	  Bug fix: Bio::PubMed.efetch/esearch ignores retmax after refactoring
+	  of Bio::PubMed.  efetch/esearch methods in Bio::NCBI::REST are also
+          affected.  Thanks to Craig Knox who reports the bug ([BioRuby]
+          efetch/esearch broken).  Bug fix by Toshiaki Katayama.
+	  (commit 51c3223e033b2992a7bd95da282f88164406ff92)
+
+2009-03-19  Naohisa Goto <ng@bioruby.org>
+
+	* doc/Tutorial.rd
+
+	  GO example using Ensembl API is moved to Appendix.
+	  (commit d677c3d7cbd2f4ff6193255e0e30366ecd0aa421)
+
+	  fixed RD text formatting issues
+	  (commit 642577ae70647f8bd0ae3bcc8ddc118cecc886c7)
+
+	* doc/Tutorial.rd.html
+
+	  doc/Tutorial.rd.html is regenerated
+	  (commit dd878d3ecd83ad5e61a21bbf90d27d1c89d5f12d)
+
+2009-03-18  Naohisa Goto <ng@bioruby.org>
+
+	* doc/Tutorial.rd
+
+	  Reverted a Blast example code because it aims to tell usage of
+	  blocks to explore a Blast report, and getting the "result" is
+	  only a side effect and not the main purpose.
+	  (commit db172eb1e5f1cbc17317bff8043cc07bf6597073)
+
+2009-03-18  Pjotr Prins <pjotr.public01@thebird.nl>
+
+	* doc/Tutorial.rd
+
+	  Updated Tutorial.
+	  (commit b3363ee94cfb86540a7d286ccac608b74737b30d)
+
+	  Updated tutorial with links and gene ontology example
+	  by Marc Hoeppner.
+	  (commit 27a5019ca7a41211055550f9731672aa71a3a4b3)
+
+	  Fixed doctests in documentation.
+	  (commit 9a21a1750a9584152fae669be132af89086e7d5f)
+
+	  Added working BLAST example.
+	  (commit 45c27f109f069db3b6208fd59cc2b683a5bca5a9)
+
+	  Added BLAST example. All doctests work again in Tutorial.rd.
+	  (commit 05edf3092d0322b8f2775e60448700024d8cb343)
+
+	  Slightly improved remarks. Tutorial.rd runs its doctests.
+	  (commit 541a4cf0d9d0d3904f1570e1258a847a22f9238b)
+
+	  reference to github.com/pjotrp/bioruby-support
+	  (commit ec5dfb1544e32034457b0dd36a9dc50fef6c0fbe)
+
+	  Added info on how to split large BLAST XML files.
+	  (commit 6c9a80cde4be6c4c3d02b77c44dfa8bfbf0a41ff)
+
+	  Updated Tutorial
+	  (commit 07267e2d9c5b774bb0f41b795f6be1f24ff175ba)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  Fixed: taxonomy, do not report node_rank of type "class".
+	  GenBanks Tests I/O passed.
+	  (commit ba5400eaf6de0f38341825cb0fbc24ca1d99eeba)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* test/unit/bio/db/biosql/tc_biosql.rb
+
+	  Removed last "\n" from reference GenBank string
+	  (commit 2de87ceef220056a502c5a9a3457abdf1d93fab0)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  Fix: reference deletion from bioentry deletion, when reference
+	  is a leaf (no more bioentries connected to it)
+	  (commit 6f3195a023cab8ee64eb3e3bb9c491534cd80603)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/io/biosql/ar-biosql.rb
+
+	  Added: relation between bioentry and refernces, also through
+	  references by bioentry_reference. This is useful to accomplish
+	  complete bioentry's delete.
+	  (commit d9e5876231d451c9ab1a2e75702f9fe70b1509b8)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* test/unit/bio/db/biosql/tc_biosql.rb
+
+	  Fixed: title test
+	  (commit 45e2d5e21bc1f93240827dee2e46ac02d24cf696)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/genbank/common.rb
+
+	  Fix: Delete added dot at the end of TITLE.
+	  (commit 2a29c9e7fd41da9d6bf065b3d6dbd473e4d03bbe)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  Add: bioentry_qualifier_value recognize if it's handling data
+	  (reader) and format it accordingly with GenBank/EMBL format
+	  ex: 26-SEP-2006 .
+	  (commit 05ba3f1647d4cc71747ada95c9bb7f2a5a44b518)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/biosql_to_biosequence.rb
+
+	  Fixed: date_modified, the code is moved to
+	  Bio::SQL::Sequence#bioentry_qualifier_anchor#method_reader.
+	  It's most an exercise of style than good programming.
+	  date_modifier reader should be a method apart.
+	  (commit c9a980877c9222e05aa0d9163ba51aa2c77a7146)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* test/unit/bio/db/biosql/tc_biosql.rb,
+	  test/unit/bio/db/biosql/test_biosql.rb,
+	  test/unit/bio/db/biosql/ts_suite_biosql.rb
+
+	  Add: BioSQL's TestSuite, alpha stage
+	  (commit be1839b3bf3008fe234e8f89d85302caef83398f)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/biosql_to_biosequence.rb
+
+	  Fix: date_modifier biosequence adapter
+	  (commit a7c1c717e1684fd9117fc2d096e8d6e7c647b62d)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* test/unit/bio/db/biosql/test_biosql.rb
+
+	  Added preliminar tests using connection with jdbcmysql.
+	  Test are focused on input/output coherence.
+	  (commit 0ada9f8b4bb8553bf076caca76bc76a4d6791c6b)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/biosql_to_biosequence.rb
+
+	  Fixed: GI:xxxx reference on VERSION's line using
+	  biosql/to_biosequence.output(:genbank)
+	  (commit 35e1dce1a75ed967ec707457ed3655ce927f83c3)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  added other_seqids as alias of identifier, for the adapter.
+	  Export problem of GI in output(:genbank) from biosql/biosequence.
+	  (commit 7f69ea73dcd28e76743bd5213c3719cf7d9d44a0)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/biosql_to_biosequence.rb
+
+	  (Changed comments only) Added TODOs as comments:
+	  to_biosequence.output(:genbank) some major and minor problems.
+	    1) Major. GI: is not exported IN(VERSION     X64011.1  GI:44010),
+	       OUT(VERSION     X64011.1)
+	    1.1) Db storage is ok, GI is saved into identifier of bioentry
+	    2) Moderate. date wrong format IN(26-SEP-2006), OUT(2006-09-26)
+	    3) Minor. Organism in output as more terms.
+	    4) Minor. Title has a dot at the end, input was without
+	
+	  ref for GI in genbank are functions ncbi_gi_number/other_seqids
+	  (commit 03662955a45e1c3d5d32150b423a92d40c0c33c7)
+	
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/io/sql.rb
+
+	  get and first converted from DataMapper to ActiveRecord
+	  (commit 78b37c61bbb0a16bbee6c3dd16bff7c292e77695)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  converted syntax of first function from DataMapper to ActiveRecord
+	  (commit 822a35794b958906e5d4bfb6d5b9d74efb360ea7)
+
+	  converted .get! method in find with conditions
+	  (commit 1f3012ba93a9c462e8b1daa762372a55534db29c)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/io/biosql/biosql.rb
+
+	  establish_connection rewrite and update Class.first call with
+	  ActiveRecord syntax. Coming from DataMapper.
+	  (commit 66fb6ff597a2ebf2f2dc1ebe7e505fbcc46c993c)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  Version developed with DataMapper, need to be tested with
+	  ActiveRecord -current ORM-.
+	  (commit 7bf5d24364fce8f3a466697e479af5f28c672265)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/io/biosql/config/database.yml
+
+	  Configured development database with jdbcmysql adapter.
+	  (commit 7e143b1d0451bce6865e560febc5c57048210416)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/io/biosql/ar-biosql.rb
+
+	  Newly added lib/bio/io/biosql/ar-biosql.rb: In one file
+	  definition of all  BioSQL's ActiveRecords classes.
+	  (commit 87f7bc6ac844583adc07e409c9fac7fa1f275d2b)
+
+	  class Bioentry: added has_many obejct_bioentry_path and
+	  subject_bioentry_path.
+	  (commit e969eae59d0de098e094ea21007c34371bab3bdd)
+
+	  class BioentryRelationship: added relation to Term class.
+	  (commit f77b28045f0631391c6f4ad4e9eed15d296bec95)
+
+	  class Biosequence: changed to composite primary keys,
+	  :bioentry_id, :version.
+	  (commit c6683346e4c13d8969bb859e882698b90d0828f1)
+
+	  class SeqfeatureQualifierValue: find function deleted, wrong here.
+	  (commit 89f64af363d0b204e50ea71924909724d56bccc4)
+
+	* lib/bio/io/sql.rb
+
+	  Separated connection (see lib/bio/io/biosql.rb) from definition
+	  of public methods.
+	  (commit 24b9e6473ce36e3151c560ea26c3b95105656ef4)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/io/biosql
+
+	  To integrate BioSQL ActiveRecords classes to one file, as the
+	  first step, following 28 files listed below are deleted. In the
+	  later	commit, they will be integrated into one file,
+	  lib/bio/io/biosql/ar-biosql.rb.
+	  (commit 0ea9f08b36e10e50c855d4346194849e8e7a263b)
+
+	     * lib/bio/io/biosql/biodatabase.rb
+	     * lib/bio/io/biosql/bioentry.rb
+	     * lib/bio/io/biosql/bioentry_dbxref.rb
+	     * lib/bio/io/biosql/bioentry_path.rb
+	     * lib/bio/io/biosql/bioentry_qualifier_value.rb
+	     * lib/bio/io/biosql/bioentry_reference.rb
+	     * lib/bio/io/biosql/bioentry_relationship.rb
+	     * lib/bio/io/biosql/biosequence.rb
+	     * lib/bio/io/biosql/comment.rb
+	     * lib/bio/io/biosql/dbxref.rb
+	     * lib/bio/io/biosql/dbxref_qualifier_value.rb
+	     * lib/bio/io/biosql/location.rb
+	     * lib/bio/io/biosql/location_qualifier_value.rb
+	     * lib/bio/io/biosql/ontology.rb
+	     * lib/bio/io/biosql/reference.rb
+	     * lib/bio/io/biosql/seqfeature.rb
+	     * lib/bio/io/biosql/seqfeature_dbxref.rb
+	     * lib/bio/io/biosql/seqfeature_path.rb
+	     * lib/bio/io/biosql/seqfeature_qualifier_value.rb
+	     * lib/bio/io/biosql/seqfeature_relationship.rb
+	     * lib/bio/io/biosql/taxon.rb
+	     * lib/bio/io/biosql/taxon_name.rb
+	     * lib/bio/io/biosql/term.rb
+	     * lib/bio/io/biosql/term_dbxref.rb
+	     * lib/bio/io/biosql/term_path.rb
+	     * lib/bio/io/biosql/term_relationship.rb
+	     * lib/bio/io/biosql/term_relationship_term.rb
+	     * lib/bio/io/biosql/term_synonym.rb
+
+2009-03-17  Naohisa Goto <ng@bioruby.org>
+
+	* Rakefile
+
+	  Rake::Task#execute now needs to take an argument. Currently,
+	  nil is given.
+
 2009-02-20  Naohisa Goto <ng@bioruby.org>
 
 	* BioRuby 1.3.0 is released.
