@@ -28,8 +28,6 @@ module Bio::Sequence::Adapter::Chromatogram
   def_biosequence_adapter :primary_accession do |orig|
     orig.version
   end
-  
-
 
 end #module Bio::Sequence::Adapter::Chromatogram
 

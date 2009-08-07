@@ -1,4 +1,4 @@
-  #
+#
 # = bio/db/chromatogram.rb - Chromatogram class 
 #
 # Copyright::	Copyright (C) 2009 Anthony Underwood <anthony.underwood@hpa.org.uk>, <email2ants@gmail.com>

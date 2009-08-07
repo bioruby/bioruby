@@ -16,7 +16,7 @@ module Bio
       'float' => 'g', 'double' => 'G',
       'bool' => 'C', 'thumb' => 'NNCC', 'rational' => 'NN', 'point' => 'nn', 
       'rect' => 'nnnn', 'vPoint' => 'NN', 'vRect' => 'NNNN', 'tag' => 'NN'} # Specifies how to pack each data type
-  	
+
     #sequence attributes
     
     # The sample title as entered when sequencing the sample (String)
