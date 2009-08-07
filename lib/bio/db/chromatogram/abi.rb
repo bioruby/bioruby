@@ -1,3 +1,9 @@
+#
+# = bio/db/chromatogram/abi.rb - Abi class 
+#
+# Copyright::	Copyright (C) 2009 Anthony Underwood <anthony.underwood@hpa.org.uk>, <email2ants@gmail.com>
+# License::	The Ruby License
+#
 module Bio
   # == Description
   #

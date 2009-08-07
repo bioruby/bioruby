@@ -1,9 +1,8 @@
 #
 # = bio/db/chromatogram/chromatogram_to_biosequence.rb - Bio::Chromatogram to Bio::Sequence adapter module
 #
-# Copyright::   Copyright (C) 2009
-#               Anthony Underwood <email2ants@gmail.com>
-# License::     The Ruby License
+# Copyright::	Copyright (C) 2009 Anthony Underwood <anthony.underwood@hpa.org.uk>, <email2ants@gmail.com>
+# License::	The Ruby License
 #
 # $Id:$
 #
