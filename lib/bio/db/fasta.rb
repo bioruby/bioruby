@@ -297,7 +297,7 @@ module Bio
     # Returns the list of the numerical data (typically the quality score
     # of its corresponding sequence) as an Array.
     def data
-      unless @list
+      unless defined?(@list)
         @list = @data.strip.split(/\s+/).map {|x| x.to_i}
       end
       @list
