@@ -239,10 +239,12 @@ RubyGems 0.9.0 and removed in RubyGems 1.0.1.
 == LICENSE
 
 BioRuby can be freely distributed under the same terms as Ruby.
+See the file COPYING (or COPYING.ja written in Japanese).
 
-Note that setup.rb included in the BioRuby package comes from
+As written in the file COPYING, see the file LEGAL for files distributed
+under different license. For example, setup.rb which comes from
 {RAA:setup}[http://raa.ruby-lang.org/project/setup/] developed by Minero Aoki
-(http://i.loveruby.net/en/projects/setup/).
+(http://i.loveruby.net/en/projects/setup/) is licensed under LGPL 2.1.
 
 
 == CONTACT
