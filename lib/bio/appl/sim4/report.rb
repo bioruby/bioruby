@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
 # License::   The Ruby License
 #
-#  $Id: report.rb,v 1.9 2007/04/05 23:35:40 trevor Exp $
+#  $Id:$
 #
 # The sim4 report parser classes.
 #
@@ -43,7 +43,7 @@ module Bio
         @hits = []
         @all_hits = []
         overrun = ''
-        text.each("\n\nseq1 = ") do |str|
+        text.each_line("\n\nseq1 = ") do |str|
           str = str.sub(/\A\s+/, '')
           str.sub!(/\n(^seq1 \= .*)/m, "\n") # remove trailing hits for sure
           tmp = $1.to_s
