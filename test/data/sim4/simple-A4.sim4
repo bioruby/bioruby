@@ -1,0 +1,25 @@
+
+seq1 = sample10-1.fst, 94 bp
+seq2 = sample10-2.fst (genome1), 599 bp
+
+>mrna1
+>genome1
+
+1-40  (145-184)   100% <-
+41-94  (404-457)   94%
+
+      0     .    :    .    :    .    :    .    :    .    :
+      1 TTGTTTCCGTCGCTGGTTATTGTCTAGAACGCAAAAATAG         T
+        ||||||||||||||||||||||||||||||||||||||||<<<...<<<|
+    145 TTGTTTCCGTCGCTGGTTATTGTCTAGAACGCAAAAATAGCTG...TACT
+
+     50     .    :    .    :    .    :    .    :    .    :
+     42 CTACACATCACTAGCGTGGGTGGGCGGAAAGAGCAGCTCGCCACT CAAG
+        ||||||||||||||| |||||||||||||-|||||||||||||||-||||
+    405 CTACACATCACTAGCCTGGGTGGGCGGAA GAGCAGCTCGCCACTTCAAG
+
+    100 
+     91 CTAA
+        ||||
+    454 CTAA
+
