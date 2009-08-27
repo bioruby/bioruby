@@ -343,8 +343,8 @@ module Bio
           dat.each do |str|
             a = str.split(/\r?\n/)
             a.shift
-            if /^(\s*\d+\s*)(.+)$/ =~ a[0] then
-              range = ($1.length)..($1.length + $2.strip.length - 1)
+            if /^(\s*\d+\s)(.+)$/ =~ a[0] then
+              range = ($1.length)..($1.length + $2.chomp.length - 1)
               a.collect! { |x| x[range] }
               s1 << a.shift
               ml << a.shift
