@@ -47,6 +47,11 @@ module Bio
       self.new(filename).report
     end
 
+    def self.report4
+      filename = "complement-A4.sim4"
+      self.new(filename).report
+    end
+
   end #class TestDataForSim4Report
 
 
@@ -462,6 +467,333 @@ module Bio
       @intron = TestDataForSim4Report.report2.hits[0].introns[0]
     end
   end #class TestSim4ReportSegmentPair2_intron
+
+
+  class TestSim4Report4 < TestSim4Report
+
+    def setup
+      @sim4 = TestDataForSim4Report.report4
+    end
+
+    def exec_test_seq1_len(sd)
+      assert_equal(284, sd.len)
+    end
+    private :exec_test_seq1_len
+
+    def test_seq1
+      sd = @sim4.seq1
+      assert_instance_of(Bio::Sim4::Report::SeqDesc, sd)
+      assert_equal('mrna4c', sd.entry_id)
+      assert_equal('mrna4c', sd.definition)
+      assert_equal('sample41-1c.fst', sd.filename)
+      exec_test_seq1_len(sd)
+    end
+
+    def test_query_def
+      assert_equal('mrna4c', @sim4.query_def)
+    end
+
+    def test_query_id
+      assert_equal('mrna4c', @sim4.query_id)
+    end
+
+    def test_query_len
+      assert_equal(284, @sim4.query_len)
+    end
+
+  end #class TestSim4Report4
+
+  class TestSim4ReportHit4 < TestSim4ReportHit
+
+    def setup
+      @hit = TestDataForSim4Report.report4.hits.first
+    end
+
+    def test_align
+      a = [
+           [ "TTTTAGCCGGCACGAGATTG AGCGTATGATCACGCGCGCGGCCTCCT CAGAGTGATGCATGATACAACTT AT ",
+             "||||||||||||||||||||-||||-||||||||||||||||||||||-|-|||| ||||||||||||||||- |-",
+             "TTTTAGCCGGCACGAGATTGCAGCG ATGATCACGCGCGCGGCCTCCTAC GAGTCATGCATGATACAACTTCTTG"],
+           [ "         ",
+             ">>>...>>>",
+             "GTT...GAT" ],
+           [ "ATATGTACTTAGCTGGCAACCGAGATTTACTTTCGAAGCACTGTGATGAACCCGCGGCCCTTTGAGCGCT",
+             "|||||||||||||-|||||||||||||||||||||||| |||||||||||||||||-|||||||||||||",
+             "ATATGTACTTAGC GGCAACCGAGATTTACTTTCGAAGGACTGTGATGAACCCGCG CCCTTTGAGCGCT" ],
+           [ "", "", "" ],
+           [ "TATATATGTACTTAGCGG ACACCGAGATTTACTTTCGAAGGACTGTGGATGAACCCGCGCCCTTTGAGCGCT",
+             "||||||||||||||||||-|-|||||||||||||||||||||||||||-||||||||||||||||||||||||",
+             "TATATATGTACTTAGCGGCA ACCGAGATTTACTTTCGAAGGACTGTG ATGAACCCGCGCCCTTTGAGCGCT" ]
+          ]
+      assert_equal(a, @hit.align)
+    end
+
+    def test_complement?
+      assert_equal(true, @hit.complement?)
+    end
+
+    def test_definition
+      assert_equal('genome4', @hit.definition)
+    end
+
+    def test_each
+      count = 0
+      assert_nothing_raised {
+        @hit.each do |x|
+          count += 1
+        end
+      }
+      assert_equal(3, count)
+      @hit.each do |x|
+        assert_instance_of(Bio::Sim4::Report::SegmentPair, x)
+      end
+    end
+
+    def exec_test_exons(meth)
+      assert_kind_of(Array, @hit.__send__(meth))
+      assert_equal(3, @hit.__send__(meth).size)
+      @hit.__send__(meth).each do |x|
+        assert_instance_of(Bio::Sim4::Report::SegmentPair, x)
+      end
+    end
+    private :exec_test_exons
+
+    def test_hit_id
+      assert_equal('genome4', @hit.hit_id)
+    end
+
+    def test_introns
+      assert_kind_of(Array, @hit.introns)
+      assert_equal(2, @hit.introns.size)
+      @hit.introns.each do |x|
+        assert_instance_of(Bio::Sim4::Report::SegmentPair, x)
+      end
+    end
+
+    def test_len
+      assert_equal(770, @hit.len)
+    end
+
+    def test_query_def
+      assert_equal('mrna4c', @hit.query_def)
+    end
+
+    def test_query_id
+      assert_equal('mrna4c', @hit.query_id)
+    end
+
+    def test_query_len
+      assert_equal(284, @hit.query_len)
+    end
+
+    def test_segmentpairs
+      assert_kind_of(Array, @hit.segmentpairs)
+      assert_equal(5, @hit.segmentpairs.size)
+      @hit.segmentpairs.each do |x|
+        assert_instance_of(Bio::Sim4::Report::SegmentPair, x)
+      end
+    end
+
+    def exec_test_seq1_len(sd)
+      assert_equal(284, sd.len)
+    end
+    private :exec_test_seq1_len
+
+    def test_seq1
+      sd = @hit.seq1
+      assert_instance_of(Bio::Sim4::Report::SeqDesc, sd)
+      assert_equal('mrna4c', sd.entry_id)
+      assert_equal('mrna4c', sd.definition)
+      assert_equal('sample41-1c.fst', sd.filename)
+      exec_test_seq1_len(sd)
+    end
+
+    def test_seq2
+      sd = @hit.seq2
+      assert_instance_of(Bio::Sim4::Report::SeqDesc, sd)
+      assert_equal('genome4', sd.entry_id)
+      assert_equal('genome4', sd.definition)
+      assert_equal(770, sd.len)
+      #assert_equal('sample40-2.fst', sd.filename)
+      assert_equal('sample40-2.fst (genome4)', sd.filename)
+    end
+
+    def test_target_def
+      assert_equal('genome4', @hit.target_def)
+    end
+
+    def test_target_id
+      assert_equal('genome4', @hit.target_id)
+    end
+
+    def test_target_len
+      assert_equal(770, @hit.target_len)
+    end
+  end #class TestSim4ReportHit4
+
+  class TestSim4ReportSegmentPair4_exon < TestSim4ReportSegmentPair_exon
+    def setup
+      @exon = TestDataForSim4Report.report4.hits[0].exons[1]
+    end
+
+    def test_align_len
+      assert_equal(70, @exon.align_len)
+    end
+
+    def test_direction
+      assert_equal("==", @exon.direction)
+    end
+
+    def test_hit_from
+      assert_equal(563, @exon.hit_from)
+    end
+
+    def test_hit_to
+      assert_equal(630, @exon.hit_to)
+    end
+
+    def test_hseq
+      hseq = "ATATGTACTTAGC GGCAACCGAGATTTACTTTCGAAGGACTGTGATGAACCCGCG CCCTTTGAGCGCT"
+      assert_equal(hseq, @exon.hseq)
+    end
+
+    def test_midline
+      midline = "|||||||||||||-|||||||||||||||||||||||| |||||||||||||||||-|||||||||||||"
+      assert_equal(midline, @exon.midline)
+    end
+
+    def test_percent_identity
+      #assert_equal(95, @exon.percent_identity)
+      assert_equal("95", @exon.percent_identity)
+    end
+
+    def test_qseq
+      qseq = "ATATGTACTTAGCTGGCAACCGAGATTTACTTTCGAAGCACTGTGATGAACCCGCGGCCCTTTGAGCGCT"
+      assert_equal(qseq, @exon.qseq)
+    end
+
+    def test_query_from
+      assert_equal(73, @exon.query_from)
+    end
+
+    def test_query_to
+      assert_equal(142, @exon.query_to)
+    end
+
+    def exec_test_seq1_from_to(seg)
+      assert_equal(73, seg.from)
+      assert_equal(142, seg.to)
+    end
+    private :exec_test_seq1_from_to
+
+    def test_seq1
+      assert_instance_of(Bio::Sim4::Report::Segment, @exon.seq1)
+      assert_equal("ATATGTACTTAGCTGGCAACCGAGATTTACTTTCGAAGCACTGTGATGAACCCGCGGCCCTTTGAGCGCT",
+                   @exon.seq1.seq)
+      exec_test_seq1_from_to(@exon.seq1)
+    end
+
+    def test_seq2
+      assert_instance_of(Bio::Sim4::Report::Segment, @exon.seq2)
+      assert_equal(563, @exon.seq2.from)
+      assert_equal(630, @exon.seq2.to)
+      assert_equal("ATATGTACTTAGC GGCAACCGAGATTTACTTTCGAAGGACTGTGATGAACCCGCG CCCTTTGAGCGCT",
+                   @exon.seq2.seq)
+    end
+  end #class TestSim4ReportSegmentPair4_exon
+
+
+  class TestSim4ReportSegmentPair4_intron < TestSim4ReportSegmentPair_intron
+    def setup
+      @intron = TestDataForSim4Report.report4.hits[0].introns[0]
+    end
+
+    def test_hit_from
+      assert_equal(425, @intron.hit_from)
+    end
+
+    def test_hit_to
+      assert_equal(562, @intron.hit_to)
+    end
+
+    def test_hseq
+      hseq = "GTT...GAT"
+      assert_equal(hseq, @intron.hseq)
+    end
+
+    def test_midline
+      midline = ">>>...>>>"
+      assert_equal(midline, @intron.midline)
+    end
+
+    def test_seq2
+      assert_instance_of(Bio::Sim4::Report::Segment, @intron.seq2)
+      assert_equal(425, @intron.seq2.from)
+      assert_equal(562, @intron.seq2.to)
+      assert_equal("GTT...GAT", @intron.seq2.seq)
+    end
+  end #class TestSim4ReportSegmentPair4_intron
+
+
+  class TestSim4ReportSegmentPair4_intron1 < Test::Unit::TestCase
+    def setup
+      @intron = TestDataForSim4Report.report4.hits[0].introns[1]
+    end
+
+    def test_align_len
+      assert_equal(0, @intron.align_len)
+    end
+
+    def test_direction
+      assert_equal(nil, @intron.direction)
+    end
+
+    def test_hit_from
+      assert_equal(631, @intron.hit_from)
+    end
+
+    def test_hit_to
+      assert_equal(699, @intron.hit_to)
+    end
+
+    def test_hseq
+      assert_equal("", @intron.hseq)
+    end
+
+    def test_midline
+      assert_equal("", @intron.midline)
+    end
+
+    def test_percent_identity
+      assert_equal(nil, @intron.percent_identity)
+    end
+
+    def test_qseq
+      assert_equal("", @intron.qseq)
+    end
+
+    def test_query_from
+      assert_equal(143, @intron.query_from)
+    end
+
+    def test_query_to
+      assert_equal(212, @intron.query_to)
+    end
+
+    def test_seq1
+      assert_instance_of(Bio::Sim4::Report::Segment, @intron.seq1)
+      assert_equal(143, @intron.seq1.from)
+      assert_equal(212, @intron.seq1.to)
+      assert_equal("", @intron.seq1.seq)
+    end
+
+    def test_seq2
+      assert_instance_of(Bio::Sim4::Report::Segment, @intron.seq2)
+      assert_equal(631, @intron.seq2.from)
+      assert_equal(699, @intron.seq2.to)
+      assert_equal("", @intron.seq2.seq)
+    end
+  end #class TestSim4ReportSegmentPair4_intron1
 
 
   class TestSim4ReportSeqDesc < Test::Unit::TestCase
