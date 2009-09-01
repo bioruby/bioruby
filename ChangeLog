@@ -1,3 +1,70 @@
+2009-08-31  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/sequence/compat.rb
+
+	  Document bug fix: Bio::Sequence::(NA|AA|Generic)#to_fasta are
+	  currently not deprecated.
+	  (commit 0e0f888a73a60c0f0a7b103019aeb82c8f063c4e)
+
+2009-08-28  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/sim4/report.rb
+
+	  Bug fix: parse error when unaligned regions exist. Thanks to
+	  Tomoaki NISHIYAMA who reports the bug ([BioRuby] SIM4 parser).
+
+	* test/unit/bio/appl/sim4/test_report.rb,
+	  test/data/sim4/complement-A4.sim4
+
+	  To confirm the bug fix, tests are added with new test data.
+	  (commit 02d531e36ecf789f232cf3e05f85391b60279f00)
+
+2009-08-27  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/sim4/report.rb
+
+	  Bug fix: parse errpr when the alignment of an intron is splitted
+	  into two lines. Thanks to Tomoaki NISHIYAMA who sent the patch
+	  ([BioRuby] SIM4 parser).
+	  (commit 137ec4c3099236c89ac4a0157d0c77ba13d1875c)
+
+2009-08-27  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/sim4/report.rb
+
+	  Ruby 1.9 support: String#each_line instead of String#each
+	  (commit b65f176f3be74c21a8bb8fc2a6f204fb8ab08fd6)
+
+2009-08-27  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/appl/sim4/test_report.rb,
+	  test/data/sim4/simple-A4.sim4, test/data/sim4/simple2-A4.sim4
+
+	  Newly added unit tests for Bio::Sim4::Report with test data.
+	  The test data is based on the data provided by Tomoaki NISHIYAMA
+	  ([BioRuby] SIM4 parser), and most of the sequence data is
+	  replaced by random sequence.
+	  (commit 0f53916dd728b871f02d1caf0c5105a2e1c58bc4)
+
+2009-08-18  Naohisa Goto <ng@bioruby.org>
+
+	* COPYING, COPYING.ja, GPL, LGPL, LEGAL
+
+	  License files are added. COPYING, COPYING.ja, GPL, LGPL are taken
+	  from Ruby's svn repository.  LEGAL is written for BioRuby.
+	  (commit c65531331e840562ac7342f1896f7e2a3aac6c88)
+
+	* README.rdoc
+
+	  Added descriptions about license to refer COPYING and LEGAL.
+	  (commit d88015a2e3b2c5f7c2a931261819b908084d0179)
+
+	* COPYING
+
+	  Modified COPYING for BioRuby, following Matz's recommendation
+	  in [ruby-list:46293].
+	  (commit 2c30e7342e33c878bd7132a302974364c54caad9)
+
 2009-05-06  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/appl/fasta.rb, lib/bio/appl/fasta/format10.rb
