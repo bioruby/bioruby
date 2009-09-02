@@ -1,3 +1,14 @@
+2009-09-02  Naohisa Goto <ng@bioruby.org>
+
+	* BioRuby 1.3.1 is released.
+
+2009-09-02  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/version.rb
+
+	  Preparation for bioruby-1.3.1 release.
+	  (commit 3d86bc6d519c4c3319e5a1b2ca36f8f5177f127f)
+
 2009-08-31  Naohisa Goto <ng@bioruby.org>
 
 	* lib/bio/sequence/compat.rb
