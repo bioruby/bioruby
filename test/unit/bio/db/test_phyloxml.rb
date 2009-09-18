@@ -13,14 +13,28 @@ require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
 
-require 'bio'
+require 'bio/sequence'
 require 'bio/tree'
 
-begin #begin rescue LoadError block (test if xml is here)
+begin
+  require 'libxml'
+rescue LoadError
+end
 
-require 'bio/db/phyloxml/phyloxml_elements'
-require 'bio/db/phyloxml/phyloxml_parser'
-require 'bio/db/phyloxml/phyloxml_writer'
+if defined?(LibXML) then
+  require 'bio/db/phyloxml/phyloxml_elements'
+  require 'bio/db/phyloxml/phyloxml_parser'
+  require 'bio/db/phyloxml/phyloxml_writer'
+end
+
+module Bio
+  class TestPhyloXML_Check_LibXML < Test::Unit::TestCase
+    def test_libxml
+      assert(defined?(LibXML),
+             "Error: libxml-ruby library is not present. Please install libxml-ruby library. It is needed for Bio::PhyloXML module. Unit test for PhyloXML will not be performed.")
+    end
+  end #class TestPhyloXML_LibXMLCheck
+end #module Bio
 
 module Bio
 
@@ -612,8 +626,4 @@ end #end module TestPhyloXMLData
   end
 
 
-end #end module Biof
-
-rescue LoadError
-    raise "Error: libxml-ruby library is not present. Please install libxml-ruby library. It is needed for Bio::PhyloXML module. Unit test for PhyloXML will not be performed."
-end #end begin and rescue block
+end if defined?(LibXML) #end module Bio
