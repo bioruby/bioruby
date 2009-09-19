@@ -19,7 +19,7 @@
 
 module Bio
 
-  # This is general Taxonomy class.
+   # This is general Taxonomy class.
 
   class Taxonomy
     #pattern = [a-zA-Z0-9_]{2,10} Can refer to any code/abbreviation/mnemonic, such as Bsu for Bacillus subtilis.
@@ -76,7 +76,7 @@ module PhyloXML
 
     # Converts elements to xml representation. Called by PhyloXML::Writer class.
     def to_xml
-      taxonomy = XML::Node.new('taxonomy')
+      taxonomy = LibXML::XML::Node.new('taxonomy')
       taxonomy["type"] = @type if @type != nil
       taxonomy["id_source"] = @id_source if @id_source != nil
 
@@ -271,13 +271,13 @@ module PhyloXML
 
     # Converts elements to xml representation. Called by PhyloXML::Writer class.
     def to_xml(branch_length,  write_branch_length_as_subelement)
-      clade = XML::Node.new('clade')
+      clade = LibXML::XML::Node.new('clade')
       
       PhyloXML::Writer.generate_xml(clade, self, [[:simple, 'name', @name]])
 
       if branch_length != nil       
         if write_branch_length_as_subelement
-          clade << XML::Node.new('branch_length', branch_length)
+          clade << LibXML::XML::Node.new('branch_length', branch_length.to_s)
         else
           clade["branch_length"] = branch_length.to_s
         end
@@ -347,7 +347,7 @@ module PhyloXML
     # Converts elements to xml representation. Called by PhyloXML::Writer class.
     def to_xml
       #@todo add unit test
-      events = XML::Node.new('events')
+      events = LibXML::XML::Node.new('events')
       PhyloXML::Writer.generate_xml(events, self, [
         [:simple, 'type', @type],
         [:simple, 'duplications', @duplications],
@@ -378,7 +378,7 @@ module PhyloXML
         if @type == nil
           raise "Type is a required attribute for confidence."
         else
-          confidence = XML::Node.new('confidence', @value.to_f)
+          confidence = LibXML::XML::Node.new('confidence', @value.to_s)
           confidence["type"] = @type          
           return confidence
         end
@@ -405,7 +405,7 @@ module PhyloXML
 
       # Converts elements to xml representation. Called by PhyloXML::Writer class.
       def to_xml
-        distr = XML::Node.new('distribution')
+        distr = LibXML::XML::Node.new('distribution')
         PhyloXML::Writer.generate_xml(distr, self, [
             [:simple, 'desc', @desc],
             [:objarr, 'point', 'points'],
@@ -453,7 +453,7 @@ module PhyloXML
       def to_xml
         raise "Geodedic datum is a required attribute of Point element." if @geodetic_datum.nil?
 
-        p = XML::Node.new('point')
+        p = LibXML::XML::Node.new('point')
         p["geodetic_datum"] = @geodetic_datum
         p["alt_unit"] = @alt_unit if @alt_unit != nil
         PhyloXML::Writer.generate_xml(p, self, [
@@ -482,7 +482,7 @@ module PhyloXML
       # Converts elements to xml representation. Called by PhyloXML::Writer class.
       def to_xml
         if @points.length > 2          
-          pol = XML::Node.new('polygon')
+          pol = LibXML::XML::Node.new('polygon')
           @points.each do |p|
             pol << p.to_xml
           end
@@ -566,7 +566,7 @@ module PhyloXML
       # Converts elements to xml representation. Called by PhyloXML::Writer class.
       def to_xml
         
-        seq = XML::Node.new('sequence')
+        seq = LibXML::XML::Node.new('sequence')
         if @type != nil
           if ["dna", "rna", "protein"].include?(@type)
             seq["type"] = @type
@@ -584,7 +584,7 @@ module PhyloXML
             [:simple, 'location', @location]])
 
         if @mol_seq != nil
-          molseq = XML::Node.new('mol_seq', @mol_seq)
+          molseq = LibXML::XML::Node.new('mol_seq', @mol_seq)
           molseq["is_aligned"] = @is_aligned.to_s if @is_aligned != nil
           seq << molseq
         end
@@ -641,7 +641,7 @@ module PhyloXML
       # Converts elements to xml representation. Called by PhyloXML::Writer class.
       def to_xml
         raise "Source attribute is required for Accession object." if @source == nil
-        accession = XML::Node.new('accession', @value)
+        accession = LibXML::XML::Node.new('accession', @value)
         accession['source'] = @source
         return accession
       end
@@ -663,7 +663,7 @@ module PhyloXML
       # Converts elements to xml representation. Called by PhyloXML::Writer class.
       def to_xml        
         if @uri != nil
-          xml_node = XML::Node.new('uri', @uri)
+          xml_node = LibXML::XML::Node.new('uri', @uri)
           Writer.generate_xml(xml_node, self, [
             [:attr, 'desc'],
             [:attr, 'type']])
@@ -705,7 +705,7 @@ module PhyloXML
 
       # Converts elements to xml representation. Called by PhyloXML::Writer class. 
       def to_xml
-        annot = XML::Node.new('annotation')
+        annot = LibXML::XML::Node.new('annotation')
         annot["ref"] = @ref if @ref != nil
         PhyloXML::Writer.generate_xml(annot, self, [[:simple, 'desc', @desc],
           [:complex, 'confidence', @confidence],
@@ -723,7 +723,7 @@ module PhyloXML
 
       # Converts elements to xml representation. Called by PhyloXML::Writer class.
       def to_xml
-        xml_node = XML::Node.new('id', @value)
+        xml_node = LibXML::XML::Node.new('id', @value)
         xml_node["provider"] = @provider if @provider != nil
         return xml_node
       end
@@ -760,7 +760,7 @@ module PhyloXML
           raise "Subelement blue of BranchColor element should not be nil"
         end
 
-        c = XML::Node.new('branch_color')
+        c = LibXML::XML::Node.new('branch_color')
         PhyloXML::Writer.generate_xml(c, self, [
             [:simple, 'red', @red],
             [:simple, 'green', @green],
@@ -808,7 +808,7 @@ module PhyloXML
 
       # Converts elements to xml representation. Called by PhyloXML::Writer class.
       def to_xml
-        date = XML::Node.new('date')
+        date = LibXML::XML::Node.new('date')
         PhyloXML::Writer.generate_xml(date, self, [
             [:attr, 'unit'],
             [:simple, 'desc', @desc],
@@ -840,7 +840,7 @@ module PhyloXML
 
       # Converts elements to xml representation. Called by PhyloXML::Writer class.
       def to_xml
-        xml_node = XML::Node.new('domain_architecture')
+        xml_node = LibXML::XML::Node.new('domain_architecture')
         PhyloXML::Writer.generate_xml(xml_node, self,[
               [:attr, 'length'],
               [:objarr, 'domain', 'domains']])
@@ -884,7 +884,7 @@ module PhyloXML
         elsif @to == nil
           raise "to attribute of ProteinDomain class is required."
         else
-          xml_node = XML::Node.new('domain', @value)
+          xml_node = LibXML::XML::Node.new('domain', @value)
           xml_node["from"] = @from.to_s
           xml_node["to"] = @to.to_s
           xml_node["id"] = @id if @id != nil
@@ -945,7 +945,7 @@ module PhyloXML
         raise "datatype is an required element of property" if @datatype.nil?
         raise "applies_to is an required element of property" if @applies_to.nil?
 
-        property = XML::Node.new('property')
+        property = LibXML::XML::Node.new('property')
         Writer.generate_xml(property, self, [
             [:attr, 'ref'],
             [:attr, 'unit'],
@@ -970,7 +970,7 @@ module PhyloXML
 
       # Converts elements to xml representation. Called by PhyloXML::Writer class.
       def to_xml
-        ref = XML::Node.new('reference')
+        ref = LibXML::XML::Node.new('reference')
         Writer.generate_xml(ref, self, [
               [:attr, 'doi'],
               [:simple, 'desc', @desc]])
@@ -1002,7 +1002,7 @@ module PhyloXML
         if @id_ref_0 == nil or @id_ref_1 == nil or @type == nil
           raise "Attributes id_ref_0, id_ref_1, type are required elements by SequenceRelation element."
         else
-          cr = XML::Node.new('clade_relation')
+          cr = LibXML::XML::Node.new('clade_relation')
           Writer.generate_xml(cr, self, [
               [:attr, 'id_ref_0'],
               [:attr, 'id_ref_1'],
@@ -1049,7 +1049,7 @@ module PhyloXML
 
       # Converts elements to xml representation. Called by PhyloXML::Writer class.
       def to_xml
-        bc = XML::Node.new('binary_characters')
+        bc = LibXML::XML::Node.new('binary_characters')
         bc['type'] = @bc_type
         PhyloXML::Writer.generate_xml(bc, self, [
             [:attr, 'gained_count'],
@@ -1058,25 +1058,25 @@ module PhyloXML
             [:attr, 'absent_count']])
 
         if not @gained.empty?
-          gained_xml = XML::Node.new('gained')
+          gained_xml = LibXML::XML::Node.new('gained')
           PhyloXML::Writer.generate_xml(gained_xml, self, [[:simplearr, 'bc', @gained]])
           bc << gained_xml
         end
 
         if not @lost.empty?
-          lost_xml = XML::Node.new('lost')
+          lost_xml = LibXML::XML::Node.new('lost')
           PhyloXML::Writer.generate_xml(lost_xml, self, [[:simplearr, 'bc', @lost]])
           bc << lost_xml
         end
 
         if not @present.empty?
-          present_xml = XML::Node.new('present')
+          present_xml = LibXML::XML::Node.new('present')
           PhyloXML::Writer.generate_xml(present_xml, self, [[:simplearr, 'bc', @present]])
           bc << present_xml
         end
 
         if not @absent.empty?
-          absent_xml = XML::Node.new('absent')
+          absent_xml = LibXML::XML::Node.new('absent')
           PhyloXML::Writer.generate_xml(absent_xml, self, [[:simplearr, 'bc', @absent]])
           bc << absent_xml
         end
@@ -1120,7 +1120,7 @@ module PhyloXML
         if @id_ref_0 == nil or @id_ref_1 == nil or @type == nil
           raise "Attributes id_ref_0, id_ref_1, type are required elements by SequenceRelation element."
         else
-          sr = XML::Node.new('sequence_relation')
+          sr = LibXML::XML::Node.new('sequence_relation')
           sr['id_ref_0'] = @id_ref_0
           sr['id_ref_1'] = @id_ref_1
           sr['distance'] = @distance.to_s if @distance != nil
@@ -1141,7 +1141,7 @@ module PhyloXML
 
       # Converts elements to xml representation. Called by PhyloXML::Writer class.
       def to_xml
-        o = XML::Node.new(@element_name)
+        o = LibXML::XML::Node.new(@element_name)
         @attributes.each do |key, value|
           o[key] = value
         end

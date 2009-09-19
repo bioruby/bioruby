@@ -33,7 +33,11 @@ require 'bio/tree'
 
 require 'bio/db/phyloxml/phyloxml_elements'
 
-require 'xml'
+require 'rubygems' #needed to require the libxml gem
+
+require 'libxml'
+
+
 
 
   # == Description
@@ -66,6 +70,8 @@ require 'xml'
   #
   class Parser
 
+    include LibXML
+
     # After parsing all the trees, if there is anything else in other xml format,
     # it is saved in this array of PhyloXML::Other objects
     attr_reader :other
@@ -88,7 +94,7 @@ require 'xml'
 
       if File.exists?(filename)
         # By default do validation
-        unless validate == false
+        unless validate == false          
           schema = XML::Schema.document(XML::Document.file(File.join(File.dirname(__FILE__),'phyloxml.xsd')))
           xml_instance = XML::Document.file(filename)
           xml_instance.validate_schema(schema) do |msg, flag|

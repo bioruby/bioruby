@@ -65,6 +65,8 @@ module Bio
 
     class Writer
 
+      include LibXML
+
       SCHEMA_LOCATION = 'http://www.phyloxml.org http://www.phyloxml.org/1.10/phyloxml.xsd'
             
       attr_accessor :write_branch_length_as_subelement
@@ -91,7 +93,7 @@ module Bio
       #it gives error NameError: uninitialized constant LibXML::XML::Encoding
       #@doc.encoding = XML::Encoding::UTF_8
 
-      @doc.save(@filename, true)
+      @doc.save(@filename, :indent => true)
       end
 
       #
@@ -125,7 +127,7 @@ module Bio
             [:objarr, 'sequence_relation', 'sequence_relations'],
             [:objarr, 'property', 'properties']] )
 
-        @doc.save(@filename, @indent)
+        @doc.save(@filename, :indent => @indent)
       end #writer#write
 
 
@@ -149,7 +151,7 @@ module Bio
         other_arr.each do |other_obj|
           @root << other_obj.to_xml
         end
-        @doc.save(@filename, @indent)
+        @doc.save(@filename, :indent => @indent)
       end
 
       #class method
