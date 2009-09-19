@@ -228,21 +228,28 @@ module Bio
     end
 
     def test_phyloxml_examples_file
+      outputfn = "phyloxml_examples_generated_in_test.xml"
       phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLData.example_xml)
-      writer = Bio::PhyloXML::Writer.new(TestPhyloXMLData.file("phyloxml_examples_test.xml"))
+      writer = Bio::PhyloXML::Writer.new(TestPhyloXMLData.file(outputfn))
       phyloxml.each do |tree|
         writer.write(tree)
       end
       writer.write_other(phyloxml.other)
 
       assert_nothing_thrown do
-        Bio::PhyloXML::Parser.new(TestPhyloXMLData.file("phyloxml_examples_test.xml"))
+        Bio::PhyloXML::Parser.new(TestPhyloXMLData.file(outputfn))
       end
+      # The output file is not deleted since it might be used in the phyloxml
+      # parser test. But since the order of tests can't be assumed, I can't
+      # hard code it in.
     end
 
     def test_made_up_xml_file
       phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLData.file("made_up.xml"))
-      writer = Bio::PhyloXML::Writer.new(TestPhyloXMLData.file("made_up_test.xml"))
+      writer = Bio::PhyloXML::Writer.new(TestPhyloXMLData.file("made_up_generated_in_test.xml"))
+      # The output file is not deleted since it might be used in the phyloxml
+      # parser test. But since the order of tests can't be assumed, I can't
+      # hard code it in.
       phyloxml.each do |tree|
         writer.write(tree)
       end      
