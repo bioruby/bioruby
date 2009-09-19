@@ -130,17 +130,19 @@ class TestSingleStrand < Test::Unit::TestCase #:nodoc:
     assert_raise(ArgumentError) { @t.new('a', [1,1,2]) }
     assert_raise(ArgumentError) { @t.new('a', 1,1,2,2) }
 
-    assert_raise(ArgumentError) { @t.new(1, [1,2,3]) }
-    assert_raise(ArgumentError) { @t.new('gaat^aca', [1,2,3]) }
-    assert_raise(ArgumentError) { @t.new('gaat^^aca') }
-    assert_raise(ArgumentError) { @t.new('z', [1,2,3]) }
-
-    assert_raise(ArgumentError) { @t.new('g', [0,1,2]) }
-    assert_raise(ArgumentError) { @t.new('g', 0,1,2,0) }
-    assert_raise(ArgumentError) { @t.new('g', [0,1,1,2]) }
-    assert_raise(ArgumentError) { @t.new('g', 0,1,1,2,2) }
-    assert_raise(ArgumentError) { @t.new(1,2,3) }
-    assert_raise(ArgumentError) { @t.new(1,2,'g') }
+  # NOTE t| 2009-09-19 commented out for library efficiency
+  # re: validate_args(sequence, c) in util/restriction_enzyme/single_strand/single_strand.rb
+    # assert_raise(ArgumentError) { @t.new(1, [1,2,3]) }
+    # assert_raise(ArgumentError) { @t.new('gaat^aca', [1,2,3]) }
+    # assert_raise(ArgumentError) { @t.new('gaat^^aca') }
+    # assert_raise(ArgumentError) { @t.new('z', [1,2,3]) }
+    # 
+    # assert_raise(ArgumentError) { @t.new('g', [0,1,2]) }
+    # assert_raise(ArgumentError) { @t.new('g', 0,1,2,0) }
+    # assert_raise(ArgumentError) { @t.new('g', [0,1,1,2]) }
+    # assert_raise(ArgumentError) { @t.new('g', 0,1,1,2,2) }
+    # assert_raise(ArgumentError) { @t.new(1,2,3) }
+    # assert_raise(ArgumentError) { @t.new(1,2,'g') }
   end
 
 

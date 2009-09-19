@@ -40,7 +40,7 @@ module Bio
 # To easily get started with the data you can simply type this command
 # at your shell prompt:
 # 
-#   % wget ftp://ftp.neb.com/pub/rebase/emboss*
+#   % wget "ftp://ftp.neb.com/pub/rebase/emboss_*"
 # 
 # 
 # = Usage
