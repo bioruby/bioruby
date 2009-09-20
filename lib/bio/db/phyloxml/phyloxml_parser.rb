@@ -33,8 +33,6 @@ require 'bio/tree'
 
 require 'bio/db/phyloxml/phyloxml_elements'
 
-require 'rubygems' #needed to require the libxml gem
-
 require 'libxml'
 
 
