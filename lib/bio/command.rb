@@ -357,22 +357,33 @@ module Command
 
   # Backport of Dir.mktmpdir in Ruby 1.9.
   #
-  # Same as Dir.mktmpdir(prefix_suffix) in Ruby 1.9 except that
-  # prefix must be a String, nil, or omitted.
+  # Same as Dir.mktmpdir(prefix_suffix) in Ruby 1.9.
   #
   # ---
   # *Arguments*:
-  # * (optional) _prefix_: String
+  # * (optional) <em>prefix_suffix</em>: String (or Array, etc.)
+  # * (optional) <em>tmpdir</em>: String: temporary directory's path
   # 
-  def mktmpdir(prefix = 'd', tmpdir = nil, &block)
-    prefix = prefix.to_str
+  def mktmpdir(prefix_suffix = nil, tmpdir = nil, &block)
     begin
-      Dir.mktmpdir(prefix, tmpdir, &block)
+      Dir.mktmpdir(prefix_suffix, tmpdir, &block)
     rescue NoMethodError
-      suffix = ''
-      # backported from Ruby 1.9.0.
-      # ***** Below is excerpted from Ruby 1.9.0's lib/tmpdir.rb ****
+      # backported from Ruby 1.9.2-preview1.
+      # ***** Below is excerpted from Ruby 1.9.2-preview1's lib/tmpdir.rb ****
       # ***** Be careful about copyright. ****
+      case prefix_suffix
+      when nil
+        prefix = "d"
+        suffix = ""
+      when String
+        prefix = prefix_suffix
+        suffix = ""
+      when Array
+        prefix = prefix_suffix[0]
+        suffix = prefix_suffix[1]
+      else
+        raise ArgumentError, "unexpected prefix_suffix: #{prefix_suffix.inspect}"
+      end
       tmpdir ||= Dir.tmpdir
       t = Time.now.strftime("%Y%m%d")
       n = nil
@@ -396,9 +407,82 @@ module Command
       else
         path
       end
-      # ***** Above is excerpted from Ruby 1.9.0's lib/tmpdir.rb ****
+      # ***** Above is excerpted from Ruby 1.9.2-preview1's lib/tmpdir.rb ****
     end
   end
+
+  # Bio::Command::Tmpdir is a wrapper class to handle temporary directory
+  # like Tempfile class. A temporary directory is created when the object
+  # of the class is created, and automatically removed when the object
+  # is destroyed by GC.
+  #
+  # BioRuby library internal use only.
+  class Tmpdir
+
+    # Returns finalizer object for Tmpdir class.
+    # Internal use only. Users should not call this method directly.
+    # 
+    # Acknowledgement: The essense of the code is taken from tempfile.rb
+    # in Ruby 1.8.7.
+    #
+    # ---
+    # *Arguments*:
+    # * (required) _data_: Array containing internal data
+    # *Returns*:: Proc object
+    def self.callback(data)
+      pid = $$
+      lambda {
+        path, = *data
+        if pid == $$
+          $stderr.print "removing ", path, " ..." if $DEBUG
+          if path and !path.empty? and
+              File.directory?(path) and
+              !File.symlink?(path) then
+            Bio::Command.remove_entry_secure(path)
+            $stderr.print "done\n" if $DEBUG
+          else
+            $stderr.print "skipped\n" if $DEBUG
+          end
+        end
+      }
+    end
+
+    # Creates a new Tmpdir object.
+    # The arguments are the same as Bio::Command.mktmpdir.
+    #
+    # ---
+    # *Arguments*:
+    # * (optional) <em>prefix_suffix</em>: String (or Array)
+    # * (optional) <em>tmpdir</em>: String: temporary directory's path
+    # *Returns*:: Tmpdir object
+    def initialize(prefix_suffix = nil, tmpdir = nil)
+      @data = []
+      @clean_proc = self.class.callback(@data)
+      ObjectSpace.define_finalizer(self, @clean_proc)
+      @data.push(@path = Bio::Command.mktmpdir(prefix_suffix, tmpdir).freeze)
+    end
+
+    # Path to the temporay directory
+    #
+    # *Returns*:: String
+    def path
+      @path || raise(IOError, 'removed temporary directory')
+    end
+
+    # Removes the temporary directory.
+    #
+    # *Returns*:: nil
+    def close!
+      # raise error if path is nil
+      self.path
+      # finilizer object is called to remove the directory
+      @clean_proc.call
+      # unregister finalizer
+      ObjectSpace.undefine_finalizer(self)
+      # @data and @path is removed
+      @data = @path = nil
+    end
+  end #class Tmpdir
 
   # Same as OpenURI.open_uri(uri).read
   # and 
