@@ -91,14 +91,18 @@ class Fastq
   def initialize(str = nil)
     return unless str
     sc = StringScanner.new(str)
-    while line = sc.scan(/.*(?:\n|\r|\r\n)?/)
-      break unless add_header_line(line)
+    while !sc.eos? and line = sc.scan(/.*(?:\n|\r|\r\n)?/)
+      unless add_header_line(line) then
+        sc.unscan
+        break
+      end
     end
-    add_line(line) if line
-    while line = sc.scan(/.*(?:\n|\r|\r\n)?/)
-      break unless add_line(line)
+    while !sc.eos? and line = sc.scan(/.*(?:\n|\r|\r\n)?/)
+      unless add_line(line) then
+        sc.unscan
+        break
+      end
     end
-    sc.unscan if line
     @entry_overrun = sc.rest
   end
 
