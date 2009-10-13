@@ -281,7 +281,7 @@ _9_
         min = -5
         max = 62
         sc = range.collect do |q|
-          tmp = 10 ** (q.fdiv(10.0)) - 1
+          tmp = 10 ** (q / 10.0) - 1
           if tmp <= 0 then
             min
           else
@@ -330,7 +330,7 @@ _9_
 
       def scores_solexa2phred(range)
         sc = range.collect do |q|
-          r = 10 * Math.log10(10 ** (q.fdiv(10)) + 1)
+          r = 10 * Math.log10(10 ** (q / 10.0) + 1)
           r.round
         end
         sc
@@ -375,13 +375,13 @@ _9_
       end
 
       def phred_q2p(scores)
-        scores.collect { |q| 10 ** (-q.fdiv(10)) }
+        scores.collect { |q| 10 ** (-q / 10.0) }
       end
 
       def solexa_q2p(scores)
         scores.collect do |q|
-          t = 10 ** (-q.fdiv(10))
-          t.fdiv(1 + t)
+          t = 10 ** (-q / 10.0)
+          t / (1.0 + t)
         end
       end
 

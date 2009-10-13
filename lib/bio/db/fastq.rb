@@ -130,8 +130,8 @@ class Fastq
     # *Returns*:: (Array containing Float) probabilities
     def solexa_q2p(scores)
       scores.collect do |q|
-        t = 10 ** (- q.fdiv(10))
-        t.fdiv(1 + t)
+        t = 10 ** (- q / 10.0)
+        t / (1.0 + t)
       end
     end
 
@@ -142,7 +142,7 @@ class Fastq
     # *Returns*:: (Array containing Float) scores
     def solexa_p2q(probabilities)
       probabilities.collect do |p|
-        (-10 * Math.log10(p.fdiv(1 - p))).round
+        (-10 * Math.log10(p / (1.0 - p))).round
       end
     end
 
