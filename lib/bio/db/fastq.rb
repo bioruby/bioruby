@@ -452,8 +452,8 @@ class Fastq
 
   # (private) reset internal state
   def reset_state
-    if defined? @qualities then
-      remove_instance_variable(:@qualities)
+    if defined? @quality_scores then
+      remove_instance_variable(:@quality_scores)
     end
     if defined? @error_probabilities then
       remove_instance_variable(:@error_probabilities)
@@ -504,14 +504,16 @@ class Fastq
   #
   # ---
   # *Returns*:: (Array containing Integer) quality score values
-  def qualities
-    unless defined? @qualities then
+  def quality_scores
+    unless defined? @quality_scores then
       self.format ||= self.class::DefaultFormatName
       s = @format.str2scores(@quality_string)
-      @qualities = s
+      @quality_scores = s
     end
-    @qualities
+    @quality_scores
   end
+
+  alias qualities quality_scores
 
   # Estimated probability of error for each base.
   # ---
@@ -519,7 +521,7 @@ class Fastq
   def error_probabilities
     unless defined? @error_probabilities then
       self.format ||= self.class::DefaultFormatName
-      a = @format.q2p(self.qualities)
+      a = @format.q2p(self.quality_scores)
       @error_probabilities = a
     end
     @error_probabilities

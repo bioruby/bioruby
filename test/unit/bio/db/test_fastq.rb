@@ -354,10 +354,10 @@ _9_
         end
       end
 
-      def common_test_qualities(scores, filename, format)
+      def common_test_quality_scores(scores, filename, format)
         entries = read_file(filename, format)
-        assert_equal(scores, entries[0].qualities)
-        assert_equal(scores.reverse, entries[1].qualities)
+        assert_equal(scores, entries[0].quality_scores)
+        assert_equal(scores.reverse, entries[1].quality_scores)
       end
 
       def common_test_error_probabilities(probabilities, filename, format)
@@ -395,11 +395,11 @@ _9_
                                     'fastq-illumina')
       end
 
-      def test_qualities_as_sanger
+      def test_quality_scores_as_sanger
         scores = scores_to_sanger(self.class::RANGE)
-        common_test_qualities(scores,
-                              self.class::FILENAME_AS_SANGER,
-                              'fastq-sanger')
+        common_test_quality_scores(scores,
+                                   self.class::FILENAME_AS_SANGER,
+                                   'fastq-sanger')
       end
 
       def test_error_probabilities_as_sanger
@@ -410,11 +410,11 @@ _9_
                                         'fastq-sanger')
       end
 
-      def test_qualities_as_solexa
+      def test_quality_scores_as_solexa
         scores = scores_to_solexa(self.class::RANGE)
-        common_test_qualities(scores,
-                              self.class::FILENAME_AS_SOLEXA,
-                              'fastq-solexa')
+        common_test_quality_scores(scores,
+                                   self.class::FILENAME_AS_SOLEXA,
+                                   'fastq-solexa')
       end
 
       def test_error_probabilities_as_solexa
@@ -425,11 +425,11 @@ _9_
                                         'fastq-solexa')
       end
 
-      def test_qualities_as_illumina
+      def test_quality_scores_as_illumina
         scores = scores_to_illumina(self.class::RANGE)
-        common_test_qualities(scores,
-                              self.class::FILENAME_AS_ILLUMINA,
-                              'fastq-illumina')
+        common_test_quality_scores(scores,
+                                   self.class::FILENAME_AS_ILLUMINA,
+                                   'fastq-illumina')
       end
 
       def test_error_probabilities_as_illumina
