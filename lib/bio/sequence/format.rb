@@ -47,6 +47,15 @@ module Format
     # (resemble to EMBOSS "ncbi" format)
     autoload :Fasta_ncbi, 'bio/db/fasta/format_fasta'
 
+    # FASTQ "fastq-sanger" format generator
+    autoload :Fastq, 'bio/db/fastq/format_fastq'
+    # FASTQ "fastq-sanger" format generator
+    autoload :Fastq_sanger, 'bio/db/fastq/format_fastq'
+    # FASTQ "fastq-solexa" format generator
+    autoload :Fastq_solexa, 'bio/db/fastq/format_fastq'
+    # FASTQ "fastq-illumina" format generator
+    autoload :Fastq_illumina, 'bio/db/fastq/format_fastq'
+
   end #module Formatter
 
   # Repository of nucleotide sequence formatter classes
