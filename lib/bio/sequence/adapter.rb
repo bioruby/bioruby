@@ -24,6 +24,7 @@ module Bio::Sequence::Adapter
   autoload :FastaFormat, 'bio/db/fasta/fasta_to_biosequence'
   autoload :BioSQL,      'bio/db/biosql/biosql_to_biosequence'
   autoload :Chromatogram,'bio/db/chromatogram/chromatogram_to_biosequence'
+  autoload :Fastq,       'bio/db/fastq/fastq_to_biosequence'
 
   private
 

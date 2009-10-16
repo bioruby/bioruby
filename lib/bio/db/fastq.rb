@@ -24,6 +24,7 @@
 require "strscan"
 require "singleton"
 
+require 'bio/sequence'
 require 'bio/io/flatfile'
 
 module Bio
@@ -44,13 +45,19 @@ class Fastq
     OFFSET = nil
 
     # Range of score. Should be redefined in subclass.
+    # The range must not exclude end value, i.e. it must be X..Y,
+    # and must not be X...Y.
     SCORE_RANGE = nil
+
+    # Type of quality scores. Should be redefined in subclass.
+    QUALITY_SCORE_TYPE = nil
 
     def initialize
       @name = self.class::NAME
       @symbol = @name.gsub(/\-/, '_').to_sym
       @offset = self.class::OFFSET
       @score_range = self.class::SCORE_RANGE
+      @quality_score_type = self.class::QUALITY_SCORE_TYPE
     end
 
     # Format name
@@ -66,6 +73,9 @@ class Fastq
 
     # Allowed range of a score value
     attr_reader :score_range
+
+    # Type of quality scores. Maybe one of :phred or :solexa.
+    attr_reader :quality_score_type
 
     # Converts quality string to scores.
     # No overflow/underflow checks will be performed.
@@ -83,7 +93,7 @@ class Fastq
     # Overflow/underflow checks will be performed. 
     # If a block is given, when overflow/underflow detected,
     # the score value is passed to the block, and uses returned value
-    # as the score. If no blocks, raises error.
+    # as the score. If no blocks, silently truncated.
     #
     # ---
     # *Arguments*:
@@ -95,10 +105,19 @@ class Fastq
           i = yield(i) unless @score_range.include?(i)
           i + @offset
         end
-        tmp.pack('C*')
       else
-        self.scores2str(a) { |i| raise 'score out of range' }
+        min = @score_range.begin
+        max = @score_range.end
+        tmp = a.collect do |i|
+          if i < min then
+            i = min
+          elsif i > max then
+            i = max
+          end
+          i + @offset
+        end
       end
+      tmp.pack('C*')
     end
 
     # PHRED score to probability conversion.
@@ -113,13 +132,18 @@ class Fastq
     end
 
     # Probability to PHRED score conversion.
+    #
+    # The values may be truncated or incorrect if overflows/underflows
+    # occurred during the calculation.
     # ---
     # *Arguments*:
     # * (required) _probabilities_: (Array containing Float) probabilities
     # *Returns*:: (Array containing Float) scores
     def phred_p2q(probabilities)
       probabilities.collect do |p|
-        (-10 * Math.log10(p)).round
+        p = Float::MIN if p < Float::MIN
+        q = -10 * Math.log10(p)
+        q.finite? ? q.round : q
       end
     end
 
@@ -142,8 +166,45 @@ class Fastq
     # *Returns*:: (Array containing Float) scores
     def solexa_p2q(probabilities)
       probabilities.collect do |p|
-        (-10 * Math.log10(p / (1.0 - p))).round
+        t = p / (1.0 - p)
+        t = Float::MIN if t < Float::MIN
+        q = -10 * Math.log10(t)
+        q.finite? ? q.round : q
       end
+    end
+
+    # Converts PHRED scores to Solexa scores.
+    #
+    # The values may be truncated or incorrect if overflows/underflows
+    # occurred during the calculation.
+    # ---
+    # *Arguments*:
+    # * (required) _scores_: (Array containing Integer) quality scores
+    # *Returns*:: (Array containing Integer) quality scores
+    def convert_scores_from_phred_to_solexa(scores)
+      sc = scores.collect do |q|
+        t = 10 ** (q / 10.0) - 1
+        t = Float::MIN if t < Float::MIN
+        r = 10 * Math.log10(t)
+        r.finite? ? r.round : r
+      end
+      sc
+    end
+
+    # Converts Solexa scores to PHRED scores.
+    #
+    # The values may be truncated if overflows/underflows occurred
+    # during the calculation.
+    # ---
+    # *Arguments*:
+    # * (required) _scores_: (Array containing Integer) quality scores
+    # *Returns*:: (Array containing Integer) quality scores
+    def convert_scores_from_solexa_to_phred(scores)
+      sc = scores.collect do |q|
+        r = 10 * Math.log10(10 ** (q / 10.0) + 1)
+        r.finite? ? r.round : r
+      end
+      sc
     end
 
     # Format information for "fastq-sanger".
@@ -157,6 +218,8 @@ class Fastq
       OFFSET = 33
       # score range
       SCORE_RANGE = 0..93
+      # type of quality scores
+      QUALITY_SCORE_TYPE = :phred
 
       alias p2q phred_p2q
       alias q2p phred_q2p
@@ -173,6 +236,8 @@ class Fastq
       OFFSET = 64
       # score range
       SCORE_RANGE = (-5)..62
+      # type of quality scores
+      QUALITY_SCORE_TYPE = :solexa
 
       alias p2q solexa_p2q
       alias q2p solexa_q2p
@@ -189,6 +254,8 @@ class Fastq
       OFFSET = 64
       # score range
       SCORE_RANGE = 0..62
+      # type of quality scores
+      QUALITY_SCORE_TYPE = :phred
 
       alias p2q phred_p2q
       alias q2p phred_q2p
@@ -428,7 +495,7 @@ class Fastq
     @entry_overrun = sc.rest
   end
 
-  # definition
+  # definition; ID line (begins with @)
   attr_reader :definition
 
   # quality as a string
@@ -448,6 +515,23 @@ class Fastq
   # length of naseq
   def nalen
     naseq.length
+  end
+
+  # returns Bio::Sequence::Generic
+  def seq
+    unless defined? @seq then
+      @seq = Bio::Sequence::Generic.new(@sequence_string)
+    end
+    @seq
+  end
+
+  # Identifier of the entry. Normally, the first word of the ID line.
+  def entry_id
+    unless defined? @entry_id then
+      eid = @definition.strip.split(/\s+/)[0] || @definition
+      @entry_id = eid
+    end
+    @entry_id
   end
 
   # (private) reset internal state
@@ -497,6 +581,13 @@ class Fastq
     @format ? @format.name : nil
   end
 
+
+  # The meaning of the quality scores.
+  # It may be one of :phred, :solexa, or nil.
+  def quality_score_type
+    self.format ||= self.class::DefaultFormatName
+    @format.quality_score_type
+  end
 
   # Quality score for each base.
   # For "fastq-sanger" or "fastq-illumina", it is PHRED score.
@@ -643,7 +734,7 @@ class Fastq
   # because of efficiency.
   # 
   def to_biosequence
-    #Bio::Sequence.adapter(self, Bio::Sequence::Adapter::Fastq)
+    Bio::Sequence.adapter(self, Bio::Sequence::Adapter::Fastq)
   end
 
 end #class Fastq
