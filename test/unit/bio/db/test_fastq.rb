@@ -24,129 +24,125 @@ module Bio
     TestFastqDataDir = Pathname.new(File.join(bioruby_root, 'test', 'data',
                                               'fastq')).cleanpath.to_s
 
+    # A module providing methods to compare float arrays
+    module FloatArrayComparison
+      private
+      def float_array_equivalent?(expected, actual, *arg)
+        assert_equal(expected.size, actual.size, *arg)
+        dt = Float::EPSILON * 1024
+        (0...(expected.size)).each do |i|
+          e = expected[i]
+          a = actual[i]
+          #assert_equal(e, a)
+          assert_in_delta(e, a, e.abs * dt)
+        end
+      end
+    end #module FloatArrayComparison
+
+    # Tests using 'longreads_original_sanger.fastq'
     class TestFastq_longreads_original_sanger < Test::Unit::TestCase
+      include FloatArrayComparison
 
-      def setup
-        fn = File.join(TestFastqDataDir, 'longreads_original_sanger.fastq')
-        @ff = Bio::FlatFile.open(Bio::Fastq, fn)
-      end
+      SEQS =
+        [
+         'tcagTTAAGATGGGATAATATCCTCAGATTGCGTGATGAACTTTGTTCTGGTGGAGGAGA
+          AGGAAGTGCATTCGACGTATGCCCGTTTGTCGATATTTGtatttaaagtaatccgtcaca
+          aatcagtgacataaatattatttagatttcgggagcaactttatttattccacaagcagg
+          tttaaattttaaatttaaattattgcagaagactttaaattaacctcgttgtcggagtca
+          tttgttcggttattggtcgaaagtaaccncgggaagtgccgaaaactaacaaacaaaaga
+          agatagtgaaattttaattaaaanaaatagccaaacgtaactaactaaaacggacccgtc
+          gaggaactgccaacggacgacacagggagtagnnn',
+         'tcagCCAGCAATTCCGACTTAATTGTTCTTCTTCCATCATTCATCTCGACTAACAGTTCT
+          ACGATTAATGAGTTTGGCtttaatttgttgttcattattgtcacaattacactactgaga
+          ctgccaaggcacncagggataggnn',
+         'tcagTTTTCTTAAATTACTTGAATCTGTTGAAGTGGATGTCCACTTTTGTATGCCAAATA
+          TGCCCAGCGTATACGATCTTGGCCACATCTCCACATAATCATCAGTCGGATGCAAAAAGC
+          GATTAAACTAAAAATGAATGCGTTTTTAGATGAGTAAATAGGTAATACTTTGTTTAAATA
+          ATAAATGTCACAAACAGAACGCGGATTACAGTACCTGAAAATAGTTGTACTGTATCTGTG
+          CCGGCACTTCCTCGGCCCTGAGAAGTTGTCCCGTTGTTTCCATTCGCACCATCCAATGGC
+          CAAAGTTTGCGAAGAATCTGTTCCGTTCCATTACCAATTGTTTTTCCATGctgagactgc
+          caaggcacacaggggataggnn',
+         'tcagTTTTTGGAGAATTCCGTCAGGGACGGCATGGCATATTTGTGGGTTCGGCACGGCGT
+          CCTGGCCAAGAAGAAGAAGACGAATTAGCCCGTTAATTTAATGACACCTTCCCCAATTTT
+          GCAGCAATGATTGGTTCATTCTTGGCGGTGCGTTTTTGTGCTTCGTCGAATTGTTGGCCA
+          TTTTGGTCCACCGGCCATCATCTTTACGCTATCCGACTGATTGGAAATCACCGCCTAGCA
+          TTTTGCCGAAGATTGTTGCGTTGTACGGCCATGTGCTGATTGTTTACATTGGCATTCTTG
+          GCAATTTGTCCTTGGTCGGCTTTGACGGCAAATTTGCGGTGTTAAGTctgagactgccaa
+          ggcacacagggggatagggnn',
+         'tcagTTGACCGGCGTTGTGTAACAATAATTCATTATTCTGAGACGATGCCAATGTAATCG
+          ACGGTTTATGCCCAATTATTCCCATCTATGCTTAACTGATCAAATACTATTTGCATTACG
+          TCACGAAATTGCGCGAACACCGCCGGCCGACAATAATTTATACCGGACATACCGGAGTTG
+          ATGGTAATCGGTAAAGAGTTTTATTTAATTATntattatcnctattaattattgttanca
+          acaatgtgcacgctntgccgcccgccgccgccgtgtcggtaggaccccggacggacccgg
+          acccggttcgggtacccgttttcgggttcccggaaccgtttttcgggtacccggtttttt
+          cggggggccccccggtaaaaaaccggggaaccccctaaaacgggtaaacgtaccgtaagg
+          gaccccctaaacgggggccccgaaaaaccgggacccaaaccggggggaaacggttaaagg
+          ggggggaagtaggngnnnnnnnnnnnn',
+         'tcagTTATTGCAGTCGTTCCGCGCCATCGCCGGTAACCGTCCGCGTGTTATTCTGTGTAT
+          CGGCCAACCTTCGTATAACTTCGTATAATGTATGCTATACGAAGTTATTACGATCTATAC
+          CGGCGAAACTCAGCCGAAAGGTCTCGCGGTAGAGCCTATGAGCTGCCCGACCGATGCATT
+          TAAATTTCCGGGGATCGtcgctgatctgagactgccaaaggcacactagggggataggnn
+          nnnnnnnnnnnnnnnnnn',
+         'tcagGTTTTAAATCGCTTTCCAAGGAATTTGAGTCTAAATCCGGTGGATCCCATCAGTAC
+          AAATGCGGCGACAAGGCCGTGAAAACACTGCTTAATTCTTTGCACTTTTTGGCCACCTTT
+          TTGGAAATGTTGTTTTGTGTTCTCAAAATTTTCCATCTCAGAACAAACATTCCATCGGGC
+          TGATGTTGTGGCTTTTGGCGCGCGAAGTGCTGCTACTGCGCGGCAAAATCAGTCGCCAGA
+          CCGGTTTTGTTGTGGACGACAAAGTGATCATGCCTGACTTGTACTTCTACCGCGATCCGC
+          AAGCGCGAATTGGTCACATAGTTATAGAATTTTTGAGCCTTTTTCTTGACATAAAAAGTG
+          TGGTTTTAAAAATTTCCTGGCAGGACCCACGCCAACGTTCAGGAATAATATCTTTTAAAA
+          AGctgagactgccaaggcacacaggggataggn',
+         'tcagTTTAATTTGGTGCTTCCTTTCAATTCCTTAGTTTAAACTTGGCACTGAAGTCTCGC
+          ATTTATAACTAGAGCCCGGATTTTAGAGGCTAAAAAGTTTTCCAGATTTCAAAATTTATT
+          TCGAAACTATTTTTCTGATTGTGATGTGACGGATTTCTAAATTAAATCGAAATGATGTGT
+          ATTGAACTTAACAAGTGATTTTTATCAGATTTTGTCAATGAATAAATTTTAATTTAAATC
+          TCTTTCTAACACTTTCATGATTAAAATCTAACAAAGCGCGACCAGTATGTGAGAAGAGCA
+          AAAACAACAAAAAGTGCTAGCACTAAAGAAGGTTCGAACCCAACACATAACGTAAGAGTT
+          ACCGGGAAGAAAACCACTctgagactgccaaggcacacagggggataggnn',
+         'tcagTTTTCAAATTTTCCGAAATTTGCTGTTTGGTAGAAGGCAAATTATTTGATTGAATT
+          TTGTATTTATTTAAAACAATTTATTTTAAAATAATAATTTTCCATTGACTTTTTACATTT
+          AATTGATTTTATTATGCATTTTATATTTGTTTTCTAAATATTCGTTTGCAAACTCACGTT
+          GAAATTGTATTAAACTCGAAATTAGAGTTTTTGAAATTAATTTTTATGTAGCATAATATT
+          TTAAACATATTGGAATTTTATAAAACATTATATTTTTctgagactgccaaggcacacagg
+          gggataggn',
+         'tcagTTTTGATCTTTTAATAATGAATTTTAATGTGTTAAAATGATTGCATTGATGGCATA
+          ACCGCATTTAAATTAATTACATGAAGTGTAAGTATGAAATTTTCCTTTCCAAATTGCAAA
+          AACTAAAATTTAAAATTTATCGTAAAAATTAACATATATTTTAAACGATTTTAAGAAACA
+          TTTGTAAATTATATTTTTGTGAAGCGTTCAAACAAAAATAAACAATAAAATATTTTTCTA
+          TTTAATAGCAAAACATTTGACGATGAAAAGGAAAATGCGGGTTTGAAAATGGGCTTTGCC
+          ATGCTATTTTCATAATAACATATTTTTATTATGAATAATAAATTTACATACAATATATAC
+          AGTCTTAAATTTATTCATAATATTTTTGAGAATctgagactgccaaggcacacaggggat
+          aggn'
+        ].collect { |x| x.gsub(/\s/, '').freeze }.freeze
 
-      def test_validate_format
-        @ff.each do |e|
-          assert(e.validate_format)
-        end
-      end
+      IDLINES =
+        [
+         'FSRRS4401BE7HA [length=395] [gc=36.46] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=95]',
+         'FSRRS4401BRRTC [length=145] [gc=38.62] [flows=800] [phred_min=0] [phred_max=38] [trimmed_length=74]',
+         'FSRRS4401B64ST [length=382] [gc=40.58] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=346]',
+         'FSRRS4401EJ0YH [length=381] [gc=48.29] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=343]',
+         'FSRRS4401BK0IB [length=507] [gc=49.31] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=208]',
+         'FSRRS4401ARCCB [length=258] [gc=46.90] [flows=800] [phred_min=0] [phred_max=38] [trimmed_length=193]',
+         'FSRRS4401CM938 [length=453] [gc=44.15] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=418]',
+         'FSRRS4401EQLIK [length=411] [gc=34.31] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=374]',
+         'FSRRS4401AOV6A [length=309] [gc=22.98] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=273]',
+         'FSRRS4401EG0ZW [length=424] [gc=23.82] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=389]',
+        ].collect { |x| x.freeze }.freeze
 
-      def test_validate_format_with_array
-        @ff.each do |e|
-          a = []
-          assert(e.validate_format(a))
-          assert(a.empty?)
-        end
-      end
 
-      def test_definition
-        ids =
-          [
-           'FSRRS4401BE7HA [length=395] [gc=36.46] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=95]',
-           'FSRRS4401BRRTC [length=145] [gc=38.62] [flows=800] [phred_min=0] [phred_max=38] [trimmed_length=74]',
-           'FSRRS4401B64ST [length=382] [gc=40.58] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=346]',
-           'FSRRS4401EJ0YH [length=381] [gc=48.29] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=343]',
-           'FSRRS4401BK0IB [length=507] [gc=49.31] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=208]',
-           'FSRRS4401ARCCB [length=258] [gc=46.90] [flows=800] [phred_min=0] [phred_max=38] [trimmed_length=193]',
-           'FSRRS4401CM938 [length=453] [gc=44.15] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=418]',
-           'FSRRS4401EQLIK [length=411] [gc=34.31] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=374]',
-           'FSRRS4401AOV6A [length=309] [gc=22.98] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=273]',
-           'FSRRS4401EG0ZW [length=424] [gc=23.82] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=389]',
-          ]
+      ENTRY_IDS = [ 'FSRRS4401BE7HA',
+                    'FSRRS4401BRRTC',
+                    'FSRRS4401B64ST',
+                    'FSRRS4401EJ0YH',
+                    'FSRRS4401BK0IB',
+                    'FSRRS4401ARCCB',
+                    'FSRRS4401CM938',
+                    'FSRRS4401EQLIK',
+                    'FSRRS4401AOV6A',
+                    'FSRRS4401EG0ZW'
+                  ].collect { |x| x.freeze }.freeze
 
-        @ff.each do |e|
-          assert_equal(ids.shift, e.definition)
-        end
-        assert(ids.empty?)
-      end
-
-      def test_sequence_string
-        seqs =
-          [
-           'tcagTTAAGATGGGATAATATCCTCAGATTGCGTGATGAACTTTGTTCTGGTGGAGGAGA
-            AGGAAGTGCATTCGACGTATGCCCGTTTGTCGATATTTGtatttaaagtaatccgtcaca
-            aatcagtgacataaatattatttagatttcgggagcaactttatttattccacaagcagg
-            tttaaattttaaatttaaattattgcagaagactttaaattaacctcgttgtcggagtca
-            tttgttcggttattggtcgaaagtaaccncgggaagtgccgaaaactaacaaacaaaaga
-            agatagtgaaattttaattaaaanaaatagccaaacgtaactaactaaaacggacccgtc
-            gaggaactgccaacggacgacacagggagtagnnn',
-           'tcagCCAGCAATTCCGACTTAATTGTTCTTCTTCCATCATTCATCTCGACTAACAGTTCT
-            ACGATTAATGAGTTTGGCtttaatttgttgttcattattgtcacaattacactactgaga
-            ctgccaaggcacncagggataggnn',
-           'tcagTTTTCTTAAATTACTTGAATCTGTTGAAGTGGATGTCCACTTTTGTATGCCAAATA
-            TGCCCAGCGTATACGATCTTGGCCACATCTCCACATAATCATCAGTCGGATGCAAAAAGC
-            GATTAAACTAAAAATGAATGCGTTTTTAGATGAGTAAATAGGTAATACTTTGTTTAAATA
-            ATAAATGTCACAAACAGAACGCGGATTACAGTACCTGAAAATAGTTGTACTGTATCTGTG
-            CCGGCACTTCCTCGGCCCTGAGAAGTTGTCCCGTTGTTTCCATTCGCACCATCCAATGGC
-            CAAAGTTTGCGAAGAATCTGTTCCGTTCCATTACCAATTGTTTTTCCATGctgagactgc
-            caaggcacacaggggataggnn',
-           'tcagTTTTTGGAGAATTCCGTCAGGGACGGCATGGCATATTTGTGGGTTCGGCACGGCGT
-            CCTGGCCAAGAAGAAGAAGACGAATTAGCCCGTTAATTTAATGACACCTTCCCCAATTTT
-            GCAGCAATGATTGGTTCATTCTTGGCGGTGCGTTTTTGTGCTTCGTCGAATTGTTGGCCA
-            TTTTGGTCCACCGGCCATCATCTTTACGCTATCCGACTGATTGGAAATCACCGCCTAGCA
-            TTTTGCCGAAGATTGTTGCGTTGTACGGCCATGTGCTGATTGTTTACATTGGCATTCTTG
-            GCAATTTGTCCTTGGTCGGCTTTGACGGCAAATTTGCGGTGTTAAGTctgagactgccaa
-            ggcacacagggggatagggnn',
-           'tcagTTGACCGGCGTTGTGTAACAATAATTCATTATTCTGAGACGATGCCAATGTAATCG
-            ACGGTTTATGCCCAATTATTCCCATCTATGCTTAACTGATCAAATACTATTTGCATTACG
-            TCACGAAATTGCGCGAACACCGCCGGCCGACAATAATTTATACCGGACATACCGGAGTTG
-            ATGGTAATCGGTAAAGAGTTTTATTTAATTATntattatcnctattaattattgttanca
-            acaatgtgcacgctntgccgcccgccgccgccgtgtcggtaggaccccggacggacccgg
-            acccggttcgggtacccgttttcgggttcccggaaccgtttttcgggtacccggtttttt
-            cggggggccccccggtaaaaaaccggggaaccccctaaaacgggtaaacgtaccgtaagg
-            gaccccctaaacgggggccccgaaaaaccgggacccaaaccggggggaaacggttaaagg
-            ggggggaagtaggngnnnnnnnnnnnn',
-           'tcagTTATTGCAGTCGTTCCGCGCCATCGCCGGTAACCGTCCGCGTGTTATTCTGTGTAT
-            CGGCCAACCTTCGTATAACTTCGTATAATGTATGCTATACGAAGTTATTACGATCTATAC
-            CGGCGAAACTCAGCCGAAAGGTCTCGCGGTAGAGCCTATGAGCTGCCCGACCGATGCATT
-            TAAATTTCCGGGGATCGtcgctgatctgagactgccaaaggcacactagggggataggnn
-            nnnnnnnnnnnnnnnnnn',
-           'tcagGTTTTAAATCGCTTTCCAAGGAATTTGAGTCTAAATCCGGTGGATCCCATCAGTAC
-            AAATGCGGCGACAAGGCCGTGAAAACACTGCTTAATTCTTTGCACTTTTTGGCCACCTTT
-            TTGGAAATGTTGTTTTGTGTTCTCAAAATTTTCCATCTCAGAACAAACATTCCATCGGGC
-            TGATGTTGTGGCTTTTGGCGCGCGAAGTGCTGCTACTGCGCGGCAAAATCAGTCGCCAGA
-            CCGGTTTTGTTGTGGACGACAAAGTGATCATGCCTGACTTGTACTTCTACCGCGATCCGC
-            AAGCGCGAATTGGTCACATAGTTATAGAATTTTTGAGCCTTTTTCTTGACATAAAAAGTG
-            TGGTTTTAAAAATTTCCTGGCAGGACCCACGCCAACGTTCAGGAATAATATCTTTTAAAA
-            AGctgagactgccaaggcacacaggggataggn',
-           'tcagTTTAATTTGGTGCTTCCTTTCAATTCCTTAGTTTAAACTTGGCACTGAAGTCTCGC
-            ATTTATAACTAGAGCCCGGATTTTAGAGGCTAAAAAGTTTTCCAGATTTCAAAATTTATT
-            TCGAAACTATTTTTCTGATTGTGATGTGACGGATTTCTAAATTAAATCGAAATGATGTGT
-            ATTGAACTTAACAAGTGATTTTTATCAGATTTTGTCAATGAATAAATTTTAATTTAAATC
-            TCTTTCTAACACTTTCATGATTAAAATCTAACAAAGCGCGACCAGTATGTGAGAAGAGCA
-            AAAACAACAAAAAGTGCTAGCACTAAAGAAGGTTCGAACCCAACACATAACGTAAGAGTT
-            ACCGGGAAGAAAACCACTctgagactgccaaggcacacagggggataggnn',
-           'tcagTTTTCAAATTTTCCGAAATTTGCTGTTTGGTAGAAGGCAAATTATTTGATTGAATT
-            TTGTATTTATTTAAAACAATTTATTTTAAAATAATAATTTTCCATTGACTTTTTACATTT
-            AATTGATTTTATTATGCATTTTATATTTGTTTTCTAAATATTCGTTTGCAAACTCACGTT
-            GAAATTGTATTAAACTCGAAATTAGAGTTTTTGAAATTAATTTTTATGTAGCATAATATT
-            TTAAACATATTGGAATTTTATAAAACATTATATTTTTctgagactgccaaggcacacagg
-            gggataggn',
-           'tcagTTTTGATCTTTTAATAATGAATTTTAATGTGTTAAAATGATTGCATTGATGGCATA
-            ACCGCATTTAAATTAATTACATGAAGTGTAAGTATGAAATTTTCCTTTCCAAATTGCAAA
-            AACTAAAATTTAAAATTTATCGTAAAAATTAACATATATTTTAAACGATTTTAAGAAACA
-            TTTGTAAATTATATTTTTGTGAAGCGTTCAAACAAAAATAAACAATAAAATATTTTTCTA
-            TTTAATAGCAAAACATTTGACGATGAAAAGGAAAATGCGGGTTTGAAAATGGGCTTTGCC
-            ATGCTATTTTCATAATAACATATTTTTATTATGAATAATAAATTTACATACAATATATAC
-            AGTCTTAAATTTATTCATAATATTTTTGAGAATctgagactgccaaggcacacaggggat
-            aggn'
-          ]
-        
-        @ff.each do |e|
-          assert_equal(seqs.shift.gsub(/\s/, ''), e.sequence_string)
-        end
-        assert(seqs.empty?)
-      end
-
-      def test_quality_string
-        qualities =
-          [ <<'_0_', <<'_1_', <<'_2_', <<'_3_', <<'_4_', <<'_5_', <<'_6_', <<'_7_', <<'_8_', <<'_9_' ]
+      QUALITY_STRINGS = 
+        [ <<'_0_', <<'_1_', <<'_2_', <<'_3_', <<'_4_', <<'_5_', <<'_6_', <<'_7_', <<'_8_', <<'_9_' ].collect { |x| x.delete("\r\n").freeze }.freeze
 FFFDDDDDDDA666?688FFHGGIIIIIIIIIIIIIIIII
 IHHHIIIIIIIIIGHGFFFFF====DFFFFFFFFFFFFFF
 D???:3104/76=:5...4.3,,,366////4<ABBAAA=
@@ -254,10 +250,140 @@ IIIIHH999HHHIA=AEEFF@=.....AD@@@DDEEEEFI
 II;;;977FFCCC@24449?FDD!
 _9_
 
+      QUALITY_SCORES = QUALITY_STRINGS.collect { |str|
+        str.unpack('C*').collect { |i| i - 33 }.freeze
+      }.freeze
+
+      ERROR_PROBABILITIES = QUALITY_SCORES.collect { |ary|
+        ary.collect { |q| 10 ** (- q / 10.0) }.freeze
+      }.freeze
+
+      def setup
+        fn = File.join(TestFastqDataDir, 'longreads_original_sanger.fastq')
+        @ff = Bio::FlatFile.open(Bio::Fastq, fn)
+      end
+
+      def test_validate_format
         @ff.each do |e|
-          assert_equal(qualities.shift.delete("\r\n"), e.quality_string)
+          assert(e.validate_format)
+        end
+        assert(@ff.eof?)
+      end
+
+      def test_validate_format_with_array
+        @ff.each do |e|
+          a = []
+          assert(e.validate_format(a))
+          assert(a.empty?)
+        end
+      end
+
+      def test_definition
+        ids = IDLINES.dup
+        @ff.each do |e|
+          assert_equal(ids.shift, e.definition)
+        end
+        assert(ids.empty?)
+      end
+
+      def test_entry_id
+        ids = ENTRY_IDS.dup
+        @ff.each do |e|
+          assert_equal(ids.shift, e.entry_id)
+        end
+        assert(ids.empty?)
+      end
+
+      def test_sequence_string
+        seqs = SEQS.dup
+        @ff.each do |e|
+          s = seqs.shift
+          assert_equal(s, e.sequence_string)
+        end
+        assert(seqs.empty?)
+      end
+
+      def test_seq
+        seqs = SEQS.collect { |x| Bio::Sequence::Generic.new(x) }
+        @ff.each do |e|
+          s = seqs.shift
+          assert_equal(s, e.seq)
+        end
+        assert(seqs.empty?)
+      end
+
+      def test_naseq
+        seqs = SEQS.collect { |x| Bio::Sequence::NA.new(x) }
+        @ff.each do |e|
+          s = seqs.shift
+          assert_equal(s, e.naseq)
+        end
+        assert(seqs.empty?)
+      end
+
+      def test_nalen
+        lengths = SEQS.collect { |x| Bio::Sequence::NA.new(x).length }
+        @ff.each do |e|
+          i = lengths.shift
+          assert_equal(i, e.nalen)
+        end
+        assert(lengths.empty?)
+      end
+
+      def test_quality_string
+        qualities = QUALITY_STRINGS.dup
+        @ff.each do |e|
+          assert_equal(qualities.shift, e.quality_string)
         end
         assert(qualities.empty?)
+      end
+
+      def test_quality_scores
+        qualities = QUALITY_SCORES.dup
+        @ff.each do |e|
+          assert_equal(qualities.shift, e.quality_scores)
+        end
+        assert(qualities.empty?)
+      end
+
+      def test_error_probabilities
+        probs = ERROR_PROBABILITIES.dup
+        @ff.each do |e|
+          float_array_equivalent?(probs.shift,
+                                  e.error_probabilities)
+        end
+        assert(probs.empty?)
+      end
+
+      def test_to_biosequence
+        @ff.each_with_index do |e, i|
+          s = nil
+          assert_nothing_raised { s = e.to_biosequence }
+          assert_equal(Bio::Sequence::Generic.new(SEQS[i]), s.seq)
+          assert_equal(IDLINES[i], s.definition)
+          assert_equal(ENTRY_IDS[i], s.entry_id)
+          assert_equal(:phred, s.quality_score_type)
+          assert_equal(QUALITY_SCORES[i], s.quality_scores)
+          float_array_equivalent?(ERROR_PROBABILITIES[i],
+                                  s.error_probabilities)
+        end
+      end
+
+      def test_roundtrip
+        @ff.each_with_index do |e, i|
+          str_orig = @ff.entry_raw
+          s = e.to_biosequence
+          str = s.output(:fastq_sanger,
+                         { :repeat_title => true, :width => 80 })
+          assert_equal(str_orig, str)
+          e2 = Bio::Fastq.new(str)
+          assert_equal(e.sequence_string, e2.sequence_string)
+          assert_equal(e.quality_string, e2.quality_string)
+          assert_equal(e.definition, e2.definition)
+          assert_equal(e.quality_scores, e2.quality_scores)
+          float_array_equivalent?(e.error_probabilities,
+                                  e2.error_probabilities)
+        end
       end
 
     end #class TestFastq_longreads_original_sanger
@@ -265,6 +391,8 @@ _9_
     # common methods to read *_full_range_as_*.fastq and test quality scores
     # and error probabilities
     module TestFastq_full_range
+      include FloatArrayComparison
+
       private
       def read_file(fn, format)
         path = File.join(TestFastqDataDir, fn)
@@ -342,16 +470,6 @@ _9_
 
       def scores_solexa2illumina(range)
         scores_phred2illumina(scores_solexa2phred(range))
-      end
-
-      def float_array_equivalent?(expected, actual, *arg)
-        assert_equal(expected.size, actual.size, *arg)
-        (0...(expected.size)).each do |i|
-          e = expected[i]
-          a = actual[i]
-          #assert_equal(e, a)
-          assert_in_delta(e, a, e.abs * (Float::EPSILON * 1024))
-        end
       end
 
       def common_test_quality_scores(scores, filename, format)
