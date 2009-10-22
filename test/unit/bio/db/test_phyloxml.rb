@@ -79,20 +79,6 @@ module Bio
 
 end #end module TestPhyloXMLData
 
-#  class TestPhyloXML0 <Test::Unit::TestCase
-#    #test if xml lib exists.
-#
-#    def test_libxml
-#      begin
-#        require 'xml'
-#      rescue LoadError
-#        puts "Please install libxml-ruby library. It is needed for Bio::PhyloXML module. Unit tests will exit now."
-#        #exit 1
-#      end
-#    end
-#
-#  end
-
   
 
   class TestPhyloXML1 < Test::Unit::TestCase
@@ -102,7 +88,7 @@ end #end module TestPhyloXMLData
     end
     
     def test_init
-      assert_equal(@phyloxml.class, Bio::PhyloXML::Parser)
+      assert_instance_of(Bio::PhyloXML::Parser, @phyloxml)
     end 
       
     def test_next_tree()
@@ -113,7 +99,7 @@ end #end module TestPhyloXMLData
         tree_arr[tree_arr.length] = tree.name
         tree = @phyloxml.next_tree
       end      
-      assert_equal(tree_arr.length, 13)
+      assert_equal(13, tree_arr.length)
     end
      
   end #class TestPhyloXML
@@ -129,25 +115,25 @@ end #end module TestPhyloXMLData
     end
     
     def test_tree_name
-      assert_equal(@tree.name, "example from Prof. Joe Felsenstein's book \"Inferring Phylogenies\"")
+      assert_equal("example from Prof. Joe Felsenstein's book \"Inferring Phylogenies\"", @tree.name)
     end
     
     def test_tree_description
-      assert_equal(@tree.description, "phyloXML allows to use either a \"branch_length\" attribute or element to indicate branch lengths.")
+      assert_equal("phyloXML allows to use either a \"branch_length\" attribute or element to indicate branch lengths.", @tree.description)
     end
     
     def test_branch_length_attribute
-      assert_equal(@tree.total_distance, 0.792)
+      assert_equal(0.792, @tree.total_distance)
     end
 
     def test_rooted_atr
-       assert_equal(@tree.rooted, true)
+       assert_equal(true, @tree.rooted)
     end
     
    
     def test_branch_length_tag
       @tree = @phyloxml.next_tree
-      assert_equal(@tree.total_distance, 0.792)
+      assert_equal(0.792, @tree.total_distance)
     end
     
     def test_bootstrap
@@ -155,8 +141,8 @@ end #end module TestPhyloXMLData
       @tree = @phyloxml.next_tree
       @tree = @phyloxml.next_tree
       node = @tree.get_node_by_name("AB")
-      assert_equal(node.confidences[0].type, 'bootstrap')
-      assert_equal(node.confidences[0].value, 89)
+      assert_equal('bootstrap', node.confidences[0].type)
+      assert_equal(89, node.confidences[0].value)
     end
 
     def test_to_biotreenode_bootstrap
@@ -165,7 +151,7 @@ end #end module TestPhyloXMLData
       @tree = @phyloxml.next_tree
       node = @tree.get_node_by_name("AB")
       bionode = node.to_biotreenode
-      assert_equal(bionode.bootstrap, 89)
+      assert_equal(89, bionode.bootstrap)
     end
 
     def test_duplications
@@ -173,7 +159,7 @@ end #end module TestPhyloXMLData
         @tree = @phyloxml.next_tree
       end
       node = @tree.root
-      assert_equal(node.events.speciations, 1)
+      assert_equal(1, node.events.speciations)
     end
 
     def test_taxonomy_scientific_name
@@ -181,10 +167,10 @@ end #end module TestPhyloXMLData
         @tree = @phyloxml.next_tree
       end
       t = @tree.get_node_by_name('A').taxonomies[0]
-      assert_equal(t.scientific_name, 'E. coli')
-      assert_equal(t.authority, "J. G. Cooper, 1863")
+      assert_equal('E. coli', t.scientific_name)
+      assert_equal("J. G. Cooper, 1863", t.authority)
       t = @tree.get_node_by_name('C').taxonomies[0]
-      assert_equal(t.scientific_name, 'C. elegans')
+      assert_equal('C. elegans', t.scientific_name)
     end
 
     def test_taxonomy_id
@@ -200,7 +186,7 @@ end #end module TestPhyloXMLData
         ids[ids.length] = node.taxonomies[0].taxonomy_id
         #id_types[id_types.length] = node.taxonomy.id_type
       }
-      assert_equal(codes.sort, ["CLOAB",  "DICDI", "OCTVU"])
+      assert_equal(["CLOAB",  "DICDI", "OCTVU"], codes.sort)
      #@todo assert ids, id_types. or create new class for id.
     end
 
@@ -209,12 +195,12 @@ end #end module TestPhyloXMLData
         @tree = @phyloxml.next_tree
       end
       taxonomy = @tree.root.taxonomies[0]
-      assert_equal(taxonomy.taxonomy_id.value, "8556")
-      assert_equal(taxonomy.taxonomy_id.provider, "NCBI")
-      assert_equal(taxonomy.scientific_name, "Varanus")
-      assert_equal(taxonomy.rank, "genus")
-      assert_equal(taxonomy.uri.desc, "EMBL REPTILE DATABASE")
-      assert_equal(taxonomy.uri.uri, "http://www.embl-heidelberg.de/~uetz/families/Varanidae.html")
+      assert_equal("8556", taxonomy.taxonomy_id.value)
+      assert_equal("NCBI", taxonomy.taxonomy_id.provider)
+      assert_equal("Varanus", taxonomy.scientific_name)
+      assert_equal("genus", taxonomy.rank)
+      assert_equal("EMBL REPTILE DATABASE", taxonomy.uri.desc)
+      assert_equal("http://www.embl-heidelberg.de/~uetz/families/Varanidae.html", taxonomy.uri.uri)
     end
 
     def test_distribution_desc
@@ -226,7 +212,7 @@ end #end module TestPhyloXMLData
       leaves.each { |node|
         descrs << node.distributions[0].desc
       }
-      assert_equal(descrs.sort, ['Africa', 'Asia', 'Australia'])
+      assert_equal(['Africa', 'Asia', 'Australia'], descrs.sort)
     end
 
     def test_distribution_point
@@ -234,16 +220,16 @@ end #end module TestPhyloXMLData
         @tree = @phyloxml.next_tree
       end
       point = @tree.get_node_by_name('A').distributions[0].points[0]
-      assert_equal(point.geodetic_datum, "WGS84")
-      assert_equal(point.lat, 47.481277)
-      assert_equal(point.long, 8.769303)
-      assert_equal(point.alt,472)
+      assert_equal("WGS84", point.geodetic_datum)
+      assert_equal(47.481277, point.lat)
+      assert_equal(8.769303, point.long)
+      assert_equal(472, point.alt)
 
       point = @tree.get_node_by_name('B').distributions[0].points[0]
-      assert_equal(point.geodetic_datum, "WGS84")
-      assert_equal(point.lat, 35.155904)
-      assert_equal(point.long, 136.915863)
-      assert_equal(point.alt,10)
+      assert_equal("WGS84", point.geodetic_datum)
+      assert_equal(35.155904, point.lat)
+      assert_equal(136.915863, point.long)
+      assert_equal(10, point.alt)
     end
 
     def test_sequence
@@ -251,17 +237,17 @@ end #end module TestPhyloXMLData
         @tree = @phyloxml.next_tree
       end
       sequence_a = @tree.get_node_by_name('A').sequences[0]
-      assert_equal(sequence_a.annotations[0].desc, 'alcohol dehydrogenase')
-      assert_equal(sequence_a.annotations[0].confidence.type, "probability" )
-      assert_equal(sequence_a.annotations[0].confidence.value, 0.99 )
+      assert_equal('alcohol dehydrogenase', sequence_a.annotations[0].desc)
+      assert_equal("probability", sequence_a.annotations[0].confidence.type)
+      assert_equal(0.99, sequence_a.annotations[0].confidence.value)
       sequence_b = @tree.get_node_by_name('B').sequences[0]
-      assert_equal(sequence_b.annotations[0].desc, 'alcohol dehydrogenase')
-      assert_equal(sequence_b.annotations[0].confidence.type, "probability" )
-      assert_equal(sequence_b.annotations[0].confidence.value, 0.91 )
+      assert_equal('alcohol dehydrogenase', sequence_b.annotations[0].desc)
+      assert_equal("probability", sequence_b.annotations[0].confidence.type)
+      assert_equal(0.91, sequence_b.annotations[0].confidence.value)
       sequence_c = @tree.get_node_by_name('C').sequences[0]
-      assert_equal(sequence_c.annotations[0].desc, 'alcohol dehydrogenase')
-      assert_equal(sequence_c.annotations[0].confidence.type, "probability" )
-      assert_equal(sequence_c.annotations[0].confidence.value, 0.67 )
+      assert_equal('alcohol dehydrogenase', sequence_c.annotations[0].desc)
+      assert_equal("probability", sequence_c.annotations[0].confidence.type)
+      assert_equal(0.67, sequence_c.annotations[0].confidence.value)
 
     end
 
@@ -273,13 +259,14 @@ end #end module TestPhyloXMLData
        leaves.each { |node|
          #just test one node for now
          if node.sequences[0].id_source == 'x'
-           assert_equal(node.sequences[0].symbol, 'adhB')
-           assert_equal(node.sequences[0].accession.source, "ncbi")
-           assert_equal(node.sequences[0].accession.value, 'AAB80874')
-           assert_equal(node.sequences[0].name, 'alcohol dehydrogenase')
+           assert_equal('adhB', node.sequences[0].symbol)
+           assert_equal("ncbi", node.sequences[0].accession.source)
+           assert_equal('AAB80874', node.sequences[0].accession.value)
+           assert_equal('alcohol dehydrogenase', node.sequences[0].name)
          end
          if node.sequences[0].id_source == 'z'
-           assert_equal(node.sequences[0].annotations[0].ref, "InterPro:IPR002085")
+           assert_equal("InterPro:IPR002085",
+                        node.sequences[0].annotations[0].ref)
          end
        }
      end
@@ -290,14 +277,15 @@ end #end module TestPhyloXMLData
        end
        @tree.leaves.each { |node|
          if node.sequences[0].symbol == 'ADHX'
-          assert_equal(node.sequences[0].accession.source, 'UniProtKB')
-          assert_equal(node.sequences[0].accession.value, 'P81431')
-          assert_equal(node.sequences[0].name, 'Alcohol dehydrogenase class-3')
-          assert_equal(node.sequences[0].is_aligned, true)
-          assert_equal(node.sequences[0].is_aligned?, true)
-          assert_equal(node.sequences[0].mol_seq, 'TDATGKPIKCMAAIAWEAKKPLSIEEVEVAPPKSGEVRIKILHSGVCHTD')
-          assert_equal(node.sequences[0].annotations[0].ref, 'EC:1.1.1.1')
-          assert_equal(node.sequences[0].annotations[1].ref, 'GO:0004022')
+          assert_equal('UniProtKB', node.sequences[0].accession.source)
+          assert_equal('P81431', node.sequences[0].accession.value)
+          assert_equal('Alcohol dehydrogenase class-3', node.sequences[0].name)
+          assert_equal(true, node.sequences[0].is_aligned)
+          assert_equal(true, node.sequences[0].is_aligned?)
+          assert_equal('TDATGKPIKCMAAIAWEAKKPLSIEEVEVAPPKSGEVRIKILHSGVCHTD',
+                       node.sequences[0].mol_seq)
+          assert_equal('EC:1.1.1.1', node.sequences[0].annotations[0].ref)
+          assert_equal('GO:0004022', node.sequences[0].annotations[1].ref)
          end
        }
      end
@@ -309,10 +297,11 @@ end #end module TestPhyloXMLData
        @tree.leaves.each { |node|
          if node.sequences[0].symbol =='ADHX'
            seq = node.sequences[0].to_biosequence
-           assert_equal(seq.definition, 'Alcohol dehydrogenase class-3')
-           assert_equal(seq.id_namespace, 'UniProtKB' )
-           assert_equal(seq.entry_id, 'P81431')
-           assert_equal(seq.seq.to_s, 'TDATGKPIKCMAAIAWEAKKPLSIEEVEVAPPKSGEVRIKILHSGVCHTD')
+           assert_equal('Alcohol dehydrogenase class-3', seq.definition)
+           assert_equal('UniProtKB', seq.id_namespace)
+           assert_equal('P81431', seq.entry_id)
+           assert_equal('TDATGKPIKCMAAIAWEAKKPLSIEEVEVAPPKSGEVRIKILHSGVCHTD',
+                        seq.seq.to_s)
          end
        }
      end
@@ -324,9 +313,10 @@ end #end module TestPhyloXMLData
        @tree.leaves.each { |node|
          if node.sequences[0].symbol == 'ADHX'
            seq = node.extract_biosequence
-           assert_equal(seq.definition,'Alcohol dehydrogenase class-3' )
-           assert_equal(seq.seq.to_s,'TDATGKPIKCMAAIAWEAKKPLSIEEVEVAPPKSGEVRIKILHSGVCHTD' )
-           assert_equal(seq.classification[0],'Octopus vulgaris')
+           assert_equal('Alcohol dehydrogenase class-3', seq.definition)
+           assert_equal('TDATGKPIKCMAAIAWEAKKPLSIEEVEVAPPKSGEVRIKILHSGVCHTD',
+                        seq.seq.to_s)
+           assert_equal('Octopus vulgaris', seq.classification[0])
          end
        }
      end
@@ -336,19 +326,19 @@ end #end module TestPhyloXMLData
          @tree = @phyloxml.next_tree
        end
        date_a = @tree.get_node_by_name('A').date
-       assert_equal(date_a.unit, 'mya')
-       assert_equal(date_a.desc, "Silurian")
-       assert_equal(date_a.value, 425)
+       assert_equal('mya', date_a.unit)
+       assert_equal("Silurian", date_a.desc)
+       assert_equal(425, date_a.value)
        date_b = @tree.get_node_by_name('B').date
-       assert_equal(date_b.unit, 'mya')
-       assert_equal(date_b.desc, "Devonian")
-       assert_equal(date_b.value, 320)
+       assert_equal('mya', date_b.unit)
+       assert_equal("Devonian", date_b.desc)
+       assert_equal(320, date_b.value)
        date_c = @tree.get_node_by_name('C').date
-       assert_equal(date_c.unit, 'mya')
-       assert_equal(date_c.desc, 'Ediacaran')
-       assert_equal(date_c.value, 600)
-       assert_equal(date_c.minimum, 570)
-       assert_equal(date_c.maximum, 630)
+       assert_equal('mya', date_c.unit)
+       assert_equal('Ediacaran', date_c.desc)
+       assert_equal(600, date_c.value)
+       assert_equal(570, date_c.minimum)
+       assert_equal(630, date_c.maximum)
      end
 
      def test_property
@@ -356,11 +346,11 @@ end #end module TestPhyloXMLData
          @tree = @phyloxml.next_tree
        end
        property = @tree.get_node_by_name('A').properties[0]
-       assert_equal(property.datatype, 'xsd:integer')
-       assert_equal(property.ref,'NOAA:depth')
-       assert_equal(property.applies_to, 'clade')
-       assert_equal(property.unit, 'METRIC:m')
-       assert_equal(property.value, ' 1200 ')
+       assert_equal('xsd:integer', property.datatype)
+       assert_equal('NOAA:depth', property.ref)
+       assert_equal('clade', property.applies_to)
+       assert_equal('METRIC:m', property.unit)
+       assert_equal(' 1200 ', property.value)
      end
 
      def test_uri
@@ -368,8 +358,8 @@ end #end module TestPhyloXMLData
          @tree = @phyloxml.next_tree
        end
        uri = @tree.root.taxonomies[0].uri
-       assert_equal(uri.desc, "EMBL REPTILE DATABASE")
-       assert_equal(uri.uri, "http://www.embl-heidelberg.de/~uetz/families/Varanidae.html")
+       assert_equal("EMBL REPTILE DATABASE", uri.desc)
+       assert_equal("http://www.embl-heidelberg.de/~uetz/families/Varanidae.html", uri.uri)
      end
 
 
@@ -412,7 +402,7 @@ end #end module TestPhyloXMLData
         node_names[node_names.length] = children.name
       }
       node_names.sort!
-      assert_equal(node_names, ["A", "B"])
+      assert_equal(["A", "B"], node_names)
     end
 
   
@@ -429,9 +419,9 @@ end #end module TestPhyloXMLData
         @tree = @phyloxml.next_tree
       end
        cr = @tree.clade_relations[0]
-       assert_equal(cr.id_ref_0, "b")
-       assert_equal(cr.id_ref_1, "c")
-       assert_equal(cr.type, "network_connection")
+       assert_equal("b", cr.id_ref_0)
+       assert_equal("c", cr.id_ref_1)
+       assert_equal("network_connection", cr.type)
     end
 
     def test_sequence_realations
@@ -442,9 +432,9 @@ end #end module TestPhyloXMLData
 
       sr = @tree.sequence_relations[0]
        
-       assert_equal(sr.id_ref_0, "x")
-       assert_equal(sr.id_ref_1, "y")
-       assert_equal(sr.type, "paralogy")
+       assert_equal("x", sr.id_ref_0)
+       assert_equal("y", sr.id_ref_1)
+       assert_equal("paralogy", sr.type)
     end
 
 
@@ -459,16 +449,16 @@ end #end module TestPhyloXMLData
 
     def test_phylogeny_confidence
       tree = @phyloxml.next_tree()
-      assert_equal(tree.confidences[0].type, "bootstrap")
-      assert_equal(tree.confidences[0].value, 89)
-      assert_equal(tree.confidences[1].type, "probability")
-      assert_equal(tree.confidences[1].value, 0.71)
+      assert_equal("bootstrap", tree.confidences[0].type)
+      assert_equal(89, tree.confidences[0].value)
+      assert_equal("probability", tree.confidences[1].type)
+      assert_equal(0.71, tree.confidences[1].value)
     end
 
     def test_to_biotreenode_probability
       tree = @phyloxml.next_tree()
       node = tree.get_node_by_name('c').to_biotreenode
-      assert_equal(node.bootstrap, nil)
+      assert_equal(nil, node.bootstrap)
     end
 
     def test_polygon
@@ -476,15 +466,15 @@ end #end module TestPhyloXMLData
         @tree = @phyloxml.next_tree
       end
       polygon = @tree.get_node_by_name('A').distributions[0].polygons[0]
-      assert_equal(polygon.points.length,3 )
-      assert_equal(polygon.points[0].lat, 47.481277)
-      assert_equal(polygon.points[0].alt_unit, "m")
-      assert_equal(polygon.points[1].long, 136.915863)
-      assert_equal(polygon.points[2].alt, 452)
+      assert_equal(3, polygon.points.length)
+      assert_equal(47.481277, polygon.points[0].lat)
+      assert_equal("m", polygon.points[0].alt_unit)
+      assert_equal(136.915863, polygon.points[1].long)
+      assert_equal(452, polygon.points[2].alt)
       polygon = @tree.get_node_by_name('A').distributions[0].polygons[1]
       #making sure can read in second polygon
-      assert_equal(polygon.points.length,3 )
-      assert_equal(polygon.points[0].lat, 40.481277)
+      assert_equal(3, polygon.points.length)
+      assert_equal(40.481277, polygon.points[0].lat)
     end
 
     def test_reference
@@ -492,9 +482,9 @@ end #end module TestPhyloXMLData
         @tree = @phyloxml.next_tree
       end
       references = @tree.get_node_by_name('A').references
-      assert_equal(references[0].doi, "10.1093/bioinformatics/btm619")
-      assert_equal(references[0].desc, "Phyutility: a phyloinformatics tool for trees, alignments and molecular data")
-      assert_equal(references[1].doi, "10.1186/1471-2105-9-S1-S23")
+      assert_equal("10.1093/bioinformatics/btm619", references[0].doi)
+      assert_equal("Phyutility: a phyloinformatics tool for trees, alignments and molecular data", references[0].desc)
+      assert_equal("10.1186/1471-2105-9-S1-S23", references[1].doi)
     end
 
 
@@ -502,34 +492,34 @@ end #end module TestPhyloXMLData
       4.times do
         @tree = @phyloxml.next_tree()
       end
-      assert_equal(@tree.root.name, "A")
+      assert_equal("A", @tree.root.name)
     end
 
     def test_domain_architecture
       5.times {@tree = @phyloxml.next_tree()}
       node = @tree.get_node_by_name("22_MOUSE")
-      assert_equal(node.name, "22_MOUSE")
-      assert_equal(node.taxonomies[0].code, "MOUSE")
+      assert_equal("22_MOUSE", node.name)
+      assert_equal("MOUSE", node.taxonomies[0].code)
       domain_arch = node.sequences[0].domain_architecture
-      assert_equal(domain_arch.length,1249 )
-      assert_equal(domain_arch.domains[0].from, 6)
-      assert_equal(domain_arch.domains[0].to, 90)
-      assert_in_delta(domain_arch.domains[0].confidence, 7.0E-26, 1E-26)
-      assert_equal(domain_arch.domains[0].value, "CARD")
-      assert_equal(domain_arch.domains[0].id, "x")
-      assert_equal(domain_arch.domains[5].from, 733)
-      assert_equal(domain_arch.domains[5].to, 771)
-      assert_in_delta(domain_arch.domains[5].confidence, 4.7E-14, 1E-15)
-      assert_equal(domain_arch.domains[5].value, "WD40")
-      assert_equal(domain_arch.domains.last.from, 1168)
-      assert_equal(domain_arch.domains.last.to, 1204)
-      assert_equal(domain_arch.domains.last.confidence, 0.3)
-      assert_equal(domain_arch.domains.last.value, "WD40")
+      assert_equal(1249, domain_arch.length)
+      assert_equal(6, domain_arch.domains[0].from)
+      assert_equal(90, domain_arch.domains[0].to)
+      assert_in_delta(7.0E-26, domain_arch.domains[0].confidence, 1E-26)
+      assert_equal("CARD", domain_arch.domains[0].value)
+      assert_equal("x", domain_arch.domains[0].id)
+      assert_equal(733, domain_arch.domains[5].from)
+      assert_equal(771, domain_arch.domains[5].to)
+      assert_in_delta(4.7E-14, domain_arch.domains[5].confidence, 1E-15)
+      assert_equal("WD40", domain_arch.domains[5].value)
+      assert_equal(1168, domain_arch.domains.last.from)
+      assert_equal(1204, domain_arch.domains.last.to)
+      assert_equal(0.3, domain_arch.domains.last.confidence)
+      assert_equal("WD40", domain_arch.domains.last.value)
     end
 
     def test_clade_width
       @tree = @phyloxml.next_tree
-      assert_equal(@tree.root.width, 0.2)
+      assert_equal(0.2, @tree.root.width)
     end
 
     def test_binary_characters
@@ -537,30 +527,30 @@ end #end module TestPhyloXMLData
         @tree = @phyloxml.next_tree
       end
       bc =@tree.get_node_by_name("cellular_organisms").binary_characters
-      assert_equal(bc.bc_type, "parsimony inferred")
-      assert_equal(bc.lost_count, 0)
-      assert_equal(bc.gained_count,0)
-      assert_equal(bc.lost, [])
+      assert_equal("parsimony inferred", bc.bc_type)
+      assert_equal(0, bc.lost_count)
+      assert_equal(0, bc.gained_count)
+      assert_equal([], bc.lost)
 
       bc2 = @tree.get_node_by_name("Eukaryota").binary_characters
-      assert_equal(bc2.gained_count, 2)
-      assert_equal(bc2.gained, ["Cofilin_ADF", "Gelsolin"])
-      assert_equal(bc2.present, ["Cofilin_ADF", "Gelsolin"])
+      assert_equal(2, bc2.gained_count)
+      assert_equal(["Cofilin_ADF", "Gelsolin"], bc2.gained)
+      assert_equal(["Cofilin_ADF", "Gelsolin"], bc2.present)
     end
 
     def test_rerootable2
       6.times do
         @tree = @phyloxml.next_tree
       end
-      assert_equal(@tree.rerootable, false)
+      assert_equal(false, @tree.rerootable)
     end
 
     def test_phylogeny_attributes
       @tree = @phyloxml.next_tree
-      assert_equal(@tree.rooted, true)
-      assert_equal(@tree.rerootable, false)
+      assert_equal(true, @tree.rooted)
+      assert_equal(false, @tree.rerootable)
       #@todo make this test pass
-      #assert_equal(@tree.branch_length_unit, "1")
+      #assert_equal("1", @tree.branch_length_unit)
 
     end
 
@@ -570,8 +560,8 @@ end #end module TestPhyloXMLData
       end
       node = @tree.get_node_by_name('22_MOUSE')
       t = node.taxonomies[0]
-      assert_equal(t.synonyms[0], "murine")
-      assert_equal(t.synonyms[1], "vermin")
+      assert_equal("murine", t.synonyms[0])
+      assert_equal("vermin", t.synonyms[1])
 
     end
 
@@ -581,7 +571,7 @@ end #end module TestPhyloXMLData
       end
       node = @tree.get_node_by_name('22_MOUSE')
       prop = node.sequences[0].annotations[0].properties[0]
-      assert_equal(prop.value, "1200")
+      assert_equal("1200", prop.value)
     end
 
   end
@@ -593,27 +583,28 @@ end #end module TestPhyloXMLData
       phyloxml.each do |tree|
         count +=1
       end
-      assert_equal(count, 13)
+      assert_equal(13, count)
     end
 
     def test_other
       phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLData.example_xml)
-      assert_equal(phyloxml.other[0], nil)
+      assert_equal(nil, phyloxml.other[0])
       phyloxml.each do |tree|
         #iterate through all trees, to get to the end
       end
       o = phyloxml.other[0]
-      assert_equal(o.element_name, 'align:alignment')
-      assert_equal(o.children[0].element_name, 'seq')
-      assert_equal(o.children[1].value, 'aggtcgcggcctgtggaagtcctctcct')
-      assert_equal(o.children[2].attributes["name"], "C")
+      assert_equal('align:alignment', o.element_name)
+      assert_equal('seq', o.children[0].element_name)
+      assert_equal('aggtcgcggcctgtggaagtcctctcct', o.children[1].value)
+      assert_equal("C", o.children[2].attributes["name"])
 
     end
 
     def test_array_behaviour
       phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLData.example_xml)
       tree = phyloxml[2]
-      assert_equal(tree.name, "same example, with support of type \"bootstrap\"")
+      assert_equal("same example, with support of type \"bootstrap\"",
+                   tree.name)
     end
 
 

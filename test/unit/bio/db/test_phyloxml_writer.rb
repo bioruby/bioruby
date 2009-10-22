@@ -233,10 +233,10 @@ module Bio
         @tree = @phyloxml_test.next_tree
       end
 
-      assert_equal(@tree.sequence_relations[0].id_ref_0, "x")
-      assert_equal(@tree.sequence_relations[1].id_ref_1, "z")
-      assert_equal(@tree.sequence_relations[2].distance, nil)
-      assert_equal(@tree.sequence_relations[2].type, "orthology")
+      assert_equal("x", @tree.sequence_relations[0].id_ref_0)
+      assert_equal("z", @tree.sequence_relations[1].id_ref_1)
+      assert_equal(nil, @tree.sequence_relations[2].distance)
+      assert_equal("orthology", @tree.sequence_relations[2].type)
 
       #File.delete(filename)
     end
