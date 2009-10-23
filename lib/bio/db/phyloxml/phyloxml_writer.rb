@@ -24,6 +24,9 @@
 #
 # * https://www.nescent.org/wg_phyloinformatics/PhyloSoC:PhyloXML_support_in_BioRuby
 
+require 'libxml'
+require 'bio/db/phyloxml/phyloxml_elements'
+
 module Bio
 
   module PhyloXML

@@ -15,7 +15,6 @@ require 'pathname'
 libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
 
-require 'bio/tree'
 require 'bio/command'
 
 begin
@@ -24,8 +23,6 @@ rescue LoadError
 end
 
 if defined?(LibXML) then
-  require 'bio/db/phyloxml/phyloxml_elements'
-  require 'bio/db/phyloxml/phyloxml_parser'
   require 'bio/db/phyloxml/phyloxml_writer'
 end
 
