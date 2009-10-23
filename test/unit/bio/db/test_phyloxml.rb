@@ -1,5 +1,5 @@
 #
-# = test/bio/db/phyloxml.rb - Unit test for Bio::PhyloXML
+# = test/unit/bio/db/test_phyloxml.rb - Unit test for Bio::PhyloXML::Parser
 #
 # Copyright::   Copyright (C) 2009
 #               Diana Jaunzeikare <latvianlinuxgirl@gmail.com>
@@ -76,13 +76,167 @@ end #end module TestPhyloXMLData
 
   
 
+  class TestPhyloXML_class_methods < Test::Unit::TestCase
+  
+    def test_open
+      filename = TestPhyloXMLData.example_xml
+      assert_instance_of(Bio::PhyloXML::Parser,
+                         phyloxml = Bio::PhyloXML::Parser.open(filename))
+      common_test_next_tree(phyloxml)
+    end
+
+    def test_new
+      str = File.read(TestPhyloXMLData.example_xml)
+      assert_instance_of(Bio::PhyloXML::Parser,
+                         phyloxml = Bio::PhyloXML::Parser.new(str))
+      common_test_next_tree(phyloxml)
+    end
+
+    def test_for_io
+      io = File.open(TestPhyloXMLData.example_xml)
+      assert_instance_of(Bio::PhyloXML::Parser,
+                         phyloxml = Bio::PhyloXML::Parser.for_io(io))
+      common_test_next_tree(phyloxml)
+      io.close
+    end
+
+    def common_test_next_tree(phyloxml)
+      tree = phyloxml.next_tree
+      tree_arr = []
+      while tree != nil do
+        tree_arr[tree_arr.length] = tree.name
+        tree = phyloxml.next_tree
+      end      
+      assert_equal(13, tree_arr.length)
+    end
+    private :common_test_next_tree
+    
+  end #class TestPhyloXML_class_methods
+
+
+
+  class TestPhyloXML_private_methods < Test::Unit::TestCase
+    def setup
+      @phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLData.example_xml)
+    end
+
+    def teardown
+      @phyloxml.close
+    end
+
+    def test__validate
+      assert_nothing_raised {
+        @phyloxml.instance_eval {
+          _validate(:file, TestPhyloXMLData.example_xml)
+        }
+      }
+    end
+
+    def test__validate_string
+      assert_nothing_raised {
+        @phyloxml.instance_eval {
+          _validate(:string, '<?xml version="1.0"?><phyloxml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.phyloxml.org http://www.phyloxml.org/1.10/phyloxml.xsd" xmlns="http://www.phyloxml.org"/>')
+        }
+      }
+    end
+
+    def test__validate_validation_error
+      libxml_set_handler_quiet
+      assert_raise(RuntimeError) {
+        @phyloxml.instance_eval {
+          _validate(:string, '<a>test</a>')
+        }
+      }
+      libxml_set_handler_verbose
+    end
+
+    def test__schema
+      s = @phyloxml.instance_eval { _schema }
+      assert_instance_of(LibXML::XML::Schema, s)
+    end
+
+    def test__secure_filename
+      assert_equal('http:/bioruby.org/test.xml',
+                   @phyloxml.instance_eval {
+                     _secure_filename('http://bioruby.org/test.xml')
+                   })
+    end
+
+    def test__secure_filename_unchanged
+      assert_equal('test/test.xml',
+                   @phyloxml.instance_eval {
+                     _secure_filename('test/test.xml')
+                   })
+    end
+
+    def test_ClosedPhyloXMLParser
+      cp = Bio::PhyloXML::Parser::ClosedPhyloXMLParser.new
+      assert_raise(LibXML::XML::Error) { cp.next_tree }
+    end
+
+    private
+
+    def libxml_set_handler_quiet
+      # Sets quiet handler.
+      # Note that there are no way to get current handler.
+      LibXML::XML::Error.set_handler(&LibXML::XML::Error::QUIET_HANDLER)
+    end
+
+    def libxml_set_handler_verbose
+      # Sets verbose handler (default LibXML error handler).
+      # Note that there are no way to get current handler.
+      LibXML::XML::Error.set_handler(&LibXML::XML::Error::VERBOSE_HANDLER)
+    end
+  end #class TestPhyloXML_private_methods
+
+
+
+  class TestPhyloXML_close < Test::Unit::TestCase
+    def phyloxml_open
+      Bio::PhyloXML::Parser.open(TestPhyloXMLData.example_xml)
+    end
+    private :phyloxml_open
+
+    def test_close
+      phyloxml = phyloxml_open
+      phyloxml.next_tree
+      assert_nil(phyloxml.close)
+    end
+
+    def test_close_after_close
+      phyloxml = phyloxml_open
+      phyloxml.close
+      assert_raise(LibXML::XML::Error) { phyloxml.close }
+    end
+
+    def test_next_tree_after_close
+      phyloxml = phyloxml_open
+      phyloxml.close
+      assert_raise(LibXML::XML::Error) { phyloxml.next_tree }
+    end
+
+    def test_close_does_not_affect_io
+      io = File.open(TestPhyloXMLData.example_xml)
+      phyloxml = Bio::PhyloXML::Parser.for_io(io)
+      phyloxml.next_tree
+      phyloxml.close
+      assert(!io.closed?)
+    end
+  end #class TestPhyloXML_close
+
+
+
   class TestPhyloXML1 < Test::Unit::TestCase
   
     def setup
-      @phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLData.example_xml)
+      @phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLData.example_xml)
+    end
+
+    def teardown
+      @phyloxml.close
     end
     
-    def test_init
+    def test_initialize
       assert_instance_of(Bio::PhyloXML::Parser, @phyloxml)
     end 
       
@@ -97,7 +251,7 @@ end #end module TestPhyloXMLData
       assert_equal(13, tree_arr.length)
     end
      
-  end #class TestPhyloXML
+  end #class TestPhyloXML1
 
 
 
@@ -105,7 +259,7 @@ end #end module TestPhyloXMLData
   
     #setup is called before and every time any function es executed.  
     def setup
-      @phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLData.example_xml)
+      @phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLData.example_xml)
       @tree = @phyloxml.next_tree
     end
     
@@ -409,7 +563,7 @@ end #end module TestPhyloXMLData
 
     def test_clade_relation
 
-      @phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLData.example_xml)
+      @phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLData.example_xml)
       7.times do
         @tree = @phyloxml.next_tree
       end
@@ -420,7 +574,7 @@ end #end module TestPhyloXMLData
     end
 
     def test_sequence_realations
-      @phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLData.example_xml)
+      @phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLData.example_xml)
       5.times do
         @tree = @phyloxml.next_tree
       end
@@ -439,7 +593,7 @@ end #end module TestPhyloXMLData
 
     #testing file made_up.xml
     def setup
-      @phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLData.made_up_xml)
+      @phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLData.made_up_xml)
     end
 
     def test_phylogeny_confidence
@@ -573,7 +727,7 @@ end #end module TestPhyloXMLData
   class TestPhyloXML5 < Test::Unit::TestCase
 
     def test_each
-      phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLData.example_xml)
+      phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLData.example_xml)
       count = 0
       phyloxml.each do |tree|
         count +=1
@@ -582,7 +736,7 @@ end #end module TestPhyloXMLData
     end
 
     def test_other
-      phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLData.example_xml)
+      phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLData.example_xml)
       assert_equal(nil, phyloxml.other[0])
       phyloxml.each do |tree|
         #iterate through all trees, to get to the end
@@ -596,7 +750,7 @@ end #end module TestPhyloXMLData
     end
 
     def test_array_behaviour
-      phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLData.example_xml)
+      phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLData.example_xml)
       tree = phyloxml[2]
       assert_equal("same example, with support of type \"bootstrap\"",
                    tree.name)
@@ -604,7 +758,7 @@ end #end module TestPhyloXMLData
 
 
 #    def test_get_tree_by_name
-#       @phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLData.made_up_xml)
+#       @phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLData.made_up_xml)
 #       tree = @phyloxml.get_tree_by_name "testing confidence"
 #
 #    end

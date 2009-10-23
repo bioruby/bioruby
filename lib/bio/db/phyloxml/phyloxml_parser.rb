@@ -41,7 +41,7 @@ module PhyloXML
 
   # == Description
   #
-  # Bio::PhyloXML is for parsing phyloXML format files.
+  # Bio::PhyloXML::Parser is for parsing phyloXML format files.
   # 
   # == Requirements
   #
@@ -55,7 +55,7 @@ module PhyloXML
   #   require 'bio'
   #
   #  # Create new phyloxml parser
-  #  phyloxml = Bio::PhyloXML::Parser.new('example.xml')
+  #  phyloxml = Bio::PhyloXML::Parser.open('example.xml')
   #
   #  # Print the names of all trees in the file
   #  phyloxml.each do |tree|
@@ -78,43 +78,225 @@ module PhyloXML
     # Initializes LibXML::Reader and reads the file until it reaches the first
     # phylogeny element.
     #
-    # Create a new Bio::PhyloXML object.
+    # Create a new Bio::PhyloXML::Parser object.
     #
-    #   p = Bio::PhyloXML.new("./phyloxml_examples.xml")
+    #   p = Bio::PhyloXML::Parser.open("./phyloxml_examples.xml")
     #
     # ---
     # *Arguments*:
     # * (required) _filename_: Path to the file to parse.
     # * (optional) _validate_: Whether to validate the file against schema or not. Default value is true.
     # *Returns*:: Bio::PhyloXML::Parser object
-    def initialize(filename, validate=true)
+    def self.open(filename, validate=true)
+      obj = new(nil, validate)
+      obj.instance_eval {
+        filename = _secure_filename(filename)
+        _validate(:file, filename) if validate
+        # XML::Parser::Options::NONET for security reason
+        @reader = XML::Reader.file(filename,
+                                   { :options =>
+                                     LibXML::XML::Parser::Options::NONET })
+        _skip_leader
+      }
+      obj
+    end
 
-      @other = []
-
-      if File.exists?(filename)
-        # By default do validation
-        unless validate == false          
-          schema = XML::Schema.document(XML::Document.file(File.join(File.dirname(__FILE__),'phyloxml.xsd')))
-          xml_instance = XML::Document.file(filename)
-          xml_instance.validate_schema(schema) do |msg, flag|
-            raise "Validation of the XML document against phyloxml.xsd schema failed." + msg
-          end
-        end
-
-        @reader = XML::Reader.file(filename)
-      else 
-        #assume it is string input
-        @reader = XML::Reader.string(filename)
+    # Initializes LibXML::Reader and reads the file until it reaches the first
+    # phylogeny element.
+    #
+    # Create a new Bio::PhyloXML::Parser object.
+    #
+    #   p = Bio::PhyloXML::Parser.open_uri("http://www.phyloxml.org/examples/apaf.xml")
+    #
+    # ---
+    # *Arguments*:
+    # * (required) _uri_: (URI or String) URI to the data to parse
+    # * (optional) _validate_: For URI reader, the "validate" option is ignored and no validation is executed.
+    # *Returns*:: Bio::PhyloXML::Parser object
+    def self.open_uri(uri, validate=true)
+      case uri
+      when URI
+        uri = uri.to_s
+      else
+        # raises error if not a String
+        uri = uri.to_str
+        # raises error if invalid URI
+        URI.parse(uri)
       end
 
+      obj = new(nil, validate)
+      obj.instance_eval {
+        @reader = XML::Reader.file(uri)
+        _skip_leader
+      }
+      obj
+    end
+
+    # Special class for closed PhyloXML::Parser object.
+    # It raises error for any methods except essential methods.
+    #
+    # Bio::PhyloXML internal use only.
+    class ClosedPhyloXMLParser #:nodoc:
+      def method_missing(*arg)
+        raise LibXML::XML::Error, 'closed PhyloXML::Parser object'
+      end
+    end #class ClosedPhyloXMLParser
+
+    # Closes the LibXML::Reader inside the object.
+    # It also closes the opened file if it is created by using
+    # Bio::PhyloXML::Parser.open method.
+    #
+    # When closed object is closed again, or closed object is used,
+    # it raises LibXML::XML::Error.
+    # ---
+    # *Returns*:: nil
+    def close
+      @reader.close
+      @reader = ClosedPhyloXMLParser.new
+      nil
+    end
+
+    # Initializes LibXML::Reader and reads from the IO until it reaches
+    # the first phylogeny element.
+    #
+    # Create a new Bio::PhyloXML::Parser object.
+    #
+    #   p = Bio::PhyloXML::Parser.for_io($stdin)
+    #
+    # ---
+    # *Arguments*:
+    # * (required) _io_: IO object
+    # * (optional) _validate_: For IO reader, the "validate" option is ignored and no validation is executed.
+    # *Returns*:: Bio::PhyloXML::Parser object
+    def self.for_io(io, validate=true)
+      obj = new(nil, validate)
+      obj.instance_eval {
+        @reader = XML::Reader.io(io,
+                                 { :options =>
+                                   LibXML::XML::Parser::Options::NONET })
+        _skip_leader
+      }
+      obj
+    end
+
+    # (private) returns PhyloXML schema
+    def _schema
+      XML::Schema.document(XML::Document.file(File.join(File.dirname(__FILE__),'phyloxml.xsd')))
+    end
+    private :_schema
+
+    # (private) do validation
+    # ---
+    # *Arguments*:
+    # * (required) <em>data_type</em>_: :file for filename, :string for string
+    # * (required) _arg_: filename or string
+    # *Returns*:: (undefined)
+    def _validate(data_type, arg)
+      options = { :options =>
+        (LibXML::XML::Parser::Options::NOERROR |   # no error messages
+         LibXML::XML::Parser::Options::NOWARNING | # no warning messages
+         LibXML::XML::Parser::Options::NONET)      # no network access
+      }
+      case data_type
+      when :file
+        # No validation when special file e.g. FIFO (named pipe)
+        return unless File.file?(arg)
+        xml_instance = XML::Document.file(arg, options)
+      when :string
+        xml_instance = XML::Document.string(arg, options)
+      else
+        # no validation for unknown data type
+        return
+      end
+
+      schema = _schema
+      begin
+        flag = xml_instance.validate_schema(schema) do |msg, flag|
+          # The document of libxml-ruby says that the block is called
+          # when validation failed, but it seems it is never called
+          # even when validation failed!
+          raise "Validation of the XML document against phyloxml.xsd schema failed. #{msg}"
+        end
+      rescue LibXML::XML::Error => evar
+        raise "Validation of the XML document against phyloxml.xsd schema failed, or XML error occurred. #{evar.message}"
+      end
+      unless flag then
+        raise "Validation of the XML document against phyloxml.xsd schema failed."
+      end
+    end
+    private :_validate
+
+    # (private) It seems that LibXML::XML::Reader reads from the network
+    # even if LibXML::XML::Parser::Options::NONET is set.
+    # So, for URI-like filename, '://' is replaced with ':/'.
+    def _secure_filename(filename)
+      # for safety, URI-like filename is checked.
+      if /\A[a-zA-Z]+\:\/\// =~ filename then
+        # for example, "http://a/b" is changed to "http:/a/b".
+        filename = filename.sub(/\:\/\//, ':/')
+      end
+      filename
+    end
+    private :_secure_filename
+
+    # (private) loops through until reaches phylogeny stuff
+    def _skip_leader
       #loops through until reaches phylogeny stuff
       # Have to leave this way, if accepting strings, instead of files
       @reader.read until is_element?('phylogeny')
+      nil
     end
+    private :_skip_leader
+
+    # Initializes LibXML::Reader and reads the PhyloXML-formatted string
+    # until it reaches the first phylogeny element.
+    #
+    # Create a new Bio::PhyloXML::Parser object.
+    #
+    #   str = File.read("./phyloxml_examples.xml")
+    #   p = Bio::PhyloXML::Parser.new(str)
+    #
+    #
+    # Deprecated usage: Reads data from a file. <em>str<em> is a filename.
+    #
+    #   p = Bio::PhyloXML::Parser.new("./phyloxml_examples.xml")
+    #
+    # Taking filename is deprecated. Use Bio::PhyloXML::Parser.open(filename).
+    # 
+    # ---
+    # *Arguments*:
+    # * (required) _str_: PhyloXML-formatted string
+    # * (optional) _validate_: Whether to validate the file against schema or not. Default value is true.
+    # *Returns*:: Bio::PhyloXML::Parser object
+    def initialize(str, validate=true)
+
+      @other = []
+
+      return unless str
+
+      # For compatibility, if filename-like string is given,
+      # treat it as a filename.
+      if /[\<\>\r\n]/ !~ str and File.exist?(str) then
+        # assume that str is filename
+        warn "Bio::PhyloXML::Parser.new(filename) is deprecated. Use Bio::PhyloXML::Parser.open(filename)."
+        filename = _secure_filename(str)
+        _validate(:file, filename) if validate
+        @reader = XML::Reader.file(filename)
+        _skip_leader
+        return
+      end
+
+      # initialize for string
+      @reader = XML::Reader.string(str,
+                                   { :options =>
+                                     LibXML::XML::Parser::Options::NONET })
+      _skip_leader
+    end
+
 
     # Iterate through all trees in the file.
     #
-    #  phyloxml = Bio::PhyloXML::Parser.new('example.xml')
+    #  phyloxml = Bio::PhyloXML::Parser.open('example.xml')
     #  phyloxml.each do |tree|
     #    puts tree.name
     #  end
@@ -129,7 +311,7 @@ module PhyloXML
     # tree is reached.
     #
     #  # Get 3rd tree in the file (starts counting from 0).
-    #  parser = PhyloXML::Parser.new('phyloxml_examples.xml')
+    #  parser = PhyloXML::Parser.open('phyloxml_examples.xml')
     #  tree = parser[2]
     #
     def [](i)
@@ -144,7 +326,7 @@ module PhyloXML
     # element, nil is returned. If there is something else besides phylogeny
     # elements, it is saved in the PhyloXML::Parser#other.
     # 
-    #  p = Bio::PhyloXML::Parser.new("./phyloxml_examples.xml")
+    #  p = Bio::PhyloXML::Parser.open("./phyloxml_examples.xml")
     #  tree = p.next_tree
     #
     # ---

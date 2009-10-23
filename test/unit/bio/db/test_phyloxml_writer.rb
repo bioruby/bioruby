@@ -1,5 +1,5 @@
 #
-# = test/bio/db/phyloxml.rb - Unit test for Bio::PhyloXML
+# = test/unit/bio/db/test_phyloxml_writer.rb - Unit test for Bio::PhyloXML::Writer
 #
 # Copyright::   Copyright (C) 2009
 #               Diana Jaunzeikare <latvianlinuxgirl@gmail.com>
@@ -8,7 +8,6 @@
 
 require 'test/unit'
 require 'singleton'
-require 'weakref'
 
 #this code is required for being able to require 'bio/db/phyloxml'
 require 'pathname'
@@ -63,22 +62,28 @@ module Bio
       include Singleton
 
       def initialize
-        if !ENV['BIORUBY_TEST_DEBUG'].to_s.empty? then
-          @protect_from_gc = tmpdir
+        @leave_tmpdir = ENV['BIORUBY_TEST_DEBUG'].to_s.empty? ? false : true
+        @tests = nil
+        @tests_passed = 0
+        @tmpdir = nil
+      end
+
+      attr_accessor :tests
+
+      def test_passed
+        @tests_passed += 1
+        if !@leave_tmpdir and @tmpdir and @tests and
+            @tests_passed >= @tests then
+          #$stderr.print "Removing #{@tmpdir.path}\n"
+          @tmpdir.close!
+          @tmpdir = nil
+          @tests_passed = 0
         end
       end
 
       def tmpdir
-        tmpdir = nil
-        begin
-          @tmpdir ||=
-            WeakRef.new(tmpdir = Bio::Command::Tmpdir.new('PhyloXML'))
-          tmpdir ||= @tmpdir.__getobj__
-        rescue WeakRef::RefError
-          @tmpdir = nil
-          retry
-        end
-        tmpdir
+        @tmpdir ||= Bio::Command::Tmpdir.new('PhyloXML')
+        @tmpdir
       end
 
       def file(f)
@@ -91,15 +96,14 @@ module Bio
     end #class WriteTo
 
     def setup
-      #GC.start
       @writeto = WriteTo.instance
-      #GC.start
+      @writeto.tests ||= self.methods.collect { |x|
+        x.to_s }.find_all { |y|
+        /\Atest\_/ =~ y }.size
     end
 
     def teardown
-      #GC.start
-      @writeto = nil
-      #GC.start
+      @writeto.test_passed
     end
 
 #    def test_write
@@ -113,12 +117,12 @@ module Bio
       filename = @writeto.file("test2.xml")
       writer = Bio::PhyloXML::Writer.new(filename)
       
-      tree = Bio::PhyloXML::Parser.new(TestPhyloXMLWriterData.mollusca_short_xml).next_tree
+      tree = Bio::PhyloXML::Parser.open(TestPhyloXMLWriterData.mollusca_short_xml).next_tree
       
       writer.write(tree)
 
       assert_nothing_thrown do
-        Bio::PhyloXML::Parser.new(filename)
+        Bio::PhyloXML::Parser.open(filename)
       end
 
       #File.delete(filename)
@@ -161,7 +165,7 @@ module Bio
     end
 
     def test_phyloxml_examples_tree1
-      tree = Bio::PhyloXML::Parser.new(TestPhyloXMLWriterData.example_xml).next_tree
+      tree = Bio::PhyloXML::Parser.open(TestPhyloXMLWriterData.example_xml).next_tree
 
       filename = @writeto.file('example_tree1.xml')
       writer = Bio::PhyloXML::Writer.new(filename)
@@ -169,7 +173,7 @@ module Bio
       writer.write(tree)
 
       assert_nothing_thrown do
-        tree2  = Bio::PhyloXML::Parser.new(filename)
+        tree2  = Bio::PhyloXML::Parser.open(filename)
       end
 
       #File.delete(filename)
@@ -178,7 +182,7 @@ module Bio
     end
 
     def test_phyloxml_examples_tree2
-      phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLWriterData.example_xml)
+      phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLWriterData.example_xml)
       2.times do
         @tree = phyloxml.next_tree
       end
@@ -188,14 +192,14 @@ module Bio
       writer.write(@tree)
 
       assert_nothing_thrown do
-        tree2  = Bio::PhyloXML::Parser.new(filename)
+        tree2  = Bio::PhyloXML::Parser.open(filename)
       end
       
       #File.delete(filename)
     end
 
     def test_phyloxml_examples_tree4
-      phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLWriterData.example_xml)
+      phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLWriterData.example_xml)
       4.times do
         @tree = phyloxml.next_tree
       end
@@ -204,7 +208,7 @@ module Bio
       writer = Bio::PhyloXML::Writer.new(filename)
       writer.write(@tree)
       assert_nothing_thrown do
-        @tree2 = Bio::PhyloXML::Parser.new(filename).next_tree
+        @tree2 = Bio::PhyloXML::Parser.open(filename).next_tree
       end
       assert_equal(@tree.name, @tree2.name)
       assert_equal(@tree.get_node_by_name('A').taxonomies[0].scientific_name, @tree2.get_node_by_name('A').taxonomies[0].scientific_name)
@@ -215,7 +219,7 @@ module Bio
     end
 
     def test_phyloxml_examples_sequence_relation
-      phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLWriterData.example_xml)
+      phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLWriterData.example_xml)
       filename = @writeto.example_xml_test
       writer = Bio::PhyloXML::Writer.new(filename)
       phyloxml.each do |tree|
@@ -223,7 +227,7 @@ module Bio
       end
 
       assert_nothing_thrown do
-        @phyloxml_test = Bio::PhyloXML::Parser.new(filename)
+        @phyloxml_test = Bio::PhyloXML::Parser.open(filename)
       end
 
       5.times do
@@ -282,7 +286,7 @@ module Bio
       Bio::PhyloXML::Writer.new(filename).write(tree)
 
       assert_nothing_thrown do
-        Bio::PhyloXML::Parser.new(filename).next_tree
+        Bio::PhyloXML::Parser.open(filename).next_tree
       end
 
       #File.delete(filename)
@@ -290,7 +294,7 @@ module Bio
 
     def test_phyloxml_examples_file
       outputfn = "phyloxml_examples_generated_in_test.xml"
-      phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLWriterData.example_xml)
+      phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLWriterData.example_xml)
       filename = @writeto.file(outputfn)
       writer = Bio::PhyloXML::Writer.new(filename)
       phyloxml.each do |tree|
@@ -299,7 +303,7 @@ module Bio
       writer.write_other(phyloxml.other)
 
       assert_nothing_thrown do
-        Bio::PhyloXML::Parser.new(filename)
+        Bio::PhyloXML::Parser.open(filename)
       end
       # The output file is not deleted since it might be used in the phyloxml
       # parser test. But since the order of tests can't be assumed, I can't
@@ -307,7 +311,7 @@ module Bio
     end
 
     def test_made_up_xml_file
-      phyloxml = Bio::PhyloXML::Parser.new(TestPhyloXMLWriterData.made_up_xml)
+      phyloxml = Bio::PhyloXML::Parser.open(TestPhyloXMLWriterData.made_up_xml)
       filename = @writeto.file("made_up_generated_in_test.xml")
       writer = Bio::PhyloXML::Writer.new(filename)
       # The output file is not deleted since it might be used in the phyloxml

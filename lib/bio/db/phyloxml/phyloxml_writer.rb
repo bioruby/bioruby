@@ -47,7 +47,7 @@ module Bio
   #   require 'bio'
   #
   #  # Create new phyloxml parser
-  #  phyloxml = Bio::PhyloXML::Parser.new('example.xml')
+  #  phyloxml = Bio::PhyloXML::Parser.open('example.xml')
   #
   #  # Read in some trees from file
   #  tree1 = phyloxml.next_tree
@@ -138,7 +138,7 @@ module Bio
       # PhyloXML Schema allows to save data in different xml format after all
       # phylogeny elements. This method is to write these additional data.
       #
-      #  parser = PhyloXML::Parser.new('phyloxml_examples.xml')
+      #  parser = PhyloXML::Parser.open('phyloxml_examples.xml')
       #  writer = PhyloXML::Writer.new('new.xml')
       #
       #  parser.each do |tree|
