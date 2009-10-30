@@ -1,5 +1,5 @@
 #
-# = bio/db/chromatogram.rb - Chromatogram class 
+# = bio/db/sanger_chromatogram/chromatogram.rb - Sanger Chromatogram class 
 #
 # Copyright::	Copyright (C) 2009 Anthony Underwood <anthony.underwood@hpa.org.uk>, <email2ants@gmail.com>
 # License::	The Ruby License
@@ -10,13 +10,13 @@ require 'bio/sequence/adapter'
 module Bio
   # == Description
   #
-  # This is the Superclass for the Abi and Scf classes that allow importing of the common scf
+  # This is the Superclass for the Abif and Scf classes that allow importing of the common scf
   # and abi sequence chromatogram formats
-  # The following attributes are Common to both the Abi and Scf subclasses
+  # The following attributes are Common to both the Abif and Scf subclasses
   #
   # * *chromatogram_type* (String): This is extracted from the chromatogram file itself and will 
-  #   probably be either .scf or ABIF for Scf and Abi files respectively.
-  # * *version* (String): The version of the Scf or Abi file
+  #   probably be either .scf or ABIF for Scf and Abif files respectively.
+  # * *version* (String): The version of the Scf or Abif file
   # * *sequence* (String): the sequence contained within the chromatogram as a string.
   # * *qualities* (Array): the quality scores of each base as an array of integers. These will
   #   probably be phred scores.
@@ -38,8 +38,8 @@ module Bio
   # == Usage
   #   filename = "path/to/sequence_chromatogram_file"
   # 
-  # for Abi files
-  #   chromatogram_ff = Bio::Abi.open(filename)
+  # for Abif files
+  #   chromatogram_ff = Bio::Abif.open(filename)
   # for Scf files
   #   chromatogram_ff = Bio::Scf.open(filename)
   #
@@ -49,10 +49,10 @@ module Bio
   #   chromatogram.qualities # => returns an array of quality values for each base
   #   chromatogram.atrace # => returns an array of the a trace y positions
   #
-  class Chromatogram
-    # The type of chromatogram file .scf for Scf files and ABIF doe Abi files
+  class SangerChromatogram
+    # The type of chromatogram file .scf for Scf files and ABIF doe Abif files
     attr_accessor :chromatogram_type
-    # The Version of the Scf or Abi file (String)
+    # The Version of the Scf or Abif file (String)
     attr_accessor :version
     # The sequence contained within the chromatogram (String)
     attr_accessor :sequence
@@ -82,7 +82,7 @@ module Bio
     
     # Returns a Bio::Sequence object based on the sequence from the chromatogram
     def to_biosequence
-      Bio::Sequence.adapter(self, Bio::Sequence::Adapter::Chromatogram)
+      Bio::Sequence.adapter(self, Bio::Sequence::Adapter::SangerChromatogram)
     end
     alias :to_seq :to_biosequence
     

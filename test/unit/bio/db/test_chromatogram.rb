@@ -1,36 +1,38 @@
 #
+# test/unit/bio/db/sanger_chromatogram/test_chromatogram.rb - Unit test for Bio::SangerChromatogram
+#
 # Copyright::	Copyright (C) 2009 Anthony Underwood <anthony.underwood@hpa.org.uk>, <email2ants@gmail.com>
 # License::	The Ruby License
 #
 require 'test/unit'
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), [".."] * 4, "lib")).cleanpath.to_s
+libpath = Pathname.new(File.join(File.dirname(__FILE__), [".."] * 5, "lib")).cleanpath.to_s
 $:.unshift(libpath) unless $:.include?(libpath)
-require 'bio/db/chromatogram'
-require 'bio/db/chromatogram/scf'
-require 'bio/db/chromatogram/abi'
+require 'bio/db/sanger_chromatogram/chromatogram'
+require 'bio/db/sanger_chromatogram/scf'
+require 'bio/db/sanger_chromatogram/abif'
 
 module Bio
 
-  class TestChromatogramData
-    bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4)).cleanpath.to_s
-    TestChromatogramData = Pathname.new(File.join(bioruby_root, 'test', 'data', 'chromatogram')).cleanpath.to_s
+  class TestSangerChromatogramData
+    bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
+    TestSangerChromatogramData = Pathname.new(File.join(bioruby_root, 'test', 'data', 'sanger_chromatogram')).cleanpath.to_s
     def self.scf_version_2
-      File.open(File.join(TestChromatogramData, 'test_chromatogram_scf_v2.scf')).read
+      File.open(File.join(TestSangerChromatogramData, 'test_chromatogram_scf_v2.scf')).read
     end
     def self.scf_version_3
-      File.open(File.join(TestChromatogramData, 'test_chromatogram_scf_v3.scf')).read
+      File.open(File.join(TestSangerChromatogramData, 'test_chromatogram_scf_v3.scf')).read
     end
     def self.abi
-      File.open(File.join(TestChromatogramData, 'test_chromatogram_abi.ab1')).read
+      File.open(File.join(TestSangerChromatogramData, 'test_chromatogram_abif.ab1')).read
     end
   end
 
-  class TestChromatogram < Test::Unit::TestCase
+  class TestSangerChromatogram < Test::Unit::TestCase
     def setup
-      @scf_version_2 = Scf.new(TestChromatogramData.scf_version_2)
-      @scf_version_3 = Scf.new(TestChromatogramData.scf_version_3)
-      @abi = Abi.new(TestChromatogramData.abi)
+      @scf_version_2 = Scf.new(TestSangerChromatogramData.scf_version_2)
+      @scf_version_3 = Scf.new(TestSangerChromatogramData.scf_version_3)
+      @abi = Abif.new(TestSangerChromatogramData.abi)
 
       @scf_version_2_sequence = "attaacgtaaaaggtttggttggttcgctataaaaactcttattttggataatttgtttagctgttgcaatataaattgacccatttaatttataaattggattctcgttgcaataaatttccagatcctgaaaaagctctggcttaaccaaattgccttggctatcaatgcttctacaccaagaaggctttaaagagataggactaactgaaacgacactttttcccgttgcttgatgtatttcaacagcatgtcttatggtttctggcttcctgaatggagaagttggttgtaaaagcaatacactgtcaaaaaaaacctccatttgctgaaacttaaacaggaggtcaataacagtatgaatcacatccgaagtatccgtggctaaatcttccgatcttagccaaggtactgaagccccatattgaacggann"
       @scf_version_2_RC_sequence = "nntccgttcaatatggggcttcagtaccttggctaagatcggaagatttagccacggatacttcggatgtgattcatactgttattgacctcctgtttaagtttcagcaaatggaggttttttttgacagtgtattgcttttacaaccaacttctccattcaggaagccagaaaccataagacatgctgttgaaatacatcaagcaacgggaaaaagtgtcgtttcagttagtcctatctctttaaagccttcttggtgtagaagcattgatagccaaggcaatttggttaagccagagctttttcaggatctggaaatttattgcaacgagaatccaatttataaattaaatgggtcaatttatattgcaacagctaaacaaattatccaaaataagagtttttatagcgaaccaaccaaaccttttacgttaat"

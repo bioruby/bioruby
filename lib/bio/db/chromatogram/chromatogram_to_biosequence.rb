@@ -1,5 +1,5 @@
 #
-# = bio/db/chromatogram/chromatogram_to_biosequence.rb - Bio::Chromatogram to Bio::Sequence adapter module
+# = bio/db/sanger_chromatogram/chromatogram_to_biosequence.rb - Bio::SangerChromatogram to Bio::Sequence adapter module
 #
 # Copyright::	Copyright (C) 2009 Anthony Underwood <anthony.underwood@hpa.org.uk>, <email2ants@gmail.com>
 # License::	The Ruby License
@@ -12,10 +12,10 @@ require 'bio/sequence/adapter'
 
 # Internal use only. Normal users should not use this module.
 #
-# Bio::Chromatogram to Bio::Sequence adapter module.
-# It is internally used in Bio::Chromatogram#to_biosequence.
+# Bio::SangerChromatogram to Bio::Sequence adapter module.
+# It is internally used in Bio::SangerChromatogram#to_biosequence.
 #
-module Bio::Sequence::Adapter::Chromatogram
+module Bio::Sequence::Adapter::SangerChromatogram
 
   extend Bio::Sequence::Adapter
 
@@ -28,5 +28,5 @@ module Bio::Sequence::Adapter::Chromatogram
     orig.version
   end
 
-end #module Bio::Sequence::Adapter::Chromatogram
+end #module Bio::Sequence::Adapter::SangerChromatogram
 
