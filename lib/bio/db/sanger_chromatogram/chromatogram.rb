@@ -87,7 +87,7 @@ module Bio
     alias :to_seq :to_biosequence
     
     # Returns the sequence from the chromatogram as a string
-    def to_s
+    def sequence_string
       @sequence
     end
     
