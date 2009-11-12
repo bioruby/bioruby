@@ -1,7 +1,7 @@
 #
 # test/unit/bio/util/test_sirna.rb - Unit test for Bio::SiRNA.
 #
-# Copyright::  Copyright (C) 2005 Mitsuteru C. Nakap <n@bioruby.org>
+# Copyright::  Copyright (C) 2005 Mitsuteru C. Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
 #  $Id:$
