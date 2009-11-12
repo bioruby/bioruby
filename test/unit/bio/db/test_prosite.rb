@@ -4,13 +4,15 @@
 # Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_prosite.rb,v 1.6 2007/04/05 23:35:43 trevor Exp $
+#  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'bio/db/prosite'
 
@@ -32,8 +34,7 @@ module Bio
   class TestPROSITE < Test::Unit::TestCase
 
     def setup
-      bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4)).cleanpath.to_s
-      data = File.open(File.join(bioruby_root, 'test', 'data', 'prosite', 'prosite.dat')).read
+      data = File.open(File.join(BioRubyTestDataPath, 'prosite', 'prosite.dat')).read
       data = data.split(Bio::PROSITE::RS)[0]
       @obj = Bio::PROSITE.new(data)
     end

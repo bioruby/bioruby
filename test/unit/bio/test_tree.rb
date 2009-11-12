@@ -5,16 +5,16 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: test_tree.rb,v 1.5 2007/04/05 23:35:42 trevor Exp $
+# $Id:$
 #
 
-require 'test/unit'
-
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), [".."] * 3, "lib")).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 2,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
-require 'bio'
+# libraries needed for the tests
+require 'test/unit'
 require 'bio/tree'
 
 module Bio

@@ -4,14 +4,15 @@
 # Copyright::  Copyright (C) 2007 Mitsuteru Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_embl_rel89.rb,v 1.2.2.1 2008/02/20 09:56:22 aerts Exp $
+#  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
-
+# libraries needed for the tests
 require 'test/unit'
 require 'bio/db/embl/embl'
 
@@ -19,8 +20,7 @@ module Bio
   class TestEMBL89 < Test::Unit::TestCase
     
     def setup
-    bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
-      output = File.open(File.join(bioruby_root, 'test', 'data', 'embl', 'AB090716.embl.rel89')).read
+      output = File.read(File.join(BioRubyTestDataPath, 'embl', 'AB090716.embl.rel89'))
       @obj = Bio::EMBL.new(output)
     end
 

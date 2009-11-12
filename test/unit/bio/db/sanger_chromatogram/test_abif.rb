@@ -5,11 +5,12 @@
 # License::	The Ruby License
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-# loading helper routine for testing
 load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
                             'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'bio/db/sanger_chromatogram/chromatogram'
 require 'bio/db/sanger_chromatogram/abif'

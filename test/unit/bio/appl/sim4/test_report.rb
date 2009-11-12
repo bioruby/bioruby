@@ -8,18 +8,19 @@
 #  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'bio/appl/sim4/report'
 
 module Bio
 
   class TestDataForSim4Report
-    bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
-    DataPath = Pathname.new(File.join(bioruby_root, 'test', 'data', 'sim4')).cleanpath.to_s
+    DataPath = Pathname.new(File.join(BioRubyTestDataPath, 'sim4')).cleanpath.to_s
 
     def initialize(filename)
       @filename = filename

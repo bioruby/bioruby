@@ -5,21 +5,21 @@
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: test_aaindex.rb,v 1.4 2007/04/05 23:35:43 trevor Exp $
+# $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
-require 'bio/io/fetch'
 require 'bio/db/aaindex'
 
 module Bio
   class DataAAindex
-    bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4)).cleanpath.to_s    
-    TestDataAAindex = Pathname.new(File.join(bioruby_root, 'test', 'data', 'aaindex')).cleanpath.to_s
+    TestDataAAindex = Pathname.new(File.join(BioRubyTestDataPath, 'aaindex')).cleanpath.to_s
 
     def self.aax1
       File.read(File.join(TestDataAAindex, "PRAM900102"))

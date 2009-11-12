@@ -9,18 +9,19 @@
 #  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib'))).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'bio/appl/bl2seq/report'
 
 
 module Bio
   class TestBl2seqReportData
-    bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
-    TestDataBl2seq = Pathname.new(File.join(bioruby_root, 'test', 'data', 'bl2seq')).cleanpath.to_s
+    TestDataBl2seq = Pathname.new(File.join(BioRubyTestDataPath, 'bl2seq')).cleanpath.to_s
 
     def self.output(format = 7)
       case format

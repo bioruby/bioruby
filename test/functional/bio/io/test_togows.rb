@@ -8,10 +8,12 @@
 #  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'uri'
 require 'bio/version'
 require 'bio/io/togows'
@@ -23,8 +25,7 @@ module Bio
   # common tests for both instance methods and class methods
   module FuncTestTogoWSRESTcommon
 
-    bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4)).cleanpath.to_s
-    TestData = Pathname.new(File.join(bioruby_root, 'test', 'data')).cleanpath.to_s
+    TestData = BioRubyTestDataPath
 
     def test_entry
       result = nil

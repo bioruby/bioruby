@@ -5,13 +5,15 @@
 #               Mitsuteru Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: test_seq.rb,v 1.9 2007/04/05 23:35:44 trevor Exp $
+# $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'bio/shell'
 require 'bio/shell/plugin/seq'

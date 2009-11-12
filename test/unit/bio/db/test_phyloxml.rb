@@ -6,12 +6,13 @@
 # License::     The Ruby License
 #
 
-require 'test/unit'
-
-#this code is required for being able to require 'bio/db/phyloxml'
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
+
+# libraries needed for the tests
+require 'test/unit'
 
 begin
   require 'libxml'
@@ -35,8 +36,7 @@ module Bio
 
   module TestPhyloXMLData
 
-  bioruby_root  = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4)).cleanpath.to_s
-  PHYLOXML_TEST_DATA = Pathname.new(File.join(bioruby_root, 'test', 'data', 'phyloxml')).cleanpath.to_s
+  PHYLOXML_TEST_DATA = Pathname.new(File.join(BioRubyTestDataPath, 'phyloxml')).cleanpath.to_s
 
   def self.example_xml
     File.join PHYLOXML_TEST_DATA, 'phyloxml_examples.xml'

@@ -8,10 +8,12 @@
 #  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib'))).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'digest/sha1'
 require 'bio/io/flatfile'
@@ -19,8 +21,7 @@ require 'bio/appl/blast/rpsblast'
 
 module Bio
 module TestRPSBlast
-  bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
-  TestFileName = Pathname.new(File.join(bioruby_root, 'test', 'data', 'rpsblast', 'misc.rpsblast')).cleanpath.to_s
+  TestFileName = Pathname.new(File.join(BioRubyTestDataPath, 'rpsblast', 'misc.rpsblast')).cleanpath.to_s
 
   class TestRPSBlastSplitter < Test::Unit::TestCase
     def setup

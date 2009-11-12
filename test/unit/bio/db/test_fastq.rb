@@ -8,10 +8,12 @@
 #  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'bio/io/flatfile'
 require 'bio/db/fastq'
@@ -19,9 +21,7 @@ require 'bio/db/fastq'
 module Bio
   module TestFastq
 
-    bioruby_root = Pathname.new(File.join(File.dirname(__FILE__),
-                                          ['..'] * 4)).cleanpath.to_s
-    TestFastqDataDir = Pathname.new(File.join(bioruby_root, 'test', 'data',
+    TestFastqDataDir = Pathname.new(File.join(BioRubyTestDataPath,
                                               'fastq')).cleanpath.to_s
 
     # A module providing methods to compare float arrays

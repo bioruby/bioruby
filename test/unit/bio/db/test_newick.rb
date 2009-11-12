@@ -6,16 +6,16 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: test_newick.rb,v 1.6 2007/12/12 16:06:22 ngoto Exp $
+# $Id:$
 #
 
-require 'test/unit'
-
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), [".."] * 4, "lib")).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
-require 'bio'
+# libraries needed for the tests
+require 'test/unit'
 require 'bio/tree'
 require 'bio/db/newick'
 

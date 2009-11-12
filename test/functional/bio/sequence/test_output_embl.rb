@@ -5,15 +5,17 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-#  $Id: test_output_embl.rb,v 1.1.2.2 2008/03/28 00:56:27 ngoto Exp $
+#  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
-require 'bio'
+require 'bio/sequence'
 
 module Bio
 class FuncTestSequenceOutputEMBL < Test::Unit::TestCase

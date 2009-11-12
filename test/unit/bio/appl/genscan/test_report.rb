@@ -4,13 +4,15 @@
 # Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_report.rb,v 1.4 2007/04/05 23:35:43 trevor Exp $
+#  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'bio/appl/genscan/report'
 
@@ -20,8 +22,7 @@ module Bio
   class TestGenscanReport < Test::Unit::TestCase
 
     def setup
-      bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
-      test_data = Pathname.new(File.join(bioruby_root, 'test', 'data', 'genscan')).cleanpath.to_s
+      test_data = Pathname.new(File.join(BioRubyTestDataPath, 'genscan')).cleanpath.to_s
       report = File.open(File.join(test_data, 'sample.report')).read
 
       @obj = Bio::Genscan::Report.new(report)
@@ -69,8 +70,7 @@ module Bio
   class TestGenscanReportGene < Test::Unit::TestCase
 
     def setup
-      bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
-      test_data = Pathname.new(File.join(bioruby_root, 'test', 'data', 'genscan')).cleanpath.to_s
+      test_data = Pathname.new(File.join(BioRubyTestDataPath, 'genscan')).cleanpath.to_s
       report = File.open(File.join(test_data, 'sample.report')).read
       @obj = Bio::Genscan::Report.new(report).predictions
     end
@@ -111,8 +111,7 @@ module Bio
   class TestGenscanReportExon < Test::Unit::TestCase
 
     def setup
-      bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
-      test_data = Pathname.new(File.join(bioruby_root, 'test', 'data', 'genscan')).cleanpath.to_s
+      test_data = Pathname.new(File.join(BioRubyTestDataPath, 'genscan')).cleanpath.to_s
       report = File.open(File.join(test_data, 'sample.report')).read
       @obj = Bio::Genscan::Report.new(report).predictions.first.exons.first
     end

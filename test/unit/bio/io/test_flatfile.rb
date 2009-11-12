@@ -5,13 +5,15 @@
 #
 # License:: The Ruby License
 #
-#  $Id: test_flatfile.rb,v 1.2 2007/04/05 23:35:43 trevor Exp $
+#  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'bio'
 require 'stringio'
@@ -21,8 +23,7 @@ module Bio
     
 module TestFlatFile
 
-  bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4)).cleanpath.to_s
-  TestDataPath = Pathname.new(File.join(bioruby_root, 'test', 'data')).cleanpath.to_s
+  TestDataPath = BioRubyTestDataPath
   TestData01 = File.join(TestDataPath, 'fasta', 'example1.txt')
 
   TestData01Ent1def =
