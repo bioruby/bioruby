@@ -110,6 +110,9 @@ module Bio::Sequence::Format::Formatter
         return fmt.p2q(ep[0, seq.length])
       end
 
+      # If quality score type of the sequence is nil, regarded as :phred.
+      qsc_type ||= :phred
+
       # checks if scores can be converted
       if qsc and qsc.size >= seq.length then
         case [ qsc_type, fmt.quality_score_type ]
@@ -146,7 +149,7 @@ module Bio::Sequence::Format::Formatter
       end
 
       # if no information, returns empty array
-      retrun []
+      return []
     end
   end #class Fastq
 

@@ -157,6 +157,9 @@ class Sequence
   # The meaning (calculation method) of the quality scores stored in
   # the <tt>quality_scores</tt> attribute.
   # Maybe one of :phred, :solexa, or nil.
+  #
+  # Note that if it is nil, and <tt>error_probabilities</tt> is empty,
+  # some methods implicitly assumes that it is :phred (PHRED score).
   attr_accessor :quality_score_type
 
   # Error probabilities of the bases/residues in the sequence.
