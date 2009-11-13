@@ -58,6 +58,18 @@ module Bio
 
     end
 
+    # Returns the data for the name.
+    # If not found, returns nil.
+    # ---
+    # *Arguments*:
+    # * (required) _name_: (String) name of the data
+    # * (required) <em>tag_number</em>: (Integer) tag number (default 1)
+    # *Returns*:: any data type or nil
+    def data(name, tag_number = 1)
+      d = @directory_entries[name]
+      d ? d[tag_number].data : nil
+    end
+
     private
     def get_directory_entries(string)
       @directory_entries = Hash.new
@@ -99,13 +111,6 @@ module Bio
       end
     end
       
-    def method_missing(method_name, tag_number = 1)
-      if @directory_entries.has_key?(method_name.to_s)
-        return @directory_entries[method_name.to_s][tag_number].data
-      else
-        return nil
-      end
-    end
     class DirectoryEntry
       attr_accessor :name, :tag_number, :element_type, :element_size, :number_of_elements, :data_size, :data_offset
       attr_accessor :data
