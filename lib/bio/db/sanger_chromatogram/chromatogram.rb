@@ -125,7 +125,7 @@ module Bio
     # Returns a new chromatogram object of the appropriate subclass (scf or abi) where the 
     # sequence, traces and qualities have all been revesed and complemented
     def complement
-      chromatogram = self.clone
+      chromatogram = self.dup
       chromatogram.complement!
       return chromatogram
     end
