@@ -157,7 +157,7 @@ class Sequence
   # The meaning (calculation method) of the quality scores stored in
   # the <tt>quality_scores</tt> attribute.
   # Maybe one of :phred, :solexa, or nil.
-  attr_accessor :quality_scores_type
+  attr_accessor :quality_score_type
 
   # Error probabilities of the bases/residues in the sequence.
   # (Array containing Float, or nil)
