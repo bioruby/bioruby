@@ -100,7 +100,8 @@ module Bio
         raw_data = string.slice(20,4)
       end
       if entry.element_type > 1023
-        entry.data = "user defined data: not processed as yet by this bioruby module"
+        # user defined data: not processed as yet by this bioruby module
+        entry.data = raw_data
       else
         pack_type = PACK_TYPES[DATA_TYPES[entry.element_type]]
         pack_type.match(/\*/) ? unpack_string = pack_type : unpack_string = "#{pack_type}#{entry.number_of_elements}"
