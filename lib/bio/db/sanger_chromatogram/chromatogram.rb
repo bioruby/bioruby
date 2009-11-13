@@ -103,7 +103,7 @@ module Bio
       @gtrace = tmp_trace.reverse
 
       # reverse base qualities
-      if !@aqual.nil? # if qualities exist
+      if !@aqual.nil? # if qualities exist
         tmp_qual = @aqual
         @aqual = @tqual.reverse
         @tqual = tmp_qual.reverse
