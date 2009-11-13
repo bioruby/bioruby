@@ -56,6 +56,13 @@ module Format
     # FASTQ "fastq-illumina" format generator
     autoload :Fastq_illumina, 'bio/db/fastq/format_fastq'
 
+    # FastaNumericFormat format generator
+    autoload :Fasta_numeric, 'bio/db/fasta/format_qual'
+    # Qual format generator.
+    # Its format is the same as Fasta_numeric, but it would perform
+    # to convert quality score or generates scores from error probability.
+    autoload :Qual, 'bio/db/fasta/format_qual'
+
   end #module Formatter
 
   # Repository of nucleotide sequence formatter classes
