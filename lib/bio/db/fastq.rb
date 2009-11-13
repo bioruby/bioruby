@@ -26,6 +26,7 @@ require "singleton"
 
 require 'bio/sequence'
 require 'bio/io/flatfile'
+require 'bio/db/fastq/quality_score'
 
 module Bio
 
@@ -49,15 +50,11 @@ class Fastq
     # and must not be X...Y.
     SCORE_RANGE = nil
 
-    # Type of quality scores. Should be redefined in subclass.
-    QUALITY_SCORE_TYPE = nil
-
     def initialize
       @name = self.class::NAME
       @symbol = @name.gsub(/\-/, '_').to_sym
       @offset = self.class::OFFSET
       @score_range = self.class::SCORE_RANGE
-      @quality_score_type = self.class::QUALITY_SCORE_TYPE
     end
 
     # Format name
@@ -75,7 +72,7 @@ class Fastq
     attr_reader :score_range
 
     # Type of quality scores. Maybe one of :phred or :solexa.
-    attr_reader :quality_score_type
+    attr_reader :quality_score_type if false # for RDoc
 
     # Converts quality string to scores.
     # No overflow/underflow checks will be performed.
@@ -120,97 +117,12 @@ class Fastq
       tmp.pack('C*')
     end
 
-    # PHRED score to probability conversion.
-    # ---
-    # *Arguments*:
-    # * (required) _scores_: (Array containing Integer) scores
-    # *Returns*:: (Array containing Float) probabilities
-    def phred_q2p(scores)
-      scores.collect do |q|
-        10 ** (- q / 10.0)
-      end
-    end
-
-    # Probability to PHRED score conversion.
-    #
-    # The values may be truncated or incorrect if overflows/underflows
-    # occurred during the calculation.
-    # ---
-    # *Arguments*:
-    # * (required) _probabilities_: (Array containing Float) probabilities
-    # *Returns*:: (Array containing Float) scores
-    def phred_p2q(probabilities)
-      probabilities.collect do |p|
-        p = Float::MIN if p < Float::MIN
-        q = -10 * Math.log10(p)
-        q.finite? ? q.round : q
-      end
-    end
-
-    # Solexa score to probability conversion.
-    # ---
-    # *Arguments*:
-    # * (required) _scores_: (Array containing Integer) scores
-    # *Returns*:: (Array containing Float) probabilities
-    def solexa_q2p(scores)
-      scores.collect do |q|
-        t = 10 ** (- q / 10.0)
-        t / (1.0 + t)
-      end
-    end
-
-    # Probability to Solexa score conversion.
-    # ---
-    # *Arguments*:
-    # * (required) _probabilities_: (Array containing Float) probabilities
-    # *Returns*:: (Array containing Float) scores
-    def solexa_p2q(probabilities)
-      probabilities.collect do |p|
-        t = p / (1.0 - p)
-        t = Float::MIN if t < Float::MIN
-        q = -10 * Math.log10(t)
-        q.finite? ? q.round : q
-      end
-    end
-
-    # Converts PHRED scores to Solexa scores.
-    #
-    # The values may be truncated or incorrect if overflows/underflows
-    # occurred during the calculation.
-    # ---
-    # *Arguments*:
-    # * (required) _scores_: (Array containing Integer) quality scores
-    # *Returns*:: (Array containing Integer) quality scores
-    def convert_scores_from_phred_to_solexa(scores)
-      sc = scores.collect do |q|
-        t = 10 ** (q / 10.0) - 1
-        t = Float::MIN if t < Float::MIN
-        r = 10 * Math.log10(t)
-        r.finite? ? r.round : r
-      end
-      sc
-    end
-
-    # Converts Solexa scores to PHRED scores.
-    #
-    # The values may be truncated if overflows/underflows occurred
-    # during the calculation.
-    # ---
-    # *Arguments*:
-    # * (required) _scores_: (Array containing Integer) quality scores
-    # *Returns*:: (Array containing Integer) quality scores
-    def convert_scores_from_solexa_to_phred(scores)
-      sc = scores.collect do |q|
-        r = 10 * Math.log10(10 ** (q / 10.0) + 1)
-        r.finite? ? r.round : r
-      end
-      sc
-    end
-
     # Format information for "fastq-sanger".
     # Bio::Fastq internal use only.
     class FASTQ_SANGER < FormatData
       include Singleton
+
+      include QualityScore::Phred
 
       # format name
       NAME = 'fastq-sanger'.freeze
@@ -218,11 +130,7 @@ class Fastq
       OFFSET = 33
       # score range
       SCORE_RANGE = 0..93
-      # type of quality scores
-      QUALITY_SCORE_TYPE = :phred
 
-      alias p2q phred_p2q
-      alias q2p phred_q2p
     end #class FASTQ_SANGER
 
     # Format information for "fastq-solexa"
@@ -230,17 +138,15 @@ class Fastq
     class FASTQ_SOLEXA < FormatData
       include Singleton
 
+      include QualityScore::Solexa
+
       # format name
       NAME = 'fastq-solexa'.freeze
       # offset 
       OFFSET = 64
       # score range
       SCORE_RANGE = (-5)..62
-      # type of quality scores
-      QUALITY_SCORE_TYPE = :solexa
 
-      alias p2q solexa_p2q
-      alias q2p solexa_q2p
     end #class FASTQ_SOLEXA
 
     # Format information for "fastq-illumina"
@@ -248,17 +154,15 @@ class Fastq
     class FASTQ_ILLUMINA < FormatData
       include Singleton
 
+      include QualityScore::Phred
+
       # format name
       NAME = 'fastq-illumina'.freeze
       # offset 
       OFFSET = 64
       # score range
       SCORE_RANGE = 0..62
-      # type of quality scores
-      QUALITY_SCORE_TYPE = :phred
 
-      alias p2q phred_p2q
-      alias q2p phred_q2p
     end #class FASTQ_ILLUMINA
 
   end #class FormatData
