@@ -1,0 +1,14 @@
+ENTRY       R00006                      Reaction
+NAME        pyruvate:pyruvate acetaldehydetransferase (decarboxylating);
+            2-acetolactate pyruvate-lyase (carboxylating)
+DEFINITION  2-Acetolactate + CO2 <=> 2 Pyruvate
+EQUATION    C00900 + C00011 <=> 2 C00022
+COMMENT     TPP-dependent enzymatic reaction (R00014+R03050)
+RPAIR       RP: RP00440  C00022_C00900 main
+            RP: RP05698  C00011_C00022 leave
+            RP: RP12733  C00022_C00900 trans
+PATHWAY     PATH: rn00770  Pantothenate and CoA biosynthesis
+ENZYME      2.2.1.6
+ORTHOLOGY   KO: K01652  acetolactate synthase I/II/III large subunit
+                        [EC:2.2.1.6]
+            KO: K01653  acetolactate synthase I/III small subunit [EC:2.2.1.6]
