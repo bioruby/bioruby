@@ -2,6 +2,7 @@
 # = bio/db/kegg/compound.rb - KEGG COMPOUND database class
 #
 # Copyright::  Copyright (C) 2001, 2002, 2004, 2007 Toshiaki Katayama <k@bioruby.org>
+# Copyright::  Copyright (C) 2009 Kozo Nishida <kozo-ni@is.naist.jp>
 # License::    The Ruby License
 #
 # $Id: compound.rb,v 0.17 2007/11/27 07:09:43 k Exp $
@@ -76,7 +77,7 @@ class COMPOUND < KEGGDB
 
   # PATHWAY
   def pathways
-    lines_fetch('PATHWAY') 
+    lines_fetch('PATHWAY')
   end
 
   # ENZYME
@@ -94,7 +95,13 @@ class COMPOUND < KEGGDB
 
   # DBLINKS
   def dblinks
-    lines_fetch('DBLINKS')
+    dbs = []
+    lines_fetch('DBLINKS').each do |db|
+      db_name = db.split(": ")[0]
+      id = db.split(": ")[1]
+      dbs.push({"db" => db_name, "id" => id})
+    end
+    @data['DBLINKS'] = dbs
   end
 
   # ATOM, BOND
