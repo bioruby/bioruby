@@ -9,6 +9,7 @@
 #
 
 require 'bio/sequence/format'
+require 'bio/db/fastq/quality_score'
 
 module Bio::Sequence::Format::Formatter
 
@@ -112,7 +113,9 @@ module Bio::Sequence::Format::Formatter
 
     def fastanumeric_quality_scores(seq)
       qsc = qual_quality_scores(seq)
-      if qsc.size != seq.length then
+      if qsc.size > seq.length then
+        qsc = qsc[0, seq.length]
+      elsif qsc.size < seq.length then
         padding = @options[:default_score] || 0
         psize = seq.length - qsc.size
         qsc += Array.new(psize, padding)
