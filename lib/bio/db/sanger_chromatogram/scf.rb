@@ -162,7 +162,7 @@ module Bio
       end
     end
     def get_v3_sequence(string,offset,length)
-      @sequence = string.slice(offset,length).unpack("a#{length}").to_s.downcase
+      @sequence = string.slice(offset,length).unpack("a#{length}").join('').downcase
     end
 
     def convert_deltas_to_values(trace_read)
