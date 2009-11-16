@@ -9,6 +9,16 @@ is released.
 
 == Incompatible changes
 
+=== Bio::KEGG::COMPOUND
+
+Bio::KEGG::COMPOUND#dblinks is changed to return an array containing
+hashes instead of array containing strings.
+
+=== Bio::KEGG:REACTION
+
+Bio::KEGG::REACTION#rpair and pathways are changed to return an array
+containing hashes instead of array containing strings.
+
 === Bio::RestrictionEnzyme
 
 Format validation when creating a object is turned off because of
