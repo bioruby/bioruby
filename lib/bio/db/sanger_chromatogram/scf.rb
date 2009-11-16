@@ -60,7 +60,7 @@ module Bio
         for base in ["a" , "c" , "g" , "t"]
           trace_read = string.slice(offset,length).unpack("#{byte}#{@samples}")
           # convert offsets
-          for sample_num in (0..trace_read.nitems-1)
+          for sample_num in (0..trace_read.size-1)
             if trace_read[sample_num] > 30000
               trace_read[sample_num] = trace_read[sample_num] - 65536
             end
@@ -68,7 +68,7 @@ module Bio
           # For 8-bit data we need to emulate a signed/unsigned
           # cast that is implicit in the C implementations.....
           if @sample_size == 1
-            for sample_num in (0..trace_read.nitems-1)
+            for sample_num in (0..trace_read.size-1)
               trace_read[sample_num] += 256 if trace_read[sample_num] < 0
             end
           end
@@ -167,12 +167,12 @@ module Bio
 
     def convert_deltas_to_values(trace_read)
       p_sample = 0;
-      for sample_num in (0..trace_read.nitems-1)
+      for sample_num in (0..trace_read.size-1)
         trace_read[sample_num] = trace_read[sample_num] + p_sample
         p_sample = trace_read[sample_num];
       end
       p_sample = 0;
-      for sample_num in (0..trace_read.nitems-1)
+      for sample_num in (0..trace_read.size-1)
         trace_read[sample_num] = trace_read[sample_num] + p_sample
         p_sample = trace_read[sample_num];
       end
