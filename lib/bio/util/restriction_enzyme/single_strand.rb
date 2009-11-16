@@ -70,7 +70,7 @@ class SingleStrand < Bio::Sequence::NA
     c.flatten! # if an array was supplied as an argument
   # NOTE t| 2009-09-19 commented out for library efficiency
     # validate_args(sequence, c)
-    sequence.downcase!
+    sequence = sequence.downcase
     
     if sequence =~ re_cut_symbol
       @cut_locations_in_enzyme_notation = CutLocationsInEnzymeNotation.new( strip_padding(sequence) )
