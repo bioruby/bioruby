@@ -47,7 +47,7 @@ class REACTION < KEGGDB
   def rpairs
     unless @data['RPAIR']
       rps = []
-      fetch('RPAIR').split(/\s+/).each_slice(4).each do |rp|
+      fetch('RPAIR').split(/\s+/).each_slice(4) do |rp|
         rps.push({"entry" => rp[1], "name" => rp[2], "type" => rp[3]})
       end
       @data['RPAIR'] = rps
