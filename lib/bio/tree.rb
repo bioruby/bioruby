@@ -261,8 +261,21 @@ module Bio
       @pathway = Bio::Pathway.new([], true)
       @root = nil
       @options = {}
+      _init_cache
       self.concat(tree) if tree
     end
+
+    # (private) clear internal cache
+    def _init_cache
+      @cache_parent = {}
+    end
+    private :_init_cache
+
+    # (private) clear internal cache
+    def _clear_cache
+      @cache_parent.clear
+    end
+    private :_clear_cache
 
     # root node of this tree
     # (even if unrooted tree, it is used by some methods)
@@ -366,6 +379,7 @@ module Bio
     # Returns the newly added edge.
     # If the edge already exists, it is overwritten with new one.
     def add_edge(source, target, edge = Edge.new)
+      _clear_cache
       @pathway.append(Bio::Relation.new(source, target, edge))
       edge
     end
@@ -387,6 +401,7 @@ module Bio
     # Returns self.
     # If the node already exists, it does nothing.
     def add_node(node)
+      _clear_cache
       @pathway.graph[node] ||= {}
       self
     end
@@ -404,6 +419,7 @@ module Bio
       unless self.include?(node)
         raise IndexError, 'the node does not exist'
       end
+      _clear_cache
       @pathway.relations.delete_if do |rel|
         rel.node.include?(node)
       end
@@ -419,6 +435,7 @@ module Bio
     # Returns self.
     # If the node does not exist, raises IndexError.
     def remove_node(node)
+      #_clear_cache #done in clear_node(node)
       self.clear_node(node)
       @pathway.graph.delete(node)
       self
@@ -428,6 +445,7 @@ module Bio
     # All edges connected with the removed nodes are also removed.
     # Returns self.
     def remove_node_if
+      #_clear_cache #done in clear_node(node)
       all = self.nodes
       all.each do |node|
         if yield node then
@@ -449,6 +467,7 @@ module Bio
       unless self.get_edge(source, target) then
         raise IndexError, 'edge not found'
       end
+      _clear_cache
       fwd = [ source, target ]
       rev = [ target, source ]
       @pathway.relations.delete_if do |rel|
@@ -464,6 +483,7 @@ module Bio
     # Removes each edge if the block returns not nil.
     # Returns self.
     def remove_edge_if #:yields: source, target, edge
+      _clear_cache
       removed_rel = []
       @pathway.relations.delete_if do |rel|
         if yield rel.node[0], rel.node[1], edge then
@@ -485,6 +505,7 @@ module Bio
     # Replaces each node by each block's return value.
     # Returns self.
     def collect_node! #:yields: node
+      _clear_cache
       tr = {}
       self.each_node do |node|
         tr[node] = yield node
@@ -505,6 +526,7 @@ module Bio
     # Replaces each edge by each block's return value.
     # Returns self.
     def collect_edge! #:yields: source, target, edge
+      _clear_cache
       @pathway.relations.each do |rel|
         newedge = yield rel.node[0], rel.node[1], rel.relation
         rel.relation = newedge
@@ -573,6 +595,7 @@ module Bio
     # shared in the concatinated tree.
     def concat(other)
       #raise TypeError unless other.kind_of?(self.class)
+      _clear_cache
       other.each_node do |node|
         self.add_node(node)
       end
@@ -591,6 +614,7 @@ module Bio
       raise IndexError, 'node1 not found' unless @pathway.graph[node1]
       raise IndexError, 'node2 not found' unless @pathway.graph[node2]
       return [ node1 ] if node1 == node2
+      return [ node1, node2 ] if @pathway.graph[node1][node2]
       step, path = @pathway.bfs_shortest_path(node1, node2)
       unless path[0] == node1 and path[-1] == node2 then
         raise NoPathError, 'node1 and node2 are not connected'
@@ -622,13 +646,53 @@ module Bio
       distance
     end
 
+    # (private) get parent only by using cache
+    def _get_cached_parent(node, root)
+      @cache_parent[root] ||= Hash.new
+      cache = @cache_parent[root]
+      if node == root then
+        unless cache.has_key?(root) then
+          self.adjacent_nodes(root).each do |n|
+            cache[n] ||= root if n != root
+          end
+          cache[root] = nil
+        end
+        parent = nil
+      else
+        unless parent = cache[node] then
+          parent = self.adjacent_nodes(node).find { |n|
+            (m = cache[n]) && (m != node)
+          }
+          _cache_parent(node, parent, root) if parent
+        end
+        parent
+      end
+    end
+    private :_get_cached_parent
+
+    # (private) set parent cache
+    def _cache_parent(node, parent, root)
+      return unless parent
+      cache = @cache_parent[root]
+      cache[node] = parent
+      self.adjacent_nodes(node).each do |n|
+        cache[n] ||= node if n != parent
+      end
+    end
+    private :_cache_parent
+
     # Gets the parent node of the _node_.
     # If _root_ isn't specified or _root_ is <code>nil</code>, @root is used.
     # Returns an <code>Node</code> object or nil.
     # The result is unspecified for cyclic trees.
     def parent(node, root = nil)
       root ||= @root
-      self.path(root, node)[-2]
+      raise IndexError, 'can not get parent for unrooted tree' unless root
+      unless ret = _get_cached_parent(node, root) then
+        ret = self.path(root, node)[-2]
+        _cache_parent(node, ret, root)
+      end
+      ret
     end
 
     # Gets the adjacent children nodes of the _node_.
@@ -637,10 +701,9 @@ module Bio
     # The result is unspecified for cyclic trees.
     def children(node, root = nil)
       root ||= @root
-      path = self.path(root, node)
-      result = self.adjacent_nodes(node)
-      result -= path
-      result
+      c = self.adjacent_nodes(node)
+      c.delete(self.parent(node, root))
+      c
     end
 
     # Gets all descendent nodes of the _node_.
@@ -788,6 +851,7 @@ module Bio
     # Returns removed nodes.
     # Note that orphan nodes are still kept unchanged.
     def remove_nonsense_nodes
+      _clear_cache
       hash = {}
       self.each_node do |node|
         hash[node] = true if @pathway.graph[node].size == 2
@@ -828,6 +892,7 @@ module Bio
       unless edge = self.get_edge(node1, node2) then
         raise IndexError, 'nodes not found or two nodes are not adjacent'
       end
+      _clear_cache
       new_edge = Edge.new(new_distance)
       self.remove_edge(node1, node2)
       self.add_edge(node1, new_node, new_edge)
