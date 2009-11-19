@@ -64,7 +64,7 @@ module Bio
         #                 <p-value>       is the position p-value of the hit.
         def parse_hit_list(data)
           motifs = []
-          data.each do |line|
+          data.each_line do |line|
             
             line.chomp!
             
