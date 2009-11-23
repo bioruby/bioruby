@@ -17,7 +17,8 @@ results in Ruby 1.9.1, especially those not covered by the unit tests.
 ==== String encodings
 
 Currently, BioRuby do not care string encodings. In some cases,
-Encoding::CompatibilityError may be raised.
+Encoding::CompatibilityError or "ArgumentError: invalid byte sequence in
+(encoding name)" may be raised.
 
 === Ruby 1.9.0
 
