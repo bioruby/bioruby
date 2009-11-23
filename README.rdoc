@@ -113,8 +113,8 @@ and could be obtained by the following procedure.
 
 == REQUIREMENTS
 
-* Ruby 1.8.2 or later -- http://www.ruby-lang.org/
-  * Ruby 1.8.5 or later is recommended.
+* Ruby 1.8.2 or later (except Ruby 1.9.0) -- http://www.ruby-lang.org/
+  * Ruby 1.8.7-p174 or later, or Ruby 1.8.6-p383 or later is recommended.
   * Not yet fully ready with Ruby 1.9, although many components can now work
     in Ruby 1.9.1.
 
