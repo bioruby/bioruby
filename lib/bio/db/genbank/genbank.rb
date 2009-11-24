@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2000-2005 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: genbank.rb,v 0.40.2.4 2008/06/17 15:56:18 ngoto Exp $
+# $Id:$
 #
 
 require 'date'
@@ -162,89 +162,4 @@ class GenBank < NCBIDB
 
 end # GenBank
 end # Bio
-
-
-
-if __FILE__ == $0
-
-  begin
-    require 'pp'
-    alias p pp
-  rescue LoadError
-  end
-
-  puts "### GenBank"
-  if ARGV.size > 0
-    gb = Bio::GenBank.new(ARGF.read)
-  else
-    require 'bio/io/fetch'
-    gb = Bio::GenBank.new(Bio::Fetch.query('gb', 'LPATOVGNS'))
-  end
-
-  puts "## LOCUS"
-  puts "# GenBank.locus"
-  p gb.locus
-  puts "# GenBank.entry_id"
-  p gb.entry_id
-  puts "# GenBank.nalen"
-  p gb.nalen
-  puts "# GenBank.strand"
-  p gb.strand
-  puts "# GenBank.natype"
-  p gb.natype
-  puts "# GenBank.circular"
-  p gb.circular
-  puts "# GenBank.division"
-  p gb.division
-  puts "# GenBank.date"
-  p gb.date
-
-  puts "## DEFINITION"
-  p gb.definition
-
-  puts "## ACCESSION"
-  p gb.accession
-
-  puts "## VERSION"
-  p gb.versions
-  p gb.version
-  p gb.gi
-
-  puts "## NID"
-  p gb.nid
-
-  puts "## KEYWORDS"
-  p gb.keywords
-
-  puts "## SEGMENT"
-  p gb.segment
-
-  puts "## SOURCE"
-  p gb.source
-  p gb.common_name
-  p gb.vernacular_name
-  p gb.organism
-  p gb.taxonomy
-
-  puts "## REFERENCE"
-  p gb.references
-
-  puts "## COMMENT"
-  p gb.comment
-
-  puts "## FEATURES"
-  p gb.features
-
-  puts "## BASE COUNT"
-  p gb.basecount
-  p gb.basecount('a')
-  p gb.basecount('A')
-
-  puts "## ORIGIN"
-  p gb.origin
-  p gb.naseq
-
-end
-
-
 
