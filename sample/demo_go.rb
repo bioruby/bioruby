@@ -64,10 +64,10 @@ require 'bio'
 
   puts "\n #==> Bio::GO::External2go"
   p e2g_url
-  spkw2go = Bio::GO::External2go.new(wget(e2g_url))
+  spkw2go = Bio::GO::External2go.parser(wget(e2g_url))
 
-  puts "\n #==> spkw2go.db"
-  p spkw2go.db
+  puts "\n #==> spkw2go.dbs"
+  p spkw2go.dbs
 
   puts "\n #==> spkw2go[1]"
   p spkw2go[1]
@@ -77,7 +77,12 @@ require 'bio'
   require 'zlib'
   puts "\n #==> Bio::GO::GeenAssociation"
   p ga_url
-  ga = Zlib::Inflate.inflate(wget(ga_url))
+  #
+  # The workaround (Zlib::MAX_WBITS + 32) is taken from:
+  #  http://d.hatena.ne.jp/ksef-3go/20070924/1190563143
+  #
+  ga = Zlib::Inflate.new(Zlib::MAX_WBITS + 32).inflate(wget(ga_url))
+  #ga = Zlib::Inflate.inflate(wget(ga_url))
   ga = Bio::GO::GeneAssociation.parser(ga)
 
   puts "\n #==> ga.size"
