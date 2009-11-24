@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: drug.rb,v 1.3 2007/06/28 11:27:24 k Exp $
+# $Id:$
 #
 
 require 'bio/db'
@@ -79,20 +79,4 @@ end # DRUG
 
 end # KEGG
 end # Bio
-
-
-if __FILE__ == $0
-  entry = ARGF.read	# dr:D00001
-  dr = Bio::KEGG::DRUG.new(entry)
-  p dr.entry_id
-  p dr.names
-  p dr.name
-  p dr.formula
-  p dr.mass
-  p dr.activity
-  p dr.remark
-  p dr.comment
-  p dr.dblinks
-  p dr.kcf
-end
 
