@@ -31,6 +31,7 @@ class Blast
       # Delimiter of each entry. Bio::FlatFile uses it.
       # In Bio::Bl2seq::Report, it it nil (1 entry 1 file).
       DELIMITER = RS = nil
+      DELIMITER_OVERRUN = nil
 
       undef format0_parse_header
       undef program, version, version_number, version_date,
