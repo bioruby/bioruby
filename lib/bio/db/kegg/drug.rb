@@ -12,11 +12,25 @@ require 'bio/db'
 module Bio
 class KEGG
 
+# == Description
+#
+# Bio::KEGG::DRUG is a parser class for the KEGG DRUG database entry.
+# KEGG DRUG is a drug information database.
+#
+# == References
+# 
+# * http://www.genome.jp/kegg/drug/
+#
 class DRUG < KEGGDB
 
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
 
+  # Creates a new Bio::KEGG::DRUG object.
+  # ---
+  # *Arguments*:
+  # * (required) _entry_: (String) single entry as a string
+  # *Returns*:: Bio::KEGG::DRUG object
   def initialize(entry)
     super(entry, TAGSIZE)
   end
@@ -31,6 +45,7 @@ class DRUG < KEGGDB
     field_fetch('NAME').split(/\s*;\s*/)
   end
 
+  # The first name recorded in the NAME field.
   def name
     names.first
   end
