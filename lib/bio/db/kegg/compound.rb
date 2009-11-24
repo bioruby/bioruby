@@ -13,6 +13,15 @@ require 'bio/db'
 module Bio
 class KEGG
 
+# == Description
+#
+# Bio::KEGG::COMPOUND is a parser class for the KEGG COMPOUND database entry.
+# KEGG COMPOUND is a chemical structure database.
+#
+# == References
+# 
+# * http://www.genome.jp/kegg/compound/
+#
 class COMPOUND < KEGGDB
 
   DELIMITER	= RS = "\n///\n"
@@ -32,6 +41,7 @@ class COMPOUND < KEGGDB
     field_fetch('NAME').split(/\s*;\s*/)
   end
 
+  # The first name recorded in the NAME field.
   def name
     names.first
   end
