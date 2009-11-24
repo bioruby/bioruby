@@ -89,7 +89,7 @@ class GO
       stack    = []
       adj_list = []
       
-      str.each {|line|
+      str.each_line {|line|
         if /^!(.+?):\s+(\S.+)$/ =~ line  # Parsing head lines
           tag   = $1
           value = $2
@@ -198,13 +198,13 @@ class GO
     # Block is acceptable.  
     def self.parser(str)
       if block_given?
-        str.each(DELIMITER) {|line|
+        str.each_line(DELIMITER) {|line|
           next if /^!/ =~ line
           yield GeneAssociation.new(line)
         }
       else
         galist = []
-        str.each(DELIMITER) {|line|
+        str.each_line(DELIMITER) {|line|
           next if /^!/ =~ line
           galist << GeneAssociation.new(line)
         }
