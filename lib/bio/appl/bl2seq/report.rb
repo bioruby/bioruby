@@ -1,12 +1,12 @@
 #
 # = bio/appl/bl2seq/report.rb - bl2seq (BLAST 2 sequences) parser
 # 
-# Copyright:: Copyright (C) 2005 GOTO Naohisa <ng@bioruby.org>
+# Copyright:: Copyright (C) 2005 Naohisa Goto <ng@bioruby.org>
 # License::   The Ruby License
 #
 #  $Id:$
 #
-# Bio::Bl2seq::Report is a NCBI bl2seq (BLAST 2 sequences) output parser.
+# Bio::Blast::Bl2seq::Report is a NCBI bl2seq (BLAST 2 sequences) output parser.
 #
 # = Acknowledgements
 #
@@ -22,14 +22,14 @@ class Blast
 
   class Bl2seq
 
-    # Bio::Bl2seq::Report is a NCBI bl2seq (BLAST 2 sequences) output parser.
+    # Bio::Blast::Bl2seq::Report is a NCBI bl2seq (BLAST 2 sequences) output parser.
     # It inherits Bio::Blast::Default::Report.
     # Most of its methods are the same as Bio::Blast::Default::Report,
     # but it lacks many methods.
     class Report < Bio::Blast::Default::Report
 
       # Delimiter of each entry. Bio::FlatFile uses it.
-      # In Bio::Bl2seq::Report, it it nil (1 entry 1 file).
+      # In Bio::Blast::Bl2seq::Report, it it nil (1 entry 1 file).
       DELIMITER = RS = nil
       DELIMITER_OVERRUN = nil
 
@@ -78,9 +78,9 @@ class Blast
         end
       end #class F0dbstat
 
-      # Bio::Bl2seq::Report::Iteration stores information about
+      # Bio::Blast::Bl2seq::Report::Iteration stores information about
       # a iteration.
-      # Normally, it may contain some Bio::Bl2seq::Report::Hit objects.
+      # Normally, it may contain some Bio::Blast::Bl2seq::Report::Hit objects.
       #
       # Note that its main existance reason is to keep complatibility
       # between Bio::Blast::Default::Report::* classes.
@@ -100,7 +100,7 @@ class Blast
         end
 
         # Returns the hits of the iteration.
-        # It returns an array of Bio::Bl2seq::Report::Hit objects.
+        # It returns an array of Bio::Blast::Bl2seq::Report::Hit objects.
         def hits; @hits; end
 
         undef message, pattern_in_database, 
@@ -109,14 +109,14 @@ class Blast
           converged?
       end #class Iteration
 
-      # Bio::Bl2seq::Report::Hit contains information about a hit.
+      # Bio::Blast::Bl2seq::Report::Hit contains information about a hit.
       # It may contain some Bio::Blast::Default::Report::HSP objects.
       # All methods are the same as Bio::Blast::Default::Report::Hit class.
       # Please refer to Bio::Blast::Default::Report::Hit.
       class Hit < Bio::Blast::Default::Report::Hit
       end #class Hit
 
-      # Bio::Bl2seq::Report::HSP holds information about the hsp
+      # Bio::Blast::Bl2seq::Report::HSP holds information about the hsp
       # (high-scoring segment pair).
       # NOTE that the HSP class below is NOT used because
       # Ruby's constants namespace are normally statically determined
