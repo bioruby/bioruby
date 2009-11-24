@@ -5,7 +5,7 @@
 # Copyright::  Copyright (C) 2009 Kozo Nishida <kozo-ni@is.naist.jp>
 # License::    The Ruby License
 #
-# $Id: compound.rb,v 0.17 2007/11/27 07:09:43 k Exp $
+# $Id:$
 #
 
 require 'bio/db'
@@ -118,21 +118,4 @@ end # COMPOUND
 
 end # KEGG
 end # Bio
-
-
-if __FILE__ == $0
-  entry = ARGF.read
-  cpd = Bio::KEGG::COMPOUND.new(entry)
-  p cpd.entry_id
-  p cpd.names
-  p cpd.name
-  p cpd.formula
-  p cpd.mass
-  p cpd.reactions
-  p cpd.rpairs
-  p cpd.pathways
-  p cpd.enzymes
-  p cpd.dblinks
-  p cpd.kcf
-end
 
