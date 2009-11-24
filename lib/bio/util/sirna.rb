@@ -5,7 +5,7 @@
 #               Itoshi NIKAIDO <dritoshi@gmail.com>
 # License::     The Ruby License
 #
-# $Id: sirna.rb,v 1.11 2007/04/05 23:35:41 trevor Exp $
+# $Id:$
 #
 # == Bio::SiRNA - Designing siRNA.
 #
@@ -249,28 +249,6 @@ module Bio
   end # class SiRNA
 
 end # module Bio
-
-
-if __FILE__ == $0
-  
-  seq = Bio::Sequence::NA.new(ARGF.read)
-
-  sirna = Bio::SiRNA.new(seq)
-  pairs = sirna.design # or .design('uitei') or .uitei or .reynolds
-
-  pairs.each do |pair|
-    puts pair.report
-
-    shrna = Bio::SiRNA::ShRNA.new(pair)
-    shrna.design # or .design('BLOCK-iT') or .block_it
-    puts shrna.report
-
-    puts "# as DNA"
-    puts shrna.top_strand.dna
-    puts shrna.bottom_strand.dna
-  end
-
-end  
 
 =begin
 
