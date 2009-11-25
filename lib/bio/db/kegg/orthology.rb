@@ -5,7 +5,7 @@
 # Copyright::  Copyright (C) 2003 Masumi Itoh <m@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: orthology.rb,v 1.10 2007/12/14 16:19:54 k Exp $
+# $Id:$
 #
 
 require 'bio/db'
@@ -111,26 +111,5 @@ end # ORTHOLOGY
     
 end # KEGG
 end # Bio
-
-
-
-if __FILE__ == $0
-
-  require 'bio/io/fetch'
-
-  flat = Bio::Fetch.query('ko', 'K00001')
-  entry = Bio::KEGG::ORTHOLOGY.new(flat)
-
-  p entry.entry_id
-  p entry.name
-  p entry.names
-  p entry.definition
-  p entry.keggclass
-  p entry.keggclasses
-  p entry.pathways
-  p entry.dblinks
-  p entry.genes
-
-end
 
 
