@@ -2,7 +2,7 @@
 # = bio/db/prosite.rb - PROSITE database class
 #
 # Copyright::  Copyright (C) 2001 Toshiaki Katayama <k@bioruby.org>
-# Licence::    Ruby's
+# License::    The Ruby License
 #
 # $Id:$
 #
