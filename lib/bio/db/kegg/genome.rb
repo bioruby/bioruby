@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2001, 2002, 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: genome.rb,v 0.18 2007/06/28 11:27:24 k Exp $
+# $Id:$
 #
 
 require 'bio/db'
@@ -198,44 +198,4 @@ end # GENOME
     
 end # KEGG
 end # Bio
-
-
-
-if __FILE__ == $0
-
-  begin
-    require 'pp'
-    def p(arg); pp(arg); end
-  rescue LoadError
-  end
-
-  require 'bio/io/flatfile'
-
-  ff = Bio::FlatFile.new(Bio::KEGG::GENOME, ARGF)
-
-  ff.each do |genome|
-
-    puts "### Tags"
-    p genome.tags
-
-    [
-      %w( ENTRY entry_id ),
-      %w( NAME name ),
-      %w( DEFINITION definition ),
-      %w( TAXONOMY taxonomy taxid lineage ),
-      %w( REFERENCE references ),
-      %w( CHROMOSOME chromosomes ),
-      %w( PLASMID plasmids ),
-      %w( STATISTICS statistics nalen num_gene num_rna ),
-    ].each do |x|
-      puts "### " + x.shift
-      x.each do |m|
-        p genome.send(m)
-      end
-    end
-
-  end
-
-end
-
 
