@@ -12,9 +12,20 @@
 #
 # == Usage
 #
-#  Specify files containing KEGG DRUG data.
+# Specify files containing KEGG DRUG data.
 #
 #  $ ruby demo_kegg_drug.rb files...
+#
+# == Example of running this script
+#
+# Download test data.
+#
+#  $ ruby -Ilib bin/br_biofetch.rb dr D00001 > D00001.drug
+#  $ ruby -Ilib bin/br_biofetch.rb dr D00002 > D00002.drug
+#
+# Run this script.
+#
+#  $ ruby -Ilib sample/demo_kegg_drug.rb D00001.drug D00002.drug
 #
 # == Development information
 #
