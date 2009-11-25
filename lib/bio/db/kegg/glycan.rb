@@ -143,24 +143,3 @@ end # GLYCAN
 end # KEGG
 end # Bio
 
-
-if __FILE__ == $0
-  entry = ARGF.read	# gl:G00024
-  gl = Bio::KEGG::GLYCAN.new(entry)
-  p gl.entry_id
-  p gl.name
-  p gl.composition
-  p gl.mass
-  p gl.keggclass
-  p gl.bindings
-  p gl.compounds
-  p gl.reactions
-  p gl.pathways
-  p gl.enzymes
-  p gl.orthologs
-  p gl.references
-  p gl.dblinks
-  p gl.kcf
-end
-
-
