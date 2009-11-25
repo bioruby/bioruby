@@ -49,8 +49,8 @@ Bio::FlatFile.foreach(Bio::KEGG::GLYCAN, ARGF) do |gl|
   p gl.mass
   puts "# gl.keggclass"
   p gl.keggclass
-  puts "# gl.bindings"
-  p gl.bindings
+  #puts "# gl.bindings"
+  #p gl.bindings
   puts "# gl.compounds"
   p gl.compounds
   puts "# gl.reactions"
