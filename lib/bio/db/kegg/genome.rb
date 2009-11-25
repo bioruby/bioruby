@@ -19,6 +19,8 @@ class KEGG
 # == References
 #
 # * ftp://ftp.genome.jp/pub/kegg/genomes/genome
+# * http://www.genome.jp/dbget-bin/www_bfind?genome
+# * http://www.genome.jp/kegg/catalog/org_list.html
 #
 class GENOME < KEGGDB
 
