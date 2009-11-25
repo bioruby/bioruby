@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: taxonomy.rb,v 1.2 2007/07/09 10:29:16 k Exp $
+#  $Id:$
 #
 
 module Bio
@@ -278,54 +278,3 @@ end # Taxonomy
 end # KEGG
 end # Bio
 
-
-
-if __FILE__ == $0
-
-  # Usage:
-  # % wget ftp://ftp.genome.jp/pub/kegg/genes/taxonomy
-  # % ruby taxonomy.rb taxonomy | less -S
-
-  taxonomy = ARGV.shift
-  org_list = ARGV.shift || nil
-
-  if org_list
-    orgs = File.readlines(org_list).map{|x| x.strip}
-  else
-    orgs = nil
-  end
-
-  tree = Bio::KEGG::Taxonomy.new(taxonomy, orgs)
-
-  puts ">>> tree - original"
-  puts tree
-
-  puts ">>> tree - after compact"
-  tree.compact
-  puts tree
-
-  puts ">>> tree - after reduce"
-  tree.reduce
-  puts tree
-
-  puts ">>> path - sorted"
-  tree.path.sort.each do |path|
-    puts path.join("/")
-  end
-
-  puts ">>> group : orgs"
-  tree.dfs(tree.root) do |parent, children|
-    if orgs = tree.organisms(parent)
-      puts "#{parent.ljust(30)} (#{orgs.size})\t#{orgs.join(', ')}"
-    end
-  end
-
-  puts ">>> group : subgroups"
-  tree.dfs_with_level(tree.root) do |parent, children, level|
-    subgroups = children.keys.sort
-    indent = " " * level
-    label  = "#{indent} #{level} #{parent}"
-    puts "#{label.ljust(35)}\t#{subgroups.join(', ')}"
-  end
-
-end
