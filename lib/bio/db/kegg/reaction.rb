@@ -5,7 +5,7 @@
 # Copyright::  Copyright (C) 2009 Kozo Nishida <kozo-ni@is.naist.jp>
 # License::    The Ruby License
 #
-# $Id: reaction.rb,v 1.6 2007/06/28 11:27:24 k Exp $
+# $Id:$
 #
 
 require 'bio/db'
@@ -92,18 +92,4 @@ end # REACTION
 
 end # KEGG
 end # Bio
-
-
-if __FILE__ == $0
-  entry = ARGF.read
-  rn = Bio::KEGG::REACTION.new(entry)
-  p rn.entry_id
-  p rn.name
-  p rn.definition
-  p rn.equation
-  p rn.rpairs
-  p rn.pathways
-  p rn.enzymes
-  p rn.orthologies
-end
 
