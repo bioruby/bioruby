@@ -191,10 +191,13 @@ class Fasta
         txt.sub!(/\<\/pre\>.*\z/m, '')
         txt.sub!(/.*^((T?FASTA|SSEARCH) (searches|compares))/m, '\1')
         txt.sub!(/^\<form method\=\"POST\" name\=\"clust_check\"\>.*\n/, '')
+        txt.sub!(/^\<select +name\=\"allch\".+\r?\n/i, '') # 2009.11.26
         txt.gsub!(/\<input[^\>]+value\=\"[^\"]*\"[^\>]*\>/i, '')
         txt.gsub!(/\<(a|form|select|input|option|img)\s+[^\>]+\>/i, '')
         txt.gsub!(/\<\/(a|form|select|input|option|img)\>/i, '')
-        @output = txt.gsub(/\&lt\;/, '<')
+        txt.gsub!(/\&lt\;/, '<')
+        txt.gsub!(/\&gt\;/, '>') # 2009.11.26
+        @output = txt
         report = parse_result(@output.dup)
       else
         raise 'cannot understand response'
