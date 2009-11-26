@@ -208,21 +208,3 @@ end # Fasta
 
 end # Bio
 
-
-if __FILE__ == $0
-  begin
-    require 'pp'
-    alias p pp
-  rescue
-  end
-
-# serv = Bio::Fasta.local('fasta34', 'hoge.nuc')
-# serv = Bio::Fasta.local('fasta34', 'hoge.pep')
-# serv = Bio::Fasta.local('ssearch34', 'hoge.pep')
-
-  # This may take 3 minutes or so.
-  serv = Bio::Fasta.remote('fasta', 'genes')
-  p serv.query(ARGF.read)
-end
-
-
