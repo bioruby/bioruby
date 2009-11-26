@@ -5,7 +5,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: hmmer.rb,v 1.9 2007/04/05 23:35:39 trevor Exp $
+# $Id:$
 #
 
 require 'bio/command'
@@ -110,17 +110,3 @@ end # class HMMER
 
 end # module Bio
 
-
-
-if __FILE__ == $0
-
-  require 'pp'
-
-  program = ARGV.shift # hmmsearch, hmmpfam
-  hmmfile = ARGV.shift
-  seqfile = ARGV.shift
-
-  factory = Bio::HMMER.new(program, hmmfile, seqfile)
-  pp factory.query
-
-end
