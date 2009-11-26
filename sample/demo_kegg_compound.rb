@@ -13,11 +13,11 @@
 #
 # == Usage
 #
-#  Specify files containing KEGG COMPOUND data.
+# Specify files containing KEGG COMPOUND data.
 #
 #  $ ruby demo_kegg_compound.rb files...
 #
-#  Example usage using test data:
+# Example usage using test data:
 #
 #  $ ruby -Ilib sample/demo_kegg_compound.rb test/data/KEGG/C00025.compound
 #

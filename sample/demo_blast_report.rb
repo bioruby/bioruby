@@ -14,11 +14,11 @@
 #
 # == Usage
 #
-#  Specify files containing BLAST results.
+# Specify files containing BLAST results.
 #
 #  $ ruby demo_blast_report.rb files...
 #
-#  Example usage using test data:
+# Example usage using test data:
 #
 #  $ ruby -Ilib sample/demo_blast_report.rb test/data/blast/b0002.faa.m7
 #  $ ruby -Ilib sample/demo_blast_report.rb test/data/blast/b0002.faa.m0

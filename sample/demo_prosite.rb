@@ -11,11 +11,11 @@
 #
 # == Usage
 #
-#  Specify files containing PROSITE data.
+# Specify files containing PROSITE data.
 #
 #  $ ruby demo_prosite.rb files...
 #
-#  Example usage using test data:
+# Example usage using test data:
 #
 #  $ ruby -Ilib sample/demo_prosite.rb test/data/prosite/prosite.dat
 #

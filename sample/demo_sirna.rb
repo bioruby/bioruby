@@ -12,11 +12,11 @@
 #
 # == Usage
 #
-#  Specify files containing nucleotide sequences.
+# Specify files containing nucleotide sequences.
 #
 #  $ ruby demo_sirna.rb files...
 #
-#  Example usage using test data:
+# Example usage using test data:
 #
 #  $ ruby -Ilib sample/demo_sirna.rb test/data/fasta/example1.txt
 #
