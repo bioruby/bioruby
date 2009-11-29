@@ -11,7 +11,8 @@
 #
 # == References
 #
-# * http://sosui.proteome.bio.tuat.ac.jp/sosui_submit.html
+# * http://bp.nuap.nagoya-u.ac.jp/sosui/
+# * http://bp.nuap.nagoya-u.ac.jp/sosui/sosui_submit.html
 #
 
 
@@ -22,7 +23,8 @@ module Bio
     # = SOSUI output report parsing class
     #
     # == References
-    # * http://sosui.proteome.bio.tuat.ac.jp/sosui_submit.html
+    # * http://bp.nuap.nagoya-u.ac.jp/sosui/
+    # * http://bp.nuap.nagoya-u.ac.jp/sosui/sosui_submit.html
     class Report
 
       # Delimiter
