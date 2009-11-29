@@ -1,5 +1,5 @@
 #
-# test/unit/bio/db/fastq/test_quality_score.rb - Unit test for Bio::Fastq::QualityScore
+# test/unit/bio/sequence/test_quality_score.rb - Unit test for Bio::Sequence::QualityScore
 #
 # Copyright::   Copyright (C) 2009
 #               Naohisa Goto <ng@bioruby.org>
@@ -10,15 +10,15 @@
 
 # loading helper routine for testing bioruby
 require 'pathname'
-load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
                             'bioruby_test_helper.rb')).cleanpath.to_s
 
 # libraries needed for the tests
 require 'test/unit'
-require 'bio/db/fastq/quality_score'
+require 'bio/sequence/quality_score'
 
 module Bio
-  module TestFastqQualityScore
+  module TestSequenceQualityScore
 
     # A module providing methods to compare float arrays
     module FloatArrayComparison
@@ -88,7 +88,7 @@ module Bio
       include TestConverterMethods
 
       class Dummy
-        include Bio::Fastq::QualityScore::Converter
+        include Bio::Sequence::QualityScore::Converter
       end #class Dummy
 
       def setup
@@ -101,7 +101,7 @@ module Bio
       include TestConverterMethods
 
       class Dummy
-        include Bio::Fastq::QualityScore::Phred
+        include Bio::Sequence::QualityScore::Phred
       end #class Dummy
 
       Qscores = (-20..100).to_a.freeze
@@ -162,7 +162,7 @@ module Bio
       end
 
       def test_self_q2p
-        result = Bio::Fastq::QualityScore::Phred.q2p(Qscores)
+        result = Bio::Sequence::QualityScore::Phred.q2p(Qscores)
         float_array_equivalent?(Q2P, result)
       end
 
@@ -177,7 +177,7 @@ module Bio
       end
 
       def test_self_p2q
-        result = Bio::Fastq::QualityScore::Phred.p2q(Q2P)
+        result = Bio::Sequence::QualityScore::Phred.p2q(Q2P)
         assert_equal(P2Q, result)
       end
 
@@ -198,7 +198,7 @@ module Bio
       end
 
       def test_self_convert_scores_to_solexa
-        do_test_from_phred_to_solexa(Bio::Fastq::QualityScore::Phred,
+        do_test_from_phred_to_solexa(Bio::Sequence::QualityScore::Phred,
                                      :convert_scores_to_solexa)
       end
     end #class TestPhred
@@ -208,7 +208,7 @@ module Bio
       include TestConverterMethods
 
       class Dummy
-        include Bio::Fastq::QualityScore::Solexa
+        include Bio::Sequence::QualityScore::Solexa
       end #class Dummy
 
       Qscores = [ -200, -175, -150, -125, -100, -75, -50, -25,
@@ -278,7 +278,7 @@ module Bio
       end
 
       def test_self_q2p
-        result = Bio::Fastq::QualityScore::Solexa.q2p(Qscores)
+        result = Bio::Sequence::QualityScore::Solexa.q2p(Qscores)
         float_array_equivalent?(Q2P, result)
       end
 
@@ -297,7 +297,7 @@ module Bio
       end
 
       def test_self_p2q
-        result = Bio::Fastq::QualityScore::Solexa.p2q(Q2P)
+        result = Bio::Sequence::QualityScore::Solexa.p2q(Q2P)
         assert_equal(P2Q_valid, result[2..-1])
         assert_operator(-150, :>, result[0])
         assert_operator(-150, :>, result[1])
@@ -312,7 +312,7 @@ module Bio
       end
 
       def test_self_convert_scores_to_phred
-        do_test_from_solexa_to_phred(Bio::Fastq::QualityScore::Solexa,
+        do_test_from_solexa_to_phred(Bio::Sequence::QualityScore::Solexa,
                                      :convert_scores_to_phred)
       end
 
@@ -325,6 +325,6 @@ module Bio
       end
     end #class TestSolexa
 
-  end #module TestFastqQualityScore
+  end #module TestSequenceQualityScore
 end #module Bio
 

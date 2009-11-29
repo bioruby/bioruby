@@ -9,7 +9,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: sequence.rb,v 0.58.2.12 2008/06/17 15:25:22 ngoto Exp $
+# $Id:$
 #
 
 require 'bio/sequence/compat'
@@ -71,6 +71,7 @@ class Sequence
   autoload :Generic, 'bio/sequence/generic'
   autoload :Format,  'bio/sequence/format'
   autoload :Adapter, 'bio/sequence/adapter'
+  autoload :QualityScore, 'bio/sequence/quality_score'
 
   include Format
 

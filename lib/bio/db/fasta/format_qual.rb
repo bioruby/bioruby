@@ -9,7 +9,7 @@
 #
 
 require 'bio/sequence/format'
-require 'bio/db/fastq/quality_score'
+require 'bio/sequence/quality_score'
 
 module Bio::Sequence::Format::Formatter
 
@@ -149,9 +149,9 @@ module Bio::Sequence::Format::Formatter
       if ep and ep.size >= seq.length then
         case fmt
         when :phred
-          return Bio::Fastq::QualityScore::Phred.p2q(ep[0, seq.length])
+          return Bio::Sequence::QualityScore::Phred.p2q(ep[0, seq.length])
         when :solexa
-          return Bio::Fastq::QualityScore::Solexa.p2q(ep[0, seq.length])
+          return Bio::Sequence::QualityScore::Solexa.p2q(ep[0, seq.length])
         end
       end
 
@@ -159,9 +159,9 @@ module Bio::Sequence::Format::Formatter
       if qsc and qsc.size >= seq.length then
         case [ qsc_type, fmt ]
         when [ :phred, :solexa ]
-          return Bio::Fastq::QualityScore::Phred.convert_scores_to_solexa(qsc[0, seq.length])
+          return Bio::Sequence::QualityScore::Phred.convert_scores_to_solexa(qsc[0, seq.length])
         when [ :solexa, :phred ]
-          return Bio::Fastq::QualityScore::Solexa.convert_scores_to_phred(qsc[0, seq.length])
+          return Bio::Sequence::QualityScore::Solexa.convert_scores_to_phred(qsc[0, seq.length])
         end
       end
 
@@ -182,16 +182,16 @@ module Bio::Sequence::Format::Formatter
         when [ :phred, :phred ], [ :solexa, :solexa ]
           return qsc
         when [ :phred, :solexa ]
-          return Bio::Fastq::QualityScore::Phred.convert_scores_to_solexa(qsc)
+          return Bio::Sequence::QualityScore::Phred.convert_scores_to_solexa(qsc)
         when [ :solexa, :phred ]
-          return Bio::Fastq::QualityScore::Solexa.convert_scores_to_phred(qsc)
+          return Bio::Sequence::QualityScore::Solexa.convert_scores_to_phred(qsc)
         end
       elsif ep_cov > qsc_cov then
         case fmt
         when :phred
-          return Bio::Fastq::QualityScore::Phred.p2q(ep)
+          return Bio::Sequence::QualityScore::Phred.p2q(ep)
         when :solexa
-          return Bio::Fastq::QualityScore::Solexa.p2q(ep)
+          return Bio::Sequence::QualityScore::Solexa.p2q(ep)
         end
       end
 

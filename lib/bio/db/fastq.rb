@@ -26,7 +26,6 @@ require "singleton"
 
 require 'bio/sequence'
 require 'bio/io/flatfile'
-require 'bio/db/fastq/quality_score'
 
 module Bio
 
@@ -122,7 +121,7 @@ class Fastq
     class FASTQ_SANGER < FormatData
       include Singleton
 
-      include QualityScore::Phred
+      include Bio::Sequence::QualityScore::Phred
 
       # format name
       NAME = 'fastq-sanger'.freeze
@@ -138,7 +137,7 @@ class Fastq
     class FASTQ_SOLEXA < FormatData
       include Singleton
 
-      include QualityScore::Solexa
+      include Bio::Sequence::QualityScore::Solexa
 
       # format name
       NAME = 'fastq-solexa'.freeze
@@ -154,7 +153,7 @@ class Fastq
     class FASTQ_ILLUMINA < FormatData
       include Singleton
 
-      include QualityScore::Phred
+      include Bio::Sequence::QualityScore::Phred
 
       # format name
       NAME = 'fastq-illumina'.freeze

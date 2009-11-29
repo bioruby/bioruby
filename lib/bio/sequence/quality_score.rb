@@ -1,5 +1,5 @@
 #
-# = bio/db/fastq/quality_score.rb - FASTQ quality score manipulation modules
+# = bio/sequence/quality_score.rb - Sequence quality score manipulation modules
 #
 # Copyright::  Copyright (C) 2009
 #              Naohisa Goto <ng@bioruby.org>
@@ -7,7 +7,8 @@
 #
 # == Description
 # 
-# FASTQ quality score manipulation modules.
+# Sequence quality score manipulation modules, mainly used by Bio::Fastq
+# and related classes.
 #
 # == References
 #
@@ -15,14 +16,12 @@
 #   http://maq.sourceforge.net/fastq.shtml
 #
 
-#require 'bio/db/fastq'
-
 module Bio
 
-class Fastq
+class Sequence
 
-  # Bio::Fastq::QualityScore is a name space for quality score modules. 
-  # Bio::Fastq internal use only.
+  # Bio::Sequence::QualityScore is a name space for quality score modules. 
+  # BioRuby internal use only (mainly from Bio::Fastq).
   module QualityScore
 
     # Converter methods between PHRED and Solexa quality scores.
@@ -74,10 +73,10 @@ class Fastq
 
     end #module Converter
 
-    # Bio::Fastq::QualityScore::Phred is a module having quality calculation
+    # Bio::Sequence::QualityScore::Phred is a module having quality calculation
     # methods for the PHRED quality score.
     #
-    # Bio::Fastq internal use only.
+    # BioRuby internal use only (mainly from Bio::Fastq).
     module Phred
 
       include Converter
@@ -137,10 +136,10 @@ class Fastq
 
     end #module Phred
 
-    # Bio::Fastq::QualityScore::Solexa is a module having quality calculation
-    # methods for the Solexa quality score.
+    # Bio::Sequence::QualityScore::Solexa is a module having quality
+    # calculation methods for the Solexa quality score.
     #
-    # Bio::Fastq internal use only.
+    # BioRuby internal use only (mainly from Bio::Fastq).
     module Solexa
 
       include Converter
@@ -201,6 +200,6 @@ class Fastq
 
   end #module QualityScore
 
-end #class Fastq
+end #class Sequence
 
 end #module Bio
