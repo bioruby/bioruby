@@ -17,8 +17,7 @@ module Bio
   class TestReaction < Test::Unit::TestCase
 
     def setup
-      bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
-      testdata_kegg = Pathname.new(File.join(bioruby_root, 'test', 'data', 'KEGG')).cleanpath.to_s
+      testdata_kegg = Pathname.new(File.join(BioRubyTestDataPath, 'KEGG')).cleanpath.to_s
       entry = File.read(File.join(testdata_kegg, "R00006.reaction"))
       @obj = Bio::KEGG::REACTION.new(entry)
     end
