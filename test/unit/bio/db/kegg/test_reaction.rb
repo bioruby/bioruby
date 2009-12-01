@@ -14,7 +14,7 @@ require 'test/unit'
 require 'bio/db/kegg/reaction'
 
 module Bio
-  class TestReaction < Test::Unit::TestCase
+  class TestKeggReaction < Test::Unit::TestCase
 
     def setup
       testdata_kegg = Pathname.new(File.join(BioRubyTestDataPath, 'KEGG')).cleanpath.to_s

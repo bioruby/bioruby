@@ -17,7 +17,7 @@ require 'test/unit'
 require 'bio/db/kegg/genes'
 
 module Bio
-  class TestGenesStructure < Test::Unit::TestCase
+  class TestKeggGenesStructure < Test::Unit::TestCase
     def setup
       entry =<<END
 STRUCTURE   PDB: 1A9X 1CS0 1C30 1T36 1M6V 1KEE 1C3O 1CE8 1BXR 1JDB
@@ -42,7 +42,7 @@ END
   end
 
 
-  class TestGenesDblinks < Test::Unit::TestCase
+  class TestKeggGenesDblinks < Test::Unit::TestCase
 
     def setup
       entry =<<END

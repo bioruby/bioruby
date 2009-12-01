@@ -14,7 +14,7 @@ require 'test/unit'
 require 'bio/db/kegg/orthology'
 
 module Bio
-  class TestOrthology < Test::Unit::TestCase
+  class TestKeggOrthology < Test::Unit::TestCase
 
     def setup
       testdata_kegg = Pathname.new(File.join(BioRubyTestDataPath, 'KEGG')).cleanpath.to_s
