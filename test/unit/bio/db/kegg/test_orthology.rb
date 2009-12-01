@@ -39,7 +39,7 @@ module Bio
     end
 
     def test_dblinks_as_hash
-      assert_equal({"cog"=>["COG0592"], "rn"=>["R00375", "R00376", "R00377", "R00378"], "go"=>["0003887"]}, @obj.dblinks_as_hash)
+      assert_equal({"COG"=>["COG0592"], "RN"=>["R00375", "R00376", "R00377", "R00378"], "GO"=>["0003887"]}, @obj.dblinks_as_hash)
     end
 
     def test_genes_as_hash

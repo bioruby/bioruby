@@ -80,7 +80,7 @@ class ORTHOLOGY < KEGGDB
     hash = {}
     dblinks.each do |line|
       name, *list = line.split(/\s+/)
-      db = name.downcase.sub(/:/, '')
+      db = name.sub(/\:\z/, '')
       hash[db] = list
     end
     return hash

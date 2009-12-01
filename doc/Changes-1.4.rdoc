@@ -19,6 +19,10 @@ hashes instead of array containing strings.
 Bio::KEGG::REACTION#rpair and pathways are changed to return an array
 containing hashes instead of array containing strings.
 
+=== Bio::KEGG::ORTHOLOGY
+
+Bio::KEGG:ORTHOLOGY#dblinks_as_hash does not lower-case database names.
+
 === Bio::RestrictionEnzyme
 
 Format validation when creating a object is turned off because of
