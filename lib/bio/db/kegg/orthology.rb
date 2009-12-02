@@ -9,6 +9,7 @@
 #
 
 require 'bio/db'
+require 'bio/db/kegg/common'
 
 module Bio
 class KEGG
@@ -26,6 +27,10 @@ class ORTHOLOGY < KEGGDB
   
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
+
+  include DblinksAsHash
+  # Returns a Hash of the DB name and an Array of entry IDs in DBLINKS field.
+  def dblinks_as_hash; end if false #dummy for RDoc
 
   # Reads a flat file format entry of the KO database.
   def initialize(entry)
@@ -73,17 +78,6 @@ class ORTHOLOGY < KEGGDB
       @data['DBLINKS'] = lines_fetch('DBLINKS')
     end
     @data['DBLINKS']
-  end
-
-  # Returns a Hash of the DB name and an Array of entry IDs in DBLINKS field.
-  def dblinks_as_hash
-    hash = {}
-    dblinks.each do |line|
-      name, *list = line.split(/\s+/)
-      db = name.sub(/\:\z/, '')
-      hash[db] = list
-    end
-    return hash
   end
 
   # Returns an Array of the organism ID and entry IDs in GENES field.
