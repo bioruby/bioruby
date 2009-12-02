@@ -77,7 +77,7 @@ class DRUG < KEGGDB
 
   # PATHWAY
   def pathways
-    lines_fetch('DBLINKS')
+    lines_fetch('PATHWAY')
   end
 
   # DBLINKS
