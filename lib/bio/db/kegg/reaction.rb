@@ -9,6 +9,7 @@
 #
 
 require 'bio/db'
+require 'bio/db/kegg/common'
 require 'enumerator'
 
 module Bio
@@ -19,6 +20,15 @@ class REACTION < KEGGDB
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
 
+  include PathwaysAsHash
+  # Returns a Hash of the pathway ID and name in PATHWAY field.
+  def pathways_as_hash; end if false #dummy for RDoc
+
+  # Creates a new Bio::KEGG::REACTION object.
+  # ---
+  # *Arguments*:
+  # * (required) _entry_: (String) single entry as a string
+  # *Returns*:: Bio::KEGG::REACTION object
   def initialize(entry)
     super(entry, TAGSIZE)
   end
@@ -57,13 +67,7 @@ class REACTION < KEGGDB
 
   # PATHWAY
   def pathways
-    maps = []
-    lines_fetch('PATHWAY').each do |map|
-      entry = map.scan(/rn[0-9]{5}/)[0]
-      name = map.split("  ")[1]
-      maps.push({"entry" => entry, "name" => name})
-    end
-    @data['PATHWAY'] = maps
+    lines_fetch('PATHWAY')
   end
 
   # ENZYME

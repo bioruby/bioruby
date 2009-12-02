@@ -43,7 +43,13 @@ module Bio
     end
 
     def test_pathways
-      assert_equal([{"name"=>"Pantothenate and CoA biosynthesis", "entry"=>"rn00770"}], @obj.pathways)
+      assert_equal([ "PATH: rn00770  Pantothenate and CoA biosynthesis" ],
+                   @obj.pathways)
+    end
+
+    def test_pathways_as_hash
+      assert_equal({ "rn00770" => "Pantothenate and CoA biosynthesis" },
+                   @obj.pathways_as_hash)
     end
 
     def test_enzymes
