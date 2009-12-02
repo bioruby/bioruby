@@ -43,7 +43,13 @@ module Bio
     end
 
     def test_dblinks
-      assert_equal([{"id"=>"56-86-0", "db"=>"CAS"}, {"id"=>"3327", "db"=>"PubChem"}, {"id"=>"16015", "db"=>"ChEBI"}, {"id"=>"C00001358", "db"=>"KNApSAcK"}, {"id"=>"GLU", "db"=>"PDB-CCD"}, {"id"=>"B00007", "db"=>"3DMET"}, {"id"=>"J9.171E", "db"=>"NIKKAJI"}], @obj.dblinks)
+      assert_equal([ "CAS: 56-86-0",
+                     "PubChem: 3327",
+                     "ChEBI: 16015",
+                     "KNApSAcK: C00001358",
+                     "PDB-CCD: GLU",
+                     "3DMET: B00007",
+                     "NIKKAJI: J9.171E" ], @obj.dblinks)
     end
 
   end
