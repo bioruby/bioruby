@@ -56,8 +56,16 @@ module Bio
       assert_equal(["2.2.1.6"], @obj.enzymes)
     end
 
-    def test_orthologies
-      assert_equal([{"entry"=>"K01652", "definition"=>"acetolactate synthase I/II/III large subunit [EC:2.2.1.6]"}, {"entry"=>"K01653", "definition"=>"acetolactate synthase I/III small subunit [EC:2.2.1.6]"}], @obj.orthologies)
+    def test_orthologs
+      assert_equal(["KO: K01652  acetolactate synthase I/II/III large subunit [EC:2.2.1.6]", "KO: K01653  acetolactate synthase I/III small subunit [EC:2.2.1.6]"], @obj.orthologs)
+    end
+
+    def test_orthologs_as_hash
+      expected = {
+        'K01652'=>"acetolactate synthase I/II/III large subunit [EC:2.2.1.6]",
+        'K01653'=>"acetolactate synthase I/III small subunit [EC:2.2.1.6]"
+      }
+      assert_equal(expected, @obj.orthologs_as_hash)
     end
 
   end

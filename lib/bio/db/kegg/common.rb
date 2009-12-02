@@ -52,8 +52,24 @@ module Bio
         end
         hash
       end
-
     end #module PathwaysAsHash
+
+    # This module provides orthologs_as_hash method.
+    #
+    # Bio::KEGG::* internal use only.
+    module OrthologsAsHash
+
+      # Returns a Hash of the orthology ID and definition in ORTHOLOGY field.
+      def orthologs_as_hash
+        kos = {}
+        orthologs.each do |ko|
+          entry = ko.scan(/K[0-9]{5}/)[0]
+          sign, entry_id, definition = ko.split(/\s+/, 3)
+          kos[entry_id] = definition
+        end
+        kos
+      end
+    end #module OrthologsAsHash
 
   end #module KEGG
 end #module Bio

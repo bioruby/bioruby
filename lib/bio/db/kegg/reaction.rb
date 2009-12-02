@@ -24,6 +24,10 @@ class REACTION < KEGGDB
   # Returns a Hash of the pathway ID and name in PATHWAY field.
   def pathways_as_hash; end if false #dummy for RDoc
 
+  include OrthologsAsHash
+  # Returns a Hash of the orthology ID and definition in ORTHOLOGY field.
+  def orthologs_as_hash; end if false #dummy for RDoc
+
   # Creates a new Bio::KEGG::REACTION object.
   # ---
   # *Arguments*:
@@ -79,15 +83,9 @@ class REACTION < KEGGDB
   end
 
   # ORTHOLOGY
-  def orthologies
+  def orthologs
     unless @data['ORTHOLOGY']
-      kos = []
-      lines_fetch('ORTHOLOGY').each do |ko|
-        entry = ko.scan(/K[0-9]{5}/)[0]
-        definition = ko.split("  ")[1]
-        kos.push({"entry" => entry, "definition" => definition})
-      end
-      @data['ORTHOLOGY'] = kos
+      @data['ORTHOLOGY'] = lines_fetch('ORTHOLOGY')
     end
     @data['ORTHOLOGY']
   end

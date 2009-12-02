@@ -56,8 +56,10 @@ Bio::FlatFile.foreach(Bio::KEGG::REACTION, ARGF) do |rn|
   p rn.pathways
   puts "# rn.enzymes"
   p rn.enzymes
-  puts "# rn.orthologies"
-  p rn.orthologies
+  puts "# rn.orthologs"
+  p rn.orthologs
+  puts "# rn.orthologs_as_hash"
+  p rn.orthologs_as_hash
 
   puts "=" * 78
 end
