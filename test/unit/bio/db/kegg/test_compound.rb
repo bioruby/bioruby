@@ -52,5 +52,43 @@ module Bio
                      "NIKKAJI: J9.171E" ], @obj.dblinks)
     end
 
+    def test_dblinks_as_hash
+      assert_equal({ "CAS"      => [ "56-86-0" ],
+                     "PubChem"  => [ "3327" ],
+                     "ChEBI"    => [ "16015" ],
+                     "KNApSAcK" => [ "C00001358" ],
+                     "PDB-CCD"  => [ "GLU" ],
+                     "3DMET"    => [ "B00007" ],
+                     "NIKKAJI"  => [ "J9.171E" ] }, @obj.dblinks_as_hash)
+    end
+
+    def test_pathways_as_hash
+      expected = {
+        "ko00250"  => "Alanine, aspartate and glutamate metabolism",
+        "ko00330"  => "Arginine and proline metabolism",
+        "ko00340"  => "Histidine metabolism",
+        "ko00471"  => "D-Glutamine and D-glutamate metabolism",
+        "ko00480"  => "Glutathione metabolism",
+        "ko00650"  => "Butanoate metabolism",
+        "ko00660"  => "C5-Branched dibasic acid metabolism",
+        "ko00860"  => "Porphyrin and chlorophyll metabolism",
+        "ko00910"  => "Nitrogen metabolism",
+        "ko00970"  => "Aminoacyl-tRNA biosynthesis",
+        "map01060" => "Biosynthesis of plant secondary metabolites",
+        "ko01064"  =>
+        "Biosynthesis of alkaloids derived from ornithine, lysine and nicotinic acid",
+        "ko01100"  => "Metabolic pathways",
+        "ko02010"  => "ABC transporters",
+        "ko04080"  => "Neuroactive ligand-receptor interaction",
+        "ko04540"  => "Gap junction",
+        "ko04720"  => "Long-term potentiation",
+        "ko04730"  => "Long-term depression",
+        "ko04742"  => "Taste transduction",
+        "ko05014"  => "Amyotrophic lateral sclerosis (ALS)",
+        "ko05016"  => "Huntington's disease"
+      }
+      assert_equal(expected, @obj.pathways_as_hash)
+    end
+
   end
 end

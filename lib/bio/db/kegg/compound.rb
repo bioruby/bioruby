@@ -8,6 +8,7 @@
 #
 
 require 'bio/db'
+require 'bio/db/kegg/common'
 
 module Bio
 class KEGG
@@ -26,6 +27,19 @@ class COMPOUND < KEGGDB
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
 
+  include DblinksAsHash
+  # Returns a Hash of the DB name and an Array of entry IDs in DBLINKS field.
+  def dblinks_as_hash; end if false #dummy for RDoc
+
+  include PathwaysAsHash
+  # Returns a Hash of the pathway ID and name in PATHWAY field.
+  def pathways_as_hash; end if false #dummy for RDoc
+
+  # Creates a new Bio::KEGG::COMPOUND object.
+  # ---
+  # *Arguments*:
+  # * (required) _entry_: (String) single entry as a string
+  # *Returns*:: Bio::KEGG::COMPOUND object
   def initialize(entry)
     super(entry, TAGSIZE)
   end
