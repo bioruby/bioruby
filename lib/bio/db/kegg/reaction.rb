@@ -22,11 +22,11 @@ class REACTION < KEGGDB
 
   include PathwaysAsHash
   # Returns a Hash of the pathway ID and name in PATHWAY field.
-  def pathways_as_hash; end if false #dummy for RDoc
+  def pathways_as_hash; super; end if false #dummy for RDoc
 
   include OrthologsAsHash
   # Returns a Hash of the orthology ID and definition in ORTHOLOGY field.
-  def orthologs_as_hash; end if false #dummy for RDoc
+  def orthologs_as_hash; super; end if false #dummy for RDoc
 
   # Creates a new Bio::KEGG::REACTION object.
   # ---

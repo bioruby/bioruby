@@ -30,7 +30,7 @@ class ORTHOLOGY < KEGGDB
 
   include DblinksAsHash
   # Returns a Hash of the DB name and an Array of entry IDs in DBLINKS field.
-  def dblinks_as_hash; end if false #dummy for RDoc
+  def dblinks_as_hash; super; end if false #dummy for RDoc
 
   # Reads a flat file format entry of the KO database.
   def initialize(entry)
