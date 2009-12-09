@@ -84,10 +84,7 @@ class REACTION < KEGGDB
 
   # ORTHOLOGY
   def orthologs
-    unless @data['ORTHOLOGY']
-      @data['ORTHOLOGY'] = lines_fetch('ORTHOLOGY')
-    end
-    @data['ORTHOLOGY']
+    lines_fetch('ORTHOLOGY')
   end
 
 end # REACTION
