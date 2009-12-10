@@ -9,15 +9,51 @@ is released.
 
 == Incompatible changes
 
-=== Bio::KEGG::COMPOUND
+=== Bio::KEGG
 
-Bio::KEGG::COMPOUND#dblinks is changed to return an array containing
-hashes instead of array containing strings.
+==== #dblinks
 
-=== Bio::KEGG:REACTION
+In Bio::KEGG::COMPOUND, DRUG, ENZYME, GLYCAN and ORTHOLOGY, the method
+dblinks is changed to return a Hash. Each key of the hash is a database name
+and its value is an array of entry IDs in the database. If old bahavior
+(returns raw entry lines as an array of strings) is needed, use
+dblinks_as_strings.
 
-Bio::KEGG::REACTION#rpair and pathways are changed to return an array
-containing hashes instead of array containing strings.
+==== #pathways
+
+In Bio::KEGG::COMPOUND, DRUG, ENZYME, GENES, GLYCAN and REACTION, the
+method pathways is changed to return a Hash. Each key of the hash is a
+pathway ID and its value is the description of the pathway.
+
+In Bio::KEGG::GENES, if old behavior (returns pathway IDs as an Array) is
+needed, use pathways.keys.
+
+In Bio::KEGG::COMPOUND, DRUG, ENZYME, GLYCAN, and REACTION, if old behavior
+(returns raw entry lines as an array of strings) is needed, use
+pathways_as_strings.
+
+Note that Bio::KEGG::ORTHOLOGY#pathways is not changed (returns an array
+containing pathway IDs).
+
+==== #orthologs
+
+In Bio::KEGG::ENZYME, GENES, GLYCAN and REACTION, the method orthologs is
+changed to return a Hash. Each key of the hash is a ortholog ID and its
+value is the name of the ortholog. If old behavior (returns raw entry lines
+as an array of strings) is needed, use orthologs_as_strings.
+
+==== #genes
+
+In Bio::KEGG::ENZYME#genes and Bio::KEGG::ORTHOLOGY#genes is changed to
+return a Hash that is the same as Bio::KEGG::ORTHOLOGY#genes_as_hash.
+If old behavior (returns raw entry lines as an array of strings) is needed,
+use genes_as_strings.
+
+==== Bio::KEGG:REACTION#rpairs
+
+Bio::KEGG::REACTION#rpairs is changed to return an array containing hashes
+instead of array containing strings. If old behavior (returns as tokens)
+is needed, use rpairs_as_tokens.
 
 === Bio::KEGG::ORTHOLOGY
 
