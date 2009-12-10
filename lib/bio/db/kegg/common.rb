@@ -31,13 +31,16 @@ class KEGG
       # Returns a Hash of the DB name and an Array of entry IDs in
       # DBLINKS field.
       def dblinks_as_hash
-        hash = {}
-        dblinks_as_strings.each do |line|
-          db, ids = line.split(/\:\s*/, 2)
-          list = ids.split(/\s+/)
-          hash[db] = list
+        unless defined? @dblinks_as_hash
+          hash = {}
+          dblinks_as_strings.each do |line|
+            db, ids = line.split(/\:\s*/, 2)
+            list = ids.split(/\s+/)
+            hash[db] = list
+          end
+          @dblinks_as_hash = hash
         end
-        return hash
+        @dblinks_as_hash
       end
     end #module DblinksAsHash
 
@@ -48,12 +51,15 @@ class KEGG
 
       # Returns a Hash of the pathway ID and name in PATHWAY field.
       def pathways_as_hash
-        hash = {}
-        pathways_as_strings.each do |line|
-          sign, entry_id, name = line.split(/\s+/, 3)
-          hash[entry_id] = name
+        unless defined? @pathways_as_hash then
+          hash = {}
+          pathways_as_strings.each do |line|
+            sign, entry_id, name = line.split(/\s+/, 3)
+            hash[entry_id] = name
+          end
+          @pathways_as_hash = hash
         end
-        hash
+        @pathways_as_hash
       end
     end #module PathwaysAsHash
 
@@ -64,13 +70,16 @@ class KEGG
 
       # Returns a Hash of the orthology ID and definition in ORTHOLOGY field.
       def orthologs_as_hash
-        kos = {}
-        orthologs_as_strings.each do |ko|
-          entry = ko.scan(/K[0-9]{5}/)[0]
-          sign, entry_id, definition = ko.split(/\s+/, 3)
-          kos[entry_id] = definition
+        unless defined? @orthologs_as_hash
+          kos = {}
+          orthologs_as_strings.each do |ko|
+            entry = ko.scan(/K[0-9]{5}/)[0]
+            sign, entry_id, definition = ko.split(/\s+/, 3)
+            kos[entry_id] = definition
+          end
+          @orthologs_as_hash = kos
         end
-        kos
+        @orthologs_as_hash
       end
     end #module OrthologsAsHash
 
@@ -82,15 +91,18 @@ class KEGG
       # Returns a Hash of the organism ID and an Array of entry IDs in
       # GENES field.
       def genes_as_hash
-        hash = {}
-        genes_as_strings.each do |line|
-          name, *list = line.split(/\s+/)
-          org = name.downcase.sub(/:/, '')
-          genes = list.map {|x| x.sub(/\(.*\)/, '')}
-          #names = list.map {|x| x.scan(/.*\((.*)\)/)}
-          hash[org] = genes
+        unless defined? @genes_as_hash
+          hash = {}
+          genes_as_strings.each do |line|
+            name, *list = line.split(/\s+/)
+            org = name.downcase.sub(/:/, '')
+            genes = list.map {|x| x.sub(/\(.*\)/, '')}
+            #names = list.map {|x| x.scan(/.*\((.*)\)/)}
+            hash[org] = genes
+          end
+          @genes_as_hash = hash
         end
-        hash
+        @genes_as_hash
       end
     end #module GenesAsHash
 
