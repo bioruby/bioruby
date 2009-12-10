@@ -18,9 +18,12 @@
 #
 
 module Bio
-  class KEGG
+class KEGG
 
-    # The module providing dblinks_as_hash method.
+  # Namespace for methods commonly used in the Bio::KEGG::* classes.
+  module Common
+
+    # The module providing dblinks_as_hash methods.
     #
     # Bio::KEGG::* internal use only.
     module DblinksAsHash
@@ -29,9 +32,9 @@ module Bio
       # DBLINKS field.
       def dblinks_as_hash
         hash = {}
-        dblinks.each do |line|
-          name, *list = line.split(/\s+/)
-          db = name.sub(/\:\z/, '')
+        dblinks_as_strings.each do |line|
+          db, ids = line.split(/\:\s*/, 2)
+          list = ids.split(/\s+/)
           hash[db] = list
         end
         return hash
@@ -46,7 +49,7 @@ module Bio
       # Returns a Hash of the pathway ID and name in PATHWAY field.
       def pathways_as_hash
         hash = {}
-        pathways.each do |line|
+        pathways_as_strings.each do |line|
           sign, entry_id, name = line.split(/\s+/, 3)
           hash[entry_id] = name
         end
@@ -62,7 +65,7 @@ module Bio
       # Returns a Hash of the orthology ID and definition in ORTHOLOGY field.
       def orthologs_as_hash
         kos = {}
-        orthologs.each do |ko|
+        orthologs_as_strings.each do |ko|
           entry = ko.scan(/K[0-9]{5}/)[0]
           sign, entry_id, definition = ko.split(/\s+/, 3)
           kos[entry_id] = definition
@@ -71,6 +74,27 @@ module Bio
       end
     end #module OrthologsAsHash
 
-  end #module KEGG
+    # This module provides genes_as_hash method.
+    #
+    # Bio::KEGG::* internal use only.
+    module GenesAsHash
+
+      # Returns a Hash of the organism ID and an Array of entry IDs in
+      # GENES field.
+      def genes_as_hash
+        hash = {}
+        genes_as_strings.each do |line|
+          name, *list = line.split(/\s+/)
+          org = name.downcase.sub(/:/, '')
+          genes = list.map {|x| x.sub(/\(.*\)/, '')}
+          #names = list.map {|x| x.scan(/.*\((.*)\)/)}
+          hash[org] = genes
+        end
+        hash
+      end
+    end #module GenesAsHash
+
+  end #module Common
+end #class KEGG
 end #module Bio
 

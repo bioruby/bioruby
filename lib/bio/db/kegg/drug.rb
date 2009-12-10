@@ -8,6 +8,7 @@
 #
 
 require 'bio/db'
+require 'bio/db/kegg/common'
 
 module Bio
 class KEGG
@@ -25,6 +26,16 @@ class DRUG < KEGGDB
 
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
+
+  include Common::DblinksAsHash
+  # Returns a Hash of the DB name and an Array of entry IDs in DBLINKS field.
+  def dblinks_as_hash; super; end if false #dummy for RDoc
+  alias dblinks dblinks_as_hash
+
+  include Common::PathwaysAsHash
+  # Returns a Hash of the pathway ID and name in PATHWAY field.
+  def pathways_as_hash; super; end if false #dummy for RDoc
+  alias pathways pathways_as_hash
 
   # Creates a new Bio::KEGG::DRUG object.
   # ---
@@ -70,24 +81,24 @@ class DRUG < KEGGDB
     field_fetch('REMARK')
   end
 
-  # COMMENT
-  def comment
-    field_fetch('COMMENT')
-  end
-
   # PATHWAY
-  def pathways
-    lines_fetch('PATHWAY')
+  def pathways_as_strings
+    lines_fetch('PATHWAY') 
   end
 
   # DBLINKS
-  def dblinks
+  def dblinks_as_strings
     lines_fetch('DBLINKS')
   end
 
   # ATOM, BOND
   def kcf
     return "#{get('ATOM')}#{get('BOND')}"
+  end
+
+  # COMMENT
+  def comment
+    field_fetch('COMMENT')
   end
 
 end # DRUG

@@ -20,13 +20,15 @@ class REACTION < KEGGDB
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
 
-  include PathwaysAsHash
+  include Common::PathwaysAsHash
   # Returns a Hash of the pathway ID and name in PATHWAY field.
   def pathways_as_hash; super; end if false #dummy for RDoc
+  alias pathways pathways_as_hash
 
-  include OrthologsAsHash
+  include Common::OrthologsAsHash
   # Returns a Hash of the orthology ID and definition in ORTHOLOGY field.
   def orthologs_as_hash; super; end if false #dummy for RDoc
+  alias orthologs orthologs_as_hash
 
   # Creates a new Bio::KEGG::REACTION object.
   # ---
@@ -69,8 +71,14 @@ class REACTION < KEGGDB
     @data['RPAIR']
   end
 
+  # Returns the content of the RPAIR entry as tokens
+  # (RPair signature, RPair ID, Compound ID pair, RPair type).
+  def rpairs_as_tokens
+    fetch('RPAIR').split(/\s+/)
+  end
+
   # PATHWAY
-  def pathways
+  def pathways_as_strings
     lines_fetch('PATHWAY')
   end
 
@@ -83,7 +91,7 @@ class REACTION < KEGGDB
   end
 
   # ORTHOLOGY
-  def orthologs
+  def orthologs_as_strings
     lines_fetch('ORTHOLOGY')
   end
 

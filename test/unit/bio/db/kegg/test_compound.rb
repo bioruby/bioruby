@@ -54,32 +54,36 @@ module Bio
       assert_equal([], @obj.rpairs)
     end
 
-    def test_pathways
-      assert_equal(["PATH: ko00250  Alanine, aspartate and glutamate metabolism", "PATH: ko00330  Arginine and proline metabolism", "PATH: ko00340  Histidine metabolism", "PATH: ko00471  D-Glutamine and D-glutamate metabolism", "PATH: ko00480  Glutathione metabolism", "PATH: ko00650  Butanoate metabolism", "PATH: ko00660  C5-Branched dibasic acid metabolism", "PATH: ko00860  Porphyrin and chlorophyll metabolism", "PATH: ko00910  Nitrogen metabolism", "PATH: ko00970  Aminoacyl-tRNA biosynthesis", "PATH: map01060  Biosynthesis of plant secondary metabolites", "PATH: ko01064  Biosynthesis of alkaloids derived from ornithine, lysine and nicotinic acid", "PATH: ko01100  Metabolic pathways", "PATH: ko02010  ABC transporters", "PATH: ko04080  Neuroactive ligand-receptor interaction", "PATH: ko04540  Gap junction", "PATH: ko04720  Long-term potentiation", "PATH: ko04730  Long-term depression", "PATH: ko04742  Taste transduction", "PATH: ko05014  Amyotrophic lateral sclerosis (ALS)", "PATH: ko05016  Huntington's disease"], @obj.pathways)
+    def test_pathways_as_strings
+      assert_equal(["PATH: ko00250  Alanine, aspartate and glutamate metabolism", "PATH: ko00330  Arginine and proline metabolism", "PATH: ko00340  Histidine metabolism", "PATH: ko00471  D-Glutamine and D-glutamate metabolism", "PATH: ko00480  Glutathione metabolism", "PATH: ko00650  Butanoate metabolism", "PATH: ko00660  C5-Branched dibasic acid metabolism", "PATH: ko00860  Porphyrin and chlorophyll metabolism", "PATH: ko00910  Nitrogen metabolism", "PATH: ko00970  Aminoacyl-tRNA biosynthesis", "PATH: map01060  Biosynthesis of plant secondary metabolites", "PATH: ko01064  Biosynthesis of alkaloids derived from ornithine, lysine and nicotinic acid", "PATH: ko01100  Metabolic pathways", "PATH: ko02010  ABC transporters", "PATH: ko04080  Neuroactive ligand-receptor interaction", "PATH: ko04540  Gap junction", "PATH: ko04720  Long-term potentiation", "PATH: ko04730  Long-term depression", "PATH: ko04742  Taste transduction", "PATH: ko05014  Amyotrophic lateral sclerosis (ALS)", "PATH: ko05016  Huntington's disease"], @obj.pathways_as_strings)
     end
 
     def test_enzymes
       assert_equal(["1.4.1.2", "1.4.1.3", "1.4.1.4", "1.4.1.13", "1.4.1.14", "1.4.3.11", "1.4.7.1", "1.5.1.9", "1.5.1.10", "1.5.1.12", "1.5.99.5", "2.1.1.21", "2.1.2.5", "2.3.1.1", "2.3.1.14", "2.3.1.35", "2.3.2.2", "2.3.2.-", "2.4.2.14", "2.4.2.-", "2.6.1.1", "2.6.1.2", "2.6.1.3", "2.6.1.4", "2.6.1.5", "2.6.1.6", "2.6.1.7", "2.6.1.8", "2.6.1.9", "2.6.1.11", "2.6.1.13", "2.6.1.16", "2.6.1.17", "2.6.1.19", "2.6.1.22", "2.6.1.23", "2.6.1.24", "2.6.1.26", "2.6.1.27", "2.6.1.29", "2.6.1.33", "2.6.1.34", "2.6.1.36", "2.6.1.38", "2.6.1.39", "2.6.1.40", "2.6.1.42", "2.6.1.48", "2.6.1.49", "2.6.1.52", "2.6.1.55", "2.6.1.57", "2.6.1.59", "2.6.1.65", "2.6.1.67", "2.6.1.68", "2.6.1.72", "2.6.1.75", "2.6.1.76", "2.6.1.79", "2.6.1.80", "2.6.1.81", "2.6.1.82", "2.6.1.83", "2.6.1.85", "2.6.1.-", "2.7.2.11", "2.7.2.13", "3.5.1.2", "3.5.1.38", "3.5.1.55", "3.5.1.65", "3.5.1.68", "3.5.1.87", "3.5.1.94", "3.5.1.96", "3.5.2.9", "3.5.3.8", "4.1.1.15", "4.1.3.27", "4.1.3.-", "5.1.1.3", "5.4.99.1", "6.1.1.17", "6.1.1.24", "6.3.1.2", "6.3.1.6", "6.3.1.11", "6.3.1.-", "6.3.2.2", "6.3.2.12", "6.3.2.17", "6.3.2.18", "6.3.4.2", "6.3.4.12", "6.3.5.1", "6.3.5.2", "6.3.5.3", "6.3.5.4", "6.3.5.5", "6.3.5.6", "6.3.5.7", "6.3.5.9", "6.3.5.10"], @obj.enzymes)
     end
 
-    def test_dblinks
+    def test_dblinks_as_strings
       assert_equal([ "CAS: 56-86-0",
                      "PubChem: 3327",
                      "ChEBI: 16015",
                      "KNApSAcK: C00001358",
                      "PDB-CCD: GLU",
                      "3DMET: B00007",
-                     "NIKKAJI: J9.171E" ], @obj.dblinks)
+                     "NIKKAJI: J9.171E" ], @obj.dblinks_as_strings)
     end
 
     def test_dblinks_as_hash
-      assert_equal({ "CAS"      => [ "56-86-0" ],
-                     "PubChem"  => [ "3327" ],
-                     "ChEBI"    => [ "16015" ],
-                     "KNApSAcK" => [ "C00001358" ],
-                     "PDB-CCD"  => [ "GLU" ],
-                     "3DMET"    => [ "B00007" ],
-                     "NIKKAJI"  => [ "J9.171E" ] }, @obj.dblinks_as_hash)
+      expected = {
+        "CAS"      => [ "56-86-0" ],
+        "PubChem"  => [ "3327" ],
+        "ChEBI"    => [ "16015" ],
+        "KNApSAcK" => [ "C00001358" ],
+        "PDB-CCD"  => [ "GLU" ],
+        "3DMET"    => [ "B00007" ],
+        "NIKKAJI"  => [ "J9.171E" ]
+      }
+      assert_equal(expected, @obj.dblinks_as_hash)
+      assert_equal(expected, @obj.dblinks)
     end
 
     def test_pathways_as_hash
@@ -108,6 +112,7 @@ module Bio
         "ko05016"  => "Huntington's disease"
       }
       assert_equal(expected, @obj.pathways_as_hash)
+      assert_equal(expected, @obj.pathways)
     end
 
     def test_kcf

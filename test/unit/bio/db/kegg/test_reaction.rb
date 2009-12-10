@@ -42,22 +42,23 @@ module Bio
       assert_equal([{"name"=>"C00022_C00900", "type"=>"main", "entry"=>"RP00440"}, {"name"=>"C00011_C00022", "type"=>"leave", "entry"=>"RP05698"}, {"name"=>"C00022_C00900", "type"=>"trans", "entry"=>"RP12733"}], @obj.rpairs)
     end
 
-    def test_pathways
+    def test_pathways_as_strings
       assert_equal([ "PATH: rn00770  Pantothenate and CoA biosynthesis" ],
-                   @obj.pathways)
+                   @obj.pathways_as_strings)
     end
 
     def test_pathways_as_hash
-      assert_equal({ "rn00770" => "Pantothenate and CoA biosynthesis" },
-                   @obj.pathways_as_hash)
+      expected = { "rn00770" => "Pantothenate and CoA biosynthesis" }
+      assert_equal(expected, @obj.pathways_as_hash)
+      assert_equal(expected, @obj.pathways)
     end
 
     def test_enzymes
       assert_equal(["2.2.1.6"], @obj.enzymes)
     end
 
-    def test_orthologs
-      assert_equal(["KO: K01652  acetolactate synthase I/II/III large subunit [EC:2.2.1.6]", "KO: K01653  acetolactate synthase I/III small subunit [EC:2.2.1.6]"], @obj.orthologs)
+    def test_orthologs_as_strings
+      assert_equal(["KO: K01652  acetolactate synthase I/II/III large subunit [EC:2.2.1.6]", "KO: K01653  acetolactate synthase I/III small subunit [EC:2.2.1.6]"], @obj.orthologs_as_strings)
     end
 
     def test_orthologs_as_hash

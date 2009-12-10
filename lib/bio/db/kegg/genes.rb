@@ -38,7 +38,7 @@
 # 
 #  # PATHWAY
 #  p entry.pathway     # => String
-#  p entry.pathways    # => Array
+#  p entry.pathways    # => Hash
 # 
 #  # POSITION
 #  p entry.position    # => String
@@ -76,6 +76,8 @@ module Bio
   autoload :Locations, 'bio/location'
   autoload :Sequence,  'bio/sequence'
 
+  require 'bio/db/kegg/common'
+
 class KEGG
 
 # == Description
@@ -90,6 +92,21 @@ class GENES < KEGGDB
 
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
+
+  include Common::DblinksAsHash
+  # Returns a Hash of the DB name and an Array of entry IDs in DBLINKS field.
+  def dblinks_as_hash; super; end if false #dummy for RDoc
+  alias dblinks dblinks_as_hash
+
+  include Common::PathwaysAsHash
+  # Returns a Hash of the pathway ID and name in PATHWAY field.
+  def pathways_as_hash; super; end if false #dummy for RDoc
+  alias pathways pathways_as_hash
+
+  include Common::OrthologsAsHash
+  # Returns a Hash of the orthology ID and definition in ORTHOLOGY field.
+  def orthologs_as_hash; super; end if false #dummy for RDoc
+  alias orthologs orthologs_as_hash
 
   # Creates a new Bio::KEGG::GENES object.
   # ---
@@ -185,7 +202,7 @@ class GENES < KEGGDB
   # Orthologs described in the ORTHOLOGY lines.
   # ---
   # *Returns*:: Array containing String
-  def orthologs
+  def orthologs_as_strings
     lines_fetch('ORTHOLOGY')
   end
 
@@ -198,8 +215,8 @@ class GENES < KEGGDB
 
   # Pathways described in the PATHWAY lines.
   # ---
-  # *Returns*:: Array containing String
-  def pathways
+  # *Returns*:: Hash of ID-description pair.
+  def pathways_as_strings
     lines_fetch('PATHWAY')
   end
 
@@ -265,17 +282,9 @@ class GENES < KEGGDB
 
   # Links to other databases described in the DBLINKS lines.
   # ---
-  # *Returns*:: Hash
-  def dblinks
-    unless @data['DBLINKS']
-      hash = {}
-      get('DBLINKS').scan(/(\S+):\s*(.*)\n?/).each do |db, str|
-        id_array = str.strip.split(/\s+/)
-        hash[db] = id_array
-      end
-      @data['DBLINKS'] = hash
-    end
-    @data['DBLINKS']		# Hash of Array of IDs in DBLINKS
+  # *Returns*:: Array containing String objects
+  def dblinks_as_strings
+    lines_fetch('DBLINKS')
   end
 
   # Returns structure ID information described in the STRUCTURE lines.

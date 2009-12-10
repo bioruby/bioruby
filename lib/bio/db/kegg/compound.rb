@@ -27,13 +27,15 @@ class COMPOUND < KEGGDB
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
 
-  include DblinksAsHash
+  include Common::DblinksAsHash
   # Returns a Hash of the DB name and an Array of entry IDs in DBLINKS field.
   def dblinks_as_hash; super; end if false #dummy for RDoc
+  alias dblinks dblinks_as_hash
 
-  include PathwaysAsHash
+  include Common::PathwaysAsHash
   # Returns a Hash of the pathway ID and name in PATHWAY field.
   def pathways_as_hash; super; end if false #dummy for RDoc
+  alias pathways pathways_as_hash
 
   # Creates a new Bio::KEGG::COMPOUND object.
   # ---
@@ -99,7 +101,7 @@ class COMPOUND < KEGGDB
   end
 
   # PATHWAY
-  def pathways
+  def pathways_as_strings
     lines_fetch('PATHWAY') 
   end
 
@@ -117,7 +119,7 @@ class COMPOUND < KEGGDB
   end
 
   # DBLINKS
-  def dblinks
+  def dblinks_as_strings
     lines_fetch('DBLINKS')
   end
 

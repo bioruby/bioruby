@@ -28,9 +28,15 @@ class ORTHOLOGY < KEGGDB
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
 
-  include DblinksAsHash
+  include Common::DblinksAsHash
   # Returns a Hash of the DB name and an Array of entry IDs in DBLINKS field.
   def dblinks_as_hash; super; end if false #dummy for RDoc
+  alias dblinks dblinks_as_hash
+
+  include Common::GenesAsHash
+  # Returns a Hash of the organism ID and an Array of entry IDs in GENES field.
+  def genes_as_hash; super; end if false #dummy for RDoc
+  alias genes genes_as_hash
 
   # Reads a flat file format entry of the KO database.
   def initialize(entry)
@@ -73,28 +79,15 @@ class ORTHOLOGY < KEGGDB
   end
   
   # Returns an Array of a database name and entry IDs in DBLINKS field.
-  def dblinks
+  def dblinks_as_strings
     lines_fetch('DBLINKS')
   end
 
   # Returns an Array of the organism ID and entry IDs in GENES field.
-  def genes
+  def genes_as_strings
     lines_fetch('GENES')
   end
 
-  # Returns a Hash of the organism ID and an Array of entry IDs in GENES field.
-  def genes_as_hash
-    hash = {}
-    genes.each do |line|
-      name, *list = line.split(/\s+/)
-      org = name.downcase.sub(/:/, '')
-      genes = list.map {|x| x.sub(/\(.*\)/, '')}
-      #names = list.map {|x| x.scan(/.*\((.*)\)/)}
-      hash[org] = genes
-    end
-    return hash
-  end
-  
 end # ORTHOLOGY
     
 end # KEGG
