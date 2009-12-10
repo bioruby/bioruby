@@ -34,9 +34,10 @@ END
       assert_equal(Array, @obj.structure.class)
     end
 
-    def test_id
-      assert_equal(10, @obj.structure.size)
-      assert_equal('PDB:1A9X', @obj.structure.first)
+    def test_ids
+      expected = %w( 1A9X 1CS0 1C30 1T36 1M6V 1KEE 1C3O 1CE8 1BXR 1JDB )
+      assert_equal(expected, @obj.structure)
+      assert_equal(expected, @obj.structures)
     end
 
   end

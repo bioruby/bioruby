@@ -283,12 +283,11 @@ class GENES < KEGGDB
   # *Returns*:: Array containing String
   def structure
     unless @data['STRUCTURE']
-      ary = Array.new
-      ary = fetch('STRUCTURE').split("PDB: ")[1].split(/\s/).map {|x| "PDB:#{x}" }
-      @data['STRUCTURE'] = ary
-    end      
+      @data['STRUCTURE'] = fetch('STRUCTURE').sub(/(PDB: )*/,'').split(/\s+/)
+    end
     @data['STRUCTURE'] # ['PDB:1A9X', ...]
   end
+  alias structures structure
 
   # Codon usage data described in the CODON_USAGE lines.
   # ---
