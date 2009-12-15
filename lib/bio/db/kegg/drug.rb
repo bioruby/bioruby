@@ -46,59 +46,89 @@ class DRUG < KEGGDB
     super(entry, TAGSIZE)
   end
 
-  # ENTRY
+  # ID of the entry, described in the ENTRY line.
+  # ---
+  # *Returns*:: String
   def entry_id
     field_fetch('ENTRY')[/\S+/]
   end
 
-  # NAME
+  # Names described in the NAME line.
+  # ---
+  # *Returns*:: Array containing String objects
   def names
     field_fetch('NAME').split(/\s*;\s*/)
   end
 
   # The first name recorded in the NAME field.
+  # ---
+  # *Returns*:: String
   def name
     names.first
   end
 
-  # FORMULA
+  # Chemical formula described in the FORMULA line.
+  # ---
+  # *Returns*:: String
   def formula
     field_fetch('FORMULA')
   end
 
-  # MASS
+  # Molecular weight described in the MASS line.
+  # ---
+  # *Returns*:: Float
   def mass
     field_fetch('MASS').to_f
   end
 
-  # ACTIVITY
+  # Biological or chemical activity described in the ACTIVITY line.
+  # ---
+  # *Returns*:: String
   def activity
     field_fetch('ACTIVITY')
   end
 
-  # REMARK
+  # REMARK lines.
+  # ---
+  # *Returns*:: String
   def remark
     field_fetch('REMARK')
   end
 
-  # PATHWAY
+  # List of KEGG Pathway IDs with short descriptions,
+  # described in the PATHWAY lines.
+  # ---
+  # *Returns*:: Array containing String objects
   def pathways_as_strings
     lines_fetch('PATHWAY') 
   end
 
-  # DBLINKS
+  # List of database names and IDs, described in the DBLINKS lines.
+  # ---
+  # *Returns*:: Array containing String objects
   def dblinks_as_strings
     lines_fetch('DBLINKS')
   end
 
-  # ATOM, BOND
+  # ATOM, BOND lines.
+  # ---
+  # *Returns*:: String
   def kcf
     return "#{get('ATOM')}#{get('BOND')}"
   end
 
-  # COMMENT
+  # COMMENT lines.
+  # ---
+  # *Returns*:: String
   def comment
     field_fetch('COMMENT')
+  end
+
+  # Product names described in the PRODUCTS lines.
+  # ---
+  # *Returns*:: Array containing String objects
+  def products
+    lines_fetch('PRODUCTS')
   end
 
 end # DRUG
