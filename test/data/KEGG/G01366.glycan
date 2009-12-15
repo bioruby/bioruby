@@ -1,0 +1,18 @@
+ENTRY       G01366                      Glycan
+COMPOSITION (4dlyxHex)1 (GlcNAc)1 (Man)2
+MASS        691.6
+CLASS       Glycoprotein; N-Glycan
+COMMENT     synthetic (CCSD:2549)
+DBLINKS     CCSD: 2549 2550 16559 25204
+            GlycomeDB: 5567
+            JCGGDB: JCGG-STR026574
+NODE        4
+            1   GlcNAc   11.4     0
+            2   4dlyxHex  -0.6     0
+            3   Man     -10.6     5
+            4   Man     -10.6    -5
+EDGE        3
+            1     2:b1    1:4
+            2     3:a1    2:6
+            3     4:a1    2:3
+///
