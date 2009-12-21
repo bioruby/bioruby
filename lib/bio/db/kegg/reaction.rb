@@ -39,50 +39,81 @@ class REACTION < KEGGDB
     super(entry, TAGSIZE)
   end
 
-  # ENTRY
+  # ID of the entry, described in the ENTRY line.
+  # ---
+  # *Returns*:: String
   def entry_id
     field_fetch('ENTRY')[/\S+/]
   end
 
-  # NAME
+  # Name of the reaction, described in the NAME line.
+  # ---
+  # *Returns*:: String
   def name
     field_fetch('NAME')
   end
 
-  # DEFINITION
+  # Definition of the reaction, described in the DEFINITION line.
+  # ---
+  # *Returns*:: String
   def definition
     field_fetch('DEFINITION')
   end
 
-  # EQUATION
+  # Chemical equation, described in the EQUATION line.
+  # ---
+  # *Returns*:: String
   def equation
     field_fetch('EQUATION')
   end
 
-  # RPAIR
-  def rpairs
-    unless @data['RPAIR']
-      rps = []
-      fetch('RPAIR').split(/\s+/).each_slice(4) do |rp|
-        rps.push({"entry" => rp[1], "name" => rp[2], "type" => rp[3]})
-      end
-      @data['RPAIR'] = rps
-    end
-    @data['RPAIR']
+  # KEGG RPAIR (ReactantPair) information, described in the RPAIR lines.
+  # ---
+  # *Returns*:: Array containing String
+  def rpairs_as_strings
+    lines_fetch('RPAIR')
   end
 
+  # KEGG RPAIR (ReactantPair) information, described in the RPAIR lines.
+  # Returns a hash of RPair IDs and [ name, type ] informations, for example,
+  #   { "RP12733" => [ "C00022_C00900", "trans" ],
+  #     "RP05698" => [ "C00011_C00022", "leave" ],
+  #     "RP00440" => [ "C00022_C00900", "main" ]
+  #   }
+  # ---
+  # *Returns*:: Hash
+  def rpairs_as_hash
+    unless defined? @rpairs_as_hash
+      rps = {}
+      rpairs_as_strings.each do |line|
+        namespace, entry_id, name, rptype = line.split(/\s+/)
+        rps[entry_id] = [ name, rptype ]
+      end
+      @rpairs_as_hash = rps
+    end
+    @rpairs_as_hash
+  end
+
+  alias rpairs rpairs_as_hash
+
   # Returns the content of the RPAIR entry as tokens
-  # (RPair signature, RPair ID, Compound ID pair, RPair type).
+  # (RPair signature, RPair ID, , RPair type).
+  # ---
+  # *Returns*:: Array containing String
   def rpairs_as_tokens
     fetch('RPAIR').split(/\s+/)
   end
 
-  # PATHWAY
+  # Pathway information, described in the PATHWAY lines.
+  # ---
+  # *Returns*:: Array containing String
   def pathways_as_strings
     lines_fetch('PATHWAY')
   end
 
-  # ENZYME
+  # Enzymes described in the ENZYME line.
+  # ---
+  # *Returns*:: Array containing String
   def enzymes
     unless @data['ENZYME']
       @data['ENZYME'] = fetch('ENZYME').scan(/\S+/)
@@ -90,7 +121,9 @@ class REACTION < KEGGDB
     @data['ENZYME']
   end
 
-  # ORTHOLOGY
+  # Orthologs described in the ORTHOLOGY lines.
+  # ---
+  # *Returns*:: Array containing String
   def orthologs_as_strings
     lines_fetch('ORTHOLOGY')
   end

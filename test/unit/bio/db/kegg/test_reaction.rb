@@ -38,8 +38,30 @@ module Bio
       assert_equal('C00900 + C00011 <=> 2 C00022', @obj.equation)
     end
 
-    def test_rpairs
-      assert_equal([{"name"=>"C00022_C00900", "type"=>"main", "entry"=>"RP00440"}, {"name"=>"C00011_C00022", "type"=>"leave", "entry"=>"RP05698"}, {"name"=>"C00022_C00900", "type"=>"trans", "entry"=>"RP12733"}], @obj.rpairs)
+    def test_rpairs_as_hash
+      expected = {
+        "RP00440" => [ "C00022_C00900", "main" ],
+        "RP05698" => [ "C00011_C00022", "leave" ],
+        "RP12733" => [ "C00022_C00900", "trans" ]
+      }
+      assert_equal(expected, @obj.rpairs_as_hash)
+      assert_equal(expected, @obj.rpairs)
+    end
+
+    def test_rpairs_as_strings
+      expected = [ 'RP: RP00440  C00022_C00900 main',
+                   'RP: RP05698  C00011_C00022 leave',
+                   'RP: RP12733  C00022_C00900 trans'
+                 ]
+      assert_equal(expected, @obj.rpairs_as_strings)
+    end
+
+    def test_rpairs_as_tokens
+      expected = %w( RP: RP00440  C00022_C00900 main
+                     RP: RP05698  C00011_C00022 leave
+                     RP: RP12733  C00022_C00900 trans
+                 )
+      assert_equal(expected, @obj.rpairs_as_tokens)
     end
 
     def test_pathways_as_strings
@@ -67,6 +89,7 @@ module Bio
         'K01653'=>"acetolactate synthase I/III small subunit [EC:2.2.1.6]"
       }
       assert_equal(expected, @obj.orthologs_as_hash)
+      assert_equal(expected, @obj.orthologs)
     end
 
   end
