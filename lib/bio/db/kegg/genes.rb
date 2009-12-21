@@ -215,7 +215,7 @@ class GENES < KEGGDB
 
   # Pathways described in the PATHWAY lines.
   # ---
-  # *Returns*:: Hash of ID-description pair.
+  # *Returns*:: Array containing String
   def pathways_as_strings
     lines_fetch('PATHWAY')
   end
