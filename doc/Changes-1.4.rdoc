@@ -51,9 +51,9 @@ use genes_as_strings.
 
 ==== Bio::KEGG:REACTION#rpairs
 
-Bio::KEGG::REACTION#rpairs is changed to return an array containing hashes
-instead of array containing strings. If old behavior (returns as tokens)
-is needed, use rpairs_as_tokens.
+Bio::KEGG::REACTION#rpairs is changed to return a Hash. Each key of the
+hash is a KEGG Rpair ID and its value is an array containing name and type.
+If old behavior (returns as tokens) is needed, use rpairs_as_tokens.
 
 === Bio::KEGG::ORTHOLOGY
 
