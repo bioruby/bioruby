@@ -5,9 +5,10 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: ncbisoap.rb,v 1.3 2007/04/05 23:35:41 trevor Exp $
+# $Id:$
 #
 
+require 'bio/io/ncbirest'
 require 'bio/io/soapwsdl'
 
 module Bio

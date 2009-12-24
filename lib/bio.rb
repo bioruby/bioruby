@@ -192,10 +192,12 @@ module Bio
     autoload :SOAP,         'bio/io/ebisoap'
   end
 
-  class NCBI
-    autoload :SOAP,       'bio/io/ncbisoap'
-    autoload :REST,       'bio/io/ncbirest'
-  end
+  autoload :NCBI,         'bio/io/ncbirest'
+  ## below are described in bio/io/ncbirest.rb
+  #class NCBI
+  #  autoload :SOAP,       'bio/io/ncbisoap'
+  #  autoload :REST,       'bio/io/ncbirest'
+  #end
 
   autoload :TogoWS,       'bio/io/togows'
 
