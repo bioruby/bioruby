@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.3.9.9001"
+  s.version = "1.3.9.9901"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -365,6 +365,9 @@ Gem::Specification.new do |s|
     "test/data/HMMER/hmmsearch.out",
     "test/data/KEGG/1.1.1.1.enzyme",
     "test/data/KEGG/C00025.compound",
+    "test/data/KEGG/D00063.drug",
+    "test/data/KEGG/G00024.glycan",
+    "test/data/KEGG/G01366.glycan",
     "test/data/KEGG/K02338.orthology",
     "test/data/KEGG/R00006.reaction",
     "test/data/SOSUI/sample.report",
@@ -384,6 +387,7 @@ Gem::Specification.new do |s|
     "test/data/embl/AB090716.embl.rel89",
     "test/data/fasta/example1.txt",
     "test/data/fasta/example2.txt",
+    "test/data/fastq/README.txt",
     "test/data/fastq/error_diff_ids.fastq",
     "test/data/fastq/error_double_qual.fastq",
     "test/data/fastq/error_double_seq.fastq",
@@ -505,8 +509,10 @@ Gem::Specification.new do |s|
     "test/unit/bio/db/embl/test_uniprot.rb",
     "test/unit/bio/db/fasta/test_format_qual.rb",
     "test/unit/bio/db/kegg/test_compound.rb",
+    "test/unit/bio/db/kegg/test_drug.rb",
     "test/unit/bio/db/kegg/test_enzyme.rb",
     "test/unit/bio/db/kegg/test_genes.rb",
+    "test/unit/bio/db/kegg/test_glycan.rb",
     "test/unit/bio/db/kegg/test_orthology.rb",
     "test/unit/bio/db/kegg/test_reaction.rb",
     "test/unit/bio/db/pdb/test_pdb.rb",
