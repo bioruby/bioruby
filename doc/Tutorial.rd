@@ -29,7 +29,7 @@
 * Copyright (C) 2001-2003 KATAYAMA Toshiaki <k .at. bioruby.org>
 * Copyright (C) 2005-2009 Pjotr Prins, Naohisa Goto and others
 
-This document was last modified: 2009/03/17
+This document was last modified: 2009/12/24
 Current editor: Pjotr Prins <p .at. bioruby.org>
 
 The latest version resides in the GIT source code repository:  ./doc/((<Tutorial.rd|URL:http://github.com/pjotrp/bioruby/raw/documentation/doc/Tutorial.rd>)).
@@ -1219,7 +1219,7 @@ For more information see ((<URL:http://libxml.rubyforge.org/install.xml>))
     require 'bio'
     
     # Create new phyloxml parser
-    phyloxml = Bio::PhyloXML::Parser.new('example.xml')
+    phyloxml = Bio::PhyloXML::Parser.open('example.xml')
     
     # Print the names of all trees in the file
     phyloxml.each do |tree|
@@ -1238,7 +1238,7 @@ You can use all Bio::Tree methods on the tree, since PhyloXML::Tree inherits fro
 
 PhyloXML files can hold additional information besides phylogenies at the end of the file. This info can be accessed through the 'other' array of the parser object.
 
-    phyloxml = Bio::PhyloXML::Parser.new('example.xml')
+    phyloxml = Bio::PhyloXML::Parser.open('example.xml')
     while tree = phyloxml.next_tree
       # do stuff with trees
     end 
@@ -1262,7 +1262,7 @@ Here is an example of how to retrieve the scientific name of the clades.
 
     require 'bio'
     
-    phyloxml = Bio::PhyloXML::Parser.new('ncbi_taxonomy_mollusca.xml')
+    phyloxml = Bio::PhyloXML::Parser.open('ncbi_taxonomy_mollusca.xml')
     phyloxml.each do |tree|
       tree.each_node do |node|
         print "Scientific name: ", node.taxonomies[0].scientific_name, "\n"
@@ -1273,7 +1273,7 @@ Here is an example of how to retrieve the scientific name of the clades.
 
     require 'bio'
     
-    phyloxml = Bio::PhyloXML::Parser.new('phyloxml_examples.xml')
+    phyloxml = Bio::PhyloXML::Parser.open('phyloxml_examples.xml')
     while tree = phyloxml.next_tree
      #do something with the trees
     end

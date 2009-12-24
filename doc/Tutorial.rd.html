@@ -13,7 +13,7 @@
 <li>Copyright (C) 2001-2003 KATAYAMA Toshiaki &lt;k .at. bioruby.org&gt;</li>
 <li>Copyright (C) 2005-2009 Pjotr Prins, Naohisa Goto and others</li>
 </ul>
-<p>This document was last modified: 2009/03/17
+<p>This document was last modified: 2009/12/24
 Current editor: Pjotr Prins &lt;p .at. bioruby.org&gt;</p>
 <p>The latest version resides in the GIT source code repository:  ./doc/<a href="http://github.com/pjotrp/bioruby/raw/documentation/doc/Tutorial.rd">Tutorial.rd</a>.</p>
 <h2><a name="label-1" id="label-1">Introduction</a></h2><!-- RDLabel: "Introduction" -->
@@ -979,22 +979,104 @@ from other BioFetch servers, we used bioruby.org server with
 Bio::Fetch.query method.)</p>
 <h2><a name="label-22" id="label-22">BioSQL</a></h2><!-- RDLabel: "BioSQL" -->
 <p>to be written...</p>
-<h2><a name="label-23" id="label-23">The BioRuby example programs</a></h2><!-- RDLabel: "The BioRuby example programs" -->
+<h1><a name="label-23" id="label-23">PhyloXML</a></h1><!-- RDLabel: "PhyloXML" -->
+<p>PhyloXML is an XML language for saving, analyzing and exchanging data of 
+annotated phylogenetic trees. PhyloXML parser in BioRuby is implemented in 
+Bio::PhyloXML::Parser and writer in Bio::PhyloXML::Writer. 
+More information at www.phyloxml.org</p>
+<h2><a name="label-24" id="label-24">Requirements</a></h2><!-- RDLabel: "Requirements" -->
+<p>In addition to BioRuby library you need a libxml ruby bindings. To install:</p>
+<pre>% gem install -r libxml-ruby</pre>
+<p>For more information see <a href="http://libxml.rubyforge.org/install.xml">&lt;URL:http://libxml.rubyforge.org/install.xml&gt;</a></p>
+<h2><a name="label-25" id="label-25">Parsing a file</a></h2><!-- RDLabel: "Parsing a file" -->
+<pre>require 'bio'
+
+# Create new phyloxml parser
+phyloxml = Bio::PhyloXML::Parser.open('example.xml')
+
+# Print the names of all trees in the file
+phyloxml.each do |tree|
+  puts tree.name
+end</pre>
+<p>If there are several trees in the file, you can access the one you wish by an index</p>
+<pre>tree = phyloxml[3]</pre>
+<p>You can use all Bio::Tree methods on the tree, since PhyloXML::Tree inherits from Bio::Tree. For example,</p>
+<pre>tree.leaves.each do |node|
+  puts node.name
+end</pre>
+<p>PhyloXML files can hold additional information besides phylogenies at the end of the file. This info can be accessed through the 'other' array of the parser object.</p>
+<pre>phyloxml = Bio::PhyloXML::Parser.open('example.xml')
+while tree = phyloxml.next_tree
+  # do stuff with trees
+end 
+
+puts phyloxml.other</pre>
+<h2><a name="label-26" id="label-26">Writing a file</a></h2><!-- RDLabel: "Writing a file" -->
+<pre># Create new phyloxml writer
+writer = Bio::PhyloXML::Writer.new('tree.xml')
+
+# Write tree to the file tree.xml
+writer.write(tree1) 
+
+# Add another tree to the file
+writer.write(tree2)</pre>
+<h2><a name="label-27" id="label-27">Retrieving data</a></h2><!-- RDLabel: "Retrieving data" -->
+<p>Here is an example of how to retrieve the scientific name of the clades.</p>
+<pre>require 'bio'
+
+phyloxml = Bio::PhyloXML::Parser.open('ncbi_taxonomy_mollusca.xml')
+phyloxml.each do |tree|
+  tree.each_node do |node|
+    print "Scientific name: ", node.taxonomies[0].scientific_name, "\n"
+  end
+end</pre>
+<h2><a name="label-28" id="label-28">Retrieving 'other' data</a></h2><!-- RDLabel: "Retrieving 'other' data" -->
+<pre>require 'bio'
+
+phyloxml = Bio::PhyloXML::Parser.open('phyloxml_examples.xml')
+while tree = phyloxml.next_tree
+ #do something with the trees
+end
+
+p phyloxml.other
+puts "\n"
+#=&gt; output is an object representation
+
+#Print in a readable way
+puts phyloxml.other[0].to_xml, "\n"
+#=&gt;:
+#
+#&lt;align:alignment xmlns:align="http://example.org/align"&gt;
+#  &lt;seq name="A"&gt;acgtcgcggcccgtggaagtcctctcct&lt;/seq&gt;
+#  &lt;seq name="B"&gt;aggtcgcggcctgtggaagtcctctcct&lt;/seq&gt;
+#  &lt;seq name="C"&gt;taaatcgc--cccgtgg-agtccc-cct&lt;/seq&gt;
+#&lt;/align:alignment&gt;
+
+#Once we know whats there, lets output just sequences
+phyloxml.other[0].children.each do |node|
+ puts node.value
+end
+#=&gt;
+#
+#acgtcgcggcccgtggaagtcctctcct
+#aggtcgcggcctgtggaagtcctctcct
+#taaatcgc--cccgtgg-agtccc-cct</pre>
+<h2><a name="label-29" id="label-29">The BioRuby example programs</a></h2><!-- RDLabel: "The BioRuby example programs" -->
 <p>Some sample programs are stored in ./samples/ directory. Run for example:</p>
 <pre>./sample/na2aa.rb test/data/fasta/example1.txt </pre>
-<h2><a name="label-24" id="label-24">Unit testing and doctests</a></h2><!-- RDLabel: "Unit testing and doctests" -->
+<h2><a name="label-30" id="label-30">Unit testing and doctests</a></h2><!-- RDLabel: "Unit testing and doctests" -->
 <p>BioRuby comes with an extensive testing framework with over 1300 tests and 2700
 assertions. To run the unit tests:</p>
 <pre>cd test
 ruby runner.rb</pre>
 <p>We have also started with doctest for Ruby. We are porting the examples
 in this tutorial to doctest - more info upcoming.</p>
-<h2><a name="label-25" id="label-25">Further reading</a></h2><!-- RDLabel: "Further reading" -->
+<h2><a name="label-31" id="label-31">Further reading</a></h2><!-- RDLabel: "Further reading" -->
 <p>See the BioRuby in anger Wiki.  A lot of BioRuby's documentation exists in the
 source code and unit tests. To really dive in you will need the latest source
 code tree. The embedded rdoc documentation can be viewed online at
 <a href="http://bioruby.org/rdoc/">&lt;URL:http://bioruby.org/rdoc/&gt;</a>.</p>
-<h2><a name="label-26" id="label-26">BioRuby Shell</a></h2><!-- RDLabel: "BioRuby Shell" -->
+<h2><a name="label-32" id="label-32">BioRuby Shell</a></h2><!-- RDLabel: "BioRuby Shell" -->
 <p>The BioRuby shell implementation you find in ./lib/bio/shell. It is very interesting
 as it uses IRB (the Ruby intepreter) which is a powerful environment described in
 <a href="http://ruby-doc.org/docs/ProgrammingRuby/html/irb.html">Programming Ruby's irb chapter</a>. IRB commands can directly be typed in the shell, e.g.</p>
@@ -1003,24 +1085,24 @@ as it uses IRB (the Ruby intepreter) which is a powerful environment described i
 <p>optionally you also may want to install the optional Ruby readline support -
 with Debian libreadline-ruby. To edit a previous line you may have to press
 line down (arrow down) first.</p>
-<h1><a name="label-27" id="label-27">Helpful tools</a></h1><!-- RDLabel: "Helpful tools" -->
+<h1><a name="label-33" id="label-33">Helpful tools</a></h1><!-- RDLabel: "Helpful tools" -->
 <p>Apart from rdoc you may also want to use rtags - which allows jumping around
 source code by clicking on class and method names. </p>
 <pre>cd bioruby/lib
 rtags -R --vi</pre>
 <p>For a tutorial see <a href="http://rtags.rubyforge.org/">&lt;URL:http://rtags.rubyforge.org/&gt;</a></p>
-<h1><a name="label-28" id="label-28">APPENDIX</a></h1><!-- RDLabel: "APPENDIX" -->
-<h2><a name="label-29" id="label-29">KEGG API</a></h2><!-- RDLabel: "KEGG API" -->
+<h1><a name="label-34" id="label-34">APPENDIX</a></h1><!-- RDLabel: "APPENDIX" -->
+<h2><a name="label-35" id="label-35">KEGG API</a></h2><!-- RDLabel: "KEGG API" -->
 <p>Please refer to KEGG_API.rd.ja (English version: <a href="http://www.genome.jp/kegg/soap/doc/keggapi_manual.html">&lt;URL:http://www.genome.jp/kegg/soap/doc/keggapi_manual.html&gt;</a> ) and</p>
 <ul>
 <li><a href="http://www.genome.jp/kegg/soap/">&lt;URL:http://www.genome.jp/kegg/soap/&gt;</a></li>
 </ul>
-<h2><a name="label-30" id="label-30">Ruby Ensembl API</a></h2><!-- RDLabel: "Ruby Ensembl API" -->
+<h2><a name="label-36" id="label-36">Ruby Ensembl API</a></h2><!-- RDLabel: "Ruby Ensembl API" -->
 <p>Ruby Ensembl API is a ruby API to the Ensembl database. It is NOT currently
 included in the BioRuby archives. To install it, see
 <a href="http://wiki.github.com/jandot/ruby-ensembl-api">&lt;URL:http://wiki.github.com/jandot/ruby-ensembl-api&gt;</a>
 for more information.</p>
-<h3><a name="label-31" id="label-31">Gene Ontology (GO) through the Ruby Ensembl API</a></h3><!-- RDLabel: "Gene Ontology (GO) through the Ruby Ensembl API" -->
+<h3><a name="label-37" id="label-37">Gene Ontology (GO) through the Ruby Ensembl API</a></h3><!-- RDLabel: "Gene Ontology (GO) through the Ruby Ensembl API" -->
 <p>Gene Ontologies can be fetched through the Ruby Ensembl API package:</p>
 <pre>require 'ensembl'
 Ensembl::Core::DBConnection.connect('drosophila_melanogaster')
@@ -1037,28 +1119,35 @@ infile.each do |line|
 end</pre>
 <p>Prints each mosq. accession/uniq identifier and the GO terms from the Drosphila
 homologues.</p>
-<h2><a name="label-32" id="label-32">Comparing BioProjects</a></h2><!-- RDLabel: "Comparing BioProjects" -->
+<h2><a name="label-38" id="label-38">Comparing BioProjects</a></h2><!-- RDLabel: "Comparing BioProjects" -->
 <p>For a quick functional comparison of BioRuby, BioPerl, BioPython and Bioconductor (R) see <a href="http://sciruby.codeforpeople.com/sr.cgi/BioProjects">&lt;URL:http://sciruby.codeforpeople.com/sr.cgi/BioProjects&gt;</a></p>
-<h2><a name="label-33" id="label-33">Using BioRuby with R</a></h2><!-- RDLabel: "Using BioRuby with R" -->
+<h2><a name="label-39" id="label-39">Using BioRuby with R</a></h2><!-- RDLabel: "Using BioRuby with R" -->
 <p>Using Ruby with R Pjotr wrote a section on SciRuby. See <a href="http://sciruby.codeforpeople.com/sr.cgi/RubyWithRlang">&lt;URL:http://sciruby.codeforpeople.com/sr.cgi/RubyWithRlang&gt;</a></p>
-<h2><a name="label-34" id="label-34">Using BioPerl or BioPython from Ruby</a></h2><!-- RDLabel: "Using BioPerl or BioPython from Ruby" -->
+<h2><a name="label-40" id="label-40">Using BioPerl or BioPython from Ruby</a></h2><!-- RDLabel: "Using BioPerl or BioPython from Ruby" -->
 <p>At the moment there is no easy way of accessing BioPerl from Ruby. The best way, perhaps, is to create a Perl server that gets accessed through XML/RPC or SOAP.</p>
-<h2><a name="label-35" id="label-35">Installing required external library</a></h2><!-- RDLabel: "Installing required external library" -->
-<p>At this point for using BioRuby no additional libraries are needed.
-This may change, so keep an eye on the Bioruby website. Also when
+<h2><a name="label-41" id="label-41">Installing required external library</a></h2><!-- RDLabel: "Installing required external library" -->
+<p>At this point for using BioRuby no additional libraries are needed, except if
+you are using Bio::PhyloXML module. Then you have to install libxml-ruby.</p>
+<p>This may change, so keep an eye on the Bioruby website. Also when
 a package is missing BioRuby should show an informative message.</p>
 <p>At this point installing third party Ruby packages can be a bit
 painful, as the gem standard for packages evolved late and some still
 force you to copy things by hand. Therefore read the README's
 carefully that come with each package.</p>
-<h2><a name="label-36" id="label-36">Trouble shooting</a></h2><!-- RDLabel: "Trouble shooting" -->
+<h3><a name="label-42" id="label-42">Installing libxml-ruby</a></h3><!-- RDLabel: "Installing libxml-ruby" -->
+<p>The simplest way is to use gem packaging system.</p>
+<pre>gem install -r libxml-ruby</pre>
+<p>If you get `require': no such file to load - mkmf (LoadError) error then do</p>
+<pre>sudo apt-get install ruby-dev</pre>
+<p>If you have other problems with installation, then see <a href="http://libxml.rubyforge.org/install.xml">&lt;URL:http://libxml.rubyforge.org/install.xml&gt;</a>  </p>
+<h2><a name="label-43" id="label-43">Trouble shooting</a></h2><!-- RDLabel: "Trouble shooting" -->
 <ul>
 <li>Error: in `require': no such file to load -- bio (LoadError)</li>
 </ul>
 <p>Ruby fails to find the BioRuby libraries - add it to the RUBYLIB path, or pass
 it to the interpeter. For example:</p>
 <pre>ruby -I$BIORUBYPATH/lib yourprogram.rb</pre>
-<h2><a name="label-37" id="label-37">Modifying this page</a></h2><!-- RDLabel: "Modifying this page" -->
+<h2><a name="label-44" id="label-44">Modifying this page</a></h2><!-- RDLabel: "Modifying this page" -->
 <p>IMPORTANT NOTICE: This page is maintained in the BioRuby source code 
 repository. Please edit the file there otherwise changes may get
 lost. See <!-- Reference, RDLabel "BioRuby Developer Information" doesn't exist --><em class="label-not-found">BioRuby Developer Information</em><!-- Reference end --> for repository and mailing list
