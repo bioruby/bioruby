@@ -115,6 +115,8 @@ module Bio
     include FuncTestPubmedCommon
 
     def setup
+      Bio::NCBI.default_email = 'staff@bioruby.org'
+      #$stderr.puts Bio::NCBI.default_tool
       @pm = Bio::PubMed.new
     end
   end #class FuncTestPubmed
@@ -124,6 +126,8 @@ module Bio
     include FuncTestPubmedCommon
 
     def setup
+      Bio::NCBI.default_email = 'staff@bioruby.org'
+      #$stderr.puts Bio::NCBI.default_tool
       @pm = Bio::PubMed
     end
   end #class FuncTestPubmedClassMethod

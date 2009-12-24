@@ -23,6 +23,8 @@
 
 require 'bio'
 
+Bio::NCBI.default_email = 'staff@bioruby.org'
+
 if ARGV[0] =~ /\A\-f/
   ARGV.shift
   form = ARGV.shift

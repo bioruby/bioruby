@@ -6,7 +6,7 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: bioruby,v 1.21 2007/07/26 10:46:46 k Exp $
+# $Id:$
 #
 
 begin
@@ -25,6 +25,9 @@ Bio::Shell::Setup.new
 
 # loading workspace and command history
 Bio::Shell.load_session
+
+# sets default email address for Entrez eUtils.
+Bio::NCBI.default_email ||= 'staff@bioruby.org'
 
 # main loop
 if Bio::Shell.cache[:rails]

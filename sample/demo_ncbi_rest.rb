@@ -26,6 +26,8 @@
 
 require 'bio'
 
+Bio::NCBI.default_email = 'staff@bioruby.org'
+
 #if __FILE__ == $0
 
   gbopts = {"db"=>"nuccore", "rettype"=>"gb"}
