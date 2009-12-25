@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
     "LGPL",
     "README.rdoc",
     "README_DEV.rdoc",
+    "RELEASE_NOTES.rdoc",
     "Rakefile",
     "bin/bioruby",
     "bin/br_biofetch.rb",
@@ -33,7 +34,6 @@ Gem::Specification.new do |s|
     "bioruby.gemspec.erb",
     "doc/Changes-0.7.rd",
     "doc/Changes-1.3.rdoc",
-    "doc/Changes-1.4.rdoc",
     "doc/KEGG_API.rd",
     "doc/KEGG_API.rd.ja",
     "doc/Tutorial.rd",
@@ -586,8 +586,8 @@ Gem::Specification.new do |s|
     "KNOWN_ISSUES.rdoc",
     "README.rdoc",
     "README_DEV.rdoc",
-    "doc/Changes-1.3.rdoc",
-    "doc/Changes-1.4.rdoc"
+    "RELEASE_NOTES.rdoc",
+    "doc/Changes-1.3.rdoc"
   ]
   s.rdoc_options << '--main' << 'README.rdoc'
   s.rdoc_options << '--title' << 'BioRuby API documentation'
