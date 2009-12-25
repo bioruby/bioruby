@@ -1,7 +1,8 @@
-= Incompatible and important changes since the BioRuby 1.3.1 release
+= BioRuby 1.4.0 RELEASE NOTES
 
-A lot of changes have been made to the BioRuby after the version 1.3.1
-is released.
+A lot of changes have been made to the BioRuby 1.4.0 after the version 1.3.1
+is released. This document describes important and/or incompatible changes
+since the BioRuby 1.3.1 release.
 
 == New features
 
@@ -74,12 +75,8 @@ flag to turn on debug of the tests.
 === "if __FILE__ == $0" convention
 
 Primitive test codes in the "if __FILE__ == $0" convention are removed and
-their contents are moved to the sample scripts named sample/demo_*.rb
-(except some older files).
-
-== Known problems
-
-See KNOWN_ISSUES.rdoc for details.
+the codes are moved to the sample scripts named sample/demo_*.rb (except
+some older or deprecated files).
 
 == Incompatible changes
 
@@ -106,15 +103,15 @@ For example, if you run "ruby my_script.rb" with BioRuby 1.4.0, the value is
 
 === Bio::KEGG
 
-==== #dblinks
+==== dblinks method
 
 In Bio::KEGG::COMPOUND, DRUG, ENZYME, GLYCAN and ORTHOLOGY, the method
 dblinks is changed to return a Hash. Each key of the hash is a database name
-and its value is an array of entry IDs in the database. If old bahavior
+and its value is an array of entry IDs in the database. If old behavior
 (returns raw entry lines as an array of strings) is needed, use
 dblinks_as_strings.
 
-==== #pathways
+==== pathways method
 
 In Bio::KEGG::COMPOUND, DRUG, ENZYME, GENES, GLYCAN and REACTION, the
 method pathways is changed to return a Hash. Each key of the hash is a
@@ -130,14 +127,14 @@ pathways_as_strings.
 Note that Bio::KEGG::ORTHOLOGY#pathways is not changed (returns an array
 containing pathway IDs).
 
-==== #orthologs
+==== orthologs method
 
 In Bio::KEGG::ENZYME, GENES, GLYCAN and REACTION, the method orthologs is
 changed to return a Hash. Each key of the hash is a ortholog ID and its
 value is the name of the ortholog. If old behavior (returns raw entry lines
 as an array of strings) is needed, use orthologs_as_strings.
 
-==== #genes
+==== genes method
 
 In Bio::KEGG::ENZYME#genes and Bio::KEGG::ORTHOLOGY#genes is changed to
 return a Hash that is the same as Bio::KEGG::ORTHOLOGY#genes_as_hash.
@@ -157,4 +154,8 @@ Bio::KEGG:ORTHOLOGY#dblinks_as_hash does not lower-case database names.
 === Bio::RestrictionEnzyme
 
 Format validation when creating an object is turned off because of efficiency.
+
+== Known problems
+
+See KNOWN_ISSUES.rdoc for details.
 
