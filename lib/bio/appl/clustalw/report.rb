@@ -72,6 +72,15 @@ module Bio
         @header or (do_parse or @header)
       end
 
+      # Return Bio::Sequence object by sequence +index+
+      def [] index
+        a = alignment
+        id  = a.keys[index]
+        seq = a.to_hash[id]
+        seq.definition = id
+        seq
+      end
+
       # Shows "match line" of CLUSTAL's alignment result, for example,
       # ':* :* .*   *       .*::*.   ** :* . *    .        '.
       # Returns a string.
