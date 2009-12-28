@@ -1,0 +1,2306 @@
+commit 02bf77af589ea62df81e9634df6fe949df2fd3ef
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Dec 28 19:25:39 2009 +0900
+
+    test_output_size is disabled because it depends on html decorations
+
+ test/functional/bio/appl/test_pts1.rb |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 5781fb402e85e73fd47948b4466c8129355b714b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Dec 28 19:21:21 2009 +0900
+
+    The PTS1 Predictor's URL had been changed.
+    
+     * The PTS1 Predictor's URL had been changed.
+     * Changed to use @uri instead of @host and @cgi_path.
+
+ lib/bio/appl/pts1.rb |    6 ++----
+ 1 files changed, 2 insertions(+), 4 deletions(-)
+
+commit a4e691d913e1ae51eadb1a871efc2c8718ef5587
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Dec 28 18:33:00 2009 +0900
+
+    Preparation of ChangeLog autogeneration: old ChangeLog is moved to doc/ChangeLog-before-1.3.1.
+
+ ChangeLog                  | 3961 --------------------------------------------
+ doc/ChangeLog-before-1.3.1 | 3961 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 3961 insertions(+), 3961 deletions(-)
+ delete mode 100644 ChangeLog
+ create mode 100644 doc/ChangeLog-before-1.3.1
+
+commit c011604766baa3cdf5ca2f4a776aa67c56460d29
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Dec 28 17:53:51 2009 +0900
+
+    Tutorial.rd.html is regenerated.
+
+ doc/Tutorial.rd.html |   70 +++++++++++++------------------------------------
+ 1 files changed, 19 insertions(+), 51 deletions(-)
+
+commit 6e2cdd13d61970aa4704475bfb5aefb70719c2e1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Dec 28 17:42:25 2009 +0900
+
+    Added Bio::NCBI.default_email= in the example, and examples using deprecated Bio::PubMed methods are temporarily commented out.
+
+ doc/Tutorial.rd |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
+
+commit 8e6d5e9baf98be7e58f4dda8b5d043a42149874b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Dec 28 17:15:09 2009 +0900
+
+    Reinserted "==>" for Blast example, and removed duplicated Ruby Ensembl API example.
+
+ doc/Tutorial.rd |   25 ++-----------------------
+ 1 files changed, 2 insertions(+), 23 deletions(-)
+
+commit 849edd7e8c5b26923cab47e7f5542948fab2b1fb
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Sun Dec 27 09:49:14 2009 +0100
+
+    Tutorial: Added info on how to run rubydoctest
+              Removed bioruby> prefix for one failing BLAST test
+
+ doc/Tutorial.rd |   69 ++++++++++++++++++++++++++++++++++++++----------------
+ 1 files changed, 48 insertions(+), 21 deletions(-)
+
+commit a39fcf0ca1a5265789110f42cc616fc5d3c16414
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 25 12:30:18 2009 +0900
+
+    Modified for release notes and fixed typo.
+
+ RELEASE_NOTES.rdoc |   29 +++++++++++++++--------------
+ 1 files changed, 15 insertions(+), 14 deletions(-)
+
+commit 3fa8b68f19fc2b6aaf8f54eb10517cc761b2193b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 25 12:10:34 2009 +0900
+
+    Changes following the rename to RELEASE_NOTES.rdoc.
+
+ README.rdoc         |    2 +-
+ bioruby.gemspec     |    6 +++---
+ bioruby.gemspec.erb |    2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+commit fd692a1165d368b9bdbe068ea6bf63fd91c9925c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 25 12:03:41 2009 +0900
+
+    Renamed doc/Changes-1.4.rdoc to RELEASE_NOTES.rdoc.
+
+ RELEASE_NOTES.rdoc   |  160 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ doc/Changes-1.4.rdoc |  160 --------------------------------------------------
+ 2 files changed, 160 insertions(+), 160 deletions(-)
+ create mode 100644 RELEASE_NOTES.rdoc
+ delete mode 100644 doc/Changes-1.4.rdoc
+
+commit 0e37f04dd8d34517693fdd4bc27f8bdada7c2f13
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 24 21:48:52 2009 +0900
+
+    Changed Bio::PhyloXML::Parser.new to open, and regenerated html.
+
+ doc/Tutorial.rd      |   10 ++--
+ doc/Tutorial.rd.html |  125 ++++++++++++++++++++++++++++++++++++++++++-------
+ 2 files changed, 112 insertions(+), 23 deletions(-)
+
+commit aeacbbd425c2e88369c171bd92c60bf8e520a9e5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 24 19:26:49 2009 +0900
+
+    bioruby.gemspec is regenerated
+
+ bioruby.gemspec |    8 +++++++-
+ 1 files changed, 7 insertions(+), 1 deletions(-)
+
+commit 1034205c199a638c359780922293f8b39c467356
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 24 19:24:56 2009 +0900
+
+    Version number changed to 1.4.0-rc1
+
+ lib/bio/version.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 04bf2da43f78fbb702b67323f3be1fe3bd2d0351
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 24 19:22:41 2009 +0900
+
+    Issues added and modified.
+
+ KNOWN_ISSUES.rdoc |   35 +++++++++++++++++++++++++++++++++--
+ 1 files changed, 33 insertions(+), 2 deletions(-)
+
+commit f1a76157b009fb0ca94d9a0e0f8a85522c383b19
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 24 19:22:19 2009 +0900
+
+    Added news and incompatible changes.
+
+ doc/Changes-1.4.rdoc |  102 ++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 files changed, 98 insertions(+), 4 deletions(-)
+
+commit 9c8ef18a20c49f17d5b89aa1db5819b2c8ee9b1d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 24 19:10:02 2009 +0900
+
+    Email address for NCBI Entrez is given with Bio::NCBI.default_email=.
+
+ bin/bioruby                           |    5 ++++-
+ sample/demo_ncbi_rest.rb              |    2 ++
+ sample/demo_pubmed.rb                 |    2 ++
+ sample/pmfetch.rb                     |    2 ++
+ sample/pmsearch.rb                    |    2 ++
+ test/functional/bio/io/test_pubmed.rb |    4 ++++
+ 6 files changed, 16 insertions(+), 1 deletions(-)
+
+commit 7a7179665694da35ab0970909bfbda9ad1b057da
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 24 19:09:09 2009 +0900
+
+    Changed autoload hierarchy of Bio::NCBI.
+
+ lib/bio.rb             |   10 ++++++----
+ lib/bio/io/ncbisoap.rb |    3 ++-
+ 2 files changed, 8 insertions(+), 5 deletions(-)
+
+commit f8dc0268d9edf699fd3f0cf18dd55a2b10ec3bcc
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 24 18:58:18 2009 +0900
+
+    New singleton methods Bio::NCBI.default_email=, default_tool=, etc.
+    
+     * New singleton methods Bio::NCBI.default_email=, default_email,
+       default_tools=, default_tools, etc., because email and tool
+       parameters will be mandatory in Entrez eUtils.
+     * Changed to raise error when email or tool is empty. Note that
+       default email is nil and library users should always set their
+       email address.
+     * Default tool name is changed to include $0 and bioruby version ID.
+     * Added multi-thread support for Bio::NCBI::REST#ncbi_access_wait.
+
+ lib/bio/io/ncbirest.rb |  161 ++++++++++++++++++++++++++++++++++++++---------
+ 1 files changed, 130 insertions(+), 31 deletions(-)
+
+commit 2e311dc44290ef6bda48f0bcba09a3c22bf32d9a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Dec 21 22:24:52 2009 +0900
+
+    Description about the incompatible change of Bio::KEGG::REACTION#rpairs.
+
+ doc/Changes-1.4.rdoc |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit d57ace3a89077caae3c681743da4b92d16b90af8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Dec 21 22:17:46 2009 +0900
+
+    Bio::KEGG::R#ACTION#rpairs is changed to return a hash.
+
+ lib/bio/db/kegg/reaction.rb            |   65 ++++++++++++++++++++++++--------
+ test/unit/bio/db/kegg/test_reaction.rb |   27 ++++++++++++-
+ 2 files changed, 74 insertions(+), 18 deletions(-)
+
+commit 60e4c77d184ee81c51668b446518cfbc9256be50
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Dec 21 22:15:44 2009 +0900
+
+    Document bug fix: return value mistake.
+
+ lib/bio/db/kegg/genes.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 6376dd55aa4995769746e556ca719d37f02975d6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Dec 20 17:32:52 2009 +0900
+
+    Added README.txt for FASTQ example data.
+
+ test/data/fastq/README.txt |  109 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 109 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/fastq/README.txt
+
+commit 8dec18794c846726733d66c5a22170f5b2c4bb1a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Dec 15 13:51:13 2009 +0900
+
+    Newly added unit tests for Bio::KEGG::GLYCAN with test data.
+
+ test/data/KEGG/G00024.glycan         |   47 ++++++
+ test/data/KEGG/G01366.glycan         |   18 +++
+ test/unit/bio/db/kegg/test_glycan.rb |  260 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 325 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/KEGG/G00024.glycan
+ create mode 100644 test/data/KEGG/G01366.glycan
+ create mode 100644 test/unit/bio/db/kegg/test_glycan.rb
+
+commit 90b97bfbcfb3f7e3d5c28b195bdb9b9c058df887
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Dec 15 11:42:39 2009 +0900
+
+    Newly added unit test for Bio::KEGG::DRUG with test data.
+
+ test/data/KEGG/D00063.drug         |  104 +++++++++++++++++++
+ test/unit/bio/db/kegg/test_drug.rb |  194 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 298 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/KEGG/D00063.drug
+ create mode 100644 test/unit/bio/db/kegg/test_drug.rb
+
+commit 443f778795b82a7f572cb8b85d2a8a8b3cea1334
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Dec 15 11:38:59 2009 +0900
+
+    New method Bio::KEGG::DRUG#products
+    
+     * New method Bio::KEGG::DRUG#products.
+     * Improved RDoc.
+
+ lib/bio/db/kegg/drug.rb |   50 +++++++++++++++++++++++++++++++++++++---------
+ 1 files changed, 40 insertions(+), 10 deletions(-)
+
+commit 48184d96b989f909ac0effb759cbc4b1ddc98dd1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 11 01:36:54 2009 +0900
+
+    Methods in Bio::KEGG::Common::* are changed to cache return values in instance variables.
+
+ lib/bio/db/kegg/common.rb |   62 ++++++++++++++++++++++++++------------------
+ 1 files changed, 37 insertions(+), 25 deletions(-)
+
+commit f364ea609f1e01ca5270a5bd7404e0bbf752bc89
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 11 01:23:42 2009 +0900
+
+    Version is changed to 1.4.0-alpha1, and bioruby.gemspec is regenerated.
+
+ bioruby.gemspec     |  142 ++++++++++++++++++++++++++++++++++++++++++++++++++-
+ bioruby.gemspec.erb |    4 +-
+ lib/bio/version.rb  |    4 +-
+ 3 files changed, 145 insertions(+), 5 deletions(-)
+
+commit 096b5fbf6b7ff906203aabf93eb9a0bd56ae9ba2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 11 01:22:59 2009 +0900
+
+    Added documents about Bio::KEGG incompatible changes.
+
+ doc/Changes-1.4.rdoc |   48 ++++++++++++++++++++++++++++++++++++++++++------
+ 1 files changed, 42 insertions(+), 6 deletions(-)
+
+commit 72ed277fe30bb1033cbc16d462f137510afb84e6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 11 01:21:26 2009 +0900
+
+    Newly added unit tests for Bio::KEGG::ENZYME with test data.
+
+ test/data/KEGG/1.1.1.1.enzyme        |  935 ++++++++++++++++++++++++++++++++++
+ test/unit/bio/db/kegg/test_enzyme.rb |  241 +++++++++
+ 2 files changed, 1176 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/KEGG/1.1.1.1.enzyme
+ create mode 100644 test/unit/bio/db/kegg/test_enzyme.rb
+
+commit b99fcb39f7c5d2857cbb65283d85ea868ae8561d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 11 01:09:03 2009 +0900
+
+    Changed Bio::KEGG::*#dblinks, pathways, orthologs, genes methods.
+    
+     * In Bio::KEGG::COMPOUND, DRUG, ENZYME, GLYCAN and ORTHOLOGY, the
+       method dblinks is changed to return a Hash. The old methods  are
+       renamed to dblinks_as_strings.
+     * In Bio::KEGG::COMPOUND, DRUG, ENZYME, GENES, GLYCAN and REACTION,
+       the method  pathways is changed to return a Hash. The old methods
+       are renamed to pathways_as_strings except for GENES.
+     * In Bio::KEGG::ENZYME, GENES, GLYCAN and REACTION, the method
+       orthologs is changed to return a Hash. The old methods are renamed
+       to orthologs_as_strings.
+     * Bio::KEGG::ENZYME#genes and Bio::KEGG::ORTHOLOGY#genes is changed
+       to return a Hash. The old methods are renamed to genes_as_strings.
+     * Added Bio::KEGG::REACTION#rpairs_as_tokens, older behavior of rpairs.
+     * Modules in lib/bio/db/kegg/common.rb are moved uner Bio::KEGG::Common
+       namespace.
+     * Refactoring.
+     * Added documents.
+     * Tests modified.
+
+ lib/bio/db/kegg/common.rb              |   40 +++++++++++++++++++++++++------
+ lib/bio/db/kegg/compound.rb            |   10 ++++---
+ lib/bio/db/kegg/drug.rb                |   27 +++++++++++++++------
+ lib/bio/db/kegg/enzyme.rb              |   31 ++++++++++++++++++++----
+ lib/bio/db/kegg/genes.rb               |   39 +++++++++++++++++++------------
+ lib/bio/db/kegg/glycan.rb              |   22 +++++++++++++++--
+ lib/bio/db/kegg/orthology.rb           |   25 +++++++------------
+ lib/bio/db/kegg/reaction.rb            |   16 +++++++++---
+ test/unit/bio/db/kegg/test_compound.rb |   27 ++++++++++++--------
+ test/unit/bio/db/kegg/test_reaction.rb |   13 +++++----
+ 10 files changed, 170 insertions(+), 80 deletions(-)
+
+commit 2cc9d4e2f28f6b2bbcb8f714f9e2eb144c594fbf
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 10 16:02:54 2009 +0900
+
+    Bio::KEGG::GENES#structure no more adds PDB: prefix.
+    
+     * Bio::KEGG::GENES#structure no more adds PDB: prefix.
+     * Added Bio::KEGG::GENES#structures as an alias of structure.
+
+ lib/bio/db/kegg/genes.rb            |    7 +++----
+ test/unit/bio/db/kegg/test_genes.rb |    7 ++++---
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+commit a8ceb23bdf19d6649aa4d879cba76a9e3f91d1d4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 10 15:28:33 2009 +0900
+
+    Refactoring of Bio::KEGG::Orthology#dblinks and genes.
+    
+     * Refactoring of Bio::KEGG::Orthology#dblinks and genes: no need
+       to treat @data because lines_fetch internally does so.
+
+ lib/bio/db/kegg/orthology.rb |   10 ++--------
+ 1 files changed, 2 insertions(+), 8 deletions(-)
+
+commit 720e0bccdfdc6fac6222cac1a9f05d6e2419896c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Dec 9 16:39:03 2009 +0900
+
+    Changed dummy lines for RDoc.
+
+ lib/bio/db/kegg/compound.rb  |    4 ++--
+ lib/bio/db/kegg/orthology.rb |    2 +-
+ lib/bio/db/kegg/reaction.rb  |    4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+commit 20f8c03af92e5cfedcb49e8ed9fc6fda2b86e9c9
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Dec 9 15:17:39 2009 +0900
+
+    Refactoring of Bio::KEGG::REACTION#orthologs.
+    
+     * Refactoring of Bio::KEGG::REACTION#orthologs: no need to treat
+       @data because lines_fetch internally does so.
+
+ lib/bio/db/kegg/reaction.rb |    5 +----
+ 1 files changed, 1 insertions(+), 4 deletions(-)
+
+commit b924601bacd643f66b37dd991913e6862df704a9
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Dec 6 15:51:03 2009 +0900
+
+    Bio::KEGG::GENES#pathways is changed to return raw lines as an Array of strings.
+    
+     * Bio::KEGG::GENES#pathways is changed to return raw lines as an
+       Array of strings.
+     * RDoc is added for Bio::KEGG::GENES.
+
+ lib/bio/db/kegg/genes.rb |   99 ++++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 96 insertions(+), 3 deletions(-)
+
+commit 4c840dc6a539db1d854b23991269b3e6515f637e
+Author: Kozo Nishida <kozo-ni@cg05.naist.jp>
+Date:   Wed Dec 2 17:02:00 2009 +0900
+
+    Added test methods.
+
+ test/unit/bio/db/kegg/test_compound.rb |   47 ++++++++++++++++++++++++++++++++
+ 1 files changed, 47 insertions(+), 0 deletions(-)
+
+commit 105efa1ecd1bc99a54aac32710a97df15035119d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Dec 2 23:31:07 2009 +0900
+
+    Refactoring: to use lib/bio/db/kegg/common.rb for dblinks_as_hash method.
+
+ lib/bio/db/kegg/orthology.rb |   16 +++++-----------
+ 1 files changed, 5 insertions(+), 11 deletions(-)
+
+commit c394ead051c3a13ceb534f93816af7ad35be932a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Dec 2 23:07:23 2009 +0900
+
+    Bio::KEGG::REACTION#orthologies is renamed to orthologs_as_hash with changing its return value to a hash.
+    
+     * Bio::KEGG::REACTION#orthologies is renamed to orthologs_as_hash
+       with changing its return value to a hash.
+     * The code of the orthologs_as_hash method is moved to
+       lib/bio/db/kegg/common.rb.
+     * Added new method Bio::KEGG::REACTION#orthologs, copied from
+       lib/bio/db/kegg/glycan.rb.
+
+ lib/bio/db/kegg/common.rb              |   18 +++++++++++++++++-
+ lib/bio/db/kegg/reaction.rb            |   14 ++++++--------
+ sample/demo_kegg_reaction.rb           |    6 ++++--
+ test/unit/bio/db/kegg/test_reaction.rb |   12 ++++++++++--
+ 4 files changed, 37 insertions(+), 13 deletions(-)
+
+commit 4e01fda27166faf066104ab9897904fd46f57123
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Dec 2 22:48:06 2009 +0900
+
+    Added Bio::KEGG::REACTION#pathways_as_hash and reverted pathways method.
+    
+     * New method Bio::KEGG::REACTION#pathways_as_hash, using a module
+       in lib/bio/db/kegg/common.rb.
+     * Bio::KEGG::REACTION#pathways is reverted to return an array of
+       string.
+
+ lib/bio/db/kegg/reaction.rb            |   18 +++++++++++-------
+ test/unit/bio/db/kegg/test_reaction.rb |    8 +++++++-
+ 2 files changed, 18 insertions(+), 8 deletions(-)
+
+commit 0c2ce4b8462792d496ab3f58206fdbd47143e280
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Dec 2 22:35:21 2009 +0900
+
+    New methods Bio::KEGG::COMPOUND#dblinks_as_hash and pathways_as_hash, using modules in lib/bio/db/kegg/common.rb.
+
+ lib/bio/db/kegg/compound.rb            |   14 +++++++++++
+ test/unit/bio/db/kegg/test_compound.rb |   38 ++++++++++++++++++++++++++++++++
+ 2 files changed, 52 insertions(+), 0 deletions(-)
+
+commit 63df07e030120eb43de22555277529822b072270
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Dec 2 22:25:20 2009 +0900
+
+    Methods commonly used from Bio::KEGG::* classes.
+    
+     * Modules containing methods commonly used from Bio::KEGG::* classes.
+       The "dblinks_as_hash" method is copied from
+       lib/bio/db/kegg/orthology.rb. The "pathways_as_hash" method is
+       derived from the dblinks_as_hash and Bio::KEGG::REACTION#pathways
+       methods.
+
+ lib/bio/db/kegg/common.rb |   60 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 60 insertions(+), 0 deletions(-)
+ create mode 100644 lib/bio/db/kegg/common.rb
+
+commit 0e55c6701b09a52356ac55300181ee656773826f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Dec 2 21:39:06 2009 +0900
+
+    Bio::KEGG::COMPOUND#dblinks is reverted to return an array of string.
+
+ lib/bio/db/kegg/compound.rb            |   11 ++---------
+ test/unit/bio/db/kegg/test_compound.rb |    8 +++++++-
+ 2 files changed, 9 insertions(+), 10 deletions(-)
+
+commit a05adcddf6c7ed67c042f31ecd86848af1ba8a22
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Dec 2 21:13:39 2009 +0900
+
+    Bug fix: fixed a copy-and-paste mistake.
+
+ lib/bio/db/kegg/drug.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 86925f3c80730e3ea3377a23a70cadb3876258c4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Dec 1 21:31:40 2009 +0900
+
+    Bio::KEGG::ORTHOLOGY#dblinks_as_hash should preserve database names.
+
+ doc/Changes-1.4.rdoc                    |    4 ++++
+ lib/bio/db/kegg/orthology.rb            |    2 +-
+ test/unit/bio/db/kegg/test_orthology.rb |    2 +-
+ 3 files changed, 6 insertions(+), 2 deletions(-)
+
+commit 60847cd2d0701fa38a499578649cb216c93993a2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Dec 1 20:41:51 2009 +0900
+
+    Test class names are changed to avoid potential class name conflict.
+
+ test/unit/bio/db/kegg/test_compound.rb  |    2 +-
+ test/unit/bio/db/kegg/test_genes.rb     |    4 ++--
+ test/unit/bio/db/kegg/test_orthology.rb |    2 +-
+ test/unit/bio/db/kegg/test_reaction.rb  |    2 +-
+ 4 files changed, 5 insertions(+), 5 deletions(-)
+
+commit 2bda62af7a020c22379dd9ec3a42496d2a5b94cb
+Author: Kozo Nishida <kozo-ni@cg05.naist.jp>
+Date:   Tue Dec 1 04:38:27 2009 +0900
+
+    Added unit tests for Bio::KEGG::ORTHOLOGY.
+
+ test/data/KEGG/K02338.orthology         |  902 +++++++++++++++++++++++++++++++
+ test/unit/bio/db/kegg/test_orthology.rb |   50 ++
+ 2 files changed, 952 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/KEGG/K02338.orthology
+ create mode 100644 test/unit/bio/db/kegg/test_orthology.rb
+
+commit acad9497caf5d737394568e911691fdad11ca091
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 30 21:39:32 2009 +0900
+
+    Changed to use BioRubyTestDataPath instead of __FILE__.
+
+ test/unit/bio/db/kegg/test_compound.rb |    3 +--
+ test/unit/bio/db/kegg/test_reaction.rb |    3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+
+commit 8e95f3fb60cd61b2bfad8e66caf03d3ff02a6dca
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Nov 29 16:37:21 2009 +0900
+
+    Bio::Fastq::QualityScore is renamed to Bio::Sequence::QualityScore.
+    
+     * Bio::Fastq::QualityScore is renamed to Bio::Sequence::QualityScore.
+     * Changes of filenames due to the previous file move.
+
+ lib/bio/db/fasta/format_qual.rb              |   18 ++++++++--------
+ lib/bio/db/fastq.rb                          |    7 ++---
+ lib/bio/sequence.rb                          |    3 +-
+ lib/bio/sequence/quality_score.rb            |   25 +++++++++++------------
+ test/unit/bio/sequence/test_quality_score.rb |   28 +++++++++++++-------------
+ 5 files changed, 40 insertions(+), 41 deletions(-)
+
+commit 2b29654c1d7e927e445e7acdd525835a873c2a2a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Nov 29 16:15:42 2009 +0900
+
+    lib/bio/db/fastq/quality_score.rb is moved to lib/bio/sequence/. The unit test is also moved.
+    
+     * lib/bio/db/fastq/quality_score.rb is moved to lib/bio/sequence/.
+     * test/unit/bio/db/fastq/test_quality_score.rb is moved to
+       test/unit/bio/sequence/.
+     * The file contents will be modified with the following commit.
+
+ lib/bio/db/fastq/quality_score.rb            |  206 ----------------
+ lib/bio/sequence/quality_score.rb            |  206 ++++++++++++++++
+ test/unit/bio/db/fastq/test_quality_score.rb |  330 --------------------------
+ test/unit/bio/sequence/test_quality_score.rb |  330 ++++++++++++++++++++++++++
+ 4 files changed, 536 insertions(+), 536 deletions(-)
+ delete mode 100644 lib/bio/db/fastq/quality_score.rb
+ create mode 100644 lib/bio/sequence/quality_score.rb
+ delete mode 100644 test/unit/bio/db/fastq/test_quality_score.rb
+ create mode 100644 test/unit/bio/sequence/test_quality_score.rb
+
+commit aa8d49bf31f90dd2796c18ee0aa6291979284ec2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Nov 29 15:20:36 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_gff1.rb.
+
+ lib/bio/db/gff.rb   |   17 -----------------
+ sample/demo_gff1.rb |   49 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 49 insertions(+), 17 deletions(-)
+ create mode 100644 sample/demo_gff1.rb
+
+commit 76fffd2d2429346478fb3d8c88cdcd878a1047b1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Nov 29 15:06:41 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_tmhmm_report.rb.
+
+ lib/bio/appl/tmhmm/report.rb |   36 ----------------------
+ sample/demo_tmhmm_report.rb  |   68 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 68 insertions(+), 36 deletions(-)
+ create mode 100644 sample/demo_tmhmm_report.rb
+
+commit dfafb0a2bcec4c0b4cd3640374e151e2039056dc
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Nov 29 14:59:27 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_targetp_report.rb.
+
+ lib/bio/appl/targetp/report.rb |  105 +------------------------------
+ sample/demo_targetp_report.rb  |  135 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 136 insertions(+), 104 deletions(-)
+ create mode 100644 sample/demo_targetp_report.rb
+
+commit 75f7c8527546f8ea3079f53b90a9b4d8260b4de0
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Nov 29 14:33:28 2009 +0900
+
+    Follow-up of the SOSUI server URL change.
+
+ lib/bio/appl/sosui/report.rb |    6 ++++--
+ 1 files changed, 4 insertions(+), 2 deletions(-)
+
+commit 8022696295dc296462f73b40cc74ad5259bee387
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Nov 29 14:32:11 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_sosui_report.rb.
+
+ lib/bio/appl/sosui/report.rb |   53 +------------------------
+ sample/demo_sosui_report.rb  |   89 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 90 insertions(+), 52 deletions(-)
+ create mode 100644 sample/demo_sosui_report.rb
+
+commit 4acfe7f565039b34a036682912a75f55da808b45
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Nov 29 14:02:32 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_hmmer_report.rb.
+
+ lib/bio/appl/hmmer/report.rb |  100 ----------------------------
+ sample/demo_hmmer_report.rb  |  149 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 149 insertions(+), 100 deletions(-)
+ create mode 100644 sample/demo_hmmer_report.rb
+
+commit 4f7bd1b7628d90661d8b557ca854b14cc44fb99c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 26 15:49:21 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are removed because they are very short.
+
+ lib/bio/appl/fasta/format10.rb |   14 --------------
+ lib/bio/appl/hmmer.rb          |   16 +---------------
+ lib/bio/io/flatfile.rb         |    8 +-------
+ 3 files changed, 2 insertions(+), 36 deletions(-)
+
+commit c2a72d195189755532e7e206af34d152ab6332d8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 26 15:20:28 2009 +0900
+
+    Bug fix: Failure of Bio::Fasta.remote due to the remote site changes.
+
+ lib/bio/appl/fasta.rb |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+commit 549112fb4dfb5f6b2fe3491fb161887a9f5262ac
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 26 15:13:10 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_fasta_remote.rb.
+
+ lib/bio/appl/fasta.rb       |   18 ---------------
+ sample/demo_fasta_remote.rb |   51 +++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 51 insertions(+), 18 deletions(-)
+ create mode 100644 sample/demo_fasta_remote.rb
+
+commit 0e4ca0db83692fdbbe93e90272a07bcbac89192c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 26 10:17:47 2009 +0900
+
+    Text indents for some comment lines are changed.
+
+ sample/demo_blast_report.rb  |    4 ++--
+ sample/demo_kegg_compound.rb |    4 ++--
+ sample/demo_prosite.rb       |    4 ++--
+ sample/demo_sirna.rb         |    4 ++--
+ 4 files changed, 8 insertions(+), 8 deletions(-)
+
+commit c0cf91fe2a9247bc3705b20515f9d4fa14288d5a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 26 10:13:26 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_keggapi.rb.
+    
+     * Demo codes in the "if __FILE__ == $0" are moved to
+       sample/demo_keggapi.rb.
+     * Commented out demonstrations of deprecated methods:
+       get_neighbors_by_gene, get_similarity_between_genes,
+       get_ko_members, get_oc_members_by_gene, get_pc_members_by_gene.
+     * Commented out demonstrations of methods internally using
+       the deprecated methods: get_all_neighbors_by_gene,
+       get_all_oc_members_by_gene, get_all_pc_members_by_gene.
+
+ lib/bio/io/keggapi.rb  |  442 ------------------------------------------
+ sample/demo_keggapi.rb |  502 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 502 insertions(+), 442 deletions(-)
+ create mode 100644 sample/demo_keggapi.rb
+
+commit 8b8206c1d8ee699185fdd19d3329311c85ee003c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 26 01:50:06 2009 +0900
+
+    Fixed the license line.
+
+ lib/bio/db/prosite.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit ebfeec8243abd4e2f65335fda1ead18efff66897
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 26 01:41:58 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_ncbi_rest.rb.
+
+ lib/bio/io/ncbirest.rb   |  101 ------------------------------------
+ sample/demo_ncbi_rest.rb |  128 ++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 128 insertions(+), 101 deletions(-)
+ create mode 100644 sample/demo_ncbi_rest.rb
+
+commit 5a0f8379a374650d12fc88fbbd5b28c38ae96395
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 26 01:33:07 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_prosite.rb.
+
+ lib/bio/db/prosite.rb  |   95 +-------------------------------------
+ sample/demo_prosite.rb |  120 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 121 insertions(+), 94 deletions(-)
+ create mode 100644 sample/demo_prosite.rb
+
+commit c560a5d0ba9d4919dbcca156ea620056dcb8f725
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 26 01:14:37 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_psort.rb.
+
+ lib/bio/appl/psort.rb |  111 ---------------------------------------
+ sample/demo_psort.rb  |  138 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 138 insertions(+), 111 deletions(-)
+ create mode 100644 sample/demo_psort.rb
+
+commit 1299a55d214784a536ae3cd8bfabdfd61fe1da86
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 26 01:04:29 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_psort_report.rb.
+    
+     * Demo codes in the "if __FILE__ == $0" are moved to
+       sample/demo_psort_report.rb, without any checks.
+
+ lib/bio/appl/psort/report.rb |   46 +---------------------------
+ sample/demo_psort_report.rb  |   70 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 71 insertions(+), 45 deletions(-)
+ create mode 100644 sample/demo_psort_report.rb
+
+commit a2686fe3c5a93947c94d4602514a62a808c182d5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 26 00:53:54 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_genscan_report.rb.
+
+ lib/bio/appl/genscan/report.rb |  176 ----------------------------------
+ sample/demo_genscan_report.rb  |  202 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 202 insertions(+), 176 deletions(-)
+ create mode 100644 sample/demo_genscan_report.rb
+
+commit 22f662ba69dd2d4a2273562dd7ea921f5cdd84bd
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 26 00:28:01 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_ddbjxml.rb.
+
+ lib/bio/io/ddbjxml.rb  |  182 +-----------------------------------------
+ sample/demo_ddbjxml.rb |  212 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 213 insertions(+), 181 deletions(-)
+ create mode 100644 sample/demo_ddbjxml.rb
+
+commit ed3b34b6598f632c7b9b3f1a17b42406c19ca32d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 26 00:12:33 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_pubmed.rb.
+    
+     * Demo codes in the "if __FILE__ == $0" are moved to
+       sample/demo_pubmed.rb.
+     * Codes using Entrez CGI are disabled in the demo.
+
+ lib/bio/io/pubmed.rb  |   88 -------------------------------------
+ sample/demo_pubmed.rb |  116 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 116 insertions(+), 88 deletions(-)
+ create mode 100644 sample/demo_pubmed.rb
+
+commit 9e6d720f383e88e247eacab6f0e43f38140a62f2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 25 23:59:10 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are removed.
+    
+     * Demo codes in the "if __FILE__ == $0" are removed because their
+       function have already been moved to sample/demo_blast_report.rb.
+
+ lib/bio/appl/blast/format0.rb |  193 --------------------------------------
+ lib/bio/appl/blast/report.rb  |  149 +-----------------------------
+ lib/bio/appl/blast/wublast.rb |  208 -----------------------------------------
+ 3 files changed, 2 insertions(+), 548 deletions(-)
+
+commit bbba2812fa9131d01fc655eb174d84f06facd8b8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 25 23:49:36 2009 +0900
+
+    New demo code of BLAST parser based on codes in "if __FILE__ ==$0"
+    
+     * Newly added sample/demo_blast_report.rb, demonstration of
+       BLAST parsers  Bio::Blast::Report, Bio::Blast::Default::Report,
+       and Bio::Blast::WU::Report. It is based on the demonstration codes
+       in the "if __FILE__ == $0" in lib/bio/appl/blast/report.rb,
+       lib/bio/appl/blast/format0.rb, and lib/bio/appl/blast/wublast.rb.
+
+ sample/demo_blast_report.rb |  285 +++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 285 insertions(+), 0 deletions(-)
+ create mode 100644 sample/demo_blast_report.rb
+
+commit 5235ed15db8d3ba3e59d8dc3bbbcf1b5b9c58281
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 25 21:57:08 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_das.rb.
+    
+     * Demo codes in the "if __FILE__ == $0" are moved to
+       sample/demo_das.rb.
+     * Demo codes using UCSC DAS server is added.
+     * Demo using the WormBase DAS server is temporarily disabled because
+       it does not work well possibly because of the server trouble.
+
+ lib/bio/io/das.rb  |   44 ----------------------
+ sample/demo_das.rb |  105 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 105 insertions(+), 44 deletions(-)
+ create mode 100644 sample/demo_das.rb
+
+commit b7b0f7bef0505b9678673e54bb863d4ff7897dd5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 25 20:58:35 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_kegg_taxonomy.rb, although it does not work correctly now.
+
+ lib/bio/db/kegg/taxonomy.rb  |   53 +-----------------------
+ sample/demo_kegg_taxonomy.rb |   92 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 93 insertions(+), 52 deletions(-)
+ create mode 100644 sample/demo_kegg_taxonomy.rb
+
+commit 23da98ca19fce1f0b487e1f955ef4cd896839590
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 25 20:11:12 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_kegg_reaction.rb.
+
+ lib/bio/db/kegg/reaction.rb  |   16 +----------
+ sample/demo_kegg_reaction.rb |   64 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 65 insertions(+), 15 deletions(-)
+ create mode 100644 sample/demo_kegg_reaction.rb
+
+commit 9c0bfb857a6b41d8e6a42ff2cbf7b06ca1d38d78
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 25 19:12:00 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_kegg_orthology.rb.
+
+ lib/bio/db/kegg/orthology.rb  |   23 +--------------
+ sample/demo_kegg_orthology.rb |   62 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 63 insertions(+), 22 deletions(-)
+ create mode 100644 sample/demo_kegg_orthology.rb
+
+commit 6f6f1eb3d87dea588ea333708c4d4486ac7136b6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 25 12:19:26 2009 +0900
+
+    Commented out demo for nonexistent method "bindings".
+
+ sample/demo_kegg_glycan.rb |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 98a6d904058b5af4808f16bcb710d73bd97c9764
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 25 12:18:31 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_kegg_glycan.rb.
+
+ lib/bio/db/kegg/glycan.rb  |   21 -------------
+ sample/demo_kegg_glycan.rb |   72 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 72 insertions(+), 21 deletions(-)
+ create mode 100644 sample/demo_kegg_glycan.rb
+
+commit d26e835ca9def2287f1050f1b048892e3cafdaa0
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 25 11:49:05 2009 +0900
+
+    Added references.
+
+ lib/bio/db/kegg/genome.rb |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+commit c3c460462481b5b8d6e9441216bcf6370b4890ef
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 25 11:45:31 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_kegg_genome.rb.
+
+ lib/bio/db/kegg/genome.rb  |   42 +------------------------
+ sample/demo_kegg_genome.rb |   74 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 75 insertions(+), 41 deletions(-)
+ create mode 100644 sample/demo_kegg_genome.rb
+
+commit 0d8e709b66bf18ead5944c27a50eb6cf2c47862f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 25 11:43:24 2009 +0900
+
+    Added document about downloading sample data.
+
+ sample/demo_kegg_drug.rb |   13 ++++++++++++-
+ 1 files changed, 12 insertions(+), 1 deletions(-)
+
+commit 0608893198e9bc88521b6c013069d8c7a13bb0e5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 25 00:10:48 2009 +0900
+
+    Added documents.
+
+ lib/bio/db/kegg/drug.rb |   15 +++++++++++++++
+ 1 files changed, 15 insertions(+), 0 deletions(-)
+
+commit 0ecdc1ee0460f16dba1e4cd5ab575c92e1c6b1ac
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 25 00:06:02 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_kegg_drug.rb.
+
+ lib/bio/db/kegg/drug.rb  |   18 +--------------
+ sample/demo_kegg_drug.rb |   54 ++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 55 insertions(+), 17 deletions(-)
+ create mode 100644 sample/demo_kegg_drug.rb
+
+commit b0c349103f01a26f4741999bd696bf5b1c032e06
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 24 23:51:13 2009 +0900
+
+    Added documents.
+
+ lib/bio/db/kegg/compound.rb |   10 ++++++++++
+ 1 files changed, 10 insertions(+), 0 deletions(-)
+
+commit e965b454c553ed9670bc83962a2a9d7c5de49929
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 24 23:45:15 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_kegg_compound.rb.
+
+ lib/bio/db/kegg/compound.rb  |   19 +-------------
+ sample/demo_kegg_compound.rb |   57 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 58 insertions(+), 18 deletions(-)
+ create mode 100644 sample/demo_kegg_compound.rb
+
+commit 7454db7c8b8ef7202736d311356d4ca350af336f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 24 23:06:21 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_litdb.rb.
+
+ lib/bio/db/litdb.rb  |   17 +----------------
+ sample/demo_litdb.rb |   42 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 43 insertions(+), 16 deletions(-)
+ create mode 100644 sample/demo_litdb.rb
+
+commit fde284248e013e44184ee2ba7da85e5b83155a69
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 24 22:57:01 2009 +0900
+
+    Ruby 1.9 support: String#each_line instead of String#each
+
+ lib/bio/db/go.rb |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 8b60099615790fe372b4fde27a391dedc767aab2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 24 22:53:12 2009 +0900
+
+    Sample code bug fix: fixed method names, and workaround for Zlib error.
+    
+     * Sample code bug fix: Following method name changes.
+     * Workaround for Zlib::DataError.
+
+ sample/demo_go.rb |   13 +++++++++----
+ 1 files changed, 9 insertions(+), 4 deletions(-)
+
+commit 737fec3db555811d127d2356e5ceef63b0413fb8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 24 19:47:14 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_go.rb.
+
+ lib/bio/db/go.rb  |   70 +---------------------------------------
+ sample/demo_go.rb |   93 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 94 insertions(+), 69 deletions(-)
+ create mode 100644 sample/demo_go.rb
+
+commit 8264b15690132d9e766f16d0829bb12cd122b900
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 24 19:20:52 2009 +0900
+
+    Document bug fix: Changed Bio::Bl2seq to Bio::Blast::Bl2seq in the RDoc.
+    
+     * Document bug fix: Changed Bio::Bl2seq to Bio::Blast::Bl2seq
+       in the RDoc.
+     * Modified copyright line.
+
+ lib/bio/appl/bl2seq/report.rb |   18 +++++++++---------
+ 1 files changed, 9 insertions(+), 9 deletions(-)
+
+commit c572ff022fee43505355608f0a0e3ba2181e87e2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 24 19:17:04 2009 +0900
+
+    Bug fix: Failed to read Bio::Blast::Bl2seq::Report data by using Bio::FlatFile.
+
+ lib/bio/appl/bl2seq/report.rb |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit 4f6b080623442dfcc5864e2aefde7e53ace068e8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 24 19:15:11 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_bl2seq_report.rb.
+
+ lib/bio/appl/bl2seq/report.rb |  194 +------------------------------------
+ sample/demo_bl2seq_report.rb  |  220 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 221 insertions(+), 193 deletions(-)
+ create mode 100644 sample/demo_bl2seq_report.rb
+
+commit 2f03e8757383e0d1a26c0f6942c74a30f3b26d90
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 24 18:24:43 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_genbank.rb.
+    
+     * Demo codes in the "if __FILE__ == $0" are moved to
+       sample/demo_genbank.rb, and modified as below.
+        * To get sequences from the NCBI web service.
+        * By default, arguments are sequence IDs (accession numbers).
+        * New option "--files" (or "-files", "--file", or "-file") to
+          read sequences from file(s).
+
+ lib/bio/db/genbank/genbank.rb |   87 +--------------------------
+ sample/demo_genbank.rb        |  132 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 133 insertions(+), 86 deletions(-)
+ create mode 100644 sample/demo_genbank.rb
+
+commit a2981c28fdb629a655c71c920f6588f8b80aff06
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 24 15:06:50 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_aaindex.rb.
+
+ lib/bio/db/aaindex.rb  |   39 +---------------------------
+ sample/demo_aaindex.rb |   67 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 68 insertions(+), 38 deletions(-)
+ create mode 100644 sample/demo_aaindex.rb
+
+commit b741d17ec5c5ac234bab35b8716fee072635de1a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 24 12:45:43 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_sirna.rb
+    
+     * Demo codes in the "if __FILE__ == $0" are moved to
+       sample/demo_sirna.rb, and modified for reading normal sequence
+       files instead of a raw sequence.
+
+ lib/bio/util/sirna.rb |   24 +------------------
+ sample/demo_sirna.rb  |   63 +++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 64 insertions(+), 23 deletions(-)
+ create mode 100644 sample/demo_sirna.rb
+
+commit 7cc778e78bc63ef73796ee15d6f0db8d6967aefe
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 23 23:00:42 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_pathway.rb.
+
+ lib/bio/pathway.rb     |  171 -----------------------------------------
+ sample/demo_pathway.rb |  196 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 196 insertions(+), 171 deletions(-)
+ create mode 100644 sample/demo_pathway.rb
+
+commit 7e5510587abc0b50b6851f005a3236bf9dc79d08
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 23 22:49:13 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_locations.rb.
+
+ lib/bio/location.rb      |   73 ----------------------------------
+ sample/demo_locations.rb |   99 ++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 99 insertions(+), 73 deletions(-)
+ create mode 100644 sample/demo_locations.rb
+
+commit f1c02666f4b11d5cf208d6beb592d8ac962ce2da
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 23 22:35:50 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_codontable.rb.
+
+ lib/bio/data/codontable.rb |   96 +-----------------------------------
+ sample/demo_codontable.rb  |  119 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 120 insertions(+), 95 deletions(-)
+ create mode 100644 sample/demo_codontable.rb
+
+commit c11a7793f85faf3d66d630833c38358ffa34a698
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 23 16:35:16 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_nucleicacid.rb.
+
+ lib/bio/data/na.rb         |   27 +-----------------------
+ sample/demo_nucleicacid.rb |   49 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 50 insertions(+), 26 deletions(-)
+ create mode 100644 sample/demo_nucleicacid.rb
+
+commit de41b67c3f65baa0f122689b2e9f479d8a247934
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 23 16:25:05 2009 +0900
+
+    Demo codes in the "if __FILE__ == $0" are moved to sample/demo_aminoacid.rb.
+
+ lib/bio/data/aa.rb       |   78 +-----------------------------------
+ sample/demo_aminoacid.rb |  101 ++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 102 insertions(+), 77 deletions(-)
+ create mode 100644 sample/demo_aminoacid.rb
+
+commit e652dd44ecb6b6dad652e33a398f92bb8373e7dd
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 23 16:12:48 2009 +0900
+
+    Added an error message about encoding in Ruby 1.9.1
+
+ KNOWN_ISSUES.rdoc |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+commit 003133b0d4e2234c27927c9d10b75185c354102e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 23 15:52:21 2009 +0900
+
+    changed recommended Ruby version
+
+ README.rdoc |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 408483d36b713678361cecf6c77ff7a2098f71fc
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Nov 22 17:07:37 2009 +0900
+
+    added information about doc/Changes-1.4.rdoc
+
+ README.rdoc |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit ef342933839e8c6cef9883045fcaf468aff5da23
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Nov 22 16:50:55 2009 +0900
+
+    In PhyloXML support, added a link to GNOME Libxml2 and fixed RDoc syntax.
+
+ README.rdoc |    6 ++++--
+ 1 files changed, 4 insertions(+), 2 deletions(-)
+
+commit 0237ef42d60c7a76cadf8ea78f4251bcfe89c95f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 19 09:43:15 2009 +0900
+
+    Ruby 1.9 support: String#each_line instead of String#each
+
+ lib/bio/appl/meme/mast/report.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit ec935ea9b19415bf3325bcc0763fbc22f3c71a3d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 19 09:40:49 2009 +0900
+
+    The "libpath magic" is replaced by loading helper routine.
+
+ test/unit/bio/appl/meme/mast/test_report.rb |   11 ++++++-----
+ test/unit/bio/appl/meme/test_mast.rb        |   11 ++++++-----
+ test/unit/bio/appl/meme/test_motif.rb       |    8 +++++---
+ 3 files changed, 17 insertions(+), 13 deletions(-)
+
+commit 3f65eeb503f3b2ef866cab4c73d2d700ca572835
+Author: Adam Kraut <adamnkraut@gmail.com>
+Date:   Tue Mar 17 19:41:31 2009 -0400
+
+    Added basic support for MEME/MAST applications
+
+ lib/bio/appl/meme/mast.rb                   |  156 +++++++++++++++++++++++++++
+ lib/bio/appl/meme/mast/report.rb            |   91 ++++++++++++++++
+ lib/bio/appl/meme/motif.rb                  |   48 ++++++++
+ test/data/meme/mast.out                     |   13 +++
+ test/data/meme/meme.out                     |    3 +
+ test/unit/bio/appl/meme/mast/test_report.rb |   45 ++++++++
+ test/unit/bio/appl/meme/test_mast.rb        |  102 +++++++++++++++++
+ test/unit/bio/appl/meme/test_motif.rb       |   36 ++++++
+ 8 files changed, 494 insertions(+), 0 deletions(-)
+ create mode 100644 lib/bio/appl/meme/mast.rb
+ create mode 100644 lib/bio/appl/meme/mast/report.rb
+ create mode 100644 lib/bio/appl/meme/motif.rb
+ create mode 100644 test/data/meme/db
+ create mode 100644 test/data/meme/mast
+ create mode 100644 test/data/meme/mast.out
+ create mode 100644 test/data/meme/meme.out
+ create mode 100644 test/unit/bio/appl/meme/mast/test_report.rb
+ create mode 100644 test/unit/bio/appl/meme/test_mast.rb
+ create mode 100644 test/unit/bio/appl/meme/test_motif.rb
+
+commit 3862f54fda0caec2a07e563a1f8a11913baca2e3
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 18 20:29:56 2009 +0900
+
+    New version of PhyloXML schema, version 1.10.
+    
+     * Upgraded to New version of PhyloXML schema, version 1.10,
+       developed by Christian M Zmasek.
+
+ lib/bio/db/phyloxml/phyloxml.xsd | 1155 +++++++++++++++++++-------------------
+ 1 files changed, 582 insertions(+), 573 deletions(-)
+
+commit 45ffd9228d513b3dbf29e1011c6a6689a8bd1b08
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 18 00:26:44 2009 +0900
+
+    Newly added sample script to test big PhyloXML data
+    
+     * Newly added a sample script to test big PhyloXML data based on
+       Diana Jaunzeikare's work.
+       (http://github.com/latvianlinuxgirl/bioruby/blob/
+       20627fc5a443d6c2e3dc73ed50e9c578ffcbc330/
+       test/unit/bio/db/test_phyloxml_big.rb).
+
+ sample/test_phyloxml_big.rb |  205 +++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 205 insertions(+), 0 deletions(-)
+ create mode 100644 sample/test_phyloxml_big.rb
+
+commit 828a8971e057919b80508cf29fd9518828b74a2f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 17 23:54:37 2009 +0900
+
+    Speed up of Bio::Tree#children and parent: caching node's parent.
+    
+     * For speed up of Bio::Tree#children and parent, internal cache of
+       the parent for each node is added. The cache is automatically
+       cleared when the tree is modified. Note that the cache can only
+       be accessed from inside Bio::Tree.
+     * Bio::Tree#parent is changed to directly raise IndexError when
+       both of the root specified in the argument and preset in the
+       tree are nil (previously, the same error is raised in the path
+       method which is internally called from the parent method).
+     * Bio::Tree#path is changed not to call bfs_shortest_path if the
+       node1 and node2 are adjacent.
+
+ lib/bio/tree.rb |   75 +++++++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 files changed, 70 insertions(+), 5 deletions(-)
+
+commit 75862212e6bb807a570338e39e19d527219b6f13
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 16 22:11:15 2009 +0900
+
+    Documented incompatible changes of Bio::KEGG::COMPOUND and Bio::KEGG:REACTION.
+
+ doc/Changes-1.4.rdoc |   10 ++++++++++
+ 1 files changed, 10 insertions(+), 0 deletions(-)
+
+commit c74cfabd6414c8b50db0251739f967accd90773f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 16 21:20:42 2009 +0900
+
+    Ruby compatibility issue: Enumerable#each_slice(4).each does not work in Ruby 1.8.5.
+
+ lib/bio/db/kegg/reaction.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit e6a920e401a2b06c355174ccdc9b993a38f9d7ec
+Author: Mitsuteru Nakao <mitsuteru.nakao@gmail.com>
+Date:   Wed Jul 22 22:50:22 2009 +0900
+
+    Added new method Bio::KEGG::GENES#structure with the unit tests.
+
+ lib/bio/db/kegg/genes.rb            |   12 ++++++++++++
+ test/unit/bio/db/kegg/test_genes.rb |   25 +++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+), 0 deletions(-)
+
+commit 9fee0c133d069348857014410983f682e468c1c7
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 16 21:04:02 2009 +0900
+
+    The "libpath magic" is replaced by loading helper routine.
+
+ test/unit/bio/db/kegg/test_compound.rb |    6 ++++--
+ test/unit/bio/db/kegg/test_reaction.rb |    6 ++++--
+ 2 files changed, 8 insertions(+), 4 deletions(-)
+
+commit 1199330eab95b8434303e92c5f792818e96db814
+Author: Kozo Nishida <kozo-ni@cg05.naist.jp>
+Date:   Sat Nov 14 09:03:50 2009 +0900
+
+    Newly added unit tests for Bio::KEGG::COMPOUND and Bio::KEGG::REACTION
+    
+     * Newly added unit tests for Bio::KEGG::COMPOUND and
+       Bio::KEGG::REACTION with test data. (Note that this is a
+       combination of several commits made by Kozo Nishida,
+       merged from git://github.com/kozo2/bioruby.git ).
+
+ test/data/KEGG/C00025.compound         |  102 ++++++++++++++++++++++++++++++++
+ test/data/KEGG/R00006.reaction         |   14 ++++
+ test/unit/bio/db/kegg/test_compound.rb |   49 +++++++++++++++
+ test/unit/bio/db/kegg/test_reaction.rb |   57 ++++++++++++++++++
+ 4 files changed, 222 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/KEGG/C00025.compound
+ create mode 100644 test/data/KEGG/R00006.reaction
+ create mode 100644 test/unit/bio/db/kegg/test_compound.rb
+ create mode 100644 test/unit/bio/db/kegg/test_reaction.rb
+
+commit 1b47640665d4332bafd9e9709628ee9722f1f3f4
+Author: Kozo Nishida <kozo-ni@cg05.naist.jp>
+Date:   Sat Nov 14 09:03:50 2009 +0900
+
+    Bio::KEGG::COMPOUND#dblinks changed to return hash list
+    
+     * Bio::KEGG::COMPOUND#dblinks is changed to return hash list (array
+       containing hashes).
+
+ lib/bio/db/kegg/compound.rb |   11 +++++++++--
+ 1 files changed, 9 insertions(+), 2 deletions(-)
+
+commit 2aa43a0aa765ee4502923c2102e352826a9a7abd
+Author: Kozo Nishida <kozo-ni@cg05.naist.jp>
+Date:   Sat Nov 14 07:29:19 2009 +0900
+
+    Bio::KEGG:REACTION#rpair and pathways changed to return hash list, and added orthologies method.
+    
+     * New method: Bio::KEGG:REACTION#orthologies
+     * Bio::KEGG:REACTION#rpair and pathways are changed to return hash
+       list (array containing hashes).
+
+ lib/bio/db/kegg/reaction.rb |   33 ++++++++++++++++++++++++++++++---
+ 1 files changed, 30 insertions(+), 3 deletions(-)
+
+commit a82f5d228370beeeb397be07e07394652fd7837e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 16 20:03:19 2009 +0900
+
+    Changed not to modify given argument
+
+ lib/bio/util/restriction_enzyme/single_strand.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit ff10d5540759a5e7eaaa71da020d95170b98e007
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 16 19:50:08 2009 +0900
+
+    Newly added a document for incompatible and/or important changes of the new release version.
+    
+     * Newly added a document for incompatible and/or important changes
+       of the new release version.
+     * Added description about Bio::RestrictionEnzyme validation is
+       disabled (although very small change).
+
+ doc/Changes-1.4.rdoc |   16 ++++++++++++++++
+ 1 files changed, 16 insertions(+), 0 deletions(-)
+ create mode 100644 doc/Changes-1.4.rdoc
+
+commit 629e537f90e0825fadeec2e0207f8caddfbed59a
+Author: trevor <>
+Date:   Sat Sep 19 11:03:23 2009 -0500
+
+    speed-up serial calls to RestrictionEnzyme
+
+ lib/bio/db/rebase.rb                               |    2 +-
+ lib/bio/util/restriction_enzyme/single_strand.rb   |    3 +-
+ .../util/restriction_enzyme/test_single_strand.rb  |   24 ++++++++++---------
+ .../test_single_strand_complement.rb               |   24 ++++++++++---------
+ 4 files changed, 29 insertions(+), 24 deletions(-)
+
+commit 9b55a92d5300294bef7b624d0f9aa3edd3e8d7fc
+Author: trevor <>
+Date:   Sat Sep 19 10:46:21 2009 -0500
+
+    speed-up rebase library
+
+ lib/bio/db/rebase.rb |    9 ++++-----
+ 1 files changed, 4 insertions(+), 5 deletions(-)
+
+commit 4aaa24b3fc3cf2d1f7cf8b6d974d2115958b5a1b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 16 15:08:31 2009 +0900
+
+    Ruby 1.9 support: Array#to_s is changed to join('')
+
+ lib/bio/db/sanger_chromatogram/scf.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 1cf924b81150545e807169144aeaca6a75f9731c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Nov 16 12:59:10 2009 +0900
+
+    Ruby 1.9 support: Array#nitems (counts the number of non-nil elements) is removed in 1.9.
+    
+     * Ruby 1.9 support: Array#nitems (counts the number of non-nil
+       elements) is removed in Ruby 1.9. In scf.rb, it seems that
+       nil would never be included in the array, and simply replaced
+       by Array#size.
+
+ lib/bio/db/sanger_chromatogram/scf.rb |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+commit a95994d9cfbf4fc89fa716358ac5b92d42a1307b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Nov 15 19:23:12 2009 +0900
+
+    Bug fix: error when quality_scores are larger than the sequence length, and added a require line.
+    
+     * Bug fix: error when sequence.quality_scores are larger than
+       the sequence length.
+     * Added a require line.
+
+ lib/bio/db/fasta/format_qual.rb |    5 ++++-
+ 1 files changed, 4 insertions(+), 1 deletions(-)
+
+commit c5aafca19b58b1651080e81699b7020cd3fd3f47
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Nov 15 19:21:49 2009 +0900
+
+    Newly added unit tests for Bio::Sequence::Format::Formatter::Fasta_numeric and Qual.
+
+ test/unit/bio/db/fasta/test_format_qual.rb |  346 ++++++++++++++++++++++++++++
+ 1 files changed, 346 insertions(+), 0 deletions(-)
+ create mode 100644 test/unit/bio/db/fasta/test_format_qual.rb
+
+commit 6e24170e29d2576ff69b18eaadc94e9769b8612a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Nov 14 02:41:13 2009 +0900
+
+    Newly added Bio::Sequence::Format::Formatter::Qual and Fasta_numeric, formatter for Qual format and FastaNumericFormat.
+
+ lib/bio/db/fasta/format_qual.rb |  201 +++++++++++++++++++++++++++++++++++++++
+ lib/bio/sequence/format.rb      |    7 ++
+ 2 files changed, 208 insertions(+), 0 deletions(-)
+ create mode 100644 lib/bio/db/fasta/format_qual.rb
+
+commit 6959fd359040b6ca9570111d515118dc2d472029
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Nov 14 02:19:17 2009 +0900
+
+    Split quality score methods in Bio::Fastq::FormatData into separete modules
+    
+     * Quality score calculation methods in Bio::Fastq::FormatData in
+       lib/bio/db/fastq.rb is splitted into separate modules
+       Bio::Fastq::QualityScore::Converter, Phred, and Solexa
+       in lib/bio/db/fastq/quality_score.rb.
+     * Unit tests for Bio::Fastq::QualityScore::* are newly added
+       in test/unit/bio/db/fastq/test_quality_score.rb.
+     * Possible bug fix: probability should be 0 <= p <= 1.
+
+ lib/bio/db/fastq.rb                          |  112 +--------
+ lib/bio/db/fastq/quality_score.rb            |  206 ++++++++++++++++
+ test/unit/bio/db/fastq/test_quality_score.rb |  330 ++++++++++++++++++++++++++
+ 3 files changed, 544 insertions(+), 104 deletions(-)
+ create mode 100644 lib/bio/db/fastq/quality_score.rb
+ create mode 100644 test/unit/bio/db/fastq/test_quality_score.rb
+
+commit 98f7703c28f0c2c34e4fe1631de227e20b9666c3
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 13 23:48:19 2009 +0900
+
+    When no error_probabilities in the sequence and quality_score_type is nil, Fastq formatter implicitly assumes that the quality_score_type is :phred.
+    
+     * When no error_probabilities in the sequence and
+       quality_score_type is nil, Fastq formatter implicitly assumes
+       that the quality_score_type is :phred.
+     * Bug fix: fixed typo in lib/bio/db/fastq/format_fastq.rb.
+
+ lib/bio/db/fastq/format_fastq.rb |    5 ++++-
+ lib/bio/sequence.rb              |    3 +++
+ 2 files changed, 7 insertions(+), 1 deletions(-)
+
+commit f85a6aee9827bc573dcb735f4a1a1827926cc66c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 13 23:29:19 2009 +0900
+
+    Bug fix: fixed typo for Bio::Sequence#quality_score_type.
+
+ lib/bio/sequence.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit d81a611d7c7c46a789b86e99cebe064ba559e3e0
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 13 20:42:12 2009 +0900
+
+    Splitting lib/bio/db/fasta.rb: FastaNumericFormat is moved to a new file, etc.
+    
+     * Splitting lib/bio/db/fasta.rb as follows:
+        * Bio::FastaNumericFormat is moved to lib/bio/db/fasta/qual.rb.
+        * Demo codes in the "if __FILE__ == $0" are moved to
+          sample/demo_fastaformat.rb.
+     * Unit tests for Bio::FastaNumericFormat are moved from
+       test/unit/bio/db/test_fasta.rb to test/unit/bio/db/test_qual.rb.
+     * lib/bio.rb is also modified for the autoload.
+     * Bug fix: fixed incorrect autoload path for Bio::FastaDefline.
+
+ lib/bio.rb                     |    4 +-
+ lib/bio/db/fasta.rb            |  135 +---------------------------------------
+ lib/bio/db/fasta/qual.rb       |  102 ++++++++++++++++++++++++++++++
+ sample/demo_fastaformat.rb     |  105 +++++++++++++++++++++++++++++++
+ test/unit/bio/db/test_fasta.rb |   43 -------------
+ test/unit/bio/db/test_qual.rb  |   63 +++++++++++++++++++
+ 6 files changed, 273 insertions(+), 179 deletions(-)
+ create mode 100644 lib/bio/db/fasta/qual.rb
+ create mode 100644 sample/demo_fastaformat.rb
+ create mode 100644 test/unit/bio/db/test_qual.rb
+
+commit c70bed5c3f828c94084fdeabe255fbb3930097d0
+Author: Andrew Grimm <andrew.j.grimm@gmail.com>
+Date:   Sun Aug 16 19:49:38 2009 +1000
+
+    Removed use of uninitialized variable in FastaNumericFormat.
+
+ lib/bio/db/fasta.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit ce6dcc344a3d7beec544d7164308dd97bafa8a19
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 13 13:04:11 2009 +0900
+
+    User data type should be stored as is, even if unknown data type.
+
+ lib/bio/db/sanger_chromatogram/abif.rb |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+commit ca96e59f151c2e10b5cd8c0690b8297979e52036
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 13 12:50:59 2009 +0900
+
+    Removed Bio::Abif#method_missing and added alternative method
+    
+     * Removed Bio::Abif#method_missing, because method_missing can
+       hide many errors related to method calls e.g. method name typo,
+       and it is not suitable for only getting data.
+     * New method Bio::Abif#data is added to get data (alternative of
+       the method_missing).
+
+ lib/bio/db/sanger_chromatogram/abif.rb |   19 ++++++++++++-------
+ 1 files changed, 12 insertions(+), 7 deletions(-)
+
+commit 8b0da27523998cb9a9df07f5e907cda6e3cef0dc
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 13 12:04:41 2009 +0900
+
+    removed a non-ascii character in comment
+
+ lib/bio/db/sanger_chromatogram/chromatogram.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 55c1a180fec97338bae8e3c5b5d5ceec64aed0f6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 13 12:02:53 2009 +0900
+
+    Bug fix: Bio::SangerChromatogram#complement fails when the object is frozen.
+
+ lib/bio/db/sanger_chromatogram/chromatogram.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 4e7d8b0ba304d1ff01364fad68035f7ec9463fb9
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 12 22:23:47 2009 +0900
+
+    fixed a typo in a copyright line
+
+ test/unit/bio/util/test_sirna.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit f376124112d23ba9b0491dbd427d328edc81d872
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 12 22:05:37 2009 +0900
+
+    The "libpath magic" in tests are replaced by the load of helper routine.
+    
+     * In all unit tests, the "libpath magic" are replaced by the load
+       of helper routine.
+     * Changed to use a constant BioRubyTestDataPath for generating test
+       data file path.
+     * Some "require" lines are modified.
+     * "File.open(...).read" in some tests are replaced by "File.read(...)".
+     * Header comment lines of some tests with wrong filename and/or
+       class/module name information are fixed.
+
+ test/functional/bio/appl/test_pts1.rb              |    6 ++++--
+ test/functional/bio/io/test_ensembl.rb             |    7 ++++---
+ test/functional/bio/io/test_pubmed.rb              |    8 +++++---
+ test/functional/bio/io/test_soapwsdl.rb            |    9 +++++----
+ test/functional/bio/io/test_togows.rb              |    9 +++++----
+ test/functional/bio/sequence/test_output_embl.rb   |   10 ++++++----
+ test/functional/bio/test_command.rb                |   10 +++++-----
+ test/runner.rb                                     |    8 +++++---
+ test/unit/bio/appl/bl2seq/test_report.rb           |    9 +++++----
+ test/unit/bio/appl/blast/test_ncbioptions.rb       |    6 ++++--
+ test/unit/bio/appl/blast/test_report.rb            |    9 +++++----
+ test/unit/bio/appl/blast/test_rpsblast.rb          |    9 +++++----
+ test/unit/bio/appl/gcg/test_msf.rb                 |   10 +++++-----
+ test/unit/bio/appl/genscan/test_report.rb          |   17 ++++++++---------
+ test/unit/bio/appl/hmmer/test_report.rb            |    9 +++++----
+ test/unit/bio/appl/iprscan/test_report.rb          |   11 ++++++-----
+ test/unit/bio/appl/mafft/test_report.rb            |   11 ++++++-----
+ test/unit/bio/appl/paml/codeml/test_rates.rb       |    9 +++++----
+ test/unit/bio/appl/paml/codeml/test_report.rb      |    9 +++++----
+ test/unit/bio/appl/paml/test_codeml.rb             |    9 +++++----
+ test/unit/bio/appl/sim4/test_report.rb             |    9 +++++----
+ test/unit/bio/appl/sosui/test_report.rb            |   11 ++++++-----
+ test/unit/bio/appl/targetp/test_report.rb          |    8 +++++---
+ test/unit/bio/appl/test_blast.rb                   |    9 +++++----
+ test/unit/bio/appl/test_fasta.rb                   |    6 ++++--
+ test/unit/bio/appl/test_pts1.rb                    |    6 ++++--
+ test/unit/bio/appl/tmhmm/test_report.rb            |   11 ++++++-----
+ test/unit/bio/data/test_aa.rb                      |    8 +++++---
+ test/unit/bio/data/test_codontable.rb              |    9 +++++----
+ test/unit/bio/data/test_na.rb                      |    8 +++++---
+ test/unit/bio/db/biosql/tc_biosql.rb               |    6 +++++-
+ test/unit/bio/db/embl/test_common.rb               |    6 ++++--
+ test/unit/bio/db/embl/test_embl.rb                 |   12 ++++++------
+ test/unit/bio/db/embl/test_embl_rel89.rb           |   12 ++++++------
+ test/unit/bio/db/embl/test_embl_to_bioseq.rb       |   15 +++++++--------
+ test/unit/bio/db/embl/test_sptr.rb                 |   14 ++++++--------
+ test/unit/bio/db/embl/test_uniprot.rb              |   11 ++++++-----
+ test/unit/bio/db/kegg/test_genes.rb                |    8 +++++---
+ test/unit/bio/db/pdb/test_pdb.rb                   |    6 ++++--
+ test/unit/bio/db/sanger_chromatogram/test_abif.rb  |    3 ++-
+ test/unit/bio/db/sanger_chromatogram/test_scf.rb   |    3 ++-
+ test/unit/bio/db/test_aaindex.rb                   |   12 ++++++------
+ test/unit/bio/db/test_fasta.rb                     |    8 +++++---
+ test/unit/bio/db/test_fastq.rb                     |   10 +++++-----
+ test/unit/bio/db/test_gff.rb                       |    6 ++++--
+ test/unit/bio/db/test_lasergene.rb                 |   12 +++++++-----
+ test/unit/bio/db/test_medline.rb                   |    6 ++++--
+ test/unit/bio/db/test_newick.rb                    |   12 ++++++------
+ test/unit/bio/db/test_nexus.rb                     |    6 ++++--
+ test/unit/bio/db/test_phyloxml.rb                  |   14 +++++++-------
+ test/unit/bio/db/test_phyloxml_writer.rb           |   15 +++++++--------
+ test/unit/bio/db/test_prosite.rb                   |   11 ++++++-----
+ test/unit/bio/db/test_rebase.rb                    |    8 +++++---
+ test/unit/bio/db/test_soft.rb                      |   13 +++++++------
+ test/unit/bio/io/flatfile/test_autodetection.rb    |   13 ++++++-------
+ test/unit/bio/io/flatfile/test_buffer.rb           |   11 ++++++-----
+ test/unit/bio/io/flatfile/test_splitter.rb         |    8 ++++----
+ test/unit/bio/io/test_ddbjxml.rb                   |    7 ++++---
+ test/unit/bio/io/test_ensembl.rb                   |    8 +++++---
+ test/unit/bio/io/test_fastacmd.rb                  |    7 ++++---
+ test/unit/bio/io/test_flatfile.rb                  |   11 ++++++-----
+ test/unit/bio/io/test_soapwsdl.rb                  |    7 ++++---
+ test/unit/bio/io/test_togows.rb                    |    6 ++++--
+ test/unit/bio/sequence/test_aa.rb                  |    8 +++++---
+ test/unit/bio/sequence/test_common.rb              |    6 ++++--
+ test/unit/bio/sequence/test_compat.rb              |    6 ++++--
+ test/unit/bio/sequence/test_dblink.rb              |    8 +++++---
+ test/unit/bio/sequence/test_na.rb                  |    6 ++++--
+ test/unit/bio/shell/plugin/test_seq.rb             |    8 +++++---
+ test/unit/bio/test_alignment.rb                    |    8 +++++---
+ test/unit/bio/test_command.rb                      |    7 ++++---
+ test/unit/bio/test_db.rb                           |    8 +++++---
+ test/unit/bio/test_feature.rb                      |    6 ++++--
+ test/unit/bio/test_location.rb                     |    6 ++++--
+ test/unit/bio/test_map.rb                          |    8 +++++---
+ test/unit/bio/test_pathway.rb                      |    6 ++++--
+ test/unit/bio/test_reference.rb                    |    6 ++++--
+ test/unit/bio/test_sequence.rb                     |    8 +++++---
+ test/unit/bio/test_shell.rb                        |    8 +++++---
+ test/unit/bio/test_tree.rb                         |   12 ++++++------
+ .../analysis/test_calculated_cuts.rb               |    6 ++++--
+ .../restriction_enzyme/analysis/test_cut_ranges.rb |    6 ++++--
+ .../analysis/test_sequence_range.rb                |    6 ++++--
+ .../double_stranded/test_aligned_strands.rb        |    6 ++++--
+ .../double_stranded/test_cut_location_pair.rb      |    6 ++++--
+ .../test_cut_location_pair_in_enzyme_notation.rb   |    6 ++++--
+ .../double_stranded/test_cut_locations.rb          |    6 ++++--
+ .../test_cut_locations_in_enzyme_notation.rb       |    6 ++++--
+ .../test_cut_locations_in_enzyme_notation.rb       |    6 ++++--
+ .../bio/util/restriction_enzyme/test_analysis.rb   |    6 ++++--
+ .../bio/util/restriction_enzyme/test_cut_symbol.rb |    6 ++++--
+ .../restriction_enzyme/test_double_stranded.rb     |    6 ++++--
+ .../util/restriction_enzyme/test_single_strand.rb  |    6 ++++--
+ .../test_single_strand_complement.rb               |    6 ++++--
+ .../restriction_enzyme/test_string_formatting.rb   |    6 ++++--
+ test/unit/bio/util/test_color_scheme.rb            |    8 +++++---
+ test/unit/bio/util/test_contingency_table.rb       |    8 +++++---
+ test/unit/bio/util/test_restriction_enzyme.rb      |    6 ++++--
+ test/unit/bio/util/test_sirna.rb                   |    8 +++++---
+ 99 files changed, 479 insertions(+), 343 deletions(-)
+
+commit f4fa0a5edc6ff6fc35577d84bda86363014a57a4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 11 17:04:43 2009 +0900
+
+    test_chromatogram.rb is splitted into test_abif.rb and test_scf.rb
+
+ test/unit/bio/db/sanger_chromatogram/test_abif.rb  |   75 +++++++++++++++
+ .../db/sanger_chromatogram/test_chromatogram.rb    |  101 --------------------
+ test/unit/bio/db/sanger_chromatogram/test_scf.rb   |   97 +++++++++++++++++++
+ 3 files changed, 172 insertions(+), 101 deletions(-)
+ create mode 100644 test/unit/bio/db/sanger_chromatogram/test_abif.rb
+ delete mode 100644 test/unit/bio/db/sanger_chromatogram/test_chromatogram.rb
+ create mode 100644 test/unit/bio/db/sanger_chromatogram/test_scf.rb
+
+commit d9cc613273cadc7f9fdfe2bafbd933efb1f403ca
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 11 17:01:37 2009 +0900
+
+    Newly added unit test helper routine which aims to replace the libpath magic
+
+ test/bioruby_test_helper.rb |   61 +++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 61 insertions(+), 0 deletions(-)
+ create mode 100644 test/bioruby_test_helper.rb
+
+commit 10e76db2a8ec37bde541157d0735303b4ca8b3b8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 10 20:59:01 2009 +0900
+
+    Bio::SangerChromatogram#to_s is renamed to sequence_string.
+
+ lib/bio/db/sanger_chromatogram/chromatogram.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 0ec2c2f38c4b4a3e451841dc32540dfa10743bc2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 30 22:49:19 2009 +0900
+
+    Renamed/moved files/directories following the rename of class names.
+    
+     * renamed: lib/bio/db/chromatogram.rb ->
+                lib/bio/db/sanger_chromatogram/chromatogram.rb
+     * renamed: lib/bio/db/chromatogram/abi.rb ->
+                lib/bio/db/sanger_chromatogram/abif.rb
+     * renamed: lib/bio/db/chromatogram/scf.rb ->
+                lib/bio/db/sanger_chromatogram/scf.rb
+     * renamed: lib/bio/db/chromatogram/chromatogram_to_biosequence.rb ->
+                lib/bio/db/sanger_chromatogram/chromatogram_to_biosequence.rb
+     * renamed: test/unit/bio/db/test_chromatogram.rb ->
+                test/unit/bio/db/sanger_chromatogram/test_chromatogram.rb
+     * renamed: test/data/chromatogram/test_chromatogram_abi.ab1 ->
+                test/data/sanger_chromatogram/test_chromatogram_abif.ab1
+     * renamed: test/data/chromatogram/*.scf ->
+                test/data/sanger_chromatogram/*.scf
+
+ lib/bio/db/chromatogram.rb                         |  133 -------------
+ lib/bio/db/chromatogram/abi.rb                     |  114 -----------
+ .../db/chromatogram/chromatogram_to_biosequence.rb |   32 ---
+ lib/bio/db/chromatogram/scf.rb                     |  210 --------------------
+ lib/bio/db/sanger_chromatogram/abif.rb             |  114 +++++++++++
+ lib/bio/db/sanger_chromatogram/chromatogram.rb     |  133 +++++++++++++
+ .../chromatogram_to_biosequence.rb                 |   32 +++
+ lib/bio/db/sanger_chromatogram/scf.rb              |  210 ++++++++++++++++++++
+ test/data/chromatogram/test_chromatogram_abi.ab1   |  Bin 228656 -> 0 bytes
+ .../data/chromatogram/test_chromatogram_scf_v2.scf |  Bin 47503 -> 0 bytes
+ .../data/chromatogram/test_chromatogram_scf_v3.scf |  Bin 47503 -> 0 bytes
+ .../sanger_chromatogram/test_chromatogram_abif.ab1 |  Bin 0 -> 228656 bytes
+ .../test_chromatogram_scf_v2.scf                   |  Bin 0 -> 47503 bytes
+ .../test_chromatogram_scf_v3.scf                   |  Bin 0 -> 47503 bytes
+ .../db/sanger_chromatogram/test_chromatogram.rb    |  101 ++++++++++
+ test/unit/bio/db/test_chromatogram.rb              |  101 ----------
+ 16 files changed, 590 insertions(+), 590 deletions(-)
+ delete mode 100644 lib/bio/db/chromatogram.rb
+ delete mode 100644 lib/bio/db/chromatogram/abi.rb
+ delete mode 100644 lib/bio/db/chromatogram/chromatogram_to_biosequence.rb
+ delete mode 100644 lib/bio/db/chromatogram/scf.rb
+ create mode 100644 lib/bio/db/sanger_chromatogram/abif.rb
+ create mode 100644 lib/bio/db/sanger_chromatogram/chromatogram.rb
+ create mode 100644 lib/bio/db/sanger_chromatogram/chromatogram_to_biosequence.rb
+ create mode 100644 lib/bio/db/sanger_chromatogram/scf.rb
+ delete mode 100644 test/data/chromatogram/test_chromatogram_abi.ab1
+ delete mode 100644 test/data/chromatogram/test_chromatogram_scf_v2.scf
+ delete mode 100644 test/data/chromatogram/test_chromatogram_scf_v3.scf
+ create mode 100644 test/data/sanger_chromatogram/test_chromatogram_abif.ab1
+ create mode 100644 test/data/sanger_chromatogram/test_chromatogram_scf_v2.scf
+ create mode 100644 test/data/sanger_chromatogram/test_chromatogram_scf_v3.scf
+ create mode 100644 test/unit/bio/db/sanger_chromatogram/test_chromatogram.rb
+ delete mode 100644 test/unit/bio/db/test_chromatogram.rb
+
+commit 49bfe319e535c8414be32b47c07fe5204a24b398
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 30 22:02:08 2009 +0900
+
+    Renamed Chromatogram to SangerChromatogram and Abi to Abif, and preparation of filename changes.
+    
+     * Renamed Chromatogram to SangerChromatogram because the word
+       "chromatogram" may be used by various experimental methods
+       other than the Sanger chromatogram.
+     * Renamed Abi to Abif because Applied Biosystems who determined
+       the file format says that its name is ABIF.
+     * Preparation of changing filenames. However, filenames are
+       not really changed now because of recording history of file
+       contents modification. The paths shown in the "require" lines
+       and test data paths may not be existed now.
+
+ lib/bio.rb                                         |    6 ++--
+ lib/bio/db/chromatogram.rb                         |   24 +++++++-------
+ lib/bio/db/chromatogram/abi.rb                     |   15 +++++----
+ .../db/chromatogram/chromatogram_to_biosequence.rb |   10 +++---
+ lib/bio/db/chromatogram/scf.rb                     |   15 +++++----
+ lib/bio/sequence/adapter.rb                        |    3 +-
+ test/unit/bio/db/test_chromatogram.rb              |   32 ++++++++++---------
+ 7 files changed, 57 insertions(+), 48 deletions(-)
+
+commit 6c020440663214014973ae8e5007ce2d31d8d45e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Oct 24 00:44:47 2009 +0900
+
+    New class method Bio::PhyloXML::Parser.open(filename) and API change of new(), etc.
+    
+     * New class methods to create parser object from various data
+       source are added: Bio::PhyloXML::Parser.open(filename),
+       for_io(io), open_uri(uri).
+     * API change of Bio::PhyloXML::Parser.new(). Now, new(filename)
+       is deprecated and it can only take a XML-formatted string.
+     * Tests are added and modified to reflect the above changes.
+     * test/unit/bio/db/test_phyloxml_writer.rb: avoid using WeakRef
+       for temporary directory maintenance.
+
+ lib/bio/db/phyloxml/phyloxml_parser.rb   |  224 +++++++++++++++++++++++++++---
+ lib/bio/db/phyloxml/phyloxml_writer.rb   |    4 +-
+ test/unit/bio/db/test_phyloxml.rb        |  178 ++++++++++++++++++++++--
+ test/unit/bio/db/test_phyloxml_writer.rb |   70 +++++-----
+ 4 files changed, 408 insertions(+), 68 deletions(-)
+
+commit fca5e800fc051a38ac6d25652c684fdd4f9bff14
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 23 15:13:25 2009 +0900
+
+    Rearrangement of require and autoload so as to correctly load PhyloXML classes
+
+ lib/bio.rb                               |   11 +++++++----
+ lib/bio/db/phyloxml/phyloxml_elements.rb |   16 +++++++++++++++-
+ lib/bio/db/phyloxml/phyloxml_parser.rb   |   11 ++++++-----
+ lib/bio/db/phyloxml/phyloxml_writer.rb   |    5 ++++-
+ test/unit/bio/db/test_phyloxml.rb        |    5 -----
+ test/unit/bio/db/test_phyloxml_writer.rb |    3 ---
+ 6 files changed, 32 insertions(+), 19 deletions(-)
+
+commit a291af62ef262ee04f3a0e1b6415d4e256c56a94
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 23 00:08:44 2009 +0900
+
+    Fixed argument order of assert_equal(expected, actual), etc.
+    
+     * Test bug fix: Argument order of assert_equal must be
+       assert_equal(expected, actual).
+     * assert_instance_of() instead of assert_equal() in
+       TestPhyloXML1#test_init.
+     * Removed some commented-out tests which may not be needed.
+
+ test/unit/bio/db/test_phyloxml.rb        |  295 +++++++++++++++---------------
+ test/unit/bio/db/test_phyloxml_writer.rb |    8 +-
+ 2 files changed, 147 insertions(+), 156 deletions(-)
+
+commit 152304dc9809102f56a2f1779c59111f84b9cd02
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Oct 17 01:40:49 2009 +0900
+
+    Improvement of tests for Bio::Fastq and related classes.
+
+ test/unit/bio/db/test_fastq.rb |  372 ++++++++++++++++++++++++++--------------
+ 1 files changed, 245 insertions(+), 127 deletions(-)
+
+commit 61556223a469a5f8b1bb4f343eca92c88c66cb9a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Oct 17 01:38:52 2009 +0900
+
+    FASTQ output support is added to Bio::Sequence.
+
+ lib/bio/db/fastq/format_fastq.rb |  172 ++++++++++++++++++++++++++++++++++++++
+ lib/bio/sequence/format.rb       |    9 ++
+ 2 files changed, 181 insertions(+), 0 deletions(-)
+ create mode 100644 lib/bio/db/fastq/format_fastq.rb
+
+commit ea4203ebb7ca268a5b6d6c50aeb63ed0eed5a803
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Oct 17 01:32:50 2009 +0900
+
+    New attributes for genome sequencer data are added to Bio::Sequence.
+    
+     * New attributes for genome sequencer data are added to
+       Bio::Sequence class: quality_scores, quality_scores_type,
+       error_probabilities.
+
+ lib/bio/sequence.rb |   13 +++++++++++++
+ 1 files changed, 13 insertions(+), 0 deletions(-)
+
+commit fce158b2194519081361e12c170882ec2e87fc5e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Oct 17 01:13:27 2009 +0900
+
+    New methods Bio::Fastq#to_biosequence, etc. and improvement of tolerance for overflows
+    
+     * Bio::Fastq#to_biosequence is newly added.
+     * New methods: Bio::Fastq#seq, entry_id, quality_score_type.
+     * Default behavior of Bio::Fastq::FormatData#scores2str is changed
+       not to raise error but to truncate saturated values.
+     * Improvement of tolerance for overflows, and preventing to calculate
+       log of negative number.
+
+ lib/bio/db/fastq.rb                      |  105 ++++++++++++++++++++++++++++--
+ lib/bio/db/fastq/fastq_to_biosequence.rb |   40 +++++++++++
+ lib/bio/sequence/adapter.rb              |    1 +
+ 3 files changed, 139 insertions(+), 7 deletions(-)
+ create mode 100644 lib/bio/db/fastq/fastq_to_biosequence.rb
+
+commit 0f189974d2027cecee575b27e969de7f62508309
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Oct 13 21:41:58 2009 +0900
+
+    Avoid using Numeric#fdiv because it can only be used in Ruby 1.8.7 or later
+
+ lib/bio/db/fastq.rb            |    6 +++---
+ test/unit/bio/db/test_fastq.rb |   10 +++++-----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+commit 42999fc6230e52c4f241f411d299db941196f62e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Oct 13 21:30:25 2009 +0900
+
+    Bio::Fastq#qualities is renamed to quality_scores.
+    
+     * Bio::Fastq#qualities is renamed to Bio::Fastq#quality_scores, and
+       the original method name is changed to be an alias of the new name.
+
+ lib/bio/db/fastq.rb            |   16 +++++++++-------
+ test/unit/bio/db/test_fastq.rb |   30 +++++++++++++++---------------
+ 2 files changed, 24 insertions(+), 22 deletions(-)
+
+commit cc0ee2169f298046c5e55fcbadfeaac01f6bf704
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Oct 11 19:19:18 2009 +0900
+
+    Newly added unit tests for Bio::Fastq with test data
+    
+     * Newly added unit tests for Bio::Fastq with test data. The test data
+       is created by P.J.A. Cock et al., and is also used in Biopython and
+       BioPerl.
+
+ test/data/fastq/error_diff_ids.fastq               |   20 +
+ test/data/fastq/error_double_qual.fastq            |   22 +
+ test/data/fastq/error_double_seq.fastq             |   22 +
+ test/data/fastq/error_long_qual.fastq              |   20 +
+ test/data/fastq/error_no_qual.fastq                |   20 +
+ test/data/fastq/error_qual_del.fastq               |   20 +
+ test/data/fastq/error_qual_escape.fastq            |   20 +
+ test/data/fastq/error_qual_null.fastq              |  Bin 0 -> 610 bytes
+ test/data/fastq/error_qual_space.fastq             |   21 +
+ test/data/fastq/error_qual_tab.fastq               |   21 +
+ test/data/fastq/error_qual_unit_sep.fastq          |   20 +
+ test/data/fastq/error_qual_vtab.fastq              |   20 +
+ test/data/fastq/error_short_qual.fastq             |   20 +
+ test/data/fastq/error_spaces.fastq                 |   20 +
+ test/data/fastq/error_tabs.fastq                   |   21 +
+ test/data/fastq/error_trunc_at_plus.fastq          |   19 +
+ test/data/fastq/error_trunc_at_qual.fastq          |   19 +
+ test/data/fastq/error_trunc_at_seq.fastq           |   18 +
+ test/data/fastq/error_trunc_in_plus.fastq          |   19 +
+ test/data/fastq/error_trunc_in_qual.fastq          |   20 +
+ test/data/fastq/error_trunc_in_seq.fastq           |   18 +
+ test/data/fastq/error_trunc_in_title.fastq         |   17 +
+ .../fastq/illumina_full_range_as_illumina.fastq    |    8 +
+ .../data/fastq/illumina_full_range_as_sanger.fastq |    8 +
+ .../data/fastq/illumina_full_range_as_solexa.fastq |    8 +
+ .../illumina_full_range_original_illumina.fastq    |    8 +
+ test/data/fastq/longreads_as_illumina.fastq        |   40 ++
+ test/data/fastq/longreads_as_sanger.fastq          |   40 ++
+ test/data/fastq/longreads_as_solexa.fastq          |   40 ++
+ test/data/fastq/longreads_original_sanger.fastq    |  120 ++++
+ test/data/fastq/misc_dna_as_illumina.fastq         |   16 +
+ test/data/fastq/misc_dna_as_sanger.fastq           |   16 +
+ test/data/fastq/misc_dna_as_solexa.fastq           |   16 +
+ test/data/fastq/misc_dna_original_sanger.fastq     |   16 +
+ test/data/fastq/misc_rna_as_illumina.fastq         |   16 +
+ test/data/fastq/misc_rna_as_sanger.fastq           |   16 +
+ test/data/fastq/misc_rna_as_solexa.fastq           |   16 +
+ test/data/fastq/misc_rna_original_sanger.fastq     |   16 +
+ .../data/fastq/sanger_full_range_as_illumina.fastq |    8 +
+ test/data/fastq/sanger_full_range_as_sanger.fastq  |    8 +
+ test/data/fastq/sanger_full_range_as_solexa.fastq  |    8 +
+ .../fastq/sanger_full_range_original_sanger.fastq  |    8 +
+ .../data/fastq/solexa_full_range_as_illumina.fastq |    8 +
+ test/data/fastq/solexa_full_range_as_sanger.fastq  |    8 +
+ test/data/fastq/solexa_full_range_as_solexa.fastq  |    8 +
+ .../fastq/solexa_full_range_original_solexa.fastq  |    8 +
+ test/data/fastq/wrapping_as_illumina.fastq         |   12 +
+ test/data/fastq/wrapping_as_sanger.fastq           |   12 +
+ test/data/fastq/wrapping_as_solexa.fastq           |   12 +
+ test/data/fastq/wrapping_original_sanger.fastq     |   24 +
+ test/unit/bio/db/test_fastq.rb                     |  711 ++++++++++++++++++++
+ 51 files changed, 1652 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/fastq/error_diff_ids.fastq
+ create mode 100644 test/data/fastq/error_double_qual.fastq
+ create mode 100644 test/data/fastq/error_double_seq.fastq
+ create mode 100644 test/data/fastq/error_long_qual.fastq
+ create mode 100644 test/data/fastq/error_no_qual.fastq
+ create mode 100644 test/data/fastq/error_qual_del.fastq
+ create mode 100644 test/data/fastq/error_qual_escape.fastq
+ create mode 100644 test/data/fastq/error_qual_null.fastq
+ create mode 100644 test/data/fastq/error_qual_space.fastq
+ create mode 100644 test/data/fastq/error_qual_tab.fastq
+ create mode 100644 test/data/fastq/error_qual_unit_sep.fastq
+ create mode 100644 test/data/fastq/error_qual_vtab.fastq
+ create mode 100644 test/data/fastq/error_short_qual.fastq
+ create mode 100644 test/data/fastq/error_spaces.fastq
+ create mode 100644 test/data/fastq/error_tabs.fastq
+ create mode 100644 test/data/fastq/error_trunc_at_plus.fastq
+ create mode 100644 test/data/fastq/error_trunc_at_qual.fastq
+ create mode 100644 test/data/fastq/error_trunc_at_seq.fastq
+ create mode 100644 test/data/fastq/error_trunc_in_plus.fastq
+ create mode 100644 test/data/fastq/error_trunc_in_qual.fastq
+ create mode 100644 test/data/fastq/error_trunc_in_seq.fastq
+ create mode 100644 test/data/fastq/error_trunc_in_title.fastq
+ create mode 100644 test/data/fastq/illumina_full_range_as_illumina.fastq
+ create mode 100644 test/data/fastq/illumina_full_range_as_sanger.fastq
+ create mode 100644 test/data/fastq/illumina_full_range_as_solexa.fastq
+ create mode 100644 test/data/fastq/illumina_full_range_original_illumina.fastq
+ create mode 100644 test/data/fastq/longreads_as_illumina.fastq
+ create mode 100644 test/data/fastq/longreads_as_sanger.fastq
+ create mode 100644 test/data/fastq/longreads_as_solexa.fastq
+ create mode 100644 test/data/fastq/longreads_original_sanger.fastq
+ create mode 100644 test/data/fastq/misc_dna_as_illumina.fastq
+ create mode 100644 test/data/fastq/misc_dna_as_sanger.fastq
+ create mode 100644 test/data/fastq/misc_dna_as_solexa.fastq
+ create mode 100644 test/data/fastq/misc_dna_original_sanger.fastq
+ create mode 100644 test/data/fastq/misc_rna_as_illumina.fastq
+ create mode 100644 test/data/fastq/misc_rna_as_sanger.fastq
+ create mode 100644 test/data/fastq/misc_rna_as_solexa.fastq
+ create mode 100644 test/data/fastq/misc_rna_original_sanger.fastq
+ create mode 100644 test/data/fastq/sanger_full_range_as_illumina.fastq
+ create mode 100644 test/data/fastq/sanger_full_range_as_sanger.fastq
+ create mode 100644 test/data/fastq/sanger_full_range_as_solexa.fastq
+ create mode 100644 test/data/fastq/sanger_full_range_original_sanger.fastq
+ create mode 100644 test/data/fastq/solexa_full_range_as_illumina.fastq
+ create mode 100644 test/data/fastq/solexa_full_range_as_sanger.fastq
+ create mode 100644 test/data/fastq/solexa_full_range_as_solexa.fastq
+ create mode 100644 test/data/fastq/solexa_full_range_original_solexa.fastq
+ create mode 100644 test/data/fastq/wrapping_as_illumina.fastq
+ create mode 100644 test/data/fastq/wrapping_as_sanger.fastq
+ create mode 100644 test/data/fastq/wrapping_as_solexa.fastq
+ create mode 100644 test/data/fastq/wrapping_original_sanger.fastq
+ create mode 100644 test/unit/bio/db/test_fastq.rb
+
+commit 951d8f7303a5c28783a2c8b25c9fb347730c1a8f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Oct 11 19:10:15 2009 +0900
+
+    Bio::Fastq API changed.
+    
+     * Bio::Fastq API changed. Removed methods: phred_quality, solexa_quality.
+       New methods: qualities, error_probabilities, format, format=,
+       validate_format.
+     * New exception classes Bio::Fastq::Error::* for errors.
+     * Internal structure is also changed. Internal only classes
+       Bio::Fastq::FormatData::* which store parameters for format variants.
+
+ lib/bio/db/fastq.rb |  519 +++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 files changed, 501 insertions(+), 18 deletions(-)
+
+commit 9bb7f6ca762c615e50d98c35b60982a4caeea323
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 25 23:36:13 2009 +0900
+
+    Bug fix: infinite loop in Bio::Fastq.new. Thanks to Hiroyuki Mishima for reporting the bug.
+
+ lib/bio/db/fastq.rb |   16 ++++++++++------
+ 1 files changed, 10 insertions(+), 6 deletions(-)
+
+commit fca6aa5333a95db4dc87e8fc814bd028d5720de4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 20 11:52:33 2009 +0900
+
+    Added file format autodetection for Bio::Fastq
+
+ lib/bio/io/flatfile/autodetection.rb |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+commit 1ba21545e7d49ae8b775fbed7a4e92b1daa54ac6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 20 11:48:59 2009 +0900
+
+    Added autoload for Bio::Fastq
+
+ lib/bio.rb |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit 380b99106d4c7955b9d07ee8668b53d384c974f4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Mar 19 17:07:25 2009 +0900
+
+    Newly added FASTQ format parser (still a prototype)
+
+ lib/bio/db/fastq.rb |  162 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 162 insertions(+), 0 deletions(-)
+ create mode 100644 lib/bio/db/fastq.rb
+
+commit 2c5df2a5f1b5ae1ea9e61c1dccc8bcd2f496f6ce
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Sep 20 19:08:55 2009 +0900
+
+    Removed "require 'rubygems'".
+
+ lib/bio/db/phyloxml/phyloxml_parser.rb |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
+
+commit 67818d2550e5d53eeee0f3d710f66f7506fb8127
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Sep 19 17:06:21 2009 +0900
+
+    Use Bio::PubMed.esearch and efetch, etc.
+    
+     * Changed to use Bio::PubMed.esearch and efetch instead of
+       deprecated methods.
+     * Regular expression for extracting option is changed.
+
+ sample/pmfetch.rb  |   15 +++++++++++----
+ sample/pmsearch.rb |   17 +++++++++++++----
+ 2 files changed, 24 insertions(+), 8 deletions(-)
+
+commit 0c95889bf69e3140b5f09ade1203d50136aee014
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 18 17:58:17 2009 +0900
+
+    Changed to use temporary directory when writing a file, etc.
+    
+      * To avoid unexpected file corruption and possibly security risk,
+        changed to use temporary directory when writing files. The
+        temporary directory is normally removed when all tests end.
+        To prevent removing the directory, set environment variable
+        BIORUBY_TEST_DEBUG.
+      * To avoid test class name conflict, TestPhyloXMLData is renamed
+        to TestPhyloXMLWriterData.
+      * Added a new test to check existence of libxml-ruby, and removed
+        code to raise error when it is not found. The code of the new
+        test is completely the same as of in test_phyloxml.rb, but it
+        is added for the purpose when test_phyloxml_writer.rb is called
+        independently.
+
+ test/unit/bio/db/test_phyloxml_writer.rb |  161 +++++++++++++++++++++---------
+ 1 files changed, 112 insertions(+), 49 deletions(-)
+
+commit 520d0f5ed535f621aed60b71d8765a99e97306a6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sun Sep 20 18:34:19 2009 +0900
+
+    Newly added internal-only class Bio::Command::Tmpdir to handle temporary directory
+    
+     * Newly added internal-only class Bio::Command::Tmpdir to handle
+       temporary directory. It is BioRuby library internal use only.
+     * Bio::Command.mktmpdir is changed to be completely compatible
+       with Ruby 1.9.x's Dir.mktmpdir.
+
+ lib/bio/command.rb                  |  104 +++++++++++++++++++++++++++++++---
+ test/functional/bio/test_command.rb |   49 ++++++++++++++++
+ 2 files changed, 143 insertions(+), 10 deletions(-)
+
+commit c813b60ae62f44d9688b21d47c84e4b7083547e6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 18 17:55:14 2009 +0900
+
+    Added new test to check existence of libxml-ruby, instead of raising error.
+
+ test/unit/bio/db/test_phyloxml.rb |   30 ++++++++++++++++++++----------
+ 1 files changed, 20 insertions(+), 10 deletions(-)
+
+commit 1b71dd9624640f3f775baab360eef0be92a86677
+Author: Diana Jaunzeikare <latvianlinuxgirl@gmail.com>
+Date:   Fri Sep 18 21:43:18 2009 -0400
+
+    Renamed output files generated by phyloxml_writer unit tests.
+
+ test/unit/bio/db/test_phyloxml_writer.rb |   13 ++++++++++---
+ 1 files changed, 10 insertions(+), 3 deletions(-)
+
+commit f8e138cb9e28996f1024fa9cf7c68c8f08603941
+Author: Diana Jaunzeikare <latvianlinuxgirl@gmail.com>
+Date:   Fri Sep 18 21:33:35 2009 -0400
+
+    Added ncbi_taxonomy_mollusca_short.xml test file
+
+ .../data/phyloxml/ncbi_taxonomy_mollusca_short.xml |   65 ++++++++++++++++++++
+ 1 files changed, 65 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/phyloxml/ncbi_taxonomy_mollusca_short.xml
+
+commit be1be310b7581928581cde24303fe2e16c04e82f
+Author: Diana Jaunzeikare <latvianlinuxgirl@gmail.com>
+Date:   Fri Sep 18 21:29:20 2009 -0400
+
+    Made the code compactible with libxml-ruby 1.1.3 (previous was 0.9.4) version.
+
+ lib/bio/db/phyloxml/phyloxml_elements.rb |   58 +++++++++++++++---------------
+ lib/bio/db/phyloxml/phyloxml_parser.rb   |   10 ++++-
+ lib/bio/db/phyloxml/phyloxml_writer.rb   |    8 +++--
+ 3 files changed, 42 insertions(+), 34 deletions(-)
+
+commit a3441afd5650069a5ada64b202a0714e8723e911
+Author: Diana Jaunzeikare <latvianlinuxgirl@gmail.com>
+Date:   Tue May 26 00:55:47 2009 -0400
+
+    Newly added PhyloXML support written by Diana Jaunzeikare.
+    
+     * Newly added PhyloXML support written by Diana Jaunzeikare.
+       It have been written during the Google Summer of Code 2009
+       "Implementing phyloXML support in BioRuby", mentored by
+       Christian Zmasek et al. with NESCent. For details of development,
+       see git://github.com/latvianlinuxgirl/bioruby.git and BioRuby
+       mailing list archives.
+     * This is a combination of 119 commits. The last commit date was
+       Mon Aug 17 10:30:10 2009 -0400.
+
+ README.rdoc                              |    3 +
+ doc/Tutorial.rd                          |  120 ++-
+ lib/bio.rb                               |    6 +
+ lib/bio/db/phyloxml/phyloxml.xsd         |  573 ++++++++
+ lib/bio/db/phyloxml/phyloxml_elements.rb | 1160 +++++++++++++++++
+ lib/bio/db/phyloxml/phyloxml_parser.rb   |  767 +++++++++++
+ lib/bio/db/phyloxml/phyloxml_writer.rb   |  223 ++++
+ test/data/phyloxml/apaf.xml              |  666 ++++++++++
+ test/data/phyloxml/bcl_2.xml             | 2097 ++++++++++++++++++++++++++++++
+ test/data/phyloxml/made_up.xml           |  144 ++
+ test/data/phyloxml/phyloxml_examples.xml |  415 ++++++
+ test/unit/bio/db/test_phyloxml.rb        |  619 +++++++++
+ test/unit/bio/db/test_phyloxml_writer.rb |  258 ++++
+ 13 files changed, 7050 insertions(+), 1 deletions(-)
+ create mode 100644 lib/bio/db/phyloxml/phyloxml.xsd
+ create mode 100644 lib/bio/db/phyloxml/phyloxml_elements.rb
+ create mode 100644 lib/bio/db/phyloxml/phyloxml_parser.rb
+ create mode 100644 lib/bio/db/phyloxml/phyloxml_writer.rb
+ create mode 100644 test/data/phyloxml/apaf.xml
+ create mode 100644 test/data/phyloxml/bcl_2.xml
+ create mode 100644 test/data/phyloxml/made_up.xml
+ create mode 100644 test/data/phyloxml/phyloxml_examples.xml
+ create mode 100644 test/unit/bio/db/test_phyloxml.rb
+ create mode 100644 test/unit/bio/db/test_phyloxml_writer.rb
+
+commit fd8281f03423ddf23f7d409863b4df647f1b1564
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 9 21:08:15 2009 +0900
+
+    Newly added Chromatogram classes contributed by Anthony Underwood.
+    
+     * Newly added Chromatogram classes contributed by Anthony Underwood.
+       See git://github.com/aunderwo/bioruby.git for details of development
+       before this merge.
+
+ lib/bio.rb                                         |    3 +
+ lib/bio/db/chromatogram.rb                         |  133 +++++++++++++
+ lib/bio/db/chromatogram/abi.rb                     |  111 +++++++++++
+ .../db/chromatogram/chromatogram_to_biosequence.rb |   32 +++
+ lib/bio/db/chromatogram/scf.rb                     |  207 ++++++++++++++++++++
+ lib/bio/sequence/adapter.rb                        |    1 +
+ test/data/chromatogram/test_chromatogram_abi.ab1   |  Bin 0 -> 228656 bytes
+ .../data/chromatogram/test_chromatogram_scf_v2.scf |  Bin 0 -> 47503 bytes
+ .../data/chromatogram/test_chromatogram_scf_v3.scf |  Bin 0 -> 47503 bytes
+ test/unit/bio/db/test_chromatogram.rb              |   99 ++++++++++
+ 10 files changed, 586 insertions(+), 0 deletions(-)
+ create mode 100644 lib/bio/db/chromatogram.rb
+ create mode 100644 lib/bio/db/chromatogram/abi.rb
+ create mode 100644 lib/bio/db/chromatogram/chromatogram_to_biosequence.rb
+ create mode 100644 lib/bio/db/chromatogram/scf.rb
+ create mode 100644 test/data/chromatogram/test_chromatogram_abi.ab1
+ create mode 100644 test/data/chromatogram/test_chromatogram_scf_v2.scf
+ create mode 100644 test/data/chromatogram/test_chromatogram_scf_v3.scf
+ create mode 100644 test/unit/bio/db/test_chromatogram.rb
+
+commit 78f9463b764687401ff4a7480c1383c5594e5133
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 10 12:38:25 2009 +0900
+
+    Bio::BIORUBY_EXTRA_VERSION is changed to ".5000".
+
+ bioruby.gemspec    |    2 +-
+ lib/bio/version.rb |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit e731c6e52bc9a672e4546eeca4f2d2d968bdba09
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 2 15:24:00 2009 +0900
+
+    BioRuby 1.3.1 is released.
+    
+    ChangeLog is modified, and bioruby.gemspec is regenerated.
+
+ ChangeLog       |   11 +++++++++++
+ bioruby.gemspec |    2 +-
+ 2 files changed, 12 insertions(+), 1 deletions(-)
