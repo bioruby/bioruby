@@ -13,7 +13,7 @@
 <li>Copyright (C) 2001-2003 KATAYAMA Toshiaki &lt;k .at. bioruby.org&gt;</li>
 <li>Copyright (C) 2005-2009 Pjotr Prins, Naohisa Goto and others</li>
 </ul>
-<p>This document was last modified: 2009/12/24
+<p>This document was last modified: 2009/12/27
 Current editor: Pjotr Prins &lt;p .at. bioruby.org&gt;</p>
 <p>The latest version resides in the GIT source code repository:  ./doc/<a href="http://github.com/pjotrp/bioruby/raw/documentation/doc/Tutorial.rd">Tutorial.rd</a>.</p>
 <h2><a name="label-1" id="label-1">Introduction</a></h2><!-- RDLabel: "Introduction" -->
@@ -652,19 +652,19 @@ Bio::Blast factory object. For this purpose use Bio::Blast.reports,
 which supports the "-m 0" default and "-m 7" XML type output format.</p>
 <ul>
 <li><p>For example: </p>
-<pre>bioruby&gt; blast_version = nil; result = []
-bioruby&gt; Bio::Blast.reports(File.new("../test/data/blast/blastp-multi.m7")) do |report|
-bioruby&gt;   blast_version = report.version
-bioruby&gt;   report.iterations.each do |itr|
-bioruby&gt;     itr.hits.each do |hit|
-bioruby&gt;       result.push hit.target_id
-bioruby&gt;     end
-bioruby&gt;   end
-bioruby&gt; end
-bioruby&gt; blast_version
-==&gt; "blastp 2.2.18 [Mar-02-2008]"
-bioruby&gt; result
-==&gt; ["BAB38768", "BAB38768", "BAB38769", "BAB37741"]</pre></li>
+<pre>blast_version = nil; result = []
+Bio::Blast.reports(File.new("../test/data/blast/blastp-multi.m7")) do |report|
+  blast_version = report.version
+  report.iterations.each do |itr|
+    itr.hits.each do |hit|
+      result.push hit.target_id
+    end
+  end
+end
+blast_version
+# ==&gt; "blastp 2.2.18 [Mar-02-2008]"
+result
+# ==&gt; ["BAB38768", "BAB38768", "BAB38769", "BAB37741"]</pre></li>
 <li><p>another example:</p>
 <pre>require 'bio'
 Bio::Blast.reports(ARGF) do |report| 
@@ -699,48 +699,16 @@ Bio::Blast::Report.new(or Bio::Blast::Default::Report.new):</p>
 <p>When you write above routines, please send to the BioRuby project and
 they may be included.</p>
 <h2><a name="label-14" id="label-14">Generate a reference list using PubMed (Bio::PubMed)</a></h2><!-- RDLabel: "Generate a reference list using PubMed (Bio::PubMed)" -->
-<p>Below script is an example which seaches PubMed and creates a reference list.</p>
-<pre>ARGV.each do |id|
-  entry = Bio::PubMed.query(id)     # searches PubMed and get entry
-  medline = Bio::MEDLINE.new(entry) # creates Bio::MEDLINE object from entry text
-  reference = medline.reference     # converts into Bio::Reference object
-  puts reference.bibtex             # shows BibTeX formatted text
-end</pre>
-<p>We named the script pmfetch.rb.</p>
-<pre>% ./pmfetch.rb 11024183 10592278 10592173</pre>
-<p>To give some PubMed ID (PMID) in arguments, the script retrieves informations
-from NCBI, parses MEDLINE format text, converts into BibTeX format and
-shows them.</p>
-<p>A keyword search is also available.</p>
-<pre>#!/usr/bin/env ruby
-
-require 'bio'
-
-# Concatinates argument keyword list to a string
-keywords = ARGV.join(' ')
-
-# PubMed keyword search
-entries = Bio::PubMed.search(keywords)
-
-entries.each do |entry|
-  medline = Bio::MEDLINE.new(entry) # creates Bio::MEDLINE object from text
-  reference = medline.reference     # converts into Bio::Reference object
-  puts reference.bibtex             # shows BibTeX format text
-end</pre>
-<p>We named the script pmsearch.rb.</p>
-<pre>% ./pmsearch.rb genome bioinformatics</pre>
-<p>To give keywords in arguments, the script searches PubMed by given
-keywords and shows bibliography informations in a BibTex format. Other
-output formats are also avaialble like the bibitem method described
-below. Some journal formats like nature and nar can be used, but lack
-bold and italic font output.</p>
-<p>(EDITORs NOTE: do we have some simple object that can be queried for
-author, title etc.?)</p>
 <p>Nowadays using NCBI E-Utils is recommended. Use Bio::PubMed.esearch
 and Bio::PubMed.efetch instead of above methods.</p>
 <pre>#!/usr/bin/env ruby
 
 require 'bio'
+
+# NCBI announces that queries without email address will return error
+# after June 2010. When you modify the script, please enter your email
+# address instead of the staff's.
+Bio::NCBI.default_email = 'staff@bioruby.org'
 
 keywords = ARGV.join(' ')
 
