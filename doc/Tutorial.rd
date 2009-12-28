@@ -849,6 +849,8 @@ When you write above routines, please send to the BioRuby project and
 they may be included.
 
 == Generate a reference list using PubMed (Bio::PubMed)
+=end
+(EDITORs NOTE: examples in this section do not work and should be rewritten.)
 
 Below script is an example which seaches PubMed and creates a reference list.
 
@@ -897,6 +899,7 @@ bold and italic font output.
 
 (EDITORs NOTE: do we have some simple object that can be queried for
 author, title etc.?)
+=begin
 
 Nowadays using NCBI E-Utils is recommended. Use Bio::PubMed.esearch
 and Bio::PubMed.efetch instead of above methods.
@@ -905,6 +908,11 @@ and Bio::PubMed.efetch instead of above methods.
     #!/usr/bin/env ruby
 
     require 'bio'
+
+    # NCBI announces that queries without email address will return error
+    # after June 2010. When you modify the script, please enter your email
+    # address instead of the staff's.
+    Bio::NCBI.default_email = 'staff@bioruby.org'
 
     keywords = ARGV.join(' ')
 
