@@ -72,6 +72,11 @@ flag to turn on debug of the tests.
 
 == Deprecated features
 
+=== ChangeLog is replaced by git log
+
+ChangeLog is replaced by the output of git-log command, and ChangeLog before
+the 1.3.1 release is moved to doc/ChangeLog-before-1.3.1.
+
 === "if __FILE__ == $0" convention
 
 Primitive test codes in the "if __FILE__ == $0" convention are removed and
