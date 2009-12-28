@@ -78,9 +78,9 @@ END
     end
     
 
-    def test_output_size
-      assert_equal(1634, @report.output.size)
-    end
+    #def test_output_size
+    #  assert_equal(1634, @report.output.size)
+    #end
 
     def test_entry_id
       assert_equal("hoge", @report.entry_id)
