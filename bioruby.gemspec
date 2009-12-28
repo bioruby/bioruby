@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.3.9.9901"
+  s.version = "1.4.0"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -32,6 +32,7 @@ Gem::Specification.new do |s|
     "bin/br_pmfetch.rb",
     "bioruby.gemspec",
     "bioruby.gemspec.erb",
+    "doc/ChangeLog-before-1.3.1",
     "doc/Changes-0.7.rd",
     "doc/Changes-1.3.rdoc",
     "doc/KEGG_API.rd",
