@@ -801,9 +801,9 @@ which supports the "-m 0" default and "-m 7" XML type output format.
       end
     end
     blast_version
-    "blastp 2.2.18 [Mar-02-2008]"
+    # ==> "blastp 2.2.18 [Mar-02-2008]"
     result
-    ["BAB38768", "BAB38768", "BAB38769", "BAB37741"]
+    # ==> ["BAB38768", "BAB38768", "BAB38769", "BAB37741"]
 
 * another example:
 
@@ -847,27 +847,6 @@ Bio::Blast::Report.new(or Bio::Blast::Default::Report.new):
 
 When you write above routines, please send to the BioRuby project and
 they may be included.
-
-== Gene Ontology (GO)
-
-Gene Ontologies can be fetched through the Ensembl package:
-
-   require 'ensembl'
-   Ensembl::Core::DBConnection.connect('drosophila_melanogaster')
-   infile = IO.readlines(ARGV.shift) # reading your comma-separated accession mapping file (one line per mapping)
-   infile.each do |line|
-     accs = line.split(",")          # Split the comma-sep.entries into an array
-     drosphila_acc = accs.shift      # the first entry is the Drosophila acc
-     mosq_acc = accs.shift           # the second entry is you Mosq. acc
-     gene = Ensembl::Core::Gene.find_by_stable_id(drosophila_acc)
-     print "#{mosq_acc}"
-     gene.go_terms.each do |go|
-        print ",#{go}"
-      end
-    end
-
-Prints each mosq. accession/uniq identifier and the GO terms from the Drosphila
-homologues.
 
 == Generate a reference list using PubMed (Bio::PubMed)
 
