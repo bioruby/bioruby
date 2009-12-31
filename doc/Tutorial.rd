@@ -21,8 +21,12 @@
 #   cat Tutorial.rd | sed -e "s,bioruby>,>>," | sed "s,==>,=>," > Tutorial.rd.tmp
 #   rubydoctest Tutorial.rd.tmp
 #
-# Rubydoctest is useful to verify an example in this document (still) works
+# alternatively, the Ruby way is
 #
+#   ruby -p -e '$_.sub!(/bioruby\>/, ">>"); $_.sub!(/\=\=\>/, "=>")' Tutorial.rd > Tutorial.rd.tmp
+#   rubydoctest Tutorial.rd.tmp
+#
+# Rubydoctest is useful to verify an example in this document (still) works
 #
 #
 
