@@ -38,7 +38,7 @@ bioruby> $: << '../lib'
 = BioRuby Tutorial
 
 * Copyright (C) 2001-2003 KATAYAMA Toshiaki <k .at. bioruby.org>
-* Copyright (C) 2005-2009 Pjotr Prins, Naohisa Goto and others
+* Copyright (C) 2005-2010 Pjotr Prins, Naohisa Goto and others
 
 This document was last modified: 2009/12/27
 Current editor: Pjotr Prins <p .at. bioruby.org>
@@ -69,7 +69,12 @@ manager. For more information see the
 ((<Ruby|URL:http://www.ruby-lang.org/en/>)) website.
 
 Once Ruby is works download and install Bioruby using the links on the
-((<Bioruby|URL:http://bioruby.org/>)) website.
+((<Bioruby|URL:http://bioruby.org/>)) website. The recommended method is via 
+Ruby gems:
+
+  gem install bio
+
+See also the Bioruby ((wiki|URL:http://bioruby.open-bio.org/wiki/Installation>)).
 
 A lot of BioRuby's documentation exists in the source code and unit tests. To
 really dive in you will need the latest source code tree. The embedded rdoc
