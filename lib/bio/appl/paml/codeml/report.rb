@@ -113,6 +113,18 @@ module Bio::PAML
 
     class Report < Bio::PAML::Common::Report
 
+      # Parse codeml output file passed with +buf+
+      def initialize buf
+      end
+
+    end  # Report
+   
+    #   ReportSingle is a simpler parser for a codeml report
+    #   containing a single run. This is retained for 
+    #   backward compatibility.
+    #
+    class ReportSingle < Bio::PAML::Common::Report
+
       attr_reader :tree_log_likelihood, :tree_length, :alpha, :tree
 
       def initialize(codeml_report)
@@ -128,7 +140,6 @@ module Bio::PAML
         text[/lnL\(.+\):\s+(-?\d+(\.\d+)?)/,1].to_f
       end
 
-      
       def pull_tree_length(text)
         text[/tree length\s+=\s+ (-?\d+(\.\d+)?)/,1].to_f
       end
@@ -141,6 +152,6 @@ module Bio::PAML
         text[/([^\n]+)\n\nDetailed/m,1]
       end
 
-    end # End Report
-  end # End Codeml
-end # End Bio::PAML
+    end # ReportSingle
+  end # Codeml
+end # Bio::PAML
