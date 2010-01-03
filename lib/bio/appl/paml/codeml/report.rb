@@ -11,6 +11,7 @@
 require 'bio/appl/paml/codeml'
 
 module Bio::PAML
+
   class Codeml
 
     # == Description
@@ -41,34 +42,42 @@ module Bio::PAML
     #
     # == Examples
     #
-    # Read the data file into a buffer
+    # Read the codeml M0-M3 data file into a buffer
     #
     #   >> require 'bio/test/biotestfile'
     #   >> buf = BioTestFile.read('paml/codeml/models/results0-3.txt')
     #
-    # Invoke Bioruby's PAML parser
+    # Invoke Bioruby's PAML codeml parser
     #
     #   >> require 'bio'
     #   >> c = Bio::PAML::Codeml::Report.new(buf)
     #
-    #   >> c.model.size
+    # Do we have two models?
+    #
+    #   >> c.models.size
     #   => 2
-    #   >> c.model[0].name
+    #   >> c.models[0].name
     #   => "M0"
+    #   >> c.models[1].name
+    #   => "M3"
     # 
     # Now fetch the results of the first model M0, and check its values
     # 
-    #   >> m0 = c.model['M0']
+    #   >> m0 = c.models[0]
     #   >> m0.tree_length
-    #   => 9.00878
+    #   => 1.90227
     #   >> m0.lnL
-    #   => -28155.576740
+    #   => -1125.800375
+    #   >> m0.omega
+    #   => 0.58589
+    #   >> m0.dN_dS
+    #   => 0.58589
     #   >> m0.kappa
-    #   => 2.17796
+    #   => 2.14311
     # 
     # Check the M3 and its specific values
     #    
-    #   >> m3 = c.model['M3']
+    #   >> m3 = c.models['M3']
     #   >> m3.lnL
     #   => -30768.946749
     #   >> m3.classes.size
@@ -100,6 +109,17 @@ module Bio::PAML
     #   >> codon.w
     #   => 2.895
     #
+    # Test the raw buffers
+    #
+    #   >> report.footer.text =~ /seed/
+    #   => true
+    #   >> m0.text =~ /Model 0: one-ratio/
+    #   => true
+    #   >> m3.text =~ /Model 3: discrete/
+    #   => true
+    #   >> report.footer.text =~ /Bayes/
+    #   => true
+    #
     # The results of a single model (old style report parser)
     #
     #   >> buf = File.read(File.join(TEST_DATA, 'output.txt'))
@@ -120,8 +140,22 @@ module Bio::PAML
 
     class Report < Bio::PAML::Common::Report
 
+      attr_reader :models, :header, :footer
+
       # Parse codeml output file passed with +buf+
       def initialize buf
+        # split the main buffer into sections for each model, header and footer.
+        sections = buf.split("\nModel ")
+        model_num = sections.size-1
+        raise ReportError,"Incorrect codeml data models=#{model_num}" if model_num > 2
+        @header = sections[0]
+        foot2 = sections[model_num].split("\nNaive ")
+        sections[model_num] = foot2[0]
+        @footer = 'Naive '+foot2[1]
+        @models = []
+        sections[1..-1].each do | model_buf |
+          @models.push Model.new(model_buf)
+        end
       end
 
     end  # Report
@@ -160,5 +194,43 @@ module Bio::PAML
       end
 
     end # ReportSingle
+
+    # Model class
+    class Model 
+
+      def initialize buf
+        @buf = buf
+      end
+
+      # Return the model name, e.g. 'M0' or 'M7'
+      def name
+        'M'.to_s+@buf[0..0]
+      end
+
+      def lnL
+        @buf[/lnL\(.+\):\s+(-?\d+(\.\d+)?)/,1].to_f
+      end
+
+      def omega
+        @buf[/omega \(dN\/dS\)\s+=\s+ (-?\d+(\.\d+)?)/,1].to_f
+      end
+
+      alias dN_dS omega
+
+      def kappa
+        @buf[/kappa \(ts\/tv\)\s+=\s+ (-?\d+(\.\d+)?)/,1].to_f
+      end
+
+      def tree_length
+        @buf[/tree length\s+=\s+ (-?\d+(\.\d+)?)/,1].to_f
+      end
+
+    end
+
+    # Supporting error class
+    class ReportError < RuntimeError
+    end
+
+
   end # Codeml
 end # Bio::PAML
