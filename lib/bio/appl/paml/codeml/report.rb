@@ -41,7 +41,14 @@ module Bio::PAML
     #
     # == Examples
     #
-    #   >> buf = File.read(File.join(TEST_DATA, 'output2.txt'))
+    # Read the data file into a buffer
+    #
+    #   >> require 'bio/test/biotestfile'
+    #   >> buf = BioTestFile.read('paml/codeml/models/results0-3.txt')
+    #
+    # Invoke Bioruby's PAML parser
+    #
+    #   >> require 'bio'
     #   >> c = Bio::PAML::Codeml::Report.new(buf)
     #
     #   >> c.model.size
