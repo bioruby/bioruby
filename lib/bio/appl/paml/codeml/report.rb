@@ -74,6 +74,13 @@ module Bio::PAML
     #   => 0.58589
     #   >> m0.kappa
     #   => 2.14311
+    #   >> m0.alpha
+    #   => nil
+    #
+    # We also have a tree (as a string)
+    #
+    #   >> m0.tree
+    #   => "((((PITG_23265T0: 0.000004, PITG_23253T0: 0.400074): 0.000004, PITG_23257T0: 0.952614): 0.000004, PITG_23264T0: 0.445507): 0.000004, PITG_23267T0: 0.011814, PITG_23293T0: 0.092242);"
     # 
     # Check the M3 and its specific values
     #    
@@ -84,58 +91,46 @@ module Bio::PAML
     #   => 3
     #   >> m3.classes[0]
     #   => {:w=>0.00928, :p=>0.56413}
+    #
+    # And the tree
+    #
+    #   >> m3.tree
+    #   => "((((PITG_23265T0: 0.000004, PITG_23253T0: 0.762597): 0.000004, PITG_23257T0: 2.721710): 0.000004, PITG_23264T0: 0.924326): 0.014562, PITG_23267T0: 0.000004, PITG_23293T0: 0.237433);"
     # 
     # Next take the overall posterior analysis
     # 
     #   >> c.nb_sites.size
-    #   => 63
+    #   => 51
     #   >> c.nb_sites[0].to_a
-    #   => [31,'L',1.0,2.895]
+    #   => [17, "I", 0.988, 3.293]
     # 
     # or by field
     #
     #   >> codon = c.nb_sites[0]
     #   >> codon.position
-    #   => 31
+    #   => 17
     #   >> codon.probability
-    #   => 1.0
+    #   => 0.988
     #   >> codon.dN_dS
-    #   => 2.895
+    #   => 3.293
     #
     # with aliases
     #
     #   >> codon.p
-    #   => 1.0
+    #   => 0.988
     #   >> codon.w
-    #   => 2.895
+    #   => 3.293
     #
     # Test the raw buffers
     #
-    #   >> report.footer.text =~ /seed/
-    #   => true
-    #   >> m0.text =~ /Model 0: one-ratio/
-    #   => true
-    #   >> m3.text =~ /Model 3: discrete/
-    #   => true
-    #   >> report.footer.text =~ /Bayes/
-    #   => true
-    #
-    # The results of a single model (old style report parser)
-    #
-    #   >> buf = File.read(File.join(TEST_DATA, 'output.txt'))
-    #   >> c = Bio::PAML::Codeml::Report.new(buf)
-    #
-    #   >> c.tree_log_likelihood
-    #   => -1817.465211
-    #
-    #   >> c.tree_length
-    #   => 0.77902
-    #
-    #   >> c.alpha
-    #   => 0.58871
-    #
-    #   >> c.tree)
-    #   => "(((rabbit: 0.082889, rat: 0.187866): 0.038008, human: 0.055050): 0.033639, goat-cow: 0.096992, marsupial: 0.284574);"
+    #   >> c.header.to_s =~ /seed/
+    #   => 1
+    #   >> m0.to_s =~ /one-ratio/
+    #   => 3
+    #   >> m3.to_s =~ /discrete/
+    #   => 3
+    #   >> c.footer.to_s =~ /Bayes/
+    #   => 16
     #
 
     class Report < Bio::PAML::Common::Report
@@ -190,11 +185,33 @@ module Bio::PAML
         @single.tree
       end
 
+      # Return a NBSites (naive empirical bayesian) object
+      def nb_sites
+        NBSites.new(@footer)
+      end
+
     end  # Report
    
     #   ReportSingle is a simpler parser for a codeml report
     #   containing a single run. This is retained for 
     #   backward compatibility.
+    #
+    #   The results of a single model (old style report parser)
+    #
+    #     >> buf = BioTestFile.read('paml/codeml/output.txt')
+    #     >> c = Bio::PAML::Codeml::Report.new(buf)
+    #
+    #     >> c.tree_log_likelihood
+    #     => -1817.465211
+    #
+    #     >> c.tree_length
+    #     => 0.77902
+    #
+    #     >> c.alpha
+    #     => 0.58871
+    #
+    #     >> c.tree
+    #     => "(((rabbit: 0.082889, rat: 0.187866): 0.038008, human: 0.055050): 0.033639, goat-cow: 0.096992, marsupial: 0.284574);"
     #
     class ReportSingle < Bio::PAML::Common::Report
 
@@ -250,11 +267,21 @@ module Bio::PAML
       alias dN_dS omega
 
       def kappa
+        return nil if @buf !~ /kappa/
         @buf[/kappa \(ts\/tv\)\s+=\s+ (-?\d+(\.\d+)?)/,1].to_f
+      end
+
+      def alpha
+        return nil if @buf !~ /alpha/
+        @buf[/alpha .+ =\s+(-?\d+(\.\d+)?)/,1].to_f
       end
 
       def tree_length
         @buf[/tree length\s+=\s+ (-?\d+(\.\d+)?)/,1].to_f
+      end
+
+      def tree
+        @buf[/([^\n]+)\n\nDetailed/m,1]
       end
 
       # Return classes when available. For M3 it parses
@@ -269,6 +296,7 @@ module Bio::PAML
       #   => {:w=>0.00928, :p=>0.56413}
 
       def classes
+        return nil if @buf !~ /classes/
         # probs = @buf.scan(/\np:\s+(\w+)\s+(\S+)\s+(\S+)/)
         probs = @buf.scan(/\np:.*?\n/).to_s.split[1..3].map { |f| f.to_f }
         ws = @buf.scan(/\nw:.*?\n/).to_s.split[1..3].map { |f| f.to_f }
@@ -277,6 +305,64 @@ module Bio::PAML
           ret.push  :p => prob, :w => ws[i] 
         end
         ret
+      end
+
+      def to_s
+        @buf
+      end
+    end
+
+    # A record of codon sites showing evidence of positive selection
+    class PositiveSite
+      attr_reader :position, :probability, :omega
+      def initialize fields
+        @position    = fields[0].to_i
+        @aaref       = fields[1]
+        @probability = fields[2].to_f
+        @omega       = fields[3].to_f
+      end
+     
+      def dN_dS
+        omega
+      end
+
+      alias w dN_dS
+
+      alias p probability
+
+      def to_a
+        [ @position, @aaref, @probability, @omega ]
+      end
+    end
+
+    # Return the positive selection sites. PAML returns:
+    #
+    # Naive Empirical Bayes (NEB) analysis
+    # Positively selected sites (*: P>95%; **: P>99%)
+    # (amino acids refer to 1st sequence: PITG_23265T0)
+    # 
+    #             Pr(w>1)     post mean +- SE for w
+    # 
+    #     17 I      0.988*        3.293
+    #     18 H      1.000**       17.975
+    #     23 F      0.991**       6.283
+    # (...)
+    #    131 V      1.000**       22.797
+    #    132 R      1.000**       10.800
+    # (newline)
+    #
+
+    class NBSites < Array
+
+      def initialize buf
+        raise ReportError,"No NB sites found" if buf !~ /Naive Empirical Bayes/
+        lines = buf.split("\n")
+        start = lines.index("Naive Empirical Bayes (NEB) analysis") + 6
+        lines[start..-1].each do | line |
+          last if line == ""
+          fields = line.split
+          push PositiveSite.new fields
+        end
       end
 
     end
