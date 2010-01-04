@@ -77,13 +77,13 @@ module Bio::PAML
     # 
     # Check the M3 and its specific values
     #    
-    #   >> m3 = c.models['M3']
+    #   >> m3 = c.models[1]
     #   >> m3.lnL
-    #   => -30768.946749
+    #   => -1070.964046
     #   >> m3.classes.size
     #   => 3
     #   >> m3.classes[0]
-    #   => ['p' => 0.69751, 'w' => 0.35313 ]
+    #   => {:w=>0.00928, :p=>0.56413}
     # 
     # Next take the overall posterior analysis
     # 
@@ -255,6 +255,28 @@ module Bio::PAML
 
       def tree_length
         @buf[/tree length\s+=\s+ (-?\d+(\.\d+)?)/,1].to_f
+      end
+
+      # Return classes when available. For M3 it parses
+      #
+      # dN/dS (w) for site classes (K=3)
+      # p:   0.56413  0.35613  0.07974
+      # w:   0.00928  1.98252 23.44160
+      #
+      # and turns it into an array of Hash
+      #
+      #   >> m3.classes[0]
+      #   => {:w=>0.00928, :p=>0.56413}
+
+      def classes
+        # probs = @buf.scan(/\np:\s+(\w+)\s+(\S+)\s+(\S+)/)
+        probs = @buf.scan(/\np:.*?\n/).to_s.split[1..3].map { |f| f.to_f }
+        ws = @buf.scan(/\nw:.*?\n/).to_s.split[1..3].map { |f| f.to_f }
+        ret = []
+        probs.each_with_index do | prob, i |
+          ret.push  :p => prob, :w => ws[i] 
+        end
+        ret
       end
 
     end
