@@ -60,6 +60,13 @@ module Bio::PAML
     #   => "M0"
     #   >> c.models[1].name
     #   => "M3"
+    #
+    # Check the general information
+    #
+    #   >> c.num_sequences
+    #   => 6
+    #   >> c.num_codons
+    #   => 134
     # 
     # Now fetch the results of the first model M0, and check its values
     # 
@@ -121,6 +128,18 @@ module Bio::PAML
     #   >> codon.w
     #   => 3.293
     #
+    # Now we generate special string 'graph' for positive selection. The 
+    # following returns a string the length of the input alignment and 
+    # shows the locations of positive selection:
+    #
+    #   >> c.nb_sites.graph[0..32]
+    #   => "                **    *       * *"
+    #
+    # And with dN/dS (high values are still an asterisk *)
+    #
+    #   >> c.nb_sites.graph(:omega => true)[0..32]
+    #   => "                3*    6       6 2"
+    #
     # Test the raw buffers
     #
     #   >> c.header.to_s =~ /seed/
@@ -165,6 +184,14 @@ module Bio::PAML
         @header = sections[0]
       end
 
+      def num_codons
+        @header.scan(/seed used = \d+\n\s+\d+\s+\d+/).to_s.split[5].to_i/3
+      end
+
+      def num_sequences
+        @header.scan(/seed used = \d+\n\s+\d+\s+\d+/).to_s.split[4].to_i
+      end
+
       # compatibility call for older interface (single models only)
       def tree_log_likelihood
         @single.tree_log_likelihood
@@ -187,7 +214,7 @@ module Bio::PAML
 
       # Return a NBSites (naive empirical bayesian) object
       def nb_sites
-        NBSites.new(@footer)
+        NBSites.new(@footer,num_codons)
       end
 
     end  # Report
@@ -354,7 +381,8 @@ module Bio::PAML
 
     class NBSites < Array
 
-      def initialize buf
+      def initialize buf, num_codons
+        @num_codons = num_codons
         raise ReportError,"No NB sites found" if buf !~ /Naive Empirical Bayes/
         lines = buf.split("\n")
         start = lines.index("Naive Empirical Bayes (NEB) analysis") + 6
@@ -363,6 +391,20 @@ module Bio::PAML
           fields = line.split
           push PositiveSite.new fields
         end
+      end
+
+      def graph options={}
+        ret = ""
+        pos = 0
+        each do | site |
+          symbol = "*"
+          if options[:omega]
+            symbol = site.omega.to_i.to_s if site.omega.abs <= 10.0
+          end
+          ret += symbol.rjust(site.position-pos)
+          pos = site.position
+        end
+        ret += ' '.rjust(@num_codons - pos - 1)
       end
 
     end
