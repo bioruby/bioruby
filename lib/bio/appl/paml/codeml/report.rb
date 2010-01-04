@@ -140,7 +140,8 @@ module Bio::PAML
     #   >> c.nb_sites.graph(:omega => true)[0..32]
     #   => "                3*    6       6 2"
     #
-    # Test the raw buffers
+    # We also provide the raw buffers to adhere to the principle of 
+    # unexpected use. Test the raw buffers for content:
     #
     #   >> c.header.to_s =~ /seed/
     #   => 1
@@ -151,6 +152,35 @@ module Bio::PAML
     #   >> c.footer.to_s =~ /Bayes/
     #   => 16
     #
+    # Finally we do a test on an M7+M8 run. 
+    #
+    #   >> buf = BioTestFile.read('paml/codeml/models/results7-8.txt')
+    #
+    # Invoke Bioruby's PAML codeml parser
+    #
+    #   >> require 'bio'
+    #   >> c = Bio::PAML::Codeml::Report.new(buf)
+    #
+    # Do we have two models?
+    #
+    #   >> c.models.size
+    #   => 2
+    #   >> c.models[0].name
+    #   => "M7"
+    #   >> c.models[1].name
+    #   => "M8"
+    #
+    # Compared to M0/M3 there are some differences. The important ones
+    # are the parameters and the full Bayesian result.
+    #
+    #   >> c.nb_sites.size
+    #   => 69
+    #   >> c.sites.size
+    #   => 51
+    #   >> c.sites[0].to_a
+    #   => [17, "I", 0.672, 2.847]
+    #   >> c.sites.graph[0..32]
+    #   => "                **    *       * *"
 
     class Report < Bio::PAML::Common::Report
 
@@ -212,11 +242,15 @@ module Bio::PAML
         @single.tree
       end
 
-      # Return a NBSites (naive empirical bayesian) object
+      # Return a PositiveSites (naive empirical bayesian) object
       def nb_sites
-        NBSites.new(@footer,num_codons)
+        PositiveSites.new("Naive Empirical Bayes (NEB) analysis",@footer,num_codons)
       end
 
+      # Return a PositiveSites Bayes Empirical Bayes (BEB) analysis
+      def sites
+        PositiveSites.new("Bayes Empirical Bayes (BEB) analysis (Yang, Wong & Nielsen 2005. Mol. Biol. Evol. 22:1107-1118)",@footer,num_codons)
+      end
     end  # Report
    
     #   ReportSingle is a simpler parser for a codeml report
@@ -362,7 +396,7 @@ module Bio::PAML
       end
     end
 
-    # Return the positive selection sites. PAML returns:
+    # Container for the positive selection sites. PAML returns:
     #
     # Naive Empirical Bayes (NEB) analysis
     # Positively selected sites (*: P>95%; **: P>99%)
@@ -379,13 +413,15 @@ module Bio::PAML
     # (newline)
     #
 
-    class NBSites < Array
+    class PositiveSites < Array
 
-      def initialize buf, num_codons
+      def initialize search, buf, num_codons
         @num_codons = num_codons
-        raise ReportError,"No NB sites found" if buf !~ /Naive Empirical Bayes/
+        if buf.index(search)==nil
+          raise ReportError,"No NB sites found for #{search}" 
+        end
         lines = buf.split("\n")
-        start = lines.index("Naive Empirical Bayes (NEB) analysis") + 6
+        start = lines.index(search) + 6
         lines[start..-1].each do | line |
           last if line == ""
           fields = line.split
