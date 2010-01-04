@@ -148,14 +148,46 @@ module Bio::PAML
         sections = buf.split("\nModel ")
         model_num = sections.size-1
         raise ReportError,"Incorrect codeml data models=#{model_num}" if model_num > 2
-        @header = sections[0]
         foot2 = sections[model_num].split("\nNaive ")
-        sections[model_num] = foot2[0]
-        @footer = 'Naive '+foot2[1]
-        @models = []
-        sections[1..-1].each do | model_buf |
-          @models.push Model.new(model_buf)
+        if foot2.size == 2
+          # We have a dual model
+          sections[model_num] = foot2[0]
+          @footer = 'Naive '+foot2[1]
+          @models = []
+          sections[1..-1].each do | model_buf |
+            @models.push Model.new(model_buf)
+          end
+        else
+          # A single model is run
+          sections = buf.split("\nTREE #")
+          model_num = sections.size-1
+          raise ReportError,"Can not parse single model file" if model_num != 1
+          @models = []
+          @models.push sections[1]
+          @footer = sections[1][/Time used/,1]
+          @single = ReportSingle.new(buf)
         end
+        @header = sections[0]
+      end
+
+      # compatibility call for older interface (single models only)
+      def tree_log_likelihood
+        @single.tree_log_likelihood
+      end
+
+      # compatibility call for older interface (single models only)
+      def tree_length
+        @single.tree_length
+      end
+
+      # compatibility call for older interface (single models only)
+      def alpha
+        @single.alpha
+      end
+
+      # compatibility call for older interface (single models only)
+      def tree
+        @single.tree
       end
 
     end  # Report
