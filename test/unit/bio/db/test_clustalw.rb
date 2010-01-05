@@ -40,12 +40,12 @@ module Bio
     end
 
     def test_sequences
-      seq = @aln[0]
+      seq = @aln.get_sequence(0)
       assert_equal('query',seq.definition)
-      assert_equal('-MKNTLLKLGVCV',seq.to_s[0..12])
-      seq = @aln[1]
+      assert_equal("-MKNTLLKLGVCVSLLGITPFVSTISSVQAERTVEHKVIKNETGTISISQLNKNVWVHTELGYFSG-EAVPSNGLVLNTSKGLVLVDSSWDDKLTKELIEMVEKKFKKRVTDVIITHAHADRIGGMKTLKERGIKAHSTALTAELAKKNG--------------------YEEPLGDLQSVTNLKFGN----MKVETFYPGKGHTEDNIVVWLPQYQILAGGCLVKSASSKDLGNVADAYVNEWSTSIENVLKRYGNINLVVPGHGEVGDR-----GLLLHTLDLLK---------------------------------------------------------------------",seq.to_s)
+      seq = @aln.get_sequence(1)
       assert_equal('gi|115023|sp|P10425|',seq.definition)
-      assert_equal('MKKNTLLKVGLCV',seq.to_s[0..12])
+      assert_equal("MKKNTLLKVGLCVSLLGTTQFVSTISSVQASQKVEQIVIKNETGTISISQLNKNVWVHTELGYFNG-EAVPSNGLVLNTSKGLVLVDSSWDNKLTKELIEMVEKKFQKRVTDVIITHAHADRIGGITALKERGIKAHSTALTAELAKKSG--------------------YEEPLGDLQTVTNLKFGN----TKVETFYPGKGHTEDNIVVWLPQYQILAGGCLVKSAEAKNLGNVADAYVNEWSTSIENMLKRYRNINLVVPGHGKVGDK-----GLLLHTLDLLK---------------------------------------------------------------------",seq.to_s)
     end
 
     def test_alignment
@@ -53,7 +53,7 @@ module Bio
     end
 
     def test_match_line
-      assert_equal("                                              .: :    *:   .     .     **. .   ..   ::*:       . * : : .        .: .* * *",@aln.match_line[0..120])
+      assert_equal("                                              .: :    *:   .     .     **. .   ..   ::*:       . * : : .        .: .* * *   *   :   * .  :     .     .                       *   :    .: .        .:      .*:  ::***:*  .:* .* :: .           .        ::.:            *              :  .                                                                          " ,@aln.match_line)
     end
 
   end # class TestClustalwFormat

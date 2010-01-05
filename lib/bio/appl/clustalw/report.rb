@@ -75,15 +75,15 @@ module Bio
       end
 
       # Returns the Bio::Sequence in the matrix at row 'row' as
-      # Bio::Sequence object. 
+      # Bio::Sequence object. When _row_ is out of range a nil is returned.
       # ---
       # *Arguments*:
       # * (required) _row_: Integer
       # *Returns*:: Bio::Sequence
       def get_sequence(row)
-        return nil if row < 0 or row >= a.keys.size
         a = alignment
-        id  = a.keys[index]
+        return nil if row < 0 or row >= a.keys.size
+        id  = a.keys[row]
         seq = a.to_hash[id]
         seq.definition = id
         seq
