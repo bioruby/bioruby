@@ -2,6 +2,8 @@
 # = bio/appl/clustalw/report.rb - CLUSTAL W format data (*.aln) class
 #
 # Copyright:: Copyright (C) 2003 GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+#             Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
+#
 # License::   The Ruby License
 #
 #  $Id: report.rb,v 1.13 2007/07/18 08:47:39 ngoto Exp $
@@ -72,8 +74,14 @@ module Bio
         @header or (do_parse or @header)
       end
 
-      # Return Bio::Sequence object by sequence +index+
-      def [] index
+      # Returns the Bio::Sequence in the matrix at row 'row' as
+      # Bio::Sequence object. 
+      # ---
+      # *Arguments*:
+      # * (required) _row_: Integer
+      # *Returns*:: Bio::Sequence
+      def get_sequence(row)
+        return nil if row < 0 or row >= a.keys.size
         a = alignment
         id  = a.keys[index]
         seq = a.to_hash[id]
