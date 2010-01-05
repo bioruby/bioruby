@@ -1,7 +1,7 @@
 #
 # test/unit/bio/db/test_clustalw.rb - Unit test for Bio::ClustalWFormat
 #
-# Copyright::  Copyright (C) 2009 Pjotr Prins <p@bioruby.org>
+# Copyright::  Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
 # License::    The Ruby License
 #
 
@@ -13,7 +13,7 @@ require 'bio/appl/clustalw/report'
 
 module Bio
 
-  class TestClustalWFormat < Test::Unit::TestCase
+  class TestClustalWReport < Test::Unit::TestCase
 
     def setup
       test_data_path = Pathname.new(File.join(BioRubyTestDataPath, 'clustalw')).cleanpath.to_s
