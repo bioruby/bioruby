@@ -18,8 +18,8 @@ module Bio
     def setup
       test_data_path = Pathname.new(File.join(BioRubyTestDataPath, 'clustalw')).cleanpath.to_s
       aln_filename = File.join(test_data_path, 'example1.aln')
-      text = File.new(aln_filename).readlines
-      @aln = Bio::ClustalW::Report.new(text.join)
+      text = File.read(aln_filename)
+      @aln = Bio::ClustalW::Report.new(text)
     end
 
     # CLUSTAL 2.0.9 multiple sequence alignment
