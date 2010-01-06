@@ -1,12 +1,12 @@
 #
-# test/unit/bio/db/test_clustalw.rb - Unit test for Bio::ClustalWFormat
+# test/unit/bio/appl/clustalw/test_report.rb - Unit test for Bio::ClustalW::Report
 #
 # Copyright::  Copyright (C) 2010 Pjotr Prins <pjotr.prins@thebird.nl> 
 # License::    The Ruby License
 #
 
 require 'pathname'
-load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
                             'bioruby_test_helper.rb')).cleanpath.to_s
 require 'test/unit'
 require 'bio/appl/clustalw/report'
