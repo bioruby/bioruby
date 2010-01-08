@@ -140,7 +140,7 @@ module Bio::PAML
     #
     # And with dN/dS (high values are still an asterisk *)
     #
-    #   >> c.nb_sites.graph(:omega => true)[0..32]
+    #   >> c.nb_sites.graph_omega[0..32]
     #   => "                3*    6       6 2"
     #
     # We also provide the raw buffers to adhere to the principle of 
@@ -155,14 +155,18 @@ module Bio::PAML
     #   >> c.footer.to_s =~ /Bayes/
     #   => 16
     #
-    # Finally we do a test on an M7+M8 run. 
+    # Finally we do a test on an M7+M8 run. Again, after loading the
+    # results file into _buf_
     #
-    #   >> buf = BioTestFile.read('paml/codeml/models/results7-8.txt')
+    #--
+    #   >> buf78 = BioTestFile.read('paml/codeml/models/results7-8.txt')
     #
+    #
+    #++
+
     # Invoke Bioruby's PAML codeml parser
     #
-    #   >> require 'bio'
-    #   >> c = Bio::PAML::Codeml::Report.new(buf)
+    #   >> c = Bio::PAML::Codeml::Report.new(buf78)
     #
     # Do we have two models?
     #
@@ -188,7 +192,15 @@ module Bio::PAML
     #   => [17, "I", 0.672, 2.847]
     #   >> c.sites.graph[0..32]
     #   => "                **    *       * *"
-
+    #
+    # Note the differences of omega with earlier M0-M3 naive Bayesian 
+    # analysis:
+    #
+    #   >> c.sites.graph_omega[0..32]
+    #   => "                24    3       3 2"
+    #
+    # The locations are the same, but the omega differs.
+    #
     class Report < Bio::PAML::Common::Report
 
       attr_reader :models, :header, :footer
@@ -269,19 +281,22 @@ module Bio::PAML
     #
     #   The results of a single model (old style report parser)
     #
+    #--
     #     >> buf = BioTestFile.read('paml/codeml/output.txt')
-    #     >> c = Bio::PAML::Codeml::Report.new(buf)
+    #++
     #
-    #     >> c.tree_log_likelihood
+    #     >> single = Bio::PAML::Codeml::Report.new(buf)
+    #
+    #     >> single.tree_log_likelihood
     #     => -1817.465211
     #
-    #     >> c.tree_length
+    #     >> single.tree_length
     #     => 0.77902
     #
-    #     >> c.alpha
+    #     >> single.alpha
     #     => 0.58871
     #
-    #     >> c.tree
+    #     >> single.tree
     #     => "(((rabbit: 0.082889, rat: 0.187866): 0.038008, human: 0.055050): 0.033639, goat-cow: 0.096992, marsupial: 0.284574);"
     #
     class ReportSingle < Bio::PAML::Common::Report
@@ -468,7 +483,7 @@ module Bio::PAML
       # Generate a graph - which is a simple string pointing out the positions
       # showing evidence of positive selection pressure.
       #
-      #   >> c.nb_sites.graph[0..32]
+      #   >> c.sites.graph[0..32]
       #   => "                **    *       * *"
       #
       def graph
@@ -480,8 +495,8 @@ module Bio::PAML
       # showing evidence of positive selection pressure, with dN/dS values
       # (high values are an asterisk *)
       #
-      #   >> c.nb_sites.graph_omega[0..32]
-      #   => "                3*    6       6 2"
+      #   >> c.sites.graph_omega[0..32]
+      #   => "                24    3       3 2"
       #
       def graph_omega
         graph_to_s(lambda { |site| 
