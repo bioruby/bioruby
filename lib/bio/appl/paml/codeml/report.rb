@@ -171,10 +171,14 @@ module Bio::PAML
     #   => "M8"
     #
     # Compared to M0/M3 there are some differences. The important ones
-    # are the parameters and the full Bayesian result.
+    # are the parameters and the full Bayesian result available for M7/M8.
+    # This is the naive Bayesian result:
     #
     #   >> c.nb_sites.size
     #   => 69
+    #
+    # And this is the full Bayesian result:
+    #
     #   >> c.sites.size
     #   => 51
     #   >> c.sites[0].to_a
@@ -186,7 +190,8 @@ module Bio::PAML
 
       attr_reader :models, :header, :footer
 
-      # Parse codeml output file passed with +buf+
+      # Parse codeml output file passed with +buf+, where buf contains
+      # the content of a codeml result file
       def initialize buf
         # split the main buffer into sections for each model, header and footer.
         sections = buf.split("\nModel ")
@@ -214,10 +219,12 @@ module Bio::PAML
         @header = sections[0]
       end
 
+      # Return the number of condons in the codeml alignment
       def num_codons
         @header.scan(/seed used = \d+\n\s+\d+\s+\d+/).to_s.split[5].to_i/3
       end
 
+      # Return the number of sequences in the codeml alignment
       def num_sequences
         @header.scan(/seed used = \d+\n\s+\d+\s+\d+/).to_s.split[4].to_i
       end
@@ -255,7 +262,7 @@ module Bio::PAML
    
     #   ReportSingle is a simpler parser for a codeml report
     #   containing a single run. This is retained for 
-    #   backward compatibility.
+    #   backward compatibility mostly.
     #
     #   The results of a single model (old style report parser)
     #
@@ -278,6 +285,7 @@ module Bio::PAML
 
       attr_reader :tree_log_likelihood, :tree_length, :alpha, :tree
 
+      # Do not use
       def initialize(codeml_report)
         @tree_log_likelihood = pull_tree_log_likelihood(codeml_report)
         @tree_length = pull_tree_length(codeml_report)
@@ -287,27 +295,35 @@ module Bio::PAML
 
       private
 
+      # Do not use
       def pull_tree_log_likelihood(text)
         text[/lnL\(.+\):\s+(-?\d+(\.\d+)?)/,1].to_f
       end
 
+      # Do not use
       def pull_tree_length(text)
         text[/tree length\s+=\s+ (-?\d+(\.\d+)?)/,1].to_f
       end
 
+      # Do not use
       def pull_alpha(text)
         text[/alpha .+ =\s+(-?\d+(\.\d+)?)/,1].to_f
       end
 
+      # Do not use
       def pull_tree(text)
         text[/([^\n]+)\n\nDetailed/m,1]
       end
 
     end # ReportSingle
 
-    # Model class
+    # Model class contains one of the models of a codeml run (e.g. M0)
+    # which is used as a test hypothesis for positive selection. This
+    # class is used by Codeml::Report.
     class Model 
 
+      # Create a model using the relevant information from the codeml
+      # result data (text buffer)
       def initialize buf
         @buf = buf
       end
@@ -317,30 +333,36 @@ module Bio::PAML
         'M'.to_s+@buf[0..0]
       end
 
+      # Return codeml log likelihood of model
       def lnL
         @buf[/lnL\(.+\):\s+(-?\d+(\.\d+)?)/,1].to_f
       end
 
+      # Return codeml omega of model
       def omega
         @buf[/omega \(dN\/dS\)\s+=\s+ (-?\d+(\.\d+)?)/,1].to_f
       end
 
       alias dN_dS omega
 
+      # Return codeml kappa of model, when available
       def kappa
         return nil if @buf !~ /kappa/
         @buf[/kappa \(ts\/tv\)\s+=\s+ (-?\d+(\.\d+)?)/,1].to_f
       end
 
+      # Return codeml alpha of model, when available
       def alpha
         return nil if @buf !~ /alpha/
         @buf[/alpha .+ =\s+(-?\d+(\.\d+)?)/,1].to_f
       end
 
+      # Return codeml treee length
       def tree_length
         @buf[/tree length\s+=\s+ (-?\d+(\.\d+)?)/,1].to_f
       end
 
+      # Return codeml tree
       def tree
         @buf[/([^\n]+)\n\nDetailed/m,1]
       end
@@ -355,7 +377,6 @@ module Bio::PAML
       #
       #   >> m3.classes[0]
       #   => {:w=>0.00928, :p=>0.56413}
-
       def classes
         return nil if @buf !~ /classes/
         # probs = @buf.scan(/\np:\s+(\w+)\s+(\S+)\s+(\S+)/)
@@ -368,14 +389,22 @@ module Bio::PAML
         ret
       end
 
+      # Return the model information as a String
       def to_s
         @buf
       end
     end
 
-    # A record of codon sites showing evidence of positive selection
+    # A record of codon sites, across the sequences in the alignment,
+    # showing evidence of positive selection.
+    #
+    # This class is used for storing both codeml's full Bayesian and naive
+    # Bayesian analysis
     class PositiveSite
-      attr_reader :position, :probability, :omega
+      attr_reader :position
+      attr_reader :probability
+      attr_reader :omega
+
       def initialize fields
         @position    = fields[0].to_i
         @aaref       = fields[1]
@@ -383,6 +412,7 @@ module Bio::PAML
         @omega       = fields[3].to_f
       end
      
+      # Return dN/dS (or omega) for this codon
       def dN_dS
         omega
       end
@@ -391,12 +421,13 @@ module Bio::PAML
 
       alias p probability
 
+      # Return contents as Array - useful for printing
       def to_a
         [ @position, @aaref, @probability, @omega ]
       end
     end
 
-    # Container for the positive selection sites. PAML returns:
+    # List for the positive selection sites. PAML returns:
     #
     # Naive Empirical Bayes (NEB) analysis
     # Positively selected sites (*: P>95%; **: P>99%)
@@ -412,7 +443,9 @@ module Bio::PAML
     #    132 R      1.000**       10.800
     # (newline)
     #
-
+    # these can be accessed using normal iterators. Also special
+    # methods are available for presenting this data
+    #
     class PositiveSites < Array
 
       def initialize search, buf, num_codons
@@ -429,20 +462,44 @@ module Bio::PAML
         end
       end
 
-      def graph options={}
+      # Generate a graph - which is a simple string pointing out the positions
+      # showing evidence of positive selection pressure.
+      #
+      #   >> c.nb_sites.graph[0..32]
+      #   => "                **    *       * *"
+      #
+      def graph
+        graph_to_s(lambda { |site| "*" })
+      end
+
+
+      # Generate a graph - which is a simple string pointing out the positions
+      # showing evidence of positive selection pressure, with dN/dS values
+      # (high values are an asterisk *)
+      #
+      #   >> c.nb_sites.graph_omega[0..32]
+      #   => "                3*    6       6 2"
+      #
+      def graph_omega
+        graph_to_s(lambda { |site| 
+            symbol = "*"
+            symbol = site.omega.to_i.to_s if site.omega.abs <= 10.0
+            symbol
+        })
+      end
+      
+      private
+
+      def graph_to_s func
         ret = ""
         pos = 0
         each do | site |
-          symbol = "*"
-          if options[:omega]
-            symbol = site.omega.to_i.to_s if site.omega.abs <= 10.0
-          end
+          symbol = func.call(site)
           ret += symbol.rjust(site.position-pos)
           pos = site.position
         end
         ret += ' '.rjust(@num_codons - pos - 1)
       end
-
     end
 
     # Supporting error class
