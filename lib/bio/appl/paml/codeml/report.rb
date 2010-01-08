@@ -42,14 +42,17 @@ module Bio::PAML
     #
     # == Examples
     #
-    # Read the codeml M0-M3 data file into a buffer
-    #
-    #   >> require 'bio/test/biotestfile'
-    #   >> buf = BioTestFile.read('paml/codeml/models/results0-3.txt')
-    #
-    # Invoke Bioruby's PAML codeml parser
+    #--
+    # The following is not shown in the documentation
     #
     #   >> require 'bio'
+    #   >> require 'bio/test/biotestfile'
+    #   >> buf = BioTestFile.read('paml/codeml/models/results0-3.txt')
+    #++
+    #
+    # Invoke Bioruby's PAML codeml parser, after having read the contents
+    # of the codeml result file into _buf_ (for example using File.read)
+    #
     #   >> c = Bio::PAML::Codeml::Report.new(buf)
     #
     # Do we have two models?
