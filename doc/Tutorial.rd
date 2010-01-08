@@ -40,7 +40,7 @@ bioruby> $: << '../lib'
 * Copyright (C) 2001-2003 KATAYAMA Toshiaki <k .at. bioruby.org>
 * Copyright (C) 2005-2010 Pjotr Prins, Naohisa Goto and others
 
-This document was last modified: 2009/12/27
+This document was last modified: 2010/01/08
 Current editor: Pjotr Prins <p .at. bioruby.org>
 
 The latest version resides in the GIT source code repository:  ./doc/((<Tutorial.rd|URL:http://github.com/pjotrp/bioruby/raw/documentation/doc/Tutorial.rd>)).
@@ -1408,14 +1408,6 @@ Gene Ontologies can be fetched through the Ruby Ensembl API package:
 
 Prints each mosq. accession/uniq identifier and the GO terms from the Drosphila
 homologues.
-
-== Comparing BioProjects
-
-For a quick functional comparison of BioRuby, BioPerl, BioPython and Bioconductor (R) see ((<URL:http://sciruby.codeforpeople.com/sr.cgi/BioProjects>))
-
-== Using BioRuby with R
-
-Using Ruby with R Pjotr wrote a section on SciRuby. See ((<URL:http://sciruby.codeforpeople.com/sr.cgi/RubyWithRlang>))
 
 == Using BioPerl or BioPython from Ruby
 
