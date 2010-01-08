@@ -11,17 +11,17 @@
 <h1><a name="label-0" id="label-0">BioRuby Tutorial</a></h1><!-- RDLabel: "BioRuby Tutorial" -->
 <ul>
 <li>Copyright (C) 2001-2003 KATAYAMA Toshiaki &lt;k .at. bioruby.org&gt;</li>
-<li>Copyright (C) 2005-2009 Pjotr Prins, Naohisa Goto and others</li>
+<li>Copyright (C) 2005-2010 Pjotr Prins, Naohisa Goto and others</li>
 </ul>
-<p>This document was last modified: 2009/12/27
+<p>This document was last modified: 2010/01/08
 Current editor: Pjotr Prins &lt;p .at. bioruby.org&gt;</p>
 <p>The latest version resides in the GIT source code repository:  ./doc/<a href="http://github.com/pjotrp/bioruby/raw/documentation/doc/Tutorial.rd">Tutorial.rd</a>.</p>
 <h2><a name="label-1" id="label-1">Introduction</a></h2><!-- RDLabel: "Introduction" -->
 <p>This is a tutorial for using Bioruby. A basic knowledge of Ruby is required.
 If you want to know more about the programming langauge Ruby we recommend the
 latest Ruby book <a href="http://www.pragprog.com/titles/ruby">Programming Ruby</a>
-by Dave Thomas and Andy Hunt - some of it is online
-<a href="http://www.rubycentral.com/pickaxe/">here</a>.</p>
+by Dave Thomas and Andy Hunt - the first edition is online
+<a href="http://www.ruby-doc.org/docs/ProgrammingRuby/">here</a>.</p>
 <p>For BioRuby you need to install Ruby and the BioRuby package on your computer</p>
 <p>You can check whether Ruby is installed on your computer and what
 version it has with the</p>
@@ -31,8 +31,11 @@ version it has with the</p>
 <p>If you see no such thing you'll have to install Ruby using your installation
 manager. For more information see the
 <a href="http://www.ruby-lang.org/en/">Ruby</a> website.</p>
-<p>Once Ruby is works download and install Bioruby using the links on the
-<a href="http://bioruby.org/">Bioruby</a> website.</p>
+<p>With Ruby download and install Bioruby using the links on the
+<a href="http://bioruby.org/">Bioruby</a> website. The recommended installation is via 
+Ruby gems:</p>
+<pre>gem install bio</pre>
+<p>See also the Bioruby <a href="http://bioruby.open-bio.org/wiki/Installation">wiki</a>.</p>
 <p>A lot of BioRuby's documentation exists in the source code and unit tests. To
 really dive in you will need the latest source code tree. The embedded rdoc
 documentation can be viewed online at
@@ -1087,13 +1090,9 @@ infile.each do |line|
 end</pre>
 <p>Prints each mosq. accession/uniq identifier and the GO terms from the Drosphila
 homologues.</p>
-<h2><a name="label-38" id="label-38">Comparing BioProjects</a></h2><!-- RDLabel: "Comparing BioProjects" -->
-<p>For a quick functional comparison of BioRuby, BioPerl, BioPython and Bioconductor (R) see <a href="http://sciruby.codeforpeople.com/sr.cgi/BioProjects">&lt;URL:http://sciruby.codeforpeople.com/sr.cgi/BioProjects&gt;</a></p>
-<h2><a name="label-39" id="label-39">Using BioRuby with R</a></h2><!-- RDLabel: "Using BioRuby with R" -->
-<p>Using Ruby with R Pjotr wrote a section on SciRuby. See <a href="http://sciruby.codeforpeople.com/sr.cgi/RubyWithRlang">&lt;URL:http://sciruby.codeforpeople.com/sr.cgi/RubyWithRlang&gt;</a></p>
-<h2><a name="label-40" id="label-40">Using BioPerl or BioPython from Ruby</a></h2><!-- RDLabel: "Using BioPerl or BioPython from Ruby" -->
+<h2><a name="label-38" id="label-38">Using BioPerl or BioPython from Ruby</a></h2><!-- RDLabel: "Using BioPerl or BioPython from Ruby" -->
 <p>At the moment there is no easy way of accessing BioPerl from Ruby. The best way, perhaps, is to create a Perl server that gets accessed through XML/RPC or SOAP.</p>
-<h2><a name="label-41" id="label-41">Installing required external library</a></h2><!-- RDLabel: "Installing required external library" -->
+<h2><a name="label-39" id="label-39">Installing required external library</a></h2><!-- RDLabel: "Installing required external library" -->
 <p>At this point for using BioRuby no additional libraries are needed, except if
 you are using Bio::PhyloXML module. Then you have to install libxml-ruby.</p>
 <p>This may change, so keep an eye on the Bioruby website. Also when
@@ -1102,20 +1101,20 @@ a package is missing BioRuby should show an informative message.</p>
 painful, as the gem standard for packages evolved late and some still
 force you to copy things by hand. Therefore read the README's
 carefully that come with each package.</p>
-<h3><a name="label-42" id="label-42">Installing libxml-ruby</a></h3><!-- RDLabel: "Installing libxml-ruby" -->
+<h3><a name="label-40" id="label-40">Installing libxml-ruby</a></h3><!-- RDLabel: "Installing libxml-ruby" -->
 <p>The simplest way is to use gem packaging system.</p>
 <pre>gem install -r libxml-ruby</pre>
 <p>If you get `require': no such file to load - mkmf (LoadError) error then do</p>
 <pre>sudo apt-get install ruby-dev</pre>
 <p>If you have other problems with installation, then see <a href="http://libxml.rubyforge.org/install.xml">&lt;URL:http://libxml.rubyforge.org/install.xml&gt;</a>  </p>
-<h2><a name="label-43" id="label-43">Trouble shooting</a></h2><!-- RDLabel: "Trouble shooting" -->
+<h2><a name="label-41" id="label-41">Trouble shooting</a></h2><!-- RDLabel: "Trouble shooting" -->
 <ul>
 <li>Error: in `require': no such file to load -- bio (LoadError)</li>
 </ul>
 <p>Ruby fails to find the BioRuby libraries - add it to the RUBYLIB path, or pass
 it to the interpeter. For example:</p>
 <pre>ruby -I$BIORUBYPATH/lib yourprogram.rb</pre>
-<h2><a name="label-44" id="label-44">Modifying this page</a></h2><!-- RDLabel: "Modifying this page" -->
+<h2><a name="label-42" id="label-42">Modifying this page</a></h2><!-- RDLabel: "Modifying this page" -->
 <p>IMPORTANT NOTICE: This page is maintained in the BioRuby source code 
 repository. Please edit the file there otherwise changes may get
 lost. See <!-- Reference, RDLabel "BioRuby Developer Information" doesn't exist --><em class="label-not-found">BioRuby Developer Information</em><!-- Reference end --> for repository and mailing list
