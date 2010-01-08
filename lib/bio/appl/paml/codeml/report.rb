@@ -244,6 +244,18 @@ module Bio::PAML
         @header.scan(/seed used = \d+\n\s+\d+\s+\d+/).to_s.split[4].to_i
       end
 
+      # Return a PositiveSites (naive empirical bayesian) object
+      def nb_sites
+        PositiveSites.new("Naive Empirical Bayes (NEB) analysis",@footer,num_codons)
+      end
+
+      # Return a PositiveSites Bayes Empirical Bayes (BEB) analysis
+      def sites
+        PositiveSites.new("Bayes Empirical Bayes (BEB) analysis (Yang, Wong & Nielsen 2005. Mol. Biol. Evol. 22:1107-1118)",@footer,num_codons)
+      end
+
+      #:stopdoc:
+
       # compatibility call for older interface (single models only)
       def tree_log_likelihood
         @single.tree_log_likelihood
@@ -264,15 +276,6 @@ module Bio::PAML
         @single.tree
       end
 
-      # Return a PositiveSites (naive empirical bayesian) object
-      def nb_sites
-        PositiveSites.new("Naive Empirical Bayes (NEB) analysis",@footer,num_codons)
-      end
-
-      # Return a PositiveSites Bayes Empirical Bayes (BEB) analysis
-      def sites
-        PositiveSites.new("Bayes Empirical Bayes (BEB) analysis (Yang, Wong & Nielsen 2005. Mol. Biol. Evol. 22:1107-1118)",@footer,num_codons)
-      end
     end  # Report
    
     #   ReportSingle is a simpler parser for a codeml report
