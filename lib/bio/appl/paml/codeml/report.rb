@@ -294,11 +294,11 @@ module Bio::PAML
         model2 = @models[1].modelnum
         case [model1, model2]
           when [0,3]
-            2*(lnL2-lnL1) > 13.2767
+            2*(lnL2-lnL1) > 13.2767   # p=0.01, df=4
           when [1,2]
-            2*(lnL2-lnL1) > 13.2767
+            2*(lnL2-lnL1) >  9.2103   # p=0.01, df=2
           when [7,8]
-            2*(lnL2-lnL1) >  9.2103
+            2*(lnL2-lnL1) >  9.2103   # p=0.01, df=2
           else
             raise ReportError,"Significance calculation for #{descr} not supported"
         end
