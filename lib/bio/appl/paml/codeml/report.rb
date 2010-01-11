@@ -110,7 +110,7 @@ module Bio::PAML
     # Next take the overall posterior analysis
     # 
     #   >> c.nb_sites.size
-    #   => 51
+    #   => 44
     #   >> c.nb_sites[0].to_a
     #   => [17, "I", 0.988, 3.293]
     # 
@@ -182,12 +182,12 @@ module Bio::PAML
     # This is the naive Bayesian result:
     #
     #   >> c.nb_sites.size
-    #   => 69
+    #   => 10
     #
     # And this is the full Bayesian result:
     #
     #   >> c.sites.size
-    #   => 51
+    #   => 30
     #   >> c.sites[0].to_a
     #   => [17, "I", 0.672, 2.847]
     #   >> c.sites.graph[0..32]
