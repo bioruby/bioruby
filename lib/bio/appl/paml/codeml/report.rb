@@ -285,20 +285,25 @@ module Bio::PAML
       # difference between the two compared models, may be compared against
       # chi-square, with critical value 9.21 at the 1% significance level.
       #
-      # Returns true or false. If it can not be calculated returns nil.
+      # Here we support a few likely combinations, M0-3, M1-2 and M7-8, used
+      # most often in literature. For other combinations, or a different 
+      # significance level, you'll have to calculate chi-square yourself.
+      #
+      # Returns true or false. If no result is calculated this method
+      # raises an error
       def significant
-        return nil if @models.size != 2
+        raise ReportError,"Wrong number of models #{@models.size}" if @models.size != 2
         lnL1 = @models[0].lnL
         model1 = @models[0].modelnum
         lnL2 = @models[1].lnL
         model2 = @models[1].modelnum
         case [model1, model2]
           when [0,3]
-            2*(lnL2-lnL1) > 13.2767   # p=0.01, df=4
+            2*(lnL2-lnL1) > 13.2767   # chi2: p=0.01, df=4
           when [1,2]
-            2*(lnL2-lnL1) >  9.2103   # p=0.01, df=2
+            2*(lnL2-lnL1) >  9.2103   # chi2: p=0.01, df=2
           when [7,8]
-            2*(lnL2-lnL1) >  9.2103   # p=0.01, df=2
+            2*(lnL2-lnL1) >  9.2103   # chi2: p=0.01, df=2
           else
             raise ReportError,"Significance calculation for #{descr} not supported"
         end
