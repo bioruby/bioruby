@@ -488,6 +488,7 @@ module Bio::PAML
             break
           end
         end
+        raise ReportError,"Out of bound error for <#{buf}>" if lines[start+6]==nil
         lines[start+6..-1].each do | line |
           break if line.strip == ""
           fields = line.split
