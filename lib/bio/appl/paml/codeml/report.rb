@@ -478,7 +478,7 @@ module Bio::PAML
         lines = buf.split("\n")
         start = lines.index(search) + 6
         lines[start..-1].each do | line |
-          last if line == ""
+          break if line.strip == ""
           fields = line.split
           push PositiveSite.new fields
         end
