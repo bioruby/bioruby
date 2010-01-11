@@ -470,10 +470,18 @@ module Bio::PAML
     #
     class PositiveSites < Array
 
+      attr_reader :descr
+
       def initialize search, buf, num_codons
         @num_codons = num_codons
         if buf.index(search)==nil
           raise ReportError,"No NB sites found for #{search}" 
+        end
+        # Set description of this class
+        if buf =~ /Naive/
+          @descr = 'dN/dS (Naive Emperical Bayes)'
+        else
+          @descr = 'dN/dS (Bayes Emperical Bayes)'
         end
         lines = buf.split("\n")
         start = lines.index(search) + 6
@@ -482,6 +490,11 @@ module Bio::PAML
           fields = line.split
           push PositiveSite.new fields
         end
+      end
+
+
+      def descr
+        'dN/dS (Naive Bayesian)'
       end
 
       # Generate a graph - which is a simple string pointing out the positions
