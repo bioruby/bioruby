@@ -246,12 +246,12 @@ module Bio::PAML
 
       # Return a PositiveSites (naive empirical bayesian) object
       def nb_sites
-        PositiveSites.new("Naive Empirical Bayes (NEB) analysis",@footer,num_codons)
+        PositiveSites.new("Naive Empirical Bayes (NEB)",@footer,num_codons)
       end
 
       # Return a PositiveSites Bayes Empirical Bayes (BEB) analysis
       def sites
-        PositiveSites.new("Bayes Empirical Bayes (BEB) analysis (Yang, Wong & Nielsen 2005. Mol. Biol. Evol. 22:1107-1118)",@footer,num_codons)
+        PositiveSites.new("Bayes Empirical Bayes (BEB)",@footer,num_codons)
       end
 
       #:stopdoc:
@@ -479,13 +479,17 @@ module Bio::PAML
           raise ReportError,"No NB sites found for #{search}" 
         end
         # Set description of this class
-        if buf =~ /Naive/
-          @descr = 'dN/dS (Naive Emperical Bayes)'
-        else
-          @descr = 'dN/dS (Bayes Emperical Bayes)'
-        end
+        @descr = search
         lines = buf.split("\n")
-        start = lines.index(search) + 6
+        # find location
+        start = 0
+        lines.each_with_index do | line, i |
+          if line =~ /#{search}/
+            start = i
+            break
+          end
+        end
+        start += 6
         lines[start..-1].each do | line |
           break if line.strip == ""
           fields = line.split
