@@ -70,6 +70,13 @@ module Bio::PAML
     #   => 6
     #   >> c.num_codons
     #   => 134
+    #   >> c.descr
+    #   => "M0-3"
+    #
+    # Test whether the second model M3 is significant over M0
+    #
+    #   >> c.significant
+    #   => true
     # 
     # Now fetch the results of the first model M0, and check its values
     # 
@@ -177,6 +184,11 @@ module Bio::PAML
     #   >> c.models[1].name
     #   => "M8"
     #
+    # Assert the results are significant
+    #
+    #   >> c.significant
+    #   => true
+    #
     # Compared to M0/M3 there are some differences. The important ones
     # are the parameters and the full Bayesian result available for M7/M8.
     # This is the naive Bayesian result:
@@ -234,6 +246,19 @@ module Bio::PAML
         @header = sections[0]
       end
 
+      # Give a short description of the models, for example 'M0-3'
+      def descr
+        num = @models.size
+        case num
+          when 0 
+            'No model'
+          when 1 
+            @models[0].name
+          else 
+            @models[0].name + '-' + @models[1].modelnum.to_s
+        end
+      end
+
       # Return the number of condons in the codeml alignment
       def num_codons
         @header.scan(/seed used = \d+\n\s+\d+\s+\d+/).to_s.split[5].to_i/3
@@ -252,6 +277,31 @@ module Bio::PAML
       # Return a PositiveSites Bayes Empirical Bayes (BEB) analysis
       def sites
         PositiveSites.new("Bayes Empirical Bayes (BEB)",@footer,num_codons)
+      end
+
+      # If the number of models is two we can calculate whether the result is
+      # statistically significant, or not, at the 1% significance level. For
+      # example, for M7-8 the LRT statistic, or twice the log likelihood
+      # difference between the two compared models, may be compared against
+      # chi-square, with critical value 9.21 at the 1% significance level.
+      #
+      # Returns true or false. If it can not be calculated returns nil.
+      def significant
+        return nil if @models.size != 2
+        lnL1 = @models[0].lnL
+        model1 = @models[0].modelnum
+        lnL2 = @models[1].lnL
+        model2 = @models[1].modelnum
+        case [model1, model2]
+          when [0,3]
+            2*(lnL2-lnL1) > 13.2767
+          when [1,2]
+            2*(lnL2-lnL1) > 13.2767
+          when [7,8]
+            2*(lnL2-lnL1) >  9.2103
+          else
+            raise ReportError,"Significance calculation for #{descr} not supported"
+        end
       end
 
       #:stopdoc:
@@ -349,9 +399,14 @@ module Bio::PAML
         @buf = buf
       end
 
+      # Return the model number
+      def modelnum
+        @buf[0..0].to_i
+      end
+
       # Return the model name, e.g. 'M0' or 'M7'
       def name
-        'M'.to_s+@buf[0..0]
+        'M'.to_s+modelnum.to_s
       end
 
       # Return codeml log likelihood of model
