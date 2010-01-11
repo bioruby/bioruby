@@ -473,7 +473,6 @@ module Bio::PAML
       attr_reader :descr
 
       def initialize search, buf, num_codons
-        @buf = buf
         @num_codons = num_codons
         if buf.index(search)==nil
           raise ReportError,"No NB sites found for #{search}" 
@@ -481,20 +480,21 @@ module Bio::PAML
         # Set description of this class
         @descr = search
         lines = buf.split("\n")
-        # find location
+        # find location of 'search'
         start = 0
         lines.each_with_index do | line, i |
-          if line =~ /#{search}/
+          if line.index(search) != nil
             start = i
             break
           end
         end
-        start += 6
-        lines[start..-1].each do | line |
+        lines[start+6..-1].each do | line |
           break if line.strip == ""
           fields = line.split
           push PositiveSite.new fields
         end
+        num = size()
+        @buf = lines[start..start+num+7].join("\n")
       end
 
       # Generate a graph - which is a simple string pointing out the positions
