@@ -534,19 +534,22 @@ module Bio::PAML
         @buf
       end
 
-      private
-
       # :nodoc:
-      # Creates a graph of sites, adjusting for gaps
-      def graph_to_s func
+      # Creates a graph of sites, adjusting for gaps. This generator
+      # is also called from HtmlPositiveSites. The _fill_ is used
+      # to fill out the gaps
+      def graph_to_s func, fill=' '
         ret = ""
         pos = 0
         each do | site |
           symbol = func.call(site)
-          ret += symbol.rjust(site.position-pos)
+          gapsize = site.position-pos-1
+          ret += fill*gapsize + symbol
+          symbol.rjust(site.position-pos, fill)
           pos = site.position
         end
-        ret += ' '.rjust(@num_codons - pos - 1)
+        gapsize = @num_codons - pos - 1
+        ret += fill*gapsize
       end
     end
 
