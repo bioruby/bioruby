@@ -423,12 +423,13 @@ module Bio::PAML
     # Bayesian analysis
     class PositiveSite
       attr_reader :position
+      attr_reader :aaref
       attr_reader :probability
       attr_reader :omega
 
       def initialize fields
         @position    = fields[0].to_i
-        @aaref       = fields[1]
+        @aaref       = fields[1].to_s
         @probability = fields[2].to_f
         @omega       = fields[3].to_f
       end
@@ -493,7 +494,6 @@ module Bio::PAML
         graph_to_s(lambda { |site| "*" })
       end
 
-
       # Generate a graph - which is a simple string pointing out the positions
       # showing evidence of positive selection pressure, with dN/dS values
       # (high values are an asterisk *)
@@ -506,6 +506,13 @@ module Bio::PAML
             symbol = "*"
             symbol = site.omega.to_i.to_s if site.omega.abs <= 10.0
             symbol
+        })
+      end
+
+      # Graph of amino acids of first sequence at locations
+      def graph_seq
+        graph_to_s(lambda { |site |
+          symbol = site.aaref
         })
       end
       
