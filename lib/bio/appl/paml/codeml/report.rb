@@ -492,11 +492,6 @@ module Bio::PAML
         end
       end
 
-
-      def descr
-        'dN/dS (Naive Bayesian)'
-      end
-
       # Generate a graph - which is a simple string pointing out the positions
       # showing evidence of positive selection pressure.
       #
@@ -531,6 +526,8 @@ module Bio::PAML
       
       private
 
+      # :nodoc:
+      # Creates a graph of sites, adjusting for gaps
       def graph_to_s func
         ret = ""
         pos = 0
