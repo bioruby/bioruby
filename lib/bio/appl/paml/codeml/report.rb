@@ -473,6 +473,7 @@ module Bio::PAML
       attr_reader :descr
 
       def initialize search, buf, num_codons
+        @buf = buf
         @num_codons = num_codons
         if buf.index(search)==nil
           raise ReportError,"No NB sites found for #{search}" 
@@ -524,6 +525,11 @@ module Bio::PAML
         })
       end
       
+      # Return the positive selection information as a String
+      def to_s
+        @buf
+      end
+
       private
 
       # :nodoc:
