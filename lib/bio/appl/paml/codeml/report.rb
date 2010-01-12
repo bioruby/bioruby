@@ -610,7 +610,7 @@ module Bio::PAML
           pos = site.position
         end
         gapsize = @num_codons - pos - 1
-        ret += fill*gapsize
+        ret += fill*gapsize if gapsize > 0
       end
     end
 
