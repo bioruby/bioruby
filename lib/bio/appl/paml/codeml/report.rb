@@ -606,11 +606,11 @@ module Bio::PAML
           symbol = func.call(site)
           gapsize = site.position-pos-1
           ret += fill*gapsize + symbol
-          symbol.rjust(site.position-pos, fill)
           pos = site.position
         end
         gapsize = @num_codons - pos - 1
         ret += fill*gapsize if gapsize > 0
+        ret
       end
     end
 
