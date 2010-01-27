@@ -1220,7 +1220,30 @@ Bio::Fetch.query method.)
 
 == BioSQL
 
-to be written...
+BioSQL is well known schema to store and retrive biological sequences using a RDBMS like PostgreSQL or MySQL; note that SQLite is not supported.
+First of all you must install a database engine or have access to a remote one. Then create the schema and populate with the taxonomy. You can follow the official guide ---PUTTHELINK--- or the one provided by the Python's guys ---PUTTHELINK---.
+Next step is to install these gems:
+* ActiveRecord
+* CompositePrimaryKeys (Rails doesn't handle by default composite primary keys)
+* The layer to comunicate with you preferred RDBMS (postgresql, mysql, jdbcmysql in case you are running JRuby )
+
+
+You can find ActiveRecord's models in /bioruby/lib/bio/io/biosql
+
+When you have you terrific CoolBioSeqDB database we can connect to it using in this way:
+
+    Bio::SQL.establish_connection({'development'=>{'hostname'=>"YourHostname",
+                                                   'database'=>"CoolBioSeqDB",
+                                                   'adapter'=>"jdbcmysql", 
+                                                   'username'=>"YourUser",
+                                                   'password'=>"YouPassword"
+                                                  }
+                                  },
+                                  'development')
+
+The first parameter is the hash contaning the description of the configuration similar to database.yml in Rails application, you can declare different environment. The second parameter is the environment to use: 'development', 'test', 'production'.
+
+BioRuby treat sequences as Biosequence objects and we mantained this approach with BioSQL too.
 
 = PhyloXML
 
