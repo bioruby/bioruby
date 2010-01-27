@@ -1241,9 +1241,23 @@ When you have you terrific CoolBioSeqDB database we can connect to it using in t
                                   },
                                   'development')
 
-The first parameter is the hash contaning the description of the configuration similar to database.yml in Rails application, you can declare different environment. The second parameter is the environment to use: 'development', 'test', 'production'.
+    #The first parameter is the hash contaning the description of the configuration similar to database.yml in Rails application, you can declare different environment. The second parameter is the environment to use: 'development', 'test', 'production'.
+To store a sequence into the database you simply need a biosequence object.
 
-BioRuby treat sequences as Biosequence objects and we mantained this approach with BioSQL too.
+    biosql_database = Bio::SQL::Biodatabase.find(:first)
+    ff = Bio::GenBank.open("gbvrl1.seq")
+    
+    ff.each_entry do |gb|
+      Bio::SQL::Sequence.new(:biosequence=>gb.to_biosequence, :biodatabase=>biosql_database
+    end
+
+    #retriving a generic accession
+    bioseq = Bio::SQL.fetch_accession("YouAccession")
+    
+    #convert the sequence in GenBank format
+    bioseq.to_biosequence.output(:genbank)
+
+If you use biosequence objects, you will find all its method mapped to BioSQL sequences.
 
 = PhyloXML
 
