@@ -130,8 +130,8 @@ module Command
     [ arg0 ]
   end
 
-  # Executes the program.  Automatically select popen for Windows
-  # environment and fork for the others.
+  # Executes the program. Automatically select popen for Ruby 1.9 or
+  # Windows environment and fork for the others.
   # A block must be given. An IO object is passed to the block.
   #
   # Available options:
@@ -143,6 +143,9 @@ module Command
   # * (optional) _options_: Hash
   # *Returns*:: (undefined)
   def call_command(cmd, options = {}, &block) #:yields: io
+    if RUBY_VERSION >= "1.9.0" then
+      return call_command_popen(cmd, options, &block)
+    end
     case RUBY_PLATFORM
     when /mswin32|bccwin32/
       call_command_popen(cmd, options, &block)
@@ -151,14 +154,43 @@ module Command
     end
   end
 
+  # This method is internally called from the call_command method.
+  # In normal case, use call_command, and do not call this method directly.
+  #
   # Executes the program via IO.popen for OS which doesn't support fork.
   # A block must be given. An IO object is passed to the block.
+  #
+  # See the document of call_command for available options.
+  #
+  # Note for Ruby 1.8:
+  # In Ruby 1.8, although shell unsafe characters are escaped.
+  # If inescapable characters exists, it raises RuntimeError.
+  # So, call_command_fork is normally recommended.
+  #
+  # Note for Ruby 1.9:
+  # In Ruby 1.9, call_command_popen is safe and robust enough, and is the
+  # recommended way, because IO.popen is improved to get a command-line
+  # as an array without calling shell.
+  #
   # ---
   # *Arguments*:
   # * (required) _cmd_: Array containing String objects
   # * (optional) _options_: Hash
   # *Returns*:: (undefined)
   def call_command_popen(cmd, options = {})
+    if RUBY_VERSION >= "1.9.0" then
+      # For Ruby 1.9 or later, using command line array with options.
+      dir = options[:chdir]
+      cmd = safe_command_line_array(cmd)
+      if dir then
+        cmd = cmd + [ { :chdir => dir } ]
+      end
+      r = IO.popen(cmd, "r+") do |io|
+        yield io
+      end
+      return r
+    end
+    # For Ruby 1.8, using command line string.
     str = make_command_line(cmd)
     # processing options
     if dir = options[:chdir] then
@@ -182,11 +214,24 @@ module Command
     end
   end
 
+  # This method is internally called from the call_command method.
+  # In normal case, use call_command, and do not call this method directly.
+  #
   # Executes the program via fork (by using IO.popen("-")) and exec.
   # A block must be given. An IO object is passed to the block.
   #
-  # From the view point of security, this method is recommended
-  # rather than call_command_popen.
+  # See the document of call_command for available options.
+  #
+  # Note for Ruby 1.8:
+  # In Ruby 1.8, from the view point of security, this method is recommended
+  # rather than call_command_popen. However, this method might have problems
+  # with multi-threads.
+  #
+  # Note for Ruby 1.9:
+  # In Ruby 1.9, this method can not be used, because Thread.critical is
+  # removed. In Ruby 1.9, call_command_popen is safe and robust enough, and
+  # is the recommended way, because IO.popen is improved to get a
+  # command-line as an array without calling shell.
   #
   # ---
   # *Arguments*:
@@ -196,12 +241,16 @@ module Command
   def call_command_fork(cmd, options = {})
     dir = options[:chdir]
     cmd = safe_command_line_array(cmd)
+    tc, Thread.critical = Thread.critical, true
     IO.popen("-", "r+") do |io|
       if io then
         # parent
+        Thread.critical = tc
         yield io
       else
         # child
+        Thread.critical = true # for safety, though already true
+        GC.disable
         # chdir to options[:chdir] if available
         begin
           Dir.chdir(dir) if dir
@@ -240,7 +289,8 @@ module Command
   # waits the program termination, and returns the output data printed to the
   # standard output as a string.
   # 
-  # Automatically select popen for Windows environment and fork for the others.
+  # Automatically select popen for Ruby 1.9 or Windows environment and
+  # fork for the others.
   #
   # Available options:
   #   :chdir => "path" : changes working directory to the specified path.
@@ -252,6 +302,9 @@ module Command
   # * (optional) _options_: Hash
   # *Returns*:: String or nil
   def query_command(cmd, query = nil, options = {})
+    if RUBY_VERSION >= "1.9.0" then
+      return query_command_popen(cmd, query, options)
+    end
     case RUBY_PLATFORM
     when /mswin32|bccwin32/
       query_command_popen(cmd, query, options)
@@ -260,11 +313,17 @@ module Command
     end
   end
 
+  # This method is internally called from the query_command method.
+  # In normal case, use query_command, and do not call this method directly.
+  #
   # Executes the program with the query (String) given to the standard input,
   # waits the program termination, and returns the output data printed to the
   # standard output as a string.
   #
-  # IO.popen is used for OS which doesn't support fork.
+  # See the document of query_command for available options.
+  #
+  # See the document of call_command_popen for the security and Ruby
+  # version specific issues.
   #
   # ---
   # *Arguments*:
@@ -283,14 +342,19 @@ module Command
     ret
   end
 
+  # This method is internally called from the query_command method.
+  # In normal case, use query_command, and do not call this method directly.
+  #
   # Executes the program with the query (String) given to the standard input,
   # waits the program termination, and returns the output data printed to the
   # standard output as a string.
   #
   # Fork (by using IO.popen("-")) and exec is used to execute the program.
   #
-  # From the view point of security, this method is recommended
-  # rather than query_command_popen.
+  # See the document of query_command for available options.
+  #
+  # See the document of call_command_fork for the security and Ruby
+  # version specific issues.
   #
   # ---
   # *Arguments*:

@@ -54,6 +54,7 @@ module Bio
     end
 
     def test_call_command_fork
+      return unless Thread.respond_to?(:critical)
       begin
         ret = Bio::Command.call_command_fork(@arg) do |io|
           io.close_write
@@ -120,6 +121,7 @@ module Bio
     end
 
     def test_query_command_fork
+      return unless Thread.respond_to?(:critical)
       ary = [ @sort ]
       begin
         str = Bio::Command.query_command_fork(ary).to_s
@@ -188,6 +190,7 @@ module Bio
     end
 
     def test_call_command_fork_chdir
+      return unless Thread.respond_to?(:critical)
       str = nil
       begin
         Bio::Command.call_command_fork(@arg, 
@@ -215,6 +218,7 @@ module Bio
     end
 
     def test_query_command_fork_chdir
+      return unless Thread.respond_to?(:critical)
       begin
         str = Bio::Command.query_command_fork(@arg, nil,
                                               { :chdir => @dirname }).to_s
