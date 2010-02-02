@@ -95,6 +95,30 @@ module Bio
       data[n]
     end
 
+    # Returns the data as a Bio::Sequence object.
+    # In the returned sequence object, the length of the sequence is zero,
+    # and the numeric data is stored to the Bio::Sequence#quality_scores
+    # attirbute.
+    #
+    # Because the meaning of the numeric data is unclear,
+    # Bio::Sequence#quality_score_type is not set by default.
+    #
+    # Note: If you modify the returned Bio::Sequence object,
+    # the sequence or definition in this FastaNumericFormat object
+    # might also be changed (but not always be changed)
+    # because of efficiency.
+    # 
+    # ---
+    # *Arguments*:
+    # *Returns*:: (Bio::Sequence) sequence object
+    def to_biosequence
+      s = Bio::Sequence.adapter(self,
+                                Bio::Sequence::Adapter::FastaNumericFormat)
+      s.seq = Bio::Sequence::Generic.new('')
+      s
+    end
+    alias to_seq to_biosequence
+
     undef query, blast, fasta, seq, naseq, nalen, aaseq, aalen
 
   end #class FastaNumericFormat
