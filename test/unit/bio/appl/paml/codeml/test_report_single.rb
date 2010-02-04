@@ -1,5 +1,5 @@
 #
-# test/unit/bio/appl/paml/codeml/test_report.rb - Unit test for Bio::PAML::Codeml::Report
+# test/unit/bio/appl/paml/codeml/test_report_single.rb - Unit test for Bio::PAML::Codeml::Report
 #
 # Copyright::  Copyright (C) 2008 Michael D. Barton <mail@michaelbarton.me.uk>
 # License::    The Ruby License
