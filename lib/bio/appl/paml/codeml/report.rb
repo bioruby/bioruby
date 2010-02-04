@@ -170,7 +170,7 @@ module Bio::PAML
     #
     #
     #++
-
+    #
     # Invoke Bioruby's PAML codeml parser
     #
     #   >> c = Bio::PAML::Codeml::Report.new(buf78)
@@ -330,6 +330,8 @@ module Bio::PAML
       def tree
         @single.tree
       end
+
+      #:startdoc:
 
     end  # Report
    
