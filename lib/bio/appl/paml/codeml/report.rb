@@ -554,7 +554,7 @@ module Bio::PAML
         lines[start+6..-1].each do | line |
           break if line.strip == ""
           fields = line.split
-          push PositiveSite.new fields
+          push PositiveSite.new(fields)
         end
         num = size()
         @buf = lines[start..start+num+7].join("\n")
