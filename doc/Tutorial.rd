@@ -1220,8 +1220,8 @@ Bio::Fetch.query method.)
 
 == BioSQL
 
-BioSQL is well known schema to store and retrive biological sequences using a RDBMS like PostgreSQL or MySQL; note that SQLite is not supported.
-First of all you must install a database engine or have access to a remote one. Then create the schema and populate with the taxonomy. You can follow the official guide ---PUTTHELINK--- or the one provided by the Python's guys ---PUTTHELINK---.
+BioSQL is a well known schema to store and retrive biological sequences using a RDBMS like PostgreSQL or MySQL; note that SQLite is not supported.
+First of all, you must install a database engine or have access to a remote one. Then create the schema and populate with the taxonomy. You can follow the official guide ---PUTTHELINK--- or the one provided by the Python's guys ---PUTTHELINK---.
 Next step is to install these gems:
 * ActiveRecord
 * CompositePrimaryKeys (Rails doesn't handle by default composite primary keys)
@@ -1230,9 +1230,13 @@ Next step is to install these gems:
 
 You can find ActiveRecord's models in /bioruby/lib/bio/io/biosql
 
-When you have you terrific CoolBioSeqDB database we can connect to it using in this way:
+When you have your database up and running, you can connect to it in this way:
 
-    Bio::SQL.establish_connection({'development'=>{'hostname'=>"YourHostname",
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+
+    connection = Bio::SQL.establish_connection({'development'=>{'hostname'=>"YourHostname",
                                                    'database'=>"CoolBioSeqDB",
                                                    'adapter'=>"jdbcmysql", 
                                                    'username'=>"YourUser",
@@ -1242,8 +1246,8 @@ When you have you terrific CoolBioSeqDB database we can connect to it using in t
                                   'development')
 
     #The first parameter is the hash contaning the description of the configuration similar to database.yml in Rails application, you can declare different environment. The second parameter is the environment to use: 'development', 'test', 'production'.
-To store a sequence into the database you simply need a biosequence object.
-
+    
+    #To store a sequence into the database you simply need a biosequence object.
     biosql_database = Bio::SQL::Biodatabase.find(:first)
     ff = Bio::GenBank.open("gbvrl1.seq")
     
@@ -1251,13 +1255,29 @@ To store a sequence into the database you simply need a biosequence object.
       Bio::SQL::Sequence.new(:biosequence=>gb.to_biosequence, :biodatabase=>biosql_database
     end
 
+    #You can list all the entries into every database 
+    Bio::SQL.list_entries
+
+    #list databases:
+    Bio::SQL.list_databases
+
     #retriving a generic accession
     bioseq = Bio::SQL.fetch_accession("YouAccession")
-    
+
+    #If you use biosequence objects, you will find all its method mapped to BioSQL sequences. But you can also access to the models directly:
+
+    #get the raw sequence associated with you accession
+    bioseq.entry.biosequence 
+   
+    #get the length of your sequence, this is the explicit form of bioseq.length
+    bioseq.entry.biosequence.length
+
     #convert the sequence in GenBank format
     bioseq.to_biosequence.output(:genbank)
 
-If you use biosequence objects, you will find all its method mapped to BioSQL sequences.
+BioSQL schema is not so intuitive at the beginning, spend some time on understanding it, in the end if you know a little bit of rails everything will go smootly.
+ToDo: add exemaples from George. I remember he did some cool post on BioSQL and Rails.
+
 
 = PhyloXML
 
