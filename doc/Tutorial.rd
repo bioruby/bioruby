@@ -1221,7 +1221,7 @@ Bio::Fetch.query method.)
 == BioSQL
 
 BioSQL is a well known schema to store and retrive biological sequences using a RDBMS like PostgreSQL or MySQL; note that SQLite is not supported.
-First of all, you must install a database engine or have access to a remote one. Then create the schema and populate with the taxonomy. You can follow the official guide ---PUTTHELINK--- or the one provided by the Python's guys ---PUTTHELINK---.
+First of all, you must install a database engine or have access to a remote one. Then create the schema and populate with the taxonomy. You can follow the official guide http://code.open-bio.org/svnweb/index.cgi/biosql/view/biosql-schema/trunk/INSTALL .
 Next step is to install these gems:
 * ActiveRecord
 * CompositePrimaryKeys (Rails doesn't handle by default composite primary keys)
