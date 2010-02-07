@@ -1221,7 +1221,7 @@ Bio::Fetch.query method.)
 == BioSQL
 
 BioSQL is a well known schema to store and retrive biological sequences using a RDBMS like PostgreSQL or MySQL; note that SQLite is not supported.
-First of all, you must install a database engine or have access to a remote one. Then create the schema and populate with the taxonomy. You can follow the official guide http://code.open-bio.org/svnweb/index.cgi/biosql/view/biosql-schema/trunk/INSTALL .
+First of all, you must install a database engine or have access to a remote one. Then create the schema and populate with the taxonomy. You can follow the ((<Official Guide|URL:http://code.open-bio.org/svnweb/index.cgi/biosql/view/biosql-schema/trunk/INSTALL>)) .
 Next step is to install these gems:
 * ActiveRecord
 * CompositePrimaryKeys (Rails doesn't handle by default composite primary keys)
@@ -1275,7 +1275,7 @@ When you have your database up and running, you can connect to it in this way:
     #convert the sequence in GenBank format
     bioseq.to_biosequence.output(:genbank)
 
-BioSQL schema is not so intuitive at the beginning, spend some time on understanding it, in the end if you know a little bit of rails everything will go smootly.
+BioSQL' ((<schema|URL:http://www.biosql.org/wiki/Schema_Overview>)) is not so intuitive at the beginning, spend some time on understanding it, in the end if you know a little bit of rails everything will go smootly. You can find information to Annotation ((<here|URL:http://www.biosql.org/wiki/Annotation_Mapping>))
 ToDo: add exemaples from George. I remember he did some cool post on BioSQL and Rails.
 
 
