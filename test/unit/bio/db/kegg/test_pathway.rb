@@ -35,22 +35,23 @@ module Bio
     end
 
     def test_keggmodules
-      expected = [ "M00097  UDP-glucose and UDP-galactose biosynthesis, Glc-1P/Gal-1P => UDP-Glc/UDP-Gal",
-			             "M00614  PTS system, N-acetylgalactosamine-specific II component",
-			             "M00616  PTS system, galactitol-specific II component",
-			             "M00618  PTS system, lactose-specific II component",
-			             "M00624  PTS system, galactosamine-specific II component"
-			           ]
-			assert_equal(expected, @obj.keggmodules)
+      expected =
+        [ "M00097  UDP-glucose and UDP-galactose biosynthesis, Glc-1P/Gal-1P => UDP-Glc/UDP-Gal",
+          "M00614  PTS system, N-acetylgalactosamine-specific II component",
+          "M00616  PTS system, galactitol-specific II component",
+          "M00618  PTS system, lactose-specific II component",
+          "M00624  PTS system, galactosamine-specific II component"
+        ]
+      assert_equal(expected, @obj.keggmodules)
     end
 
     def test_rel_pathways
       expected = [ "map00010  Glycolysis / Gluconeogenesis",
-			             "map00040  Pentose and glucuronate interconversions",
-			             "map00051  Fructose and mannose metabolism",
-			             "map00520  Amino sugar and nucleotide sugar metabolism"
-			           ]
-			assert_equal(expected, @obj.rel_pathways)
+                   "map00040  Pentose and glucuronate interconversions",
+                   "map00051  Fructose and mannose metabolism",
+                   "map00520  Amino sugar and nucleotide sugar metabolism"
+                 ]
+      assert_equal(expected, @obj.rel_pathways)
     end
 
   end

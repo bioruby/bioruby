@@ -33,7 +33,7 @@ class PATHWAY < KEGGDB
   # * (required) _entry_: (String) single entry as a string
   # *Returns*:: Bio::KEGG::PATHWAY object
   def initialize(entry)
-   	super(entry, TAGSIZE)
+    super(entry, TAGSIZE)
   end
 
   # Return the ID of the pathway, described in the ENTRY line.
@@ -47,7 +47,7 @@ class PATHWAY < KEGGDB
   # ---
   # *Returns*:: String
   def name
-   	field_fetch('NAME')
+    field_fetch('NAME')
   end
 
   # Return the name of the KEGG class, described in the CLASS line.
