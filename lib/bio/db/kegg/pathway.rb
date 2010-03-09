@@ -58,14 +58,52 @@ class PATHWAY < KEGGDB
   end
 
   # Returns MODULE field of the entry.
-  def keggmodules
+  # ---
+  # *Returns*:: Array containing String objects
+  def pathway_modules_as_strings
     lines_fetch('MODULE')
   end
 
+  # Returns MODULE field as a Hash. Each key of the hash is Pathway Module ID,
+  # and each value is the name of the Pathway Module.
+  # ---
+  # *Returns*:: Hash
+  def pathway_modules_as_hash
+    unless defined? @pathway_modules_s_as_hash then
+      hash = {}
+      pathway_modules_as_strings.each do |line|
+        entry_id, name = line.split(/\s+/, 2)
+        hash[entry_id] = name
+      end
+      @pathway_modules_as_hash = hash
+    end
+    @pathway_modules_as_hash
+  end
+  alias pathway_modules pathway_modules_as_hash
+
   # Returns REL_PATHWAY field of the entry.
-  def rel_pathways
+  # ---
+  # *Returns*:: Array containing String objects
+  def rel_pathways_as_strings
     lines_fetch('REL_PATHWAY')
   end
+
+  # Returns REL_PATHWAY field as a Hash. Each key of the hash is
+  # Pathway ID, and each value is the name of the pathway.
+  # ---
+  # *Returns*:: Hash
+  def rel_pathways_as_hash
+    unless defined? @rel_pathways_as_hash then
+      hash = {}
+      rel_pathways_as_strings.each do |line|
+        entry_id, name = line.split(/\s+/, 2)
+        hash[entry_id] = name
+      end
+      @rel_pathways_as_hash = hash
+    end
+    @rel_pathways_as_hash
+  end
+  alias rel_pathways rel_pathways_as_hash
 
 end # PATHWAY
 

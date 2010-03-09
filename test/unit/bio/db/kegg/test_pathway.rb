@@ -34,7 +34,19 @@ module Bio
       assert_equal('Metabolism; Carbohydrate Metabolism', @obj.keggclass)
     end
 
-    def test_keggmodules
+    def test_pathway_modules_as_hash
+      expected = {
+        "M00097"=>"UDP-glucose and UDP-galactose biosynthesis, Glc-1P/Gal-1P => UDP-Glc/UDP-Gal",
+        "M00614"=>"PTS system, N-acetylgalactosamine-specific II component",
+        "M00616"=>"PTS system, galactitol-specific II component",
+        "M00618"=>"PTS system, lactose-specific II component",
+        "M00624"=>"PTS system, galactosamine-specific II component"
+      }
+      assert_equal(expected, @obj.pathway_modules_as_hash)
+      assert_equal(expected, @obj.pathway_modules)
+    end
+
+    def test_pathway_modules_as_strings
       expected =
         [ "M00097  UDP-glucose and UDP-galactose biosynthesis, Glc-1P/Gal-1P => UDP-Glc/UDP-Gal",
           "M00614  PTS system, N-acetylgalactosamine-specific II component",
@@ -42,15 +54,26 @@ module Bio
           "M00618  PTS system, lactose-specific II component",
           "M00624  PTS system, galactosamine-specific II component"
         ]
-      assert_equal(expected, @obj.keggmodules)
+      assert_equal(expected, @obj.pathway_modules_as_strings)
     end
 
-    def test_rel_pathways
+    def test_rel_pathways_as_strings
       expected = [ "map00010  Glycolysis / Gluconeogenesis",
                    "map00040  Pentose and glucuronate interconversions",
                    "map00051  Fructose and mannose metabolism",
                    "map00520  Amino sugar and nucleotide sugar metabolism"
                  ]
+      assert_equal(expected, @obj.rel_pathways_as_strings)
+    end
+
+    def test_rel_pathways_as_hash
+      expected = {
+        "map00010"=>"Glycolysis / Gluconeogenesis",
+        "map00040"=>"Pentose and glucuronate interconversions",
+        "map00051"=>"Fructose and mannose metabolism",
+        "map00520"=>"Amino sugar and nucleotide sugar metabolism"
+      }
+      assert_equal(expected, @obj.rel_pathways_as_hash)
       assert_equal(expected, @obj.rel_pathways)
     end
 
