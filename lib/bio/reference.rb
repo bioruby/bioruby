@@ -150,6 +150,30 @@ module Bio
       @affiliations = hash['affiliations'] || []
     end
 
+    # If _other_ is equal with the self, returns true.
+    # Otherwise, returns false.
+    # ---
+    # *Arguments*:
+    # * (required) _other_: any object
+    # *Returns*:: true or false
+    def ==(other)
+      return true if super(other)
+      return false unless other.instance_of?(self.class)
+      flag = false
+      [ :authors, :title, :journal, :volume, :issue, :pages,
+        :year, :pubmed, :medline, :doi, :abstract,
+        :url, :mesh, :embl_gb_record_number,
+        :sequence_position, :comments, :affiliations ].each do |m|
+        begin
+          flag = (self.__send__(m) == other.__send__(m))
+        rescue NoMethodError, ArgumentError, NameError
+          flag = false
+        end
+        break unless flag
+      end
+      flag
+    end
+
     # Formats the reference in a given style.
     #
     # Styles:
