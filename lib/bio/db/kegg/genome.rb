@@ -8,6 +8,7 @@
 #
 
 require 'bio/db'
+require 'bio/reference'
 
 module Bio
 class KEGG
@@ -31,6 +32,27 @@ class GENOME < KEGGDB
     super(entry, TAGSIZE)
   end
 
+  # (private) Returns a tag name of the field as a String.
+  # Needed to redefine because of the PLASMID field.
+  def tag_get(str)
+    if /\APLASMID\s+/ =~ str.to_s then
+      'PLASMID'
+    else
+      super(str)
+    end
+  end
+  private :tag_get
+
+  # (private) Returns a String of the field without a tag name.
+  # Needed to redefine because of the PLASMID field.
+  def tag_cut(str)
+    if /\APLASMID\s+/ =~ str.to_s then
+      $'
+    else
+      super(str)
+    end
+  end
+  private :tag_cut
 
   # ENTRY -- Returns contents of the ENTRY record as a String.
   def entry_id
@@ -80,7 +102,20 @@ class GENOME < KEGGDB
 
   # ORIGINAL_DB -- Returns contents of the ORIGINAL_DB record as a String.
   def original_db
-    field_fetch('ORIGINAL_DB')
+    #field_fetch('ORIGINAL_DB')
+    unless defined?(@original_db)
+      @original_db = fetch('ORIGINAL_DB')
+    end
+    @original_db
+  end
+
+  # Returns ORIGINAL_DB record as an Array containing String objects.
+  #
+  # ---
+  # *Arguments*:
+  # *Returns*:: Array containing String objects
+  def original_databases
+    lines_fetch('ORIGINAL_DB')
   end
 
   # DISEASE -- Returns contents of the COMMENT record as a String.
@@ -99,25 +134,43 @@ class GENOME < KEGGDB
     unless @data['REFERENCE']
       ary = []
       toptag2array(get('REFERENCE')).each do |ref|
-        hash = Hash.new('')
+        hash = Hash.new
         subtag2array(ref).each do |field|
           case tag_get(field)
+          when /REFERENCE/
+            cmnt = tag_cut(field).chomp
+            if /^\s*PMID\:(\d+)\s*/ =~ cmnt then
+              hash['pubmed'] = $1
+              cmnt = $'
+            end
+            if cmnt and !cmnt.empty? then
+              hash['comments'] ||= []
+              hash['comments'].push(cmnt)
+            end
           when /AUTHORS/
             authors = truncate(tag_cut(field))
-            authors = authors.split(', ')
-            authors[-1] = authors[-1].split(/\s+and\s+/)
+            authors = authors.split(/\, /)
+            authors[-1] = authors[-1].split(/\s+and\s+/) if authors[-1]
             authors = authors.flatten.map { |a| a.sub(',', ', ') }
             hash['authors']	= authors
           when /TITLE/
             hash['title']	= truncate(tag_cut(field))
           when /JOURNAL/
             journal = truncate(tag_cut(field))
-            if journal =~ /(.*) (\d+):(\d+)-(\d+) \((\d+)\) \[UI:(\d+)\]$/
+            case journal
+            # KEGG style
+            when /(.*) (\d*(?:\([^\)]+\))?)\:(\d+\-\d+) \((\d+)\)$/
               hash['journal']	= $1
               hash['volume']	= $2
               hash['pages']	= $3
-              hash['year']	= $5
-              hash['medline']	= $6
+              hash['year']	= $4
+            # old KEGG style
+            when /(.*) (\d+):(\d+\-\d+) \((\d+)\) \[UI:(\d+)\]$/
+              hash['journal']	= $1
+              hash['volume']	= $2
+              hash['pages']	= $3
+              hash['year']	= $4
+              hash['medline']	= $5
             else
               hash['journal'] = journal
             end
@@ -125,7 +178,7 @@ class GENOME < KEGGDB
         end
         ary.push(Reference.new(hash))
       end
-      @data['REFERENCE'] = References.new(ary)
+      @data['REFERENCE'] = ary #.extend(Bio::References::BackwardCompatibility)
     end
     @data['REFERENCE']
   end
