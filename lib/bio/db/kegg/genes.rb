@@ -191,12 +191,14 @@ class GENES < KEGGDB
   # ---
   # *Returns*:: Array containing String
   def eclinks
-    ec_list = definition.slice(/\[EC:(.*?)\]/, 1)
-    if ec_list
-      ec_list.strip.split(/\s+/)
-    else
-      []
+    unless defined? @eclinks
+      ec_list = 
+        definition.slice(/\[EC\:([^\]]+)\]/, 1) ||
+        definition.slice(/\(EC\:([^\)]+)\)/, 1)
+      ary = ec_list ? ec_list.strip.split(/\s+/) : []
+      @eclinks = ary
     end
+    @eclinks
   end
 
   # Orthologs described in the ORTHOLOGY lines.
@@ -210,7 +212,10 @@ class GENES < KEGGDB
   # ---
   # *Returns*:: String
   def pathway
-    field_fetch('PATHWAY')
+    unless defined? @pathway
+      @pathway = fetch('PATHWAY')
+    end
+    @pathway
   end
 
   # Pathways described in the PATHWAY lines.

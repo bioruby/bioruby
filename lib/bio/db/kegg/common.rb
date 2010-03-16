@@ -54,7 +54,8 @@ class KEGG
         unless defined? @pathways_as_hash then
           hash = {}
           pathways_as_strings.each do |line|
-            sign, entry_id, name = line.split(/\s+/, 3)
+            line = line.sub(/\APATH\:\s+/, '')
+            entry_id, name = line.split(/\s+/, 2)
             hash[entry_id] = name
           end
           @pathways_as_hash = hash
@@ -72,9 +73,9 @@ class KEGG
       def orthologs_as_hash
         unless defined? @orthologs_as_hash
           kos = {}
-          orthologs_as_strings.each do |ko|
-            entry = ko.scan(/K[0-9]{5}/)[0]
-            sign, entry_id, definition = ko.split(/\s+/, 3)
+          orthologs_as_strings.each do |line|
+            ko = line.sub(/\AKO\:\s+/, '')
+            entry_id, definition = ko.split(/\s+/, 2)
             kos[entry_id] = definition
           end
           @orthologs_as_hash = kos
