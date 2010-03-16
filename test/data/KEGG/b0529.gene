@@ -1,0 +1,47 @@
+ENTRY       b0529             CDS       E.coli
+NAME        folD, ads, ECK0522, JW0518
+DEFINITION  bifunctional 5,10-methylene-tetrahydrofolate
+            dehydrogenase/5,10-methylene-tetrahydrofolate cyclohydrolase
+            (EC:1.5.1.5 3.5.4.9)
+ORTHOLOGY   K01491  methylenetetrahydrofolate dehydrogenase (NADP+) /
+                    methenyltetrahydrofolate cyclohydrolase [EC:1.5.1.5 3.5.4.9]
+PATHWAY     eco00630  Glyoxylate and dicarboxylate metabolism
+            eco00670  One carbon pool by folate
+            eco01100  Metabolic pathways
+CLASS       Metabolism; Carbohydrate Metabolism; Glyoxylate and dicarboxylate
+            metabolism [PATH:eco00630]
+            Metabolism; Metabolism of Cofactors and Vitamins; One carbon pool by
+            folate [PATH:eco00670]
+POSITION    complement(556098..556964)
+MOTIF       Pfam: THF_DHG_CYH_C THF_DHG_CYH Amidohydro_1
+            PROSITE: THF_DHG_CYH_1 THF_DHG_CYH_2
+DBLINKS     NCBI-GI: 16128513
+            NCBI-GeneID: 945221
+            RegulonDB: B0529
+            EcoGene: EG10328
+            ECOCYC: EG10328
+            UniProt: P24186
+STRUCTURE   PDB: 1B0A
+AASEQ       288
+            MAAKIIDGKTIAQQVRSEVAQKVQARIAAGLRAPGLAVVLVGSNPASQIYVASKRKACEE
+            VGFVSRSYDLPETTSEAELLELIDTLNADNTIDGILVQLPLPAGIDNVKVLERIHPDKDV
+            DGFHPYNVGRLCQRAPRLRPCTPRGIVTLLERYNIDTFGLNAVVIGASNIVGRPMSMELL
+            LAGCTTTVTHRFTKNLRHHVENADLLIVAVGKPGFIPGDWIKEGAIVIDVGINRLENGKV
+            VGDVVFEDAAKRASYITPVPGGVGPMTVATLIENTLQACVEYHDPQDE
+NTSEQ       867
+            atggcagcaaagattattgacggtaaaacgattgcgcagcaggtgcgctctgaagttgct
+            caaaaagttcaggcgcgtattgcagccggactgcgggcaccaggactggccgttgtgctg
+            gtgggtagtaaccctgcatcgcaaatttatgtcgcaagcaaacgcaaggcttgtgaagaa
+            gtcgggttcgtctcccgctcttatgacctcccggaaaccaccagcgaagcggagctgctg
+            gagcttatcgatacgctgaatgccgacaacaccatcgatggcattctggttcaactgccg
+            ttaccggcgggtattgataacgtcaaagtgctggaacgtattcatccggacaaagacgtg
+            gacggtttccatccttacaacgtcggtcgtctgtgccagcgcgcgccgcgtctgcgtccc
+            tgcaccccgcgcggtatcgtcacgctgcttgagcgttacaacattgataccttcggcctc
+            aacgccgtggtgattggcgcatcgaatatcgttggccgcccgatgagcatggaactgctg
+            ctggcaggttgcaccactacagtgactcaccgcttcactaaaaatctgcgtcatcacgta
+            gaaaatgccgatctattgatcgttgccgttggcaagccaggctttattcccggtgactgg
+            atcaaagaaggcgcaattgtgattgatgtcggcatcaaccgtctggaaaatggcaaagtt
+            gtgggcgacgtcgtgtttgaagacgcggctaaacgcgcctcatacattacgcctgttccc
+            ggcggcgttggcccgatgacggttgccacgctgattgaaaacacgctacaggcgtgcgtt
+            gaatatcatgatccacaggatgagtaa
+///
