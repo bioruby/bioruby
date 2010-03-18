@@ -68,6 +68,10 @@ class KEGG
                   hash['pages']   = $3
                   hash['year']    = $4
                   hash['medline'] = $5
+                  # Only journal name and year are available
+                when /(.*) \((\d+)\)$/
+                  hash['journal'] = $1
+                  hash['year']    = $2
                 else
                   hash['journal'] = journal
                 end
