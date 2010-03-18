@@ -1,7 +1,7 @@
 #
 # = bio/db/kegg/common.rb - Common methods for KEGG database classes
 #
-# Copyright::  Copyright (C) 2003-2007 Toshiaki Katayama <k@bioruby.org>
+# Copyright::  Copyright (C) 2001-2007 Toshiaki Katayama <k@bioruby.org>
 # Copyright::  Copyright (C) 2003 Masumi Itoh <m@bioruby.org>
 # Copyright::  Copyright (C) 2009 Kozo Nishida <kozo-ni@is.naist.jp>
 # License::    The Ruby License
@@ -22,6 +22,65 @@ class KEGG
 
   # Namespace for methods commonly used in the Bio::KEGG::* classes.
   module Common
+
+    # The module provides references method.
+    module References
+      # REFERENCE -- Returns contents of the REFERENCE records as an Array of
+      # Bio::Reference objects.
+      def references
+        unless @data['REFERENCE']
+          ary = []
+          toptag2array(get('REFERENCE')).each do |ref|
+            hash = Hash.new
+            subtag2array(ref).each do |field|
+              case tag_get(field)
+              when /REFERENCE/
+                cmnt = tag_cut(field).chomp
+                if /^\s*PMID\:(\d+)\s*/ =~ cmnt then
+                  hash['pubmed'] = $1
+                  cmnt = $'
+                end
+                if cmnt and !cmnt.empty? then
+                  hash['comments'] ||= []
+                  hash['comments'].push(cmnt)
+                end
+              when /AUTHORS/
+                authors = truncate(tag_cut(field))
+                authors = authors.split(/\, /)
+                authors[-1] = authors[-1].split(/\s+and\s+/) if authors[-1]
+                authors = authors.flatten.map { |a| a.sub(',', ', ') }
+                hash['authors']	= authors
+              when /TITLE/
+                hash['title']	= truncate(tag_cut(field))
+              when /JOURNAL/
+                journal = truncate(tag_cut(field))
+                case journal
+                  # KEGG style
+                when /(.*) (\d*(?:\([^\)]+\))?)\:(\d+\-\d+) \((\d+)\)$/
+                  hash['journal'] = $1
+                  hash['volume']  = $2
+                  hash['pages']   = $3
+                  hash['year']    = $4
+                  # old KEGG style
+                when /(.*) (\d+):(\d+\-\d+) \((\d+)\) \[UI:(\d+)\]$/
+                  hash['journal'] = $1
+                  hash['volume']  = $2
+                  hash['pages']   = $3
+                  hash['year']    = $4
+                  hash['medline'] = $5
+                else
+                  hash['journal'] = journal
+                end
+              end
+            end
+            ary.push(Reference.new(hash))
+          end
+          @data['REFERENCE'] = ary #.extend(Bio::References::BackwardCompatibility)
+
+        end
+        @data['REFERENCE']
+      end
+    end #module References
 
     # The module providing dblinks_as_hash methods.
     #

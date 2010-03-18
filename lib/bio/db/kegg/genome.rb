@@ -9,6 +9,7 @@
 
 require 'bio/db'
 require 'bio/reference'
+require 'bio/db/kegg/common'
 
 module Bio
 class KEGG
@@ -27,6 +28,12 @@ class GENOME < KEGGDB
 
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
+
+  include Common::References
+  # REFERENCE -- Returns contents of the REFERENCE records as an Array of
+  # Bio::Reference objects.
+  def references; super; end if false #dummy for RDoc
+
 
   def initialize(entry)
     super(entry, TAGSIZE)
@@ -128,61 +135,6 @@ class GENOME < KEGGDB
     field_fetch('COMMENT')
   end
   
-  # REFERENCE -- Returns contents of the REFERENCE records as an Array of
-  # Bio::Reference objects.
-  def references
-    unless @data['REFERENCE']
-      ary = []
-      toptag2array(get('REFERENCE')).each do |ref|
-        hash = Hash.new
-        subtag2array(ref).each do |field|
-          case tag_get(field)
-          when /REFERENCE/
-            cmnt = tag_cut(field).chomp
-            if /^\s*PMID\:(\d+)\s*/ =~ cmnt then
-              hash['pubmed'] = $1
-              cmnt = $'
-            end
-            if cmnt and !cmnt.empty? then
-              hash['comments'] ||= []
-              hash['comments'].push(cmnt)
-            end
-          when /AUTHORS/
-            authors = truncate(tag_cut(field))
-            authors = authors.split(/\, /)
-            authors[-1] = authors[-1].split(/\s+and\s+/) if authors[-1]
-            authors = authors.flatten.map { |a| a.sub(',', ', ') }
-            hash['authors']	= authors
-          when /TITLE/
-            hash['title']	= truncate(tag_cut(field))
-          when /JOURNAL/
-            journal = truncate(tag_cut(field))
-            case journal
-            # KEGG style
-            when /(.*) (\d*(?:\([^\)]+\))?)\:(\d+\-\d+) \((\d+)\)$/
-              hash['journal']	= $1
-              hash['volume']	= $2
-              hash['pages']	= $3
-              hash['year']	= $4
-            # old KEGG style
-            when /(.*) (\d+):(\d+\-\d+) \((\d+)\) \[UI:(\d+)\]$/
-              hash['journal']	= $1
-              hash['volume']	= $2
-              hash['pages']	= $3
-              hash['year']	= $4
-              hash['medline']	= $5
-            else
-              hash['journal'] = journal
-            end
-          end
-        end
-        ary.push(Reference.new(hash))
-      end
-      @data['REFERENCE'] = ary #.extend(Bio::References::BackwardCompatibility)
-    end
-    @data['REFERENCE']
-  end
-
   # CHROMOSOME -- Returns contents of the CHROMOSOME records as an Array
   # of Hash.
   def chromosomes
