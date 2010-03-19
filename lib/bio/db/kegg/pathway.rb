@@ -27,6 +27,14 @@ class PATHWAY < KEGGDB
   DELIMITER = RS = "\n///\n"
   TAGSIZE = 12
 
+  include Common::References
+  # REFERENCE -- Returns contents of the REFERENCE records as an Array of
+  # Bio::Reference objects.
+  # ---
+  # *Returns*:: an Array containing Bio::Reference objects
+  def references; super; end if false #dummy for RDoc
+
+
   # Creates a new Bio::KEGG::PATHWAY object.
   # ---
   # *Arguments*:
