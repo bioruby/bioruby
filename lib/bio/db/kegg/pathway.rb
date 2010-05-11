@@ -34,6 +34,14 @@ class PATHWAY < KEGGDB
   # *Returns*:: an Array containing Bio::Reference objects
   def references; super; end if false #dummy for RDoc
 
+  include Common::PathwayModulesAsHash
+  # Returns MODULE field as a Hash.
+  # Each key of the hash is Pathway Module ID,
+  # and each value is the name of the Pathway Module.
+  # ---
+  # *Returns*:: Hash
+  def pathway_modules_as_hash; super; end if false #dummy for RDoc
+  alias pathway_modules pathway_modules_as_hash
 
   # Creates a new Bio::KEGG::PATHWAY object.
   # ---
@@ -71,23 +79,6 @@ class PATHWAY < KEGGDB
   def pathway_modules_as_strings
     lines_fetch('MODULE')
   end
-
-  # Returns MODULE field as a Hash. Each key of the hash is Pathway Module ID,
-  # and each value is the name of the Pathway Module.
-  # ---
-  # *Returns*:: Hash
-  def pathway_modules_as_hash
-    unless defined? @pathway_modules_s_as_hash then
-      hash = {}
-      pathway_modules_as_strings.each do |line|
-        entry_id, name = line.split(/\s+/, 2)
-        hash[entry_id] = name
-      end
-      @pathway_modules_as_hash = hash
-    end
-    @pathway_modules_as_hash
-  end
-  alias pathway_modules pathway_modules_as_hash
 
   # Returns REL_PATHWAY field of the entry.
   # ---
