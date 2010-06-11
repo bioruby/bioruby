@@ -1,0 +1,728 @@
+! version: $Revision: 1.17 $
+! date: $Date: 2010/06/11 01:01:37 $
+!
+! Generated from file ontology/editors/gene_ontology_write.obo,
+! CVS revision:  1.1296; date:  10:06:2010 16:16
+!
+! Mapping of Gene Ontology terms to Wikipedia entries.
+! Wikipedia: http://en.wikipedia.org
+! Last update at Thu Jun 10 17:21:44 2010 by the script /users/cjm/cvs/go-moose/bin/daily_from_obo.pl
+!
+Wikipedia:11beta-hydroxysteroid_dehydrogenase > GO:11-beta-hydroxysteroid dehydrogenase activity ; GO:0003845
+Wikipedia:2-(hydroxymethyl)-3-(acetamidomethylene)succinate_amidohydrolase_(deaminating\,_decarboxylating) > GO:2-(hydroxymethyl)-3-(acetamidomethylene)succinate hydrolase activity ; GO:0047414
+Wikipedia:2-hydroxymethylglutarate_dehydrogenase > GO:2-hydroxymethylglutarate dehydrogenase activity ; GO:0043718
+Wikipedia:2-oxoaldehyde_dehydrogenase_(NAD+) > GO:2-oxoaldehyde dehydrogenase (NAD) activity ; GO:0047551
+Wikipedia:3alpha(17beta)-hydroxysteroid_dehydrogenase_(NAD+) > GO:3-alpha(17-beta)-hydroxysteroid dehydrogenase (NAD+) activity ; GO:0047035
+Wikipedia:3alpha-hydroxysteroid_dehydrogenase_(A-specific) > GO:3-alpha-hydroxysteroid dehydrogenase (A-specific) activity ; GO:0047026
+Wikipedia:3alpha-hydroxysteroid_dehydrogenase_(B-specific) > GO:3-alpha-hydroxysteroid dehydrogenase (B-specific) activity ; GO:0047042
+Wikipedia:5-HT_receptor > GO:serotonin receptor activity ; GO:0004993
+Wikipedia:5-oxoprolinase_(ATP-hydrolysing) > GO:5-oxoprolinase (ATP-hydrolyzing) activity ; GO:0017168
+Wikipedia:7beta-hydroxysteroid_dehydrogenase_(NADP+) > GO:7-beta-hydroxysteroid dehydrogenase (NADP+) activity ; GO:0047022
+Wikipedia:ATP_hydrolysis > GO:ATP catabolic process ; GO:0006200
+Wikipedia:Abscission > GO:abscission ; GO:0009838
+Wikipedia:Acrosome > GO:acrosomal vesicle ; GO:0001669
+Wikipedia:Acrosome_reaction > GO:acrosome reaction ; GO:0007340
+Wikipedia:Actin > GO:actin filament ; GO:0005884
+Wikipedia:Actin > GO:filamentous actin ; GO:0031941
+Wikipedia:Adaptive_immune_system > GO:adaptive immune response ; GO:0002250
+Wikipedia:Adrenergic_receptor > GO:adrenoceptor activity ; GO:0004935
+Wikipedia:Aggresome > GO:aggresome ; GO:0016235
+Wikipedia:Aggression > GO:aggressive behavior ; GO:0002118
+Wikipedia:AgingSenescence > GO:aging ; GO:0007568
+Wikipedia:Aldehyde_dehydrogenase_(NAD+) > GO:aldehyde dehydrogenase (NAD) activity ; GO:0004029
+Wikipedia:Amino_acid_synthesis > GO:cellular amino acid biosynthetic process ; GO:0008652
+Wikipedia:Amyloplast > GO:amyloplast ; GO:0009501
+Wikipedia:Anabolism > GO:biosynthetic process ; GO:0009058
+Wikipedia:Anaerobic_respiration > GO:anaerobic respiration ; GO:0009061
+Wikipedia:Anammox > GO:anaerobic respiration, using ammonium as electron donor ; GO:0019331
+Wikipedia:Anaphase > GO:anaphase ; GO:0051322
+Wikipedia:Anaphase-promoting_complex > GO:anaphase-promoting complex ; GO:0005680
+Wikipedia:Angiogenesis > GO:angiogenesis ; GO:0001525
+Wikipedia:Anoikis > GO:anoikis ; GO:0043276
+Wikipedia:Antibody > GO:immunoglobulin complex, circulating ; GO:0042571
+Wikipedia:Antibody-dependent_cell-mediated_cytotoxicity > GO:antibody-dependent cellular cytotoxicity ; GO:0001788
+Wikipedia:Antibody-dependent_cellular_cytotoxicity > GO:antibody-dependent cellular cytotoxicity ; GO:0001788
+Wikipedia:Antigen_presentation > GO:antigen processing and presentation ; GO:0019882
+Wikipedia:Antigenic_variation > GO:antigenic variation ; GO:0020033
+Wikipedia:Apicoplast > GO:apicoplast ; GO:0020011
+Wikipedia:Apolysis > GO:apolysis ; GO:0018989
+Wikipedia:Apoplast > GO:apoplast ; GO:0048046
+Wikipedia:Apoptosis > GO:apoptosis ; GO:0006915
+Wikipedia:Apoptosome > GO:apoptosome ; GO:0043293
+Wikipedia:Arachidonic_acid > GO:arachidonic acid metabolic process ; GO:0019369
+Wikipedia:Arginine > GO:arginine metabolic process ; GO:0006525
+Wikipedia:Arylsulfatase_B > GO:N-acetylgalactosamine-4-sulfatase activity ; GO:0003943
+Wikipedia:Asexual_reproduction > GO:asexual reproduction ; GO:0019954
+Wikipedia:Asparaginyl-tRNA_synthase_(glutamine-hydrolysing) > GO:asparaginyl-tRNA synthase (glutamine-hydrolyzing) activity ; GO:0050566
+Wikipedia:Asymmetric_cell_division > GO:asymmetric cell division ; GO:0008356
+Wikipedia:Attenuator_(genetics) > GO:transcriptional attenuation ; GO:0031555
+Wikipedia:Autolysis > GO:autolysis ; GO:0001896
+Wikipedia:Autophagy_(cellular) > GO:autophagy ; GO:0006914
+Wikipedia:Autophagy_(cellular)#Selective_autophagy > GO:mitochondrion degradation ; GO:0000422
+Wikipedia:Autosome > GO:autosome ; GO:0030849
+Wikipedia:Autotrophy > GO:carbon fixation ; GO:0015977
+Wikipedia:Axolemma > GO:axolemma ; GO:0030673
+Wikipedia:Axon > GO:axon ; GO:0030424
+Wikipedia:Axon_guidance > GO:axon guidance ; GO:0007411
+Wikipedia:Axon_hillock > GO:axon hillock ; GO:0043203
+Wikipedia:Axoneme > GO:axoneme ; GO:0005930
+Wikipedia:Axoplasmic_transport > GO:axon cargo transport ; GO:0008088
+Wikipedia:Barr_body > GO:Barr body ; GO:0001740
+Wikipedia:Basal_lamina > GO:basal lamina ; GO:0005605
+Wikipedia:Base_excision_repair > GO:base-excision repair ; GO:0006284
+Wikipedia:Base_pair > GO:base pairing ; GO:0000496
+Wikipedia:Basement_membrane > GO:basement membrane ; GO:0005604
+Wikipedia:Basophil_activation > GO:basophil activation ; GO:0045575
+Wikipedia:Behavior > GO:behavior ; GO:0007610
+Wikipedia:Beta-alanine > GO:beta-alanine metabolic process ; GO:0019482
+Wikipedia:Binary_fission > GO:binary fission ; GO:0043093
+Wikipedia:Binding_(molecular) > GO:binding ; GO:0005488
+Wikipedia:Biological_membrane > GO:membrane ; GO:0016020
+Wikipedia:Biological_process > GO:biological_process ; GO:0008150
+Wikipedia:Bioluminescence > GO:bioluminescence ; GO:0008218
+Wikipedia:Biomineralisation > GO:biomineral formation ; GO:0031214
+Wikipedia:Biotin > GO:biotin metabolic process ; GO:0006768
+Wikipedia:Bleb_(cell_biology) > GO:bleb ; GO:0032059
+Wikipedia:Blood_pressure#Regulation > GO:regulation of blood pressure ; GO:0008217
+Wikipedia:Bone_remodeling > GO:bone remodeling ; GO:0046849
+Wikipedia:Bone_resorption > GO:bone resorption ; GO:0045453
+Wikipedia:Brush_border > GO:brush border ; GO:0005903
+Wikipedia:Butanediol_fermentation > GO:glucose catabolic process to butanediol ; GO:0019650
+Wikipedia:C4_carbon_fixation > GO:C4 photosynthesis ; GO:0009760
+Wikipedia:CALCRL > GO:calcitonin gene-related polypeptide receptor activity ; GO:0001635
+Wikipedia:Cajal_body > GO:Cajal body ; GO:0015030
+Wikipedia:Calcium_signaling > GO:calcium-mediated signaling ; GO:0019722
+Wikipedia:Capsid > GO:viral capsid ; GO:0019028
+Wikipedia:Capsomere > GO:capsomere ; GO:0046727
+Wikipedia:Capsule_(microbiology) > GO:capsule ; GO:0042603
+Wikipedia:Carbohydrate_metabolism > GO:carbohydrate metabolic process ; GO:0005975
+Wikipedia:Carbon-monoxide_dehydrogenase_(cytochrome_b-561) > GO:carbon-monoxide oxygenase activity ; GO:0008805
+Wikipedia:Carboxysome > GO:carboxysome ; GO:0031470
+Wikipedia:Carnitine#Role_in_fatty_acid_metabolism > GO:carnitine shuttle ; GO:0006853
+Wikipedia:Casparian_strip > GO:Casparian strip ; GO:0048226
+Wikipedia:Catabolism > GO:catabolic process ; GO:0009056
+Wikipedia:Catecholamines > GO:catecholamine biosynthetic process ; GO:0042423
+Wikipedia:Caveolae > GO:caveola ; GO:0005901
+Wikipedia:Cell_(biology) > GO:cell ; GO:0005623
+Wikipedia:Cell_adhesion > GO:cell adhesion ; GO:0007155
+Wikipedia:Cell_cortex > GO:cell cortex ; GO:0005938
+Wikipedia:Cell_cycle > GO:cell cycle ; GO:0007049
+Wikipedia:Cell_cycle_checkpoint > GO:cell cycle checkpoint ; GO:0000075
+Wikipedia:Cell_division > GO:cell division ; GO:0051301
+Wikipedia:Cell_envelope > GO:cell envelope ; GO:0030313
+Wikipedia:Cell_fate_determination > GO:cell fate determination ; GO:0001709
+Wikipedia:Cell_junction > GO:cell junction ; GO:0030054
+Wikipedia:Cell_membrane > GO:plasma membrane ; GO:0005886
+Wikipedia:Cell_migration > GO:cell migration ; GO:0016477
+Wikipedia:Cell_nucleus > GO:nucleus ; GO:0005634
+Wikipedia:Cell_plate > GO:cell plate ; GO:0009504
+Wikipedia:Cell_signaling > GO:cell communication ; GO:0007154
+Wikipedia:Cell_wall > GO:cell wall ; GO:0005618
+Wikipedia:Cellular_differentiation > GO:cell differentiation ; GO:0030154
+Wikipedia:Cellular_differentiation#Dedifferentiation > GO:dedifferentiation ; GO:0043696
+Wikipedia:Cellular_respiration > GO:cellular respiration ; GO:0045333
+Wikipedia:Cellular_respiration#Aerobic_respiration > GO:aerobic respiration ; GO:0009060
+Wikipedia:Cellular_respiration#Anaerobic_respiration > GO:anaerobic respiration ; GO:0009061
+Wikipedia:Cellulosome > GO:cellulosome ; GO:0043263
+Wikipedia:Centriole > GO:centriole ; GO:0005814
+Wikipedia:Centrosome > GO:centrosome ; GO:0005813
+Wikipedia:Chemical_synapse > GO:synapse ; GO:0045202
+Wikipedia:Chemokinesis > GO:chemokinesis ; GO:0042466
+Wikipedia:Chemotaxis > GO:chemotaxis ; GO:0006935
+Wikipedia:Chemotropism > GO:chemotropism ; GO:0043577
+Wikipedia:Chiasma_(genetics) > GO:chiasma ; GO:0005712
+Wikipedia:Chloroplast > GO:chloroplast ; GO:0009507
+Wikipedia:Chloroplast_membrane > GO:chloroplast membrane ; GO:0031969
+Wikipedia:Chlorosome > GO:chlorosome ; GO:0046858
+Wikipedia:Chondrogenesis > GO:cartilage development ; GO:0051216
+Wikipedia:Chromoplast > GO:chromoplast ; GO:0009509
+Wikipedia:Chromosome > GO:chromosome ; GO:0005694
+Wikipedia:Chromosome_segregation > GO:chromosome segregation ; GO:0007059
+Wikipedia:Chylomicron > GO:chylomicron ; GO:0042627
+Wikipedia:Cilium > GO:cilium ; GO:0005929
+Wikipedia:Circadian_rhythm > GO:circadian rhythm ; GO:0007623
+Wikipedia:Circulatory_system > GO:circulatory system process ; GO:0003013
+Wikipedia:Clathrin > GO:clathrin coat ; GO:0030118
+Wikipedia:Clavulanic_acid > GO:clavulanic acid biosynthetic process ; GO:0033050
+Wikipedia:Cleavage_furrow > GO:cleavage furrow ; GO:0032154
+Wikipedia:Cnidocyte > GO:nematocyst ; GO:0042151
+Wikipedia:Coagulation > GO:blood coagulation ; GO:0007596
+Wikipedia:Coenzyme_Q_-_cytochrome_c_reductase > GO:respiratory chain complex III ; GO:0045275
+Wikipedia:Cognition > GO:cognition ; GO:0050890
+Wikipedia:Collagen > GO:collagen ; GO:0005581
+Wikipedia:Collagen_type_I > GO:collagen type I ; GO:0005584
+Wikipedia:Collagen_type_II > GO:collagen type II ; GO:0005585
+Wikipedia:Collagen_type_IV > GO:collagen type IV ; GO:0005587
+Wikipedia:Complement_membrane_attack_complex > GO:membrane attack complex ; GO:0005579
+Wikipedia:Conditioned_taste_aversion > GO:conditioned taste aversion ; GO:0001661
+Wikipedia:Conjugation > GO:conjugation ; GO:0000746
+Wikipedia:Contact_inhibition > GO:contact inhibition ; GO:0060242
+Wikipedia:Contractile_vacuole > GO:contractile vacuole ; GO:0000331
+Wikipedia:Convergent_extension > GO:convergent extension ; GO:0060026
+Wikipedia:Corticotropin-releasing_hormone > GO:adrenocorticotropin-releasing hormone activity ; GO:0017045
+Wikipedia:Costamere > GO:costamere ; GO:0043034
+Wikipedia:Crassulacean_acid_metabolism > GO:CAM photosynthesis ; GO:0009761
+Wikipedia:Cysteine > GO:cysteine catabolic process ; GO:0009093
+Wikipedia:Cysteine_metabolism > GO:cysteine metabolic process ; GO:0006534
+Wikipedia:Cytochrome_b6f_complex > GO:cytochrome b6f complex ; GO:0009512
+Wikipedia:Cytokinesis > GO:cytokinesis ; GO:0000910
+Wikipedia:Cytolysis > GO:cytolysis ; GO:0019835
+Wikipedia:Cytoplasm > GO:cytoplasm ; GO:0005737
+Wikipedia:Cytoskeleton > GO:cytoskeleton ; GO:0005856
+Wikipedia:Cytosol > GO:cytosol ; GO:0005829
+Wikipedia:Cytostome > GO:cytostome ; GO:0031910
+Wikipedia:DNA_damage_checkpoint > GO:DNA damage checkpoint ; GO:0000077
+Wikipedia:DNA_methylation > GO:DNA methylation ; GO:0006306
+Wikipedia:DNA_mismatch_repair > GO:mismatch repair ; GO:0006298
+Wikipedia:DNA_repair > GO:DNA repair ; GO:0006281
+Wikipedia:DNA_replication > GO:DNA replication ; GO:0006260
+Wikipedia:Death > GO:death ; GO:0016265
+Wikipedia:Death-inducing_signaling_complex > GO:death-inducing signaling complex ; GO:0031264
+Wikipedia:Decidualization > GO:decidualization ; GO:0046697
+Wikipedia:Defecation > GO:defecation ; GO:0030421
+Wikipedia:Dehiscence_(botany) > GO:dehiscence ; GO:0009900
+Wikipedia:Denaturation#Protein_denaturation > GO:protein denaturation ; GO:0030164
+Wikipedia:Dendrite > GO:dendrite ; GO:0030425
+Wikipedia:Dendritic_spine > GO:dendritic spine ; GO:0043197
+Wikipedia:Dephosphorylation > GO:dephosphorylation ; GO:0016311
+Wikipedia:Depurination > GO:depurination ; GO:0045007
+Wikipedia:Desmosome > GO:desmosome ; GO:0030057
+Wikipedia:Diakinesis > GO:diakinesis ; GO:0000241
+Wikipedia:Diapause > GO:diapause ; GO:0055115
+Wikipedia:Digalactosyldiacylglycerol_synthase > GO:digalactosyldiacylglycerol synthase activity ; GO:0046481
+Wikipedia:Digestion > GO:digestion ; GO:0007586
+Wikipedia:Diplotene > GO:diplotene ; GO:0000240
+Wikipedia:Diuresis > GO:diuresis ; GO:0030146
+Wikipedia:Dosage_compensation > GO:dosage compensation ; GO:0007549
+Wikipedia:Drug_metabolism > GO:drug metabolic process ; GO:0017144
+Wikipedia:EIF-2 > GO:eukaryotic translation initiation factor 2 complex ; GO:0005850
+Wikipedia:Echolocation > GO:echolocation ; GO:0050959
+Wikipedia:Egg_activation > GO:egg activation ; GO:0007343
+Wikipedia:Eicosanoid > GO:icosanoid biosynthetic process ; GO:0046456
+Wikipedia:Eisosome > GO:eisosome ; GO:0032126
+Wikipedia:Elaioplast > GO:elaioplast ; GO:0009545
+Wikipedia:Electron_transfer > GO:respiratory electron transport chain ; GO:0022904
+Wikipedia:Electron_transport_chain > GO:electron transport chain ; GO:0022900
+Wikipedia:Electroreception > GO:electroception ; GO:0050956
+Wikipedia:Embryogenesis > GO:embryonic development ; GO:0009790
+Wikipedia:Endochondral_ossification > GO:endochondral ossification ; GO:0001958
+Wikipedia:Endocytosis > GO:endocytosis ; GO:0006897
+Wikipedia:Endomembrane_system > GO:endomembrane system ; GO:0012505
+Wikipedia:Endoplasmic_reticulum > GO:endoplasmic reticulum ; GO:0005783
+Wikipedia:Endoplasmic_reticulum#Rough_endoplasmic_reticulum > GO:rough endoplasmic reticulum ; GO:0005791
+Wikipedia:Endoplasmic_reticulum#Sarcoplasmic_reticulum > GO:sarcoplasmic reticulum ; GO:0016529
+Wikipedia:Endoplasmic_reticulum#Smooth_endoplasmic_reticulum > GO:smooth endoplasmic reticulum ; GO:0005790
+Wikipedia:Endosome > GO:endosome ; GO:0005768
+Wikipedia:Enhanceosome > GO:enhanceosome ; GO:0034206
+Wikipedia:Enoyl-acyl_carrier_protein_reductase > GO:enoyl-[acyl-carrier-protein] reductase activity ; GO:0016631
+Wikipedia:Enzyme > GO:catalytic activity ; GO:0003824
+Wikipedia:Equilibrioception > GO:equilibrioception ; GO:0050957
+Wikipedia:Erection#Penile_erection > GO:penile erection ; GO:0043084
+Wikipedia:Erythropoiesis > GO:erythrocyte differentiation ; GO:0030218
+Wikipedia:Estivation > GO:estivation ; GO:0042751
+Wikipedia:Estrous_cycle > GO:estrous cycle phase ; GO:0060206
+Wikipedia:Ethanol_fermentation > GO:glucose catabolic process to ethanol ; GO:0019655
+Wikipedia:Ether_lipid > GO:ether lipid metabolic process ; GO:0046485
+Wikipedia:Etioplast > GO:etioplast ; GO:0009513
+Wikipedia:Euchromatin > GO:euchromatin ; GO:0000791
+Wikipedia:Excitatory_synapse > GO:excitatory synapse ; GO:0060076
+Wikipedia:Excretion > GO:excretion ; GO:0007588
+Wikipedia:Exocyst > GO:exocyst ; GO:0000145
+Wikipedia:Exocytosis > GO:exocytosis ; GO:0006887
+Wikipedia:Extensin > GO:glycoprotein network ; GO:0048222
+Wikipedia:Extracellular > GO:extracellular region ; GO:0005576
+Wikipedia:Extracellular_matrix > GO:extracellular matrix ; GO:0031012
+Wikipedia:Extrachromosomal_DNA > GO:extrachromosomal DNA ; GO:0046821
+Wikipedia:Eye_color > GO:eye pigmentation ; GO:0048069
+Wikipedia:Eye_development > GO:eye development ; GO:0001654
+Wikipedia:FACIT_collagen > GO:FACIT collagen ; GO:0005593
+Wikipedia:Facilitated_diffusion > GO:facilitated diffusion ; GO:0022814
+Wikipedia:Fascia_adherens > GO:fascia adherens ; GO:0005916
+Wikipedia:Fatty_acid_degradation > GO:fatty acid catabolic process ; GO:0009062
+Wikipedia:Fatty_acid_metabolism > GO:fatty acid metabolic process ; GO:0006631
+Wikipedia:Fatty_acid_synthesis > GO:fatty acid biosynthetic process ; GO:0006633
+Wikipedia:Fatty_acid_synthetase_complex > GO:fatty acid synthase complex ; GO:0005835
+Wikipedia:Fermentation_(biochemistry) > GO:fermentation ; GO:0006113
+Wikipedia:Fertilisation > GO:fertilization ; GO:0009566
+Wikipedia:Fever > GO:fever ; GO:0001660
+Wikipedia:Fibrinolysis > GO:fibrinolysis ; GO:0042730
+Wikipedia:Filopodia > GO:filopodium ; GO:0030175
+Wikipedia:Flagellum > GO:flagellum ; GO:0019861
+Wikipedia:Flavonoid > GO:flavonoid biosynthetic process ; GO:0009813
+Wikipedia:Flocculation > GO:flocculation ; GO:0000128
+Wikipedia:Focal_adhesion > GO:focal adhesion ; GO:0005925
+Wikipedia:Folic_acid > GO:folic acid biosynthetic process ; GO:0046656
+Wikipedia:Fructose > GO:fructose metabolic process ; GO:0006000
+Wikipedia:G1_phase > GO:G1 phase ; GO:0051318
+Wikipedia:G2_phase > GO:G2 phase ; GO:0051319
+Wikipedia:GMP_synthase_(glutamine-hydrolysing) > GO:GMP synthase (glutamine-hydrolyzing) activity ; GO:0003922
+Wikipedia:Galactose > GO:galactose metabolic process ; GO:0006012
+Wikipedia:Gap_junction > GO:gap junction ; GO:0005921
+Wikipedia:Gastrulation > GO:gastrulation ; GO:0007369
+Wikipedia:Gene_expression > GO:gene expression ; GO:0010467
+Wikipedia:Gene_silencing > GO:gene silencing ; GO:0016458
+Wikipedia:Genomic_imprinting > GO:regulation of gene expression by genetic imprinting ; GO:0006349
+Wikipedia:Germ_plasm > GO:germ plasm ; GO:0060293
+Wikipedia:Germ_pore > GO:germination pore ; GO:0043677
+Wikipedia:Germ_tube > GO:germ tube ; GO:0032179
+Wikipedia:Germination#Seed_germination > GO:seed germination ; GO:0009845
+Wikipedia:Gestation > GO:female pregnancy ; GO:0007565
+Wikipedia:Gluconeogenesis > GO:gluconeogenesis ; GO:0006094
+Wikipedia:Glucose_uptake > GO:glucose import ; GO:0046323
+Wikipedia:Glucoside_3-dehydrogenase > GO:glucoside 3-dehydrogenase activity ; GO:0033757
+Wikipedia:Glucuronic_acid > GO:glucuronate metabolic process ; GO:0019585
+Wikipedia:Glutamic_acid > GO:glutamate metabolic process ; GO:0006536
+Wikipedia:Glutaminyl-tRNA_synthase_(glutamine-hydrolysing) > GO:glutaminyl-tRNA synthase (glutamine-hydrolyzing) activity ; GO:0050567
+Wikipedia:Glycine_decarboxylase_complex > GO:glycine cleavage complex ; GO:0005960
+Wikipedia:Glycocalyx > GO:glycocalyx ; GO:0030112
+Wikipedia:Glycolysis > GO:glycolysis ; GO:0006096
+Wikipedia:Glycosome > GO:glycosome ; GO:0020015
+Wikipedia:Glycosylation > GO:glycosylation ; GO:0070085
+Wikipedia:Glyoxylate_cycle > GO:glyoxylate cycle ; GO:0006097
+Wikipedia:Glyoxylate_reductase_(NADP+) > GO:glyoxylate reductase (NADP) activity ; GO:0030267
+Wikipedia:Glyoxysome > GO:glyoxysome ; GO:0009514
+Wikipedia:Golgi_apparatus > GO:Golgi apparatus ; GO:0005794
+Wikipedia:Gravitropism > GO:gravitropism ; GO:0009630
+Wikipedia:Growth_cone > GO:growth cone ; GO:0030426
+Wikipedia:Habituation > GO:habituation ; GO:0046959
+Wikipedia:Haematopoiesis > GO:hemopoiesis ; GO:0030097
+Wikipedia:Hearing_(sense) > GO:sensory perception of sound ; GO:0007605
+Wikipedia:Heart_development > GO:heart development ; GO:0007507
+Wikipedia:Hedgehog_signaling_pathway > GO:smoothened signaling pathway ; GO:0007224
+Wikipedia:Hemidesmosome > GO:hemidesmosome ; GO:0030056
+Wikipedia:Hemostasis > GO:hemostasis ; GO:0007599
+Wikipedia:Heterochromatin > GO:heterochromatin ; GO:0000792
+Wikipedia:Heterogeneous_ribonucleoprotein_particle > GO:heterogeneous nuclear ribonucleoprotein complex ; GO:0030530
+Wikipedia:Heterotroph > GO:carbon utilization ; GO:0015976
+Wikipedia:Hibernation > GO:hibernation ; GO:0042750
+Wikipedia:Histidine > GO:histidine metabolic process ; GO:0006547
+Wikipedia:Histogenesis > GO:tissue development ; GO:0009888
+Wikipedia:Histolysis > GO:histolysis ; GO:0007559
+Wikipedia:Histone#Histone_modifications_in_chromatin_regulation > GO:histone modification ; GO:0016570
+Wikipedia:Histone_methylation > GO:histone methylation ; GO:0016571
+Wikipedia:Host_(biology) > GO:host ; GO:0018995
+Wikipedia:Humoral_immunity > GO:humoral immune response ; GO:0006959
+Wikipedia:Hydrogenosome > GO:hydrogenosome ; GO:0042566
+Wikipedia:Hydrotropism > GO:hydrotropism ; GO:0010274
+Wikipedia:Hypersensitivity > GO:hypersensitivity ; GO:0002524
+Wikipedia:Immune_syntem > GO:immune system process ; GO:0002376
+Wikipedia:Immunoglobulin_class_switching > GO:isotype switching ; GO:0045190
+Wikipedia:Immunologic_activation > GO:leukocyte activation ; GO:0045321
+Wikipedia:Immunological_synapse > GO:immunological synapse ; GO:0001772
+Wikipedia:Inclusion_bodies > GO:inclusion body ; GO:0016234
+Wikipedia:Inflammation > GO:inflammatory response ; GO:0006954
+Wikipedia:Inhibitory_postsynaptic_potential > GO:inhibitory synapse ; GO:0060077
+Wikipedia:Innate_immune_system > GO:innate immune response ; GO:0045087
+Wikipedia:Inner_mitochondrial_membrane > GO:mitochondrial inner membrane ; GO:0005743
+Wikipedia:Inositol > GO:inositol metabolic process ; GO:0006020
+Wikipedia:Insemination > GO:insemination ; GO:0007320
+Wikipedia:Intercalated_disc > GO:intercalated disc ; GO:0014704
+Wikipedia:Interleukin-17_receptor > GO:interleukin-17 receptor activity ; GO:0030368
+Wikipedia:Interleukin-1_receptor > GO:interleukin-1 receptor activity ; GO:0004908
+Wikipedia:Interleukin-3_receptor > GO:interleukin-3 receptor activity ; GO:0004912
+Wikipedia:Intermediate_filament > GO:intermediate filament ; GO:0005882
+Wikipedia:Interphase > GO:interphase ; GO:0051325
+Wikipedia:Intracellular > GO:intracellular ; GO:0005622
+Wikipedia:Intraflagellar_transport > GO:intraflagellar transport ; GO:0042073
+Wikipedia:Intramembranous_ossification > GO:intramembranous ossification ; GO:0001957
+Wikipedia:Ion_channels > GO:narrow pore, gated channel activity ; GO:0022831
+Wikipedia:Karyogamy > GO:karyogamy ; GO:0000741
+Wikipedia:Kidney_development > GO:kidney development ; GO:0001822
+Wikipedia:Kinesis > GO:kinesis ; GO:0042465
+Wikipedia:Kinetochore > GO:kinetochore ; GO:0000776
+Wikipedia:Kinetoplast > GO:kinetoplast ; GO:0020023
+Wikipedia:Kinocilium > GO:kinocilium ; GO:0060091
+Wikipedia:LDL_receptor > GO:low-density lipoprotein receptor activity ; GO:0005041
+Wikipedia:LDL_receptor > GO:high-density lipoprotein receptor activity ; GO:0070506
+Wikipedia:Lactation > GO:lactation ; GO:0007595
+Wikipedia:Lactic_acid_fermentation > GO:glucose catabolic process to lactate ; GO:0019659
+Wikipedia:Lamellipodia > GO:lamellipodium ; GO:0030027
+Wikipedia:Lamina_densa > GO:lamina densa ; GO:0008003
+Wikipedia:Lamina_lucida > GO:lamina lucida ; GO:0008002
+Wikipedia:Learning > GO:learning ; GO:0007612
+Wikipedia:Learning#Associative_learning > GO:associative learning ; GO:0008306
+Wikipedia:Leptotene > GO:leptotene ; GO:0000237
+Wikipedia:Leucoplast > GO:leucoplast ; GO:0009516
+Wikipedia:Leukocyte_extravasation > GO:cellular extravasation ; GO:0045123
+Wikipedia:Leukotriene#Leukotriene_synthesis > GO:leukotriene biosynthetic process ; GO:0019370
+Wikipedia:Ligand_(biochemistry) > GO:receptor binding ; GO:0005102
+Wikipedia:Light-harvesting_complex > GO:light-harvesting complex ; GO:0030076
+Wikipedia:Limb_development > GO:limb development ; GO:0060173
+Wikipedia:Linoleic_acid > GO:linoleic acid metabolic process ; GO:0043651
+Wikipedia:Lipid_bilayer_fusion > GO:cellular membrane fusion ; GO:0006944
+Wikipedia:Lipid_catabolism > GO:lipid catabolic process ; GO:0016042
+Wikipedia:Lipid_metabolism > GO:lipid metabolic process ; GO:0006629
+Wikipedia:Lipid_raft > GO:membrane raft ; GO:0045121
+Wikipedia:List_of_feeding_behaviours > GO:feeding behavior ; GO:0007631
+Wikipedia:Lithotrophy > GO:energy derivation by oxidation of reduced inorganic compounds ; GO:0015975
+Wikipedia:Long-term_memory > GO:long-term memory ; GO:0007616
+Wikipedia:Luteal_phase > GO:luteinization ; GO:0001553
+Wikipedia:Luteinization > GO:luteinization ; GO:0001553
+Wikipedia:Luteolysis > GO:luteolysis ; GO:0001554
+Wikipedia:Lymphangiogenesis > GO:lymphangiogenesis ; GO:0001946
+Wikipedia:Lysine > GO:lysine metabolic process ; GO:0006553
+Wikipedia:Lysogenic_cycle > GO:lysogeny ; GO:0030069
+Wikipedia:Lysosome > GO:lysosome ; GO:0005764
+Wikipedia:MAPK_cascade > GO:MAPKKK cascade ; GO:0000165
+Wikipedia:M_phase > GO:M phase ; GO:0000279
+Wikipedia:Macronucleus > GO:macronucleus ; GO:0031039
+Wikipedia:Magnetoception > GO:magnetoreception ; GO:0050958
+Wikipedia:Malate-aspartate_shuttle > GO:malate-aspartate shuttle ; GO:0043490
+Wikipedia:Malolactic_fermentation > GO:malolactic fermentation ; GO:0043464
+Wikipedia:Maltoporin > GO:maltose transporting porin activity ; GO:0015481
+Wikipedia:Mating_behaviour > GO:mating behavior ; GO:0007617
+Wikipedia:Mediator_(coactivator) > GO:mediator complex ; GO:0016592
+Wikipedia:Megagametogenesis > GO:megagametogenesis ; GO:0009561
+Wikipedia:Meiosis > GO:meiosis ; GO:0007126
+Wikipedia:Meiosis#Diakinesis > GO:diakinesis ; GO:0000241
+Wikipedia:Meiosis#Diplotene > GO:diplotene ; GO:0000240
+Wikipedia:Meiosis#Leptotene > GO:leptotene ; GO:0000237
+Wikipedia:Meiosis#Meiosis_I > GO:meiosis I ; GO:0007127
+Wikipedia:Meiosis#Meiosis_II > GO:meiosis II ; GO:0007135
+Wikipedia:Meiosis#Pachytene > GO:pachytene ; GO:0000239
+Wikipedia:Meiosis#Zygotene > GO:zygotene ; GO:0000238
+Wikipedia:Melanosome > GO:melanosome ; GO:0042470
+Wikipedia:Membrane_nanotube > GO:cytoneme ; GO:0035230
+Wikipedia:Membrane_nanotube > GO:cell hair ; GO:0070451
+Wikipedia:Memory > GO:memory ; GO:0007613
+Wikipedia:Menarche > GO:menarche ; GO:0042696
+Wikipedia:Menopause > GO:menopause ; GO:0042697
+Wikipedia:Menstruation > GO:menstruation ; GO:0042703
+Wikipedia:Mesosome > GO:mesosome ; GO:0046868
+Wikipedia:Metabolism > GO:metabolic process ; GO:0008152
+Wikipedia:Metamorphosis > GO:metamorphosis ; GO:0007552
+Wikipedia:Metaphase > GO:metaphase ; GO:0051323
+Wikipedia:Methanogenesis > GO:methanogenesis ; GO:0015948
+Wikipedia:Methylation > GO:methylation ; GO:0032259
+Wikipedia:Microbody > GO:microbody ; GO:0042579
+Wikipedia:Microgametogenesis > GO:microgametogenesis ; GO:0055046
+Wikipedia:Microneme > GO:microneme ; GO:0020009
+Wikipedia:Micronucleus > GO:micronucleus ; GO:0031040
+Wikipedia:Microsome > GO:microsome ; GO:0005792
+Wikipedia:Microtubule > GO:microtubule ; GO:0005874
+Wikipedia:Microtubule_nucleation > GO:microtubule nucleation ; GO:0007020
+Wikipedia:Microtubule_organizing_center > GO:microtubule organizing center ; GO:0005815
+Wikipedia:Microvillus > GO:microvillus ; GO:0005902
+Wikipedia:Midbody_(cell_biology) > GO:midbody ; GO:0030496
+Wikipedia:Middle_lamella > GO:middle lamella ; GO:0009519
+Wikipedia:Minor_spliceosome > GO:U12-type spliceosomal complex ; GO:0005689
+Wikipedia:Mitochondrial_matrix > GO:mitochondrial matrix ; GO:0005759
+Wikipedia:Mitochondrion > GO:mitochondrion ; GO:0005739
+Wikipedia:Mitogen-activated_protein_kinase > GO:MAPKKK cascade ; GO:0000165
+Wikipedia:Mitophagy > GO:mitochondrion degradation ; GO:0000422
+Wikipedia:Mitosis > GO:mitosis ; GO:0007067
+Wikipedia:Mitosis#Endomitosis > GO:endomitotic cell cycle ; GO:0007113
+Wikipedia:Mitosome > GO:mitosome ; GO:0032047
+Wikipedia:Mitotic_crossover > GO:mitotic recombination ; GO:0006312
+Wikipedia:Mixed_acid_fermentation > GO:glucose catabolic process to mixed acids ; GO:0019664
+Wikipedia:Morphine > GO:morphine metabolic process ; GO:0071272
+Wikipedia:Morphogenesis > GO:anatomical structure morphogenesis ; GO:0009653
+Wikipedia:Muscle_atrophy > GO:muscle atrophy ; GO:0014889
+Wikipedia:Muscle_contraction > GO:muscle contraction ; GO:0006936
+Wikipedia:Muscle_hypertrophy > GO:muscle hypertrophy ; GO:0014896
+Wikipedia:Myelin > GO:myelination ; GO:0042552
+Wikipedia:Myelin > GO:myelin sheath ; GO:0043209
+Wikipedia:Myofibril > GO:myofibril ; GO:0030016
+Wikipedia:N-methylhydantoinase_(ATP-hydrolysing) > GO:N-methylhydantoinase (ATP-hydrolyzing) activity ; GO:0047423
+Wikipedia:NAD+_synthase_(glutamine-hydrolysing) > GO:NAD+ synthase (glutamine-hydrolyzing) activity ; GO:0003952
+Wikipedia:NADH_dehydrogenase > GO:NADH dehydrogenase complex ; GO:0030964
+Wikipedia:NMDA_receptor > GO:N-methyl-D-aspartate selective glutamate receptor activity ; GO:0004972
+Wikipedia:Natriuresis > GO:natriuresis ; GO:0030147
+Wikipedia:Neural_development > GO:central nervous system development ; GO:0007417
+Wikipedia:Neural_development#Neuron_migration > GO:neuron migration ; GO:0001764
+Wikipedia:Neurofilament > GO:neurofilament ; GO:0005883
+Wikipedia:Neurogenesis > GO:neurogenesis ; GO:0022008
+Wikipedia:Neurohormone > GO:neuropeptide hormone activity ; GO:0005184
+Wikipedia:Neuromuscular_junction > GO:neuromuscular junction ; GO:0031594
+Wikipedia:Neuron_migration > GO:neuron migration ; GO:0001764
+Wikipedia:Neuroprotection > GO:neuroprotection ; GO:0043526
+Wikipedia:Neurotransmission > GO:synaptic transmission ; GO:0007268
+Wikipedia:Neurulation > GO:neural tube formation ; GO:0001841
+Wikipedia:Nitrite_reductase_(cytochrome;_ammonia-forming) > GO:nitrite reductase (cytochrome, ammonia-forming) activity ; GO:0042279
+Wikipedia:Nitrogen_fixation > GO:nitrogen fixation ; GO:0009399
+Wikipedia:Nociception > GO:sensory perception of pain ; GO:0019233
+Wikipedia:Nodes_of_Ranvier > GO:node of Ranvier ; GO:0033268
+Wikipedia:Nonsense-mediated_decay > GO:nuclear-transcribed mRNA catabolic process, nonsense-mediated decay ; GO:0000184
+Wikipedia:Nonsense-mediated_mRNA_decay > GO:nuclear-transcribed mRNA catabolic process, nonsense-mediated decay ; GO:0000184
+Wikipedia:Norepinephrine#Degradation > GO:norepinephrine catabolic process ; GO:0042422
+Wikipedia:Norepinephrine_transporter > GO:norepinephrine transmembrane transporter activity ; GO:0005333
+Wikipedia:Notch_signaling_pathway > GO:Notch signaling pathway ; GO:0007219
+Wikipedia:Nuclear_envelope > GO:nuclear envelope ; GO:0005635
+Wikipedia:Nuclear_lamina > GO:nuclear lamina ; GO:0005652
+Wikipedia:Nuclear_matrix > GO:nuclear matrix ; GO:0016363
+Wikipedia:Nuclear_pore > GO:nuclear pore ; GO:0005643
+Wikipedia:Nuclear_transport > GO:nuclear transport ; GO:0051169
+Wikipedia:Nucleoid > GO:nucleoid ; GO:0009295
+Wikipedia:Nucleolus > GO:nucleolus ; GO:0005730
+Wikipedia:Nucleolus_organizer_region > GO:nucleolus organizer region ; GO:0005731
+Wikipedia:Nucleomorph > GO:nucleomorph ; GO:0033009
+Wikipedia:Nucleoplasm > GO:nucleoplasm ; GO:0005654
+Wikipedia:Nucleosome > GO:nucleosome ; GO:0000786
+Wikipedia:Nucleotide_salvage > GO:nucleotide salvage ; GO:0043173
+Wikipedia:Odontogenesis > GO:odontogenesis ; GO:0042476
+Wikipedia:Oil_body > GO:monolayer-surrounded lipid storage body ; GO:0012511
+Wikipedia:Olfaction > GO:sensory perception of smell ; GO:0007608
+Wikipedia:Oocyte_maturation > GO:oocyte maturation ; GO:0001556
+Wikipedia:Oogenesis > GO:oogenesis ; GO:0048477
+Wikipedia:Operant_conditioning > GO:operant conditioning ; GO:0035106
+Wikipedia:Opsonin > GO:opsonization ; GO:0008228
+Wikipedia:Optomotor_response > GO:optomotor response ; GO:0071632
+Wikipedia:Organelle > GO:organelle ; GO:0043226
+Wikipedia:Organogenesis > GO:organ development ; GO:0048513
+Wikipedia:Origin_recognition_complex > GO:origin recognition complex ; GO:0000808
+Wikipedia:Ossification > GO:ossification ; GO:0001503
+Wikipedia:Outer_mitochondrial_membrane > GO:mitochondrial outer membrane ; GO:0005741
+Wikipedia:Oviposition > GO:oviposition ; GO:0018991
+Wikipedia:Ovulation > GO:ovulation ; GO:0030728
+Wikipedia:Oxidative_phosphorylation > GO:oxidative phosphorylation ; GO:0006119
+Wikipedia:Oxygen_evolving_complex > GO:oxygen evolving complex ; GO:0009654
+Wikipedia:P_body > GO:cytoplasmic mRNA processing body ; GO:0000932
+Wikipedia:Pachytene > GO:pachytene ; GO:0000239
+Wikipedia:Pancreas > GO:pancreas development ; GO:0031016
+Wikipedia:Paraspeckle > GO:paraspeckles ; GO:0042382
+Wikipedia:Pentose_phosphate_pathway > GO:pentose-phosphate shunt ; GO:0006098
+Wikipedia:Perception > GO:sensory perception ; GO:0007600
+Wikipedia:Peripheral_membrane_protein > GO:extrinsic to membrane ; GO:0019898
+Wikipedia:Periplasmic_space > GO:outer membrane-bounded periplasmic space ; GO:0030288
+Wikipedia:Peristalsis > GO:peristalsis ; GO:0030432
+Wikipedia:Peroxisome > GO:peroxisome ; GO:0005777
+Wikipedia:Phagocytosis > GO:phagocytosis ; GO:0006909
+Wikipedia:Phagolysosome > GO:phagolysosome ; GO:0032010
+Wikipedia:Phagosome > GO:phagocytic vesicle ; GO:0045335
+Wikipedia:Phosphoinositide_3-kinase > GO:phosphoinositide 3-kinase activity ; GO:0035004
+Wikipedia:Phosphorylation > GO:phosphorylation ; GO:0016310
+Wikipedia:Photoinhibition > GO:photoinhibition ; GO:0010205
+Wikipedia:Photolysis#Photolysis_in_photosynthesis > GO:photosynthesis, light reaction ; GO:0019684
+Wikipedia:Photomorphogenesis > GO:photomorphogenesis ; GO:0009640
+Wikipedia:Photoperiodism > GO:photoperiodism ; GO:0009648
+Wikipedia:Photorespiration > GO:photorespiration ; GO:0009853
+Wikipedia:Photosynthesis > GO:photosynthesis ; GO:0015979
+Wikipedia:Photosystem > GO:photosystem ; GO:0009521
+Wikipedia:Photosystem_II > GO:photosystem II ; GO:0009523
+Wikipedia:Phototaxis > GO:phototaxis ; GO:0042331
+Wikipedia:Phototropism > GO:phototropism ; GO:0009638
+Wikipedia:Phragmoplast > GO:phragmoplast ; GO:0009524
+Wikipedia:Phragmosome > GO:phragmosome ; GO:0009525
+Wikipedia:Phycobilisome > GO:phycobilisome ; GO:0030089
+Wikipedia:Pilus > GO:pilus ; GO:0009289
+Wikipedia:Pinocytosis > GO:pinocytosis ; GO:0006907
+Wikipedia:Plasmodesma > GO:plasmodesma ; GO:0009506
+Wikipedia:Plastid > GO:plastid ; GO:0009536
+Wikipedia:Platelet_alpha-granule > GO:platelet alpha granule ; GO:0031091
+Wikipedia:Podosome > GO:podosome ; GO:0002102
+Wikipedia:Pollination > GO:pollination ; GO:0009856
+Wikipedia:Polysome > GO:polysome ; GO:0005844
+Wikipedia:Polytene_chromosome > GO:polytene chromosome ; GO:0005700
+Wikipedia:Porin_(protein) > GO:porin activity ; GO:0015288
+Wikipedia:Porosome > GO:porosome ; GO:0033012
+Wikipedia:Porphyrin > GO:porphyrin metabolic process ; GO:0006778
+Wikipedia:Post-transcriptional_modification > GO:RNA processing ; GO:0006396
+Wikipedia:Post_transcriptional_gene_silencing > GO:posttranscriptional gene silencing ; GO:0016441
+Wikipedia:Postreplication_checkpoint > GO:DNA damage checkpoint ; GO:0000077
+Wikipedia:Postreplication_repair > GO:postreplication repair ; GO:0006301
+Wikipedia:Postsynaptic_density > GO:postsynaptic density ; GO:0014069
+Wikipedia:Posttranslational_modification > GO:post-translational protein modification ; GO:0043687
+Wikipedia:Prefoldin > GO:prefoldin complex ; GO:0016272
+Wikipedia:Preprophase_band > GO:preprophase band ; GO:0009574
+Wikipedia:Prepulse_inhibition > GO:prepulse inhibition ; GO:0060134
+Wikipedia:Programmed_cell_death > GO:programmed cell death ; GO:0012501
+Wikipedia:Pronucleus > GO:pronucleus ; GO:0045120
+Wikipedia:Prophase > GO:prophase ; GO:0051324
+Wikipedia:Proprioception > GO:proprioception ; GO:0019230
+Wikipedia:Prostanoid#Biosynthesis > GO:prostanoid biosynthetic process ; GO:0046457
+Wikipedia:Protein_catabolism > GO:protein catabolic process ; GO:0030163
+Wikipedia:Protein_complex > GO:protein complex ; GO:0043234
+Wikipedia:Protein_folding > GO:protein folding ; GO:0006457
+Wikipedia:Protein_metabolism > GO:protein metabolic process ; GO:0019538
+Wikipedia:Protein_splicing > GO:protein splicing ; GO:0030908
+Wikipedia:Protein_targeting > GO:protein targeting ; GO:0006605
+Wikipedia:Proteinoplast > GO:proteinoplast ; GO:0031986
+Wikipedia:Proteolysis > GO:proteolysis ; GO:0006508
+Wikipedia:Protozoal_merogony > GO:schizogony ; GO:0020014
+Wikipedia:Provirus > GO:provirus ; GO:0019038
+Wikipedia:Pseudopod > GO:pseudopodium ; GO:0031143
+Wikipedia:Pseudouridine > GO:pseudouridine synthesis ; GO:0001522
+Wikipedia:Pseudouridylation > GO:pseudouridine synthesis ; GO:0001522
+Wikipedia:Pupa > GO:pupation ; GO:0035074
+Wikipedia:Pupa#Emergence > GO:eclosion ; GO:0007562
+Wikipedia:Pyknosis > GO:apoptotic chromosome condensation ; GO:0030263
+Wikipedia:Pyruvate_decarboxylation > GO:pyruvate oxidation ; GO:0009444
+Wikipedia:Pyruvate_dehydrogenase_complex > GO:pyruvate dehydrogenase complex ; GO:0045254
+Wikipedia:Pyruvic_acid > GO:pyruvate metabolic process ; GO:0006090
+Wikipedia:Quorum_sensing > GO:quorum sensing ; GO:0009372
+Wikipedia:RCC1 > GO:Ran guanyl-nucleotide exchange factor activity ; GO:0005087
+Wikipedia:RNA-induced_silencing_complex > GO:RNA-induced silencing complex ; GO:0016442
+Wikipedia:RNA_editing > GO:RNA modification ; GO:0009451
+Wikipedia:RNA_interference > GO:RNA interference ; GO:0016246
+Wikipedia:RNA_splicing > GO:RNA splicing ; GO:0008380
+Wikipedia:RNase_MRP > GO:ribonuclease MRP activity ; GO:0000171
+Wikipedia:RNase_P > GO:ribonuclease P activity ; GO:0004526
+Wikipedia:Radial_spoke > GO:radial spoke ; GO:0001534
+Wikipedia:Receptor-mediated_endocytosis > GO:receptor-mediated endocytosis ; GO:0006898
+Wikipedia:Recombinational_repair > GO:recombinational repair ; GO:0000725
+Wikipedia:Redox > GO:oxidation reduction ; GO:0055114
+Wikipedia:Reflex > GO:reflex ; GO:0060004
+Wikipedia:Regeneration_(biology) > GO:regeneration ; GO:0031099
+Wikipedia:Regulation_of_gene_expression > GO:regulation of gene expression ; GO:0010468
+Wikipedia:Replication_fork > GO:replication fork ; GO:0005657
+Wikipedia:Replication_protein_A > GO:DNA replication factor A complex ; GO:0005662
+Wikipedia:Replisome > GO:replisome ; GO:0030894
+Wikipedia:Reproduction > GO:reproduction ; GO:0000003
+Wikipedia:Respiratory_burst > GO:respiratory burst ; GO:0045730
+Wikipedia:Retinol > GO:retinol metabolic process ; GO:0042572
+Wikipedia:Reverse_transcription > GO:transcription, RNA-dependent ; GO:0006410
+Wikipedia:Rhoptry > GO:rhoptry ; GO:0020008
+Wikipedia:Riboflavin > GO:riboflavin metabolic process ; GO:0006771
+Wikipedia:Riboflavin > GO:riboflavin biosynthetic process ; GO:0009231
+Wikipedia:Ribonuclease_A > GO:pancreatic ribonuclease activity ; GO:0004522
+Wikipedia:Ribonucleoprotein > GO:ribonucleoprotein complex ; GO:0030529
+Wikipedia:Ribosome > GO:ribosome ; GO:0005840
+Wikipedia:Ribosome_biogenesis > GO:ribosome biogenesis ; GO:0042254
+Wikipedia:Ripening > GO:ripening ; GO:0009835
+Wikipedia:Rosetting > GO:rosetting ; GO:0020013
+Wikipedia:S-layer > GO:S-layer ; GO:0030115
+Wikipedia:SCF_complex > GO:SCF ubiquitin ligase complex ; GO:0019005
+Wikipedia:SOS_response > GO:SOS response ; GO:0009432
+Wikipedia:SUMO_protein > GO:protein sumoylation ; GO:0016925
+Wikipedia:S_phase > GO:S phase ; GO:0051320
+Wikipedia:Salivation > GO:saliva secretion ; GO:0046541
+Wikipedia:Sarcolemma > GO:sarcolemma ; GO:0042383
+Wikipedia:Sarcomere > GO:sarcomere ; GO:0030017
+Wikipedia:Sarcomere#bands > GO:M band ; GO:0031430
+Wikipedia:Sarcomere#bands > GO:A band ; GO:0031672
+Wikipedia:Sarcomere#bands > GO:H zone ; GO:0031673
+Wikipedia:Sarcomere#bands > GO:I band ; GO:0031674
+Wikipedia:Sarcoplasm > GO:sarcoplasm ; GO:0016528
+Wikipedia:Secondary_cell_wall > GO:secondary cell wall ; GO:0009531
+Wikipedia:Secondary_metabolism > GO:secondary metabolic process ; GO:0019748
+Wikipedia:Secretion > GO:secretion by cell ; GO:0032940
+Wikipedia:Seed#Seed_dormancy_and_protection > GO:seed dormancy ; GO:0010162
+Wikipedia:Segmentation_(biology) > GO:segmentation ; GO:0035282
+Wikipedia:Senescence > GO:senescence ; GO:0010149
+Wikipedia:Senescence#Cellular_senescence > GO:cell aging ; GO:0007569
+Wikipedia:Sensitization > GO:sensitization ; GO:0046960
+Wikipedia:Septin_ring > GO:septin ring ; GO:0005940
+Wikipedia:Serine_3-dehydrogenase > GO:serine 3-dehydrogenase activity ; GO:0031132
+Wikipedia:Serotonin > GO:serotonin biosynthetic process ; GO:0042427
+Wikipedia:Sex-determination_system > GO:sex determination ; GO:0007530
+Wikipedia:Sexual_differentiation > GO:sex differentiation ; GO:0007548
+Wikipedia:Sexual_reproduction > GO:sexual reproduction ; GO:0019953
+Wikipedia:Shade_avoidance > GO:shade avoidance ; GO:0009641
+Wikipedia:Short-term_memory > GO:short-term memory ; GO:0007614
+Wikipedia:Signal_recognition_particle > GO:signal recognition particle, endoplasmic reticulum targeting ; GO:0005786
+Wikipedia:Signal_recognition_particle > GO:signal recognition particle ; GO:0048500
+Wikipedia:Signal_transduction > GO:signal transduction ; GO:0007165
+Wikipedia:Ski_complex > GO:Ski complex ; GO:0055087
+Wikipedia:Sleep > GO:sleep ; GO:0030431
+Wikipedia:Slime_layer > GO:slime layer ; GO:0030114
+Wikipedia:SnRNP > GO:small nuclear ribonucleoprotein complex ; GO:0030532
+Wikipedia:Social_behavior > GO:social behavior ; GO:0035176
+Wikipedia:Soma_(biology) > GO:neuronal cell body ; GO:0043025
+Wikipedia:Somitogenesis > GO:somitogenesis ; GO:0001756
+Wikipedia:Specific_granule > GO:specific granule ; GO:0042581
+Wikipedia:Spectrin > GO:spectrin ; GO:0008091
+Wikipedia:Sperm_competition > GO:sperm competition ; GO:0046692
+Wikipedia:Sperm_motility > GO:sperm motility ; GO:0030317
+Wikipedia:Spermatogenesis > GO:spermatogenesis ; GO:0007283
+Wikipedia:Spermiogenesis > GO:spermatid development ; GO:0007286
+Wikipedia:Spindle_apparatus > GO:spindle ; GO:0005819
+Wikipedia:Spindle_checkpoint > GO:spindle checkpoint ; GO:0031577
+Wikipedia:Spindle_pole_body > GO:spindle pole body ; GO:0005816
+Wikipedia:Spliceosome > GO:spliceosomal complex ; GO:0005681
+Wikipedia:Spore > GO:sporulation ; GO:0043934
+Wikipedia:Sporogenesis > GO:sporulation resulting in formation of a cellular spore ; GO:0030435
+Wikipedia:Startle_reaction > GO:startle response ; GO:0001964
+Wikipedia:Stem_cell_differentiation > GO:stem cell differentiation ; GO:0048863
+Wikipedia:Steroid_metabolism > GO:steroid metabolic process ; GO:0008202
+Wikipedia:Steroid_metabolisms#Steroid_biosynthesis > GO:steroid biosynthetic process ; GO:0006694
+Wikipedia:Stress_granule > GO:stress granule ; GO:0010494
+Wikipedia:Stringent_response > GO:stringent response ; GO:0015968
+Wikipedia:Stromule > GO:stromule ; GO:0010319
+Wikipedia:Sucrase-isomaltase > GO:sucrase-isomaltase complex ; GO:0070014
+Wikipedia:Sulfur_metabolism > GO:sulfur metabolic process ; GO:0006790
+Wikipedia:Symplast > GO:symplast ; GO:0055044
+Wikipedia:Synapsis > GO:synapsis ; GO:0007129
+Wikipedia:Synaptic_vesicle > GO:synaptic vesicle ; GO:0008021
+Wikipedia:Synaptogenesis > GO:synapse assembly ; GO:0007416
+Wikipedia:Synaptonemal_complex > GO:synaptonemal complex ; GO:0000795
+Wikipedia:Synaptosome > GO:synaptosome ; GO:0019717
+Wikipedia:Systemic_acquired_resistance > GO:systemic acquired resistance ; GO:0009627
+Wikipedia:T-tubule > GO:T-tubule ; GO:0030315
+Wikipedia:TRAMP_complex > GO:TRAMP complex ; GO:0031499
+Wikipedia:TRAPP_complex > GO:TRAPP complex ; GO:0030008
+Wikipedia:T_cell_receptor > GO:T cell receptor complex ; GO:0042101
+Wikipedia:Taste > GO:sensory perception of taste ; GO:0050909
+Wikipedia:Taste_aversion > GO:conditioned taste aversion ; GO:0001661
+Wikipedia:Taxis > GO:taxis ; GO:0042330
+Wikipedia:Telophase > GO:telophase ; GO:0051326
+Wikipedia:Terminal_cisterna > GO:terminal cisterna ; GO:0014802
+Wikipedia:Terpenoid > GO:terpenoid biosynthetic process ; GO:0016114
+Wikipedia:Testosterone_17beta-dehydrogenase_(NADP+) > GO:testosterone 17-beta-dehydrogenase (NADP+) activity ; GO:0047045
+Wikipedia:Thelarche > GO:thelarche ; GO:0042695
+Wikipedia:Thermoception > GO:thermoception ; GO:0050955
+Wikipedia:Thermoregulation > GO:temperature homeostasis ; GO:0001659
+Wikipedia:Thermotaxis > GO:thermotaxis ; GO:0043052
+Wikipedia:Thiamine > GO:thiamin metabolic process ; GO:0006772
+Wikipedia:Thigmotropism > GO:thigmotropism ; GO:0009652
+Wikipedia:Thylakoid > GO:thylakoid ; GO:0009579
+Wikipedia:Thymocyte > GO:T cell selection ; GO:0045058
+Wikipedia:Thyrotropin_receptor > GO:thyroid-stimulating hormone receptor activity ; GO:0004996
+Wikipedia:Tight_junction > GO:tight junction ; GO:0005923
+Wikipedia:Touch > GO:sensory perception of touch ; GO:0050975
+Wikipedia:Transcription_(genetics) > GO:transcription ; GO:0006350
+Wikipedia:Transcytosis > GO:transcytosis ; GO:0045056
+Wikipedia:Transdifferentiation > GO:transdifferentiation ; GO:0060290
+Wikipedia:Transduction_(genetics) > GO:transduction ; GO:0009293
+Wikipedia:Transduction_(physiology) > GO:detection of stimulus involved in sensory perception ; GO:0050906
+Wikipedia:Translation_(genetics) > GO:translation ; GO:0006412
+Wikipedia:Translational_frameshift > GO:translational frameshifting ; GO:0006452
+Wikipedia:Transmembrane_protein > GO:integral to membrane ; GO:0016021
+Wikipedia:Transpiration > GO:transpiration ; GO:0010148
+Wikipedia:Transposon > GO:transposition ; GO:0032196
+Wikipedia:Transposon##Class_I\:_Retrotransposons > GO:transposition, RNA-mediated ; GO:0032197
+Wikipedia:Transsulfuration_pathway > GO:transsulfuration ; GO:0019346
+Wikipedia:Tricarboxylic_acid_cycle > GO:tricarboxylic acid cycle ; GO:0006099
+Wikipedia:Trichocyst > GO:trichocyst ; GO:0055039
+Wikipedia:Trimethylamine_N-oxide_reductase > GO:trimethylamine-N-oxide reductase (cytochrome c) activity ; GO:0050626
+Wikipedia:Tropism > GO:tropism ; GO:0009606
+Wikipedia:Tryptophan > GO:tryptophan metabolic process ; GO:0006568
+Wikipedia:Tubuloglomerular_feedback > GO:tubuloglomerular feedback ; GO:0003098
+Wikipedia:Type_III_hypersensitivity > GO:type III hypersensitivity ; GO:0001802
+Wikipedia:Type_II_hypersensitivity > GO:type II hypersensitivity ; GO:0002445
+Wikipedia:Type_II_topoisomerase > GO:DNA topoisomerase (ATP-hydrolyzing) activity ; GO:0003918
+Wikipedia:Type_IV_hypersensitivity > GO:type IV hypersensitivity ; GO:0001806
+Wikipedia:Type_I_hypersensitivity > GO:type I hypersensitivity ; GO:0016068
+Wikipedia:Tyrosine > GO:tyrosine metabolic process ; GO:0006570
+Wikipedia:Ubiquitin-activating_enzyme > GO:ubiquitin activating enzyme activity ; GO:0004839
+Wikipedia:Urea_cycle > GO:urea cycle ; GO:0000050
+Wikipedia:Urination > GO:micturition ; GO:0060073
+Wikipedia:Urokinase_receptor > GO:U-plasminogen activator receptor activity ; GO:0030377
+Wikipedia:V(D)J_recombination > GO:V(D)J recombination ; GO:0033151
+Wikipedia:VLDL_receptor > GO:very-low-density lipoprotein receptor activity ; GO:0030229
+Wikipedia:Vacuole > GO:vacuole ; GO:0005773
+Wikipedia:Vasculogenesis > GO:vasculogenesis ; GO:0001570
+Wikipedia:Vasoconstriction > GO:vasoconstriction ; GO:0042310
+Wikipedia:Vasodilation > GO:vasodilation ; GO:0042311
+Wikipedia:Vesicle_(biology) > GO:vesicle ; GO:0031982
+Wikipedia:Vesicular-tubular_cluster > GO:ER-Golgi intermediate compartment ; GO:0005793
+Wikipedia:Viral_envelope > GO:viral envelope ; GO:0019031
+Wikipedia:Viral_life_cycle > GO:viral reproduction ; GO:0016032
+Wikipedia:Viral_tegument > GO:viral tegument ; GO:0019033
+Wikipedia:Viral_transformation > GO:transformation of host cell by virus ; GO:0019087
+Wikipedia:Virus > GO:virion ; GO:0019012
+Wikipedia:Virus-like_particle > GO:retrotransposon nucleocapsid ; GO:0000943
+Wikipedia:Visual_perception > GO:visual perception ; GO:0007601
+Wikipedia:Visual_phototransduction > GO:phototransduction ; GO:0007602
+Wikipedia:Vitellogenesis > GO:vitellogenesis ; GO:0007296
+Wikipedia:Vocal_learning > GO:vocal learning ; GO:0042297
+Wikipedia:Weibel-Palade_body > GO:Weibel-Palade body ; GO:0033093
+Wikipedia:Wound_healing > GO:wound healing ; GO:0042060
+Wikipedia:X-inactivation > GO:dosage compensation, by inactivation of X chromosome ; GO:0009048
+Wikipedia:X_chromosome > GO:X chromosome ; GO:0000805
+Wikipedia:Xanthophyll#Xanthophyll_cycle > GO:xanthophyll cycle ; GO:0010028
+Wikipedia:Xenobiotic_metabolism > GO:xenobiotic metabolic process ; GO:0006805
+Wikipedia:Y_chromosome > GO:Y chromosome ; GO:0000806
+Wikipedia:ZW_sex-determination_system > GO:W chromosome ; GO:0000804
+Wikipedia:ZW_sex-determination_system > GO:Z chromosome ; GO:0000807
+Wikipedia:Zygotene > GO:zygotene ; GO:0000238
+Wikipedia:parahippocampal_gyrus > GO:parahippocampal gyrus development ; GO:0021770
