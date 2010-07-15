@@ -587,7 +587,179 @@ module Bio
     def test_remove_edge_nonexistent
       assert_raise(IndexError) { @tree.remove_edge(@mouse, @rat) }
     end
-  end #class TestTree2
+
+    def test_remove_edge_if
+      ary = []
+      assert_equal(@tree, @tree.remove_node_if { |edge| edge ==  @mouse })
+    end
+    def test_collect_node
+      expected = ["mouse"]
+      res = @tree.collect_node!{|node| @mouse}
+      actual = res.nodes
+      assert_equal( expected, actual.map{|elem| elem.name} )
+    end
+
+    def test_collect_edge
+# I don't understand how "collect_edge" works.
+# The line 532 of "tree.rb" outputs an error because Bio::Relation doesn't have "relation=" .
+#
+#      expected =
+#        [ {:edge=>0.0968,
+#           :node=>["mouse", "mouse"]},
+#          {:edge=>0.1125,
+#           :node=>["mouse", "mouse"]},
+#          {:edge=>0.256,
+#           :node=>["mouse", "mouse"]},
+#          {:edge=>0.0386,
+#           :node=>["mouse", "mouse"]},
+#          {:edge=>0.0503,
+#           :node=>["mouse", "mouse"]},
+#          {:edge=>0.2235,
+#           :node=>["mouse", "mouse"]} ]
+         
+#      assert_equal("", @tree.collect_edge!{|edge1, edge2, rel|  [ @rodents,  @mouse,      @edge_rodents_mouse]  })
+    end
+
+    def test_get_edge_merged
+      edge1 = Bio::Tree::Edge.new(12.34)
+      edge2 = Bio::Tree::Edge.new(56.78)
+      merged_edge = @tree.get_edge_merged(edge1, edge2)
+      assert_equal(69.12, merged_edge.distance)
+    end
+
+    def test_get_node_bootstrap
+      node = Bio::Tree::Node.new("test")
+      node.bootstrap = 1
+      assert_equal(1, @tree.get_node_bootstrap(node))
+    end
+
+     def test_get_node_bootstrap_string
+      node = Bio::Tree::Node.new("test")
+      node.bootstrap = 1
+      assert_equal(1, @tree.get_node_bootstrap(node))
+     end
+
+     def test_remove_edge_if
+       @tree.remove_edge_if{|source, target, edge| target == @mouse or @rat or @rodents or @human or @chimpanzee or @primates}
+       assert_equal(0, @tree.number_of_edges)
+     end
+
+     def test_subtree
+       assert_equal("mouse", @tree.subtree([@mouse]).nodes[0].name)
+     end
+
+     def test_subtree_with_all_paths
+       assert_equal("mouse", @tree.subtree_with_all_paths([@mouse]).nodes[0].name )
+     end
+
+     def test_concat
+       tree2 = Bio::Tree.new
+       node1      = Bio::Tree::Node.new('node1')
+       node2      = Bio::Tree::Node.new('node2')
+       edge = Bio::Tree::Edge.new(0.1)
+       tree2.add_edge( node1,  node2, edge)
+       new_edge = @tree.concat(tree2).edges[6]
+       actual = [ new_edge[0].name, new_edge[1].name, new_edge[2].distance ]
+       assert_equal(["node1", "node2", 0.1], actual)
+     end
+
+     def test_path
+       actual =  @tree.path(@mouse, @human).map{|node| node.name }
+       assert_equal(["mouse", "rodents", "mammals", "primates", "human"],actual)
+     end
+
+     def test_path
+       actual =  @tree.distance(@mouse, @human)
+       assert_equal(0.6149, actual)
+     end
+
+     #Passed cache_* methods because of internal methods
+
+     def test_parent
+       actual = @tree.parent(@mouse, @mammals).name
+       assert_equal("rodents", actual)
+     end
+
+     def test_children
+       actual = @tree.children(@rodents, @mammals).map{|node| node.name}.sort
+       assert_equal(["mouse", "rat"], actual)
+     end
+
+     def test_descendents
+       actual = @tree.descendents(@rodents, @mammals).map{|node| node.name}.sort
+       assert_equal(["mouse", "rat"], actual)
+     end
+
+     def test_leaves
+       actual = @tree.leaves.map{|node| node.name}.sort
+       assert_equal(["chimpanzee", "human", "mouse", "rat"], actual)
+       actual = @tree.leaves(@rodents, @mammals ).map{|node| node.name}.sort
+       assert_equal(["mouse", "rat"],actual)
+     end
+
+     def test_ancestors
+       actual = @tree.ancestors(@mouse, @mammals).map{|node| node.name}.sort
+       assert_equal(["mammals", "rodents"] , actual)
+     end
+
+     def test_lowest_common_ancestor
+      actual = @tree.lowest_common_ancestor(@mouse, @rat, @mammals).name
+      assert_equal("rodents", actual)
+     end
+
+     def test_total_distance
+       actual = @tree.total_distance.to_s
+       assert_equal("0.7777", actual)
+     end
+
+     def test_distance_matrix
+       actual = @tree.distance_matrix.to_a.map{|dist| dist.map{|elem| elem.to_s}.sort }.sort
+       expected = 
+[["0", "0.0889", "0.6149", "0.6306"],
+ ["0", "0.0889", "0.6266", "0.6423"],
+ ["0", "0.2093", "0.6149", "0.6266"],
+ ["0", "0.2093", "0.6306", "0.6423"]]
+       assert_equal(expected , actual)
+     end
+     
+     def test_adjacency_matrix
+       #the order of the result vary every exectuion and has a lot of nil. I use Array#sort to fix the order and put "0" in the place of nil 
+       expected =
+[["0", "0", "0", "0", "0", "0", "0.0386"],
+ ["0", "0", "0", "0", "0", "0", "0.0503"],
+ ["0", "0", "0", "0", "0", "0", "0.0968"],
+ ["0", "0", "0", "0", "0", "0", "0.1125"],
+ ["0", "0", "0", "0", "0", "0.2235", "0.256"],
+ ["0", "0", "0", "0", "0.0386", "0.0503", "0.2235"],
+ ["0", "0", "0", "0", "0.0968", "0.1125", "0.256"]]
+       actual = @tree.adjacency_matrix.to_a.map do |adj| 
+         adj.map do |elem| 
+           if elem != nil
+             elem.to_s 
+           else
+             elem = "0"
+           end
+         end.sort
+       end.sort
+       assert_equal(expected , actual)
+     end
+
+     def test_remove_nonsense_nodes
+       expected = "mammals"
+       actual = @tree.remove_nonsense_nodes[0].name
+       assert_equal(expected  , actual)
+     end
+
+     def test_insert_node
+       expected = "mammals"
+       node1      = Bio::Tree::Node.new('node1')
+       new = @tree.insert_node(@mouse, @rodents, node1)
+       new_rel1 = new.edges[6][0].name
+       new_rel2 = new.edges[5][1].name
+       assert_equal("node1"  , new_rel1)
+       assert_equal("node1"  , new_rel2)
+     end
+   end #class TestTree2
 
 end #module Bio
 
