@@ -293,8 +293,8 @@ class GO
 
     # Bio::GO::GeneAssociation#to_str -> a line of gene_association file.
     def to_str
-      return [@db, @db_object_id, @db_object_symbol, @quialifier, @goid, 
-              @qualifier.join("|"), @evidence, @with.join("|"), @aspect,
+      return [@db, @db_object_id, @db_object_symbol, @qualifier, @goid, 
+              @db_reference.join("|"), @evidence, @with.join("|"), @aspect,
               @db_object_name, @db_object_synonym.join("|"), @db_object_type,
               @taxon, @date, @assigned_by].join("\t")
     end
