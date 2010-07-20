@@ -31,7 +31,7 @@ module Bio
       result = nil
       acc = 'AF237819'
       assert_nothing_raised {
-        result = @togows.entry('genbank', acc)
+        result = @togows.entry('nucleotide', acc)
       }
       assert(!result.to_s.strip.empty?)
       gb = Bio::GenBank.new(result)
@@ -42,7 +42,7 @@ module Bio
       result = nil
       accs = [ 'AF237819' ,'AB302966', 'AY582120' ]
       assert_nothing_raised {
-        result = @togows.entry('genbank', accs)
+        result = @togows.entry('nucleotide', accs)
       }
       assert(!result.to_s.strip.empty?)
       count = 0
@@ -56,7 +56,7 @@ module Bio
       accs2 = accs.join(',')
       result2 = nil
       assert_nothing_raised {
-        result2 = @togows.entry('genbank', accs2)
+        result2 = @togows.entry('nucleotide', accs2)
       }
       assert(result2 == result)
     end
@@ -65,7 +65,7 @@ module Bio
       result = nil
       acc = 'AF237819'
       assert_nothing_raised {
-        result = @togows.entry('genbank', acc, 'fasta')
+        result = @togows.entry('nucleotide', acc, 'fasta')
       }
       assert(!result.to_s.strip.empty?)
       assert_match(/^\>/, result)
@@ -203,7 +203,7 @@ module Bio
       acc = 'AF237819'
       assert_nothing_raised {
         response = @togows.instance_eval {
-          get('entry', 'genbank', acc, 'entry_id')
+          get('entry', 'nucleotide', acc, 'entry_id')
         }
       }
       assert_kind_of(Net::HTTPResponse, response)
