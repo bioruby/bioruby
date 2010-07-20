@@ -399,6 +399,10 @@ module Bio
 
           litdb    = RuleRegexp[ 'Bio::LITDB',
             /^CODE        [0-9]+$/ ],
+          pathway_module = RuleRegexp[ 'Bio::KEGG::MODULE',
+            /^ENTRY       .+ Pathway\s+Module\s*/ ],
+          pathway  = RuleRegexp[ 'Bio::KEGG::PATHWAY',
+            /^ENTRY       .+ Pathway\s*/ ],
           brite    = RuleRegexp[ 'Bio::KEGG::BRITE',
             /^Entry           [A-Z0-9]+/ ],
           orthology = RuleRegexp[ 'Bio::KEGG::ORTHOLOGY',
@@ -510,6 +514,8 @@ module Bio
         # KEGG
         #aaindex.is_prior_to litdb
         #litdb.is_prior_to brite
+        pathway_module.is_prior_to pathway
+        pathway.is_prior_to brite
         brite.is_prior_to orthology
         orthology.is_prior_to drug
         drug.is_prior_to glycan
