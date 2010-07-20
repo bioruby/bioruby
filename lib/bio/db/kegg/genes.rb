@@ -1,7 +1,7 @@
 #
 # = bio/db/kegg/genes.rb - KEGG/GENES database class
 #
-# Copyright::   Copyright (C) 2001, 2002, 2006
+# Copyright::   Copyright (C) 2001, 2002, 2006, 2010
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
@@ -29,8 +29,7 @@
 # 
 #  # NAME
 #  p entry.name        # => String
-#  p entry.genes       # => Array
-#  p entry.gene        # => String
+#  p entry.names       # => Array
 # 
 #  # DEFINITION
 #  p entry.definition  # => String
@@ -169,16 +168,10 @@ class GENES < KEGGDB
   #
   # ---
   # *Returns*:: Array containing String
-  def genes
+  def names_as_array
     name.split(', ')
   end
-
-  # Returns the first gene name described in the NAME line.
-  # ---
-  # *Returns*:: String
-  def gene
-    genes.first
-  end
+  alias names names_as_array
 
   # Definition of the entry, described in the DEFINITION line.
   # ---
@@ -225,6 +218,16 @@ class GENES < KEGGDB
     lines_fetch('PATHWAY')
   end
 
+  # Returns CLASS field of the entry.
+  def keggclass
+    field_fetch('CLASS')
+  end
+
+  # Returns an Array of biological classes in CLASS field.
+  def keggclasses
+    keggclass.gsub(/ \[[^\]]+/, '').split(/\] ?/)
+  end
+
   # The position in the genome described in the POSITION line.
   # ---
   # *Returns*:: String
@@ -266,14 +269,21 @@ class GENES < KEGGDB
 
   # Motif information described in the MOTIF lines.
   # ---
+  # *Returns*:: Strings
+  def motifs_as_strings
+    lines_fetch('MOTIF')
+  end
+
+  # Motif information described in the MOTIF lines.
+  # ---
   # *Returns*:: Hash
-  def motif
+  def motifs_as_hash
     unless @data['MOTIF']
       hash = {}
       db = nil
-      lines_fetch('MOTIF').each do |line|
+      motifs_as_strings.each do |line|
         if line[/^\S+:/]
-          db, str = line.split(/:/)
+          db, str = line.split(/:/, 2)
         else
           str = line
         end
@@ -284,6 +294,7 @@ class GENES < KEGGDB
     end
     @data['MOTIF']		# Hash of Array of IDs in MOTIF
   end
+  alias motifs motifs_as_hash
 
   # Links to other databases described in the DBLINKS lines.
   # ---
@@ -303,7 +314,7 @@ class GENES < KEGGDB
   end
   alias structures structure
 
-  # Codon usage data described in the CODON_USAGE lines.
+  # Codon usage data described in the CODON_USAGE lines. (Deprecated: no more exists)
   # ---
   # *Returns*:: Hash
   def codon_usage(codon = nil)
