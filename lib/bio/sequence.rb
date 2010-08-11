@@ -72,8 +72,10 @@ class Sequence
   autoload :Format,  'bio/sequence/format'
   autoload :Adapter, 'bio/sequence/adapter'
   autoload :QualityScore, 'bio/sequence/quality_score'
+  autoload :SequenceMasker, 'bio/sequence/sequence_masker'
 
   include Format
+  include SequenceMasker
 
   # Create a new Bio::Sequence object
   #
