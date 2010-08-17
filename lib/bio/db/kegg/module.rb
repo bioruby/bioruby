@@ -148,6 +148,9 @@ class MODULE < KEGGDB
   alias compounds compounds_as_hash
 
 
+  # (Private) Creates a hash from lines.
+  # Each line is consisted of two components, ID and description,
+  # separated with spaces. IDs must be unique with each other.
   def strings_as_hash(lines)
     hash = {}
     lines.each do |line|
@@ -156,6 +159,7 @@ class MODULE < KEGGDB
     end
     return hash
   end
+  private :strings_as_hash
 
 end # MODULE
 
