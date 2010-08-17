@@ -61,12 +61,8 @@ class MODULE < KEGGDB
   # Name of the KEGG class, described in the CLASS line.
   # ---
   # *Returns*:: String
-  def keggclasses
+  def keggclass
     field_fetch('CLASS')
-  end
-
-  def keggclasses_as_array
-    keggclasses.split(/\s*;\s*/)
   end
 
   # Pathways described in the PATHWAY lines.
