@@ -83,14 +83,6 @@ class MODULE < KEGGDB
   end
   alias pathways pathways_as_hash
 
-=begin
-  # Pathway IDs described in the PATHWAY lines.
-  # ---
-  # *Returns*:: Array containing String
-  def pathways
-    pathways_as_hash.keys.sort
-  end
-=end
 
   # Orthologs described in the ORTHOLOGY lines.
   # ---
@@ -117,14 +109,6 @@ class MODULE < KEGGDB
     orthologs_as_hash.keys.map{|x| x.split(/\+|\-|,/)}.flatten.sort.uniq
   end
 
-=begin
-  # Ortholog IDs described in the ORTHOLOGY lines.
-  # ---
-  # *Returns*:: Array containing String
-  def orthologs
-    orthologs_as_hash.keys.sort
-  end
-=end
 
   # Reactions described in the REACTION lines.
   # ---
@@ -144,14 +128,6 @@ class MODULE < KEGGDB
   end
   alias reactions reactions_as_hash
 
-=begin
-  # Reaction IDs described in the REACTION lines.
-  # ---
-  # *Returns*:: Array containing String
-  def reactions
-    reactions_as_hash.keys.sort
-  end
-=end
 
   # Compounds described in the COMPOUND lines.
   # ---
@@ -171,14 +147,6 @@ class MODULE < KEGGDB
   end
   alias compounds compounds_as_hash
 
-=begin
-  # Compound IDs described in the COMPOUND lines.
-  # ---
-  # *Returns*:: Array containing String
-  def compounds
-    compounds_as_hash.keys.sort
-  end
-=end
 
   def strings_as_hash(lines)
     hash = {}
