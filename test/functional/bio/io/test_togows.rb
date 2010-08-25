@@ -135,7 +135,7 @@ module Bio
       result = nil
       assert_nothing_raised {
         result = @togows.retrieve('hsa:124',
-                                  :database => 'gene',
+                                  :database => 'kegg-genes',
                                   :field => 'entry_id',
                                   :format => 'json')
       }
@@ -146,7 +146,7 @@ module Bio
       result = nil
       assert_nothing_raised {
         result = @togows.retrieve('1.1.1.1',
-                                  :database => [ 'gene', 'enzyme' ])
+                                  :database => [ 'kegg-genes', 'kegg-enzyme' ])
       }
       assert(!result.to_s.strip.empty?)
     end
@@ -155,7 +155,7 @@ module Bio
       result = nil
       assert_nothing_raised {
         result = @togows.retrieve([ '1.1.1.1', 'hsa:124' ],
-                                  :database => [ 'gene', 'enzyme' ])
+                                  :database => [ 'kegg-genes', 'kegg-enzyme' ])
       }
       assert(!result.to_s.strip.empty?)
     end
