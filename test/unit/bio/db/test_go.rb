@@ -1,7 +1,7 @@
 #
-# test/unit/bio/*****.rb - Unit test for Bio::GO
+# test/unit/bio/db/test_go.rb - Unit test for Bio::GO
 #
-# Copyright::  Copyright (C) 2009 Naohisa Goto <ng@bioruby.org>
+# Copyright::  Copyright (C) 2010 Kazuhiro Hayashi <k.hayashi.info@gmail.com>
 # License::    The Ruby License
 #
 
@@ -17,14 +17,15 @@ require 'bio/db/go'
 module Bio
   class TestBioGOOntology < Test::Unit::TestCase
 
+    TestDataFileName = File.join(BioRubyTestDataPath,
+                                 'go', 'part_of_component.ontology')
+
     def setup
-      filename = File.join(BioRubyTestDataPath, 'go/part_of_component.ontology')
-      @obj = Bio::GO::Ontology.new(File.read(filename))
+      @obj = Bio::GO::Ontology.new(File.read(TestDataFileName))
     end
 
     def test_dag_edit_format_parser
-      filename = File.join(BioRubyTestDataPath, 'go/part_of_component.ontology')
-      obj = Bio::GO::Ontology.new(File.read(filename))
+      obj = Bio::GO::Ontology.new(File.read(TestDataFileName))
       assert_equal(Bio::GO::Ontology,obj.class)
     end
     def test_goid2term
@@ -40,12 +41,15 @@ module Bio
 
   class TestGeneAssociation < Test::Unit::TestCase
 
+    TestDataFileName = File.join(BioRubyTestDataPath,
+                                 'go', "part_of_gene_association.sgd")
+
     def setup
       @ga = Bio::GO::GeneAssociation.new("SGD\tS000007287\t15S_RRNA\t\tGO:0005763\tSGD_REF:S000073642|PMID:6261980\tISS\t\tC\tRibosomal RNA of the small mitochondrial ribosomal subunit\t15S_rRNA|15S_RRNA_2\tgene\ttaxon:4932\t20040202\tSGD\t\t")
     end
 
     def test_parser
-      file = File.read("/Users/kaz/BioRubyTest/data/go/part_of_gene_association.sgd")
+      file = File.read(TestDataFileName)
       gas = Bio::GO::GeneAssociation.parser(file)
       gas.map{ |ga| assert_equal(Bio::GO::GeneAssociation, ga.class) }
       Bio::GO::GeneAssociation.parser(file) {|ga| assert_equal(Bio::GO::GeneAssociation, ga.class) }
@@ -106,8 +110,12 @@ module Bio
   end
 
   class External2go < Test::Unit::TestCase
+
+    TestDataFileName = File.join(BioRubyTestDataPath,
+                                 'go', "part_of_wikipedia2go")
+
     def setup
-      file = File.read("/Users/kaz/BioRubyTest/data/go/part_of_wikipedia2go")
+      file = File.read(TestDataFileName)
       @e2g = Bio::GO::External2go.parser(file)
     end
     def test_parser
@@ -125,7 +133,7 @@ module Bio
   :db=>"Wikipedia",
   :db_id=>"2-hydroxymethylglutarate_dehydrogenase",
   :go_term=>"2-hydroxymethylglutarate dehydrogenase activity"}]
-      file = File.read("/Users/kaz/BioRubyTest/data/go/part_of_wikipedia2go")
+      file = File.read(TestDataFileName)
       e2g = Bio::GO::External2go.parser(file)
       assert_equal(expected, e2g)
       assert_raise(RuntimeError){ Bio::GO::External2go.parser("probably this occurs error")}
