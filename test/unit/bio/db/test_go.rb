@@ -18,7 +18,7 @@ module Bio
   class TestBioGOOntology < Test::Unit::TestCase
 
     TestDataFileName = File.join(BioRubyTestDataPath,
-                                 'go', 'part_of_component.ontology')
+                                 'go', 'selected_component.ontology')
 
     def setup
       @obj = Bio::GO::Ontology.new(File.read(TestDataFileName))
@@ -42,7 +42,7 @@ module Bio
   class TestGeneAssociation < Test::Unit::TestCase
 
     TestDataFileName = File.join(BioRubyTestDataPath,
-                                 'go', "part_of_gene_association.sgd")
+                                 'go', "selected_gene_association.sgd")
 
     def setup
       @ga = Bio::GO::GeneAssociation.new("SGD\tS000007287\t15S_RRNA\t\tGO:0005763\tSGD_REF:S000073642|PMID:6261980\tISS\t\tC\tRibosomal RNA of the small mitochondrial ribosomal subunit\t15S_rRNA|15S_RRNA_2\tgene\ttaxon:4932\t20040202\tSGD\t\t")
@@ -112,7 +112,7 @@ module Bio
   class External2go < Test::Unit::TestCase
 
     TestDataFileName = File.join(BioRubyTestDataPath,
-                                 'go', "part_of_wikipedia2go")
+                                 'go', "selected_wikipedia2go")
 
     def setup
       file = File.read(TestDataFileName)
