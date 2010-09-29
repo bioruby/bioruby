@@ -529,7 +529,7 @@ module Bio
       _clear_cache
       @pathway.relations.each do |rel|
         newedge = yield rel.node[0], rel.node[1], rel.relation
-        rel.relation = newedge
+        rel.edge = newedge
         @pathway.append(rel, false)
       end
       self
