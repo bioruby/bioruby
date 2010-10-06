@@ -22,8 +22,7 @@ module Bio
   class FuncTestCommandCall < Test::Unit::TestCase
 
     def setup
-      case RUBY_PLATFORM
-      when /mswin32|bccwin32/
+      if Bio::Command.module_eval { windows_platform? } then
         cmd = File.expand_path(File.join(BioRubyTestDataPath, 'command', 'echoarg2.bat'))
         @arg = [ cmd, 'test "argument 1"', '"test" argument 2', 'arg3' ]
         @expected = '"""test"" argument 2"'
@@ -93,8 +92,7 @@ module Bio
     def setup
       @data = [ "987", "123", "567", "456", "345" ]
       @sorted = @data.sort
-      case RUBY_PLATFORM
-      when /mswin32|bccwin32/
+      if Bio::Command.module_eval { windows_platform? } then
         @sort = "sort"
         @data = @data.join("\r\n") + "\r\n"
       else
@@ -150,8 +148,7 @@ module Bio
 
   class FuncTestCommandChdir < Test::Unit::TestCase
     def setup
-      case RUBY_PLATFORM
-      when /mswin32|bccwin32/
+      if Bio::Command.module_eval { windows_platform? } then
         @arg = [ 'dir', '/B', '/-P' ]
       else
         cmd = '/bin/ls'
