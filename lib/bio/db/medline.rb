@@ -45,7 +45,7 @@ class MEDLINE < NCBIDB
 
   # returns a Reference object.
   def reference
-    hash = Hash.new('')
+    hash = Hash.new
 
     hash['authors']	= authors
     hash['title']	= title
