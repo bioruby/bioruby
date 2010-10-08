@@ -43,7 +43,7 @@ module Command
   # Note that Cygwin is not treated as Windows.
   #
   # Known issues:
-  # * It might mistake in minor platforms/architectures/interpreters.
+  # * It might make a mistake in minor platforms/architectures/interpreters.
   # * When running JRuby on Cygwin, the result is unknown.
   # ---
   # *Returns*:: true or false
@@ -74,11 +74,11 @@ module Command
   # When supported or unknown, it returns false or nil.
   #
   # Known issues:
-  # * It might mistake in minor platforms/architectures/interpreters.
+  # * It might make a mistake in minor platforms/architectures/interpreters.
   # ---
   # *Returns*:: true, false or nil.
   def no_fork?
-    if (defined?(@@nofork) && @@nofork) or
+    if (defined?(@@no_fork) && @@no_fork) or
         windows_platform? or /java/i =~ RUBY_PLATFORM then
       true
     else
