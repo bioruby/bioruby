@@ -51,6 +51,7 @@ Some new methods are added to parse new fields added to some KEGG file
 formats. Unit tests for KEGG parsers are also added and improved. In
 addition, return value types of some methods are also changed for unifying
 APIs among KEGG parser classes. See incompatible changes below for details.
+Most of them are contributed by Kozo Nishida.
 
 === Many sample scripts are added
 
