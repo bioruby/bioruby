@@ -1,0 +1,31 @@
+= BioRuby 1.4.1 RELEASE NOTES
+
+A lot of changes have been made to the BioRuby 1.4.1 after the version 1.4.0
+is released. This document describes important and/or incompatible changes
+since the BioRuby 1.4.0 release.
+
+For known problems, see KNOWN_ISSUES.rdoc.
+
+== New features
+
+=== PAML Codeml support is significantly improved
+
+PAML Codeml result parser is completely rewritten and is significantly
+improved. The code is developed by Pjotr Prins.
+
+=== KEGG PATHWAY and KEGG MODULE parser
+
+Parsers for KEGG PATHWAY and KEGG MODULE data are added. The code is developed
+by Kozo Nishida and Toshiaki Katayama.
+
+== Incompatible changes
+
+=== Bio::PAML::Codeml::Report
+
+The code is completely rewritten. See the RDoc for details.
+
+=== Bio::KEGG::ORTHOLOGY
+
+Bio::KEGG::ORTHOLOGY#pathways is changed to return a hash. The old pathway
+method is renamed to pathways_in_keggclass for compatibility.
+
