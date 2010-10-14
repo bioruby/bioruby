@@ -126,10 +126,10 @@ module Bio
   #   http://www.ncbi.nlm.nih.gov/BLAST/fasta.shtml
   #
   # * Frequently Asked Questions:  Indexing of Sequence Identifiers (by Warren R. Gish.)
-  #   http://blast.wustl.edu/doc/FAQ-Indexing.html#Identifiers
+  #   http://blast.wustl.edu/doc/FAQ-Indexing.html#Identifiers [dead link]
   #
   # * README.formatdb
-  #   ftp://ftp.ncbi.nih.gov/blast/documents/README.formatdb
+  #   ftp://ftp.ncbi.nih.gov/blast/documents/README.formatdb [dead link]
   # 
   class FastaDefline
 
@@ -140,6 +140,7 @@ module Bio
       'emb' => [ 'acc_version', 'locus' ],      # EMBL
       'dbj' => [ 'acc_version', 'locus' ],      # DDBJ
       'sp'  => [ 'accession', 'entry_id' ],   # SWISS-PROT
+      'tr'  => [ 'accession', 'entry_id' ],   # TREMBL
       'pdb' => [ 'entry_id', 'chain' ],       # PDB
       'bbs' => [ 'number' ],                  # GenInfo Backbone Id
       'gnl' => [ 'database' , 'entry_id' ],   # General database identifier
