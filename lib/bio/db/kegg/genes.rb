@@ -46,7 +46,7 @@
 #  p entry.locations   # => Bio::Locations
 #
 #  # MOTIF
-#  p entry.motif       # => Hash of Array
+#  p entry.motifs      # => Hash of Array
 #
 #  # DBLINKS
 #  p entry.dblinks     # => Hash of Array
@@ -173,6 +173,26 @@ class GENES < KEGGDB
   end
   alias names names_as_array
 
+  # The method will be deprecated. Use Bio::KEGG::GENES#names.
+  #
+  # Names of the entry as an Array, described in the NAME line.
+  #
+  # ---
+  # *Returns*:: Array containing String
+  def genes
+    names_as_array
+  end
+
+  # The method will be deprecated.
+  # Use <tt>entry.names.first</tt> instead.
+  #
+  # Returns the first gene name described in the NAME line.
+  # ---
+  # *Returns*:: String
+  def gene
+    genes.first
+  end
+
   # Definition of the entry, described in the DEFINITION line.
   # ---
   # *Returns*:: String
@@ -295,6 +315,16 @@ class GENES < KEGGDB
     @data['MOTIF']		# Hash of Array of IDs in MOTIF
   end
   alias motifs motifs_as_hash
+
+  # The specification of the method will be changed in the future.
+  # Please use Bio::KEGG::GENES#motifs.
+  #
+  # Motif information described in the MOTIF lines.
+  # ---
+  # *Returns*:: Hash
+  def motif
+    motifs
+  end
 
   # Links to other databases described in the DBLINKS lines.
   # ---
