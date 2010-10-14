@@ -140,6 +140,7 @@ module Bio
       'emb' => [ 'acc_version', 'locus' ],      # EMBL
       'dbj' => [ 'acc_version', 'locus' ],      # DDBJ
       'sp'  => [ 'accession', 'entry_id' ],   # SWISS-PROT
+      'tr'  => [ 'accession', 'entry_id' ],   # TREMBL
       'pdb' => [ 'entry_id', 'chain' ],       # PDB
       'bbs' => [ 'number' ],                  # GenInfo Backbone Id
       'gnl' => [ 'database' , 'entry_id' ],   # General database identifier
