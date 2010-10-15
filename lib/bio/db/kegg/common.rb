@@ -192,6 +192,24 @@ class KEGG
       end
     end #module ModulesAsHash
 
+    # This module provides strings_as_hash private method.
+    #
+    # Bio::KEGG::* internal use only.
+    module StringsAsHash
+      # (Private) Creates a hash from lines.
+      # Each line is consisted of two components, ID and description,
+      # separated with spaces. IDs must be unique with each other.
+      def strings_as_hash(lines)
+        hash = {}
+        lines.each do |line|
+          entry_id, definition = line.split(/\s+/, 2)
+          hash[entry_id] = definition
+        end
+        return hash
+      end
+      private :strings_as_hash
+    end #module StringsAsHash
+
   end #module Common
 end #class KEGG
 end #module Bio

@@ -28,6 +28,11 @@ class MODULE < KEGGDB
   DELIMITER = RS = "\n///\n"
   TAGSIZE = 12
 
+  #--
+  # for a private method strings_as_hash.
+  #++
+  include Common::StringsAsHash
+
   # Creates a new Bio::KEGG::MODULE object.
   # ---
   # *Arguments*:
@@ -146,20 +151,6 @@ class MODULE < KEGGDB
     @compounds_as_hash
   end
   alias compounds compounds_as_hash
-
-
-  # (Private) Creates a hash from lines.
-  # Each line is consisted of two components, ID and description,
-  # separated with spaces. IDs must be unique with each other.
-  def strings_as_hash(lines)
-    hash = {}
-    lines.each do |line|
-      entry_id, definition = line.split(/\s+/, 2)
-      hash[entry_id] = definition
-    end
-    return hash
-  end
-  private :strings_as_hash
 
 end # MODULE
 
