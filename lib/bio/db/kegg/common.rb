@@ -170,27 +170,27 @@ class KEGG
       end
     end #module GenesAsHash
 
-    # This module provides pathway_modules_as_hash method.
+    # This module provides modules_as_hash method.
     #
     # Bio::KEGG::* internal use only.
-    module PathwayModulesAsHash
+    module ModulesAsHash
       # Returns MODULE field as a Hash.
-      # Each key of the hash is Pathway Module ID,
+      # Each key of the hash is KEGG MODULE ID,
       # and each value is the name of the Pathway Module.
       # ---
       # *Returns*:: Hash
-      def pathway_modules_as_hash
-        unless defined? @pathway_modules_s_as_hash then
+      def modules_as_hash
+        unless defined? @modules_s_as_hash then
           hash = {}
-          pathway_modules_as_strings.each do |line|
+          modules_as_strings.each do |line|
             entry_id, name = line.split(/\s+/, 2)
             hash[entry_id] = name
           end
-          @pathway_modules_as_hash = hash
+          @modules_as_hash = hash
         end
-        @pathway_modules_as_hash
+        @modules_as_hash
       end
-    end #module PathwayModulesAsHash
+    end #module ModulesAsHash
 
   end #module Common
 end #class KEGG

@@ -35,7 +35,7 @@ module Bio
       assert_equal('Metabolism; Carbohydrate Metabolism', @obj.keggclass)
     end
 
-    def test_pathway_modules_as_hash
+    def test_modules_as_hash
       expected = {
         "M00097"=>"UDP-glucose and UDP-galactose biosynthesis, Glc-1P/Gal-1P => UDP-Glc/UDP-Gal",
         "M00614"=>"PTS system, N-acetylgalactosamine-specific II component",
@@ -43,11 +43,11 @@ module Bio
         "M00618"=>"PTS system, lactose-specific II component",
         "M00624"=>"PTS system, galactosamine-specific II component"
       }
-      assert_equal(expected, @obj.pathway_modules_as_hash)
-      assert_equal(expected, @obj.pathway_modules)
+      assert_equal(expected, @obj.modules_as_hash)
+      assert_equal(expected, @obj.modules)
     end
 
-    def test_pathway_modules_as_strings
+    def test_modules_as_strings
       expected =
         [ "M00097  UDP-glucose and UDP-galactose biosynthesis, Glc-1P/Gal-1P => UDP-Glc/UDP-Gal",
           "M00614  PTS system, N-acetylgalactosamine-specific II component",
@@ -55,7 +55,7 @@ module Bio
           "M00618  PTS system, lactose-specific II component",
           "M00624  PTS system, galactosamine-specific II component"
         ]
-      assert_equal(expected, @obj.pathway_modules_as_strings)
+      assert_equal(expected, @obj.modules_as_strings)
     end
 
     def test_rel_pathways_as_strings
@@ -142,7 +142,7 @@ module Bio
       assert_equal(expected, @obj.keggclass)
     end
 
-    def test_pathway_modules_as_strings
+    def test_modules_as_strings
       expected =
         [ "M00004  Pentose phosphate pathway (Pentose phosphate cycle) [PATH:map00030]",
           "M00005  PRPP biosynthesis, ribose 5P -> PRPP [PATH:map00030]",
@@ -152,10 +152,10 @@ module Bio
           "M00680  Semi-phosphorylative Entner-Doudoroff pathway, gluconate => glyceraldehyde-3P + pyruvate [PATH:map00030]",
           "M00681  Non-phosphorylative Entner-Doudoroff pathway, gluconate => glyceraldehyde + pyruvate [PATH:map00030]"
         ]
-      assert_equal(expected, @obj.pathway_modules_as_strings)
+      assert_equal(expected, @obj.modules_as_strings)
     end
 
-    def test_pathway_modules_as_hash
+    def test_modules_as_hash
       expected = {
         "M00008" => "Entner-Doudoroff pathway, glucose-6P => glyceraldehyde-3P + pyruvate [PATH:map00030]",
         "M00680" => "Semi-phosphorylative Entner-Doudoroff pathway, gluconate => glyceraldehyde-3P + pyruvate [PATH:map00030]",
@@ -165,8 +165,8 @@ module Bio
         "M00006" => "Pentose phosphate pathway, oxidative phase, glucose 6P => ribulose 5P [PATH:map00030]",
         "M00007" => "Pentose phosphate pathway, non-oxidative phase, fructose 6P => ribose 5P [PATH:map00030]"
       }
-      assert_equal(expected, @obj.pathway_modules_as_hash)
-      assert_equal(expected, @obj.pathway_modules)
+      assert_equal(expected, @obj.modules_as_hash)
+      assert_equal(expected, @obj.modules)
     end
 
     def test_rel_pathways_as_strings
