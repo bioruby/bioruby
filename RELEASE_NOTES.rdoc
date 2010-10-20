@@ -29,3 +29,9 @@ The code is completely rewritten. See the RDoc for details.
 Bio::KEGG::ORTHOLOGY#pathways is changed to return a hash. The old pathway
 method is renamed to pathways_in_keggclass for compatibility.
 
+=== Bio::AAindex2
+
+Bio::AAindex2 now copies each symmetric element for lower triangular matrix
+to the upper right part, because the Matrix class in Ruby 1.9.2 no longer
+accepts any dimension mismatches. We think the previous behavior is a bug.
+
