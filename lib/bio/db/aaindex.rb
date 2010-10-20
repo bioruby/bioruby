@@ -254,7 +254,17 @@ module Bio
         label_data.each_line do |line|
           ma << line.strip.split(/\s+/).map {|x| x.to_f }
         end
-        @data['matrix'] = Matrix[*ma]
+        ma_len = ma.size
+        ma.each do |row|
+          row_size = row.size
+          if row_size < ma_len
+            (row_size..ma_len-1).each do |i|
+              row[i] = ma[i][row_size-1]
+            end
+          end
+        end
+        mat = Matrix[*ma]
+        @data['matrix'] = mat
       end
     end
 
