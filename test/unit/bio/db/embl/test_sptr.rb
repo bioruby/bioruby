@@ -1660,7 +1660,7 @@ CC   -----------------------------------------------------------------------"
               "     MEEPQSDPSV EPPLSQETFS DLWKLLPENN VLSPLPSQAM DDLMLSPDDI EQWFTEDPGP\n" * 200,
               "//\n"].join
       sp = SPTR.new(data)
-      assert(12000, sp.seq.size)
+      assert_equal(12000, sp.seq.size)
     end
   end
 
