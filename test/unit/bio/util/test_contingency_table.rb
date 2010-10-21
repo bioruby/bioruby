@@ -74,20 +74,20 @@ module Bio #:nodoc:
 
 
       #assert_equal(2.4, results[0][2])
-      assert_equal('2.4', results[0][2].to_s)
-      assert_equal('0.534522483824849', results[0][3].to_s)
+      assert_in_delta(2.4, results[0][2], 1e-13)
+      assert_in_delta(0.534522483824849, results[0][3], 1e-15)
 
-      assert_equal('12.0', results[5][2].to_s)
-      assert_equal('0.816496580927726', results[5][3].to_s)
+      assert_in_delta(12.0, results[5][2], 1e-13)
+      assert_in_delta(0.816496580927726, results[5][3], 1e-15)
 
-      assert_equal('2.4', results[9][2].to_s)
-      assert_equal('0.534522483824849', results[9][3].to_s)
+      assert_in_delta(2.4, results[9][2], 1e-13)
+      assert_in_delta(0.534522483824849, results[9][3], 1e-15)
 
       ctable = Bio::ContingencyTable.new
       ctable.table['a']['t'] = 4
       ctable.table['a']['g'] = 2
       ctable.table['g']['t'] = 3
-      assert_equal('1.28571428571429', ctable.chi_square.to_s)
+      assert_in_delta(1.28571428571429, ctable.chi_square, 1e-14)
       assert_equal(ctable.column_sum_all, ctable.row_sum_all)
       assert_equal(ctable.column_sum_all, ctable.table_sum_all)
     end
