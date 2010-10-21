@@ -1,7 +1,7 @@
 #
-# test/unit/bio/*****.rb - Unit test for Bio::FastaDefline
+# test/unit/bio/db/fasta/test_defline.rb - Unit test for Bio::FastaDefline
 #
-# Copyright::  Copyright (C) 2009 Naohisa Goto <ng@bioruby.org>
+# Copyright::  Copyright (C) 2010 Kazuhiro Hayashi <k.hayashi.info@gmail.com>
 # License::    The Ruby License
 #
 
@@ -12,7 +12,7 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 
 # libraries needed for the tests
 require 'test/unit'
-require 'lib/bio/db/fasta/defline.rb'
+require 'bio/db/fasta/defline.rb'
 
 module Bio
   class TestBioFastaDefline < Test::Unit::TestCase
