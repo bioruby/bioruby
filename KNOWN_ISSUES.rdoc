@@ -4,7 +4,7 @@ License::   The Ruby License
 
 = Known issues and bugs in BioRuby
 
-Below are known issues and bugs in BioRuby. Pathes to fix them are welcomed.
+Below are known issues and bugs in BioRuby. Patches to fix them are welcome.
 We hope they will be fixed in the future.
 
 Items marked with (WONT_FIX) tags would not be fixed within BioRuby because
