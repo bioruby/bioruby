@@ -182,7 +182,7 @@ module Bio
     end
 
     def test_matrix_determinant
-      assert_equal(27926521997.99999, @obj.matrix.determinant)
+      assert_in_delta(27926521998.0, @obj.matrix.determinant, 1e-3)
     end
 
     def test_matrix_rank
