@@ -85,8 +85,9 @@ module Bio
         return nil if row < 0 or row >= a.keys.size
         id  = a.keys[row]
         seq = a.to_hash[id]
-        seq.definition = id
-        seq
+        s = Bio::Sequence.new(seq.seq)
+        s.definition = id
+        s
       end
 
       # Shows "match line" of CLUSTAL's alignment result, for example,
