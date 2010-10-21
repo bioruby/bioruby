@@ -379,7 +379,7 @@ module Bio
     end
 
     def test_get 
-      assert_equal({'sp' => '3MG1_ECOLI'}, @defline.get )
+      assert_equal('3MG1_ECOLI', @defline.get('sp') )
     end
 
     def test_sp 
@@ -439,7 +439,7 @@ module Bio
     end
 
     def test_get 
-      assert_equal({'tr' => 'C8URF0_ECO1A'}, @defline.get )
+      assert_equal('C8URF0_ECO1A', @defline.get('tr') )
     end
 
     def test_tr 
