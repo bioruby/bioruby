@@ -58,4 +58,23 @@ module Bio
 
   end # class TestClustalwFormat
 
+  class TestClustalWReportWith2ndArgument < Test::Unit::TestCase
+
+    def setup
+      aln_filename = File.join(BioRubyTestDataPath, 'clustalw',
+                               'example1.aln')
+      text = File.read(aln_filename)
+      @aln = Bio::ClustalW::Report.new(text, "PROTEIN")
+    end
+
+    def test_sequences
+      seq = @aln.get_sequence(0)
+      assert_equal('query',seq.definition)
+      assert_equal("-MKNTLLKLGVCVSLLGITPFVSTISSVQAERTVEHKVIKNETGTISISQLNKNVWVHTELGYFSG-EAVPSNGLVLNTSKGLVLVDSSWDDKLTKELIEMVEKKFKKRVTDVIITHAHADRIGGMKTLKERGIKAHSTALTAELAKKNG--------------------YEEPLGDLQSVTNLKFGN----MKVETFYPGKGHTEDNIVVWLPQYQILAGGCLVKSASSKDLGNVADAYVNEWSTSIENVLKRYGNINLVVPGHGEVGDR-----GLLLHTLDLLK---------------------------------------------------------------------",seq.to_s)
+      seq = @aln.get_sequence(1)
+      assert_equal('gi|115023|sp|P10425|',seq.definition)
+      assert_equal("MKKNTLLKVGLCVSLLGTTQFVSTISSVQASQKVEQIVIKNETGTISISQLNKNVWVHTELGYFNG-EAVPSNGLVLNTSKGLVLVDSSWDNKLTKELIEMVEKKFQKRVTDVIITHAHADRIGGITALKERGIKAHSTALTAELAKKSG--------------------YEEPLGDLQTVTNLKFGN----TKVETFYPGKGHTEDNIVVWLPQYQILAGGCLVKSAEAKNLGNVADAYVNEWSTSIENMLKRYRNINLVVPGHGKVGDK-----GLLLHTLDLLK---------------------------------------------------------------------",seq.to_s)
+    end
+
+  end #class TestClustalWReportWith2ndArgument
 end
