@@ -1,5 +1,5 @@
 #
-# test/unit/bio/db/fasta/test_defline.rb - Unit test for Bio::FastaDefline
+# test/unit/bio/db/fasta/test_defline_misc.rb - Unit test for Bio::FastaDefline
 #
 # Copyright::  Copyright (C) 2010
 #              John Prince <jtprince@byu.edu> 
