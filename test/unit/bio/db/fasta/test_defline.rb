@@ -140,7 +140,7 @@ module Bio
     end
   end
 
-  class TestFastaDeflineGI2
+  class TestFastaDeflineGI2 < Test::Unit::TestCase
 
     def setup
       definition_line = '>gi|9910844|sp|Q9UWG2|RL3_METVA 50S ribosomal protein L3P'
@@ -255,7 +255,7 @@ module Bio
     end
   end
 
-  class TestFastaDeflineEmb
+  class TestFastaDeflineEmb < Test::Unit::TestCase
 
     def setup
       definition_line = '>emb:CACDC28 [X80034] C.albicans CDC28 gene'
@@ -311,7 +311,7 @@ module Bio
     end
   end
 
-  class TestFastaDeflineSimple
+  class TestFastaDeflineSimple < Test::Unit::TestCase
 
     def setup
       definition_line = '>ABC12345 this is test'
@@ -367,7 +367,7 @@ module Bio
     end
   end
 
-  class TestFastaDeflineSwissProt
+  class TestFastaDeflineSwissProt < Test::Unit::TestCase
 
     def setup
       definition_line = '>sp|P05100|3MG1_ECOLI DNA-3-methyladenine glycosylase 1 OS=Escherichia coli (strain K12) GN=tag PE=1 SV=1'
@@ -427,7 +427,7 @@ module Bio
     end
   end
 
-  class TestFastaDeflineTrembl
+  class TestFastaDeflineTrembl < Test::Unit::TestCase
 
     def setup
       definition_line = '>tr|C8URF0|C8URF0_ECO1A Conserved predicted plasmid protein ECsL50 OS=Escherichia coli O111:H- (strain 11128 / EHEC) GN=ECO111_p3-39 PE=4 SV=1'
