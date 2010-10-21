@@ -36,7 +36,7 @@ module Bio
     end
 
     def test_get_emb
-      assert_equal('CAA85678.1', @defline.get('emb'),)
+      assert_equal('CAA85678.1', @defline.get('emb'))
     end
 
     def test_gi
