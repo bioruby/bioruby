@@ -1,3 +1,58 @@
+commit 92cfda14c08b270ed1beca33153125141f88510e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 22 13:00:09 2010 +0900
+
+    Preparation for bioruby-1.4.1 release.
+
+ bioruby.gemspec    |    2 +-
+ lib/bio/version.rb |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit d7999539392bba617b041e3120b5b2d785301f24
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 22 10:27:02 2010 +0900
+
+    Newly added issue is copied from KNOWN_ISSUES.rdoc to the release note.
+
+ RELEASE_NOTES.rdoc |   15 +++++++++++++++
+ 1 files changed, 15 insertions(+), 0 deletions(-)
+
+commit a9f287658441038a4e9bb220502523de039417f9
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 22 10:26:44 2010 +0900
+
+    updated description of an issue
+
+ KNOWN_ISSUES.rdoc |   12 +++++++-----
+ 1 files changed, 7 insertions(+), 5 deletions(-)
+
+commit bb946d1c97d1eb0de62c8b509bbfb02d67efffeb
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 23:17:25 2010 +0900
+
+    Added an issue about command-line string escaping on Windows with Ruby 1.9.
+
+ KNOWN_ISSUES.rdoc |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
+
+commit fe7d26516cc6b9a3cf8c16e6f8204a4d5eb5e5ae
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 20:34:32 2010 +0900
+
+    Added descriptions.
+
+ RELEASE_NOTES.rdoc |   52 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 52 insertions(+), 0 deletions(-)
+
+commit fd5da3b47ebce1df46922f20d013439faef483e9
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 18:27:44 2010 +0900
+
+    ChangeLog is updated.
+
+ ChangeLog | 1657 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 1657 insertions(+), 0 deletions(-)
+
 commit fab16977d23bb3a5fdfc976eece14dfdabdcac4d
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Thu Oct 21 18:07:43 2010 +0900
