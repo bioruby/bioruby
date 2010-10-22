@@ -87,3 +87,18 @@ Bio::MEDLINE#reference no longer puts empty values in the returned
 Bio::Reference object. We think the previous behavior is a bug.
 We also think the effect is very small.
 
+== Known issues
+
+The following issues are added or updated. See KNOWN_ISSUES.rdoc for other
+already known issues.
+
+=== String escaping of command-line arguments in Ruby 1.9.X on Windows
+
+After BioRuby 1.4.1, in Ruby 1.9.X running on Windows, escaping of
+command-line arguments are processed by the Ruby interpreter. Before BioRuby
+1.4.0, the escaping is executed in Bio::Command#escape_shell_windows, and
+the behavior is different from the Ruby interpreter's one.
+
+Curreltly, due to the change, test/functional/bio/test_command.rb may fail
+on Windows with Ruby 1.9.X.
+
