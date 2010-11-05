@@ -1,7 +1,7 @@
 #
-# test/unit/bio/*****.rb - Unit test for Bio::GenBank
+# test/unit/bio/db/genbank/test_genbank.rb - Unit test for Bio::GenBank
 #
-# Copyright::  Copyright (C) 2009 Naohisa Goto <ng@bioruby.org>
+# Copyright::  Copyright (C) 2010 Kazuhiro Hayashi <k.hayashi.info@gmail.com>
 # License::    The Ruby License
 #
 
@@ -12,16 +12,20 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 
 # libraries needed for the tests
 require 'test/unit'
+require 'bio/sequence'
+require 'bio/reference'
+require 'bio/feature'
+require 'bio/compat/features'
+require 'bio/compat/references'
 require 'bio/db/genbank/genbank'
 require 'bio/db/genbank/genbank_to_biosequence'
-require 'bio'
 
 
 module Bio
   class TestBioGenBank < Test::Unit::TestCase
 
     def setup
-      filename = File.join(BioRubyTestDataPath, '/genbank/SCU49845.gb')
+      filename = File.join(BioRubyTestDataPath, 'genbank', 'SCU49845.gb')
       @obj = Bio::GenBank.new(File.read(filename))
     end
 
