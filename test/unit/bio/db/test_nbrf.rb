@@ -1,7 +1,7 @@
 #
-# test/unit/bio/*****.rb - Unit test for Bio::NBRF
+# test/unit/bio/db/test_nbrf.rb - Unit test for Bio::NBRF
 #
-# Copyright::  Copyright (C) 2009 Naohisa Goto <ng@bioruby.org>
+# Copyright::  Copyright (C) 2010 Kazuhiro Hayashi <k.hayashi.info@gmail.com>
 # License::    The Ruby License
 #
 
@@ -12,7 +12,7 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
 
 # libraries needed for the tests
 require 'test/unit'
-require 'lib/bio/db/nbrf.rb'
+require 'bio/db/nbrf'
 
 #some condition is not covered with it. This unit test need a nucleotide acid sequence.
 #I can't find a nucleic acid sequence in PIR format 
@@ -20,7 +20,7 @@ module Bio
   class TestBioNBRF < Test::Unit::TestCase
 
     def setup
-      filename = File.join(BioRubyTestDataPath, 'pir/CRAB_ANAPL.pir')
+      filename = File.join(BioRubyTestDataPath, 'pir', 'CRAB_ANAPL.pir')
       @obj = Bio::NBRF.new(File.read(filename))
     end
 
