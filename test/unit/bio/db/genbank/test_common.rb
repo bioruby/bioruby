@@ -1,7 +1,7 @@
 #
-# test/unit/bio/*****.rb - Unit test for Bio::GenBank
+# test/unit/bio/db/genbank/test_common.rb - Unit test for Bio::NCBIDB::Common
 #
-# Copyright::  Copyright (C) 2009 Naohisa Goto <ng@bioruby.org>
+# Copyright::  Copyright (C) 2010 Kazuhiro Hayashi <k.hayashi.info@gmail.com>
 # License::    The Ruby License
 #
 
