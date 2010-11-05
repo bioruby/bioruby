@@ -1,7 +1,7 @@
 #
 # test/unit/bio/db/litdb.rb - Unit test for Bio::LITDB
 #
-# Copyright::  Copyright (C) 2009 Naohisa Goto <ng@bioruby.org>
+# Copyright::  Copyright (C) 2010 Kazuhiro Hayashi <k.hayashi.info@gmail.com>
 # License::    The Ruby License
 #
 
@@ -12,14 +12,14 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
 
 # libraries needed for the tests
 require 'test/unit'
-require 'lib/bio/db/litdb'
-require 'lib/bio/reference'
+require 'bio/db/litdb'
+require 'bio/reference'
 
 module Bio
   class TestBioLITDB < Test::Unit::TestCase
 
     def setup
-      filename = File.join(BioRubyTestDataPath, 'litdb/1717226.litdb')
+      filename = File.join(BioRubyTestDataPath, 'litdb', '1717226.litdb')
       @obj = Bio::LITDB.new(File.read(filename))
     end
 
