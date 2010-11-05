@@ -1,7 +1,7 @@
 #
-# test/unit/bio/*****.rb - Unit test for Bio::GenPept
+# test/unit/bio/db/genbank/test_genpept.rb - Unit test for Bio::GenPept
 #
-# Copyright::  Copyright (C) 2009 Naohisa Goto <ng@bioruby.org>
+# Copyright::  Copyright (C) 2010 Kazuhiro Hayashi <k.hayashi.info@gmail.com>
 # License::    The Ruby License
 #
 
@@ -12,7 +12,7 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 
 # libraries needed for the tests
 require 'test/unit'
-require 'lib/bio/db/genbank/genpept.rb'
+require 'bio/db/genbank/genpept.rb'
 
 #The coverage of this class is 100%
 #It tests only the methods descripbed in the soruce class.(It dosen't test the inherited methods from NCBIDB)
@@ -20,7 +20,7 @@ module Bio
   class TestBioGenPept < Test::Unit::TestCase
 
     def setup
-      filename = File.join(BioRubyTestDataPath, 'genbank/CAA35997.gp')
+      filename = File.join(BioRubyTestDataPath, 'genbank', 'CAA35997.gp')
       @obj = Bio::GenPept.new(File.read(filename))
     end
 
