@@ -18,19 +18,18 @@ require 'bio/compat/references' #  Bio::References in this file seems to be obso
 require 'bio/feature'
 require 'bio/compat/features'    #  Bio::Features in this file seems to be obsolete, but Bio::NCBIDB::Common should require it.
 
-#Mock Class including the target module. Bio::NCBIDBCommon is used for the test.
-module Bio
-  class NCBIDBCommon < NCBIDB
-     include Bio::NCBIDB::Common
-  end
-end
-
 
 # - This class has low coverage, because a sample entry used in it lacks a lot of fields.
 # - There are all the methods for test.
 module Bio
   class NCBIDB
     class TestCommon < Test::Unit::TestCase
+
+      #Mock Class including the target module.
+      #BioNCBIDBCommon is used for the test.
+      class BioNCBIDBCommon < Bio::NCBIDB
+        include Bio::NCBIDB::Common
+      end
 
       #a sample entry is a part of data/genbank/SCU49845.gb
       def setup
@@ -47,7 +46,7 @@ SOURCE      Saccharomyces cerevisiae (baker's yeast)
             Saccharomycotina; Saccharomycetes; Saccharomycetales;
             Saccharomycetaceae; Saccharomyces.
 EOF
-        @obj = Bio::NCBIDBCommon.new(entry)
+        @obj = BioNCBIDBCommon.new(entry)
       end
 
       def test_locus
@@ -117,7 +116,7 @@ SOURCE      Saccharomyces cerevisiae (baker's yeast)
   ORGANISM  Saccharomyces cerevisiae
             Saccharomyces.
 EOS
-        obj2 = Bio::NCBIDBCommon.new(source_pattern2)
+        obj2 = BioNCBIDBCommon.new(source_pattern2)
           expected2 = {"organism"=>"Saccharomyces cerevisiae",
                        "common_name"=>"Saccharomyces cerevisiae (baker's yeast)",
                        "taxonomy"=>"Saccharomyces."}
@@ -128,7 +127,7 @@ EOS
 SOURCE      Saccharomyces cerevisiae (baker's yeast)
   ORGANISM  Saccharomyces cerevisiae
 EOS
-        obj3 = Bio::NCBIDBCommon.new(source_pattern3)
+        obj3 = BioNCBIDBCommon.new(source_pattern3)
           expected3 = {"organism"=>"Saccharomyces cerevisiae",
                        "common_name"=>"Saccharomyces cerevisiae (baker's yeast)",
                        "taxonomy"=>""}
@@ -161,7 +160,7 @@ REFERENCE   2  (bases 1 to 2264)
   REMARK    GeneRIF: limited to the digit-interdigit junction rather than being
             expressed throughout the interdigital zone
 EOS
-        com = Bio::NCBIDBCommon.new(str)
+        com = BioNCBIDBCommon.new(str)
         obj = com.references
          expected = 
            {:mesh=>[],
@@ -214,7 +213,7 @@ EOS
 REFERENCE   2  (bases 1 to 2264)
   JOURNAL   testcase
 EOS
-      obj2 = Bio::NCBIDBCommon.new(ref)
+      obj2 = BioNCBIDBCommon.new(ref)
       actual3 = obj2.references[0].journal
       assert_equal("testcase",actual3)
       end
@@ -243,7 +242,7 @@ FEATURES             Location/Qualifiers
                      /translation="SSIYNGISTSGLDLNNGTIADMRQLGIVESYKLKRAVVSSASEA
                      AEVLLRVDNIIRARPRTANRQHM"
 EOS
-        obj = Bio::NCBIDBCommon.new(fet)
+        obj = BioNCBIDBCommon.new(fet)
         actual =
         {:feature=>obj.features[0].feature,
          :position=>obj.features[0].position,
