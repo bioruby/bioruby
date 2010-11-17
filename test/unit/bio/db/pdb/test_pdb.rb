@@ -307,11 +307,11 @@ EOS
 
   end
 
-  #TestPDBRecord::Test*Å@are unit tests for pdb field classes.
+  #TestPDBRecord::Test* are unit tests for pdb field classes.
   #each test class uses one line or several lines of PDB record.
   #they tests all the methods described or generated in Bio::PDB::Record.
 
-  module Record
+  module TestPDBRecord
 
     # test of Bio::PDB::Record::ATOM
     class TestATOM < Test::Unit::TestCase
