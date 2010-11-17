@@ -1,8 +1,8 @@
 #
 # = test/unit/bio/db/pdb/test_pdb.rb - Unit test for Bio::PDB classes
 #
-# Copyright:: Copyright (C) 2006
-#             Naohisa Goto <ng@bioruby.org>
+# Copyright:: Copyright (C) 2010 Kazuhiro Hayashi <k.hayashi.info@gmail.com>
+# Copyright:: Copyright (C) 2006 Naohisa Goto <ng@bioruby.org>
 #
 # License:: The Ruby License
 #
