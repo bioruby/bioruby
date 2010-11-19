@@ -84,8 +84,8 @@ EOF
       assert_equal("OXIDOREDUCTASE",@pdb.classification)
     end
     def test_dbref
-      assert_equal(Bio::PDB::Record::DBREF,@pdb.dbref.first.class)
-      assert_equal(Bio::PDB::Record::DBREF,@pdb.dbref("A").first.class)
+      assert_instance_of(Bio::PDB::Record::DBREF,@pdb.dbref.first)
+      assert_instance_of(Bio::PDB::Record::DBREF,@pdb.dbref("A").first)
     end
     def test_definition
       assert_equal("HUMAN MITOCHONDRIAL ALDEHYDE DEHYDROGENASE COMPLEXED WITH",@pdb.definition)
@@ -119,14 +119,14 @@ EOF
       assert_equal("3INJ", @pdb.entry_id)
     end
     def test_helix
-      assert_equal(Array,@pdb.helix.class)
+      assert_instance_of(Array, @pdb.helix)
       assert_equal(nil,@pdb.helix(1))
     end
     def test_inspect
       assert_equal("#<Bio::PDB entry_id=\"3INJ\">",@pdb.inspect)
     end
     def test_jrnl
-      assert_equal(Hash,@pdb.jrnl.class)
+      assert_instance_of(Hash, @pdb.jrnl)
     end
     def test_keywords
       assert_equal(["OXIDOREDUCTASE", "ALDH", "E487K", "ROSSMANN FOLD", "ALDA-1"],@pdb.keywords)
@@ -156,7 +156,7 @@ EOS
       assert_equal(actual,expected)
     end
     def test_record
-      assert_equal(Hash,@pdb.record.class)
+      assert_instance_of(Hash, @pdb.record)
     end
     def test_seqres
       assert_equal({"A"=>"SAAATQAVPAPNQ"},@pdb.seqres)
@@ -284,7 +284,7 @@ EOS
       assert_equal(expected,actual2)
     end
     def test_ssbond
-      assert_equal(Bio::PDB::Record::SSBOND,@pdb.ssbond.first.class)
+      assert_instance_of(Bio::PDB::Record::SSBOND,@pdb.ssbond.first)
     end
     
     #is this method correct?
@@ -2949,7 +2949,7 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
     end
 
     def test_geometricCentre
-      assert_equal(Bio::PDB::Coordinate,@res.geometricCentre().class)
+      assert_instance_of(Bio::PDB::Coordinate,@res.geometricCentre())
 #      assert_equal(Vector[23.4226, -34.1772, 45.1734], @res.geometricCentre())
       expected = [ 23.4226, -34.1772, 45.1734 ]
       @res.geometricCentre().to_a.each do |num|
@@ -2959,7 +2959,7 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
     end
 
     def test_centreOfGravity
-      assert_equal(Bio::PDB::Coordinate,@res.centreOfGravity().class)
+      assert_instance_of(Bio::PDB::Coordinate,@res.centreOfGravity())
       expected = [ 23.4047272727273, -34.1511515151515, 45.2351515151515 ]
       @res.centreOfGravity().to_a.each do |num|
         assert_in_delta(expected.shift, num, 0.001)
