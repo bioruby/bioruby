@@ -355,23 +355,23 @@ EOS
       end
 
       def test_x
-        assert_in_delta(29.909, @atom.x, Float::EPSILON)
+        assert_in_delta(29.909, @atom.x, 0.0001)
       end
 
       def test_y
-        assert_in_delta(16.996, @atom.y, Float::EPSILON)
+        assert_in_delta(16.996, @atom.y, 0.0001)
       end
 
       def test_z
-        assert_in_delta(55.922, @atom.z, Float::EPSILON)
+        assert_in_delta(55.922, @atom.z, 0.0001)
       end
 
       def test_occupancy
-        assert_in_delta(0.72, @atom.occupancy, Float::EPSILON)
+        assert_in_delta(0.72, @atom.occupancy, 0.001)
       end
 
       def test_tempFactor
-        assert_in_delta(13.25, @atom.tempFactor, Float::EPSILON)
+        assert_in_delta(13.25, @atom.tempFactor, 0.001)
       end
 
       def test_segID
@@ -483,23 +483,23 @@ EOS
       end
 
       def test_x
-        assert_in_delta(5.037, @hetatm.x, Float::EPSILON)
+        assert_in_delta(5.037, @hetatm.x, 0.0001)
       end
 
       def test_y
-        assert_in_delta(-39.853, @hetatm.y, Float::EPSILON)
+        assert_in_delta(-39.853, @hetatm.y, 0.0001)
       end
 
       def test_z
-        assert_in_delta(62.809, @hetatm.z, Float::EPSILON)
+        assert_in_delta(62.809, @hetatm.z, 0.0001)
       end
 
       def test_occupancy
-        assert_in_delta(1.00, @hetatm.occupancy, Float::EPSILON)
+        assert_in_delta(1.00, @hetatm.occupancy, 0.001)
       end
 
       def test_tempFactor
-        assert_in_delta(17.37, @hetatm.tempFactor, Float::EPSILON)
+        assert_in_delta(17.37, @hetatm.tempFactor, 0.001)
       end
 
       def test_segID
