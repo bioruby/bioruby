@@ -2951,14 +2951,20 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
     def test_geometricCentre
       assert_equal(Bio::PDB::Coordinate,@res.geometricCentre().class)
 #      assert_equal(Vector[23.4226, -34.1772, 45.1734], @res.geometricCentre())
-      expected = ["23.4226", "-34.1772", "45.1734"]
-      actual = @res.geometricCentre().to_a.map{|num| num.to_s}
-      assert_equal(expected , actual)
+      expected = [ 23.4226, -34.1772, 45.1734 ]
+      @res.geometricCentre().to_a.each do |num|
+        assert_in_delta(expected.shift, num, 0.001)
+      end
+      assert(expected.empty?)
     end
 
     def test_centreOfGravity
       assert_equal(Bio::PDB::Coordinate,@res.centreOfGravity().class)
-      assert_equal(["23.4047272727273", "-34.1511515151515", "45.2351515151515"], @res.centreOfGravity().to_a.map{|num| num.to_s})
+      expected = [ 23.4047272727273, -34.1511515151515, 45.2351515151515 ]
+      @res.centreOfGravity().to_a.each do |num|
+        assert_in_delta(expected.shift, num, 0.001)
+      end
+      assert(expected.empty?)
     end
     
     def test_distance
@@ -2968,8 +2974,8 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       )
 
       actual2 = Bio::PDB::Utils.distance([23.849, -34.509,  44.904], [21.887, -34.822,  48.124])
-      assert_equal("3.78362432067456", actual1.to_s)
-      assert_equal("3.78362432067456",actual2.to_s)
+      assert_in_delta(3.78362432067456, actual1, 0.001)
+      assert_in_delta(3.78362432067456, actual2, 0.001)
     end
     def test_dihedral_angle
       actual1 = Bio::PDB::Utils.dihedral_angle(
@@ -2986,13 +2992,13 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
         Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM     14  CA  PRO A   9      24.180  35.345  51.107  1.00 22.35           C"),
         Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM     21  CA  ALA A  10      23.833  38.844  52.579  1.00 23.41           C")
       )
-      assert_equal("-1.94387328933899",actual1.to_s)
-      assert_equal("1.94387328933899",actual2.to_s)
+      assert_in_delta(-1.94387328933899, actual1, 0.001)
+      assert_in_delta( 1.94387328933899, actual2, 0.001)
 
     end
     def test_rad2deg
       deg = Bio::PDB::Utils::rad2deg(3.14159265358979)
-      assert_equal("180.0", deg.to_s)
+      assert_in_delta(180.0, deg, 0.0000000001)
     end
 
   end #class Test_Utils
