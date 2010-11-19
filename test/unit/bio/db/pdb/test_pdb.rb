@@ -2567,7 +2567,6 @@ expected = [{:serial=>1, :name=>"N", :altLoc=>" ", :resName=>"ALA", :chainID=>"A
 {:serial=>2, :name=>"CA", :altLoc=>" ", :resName=>"ALA", :chainID=>"A", :resSeq=>7, :iCode=>"", :x=>23.849, :y=>-34.509, :z=>44.904, :occupancy=>1.0, :tempFactor=>27.89, :segID=>"", :element=>"C", :charge=>""},
 {:serial=>3, :name=>"C", :altLoc=>" ", :resName=>"ALA", :chainID=>"A", :resSeq=>7, :iCode=>"", :x=>23.102, :y=>-34.082, :z=>46.159, :occupancy=>1.0, :tempFactor=>26.68, :segID=>"", :element=>"C", :charge=>""},{:serial=>4, :name=>"O", :altLoc=>" ", :resName=>"ALA", :chainID=>"A", :resSeq=>7, :iCode=>"", :x=>23.097, :y=>-32.903, :z=>46.524, :occupancy=>1.0, :tempFactor=>30.02, :segID=>"", :element=>"O", :charge=>""},
 {:serial=>5, :name=>"CB", :altLoc=>" ", :resName=>"ALA", :chainID=>"A", :resSeq=>7, :iCode=>"", :x=>23.581, :y=>-33.526, :z=>43.77, :occupancy=>1.0, :tempFactor=>31.41, :segID=>"", :element=>"C", :charge=>""}]
-     @res
       actual = []
       @res.each_atom do |atom|
         actual << {:serial=>atom.serial, :name=>atom.name, :altLoc=>atom.altLoc, :resName=>atom.resName, :chainID=>atom.chainID, :resSeq=>atom.resSeq, :iCode=>atom.iCode, :x=>atom.x, :y=>atom.y, :z=>atom.z, :occupancy=>atom.occupancy, :tempFactor=>atom.tempFactor, :segID=>atom.segID, :element=>atom.element, :charge=>atom.charge}
@@ -2724,16 +2723,16 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
   
   class TestChain < Test::Unit::TestCase
       def setup
-        @chain = Bio::PDB::Chain.new(1,nil)
-        @chain.addResidue(Bio::PDB::Residue.new(resName="ALA",resSeq = 7, iCode = 1, chain = chain))
-        @chain.addResidue(Bio::PDB::Residue.new(resName="ALA",resSeq = 6, iCode = 2, chain = chain))
-        @chain.addResidue(Bio::PDB::Residue.new(resName="ALA",resSeq = 7,  iCode = 3, chain = chain))
-        @chain.addLigand(Bio::PDB::Heterogen.new(resName="EDD",resSeq = 1, iCode = 2, chain = chain)) 
+        @chain = Bio::PDB::Chain.new('A',nil)
+        @chain.addResidue(Bio::PDB::Residue.new(resName="ALA",resSeq = 7, iCode = 1, chain = @chain))
+        @chain.addResidue(Bio::PDB::Residue.new(resName="ALA",resSeq = 6, iCode = 2, chain = @chain))
+        @chain.addResidue(Bio::PDB::Residue.new(resName="ALA",resSeq = 7,  iCode = 3, chain = @chain))
+        @chain.addLigand(Bio::PDB::Heterogen.new(resName="EDD",resSeq = 1, iCode = 2, chain = @chain)) 
       end
 
       def test_square_brace #[]
         expected = {:iCode=>1,
-                    :chain_id=>4,
+                    :chain_id=>'A',
                     :atoms_size=>0,
                     :resSeq=>7,
                     :id=>"71",
@@ -2744,19 +2743,19 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       end
       def test_comp #<=> 
         expected = [{:iCode=>2,
-                     :chain_id=>4,
+                     :chain_id=>'A',
                      :atoms_size=>0,
                      :resSeq=>6,
                      :id=>"62",
                      :resName=>"ALA"},
                     {:iCode=>1,
-                     :chain_id=>4,
+                     :chain_id=>'A',
                      :atoms_size=>0,
                      :resSeq=>7,
                      :id=>"71",
                      :resName=>"ALA"},
                     {:iCode=>3,
-                     :chain_id=>4,
+                     :chain_id=>'A',
                      :atoms_size=>0,
                      :resSeq=>7,
                      :id=>"73",
@@ -2771,19 +2770,19 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
         assert_equal(expected, actual)
       end
       def test_addResidue
-        assert_nothing_raised{ @chain.addResidue(Bio::PDB::Residue.new(resName="ALA",resSeq = 7, iCode = 1, chain = chain))}
+        assert_nothing_raised{ @chain.addResidue(Bio::PDB::Residue.new(resName="ALA",resSeq = 9, iCode = 1, chain = @chain))}
       end
       def test_aaseq
         assert_equal("AAA", @chain.aaseq)
       end
       def test_addLigand
-         assert_nothing_raised{ @chain.addLigand(Bio::PDB::Heterogen.new(resName="EDD",resSeq = 1, iCode = 2, chain = nil)) }
+         assert_nothing_raised{ @chain.addLigand(Bio::PDB::Heterogen.new(resName="EDD",resSeq = 10, iCode = 2, chain = @chain)) }
       end
       def test_atom_seq
         assert_equal("AAA", @chain.atom_seq)
       end
       def test_each
-        expected = [{:atoms_size=>0, :resSeq=>7, :chain_id=>4, :iCode=>1, :id=>"71", :resName=>"ALA"}, {:atoms_size=>0, :resSeq=>6, :chain_id=>4, :iCode=>2, :id=>"62", :resName=>"ALA"}, {:atoms_size=>0, :resSeq=>7, :chain_id=>4, :iCode=>3, :id=>"73", :resName=>"ALA"}]
+        expected = [{:atoms_size=>0, :resSeq=>7, :chain_id=>'A', :iCode=>1, :id=>"71", :resName=>"ALA"}, {:atoms_size=>0, :resSeq=>6, :chain_id=>'A', :iCode=>2, :id=>"62", :resName=>"ALA"}, {:atoms_size=>0, :resSeq=>7, :chain_id=>'A', :iCode=>3, :id=>"73", :resName=>"ALA"}]
         actual = []
         @chain.each do |residue|
            actual << {:resName => residue.resName, :id => residue.id, :chain_id => residue.chain.id, :resSeq => residue.resSeq, :iCode => residue.iCode, :atoms_size => residue.atoms.size}
@@ -2791,7 +2790,7 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
         assert_equal(expected, actual)
       end
       def test_each_residue
-        expected = [{:atoms_size=>0, :resSeq=>7, :chain_id=>4, :iCode=>1, :id=>"71", :resName=>"ALA"}, {:atoms_size=>0, :resSeq=>6, :chain_id=>4, :iCode=>2, :id=>"62", :resName=>"ALA"}, {:atoms_size=>0, :resSeq=>7, :chain_id=>4, :iCode=>3, :id=>"73", :resName=>"ALA"}]
+        expected = [{:atoms_size=>0, :resSeq=>7, :chain_id=>'A', :iCode=>1, :id=>"71", :resName=>"ALA"}, {:atoms_size=>0, :resSeq=>6, :chain_id=>'A', :iCode=>2, :id=>"62", :resName=>"ALA"}, {:atoms_size=>0, :resSeq=>7, :chain_id=>'A', :iCode=>3, :id=>"73", :resName=>"ALA"}]
         actual = []
         @chain.each do |residue|
            actual << {:resName => residue.resName, :id => residue.id, :chain_id => residue.chain.id, :resSeq => residue.resSeq, :iCode => residue.iCode, :atoms_size => residue.atoms.size}
@@ -2800,7 +2799,7 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       end
       def test_each_heterogen
         expected = [{:iCode=>2,
-                      :chain_id=>4,
+                      :chain_id=>'A',
                       :resSeq=>1,
                       :id=>"12",
                       :atoms_size=>0,
@@ -2814,7 +2813,7 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       def test_get_heterogen_by_id
         heterogen = @chain.get_heterogen_by_id("12")
         expected = {:iCode=>2,
-                      :chain_id=>4,
+                      :chain_id=>'A',
                       :resSeq=>1,
                       :id=>"12",
                       :atoms_size=>0,
@@ -2824,12 +2823,12 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       end
       def test_get_residue_by_id
         residue = @chain.get_residue_by_id("71")
-        expected = {:atoms_size=>0, :resSeq=>7, :chain_id=>4, :iCode=>1, :id=>"71", :resName=>"ALA"}
+        expected = {:atoms_size=>0, :resSeq=>7, :chain_id=>'A', :iCode=>1, :id=>"71", :resName=>"ALA"}
         actual = {:resName => residue.resName, :id => residue.id, :chain_id => residue.chain.id,     :resSeq => residue.resSeq, :iCode => residue.iCode, :atoms_size => residue.atoms.size}
         assert_equal(expected, actual)
       end
       def test_inspect
-        expected = "#<Bio::PDB::Chain id=1 model.serial=nil residues.size=3 heterogens.size=1 aaseq=\"AAA\">"
+        expected = "#<Bio::PDB::Chain id=\"A\" model.serial=nil residues.size=3 heterogens.size=1 aaseq=\"AAA\">"
         assert_equal(expected, @chain.inspect)
       end
       def test_rehash
@@ -2879,7 +2878,7 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
         assert_equal(expected, actual)
       end
       def test_addChain
-        assert_nothing_raised{ @model.addChain(Bio::PDB::Chain.new(1, @model))}
+        assert_nothing_raised{ @model.addChain(Bio::PDB::Chain.new("D", @model))}
       end
       def test_each
         expected = [{:model_serial=>1,
@@ -3084,14 +3083,14 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       @residues.extend(Bio::PDB::ResidueFinder)
 #      expected = [Bio::PDB::Residue.new("",1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3)]
       expected = [
-        {:resName=>"", :id=>"1", :chain_id=>4, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
-        {:resName=>"", :id=>"2", :chain_id=>4, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
-        {:resName=>"", :id=>"3", :chain_id=>4, :resSeq=>3, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"1", :chain=>nil, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"2", :chain=>nil, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"3", :chain=>nil, :resSeq=>3, :iCode=>nil, :atoms_size=>0},
       ]
       finded = @residues.find_residue{|m| true}
       actual = []
       finded.each do |res|
-         actual << {:resName=> res.resName, :id=> res.id, :chain_id=> res.chain.id, :resSeq=> res.resSeq, :iCode=> res.iCode, :atoms_size=> res.atoms.size}    
+         actual << {:resName=> res.resName, :id=> res.id, :chain=> res.chain, :resSeq=> res.resSeq, :iCode=> res.iCode, :atoms_size=> res.atoms.size}    
       end
       assert_equal(expected,actual)
     end
@@ -3099,12 +3098,12 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
     def test_each_residue
 #      expected = [Bio::PDB::Residue.new("", 1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3), Bio::PDB::Residue.new("",1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3)]
       expected = [
-        {:resName=>"", :id=>"1", :chain_id=>4, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
-        {:resName=>"", :id=>"2", :chain_id=>4, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
-        {:resName=>"", :id=>"3", :chain_id=>4, :resSeq=>3, :iCode=>nil, :atoms_size=>0},
-        {:resName=>"", :id=>"1", :chain_id=>4, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
-        {:resName=>"", :id=>"2", :chain_id=>4, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
-        {:resName=>"", :id=>"3", :chain_id=>4, :resSeq=>3, :iCode=>nil, :atoms_size=>0}
+        {:resName=>"", :id=>"1", :chain=>nil, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"2", :chain=>nil, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"3", :chain=>nil, :resSeq=>3, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"1", :chain=>nil, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"2", :chain=>nil, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"3", :chain=>nil, :resSeq=>3, :iCode=>nil, :atoms_size=>0}
       ]
       chains = [@residues,@residues]
       def chains.each_chain
@@ -3115,7 +3114,7 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       chains.extend(Bio::PDB::ResidueFinder)
       actual = []
       chains.each_residue do |res|
-         actual << {:resName=> res.resName, :id=> res.id, :chain_id=> res.chain.id, :resSeq=> res.resSeq, :iCode=> res.iCode, :atoms_size=> res.atoms.size}
+         actual << {:resName=> res.resName, :id=> res.id, :chain=> res.chain, :resSeq=> res.resSeq, :iCode=> res.iCode, :atoms_size=> res.atoms.size}
       end
       assert_equal(expected, actual)
     end
@@ -3123,12 +3122,12 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
     def test_residues
 #      expected = [Bio::PDB::Residue.new("", 1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3), Bio::PDB::Residue.new("",1), Bio::PDB::Residue.new("",2), Bio::PDB::Residue.new("",3)]
       expected = [ 
-        {:resName=>"", :id=>"1", :chain_id=>4, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
-        {:resName=>"", :id=>"2", :chain_id=>4, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
-        {:resName=>"", :id=>"3", :chain_id=>4, :resSeq=>3, :iCode=>nil, :atoms_size=>0},
-        {:resName=>"", :id=>"1", :chain_id=>4, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
-        {:resName=>"", :id=>"2", :chain_id=>4, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
-        {:resName=>"", :id=>"3", :chain_id=>4, :resSeq=>3, :iCode=>nil, :atoms_size=>0}]
+        {:resName=>"", :id=>"1", :chain=>nil, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"2", :chain=>nil, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"3", :chain=>nil, :resSeq=>3, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"1", :chain=>nil, :resSeq=>1, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"2", :chain=>nil, :resSeq=>2, :iCode=>nil, :atoms_size=>0},
+        {:resName=>"", :id=>"3", :chain=>nil, :resSeq=>3, :iCode=>nil, :atoms_size=>0}]
       @residues.instance_eval{
         def residues
           return self
@@ -3144,7 +3143,7 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       chains.extend(Bio::PDB::ChainFinder)
       actual = []
       chains.residues.each do |res|
-        actual << {:resName=> res.resName, :id=> res.id, :chain_id=> res.chain.id, :resSeq=> res.resSeq, :iCode=> res.iCode, :atoms_size=> res.atoms.size}
+        actual << {:resName=> res.resName, :id=> res.id, :chain=> res.chain, :resSeq=> res.resSeq, :iCode=> res.iCode, :atoms_size=> res.atoms.size}
       end
       assert_equal(expected,actual)
     end
@@ -3326,15 +3325,15 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       end
       @heterogens.extend(Bio::PDB::HeterogenFinder)
       expected = [
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
       ]
       hets = @heterogens.find_heterogen{|a| true}
       actual = []
       hets.each do |het|
-        actual << {:resName=> het.resName, :id=> het.id, :chain_id=> het.chain.id, :resSeq=> het.resSeq, :iCode=> het.iCode, :atoms_size=> het.atoms.size}
+        actual << {:resName=> het.resName, :id=> het.id, :chain=> het.chain, :resSeq=> het.resSeq, :iCode=> het.iCode, :atoms_size=> het.atoms.size}
       end
       assert_equal(expected,actual)
     end
@@ -3351,14 +3350,14 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
 #        Bio::PDB::Heterogen.new()
 #      ]
       expected = [
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0}
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0}
       ]
       def @heterogens.each_heterogen
         self.each do |heterogen|
@@ -3374,7 +3373,7 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       chains.extend(Bio::PDB::HeterogenFinder)
       actual = []
       chains.each_heterogen do |het|
-        actual << {:resName=> het.resName, :id=> het.id, :chain_id=> het.chain.id, :resSeq=> het.resSeq, :iCode=> het.iCode, :atoms_size=> het.atoms.size}
+        actual << {:resName=> het.resName, :id=> het.id, :chain=> het.chain, :resSeq=> het.resSeq, :iCode=> het.iCode, :atoms_size=> het.atoms.size}
       end
       assert_equal(expected, actual)
     end
@@ -3391,14 +3390,14 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
 #        Bio::PDB::Heterogen.new()
 #      ]
       expected = [
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
-        {:resName=>nil, :id=>nil, :chain_id=>4, :resSeq=>nil, :iCode=>nil, :atoms_size=>0}
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0},
+        {:resName=>nil, :id=>nil, :chain=>nil, :resSeq=>nil, :iCode=>nil, :atoms_size=>0}
       ]
       @heterogens.instance_eval{
         def heterogens
@@ -3416,7 +3415,7 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       hets = chains.heterogens
         actual = []
         hets.each do |het|
-           actual << {:resName=> het.resName, :id=> het.id, :chain_id=> het.chain.id, :resSeq=> het.resSeq, :iCode=> het.iCode, :atoms_size=> het.atoms.size}
+           actual << {:resName=> het.resName, :id=> het.id, :chain=> het.chain, :resSeq=> het.resSeq, :iCode=> het.iCode, :atoms_size=> het.atoms.size}
         end
 
       assert_equal(expected,actual)
