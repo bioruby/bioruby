@@ -2845,7 +2845,7 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       def test_to_s
         assert_equal("TER\n",@chain.to_s)
       end
-    end
+  end
 
   class TestModel < Test::Unit::TestCase
       def setup
@@ -2935,7 +2935,7 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       def test_to_s
         assert_equal("MODEL     1\nTER\nTER\nTER\nENDMDL\n",@model.to_s)
       end
-    end
+  end
 
   #this class tests Bio::PDB::Utils with Bio::PDB::Residue class witch is generated directly
   class TestUtils < Test::Unit::TestCase
