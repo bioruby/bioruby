@@ -1820,14 +1820,14 @@ module Bio
                  nil
                end || 'X')
             end
-            seq = Bio::Sequence::AA.new(a.to_s)
+            seq = Bio::Sequence::AA.new(a.join(''))
           else
             # nucleic acid sequence
             a.collect! do |na|
               na = na.delete('^a-zA-Z')
               na.size == 1 ? na : 'n'
             end
-            seq = Bio::Sequence::NA.new(a.to_s)
+            seq = Bio::Sequence::NA.new(a.join(''))
           end
           newHash[k] = seq
         end
