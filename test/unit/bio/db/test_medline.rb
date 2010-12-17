@@ -41,6 +41,7 @@ module Bio
         'volume' => "11",
         'year' => "2010",
         'pubmed' => "20146148",
+        'doi' => "10.1080/15389580903471126",
         'mesh' =>
         [ "Accidents, Traffic/mortality/*statistics & numerical data",
           "Adult",
