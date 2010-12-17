@@ -130,6 +130,12 @@ END
       assert_equal("folD, ads, ECK0522, JW0518", @obj.name)
     end
 
+    def test_names_as_array
+      expected = ["folD", "ads", "ECK0522", "JW0518"]
+      assert_equal(expected, @obj.names_as_array)
+      assert_equal(expected, @obj.names)
+    end
+
     def test_genes
       expected = ["folD", "ads", "ECK0522", "JW0518"]
       assert_equal(expected, @obj.genes)
@@ -182,11 +188,20 @@ END
       assert_equal(expected, @obj.locations)
     end
 
-    def test_motif
+    def test_motifs_as_strings
+      expected =
+        [ "Pfam: THF_DHG_CYH_C THF_DHG_CYH Amidohydro_1",
+          "PROSITE: THF_DHG_CYH_1 THF_DHG_CYH_2" ]
+      assert_equal(expected, @obj.motifs_as_strings)
+    end
+
+    def test_motifs_as_hash
       expected = {
         "Pfam"    => ["THF_DHG_CYH_C", "THF_DHG_CYH", "Amidohydro_1"],
         "PROSITE" => ["THF_DHG_CYH_1", "THF_DHG_CYH_2"]
       }
+      assert_equal(expected, @obj.motifs_as_hash)
+      assert_equal(expected, @obj.motifs)
       assert_equal(expected, @obj.motif)
     end
 
@@ -315,6 +330,19 @@ END
         assert_equal(strary, @obj.pathways_as_strings)
         assert_equal(str, @obj.pathway)
       }
+    end
+
+    def test_keggclass
+      expected = "Metabolism; Carbohydrate Metabolism; Glyoxylate and dicarboxylate metabolism [PATH:eco00630] Metabolism; Metabolism of Cofactors and Vitamins; One carbon pool by folate [PATH:eco00670]"
+      assert_equal(expected, @obj.keggclass)
+    end
+
+    def test_keggclasses
+      expected =
+        [ "Metabolism; Carbohydrate Metabolism; Glyoxylate and dicarboxylate metabolism",
+          "Metabolism; Metabolism of Cofactors and Vitamins; One carbon pool by folate"
+        ]
+      assert_equal(expected, @obj.keggclasses)
     end
 
   end #class TestBioKEGGGENES_b0529

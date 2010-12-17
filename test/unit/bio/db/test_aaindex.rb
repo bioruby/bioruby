@@ -162,11 +162,11 @@ module Bio
     end
 
     def test_matrix_1_2
-      assert_equal(nil, @obj.matrix[1, 2])
+      assert_equal(0.0, @obj.matrix[1, 2])
     end
 
     def test_access_A_R
-      assert_equal(nil, @obj['A', 'R'])
+      assert_equal(-2.0, @obj['A', 'R'])
     end
 
     def test_access_R_A
@@ -174,7 +174,7 @@ module Bio
     end
 
     def test_matrix_A_R
-      assert_equal(nil, @obj.matrix('A', 'R'))
+      assert_equal(-2.0, @obj.matrix('A', 'R'))
     end
 
     def test_matrix_R_A
@@ -182,16 +182,17 @@ module Bio
     end
 
     def test_matrix_determinant
-      assert_equal(0, @obj.matrix.determinant)
+      assert_in_delta(27926521998.0, @obj.matrix.determinant, 1e-3)
     end
 
     def test_matrix_rank
-      assert_equal(1, @obj.matrix.rank)
+      assert_equal(20, @obj.matrix.rank)
     end
 
     def test_matrix_transpose
-      ary = Matrix[[2.0, -2.0, 0.0, 0.0, -2.0, 0.0, 0.0, 1.0, -1.0, -1.0, -2.0, -1.0, -1.0, -4.0, 1.0, 1.0, 1.0, -6.0, -3.0, 0.0]]
-      assert_equal(ary, @obj.matrix.transpose)
+      assert_equal(@obj.matrix, @obj.matrix.transpose)
+      ary = Matrix.row_vector([2.0, -2.0, 0.0, 0.0, -2.0, 0.0, 0.0, 1.0, -1.0, -1.0, -2.0, -1.0, -1.0, -4.0, 1.0, 1.0, 1.0, -6.0, -3.0, 0.0]).row(0)
+      assert_equal(ary, @obj.matrix.transpose.row(0))
     end
   end    
 end

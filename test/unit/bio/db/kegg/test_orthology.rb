@@ -58,14 +58,14 @@ module Bio
       assert_equal(["SynWH7803_0001"], @obj.genes_as_hash["syx"])
     end
 
-    def test_pathway_modules_as_hash
+    def test_modules_as_hash
       expected = {"M00597"=>"DNA polymerase III complex"}
-      assert_equal(expected, @obj.pathway_modules_as_hash)
+      assert_equal(expected, @obj.modules_as_hash)
     end
 
-    def test_pathway_modules
+    def test_modules
       expected = {"M00597"=>"DNA polymerase III complex"}
-      assert_equal(expected, @obj.pathway_modules)
+      assert_equal(expected, @obj.modules)
     end
 
     def test_references
@@ -114,9 +114,9 @@ module Bio
       assert_equal(expected, @obj.pathways_in_keggclass)
     end
 
-    def test_pathway_modules_as_strings
+    def test_modules_as_strings
       expected = ["M00597  DNA polymerase III complex"]
-      assert_equal(expected, @obj.pathway_modules_as_strings)
+      assert_equal(expected, @obj.modules_as_strings)
     end
 
     def test_dblinks_as_strings

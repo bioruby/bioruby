@@ -1,0 +1,31 @@
+!CVS Version: Revision: 1.1498 $
+!GOC Validation Date: 06/05/2010 $
+!Submission Date: 6/5/2010
+!
+! The above "Submission Date" is when the annotation project provided
+! this file to the Gene Ontology Consortium (GOC).  The "GOC Validation
+! Date" indicates when this file was last changed as a result of a GOC
+! validation and filtering process.  The "CVS Version" above is the
+! GOC version of this file.
+!
+! Note: The contents of this file may differ from that submitted to the
+! GOC. The identifiers and syntax of the file have been checked, rows of
+! data not meeting the standards set by the GOC have been removed. This
+! file may also have annotations removed because the annotations for the
+! listed Taxonomy identifier are only allowed in a file provided by
+! another annotation project.  The original submitted file is available from:
+!  http://www.geneontology.org/gene-associations/submission/
+!
+! For information on which taxon are allowed in which files please see:
+!  http://www.geneontology.org/GO.annotation.shtml#script
+!
+!Project_name: Saccharomyces Genome Database (SGD)
+!URL: http://www.yeastgenome.org/
+!Contact Email: yeast-curator@yeastgenome.org
+!Funding: NHGRI of US National Institutes of Health, 5-P41-HG001315-12
+!gaf-version: 2.0
+!Date: 06/05/2010 $
+!
+SGD	S000007287	15S_RRNA		GO:0005763	SGD_REF:S000073642|PMID:6261980	ISS		C	Ribosomal RNA of the small mitochondrial ribosomal subunit	15S_rRNA|15S_RRNA_2	gene	taxon:4932	20040202	SGD		
+SGD	S000007287	15S_RRNA		GO:0006412	SGD_REF:S000073643|PMID:6280192	IGI		P	Ribosomal RNA of the small mitochondrial ribosomal subunit	15S_rRNA|15S_RRNA_2	gene	taxon:4932	20060630	SGD		
+SGD	S000007287	15S_RRNA		GO:0042255	SGD_REF:S000051605|PMID:2167435	IGI		P	Ribosomal RNA of the small mitochondrial ribosomal subunit	15S_rRNA|15S_RRNA_2	gene	taxon:4932	20030723	SGD		

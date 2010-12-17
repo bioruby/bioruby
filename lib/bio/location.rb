@@ -632,8 +632,8 @@ class Locations
         end
       end
 
-      join_list.each do |position|
-        ary << gbl_pos2loc(position)
+      join_list.each do |pos|
+        ary << gbl_pos2loc(pos)
       end
 
     when /^complement\((.*)\)$/				# (J) complement()

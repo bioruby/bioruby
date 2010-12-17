@@ -183,6 +183,20 @@ module Format
     a
   end
 
+  # The same as output(:fasta, :header=>definition, :width=>width)
+  # This method is intended to replace Bio::Sequence#to_fasta.
+  #
+  #   s = Bio::Sequence.new('atgc')
+  #   puts s.output_fasta                   #=> "> \natgc\n"
+  # ---
+  # *Arguments*: 
+  # * (optional) _definition_: (String) definition line
+  # * (optional) _width_: (Integer) width (default 70)
+  # *Returns*:: String object
+  def output_fasta(definition = nil, width = 70)
+    output(:fasta, :header=> definition, :width => width)
+  end
+
   private
 
   # returns formatter repository modules

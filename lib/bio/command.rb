@@ -1,7 +1,7 @@
 #
 # = bio/command.rb - general methods for external command execution
 #
-# Copyright::	Copyright (C) 2003-2008
+# Copyright::	Copyright (C) 2003-2010
 # 		Naohisa Goto <ng@bioruby.org>,
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
@@ -33,6 +33,59 @@ module Command
   UNESCAPABLE_CHARS   = /[\x00-\x08\x10-\x1a\x1c-\x1f\x7f\xff]/n
 
   module_function
+
+  # *CAUTION* Bio::Command INTERNAL USE ONLY.
+  # Users must NOT use the method.
+  # The method will be removed when it is not needed.
+  #
+  # Checks if the program is running on Microsoft Windows.
+  # If Windows, returns true. Otherwise, returns false.
+  # Note that Cygwin is not treated as Windows.
+  #
+  # Known issues:
+  # * It might make a mistake in minor platforms/architectures/interpreters.
+  # * When running JRuby on Cygwin, the result is unknown.
+  # ---
+  # *Returns*:: true or false
+  def windows_platform?
+    case RUBY_PLATFORM
+    when /(?:mswin|bccwin|mingw)(?:32|64)/i
+      true
+    when /java/i
+      # Reference: Redmine's platform.rb
+      # http://www.redmine.org/projects/redmine/repository/revisions/1753/entry/trunk/lib/redmine/platform.rb
+      if /windows/i =~ (ENV['OS'] || ENV['os']).to_s then
+        true
+      else
+        false
+      end
+    else
+      false
+    end
+  end
+  private_class_method :windows_platform?
+
+  # *CAUTION* Bio::Command INTERNAL USE ONLY.
+  # Users must NOT use the method.
+  # The method will be removed when it is not needed.
+  #
+  # Checks if the OS does not support fork(2) system call.
+  # When not supported, it returns true.
+  # When supported or unknown, it returns false or nil.
+  #
+  # Known issues:
+  # * It might make a mistake in minor platforms/architectures/interpreters.
+  # ---
+  # *Returns*:: true, false or nil.
+  def no_fork?
+    if (defined?(@@no_fork) && @@no_fork) or
+        windows_platform? or /java/i =~ RUBY_PLATFORM then
+      true
+    else
+      false
+    end
+  end
+  private_class_method :no_fork?
 
   # Escape special characters in command line string for cmd.exe on Windows.
   # ---
@@ -66,8 +119,7 @@ module Command
   # * (required) _str_: String
   # *Returns*:: String object
   def escape_shell(str)
-    case RUBY_PLATFORM
-    when /mswin32|bccwin32/
+    if windows_platform? then
       escape_shell_windows(str)
     else
       escape_shell_unix(str)
@@ -80,8 +132,7 @@ module Command
   # * (required) _ary_: Array containing String objects
   # *Returns*:: String object
   def make_command_line(ary)
-    case RUBY_PLATFORM
-    when /mswin32|bccwin32/
+    if windows_platform? then
       make_command_line_windows(ary)
     else
       make_command_line_unix(ary)
@@ -145,12 +196,16 @@ module Command
   def call_command(cmd, options = {}, &block) #:yields: io
     if RUBY_VERSION >= "1.9.0" then
       return call_command_popen(cmd, options, &block)
-    end
-    case RUBY_PLATFORM
-    when /mswin32|bccwin32/
+    elsif no_fork? then
       call_command_popen(cmd, options, &block)
     else
-      call_command_fork(cmd, options, &block)
+      begin
+        call_command_fork(cmd, options, &block)
+      rescue NotImplementedError
+        # fork(2) not implemented
+        @@no_fork = true
+        call_command_popen(cmd, options, &block)
+      end
     end
   end
 
@@ -194,8 +249,7 @@ module Command
     str = make_command_line(cmd)
     # processing options
     if dir = options[:chdir] then
-      case RUBY_PLATFORM
-      when /mswin32|bccwin32/
+      if windows_platform?
         # Unix-like dir separator is changed to Windows dir separator
         # by using String#gsub.
         dirstr = dir.gsub(/\//, "\\")
@@ -241,11 +295,12 @@ module Command
   def call_command_fork(cmd, options = {})
     dir = options[:chdir]
     cmd = safe_command_line_array(cmd)
-    tc, Thread.critical = Thread.critical, true
+    begin
+    tc, Thread.critical, flag0, flag1 = Thread.critical, true, true, true
     IO.popen("-", "r+") do |io|
       if io then
         # parent
-        Thread.critical = tc
+        flag0, Thread.critical, flag1 = false, tc, false
         yield io
       else
         # child
@@ -266,6 +321,11 @@ module Command
         end
         Process.exit!(1)
       end
+    end
+    ensure
+      # When IO.popen("-") raises error, Thread.critical will be set here.
+      Thread.critical = tc if flag0 or flag1
+      #warn 'Thread.critical might have wrong value.' if flag0 != flag1
     end
   end
 
@@ -304,12 +364,16 @@ module Command
   def query_command(cmd, query = nil, options = {})
     if RUBY_VERSION >= "1.9.0" then
       return query_command_popen(cmd, query, options)
-    end
-    case RUBY_PLATFORM
-    when /mswin32|bccwin32/
+    elsif no_fork? then
       query_command_popen(cmd, query, options)
     else
-      query_command_fork(cmd, query, options)
+      begin
+        query_command_fork(cmd, query, options)
+      rescue NotImplementedError
+        # fork(2) not implemented
+        @@no_fork = true
+        query_command_fork(cmd, query, options)
+      end
     end
   end
 

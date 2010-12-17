@@ -43,14 +43,14 @@ class ORTHOLOGY < KEGGDB
   def pathways_as_hash; super; end if false #dummy for RDoc
   alias pathways pathways_as_hash
 
-  include Common::PathwayModulesAsHash
+  include Common::ModulesAsHash
   # Returns MODULE field as a Hash.
-  # Each key of the hash is Pathway Module ID,
+  # Each key of the hash is KEGG MODULE ID,
   # and each value is the name of the Pathway Module.
   # ---
   # *Returns*:: Hash
-  def pathway_modules_as_hash; super; end if false #dummy for RDoc
-  alias pathway_modules pathway_modules_as_hash
+  def modules_as_hash; super; end if false #dummy for RDoc
+  alias modules modules_as_hash
 
   include Common::References
   # REFERENCE -- Returns contents of the REFERENCE records as an Array of
@@ -113,7 +113,7 @@ class ORTHOLOGY < KEGGDB
   # Returns MODULE field of the entry.
   # ---
   # *Returns*:: Array containing String objects
-  def pathway_modules_as_strings
+  def modules_as_strings
     lines_fetch('MODULE')
   end
   

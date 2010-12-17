@@ -1,0 +1,16 @@
+ENTRY       ko00312                     Pathway
+NAME        beta-Lactam resistance
+CLASS       Metabolism; Biosynthesis of Other Secondary Metabolites
+PATHWAY_MAP ko00312  beta-Lactam resistance
+DRUG        D00660  Tazobactam (JAN/USAN/INN)
+ORTHOLOGY   K02172  bla regulator protein blaR1
+            K02171  penicillinase repressor
+            K01467  beta-lactamase [EC:3.5.2.6]
+            K02352  drp35
+            K02547  methicillin resistance protein
+            K02546  methicillin resistance regulatory protein
+            K02545  penicillin-binding protein 2 prime
+COMPOUND    C00039  DNA
+            C03438  beta-Lactam antibiotics
+REL_PATHWAY ko00311  Penicillin and cephalosporin biosynthesis
+///
