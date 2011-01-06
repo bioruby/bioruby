@@ -39,9 +39,12 @@ module Bio
     )[0.1250];
     END_OF_TREE_STRING
 
+    def setup
+      @newick = Bio::Newick.new(TREE_STRING)
+    end
+
     def test_string_tree
-      newick = Bio::Newick.new(TREE_STRING)
-      tree = newick.tree
+      tree = @newick.tree
       assert_equal(3, tree.children(tree.root).size)
       assert_equal(9, tree.descendents(tree.root).size)
       assert_equal(6, tree.leaves.size)
@@ -72,9 +75,12 @@ module Bio
     )root;
     END_OF_TREE_STRING
 
+    def setup
+      @newick = Bio::Newick.new(TREE_STRING)
+    end
+
     def test_string_tree
-      newick = Bio::Newick.new(TREE_STRING)
-      tree = newick.tree
+      tree = @newick.tree
       assert_equal('root', tree.root.name)
       assert_equal([ 
                     "this is test",
