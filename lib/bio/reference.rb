@@ -272,7 +272,7 @@ module Bio
       lines << "%N #{@issue}" unless @issue.to_s.empty?
       lines << "%P #{@pages}" unless @pages.empty?
       lines << "%M #{@pubmed}" unless @pubmed.to_s.empty?
-      u = @url.empty? ? pubmed_url : @url
+      u = @url.to_s.empty? ? pubmed_url : @url
       lines << "%U #{u}" unless u.empty?
       lines << "%X #{@abstract}" unless @abstract.empty?
       @mesh.each do |term|
