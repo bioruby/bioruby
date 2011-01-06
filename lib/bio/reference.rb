@@ -587,9 +587,8 @@ module Bio
     # *Returns*:: String
     def pubmed_url
       unless @pubmed.to_s.empty?
-        cgi = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi"
-        opts = "cmd=Retrieve&db=PubMed&dopt=Citation&list_uids"
-        return "#{cgi}?#{opts}=#{@pubmed}"
+        head = "http://www.ncbi.nlm.nih.gov/pubmed"
+        return "#{head}/#{@pubmed}"
       end
       ''
     end

@@ -85,6 +85,11 @@ module Bio
       assert_equal(str, @obj.affiliations)
     end
 
+    def test_pubmed_url
+      assert_equal("http://www.ncbi.nlm.nih.gov/pubmed/12345678",
+                   @obj.pubmed_url)
+    end
+
     def test_format_general
       str = 'Hoge, J.P., Fuga, F.B. (2001). "Title of the study." Theor. J. Hoge 12:123-145.'
       assert_equal(str, @obj.format)
