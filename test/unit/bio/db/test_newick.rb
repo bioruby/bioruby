@@ -55,6 +55,18 @@ module Bio
       assert_equal("HexFLZ83", leaf.name)
     end
 
+    def test_reparse
+      tree = @newick.tree
+      assert_equal(@newick, @newick.reparse)
+    end
+
+    def test_reparse_before_lazy_parsing
+      # not to use @newick to guarantee that the Newick object
+      # is before lazy parsing.
+      newick = Bio::Newick.new(TREE_STRING)
+      assert_equal(newick, newick.reparse)
+    end
+
   end #class TestNewick
 
   class TestNewick2 < Test::Unit::TestCase
