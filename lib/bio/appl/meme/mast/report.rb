@@ -65,9 +65,8 @@ module Bio
         def parse_hit_list(data)
           motifs = []
           data.each_line do |line|
-            
-            line.chomp!
-            
+           
+
             # skip comments
             next if line =~ /^#/
             

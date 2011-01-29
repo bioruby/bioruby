@@ -1,5 +1,5 @@
 #
-# test/unit/bio/appl/meme/test_mast.rb - Unit test for Bio::Meme::Mast::Report
+# test/unit/bio/appl/meme/mast/test_report.rb - Unit test for Bio::Meme::Mast::Report
 #
 # Copyright::  Copyright (C) 2008 Adam Kraut <adamnkraut@gmail.com>
 # License::    The Ruby License
