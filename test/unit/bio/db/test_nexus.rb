@@ -19,9 +19,6 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
 
 # libraries needed for the tests
 require 'test/unit'
-require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), [".."] * 4, "lib")).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
 require 'bio/db/nexus'
 
 module Bio
