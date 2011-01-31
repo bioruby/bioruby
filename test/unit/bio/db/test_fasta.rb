@@ -4,13 +4,15 @@
 # Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_fasta.rb,v 1.5 2007/04/05 23:35:43 trevor Exp $
+#  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'bio/db/fasta'
 
@@ -193,49 +195,6 @@ END
   end # class TestFastaFormat
 
 
-  class TestFastaNumericFormat < Test::Unit::TestCase
-
-    def setup
-      text =<<END
->CRA3575282.F 
-24 15 23 29 20 13 20 21 21 23 22 25 13 22 17 15 25 27 32 26  
-32 29 29 25
-END
-      @obj = Bio::FastaNumericFormat.new(text)
-    end
-
-    def test_entry
-      assert_equal(">CRA3575282.F\n24 15 23 29 20 13 20 21 21 23 22 25 13 22 17 15 25 27 32 26  \n32 29 29 25\n", @obj.entry)
-    end
-
-    def test_entry_id
-      assert_equal('CRA3575282.F', @obj.entry_id) 
-    end
-
-    def test_definition
-      assert_equal('CRA3575282.F', @obj.definition)
-    end
-
-    def test_data
-      data = [24, 15, 23, 29, 20, 13, 20, 21, 21, 23, 22, 25, 13, 22, 17, 15, 25, 27, 32, 26, 32, 29, 29, 25]
-      assert_equal(data, @obj.data)
-    end
-
-    def test_length
-      assert_equal(24, @obj.length)
-    end
-
-    def test_each
-      assert(@obj.each {|x| })
-    end
-
-    def test_arg
-      assert(@obj[0], '')
-      assert(@obj[-1], '')
-    end
-
-
-  end # class TestFastaFormatNumeric
 
 
   class TestFastaDefinition < Test::Unit::TestCase

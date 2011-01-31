@@ -6,16 +6,16 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: test_newick.rb,v 1.6 2007/12/12 16:06:22 ngoto Exp $
+# $Id:$
 #
 
-require 'test/unit'
-
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), [".."] * 4, "lib")).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
-require 'bio'
+# libraries needed for the tests
+require 'test/unit'
 require 'bio/tree'
 require 'bio/db/newick'
 
@@ -39,9 +39,12 @@ module Bio
     )[0.1250];
     END_OF_TREE_STRING
 
+    def setup
+      @newick = Bio::Newick.new(TREE_STRING)
+    end
+
     def test_string_tree
-      newick = Bio::Newick.new(TREE_STRING)
-      tree = newick.tree
+      tree = @newick.tree
       assert_equal(3, tree.children(tree.root).size)
       assert_equal(9, tree.descendents(tree.root).size)
       assert_equal(6, tree.leaves.size)
@@ -50,6 +53,18 @@ module Bio
       assert_equal(tree.path(tree.root, leaf)[1], tree.ancestors(leaf)[1])
       assert_equal(0.00217, tree.get_edge(leaf, tree.parent(leaf)).distance)
       assert_equal("HexFLZ83", leaf.name)
+    end
+
+    def test_reparse
+      tree = @newick.tree
+      assert_equal(@newick, @newick.reparse)
+    end
+
+    def test_reparse_before_lazy_parsing
+      # not to use @newick to guarantee that the Newick object
+      # is before lazy parsing.
+      newick = Bio::Newick.new(TREE_STRING)
+      assert_equal(newick, newick.reparse)
     end
 
   end #class TestNewick
@@ -72,9 +87,12 @@ module Bio
     )root;
     END_OF_TREE_STRING
 
+    def setup
+      @newick = Bio::Newick.new(TREE_STRING)
+    end
+
     def test_string_tree
-      newick = Bio::Newick.new(TREE_STRING)
-      tree = newick.tree
+      tree = @newick.tree
       assert_equal('root', tree.root.name)
       assert_equal([ 
                     "this is test",

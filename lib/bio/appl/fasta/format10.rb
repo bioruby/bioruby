@@ -399,17 +399,3 @@ end # Report
 end # Fasta
 end # Bio
 
-
-if __FILE__ == $0
-  begin
-    require 'pp'
-    alias p pp
-  rescue
-  end
-
-  rep = Bio::Fasta::Report.new(ARGF.read)
-  p rep
-
-end
-
-

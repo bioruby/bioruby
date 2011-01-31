@@ -4,8 +4,11 @@ License::   The Ruby License
 
 = Known issues and bugs in BioRuby
 
-Below are known issues and bugs in BioRuby. They will be fixed in the future,
-except items with (WONT_FIX) tags.
+Below are known issues and bugs in BioRuby. Patches to fix them are welcome.
+We hope they will be fixed in the future.
+
+Items marked with (WONT_FIX) tags would not be fixed within BioRuby because
+they are not BioRuby's issues and/or it is very difficult to fix them.
 
 == 1. Ruby version specific issues
 
@@ -17,7 +20,8 @@ results in Ruby 1.9.1, especially those not covered by the unit tests.
 ==== String encodings
 
 Currently, BioRuby do not care string encodings. In some cases,
-Encoding::CompatibilityError may be raised.
+Encoding::CompatibilityError or "ArgumentError: invalid byte sequence in
+(encoding name)" may be raised.
 
 === Ruby 1.9.0
 
@@ -65,6 +69,16 @@ This indicates that br_bioflat.rb and Bio::FlatFileIndex may create
 incorrect indexes on mswin32, mingw32, and bccwin32. In addition,
 Bio::FlatFile may return incorrect data.
 
+==== String escaping of command-line arguments
+
+After BioRuby 1.4.1, in Ruby 1.9.X running on Windows, escaping of
+command-line arguments are processed by the Ruby interpreter. Before BioRuby
+1.4.0, the escaping is executed in Bio::Command#escape_shell_windows, and
+the behavior is different from the Ruby interpreter's one.
+
+Curreltly, due to the change, test/functional/bio/test_command.rb may fail
+on Windows with Ruby 1.9.X.
+
 ==== Windows 95/98/98SE/ME
 
 (WONT_FIX) Some methods that call external programs may not work in
@@ -85,4 +99,32 @@ the latest Ensembl. For a workaround, use an archive server. For example,
 
 Alternatively, consider using Ruby Ensembl API.
 * http://github.com/jandot/ruby-ensembl-api
+
+=== Bio::DBGET and sample/dbget
+
+(WONT_FIX) Because the DBGET service have not been publically available for
+a long time, we give up support for Bio::DBGET and sample/dbget. Instead,
+using Bio::TogoWS or Bio::KEGG::API is recommended.
+
+=== Bio::NCBI::SOAP
+
+It seems that Bio::NCBI::SOAP (in lib/bio/io/ncbisoap.rb) does not work
+correctly, even running on Ruby 1.8.x. Instead, use Bio::NCBI::REST.
+
+=== Bio::KEGG::Taxonomy and sample/demo_kegg_taxonomy.rb
+
+Bio::KEGG::Taxonomy fails to parse current KEGG taxonomy data file probably
+because of the growth of the data size.
+
+== 4. Compatibility issues with other libraries/extensions
+
+=== ActiveRecord
+
+BioSQL support uses ActiveRecord, but the author of the document does not
+know which version is suitable.
+
+=== Ruby on Rails
+
+BioRuby Shell on Web uses Ruby on Rails, but the author of the document does
+not know which version is suitable.
 

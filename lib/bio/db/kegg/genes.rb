@@ -1,11 +1,11 @@
 #
 # = bio/db/kegg/genes.rb - KEGG/GENES database class
 #
-# Copyright::   Copyright (C) 2001, 2002, 2006
+# Copyright::   Copyright (C) 2001, 2002, 2006, 2010
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: genes.rb,v 0.26 2007/12/14 16:20:38 k Exp $
+# $Id:$
 #
 #
 # == KEGG GENES parser
@@ -29,8 +29,7 @@
 # 
 #  # NAME
 #  p entry.name        # => String
-#  p entry.genes       # => Array
-#  p entry.gene        # => String
+#  p entry.names       # => Array
 # 
 #  # DEFINITION
 #  p entry.definition  # => String
@@ -38,7 +37,7 @@
 # 
 #  # PATHWAY
 #  p entry.pathway     # => String
-#  p entry.pathways    # => Array
+#  p entry.pathways    # => Hash
 # 
 #  # POSITION
 #  p entry.position    # => String
@@ -47,11 +46,14 @@
 #  p entry.locations   # => Bio::Locations
 #
 #  # MOTIF
-#  p entry.motif       # => Hash of Array
+#  p entry.motifs      # => Hash of Array
 #
 #  # DBLINKS
 #  p entry.dblinks     # => Hash of Array
 # 
+#  # STRUCTURE
+#  p entry.structure   # => Array
+#
 #  # CODON_USAGE
 #  p entry.codon_usage # => Hash
 #  p entry.cu_list     # => Array
@@ -73,18 +75,53 @@ module Bio
   autoload :Locations, 'bio/location'
   autoload :Sequence,  'bio/sequence'
 
+  require 'bio/db/kegg/common'
+
 class KEGG
 
+# == Description
+#
+# KEGG GENES entry parser.
+#
+# == References
+#
+# * http://www.genome.jp/kegg/genes.html
+#
 class GENES < KEGGDB
 
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
 
+  include Common::DblinksAsHash
+  # Returns a Hash of the DB name and an Array of entry IDs in DBLINKS field.
+  def dblinks_as_hash; super; end if false #dummy for RDoc
+  alias dblinks dblinks_as_hash
+
+  include Common::PathwaysAsHash
+  # Returns a Hash of the pathway ID and name in PATHWAY field.
+  def pathways_as_hash; super; end if false #dummy for RDoc
+  alias pathways pathways_as_hash
+
+  include Common::OrthologsAsHash
+  # Returns a Hash of the orthology ID and definition in ORTHOLOGY field.
+  def orthologs_as_hash; super; end if false #dummy for RDoc
+  alias orthologs orthologs_as_hash
+
+  # Creates a new Bio::KEGG::GENES object.
+  # ---
+  # *Arguments*:
+  # * (required) _entry_: (String) single entry as a string
+  # *Returns*:: Bio::KEGG::GENES object
   def initialize(entry)
     super(entry, TAGSIZE)
   end
 
-
+  # Returns the "ENTRY" line content as a Hash.
+  # For example, 
+  #   {"organism"=>"E.coli", "division"=>"CDS", "id"=>"b0356"}
+  #
+  # ---
+  # *Returns*:: Hash
   def entry
     unless @data['ENTRY']
       hash = Hash.new('')
@@ -99,55 +136,121 @@ class GENES < KEGGDB
     @data['ENTRY']
   end
 
+  # ID of the entry, described in the ENTRY line.
+  # ---
+  # *Returns*:: String
   def entry_id
     entry['id']
   end
 
+  # Division of the entry, described in the ENTRY line.
+  # ---
+  # *Returns*:: String
   def division
     entry['division']			# CDS, tRNA etc.
   end
 
+  # Organism name of the entry, described in the ENTRY line.
+  # ---
+  # *Returns*:: String
   def organism
     entry['organism']			# H.sapiens etc.
   end
 
+  # Returns the NAME line.
+  # ---
+  # *Returns*:: String
   def name
     field_fetch('NAME')
   end
 
-  def genes
+  # Names of the entry as an Array, described in the NAME line.
+  #
+  # ---
+  # *Returns*:: Array containing String
+  def names_as_array
     name.split(', ')
   end
+  alias names names_as_array
 
+  # The method will be deprecated. Use Bio::KEGG::GENES#names.
+  #
+  # Names of the entry as an Array, described in the NAME line.
+  #
+  # ---
+  # *Returns*:: Array containing String
+  def genes
+    names_as_array
+  end
+
+  # The method will be deprecated.
+  # Use <tt>entry.names.first</tt> instead.
+  #
+  # Returns the first gene name described in the NAME line.
+  # ---
+  # *Returns*:: String
   def gene
     genes.first
   end
 
+  # Definition of the entry, described in the DEFINITION line.
+  # ---
+  # *Returns*:: String
   def definition
     field_fetch('DEFINITION')
   end
 
+  # Enzyme's EC numbers shown in the DEFINITION line.
+  # ---
+  # *Returns*:: Array containing String
   def eclinks
-    ec_list = definition.slice(/\[EC:(.*?)\]/, 1)
-    if ec_list
-      ec_list.strip.split(/\s+/)
-    else
-      []
+    unless defined? @eclinks
+      ec_list = 
+        definition.slice(/\[EC\:([^\]]+)\]/, 1) ||
+        definition.slice(/\(EC\:([^\)]+)\)/, 1)
+      ary = ec_list ? ec_list.strip.split(/\s+/) : []
+      @eclinks = ary
     end
+    @eclinks
   end
 
-  def orthologs
+  # Orthologs described in the ORTHOLOGY lines.
+  # ---
+  # *Returns*:: Array containing String
+  def orthologs_as_strings
     lines_fetch('ORTHOLOGY')
   end
 
+  # Returns the PATHWAY lines as a String.
+  # ---
+  # *Returns*:: String
   def pathway
-    field_fetch('PATHWAY')
+    unless defined? @pathway
+      @pathway = fetch('PATHWAY')
+    end
+    @pathway
   end
 
-  def pathways
-    pathway.scan(/\[PATH:(.*?)\]/).flatten
+  # Pathways described in the PATHWAY lines.
+  # ---
+  # *Returns*:: Array containing String
+  def pathways_as_strings
+    lines_fetch('PATHWAY')
   end
 
+  # Returns CLASS field of the entry.
+  def keggclass
+    field_fetch('CLASS')
+  end
+
+  # Returns an Array of biological classes in CLASS field.
+  def keggclasses
+    keggclass.gsub(/ \[[^\]]+/, '').split(/\] ?/)
+  end
+
+  # The position in the genome described in the POSITION line.
+  # ---
+  # *Returns*:: String
   def position
     unless @data['POSITION']
       @data['POSITION'] = fetch('POSITION').gsub(/\s/, '')
@@ -155,6 +258,9 @@ class GENES < KEGGDB
     @data['POSITION']
   end
 
+  # Chromosome described in the POSITION line.
+  # ---
+  # *Returns*:: String or nil
   def chromosome
     if position[/:/]
       position.sub(/:.*/, '')
@@ -165,21 +271,39 @@ class GENES < KEGGDB
     end
   end
 
+  # The position in the genome described in the POSITION line
+  # as GenBank feature table location formatted string.
+  # ---
+  # *Returns*:: String
   def gbposition
     position.sub(/.*?:/, '')
   end
 
+  # The position in the genome described in the POSITION line
+  # as Bio::Locations object.
+  # ---
+  # *Returns*:: Bio::Locations object
   def locations
     Bio::Locations.new(gbposition)
   end
 
-  def motif
+  # Motif information described in the MOTIF lines.
+  # ---
+  # *Returns*:: Strings
+  def motifs_as_strings
+    lines_fetch('MOTIF')
+  end
+
+  # Motif information described in the MOTIF lines.
+  # ---
+  # *Returns*:: Hash
+  def motifs_as_hash
     unless @data['MOTIF']
       hash = {}
       db = nil
-      lines_fetch('MOTIF').each do |line|
+      motifs_as_strings.each do |line|
         if line[/^\S+:/]
-          db, str = line.split(/:/)
+          db, str = line.split(/:/, 2)
         else
           str = line
         end
@@ -190,19 +314,39 @@ class GENES < KEGGDB
     end
     @data['MOTIF']		# Hash of Array of IDs in MOTIF
   end
+  alias motifs motifs_as_hash
 
-  def dblinks
-    unless @data['DBLINKS']
-      hash = {}
-      get('DBLINKS').scan(/(\S+):\s*(.*)\n?/).each do |db, str|
-        id_array = str.strip.split(/\s+/)
-        hash[db] = id_array
-      end
-      @data['DBLINKS'] = hash
-    end
-    @data['DBLINKS']		# Hash of Array of IDs in DBLINKS
+  # The specification of the method will be changed in the future.
+  # Please use Bio::KEGG::GENES#motifs.
+  #
+  # Motif information described in the MOTIF lines.
+  # ---
+  # *Returns*:: Hash
+  def motif
+    motifs
   end
 
+  # Links to other databases described in the DBLINKS lines.
+  # ---
+  # *Returns*:: Array containing String objects
+  def dblinks_as_strings
+    lines_fetch('DBLINKS')
+  end
+
+  # Returns structure ID information described in the STRUCTURE lines.
+  # ---
+  # *Returns*:: Array containing String
+  def structure
+    unless @data['STRUCTURE']
+      @data['STRUCTURE'] = fetch('STRUCTURE').sub(/(PDB: )*/,'').split(/\s+/)
+    end
+    @data['STRUCTURE'] # ['PDB:1A9X', ...]
+  end
+  alias structures structure
+
+  # Codon usage data described in the CODON_USAGE lines. (Deprecated: no more exists)
+  # ---
+  # *Returns*:: Hash
   def codon_usage(codon = nil)
     unless @data['CODON_USAGE']
       hash = Hash.new
@@ -220,6 +364,9 @@ class GENES < KEGGDB
     @data['CODON_USAGE']
   end
 
+  # Codon usage data described in the CODON_USAGE lines as an array.
+  # ---
+  # *Returns*:: Array
   def cu_list
     ary = []
     get('CODON_USAGE').sub(/.*/,'').each_line do |line|	# cut 1st line
@@ -230,6 +377,9 @@ class GENES < KEGGDB
     return ary
   end
 
+  # Returns amino acid sequence described in the AASEQ lines.
+  # ---
+  # *Returns*:: Bio::Sequence::AA object
   def aaseq
     unless @data['AASEQ']
       @data['AASEQ'] = Bio::Sequence::AA.new(fetch('AASEQ').gsub(/\d+/, ''))
@@ -237,10 +387,16 @@ class GENES < KEGGDB
     @data['AASEQ']
   end
 
+  # Returns length of the amino acid sequence described in the AASEQ lines.
+  # ---
+  # *Returns*:: Integer
   def aalen
     fetch('AASEQ')[/\d+/].to_i
   end
 
+  # Returns nucleic acid sequence described in the NTSEQ lines.
+  # ---
+  # *Returns*:: Bio::Sequence::NA object
   def ntseq
     unless @data['NTSEQ']
       @data['NTSEQ'] = Bio::Sequence::NA.new(fetch('NTSEQ').gsub(/\d+/, ''))
@@ -249,6 +405,9 @@ class GENES < KEGGDB
   end
   alias naseq ntseq
 
+  # Returns nucleic acid sequence length.
+  # ---
+  # *Returns*:: Integer
   def ntlen
     fetch('NTSEQ')[/\d+/].to_i
   end

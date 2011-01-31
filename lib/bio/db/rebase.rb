@@ -40,7 +40,7 @@ module Bio
 # To easily get started with the data you can simply type this command
 # at your shell prompt:
 # 
-#   % wget ftp://ftp.neb.com/pub/rebase/emboss*
+#   % wget "ftp://ftp.neb.com/pub/rebase/emboss_*"
 # 
 # 
 # = Usage
@@ -195,7 +195,7 @@ class REBASE
   # * _none_
   # *Returns*:: +Array+ sorted enzyme names
   def enzymes
-    @data.keys.sort
+    @enzyme_names
   end
   
   # Check if supplied name is the name of an available enzyme
@@ -205,10 +205,7 @@ class REBASE
   # * +name+: Enzyme name
   # *Returns*:: +true/false+
   def enzyme_name?(name)
-    enzymes.each do |e|
-      return true if e.downcase == name.downcase
-    end
-    return false
+    @enzyme_names_downcased.include?(name.downcase)
   end
 
   # Save the current data
@@ -290,6 +287,8 @@ class REBASE
       d.references = []
     end
 
+    @enzyme_names = @data.keys.sort
+    @enzyme_names_downcased = @enzyme_names.map{|a| a.downcase}
     setup_enzyme_and_reference_association
   end
 

@@ -8,10 +8,12 @@
 #  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'uri'
 require 'bio/version'
 require 'bio/io/togows'
@@ -23,14 +25,13 @@ module Bio
   # common tests for both instance methods and class methods
   module FuncTestTogoWSRESTcommon
 
-    bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4)).cleanpath.to_s
-    TestData = Pathname.new(File.join(bioruby_root, 'test', 'data')).cleanpath.to_s
+    TestData = BioRubyTestDataPath
 
     def test_entry
       result = nil
       acc = 'AF237819'
       assert_nothing_raised {
-        result = @togows.entry('genbank', acc)
+        result = @togows.entry('nucleotide', acc)
       }
       assert(!result.to_s.strip.empty?)
       gb = Bio::GenBank.new(result)
@@ -41,7 +42,7 @@ module Bio
       result = nil
       accs = [ 'AF237819' ,'AB302966', 'AY582120' ]
       assert_nothing_raised {
-        result = @togows.entry('genbank', accs)
+        result = @togows.entry('nucleotide', accs)
       }
       assert(!result.to_s.strip.empty?)
       count = 0
@@ -55,7 +56,7 @@ module Bio
       accs2 = accs.join(',')
       result2 = nil
       assert_nothing_raised {
-        result2 = @togows.entry('genbank', accs2)
+        result2 = @togows.entry('nucleotide', accs2)
       }
       assert(result2 == result)
     end
@@ -64,7 +65,7 @@ module Bio
       result = nil
       acc = 'AF237819'
       assert_nothing_raised {
-        result = @togows.entry('genbank', acc, 'fasta')
+        result = @togows.entry('nucleotide', acc, 'fasta')
       }
       assert(!result.to_s.strip.empty?)
       assert_match(/^\>/, result)
@@ -134,7 +135,7 @@ module Bio
       result = nil
       assert_nothing_raised {
         result = @togows.retrieve('hsa:124',
-                                  :database => 'gene',
+                                  :database => 'kegg-genes',
                                   :field => 'entry_id',
                                   :format => 'json')
       }
@@ -145,7 +146,7 @@ module Bio
       result = nil
       assert_nothing_raised {
         result = @togows.retrieve('1.1.1.1',
-                                  :database => [ 'gene', 'enzyme' ])
+                                  :database => [ 'kegg-genes', 'kegg-enzyme' ])
       }
       assert(!result.to_s.strip.empty?)
     end
@@ -154,7 +155,7 @@ module Bio
       result = nil
       assert_nothing_raised {
         result = @togows.retrieve([ '1.1.1.1', 'hsa:124' ],
-                                  :database => [ 'gene', 'enzyme' ])
+                                  :database => [ 'kegg-genes', 'kegg-enzyme' ])
       }
       assert(!result.to_s.strip.empty?)
     end
@@ -202,7 +203,7 @@ module Bio
       acc = 'AF237819'
       assert_nothing_raised {
         response = @togows.instance_eval {
-          get('entry', 'genbank', acc, 'entry_id')
+          get('entry', 'nucleotide', acc, 'entry_id')
         }
       }
       assert_kind_of(Net::HTTPResponse, response)

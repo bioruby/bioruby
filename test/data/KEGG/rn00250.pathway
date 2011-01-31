@@ -1,0 +1,114 @@
+ENTRY       rn00250                     Pathway
+NAME        Alanine, aspartate and glutamate metabolism
+CLASS       Metabolism; Amino Acid Metabolism
+PATHWAY_MAP rn00250  Alanine, aspartate and glutamate metabolism
+MODULE      M00017  Glutamate biosynthesis, oxoglutarate => glutamate (glutamate dehydrogenase) [PATH:rn00250]
+            M00018  Glutamine biosynthesis, glutamate => glutamine [PATH:rn00250]
+            M00019  Glutamate biosynthesis, oxoglutarete => glutamate (glutamate synthase) [PATH:rn00250]
+            M00021  Aspartate biosynthesis, oxaloacetate => aspartate [PATH:rn00250]
+            M00022  Asparagine biosynthesis, aspartate => asparagine [PATH:rn00250]
+            M00026  Alanine biosynthesis, pyruvate => alanine [PATH:rn00250]
+            M00038  Glutamine degradation, glutamine => glutamate + NH3 [PATH:rn00250]
+            M00040  GABA (gamma-Aminobutyrate) shunt [PATH:rn00250]
+            M00044  Aspartate degradation, aspartate => fumarate [PATH:rn00250]
+            M00045  Aspartate degradation, aspartate => oxaloacetate [PATH:rn00250]
+            M00046  Asparagine degradation, asparagine => aspartate +NH3 [PATH:rn00250]
+DISEASE     H00074  Canavan disease (CD)
+            H00185  Citrullinemia (CTLN)
+            H00197  Adenylosuccinate lyase deficiency
+DBLINKS     GO: 0006522 0006531 0006536
+REACTION    R00093  L-glutamate:NAD+ oxidoreductase (transaminating)
+            R00114  L-Glutamate:NADP+ oxidoreductase (transaminating)
+            R00149  Carbon-dioxide:ammonia ligase (ADP-forming,carbamate-phosphorylating)
+            R00243  L-Glutamate:NAD+ oxidoreductase (deaminating)
+            R00248  L-Glutamate:NADP+ oxidoreductase (deaminating)
+            R00253  L-Glutamate:ammonia ligase (ADP-forming)
+            R00256  L-Glutamine amidohydrolase
+            R00258  L-Alanine:2-oxoglutarate aminotransferase
+            R00261  L-glutamate 1-carboxy-lyase (4-aminobutanoate-forming)
+            R00269  2-Oxoglutaramate amidohydrolase
+            R00348  2-Oxosuccinamate amidohydrolase
+            R00355  L-Aspartate:2-oxoglutarate aminotransferase
+            R00357  L-Aspartic acid:oxygen oxidoreductase (deaminating)
+            R00359  D-Aspartate:oxygen oxidoreductase (deaminating)
+            R00369  L-Alanine:glyoxylate aminotransferase
+            R00396  L-Alanine:NAD+ oxidoreductase (deaminating)
+            R00397  L-aspartate 4-carboxy-lyase (L-alanine-forming)
+            R00400  L-alanine:oxaloacetate aminotransferase
+            R00483  L-aspartate:ammonia ligase (AMP-forming)
+            R00484  N-Carbamoyl-L-aspartate amidohydrolase
+            R00485  L-Asparagine amidohydrolase
+            R00487  Acetyl-CoA:L-aspartate N-acetyltransferase
+            R00488  N-Acetyl-L-aspartate amidohydrolase
+            R00490  L-Aspartate ammonia-lyase
+            R00491  aspartate racemase
+            R00575  hydrogen-carbonate:L-glutamine amido-ligase (ADP-forming, carbamate-phosphorylating)
+            R00576  L-Glutamine:pyruvate aminotransferase
+            R00578  L-aspartate:L-glutamine amido-ligase (AMP-forming)
+            R00707  (S)-1-pyrroline-5-carboxylate:NAD+ oxidoreductase
+            R00708  (S)-1-pyrroline-5-carboxylate:NADP+ oxidoreductase
+            R00713  Succinate-semialdehyde:NAD+ oxidoreductase
+            R00714  Succinate-semialdehyde:NADP+ oxidoreductase
+            R00768  L-glutamine:D-fructose-6-phosphate isomerase (deaminating)
+            R01072  5-phosphoribosylamine:diphosphate phospho-alpha-D-ribosyltransferase (glutamate-amidating)
+            R01083  N6-(1,2-dicarboxyethyl)AMP AMP-lyase (fumarate-forming)
+            R01086  2-(Nomega-L-arginino)succinate arginine-lyase (fumarate-forming)
+            R01135  IMP:L-aspartate ligase (GDP-forming)
+            R01346  L-Asparagine:2-oxo-acid aminotransferase
+            R01397  carbamoyl-phosphate:L-aspartate carbamoyltransferase
+            R01648  4-Aminobutanoate:2-oxoglutarate aminotransferase
+            R01954  L-Citrulline:L-aspartate ligase (AMP-forming)
+COMPOUND    C00014  NH3
+            C00022  Pyruvate
+            C00025  L-Glutamate
+            C00026  2-Oxoglutarate
+            C00036  Oxaloacetate
+            C00041  L-Alanine
+            C00042  Succinate
+            C00049  L-Aspartate
+            C00064  L-Glutamine
+            C00122  Fumarate
+            C00152  L-Asparagine
+            C00169  Carbamoyl phosphate
+            C00232  Succinate semialdehyde
+            C00334  4-Aminobutanoate
+            C00352  D-Glucosamine 6-phosphate
+            C00402  D-Aspartate
+            C00438  N-Carbamoyl-L-aspartate
+            C00940  2-Oxoglutaramate
+            C01042  N-Acetyl-L-aspartate
+            C02362  2-Oxosuccinamate
+            C03090  5-Phosphoribosylamine
+            C03406  N-(L-Arginino)succinate
+            C03794  N6-(1,2-Dicarboxyethyl)-AMP
+            C03912  (S)-1-Pyrroline-5-carboxylate
+REFERENCE   
+  AUTHORS   Nishizuka Y, Seyama Y, Ikai A, Ishimura Y, Kawaguchi A (eds).
+  TITLE     [Cellular Functions and Metabolic Maps] (In Japanese)
+  JOURNAL   Tokyo Kagaku Dojin (1997)
+REFERENCE   PMID:9687539
+  AUTHORS   Wu G
+  TITLE     Intestinal mucosal amino acid catabolism.
+  JOURNAL   J Nutr 128:1249-52 (1998)
+REL_PATHWAY rn00010  Glycolysis / Gluconeogenesis
+            rn00020  Citrate cycle (TCA cycle)
+            rn00230  Purine metabolism
+            rn00240  Pyrimidine metabolism
+            rn00253  Tetracycline biosynthesis
+            rn00260  Glycine, serine and threonine metabolism
+            rn00300  Lysine biosynthesis
+            rn00330  Arginine and proline metabolism
+            rn00340  Histidine metabolism
+            rn00410  beta-Alanine metabolism
+            rn00460  Cyanoamino acid metabolism
+            rn00471  D-Glutamine and D-glutamate metabolism
+            rn00473  D-Alanine metabolism
+            rn00480  Glutathione metabolism
+            rn00650  Butanoate metabolism
+            rn00660  C5-Branched dibasic acid metabolism
+            rn00760  Nicotinate and nicotinamide metabolism
+            rn00770  Pantothenate and CoA biosynthesis
+            rn00860  Porphyrin and chlorophyll metabolism
+            rn00910  Nitrogen metabolism
+KO_PATHWAY  ko00250
+///

@@ -7,10 +7,12 @@
 #  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib'))).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'bio/sequence'
 require 'bio/alignment'
@@ -21,9 +23,7 @@ module Bio
 
   module TestGCGMsfData
 
-    bioruby_root  = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
-
-    Filename_PileupAA = Pathname.new(File.join(bioruby_root, 'test', 'data', 'gcg', 'pileup-aa.msf')).cleanpath.to_s
+    Filename_PileupAA = Pathname.new(File.join(BioRubyTestDataPath, 'gcg', 'pileup-aa.msf')).cleanpath.to_s
 
     PileupAA = File.read(Filename_PileupAA).freeze
 

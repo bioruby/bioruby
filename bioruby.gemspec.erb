@@ -81,7 +81,9 @@ Gem::Specification.new do |s|
         # Fail safe settings
         if rdoc_files.empty? then
           rdoc_files = [ 'README.rdoc', 'README_DEV.rdoc',
-                         'doc/Changes-1.3.rdoc' ]
+                         'RELEASE_NOTES.rdoc',
+                         'doc/Changes-1.3.rdoc',
+                       ]
         end
         rdoc_files.push "ChangeLog" unless rdoc_files.include?("ChangeLog")
         rdoc_files.sort.collect { |x| x.dump }.join(",\n    ")

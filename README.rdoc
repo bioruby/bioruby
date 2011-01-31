@@ -9,7 +9,7 @@ License::   The Ruby License
 
 = BioRuby
 
-Copyright (C) 2001-2009 Toshiaki Katayama <k@bioruby.org>
+Copyright (C) 2001-2010 Toshiaki Katayama <k@bioruby.org>
 
 BioRuby is an open source Ruby library for developing bioinformatics
 software.  Object oriented scripting language Ruby has many features
@@ -40,7 +40,9 @@ services including KEGG API can be easily utilized by BioRuby.
 ==== General information
 
 README.rdoc:: This file. General information and installation procedure.
+RELEASE_NOTES.rdoc:: News and important changes in this release.
 KNOWN_ISSUES.rdoc:: Known issues and bugs in BioRuby.
+doc/RELEASE_NOTES-1.4.0.rdoc:: News and incompatible changes from 1.3.1 to 1.4.0.
 doc/Changes-1.3.rdoc:: News and incompatible changes from 1.2.1 to 1.3.0.
 doc/Changes-0.7.rd:: News and incompatible changes from 0.6.4 to 1.2.1.
 
@@ -112,10 +114,10 @@ and could be obtained by the following procedure.
 
 == REQUIREMENTS
 
-* Ruby 1.8.2 or later -- http://www.ruby-lang.org/
-  * Ruby 1.8.5 or later is recommended.
+* Ruby 1.8.2 or later (except Ruby 1.9.0) -- http://www.ruby-lang.org/
+  * Ruby 1.8.7-p174 or later, or Ruby 1.8.6-p383 or later is recommended.
   * Not yet fully ready with Ruby 1.9, although many components can now work
-    in Ruby 1.9.1.
+    in Ruby 1.9.1 and Ruby 1.9.2.
 
 == OPTIONAL REQUIREMENTS
 
@@ -144,6 +146,11 @@ Accessing BioSQL database created by other Open Bio* libraries:
   at least one driver from MySQL/Ruby, postgres-pr, or
   {RubyForge:ruby-oci8}[http://ruby-oci8.rubyforge.org/]
   (note that ruby-oci8 can only work with ruby-dbi 0.2.2).
+
+For parsing PhyloXML format files:
+
+* {RubyForge:libxml-ruby}[http://libxml.rubyforge.org/] (Ruby language
+  bindings for the {GNOME Libxml2 XML toolkit}[http://xmlsoft.org/])
 
 
 == INSTALL
@@ -239,10 +246,12 @@ RubyGems 0.9.0 and removed in RubyGems 1.0.1.
 == LICENSE
 
 BioRuby can be freely distributed under the same terms as Ruby.
+See the file COPYING (or COPYING.ja written in Japanese).
 
-Note that setup.rb included in the BioRuby package comes from
+As written in the file COPYING, see the file LEGAL for files distributed
+under different license. For example, setup.rb which comes from
 {RAA:setup}[http://raa.ruby-lang.org/project/setup/] developed by Minero Aoki
-(http://i.loveruby.net/en/projects/setup/).
+(http://i.loveruby.net/en/projects/setup/) is licensed under LGPL 2.1.
 
 
 == CONTACT

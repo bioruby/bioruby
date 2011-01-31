@@ -1,0 +1,37 @@
+ENTRY       map00030                    Pathway
+NAME        Pentose phosphate pathway
+DESCRIPTION The pentose phosphate pathway is a process of glucose turnover that produces NADPH as reducing equivalents and pentoses as essential parts of nucleotides. There are two different phases in the pathway. One is irreversible oxidative phase in which glucose-6P is converted to ribulose-5P by oxidative decarboxylation, and NADPH is generated [MD:M00006]. The other is reversible non-oxidative phase in which phosphorylated sugars are interconverted to generate xylulose-5P, ribulose-5P, and ribose-5P [MD:M00007]. Phosphoribosyl pyrophosphate (PRPP) formed from ribose-5P [MD:M00005] is an activated compound used in the biosynthesis of histidine and purine/pyrimidine nucleotides. This pathway map also shows the Entner-Doudoroff pathway where 6-P-gluconate is dehydrated and then cleaved into pyruvate and glyceraldehyde-3P [MD:M00008].
+CLASS       Metabolism; Carbohydrate Metabolism
+PATHWAY_MAP map00030  Pentose phosphate pathway
+MODULE      M00004  Pentose phosphate pathway (Pentose phosphate cycle) [PATH:map00030]
+            M00005  PRPP biosynthesis, ribose 5P -> PRPP [PATH:map00030]
+            M00006  Pentose phosphate pathway, oxidative phase, glucose 6P => ribulose 5P [PATH:map00030]
+            M00007  Pentose phosphate pathway, non-oxidative phase, fructose 6P => ribose 5P [PATH:map00030]
+            M00008  Entner-Doudoroff pathway, glucose-6P => glyceraldehyde-3P + pyruvate [PATH:map00030]
+            M00680  Semi-phosphorylative Entner-Doudoroff pathway, gluconate => glyceraldehyde-3P + pyruvate [PATH:map00030]
+            M00681  Non-phosphorylative Entner-Doudoroff pathway, gluconate => glyceraldehyde + pyruvate [PATH:map00030]
+DISEASE     H00196  Phosphoribosylpyrophosphate synthetase I superactivity
+DBLINKS     GO: 0006098
+REFERENCE   (map 3)
+  AUTHORS   Nishizuka Y (ed).
+  TITLE     [Metabolic Maps] (In Japanese)
+  JOURNAL   Tokyo Kagaku Dojin (1980)
+REFERENCE   (map 4)
+  AUTHORS   Nishizuka Y, Seyama Y, Ikai A, Ishimura Y, Kawaguchi A (eds).
+  TITLE     [Cellular Functions and Metabolic Maps] (In Japanese)
+  JOURNAL   Tokyo Kagaku Dojin (1997)
+REFERENCE   
+  AUTHORS   Michal G.
+  TITLE     Biochemical Pathways
+  JOURNAL   Wiley (1999)
+REFERENCE   PMID:12700258
+  AUTHORS   Hove-Jensen B, Rosenkrantz TJ, Haldimann A, Wanner BL.
+  TITLE     Escherichia coli phnN, encoding ribose 1,5-bisphosphokinase activity (phosphoribosyl diphosphate forming): dual role in phosphonate degradation and NAD biosynthesis pathways.
+  JOURNAL   J Bacteriol 185:2793-801 (2003)
+REL_PATHWAY map00010  Glycolysis / Gluconeogenesis
+            map00040  Pentose and glucuronate interconversions
+            map00230  Purine metabolism
+            map00240  Pyrimidine metabolism
+            map00340  Histidine metabolism
+KO_PATHWAY  ko00030
+///

@@ -4,7 +4,7 @@
 # Copyright:: Copyright (C) 2004 GOTO Naohisa <ng@bioruby.org>
 # License::   The Ruby License
 #
-#  $Id: report.rb,v 1.9 2007/04/05 23:35:40 trevor Exp $
+#  $Id:$
 #
 # The sim4 report parser classes.
 #
@@ -43,7 +43,7 @@ module Bio
         @hits = []
         @all_hits = []
         overrun = ''
-        text.each("\n\nseq1 = ") do |str|
+        text.each_line("\n\nseq1 = ") do |str|
           str = str.sub(/\A\s+/, '')
           str.sub!(/\n(^seq1 \= .*)/m, "\n") # remove trailing hits for sure
           tmp = $1.to_s
@@ -161,7 +161,7 @@ module Bio
         attr_reader :percent_identity
 
         # Returns directions of mapping.
-        # Maybe one of "->", "<-" or "" or nil.
+        # Maybe one of "->", "<-", "==" or "" or nil.
         # This would be a Bio::Sim4 specific method.
         attr_reader :direction
 
@@ -170,7 +170,7 @@ module Bio
         # Bio::Sim4::Report::Hit class.
         # Users shall not use it directly.
         def self.parse(str, aln)
-          /^(\d+)\-(\d+)\s*\((\d+)\-(\d+)\)\s*([\d\.]+)\%\s*([\-\<\>]*)/ =~ str
+          /^(\d+)\-(\d+)\s*\((\d+)\-(\d+)\)\s*([\d\.]+)\%\s*([\-\<\>\=]*)/ =~ str
           self.new(Segment.new($1, $2, aln[0]),
                    Segment.new($3, $4, aln[2]),
                    aln[1], $5, $6)
@@ -194,6 +194,17 @@ module Bio
         # Users shall not use it directly.
         def self.seq2_intron(prev_e, e, aln)
           self.new(Segment.new(nil, nil, aln[0]),
+                   Segment.new(prev_e.seq2.to+1, e.seq2.from-1, aln[2]),
+                   aln[1])
+        end
+
+        # Parses part of sim4 result text and creates a new SegmentPair
+        # object for regions which can not be aligned correctly.
+        # It is designed to be called internally from
+        # Bio::Sim4::Report::Hit class.
+        # Users shall not use it directly.
+        def self.both_intron(prev_e, e, aln)
+          self.new(Segment.new(prev_e.seq1.to+1, e.seq1.from-1, aln[0]),
                    Segment.new(prev_e.seq2.to+1, e.seq2.from-1, aln[2]),
                    aln[1])
         end
@@ -318,7 +329,9 @@ module Bio
             exo << e
             if ai then
               # intron data in alignment
-              if ai[2].strip.empty? then
+              if ai[1].strip.empty? then
+                i = SegmentPair.both_intron(prev_e, e, ai)
+              elsif ai[2].strip.empty? then
                 i = SegmentPair.seq1_intron(prev_e, e, ai)
               else
                 i = SegmentPair.seq2_intron(prev_e, e, ai)
@@ -338,29 +351,49 @@ module Bio
         # Parses alignment.
         def parse_align
           s1 = []; ml = []; s2 = []
+          blocks = []
+          blocks.push [ s1, ml, s2 ]
           dat = @data[1..-1]
           return unless dat
           dat.each do |str|
             a = str.split(/\r?\n/)
-            a.shift
-            if /^(\s*\d+\s*)(.+)$/ =~ a[0] then
-              range = ($1.length)..($1.length + $2.strip.length - 1)
+            ruler = a.shift
+            # First line, for example,
+            # "     50     .    :    .    :    .    :    .    :    .    :"
+            # When the number is 0, forced to be a separated block
+            if /^\s*(\d+)/ =~ ruler and $1.to_i == 0 and !ml.empty? then
+              s1 = []; ml = []; s2 = []
+              blocks.push [ s1, ml, s2 ]
+            end
+            # For example,
+            # "    190 GAGTCATGCATGATACAA          CTTATATATGTACTTAGCGGCA"
+            # "        ||||||||||||||||||<<<...<<<-||-|||||||||||||||||||"
+            # "    400 GAGTCATGCATGATACAACTT...AGCGCT ATATATGTACTTAGCGGCA"
+            if /^(\s*\d+\s)(.+)$/ =~ a[0] then
+              range = ($1.length)..($1.length + $2.chomp.length - 1)
               a.collect! { |x| x[range] }
               s1 << a.shift
               ml << a.shift
               s2 << a.shift
             end
           end #each
-          alx  = ml.join('').split(/([\<\>]+\.+[\<\>]+)/)
-          seq1 = s1.join(''); seq2 = s2.join('')
-          i = 0
-          alx.collect! do |x|
-            len = x.length
-            y = [ seq1[i, len], x, seq2[i, len] ]
-            i += len
-            y
+          alx_all = []
+          blocks.each do |ary|
+            s1, ml, s2 = ary
+            alx  = ml.join('').split(/([\<\>]+\.+[\<\>]+)/)
+            seq1 = s1.join(''); seq2 = s2.join('')
+            i = 0
+            alx.collect! do |x|
+              len = x.length
+              y = [ seq1[i, len], x, seq2[i, len] ]
+              i += len
+              y
+            end
+            # adds virtual intron information if necessary
+            alx_all.push([ '', '', '' ]) unless alx_all.empty?
+            alx_all.concat alx
           end
-          @align = alx
+          @align = alx_all
         end
         private :parse_align
 

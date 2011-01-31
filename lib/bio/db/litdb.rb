@@ -4,7 +4,7 @@
 # Copyright::  Copyright (C) 2001 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: litdb.rb,v 0.10 2007/04/05 23:35:40 trevor Exp $
+# $Id:$
 #
 
 require 'bio/db'
@@ -90,18 +90,3 @@ module Bio
 end
 
 
-if __FILE__ == $0
-  require 'bio/io/fetch'
-
-  entry = Bio::Fetch.query('litdb', '0308004') 
-  puts entry
-  p Bio::LITDB.new(entry).reference
-
-  entry = Bio::Fetch.query('litdb', '0309094')
-  puts entry
-  p Bio::LITDB.new(entry).reference
-
-  entry = Bio::Fetch.query('litdb', '0309093')
-  puts entry
-  p Bio::LITDB.new(entry).reference
-end

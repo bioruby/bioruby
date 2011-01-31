@@ -1,0 +1,141 @@
+LEGAL NOTICE INFORMATION
+------------------------
+
+All the files in this distribution are covered under either the Ruby's
+license (see the file COPYING) or public-domain except some files
+mentioned below.
+
+
+setup.rb:
+
+ Copyright (c) 2000-2006 Minero Aoki
+
+ This program is free software.
+ You can distribute/modify this program under the terms of
+ the GNU LGPL, Lesser General Public License version 2.1.
+
+
+sample/any2fasta.rb:
+
+   Copyright (C) 2006 Pjotr Prins <p@bioruby.org>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+
+sample/biofetch.rb:
+
+   Copyright (C) 2002-2004 KATAYAMA Toshiaki <k@bioruby.org>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+
+sample/enzymes.rb:
+
+   Copyright (C) 2006 Pjotr Prins <p@bioruby.org> and
+   Trevor Wennblom <trevor@corevx.com>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+
+sample/fasta2tab.rb:
+sample/fsplit.rb:
+sample/gb2tab.rb:
+sample/genes2nuc.rb:
+sample/genes2pep.rb:
+sample/genes2tab.rb:
+sample/genome2tab.rb:
+sample/gt2fasta.rb:
+sample/ssearch2tab.rb:
+sample/tfastx2tab.rb:
+sample/vs-genes.rb:
+
+   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+
+sample/fastagrep.rb:
+sample/fastasort.rb:
+sample/na2aa.rb:
+
+   Copyright (C) 2008 KATAYAMA Toshiaki <k@bioruby.org> & Pjotr Prins
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+
+sample/gb2fasta.rb:
+
+   Copyright (C) 2001 KATAYAMA Toshiaki <k@bioruby.org>
+   Copyright (C) 2002 Yoshinori K. Okuji <o@bioruby.org>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+
+sample/gbtab2mysql.rb:
+sample/genome2rb.rb:
+sample/pmfetch.rb:
+sample/pmsearch.rb:
+
+   Copyright (C) 2002 KATAYAMA Toshiaki <k@bioruby.org>
+
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+
+sample/tdiary.rb:
+
+   Copyright (C) 2003 KATAYAMA Toshiaki <k@bioruby.org>
+                      Mitsuteru C. Nakao <n@bioruby.org>
+                      Itoshi NIKAIDO  <itoshi@gsc.riken.go.jp>
+                      Takeya KASUKAWA <kasukawa@gsc.riken.go.jp>
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+
+test/data/uniprot/p53_human.uniprot:
+
+   This Swiss-Prot entry is copyright. It is produced through a collaboration
+   between  the Swiss Institute of Bioinformatics  and the  EMBL outstation -
+   the European Bioinformatics Institute.  There are no  restrictions on  its
+   use as long as its content is in no way modified and this statement is not
+   removed.
+
+
+GPL:
+
+ Copyright (C) 1989, 1991 Free Software Foundation, Inc.
+                       59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+
+
+LGPL:
+
+ Copyright (C) 1991, 1999 Free Software Foundation, Inc.
+     59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ Everyone is permitted to copy and distribute verbatim copies
+ of this license document, but changing it is not allowed.
+

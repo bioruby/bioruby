@@ -1,0 +1,59 @@
+ENTRY       hsa00790                    Pathway
+NAME        Folate biosynthesis - Homo sapiens (human)
+CLASS       Metabolism; Metabolism of Cofactors and Vitamins
+PATHWAY_MAP hsa00790  Folate biosynthesis
+MODULE      M00251  Folate biosynthesis, GTP => THF [PATH:hsa00790]
+            M00304  Methanogenesis [PATH:hsa00790]
+DISEASE     H00167  Phenylketonuria (PKU)
+            H00213  Hypophosphatasia
+DRUG        D00142  Methotrexate (JP15/USP/INN)
+            D02115  Methotrexate sodium
+            D06238  Trimetrexate (USAN/INN)
+            D06239  Trimetrexate glucuronate (USAN)
+DBLINKS     GO: 0046656
+ORGANISM    Homo sapiens (human) [GN:hsa]
+GENE        2643  GCH1, DYT14, DYT5, DYT5a, GCH, GTP-CH-1, GTPCH1, HPABH4B [KO:K01495] [EC:3.5.4.16]
+            248  ALPI, IAP [KO:K01077] [EC:3.1.3.1]
+            249  ALPL, AP-TNAP, APTNAP, FLJ40094, FLJ93059, HOPS, MGC161443, MGC167935, TNAP, TNSALP [KO:K01077] [EC:3.1.3.1]
+            250  ALPP, ALP, FLJ61142, PALP, PLAP [KO:K01077] [EC:3.1.3.1]
+            251  ALPPL2, ALPG, ALPPL, GCAP [KO:K01077] [EC:3.1.3.1]
+            1719  DHFR, DHFRP1, DYR [KO:K00287] [EC:1.5.1.3]
+            2356  FPGS [KO:K01930] [EC:6.3.2.17]
+            8836  GGH, GH [KO:K01307] [EC:3.4.19.9]
+            5805  PTS, FLJ97081, PTPS [KO:K01737] [EC:4.2.3.12]
+            6697  SPR, SDR38C1 [KO:K00072] [EC:1.1.1.153]
+            5860  QDPR, DHPR, FLJ42391, PKU2, SDR33C1 [KO:K00357] [EC:1.5.1.34]
+COMPOUND    C00044  GTP
+            C00101  Tetrahydrofolate
+            C00251  Chorismate
+            C00266  Glycolaldehyde
+            C00268  Dihydrobiopterin
+            C00272  Tetrahydrobiopterin
+            C00415  Dihydrofolate
+            C00504  Folate
+            C00568  4-Aminobenzoate
+            C00921  Dihydropteroate
+            C01217  5,6,7,8-Tetrahydromethanopterin
+            C01300  2-Amino-4-hydroxy-6-hydroxymethyl-7,8-dihydropteridine
+            C03541  Tetrahydrofolyl-[Glu](n)
+            C03684  6-Pyruvoyltetrahydropterin
+            C04244  6-Lactoyl-5,6,7,8-tetrahydropterin
+            C04807  2-Amino-7,8-dihydro-4-hydroxy-6-(diphosphooxymethyl)pteridine
+            C04874  2-Amino-4-hydroxy-6-(D-erythro-1,2,3-trihydroxypropyl)-7,8-dihydropteridine
+            C04895  2-Amino-4-hydroxy-6-(erythro-1,2,3-trihydroxypropyl)dihydropteridine triphosphate
+            C05922  Formamidopyrimidine nucleoside triphosphate
+            C05923  2,5-Diaminopyrimidine nucleoside triphosphate
+            C05924  Molybdopterin
+            C05925  Dihydroneopterin phosphate
+            C05926  Neopterin
+            C05927  7,8-Dihydromethanopterin
+            C06148  2,5-Diamino-6-(5'-triphosphoryl-3',4'-trihydroxy-2'-oxopentyl)-amino-4-oxopyrimidine
+            C06149  6-(3'-Triphosphoryl-1'-methylglyceryl)-7-methyl-7,8-dihydrobiopterin
+            C09332  Tetrahydrofolyl-[Glu](2)
+            C11355  4-Amino-4-deoxychorismate
+REL_PATHWAY hsa00230  Purine metabolism
+            hsa00400  Phenylalanine, tyrosine and tryptophan biosynthesis
+            hsa00670  One carbon pool by folate
+            hsa00680  Methane metabolism
+KO_PATHWAY  ko00790
+///

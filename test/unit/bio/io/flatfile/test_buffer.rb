@@ -8,18 +8,19 @@
 #  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
-require 'bio'
 require 'stringio'
+require 'bio/io/flatfile/buffer'
 
 module Bio::TestFlatFileBufferedInputStream
 
-  bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5)).cleanpath.to_s
-  TestDataPath = Pathname.new(File.join(bioruby_root, 'test', 'data')).cleanpath.to_s
+  TestDataPath = BioRubyTestDataPath
   TestDataFastaFormat01 = File.join(TestDataPath, 'fasta', 'example1.txt')
 
   class TestBufferedInputStreamClassMethod < Test::Unit::TestCase

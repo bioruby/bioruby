@@ -4,10 +4,12 @@
 # Copyright::  Copyright (C) 2001, 2002, 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: genome.rb,v 0.18 2007/06/28 11:27:24 k Exp $
+# $Id:$
 #
 
 require 'bio/db'
+require 'bio/reference'
+require 'bio/db/kegg/common'
 
 module Bio
 class KEGG
@@ -19,16 +21,45 @@ class KEGG
 # == References
 #
 # * ftp://ftp.genome.jp/pub/kegg/genomes/genome
+# * http://www.genome.jp/dbget-bin/www_bfind?genome
+# * http://www.genome.jp/kegg/catalog/org_list.html
 #
 class GENOME < KEGGDB
 
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
 
+  include Common::References
+  # REFERENCE -- Returns contents of the REFERENCE records as an Array of
+  # Bio::Reference objects.
+  def references; super; end if false #dummy for RDoc
+
+
   def initialize(entry)
     super(entry, TAGSIZE)
   end
 
+  # (private) Returns a tag name of the field as a String.
+  # Needed to redefine because of the PLASMID field.
+  def tag_get(str)
+    if /\APLASMID\s+/ =~ str.to_s then
+      'PLASMID'
+    else
+      super(str)
+    end
+  end
+  private :tag_get
+
+  # (private) Returns a String of the field without a tag name.
+  # Needed to redefine because of the PLASMID field.
+  def tag_cut(str)
+    if /\APLASMID\s+/ =~ str.to_s then
+      $'
+    else
+      super(str)
+    end
+  end
+  private :tag_cut
 
   # ENTRY -- Returns contents of the ENTRY record as a String.
   def entry_id
@@ -78,7 +109,20 @@ class GENOME < KEGGDB
 
   # ORIGINAL_DB -- Returns contents of the ORIGINAL_DB record as a String.
   def original_db
-    field_fetch('ORIGINAL_DB')
+    #field_fetch('ORIGINAL_DB')
+    unless defined?(@original_db)
+      @original_db = fetch('ORIGINAL_DB')
+    end
+    @original_db
+  end
+
+  # Returns ORIGINAL_DB record as an Array containing String objects.
+  #
+  # ---
+  # *Arguments*:
+  # *Returns*:: Array containing String objects
+  def original_databases
+    lines_fetch('ORIGINAL_DB')
   end
 
   # DISEASE -- Returns contents of the COMMENT record as a String.
@@ -91,43 +135,6 @@ class GENOME < KEGGDB
     field_fetch('COMMENT')
   end
   
-  # REFERENCE -- Returns contents of the REFERENCE records as an Array of
-  # Bio::Reference objects.
-  def references
-    unless @data['REFERENCE']
-      ary = []
-      toptag2array(get('REFERENCE')).each do |ref|
-        hash = Hash.new('')
-        subtag2array(ref).each do |field|
-          case tag_get(field)
-          when /AUTHORS/
-            authors = truncate(tag_cut(field))
-            authors = authors.split(', ')
-            authors[-1] = authors[-1].split(/\s+and\s+/)
-            authors = authors.flatten.map { |a| a.sub(',', ', ') }
-            hash['authors']	= authors
-          when /TITLE/
-            hash['title']	= truncate(tag_cut(field))
-          when /JOURNAL/
-            journal = truncate(tag_cut(field))
-            if journal =~ /(.*) (\d+):(\d+)-(\d+) \((\d+)\) \[UI:(\d+)\]$/
-              hash['journal']	= $1
-              hash['volume']	= $2
-              hash['pages']	= $3
-              hash['year']	= $5
-              hash['medline']	= $6
-            else
-              hash['journal'] = journal
-            end
-          end
-        end
-        ary.push(Reference.new(hash))
-      end
-      @data['REFERENCE'] = References.new(ary)
-    end
-    @data['REFERENCE']
-  end
-
   # CHROMOSOME -- Returns contents of the CHROMOSOME records as an Array
   # of Hash.
   def chromosomes
@@ -198,44 +205,4 @@ end # GENOME
     
 end # KEGG
 end # Bio
-
-
-
-if __FILE__ == $0
-
-  begin
-    require 'pp'
-    def p(arg); pp(arg); end
-  rescue LoadError
-  end
-
-  require 'bio/io/flatfile'
-
-  ff = Bio::FlatFile.new(Bio::KEGG::GENOME, ARGF)
-
-  ff.each do |genome|
-
-    puts "### Tags"
-    p genome.tags
-
-    [
-      %w( ENTRY entry_id ),
-      %w( NAME name ),
-      %w( DEFINITION definition ),
-      %w( TAXONOMY taxonomy taxid lineage ),
-      %w( REFERENCE references ),
-      %w( CHROMOSOME chromosomes ),
-      %w( PLASMID plasmids ),
-      %w( STATISTICS statistics nalen num_gene num_rna ),
-    ].each do |x|
-      puts "### " + x.shift
-      x.each do |m|
-        p genome.send(m)
-      end
-    end
-
-  end
-
-end
-
 

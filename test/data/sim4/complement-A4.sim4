@@ -1,0 +1,43 @@
+
+seq1 = sample41-1c.fst, 284 bp
+seq2 = sample40-2.fst (genome4), 770 bp
+
+>mrna4c
+>genome4
+
+(complement)
+
+1-72  (351-424)   89% ->
+73-142  (563-630)   95% ==
+213-284  (700-770)   95%
+
+      0     .    :    .    :    .    :    .    :    .    :
+      1 TTTTAGCCGGCACGAGATTG AGCGTATGATCACGCGCGCGGCCTCCT C
+        ||||||||||||||||||||-||||-||||||||||||||||||||||-|
+    351 TTTTAGCCGGCACGAGATTGCAGCG ATGATCACGCGCGCGGCCTCCTAC
+
+     50     .    :    .    :    .    :    .    :    .    :
+     49 AGAGTGATGCATGATACAACTT AT          ATATGTACTTAGCTG
+        -|||| ||||||||||||||||- |->>>...>>>|||||||||||||-|
+    400  GAGTCATGCATGATACAACTTCTTGGTT...GATATATGTACTTAGC G
+
+    100     .    :    .    :    .    :    .    :    .    :
+     88 GCAACCGAGATTTACTTTCGAAGCACTGTGATGAACCCGCGGCCCTTTGA
+        ||||||||||||||||||||||| |||||||||||||||||-||||||||
+    577 GCAACCGAGATTTACTTTCGAAGGACTGTGATGAACCCGCG CCCTTTGA
+
+    150     .
+    138 GCGCT
+        |||||
+    626 GCGCT
+
+      0     .    :    .    :    .    :    .    :    .    :
+    213 TATATATGTACTTAGCGG ACACCGAGATTTACTTTCGAAGGACTGTGGA
+        ||||||||||||||||||-|-|||||||||||||||||||||||||||-|
+    700 TATATATGTACTTAGCGGCA ACCGAGATTTACTTTCGAAGGACTGTG A
+
+     50     .    :    .    :
+    262 TGAACCCGCGCCCTTTGAGCGCT
+        |||||||||||||||||||||||
+    748 TGAACCCGCGCCCTTTGAGCGCT
+

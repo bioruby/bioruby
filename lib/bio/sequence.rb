@@ -9,7 +9,7 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id: sequence.rb,v 0.58.2.12 2008/06/17 15:25:22 ngoto Exp $
+# $Id:$
 #
 
 require 'bio/sequence/compat'
@@ -71,8 +71,11 @@ class Sequence
   autoload :Generic, 'bio/sequence/generic'
   autoload :Format,  'bio/sequence/format'
   autoload :Adapter, 'bio/sequence/adapter'
+  autoload :QualityScore, 'bio/sequence/quality_score'
+  autoload :SequenceMasker, 'bio/sequence/sequence_masker'
 
   include Format
+  include SequenceMasker
 
   # Create a new Bio::Sequence object
   #
@@ -149,6 +152,22 @@ class Sequence
   # The sequence object, usually Bio::Sequence::NA/AA, 
   # but could be a simple String
   attr_accessor :seq
+
+  # Quality scores of the bases/residues in the sequence.
+  # (Array containing Integer, or nil)
+  attr_accessor :quality_scores
+
+  # The meaning (calculation method) of the quality scores stored in
+  # the <tt>quality_scores</tt> attribute.
+  # Maybe one of :phred, :solexa, or nil.
+  #
+  # Note that if it is nil, and <tt>error_probabilities</tt> is empty,
+  # some methods implicitly assumes that it is :phred (PHRED score).
+  attr_accessor :quality_score_type
+
+  # Error probabilities of the bases/residues in the sequence.
+  # (Array containing Float, or nil)
+  attr_accessor :error_probabilities
 
   #---
   # Attributes below have been added during BioHackathon2008

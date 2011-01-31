@@ -150,6 +150,30 @@ module Bio
       @affiliations = hash['affiliations'] || []
     end
 
+    # If _other_ is equal with the self, returns true.
+    # Otherwise, returns false.
+    # ---
+    # *Arguments*:
+    # * (required) _other_: any object
+    # *Returns*:: true or false
+    def ==(other)
+      return true if super(other)
+      return false unless other.instance_of?(self.class)
+      flag = false
+      [ :authors, :title, :journal, :volume, :issue, :pages,
+        :year, :pubmed, :medline, :doi, :abstract,
+        :url, :mesh, :embl_gb_record_number,
+        :sequence_position, :comments, :affiliations ].each do |m|
+        begin
+          flag = (self.__send__(m) == other.__send__(m))
+        rescue NoMethodError, ArgumentError, NameError
+          flag = false
+        end
+        break unless flag
+      end
+      flag
+    end
+
     # Formats the reference in a given style.
     #
     # Styles:
@@ -248,7 +272,7 @@ module Bio
       lines << "%N #{@issue}" unless @issue.to_s.empty?
       lines << "%P #{@pages}" unless @pages.empty?
       lines << "%M #{@pubmed}" unless @pubmed.to_s.empty?
-      u = @url.empty? ? pubmed_url : @url
+      u = @url.to_s.empty? ? pubmed_url : @url
       lines << "%U #{u}" unless u.empty?
       lines << "%X #{@abstract}" unless @abstract.empty?
       @mesh.each do |term|
@@ -563,9 +587,8 @@ module Bio
     # *Returns*:: String
     def pubmed_url
       unless @pubmed.to_s.empty?
-        cgi = "http://www.ncbi.nlm.nih.gov/entrez/query.fcgi"
-        opts = "cmd=Retrieve&db=PubMed&dopt=Citation&list_uids"
-        return "#{cgi}?#{opts}=#{@pubmed}"
+        head = "http://www.ncbi.nlm.nih.gov/pubmed"
+        return "#{head}/#{@pubmed}"
       end
       ''
     end

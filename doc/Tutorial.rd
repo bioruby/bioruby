@@ -1,12 +1,10 @@
 # This document is generated with a version of rd2html (part of Hiki)
 #
-# A possible test run could be from rdtool (on Debian package rdtool)
-#
-#   rd2 $BIORUBYPATH/doc/Tutorial.rd
+#   rd2 Tutorial.rd
 #
 # or with style sheet:
 #
-#   rd2 -r rd/rd2html-lib.rb --with-css=bioruby.css $BIORUBYPATH/doc/Tutorial.rd > ~/bioruby.html
+#   rd2 -r rd/rd2html-lib.rb --with-css=bioruby.css Tutorial.rd > Tutorial.rd.html
 #
 # in Debian:
 #
@@ -17,9 +15,22 @@
 # To add tests run Toshiaki's bioruby shell and paste in the query plus
 # results.
 #
-# To run the embedded Ruby doctests you can use the rubydoctest tool, part
-# of the bioruby-support repository at http://github.com/pjotrp/bioruby-support/
+# To run the embedded Ruby doctests you can use the rubydoctest tool, though
+# it needs a little conversion. Like:
 #
+#   cat Tutorial.rd | sed -e "s,bioruby>,>>," | sed "s,==>,=>," > Tutorial.rd.tmp
+#   rubydoctest Tutorial.rd.tmp
+#
+# alternatively, the Ruby way is
+#
+#   ruby -p -e '$_.sub!(/bioruby\>/, ">>"); $_.sub!(/\=\=\>/, "=>")' Tutorial.rd > Tutorial.rd.tmp
+#   rubydoctest Tutorial.rd.tmp
+#
+# Rubydoctest is useful to verify an example in this document (still) works
+#
+#
+
+bioruby> $: << '../lib'
 
 =begin
 #doctest Testing bioruby
@@ -27,9 +38,9 @@
 = BioRuby Tutorial
 
 * Copyright (C) 2001-2003 KATAYAMA Toshiaki <k .at. bioruby.org>
-* Copyright (C) 2005-2009 Pjotr Prins, Naohisa Goto and others
+* Copyright (C) 2005-2010 Pjotr Prins, Naohisa Goto and others
 
-This document was last modified: 2009/03/17
+This document was last modified: 2010/01/08
 Current editor: Pjotr Prins <p .at. bioruby.org>
 
 The latest version resides in the GIT source code repository:  ./doc/((<Tutorial.rd|URL:http://github.com/pjotrp/bioruby/raw/documentation/doc/Tutorial.rd>)).
@@ -39,8 +50,8 @@ The latest version resides in the GIT source code repository:  ./doc/((<Tutorial
 This is a tutorial for using Bioruby. A basic knowledge of Ruby is required.
 If you want to know more about the programming langauge Ruby we recommend the
 latest Ruby book ((<Programming Ruby|URL:http://www.pragprog.com/titles/ruby>))
-by Dave Thomas and Andy Hunt - some of it is online
-((<here|URL:http://www.rubycentral.com/pickaxe/>)).
+by Dave Thomas and Andy Hunt - the first edition is online
+((<here|URL:http://www.ruby-doc.org/docs/ProgrammingRuby/>)).
 
 For BioRuby you need to install Ruby and the BioRuby package on your computer
 
@@ -57,8 +68,13 @@ If you see no such thing you'll have to install Ruby using your installation
 manager. For more information see the
 ((<Ruby|URL:http://www.ruby-lang.org/en/>)) website.
 
-Once Ruby is works download and install Bioruby using the links on the
-((<Bioruby|URL:http://bioruby.org/>)) website.
+With Ruby download and install Bioruby using the links on the
+((<Bioruby|URL:http://bioruby.org/>)) website. The recommended installation is via 
+Ruby gems:
+
+  gem install bio
+
+See also the Bioruby ((<wiki|URL:http://bioruby.open-bio.org/wiki/Installation>)).
 
 A lot of BioRuby's documentation exists in the source code and unit tests. To
 really dive in you will need the latest source code tree. The embedded rdoc
@@ -201,7 +217,6 @@ use all methods on the subsequence. For example,
    bioruby> seq.window_search(15, 3) { | s | a.push s.translate }
    bioruby> a
    ==> ["MHAIK", "HAIKL", "AIKLI", "IKLIP", "KLIPI", "LIPIR", "IPIRS", "PIRSS", "IRSSR", "RSSRS", "SSRSS", "SRSSK", "RSSKK", "SSKKK"]
-
 
 Finally, the window_search method returns the last leftover
 subsequence. This allows for example
@@ -785,19 +800,19 @@ which supports the "-m 0" default and "-m 7" XML type output format.
 
 * For example: 
 
-   bioruby> blast_version = nil; result = []
-   bioruby> Bio::Blast.reports(File.new("../test/data/blast/blastp-multi.m7")) do |report|
-   bioruby>   blast_version = report.version
-   bioruby>   report.iterations.each do |itr|
-   bioruby>     itr.hits.each do |hit|
-   bioruby>       result.push hit.target_id
-   bioruby>     end
-   bioruby>   end
-   bioruby> end
-   bioruby> blast_version
-   ==> "blastp 2.2.18 [Mar-02-2008]"
-   bioruby> result
-   ==> ["BAB38768", "BAB38768", "BAB38769", "BAB37741"]
+    blast_version = nil; result = []
+    Bio::Blast.reports(File.new("../test/data/blast/blastp-multi.m7")) do |report|
+      blast_version = report.version
+      report.iterations.each do |itr|
+        itr.hits.each do |hit|
+          result.push hit.target_id
+        end
+      end
+    end
+    blast_version
+    # ==> "blastp 2.2.18 [Mar-02-2008]"
+    result
+    # ==> ["BAB38768", "BAB38768", "BAB38769", "BAB37741"]
 
 * another example:
 
@@ -843,6 +858,8 @@ When you write above routines, please send to the BioRuby project and
 they may be included.
 
 == Generate a reference list using PubMed (Bio::PubMed)
+=end
+(EDITORs NOTE: examples in this section do not work and should be rewritten.)
 
 Below script is an example which seaches PubMed and creates a reference list.
 
@@ -891,6 +908,7 @@ bold and italic font output.
 
 (EDITORs NOTE: do we have some simple object that can be queried for
 author, title etc.?)
+=begin
 
 Nowadays using NCBI E-Utils is recommended. Use Bio::PubMed.esearch
 and Bio::PubMed.efetch instead of above methods.
@@ -899,6 +917,11 @@ and Bio::PubMed.efetch instead of above methods.
     #!/usr/bin/env ruby
 
     require 'bio'
+
+    # NCBI announces that queries without email address will return error
+    # after June 2010. When you modify the script, please enter your email
+    # address instead of the staff's.
+    Bio::NCBI.default_email = 'staff@bioruby.org'
 
     keywords = ARGV.join(' ')
 
@@ -1197,7 +1220,168 @@ Bio::Fetch.query method.)
 
 == BioSQL
 
-to be written...
+BioSQL is a well known schema to store and retrive biological sequences using a RDBMS like PostgreSQL or MySQL; note that SQLite is not supported.
+First of all, you must install a database engine or have access to a remote one. Then create the schema and populate with the taxonomy. You can follow the ((<Official Guide|URL:http://code.open-bio.org/svnweb/index.cgi/biosql/view/biosql-schema/trunk/INSTALL>)) .
+Next step is to install these gems:
+* ActiveRecord
+* CompositePrimaryKeys (Rails doesn't handle by default composite primary keys)
+* The layer to comunicate with you preferred RDBMS (postgresql, mysql, jdbcmysql in case you are running JRuby )
+
+
+You can find ActiveRecord's models in /bioruby/lib/bio/io/biosql
+
+When you have your database up and running, you can connect to it in this way:
+
+    #!/usr/bin/env ruby
+    
+    require 'bio'
+
+    connection = Bio::SQL.establish_connection({'development'=>{'hostname'=>"YourHostname",
+                                                   'database'=>"CoolBioSeqDB",
+                                                   'adapter'=>"jdbcmysql", 
+                                                   'username'=>"YourUser",
+                                                   'password'=>"YouPassword"
+                                                  }
+                                  },
+                                  'development')
+
+    #The first parameter is the hash contaning the description of the configuration similar to database.yml in Rails application, you can declare different environment. The second parameter is the environment to use: 'development', 'test', 'production'.
+    
+    #To store a sequence into the database you simply need a biosequence object.
+    biosql_database = Bio::SQL::Biodatabase.find(:first)
+    ff = Bio::GenBank.open("gbvrl1.seq")
+    
+    ff.each_entry do |gb|
+      Bio::SQL::Sequence.new(:biosequence=>gb.to_biosequence, :biodatabase=>biosql_database
+    end
+
+    #You can list all the entries into every database 
+    Bio::SQL.list_entries
+
+    #list databases:
+    Bio::SQL.list_databases
+
+    #retriving a generic accession
+    bioseq = Bio::SQL.fetch_accession("YouAccession")
+
+    #If you use biosequence objects, you will find all its method mapped to BioSQL sequences. But you can also access to the models directly:
+
+    #get the raw sequence associated with you accession
+    bioseq.entry.biosequence 
+   
+    #get the length of your sequence, this is the explicit form of bioseq.length
+    bioseq.entry.biosequence.length
+
+    #convert the sequence in GenBank format
+    bioseq.to_biosequence.output(:genbank)
+
+BioSQL' ((<schema|URL:http://www.biosql.org/wiki/Schema_Overview>)) is not so intuitive at the beginning, spend some time on understanding it, in the end if you know a little bit of rails everything will go smootly. You can find information to Annotation ((<here|URL:http://www.biosql.org/wiki/Annotation_Mapping>))
+ToDo: add exemaples from George. I remember he did some cool post on BioSQL and Rails.
+
+
+= PhyloXML
+
+PhyloXML is an XML language for saving, analyzing and exchanging data of 
+annotated phylogenetic trees. PhyloXML parser in BioRuby is implemented in 
+Bio::PhyloXML::Parser and writer in Bio::PhyloXML::Writer. 
+More information at www.phyloxml.org
+
+== Requirements
+
+In addition to BioRuby library you need a libxml ruby bindings. To install:
+
+  % gem install -r libxml-ruby
+
+For more information see ((<URL:http://libxml.rubyforge.org/install.xml>))
+
+== Parsing a file
+
+    require 'bio'
+    
+    # Create new phyloxml parser
+    phyloxml = Bio::PhyloXML::Parser.open('example.xml')
+    
+    # Print the names of all trees in the file
+    phyloxml.each do |tree|
+      puts tree.name
+    end
+
+If there are several trees in the file, you can access the one you wish by an index
+
+    tree = phyloxml[3]
+
+You can use all Bio::Tree methods on the tree, since PhyloXML::Tree inherits from Bio::Tree. For example,
+
+   tree.leaves.each do |node|
+     puts node.name
+   end
+
+PhyloXML files can hold additional information besides phylogenies at the end of the file. This info can be accessed through the 'other' array of the parser object.
+
+    phyloxml = Bio::PhyloXML::Parser.open('example.xml')
+    while tree = phyloxml.next_tree
+      # do stuff with trees
+    end 
+      
+    puts phyloxml.other
+
+== Writing a file
+
+    # Create new phyloxml writer
+    writer = Bio::PhyloXML::Writer.new('tree.xml')
+   
+    # Write tree to the file tree.xml
+    writer.write(tree1) 
+    
+    # Add another tree to the file
+    writer.write(tree2)
+
+== Retrieving data
+
+Here is an example of how to retrieve the scientific name of the clades.
+
+    require 'bio'
+    
+    phyloxml = Bio::PhyloXML::Parser.open('ncbi_taxonomy_mollusca.xml')
+    phyloxml.each do |tree|
+      tree.each_node do |node|
+        print "Scientific name: ", node.taxonomies[0].scientific_name, "\n"
+      end
+    end
+
+== Retrieving 'other' data
+
+    require 'bio'
+    
+    phyloxml = Bio::PhyloXML::Parser.open('phyloxml_examples.xml')
+    while tree = phyloxml.next_tree
+     #do something with the trees
+    end
+
+    p phyloxml.other
+    puts "\n"
+    #=> output is an object representation
+    
+    #Print in a readable way
+    puts phyloxml.other[0].to_xml, "\n"
+    #=>:
+    #
+    #<align:alignment xmlns:align="http://example.org/align">
+    #  <seq name="A">acgtcgcggcccgtggaagtcctctcct</seq>
+    #  <seq name="B">aggtcgcggcctgtggaagtcctctcct</seq>
+    #  <seq name="C">taaatcgc--cccgtgg-agtccc-cct</seq>
+    #</align:alignment>
+    
+    #Once we know whats there, lets output just sequences
+    phyloxml.other[0].children.each do |node|
+     puts node.value
+    end
+    #=>
+    #
+    #acgtcgcggcccgtggaagtcctctcct
+    #aggtcgcggcctgtggaagtcctctcct
+    #taaatcgc--cccgtgg-agtccc-cct
+
 
 == The BioRuby example programs
 
@@ -1282,21 +1466,15 @@ Gene Ontologies can be fetched through the Ruby Ensembl API package:
 Prints each mosq. accession/uniq identifier and the GO terms from the Drosphila
 homologues.
 
-== Comparing BioProjects
-
-For a quick functional comparison of BioRuby, BioPerl, BioPython and Bioconductor (R) see ((<URL:http://sciruby.codeforpeople.com/sr.cgi/BioProjects>))
-
-== Using BioRuby with R
-
-Using Ruby with R Pjotr wrote a section on SciRuby. See ((<URL:http://sciruby.codeforpeople.com/sr.cgi/RubyWithRlang>))
-
 == Using BioPerl or BioPython from Ruby
 
 At the moment there is no easy way of accessing BioPerl from Ruby. The best way, perhaps, is to create a Perl server that gets accessed through XML/RPC or SOAP.
 
 == Installing required external library
 
-At this point for using BioRuby no additional libraries are needed.
+At this point for using BioRuby no additional libraries are needed, except if
+you are using Bio::PhyloXML module. Then you have to install libxml-ruby.
+
 This may change, so keep an eye on the Bioruby website. Also when
 a package is missing BioRuby should show an informative message.
 
@@ -1304,6 +1482,18 @@ At this point installing third party Ruby packages can be a bit
 painful, as the gem standard for packages evolved late and some still
 force you to copy things by hand. Therefore read the README's
 carefully that come with each package.
+
+=== Installing libxml-ruby
+
+The simplest way is to use gem packaging system.
+
+  gem install -r libxml-ruby
+
+If you get `require': no such file to load - mkmf (LoadError) error then do
+
+  sudo apt-get install ruby-dev
+
+If you have other problems with installation, then see ((<URL:http://libxml.rubyforge.org/install.xml>))  
 
 == Trouble shooting
 

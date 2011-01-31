@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phyloxml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.phyloxml.org http://www.phyloxml.org/1.00/phyloxml.xsd" xmlns="http://www.phyloxml.org">
+<phylogeny rooted="true">
+  <clade>
+    <taxonomy>
+      <scientific_name>Mollusca</scientific_name>
+    </taxonomy>
+    <clade>
+      <taxonomy>
+        <scientific_name>Gastropoda</scientific_name>
+      </taxonomy>
+      <clade>
+        <taxonomy>
+          <scientific_name>Orthogastropoda</scientific_name>
+        </taxonomy>
+        <clade>
+          <taxonomy>
+            <scientific_name>Vetigastropoda</scientific_name>
+          </taxonomy>
+          <clade>
+            <taxonomy>
+              <scientific_name>Haliotoidea</scientific_name>
+            </taxonomy>
+            <clade>
+              <taxonomy>
+                <scientific_name>Haliotidae</scientific_name>
+              </taxonomy>
+              <clade>
+                <taxonomy>
+                  <scientific_name>Sulculus</scientific_name>
+                </taxonomy>
+                <clade>
+                  <taxonomy>
+                    <scientific_name>Sulculus diversicolor</scientific_name>
+                  </taxonomy>
+                </clade>
+              </clade>
+            </clade>
+          </clade>
+        </clade>
+      </clade>
+      <clade>
+        <taxonomy>
+          <scientific_name>Eogastropoda</scientific_name>
+        </taxonomy>
+        <clade>
+          <taxonomy>
+            <scientific_name>Docoglossa</scientific_name>
+          </taxonomy>
+        </clade>
+      </clade>
+    </clade>
+    <clade>
+      <taxonomy>
+        <scientific_name>Bivalvia</scientific_name>
+      </taxonomy>
+      <clade>
+        <taxonomy>
+          <scientific_name>Heteroconchia</scientific_name>
+        </taxonomy>
+      </clade>
+    </clade>
+  </clade>
+</phylogeny>
+</phyloxml>

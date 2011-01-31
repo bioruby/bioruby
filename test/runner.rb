@@ -1,10 +1,12 @@
 #!/usr/bin/env ruby
 
-require 'test/unit'
+# loading helper routine for testing bioruby
 require 'pathname'
+load Pathname.new(File.join(File.dirname(__FILE__), 
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
-bioruby_libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'], 'lib')).cleanpath.to_s
-$:.unshift(bioruby_libpath) unless $:.include?(bioruby_libpath)
+# libraries needed for the tests
+require 'test/unit'
 
 if !defined?(Test::Unit::AutoRunner) then
   # Ruby 1.9.1 does not have Test::Unit::AutoRunner

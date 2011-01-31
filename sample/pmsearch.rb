@@ -18,25 +18,36 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#  $Id: pmsearch.rb,v 1.2 2002/07/23 04:52:03 k Exp $
+#  $Id:$
 #
 
 require 'bio'
 
-if ARGV[0] =~ /-f/
+Bio::NCBI.default_email = 'staff@bioruby.org'
+
+if ARGV[0] =~ /\A\-f/
   ARGV.shift
   form = ARGV.shift
 else
   form = 'bibtex'
 end
 
-entries = Bio::PubMed.search(ARGV.join(' '))
+keywords = ARGV.join(' ')
+uids = Bio::PubMed.esearch(keywords)
+
+if uids and !uids.empty? then
+  entries = Bio::PubMed.efetch(uids)
+else
+  entries = []
+end
+
 entries.each do |entry| 
   case form
   when 'medline'
     puts entry
   else
-    puts Bio::MEDLINE.new(entry).reference.send(form)
+    puts Bio::MEDLINE.new(entry).reference.__send__(form.intern)
   end
+  print "\n"
 end
 

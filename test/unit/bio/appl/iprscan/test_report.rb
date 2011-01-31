@@ -3,21 +3,22 @@
 #
 #   Copyright (C) 2006 Mitsuteru Nakao <n@bioruby.org>
 #
-#  $Id: test_report.rb,v 1.7 2007/07/18 11:11:57 nakao Exp $
+#  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'bio/appl/iprscan/report'
 
 
 module Bio
   class TestIprscanData
-    bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), [".."] * 5)).cleanpath.to_s
-    TestDataIprscan = Pathname.new(File.join(bioruby_root, "test", "data", "iprscan")).cleanpath.to_s
+    TestDataIprscan = Pathname.new(File.join(BioRubyTestDataPath, "iprscan")).cleanpath.to_s
     def self.raw_format
       File.open(File.join(TestDataIprscan, "merged.raw"))
     end

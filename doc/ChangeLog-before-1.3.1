@@ -1,0 +1,3961 @@
+2009-09-02  Naohisa Goto <ng@bioruby.org>
+
+	* BioRuby 1.3.1 is released.
+
+2009-09-02  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/version.rb
+
+	  Preparation for bioruby-1.3.1 release.
+	  (commit 3d86bc6d519c4c3319e5a1b2ca36f8f5177f127f)
+
+2009-08-31  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/sequence/compat.rb
+
+	  Document bug fix: Bio::Sequence::(NA|AA|Generic)#to_fasta are
+	  currently not deprecated.
+	  (commit 0e0f888a73a60c0f0a7b103019aeb82c8f063c4e)
+
+2009-08-28  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/sim4/report.rb
+
+	  Bug fix: parse error when unaligned regions exist. Thanks to
+	  Tomoaki NISHIYAMA who reports the bug ([BioRuby] SIM4 parser).
+
+	* test/unit/bio/appl/sim4/test_report.rb,
+	  test/data/sim4/complement-A4.sim4
+
+	  To confirm the bug fix, tests are added with new test data.
+	  (commit 02d531e36ecf789f232cf3e05f85391b60279f00)
+
+2009-08-27  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/sim4/report.rb
+
+	  Bug fix: parse errpr when the alignment of an intron is splitted
+	  into two lines. Thanks to Tomoaki NISHIYAMA who sent the patch
+	  ([BioRuby] SIM4 parser).
+	  (commit 137ec4c3099236c89ac4a0157d0c77ba13d1875c)
+
+2009-08-27  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/sim4/report.rb
+
+	  Ruby 1.9 support: String#each_line instead of String#each
+	  (commit b65f176f3be74c21a8bb8fc2a6f204fb8ab08fd6)
+
+2009-08-27  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/appl/sim4/test_report.rb,
+	  test/data/sim4/simple-A4.sim4, test/data/sim4/simple2-A4.sim4
+
+	  Newly added unit tests for Bio::Sim4::Report with test data.
+	  The test data is based on the data provided by Tomoaki NISHIYAMA
+	  ([BioRuby] SIM4 parser), and most of the sequence data is
+	  replaced by random sequence.
+	  (commit 0f53916dd728b871f02d1caf0c5105a2e1c58bc4)
+
+2009-08-18  Naohisa Goto <ng@bioruby.org>
+
+	* COPYING, COPYING.ja, GPL, LGPL, LEGAL
+
+	  License files are added. COPYING, COPYING.ja, GPL, LGPL are taken
+	  from Ruby's svn repository.  LEGAL is written for BioRuby.
+	  (commit c65531331e840562ac7342f1896f7e2a3aac6c88)
+
+	* README.rdoc
+
+	  Added descriptions about license to refer COPYING and LEGAL.
+	  (commit d88015a2e3b2c5f7c2a931261819b908084d0179)
+
+	* COPYING
+
+	  Modified COPYING for BioRuby, following Matz's recommendation
+	  in [ruby-list:46293].
+	  (commit 2c30e7342e33c878bd7132a302974364c54caad9)
+
+2009-05-06  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/fasta.rb, lib/bio/appl/fasta/format10.rb
+
+	  Restored Bio::Fasta.parser for keeping compatibility, and added
+	  forgotten require.
+	  (commit 97b9284109c9a4431b92eab208509e1df6069b4b)
+
+2009-05-02  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/fasta.rb
+
+	  * Bug fix: Bio::Fasta::Report should be autoloaded.
+	  * Removed useless method Bio::Fasta::Report.parser because
+	    only the "format10" parser is available for a long time
+	    and dynamic require is a potential security hole.
+	  * Removed "require" lines in Bio::Fasta#parse_result.
+	  (commit 3d3edc44127f4fd97abcc17a859e36623facdc7c)
+
+2009-05-02  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/fasta/format10.rb
+
+	  Bug Fix: stack overflow problem, and added support for multiple
+	  query sequences.
+	
+	  * Bug fix: stack overflow problem. Thanks to Fredrik Johansson who
+            reports the bug ([BioRuby] Made a change in format10.rb).
+	  * Changed to set @entry_overrun when a report containing multiple
+	    query sequences' results is given.
+	  * New methods Bio::Fasta::Report#query_def and query_len.
+	  * To support reading a search result with multiple query sequences
+	    by using Bio::FlatFile, a flatfile splitter class
+	    Bio::Fasta::Report::FastaFormat10Splitter is newly added.
+	  (commit e57349594427ad1a51979c9d4e0c3efcffd160c2)
+
+2009-04-27  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/test_feature.rb, test/unit/bio/test_reference.rb
+
+	  class name conflict of NullStderr
+	  (commit 1607b60d905eb8cb5ca289e357cbb2cbb7a118ff)
+
+	* test/unit/bio/appl/test_blast.rb
+	
+	  Bug fix: method redefined: TestBlast#test_self_local
+	  (commit 9caa4c9d94126b3568c439878876062c84afbdec)
+
+	* test/unit/bio/appl/hmmer/test_report.rb
+	  Bug fix: method name conflict:
+	  TestHMMERReportClassMethods#test_reports_ary
+	  (commit cc3e1b85cf885736a7b1293c7e0951e099cd7e6b) 
+
+	* test/unit/bio/appl/bl2seq/test_report.rb
+
+	  * Bug fix: method redefined: TestBl2seqReport#test_undefed_methods.
+	    To fix the bug, the second "test_undefed_methods" is renamed to
+	    "test_undefed_methods_for_iteration".
+	  * Assertions are changed in the first "test_undefed_methods".
+	  * Fixed typo.
+	  (commit 7e1a550de3dffde3fd8808803e44f35072e4d40b)
+
+2009-04-27  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/util/restriction_enzyme/range/sequence_range/calculated_cuts.rb
+	  Bug fix: attribute "strands_for_display" is disabled because the
+	  method definition with the same name overwrites the attribute
+	  definition.
+	  (commit af07e2784faacc51366ddfab5bedd45841734f53)
+
+	* lib/bio/db/embl/embl.rb
+
+	  Bug fix: removed duplicated alias
+	  (commit 65c360f39580322b5eee64b7c2d8274ff7b8dfff)
+
+	* lib/bio/appl/pts1.rb
+
+	  Bug fix: removed unused attribute "function" in Bio::PTS1
+	  because method definition with the same name appeared later
+	  wipes out the attribute definition.
+	  (commit 81cbe9da55217d186e6dc9c1bfb56a39fba73590)
+
+2009-04-27  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Bug fix: forgotten "if false #dummy" in the attribute "query_to".
+	  (commit 7c2e8d0d11baf8cb9e25207ba5b27d4e9d756054)
+
+	* lib/bio/appl/blast.rb
+
+	  Bug fix: suppressing warning messages when $VERBOSE=true.
+
+	  * To suppress warining message "lib/bio/appl/blast.rb:402: warning:
+	    useless use of :: in void context", a dummy variable is added.
+	  * The attribute "server" is changed to attr_reader because "server="
+	    is defined later.
+	  (commit f9404276d2ddcf15966cab74c419733ccd748af2)
+
+2009-04-27  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/test_sequence.rb
+
+	  Fixed test name overwriting another test name in TestSequence.
+	  Fixed by Andrew Grimm at git://github.com/agrimm/bioruby.git
+	  in Thu Feb 19 22:30:26 2009 +1100.
+	  (commit a6c39a719b284a43fe8c67edc1f2826d2941647f)
+
+2009-04-26  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/appl/gcg/test_msf.rb,
+	  test/data/gcg/pileup-aa.msf
+
+	  Newly added unit tests for Bio::GCG::Msf with test data
+	  (commit a1819cd3b772300ef5bea2ebb63376e5b9fc64da)
+
+2009-04-23  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/gcg/msf.rb
+
+	  * Bug fix: incorrect parsing of GCG clustalw+ results.
+	  * Small refactoring of codes
+	  (commit 2eae8f722aa888c85d54aa958eb117d49ce42f8b)
+
+2009-04-21  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/gcg/msf.rb
+
+	  * Bug fix: Bio::GCG::Msf fails parsing when two dots are appeared
+	    at the end of a line. Thanks to Fredrik Johansson who reports the
+	    bug and send the patch ([BioRuby] Parsing MSF alignment file).
+	  * bug fix: misspelling of "ALIGNMENT".
+	  (commit 44ca52443e0249f54c43f92d08cf083cdd12c692)
+
+2009-04-21  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/io/pubmed.rb
+
+	  Bug fix: Bio::PubMed#efetch should return an array of string
+	  objects. Thanks to Masahide Kikkawa and Fredrik Johansson
+	  who report the bug (in "[BioRuby] Bio::PubMed.efetch, bug?"
+	  and "[BioRuby] PubMed.efetch error").
+	  (commit a48a9a35b87dead069fe328ba7086977304af995)
+
+	* test/functional/bio/io/test_pubmed.rb
+
+	  Newly added functional test for Bio::PubMed.
+	  (commit bf5ba6d4503f3ddb0ca31673882f5b396a932bbe)
+
+2009-04-21  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/io/ncbirest.rb
+
+	  * Bug fix: Bio::NCBI::REST#esearch ignores hash["retstart"].
+	  * In Bio::NCBI::REST#esearch, the priority of limit and
+	    hash["retmax"] is clarified: limit is used unless it is nil.
+	    In addition, default value of limit is changed to nil. If both
+	    limit and hash["retmax"] are nil, default value 100 is used.
+	  * Bio::NCBI::REST::NCBI_INTERVAL is changed to 1.
+	  (commit fc0339fe8a42cd00199cfdc938590ae9626551bc)
+
+2009-03-19  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/io/ncbirest.rb
+
+	  Bug fix: Bio::PubMed.efetch/esearch ignores retmax after refactoring
+	  of Bio::PubMed.  efetch/esearch methods in Bio::NCBI::REST are also
+          affected.  Thanks to Craig Knox who reports the bug ([BioRuby]
+          efetch/esearch broken).  Bug fix by Toshiaki Katayama.
+	  (commit 51c3223e033b2992a7bd95da282f88164406ff92)
+
+2009-03-19  Naohisa Goto <ng@bioruby.org>
+
+	* doc/Tutorial.rd
+
+	  GO example using Ensembl API is moved to Appendix.
+	  (commit d677c3d7cbd2f4ff6193255e0e30366ecd0aa421)
+
+	  fixed RD text formatting issues
+	  (commit 642577ae70647f8bd0ae3bcc8ddc118cecc886c7)
+
+	* doc/Tutorial.rd.html
+
+	  doc/Tutorial.rd.html is regenerated
+	  (commit dd878d3ecd83ad5e61a21bbf90d27d1c89d5f12d)
+
+2009-03-18  Naohisa Goto <ng@bioruby.org>
+
+	* doc/Tutorial.rd
+
+	  Reverted a Blast example code because it aims to tell usage of
+	  blocks to explore a Blast report, and getting the "result" is
+	  only a side effect and not the main purpose.
+	  (commit db172eb1e5f1cbc17317bff8043cc07bf6597073)
+
+2009-03-18  Pjotr Prins <pjotr.public01@thebird.nl>
+
+	* doc/Tutorial.rd
+
+	  Updated Tutorial.
+	  (commit b3363ee94cfb86540a7d286ccac608b74737b30d)
+
+	  Updated tutorial with links and gene ontology example
+	  by Marc Hoeppner.
+	  (commit 27a5019ca7a41211055550f9731672aa71a3a4b3)
+
+	  Fixed doctests in documentation.
+	  (commit 9a21a1750a9584152fae669be132af89086e7d5f)
+
+	  Added working BLAST example.
+	  (commit 45c27f109f069db3b6208fd59cc2b683a5bca5a9)
+
+	  Added BLAST example. All doctests work again in Tutorial.rd.
+	  (commit 05edf3092d0322b8f2775e60448700024d8cb343)
+
+	  Slightly improved remarks. Tutorial.rd runs its doctests.
+	  (commit 541a4cf0d9d0d3904f1570e1258a847a22f9238b)
+
+	  reference to github.com/pjotrp/bioruby-support
+	  (commit ec5dfb1544e32034457b0dd36a9dc50fef6c0fbe)
+
+	  Added info on how to split large BLAST XML files.
+	  (commit 6c9a80cde4be6c4c3d02b77c44dfa8bfbf0a41ff)
+
+	  Updated Tutorial
+	  (commit 07267e2d9c5b774bb0f41b795f6be1f24ff175ba)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  Fixed: taxonomy, do not report node_rank of type "class".
+	  GenBanks Tests I/O passed.
+	  (commit ba5400eaf6de0f38341825cb0fbc24ca1d99eeba)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* test/unit/bio/db/biosql/tc_biosql.rb
+
+	  Removed last "\n" from reference GenBank string
+	  (commit 2de87ceef220056a502c5a9a3457abdf1d93fab0)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  Fix: reference deletion from bioentry deletion, when reference
+	  is a leaf (no more bioentries connected to it)
+	  (commit 6f3195a023cab8ee64eb3e3bb9c491534cd80603)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/io/biosql/ar-biosql.rb
+
+	  Added: relation between bioentry and refernces, also through
+	  references by bioentry_reference. This is useful to accomplish
+	  complete bioentry's delete.
+	  (commit d9e5876231d451c9ab1a2e75702f9fe70b1509b8)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* test/unit/bio/db/biosql/tc_biosql.rb
+
+	  Fixed: title test
+	  (commit 45e2d5e21bc1f93240827dee2e46ac02d24cf696)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/genbank/common.rb
+
+	  Fix: Delete added dot at the end of TITLE.
+	  (commit 2a29c9e7fd41da9d6bf065b3d6dbd473e4d03bbe)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  Add: bioentry_qualifier_value recognize if it's handling data
+	  (reader) and format it accordingly with GenBank/EMBL format
+	  ex: 26-SEP-2006 .
+	  (commit 05ba3f1647d4cc71747ada95c9bb7f2a5a44b518)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/biosql_to_biosequence.rb
+
+	  Fixed: date_modified, the code is moved to
+	  Bio::SQL::Sequence#bioentry_qualifier_anchor#method_reader.
+	  It's most an exercise of style than good programming.
+	  date_modifier reader should be a method apart.
+	  (commit c9a980877c9222e05aa0d9163ba51aa2c77a7146)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* test/unit/bio/db/biosql/tc_biosql.rb,
+	  test/unit/bio/db/biosql/test_biosql.rb,
+	  test/unit/bio/db/biosql/ts_suite_biosql.rb
+
+	  Add: BioSQL's TestSuite, alpha stage
+	  (commit be1839b3bf3008fe234e8f89d85302caef83398f)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/biosql_to_biosequence.rb
+
+	  Fix: date_modifier biosequence adapter
+	  (commit a7c1c717e1684fd9117fc2d096e8d6e7c647b62d)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* test/unit/bio/db/biosql/test_biosql.rb
+
+	  Added preliminar tests using connection with jdbcmysql.
+	  Test are focused on input/output coherence.
+	  (commit 0ada9f8b4bb8553bf076caca76bc76a4d6791c6b)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/biosql_to_biosequence.rb
+
+	  Fixed: GI:xxxx reference on VERSION's line using
+	  biosql/to_biosequence.output(:genbank)
+	  (commit 35e1dce1a75ed967ec707457ed3655ce927f83c3)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  added other_seqids as alias of identifier, for the adapter.
+	  Export problem of GI in output(:genbank) from biosql/biosequence.
+	  (commit 7f69ea73dcd28e76743bd5213c3719cf7d9d44a0)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/biosql_to_biosequence.rb
+
+	  (Changed comments only) Added TODOs as comments:
+	  to_biosequence.output(:genbank) some major and minor problems.
+	    1) Major. GI: is not exported IN(VERSION     X64011.1  GI:44010),
+	       OUT(VERSION     X64011.1)
+	    1.1) Db storage is ok, GI is saved into identifier of bioentry
+	    2) Moderate. date wrong format IN(26-SEP-2006), OUT(2006-09-26)
+	    3) Minor. Organism in output as more terms.
+	    4) Minor. Title has a dot at the end, input was without
+	
+	  ref for GI in genbank are functions ncbi_gi_number/other_seqids
+	  (commit 03662955a45e1c3d5d32150b423a92d40c0c33c7)
+	
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/io/sql.rb
+
+	  get and first converted from DataMapper to ActiveRecord
+	  (commit 78b37c61bbb0a16bbee6c3dd16bff7c292e77695)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  converted syntax of first function from DataMapper to ActiveRecord
+	  (commit 822a35794b958906e5d4bfb6d5b9d74efb360ea7)
+
+	  converted .get! method in find with conditions
+	  (commit 1f3012ba93a9c462e8b1daa762372a55534db29c)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/io/biosql/biosql.rb
+
+	  establish_connection rewrite and update Class.first call with
+	  ActiveRecord syntax. Coming from DataMapper.
+	  (commit 66fb6ff597a2ebf2f2dc1ebe7e505fbcc46c993c)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  Version developed with DataMapper, need to be tested with
+	  ActiveRecord -current ORM-.
+	  (commit 7bf5d24364fce8f3a466697e479af5f28c672265)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/io/biosql/config/database.yml
+
+	  Configured development database with jdbcmysql adapter.
+	  (commit 7e143b1d0451bce6865e560febc5c57048210416)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/io/biosql/ar-biosql.rb
+
+	  Newly added lib/bio/io/biosql/ar-biosql.rb: In one file
+	  definition of all  BioSQL's ActiveRecords classes.
+	  (commit 87f7bc6ac844583adc07e409c9fac7fa1f275d2b)
+
+	  class Bioentry: added has_many obejct_bioentry_path and
+	  subject_bioentry_path.
+	  (commit e969eae59d0de098e094ea21007c34371bab3bdd)
+
+	  class BioentryRelationship: added relation to Term class.
+	  (commit f77b28045f0631391c6f4ad4e9eed15d296bec95)
+
+	  class Biosequence: changed to composite primary keys,
+	  :bioentry_id, :version.
+	  (commit c6683346e4c13d8969bb859e882698b90d0828f1)
+
+	  class SeqfeatureQualifierValue: find function deleted, wrong here.
+	  (commit 89f64af363d0b204e50ea71924909724d56bccc4)
+
+	* lib/bio/io/sql.rb
+
+	  Separated connection (see lib/bio/io/biosql.rb) from definition
+	  of public methods.
+	  (commit 24b9e6473ce36e3151c560ea26c3b95105656ef4)
+
+2009-03-17  Raoul Jean Pierre Bonnal <ilpuccio.febo@gmail.com>
+
+	* lib/bio/io/biosql
+
+	  To integrate BioSQL ActiveRecords classes to one file, as the
+	  first step, following 28 files listed below are deleted. In the
+	  later	commit, they will be integrated into one file,
+	  lib/bio/io/biosql/ar-biosql.rb.
+	  (commit 0ea9f08b36e10e50c855d4346194849e8e7a263b)
+
+	     * lib/bio/io/biosql/biodatabase.rb
+	     * lib/bio/io/biosql/bioentry.rb
+	     * lib/bio/io/biosql/bioentry_dbxref.rb
+	     * lib/bio/io/biosql/bioentry_path.rb
+	     * lib/bio/io/biosql/bioentry_qualifier_value.rb
+	     * lib/bio/io/biosql/bioentry_reference.rb
+	     * lib/bio/io/biosql/bioentry_relationship.rb
+	     * lib/bio/io/biosql/biosequence.rb
+	     * lib/bio/io/biosql/comment.rb
+	     * lib/bio/io/biosql/dbxref.rb
+	     * lib/bio/io/biosql/dbxref_qualifier_value.rb
+	     * lib/bio/io/biosql/location.rb
+	     * lib/bio/io/biosql/location_qualifier_value.rb
+	     * lib/bio/io/biosql/ontology.rb
+	     * lib/bio/io/biosql/reference.rb
+	     * lib/bio/io/biosql/seqfeature.rb
+	     * lib/bio/io/biosql/seqfeature_dbxref.rb
+	     * lib/bio/io/biosql/seqfeature_path.rb
+	     * lib/bio/io/biosql/seqfeature_qualifier_value.rb
+	     * lib/bio/io/biosql/seqfeature_relationship.rb
+	     * lib/bio/io/biosql/taxon.rb
+	     * lib/bio/io/biosql/taxon_name.rb
+	     * lib/bio/io/biosql/term.rb
+	     * lib/bio/io/biosql/term_dbxref.rb
+	     * lib/bio/io/biosql/term_path.rb
+	     * lib/bio/io/biosql/term_relationship.rb
+	     * lib/bio/io/biosql/term_relationship_term.rb
+	     * lib/bio/io/biosql/term_synonym.rb
+
+2009-03-17  Naohisa Goto <ng@bioruby.org>
+
+	* Rakefile
+
+	  Rake::Task#execute now needs to take an argument. Currently,
+	  nil is given.
+
+2009-02-20  Naohisa Goto <ng@bioruby.org>
+
+	* BioRuby 1.3.0 is released.
+
+2009-02-19  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/version.rb
+
+	  Preparation for bioruby-1.3.0 release.
+	  (commit fd7fc9f78bc5f4d9a10b3c0d457d9781c9ec2e49)
+
+	* bioruby.gemspec.erb
+
+	  Fixed a logic to determine whether in git repository, and file
+	  lists are changed to be sorted.
+	  (commit ede0c0d7aeab078b6183c4e0e7c74faec32739f7)
+
+2009-02-18  Naohisa Goto <ng@bioruby.org>
+
+	* README.rdoc
+
+	  Added list of document files bundled in the BioRuby distribution.
+	  (commit 92748f848e4708766e44c22b2f02ac662491971f)
+
+2009-02-10  Naohisa Goto <ng@bioruby.org>
+
+	* KNOWN_ISSUES.rdoc
+
+	  Added details about the text mode issue on mswin32/mingw32/bccwin32
+	  and about non-UNIX/Windows systems.
+	  (commit 342a167a23d3b078bd77b3f16f0ceb1aa071df66)
+
+2009-02-09  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/db/test_gff.rb
+
+	  Test bug fix: test_gff.rb failed in some environment (e.g. Windows)
+	  because the default formatting rule of Float#to_s depends on the
+	  libc implementation.
+	  (commit f39bf88ed6a41bd328372ee7de7a23902235f833)
+
+
+2009-02-06  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/gff.rb, test/unit/bio/db/test_gff.rb
+
+	  * Bug fix: Bio::GFF::GFF3::Record#id and #id= should be changed
+	    to follow the previous incompatible change of @attributes.
+	    Thanks to Tomoaki NISHIYAMA who reports the bug ([BioRuby]
+	    GFF3 status (possible bug?)).
+	  * Unit tests are added.
+	  (commit 5258d88ef98a12fd7829eb86aa8664a18a672a43)
+	  (commit c0c7708b3e91b0d2f2d0d50a4a0ba36928057cc8)
+
+2009-02-05  Naohisa Goto <ng@bioruby.org>
+
+	* Rakefile
+
+	  New task "tutorial2html" to generate html from doc/Tutorial.rd
+	  and doc/Tutorial.rd.ja.
+	  (commit 8d66fae59477f01f12b2fa3509ea34c371102725)
+
+	* doc/Tutorial.rd.html, doc/Tutorial.rd.ja.html
+
+	  Automatically generated tutorial html from RD formatted documents.
+	  (commit 90c4a23eea08b06dd758aaa0a53bea789602d252)
+
+	* doc/bioruby.css
+
+	  Newly added stylesheet for the tutorial html files. The bioruby.css
+	  have been used in http://bioruby.org/ and have been maintained by
+	  Toshiaki Katayama.
+	  (commit b69dc243787525de065bdf2e6b7da68d6079ab91)
+
+	* test/runner.rb
+
+	  Added workaroud for test-unit-2.0.x.
+	  (commit 475ac6a6b38e8df30de3d9bf4c7e810759ab023d)
+
+2009-02-04  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Bug fix: a null line can be inserted after query name lines.
+	  (commit bea9ce35b4177f407575ed0752c36bba8a50f502)
+
+2009-02-03  Naohisa Goto <ng@bioruby.org>
+
+	* Tutorial.rd.ja
+
+	  * Document bug: BioRuby shell commands seq, ent, obj were renamed to
+	    getseq, getent, getobj, respectively. Thanks to Hiroyuki Mishima
+	    who reports the issue ([BioRuby-ja]).
+	  * Changes of returned value of getseq are also reflected to the
+	    document.
+	  * Recommended Ruby version and installation procedure are also
+	    changed.
+	  (commit 916e96ca549db71a550e7a5d3bd49a3149614313)
+
+	* doc/Changes-0.7.rd
+
+	  Documentation forgotten in 1.1.0: rename of BioRuby shell commands.
+	  (commit 64113314caac3453b4cc3b80ece9b5fb5841e069)
+
+2009-01-30  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Bug fix: incorrect parsing of hit sequence's whole length.
+	  (commit 98e6f57630b2c3394a9403f58e76b102346c56ef)
+
+	  Bug fix: Whole length of a hit sequence is mistakenly parsed when
+	  it contains ",". WU-BLAST parser is also affected in addition to
+	  NCBI BLAST parser.
+
+	* lib/bio/db/lasergene.rb, lib/bio/db/soft.rb,
+	  lib/bio/util/color_scheme.rb, lib/bio/util/contingency_table.rb,
+	  lib/bio/util/restriction_enzyme.rb
+
+	  Removed ":nodoc:" in in "module Bio" which prevents RDoc of the
+	  Bio module.
+	  (commit 458db79b467d40ed02db0d085218f611e7dd5e04)
+
+2009-01-29  Naohisa Goto <ng@bioruby.org>
+
+	* doc/Changes-1.3.rdoc
+
+	  Added documents about Bio::TogoWS and Bio::BIORUBY_VERSION.
+
+	* lib/bio/shell/plugin/entry.rb
+
+	  getent (BioRuby shell command) is changed to use EBI Dbfetch or
+	  TogoWS in addition to NCBI or KEGG API.
+	  (commit 0e172590f60dd5a5f27a24ecd230037a7909224c)
+
+	* lib/bio/shell/plugin/togows.rb, lib/bio/shell.rb
+
+	  Added new shell plugin providing accesses to TogoWS REST services.
+	  (commit 03f6720b90e90703c23536a11b3f12c8155550ff)
+
+	* lib/bio.rb
+
+	  Added autoload of Bio::TogoWS.
+	  (commit f8605e1234164a7aa7f236b4e96a4299229753d7)
+
+	* test/functional/bio/io/test_togows.rb,
+	  test/unit/bio/io/test_togows.rb
+
+	  Newly added functional and unit tests for Bio::TogoWS::REST.
+	  (commit f04152b80d07f44f146fa3fa0729facede865aac)
+	
+	* lib/bio/io/togows.rb
+
+	  New class Bio::TogoWS::REST, a REST client for the TogoWS web
+	  service (http://togows.dbcls.jp/site/en/rest.html).
+	  (commit 652d2534163675182b9ce30cbb1dd5efff45cd60)
+
+	* bin/br_pmfetch.rb
+
+	  Changed to use Bio::BIORUBY_VERSION_ID instead of CVS version ID.
+	  (commit f69d538ffa9ded00eb68dd306e65505d03b6c656)
+
+	* lib/bio/shell/core.rb
+
+	  Changed to use BIORUBY_VERSION_ID.
+	  (commit 4ce11656a205e85cae64eca27cef7cd94eb80930)
+
+	* bioruby.gemspec.erb
+
+	  Gem version is now determined from lib/bio/version.rb or
+	  BIORUBY_GEM_VERSION environment variable.
+	  (commit 1811e845e60bc2847ea5717ef936bad93f9f2c87)
+
+	* Rakefile
+
+	  * Changed to use lib/bio/version.rb.
+	  * Environment variable BIORUBY_EXTRAVERSION is renamed to
+	    BIORUBY_EXTRA_VERSION.
+	  * Added dependency on lib/bio/version.rb to bioruby.gemspec.
+	    (commit fb27eaa584cda1bb4cb75e10085996503361c98a)
+	
+	* lib/bio.rb, lib/bio/version.rb
+
+	  Bio::BIORUBY_VERSION is split into lib/bio/version.rb.
+	  (commit 9779398c3fa0e9405a875b754a5243e0d6922c32)
+
+	  * New file lib/bio/version.rb contains BioRuby version information.
+	  * New constants: Bio::BIORUBY_EXTRA_VERSION stores extra version
+	    string (e.g. "-pre1") and Bio::BIORUBY_VERSION_ID stores BioRuby
+	    version string (e.g. "1.3.0-pre1").
+	  * Bio::BIORUBY_VERSION is changed to be frozen. Above two constants
+	    also store frozen values.
+
+2009-01-26  Naohisa Goto <ng@bioruby.org>
+
+	* KNOWN_ISSUES.rdoc
+
+	  Newly added KNOWN_ISSUES.rdoc that describes known issues and
+	  bugs in current BioRuby.
+	  (commit 06b10262be0bf797a3b133e4697e9b0955408944)
+	  (commit a65ad8b42613e46b0b4bb0650d6301da0dcc88c9)
+
+	* lib/bio/shell/plugin/ncbirest.rb, lib/bio/shell.rb
+
+          New shell plugin lib/bio/shell/plugin/ncbirest.rb, providing
+          "efetch", "einfo", "esearch", and "esearch_count" methods.
+          They act the same as those defined in Bio::NCBI::REST, except
+          that "efetch" fetches entries with pre-defined databases
+	  depending on arguments.
+	  (commit c482e1864aa0dbca3727b1059d4fe3d0aefb3917)
+	  (commit 3360b8905fdbcd4ca050470fdb2f02a7387e8bb9)
+
+	* lib/bio/shell/plugin/entry.rb
+
+          Shell commands "getent" and "getseq" are changed to use
+	  "efetch" method when "gb" or some variant is specified as
+	  the database.
+	  (commit c482e1864aa0dbca3727b1059d4fe3d0aefb3917)
+	  (commit 3360b8905fdbcd4ca050470fdb2f02a7387e8bb9)
+
+	* bioruby.gemspec.erb, bioruby.gemspec
+
+	  * Changed version to 1.2.9.9501.
+          * Changed to use "git ls-files" instead of "git-ls-files", and
+            changed not to redirect to /dev/null.
+          * Special treatment of bioruby.gemspec is removed.
+          * ChangeLog is included to RDoc.
+          * Set RDoc title to "BioRuby API documentation".
+          * Set "--line-numbers" and "--inline-source" to rdoc_options.
+	    (commit f014685090c38eeb64219603f2c7e90574849431)
+	  * added KNOWN_ISSUES.rdoc to files for no-git environment.
+	    (commit 06b10262be0bf797a3b133e4697e9b0955408944)
+	  * Ruby 1.9 support: command execution with shell can raise
+	    an error.
+	    (commit 3179de32f1dc746c8de975917b1718a523800d69)
+	  * bioruby.gemspec is generated from bioruby.gemspec.erb.
+	    (commit 4e1cd3bfb8207b357d5b71cc0fc8366f06491130)
+	    (commit 06b10262be0bf797a3b133e4697e9b0955408944)
+
+2009-01-21  Naohisa Goto <ng@bioruby.org>
+
+	* ChangeLog
+
+	  Added recent changes and fixed typo for recent changes.
+
+2009-01-20  Naohisa Goto <ng@bioruby.org>
+
+	* ChangeLog, doc/Changes-1.3.rdoc
+
+	  Added ChangeLog and doc/Changes-1.3.rdoc for recent changes.
+	  (commit be2254ddea152fddf51a2476eeb20d804b1e3123)
+
+	* bioruby.gemspec
+
+	  Added bioruby.gemspec created from bioruby.gemspec.erb.
+	  (commit 4c54597eaf09107c34ad06bc5f5f9cead77a0198)
+
+	* lib/bio/appl/blast/wublast.rb
+	
+	  Bug fix: parsing of exit code failed when ignoring fatal errors
+	  (commit 44ed958acebe4324a9a48e7292c4f0ad5c0fb685)
+
+	  * Bug fix: could not get exit code in WU-BLAST results executed
+	    with a command line option "-nonnegok", "-novalidctxok", or
+	    "-shortqueryok".
+	  * New methods Bio::Blast::WU::Report#exit_code_message and #notes.
+
+	* Rakefile
+
+	  Added package tasks and changed to use ERB instead of eruby.
+	  (commit 7b081c173d3b1cbc46034297ea802a4e06f85b2f)
+
+	* bioruby.gemspec.erb
+
+	  Use git-ls-files command to obtain list of files when available.
+	  (commit 5d5cb24fdd56601bc43ee78facc255ca484245c0)
+
+2009-01-17  Naohisa Goto <ng@bioruby.org>
+
+	* Rakefile
+
+	  Simple Rakefile for dynamic generation of bioruby.gemspec
+	  (commit d5161d164f3520db25bed9aececb962428b9d6bc)
+
+	* bioruby.gemspec.erb
+
+	  bioruby.gemspec is renamed to bioruby.gemspec.erb with modification.
+	  (commit bef311668e4a3be30965ce94d41e7bde4a4e17f9)
+
+	  To prevent the error "Insecure operation - glob" in GitHub,
+	  bioruby.gemspec is renamed to bioruby.gemspec.erb, and modified
+	  to generate the file list by using eruby.
+
+2009-01-15  Naohisa Goto <ng@bioruby.org>
+
+	* doc/Changes-1.3.rdoc
+
+	  Changes-1.3.rd is renamed to Changes-1.3.rdoc with format
+	  conversion, and fixed typo.
+	  (commit 1aef599650d14362ed233dcc9a7db8d3c1db1777)
+
+	  Added details about newly added classes etc.
+	  (commit eda9fd0abbb8e430810468d777d0b585e33c25d8)
+
+2009-01-13  Naohisa Goto <ng@bioruby.org>
+
+	* bioruby.gemspec
+
+	  Changed version to 1.2.9001, set has_rdoc = true and rdoc options.
+	  (commit 1f63d3d5389dd3b0316e9f312b56e62371caa253)
+
+	  * Gem version number changed to 1.2.9.9001 for testing gem.
+	  * Changed to has_rdoc = true.
+	  * README.rdoc and README_DEV.rdoc are now included to gem's rdoc,
+	    and README.rdoc is set to the main page.
+	  * *.yaml is now excluded from rdoc.
+
+2009-01-13  Jan Aerts <jan.aerts@gmail.com>
+
+	* bioruby.gemspec
+
+	  Renamed gemspec.rb to bioruby.gemspec because so github builds
+	  the gem automatically
+	  (commit 561ae16d20f73dcd6fc3d47c41c97c32f9aadb1a)
+	  (committer: Naohisa Goto)
+	  (original commit date: Wed Jun 25 11:01:03 2008 +0100)
+
+	  Edited gemspec because github returned an error while building gem.
+	  (commit f0d91e07550872c2f0d5835e496af1add7759d42)
+	  (committer: Naohisa Goto)
+	  (original commit date: Wed Jun 25 11:03:04 2008 +0100)
+
+2009-01-13  Naohisa Goto <ng@bioruby.org>
+
+	* README.rdoc
+
+	  Changed format from RD to RDoc with some additional URLs
+	  (commit cb8781d701f22cbaf16575bb237a9e0cbf8cd407)
+
+	  Clarified copyright of README.rdoc and BioRuby
+	  (commit acd9e6d6e6046281c6c9c03cff1021449b8e780f)
+
+	  Updated descriptions about RubyGems, and added Ruby 1.9 partial
+	  support
+	  (commit ff63658b255988bf0e7a9f5a2d1523d5104fe588)
+
+2009-01-09  Naohisa Goto <ng@bioruby.org>
+
+	* test/runner,rb
+
+	  Ruby 1.9.1 support: using alternatives if no Test::Unit::AutoRunner
+	  (commit 5df2a9dc0642d4f1e9a4398d6af908780d622a6e)
+
+2009-01-05  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/fantom.rb
+
+	  Bug fix: incomplete cgi parameter escaping, and suppressing warnings.
+	  (commit 754d8815255a0f0db20df9dd74f9f146605d430e)
+
+	  * Bug fix: incomplete cgi parameter escaping for ID string in
+	    Bio::FANTOM.get_by_id (and Bio::FANTOM.query which internally
+	    calls the get_by_id method).
+	  * Warning message "Net::HTTP v1.1 style assignment found" when
+	    $VERBOSE=true is suppressed.
+	  * Removed obsolete "rescue LoadError" when require 'rexml/document'.
+
+	* lib/bio/io/fetch.rb
+
+	  Bug fix: possible incomplete form key/value escaping.
+	  (commit ecaf2c66261e4ce19ab35f73e305468e1da412ed)
+
+	  * Bug fix: possible incomplete form key/value escaping
+	  * Refactoring: changed to use private methods _get and _get_single
+	    to access remote site.
+
+	* lib/bio/io/pubmed.rb
+
+	  Bug fix: possible incomplete escaping of parameters, and
+	  suppressing warnings
+	  (commit 93daccabb1a82bb20e92798c1810182dfb836ba7)
+
+	  * Bug fix: possible incomplete string escaping of REST parameters
+	    in Bio::PubMed#query and #pmfetch.
+	  * Warning message "Net::HTTP v1.1 style assignment found" when
+	    $VERBOSE=true is suppressed.
+	  * Removed obsolete "unless defined?(CGI)".
+
+	* lib/bio/command.rb, test/unit/bio/test_command.rb
+
+	  Bug fix: incomplete escaping in Bio::Command.make_cgi_params etc.
+	  (commit 17c8f947e5d94012921f9252f71460e9d8f593e3)
+
+	  * Buf fix: in Bio::Command.make_cgi_params and
+	    make_cgi_params_key_value, string escaping of form keys and values
+	    is incomplete.
+	  * Warning message "useless use of :: in void context" is suppressed
+	    when running test/unit/bio/test_command.rb with $VERBOSE=true.
+	  * Unit tests are added.
+
+	* lib/bio/appl/, lib/bio/io/ (9 files)
+
+	  Suppress warning message "Net::HTTP v1.1 style assignment found"
+	  when $VERBOSE = true.
+	  (commit a2985eb1f3aed383f1b1b391f2184317c7fd21c7)
+
+2009-01-02  Naohisa Goto <ng@bioruby.org>
+
+	* README.rdoc
+
+	  Changing optional requirements, recommended Ruby version, and
+	  setup.rb credit.
+	  (commit a5462ab4bd403d2d833e5d6db26ae98ca763513c)
+
+2008-12-30  Naohisa Goto <ng@bioruby.org>
+
+	* README.rdoc
+
+	  Fixed grammar and spelling in README.rdoc, indicated by
+	  Andrew Grimm at git://github.com/agrimm/bioruby.git
+	  in Sun Sep 21 19:59:03 2008 +1000.
+	  (commit 446918037bff392b9c6bc6828720c585733a8f4b)
+
+2008-12-30  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio.rb
+
+	  Changed BIORUBY_VERSION to 1.3.0, which will be the next BioRuby
+	  release version number.
+	  (commit b000b1c4a5a136ab287b517b8b8c66e54f99a8a8).
+
+	* doc/Changes-1.3.rd
+
+	  Added documents about changed points for 1.3.0 release.
+	  (commit 028e323e784eb60b18f941cce1e3752abff1433c)
+
+	* lib/bio/appl/blast/format8.rb
+
+	  Ruby 1.9 support: String#each_line instead of String#each
+	  (commit 1bc59708137fd46911d5892e4712cc49c71fa031)
+
+	* lib/bio/io/flatfile/splitter.rb
+	
+	  Checks for undefined constants are added for running without
+	  "require 'bio'" in unit tests.
+	  (commit 311176d4d390e5948348f623ff3632454136a03f)
+
+	* lib/bio/appl/blast.rb, lib/bio/appl/blast/report.rb,
+	  test/unit/bio/appl/test_blast.rb
+
+	  Support for default (-m 0) and tabular (-m 8) formats in
+	  Bio::Blast.reports.
+
+	  * Added support for default (-m 0) and tabular (-m 8) formats in
+	    Bio::Blast.reports method. For the purpose, Bio::Blast::Report_tab
+	    is added to read tabular format by using Bio::FlatFile.
+	  * Unit tests are added.
+
+2008-12-26  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/paml/codeml/rates.rb
+
+	  Ruby 1.9 support: String#each_line instead of String#each
+	  (commit 1789a3975c4c82d3b45f545893be8f2a7bf47a01)
+
+2008-12-26  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/command.rb, lib/bio/appl/fasta.rb,
+	  lib/bio/appl/blast/genomenet.rb
+
+	  Refactoring and following the change of the remote site
+	  fasta.genome.jp.
+	  (commit 671092dff67890fc48dd7ff2f606c4cedc2eb02c)
+
+	  * New method Bio::Command.http_post_form.
+	  * Bio::Blast::Remote::GenomeNet#exec_genomenet and
+	    Bio::Fasta#exec_genomenet are changed to use the new method.
+	  * Changed a regexp. in Bio::Fasta#exec_genomenet is changed
+	    following the change of the remote GenomeNet (fasta.genome.jp).
+
+2008-12-24  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/location.rb, test/unit/bio/test_location.rb
+
+	  New method Bio::Locations#to_s with bug fix, etc.
+	  (commit 115b09456881e1d03730d0b9e7a61a65abf6a1fe)
+
+	  * New method Bio::Locations#to_s is added.
+	  * New attributes Bio::Locations#operator and Bio::Location#carat.
+	  * Changed not to substitute from "order(...)" or "group(...)" to
+	    "join(...)".
+	  * Bug fix: Bio::Locations.new(str) changes the argument string
+	    when the string contains whitespaces.
+	  * Unit tests for Bio::Locations#to_s are added.
+
+2008-12-20  Naohisa Goto <ng@bioruby.org>
+
+	* test/functional/bio/appl/test_pts1.rb,
+	  test/unit/bio/appl/test_pts1.rb
+
+	  Moved part of test_pts1.rb using network from test/unit to
+	  test/functional.
+	  (commit 933ff3e7d615fe6521934f137519ea84b3b517f2)
+
+2008-12-18  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/io/test_soapwsdl.rb
+
+	  Ruby 1.9 support: following the change of Object#instance_methods
+	  (commit 008cf5f43786f6143f74889e0ec53d1c8a452aa2)
+
+	  Note that SOAP/WSDL library is no longer bundled with Ruby 1.9,
+	  and tests in test_soapwsdl.rb may fail.
+
+	* test/unit/bio/io/test_ddbjxml.rb
+
+	  Ruby 1.9 support: following the change of Module::constants
+	  (commit ed1ad96e7ed9d6c7d67e5413a22ba935a3b36efa)
+
+	* lib/bio/util/restriction_enzyme/single_strand.rb
+
+	  Ruby 1.9 support: changed Array#to_s to join, Symbol#to_i to __id__,
+	  etc.
+	  (commit a29debb8c03244c1ce61317d6df0a2c5d066de3d)
+
+	  * Ruby 1.9 support: in pattern method, changed to use Array#join
+	    instead of Array#to_s.
+	  * Ruby 1.9 support: in self.once method, changed to use
+	    Object#__id__ instead of Symbol#to_i.
+	  * self.once is changed to be a private class method.
+
+2008-12-18  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/rebase.rb
+
+	  Ruby 1.9 support: changed not to use String#each, etc.
+	  (commit 47ba6e9fcf864f5881211e766f2e47b60dde178a)
+
+	  * Ruby 1.9 support: In parse_enzymes, parse_references, and
+	    parse_suppliers methods, String#each is changed to each_line.
+	  * Changed to use require instead of autoload, to reduce support cost.
+
+2008-12-16  Moses Hohman <moses@moseshohman.com>
+
+	* lib/bio/db/medline.rb, test/unit/bio/db/test_medline.rb
+
+	  fix medline parsing of author last names that are all caps
+	  (commit 5f37d566fc2efa4878efbd19e83f909a58c4cb00)
+
+2008-12-15  Mitsuteru Nakao <n@bioruby.org>
+
+	* lib/bio/db/kegg/glycan.rb
+
+	  Bug fix in Bio::KEGG::GLYCAN#mass.
+	  Thanks to a reporter.
+	  (commit cb8f1acc4caebf1f04d4a6c141dd4477fcb5394b)
+	  (committer: Naohisa Goto)
+
+2008-12-15  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/pathway.rb, test/unit/bio/test_pathway.rb
+
+	  Fixed pending bugs described in unit test, and Ruby 1.9 support
+	  (commit 97b3cd4cf78eff8aede16369298aaacf1c319b68)
+
+	  * Pending bugs described in test/unit/bio/test_pathway.rb are fixed.
+	    Fixed a bug in subgraph: does not include nodes w/o edges.
+	    A bug in cliquishness depending on the subgraph bug is also fixed.
+	  * Bio::Pathway#cliquishness is changed to calculate cliquishness
+	    (clustering coefficient) for not only undirected graphs but also
+	    directed graphs. Note that pending proposed specification changes
+	    previously written in test_pathway.rb (raises error for directed
+	    graphs, and return 1 for a node that has only one neighbor node)
+	    are rejected.
+	  * Ruby 1.9 support: To avoid dependency to the order of objects
+	    in Hash#each (and each_keys, etc.), Bio::Pathway#index is used
+	    to specify preferences of nodes in a graph. Affected methods
+	    are: to_matrix, dump_matrix, dump_list, depth_first_search.
+	  * Bug fix in the libpath magic in test/unit/bio/test_pathway.rb.
+
+2008-12-09  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/newick.rb, lib/bio/tree.rb
+
+	  Ruby 1.9 support: suppressing "warning: shadowing outer local
+	  variable".
+	  (commit 6fe31f0a42a87631bdee3796cff65afb053b2add)
+
+2008-12-05  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/io/test_fastacmd.rb
+
+	  Ruby 1.9 support: changed to use respond_to?, etc.
+	  (commit 5d6c92c752c00f07ed856fd209c8078ef9fdf57a)
+
+	  * Following the change of Module#methods in Ruby 1.9, changed
+	    to use respond_to?().
+	  * The test path '/tmp/test' is replaced with '/dev/null'
+
+	* lib/bio/db/gff.rb
+
+	  Ruby 1.9 support: changes following the change of String#[]
+	  (commit c25cc506bffcf1f2397ac2210153cfbfbbcb4942)
+
+	* lib/bio/reference.rb
+
+	  Ruby 1.9 support: using enumerator instead of String#collect
+	  (commit ea99242570fc8b2e2a869db84b7daaa7737f23e0)
+
+	* test/unit/bio/test_location.rb
+
+	  Test bug fix: wrong number in libpath magic
+	  (commit aa45101246bc42f78a21ee110bc58e59f532e24a)
+
+	* test/unit/bio/db/test_nexus.rb
+
+	  Test bug fix: missing libpath magic
+	  (commit d54eed426461f3a3148953fda1f7b428e74051c6)
+
+	  Thanks to Anthony Underwood who reports the bug in his Github
+	  repository.
+
+	* test/unit/bio/db/pdb/test_pdb.rb
+
+	  Test bug fix: wrong number in libpath magic
+	  (commit b53d703a8dd72608ab5ea03457c2828470069f2f)
+
+2008-12-04  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/db/embl/test_embl_to_bioseq.rb
+
+	  Test bug fix: typing error (found by using Ruby 1.9)
+	  (commit fa52f99406ddd42221be354346f67245b3572510)
+
+	* test/unit/bio/db/embl/test_common.rb
+
+	  Ruby 1.9 support: following the change of Module#instance_methods
+	  (commit d18fa7c1c3660cf04ec2a8a42d543a20a77cee2c)
+
+	  In Ruby 1.9, Module#instance_methods returns Array containing
+	  Symbol objects instead of String. To support both 1.8 and 1.9,
+	  "to_s" is added to every affected test method.
+
+	* lib/bio/appl/tmhmm/report.rb
+
+	  Ruby 1.9 support: using enumerator if the entry is a string
+	  (commit 36968122b64b722e230e3e1b52d78221c0b60884)
+
+	* lib/bio/appl/pts1.rb
+
+	  Ruby 1.9 support: String#each to each_line and Array#to_s to join('')
+	  (commit c4c251d5e94167512a0b8a38073a09b72994c08f)
+
+	* test/unit/bio/appl/test_fasta.rb
+
+	  Ruby 1.9 support: changed to use Array#join instead of Array#to_s
+	  (commit bf8823014488166c6e1227dd26bdca344c9f07b7)
+
+	* lib/bio/appl/blast.rb
+
+	  Ruby 1.9 support: String#each is changed to String#each_line
+	  (commit 3e177b9aecf6b54a5112fd81fc02386d18fc14b9)
+
+	* lib/bio/appl/hmmer/report.rb
+
+	  Ruby 1.9 support: String#each is changed to String#each_line
+	  (commit 63bdb3a098bc447e7bd272b3be8f809b4b56d451)
+
+	* lib/bio/appl/genscan/report.rb
+
+	  Ruby 1.9 support: String#each is changed to String#each_line
+	  (commit 082250786756de2b4171b3a00e0c4faaa816fc8f)
+
+	* test/functional/bio/io/test_ensembl.rb
+
+	  Using jul2008.archive.ensembl.org for workaround of test failure.
+	  (commit 1d286f222cdc51cf1323d57c1c79e6943d574829)
+
+	  Due to the renewal of Ensembl web site, lib/bio/io/ensembl.rb
+	  does not work for the latest Ensembl. For a workaround of
+	  the failure of tests in test/functional/bio/io/test_ensembl.rb,
+	  tests for Ensembl#exportview are changed using Ensembl archive
+	  (http://jul2008.archive.ensembl.org/).
+
+2008-12-03  Naohisa Goto <ng@bioruby.org>
+
+	* sample/demo_sequence.rb
+
+	  sample/demo_sequence.rb, example of sequence manipulation.
+	  (commit b7f52b47dbcc7d32f4eb7377d2b1510eb1991fd5)
+
+	  The content of this file is moved from previous version of
+	  lib/bio/sequence.rb (inside the "if __FILE__ == $0").
+
+2008-12-02  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/paml/baseml.rb, etc. (17 files)
+
+	  Support for baseml and yn00 (still under construction), and
+	  incompatible changes to Bio::PAML::Codeml.
+	  (commit d2571013409661b4d7be8c5c9db14dbe9a9daaaf)
+
+	  * Security fix: To prevent possible shell command injection,
+	    changed to use Bio::Command.query_command instead of %x.
+	  * Bug fix with incompatible changes: Using Tempfile.new.path
+	    as default values are removed because this can cause
+	    unexpected file loss during garbage collection.
+	  * Change of method/file names: The term "config file" is changed
+	    to "control file" because the term "config file" is never used
+	    in PAML documents. The term "options" is changed to "parameters"
+	    because the "options" have been used for command-line arguments
+	    in other wrappers (e.g. Bio::Blast, Bio::ClustalW). The term
+	    "parameters" is also used in BioPerl's
+	    Bio::Tools::Run::Phylo::PAML.
+	  * Bio::PAML::Codeml.create_config_file, create_control_file,
+	    Bio::PAML::Codeml#options, and #options= are now deprecated.
+	    They will be removed in the future.
+	  * New class Bio::PAML::Common, basic wrapper common to PAML programs.
+	    Bio::PAML::Codeml is changed to inherit the Common class.
+	  * New classes Bio::PAML::Baseml and Bio::PAML::Yn00, wrappers for
+	    baseml and yn00.
+	  * New classes Bio::PAML::Common::Report, Bio::PAML::Baseml::Report
+	    and Bio::PAML::Yn00::Report, but still under construction.
+	  * New methods Bio::PAML::Codeml#query(alignment, tree), etc.
+	  * test/data/paml/codeml/dummy_binary is removed because
+	    the default of Bio::PAML::Codeml.new is changed to use
+	    "codeml" command in PATH.
+	  * test/data/paml/codeml/config.missing_tree.txt is removed
+	    because treefile can be optional parameter depending on runmode.
+	    test/data/paml/codeml/config.missing_align.txt is also removed
+	    because test is changed to use normal control file parameters.
+	
+	* lib/bio/command.rb, test/functional/bio/test_command.rb
+
+	  Improvement of Bio::Command.query_command, call_command, etc.
+	  (commit e68ee45589f8063e5a648ab235d6c8bbc2c6e5ff)
+
+	  * Improvement of Bio::Command.query_command, call_command,
+	    query_command_popen, query_command_fork, call_command_popen,
+	    and call_command_fork: they can get an option :chdir => "path",
+	    specifying working directory of the child process.
+	  * New method Bio::Command.mktmpdir backported from Ruby 1.9.0.
+	  * New method Bio::Command.remove_entry_secure that simply calls
+	    FileUtils.remove_entry_secure or prints warning messages.
+	  * Tests are added in test/functional/bio/test_command.rb.
+	  * Ruby 1.9 followup: FuncTestCommandQuery#test_query_command_open3
+	    failed in ruby 1.9 due to the change of Array#to_s.
+
+2008-11-19  Naohisa Goto <ng@bioruby.org>
+
+	* test/data/paml/codeml/
+
+	  Removed some files in test/data/paml/codeml/ because of potential
+	  copyright problem, because they are completely identical with
+	  those distributed in PAML 4.1.
+	  (commit 086b83d3e54f69d2b9e71af3f9647518768353b0)
+
+2008-10-21  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/sequence/compat.rb
+
+	  Bug fix: TypeError is raised in Bio::Sequence#to_s before
+	  Sequence#seq is called.
+	  (commit ea8e068a5b7f670ce62bc0d3d4b21639e3ca2714)
+
+	  Thanks to Anthony Underwood who reported the bug and sent the patch.
+
+2008-10-19  Naohisa Goto <ng@bioruby.org>
+
+	* setup.rb, README.rdoc
+
+	  install.rb is replaced by new setup.rb.
+	  (commit 9def7df5b81340c49534ff0bb932de62402a1c8d)
+
+	  * install.rb is replaced by the latest version of setup.rb taken
+	    from the original author's svn repository (svn r2637, newer than
+	    version 3.4.1, latest release version.
+	    $ svn co http://i.loveruby.net/svn/public/setup/trunk setup).
+	  * README.rdoc is modified to follow the rename of install.rb to
+	    setup.rb.
+
+2008-10-18  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/ncbirest.rb
+
+	  * New methods: Bio::NCBI::REST#einfo, #esearch_count, etc.
+	  * New classes: Bio::NCBI::REST::ESearch, Bio::NCBI::REST::EFetch.
+	  (commit 637f97deefd6cc113ef18fe18ab628eb619f3dc1)
+	  (committer: Naohisa Goto)
+	
+2008-10-14  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/sequence/common.rb, test/unit/bio/sequence/test_common.rb,
+	  test/unit/bio/sequence/test_compat.rb,
+	  test/unit/bio/sequence/test_na.rb
+
+	  Bug fix: Bio::Sequence::Common#randomize severely biased.
+	  (commit 02de70cbf036b41a50d770954f3b16ba2beca880)
+
+	  * Bug fix: Bio::Sequence::Common#randomize was severely biased.
+	    To fix the bug, it is changed to used Fisher-Yates shuffle,
+	    as suggested by Anders Jacobsen.
+	    ([BioRuby] Biased Bio::Sequence randomize())
+	  * The module method Bio::Sequence::Common.randomize is removed
+	    because it is not used anymore.
+	  * Unit tests for Bio::Sequence::Common#randomize are added.
+	  * To avoid possible test class name conflicts, class/module
+	    names are changed in test_na.rb, test_compat.rb, and
+	    test_common.rb.
+
+2008-10-14  Raoul Jean Pierre Bonnal <raoul.bonnal@itb.cnr.it>
+
+	* lib/bio/io/sql.rb
+
+	  Changed the demonstration code in the "if __FILE__ == $0".
+	  (commit 9942105920182c809564554bb0d1dba33fe4caab)
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  Fix: typing error
+	  (commit 67fbbb93adaa8b4b91de3703a235bc75eaef842a)
+
+2008-10-14  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/biosql/sequence.rb, lib/bio/io/sql.rb
+
+	  Merging patches by Raoul in commit
+	  496561a70784d3a1a82bf3117b2d267c7625afac which are ignored
+	  when rebasing, probably because of manually editing during merge.
+	  (commit c699253d53510c0e76188a72004651a4635088b3)
+
+2008-10-10  Raoul Jean Pierre Bonnal <raoul.bonnal@itb.cnr.it>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  Fix: check on nil objects (to_biosql)
+	  (commit f701e9a71f524ee4373c94ee1bd345e87f16f6ce)
+	
+	  BugFix: ex. /focus="true" in output was /focus="t",
+	  qualifier.value.to_s fix the bug
+	  (commit f6e1530f3372c87031b551e5c76e24f264891e64)
+	
+	* lib/bio/io/biosql/seqfeature.rb
+
+	  BugFix: seqfeature_qualifier_value returned ordered only by rank
+	  (commit fb74009393eeca6743f78b7b45cb66858c41d733)
+
+	* lib/bio/io/biosql/bioentry.rb
+
+	  BugFix: seqfeatures returned ordered by rank
+	  (commit 25a249d87d23bd9cb4e671053019675836fcd38c)
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  Fixed to suppress warnings: Bio::Features is obsoleted.
+	  (commit 198a1e893dd4515d61276c9cce8905f02130e721)
+
+	* lib/bio/db/biosql/biosql_to_biosequence.rb
+
+	  Removed alias comment.
+	  (commit c037ec565987634b354ff6d77dbbe7c9d83a9e7c)
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  Implemented Entry's comments and reference's comments.
+	  Fixed species common name.
+	  (commit bd3b24ea53ebd9b0ec9dd9f15c27091fe6143e28)
+
+	* lib/bio/io/biosql/bioentry.rb
+
+	  Cleaned, deleted pk and seq reference
+	  (commit 14bcf90334ec3c3f1c1784977b329ae641e9e106)
+
+	* lib/bio/io/biosql/comment.rb
+
+	  cleaned codes
+	  (commit 54976693350ab0512cecf946999c2868b9e88007)
+
+	* lib/bio/db/biosql/biosql_to_biosequence.rb
+
+	  Added comments, comment adapter.
+	  (commit 5394ecea34778c9f571eb35cfc16e3b1a6cb6d1b)
+
+2008-10-09  Raoul Jean Pierre Bonnal <raoul.bonnal@itb.cnr.it>
+
+	* lib/bio/io/sql.rb
+
+	  Changed the demonstration code in the "if __FILE__ == $0".
+	  (commit efb61d7c21d229e882c6706838c284404343fa9c)
+	
+	* lib/bio/db/biosql/sequence.rb
+
+	  Added support for reference. ToDo: handling comments.
+	  (commit 29211059ee04214d7879f900ec563c0708d8c9d6)
+
+	* lib/bio/io/biosql/bioentry_reference.rb
+
+	  Fix: compisite primary keys :bioentry_id, :reference_id, :rank
+	  (commit eba61ba670c591f58866b37ababc4acac0cc7883)
+
+	* lib/bio/io/biosql/dbxref.rb
+
+	  removed explicit pk and seq
+	  (commit e149f94484469fb3dfd881b45b14be7093b67e0d)
+
+2008-10-09  Naohisa Goto <ng@bioruby.org>
+
+	* test/functional/bio/test_command.rb,
+	  test/data/command/echoarg2.bat
+
+	  Bug fix: tests in FuncTestCommandCall are failed on mswin32,
+	  and URL changed.
+	  (commit 921292f1188d85994742ce4aa156b39d6e720aad)
+
+	  * Bug fix: tests in FuncTestCommandCall were failed on mswin32.
+	    To fix the test bug, a batch file test/data/command/echoarg2.bat
+	    is newly added. This file is only used on mswin32 or bccwin32.
+	  * URL for test to fetch a web page is changed to
+	    http://bioruby.open-bio.org/.
+	
+2008-10-07  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/appl/paml/test_codeml.rb
+
+	  Bug fix: error on mswin32 in
+	  test_expected_options_set_in_config_file.
+	  (commit  16b8f321c653502ef801d801383a019bc45f67de)
+	
+	  Bug fix: On mswin32, test_expected_options_set_in_config_file
+	  in Bio::TestCodemlConfigGeneration failed with the error
+	  "Errno::EACCESS: Permission denied" because it attempts to remove
+	  the temporary file that is previously opened but not explicitly
+	  closed, and, in Windows, the opend file is automatically locked
+	  and protected from being removed.
+
+	* lib/bio/command.rb, test/functional/bio/test_command.rb,
+	  test/unit/bio/test_command.rb
+
+	  Bio::Command improved, and added functional tests.
+	  (commit bb618cdfbfb56c40249aff81b6ef84742465851c)
+
+	  * In Bio::Command.call_command_* and Bio::Command.query_command_*,
+	    when giving command-line array with size 1, the command might
+	    passed to shell. To prevent this, changed to call a new method
+	    Bio::Command#safe_command_line_array internally.
+	  * Added test/functional/bio/test_command.rb, contains unit tests
+	    to call external commands and to access external web sites.
+
+2008-10-06  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  Bio::Sequence::SQL::Sequence#seq is changed to return a
+	  Bio::Sequence::Generic object, because of avoiding to create
+	  nested Bio::Sequence object in #to_biosequence and because
+	  Bio::FastaFormat#seq also returns a Bio::Sequence::Generic object.
+	  (commit 8fb944c964ab5e1ca8905e6c4ce8e68479952935)
+
+2008-10-03  Raoul Jean Pierre Bonnal <raoul.bonnal@itb.cnr.it>
+
+	* lib/bio/io/biosql/taxon.rb
+
+	  Added has_one :taxon_genbank_common_name,
+	  :class_name => "TaxonName",
+	  :conditions => "name_class = 'genbank common name'"
+	  (commit dc7a18b17cad8e603e0d3c20a5a80bc2a6f0899c)
+	
+	* lib/bio/db/biosql/sequence.rb
+
+	  Fix taxon identification by splitting scientific name and genbank
+	  common name. Fix organism/source's name composed by scientific
+	  name and genbank common name.
+	  (commit 5d6abcc0dcd05d7083622360489a5f4c361e0cc7)
+	
+	* lib/bio/io/sql.rb
+
+	Working on tests about format import/export.
+	(commit d28a343e4bab3cc0c04ac65dce677cfee0f81a46)
+
+	* lib/bio/io/biosql/term.rb
+
+	  Fix foreign keys
+	  (commit c19c8766c7c0bec7561727abf2ef1bdf47d4e032)
+
+	* lib/bio/io/biosql/seqfeature_qualifier_value.rb
+
+	  added composite primary keys :seqfeature_id, :term_id, :rank
+	  (commit cdd6a3bfc1ab748acb0c0d9161ebeb3dc7a76544)
+
+	* lib/bio/io/biosql/ontology.rb
+
+	  class cleaned.
+	  (commit 81eb2c246d01790db72f0b08929bec5d862c959e)
+
+	* lib/bio/io/biosql/biodatabase.rb
+
+	  class cleaned.
+	  (commit 4aede5c5fee92c2f8cdf151a3e038025b6c7fd74)
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  to_biosequence: removed not adapter comments.
+	  (commit 591fda23464c7b7031db09a8ca85deca320a5c87)
+	
+	  Removed main garbage comments.
+	  (commit c46d7a2b4e188a0592d5b49def17b9e6fd598268)
+
+	  feature= Fix creation of Ontology and Term.
+	  (commit 95fe6d1a65e94da502529e597b137d12c3fe2fc2)
+
+	* lib/bio/db/biosql/biosql_to_biosequence.rb
+
+	  :seq cleaned.
+	  (commit d6f719693286b74c1a0ea8a42c09a12f775b74dc)
+
+2008-10-01  Naohisa Goto <ng@bioruby.org>
+
+	* test/functional/bio/io/test_ensembl.rb
+
+	Bug fix: 3 failures occurred in test_ensembl.rb because of recent
+	changes in Ensembl database (the gene ENSG00000206158 used as
+	an example in this file was removed from the Ensembl database).
+	To fix this, the example gene is changed to ENSG00000172146
+	(OR1A1, olfactory receptor 1A1).
+	(commit e20c86d2cd7d4fd1723762e8a5acc3bc311a5c1b)
+
+	* lib/bio/db/embl/sptr.rb, test/unit/bio/db/embl/test_sptr.rb
+
+	  Ruby 1.9 support: in Bio::SPTR, avoid using String#each and
+	  Array#to_s.
+	  (commit 5ff56653cd7cc2520c2c04acbc9ce2bf2a0fae9a)
+
+	  * In Bio::SPTR#gn_uniprot_parser, String#each (which is removed
+	    in Ruby 1.9) is changed to each_line.
+	  * In Bio::SPTR#cc and cc_* (private) methods, Array#to_s (whose
+	    behavior is changed in Ruby 1.9) is changed to join('').
+	  * Unit test for Bio::STPR#dr method is added and changed.
+
+2008-09-30  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/embl/sptr.rb, test/unit/bio/db/embl/test_sptr.rb
+
+	  Bug fix in Bio::SPTR#dr: raised error when asked it to return
+	  a DR key that didn't exist in the uniprot entry. Thanks to
+	  Ben Woodcroft who reports the bug and send a patch.
+	  ([BioRuby] Bio::SPTR bug and fix).
+	  (commit 3147683c0b41e3f9418e26b481bf8b3e9ce63b8c)
+
+	* lib/bio.rb
+
+	  Added autoload of Bio::NCBI::REST, and BIORUBY_VERSION incremented.
+	  (commit d6a37b0fcf1fb2f6e134dcdb8e29e79ec2a8fea7)
+
+          * Added autoload of Bio::NCBI::REST.
+	  * Added comments for autoloading Bio::Sequence and Bio::Blast.
+	  * BIORUBY_VERSION is temporary incremented to 1.2.2, though
+	    the version number will not be used in upcoming release.
+	    Upcoming release will probably be using larger version number.
+
+2008-09-25  Raoul Jean Pierre Bonnal <raoul.bonnal@itb.cnr.it>
+
+	* lib/bio/db/biosql/sequence.rb
+
+	  Updated with adapter. Problem saving big sequences.
+	  (commit 82d87fbaf70f9a46c40dded0b2db510a40964e62)
+
+	* lib/bio/io/biosql/* (25 files)
+
+	  AR: explicit class and foreign_key reference.
+	  (commit 70327998186c2f943addb5d46b4bda8007ed5444)
+
+2008-09-24  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/gff.rb, test/unit/bio/db/test_gff.rb
+
+	  Bug fix and incompatible changes in GFF2 and GFF3 attributes.
+	  (commit 7b174bb842d9dcf9fd7f4b59e8f3b13ebc0ff3d4)
+
+	  * Bug fix: GFF2 attributes parser misunderstand semicolons.
+	  * Incompatible change in Bio::GFF::GFF2::Record#attributes
+	    and Bio::GFF::GFF3::Record#attributes.  Now, instead of Hash,
+	    the method is changed to return a nested Array, containing
+	    [ tag, value ] pairs, because of supporting multiple tags
+	    in same name.  If you want to get a Hash, use
+	    Record#attributes_to_hash method, though some tag-value pairs
+	    in same tag name may not be included.
+	  * Bio::GFF::Record#attribute still returns a Hash for compatibility.
+	  * New methods for getting, setting and manipulating attributes:
+	    Bio::GFF::GFF2::Record#attribute, #get_attribute, #get_attributes,
+	    #set_attribute, #replace_attributes, #add_attribute,
+	    #delete_attribute, #delete_attributes, and #sort_attributes_by_tag!
+	    (These are also added to Bio::GFF::GFF3::Record).
+	    It is recommended to use these methods instead of directly
+	    manipulating the array returned by Record#attributes.
+	    * Incompatible change in GFF2 attributes parser: the priority
+	    of '"' (double quote) is greater than ';' (semicolon).
+	    Special treatment of '\;' in GFF2 is now removed.
+	    Unlike GFF2, in Bio::GFF, the '\;' can still be used for
+	    backward compatibility.
+	  * Incompatible changes in attribute values in Bio::GFF::GFF2.
+	    Now, GFF2 attribute values are automatically unescaped.
+	    In addition, if a value of an attribute is consisted of two
+	    or more tokens delimited by spaces, an object of the new class
+	    Bio::GFF::GFF2::Record::Value is returned instead of String.
+	    The new class Bio::GFF::GFF2::Record::Value aims to store
+	    a parsed value of an attribute.  If you really want to get
+	    unparsed string, Value#to_s can be used.
+	  * Incompatible changes about data type in GFF2 columns:
+	    Bio::GFF::GFF2::Record#start, #end, and #frame return
+	    Integer or nil, and #score returns Float or nil.
+	  * Incompatible changes about the metadata in GFF2.
+	    The "##gff-version" line is parsed and the version string
+	    is stored to Bio::GFF::GFF2#gff_version. Other metadata
+	    lines are stored in an array obtained with a new method
+	    Bio::GFF::GFF2#metadata. Each metadata is parsed to
+	    Bio::GFF::GFF2::MetaData object.
+	  * Bio::GFF::Record#comments is renamed to #comment, and
+	    #comments= is renamed to #comment=, because they only allow
+	    a single String (or nil) and the plural form "comments"
+	    may be confusable. The "comments" and "comments=" methods
+	    can still be used, but warning messages will be shown
+	    when using in GFF2::Record and GFF3::Record objects.
+	  * New methods Bio::GFF::GFF2#to_s, Bio::GFF::GFF2::Record#to_s.
+	  * New methods Bio::GFF::GFF2::Record#comment_only?
+	    (also added in Bio::GFF::GFF3::Record).
+	  * Unit tests are added and modified.
+
+2008-09-18  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/rpsblast.rb, lib/bio/appl/blast/format0.rb,
+	  lib/bio/io/flatfile/autodetection.rb, 
+	  test/unit/bio/appl/blast/test_rpsblast.rb,
+	  test/data/rpsblast/misc.rpsblast
+
+	  Improved support for RPS-BLAST results from multi-fasta query
+	  sequences.
+	  (commit 11f1787cf93c046c06d4a33a554210d56866274e)
+
+	  * By using Bio::FlatFile (e.g. Bio::FlatFile.open), a rpsblast
+	    result generated from multiple query sequences is automatically
+	    split into multiple Bio::Blast::RPSBlast::Report objects
+	    corresponding to query sequences. For the purpose, new
+	    flatfile splitter class Bio::Blast::RPSBlast::RPSBlastSplitter
+	    is added.
+	  * File format autodetection for RPS-BLAST default report is added.
+	  * Bug fix: Bio::Blast::RPSBlast::Report#program returns incorrect
+	    value. To fix the bug, regular expression in
+	    Bio::Blast::Default::Report#format0_parse_header (private method)
+	    is changed.
+	  * Unit tests are added for Bio::Blast::RPSBlast.
+
+2008-09-17  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/io/flatfile/buffer.rb,
+	  test/unit/bio/io/flatfile/test_buffer.rb
+
+	  Bug fix in Bio::FlatFile::BufferedInputStream#gets.
+	  (commit e15012e2a94d05308d139cb010749a1829d5c57f)
+
+	  * Bug fix: Bio::FlatFile::BufferedInputStream#gets('') might not
+	    work correctly. Now, BufferedInputStream#gets is refactored.
+	    Note that when rs = '' (paragraph mode), the behavior may still
+	    differ from that of IO#gets('').
+	  * Test methods are added to test_buffer.rb.
+
+2008-09-16  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/wublast.rb
+
+	  Bug fix: parse error or infinite loop for WU-BLAST reports.
+	  (commit 07d1554c945400f9202d7b856055743e11860752)
+
+	  * Bug fix in Bio::Blast::WU::Report: fixed parse errors
+	    (errors, infinite loop, and wrong results could be generated)
+	    when parsing WU-BLAST reports generated by recent version of
+	    WU-BLAST.
+	    * New methods Bio::Blast::WU::Report#query_record_number,
+	      #exit_code, and #fatal_errors.
+
+2008-09-03  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blat/report.rb
+
+	  Bug fix: headers were parsed incorrectly with warning.
+	  (commit 3ff940988b76bdff75679cdf0af4c836f76fa3a1)
+
+	* lib/bio/io/flatfile/splitter.rb
+
+	  To suppress warning messages "warning: private attribute?",
+	  private attributes are explicitly specified by using "private".
+	  (commit 1440b766202a2b66ac7386b9b46928834a9c9873)
+
+2008-09-01  Michael Barton <mail@michaelbarton.me.uk>
+
+	* lib/bio/appl/paml/codeml/report.rb
+
+	Added code to pull estimated tree from codeml report.
+	(commit 64cc5ef6f2d949cc9193b08dfc3fde6b221950d7)
+
+2008-09-01  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/db/embl/test_embl_rel89.rb
+
+	  Changed test class name because of name conflict of Bio::TestEMBL.
+	  (commit 536cdf903a3c3908c117efd554d33117d91452f4)
+
+	* test/unit/bio/util/restriction_enzyme/
+
+	  To prevent possible test class name conflicts about restriction
+	  enzyme.
+	  (commit 0fe1e7d3ed02185632f4a34d8efe1f21f755b289)
+
+	  * Tests about restriction enzyme are moved under a new module
+	    Bio::TestRestrictionEnzyme to prevent possible name conflict.
+	  * Conflicted test class names are changed.
+
+2008-08-31  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/db/test_prosite.rb
+
+	  Fixed failed test due to the change of hash algorithm in Ruby 1.8.7.
+	  (Probably also affected in Ruby 1.9.0).
+	  (commit e86f8d757c45805389e154f06ccde5a3d9e8a557)
+
+2008-08-29  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast.rb
+
+	  Bio::Blast.reports is changed to support new BLAST XML format.
+	  (commit 02cc0695b85f18e8254aefed78a912812fc896d6)
+
+	  * Bio::Blast.reports is changed to support new BLAST XML format.
+	  * Removed unused require.
+
+2008-08-28  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/report.rb, lib/bio/appl/blast/rexml.rb,
+	  lib/bio/appl/blast/xmlparser.rb,
+	  test/unit/bio/appl/blast/test_report.rb
+
+	  Support for BLAST XML format with multiple queries after blastall
+	  2.2.14.
+	  (commit de7897b5690279aae14d9bded5e682458bc61f9c)
+
+	  * BLAST XML format with multiple query sequences generated by
+	    blastall 2.2.14 or later is now supported.
+	  * New methods Bio::Blast::Report#reports, stores Bio::Blast::Report
+	    objects corresponding to the multiple query sequences.
+	  * New methods Bio::Blast::Report::Iteration#query_id, query_def,
+	    and query_len, which are available only for the new format.
+	  * New class Bio::Blast::Report::BlastXmlSplitter, flatfile splitter
+	    for Bio::FlatFile system.
+	  * Bug fix: Bio::Blast::Report#expect returned incorrect value.
+	  * Fixed typo and added tests in
+	    test/unit/bio/appl/blast/test_report.rb.
+	  * Some RDoc documents are added/modified.
+
+2008-08-19  Michael Barton <mail@michaelbarton.me.uk>
+
+	* lib/bio/appl/paml/codeml/rates.rb
+
+	  Updated regex for rates parser to include columns that have a '*'
+	  character.
+
+	* test/unit/bio/appl/paml/codeml/test_rates.rb
+
+	  Updated testing for new rates file with * characters.
+
+	* test/data/paml/codeml/rates
+
+	  Added rates file that includes positions with * characters.
+	
+2008-08-18  Naohisa Goto <ng@bioruby.org>
+
+	* test/unit/bio/io/test_ddbjxml.rb
+
+	  Changed a failed test, and added a test for
+	  Bio::DDBJ::XML::RequestManager.
+
+2008-08-16  Michael Barton <mail@michaelbarton.me.uk>
+
+	* lib/bio/appl/paml/, test/unit/bio/appl/paml/, test/data/paml/
+
+	  Wrapper and parser for PAML Codeml program is added
+	  (merged from git://github.com/michaelbarton/bioruby).
+	  After merging, some changes were made by Naohisa Goto.
+	  See git log for details.
+
+2008-08-15  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast.rb, lib/bio/appl/blast/genomenet.rb
+
+	  "-m 0" (BLAST's default) format support is improved, and fixed
+	  wrong example in the RDoc of Bio::Blast#query.
+
+	  * Added support for "-m 0" (BLAST's default) format to the Bio::Blast
+	    factory. For the purpose, Bio::Blast#parse_result (private method)
+	    is changed.
+	  * Added support for "-m 0" (default) format to the GenomeNet BLAST
+	    factory (in Bio::Blast::Remote::GenomeNet).
+	  * Bug fix: wrong example in the RDoc in Bio::Blast#query is changed.
+	  * Bio::Blast#set_option (private method) is changed to determine
+	    format correctly.
+
+	* lib/bio/appl/blast/ddbj.rb, lib/bio/io/ddbjxml.rb
+
+	  Changed always using REST version of RequestManager, and changed
+	  to raise error when busy.
+
+	  * In Bio::Blast::Remote::DDBJ, changed always to use REST version
+	    for RequestManager, because of suppressing warning messages.
+	  * In Bio::DDBJ::XML::RequestManager, module REST_RequestManager is
+	    changed to class REST.
+	  * In Bio::Blast::Remote::DDBJ#exec_ddbj, changed to raise
+	    RuntimeError when "The search and analysis service by WWW is very
+	    busy now" message is returned from the server (which implies
+	    invalid options or queries may be given).
+
+2008-08-14  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast.rb, lib/bio/appl/blast/genomenet.rb,
+	  lib/bio/appl/blast/remote.rb
+
+	  Bio::Blast#exec_genomenet is moved to genomenet.rb, with bug fix.
+
+	  * Bio::Blast#exec_genomenet is moved to 
+	    lib/bio/appl/blast/genomenet.rb.
+	  * Incompatible change: Bio::Blast#exec_* is changed to return
+	    String. Parsing the string is now processed in query method.
+	  * New module Bio::Blast::Remote, to store remote BLAST factories.
+	  * New module Bio::Blast::Remote::GenomeNet (and Genomenet for
+	    lazy including), to store exec_genomenet and other methods.
+	    In the future, it might be a standalone class (or something else).
+	  * New module methods Bio::Blast::Remote::GenomeNet.databases,
+	    nucleotide_databases, protein_databases, and database_description,
+	    to provide information of available databases.
+	  * Bug fix: remote BLAST on GenomeNet with long query sequences
+	    fails because of the change of the behavior of the remote site.
+	  * Incompatible change: Bio::Blast#options= can change program,
+	    db, format, matrix, and filter instance variables.
+	  * Bio::Blast#format= is added.
+	  * Bio::Blast.local changed to accept 4th argument: full path to
+	    the blastall command.
+
+	* lib/bio/appl/blast/ddbj.rb, lib/bio/io/ddbjxml.rb,
+	  lib/bio/appl/blast/genomenet.rb, lib/bio/appl/blast/remote.rb,
+	  lib/bio/appl/blast.rb
+
+	  New module Bio::Blast::Remote::DDBJ, remote BLAST on DDBJ.
+
+	  * New module Bio::Blast::Remote::DDBJ, remote BLAST routine using
+	    DDBJ Web API for Biology (WABI). Now, Bio::Blast.new(program,
+	    db, options, 'ddbj') works.
+	  * New class Bio::DDBJ::XML::RequestManager. In this class,
+	    workaround for Ruby 1.8.5's bundled SOAP4R is made.
+	  * Some common codes are moved from
+	    Bio::Blast::Remote::GenomeNet::Information to
+	    Bio::Blast::Remote::Information.
+	
+	* lib/bio/io/ddbjxml.rb
+
+	  Changed to use DDBJ REST interface for a workaround instead of
+	  editing WSDL. (commit a64c8da5df5076c5f55b54b7f134d22a2e8d281c)
+
+2008-08-09  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast.rb
+
+	  * Bug fix: Bio::Blast raises TypeError without "-m" option,
+	    reported by Natapol Pornputapong.
+	  * New class Bio::Blast::NCBIOptions to treat command-line options
+	    for blastall (and for other NCBI tools, e.g. formatdb).
+	  * Changed not to overwrite @filter, @matrix or @format unless
+	    '-F', '-M', or '-m' option is given, respectively.
+
+2008-07-30  BioHackathon2008 participants from BioRuby project
+
+	* Branch 'biohackathon2008' is merged.
+	  See doc/Changes-1.3.rd for incompatible changes.
+
+	* lib/bio/sequence.rb, lib/bio/sequence/
+	* lib/bio/db/embl/
+	* lib/bio/db/genbank/
+	* lib/bio/db/fasta.rb, lib/bio/db/fasta/
+
+	  A new method #to_biosequence is added to Bio::EMBL, Bio::GenBank
+	  and Bio::FastaFormat. Bio::FastaFormat#to_seq is now an alias of
+	  the #to_biosequence method.
+
+	  Bio::Sequence#output is added to output formatted text.
+	  Supported formats are: EMBL, GenBank, Fasta, or raw.
+
+	  Written by Naohisa Goto and Jan Aerts.
+	
+	* lib/bio/db/biosql/
+	* lib/bio/io/sql.rb, lib/bio/io/biosql/
+
+	  New BioSQL implementation by Raoul Jean Pierre Bonnal.
+
+	* lib/bio/reference.rb
+	* lib/bio/feature.rb
+
+	  Bio::References and Bio::Features are obsoleted.
+	  For more information, see doc/Changes-1.3.rd.
+
+	* (Many changes are not listed here. See git log for details.)
+
+2008-07-30  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/gff.rb, test/unit/bio/db/test_gff.rb
+
+	  Branch 'test-gff3' in git://github.com/ngoto/bioruby is merged.
+	  Fixed gff3 attribute bug, and many improvements are added.
+	  See doc/Changes-1.3.rd for incompatible changes.
+	  Thanks to Ben Woodcroft who reported the bug and contributed codes.
+
+2008-07-29  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Bug fix: fixed ScanError when bit score is in exponential notation
+	  such as 1.234e+5. Regular expressions for numerics including
+	  exponential notations are changed to get correct values.
+
+2008-07-18  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/hmmer.rb
+
+	  Bug fix: ArgumentError caused by misspelling of a variable name.
+
+2008-06-23  Jan Aerts <jan.aerts@gmail.com>
+
+	* README.rdoc
+	* README_DEV.rdoc
+	* gemspec.rb
+	
+	  Renamed README files to RDoc gets parsed on github website.
+	  (commit 34b7693f74de2358759e955d8ce36cfe15e64b54)
+	  Edited README.rdoc and README_DEV.rdoc to reflect move from CVS
+	  to git.
+	  (commit a61b16163d3ca74f3f7c8d8e8f03f5f8c68dee60)
+
+2008-06-13  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/reference.rb
+	* test/unit/bio/test_reference.rb
+
+	  * New method Bio::Reference#pubmed_url added (renamed the url method
+	    in CVS revision 1.25).
+	  * Bio::Reference#endnote is changed not to overwrite url if url is
+	    already given by user.
+	  * Improvement of Bio::Reference#bibtex method. (Idea to improve
+	    bibtex method is originally made by Pjotr Prins.)
+
+	* test/unit/bio/util/restriction_enzyme/double_stranded/test_aligned_strands.rb
+	  "require 'bio/sequence'" is needed to run the tests in this file.
+	  (commit 735e3563b723645afa65f0e4213a7c92152f68ec)
+
+2008-05-19  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* sample/fastasort.rb
+
+	  Simple example for sorting a flatfile
+	  (commit 677ac7c0707860f0478e75f72f23faa05b29dc6d)
+
+	* doc/Tutorial.rd
+	* sample/fastagrep.rb
+	* sample/fastasort.rb
+
+	  Piping FASTA files (examples and doc)
+	  (commit ecd5e04477246dcf6cac84a6fbd21fb59efa3cf0)
+
+2008-05-14  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Bug fix: Possibly because of the output format changes of PHI-BLAST,
+	  Bio::Blast::Default::Report::Iteration#eff_space (and the shortcut
+	  method in the Report class) failed for PHI-BLAST (blastpgp) results,
+	  and Iteration#pattern and #pattern_positions (and the
+	  shortcut methods in the Report class) returned incorrect values.
+
+2008-05-12  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/xmlparser.rb, lib/bio/appl/blast/rexml.rb
+
+	  Bug fix: unit test sometime fails due to improper treatment of some
+	  Blast parameters and difference between rexml and xmlparser.
+	  To fix the bug, types of some parameters may be changed, e.g.
+	  Bio::Blast::Report#expect is changed to return Float or nil.
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Bug fix: Bio::Blast::Default::Report#eff_space returns wrong value 
+	  ("Effective length of database"). It should return the value of
+	  "Effective search space".
+
+	* test/unit/bio/appl/blast/test_xmlparser.rb
+
+	  Bug fix: tests in test/unit/bio/appl/blast/test_report.rb were
+	  ignored because of conflicts of the names of test classes.
+	  Class name in test_xmlparser.rb is changed to fix the bug.
+
+2008-04-23  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/embl/common.rb
+
+	  Bug fix: Bio::EMBL#references failed to parse journal name,
+	  volume, issue, pages, and year. In addition, it might failed
+	  to parse PubMed ID.
+	  (commit c715f51729b115309a78cf29fdce7fef992da875)
+
+2008-04-18  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/embl/sptr.rb
+
+	  Bug fix: Bio::SPTR#references raises NoMethodError since
+	  lib/bio/db/embl/sptr.rb CVS version 1.34.
+	  (commit 1b3e484e19c9c547cecfe53858a646b525685e0d)
+
+2008-04-15  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/rpsblast.rb
+
+	  Newly added RPS-Blast default (-m 0) output parser.
+
+2008-04-01  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Fixed a bug: Failed to parse database name in some cases.
+	  Thanks to Tomoaki Nishiyama who reported the bug and sent patches
+	  ([BioRuby-ja] BLAST format0 parser fails header parsing output
+	  of specific databases).
+
+	* lib/bio/db/pdb/chain.rb, lib/bio/db/pdb/pdb.rb
+
+	  Fixed bugs: Bio::PDB::Chain#aaseq failed for nucleotide chain;
+	  Failed to parse chains for some entries (e.g. 1B2M).
+	  Thanks to Semin Lee who reported the bugs and sent patches
+	  ([BioRuby] Bio::PDB parsing problem (1B2M)).
+
+2008-02-19  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/ncbirest.rb
+	* lib/bio/io/pubmed.rb
+
+	  NCBI E-Utilities (REST) functionality is separated to ncbirest.rb
+	  and pubmed.rb is changed to utilize the Bio::NCBI::REST class for
+	  esearch and efetch. You can now search and retrieve any database
+	  in any format that NCBI supports by E-Utilities through the
+	  Bio::NCBI::REST interface (currently, only esearch and efetch methods
+	  are implemented).
+	  (commit 0677bb69044cf6cfba453420bc1bbeb422f691c1)
+	  (commit f60e9f8153efacff0c97d12fb5c0830ebeb02edd)
+	  (commit 6e4670ab5e67ca596788f4c26a95a9687d36ce84)
+
+2008-02-13  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* doc/Tutorial.rd
+	  (commit d7ee01d86d6982f6b8aa19eba9adac95bebb08e8)
+
+2008-02-12  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Fixed bugs: Failed to parse query length for long query
+	  (>= 10000 letters) as comma is inserted for digit separator
+	  by blastall; Failed to parse e-value for some BLASTX results.
+	  Thanks to Shuji Shigenobu who reported the bugs and sent patches.
+
+2008-02-11  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* doc/Tutorial.rd
+
+	  Expanding on the Tutorial
+	  (bdc1d14f497909041fa761f659a74d98702a335a)
+	  Minor adjustments to Tutorial
+	  (72b5f4f0667a3a0c44ca31b0ab8228381e37919c)
+
+2008-02-06  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* sample/na2aa.rb
+
+	  Simple example to translate any NA to AA fasta
+	  (commit 433f974219cf04342935c1760464af24a5696c49)
+
+2008-02-05  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* sample/gb2fasta.rb
+
+	  Fixed broken require in gb2fasta example
+	  (commit b55daed0d6cff2e45155be01ef2a946925c972cf)
+
+2008-02-05  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* doc/Tutorial.rd
+
+	  Minor tweak to Tutorial.rd
+	  (commit 75416d780f99de24498a47fd22703d74f9a22329)
+
+2008-02-03  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* doc/Tutorial.rd
+
+	  More doctests in Tutorial.rd
+	  (commit 39d182bb67977956c0f22631ac596d65ccce74ff)
+
+2008-02-02  Pjotr Prins <pjotr.prins@wur.nl>
+
+	* doc/Tutorial.rd
+
+	  Tabs in the Tutorial broke the rd parser - the Wiki will be fixed
+	  now.
+	  (commit 49078a5dea4f16f44add1882c60bf75df67ea19b)
+	  Updating tutorial.
+	  (commit f2f2005c3964f37e2d65afef0d52e63950d6bcb7)
+	  (commit d2b05581953712d0ac67ba0de1aa43853ed4e27f)
+
+2008-02-02  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/shell/rails/vendor/plugins/
+
+	  The 'generators' directory is moved under the 'bioruby' subdirectory
+	  so that 'bioruby --rails' command can work with Rails 2.x series
+	  in addition to the Rails 1.2.x series.
+
+2008-01-30  Mitsuteru Nakao <n@bioruby.org>
+
+	* lib/bio/appl/blast.rb
+
+	  Fixed the bug at building the blastall command line options ('-m 0').
+	  (commit 61443d177847825505103488573186dfc4e7568e)
+
+2008-01-10  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/emboss.rb
+
+	  Added a method Bio::EMBOSS.run(program, arguments...)
+	  and Bio::EMBOSS.new is obsoleted.
+	  (commit fa04d97b073aefe05edc34a84498ba0a57ff98d2)
+
+2008-01-10  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/hinv.rb
+
+	  Bio::Hinv to access the H-invitational DB (http://h-invitational.jp/)
+	  web service in REST mode is added.
+
+2007-12-30  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby 1.2.1 released
+
+	  This version is not Ruby 1.9 (released few days ago) compliant yet.
+
+2007-12-28  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/report/format0.rb
+
+	  Fixed parse error when compisition-based statistics were enabled.
+	  In addition, Bio::Blast::Default::Report#references and
+	  Bio::Blast::Default::Report::HSP#stat_method methods are added.
+	  In NCBI BLAST 2.2.17, default option of composition-based
+	  statistics for blastp or tblastn are changed to be enabled
+	  by default.
+
+	* lib/bio/appl/blast/report/wublast.rb
+
+	  Changed to follow the above changes in format0.rb.
+
+	* lib/bio/sequence/common.rb
+
+	  Ruby 1.9 compliant: in window_search method, a local variable name
+	  outside the iterator loop is changed not to be shadowed by the
+	  iterator variable.
+
+	* lib/bio/db/pdb/pdb.rb
+
+	  Ruby 1.9 compliant: changed to avoid "RuntimeError: implicit
+	  argument passing of super from method defined by define_method()
+	  is not supported. Specify all arguments explicitly." error.
+
+	  Ruby 1.9 compliant: Bio::PDB::Record.get_record_class and
+	  Bio::PDB::Record.create_definition_hash (Note: they should only
+	  be internally used by PDB parser and users should not call them)
+	  are changed to follow the change of Module#constants which
+	  returns an array of Symbol instead of String.
+
+2007-12-26  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/alignment.rb
+
+	  Ruby 1.9 compliant: in EnumerableExtension#each_window and
+	  OriginalAlignment#index methods, local variable names outside the
+	  iterator loops are changed not to be shadowed by iterator
+	  variables.
+	  
+	  Warning messages for uninitialized instance variables of
+	  @gap_regexp, @gap_char, @missing_char, and @seqclass
+	  are suppressed.
+
+	* test/unit/bio/test_alignment.rb
+
+	  Ruby 1.9 compliant: Ruby 1.9 compliant: The last comma in Array.[]
+	  is no longer allowed. (For example,
+	    class A < Array; end; A[ 1, 2, 3, ]
+	  raises syntax error in Ruby 1.9.)
+
+2007-12-21  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/db/medline.rb
+
+	  Added doi and pii methods to extract DOI and PII number from AID field
+
+2007-12-18  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/pdb/pdb.rb
+
+	  Bio::PDB#inspect is added to prevent memory exhaust problem.
+	  ([BioRuby] Parse big PDB use up all memory)
+
+	* lib/bio/db/pdb/model.rb
+
+	  Bio::PDB::Model#inspect is added.
+
+	* lib/bio/db/pdb/chain.rb
+
+	  Bio::PDB::Chain#inspect is added.
+
+	* lib/bio/db/pdb/residue.rb
+
+	  Bio::PDB::Residue#inspect is added.
+	  This also affects Bio::PDB::Heterogen#inspect.
+
+2007-12-15  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby 1.2.0 released
+
+	  * BioRuby shell is improved
+	    * file save functionality is fixed
+	    * deprecated require_gem is changed to gem to suppress warnings
+	    * deprecated end_form_tag is rewrited to suppress warnings
+	    * images for Rails shell are separated to the bioruby directory
+	    * spinner is shown during the evaluation
+	    * background image in the textarea is removed for the visibility
+	  * Bio::Blast is fixed to parse -m 8 formatted result correctly
+	  * Bio::PubMed is rewrited to enhance its functionality
+	    * e.g. 'rettype' => 'count' and 'retmode' => 'xml' are available
+	  * Bio::FlatFile is improved to accept recent MEDLINE format
+	  * Bio::KEGG::COMPOUND is enhanced to utilize REMARK field
+	  * Bio::KEGG::API is fixed to skip filter when the value is Fixnum
+	  * A number of minor bug fixes
+
+2007-12-12  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/newick.rb:
+
+	  Changed to be compliant with the Gary Olsen's Interpretation of
+	  the "Newick's 8:45" Tree Format Standard.
+
+	* test/unit/bio/db/test_newick.rb
+
+	  More tests are added.
+
+	* lib/bio/io/flatfile/indexer.rb
+
+	  Fixed a misspelling in Bio::FlatFileIndex.formatstring2class.
+
+2007-11-28  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/pubmed.rb:
+
+	  Fixed search, query methods (but use of esearch and efetch is
+	  strongly recommended).
+
+	  efetch method is enhanced to accept any PubMed search options
+	  as a hash (to retrieve in XML format etc.)
+
+	  Changed to wait 3 seconds among each access by default to be
+	  compliant with the NCBI terms (Make no more than one request
+	  every 3 seconds).
+
+	  All Bio::PubMed.* class methods are changed to instance methods
+	  (interface as the class methods are remained for the backward
+	  compatibility).
+
+2007-07-19  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby 1.1.0 released
+
+2007-07-17  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/das.rb
+
+	  Fixed that mapmaster method to return correct value (mapmaseter's
+	  URL). This bug is reported and fixed by Dave Thorne.
+
+2007-07-16  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/mafft/report.rb
+
+	  For generic multi-fasta formatted sequence alignment,
+	  Bio::Alignment::MultiFastaFormat is newly added based on
+	  Bio::MAFFT::Report class, and Bio::MAFFT::Report is
+	  changed to inherit the new class.
+	  Tests are added in test/unit/bio/appl/mafft/test_report.rb.
+
+	* lib/bio/alignment.rb
+
+	  New modules and classes Bio::Alignment::FactoryTemplate::* are added.
+	  They are used by following three new classes.
+	
+	* lib/bio/appl/muscle.rb
+	* lib/bio/appl/probcons.rb
+	* lib/bio/appl/tcoffee.rb
+
+	  New classess Bio::Muscle, Bio::Probcons, and Bio::Tcoffee are added
+	  for MUSCLE, ProbCons, and T-Coffee multiple alignment programs.
+	  Contributed by Jeffrey Blakeslee and colleagues.
+
+	* lib/bio/appl/clustalw.rb
+	* lib/bio/appl/mafft.rb
+
+	  Interfaces of Bio::ClustalW and Bio::MAFFT are added/modified
+	  to follow Bio::Alignment::FactoryTemplate (but not yet changed to
+	  use it).
+
+2007-07-09  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby shell on Rails has new CSS theme
+
+	  Completely new design for BioRuby shell on Rails translated from
+	  the 'DibdoltRed' theme on www.openwebdesign.org which is created by
+	  Darjan Panic and Brian Green as a public domain work!
+
+2007-07-09  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/db/kegg/taxonomy.rb
+
+	  Newly added KEGG taxonomy file parser which treats taxonomic tree
+	  structure of the KEGG organisms. The file is available at
+	    ftp://ftp.genome.jp/pub/kegg/genes/taxonomy
+	  and is a replacement of the previously used keggtab file (obsoleted).
+
+	* lib/bio/db/kegg/keggtab.rb
+
+	  Bio::KEGG::Keggtab is obsoleted as the file is no longer provided.
+	  Use Bio::KEGG::Taxonomy (lib/bio/db/kegg/taxonomy.rb) instead.
+
+	* lib/bio/shell/plugin/soap.rb
+
+	  Newly added web service plugins for BioRuby shell which supports
+	  NCBI SOAP, EBI SOAP and DDBJ XML in addition to the KEGG API.
+
+2007-07-09  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/pdb/pdb.rb
+
+	  Pdb_LString.new is changed not to raise error for nil.
+
+	  Fixed a bug when below records does not exist in a PDB entry:
+	  REMARK (remark), JRNL (jrnl), HELIX (helix),
+	  TURN (turn), SHEET (sheet), SSBOND (ssbond), SEQRES (seqres),
+	  DBREF (dbref), KEYWDS (keywords), AUTHOR (authors),
+	  HEADER (entry_id, accession, classification),
+	  TITLE (definition), and REVDAT (version) records (methods).
+
+	  Incompatible change: Bio::PDB#record is changed to return
+	  an empty array for nonexistent record.
+
+	  (reported by Mikael Borg)
+
+2007-07-09  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/io/flatfile.rb
+
+	  Bio::FlatFile.foreach is added (which is suggested by IO.foreach).
+
+2007-06-28  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/shell/setup.rb, core.rb
+
+	  Changed not to use Dir.chdir by caching full path of the save
+	  directory at a start up time, so that user can freely change
+	  the work directory without affecting object/history saving
+	  functionality.
+
+	  Bio::Shell.cache[:savedir] stores the session saving directory
+	  (session means shell/session/{config,history,object} files),
+	  Bio::Shell.cache[:workdir] stores the working directory at a start
+	  up time (can be same directory with the :savedir) and both are
+	  converted and stored as full path allowing user to use Dir.chdir
+	  in the shell session).
+
+	  If --rails (-r) option is applied, 'bioruby' command will run in
+	  the Rails server mode, and the server will start in the :savedir.
+
+	  (A) IRB mode
+
+	  1. run in the current directory and the session will be saved
+	     in the ~/.bioruby directory
+
+	       % bioruby
+
+	  2. run in the current directory and the session will be saved
+	     in the foo/bar directory
+
+	       % bioruby foo/bar
+
+	  3. run in the current directory and the session will be saved
+	     in the /tmp/foo/bar directory
+
+	       % bioruby /tmp/foo/bar
+
+	  (B) Rails mode
+
+	  4. run in the ~/.bioruby directory and the session will also be saved
+	     in the ~/.bioruby directory
+
+	       % bioruby -r
+
+	  5. run in the foo/bar directory and the session will also be saved
+	     in the foo/bar directory
+
+	       % bioruby -r foo/bar
+
+	  6. run in the /tmp/foo/bar directory and the session will also be
+	     saved in the /tmp/foo/bar directory
+
+	       % bioruby -r /tmp/foo/bar
+
+	  (C) Script mode
+
+	  7. run in the current directory using the session saved
+	     in the ~/.bioruby directory
+
+	       % bioruby ~/.bioruby/shell/script.rb
+
+	  8. run in the current directory using the session saved
+	     in the foo/bar directory
+
+	       % bioruby foo/bar/shell/script.rb
+
+	  9. run in the current directory using the session saved
+	     in the /tmp/foo/bar directory
+
+	       % bioruby /tmp/foo/bar/shell/script.rb
+
+2007-06-21  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/shell/setup.rb
+
+	  If no directory is specified to the bioruby command,
+	  use ~/.bioruby directory as the default save directory
+	  instead of the current directory, as suggested by Jun Sese.
+
+	  User can use 'bioruby' command without botherd by directories
+	  and files previously created by the 'bioruby' command
+	  in the current directory even when not needed.
+
+2007-05-19  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/appl/fasta.rb
+
+	  Bug fixed that exec_local fails to exec when @ktup is nil.
+	  This problem is reported and fixed by Fredrik Johansson.
+
+	* lib/bio/db/gff.rb
+
+	  parser_attributes method in GFF3 class is modified to use
+	  '=' char as a separator instead of ' ' (which is used in
+	  GFF2 spec).
+
+2007-04-06  Toshiaki Katayama <k@bioruby.org>
+
+	* COPYING, COPYING.LIB are removed
+
+	  BioRuby is now distributed under the same terms as Ruby.
+
+	  On behalf of the BioRuby developer, I have asked all authors of
+	  the BioRuby code to change BioRuby's license from LGPL to Ruby's.
+	  And we have finished to change license of all modules in the BioRuby
+	  library. This means that Ruby user can freely use BioRuby library
+	  without being annoyed by licensing issues.
+
+	* lib/bio/db/kegg/ko.rb is renamed to lib/bio/db/kegg/ortholog.rb
+
+	  KEGG KO database is renamed to KEGG ORTHOLOG database, thus we
+	  follow the change. Bio::KEGG::KO is renamed to Bio::KEGG::ORTHOLOG.
+	  
+	  Bio::KEGG::ORTHOLOG#genes, dblinks methods are rewrited to use
+	  lines_fetch method.
+
+	* lib/bio/data/aa.rb
+
+	  to_re method is changed that the generated regexp to include
+	  ambiguous amino acid itself - replacement of amino acid X should
+	  include X itself.
+
+2007-04-05  Trevor Wennblom <trevor@corevx.com>
+
+	* License headers are completely rewrited to Ruby's.
+
+2007-04-02  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/mafft.rb
+
+	  Incompatible change: Bio::MAFFT#output is changed to return
+	  a string of multi-fasta formmatted text. To get an array of
+	  Bio::FastaFormat objects (as of 1.0 or before), please use
+	  report.data instead.
+
+2007-03-29  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/db/kegg/cell.rb
+
+	  Obsoleted as the KEGG CELL database is not publically available
+	  any more.
+
+2007-03-28  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/shell/rails/.../bioruby_controller.rb
+
+	  BioRuby shell on Rails access is changed to be limited only from
+	  the localhost for security reason (if local_request?).
+
+	* lib/bio/command.rb
+
+	  The post_form method is modified to accept URL as a string and
+	  extended to accept params as
+	    array of string
+	    array of hash
+	    array of array
+	     or
+	    string
+	  in addition to hash (also can be ommited if not needed - defaults
+	  to nil).
+
+	  Keys and parameters of params are forced to use to_s for sure.
+
+	* lib/bio/io/ensembl.rb
+
+	  Re-designed to allows user to use Bio::Ensembl.new without
+	  creating inherited sub class.
+
+	  Changed to use Bio::Command.post_form
+
+	* lib/bio/das.rb
+
+	  Changed to use Bio::Command
+
+	* lib/bio/shell/plugin/das.rb
+
+	  Newly added BioDAS client plugin for BioRuby shell.
+
+	    das.list_sequences
+	    das.dna
+	    das.features
+
+2007-03-15  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/shell/irb.rb
+
+	  Changed to load Rails environment when bioruby shell is invoked
+	  in the Rails project directory. This means that user can use
+	  'bioruby' command as a better './script/console' which has
+	  persistent objects and shared history.
+
+2007-03-08  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/db/kegg/drug.rb
+
+	  Newly added KEGG DRUG database parser.
+
+	* lib/bio/db/kegg/glycan.rb
+
+	  Bio::KEGG::GLYCAN#bindings method is removed.
+	  Bio::KEGG::GLYCAN#comment, remarks methods are added.
+	  Bio::KEGG::GLYCAN#orthologs and dblinks methods are changed to use
+	  lines_fetch method.
+
+	* lib/bio/kegg/compound.rb
+
+	  Bio::KEGG::COMPOUND#glycans method is added
+	  Bio::KEGG::COMPOUND#names method is changed to return an array
+	  of stripped strings.
+
+	* lib/bio/db/kegg/genes.rb
+
+	  Bio::KEGG::GENES#orthologs method is added.
+
+2007-03-27  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/command.rb
+
+	  Bio::Command.call_command_fork and query_command_fork methods
+	  are changed to handle all Ruby exceptions in the child process.
+
+	* lib/bio/io/flatfile.rb
+
+	  UniProt format autodetection was changed to follow the change of
+	  UniProtKB release 9.0 of 31-Oct-2006.
+
+2007-02-12  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/io/flatfile.rb
+
+	  Exception class UnknownDataFormatError is added.
+	  It will be raised before reading data from IO when data format
+	  hasn't been specified due to failure of file format autodetection.
+
+2007-02-12  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/flatfile.rb
+
+	  Added support for KEGG EGENES.
+
+2007-02-02  Trevor Wennblom <trevor@corevx.com>
+
+	* lib/bio/util/restriction_enzyme*
+
+	  Bio::RestrictionEnzyme stabilized.
+	
+2007-02-02  Trevor Wennblom <trevor@corevx.com>
+
+	* lib/bio/db/lasergene.rb
+
+	  Bio::Lasergene Interface for DNAStar Lasergene sequence file format
+
+2007-02-02  Trevor Wennblom <trevor@corevx.com>
+
+	* lib/bio/db/soft.rb
+
+	  Bio::SOFT for reading SOFT formatted NCBI GEO files.
+
+2007-01-16  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby shell on Rails new features and fixes
+
+	  New features:
+	  * Input [#] is linked to action for filling textarea from history
+	  * [methods] is separated into columns for readability
+
+	  Fixes and improvements:
+	  * HIDE_VARIABLES is moved from helper to controller to avoid warning
+	    "already initialized constant - HIDE_VARIABLES" repeated on reload.
+	  * <div id="evaluate"> is renamed to "log_#" with number for future
+	    extention.
+	  * <div id="log_#"> are inserted in the <div id="logs">
+
+2007-01-15  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/db.rb
+
+	  lines_fetch method (internally used various bio/db/*.rb modules)
+	  is rewrited to concatenate indented sub field.
+
+	* lib/bio/db/kegg/compound.rb
+
+	  Bio::KEGG::COMPOUND#comment method which returns contents of
+	  the COMMENT line is added
+
+	* lib/bio/db/kegg/enzyme.rb
+
+	  Bio::KEGG::ENZYME#entry_id is changed to return EC number only.
+	  Previous version of entry_id method is renamed to entry method
+	  which returns a "EC x.x.x.x   Enzyme" style string.
+
+	  Bio::KEGG::ENZYME#obsolete? method is added which returns boolean
+	  value (true or false) according to the ENTRY line contains
+	  a string 'Obsolete' or not.
+
+	  Bio::KEGG::ENZYME#all_reac, iubmb_reactions, kegg_reactions methods
+	  are added to support newly added ALL_REAC field.
+	
+	  Bio::KEGG::ENZYME#inhibitors and orthologs methods are added.
+
+	  Bio::KEGG::ENZYME#substrates, products, inhibitors, cofactors,
+	  pathways, orthologs, diseases, motifs methods are rewrited to
+	  utilizes new lines_fetch method in db.rb to process continuous
+	  sub field.
+
+	* lib/bio/db/kegg/genome.rb
+
+	  Bio::KEGG::GENOME#scaffolds, gc, genomemap methods are obsoleted.
+	  Bio::KEGG::GENOME#distance, data_source, original_db methods are
+	  added.
+
+2006-12-24  Toshiaki Katayama <k@bioruby.org>
+
+	* bin/bioruby, lib/bio/shell/, lib/bio/shell/rails/
+	  (lib/bio/shell/rails/vendor/plugins/generators/)
+
+	  Web functionallity of the BioRuby shell is completely rewrited
+	  to utilize generator of the Ruby on Rails. This means we don't
+	  need to have a copy of the rails installation in our code base
+	  any more. The shell now run in threads so user does not need
+	  to run 2 processes as before (drb and webrick). Most importantly,
+	  the shell is extended to have textarea to input any code and
+	  the evaluated result is returned with AJAX having various neat
+	  visual effects.
+
+	* lib/bio.rb
+
+	  Extended to have Bio.command where command can be any BioRuby
+	  shell methods.
+	    ex. puts Bio.getseq("atgc" * 10).randomize.translate
+
+	* lib/bio/shell/plugin/entry.rb, seq.rb
+
+	  seq, ent, obj commands are renamed to getseq, getent, getobj
+	  respectively. This getseq is also changed to return Bio::Sequence
+	  with @moltype = Bio::Sequence::NA object instead of Bio::Sequence::NA
+	  object.
+
+	* lib/bio/db/kegg/kgml.rb
+
+	  Some method names are changed to avoid confusion:
+	  * entry_type is renamed to category (<entry type="">)
+	  * map is renamed to pathway (<entry map="">)
+
+2006-12-19  Christian Zmasek <czmasek@burnham.org>
+
+	* lib/bio/db/nexus.rb
+
+	  Bio::Nexus is newly developed during the Phyloinformatics hackathon.
+
+2006-12-16  Toshiaki Katayama <k@birouby.org>
+
+	* lib/bio/io/sql.rb
+
+	  Updated to follow recent BioSQL schema contributed by
+	  Raoul Jean Pierre Bonnal.
+
+2006-12-15  Mitsuteru Nakao <n@bioruby.org>
+
+	* lib/bio/appl/iprscan/report.rb
+	
+	  Bio::Iprscan::Report for InterProScan output is newly added.		
+2006-12-15  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/mafft/report.rb
+
+	  Bio::MAFFT::Report#initialize is changed to get a string of
+	  multi-fasta formmatted text instead of Array.
+
+2006-12-14  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/phylip/alignment.rb
+
+	  Phylip format multiple sequence alignment parser class
+	  Bio::Phylip::PhylipFormat is newly added.
+
+	* lib/bio/appl/phylip/distance_matrix.rb
+
+	  Bio::Phylip::DistanceMatrix, a parser for phylip distance matrix
+	  (generated by dnadist/protdist/restdist programs) is newly added.
+
+	* lib/bio/appl/gcg/msf.rb, lib/bio/appl/gcg/seq.rb
+
+	  Bio::GCG::Msf in lib/bio/appl/gcg/msf.rb for GCG MSF multiple
+	  sequence alignment format parser, and Bio::GCG::Seq in
+	  lib/bio/appl/gcg/seq.rb for GCG sequence format parser are
+	  newly added.
+
+	* lib/bio/alignment.rb
+
+	  Output of Phylip interleaved/non-interleaved format (.phy),
+	  Molphy alignment format (.mol), and GCG MSF format (.msf)
+	  are supported. Bio::Alignment::ClustalWFormatter is removed
+	  and methods in the module are renamed and moved to
+	  Bio::Alignment::Output.
+
+	* lib/bio/appl/clustalw.rb, lib/bio/appl/mafft.rb, lib/bio/appl/sim4.rb
+
+	  Changed to use Bio::Command instead of Open3.popen3.
+	
+2006-12-13  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/tree.rb, lib/bio/db/newick.rb
+
+	  Bio::PhylogeneticTree is renamed to Bio::Tree, and
+	  lib/bio/phylogenetictree.rb is renamed to lib/bio/tree.rb.
+	  NHX (New Hampshire eXtended) parser/writer support are added.
+
+2006-12-13  Toshiaki Katayama <k@bioruby.org>
+
+	* doc/Desing.rd.ja, doc/TODO.rd.ja, doc/BioRuby.rd.ja are obsoletd.
+
+2006-10-05  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/newick.rb
+
+	  Bio::Newick for Newick standard phylogenetic tree parser is
+	  newly added (contributed by Daniel Amelang).
+
+        * lib/bio/phylogenetictree.rb
+
+	  Bio::PhylogeneticTree for phylogenetic tree data structure
+	  is newly added.
+
+2006-09-19  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/soapwsdl.rb
+	* lib/bio/io/ebisoap.rb
+	* lib/bio/io/ncbisoap.rb
+
+	  Newly added web service modules.
+
+	* lib/bio/db/kegg/kgml.rb
+
+	  Accessor for the <component> attribute is added.
+
+	* lib/bio/shell/plugin/codon.rb
+
+	  Support for Pyrrolysine and Selenocysteine are added in the
+	  BioRuby shell.
+
+	* lib/bio/sshell/plugin/seq.rb
+
+	  sixtrans, skip, step methods are added in the BioRuby shell.
+	    bioruby> seqtrans(seq)
+
+	    bioruby> seq.step(window_size) {|subseq|
+	      # do something on subseq
+	    }
+
+	    bioruby> seq.skip(window_sizep, step_size) {|subseq|
+	      # do something on subseq
+	    }
+
+2006-07-26  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/data/aa.rb
+
+	  Amino acids J (Xle: I/L), O (Pyl: pyrrolysine) and X (unknown)
+	  are added (now we have consumed 26 alphabets!).
+
+	* lib/bio/io/fastacmd.rb
+
+	  Fixed that new version of fastacmd (in BLAST package) changed
+	  the option from '-D T' to '-D 1', contributed by the author
+	  of this module Shuji Shigenobu.
+
+	* lib/bio/shell/plugin/psort.rb
+
+	  Newly added BioRuby shell plugin for PSORT
+
+	* lib/bio/shell/plugin/blast.rb
+
+	  Newly added BioRuby shell plugin for BLAST search against KEGG GENES
+
+	* lib/bio/db/prosite.rb
+
+	  PROSITE#re instance method is added to translate PATTERN of
+	  the entry to Regexp using PROSITE.pa2re class method.
+
+	* lib/bio/db/kegg/genes.rb
+
+	  Bio::KEGG::GENES#keggclass method is renamed to pathway
+	  Bio::KEGG::GENES#splinks method is removed
+	  Bio::KEGG::GENES#motifs method is added
+	  these reflect changes made in the original KEGG GENES database.
+
+	  Bio::KEGG::GENES#locations method is added to return Bio::Locations
+	  Bio::KEGG::GENES#codon_usage is renamed cu_list (returns as Array)
+	  Bio::KEGG::GENES#cu is renamed to codon_usage (returns as Hash)
+	  Bio::KEGG::GENES#aalen, nalen methods are changed to return
+	  the number written in the entry (use seq.length to obtain calculated
+	  number as before).
+
+	* lib/bio/db/kegg/kgml.rb
+
+	  Names of some accessors have been changed (including bug fixes)
+	  and instance variable @dom is obsoleted. Here's a list of
+	  incompatible attribute names with KGML tags by this change:
+	    <entry>
+	      :id -> :entry_id
+	      :type -> :entry_type 
+	      names()
+	    <graphics>
+	      :name -> :label
+	      :type -> :shape
+	    <relation>
+	      :entry1 -> :node1
+	      :entry2 -> :node2
+	      :type -> :rel
+	    <subtype>
+	      edge()
+	    <reaction>
+	      :name -> :entry_id
+	      :type -> :direction
+
+	* lib/bio/io/das.rb
+
+	  Bug fixed that the value of segment.stop was overwritten by
+	  segment.orientation.
+
+2006-07-14  Naohisa Goto <ng@bioruby.org>
+
+        * lib/bio/command.rb
+
+          Bio::Command::Tools and Bio::Command::NetTools are combined
+	  and re-constructed into a new Bio::Command module.
+
+	  lib/bio/appl/blast.rb, lib/bio/appl/fasta.rb,
+	  lib/bio/appl/emboss.rb, lib/bio/appl/psort.rb,
+	  lib/bio/appl/hmmer.rb, lib/bio/db/fantom.rb, 
+	  lib/bio/io/fastacmd.rb, lib/bio/io/fetch.rb,
+	  lib/bio/io/keggapi.rb, lib/bio/io/pubmed.rb, and
+	  lib/bio/io/registry.rb are changed to use the new Bio::Command
+	  instead of old Bio::Command or Net::HTTP.
+
+2006-06-29  Naohisa Goto <ng@bioruby.org>
+
+        * lib/bio/appl/blat/report.rb
+
+	  Bio::BLAT::Report::Hit#milli_bad, #percent_identity, #protein?,
+	  #score, and #psl_version methods/attributes are newly added,
+	  and psl files without headers are supported (discussed in
+	  bioruby-ja ML).
+
+2006-06-27  Naohisa Goto <ng@bioruby.org>
+
+        * lib/bio/sequence/na.rb
+
+          Bio::Sequence::NA#gc_content, #at_content, #gc_skew, #at_skew
+	  are newly added. Bio::Sequence::NA#gc_percent are changed
+	  not to raise ZeroDivisionError and returns 0 when given sequence
+	  is empty.
+
+	* lib/bio/db/pdb/pdb.rb
+
+	  Bio::PDB::ATOM#name, #resName, #iCode, #chaarge, #segID, and
+	  #element are changed to strip whitespaces when initializing.
+	  Bio::PDB::HETATM is also subject to the above changes.
+	  (suggested by Mikael Borg)
+
+2006-06-12  Naohisa Goto <ng@bioruby.org>
+
+        * lib/bio/io/flatfile.rb
+
+	  Bug fix: Bio::FlatFile.open(klass, filename) didn't work.
+
+2006-05-30  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/io/soapwsdl.rb
+
+	  Generic list_methods method which extracts web service methods
+	  defined in the WSDL file is added.
+
+2006-05-02  Mitsuteru Nakao <n@bioruby.org>
+
+        * lib/bio/appl/pts1.rb
+
+          Bio::PTS1 first commit.
+
+2006-04-30  Naohisa Goto <ng@bioruby.org>
+
+        * lib/bio/appl/blast/format0.rb
+
+	  Bug fix: parse error for hits whose database sequence names
+	  contain 'Score', and subsequent hits after them would lost
+	  (reported by Tomoaki NISHIYAMA).
+
+2006-04-14  Mitsuteru Nakao <n@bioruby.org>
+
+        * lib/bio/io/ensembl.rb
+
+          Bio::Ensembl first commit. It is a client class for Ensembl Genome
+          Browser.
+
+2006-03-22  Naohisa Goto <ng@bioruby.org>
+
+        * lib/bio/io/flatfile.rb
+
+	  Bug fix: Bio::FlatFile raises error for pipes, ARGF, etc.
+	  The bug also affects bio/appl/mafft.rb, bio/appl/clustalw.rb,
+	  bio/appl/blast.rb, bio/io/fastacmd.rb, and so on.
+
+	  Bio::FlatFile#entry_start_pos and #entry_ended_pos are
+	  changed to be enabled only when Bio::FlatFile#entry_pos_flag
+	  is true.
+
+2006-02-27  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby 1.0.0 released
+
+2006-02-10  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby shell is changed to use session/ directory under the current
+	  or specified directory to store the session information instead of
+	  ./.bioruby directory.
+
+2006-02-05  Toshiaki Katayama <k@bioruby.org>
+
+	* License to be changed to Ruby's (not yet completed).
+
+2006-02-01  Trevor Wennblom <trevor@corevx.com>
+
+	* Bio::RestrictionEnzyme first commit for comments.
+	  * See lib/bio/util/restriction_enzyme.rb and
+	    test/unit/bio/util/restriction_enzyme
+
+2006-01-28  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/appl/emboss.rb
+
+          EMBOSS USA format is now accepted via seqret/entret commands
+	  and also utilized in the BioRuby shell (lib/bio/shell.rb,
+	  plugin/entry.rb, plugin/emboss.rb).
+
+	* lib/bio/io/brdb.rb is removed - unused Bio::BRDB (BioRuby DB)
+
+2006-01-23  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/sequence.rb
+
+	  Bio::Sequence is refactored to be a container class for
+	  any sequence annotations.  Functionality is separared into
+	  several files under the lib/bio/sequence/ direcotry as
+	  common.rb, compat.rb, aa.rb, na.rb, format.rb
+
+2006-01-20  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby 0.7.1 is released.
+
+2006-01-12  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/db.ra: fixed a bug of the tag_cut method introduced in 0.7.0
+	  (reported by Alex Gutteridge)
+
+2006-01-04  Naohisa Goto <ng@bioruby.org>
+
+	* Bio::PDB is refactored.  See doc/Changes-0.7 for more details.
+
+2005-12-19  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby 0.7.0 is released.
+
+	  See doc/Changes-0.7.rd file for major and incompatible changes.
+
+2005-12-19  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/pdb.rb, lib/bio/db/pdb/pdb.rb, lib/bio/db/pdb/*.rb
+	  * Many changes have been made.
+	  * Bio::PDB::FieldDef is removed and Bio::PDB::Record is completely
+            changed. Now, Record is changed from hash to Struct, and
+            method_missing is no longer used.
+          * In the "MODEL" record, model_serial is changed to serial.
+	  * In any records, record_type is changed to record_name.
+	  * In most records contains real numbers, changed to return
+	    float values instead of strings.
+	  * Pdb_AChar, Pdb_Atom, Pdb_Character, Pdb_Continuation,
+	    Pdb_Date, Pdb_IDcode, Pdb_Integer, Pdb_LString, Pdb_List,
+	    Pdb_Real, Pdb_Residue_name, Pdb_SList, Pdb_Specification_list,
+	    Pdb_String, Pdb_StringRJ and Pdb_SymOP are moved under
+	    Bio::PDB::DataType.
+	  * There are more and more changes to be written...
+
+	* lib/bio/db/pdb/atom.rb
+	  * Bio::PDB::Atom is removed.
+	    Instead, please use Bio::PDB::Record::ATOM and
+            Bio::PDB::Record::HETATM.
+
+2005-12-02  Naohisa Goto <ng:bioruby.org>
+
+	* lib/bio/alignment.rb
+	  * Old Bio::Alignment class is renamed to
+	    Bio::Alignment::OriginalAlignment.
+	    Now, new Bio::Alignment is a module. However,
+	    you don't mind so much because most of the class methods
+	    previously existed are defined to delegate to the new
+	    Bio::Alignment::OriginalAlignment class,
+            for keeping backward compatibility.
+	  * New classes and modules are introduced. Please refer RDoc.
+	  * each_site and some methods changed to return Bio::Alignment::Site,
+	    which inherits Array (previously returned Array).
+	  * consensus_iupac now returns only standard bases
+	    'a', 'c', 'g', 't', 'm', 'r', 'w', 's', 'y', 'k', 'v',
+	    'h', 'd', 'b', 'n', or nil (in SiteMethods#consensus_iupac) or
+	    '?' (or missing_char, in EnumerableExtension#consensus_iupac).
+	    Note that consensus_iupac now does not return u and invalid
+	    letters not defined in IUPAC standard even if all bases
+	    are equal.
+	  * There are more and more changes to be written...
+
+2005-11-05  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/sequence.rb
+
+	  Bio::Sequence.auto(str) method is added which auto detect the
+	  molecular type of the string and then returns the
+	  Bio::Sequence::NA or Bio::Sequence::AA object.
+	  
+	  Bio::Sequence#blast and Bio::Sequence#fasta methods are removed.
+
+	* lib/bio/shell/plugin/codon.rb
+
+	  Newly added plugin to treat codon table.
+	  ColoredCodonTable is ported from the codontable.rb
+
+2005-11-01  Toshiaki Katayama <k@bioruby.org>
+
+	* bin/bioruby, lib/bio/shell/
+
+	  All methods are changed to private methods to avoid adding them
+	  in top level binding, which caused many unexpected behaviors,
+	  as adviced by Koichi Sasada.
+
+	  The MIDI plugin is now able to select musical scales.
+	
+2005-10-23  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/util/color_scheme
+
+	  Newly contributed Bio::ColorScheme
+
+	* lib/bio/db/kegg/kgml.rb
+
+	  Newly added KEGG KGML parser.
+
+2005-10-05  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/shell/plugin/midi.rb
+
+	  Sequcne to MIDI plugin is contributed by Natsuhiro Ichinose
+
+2005-09-25  Toshiaki Katayama <k@bioruby.org>
+
+	* README.DEV
+
+	  Newly added guideline document for the contributors.
+
+	* README
+
+	  Updated and added instructions on RubyGems.
+
+2005-09-23  Toshiaki Katayama <k@bioruby.org>
+
+	* bin/bioruby, lib/bio/shell.rb, lib/bio/shell/core.rb,
+	  lib/bio/shell/session.rb, lib/bio/shell/plugin/seq.rb,
+	  lib/bio/shell/flatfile.rb, lib/bio/shell/obda.rb
+
+	  Newly added BioRuby shell, the command line user interface.
+	  Try 'bioruby' command in your terminal.
+
+	* doc/Changes-0.7.rd
+
+	  Newly added document describing incompatible and important
+	  changes between the BioRuby 0.6 and 0.7 versions.
+
+	* lib/bio/sequence.rb
+
+	  Bio::Sequence.guess, Bio::Sequence#guess methods are added
+	  which guess the sequence type by following fomula (default
+	  value for the threshold is 0.9).
+
+	              number of ATGC
+	  --------------------------------------- > threshold
+	    number of other chars - number of N
+
+2005-09-10  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio.rb, lib/bio/appl/blast.rb, lib/bio/appl/blast/format0.rb,
+	  lib/bio/appl/blast/report.rb, lib/bio/appl/clustalw.rb,
+	  lib/bio/appl/fasta.rb, lib/bio/appl/fasta/format10.rb,
+	  lib/bio/appl/hmmer.rb, lib/bio/appl/hmmer/report.rb,
+	  lib/bio/appl/mafft.rb, lib/bio/appl/psort.rb,
+	  lib/bio/appl/psort/report.rb, lib/bio/appl/sim4.rb,
+	  lib/bio/db/genbank/ddbj.rb, lib/bio/io/flatfile/bdb.rb,
+	  lib/bio/io/flatfile/index.rb, lib/bio/io/flatfile/indexer.rb
+
+	  fixed autoload problem
+
+	* lib/bio/appl/blast.rb, lib/bio/appl/blast/report.rb
+
+	  Bio::Blast.reports method was moved from lib/bio/appl/blast/report.rb
+	  to lib/bio/appl/blast.rb for autoload.
+
+2005-08-31  Toshiaki Katayama <k@bioryby.org>
+
+	* BioRuby 0.6.4 is released.
+
+	* doc/KEGG_API.rd
+
+	  Newly added English version of the KEGG API manual.
+
+	* lib/bio/aa.rb
+
+	  the 'one2name' method introduced in 0.6.3 is fixed and added 'one'
+	  and 'three' methods as aliases for 'to_1' and 'to_3' methods.
+
+2005-08-31  Naohisa Goto <ng@bioruby.org>
+
+	* removed unused file lib/bio/appl/factory.rb
+	  (the functionality had been integrated into lib/bio/command.rb)
+
+	* doc/Tutorial.rd
+
+	  Newly added an English translation of the Japanese tutorial.
+
+2005-08-16  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/command.rb
+
+	  Newly added Bio::Command::Tools module.
+	  Bio::Command::Tools is a collection of useful methods
+	  for execution of external commands.
+
+	* lib/bio/appl/blast.rb, lib/bio/appl/fasta.rb,
+	  lib/bio/appl/hmmer.rb, lib/bio/io/fastacmd.rb
+
+	  For security reason, shell special characters are escaped.
+
+	* lib/bio/appl/blast.rb, lib/bio/appl/fasta.rb, lib/bio/appl/hmmer.rb
+
+	  Options are stored with an array (@options).
+	  #options and #opions= methods are added.
+
+	* lib/bio/appl/blast.rb, lib/bio/appl/fasta.rb
+
+	  Bio::Blast.remote and Bio::Fasta.remote is fixed to work
+	  with the recent change of the GenomeNet.
+
+2005-08-11  Toshiaki Katayama <k@bioruby.org>
+
+	* Sequence#to_re method to have compatibility with 0.6.2 for RNA
+
+	* Fixed Bio::Fastacmd#fetch to work
+
+	* Bio::Fastacmd and Bio::Bl2seq classes (introduced in 0.6.3) are
+	  renamed to Bio::Blast::Fastacmd, Bio::Blast::Bl2seq respectively.
+
+2005-08-09  Toshiaki Katayama <k@bioruby.org>
+
+	* BioRuby 0.6.3 is released.
+
+	  This version would be the final release to support Ruby 1.6 series
+	  (as long as no serious bug is found:).
+
+	* lib/bio/util/sirna.rb:
+
+	  Newly added method for desing of siRNA, contributed by
+	  Itoshi Nikaido.  The lib/bio/util/ directory if reserved
+	  for bioinfomatics algorithms implemented by pure Ruby.
+
+	* lib/bio/io/fastacmd.rb:
+
+	  Newly added wrapper for NCBI fastacmd program, contributed by
+	  Shinji Shigenobu.
+
+	* lib/bio/appl/hmmer/report.rb:
+
+	  Bug fixed by Masashi Fujita when the position of sequence
+	  rarely becomes '-' instead of digits.
+
+2005-08-08  Mitsuteru Nakao <n@bioruby.org>
+
+        * lib/bio/db/embl/sptr.rb:
+
+          Added Bio::SPTR#protein_name and Bio::SPTR#synoyms methods. 
+          contributed by Luca Pireddu.
+
+          Changed Bio::SPTR#gn, Bio::SPTR#gene_name and 
+          Bio::SPTR#gene_names methods. contributed by Luca Pireddu.
+
+2005-08-08  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/bl2seq/report.rb:
+
+	  Newly added bl2seq (BLAST 2 sequences) output parser.
+
+	* lib/bio/appl/blast/format0.rb:
+
+	  Added `self.class::` before F0dbstat.new for bl2seq/report.rb
+
+2005-08-07  Toshiaki Katayama <k@bioruby.org>
+
+	* lib/bio/sequence.rb, lib/bio/data/na.rb, lib/bio/data/aa.rb:
+
+	  Bio::NucleicAcid, Bio::AminoAcid classes are refactored to have
+	  Data module, and this module is included and extended to make
+	  all methods as both of instance methods and class methods.
+
+	  Bio::Sequence::NA and AA classes are rewrited (molecular_weight,
+	  to_re methods) to use Bio::NucleicAcid.
+
+	  Bio::Sequence::NA#molecular_weight method is fixed to subtract
+	  two hydrogens per each base.
+
+	* lib/bio/db/medline.rb: publication_type (pt) method is added.
+
+2005-08-07  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/db/genbank/common.rb:
+
+	  Avoid NoMethodError (private method `chomp` called for nil:NilClass)
+	  when parsing features of
+
+	    ftp://ftp.ncbi.nih.gov/genbank/genomes/Bacteria/
+            Salmonella_typhimurium_LT2/AE006468.gbk
+
+2005-07-11  Toshiaki Katayama <k@bioruby.org>
+
+	* bin/br_pmfetch.rb:
+
+	  Added sort by page option (--sort page)
+
+	* lib/io/higet.rb:
+
+	  Newly added Bio::HGC::HiGet class for HiGet SOAP service.
+
+2005-06-28  Toshiaki Katayama <k@bioruby.org>
+
+	* gemspec.rb: newly added RubyGems spec file.
+
+2005-06-21  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/report.rb:
+
+	  Newly added support for reading BLAST -m 7 result files
+	  through Bio::FlatFile by adding
+	  DELIMITER = "</BlastOutput>\n" to Bio::Blast::Report class.
+	  (Note that tab-delimited format (-m 8 and -m 9) are not yet
+	  supported by Bio::FlatFile)
+
+	* lib/bio/io/flatfile.rb:
+
+	  Added file format autodetection of BLAST XML format.
+
+2005-06-20  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/appl/blast/format0.rb: added 'to_s' to store original entry
+
+2005-04-04  Mitsuteru Nakao <n@bioruby.org>
+
+        * lib/bio/db/go.rb:
+
+          Newly added Bio::GO::External2go class for parsing external2go file.
+
+2005-03-10  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/io/flatfile.rb:
+
+	  Added file format autodetection of Spidey (Bio::Spidey::Report).
+
+2005-03-10  Naohisa Goto <ng@bioruby.org>
+
+	* lib/bio/io/flatfile.rb:
+
+	  Added file format autodetection for Bio::KEGG::KO,
+	  Bio::KEGG::GLYCAN, Bio::KEGG::REACTION, Bio::Blat::Report
+	  and Bio::Sim4::Report.
+
+	  In order to distinguish Bio::KEGG::REACTION and 
+	  Bio::KEGG::COMPOUND, autodetection regexp. of
+	  Bio::KEGG::COMPOUND were modified.
+
+2005-02-09  KATAYAMA Toshiaki <k@bioruby.org>
+
+	* lib/bio/db/kegg/genes.rb:
+
+	  Added cu method which returns codon usage in Hash for the
+	  convenience (codon_usage method returns in Array or Fixnum).
+
+2004-12-13  KATAYAMA Toshiaki <k@bioruby.org>
+
+	* BioRuby 0.6.2 released.
+
+	* test/all_tests.rb:
+
+	  Unit tests for some classes are newly incorporated by
+	  Moses Hohman.  You can try it by 'ruby install.rb test'
+
+	* lib/bio/appl/spidey/report.rb:
+
+	  Newly added Spidey result parser class.
+
+	* lib/bio/appl/blat/report.rb:
+
+	  Newly added BLAT result parser class.
+
+	* fixes and improvements:
+	  * lib/bio/appl/blast/blast/format0.rb
+	    * minor fix for the Blast default format parser
+	  * lib/bio/alignment.rb
+	    * Alignment class
+	  * lib/bio/db/prosite.rb
+	    * bug reported by Rolv Seehuus is fixed
+	    * some methods are added
+
+2004-10-25  KATAYAMA Toshiaki <k@bioruby.org>
+
+	* lib/bio/db/{compound.rb,reaction.rb,glycan.rb}:
+
+	  Newly added parser for KEGG REACTION and KEGG GLYCAN database
+	  entries, fix for KEGG COMPOUND parser to support the new format.
+
+2004-10-09  GOTO Naohisa <ng@bioruby.org>
+
+	* lib/bio/appl/sim4.rb
+
+	  Newly added sim4 wrapper class.
+	  This is test version, specs would be changed frequently.
+
+	* lib/bio/appl/sim4/report.rb
+
+	  Newly added sim4 result parser class.
+
+2004-08-25  KATAYAMA Toshiaki <k@bioruby.org>
+
+	* BioRuby 0.6.1 released.
+	  * fix for the packaging miss of 0.6.0
+	  * bin/*.rb are renamed to bin/br_*.rb (similar to the BioPerl's
+	    convention: bp_*.pl)
+
+2004-08-24  KATAYAMA Toshiaki <k@bioruby.org>
+
+	* BioRuby 0.6.0 released.
+	  * many fixes for Ruby 1.8
+	  * updated for genome.ad.jp -> genome.jp transition
+
+	* lib/bio/db/pdb.rb
+
+	  Newly added parser for PDB contributed by Alex Gutteridge (EBI).
+
+	* lib/bio/data/codontable.rb
+
+	  Bio::CodonTable is rewrited to be a class instead of static variable.
+	  Now it can hold table definition, start codons, stop codons and
+	  added methods to detect start/stop codons and reverse translation.
+
+	  Also includes sample code to show codon table in ANSI colored
+	  ascii art, have fun.
+
+	* lib/bio/sequence.rb
+
+	  Bio::Sequence::NA#translate is rewrited to accept an user defined
+	  codon table as a Bio::CodonTable object and any character can be
+	  specified for the unknown codon.  This method runs about 30% faster
+	  than ever before.
+
+	  Bio::Sequence::AA#to_re method is added for the symmetry.
+
+	  Bio::Seq will be changed to hold generic rich sequence features.
+	  This means Bio::Seq is no longer an alias of Bio::Sequence but
+	  is a sequence object model, something like contents of a GenBank
+	  entry, common in BioPerl, BioJava etc.
+
+	* lib/bio/io/soapwsdl.rb
+
+	  Newly added common interface for SOAP/WSDL in BioRuby
+	  used by keggapi.rb, ddbjxml.rb.
+
+	* lib/bio/io/keggapi.rb
+
+	  Completely rewrited to support KEGG API v3.0
+
+	* lib/bio/io/esoap.rb
+
+	  Newly added client library for Entrez Utilities SOAP interface.
+
+	* lib/bio/db/genbank, lib/bio/db/embl
+
+	  Refactored to use common.rb as a common module.
+
+	* bin/pmfetch.rb
+
+	  Newly added command to search PubMed.
+
+	* bin/biofetch.rb, flatfile.rb, biogetseq.rb
+
+	  Renamed to have .rb suffix.
+
+	* sample/biofetch.rb
+
+	  Rewrited to use KEGG API instead of DBGET
+
+
+2003-10-13  KATAYAMA Toshiaki <k@bioruby.org>
+
+	* BioRuby 0.5.3 released.
+
+	  Fixed bugs in Blast XML parsers: xmlparser.rb is fixed not to
+	  omit the string after ' and " in sequence definitions,
+	  rexml.rb is fixed not to raise NoMethodError as "undefined
+	  method `each_element_with_text' for nil:NilClass".
+
+2003-10-07  GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+
+	* lib/bio/db/nbrf.rb
+
+	  Newly added NBRF/PIR flatfile sequence format class.
+
+2003-09-30  GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+
+	* lib/bio/db/pdb.rb
+
+	  Newly added PDB database flatfile format class.
+	  This is pre-alpha version, specs shall be changed frequently.
+
+2003-08-22  KATAYAMA Toshiaki <k@bioruby.org>
+
+	* BioRuby 0.5.2 released.
+
+	  Fixed to be loaded in Ruby 1.8.0 without warnings.
+
+	* doc/KEGG_API.rd.ja
+
+	  Newly added a Japanese document on the KEGG API.
+
+2003-08-12  GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+
+	* lib/bio/appl/blast/format0.rb
+
+	  Newly added NCBI BLAST default (-m 0) output parser,
+	  which may be 5-10x faster than BioPerl's parser.
+	  This is alpha version, specs may be frequently changed.
+	  PHI-BLAST support is still incomplete.
+	  Ruby 1.8 recommended. In ruby 1.6, you need strscan.
+
+	* lib/bio/appl/blast/wublast.rb
+
+	  Newly added WU-BLAST default output parser.
+	  This is alpha version, specs may be frequently changed.
+	  Support for parameters and statistics are still incomplete.
+	  Ruby 1.8 recommended. In ruby 1.6, you need strscan.
+
+2003-07-25  GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
+
+	* lib/bio/alignment.rb:
+
+	  Newly added multiple sequence alignment class.
+
+	* lib/bio/appl/alignfactory.rb:
+
+	  Newly added template class for multiple alignment software.
+
+	* lib/bio/appl/clustalw.rb:
+
+	  Newly added CLUSTAL W wrapper.
+	  <http://www.ebk.ac.uk/clustalw/>
+	  <ftp://ftp.ebk.ac.uk/pub/software/unix/clustalw/>
+
+	* lib/bio/appl/clustalw/report.rb:
+
+	  Newly added CLUSTAL W result data (*.aln file) parser.
+
+	* lib/bio/appl/mafft.rb, lib/bio/appl/mafft/report.rb:
+
+	  Newly added MAFFT wrapper and report parser.
+	  (MAFFT is a multiple sequence alignment program based on FFT.)
+	  <http://www.biophys.kyoto-u.ac.jp/~katoh/programs/align/mafft/>
+
+2003-07-16  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* BioRuby version 0.5.1 released.
+
+	* lib/bio/sequence.rb: some methods (using 'rna?' internally) were
+	  temporally unusable by the changes in 0.5.0 is fixed.
+
+	* lib/bio/io/flatfile.rb: autodetection failure of the fasta entry
+	  without sequence is fixed.  FlatFile.auto method is added.
+
+	* lib/bio/db.rb: sugtag2array fixed.  DB.open now accepts IO/ARGF.
+
+	* lib/bio/db/embl.rb: references method is added.
+
+
+2003-06-25  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* BioRuby version 0.5.0 released.
+
+	* lib/bio/appl/blast/report.rb:
+
+	    Refactored from xmlparser.rb, rexml.rb, and format8.rb files.
+	    Formats are auto detected and parsers are automatically
+	    selected by checking whether XMLParser or REXML are installed.
+	    You can call simply as
+	      Bio::Blast::Report.new(blastoutput)
+	    or you can choose parsers/format explicitly by
+	      Bio::Blast::Report.xmlparser(format7blastoutput)
+	      Bio::Blast::Report.rexml(fomat7blastoutput)
+	      Bio::Blast::Report.tab(format8blastoutput)
+	    You can also use newly added class method reports for multiple
+	    xml blast output.
+	      Bio::Blast.reports(output) # output can be IO or String
+
+	* lib/bio/appl/fasta/report.rb:
+
+	    Refactored from format10.rb, format6.rb and sample/* files.
+
+	* lib/bio/appl/hmmer/report.rb:
+
+	    Bug fix and clean up.
+
+	* bin/biogetseq:
+
+	    Newly added OBDA (BioRegistry) entry retrieval command.
+
+	* etc/bioinformatics/seqdatabase.ini, lib/bio/io/registry.rb:
+	    Updated for new OBDA spec (Singapore version).
+	    Including config file versioning and changes in tag names,
+	    support for OBDA_SEARCH_PATH environmental variable.
+
+	* lib/bio/io/keggapi.rb:
+
+	    Newly added KEGG API client library.
+	    <http://www.genome.ad.jp/kegg/soap/>
+
+	* lib/bio/io/ddbjxml.rb:
+
+	    Newly added DDBJ XML client library (test needed).
+	    <http://xml.nig.ac.jp/>
+
+	* lib/bio/io/das.rb:
+
+	    Newly added BioDAS client library.
+
+	* lib/bio/db/gff.rb:
+
+	    Newly added GFF format parser/store library.
+
+	* lib/bio/appl/tmhmm/report.rb:
+
+	    Newly added TMHMM report parser.
+	    <http://www.cbs.dtu.dk/services/TMHMM/>
+
+	* lib/bio/appl/targetp/report.rb:
+
+	    Newly added TargetP report parser.
+	    <http://www.cbs.dtu.dk/services/TargetP/>
+
+	* lib/bio/appl/sosui/report.rb:
+
+	    Newly added SOSUI report parser.
+	    <http://sosui.proteome.bio.tuat.ac.jp/cgi-bin/sosui.cgi>
+
+	* lib/bio/appl/psort/report.rb:
+
+	    Newly added PSORT report parser.
+	    <http://www.psort.org/>, <http://psort.ims.u-tokyo.ac.jp/>
+
+	* lib/bio/appl/genscan/report.rb:
+
+	    Newly added GENSCAN report parser.
+	    <http://genes.mit.edu/GENSCAN.html>
+
+	* lib/bio/db/prosite.rb: bug fix in ps2re method.
+
+	* lib/bio/db/fantom.rb:
+
+	    Newly added FANTOM database parser (XML).
+	    <http://fantom2.gsc.riken.go.jp/>
+
+	* lib/bio/db/go.rb:
+
+	    Newly added GO parser.
+	    <http://www.geneontology.org/>
+
+	* lib/bio/feature.rb:
+	
+	    'each' method now accepts an argument to select specific feature.
+
+	* lib/bio/db/fasta.rb: definition=, data= to change comment line.
+
+	* lib/bio/db/genbank.rb:
+	
+	    References and features now accept a block. 'acc_version' method
+	    is added to return the Accsession.Version string.
+	    'accession' method now returns Accession part of the acc_version.
+	    'version' method now returns Version part of the acc_version as
+	    an integer.
+
+	* lib/bio/db/keggtab.rb:
+
+	    Rewrited for bug fix and clean up (note: some methods renamed!)
+	    * gsub('abrev', 'abbrev') in method names
+	    * db_path_by_keggorg is changed to db_path_by_abbrev
+	    * @bio_root is changed to @bioroot (ENV['BIOROOT'] overrides)
+	    * Bio::KEGG::DBname is changed to Bio::KEGG::Keggtab::DB
+	      * @database is added (a hash with its key db_abbreb)
+	      * database, name, path methods added with its argument db_abbreb
+
+	* lib/bio/io/flatfile.rb:
+
+	   Enumerable mix-in is included.
+
+	* lib/bio/io/flatfile/indexer.rb:
+
+	    Indexing of the FASTA format file is now supported with various
+	    type of definition line.
+
+	* bin/dbget:
+
+	    Removed (moved under sample directory because the port of the
+	    dbget server is now closed).
+
+	* install.rb:
+
+	    Changed to use setup 3.1.4 to avoid installing CVS/ directory.
+
+	* sample/goslim.rb:
+
+	    Added a sample to generate histogram from GO slim.
+
+	* sample/tdiary.rb:
+
+	    Added for tDiary <http://www.tdiary.org/> users. have fun. :)
+
+2003-01-28  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* BioRuby version 0.4.0 released.
+	* bin/bioflat:
+	  * newly added for the BioFlat indexing
+	* lib/bio/io/flatfile.rb, flatfile/{indexer.rb,index.rb,bdb.rb}:
+	  * flatfile indexing is supported by N. Goto
+	* lib/bio/db/genbank.rb: changed to contain common methods only
+	  * lib/bio/db/genbank/genbank.rb
+	  * lib/bio/db/genbank/genpept.rb
+	  * lib/bio/db/genbank/refseq.rb
+	  * lib/bio/db/genbank/ddbj.rb
+	* lib/bio/db/embl.rb: changed to contain common methods only
+	  * lib/bio/db/embl/embl.rb
+	  * lib/bio/db/embl/sptr.rb
+	  * lib/bio/db/embl/swissprot.rb
+	  * lib/bio/db/embl/trembl.rb
+	* lib/bio/appl/emboss.rb:
+	  * added - just a generic wrapper, no specific parsers yet.
+	* lib/bio/appl/hmmer.rb:
+	  * added - execution wrapper
+	* lib/bio/appl/hmmer/report.rb:
+	  * added - parsers for hmmsearch, hmmpfam contributed by H. Suga
+	* lib/bio/db.rb: open method added for easy use of flatfile.
+	* lib/bio/db/kegg/genes.rb:
+	  * fixed bug in codon_usage method in the case of long sequence >999
+	  * eclinks, splinks, pathways, gbposition, chromosome methods added
+	* lib/bio/db/aaindex.rb:
+	  * adapted for the new AAindex2 format (release >= 6.0).
+	* lib/bio/db/fasta.rb: entry_id is changed to return first word	only
+	* lib/bio/data/na.rb, aa.rb, keggorg.rb:
+	  * moved under class NucleicAcid, AminoAcid, KEGG (!)
+	* in the test codes, DBGET is replaced by BioFetch
+
+2002-08-30  Yoshinori K. Okuji  <okuji@enbug.org>
+
+	* lib/bio/matrix.rb: Removed.
+	* lib/bio/db/aaindex.rb: Require matrix instead of bio/matrix.
+	* lib/bio/db/transfac.rb: Likewise.
+	* lib/bio/pathway.rb: Likewise.
+	  (Pathway#dump_matrix): Don't use Matrix#dump.
+
+2002-07-30  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* BioRuby version 0.3.9 released.
+	* lib/bio/location.rb:
+	  * Locations#length (size) methods added (contributed by N. Goto)
+	  * Locations#relative method added  (contributed by N. Goto)
+	  * Locations#absolute method is renamed from offset
+	  * Locations#offset, offset_aa methods removed
+	    * use absolute/relative(n, :aa) for _aa
+          * Locations#[], range methods added
+	  * Location#range method added
+	* lib/bio/db/embl.rb:
+	  * fix accession method.
+	* lib/bio/db/genpept.rb:
+	  * temporally added - in the next release, we will make refactoring.
+	* lib/bio/reference.rb:
+	  * in bibtex and bibitem format, "PMIDnum" is changed to "PMID:num".
+	* lib/bio/io/pubmed.rb:
+	  * esearch, efetch methods are added.
+	* lib/bio/db/aaindex.rb:
+	  * fix serious bug in the index method to support negative values.
+	* lib/bio/db.rb:
+	  * fix fetch method to cut tag without fail.
+	* lib/bio/extend.rb:
+	  * added first_line_only option for the prefix in fill method.
+	* doc/Tutorial.rd.ja:
+	  * added docs on BibTeX etc.
+
+2002-06-26  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* BioRuby version 0.3.8 released.
+	* lib/bio/sequence.rb:
+	  * normalize! method added for clean up the object itself.
+	  * 'to_seq' method was renamed to 'seq' (!)
+	    * to_xxxx should be used when the class of the object changes.
+	* lib/bio/appl/blast/xmparser.rb:
+	  * each_iteration, each_hit, each, hits, statistics, message methods
+	    are added in Report class.
+	  * statistics, message methods are added in Iteration class.
+	  * methods compatible with Fasta::Report::Hit are added in Hit class.
+	* lib/bio/appl/blast/rexml.rb:
+	  * many APIs were changed to follow the xmlparser.rb's. (!)
+	* lib/bio/appl/{blast.rb,fasta.rb]:
+	  * class method parser() is added for loading specified Report class.
+	* etc/bioinformatics/seqdatabase.ini: added for OBDA (!)
+	  * sample setup for BioRegistry - Open Bio Sequence Database Access.
+	* lib/bio/extend.rb: added (!)
+	  * This module adds some functionarity to the existing classes and
+	    not loaded by default. User should require specifically if needed.
+	* lib/bio/util/*: removed and merged into lib/bio/extend.rb (!)
+	* lib/bio/id.rb: removed (!)
+	* lib/bio/db/{embl.rb,sptr.rb,transfac.rb}: added entry_id
+	* lib/bio/data/keggorg.rb: updated
+	* sample/genes2* sample/genome2*: updated
+	* doc/Tutrial.rd.ja: updated
+
+2002-06-19  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* BioRuby version 0.3.7 released.
+	* lib/bio/sequence.rb: Sequence inherits String again (!)
+	* lib/bio/db.rb, db/embl.rb, db/sptr.rb: moved EMBL specific methods
+
+2002-06-18  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* lib/bio/feature.rb: Bio::Feature#[] method added
+	* doc/Tutrial.rd.ja: changed to use Feature class
+
+2002-05-28  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* lib/bio/appl/fasta.rb: parser separated, API renewal (!)
+	  * lib/bio/appl/fasta/format10.rb: moved from fasta.rb
+
+	* lib/bio/appl/blast.rb: parser separated, API renewal (!)
+	  * lib/bio/appl/blast/format8.rb: newly added
+	  * lib/bio/appl/blast/rexml.rb: newly added
+	  * lib/bio/appl/blast/xmlparser.rb: moved from blast.rb
+
+2002-05-16  KATAYAMA Toshiaki  <k@bioruby.org>
+
+	* lib/bio/sequence.rb: added alias 'Seq' for class Sequence
+	* lib/bio/db/fasta.rb: entry method added
+
+2002-05-15  KATAYAMA Toshiaki  <k@bioruby.org>
+	
+	* lib/bio/io/dbget.rb: bug fixed for pfam (was wrongly skip # lines)
+	* lib/bio/location.rb: offset method added, eased range check
+
+2002-04-26  KATAYAMA Toshiaki  <k@bioruby.org>
+	
+	* sample/biofetch.rb: new 'info=' option added
+
+2002-04-22  KATAYAMA Toshiaki  <k@bioruby.org>
+	
+	* lib/bio/appl/fasta.rb: follow changes made at fasta.genome.ad.jp
+	* sample/gb2tab.rb: fixed to use authors.inspect for reference
+
+2002-04-15  KATAYAMA Toshiaki  <k@bioruby.org>
+	
+	* sample/gb2fasta.rb: changed to follow new genbank.rb spec.
+	* sample/gt2fasta.rb: changed to follow new genbank.rb spec.
+	* sample/gbtab2mysql.rb: added for loading tab delimited data.
+
+2002/04/08
+	* version 0.3.6 released -k
+	  * fixed inconsistency among db.rb, genbank.rb, genome.rb -k
+	  * lib/bio/db/genbank.rb : serious bug fixed in locus method -k
+	  * lib/bio/feature.rb : method name 'type' has changed -k
+
+2002/03/27
+	* sample/gb2tab.rb changed to follow new genbank.rb w/ new schema -k
+
+2002/03/26
+	* sample/gb2tab.rb use ruby instead of perl in the example -o
+	* sample/gb2fasta.rb updated -o
+
+2002/03/11
+	* version 0.3.5 released -k
+
+2002/03/04
+	* lib/bio/sequence.rb to_a, to_ary methods renamed to names, codes -k
+	* sample/biofetch.rb added for BioFetch server -k
+	* bin/biofetch added for BioFetch client -k
+	* lib/bio/io/fetch.rb added for BioFetch library -k
+	* lib/bio/io/sql.rb added for BioSQL -k
+	* lib/bio/io/registry.rb added for BioDirectory/Registry -k
+	* lib/bio/feature.rb added for BioSQL, GenBank, EMBL etc. -k
+	* lib/bio/db/genbank.rb rewrited to use Features, References -k
+	* lib/bio/db/{genes,genome}.rb clean up -k
+	* lib/bio/reference.rb added class References -k
+
+2002/02/05
+	* changed to use 'cgi' instead of 'cgi-lib' -n,k
+
+2002/01/31
+	* version 0.3.4 released -k
+	  * lib/bio/db/genbank.rb -k
+	    * fix for multiple 'allele' in the feature key. (thanx Lixin)
+
+2002/01/07
+	* lib/bio/appl/blast.rb -n
+	  * remote blast support etc.
+
+2001/12/18
+	* lib/bio/id.rb -k
+	  * newly created
+	* lib/bio/io/brdb.rb -k
+	  * newly created
+	* lib/bio/db.rb -k
+	  * template methods are deleted
+	  * detailed docuement added
+	* lib/bio/sequence.rb -k
+	  * to_fasta, complement, translate fixed (due to the changes made
+	    in 0.3.3)
+	  * Sequence::NA#initialize doesn't replace 'u' with 't' any longer
+	    * gc_percent, complement, translate, to_re, molecular_weight
+	      methods are adapted to this change
+	  * molecular_weight changed to calculate more precisely
+	  * test code added 
+	* lib/bio.rb -k
+	  * rescue for require 'bio/appl/blast' is deleted
+
+2001/12/15
+	* lib/bio/sequence.rb -o
+	  * Sequence#to_str added
+
+2001/12/15
+	* version 0.3.3 released -k
+

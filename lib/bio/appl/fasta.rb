@@ -191,10 +191,13 @@ class Fasta
         txt.sub!(/\<\/pre\>.*\z/m, '')
         txt.sub!(/.*^((T?FASTA|SSEARCH) (searches|compares))/m, '\1')
         txt.sub!(/^\<form method\=\"POST\" name\=\"clust_check\"\>.*\n/, '')
+        txt.sub!(/^\<select +name\=\"allch\".+\r?\n/i, '') # 2009.11.26
         txt.gsub!(/\<input[^\>]+value\=\"[^\"]*\"[^\>]*\>/i, '')
         txt.gsub!(/\<(a|form|select|input|option|img)\s+[^\>]+\>/i, '')
         txt.gsub!(/\<\/(a|form|select|input|option|img)\>/i, '')
-        @output = txt.gsub(/\&lt\;/, '<')
+        txt.gsub!(/\&lt\;/, '<')
+        txt.gsub!(/\&gt\;/, '>') # 2009.11.26
+        @output = txt
         report = parse_result(@output.dup)
       else
         raise 'cannot understand response'
@@ -207,22 +210,4 @@ class Fasta
 end # Fasta
 
 end # Bio
-
-
-if __FILE__ == $0
-  begin
-    require 'pp'
-    alias p pp
-  rescue
-  end
-
-# serv = Bio::Fasta.local('fasta34', 'hoge.nuc')
-# serv = Bio::Fasta.local('fasta34', 'hoge.pep')
-# serv = Bio::Fasta.local('ssearch34', 'hoge.pep')
-
-  # This may take 3 minutes or so.
-  serv = Bio::Fasta.remote('fasta', 'genes')
-  p serv.query(ARGF.read)
-end
-
 

@@ -5,7 +5,7 @@
 #
 # License:: The Ruby License
 #
-#  $Id: flatfile.rb,v 1.61 2007/11/15 07:07:16 k Exp $
+#  $Id:$
 #
 #
 # Bio::FlatFile is a helper and wrapper class to read a biological data file.
@@ -465,9 +465,3 @@ module Bio
 
 end #module Bio
 
-if __FILE__ == $0
-  if ARGV.size == 2
-    require 'bio'
-    p Bio::FlatFile.open(eval(ARGV.shift), ARGV.shift).next_entry
-  end
-end

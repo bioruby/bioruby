@@ -1,0 +1,47 @@
+ENTRY       G00024                      Glycan
+NAME        T antigen
+COMPOSITION (Gal)1 (GalNAc)1 (Ser/Thr)1
+MASS        365.3 (Ser/Thr)
+CLASS       Glycoprotein; O-Glycan
+            Neoglycoconjugate
+REMARK      Same as: C04750 C04776
+REFERENCE   1  [PMID:12950230]
+            Backstrom M, Link T, Olson FJ, Karlsson H, Graham R, Picco G,
+            Burchell J, Taylor-Papadimitriou J, Noll T, Hansson GC.
+            Recombinant MUC1 mucin with a breast cancer-like O-glycosylation
+            produced in large amounts in Chinese-hamster ovary cells.
+            Biochem. J. 376 (2003) 677-86.
+            2  [PMID:14631106]
+            Wu AM.
+            Carbohydrate structural units in glycoproteins and polysaccharides
+            as important ligands for Gal and GalNAc reactive lectins.
+            J. Biomed. Sci. 10 (2003) 676-88.
+REACTION    R05908 R05912 R05913 R06140
+PATHWAY     PATH: ko00512  O-Glycan biosynthesis
+            PATH: ko01100  Metabolic pathways
+ENZYME      2.4.1.102       2.4.1.122       2.4.99.4        3.2.1.97
+ORTHOLOGY   KO: K00727  beta-1,3-galactosyl-O-glycosyl-glycoprotein
+                        beta-1,6-N-acetylglucosaminyltransferase [EC:2.4.1.102]
+            KO: K00731  glycoprotein-N-acetylgalactosamine
+                        3-beta-galactosyltransferase [EC:2.4.1.122]
+            KO: K00780  beta-galactoside alpha-2,3-sialyltransferase
+                        (sialyltransferase 4A) [EC:2.4.99.4]
+            KO: K03368  beta-galactoside alpha-2,3-sialyltransferase
+                        (sialyltransferase 4B) [EC:2.4.99.4]
+DBLINKS     CCSD: 98 99 100 2225 2236 2237 2238 2239 2240 2241 2242 2243 3406
+                  5035 5038 5887 14321 18613 25363 27572 28182 29046 29092 29175
+                  29393 29521 29554 30734 30735 30848 30849 30850 30917 32646
+                  33022 33851 33878 33952 34823 34829 34986 34995 35029 35050
+                  35107 35108 35805 35833 35991 36236 36826 36863 37982 38587
+                  38640 38672 42797 43915 44029 44775 45346 46438 46466 47186
+                  48015 48891 49283 49293 50466 50469 50477
+            GlycomeDB: 475
+            JCGGDB: JCGG-STR025711
+NODE        3
+            1   Ser/Thr     8     0
+            2   GalNAc     -1     0
+            3   Gal        -9     0
+EDGE        2
+            1     2:a1    1
+            2     3:b1    2:3
+///

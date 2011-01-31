@@ -5,7 +5,7 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id: na.rb,v 0.23 2007/04/06 04:41:28 k Exp $
+# $Id:$
 #
 # == Synopsis
 #
@@ -196,28 +196,3 @@ end
 
 end # module Bio
 
-
-if __FILE__ == $0
-
-  puts "### na = Bio::NucleicAcid.new"
-  na = Bio::NucleicAcid.new
-
-  puts "# na.to_re('yrwskmbdhvnatgc')"
-  p na.to_re('yrwskmbdhvnatgc')
-
-  puts "# Bio::NucleicAcid.to_re('yrwskmbdhvnatgc')"
-  p Bio::NucleicAcid.to_re('yrwskmbdhvnatgc')
-
-  puts "# na.weight('A')"
-  p na.weight('A')
-
-  puts "# Bio::NucleicAcid.weight('A')"
-  p Bio::NucleicAcid.weight('A')
-
-  puts "# na.weight('atgc')"
-  p na.weight('atgc')
-
-  puts "# Bio::NucleicAcid.weight('atgc')"
-  p Bio::NucleicAcid.weight('atgc')
-
-end

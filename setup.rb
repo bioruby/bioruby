@@ -1472,6 +1472,11 @@ class Installer
     rescue LoadError
       setup_rb_error 'test/unit cannot loaded.  You need Ruby 1.8 or later to invoke this task.'
     end
+########## begin customization for BioRuby
+    unless defined?(Test::Unit::AutoRunner) then
+      setup_rb_error 'Sorry it does not work in Ruby 1.9. Run "ruby test/runner.rb" instead.'
+    end
+########## end customization for BioRuby
     runner = Test::Unit::AutoRunner.new(true)
     runner.to_run << TESTDIR
     runner.run

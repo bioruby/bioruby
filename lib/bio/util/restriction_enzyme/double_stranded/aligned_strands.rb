@@ -21,6 +21,11 @@ class AlignedStrands
   extend CutSymbol
   extend StringFormatting
 
+  # Creates a new object.
+  # ---
+  # *Returns*:: Bio::RestrictionEnzyme::DoubleStranded::AlignedStrands object
+  def initialize; super; end
+
   # The object returned for alignments
   Result = Struct.new(:primary, :complement)
 

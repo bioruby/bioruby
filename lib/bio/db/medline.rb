@@ -32,8 +32,12 @@ class MEDLINE < NCBIDB
     entry.each_line do |line|
       if line =~ /^\w/
         tag = line[0,4].strip
+      else
+        # continuation from previous lines
+        @pubmed[tag] = @pubmed[tag].sub(/(?:\r|\r\n|\n)\z/, ' ')
       end
-      @pubmed[tag] += line[6..-1] if line.length > 6
+      value = line[6..-1]
+      @pubmed[tag] += value if value
     end
   end
   attr_reader :pubmed
@@ -41,7 +45,7 @@ class MEDLINE < NCBIDB
 
   # returns a Reference object.
   def reference
-    hash = Hash.new('')
+    hash = Hash.new
 
     hash['authors']	= authors
     hash['title']	= title
@@ -54,6 +58,7 @@ class MEDLINE < NCBIDB
     hash['medline']  	= ui
     hash['abstract']	= abstract
     hash['mesh']	= mesh
+    hash['doi']	= doi
     hash['affiliations'] = affiliations
 
     hash.delete_if { |k, v| v.nil? or v.empty? }

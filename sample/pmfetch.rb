@@ -18,12 +18,14 @@
 #  along with this program; if not, write to the Free Software
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#  $Id: pmfetch.rb,v 1.2 2002/07/23 04:52:03 k Exp $
+#  $Id:$
 #
 
 require 'bio' 
 
-if ARGV[0] =~ /-f/
+Bio::NCBI.default_email = 'staff@bioruby.org'
+
+if ARGV[0] =~ /\A\-f/
   ARGV.shift
   form = ARGV.shift
 else
@@ -31,12 +33,19 @@ else
 end
 
 ARGV.each do |id| 
-  entry = Bio::PubMed.query(id) 
+  entries = Bio::PubMed.efetch(id) 
+  if entries and entries.size == 1 then
+    entry = entries[0]
+  else
+    # dummy entry if not found or possibly incorrect result
+    entry = 'PMID- '
+  end
   case form
   when 'medline'
     puts entry
   else
-    puts Bio::MEDLINE.new(entry).reference.send(form)
+    puts Bio::MEDLINE.new(entry).reference.__send__(form.intern)
   end
+  print "\n"
 end 
 

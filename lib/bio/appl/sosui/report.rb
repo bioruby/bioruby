@@ -5,13 +5,14 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-#  $Id: report.rb,v 1.11 2007/04/05 23:35:40 trevor Exp $
+#  $Id:$
 #
 # == Example
 #
 # == References
 #
-# * http://sosui.proteome.bio.tuat.ac.jp/sosui_submit.html
+# * http://bp.nuap.nagoya-u.ac.jp/sosui/
+# * http://bp.nuap.nagoya-u.ac.jp/sosui/sosui_submit.html
 #
 
 
@@ -22,7 +23,8 @@ module Bio
     # = SOSUI output report parsing class
     #
     # == References
-    # * http://sosui.proteome.bio.tuat.ac.jp/sosui_submit.html
+    # * http://bp.nuap.nagoya-u.ac.jp/sosui/
+    # * http://bp.nuap.nagoya-u.ac.jp/sosui/sosui_submit.html
     class Report
 
       # Delimiter
@@ -96,56 +98,5 @@ module Bio
   end # class SOSUI
 
 end # module Bio
-
-
-
-if __FILE__ == $0
-
-  begin
-    require 'pp'
-    alias p pp 
-  rescue LoadError
-  end
-
-
-  sample = <<HOGE
->HOGE1
- MEMBRANE PROTEIN
- NUMBER OF TM HELIX = 6
- TM 1   12-  34 SECONDARY   LLVPILLPEKCYDQLFVQWDLLH
- TM 2   36-  58 PRIMARY     PCLKILLSKGLGLGIVAGSLLVK
- TM 3  102- 124 SECONDARY   SWGEALFLMLQTITICFLVMHYR
- TM 4  126- 148 PRIMARY     QTVKGVAFLACYGLVLLVLLSPL
- TM 5  152- 174 SECONDARY   TVVTLLQASNVPAVVVGRLLQAA
- TM 6  214- 236 SECONDARY   AGTFVVSSLCNGLIAAQLLFYWN
-
->HOGE2
- SOLUBLE PROTEIN
-
-HOGE
-
-  def hoge(ent)
-    puts '==='
-    puts ent
-    puts '==='
-    sosui = Bio::SOSUI::Report.new(ent)
-    p [:entry_id, sosui.entry_id]
-    p [:prediction, sosui.prediction]
-    p [:tmhs.size, sosui.tmhs]
-    pp [:tmhs, sosui.tmh]
-  end
-
-  sample.split(/#{Bio::SOSUI::Report::DELIMITER}/).each {|ent|
-    hoge(ent)
-  }
-
-  exit if ARGV.size == 0
-
-  while ent = $<.gets(Bio::SOSUI::Report::DELIMITER)
-    hoge(ent)
-  end
-
-end
-
 
 

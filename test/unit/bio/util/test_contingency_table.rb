@@ -5,13 +5,15 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: test_contingency_table.rb,v 1.4 2007/04/05 23:35:44 trevor Exp $
+#  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4 , 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'bio/util/contingency_table'
 
@@ -72,20 +74,20 @@ module Bio #:nodoc:
 
 
       #assert_equal(2.4, results[0][2])
-      assert_equal('2.4', results[0][2].to_s)
-      assert_equal('0.534522483824849', results[0][3].to_s)
+      assert_in_delta(2.4, results[0][2], 1e-13)
+      assert_in_delta(0.534522483824849, results[0][3], 1e-15)
 
-      assert_equal('12.0', results[5][2].to_s)
-      assert_equal('0.816496580927726', results[5][3].to_s)
+      assert_in_delta(12.0, results[5][2], 1e-13)
+      assert_in_delta(0.816496580927726, results[5][3], 1e-15)
 
-      assert_equal('2.4', results[9][2].to_s)
-      assert_equal('0.534522483824849', results[9][3].to_s)
+      assert_in_delta(2.4, results[9][2], 1e-13)
+      assert_in_delta(0.534522483824849, results[9][3], 1e-15)
 
       ctable = Bio::ContingencyTable.new
       ctable.table['a']['t'] = 4
       ctable.table['a']['g'] = 2
       ctable.table['g']['t'] = 3
-      assert_equal('1.28571428571429', ctable.chi_square.to_s)
+      assert_in_delta(1.28571428571429, ctable.chi_square, 1e-14)
       assert_equal(ctable.column_sum_all, ctable.row_sum_all)
       assert_equal(ctable.column_sum_all, ctable.table_sum_all)
     end

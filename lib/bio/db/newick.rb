@@ -343,7 +343,9 @@ module Bio
     # Returns self.
     # This method is useful after changing parser options.
     def reparse
-      remove_instance_variable(:tree)
+      if defined?(@tree)
+        remove_instance_variable(:@tree)
+      end
       self.tree
       self
     end

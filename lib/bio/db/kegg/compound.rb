@@ -4,19 +4,44 @@
 # Copyright::  Copyright (C) 2001, 2002, 2004, 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: compound.rb,v 0.17 2007/11/27 07:09:43 k Exp $
+# $Id:$
 #
 
 require 'bio/db'
+require 'bio/db/kegg/common'
 
 module Bio
 class KEGG
 
+# == Description
+#
+# Bio::KEGG::COMPOUND is a parser class for the KEGG COMPOUND database entry.
+# KEGG COMPOUND is a chemical structure database.
+#
+# == References
+# 
+# * http://www.genome.jp/kegg/compound/
+#
 class COMPOUND < KEGGDB
 
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
 
+  include Common::DblinksAsHash
+  # Returns a Hash of the DB name and an Array of entry IDs in DBLINKS field.
+  def dblinks_as_hash; super; end if false #dummy for RDoc
+  alias dblinks dblinks_as_hash
+
+  include Common::PathwaysAsHash
+  # Returns a Hash of the pathway ID and name in PATHWAY field.
+  def pathways_as_hash; super; end if false #dummy for RDoc
+  alias pathways pathways_as_hash
+
+  # Creates a new Bio::KEGG::COMPOUND object.
+  # ---
+  # *Arguments*:
+  # * (required) _entry_: (String) single entry as a string
+  # *Returns*:: Bio::KEGG::COMPOUND object
   def initialize(entry)
     super(entry, TAGSIZE)
   end
@@ -31,6 +56,7 @@ class COMPOUND < KEGGDB
     field_fetch('NAME').split(/\s*;\s*/)
   end
 
+  # The first name recorded in the NAME field.
   def name
     names.first
   end
@@ -75,7 +101,7 @@ class COMPOUND < KEGGDB
   end
 
   # PATHWAY
-  def pathways
+  def pathways_as_strings
     lines_fetch('PATHWAY') 
   end
 
@@ -93,7 +119,7 @@ class COMPOUND < KEGGDB
   end
 
   # DBLINKS
-  def dblinks
+  def dblinks_as_strings
     lines_fetch('DBLINKS')
   end
 
@@ -111,21 +137,4 @@ end # COMPOUND
 
 end # KEGG
 end # Bio
-
-
-if __FILE__ == $0
-  entry = ARGF.read
-  cpd = Bio::KEGG::COMPOUND.new(entry)
-  p cpd.entry_id
-  p cpd.names
-  p cpd.name
-  p cpd.formula
-  p cpd.mass
-  p cpd.reactions
-  p cpd.rpairs
-  p cpd.pathways
-  p cpd.enzymes
-  p cpd.dblinks
-  p cpd.kcf
-end
 

@@ -1,8 +1,12 @@
 # To change this template, choose Tools | Templates
 # and open the template in the editor.
 
-$:.unshift File.join(File.dirname(__FILE__),'..','lib')
+# loading helper routine for testing bioruby
+require 'pathname'
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'bio'
 

@@ -4,10 +4,11 @@
 # Copyright::  Copyright (C) 2001, 2002, 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: enzyme.rb,v 0.12 2007/12/14 16:20:38 k Exp $
+# $Id:$
 #
 
 require 'bio/db'
+require 'bio/db/kegg/common'
 
 module Bio
 class KEGG
@@ -16,6 +17,26 @@ class ENZYME < KEGGDB
 
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
+
+  include Common::DblinksAsHash
+  # Returns a Hash of the DB name and an Array of entry IDs in DBLINKS field.
+  def dblinks_as_hash; super; end if false #dummy for RDoc
+  alias dblinks dblinks_as_hash
+
+  include Common::PathwaysAsHash
+  # Returns a Hash of the pathway ID and name in PATHWAY field.
+  def pathways_as_hash; super; end if false #dummy for RDoc
+  alias pathways pathways_as_hash
+
+  include Common::OrthologsAsHash
+  # Returns a Hash of the orthology ID and definition in ORTHOLOGY field.
+  def orthologs_as_hash; super; end if false #dummy for RDoc
+  alias orthologs orthologs_as_hash
+
+  include Common::GenesAsHash
+  # Returns a Hash of the organism ID and an Array of entry IDs in GENES field.
+  def genes_as_hash; super; end if false #dummy for RDoc
+  alias genes genes_as_hash
 
   def initialize(entry)
     super(entry, TAGSIZE)
@@ -102,17 +123,17 @@ class ENZYME < KEGGDB
   end
 
   # PATHWAY
-  def pathways
+  def pathways_as_strings
     lines_fetch('PATHWAY')
   end
 
   # ORTHOLOGY
-  def orthologs
+  def orthologs_as_strings
     lines_fetch('ORTHOLOGY')
   end
 
   # GENES
-  def genes
+  def genes_as_strings
     lines_fetch('GENES')
   end
 
@@ -137,7 +158,7 @@ class ENZYME < KEGGDB
   # REFERENCE
 
   # DBLINKS
-  def dblinks
+  def dblinks_as_strings
     lines_fetch('DBLINKS')
   end
 

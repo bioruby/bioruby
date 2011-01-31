@@ -5,16 +5,17 @@
 #              2005 Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: test_report.rb,v 1.1 2007/07/16 12:21:39 ngoto Exp $
+#  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 5, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
-
-require 'bio'
+require 'bio/appl/mafft/report'
 
 module Bio
   class TestAlignmentMultiFastaFormat < Test::Unit::TestCase

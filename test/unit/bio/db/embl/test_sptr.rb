@@ -7,11 +7,12 @@
 #  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), 
-                                 ['..'] * 5, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
 require 'test/unit'
 require 'bio/db/embl/sptr'
 
@@ -19,11 +20,8 @@ module Bio
   class TestSPTR < Test::Unit::TestCase
 
     def setup
-      bioruby_root = Pathname.new(File.join(File.dirname(__FILE__), 
-                                            ['..'] * 5)).cleanpath.to_s
-      data = File.open(File.join(bioruby_root, 
-                                 'test', 'data', 'uniprot', 
-                                 'p53_human.uniprot')).read
+      data = File.read(File.join(BioRubyTestDataPath, 
+                                 'uniprot', 'p53_human.uniprot'))
       @obj = Bio::SPTR.new(data)
     end
 
@@ -1662,7 +1660,7 @@ CC   -----------------------------------------------------------------------"
               "     MEEPQSDPSV EPPLSQETFS DLWKLLPENN VLSPLPSQAM DDLMLSPDDI EQWFTEDPGP\n" * 200,
               "//\n"].join
       sp = SPTR.new(data)
-      assert(12000, sp.seq.size)
+      assert_equal(12000, sp.seq.size)
     end
   end
 

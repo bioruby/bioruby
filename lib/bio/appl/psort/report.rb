@@ -5,7 +5,7 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-#  $Id: report.rb,v 1.15 2007/04/05 23:35:40 trevor Exp $
+#  $Id:$
 #
 # == A Report classes for PSORT Systems
 # 
@@ -411,47 +411,3 @@ module Bio
 
 end # module Bio
 
-
-
-
-
-# testing code
-
-if __FILE__ == $0
-
-
-  while entry = $<.gets(Bio::PSORT::PSORT2::Report::DELIMITER)
-
-    puts "\n ==> a = Bio::PSORT::PSORT2::Report.parser(entry)"
-    a = Bio::PSORT::PSORT2::Report.parser(entry)
-
-    puts "\n ==> a.entry_id "
-    p a.entry_id
-    puts "\n ==> a.scl "
-    p a.scl
-    puts "\n ==> a.pred "
-    p a.pred
-    puts "\n ==> a.prob "
-    p a.prob
-    p a.prob.keys.sort.map {|k| k.rjust(4)}.inspect.gsub('"','')
-    p a.prob.keys.sort.map {|k| a.prob[k].to_s.rjust(4) }.inspect.gsub('"','')
-
-    puts "\n ==> a.k "
-    p a.k
-    puts "\n ==> a.definition"
-    p a.definition
-    puts "\n ==> a.seq"
-    p a.seq
-
-    puts "\n ==> a.features.keys.sort "
-    p a.features.keys.sort
-
-    a.features.keys.sort.each do |key|
-      puts "\n ==> a.features['#{key}'] "
-      puts a.features[key]
-    end
-
-    
-  end
-
-end

@@ -7,9 +7,68 @@
 # $Id:$
 #
 
+require 'thread'
 require 'bio/command'
+require 'bio/version'
 
 module Bio
+
+class NCBI
+
+  autoload :SOAP,       'bio/io/ncbisoap'
+
+  # (Hash) Default parameters for Entrez (eUtils).
+  # They may also be used for other NCBI services.
+  ENTREZ_DEFAULT_PARAMETERS = {
+    'tool' => "#{$0} (bioruby/#{Bio::BIORUBY_VERSION_ID})",
+    'email' => nil,
+  }
+
+  # Resets Entrez (eUtils) default parameters.
+  # ---
+  # *Returns*:: (Hash) default parameters
+  def self.reset_entrez_default_parameters
+    h = {
+      'tool' => "#{$0} (bioruby/#{Bio::BIORUBY_VERSION_ID})",
+      'email' => nil,
+    }
+    ENTREZ_DEFAULT_PARAMETERS.clear
+    ENTREZ_DEFAULT_PARAMETERS.update(h)
+  end
+
+  # Gets default email address for Entrez (eUtils).
+  # ---
+  # *Returns*:: String or nil
+  def self.default_email
+    ENTREZ_DEFAULT_PARAMETERS['email']
+  end
+
+  # Sets default email address used for Entrez (eUtils).
+  # It may also be used for other NCBI services.
+  # ---
+  # *Arguments*:
+  # * (required) _str_: (String) email address
+  # *Returns*:: same as given argument
+  def self.default_email=(str)
+    ENTREZ_DEFAULT_PARAMETERS['email'] = str
+  end
+
+  # Gets default tool name for Entrez (eUtils).
+  # ---
+  # *Returns*:: String or nil
+  def self.default_tool
+    ENTREZ_DEFAULT_PARAMETERS['tool']
+  end
+
+  # Sets default tool name for Entrez (eUtils).
+  # It may also be used for other NCBI services.
+  # ---
+  # *Arguments*:
+  # * (required) _str_: (String) tool name
+  # *Returns*:: same as given argument
+  def self.default_tool=(str)
+    ENTREZ_DEFAULT_PARAMETERS['tool'] = str
+  end
 
 # == Description
 #
@@ -19,29 +78,81 @@ module Bio
 #
 # * http://www.ncbi.nlm.nih.gov/entrez/utils/utils_index.html
 #
-class NCBI
 class REST
 
   # Run retrieval scripts on weekends or between 9 pm and 5 am Eastern Time
   # weekdays for any series of more than 100 requests.
   # -> Not implemented yet in BioRuby
-
-  # Make no more than one request every 1 seconds.
-  # (NCBI's restriction is "Make no more than 3 requests every 1 second.",
-  # but limited to 1/sec partly because of keeping the value in integer.)
-  NCBI_INTERVAL = 1
+  #
+  # Wait for 1/3 seconds.
+  # NCBI's restriction is: "Make no more than 3 requests every 1 second.".
+  NCBI_INTERVAL = 1.0 / 3.0
   @@last_access = nil
+  @@last_access_mutex = nil
 
   private
 
+  # (Private) Sleeps until allowed to access.
+  # ---
+  # *Arguments*:
+  # * (required) _wait_: wait unit time
+  # *Returns*:: (undefined)
   def ncbi_access_wait(wait = NCBI_INTERVAL)
-    if @@last_access
-      duration = Time.now - @@last_access
-      if wait > duration
-        sleep wait - duration
+    @@last_access_mutex ||= Mutex.new
+    @@last_access_mutex.synchronize {
+      if @@last_access
+        duration = Time.now - @@last_access
+        if wait > duration
+          sleep wait - duration
+        end
       end
+      @@last_access = Time.now
+    }
+    nil
+  end
+
+  # (Private) default parameters
+  # ---
+  # *Returns*:: Hash
+  def default_parameters
+    Bio::NCBI::ENTREZ_DEFAULT_PARAMETERS
+  end
+
+  # (Private) Sends query to NCBI.
+  # ---
+  # *Arguments*:
+  # * (required) _serv_: (String) server URI string
+  # * (required) _opts_: (Hash) parameters
+  # *Returns*:: nil
+  def ncbi_post_form(serv, opts)
+    ncbi_check_parameters(opts)
+    ncbi_access_wait
+    response = Bio::Command.post_form(serv, opts)
+    response
+  end
+
+  # (Private) Checks parameters as NCBI requires.
+  # If no email or tool parameter, raises an error.
+  #
+  # NCBI announces that "Effective on
+  # June 1, 2010, all E-utility requests, either using standard URLs or
+  # SOAP, must contain non-null values for both the &tool and &email
+  # parameters. Any E-utility request made after June 1, 2010 that does
+  # not contain values for both parameters will return an error explaining
+  # that these parameters must be included in E-utility requests."
+  # ---
+  # *Arguments*:
+  # * (required) _opts_: Hash containing parameters
+  # *Returns*:: (undefined)
+  def ncbi_check_parameters(opts)
+    #return if Time.now < Time.gm(2010,5,31)
+    if opts['email'].to_s.empty? then
+      raise 'Set email parameter for the query, or set Bio::NCBI.default_email = "(your email address)"'
     end
-    @@last_access = Time.now
+    if opts['tool'].to_s.empty? then
+      raise 'Set tool parameter for the query, or set Bio::NCBI.default_tool = "(your tool name)"'
+    end
+    nil
   end
 
   public
@@ -67,8 +178,8 @@ class REST
   # *Returns*:: array of string (database names)
   def einfo
     serv = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/einfo.fcgi"
-    opts = {}
-    response = Bio::Command.post_form(serv, opts)
+    opts = default_parameters.merge({})
+    response = ncbi_post_form(serv, opts)
     result = response.body
     list = result.scan(/<DbName>(.*?)<\/DbName>/m).flatten
     return list
@@ -134,10 +245,7 @@ class REST
   # *Returns*:: array of entry IDs or a number of results
   def esearch(str, hash = {}, limit = nil, step = 10000)
     serv = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
-    opts = {
-      "tool"   => "bioruby",
-      "term"   => str,
-    }
+    opts = default_parameters.merge({ "term" => str })
     opts.update(hash)
 
     case opts["rettype"]
@@ -156,8 +264,7 @@ class REST
       0.step(limit, step) do |i|
         retmax = [step, limit - i].min
         opts.update("retmax" => retmax, "retstart" => i + retstart)
-        ncbi_access_wait
-        response = Bio::Command.post_form(serv, opts)
+        response = ncbi_post_form(serv, opts)
         result = response.body
         list += result.scan(/<Id>(.*?)<\/Id>/m).flatten
       end
@@ -169,14 +276,10 @@ class REST
   # *Returns*:: array of entry IDs or a number of results
   def esearch_count(str, hash = {})
     serv = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
-    opts = {
-      "tool"   => "bioruby",
-      "term"   => str,
-    }
+    opts = default_parameters.merge({ "term" => str })
     opts.update(hash)
     opts.update("rettype" => "count")
-    #ncbi_access_wait
-    response = Bio::Command.post_form(serv, opts)
+    response = ncbi_post_form(serv, opts)
     result = response.body
     count = result.scan(/<Count>(.*?)<\/Count>/m).flatten.first.to_i
     return count
@@ -211,10 +314,7 @@ class REST
   # *Returns*:: String
   def efetch(ids, hash = {}, step = 100)
     serv = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
-    opts = {
-      "tool"     => "bioruby",
-      "retmode"  => "text",
-    }
+    opts = default_parameters.merge({ "retmode"  => "text" })
     opts.update(hash)
 
     case ids
@@ -228,8 +328,7 @@ class REST
     0.step(list.size, step) do |i|
       opts["id"] = list[i, step].join(',')
       unless opts["id"].empty?
-        ncbi_access_wait
-        response = Bio::Command.post_form(serv, opts)
+        response = ncbi_post_form(serv, opts)
         result += response.body
       end
     end
@@ -637,104 +736,3 @@ end # REST
 end # NCBI
 end # Bio
 
-
-if __FILE__ == $0
-
-  gbopts = {"db"=>"nuccore", "rettype"=>"gb"}
-  pmopts = {"db"=>"pubmed", "rettype"=>"medline"}
-  count = {"rettype" => "count"}
-  xml = {"retmode"=>"xml"}
-  max = {"retmax"=>5}
-
-  puts "=== class methods ==="
-
-  puts "--- Search NCBI by E-Utils ---"
-
-  puts Time.now
-  puts "# count of 'tardigrada' in nuccore"
-  puts Bio::NCBI::REST.esearch("tardigrada", gbopts.merge(count))
-
-  puts Time.now
-  puts "# max 5 'tardigrada' entries in nuccore"
-  puts Bio::NCBI::REST.esearch("tardigrada", gbopts.merge(max))
-
-  puts Time.now
-  puts "# count of 'yeast kinase' in nuccore"
-  puts Bio::NCBI::REST.esearch("yeast kinase", gbopts.merge(count))
-
-  puts Time.now
-  puts "# max 5 'yeast kinase' entries in nuccore (XML)"
-  puts Bio::NCBI::REST.esearch("yeast kinase", gbopts.merge(xml).merge(max))
-
-  puts Time.now
-  puts "# count of 'genome&analysis|bioinformatics' in pubmed"
-  puts Bio::NCBI::REST.esearch("(genome AND analysis) OR bioinformatics", pmopts.merge(count))
-
-  puts Time.now
-  puts "# max 5 'genome&analysis|bioinformatics' entries in pubmed (XML)"
-  puts Bio::NCBI::REST.esearch("(genome AND analysis) OR bioinformatics", pmopts.merge(xml).merge(max))
-
-  puts Time.now
-  Bio::NCBI::REST.esearch("(genome AND analysis) OR bioinformatics", pmopts.merge(max)).each do |x|
-    puts "# each of 5 'genome&analysis|bioinformatics' entries in pubmed"
-    puts x
-  end
-
-  puts "--- Retrieve NCBI entry by E-Utils ---"
-
-  puts Time.now
-  puts "# '185041' entry in nuccore"
-  puts Bio::NCBI::REST.efetch("185041", gbopts)
-
-  puts Time.now
-  puts "# 'J00231' entry in nuccore (XML)"
-  puts Bio::NCBI::REST.efetch("J00231", gbopts.merge(xml))
-
-  puts Time.now
-  puts "# 16381885 entry in pubmed"
-  puts Bio::NCBI::REST.efetch(16381885, pmopts)
-
-  puts Time.now
-  puts "# '16381885' entry in pubmed"
-  puts Bio::NCBI::REST.efetch("16381885", pmopts)
-
-  puts Time.now
-  puts "# [10592173,14693808] entries in pubmed"
-  puts Bio::NCBI::REST.efetch([10592173, 14693808], pmopts)
-
-  puts Time.now
-  puts "# [10592173,14693808] entries in pubmed (XML)"
-  puts Bio::NCBI::REST.efetch([10592173, 14693808], pmopts.merge(xml))
-
-
-  puts "=== instance methods ==="
-
-  ncbi = Bio::NCBI::REST.new
-
-  puts "--- Search NCBI by E-Utils ---"
-
-  puts Time.now
-  puts "# count of 'genome&analysis|bioinformatics' in pubmed"
-  puts ncbi.esearch("(genome AND analysis) OR bioinformatics", pmopts.merge(count))
-
-  puts Time.now
-  puts "# max 5 'genome&analysis|bioinformatics' entries in pubmed"
-  puts ncbi.esearch("(genome AND analysis) OR bioinformatics", pmopts.merge(max))
-
-  puts Time.now
-  ncbi.esearch("(genome AND analysis) OR bioinformatics", pmopts).each do |x|
-    puts "# each 'genome&analysis|bioinformatics' entries in pubmed"
-    puts x
-  end
-
-  puts "--- Retrieve NCBI entry by E-Utils ---"
-
-  puts Time.now
-  puts "# 16381885 entry in pubmed"
-  puts ncbi.efetch(16381885, pmopts)
-
-  puts Time.now
-  puts "# [10592173,14693808] entries in pubmed"
-  puts ncbi.efetch([10592173, 14693808], pmopts)
-
-end

@@ -4,95 +4,135 @@
 # Copyright::  Copyright (C) 2007 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: drug.rb,v 1.3 2007/06/28 11:27:24 k Exp $
+# $Id:$
 #
 
 require 'bio/db'
+require 'bio/db/kegg/common'
 
 module Bio
 class KEGG
 
+# == Description
+#
+# Bio::KEGG::DRUG is a parser class for the KEGG DRUG database entry.
+# KEGG DRUG is a drug information database.
+#
+# == References
+# 
+# * http://www.genome.jp/kegg/drug/
+#
 class DRUG < KEGGDB
 
   DELIMITER	= RS = "\n///\n"
   TAGSIZE	= 12
 
+  include Common::DblinksAsHash
+  # Returns a Hash of the DB name and an Array of entry IDs in DBLINKS field.
+  def dblinks_as_hash; super; end if false #dummy for RDoc
+  alias dblinks dblinks_as_hash
+
+  include Common::PathwaysAsHash
+  # Returns a Hash of the pathway ID and name in PATHWAY field.
+  def pathways_as_hash; super; end if false #dummy for RDoc
+  alias pathways pathways_as_hash
+
+  # Creates a new Bio::KEGG::DRUG object.
+  # ---
+  # *Arguments*:
+  # * (required) _entry_: (String) single entry as a string
+  # *Returns*:: Bio::KEGG::DRUG object
   def initialize(entry)
     super(entry, TAGSIZE)
   end
 
-  # ENTRY
+  # ID of the entry, described in the ENTRY line.
+  # ---
+  # *Returns*:: String
   def entry_id
     field_fetch('ENTRY')[/\S+/]
   end
 
-  # NAME
+  # Names described in the NAME line.
+  # ---
+  # *Returns*:: Array containing String objects
   def names
     field_fetch('NAME').split(/\s*;\s*/)
   end
 
+  # The first name recorded in the NAME field.
+  # ---
+  # *Returns*:: String
   def name
     names.first
   end
 
-  # FORMULA
+  # Chemical formula described in the FORMULA line.
+  # ---
+  # *Returns*:: String
   def formula
     field_fetch('FORMULA')
   end
 
-  # MASS
+  # Molecular weight described in the MASS line.
+  # ---
+  # *Returns*:: Float
   def mass
     field_fetch('MASS').to_f
   end
 
-  # ACTIVITY
+  # Biological or chemical activity described in the ACTIVITY line.
+  # ---
+  # *Returns*:: String
   def activity
     field_fetch('ACTIVITY')
   end
 
-  # REMARK
+  # REMARK lines.
+  # ---
+  # *Returns*:: String
   def remark
     field_fetch('REMARK')
   end
 
-  # COMMENT
+  # List of KEGG Pathway IDs with short descriptions,
+  # described in the PATHWAY lines.
+  # ---
+  # *Returns*:: Array containing String objects
+  def pathways_as_strings
+    lines_fetch('PATHWAY') 
+  end
+
+  # List of database names and IDs, described in the DBLINKS lines.
+  # ---
+  # *Returns*:: Array containing String objects
+  def dblinks_as_strings
+    lines_fetch('DBLINKS')
+  end
+
+  # ATOM, BOND lines.
+  # ---
+  # *Returns*:: String
+  def kcf
+    return "#{get('ATOM')}#{get('BOND')}"
+  end
+
+  # COMMENT lines.
+  # ---
+  # *Returns*:: String
   def comment
     field_fetch('COMMENT')
   end
 
-  # PATHWAY
-  def pathways
-    lines_fetch('DBLINKS')
-  end
-
-  # DBLINKS
-  def dblinks
-    lines_fetch('DBLINKS')
-  end
-
-  # ATOM, BOND
-  def kcf
-    return "#{get('ATOM')}#{get('BOND')}"
+  # Product names described in the PRODUCTS lines.
+  # ---
+  # *Returns*:: Array containing String objects
+  def products
+    lines_fetch('PRODUCTS')
   end
 
 end # DRUG
 
 end # KEGG
 end # Bio
-
-
-if __FILE__ == $0
-  entry = ARGF.read	# dr:D00001
-  dr = Bio::KEGG::DRUG.new(entry)
-  p dr.entry_id
-  p dr.names
-  p dr.name
-  p dr.formula
-  p dr.mass
-  p dr.activity
-  p dr.remark
-  p dr.comment
-  p dr.dblinks
-  p dr.kcf
-end
 

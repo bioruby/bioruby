@@ -8,13 +8,15 @@
 #  $Id:$
 #
 
+# loading helper routine for testing bioruby
 require 'pathname'
-libpath = Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4, 'lib')).cleanpath.to_s
-$:.unshift(libpath) unless $:.include?(libpath)
+load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
+                            'bioruby_test_helper.rb')).cleanpath.to_s
 
+# libraries needed for the tests
+require 'test/unit'
 require 'bio/io/pubmed'
 require 'bio/db/medline'
-require 'test/unit'
 
 module Bio
 
@@ -113,6 +115,8 @@ module Bio
     include FuncTestPubmedCommon
 
     def setup
+      Bio::NCBI.default_email = 'staff@bioruby.org'
+      #$stderr.puts Bio::NCBI.default_tool
       @pm = Bio::PubMed.new
     end
   end #class FuncTestPubmed
@@ -122,6 +126,8 @@ module Bio
     include FuncTestPubmedCommon
 
     def setup
+      Bio::NCBI.default_email = 'staff@bioruby.org'
+      #$stderr.puts Bio::NCBI.default_tool
       @pm = Bio::PubMed
     end
   end #class FuncTestPubmedClassMethod

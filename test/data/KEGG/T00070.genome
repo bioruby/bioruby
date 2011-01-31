@@ -1,0 +1,34 @@
+ENTRY       T00070            Complete  Genome
+NAME        atu, A.tumefaciens, AGRT5, 176299
+DEFINITION  Agrobacterium tumefaciens C58
+ANNOTATION  manual
+TAXONOMY    TAX:176299
+  LINEAGE   Bacteria; Proteobacteria; Alphaproteobacteria; Rhizobiales;
+            Rhizobiaceae; Rhizobium/Agrobacterium group; Agrobacterium
+DATA_SOURCE RefSeq
+ORIGINAL_DB UWash
+DISEASE     Crown gall disease in plants
+COMMENT     Originally called Agrobacterium tumefaciens C58
+            (U.Washington/Dupont) to distinguish from Agrobacterium tumefaciens
+            C58 (Cereon) [GN:atc]
+CHROMOSOME  Circular
+  SEQUENCE  RS:NC_003062
+  LENGTH    2841580
+CHROMOSOME  L (linear chromosome)
+  SEQUENCE  RS:NC_003063
+  LENGTH    2075577
+PLASMID  Ti; Circular
+  SEQUENCE  RS:NC_003065
+  LENGTH    214233
+PLASMID  AT; Circular
+  SEQUENCE  RS:NC_003064
+  LENGTH    542868
+STATISTICS  Number of nucleotides:       5674258
+            Number of protein genes:        5355
+            Number of RNA genes:              74
+REFERENCE   PMID:11743193
+  AUTHORS   Wood DW, et al.
+  TITLE     The genome of the natural genetic engineer Agrobacterium
+            tumefaciens C58.
+  JOURNAL   Science 294:2317-23 (2001)
+///
