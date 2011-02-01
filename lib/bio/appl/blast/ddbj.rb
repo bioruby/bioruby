@@ -122,8 +122,10 @@ module Bio::Blast::Remote
         case result.to_s
         when /The search and analysis service by WWW is very busy now/
           raise result.to_s.strip + '(Alternatively, wrong options may be given.)'
-        when /Your job has not completed yet/
+        when /\AYour job has not (?:been )?completed yet/
           sleeptime = 5
+        when /\AERROR:/
+          raise result.to_s.strip
         else
           flag = false
         end
