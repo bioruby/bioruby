@@ -1,0 +1,38 @@
+= BioRuby 1.4.2 RELEASE NOTES
+
+A lot of changes have been made to the BioRuby 1.4.2 after the version 1.4.1
+is released. This document describes important and/or incompatible changes
+since the BioRuby 1.4.1 release.
+
+For known problems, see KNOWN_ISSUES.rdoc.
+
+== New features
+
+=== (to be written)
+
+== Bug fixes
+
+=== Bio::Blast
+
+* Failure of remote BLAST execution is fixed, due to the changes in GenomeNet
+  and DDBJ.
+* When executing remote BLAST with "genomenet" server, options "-b" and "-v"
+  are now correctly used to limit the number of hits to be reported.
+
+=== Other bug fixes
+
+== Incompatible changes
+
+=== Bio::Blast with the remote GenomeNet server
+
+When executing remote BLAST with "genomenet" server, options "-b" and "-v"
+are now correctly used to limit the number of hits to be reported.
+In 1.4.1 and before, "-B" and "-V" were mistakenly used for the purpose.
+
+== Known issues
+
+The following issues are added or updated. See KNOWN_ISSUES.rdoc for other
+already known issues.
+
+=== (to be written)
+
