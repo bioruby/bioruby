@@ -227,10 +227,9 @@ module Bio::Blast::Remote
           end
         end
 
-        # workaround 2005.08.12
-        if /\<A +HREF=\"(http\:\/\/blast\.genome\.jp(\/tmp\/[^\"]+))\"\>Show all result\<\/A\>/i =~ @output.to_s then
-          result = http.get($2)
-          @output = result.body
+        # workaround 2005.08.12 + 2011.01.27
+        if /\<A +HREF=\"(http\:\/\/[\-\.a-z0-9]+\.genome\.jp(\/tmp\/[^\"]+))\"\>Show all result\<\/A\>/i =~ @output.to_s then
+          @output = Bio::Command.read_uri($1)
           txt = @output.to_s.split(/\<pre\>/)[1]
           raise 'cannot understand response' unless txt
           txt.sub!(/\<\/pre\>.*\z/m, '')
