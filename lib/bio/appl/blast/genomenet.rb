@@ -169,8 +169,8 @@ module Bio::Blast::Remote
       matrix = opt.delete('-M') || 'blosum62'
       filter = opt.delete('-F') || 'T'
 
-      opt_V = opt.delete('-V') || 500 # default value for GenomeNet
-      opt_B = opt.delete('-B') || 250 # default value for GenomeNet
+      opt_v = opt.delete('-v') || 500 # default value for GenomeNet
+      opt_b = opt.delete('-b') || 250 # default value for GenomeNet
 
       # format, not for form parameters, but included in option string
       opt_m = opt.get('-m') || '7' # default of BioRuby GenomeNet factory
@@ -186,8 +186,8 @@ module Bio::Blast::Remote
         'other_param'    => optstr,
         'matrix'         => matrix,
         'filter'         => filter,
-        'V_value'        => opt_V, 
-        'B_value'        => opt_B, 
+        'V_value'        => opt_v, 
+        'B_value'        => opt_b, 
         'alignment_view' => 0,
       }
 
