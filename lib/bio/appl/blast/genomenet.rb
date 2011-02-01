@@ -166,6 +166,15 @@ module Bio::Blast::Remote
       program = opt.delete('-p')
       db = opt.delete('-d')
 
+      # When database name starts with mine-aa or mine-nt,
+      # space-separated list of KEGG organism codes can be given.
+      # For example, "mine-aa eco bsu hsa".
+      if /\A(mine-(aa|nt))\s+/ =~ db.to_s then
+        db = $1
+        myspecies = {}
+        myspecies["myspecies-#{$2}"] = $'
+      end
+
       matrix = opt.delete('-M') || 'blosum62'
       filter = opt.delete('-F') || 'T'
 
@@ -190,6 +199,8 @@ module Bio::Blast::Remote
         'B_value'        => opt_b, 
         'alignment_view' => 0,
       }
+
+      form.merge!(myspecies) if myspecies
 
       form.keys.each do |k|
         form.delete(k) unless form[k]
