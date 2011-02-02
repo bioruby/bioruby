@@ -58,6 +58,7 @@ class MEDLINE < NCBIDB
     hash['medline']  	= ui
     hash['abstract']	= abstract
     hash['mesh']	= mesh
+    hash['doi']	= doi
     hash['affiliations'] = affiliations
 
     hash.delete_if { |k, v| v.nil? or v.empty? }
