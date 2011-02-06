@@ -260,7 +260,7 @@ module Bio
   #  autoload :Report,       'bio/appl/mafft/report'
   #end
 
-  autoload :MEME,           'bio/appl/meme'
+  autoload :Meme,           'bio/appl/meme'
   ## below as described in bio/appl/meme.rb
   #class Meme
   #  autoload :Report,      'bio/appl/meme/report'
