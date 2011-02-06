@@ -260,6 +260,12 @@ module Bio
   #  autoload :Report,       'bio/appl/mafft/report'
   #end
 
+  autoload :MEME,           'bio/appl/meme'
+  ## below as described in bio/appl/meme.rb
+  #class Meme
+  #  autoload :Report,      'bio/appl/meme/report'
+  #end
+
   autoload :Tcoffee,        'bio/appl/tcoffee'
   autoload :Muscle,         'bio/appl/muscle'
   autoload :Probcons,       'bio/appl/probcons'
