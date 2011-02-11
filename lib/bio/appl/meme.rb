@@ -157,7 +157,8 @@ module Bio
     
     def run
       check_options
-      call_command(@cmd) {|io| @output = io.read }
+      @command = @cmd.split(' ')
+      call_command(@command) {|io| @output = io.read }
       Report.new(@output)
     end
     

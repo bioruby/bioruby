@@ -57,10 +57,10 @@ class TestMemeReport < Test::Unit::TestCase
     end
     site = motif.sites.first
     # shit, I think I have the parameter order switched!!!
-    assert_equal(site.site_name, 'NP_523684')
-    assert_equal(site.site_start, 206)
-    assert_equal(site.site_end, 238)
-    assert_equal(site.site_pvalue, 1.17e-39)
+    assert_equal('NP_523684', site.site_name)
+    assert_equal(206, site.site_start)
+    assert_equal(238, site.site_end)
+    assert_equal(1.17e-39, site.site_pvalue)
   end
   
 

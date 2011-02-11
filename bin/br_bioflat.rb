@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby
+#! /usr/local/bin/ruby
 # 
 # = bioflat - OBDA flat file indexer (executable)
 # 
