@@ -35,7 +35,7 @@ module Bio
       @motif_regex  = motif_regex
       @sites = []
       sites.each do |site|
-        @sites << Site.new(site[:site_name], site[:site_start], site[:site_end], site[:site_pvalue])
+        @sites << Site.new(site[:site_name], site[:site_start], site[:site_end], site[:site_pvalue], site[:site_sequence])
       end
     end
 
@@ -53,13 +53,14 @@ module Bio
     
     
     class Site
-      attr_accessor :site_name, :site_start, :site_end, :site_pvalue
+      attr_accessor :site_name, :site_start, :site_end, :site_pvalue, :site_sequence
       # this site class should take in a motif and initialize each site for that motif
-      def initialize(site_name, site_start, site_end, site_pvalue)
+      def initialize(site_name, site_start, site_end, site_pvalue, site_sequence)
         @site_name = site_name.to_s
         @site_start = site_start.to_i
         @site_end = site_end.to_i
         @site_pvalue = site_pvalue.to_f        
+        @site_sequence = site_sequence.to_s
       end
       
     end # end Site class

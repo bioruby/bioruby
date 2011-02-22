@@ -51,18 +51,20 @@ class TestMemeReport < Test::Unit::TestCase
   end
 
   def test_site_has_valid_data
-    motif = @report.motifs.first
-    motif.each_site do |site|
-      puts site.site_name
-    end
+    motif = @report.motifs.first  
     site = motif.sites.first
-    # shit, I think I have the parameter order switched!!!
     assert_equal('NP_523684', site.site_name)
     assert_equal(206, site.site_start)
     assert_equal(238, site.site_end)
     assert_equal(1.17e-39, site.site_pvalue)
+    assert_equal("RSERKKWIHCFEDVTAIIFCVAMSEYDQVLHED", site.site_sequence)
   end
   
+  def test_each_motif_method_works
+    @report.each do |motif|
+      puts motif.motif_number.to_s + motif.motif_width.to_s
+    end
+  end
 
     
   

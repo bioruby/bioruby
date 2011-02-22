@@ -104,15 +104,15 @@ module Bio
             elsif record_start and record_regex.match(line)
               # damn, this line looks like shit but the named captures sure are AWESOME
               # NOTE: i believe this is a 1.9+ feature, haven't tested
-              /^(?<site_name>\w+)[\.\d\|\w]+\s+(?<site_start>\d+)\s+(?<site_pvalue>\d\.\d+e\-\d+)/ =~ line
+              /^(?<site_name>\w+)[\.\d\|\w]+\s+(?<site_start>\d+)\s+(?<site_pvalue>\d\.\d+e\-\d+)\s+\w+\s+(?<site_sequence>\w+)/ =~ line
               # need this minus 1 or else the sequence is 1 AA too long
               site_end = site_start.to_i + motif_width.to_i - 1
-              
-              
+                            
               site = { :site_name   => site_name,
                        :site_start  => site_start,
                        :site_end    => site_end,
-                       :site_pvalue => site_pvalue }
+                       :site_pvalue => site_pvalue,
+                       :site_sequence => site_sequence }
               sites << site
    
 

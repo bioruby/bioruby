@@ -43,7 +43,7 @@ module Bio
     
     include Bio::Command
     
-    #autoload :Report, 'bio/appl/meme/report'
+    autoload :Report, 'bio/appl/meme/report'
     
     # A Hash of options for Meme
     attr_accessor :options
@@ -157,7 +157,7 @@ module Bio
     
     def run
       check_options
-      @command = @cmd.split(' ')
+      @command = @cmd.split
       call_command(@command) {|io| @output = io.read }
       Report.new(@output)
     end
