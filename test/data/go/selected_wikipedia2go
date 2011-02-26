@@ -1,0 +1,13 @@
+! version: $Revision: 1.17 $
+! date: $Date: 2010/06/11 01:01:37 $
+!
+! Generated from file ontology/editors/gene_ontology_write.obo,
+! CVS revision:  1.1296; date:  10:06:2010 16:16
+!
+! Mapping of Gene Ontology terms to Wikipedia entries.
+! Wikipedia: http://en.wikipedia.org
+! Last update at Thu Jun 10 17:21:44 2010 by the script /users/cjm/cvs/go-moose/bin/daily_from_obo.pl
+!
+Wikipedia:11beta-hydroxysteroid_dehydrogenase > GO:11-beta-hydroxysteroid dehydrogenase activity ; GO:0003845
+Wikipedia:2-(hydroxymethyl)-3-(acetamidomethylene)succinate_amidohydrolase_(deaminating\,_decarboxylating) > GO:2-(hydroxymethyl)-3-(acetamidomethylene)succinate hydrolase activity ; GO:0047414
+Wikipedia:2-hydroxymethylglutarate_dehydrogenase > GO:2-hydroxymethylglutarate dehydrogenase activity ; GO:0043718

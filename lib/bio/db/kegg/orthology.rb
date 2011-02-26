@@ -38,6 +38,27 @@ class ORTHOLOGY < KEGGDB
   def genes_as_hash; super; end if false #dummy for RDoc
   alias genes genes_as_hash
 
+  include Common::PathwaysAsHash
+  # Returns a Hash of the pathway ID and name in PATHWAY field.
+  def pathways_as_hash; super; end if false #dummy for RDoc
+  alias pathways pathways_as_hash
+
+  include Common::ModulesAsHash
+  # Returns MODULE field as a Hash.
+  # Each key of the hash is KEGG MODULE ID,
+  # and each value is the name of the Pathway Module.
+  # ---
+  # *Returns*:: Hash
+  def modules_as_hash; super; end if false #dummy for RDoc
+  alias modules modules_as_hash
+
+  include Common::References
+  # REFERENCE -- Returns contents of the REFERENCE records as an Array of
+  # Bio::Reference objects.
+  # ---
+  # *Returns*:: an Array containing Bio::Reference objects
+  def references; super; end if false #dummy for RDoc
+
   # Reads a flat file format entry of the KO database.
   def initialize(entry)
     super(entry, TAGSIZE)
@@ -73,9 +94,27 @@ class ORTHOLOGY < KEGGDB
     keggclass.gsub(/ \[[^\]]+/, '').split(/\] ?/)
   end
 
+  # Pathways described in the PATHWAY field.
+  # ---
+  # *Returns*:: Array containing String
+  def pathways_as_strings
+    lines_fetch('PATHWAY')
+  end
+
+  # *OBSOLETE* Do not use this method.
+  # Because KEGG ORTHOLOGY format is changed and PATHWAY field is added,
+  # older "pathways" method is renamed and remain only for compatibility.
+  # 
   # Returns an Array of KEGG/PATHWAY ID in CLASS field.
-  def pathways
+  def pathways_in_keggclass
     keggclass.scan(/\[PATH:(.*?)\]/).flatten
+  end
+
+  # Returns MODULE field of the entry.
+  # ---
+  # *Returns*:: Array containing String objects
+  def modules_as_strings
+    lines_fetch('MODULE')
   end
   
   # Returns an Array of a database name and entry IDs in DBLINKS field.

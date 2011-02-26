@@ -4,7 +4,7 @@ License::   The Ruby License
 
 = Known issues and bugs in BioRuby
 
-Below are known issues and bugs in BioRuby. Pathes to fix them are welcomed.
+Below are known issues and bugs in BioRuby. Patches to fix them are welcome.
 We hope they will be fixed in the future.
 
 Items marked with (WONT_FIX) tags would not be fixed within BioRuby because
@@ -68,6 +68,16 @@ because of the conversion of line feed codes in the text mode.
 This indicates that br_bioflat.rb and Bio::FlatFileIndex may create
 incorrect indexes on mswin32, mingw32, and bccwin32. In addition,
 Bio::FlatFile may return incorrect data.
+
+==== String escaping of command-line arguments
+
+After BioRuby 1.4.1, in Ruby 1.9.X running on Windows, escaping of
+command-line arguments are processed by the Ruby interpreter. Before BioRuby
+1.4.0, the escaping is executed in Bio::Command#escape_shell_windows, and
+the behavior is different from the Ruby interpreter's one.
+
+Curreltly, due to the change, test/functional/bio/test_command.rb may fail
+on Windows with Ruby 1.9.X.
 
 ==== Windows 95/98/98SE/ME
 

@@ -85,6 +85,11 @@ module Bio
       assert_equal(str, @obj.affiliations)
     end
 
+    def test_pubmed_url
+      assert_equal("http://www.ncbi.nlm.nih.gov/pubmed/12345678",
+                   @obj.pubmed_url)
+    end
+
     def test_format_general
       str = 'Hoge, J.P., Fuga, F.B. (2001). "Title of the study." Theor. J. Hoge 12:123-145.'
       assert_equal(str, @obj.format)
@@ -200,6 +205,36 @@ __END__
     end
 
   end
+
+  class TestReference_noURL < Test::Unit::TestCase
+    def setup
+      hash = {
+        'authors' => [ "Hoge, J.P.", "Fuga, F.B." ],
+        'title' => "Title of the study.",
+        'journal' => "Theor. J. Hoge",
+        'volume' => 12,
+        'issue' => 3,
+        'pages' => "123-145",
+        'year' => 2001,
+        'pubmed' => 12345678,
+        'medline' => 98765432,
+        'abstract' => "Hoge fuga. hoge fuga.",
+        'mesh' => ['Hoge'],
+        'affiliations' => ['Tokyo']
+      }
+      @obj = Bio::Reference.new(hash)
+    end
+
+    def test_url
+      assert_equal(nil, @obj.url)
+    end
+
+    def test_format_endnote
+      str = "%0 Journal Article\n%A Hoge, J.P.\n%A Fuga, F.B.\n%D 2001\n%T Title of the study.\n%J Theor. J. Hoge\n%V 12\n%N 3\n%P 123-145\n%M 12345678\n%U http://www.ncbi.nlm.nih.gov/pubmed/12345678\n%X Hoge fuga. hoge fuga.\n%K Hoge\n%+ Tokyo"
+      assert_equal(str, @obj.format('endnote'))
+      assert_equal(str, @obj.endnote)
+    end
+  end #class TestReference_noURL
 
   class TestReferences < Test::Unit::TestCase
 

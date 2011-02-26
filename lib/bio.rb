@@ -107,6 +107,8 @@ module Bio
     autoload :EXPRESSION,   'bio/db/kegg/expression'
     autoload :ORTHOLOGY,    'bio/db/kegg/orthology'
     autoload :KGML,         'bio/db/kegg/kgml'
+    autoload :PATHWAY,      'bio/db/kegg/pathway'
+    autoload :MODULE,       'bio/db/kegg/module'
     autoload :Taxonomy,     'bio/db/kegg/taxonomy'
   end
 

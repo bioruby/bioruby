@@ -1,3 +1,1715 @@
+commit 92cfda14c08b270ed1beca33153125141f88510e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 22 13:00:09 2010 +0900
+
+    Preparation for bioruby-1.4.1 release.
+
+ bioruby.gemspec    |    2 +-
+ lib/bio/version.rb |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit d7999539392bba617b041e3120b5b2d785301f24
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 22 10:27:02 2010 +0900
+
+    Newly added issue is copied from KNOWN_ISSUES.rdoc to the release note.
+
+ RELEASE_NOTES.rdoc |   15 +++++++++++++++
+ 1 files changed, 15 insertions(+), 0 deletions(-)
+
+commit a9f287658441038a4e9bb220502523de039417f9
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 22 10:26:44 2010 +0900
+
+    updated description of an issue
+
+ KNOWN_ISSUES.rdoc |   12 +++++++-----
+ 1 files changed, 7 insertions(+), 5 deletions(-)
+
+commit bb946d1c97d1eb0de62c8b509bbfb02d67efffeb
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 23:17:25 2010 +0900
+
+    Added an issue about command-line string escaping on Windows with Ruby 1.9.
+
+ KNOWN_ISSUES.rdoc |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
+
+commit fe7d26516cc6b9a3cf8c16e6f8204a4d5eb5e5ae
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 20:34:32 2010 +0900
+
+    Added descriptions.
+
+ RELEASE_NOTES.rdoc |   52 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 52 insertions(+), 0 deletions(-)
+
+commit fd5da3b47ebce1df46922f20d013439faef483e9
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 18:27:44 2010 +0900
+
+    ChangeLog is updated.
+
+ ChangeLog | 1657 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 1657 insertions(+), 0 deletions(-)
+
+commit fab16977d23bb3a5fdfc976eece14dfdabdcac4d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 18:07:43 2010 +0900
+
+    preparation for release candidate 1.4.1-rc1
+
+ bioruby.gemspec    |   40 ++++++++++++++++++++++++++++++++++++++--
+ lib/bio/version.rb |    4 ++--
+ 2 files changed, 40 insertions(+), 4 deletions(-)
+
+commit 119cc3bf5582735a5df574450ec685fd2f989b5d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 18:05:13 2010 +0900
+
+    Temporarily removed for packaging new version. It will be reverted later.
+
+ doc/howtos/sequence_codon.txt |   38 --------------------------------------
+ 1 files changed, 0 insertions(+), 38 deletions(-)
+ delete mode 100644 doc/howtos/sequence_codon.txt
+
+commit 1b1b3752e3c98a29caf837bfc12c1ed79a04dba2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 16:48:43 2010 +0900
+
+    Fixed typo, reported by Tomoaki NISHIYAMA.
+
+ KNOWN_ISSUES.rdoc |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 47ed7e5eaca4a261ef0fd4f76909c930e52aadd5
+Merge: c002142 548cb58
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 16:17:59 2010 +0900
+
+    Merge branch 'test-defline-by-jtprince'
+
+commit 548cb58aaad06bb9161e09f7b4ae45729898ca5e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 16:16:28 2010 +0900
+
+    adjusted filename in header
+
+ test/unit/bio/db/fasta/test_defline_misc.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 95be260708ef21be7848a5d4b7c494cc6bb3d81f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 16:14:58 2010 +0900
+
+    Renamed to test_defline_misc.rb to resolve the file name conflict.
+
+ test/unit/bio/db/fasta/test_defline.rb      |  490 ---------------------------
+ test/unit/bio/db/fasta/test_defline_misc.rb |  490 +++++++++++++++++++++++++++
+ 2 files changed, 490 insertions(+), 490 deletions(-)
+ delete mode 100644 test/unit/bio/db/fasta/test_defline.rb
+ create mode 100644 test/unit/bio/db/fasta/test_defline_misc.rb
+
+commit 1e7628e2c396330743d4904b100d62d2c2773bf0
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 16:11:14 2010 +0900
+
+    Test bug fix: mistake in test_get method in two classes.
+
+ test/unit/bio/db/fasta/test_defline.rb |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit c479f56f14fb531e31c7e5fdd02f6c934ac468fa
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 16:06:46 2010 +0900
+
+    Test bug fix: test classes should inherit Test::Unit::TestCase.
+
+ test/unit/bio/db/fasta/test_defline.rb |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
+
+commit 0e8ea46e5a239df5c1da3c63e602376c04191ef4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 15:55:02 2010 +0900
+
+    Bug fix: syntax error in Ruby 1.8.7 due to a comma.
+
+ test/unit/bio/db/fasta/test_defline.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 62a2c1d7c47fbef7a7e7c4f1c079f98fa74e5099
+Author: John Prince <jtprince@gmail.com>
+Date:   Tue Oct 19 11:20:16 2010 -0600
+
+    added individual unit tests for Bio::FastaDefline
+
+ test/unit/bio/db/fasta/test_defline.rb |  490 ++++++++++++++++++++++++++++++++
+ 1 files changed, 490 insertions(+), 0 deletions(-)
+ create mode 100644 test/unit/bio/db/fasta/test_defline.rb
+
+commit c002142cdb478b0ad08b7bd5e3331c7b643222f1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 15:36:58 2010 +0900
+
+    Adjusted file paths and the copyright line.
+
+ test/unit/bio/db/fasta/test_defline.rb |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit a5818c5f8ae07e4ec4bdcc2229df9a59bded63f0
+Author: Kazuhiro Hayashi <k.hayashi.info@gmail.com>
+Date:   Thu Jun 17 11:54:15 2010 +0900
+
+    Newly added unit tests for Bio::FastaDefline
+    
+     * Newly added unit tests for Bio::FastaDefline.
+     * This is part of combination of the two commits:
+       bd2452caf0768e7000d19d462465b1772e3c030b
+       (modified test file for Bio::FastaDefline)
+       cae1b6c00cdb9044cb0dfb4db58e6acfe9b7d246
+       (Added test/unit/bio/db/fasta/test_defline.rb and
+        test/unit/bio/db/kegg/test_kgml.rb with the sample file newly.)
+
+ test/unit/bio/db/fasta/test_defline.rb |  160 ++++++++++++++++++++++++++++++++
+ 1 files changed, 160 insertions(+), 0 deletions(-)
+ create mode 100644 test/unit/bio/db/fasta/test_defline.rb
+
+commit 4addb906df442adf4ed20275428070b651abbf07
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 15:08:46 2010 +0900
+
+    Added note for a dead link, updated a URL, and added a new reference.
+
+ lib/bio/db/fasta/defline.rb |    8 ++++++--
+ 1 files changed, 6 insertions(+), 2 deletions(-)
+
+commit e636f123adf28688748cc5bbbc6e0c817358d475
+Author: John Prince <jtprince@gmail.com>
+Date:   Thu Oct 14 15:38:07 2010 -0600
+
+    included TREMBL prefix to list of NSIDs (tr|)
+    
+     * Included TREMBL prefix to list of NSIDs (tr|).
+       This is a standard prefix found in UniprotKB FASTA files.
+
+ lib/bio/db/fasta/defline.rb |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit 5277eb0b5376a0dc217dc051c49993c505956400
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 14:16:03 2010 +0900
+
+    Bug fix: Bio::ClustalW::Report#get_sequence may fail
+    
+     * Bug fix: Bio::ClustalW::Report#get_sequence may fail when the second
+       argument of Bio::ClustalW::Report.new is specified.
+
+ lib/bio/appl/clustalw/report.rb |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
+
+commit 81b9238abb643573a4051dc0f10c4f9a2cff40fa
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 14:21:52 2010 +0900
+
+    Added a test class to test the second argument of Bio::ClustalW::Report.new.
+
+ test/unit/bio/appl/clustalw/test_report.rb |   19 +++++++++++++++++++
+ 1 files changed, 19 insertions(+), 0 deletions(-)
+
+commit 3e9b149aec91585732a34efaa960c96bcec2eef8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 13:22:38 2010 +0900
+
+    Ruby 1.9.2 support: defined Bio::RestrictionEnzyme::DoubleStranded::AlignedStrands#initialize
+    
+     * Bio::RestrictionEnzyme::DoubleStranded::AlignedStrands#initialize
+       is explicitly defined, due to the behavior change of argument number
+       check in the default initialize method in Ruby 1.9.2.
+
+ .../double_stranded/aligned_strands.rb             |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+commit cfe31c02d4bd0d97e588d25dc30188da6be81e85
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 11:49:08 2010 +0900
+
+    Ruby 1.9.2 support: assert_in_delta for a float value.
+
+ test/unit/bio/db/test_aaindex.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 3f5d2ccb9ac8bc44febc88d441f47aeddf7f12ff
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 11:41:38 2010 +0900
+
+    Ruby 1.9.2 support: using assert_in_delta for float values.
+    
+     * Ruby 1.9.2 support: using assert_in_delta for float values.
+       The patch is written by Tomoaki NISHIYAMA during BH2010.10.
+
+ test/unit/bio/util/test_contingency_table.rb |   14 +++++++-------
+ 1 files changed, 7 insertions(+), 7 deletions(-)
+
+commit f357929bc5dcf8295b0a11a09b4025e3592d9eda
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 11:16:37 2010 +0900
+
+    Small changes for README.rdoc.
+
+ README.rdoc |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
+
+commit c6c567fe9602ae8d7d343a5773f51d8aa22c8876
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 21 11:12:17 2010 +0900
+
+    Shows message when running "ruby setup.rb test" with Ruby1.9.
+
+ setup.rb |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+commit 9b66463c4150a679e63289e0cee3c4d1200c7d0f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Oct 20 17:53:36 2010 +0900
+
+    Added description about incompatible the change in Bio::AAindex2.
+
+ RELEASE_NOTES.rdoc |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+commit 327ea878d4e15b99711d8121a54698da29d4b0aa
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Oct 20 17:35:53 2010 +0900
+
+    Changed the expected return values in the unit tests, following the last change to Bio::AAindex2.
+    
+     * Changed the expected return values in the unit tests,
+     following the last change to Bio::AAindex2.
+     * The patch is written by Tomoaki NISHIYAMA during BH2010.10.
+
+ test/unit/bio/db/test_aaindex.rb |   15 ++++++++-------
+ 1 files changed, 8 insertions(+), 7 deletions(-)
+
+commit 31963b43daab2801087f5f6d23b04e357bb7b1e2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Oct 20 17:32:26 2010 +0900
+
+    Ruby 1.9.2 support: Incompatible change: the symmetric elements for triangular matrix should be copied
+    
+     * Ruby 1.9.2 support: Incompatible change: the symmetric elements
+       for triangular matrix should be copied. The patch is written by
+       Tomoaki NISHIYAMA during BH2010.10.
+
+ lib/bio/db/aaindex.rb |   12 +++++++++++-
+ 1 files changed, 11 insertions(+), 1 deletions(-)
+
+commit e8a1d65984781466eff9d5a262f18cb1c3e01056
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Oct 20 16:10:51 2010 +0900
+
+    Test bug fix: confusion between assert and assert_equal
+    
+     * Test bug fix: the assert should be assert_equal. The bug was
+       found with Ruby 1.9.2-p0.
+
+ test/unit/bio/db/embl/test_sptr.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit feb2cda47beab91e2fc3dddf99d5cc1cacf3fbae
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Oct 20 14:59:40 2010 +0900
+
+    Test bug fix: confusion between assert and assert_equal, and apparently wrong expected values.
+    
+     * Test bug fix: the assert should be assert_equal. The bug was found
+       with Ruby 1.9.2-p0.
+     * In the test_rates_hundred_and_fiftieth_position method, the index
+       for @example_rates and the expected value of the third assertion
+       were apparently wrong.
+     * Reported by Tomoaki NISHIYAMA during BH2010.10.
+
+ test/unit/bio/appl/paml/codeml/test_rates.rb |   12 ++++++------
+ 1 files changed, 6 insertions(+), 6 deletions(-)
+
+commit ffc03a11a4ef7b36ea78de58d4c8d4e9259093c4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Oct 16 01:06:36 2010 +0900
+
+    Tests for Bio::KEGG::PATHWAY are improved with new test data.
+
+ test/data/KEGG/ec00072.pathway        |   23 +
+ test/data/KEGG/hsa00790.pathway       |   59 ++
+ test/data/KEGG/ko00312.pathway        |   16 +
+ test/data/KEGG/rn00250.pathway        |  114 ++++
+ test/unit/bio/db/kegg/test_pathway.rb | 1055 +++++++++++++++++++++++++++++++++
+ 5 files changed, 1267 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/KEGG/ec00072.pathway
+ create mode 100644 test/data/KEGG/hsa00790.pathway
+ create mode 100644 test/data/KEGG/ko00312.pathway
+ create mode 100644 test/data/KEGG/rn00250.pathway
+
+commit 1e1d974c2c72ddf5a45e41c6f2510729fb65a4ad
+Author: Toshiaki Katayama <k@bioruby.org>
+Date:   Tue Jul 20 11:46:52 2010 +0900
+
+    Added methods for parsing KEGG PATHWAY fields.
+    
+     * Added methods for parsing KEGG PATHWAY fields.
+     * This is part of commit e2abe5764f3ded91c82689245f19a0412d3a7afb
+       and modified to merge with the current HEAD (original commit
+       message: Changes for TogoWS).
+
+ lib/bio/db/kegg/pathway.rb |  146 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 145 insertions(+), 1 deletions(-)
+
+commit 957c8ee630538a8c49c52339cb3c0364e5328378
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Oct 16 00:50:42 2010 +0900
+
+    Private method strings_as_hash is moved to Bio::KEGG::Common::StringsAsHash.
+
+ lib/bio/db/kegg/common.rb |   18 ++++++++++++++++++
+ lib/bio/db/kegg/module.rb |   19 +++++--------------
+ 2 files changed, 23 insertions(+), 14 deletions(-)
+
+commit b7fd85382bccceaa29958d5daf98ca0a513e5a9a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 15 22:01:05 2010 +0900
+
+    Renamed Bio::KEGG::*#pathway_modules to modules, etc.
+    
+     * Renamed following methods in Bio::KEGG::ORTHOLOGY and
+       Bio::KEGG:PATHWAY classes: pathway_modules to modules,
+       pathway_modules_as_strings to modules_as_strings, and
+       pathway_modules_as_hash to modules_as_hash.
+     * Unit tests are also modified.
+
+ lib/bio/db/kegg/common.rb               |   18 +++++++++---------
+ lib/bio/db/kegg/orthology.rb            |   10 +++++-----
+ lib/bio/db/kegg/pathway.rb              |   10 +++++-----
+ test/unit/bio/db/kegg/test_orthology.rb |   12 ++++++------
+ test/unit/bio/db/kegg/test_pathway.rb   |   20 ++++++++++----------
+ 5 files changed, 35 insertions(+), 35 deletions(-)
+
+commit 02aea9f18ff6e3079309a76d04d02ea1f2902e7b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 15 00:20:48 2010 +0900
+
+    Modified tests for Bio::KEGG::GENES following the changes of the class.
+
+ test/unit/bio/db/kegg/test_genes.rb |   30 +++++++++++++++++++++++++++++-
+ 1 files changed, 29 insertions(+), 1 deletions(-)
+
+commit f4b45ea629734ecff820483475d83fef6cbe068e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 14 23:57:18 2010 +0900
+
+    Reverted Bio::KEGG::GENES#genes, gene and motif methods and modified.
+    
+     * Reverted Bio::KEGG::GENES#genes, gene and motif methods which are
+       removed in the last commit. To avoid code duplication, they are
+       also modified to use other methods, and RDoc is added about the
+       deprecation or change of the methods.
+     * Modified RDoc.
+
+ lib/bio/db/kegg/genes.rb |   32 +++++++++++++++++++++++++++++++-
+ 1 files changed, 31 insertions(+), 1 deletions(-)
+
+commit dd987911cb4a84e23565bb37707611d054c22101
+Author: Toshiaki Katayama <k@bioruby.org>
+Date:   Tue Jul 20 11:46:52 2010 +0900
+
+    New methods Bio::KEGG::GENES#keggclass etc.
+    
+     * New methods and aliases are added: Bio::KEGG::GENES#keggclass,
+       keggclasses, names_as_array, names, motifs_as_strings,
+       motifs_as_hash, motifs.
+     * Removed Bio::KEGG::GENES#genes, gene and motif methods.
+     * Added a comment about deprecation of CODON_USAGE lines.
+     * This is part of commit e2abe5764f3ded91c82689245f19a0412d3a7afb
+       (original commit message: Changes for TogoWS).
+
+ lib/bio/db/kegg/genes.rb |   41 ++++++++++++++++++++++++++---------------
+ 1 files changed, 26 insertions(+), 15 deletions(-)
+
+commit b2575f5acfeca269c93a35baa3809fdac17a7271
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Oct 13 23:12:33 2010 +0900
+
+    Release notes for the upcoming release version.
+
+ RELEASE_NOTES.rdoc |   31 +++++++++++++++++++++++++++++++
+ 1 files changed, 31 insertions(+), 0 deletions(-)
+ create mode 100644 RELEASE_NOTES.rdoc
+
+commit 83992875c45a1fdd54d042c923dee51119026e49
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Oct 13 23:11:21 2010 +0900
+
+    Renamed RELEASE_NOTES.rdoc to doc/RELEASE_NOTES-1.4.0.rdoc.
+
+ RELEASE_NOTES.rdoc           |  167 ------------------------------------------
+ doc/RELEASE_NOTES-1.4.0.rdoc |  167 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 167 insertions(+), 167 deletions(-)
+ delete mode 100644 RELEASE_NOTES.rdoc
+ create mode 100644 doc/RELEASE_NOTES-1.4.0.rdoc
+
+commit f649629eb6216aeabbd2020bcac9b7f870b12395
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Oct 13 21:58:58 2010 +0900
+
+    Added acknowledgement to Kozo Nishida for KEGG parsers.
+
+ RELEASE_NOTES.rdoc |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit 379f177edc0f95dee1ec0c2d2cf679c27918e41b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 8 16:31:58 2010 +0900
+
+    Fixed a variable name mistake in Bio::Command, and English grammer fix.
+    
+     * Fixed a variable name mistake in Bio::Command#no_fork?.
+     * English grammer fix for comments. Thanks to Andrew Grimm who
+       reports the fix.
+
+ lib/bio/command.rb |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 1344c27c90438d8c8840ee507d0ab43224f89054
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Oct 6 23:47:26 2010 +0900
+
+    Bug fix: fork(2) is called on platforms that do not support it.
+    
+     * Bug fix: fork(2) is called on platforms that do not support it.
+       Thanks to Andrew Grimm who reports the bug
+       (fork() is called on platforms that do not support it;
+       http://github.com/bioruby/bioruby/issues#issue/6).
+     * Bio::Command#call_command and query_command can now fall back
+       into using popen when fork(2) is not implemented.
+     * Detection of Windows platform is improved. The idea of the code
+       is taken from Redmine's platform.rb.
+
+ lib/bio/command.rb                  |   98 +++++++++++++++++++++++++++++------
+ test/functional/bio/test_command.rb |    9 +--
+ 2 files changed, 84 insertions(+), 23 deletions(-)
+
+commit 0bfa1c3a8d7b8d03919d54a2a241ca96a79bad83
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Oct 6 15:49:51 2010 +0900
+
+    Bug fix: Bio::MEDLINE#reference is changed not to put empty values
+    
+     * Bug fix: Bio::MEDLINE#reference is changed not to put empty values
+       in the returned Bio::Reference object. I think the original bahavior
+       is a bug. This is an incompatible change but the effect is very small.
+
+ lib/bio/db/medline.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 8e0bc03d79a1f20743c29f0a44e273d362eaa2cd
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Oct 6 15:39:34 2010 +0900
+
+    Bug fix: Bio::MEDLINE#initialize should handle continuation of lines.
+    
+     * Bug fix: Bio::MEDLINE#initialize should handle continuation of lines.
+       Thanks to Steven Bedrick who reports the bug
+       (Bio::MEDLINE#initialize handles multi-line MeSH terms incorrectly;
+       http://github.com/bioruby/bioruby/issues#issue/7).
+
+ lib/bio/db/medline.rb |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+commit 728de78b438108e44066a7ce7490632c81108fb6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Oct 6 15:29:10 2010 +0900
+
+    Added unit tests for Bio::MEDLINE with test data.
+    
+     * Added unit tests for Bio::MEDLINE with test data. The data is
+       taken from NCBI and the abstract was removed to avoid possible
+       copyright problem. The choice of the data (PMID: 20146148) is
+       suggested by Steven Bedrick in a bug report (Bio::MEDLINE#initialize
+       handles multi-line MeSH terms incorrectly).
+
+ test/data/medline/20146148_modified.medline |   54 ++++++++++
+ test/unit/bio/db/test_medline.rb            |  148 +++++++++++++++++++++++++++
+ 2 files changed, 202 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/medline/20146148_modified.medline
+
+commit 930095817ce60793ac909a4d01731d1f97bc4fa5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 29 20:51:12 2010 +0900
+
+    Bug fix: NoMethodError in Bio::Tree#collect_edge!
+    
+     * Bug fix: NoMethodError in Bio::Tree#collect_edge!.
+       Thanks to Kazuhiro Hayashi who reports the bug.
+
+ lib/bio/tree.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit c7927ec4743ddc4ec4501790bbed097b69f616e7
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 29 20:49:44 2010 +0900
+
+    Modified and improved tests for Bio::Tree.
+
+ test/unit/bio/test_tree.rb |  393 +++++++++++++++++++++++++++-----------------
+ 1 files changed, 240 insertions(+), 153 deletions(-)
+
+commit 0161148c9b4d9ea404af92b4baf8241239a283de
+Author: Kazuhiro Hayashi <k.hayashi.info@gmail.com>
+Date:   Fri Jul 16 00:09:39 2010 +0900
+
+    Modified unit tests for Bio::Tree
+    
+     * Modified unit tests for Bio::Tree.
+     * This is part of combination of the two commits:
+       * 6675fd930718e41ad009f469b8167f81c9b2ad52
+         (Modified unit tests and classes)
+       * a6dc63ffe3460ea8d8980b3d6c641356881e0862
+         (Modified unit test for Bio::Tree)
+
+ test/unit/bio/test_tree.rb |  174 +++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 173 insertions(+), 1 deletions(-)
+
+commit 31ded691a9329e45fe563e5f70138648d3b30bbf
+Author: Kazuhiro Hayashi <k.hayashi.info@gmail.com>
+Date:   Thu Jul 15 21:06:28 2010 +0900
+
+    Bug fix: Bio::Tree#remove_edge_if did not work.
+    
+     * Bug fix: Bio::Tree#remove_edge_if did not work.
+     * This is part of commit 6675fd930718e41ad009f469b8167f81c9b2ad52
+       (original commit message: Modified unit tests and classes)
+       and removed a comment line.
+
+ lib/bio/tree.rb |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit d0a3af23c74004688a8fc0b5be3d09f7144e33a1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 22 19:23:50 2010 +0900
+
+    Renamed test/data/go/part_of_* to avoid possible confusion
+    
+     * Renamed test/data/go/part_of_* to selected_* to avoid possible
+       confusion: The word "part_of" is a keyword in Gene Ontology.
+
+ test/data/go/part_of_component.ontology    |   12 ----------
+ test/data/go/part_of_gene_association.sgd  |   31 ----------------------------
+ test/data/go/part_of_wikipedia2go          |   13 -----------
+ test/data/go/selected_component.ontology   |   12 ++++++++++
+ test/data/go/selected_gene_association.sgd |   31 ++++++++++++++++++++++++++++
+ test/data/go/selected_wikipedia2go         |   13 +++++++++++
+ test/unit/bio/db/test_go.rb                |    6 ++--
+ 7 files changed, 59 insertions(+), 59 deletions(-)
+ delete mode 100644 test/data/go/part_of_component.ontology
+ delete mode 100644 test/data/go/part_of_gene_association.sgd
+ delete mode 100644 test/data/go/part_of_wikipedia2go
+ create mode 100644 test/data/go/selected_component.ontology
+ create mode 100644 test/data/go/selected_gene_association.sgd
+ create mode 100644 test/data/go/selected_wikipedia2go
+
+commit e4f82da52402f8175bd92b50209b09bc83bfddd6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 22 19:21:36 2010 +0900
+
+    Removed unused test/data/go/wikipedia2go.txt.
+
+ test/data/go/wikipedia2go.txt |  728 -----------------------------------------
+ 1 files changed, 0 insertions(+), 728 deletions(-)
+ delete mode 100644 test/data/go/wikipedia2go.txt
+
+commit 5003fd53b0a3852fa23b76ad6ec8e9e76d5850fc
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 16 22:37:31 2010 +0900
+
+    Adjusted test data file paths and header lines in test_go.rb.
+    
+     * Adjusted test data file paths.
+     * Adjusted copyright and description in the header.
+
+ test/unit/bio/db/test_go.rb |   26 +++++++++++++++++---------
+ 1 files changed, 17 insertions(+), 9 deletions(-)
+
+commit 540cb7ab27e79634f5436476cce51cc20ca0f70f
+Author: Kazuhiro Hayashi <k.hayashi.info@gmail.com>
+Date:   Thu Jul 15 21:06:28 2010 +0900
+
+    Added tests for Bio::GO classes.
+    
+     * Added tests for Bio::GO classes.
+     * This is part of combination of the three commits:
+       * 555f7b49a43e7c35c82cd48b199af96ca93d4179
+         (added test_genbank.rb and test_go.rb with the test files.
+          modified test_pdb.rb)
+       * e966f17546427b8ad39cb9942807ceb8a068d746
+         (modified test/unit/bio/db/test_go.rb and added the test files
+          for each GO class)
+       * 6675fd930718e41ad009f469b8167f81c9b2ad52
+         (Modified unit tests and classes)
+
+ test/unit/bio/db/test_go.rb |  163 +++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 163 insertions(+), 0 deletions(-)
+ create mode 100644 test/unit/bio/db/test_go.rb
+
+commit 5ff01f7dfbc3661d8c66b44874a2ba4ff2f96b56
+Author: Kazuhiro Hayashi <k.hayashi.info@gmail.com>
+Date:   Fri Jun 11 21:02:29 2010 +0900
+
+    Added test data for Bio::GO classes.
+    
+     * Added test data for Bio::GO classes.
+     * This is part of combination of the three commits:
+       * 555f7b49a43e7c35c82cd48b199af96ca93d4179
+         (added test_genbank.rb and test_go.rb with the test files.
+          modified test_pdb.rb)
+       * e966f17546427b8ad39cb9942807ceb8a068d746
+         (modified test/unit/bio/db/test_go.rb and added the test files
+          for each GO class)
+       * 6675fd930718e41ad009f469b8167f81c9b2ad52
+         (Modified unit tests and classes)
+     * License for the test data is the public domain.
+       ( http://wiki.geneontology.org/index.php/Legal_FAQ )
+
+ test/data/go/part_of_component.ontology   |   12 +
+ test/data/go/part_of_gene_association.sgd |   31 ++
+ test/data/go/part_of_wikipedia2go         |   13 +
+ test/data/go/wikipedia2go.txt             |  728 +++++++++++++++++++++++++++++
+ 4 files changed, 784 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/go/part_of_component.ontology
+ create mode 100644 test/data/go/part_of_gene_association.sgd
+ create mode 100644 test/data/go/part_of_wikipedia2go
+ create mode 100644 test/data/go/wikipedia2go.txt
+
+commit d4210673a1a696bfb02c93b7743e60dea1a5fcc8
+Author: Kazuhiro Hayashi <k.hayashi.info@gmail.com>
+Date:   Thu Jul 15 21:06:28 2010 +0900
+
+    Bug fix: Typo and missing field in Bio::GO::GeneAssociation#to_str.
+    
+     * Bug fix: Typo and missing field in Bio::GO::GeneAssociation#to_str.
+     * This is part of commit 6675fd930718e41ad009f469b8167f81c9b2ad52
+       (original commit message: Modified unit tests and classes)
+       and modified. The bug is also reported by Ralf Stephan
+       ([BioRuby] [PATCH] GO annotations fixes and improvements).
+
+ lib/bio/db/go.rb |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit acab0bb4a4e0f970f8f6be3aea2c371f63a49fa7
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Aug 25 22:58:42 2010 +0900
+
+    Database names used in tests are changed, following the change of TogoWS.
+    
+     * Database names used in tests are changed, following the change of
+       TogoWS: "gene" to "kegg-genes" and "enzyme" to "kegg-enzyme".
+
+ test/functional/bio/io/test_togows.rb |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 1fb1f1cc5ca3edb42de03874b3527ce0cf0de294
+Author: Toshiaki Katayama <k@bioruby.org>
+Date:   Tue Jul 20 11:46:52 2010 +0900
+
+    Database name used in tests is changed, following the change of TogoWS.
+    
+     * The database name "genbank" is changed to "nucleotide", following
+       the change in TogoWS.
+     * This is part of commit e2abe5764f3ded91c82689245f19a0412d3a7afb.
+       (Original commit message: Changes for TogoWS)
+
+ test/functional/bio/io/test_togows.rb |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
+
+commit 1db4b8011f4fee158aeb78ec2d76c76688714788
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Aug 11 23:33:49 2010 +0900
+
+    New method Bio::Fastq#mask for masking low score regions.
+    
+     * New method Bio::Fastq#mask for masking low score regions is added
+       with unit tests. This method is implemented as a shortcut of
+       Bio::Sequence#mask_with_quality_score method.
+
+ lib/bio/db/fastq.rb            |   15 +++++++++++++++
+ test/unit/bio/db/test_fastq.rb |   36 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 51 insertions(+), 0 deletions(-)
+
+commit 72b47b2391a01c5f4214fd188abe0857cd3ed166
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Aug 11 23:04:57 2010 +0900
+
+    New module Bio::Sequence::SequenceMasker to help masking a sequence.
+    
+     * New module Bio::Sequence::SequenceMasker to help masking a sequence.
+       The module is only expected to be included in Bio::Sequence.
+       In the future, methods in this module might be moved to
+       Bio::Sequence or other module and this module might be removed.
+     * Unit tests for Bio::Sequence::SequenceMasker are also added.
+
+ lib/bio/sequence.rb                            |    2 +
+ lib/bio/sequence/sequence_masker.rb            |   95 +++++++++++++
+ test/unit/bio/sequence/test_sequence_masker.rb |  169 ++++++++++++++++++++++++
+ 3 files changed, 266 insertions(+), 0 deletions(-)
+ create mode 100644 lib/bio/sequence/sequence_masker.rb
+ create mode 100644 test/unit/bio/sequence/test_sequence_masker.rb
+
+commit a2b21fa31c87fc47ae375380fb34958460414107
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Aug 11 22:59:46 2010 +0900
+
+    New method Bio::Sequence#output_fasta, a replacement for to_fasta.
+    
+     * New method Bio::Sequence#output_fasta, a replacement for
+       Bio::Sequence#to_fasta. This is also implemented as a shortcut of
+       Bio::Sequence#output(:fasta).
+
+ lib/bio/sequence/format.rb |   14 ++++++++++++++
+ 1 files changed, 14 insertions(+), 0 deletions(-)
+
+commit d139a1e3e7f77317102eaa24649515541761a212
+Author: Toshiaki Katayama <k@bioruby.org>
+Date:   Tue Jul 20 11:46:52 2010 +0900
+
+    File format autodetection for Bio::KEGG::PATHWAY and Bio::KEGG::MODULE.
+    
+     * Added file format autodetection for Bio::KEGG::PATHWAY and
+       Bio::KEGG::MODULE.
+     * This is part of commit e2abe5764f3ded91c82689245f19a0412d3a7afb.
+       (Original commit message: Changes for TogoWS)
+
+ lib/bio/io/flatfile/autodetection.rb |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+commit 920d92c13b44921a3f58ddbd8566e7a90dd59996
+Author: Toshiaki Katayama <k@bioruby.org>
+Date:   Tue Jul 20 11:46:52 2010 +0900
+
+    Added autoload for Bio::KEGG::PATHWAY and Bio::KEGG::MODULE.
+    
+     * Added autoload for Bio::KEGG::PATHWAY and Bio::KEGG::MODULE.
+     * This is part of commit e2abe5764f3ded91c82689245f19a0412d3a7afb.
+       (Original commit message: Changes for TogoWS)
+
+ lib/bio.rb |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+commit bf342c28e0c75c9b48770144f421dd12babd9d0e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Aug 17 23:19:47 2010 +0900
+
+    Unit tests for Bio::KEGG::MODULE is modified and improved.
+
+ test/unit/bio/db/kegg/test_module.rb |  194 ++++++++++++++++++++++++++++++----
+ 1 files changed, 173 insertions(+), 21 deletions(-)
+
+commit 1742568a4f27e75a19441e4a4437ca3f1c0251f8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Aug 17 23:15:44 2010 +0900
+
+    In Bio::KEGG::MODULE, an internal-only method is changed to private.
+
+ lib/bio/db/kegg/module.rb |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+commit 8f5ff66cca678ac6be75a7dda1ff840ac3111f42
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Aug 17 23:10:39 2010 +0900
+
+    Removed unused comments.
+
+ lib/bio/db/kegg/module.rb |   32 --------------------------------
+ 1 files changed, 0 insertions(+), 32 deletions(-)
+
+commit f9d23fb32eeb15dc57580e25653d3f2fff5fa1dc
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Aug 17 22:59:18 2010 +0900
+
+    Reverted Bio::KEGG::MODULE#keggclass.
+    
+     * Reverted Bio::KEGG::MODULE#keggclass.
+     * Removed keggclasses and keggclasses_as_array methods, because
+       they are inconsistent with Bio::KEGG::ORTHOLOGY#keggclasses.
+
+ lib/bio/db/kegg/module.rb |    6 +-----
+ 1 files changed, 1 insertions(+), 5 deletions(-)
+
+commit 94188d23ad843c7cb998c99f46371e540ce457dc
+Author: Toshiaki Katayama <k@bioruby.org>
+Date:   Tue Jul 20 11:41:50 2010 +0900
+
+    For Bio::KEGG::MODULE, methods are added and modified.
+    
+     * For Bio::KEGG::MODULE, methods are added and modified.
+       * New methods: definition, etc.
+       * Removed methods: pathway, orthologies, keggclass, etc.
+       * Changed methods: reactions, compounds, etc.
+     * (Original commit message: Changes for TogoWS)
+
+ lib/bio/db/kegg/module.rb |  136 +++++++++++++++++++++++++++++++++++++++++---
+ 1 files changed, 126 insertions(+), 10 deletions(-)
+
+commit 92efc03707a49fa0b2c02e7b2f8b53749a75ad59
+Author: Kozo Nishida <kozo-ni@cg04.naist.jp>
+Date:   Thu Feb 4 22:59:20 2010 +0900
+
+    New class Bio::KEGG::MODULE, parser for KEGG MODULE (Pathway Module).
+
+ lib/bio/db/kegg/module.rb            |   83 ++++++++++++++++++++++++++++++
+ test/data/KEGG/M00118.module         |   44 ++++++++++++++++
+ test/unit/bio/db/kegg/test_module.rb |   94 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 221 insertions(+), 0 deletions(-)
+ create mode 100644 lib/bio/db/kegg/module.rb
+ create mode 100644 test/data/KEGG/M00118.module
+ create mode 100644 test/unit/bio/db/kegg/test_module.rb
+
+commit b7c75cc6023d5dc9096111fde99a6e89db2e4bdc
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed May 12 01:13:52 2010 +0900
+
+    Improvement of tests for Bio::KEGG::ORTHOLOGY using updated test data.
+
+ test/unit/bio/db/kegg/test_orthology.rb |   95 +++++++++++++++++++++++++++++++
+ 1 files changed, 95 insertions(+), 0 deletions(-)
+
+commit f61c232371f6f673044960b0626486b2e8e160b8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed May 12 01:11:16 2010 +0900
+
+    Updated test data K02338.orthology to follow KEGG format changes.
+
+ test/data/KEGG/K02338.orthology |  232 ++++++++++++++++++++++++++++++---------
+ 1 files changed, 180 insertions(+), 52 deletions(-)
+
+commit 2aa060f42263392877683a47ef9bd744ef4de7f8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed May 12 01:03:18 2010 +0900
+
+    Incompatible change of Bio::KEGG::ORTHOLOGY#pathways, and added new methods
+    
+     * Incompatible change of Bio::KEGG::ORTHOLOGY#pathways due to the
+       changes of KEGG ORTHOLOGY format changes: Because PATHWAY field
+       is added, the method is changed to return a hash. The pathway
+       method of old behavior is renamed to pathways_in_keggclass
+       for compatibility.
+     * New methods are added to Bio::KEGG::ORTHOLOGY: references,
+       pathways_as_strings, pathways_as_hash, pathway_modules,
+       pathway_modules_as_hash, pathway_modules_as_strings.
+
+ lib/bio/db/kegg/orthology.rb |   41 ++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 40 insertions(+), 1 deletions(-)
+
+commit 2e6754f2598f66f29afb573c3dc83592089b411c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed May 12 00:59:26 2010 +0900
+
+    Changed to use Bio::KEGG::Common::PathwayModulesAsHash.
+
+ lib/bio/db/kegg/pathway.rb |   25 ++++++++-----------------
+ 1 files changed, 8 insertions(+), 17 deletions(-)
+
+commit 527920da990f4374e20333d6852b810ea73ead02
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed May 12 00:55:10 2010 +0900
+
+    New module Bio::KEGG::Common::PathwayModulesAsHash (internal use only)
+    
+     * New module Bio::KEGG::Common::PathwayModulesAsHash is added,
+       based on Bio::KEGG::PATHWAY#pathway_modules_as_hash method.
+       Note that the method is Bio::KEGG::* internal use only.
+
+ lib/bio/db/kegg/common.rb |   22 ++++++++++++++++++++++
+ 1 files changed, 22 insertions(+), 0 deletions(-)
+
+commit 36041377dbafce642180eb1c664ee36ef21d3bfb
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 19 23:25:56 2010 +0900
+
+    New method Bio::KEGG::PATHWAY#references.
+    
+     * New method Bio::KEGG::PATHWAY#references.
+     * Additional unit tests for Bio::KEGG::PATHWAY with test data.
+
+ lib/bio/db/kegg/pathway.rb            |    8 ++
+ test/data/KEGG/map00030.pathway       |   37 ++++++++++
+ test/unit/bio/db/kegg/test_pathway.rb |  120 ++++++++++++++++++++++++++++++++-
+ 3 files changed, 162 insertions(+), 3 deletions(-)
+ create mode 100644 test/data/KEGG/map00030.pathway
+
+commit d743892d298786eb9e88e2a51ac9f7774785848f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 19 00:06:20 2010 +0900
+
+    Improvement of Bio::KEGG::Common::References#references.
+    
+     * Improvement of Bio::KEGG::Common::References#references:
+       added support for parsing "journal (year)" style.
+
+ lib/bio/db/kegg/common.rb |    4 ++++
+ 1 files changed, 4 insertions(+), 0 deletions(-)
+
+commit 35807ae22c9ad9a3ce37ed5c655d1c080f8d2334
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 19 00:02:10 2010 +0900
+
+    Implementation of Bio::KEGG::GENOME#references is moved.
+    
+     * Implementation of Bio::KEGG::GENOME#references is moved to
+       Bio::KEGG::Common::References#references, which will be
+       shared with Bio::KEGG::Pathway and other classes.
+
+ lib/bio/db/kegg/common.rb |   61 +++++++++++++++++++++++++++++++++++++++++++-
+ lib/bio/db/kegg/genome.rb |   62 +++++---------------------------------------
+ 2 files changed, 67 insertions(+), 56 deletions(-)
+
+commit 263c37a07203b87e3b33d35adef3aa3ddcf89601
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Mar 17 00:26:56 2010 +0900
+
+    Bug fix: Bio::KEGG::GENES#pathway may fail, and other parse issues due to the format changes of KEGG GENES.
+    
+     * Bug fix: Bio::KEGG::GENES#pathway may return unexpected value
+       after calling pathways, pathways_as_hash or pathways_as_string
+       methods.
+     * Bio::KEGG::GENES#eclinks, Bio::KEGG::Common::PathwaysAsHash,
+       and Bio::KEGG::Common::OrthologsAsHash are modified due to
+       the file format changes of KEGG::GENES.
+
+ lib/bio/db/kegg/common.rb |    9 +++++----
+ lib/bio/db/kegg/genes.rb  |   17 +++++++++++------
+ 2 files changed, 16 insertions(+), 10 deletions(-)
+
+commit 364cd405a10d0742091281c5a16b77cb54a8087e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Mar 17 00:25:51 2010 +0900
+
+    New methods Bio::Location#== and Bio::Locations#==.
+
+ lib/bio/location.rb |   39 +++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 39 insertions(+), 0 deletions(-)
+
+commit 2c7ffd6808e572cf35b82d6e74790447d44d08cc
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Mar 17 00:23:00 2010 +0900
+
+    Improved unit tests for Bio::KEGG::GENES with new test data.
+
+ test/data/KEGG/b0529.gene           |   47 +++++++
+ test/unit/bio/db/kegg/test_genes.rb |  254 ++++++++++++++++++++++++++++++++++-
+ 2 files changed, 300 insertions(+), 1 deletions(-)
+ create mode 100644 test/data/KEGG/b0529.gene
+
+commit 764869fd42d1e3f96885b3499844bf4fadde80f1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Mar 17 00:10:51 2010 +0900
+
+    Bug fix: Bio::KEGG::GENOME parser issues for PLASMID, REFERENCE, and ORIGINAL_DB fields.
+    
+     * Bug fix: Fixed parse error for PLASMID fields due to the changes
+       of the KEGG GENOME file format. For the bug fix, tag_get and
+       tag_cut methods are redefined.
+     * Bug fix: Fixed parse error for REFERENCE fields due to the changes
+       of the file format.
+     * New method Bio::KEGG::GENOME#original_databases is added to get
+       ORIGINAL_DB record as an Array of String objects.
+
+ lib/bio/db/kegg/genome.rb |   69 +++++++++++++++++++++++++++++++++++++++-----
+ 1 files changed, 61 insertions(+), 8 deletions(-)
+
+commit 75db7c6c7132f19e212be36d06643a0f48a7df44
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Mar 17 00:09:09 2010 +0900
+
+    New method Bio::Reference#==.
+
+ lib/bio/reference.rb |   24 ++++++++++++++++++++++++
+ 1 files changed, 24 insertions(+), 0 deletions(-)
+
+commit 64a6bfb52ca1bb27bd38c86c060e2925f38924fb
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Mar 17 00:07:43 2010 +0900
+
+    Newly added unit tests for Bio::KEGG::GENOME with test data.
+
+ test/data/KEGG/T00005.genome         |  140 ++++++++++++
+ test/data/KEGG/T00070.genome         |   34 +++
+ test/unit/bio/db/kegg/test_genome.rb |  408 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 582 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/KEGG/T00005.genome
+ create mode 100644 test/data/KEGG/T00070.genome
+ create mode 100644 test/unit/bio/db/kegg/test_genome.rb
+
+commit 21c92bb991c83dce27a4411382c456cdd6029a82
+Author: Naohisa Goto <ngoto@gen-info.osaka-u.ac.jp>
+Date:   Tue Mar 9 23:24:15 2010 +0900
+
+    Renamed Bio::KEGG::PATHWAY#keggmodules to pathway_modules_as_strings, etc.
+    
+     * Bio::KEGG::PATHWAY#keggmodules is renamed to
+       pathway_modules_as_strings.
+     * New method pathway_modules_as_hash and its alias method
+       pathway_modules is added.
+     * Bio::KEGG::PATHWAY#rel_pathways is renamed to
+       rel_pathways_as_strings.
+     * New method rel_pathways_as_hash is added, and rel_pathways
+       is changed to be the alias of the rel_pathways_as_hash method.
+     * Unit tests are also changed.
+
+ lib/bio/db/kegg/pathway.rb            |   42 +++++++++++++++++++++++++++++++-
+ test/unit/bio/db/kegg/test_pathway.rb |   29 ++++++++++++++++++++--
+ 2 files changed, 66 insertions(+), 5 deletions(-)
+
+commit fa10f38716ec2eecd6fa8e8b027085377e9ee421
+Author: Naohisa Goto <ngoto@gen-info.osaka-u.ac.jp>
+Date:   Tue Mar 9 21:13:18 2010 +0900
+
+    Fixed text indentations.
+
+ lib/bio/db/kegg/pathway.rb            |    4 ++--
+ test/unit/bio/db/kegg/test_pathway.rb |   25 +++++++++++++------------
+ 2 files changed, 15 insertions(+), 14 deletions(-)
+
+commit 0916b0cac5d17ce47ef5cc3382e3167293bcf4c2
+Author: Kozo Nishida <kozo-ni@cg04.naist.jp>
+Date:   Tue Feb 2 17:34:17 2010 +0900
+
+    Newly added Bio::KEGG::PATHWAY with test code and test data.
+
+ lib/bio/db/kegg/pathway.rb            |   73 +++++++++++++++++++++++++++++++++
+ test/data/KEGG/map00052.pathway       |   13 ++++++
+ test/unit/bio/db/kegg/test_pathway.rb |   57 +++++++++++++++++++++++++
+ 3 files changed, 143 insertions(+), 0 deletions(-)
+ create mode 100644 lib/bio/db/kegg/pathway.rb
+ create mode 100644 test/data/KEGG/map00052.pathway
+ create mode 100644 test/unit/bio/db/kegg/test_pathway.rb
+
+commit c3ceea339164754071f03ce13da4f65e08230f40
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Feb 19 00:43:38 2010 +0900
+
+    Tutorial.rd.html is regenerated.
+
+ doc/Tutorial.rd.html |   55 +++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 54 insertions(+), 1 deletions(-)
+
+commit 315da0213edfece696d22cc4648cb7a74f18ad34
+Author: Ra <ilpuccio.febo@gmail.com>
+Date:   Sun Feb 7 10:38:36 2010 +0100
+
+    Added BioSQL docs links
+
+ doc/Tutorial.rd |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 22374415873906f4bcd3e84950c14b5f0b6c7e61
+Author: Ra <ilpuccio.febo@gmail.com>
+Date:   Sun Feb 7 02:39:16 2010 +0100
+
+    Added link to BioSQL install doc.
+
+ doc/Tutorial.rd |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 4d18dd2f5a3f18348e5f4aa07b14c104d3a65f5b
+Author: Ra <ilpuccio.febo@gmail.com>
+Date:   Fri Feb 5 21:30:36 2010 +0100
+
+    Added other examples about BioSQL
+
+ doc/Tutorial.rd |   36 ++++++++++++++++++++++++++++--------
+ 1 files changed, 28 insertions(+), 8 deletions(-)
+
+commit b704f01cd0799ab1a7e3975119e9d6139ddfbd51
+Author: Ra <ilpuccio.febo@gmail.com>
+Date:   Wed Jan 27 21:08:25 2010 +0100
+
+    BioSQL tutorial continue...
+
+ doc/Tutorial.rd |   18 ++++++++++++++++--
+ 1 files changed, 16 insertions(+), 2 deletions(-)
+
+commit 1993a1566b5ade937703d0291c4eaf2de673d170
+Author: Ra <ilpuccio.febo@gmail.com>
+Date:   Wed Jan 27 20:32:23 2010 +0100
+
+    BioSQL tutorial inital draft.
+
+ doc/Tutorial.rd |   25 ++++++++++++++++++++++++-
+ 1 files changed, 24 insertions(+), 1 deletions(-)
+
+commit 09047b664a03492d7546d92b619faacee72d0cd5
+Author: Jan Aerts <jan.aerts@gmail.com>
+Date:   Sun Feb 7 17:58:59 2010 +0900
+
+    Added code example that will serve as basis for sequence/codon howto
+
+ doc/howtos/sequence_codon.txt |   38 ++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 38 insertions(+), 0 deletions(-)
+ create mode 100644 doc/howtos/sequence_codon.txt
+
+commit c1e2165ba801cccd52135b13ed36713517e1fa8a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Feb 5 12:50:38 2010 +0900
+
+    Suppressed "warning: parenthesize argument(s) for future version" in Ruby 1.8.5.
+
+ lib/bio/appl/paml/codeml/report.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit f7ce9ba6a2f4e680ee40017a21aa95d05baf34f4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Feb 4 20:26:00 2010 +0900
+
+    Added :startdoc: and removed an empty line for RDoc.
+
+ lib/bio/appl/paml/codeml/report.rb |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+commit 6d4d2e1f37efb1e53091fbc9a0977568996788ff
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Feb 4 16:58:10 2010 +0900
+
+    New unit test for Bio::PAML::Codeml::Report.
+    
+     * New unit test for Bio::PAML::Codeml::Report and related classes.
+       The test code is copied from the examples described in
+       lib/bio/appl/paml/codeml/report.rb and modified for the unit test.
+
+ test/unit/bio/appl/paml/codeml/test_report.rb |  253 +++++++++++++++++++++++++
+ 1 files changed, 253 insertions(+), 0 deletions(-)
+ create mode 100644 test/unit/bio/appl/paml/codeml/test_report.rb
+
+commit 8418549811293c3e20b91d4e95da2cb2a282a064
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Feb 4 16:47:37 2010 +0900
+
+    Changes due to the rename to report_single.rb.
+
+ .../bio/appl/paml/codeml/test_report_single.rb     |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 7bfb428da237709b243c8d0e4646bd41710d1519
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Feb 4 16:39:10 2010 +0900
+
+    Renamed codeml/test_report.rb to codeml/test_report_single.rb.
+    
+     * Renamed test/unit/bio/appl/paml/codeml/test_report.rb to
+       test_report_single.rb.
+
+ test/unit/bio/appl/paml/codeml/test_report.rb      |   46 --------------------
+ .../bio/appl/paml/codeml/test_report_single.rb     |   46 ++++++++++++++++++++
+ 2 files changed, 46 insertions(+), 46 deletions(-)
+ delete mode 100644 test/unit/bio/appl/paml/codeml/test_report.rb
+ create mode 100644 test/unit/bio/appl/paml/codeml/test_report_single.rb
+
+commit 762d38b1564da7d846e3dcd461cf465aa685a1ae
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Tue Jan 12 10:13:35 2010 +0100
+
+    Modified output of Bio::PAML::Codeml::PositiveSites#graph_to_s
+    
+     * Modified output of Bio::PAML::Codeml::PositiveSites#graph_to_s.
+       (Part of commit ea350da85e5db2ba35cb8dd1e86e3d4323ee3fd1.
+        Original commit message is:
+        HtmlPaml: fixed some missing output
+              use real greek omega in output)
+
+ lib/bio/appl/paml/codeml/report.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit f88645cd783b7027950133c0badb0a8da8e4fb95
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Tue Jan 12 09:24:46 2010 +0100
+
+    Codeml: no negative gaps
+
+ lib/bio/appl/paml/codeml/report.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 978b21cf90d0280e6e6c7d6e4fa65c49692bdd69
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 11 17:31:45 2010 +0100
+
+    Codeml: always raise an error when significance can not be calculated
+
+ lib/bio/appl/paml/codeml/report.rb |   15 ++++++++++-----
+ 1 files changed, 10 insertions(+), 5 deletions(-)
+
+commit 12b5895f6f1819252d616bb0a38aa88a7828daff
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 11 17:22:34 2010 +0100
+
+    Codeml: oops
+
+ lib/bio/appl/paml/codeml/report.rb |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit a8ff0a07fdbef72f72103f0bceb9c24a63162fc6
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 11 17:19:26 2010 +0100
+
+    Codeml: added significance testing for a few model combinations
+
+ lib/bio/appl/paml/codeml/report.rb |   57 +++++++++++++++++++++++++++++++++++-
+ 1 files changed, 56 insertions(+), 1 deletions(-)
+
+commit 0e11af19450faca3568f89b23d5bd764688f75c0
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 11 16:24:51 2010 +0100
+
+    Codeml: raise error instead of a 'nil' error when buffer is incomplete
+
+ lib/bio/appl/paml/codeml/report.rb |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit 1cb2aaaa701a1613812dd479201d27c1d7dcf016
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 11 14:37:52 2010 +0100
+
+    Bio::PAML::Codeml::PositiveSites#graph_to_s gets fill character
+    
+     * Bio::PAML::Codeml::PositiveSites#graph_to_s gets fill character
+       as an argument.
+       (Part of commit d67259c9f203dc92c68ad04b4112329a7093a259.
+        Original commit message is:
+        HtmlPaml: show colors for probabilities of positive selection)
+
+ lib/bio/appl/paml/codeml/report.rb |   15 +++++++++------
+ 1 files changed, 9 insertions(+), 6 deletions(-)
+
+commit ae5b9cf9ee697cc237c77335b12b57709a0e7a46
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 11 13:37:52 2010 +0100
+
+    Codeml: return correct buffer
+
+ lib/bio/appl/paml/codeml/report.rb |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
+
+commit 44f2e28c3e0d382505b067ec3c7aa55cbb9f0a38
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 11 13:10:40 2010 +0100
+
+    Improvement of Bio::PAML::Codeml::PositiveSites#initialize, etc
+    
+     * Improved target analysis location detection in
+       Bio::PAML::Codeml::PositiveSites#initialize.
+     * Changed description inside Bio::PAML::Codeml::Report#nb_sites
+       and sites methods.
+     * This is part of commit e88ff474748b3295a8a4089356d3086638200d64.
+       (Original commit message: HtmlPaml: improved output)
+
+ lib/bio/appl/paml/codeml/report.rb |   20 ++++++++++++--------
+ 1 files changed, 12 insertions(+), 8 deletions(-)
+
+commit ee8973696d0434c591ceaffc580f1aa30fd036f9
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 11 12:54:40 2010 +0100
+
+    Codeml: fixed doctests
+
+ lib/bio/appl/paml/codeml/report.rb |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit f7bbb0859e28cb51137d0a8f8d962821eb67db91
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 11 12:51:25 2010 +0100
+
+    New method Bio::PAML::Codeml::PositiveSites#to_s
+    
+     * New method Bio::PAML::Codeml::PositiveSites#to_s
+       (part of the commit 82e933fd1961a2b31873bc37cbf3205adbf0a6de,
+        original commit message: HtmlPaml: add facility for color output)
+
+ lib/bio/appl/paml/codeml/report.rb |    6 ++++++
+ 1 files changed, 6 insertions(+), 0 deletions(-)
+
+commit d4f3dbaf78f623d870a1a76ab1353d786e0fb73b
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 11 12:34:59 2010 +0100
+
+    Codeml: HtmlPaml: minor tweaks
+
+ lib/bio/appl/paml/codeml/report.rb |    7 ++-----
+ 1 files changed, 2 insertions(+), 5 deletions(-)
+
+commit 7d41b6acb41c5913622fde127a030f940a432cc5
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 11 12:19:15 2010 +0100
+
+    Codeml: add short description to positive sites line
+
+ lib/bio/appl/paml/codeml/report.rb |   13 +++++++++++++
+ 1 files changed, 13 insertions(+), 0 deletions(-)
+
+commit a9d6765b3a5d23be7e8cf59954d67cd2354e5878
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 11 12:13:55 2010 +0100
+
+    Codeml: fixed bug in graph output
+
+ lib/bio/appl/paml/codeml/report.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit af124dcaa2adb446e273456f8dd0b84aff9b00db
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 11 12:11:00 2010 +0100
+
+    Codeml: added graph_seq, which shows the AA of the first sequence at positive sites
+
+ lib/bio/appl/paml/codeml/report.rb |   11 +++++++++--
+ 1 files changed, 9 insertions(+), 2 deletions(-)
+
+commit 1924dcd951a9e655726bc1af72626526ed223258
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Fri Jan 8 10:13:37 2010 +0100
+
+    Codeml: added :stopdoc: directive for rdoc
+
+ lib/bio/appl/paml/codeml/report.rb |   21 ++++++++++++---------
+ 1 files changed, 12 insertions(+), 9 deletions(-)
+
+commit 7b68fd9d785723935f90144f67999fcf74bcc7c0
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Fri Jan 8 10:01:49 2010 +0100
+
+    Codeml: fixed the doctests and added some info.
+            all tests pass &
+
+ lib/bio/appl/paml/codeml/report.rb |   43 ++++++++++++++++++++++++-----------
+ 1 files changed, 29 insertions(+), 14 deletions(-)
+
+commit ce212c507e9e81120e7ad12be6df955e90d0ad33
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Fri Jan 8 09:46:05 2010 +0100
+
+    Codeml: exclude TestFile class from RDoc generated documentation
+
+ lib/bio/appl/paml/codeml/report.rb |    9 ++++++---
+ 1 files changed, 6 insertions(+), 3 deletions(-)
+
+commit 9d64a70b628cb3cda9cc1576b9966dae242e5230
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Fri Jan 8 09:39:02 2010 +0100
+
+    Codeml: added many comments
+
+ lib/bio/appl/paml/codeml/report.rb |   87 +++++++++++++++++++++++++++++------
+ 1 files changed, 72 insertions(+), 15 deletions(-)
+
+commit 2b92df64016865a2ab40c93650409cfd67a2a98e
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 4 17:57:32 2010 +0100
+
+    codeml: Added parser for full Bayesian sites
+            all tests pass &
+
+ lib/bio/appl/paml/codeml/report.rb |   52 ++++++++++++++++++++++++++++++-----
+ 1 files changed, 44 insertions(+), 8 deletions(-)
+
+commit 198f0c014f7993fbe22825d0be67e9b1aa19d2de
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 4 17:37:15 2010 +0100
+
+    codeml: show graph
+
+ lib/bio/appl/paml/codeml/report.rb |   46 ++++++++++++++++++++++++++++++++++-
+ 1 files changed, 44 insertions(+), 2 deletions(-)
+
+commit 0843bb4d79dc4d94a22d79a797a39dc2866222c5
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 4 17:09:27 2010 +0100
+
+    Codeml: added full support for positive selection sites
+            doctests + unit tests pass &
+
+ lib/bio/appl/paml/codeml/report.rb |  150 ++++++++++++++++++++++++++++--------
+ 1 files changed, 118 insertions(+), 32 deletions(-)
+
+commit 1610c5d86cddd53f7f0300d0f7a137daaa61ef94
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 4 12:33:20 2010 +0100
+
+    codeml: added M3 classes
+
+ lib/bio/appl/paml/codeml/report.rb |   28 +++++++++++++++++++++++++---
+ 1 files changed, 25 insertions(+), 3 deletions(-)
+
+commit efc939fbd300ceb371b342172382cdec9fcc74b7
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Mon Jan 4 12:02:47 2010 +0100
+
+    codeml: adding compatibility layer for single model (old type)
+            unit tests pass &
+
+ lib/bio/appl/paml/codeml/report.rb |   44 +++++++++++++++++++++++++++++++-----
+ 1 files changed, 38 insertions(+), 6 deletions(-)
+
+commit b89990daa3ea26a9f9195ec16044fb2070bcdd1a
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Sun Jan 3 12:34:53 2010 +0100
+
+    Implementation parsing one model - doctests for M0 pass
+
+ lib/bio/appl/paml/codeml/report.rb |   90 ++++++++++++++++++++++++++++++++----
+ 1 files changed, 81 insertions(+), 9 deletions(-)
+
+commit dce447d3e81e738323e6fb6b2d28324e1fa62e7d
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Sun Jan 3 11:27:54 2010 +0100
+
+    Codeml: use BioTestFile for locating test data in the doctest
+
+ lib/bio/appl/paml/codeml/report.rb |    9 ++++++++-
+ 1 files changed, 8 insertions(+), 1 deletions(-)
+
+commit 27a7b558d60b7ec127df2c351542433c321704ac
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Sat Jan 2 23:36:47 2010 +0100
+
+    Codeml: split new type report and old type report
+
+ lib/bio/appl/paml/codeml/report.rb |   19 +++++++++++++++----
+ 1 files changed, 15 insertions(+), 4 deletions(-)
+
+commit 027808e4723ca77af3e15b461ddcc09faf692732
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Sat Jan 2 23:25:22 2010 +0100
+
+    Added example files for PAML codeml dual model runs
+
+ test/data/paml/codeml/models/aa.aln         |   26 ++
+ test/data/paml/codeml/models/aa.dnd         |   13 +
+ test/data/paml/codeml/models/aa.ph          |   13 +
+ test/data/paml/codeml/models/alignment.phy  |   49 ++++
+ test/data/paml/codeml/models/results0-3.txt |  312 ++++++++++++++++++++++++
+ test/data/paml/codeml/models/results7-8.txt |  340 +++++++++++++++++++++++++++
+ 6 files changed, 753 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/paml/codeml/models/aa.aln
+ create mode 100644 test/data/paml/codeml/models/aa.dnd
+ create mode 100644 test/data/paml/codeml/models/aa.ph
+ create mode 100644 test/data/paml/codeml/models/alignment.phy
+ create mode 100644 test/data/paml/codeml/models/results0-3.txt
+ create mode 100644 test/data/paml/codeml/models/results7-8.txt
+
+commit 1d35e616ce411bf643ab6dcb7126a6e1aca1e186
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Sat Jan 2 17:04:56 2010 +0100
+
+    Codeml::Report Added new description and reference
+
+ lib/bio/appl/paml/codeml/report.rb |  113 ++++++++++++++++++++++++++++++------
+ 1 files changed, 96 insertions(+), 17 deletions(-)
+
+commit d21b26044e776fab44dbc95f181afd04b67abe28
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Feb 1 22:31:21 2010 +0900
+
+    Bug fix and Ruby 1.9 support: Bio::Command.call_command_fork etc.
+    
+     * Bug fix: In Bio::Command.call_command_fork, thread switching is
+       disabled in the child process. Thanks to Andrew Grimm who
+       reports the bug ([BioRuby] Thread-safety of alignment).
+       Note that call_command_fork no longer works in Ruby 1.9 because
+       it is changed to use Thread.critical which is removed in Ruby 1.9.
+     * Ruby 1.9 support: In Ruby 1.9, Bio::Command.call_command_popen
+       bypasses shell execution by passing command-line as an Array,
+       which is a new feature added in Ruby 1.9. Now, call_command_popen
+       is safe and robust enough with Ruby 1.9.
+     * Ruby 1.9 support: In Ruby 1.9, Bio::Command.call_command and
+       query_command use call_command_popen and query_command_popen,
+       respectively.
+     * RDoc for the above and related methods are modified.
+
+ lib/bio/command.rb                  |   80 +++++++++++++++++++++++++++++++----
+ test/functional/bio/test_command.rb |    4 ++
+ 2 files changed, 76 insertions(+), 8 deletions(-)
+
+commit 981dc1c89049bf00e56a9e83ef352cb4c4b45d6a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Feb 2 22:47:36 2010 +0900
+
+    Bug fix: Bio::FastaNumericFormat#to_biosequence bug fix
+    
+     * Bug fix: New method Bio::FastaNumericFormat#to_biosequence is
+       defined to avoid NomethodError occurred in the superclass'es
+       method. For the purpose, a new module
+       Bio::Sequence::Adapter::FastaNumericFormat is added.
+       Thanks to Hiroyuki MISHIMA who reports the bug ([BioRuby] trouble
+       on the FASTA.QUAL format (Bio::FastaNumericFormat)).
+     * Newly added unit test for Bio::FastaNumericFormat#to_biosequence.
+
+ lib/bio/db/fasta/qual.rb                |   24 ++++++++++++++++++++++++
+ lib/bio/db/fasta/qual_to_biosequence.rb |   29 +++++++++++++++++++++++++++++
+ lib/bio/sequence/adapter.rb             |    1 +
+ test/unit/bio/db/test_qual.rb           |   11 +++++++++--
+ 4 files changed, 63 insertions(+), 2 deletions(-)
+ create mode 100644 lib/bio/db/fasta/qual_to_biosequence.rb
+
+commit 29ed6870e453f54aac2ce9dcb7891186eb01c40d
+Author: Ben J Woodcroft <ben@reefedge.sols.uq.edu.au>
+Date:   Wed Jan 13 14:38:13 2010 +1000
+
+    Bug fix: fixed uniprot GN parsing issue
+
+ lib/bio/db/embl/sptr.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit a3002a79ec012559f5847ba8ebe4faf6e7fa609e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jan 8 22:14:15 2010 +0900
+
+    Tutorial.rd.html is regenerated.
+
+ doc/Tutorial.rd.html |   29 ++++++++++++++---------------
+ 1 files changed, 14 insertions(+), 15 deletions(-)
+
+commit 9238c3cb0e8f1156d23a5dfb3ce4e299a91b9f23
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Fri Jan 8 09:04:23 2010 +0100
+
+    Tutorial: removed bad links
+
+ doc/Tutorial.rd |   10 +---------
+ 1 files changed, 1 insertions(+), 9 deletions(-)
+
+commit 60542fd9863c5fc1240a15cc76f8fa90644a15c8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jan 6 20:38:25 2010 +0900
+
+    Changed header and the depth of loading helper due to the rename.
+
+ test/unit/bio/appl/clustalw/test_report.rb |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 68924e736df76fe3c77d9fe132b6df01fc0621fe
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jan 6 20:34:10 2010 +0900
+
+    Renamed test/unit/bio/db/test_clustalw.rb to test/unit/bio/appl/clustalw/test_report.rb.
+
+ test/unit/bio/appl/clustalw/test_report.rb |   61 ++++++++++++++++++++++++++++
+ test/unit/bio/db/test_clustalw.rb          |   61 ----------------------------
+ 2 files changed, 61 insertions(+), 61 deletions(-)
+ create mode 100644 test/unit/bio/appl/clustalw/test_report.rb
+ delete mode 100644 test/unit/bio/db/test_clustalw.rb
+
+commit 8368eee50de51f6218ffc7b1bf1aad332702c4ba
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Tue Jan 5 12:54:43 2010 +0100
+
+    Clustal: unit tests according to Naohisa
+
+ lib/bio/appl/clustalw/report.rb   |    6 +++---
+ test/unit/bio/db/test_clustalw.rb |   10 +++++-----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+commit ad525a01fa17052e9b7e9b7f30639c48596552ba
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Tue Jan 5 12:50:17 2010 +0100
+
+    Clustal: unit test uses File.read
+
+ test/unit/bio/db/test_clustalw.rb |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 7ab517e05cc470b9ca57273092599adb8c00dc11
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Tue Jan 5 12:49:21 2010 +0100
+
+    Clustal: unit test, changed class name and copyright header
+
+ test/unit/bio/db/test_clustalw.rb |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 0829ee91a97976eb6671a2feec7edfc524f44b2c
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Tue Jan 5 12:46:37 2010 +0100
+
+    Clustal: Changed [] to get_sequence, with method description
+    
+     * Clustal: Added copyright.
+     * Changed [] to get_sequence, with method description.
+
+ lib/bio/appl/clustalw/report.rb |   12 ++++++++++--
+ 1 files changed, 10 insertions(+), 2 deletions(-)
+
+commit 3b8968a6b7b98e0f03b0822849594262a8f4ac99
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Sun Dec 27 16:44:30 2009 +0100
+
+    ClustalW: Added [] method to reach sequence + definition
+
+ lib/bio/appl/clustalw/report.rb   |    9 +++++++++
+ test/unit/bio/db/test_clustalw.rb |    6 ++----
+ 2 files changed, 11 insertions(+), 4 deletions(-)
+
+commit 3926fabbcc0636c6e4ed08233af3d647c620cd5b
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Sun Dec 27 16:22:38 2009 +0100
+
+    ClustalW: Add ALN parser unit test
+
+ test/data/clustalw/example1.aln   |   58 ++++++++++++++++++++++++++++++++++
+ test/unit/bio/db/test_clustalw.rb |   63 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 121 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/clustalw/example1.aln
+ create mode 100644 test/unit/bio/db/test_clustalw.rb
+
+commit 2ef97f945b122dc279eb0ec0a34a2adb0c5f0cff
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Sat Jan 2 13:24:33 2010 +0100
+
+    Tutorial: Fixed URLs
+
+ doc/Tutorial.rd |   10 +++++-----
+ 1 files changed, 5 insertions(+), 5 deletions(-)
+
+commit 567ca8b010e15cbea9398ee74c78eae01fc6671d
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Fri Jan 1 12:08:50 2010 +0100
+
+    Tutorial: Added info on gem install
+
+ doc/Tutorial.rd |    9 +++++++--
+ 1 files changed, 7 insertions(+), 2 deletions(-)
+
+commit 21070ab4928d9c7446d58f3003d43ee6235046aa
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Thu Dec 31 11:41:54 2009 +0100
+
+    Tutorial.rd: Added Naohisa's Ruby replacement for sed conversion
+
+ doc/Tutorial.rd |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+commit ebded2364f716fa03b0fdbec9887f807836eb789
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jan 6 10:59:39 2010 +0900
+
+    Bio::BIORUBY_EXTRA_VERSION is changed to ".5000".
+
+ bioruby.gemspec    |    2 +-
+ lib/bio/version.rb |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit a1bda9088662edec55af0106b4292c39e51c8b7b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Dec 28 21:56:33 2009 +0900
+
+    BioRuby 1.4.0 is released.
+
+ ChangeLog       |   32 ++++++++++++++++++++++++++++++++
+ bioruby.gemspec |    3 ++-
+ 2 files changed, 34 insertions(+), 1 deletions(-)
+
 commit 5c88896357e1eff0686ceb06cbec0a7837f85050
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Mon Dec 28 21:55:41 2009 +0900

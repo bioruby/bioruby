@@ -12,9 +12,158 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
 
 # libraries needed for the tests
 require 'test/unit'
+require 'bio/reference'
 require 'bio/db/medline'
 
 module Bio
+  class TestMEDLINE_20146148 < Test::Unit::TestCase
+
+    def setup
+      filename = File.join(BioRubyTestDataPath, 'medline',
+                           '20146148_modified.medline')
+      @obj = Bio::MEDLINE.new(File.read(filename))
+    end
+
+    def test_self_new
+      assert_instance_of(Bio::MEDLINE, @obj)
+    end
+
+    def test_reference
+      h = {
+        'authors' => ["Mattsson, M.", "Summala, H."],
+        'affiliations' =>
+        [ "Traffic Research Unit, Department of Psychology, University of Helsinki, Finland. markus.mattsson@helsinki.fi" ],
+        'journal' => "Traffic Inj Prev",
+        'title' =>
+        "With power comes responsibility: motorcycle engine power and power-to-weight ratio in relation to accident risk.",
+        'pages' => '87-95',
+        'issue' => "1",
+        'volume' => "11",
+        'year' => "2010",
+        'pubmed' => "20146148",
+        'doi' => "10.1080/15389580903471126",
+        'mesh' =>
+        [ "Accidents, Traffic/mortality/*statistics & numerical data",
+          "Adult",
+          "Age Distribution",
+          "Body Weight",
+          "Female",
+          "Finland/epidemiology",
+          "Humans",
+          "Linear Models",
+          "Male",
+          "Motorcycles/classification/legislation & jurisprudence/*statistics & numerical data",
+          "Questionnaires",
+          "Risk",
+          "Social Responsibility",
+          "Young Adult" ],
+        'abstract' => 
+        "(The abstract is omitted to avoid copyright issues. Please find the abstract at http://www.ncbi.nlm.nih.gov/pubmed/20146148. We believe that other information in this entry is within public domain, according to \"Copyright and Disclaimers\" in http://www.ncbi.nlm.nih.gov/About/disclaimer.html.)"
+      }
+      expected = Bio::Reference.new(h)
+      assert_equal(expected, @obj.reference)
+    end
+
+    def test_pmid
+      assert_equal("20146148", @obj.pmid)
+    end
+
+    def test_ui
+      assert_equal("", @obj.ui)
+    end
+
+    def test_ta
+      assert_equal("Traffic Inj Prev", @obj.ta)
+    end
+
+    def test_vi
+      assert_equal("11", @obj.vi)
+    end
+
+    def test_ip
+      assert_equal("1", @obj.ip)
+    end
+
+    def test_pg
+      assert_equal("87-95", @obj.pg)
+    end
+
+    def test_pages
+      assert_equal("87-95", @obj.pages)
+    end
+
+    def test_dp
+      assert_equal("2010 Feb", @obj.dp)
+    end
+
+    def test_year
+      assert_equal("2010", @obj.year)
+    end
+
+    def test_ti
+      expected = "With power comes responsibility: motorcycle engine power and power-to-weight ratio in relation to accident risk."
+      assert_equal(expected, @obj.ti)
+    end
+
+    def test_ab
+      expected = "(The abstract is omitted to avoid copyright issues. Please find the abstract at http://www.ncbi.nlm.nih.gov/pubmed/20146148. We believe that other information in this entry is within public domain, according to \"Copyright and Disclaimers\" in http://www.ncbi.nlm.nih.gov/About/disclaimer.html.)"
+      assert_equal(expected, @obj.ab)
+    end
+
+    def test_au
+      expected = "Mattsson M\nSummala H"
+      assert_equal(expected, @obj.au)
+    end
+
+    def test_authors
+      expected = ["Mattsson, M.", "Summala, H."]
+      assert_equal(expected, @obj.authors)
+    end
+
+    def test_so
+      expected = "Traffic Inj Prev. 2010 Feb;11(1):87-95."
+      assert_equal(expected, @obj.so)
+    end
+
+    def test_mh
+      expected =
+        [ "Accidents, Traffic/mortality/*statistics & numerical data",
+          "Adult",
+          "Age Distribution",
+          "Body Weight",
+          "Female",
+          "Finland/epidemiology",
+          "Humans",
+          "Linear Models",
+          "Male",
+          "Motorcycles/classification/legislation & jurisprudence/*statistics & numerical data",
+          "Questionnaires",
+          "Risk",
+          "Social Responsibility",
+          "Young Adult"
+        ]
+      assert_equal(expected, @obj.mh)
+    end
+
+    def test_ad
+      expected = [ "Traffic Research Unit, Department of Psychology, University of Helsinki, Finland. markus.mattsson@helsinki.fi" ]
+      assert_equal(expected, @obj.ad)
+    end
+
+    def test_doi
+      assert_equal("10.1080/15389580903471126", @obj.doi)
+    end
+
+    def test_pii
+      assert_equal("919158438", @obj.pii)
+    end
+
+    def test_pt
+      expected = [ "Journal Article", "Research Support, Non-U.S. Gov't" ]
+      assert_equal(expected, @obj.pt)
+    end
+  end #class TestMEDLINE_20146148
+
   class TestMEDLINE < Test::Unit::TestCase
     def test_authors
       assert_equal(["Kane, D. W.",

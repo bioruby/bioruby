@@ -22,8 +22,7 @@ module Bio
   class FuncTestCommandCall < Test::Unit::TestCase
 
     def setup
-      case RUBY_PLATFORM
-      when /mswin32|bccwin32/
+      if Bio::Command.module_eval { windows_platform? } then
         cmd = File.expand_path(File.join(BioRubyTestDataPath, 'command', 'echoarg2.bat'))
         @arg = [ cmd, 'test "argument 1"', '"test" argument 2', 'arg3' ]
         @expected = '"""test"" argument 2"'
@@ -54,6 +53,7 @@ module Bio
     end
 
     def test_call_command_fork
+      return unless Thread.respond_to?(:critical)
       begin
         ret = Bio::Command.call_command_fork(@arg) do |io|
           io.close_write
@@ -92,8 +92,7 @@ module Bio
     def setup
       @data = [ "987", "123", "567", "456", "345" ]
       @sorted = @data.sort
-      case RUBY_PLATFORM
-      when /mswin32|bccwin32/
+      if Bio::Command.module_eval { windows_platform? } then
         @sort = "sort"
         @data = @data.join("\r\n") + "\r\n"
       else
@@ -120,6 +119,7 @@ module Bio
     end
 
     def test_query_command_fork
+      return unless Thread.respond_to?(:critical)
       ary = [ @sort ]
       begin
         str = Bio::Command.query_command_fork(ary).to_s
@@ -148,8 +148,7 @@ module Bio
 
   class FuncTestCommandChdir < Test::Unit::TestCase
     def setup
-      case RUBY_PLATFORM
-      when /mswin32|bccwin32/
+      if Bio::Command.module_eval { windows_platform? } then
         @arg = [ 'dir', '/B', '/-P' ]
       else
         cmd = '/bin/ls'
@@ -188,6 +187,7 @@ module Bio
     end
 
     def test_call_command_fork_chdir
+      return unless Thread.respond_to?(:critical)
       str = nil
       begin
         Bio::Command.call_command_fork(@arg, 
@@ -215,6 +215,7 @@ module Bio
     end
 
     def test_query_command_fork_chdir
+      return unless Thread.respond_to?(:critical)
       begin
         str = Bio::Command.query_command_fork(@arg, nil,
                                               { :chdir => @dirname }).to_s

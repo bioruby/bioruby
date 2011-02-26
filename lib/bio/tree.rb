@@ -486,14 +486,14 @@ module Bio
       _clear_cache
       removed_rel = []
       @pathway.relations.delete_if do |rel|
-        if yield rel.node[0], rel.node[1], edge then
+        if yield rel.node[0], rel.node[1], rel.edge then
           removed_rel << rel
           true
         end
       end
       removed_rel.each do |rel|
-        source = rel[0]
-        target = rel[1]
+        source = rel.node[0]
+        target = rel.node[1]
         h = @pathway.graph[source]
         h.delete(target) if h
         h = @pathway.graph[target]
@@ -529,7 +529,7 @@ module Bio
       _clear_cache
       @pathway.relations.each do |rel|
         newedge = yield rel.node[0], rel.node[1], rel.relation
-        rel.relation = newedge
+        rel.edge = newedge
         @pathway.append(rel, false)
       end
       self

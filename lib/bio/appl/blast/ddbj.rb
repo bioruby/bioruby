@@ -42,27 +42,38 @@ module Bio::Blast::Remote
 
         databases = {}
         dbdescs = {}
-        key = 'blastn'
+        keys = [ 'blastn', 'blastp' ]
+        keys.each do |key|
+          databases[key] ||= []
+          dbdescs[key] ||= {}
+        end
         prefix = ''
-        databases[key] ||= []
-        dbdescs[key] ||= {}
+        prefix_count = 0
         str.each_line do |line|
           a = line.strip.split(/\s*\-\s*/, 2)
           case a.size
           when 1
             prefix = a[0].to_s.strip
             prefix += ': ' unless prefix.empty?
-            key = 'blastn'
+            prefix_count = 0
             next #each_line
           when 0
-            prefix = ''
-            key = 'blastp'
-            databases[key] ||= []
-            dbdescs[key] ||= {}
+            prefix = '' if prefix_count > 0
             next #each_line
           end
           name = a[0].to_s.strip.freeze
-          desc = (prefix + a[1].to_s.strip).freeze
+          desc = a[1].to_s.strip
+          key = case desc
+                when /\(NT\)\s*$/
+                  'blastn'
+                when /\(AA\)\s*$/
+                  'blastp'
+                else
+                  warn "DDBJ BLAST: could not determine the database is NT or AA: #{line.chomp}" if $VERBOSE
+                  next #each_line
+                end
+          desc = (prefix + desc).freeze
+          prefix_count += 1
           databases[key].push name
           dbdescs[key][name] = desc
         end
@@ -122,8 +133,10 @@ module Bio::Blast::Remote
         case result.to_s
         when /The search and analysis service by WWW is very busy now/
           raise result.to_s.strip + '(Alternatively, wrong options may be given.)'
-        when /Your job has not completed yet/
+        when /\AYour job has not (?:been )?completed yet/
           sleeptime = 5
+        when /\AERROR:/
+          raise result.to_s.strip
         else
           flag = false
         end

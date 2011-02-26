@@ -1,0 +1,140 @@
+ENTRY       T00005            Complete  Genome
+NAME        sce, S.cerevisiae, YEAST, 4932
+DEFINITION  Saccharomyces cerevisiae S288C
+ANNOTATION  manual
+TAXONOMY    TAX:4932
+  LINEAGE   Eukaryota; Fungi; Dikarya; Ascomycota; Saccharomycotina;
+            Saccharomycetes; Saccharomycetales; Saccharomycetaceae;
+            Saccharomyces
+DATA_SOURCE RefSeq
+ORIGINAL_DB SGD
+            MIPS
+CHROMOSOME  I
+  SEQUENCE  RS:NC_001133
+  LENGTH    230208
+CHROMOSOME  II
+  SEQUENCE  RS:NC_001134
+  LENGTH    813178
+CHROMOSOME  III
+  SEQUENCE  RS:NC_001135
+  LENGTH    316617
+CHROMOSOME  IV
+  SEQUENCE  RS:NC_001136
+  LENGTH    1531919
+CHROMOSOME  V
+  SEQUENCE  RS:NC_001137
+  LENGTH    576869
+CHROMOSOME  VI
+  SEQUENCE  RS:NC_001138
+  LENGTH    270148
+CHROMOSOME  VII
+  SEQUENCE  RS:NC_001139
+  LENGTH    1090947
+CHROMOSOME  VIII
+  SEQUENCE  RS:NC_001140
+  LENGTH    562643
+CHROMOSOME  IX
+  SEQUENCE  RS:NC_001141
+  LENGTH    439885
+CHROMOSOME  X
+  SEQUENCE  RS:NC_001142
+  LENGTH    745741
+CHROMOSOME  XI
+  SEQUENCE  RS:NC_001143
+  LENGTH    666454
+CHROMOSOME  XII
+  SEQUENCE  RS:NC_001144
+  LENGTH    1078175
+CHROMOSOME  XIII
+  SEQUENCE  RS:NC_001145
+  LENGTH    924429
+CHROMOSOME  XIV
+  SEQUENCE  RS:NC_001146
+  LENGTH    784333
+CHROMOSOME  XV
+  SEQUENCE  RS:NC_001147
+  LENGTH    1091289
+CHROMOSOME  XVI
+  SEQUENCE  RS:NC_001148
+  LENGTH    948062
+CHROMOSOME  MT (mitochondrion); Circular
+  SEQUENCE  RS:NC_001224
+  LENGTH    85779
+STATISTICS  Number of nucleotides:      12156676
+            Number of protein genes:        5881
+            Number of RNA genes:             414
+REFERENCE   PMID:8849441
+  AUTHORS   Goffeau A, et al.
+  TITLE     Life with 6000 genes.
+  JOURNAL   Science 274:546-67 (1996)
+REFERENCE   PMID:7731988 (chromosome I)
+  AUTHORS   Bussey H, et al.
+  TITLE     The nucleotide sequence of chromosome I from Saccharomyces
+            cerevisiae.
+  JOURNAL   Proc Natl Acad Sci U S A 92:3809-13 (1995)
+REFERENCE   PMID:7813418 (chromosome II)
+  AUTHORS   Feldmann,H., et al.
+  TITLE     Complete DNA sequence of yeast chromosome II.
+  JOURNAL   EMBO J 13:5795-809 (1994)
+REFERENCE   PMID:1574125 (chromosome III)
+  AUTHORS   Oliver,S.G., et al.
+  TITLE     The complete DNA sequence of yeast chromosome III.
+  JOURNAL   Nature 357:38-46 (1992)
+REFERENCE   PMID:9169867 (chromosome IV)
+  AUTHORS   Jacq C, et al.
+  TITLE     The nucleotide sequence of Saccharomyces cerevisiae chromosome IV.
+  JOURNAL   Nature 387(6632 Suppl):75-8 (1997)
+REFERENCE   PMID:9169868 (chromosome V)
+  AUTHORS   Dietrich FS, et al.
+  TITLE     The nucleotide sequence of Saccharomyces cerevisiae chromosome V.
+  JOURNAL   Nature 387(6632 Suppl):78-81 (1997)
+REFERENCE   PMID:7670463 (chromosome VI)
+  AUTHORS   Murakami,Y., et al.
+  TITLE     Analysis of the nucleotide sequence of chromosome VI from
+            Saccharomyces cerevisiae.
+  JOURNAL   Nat Genet 10:261-8 (1995)
+REFERENCE   PMID:9169869 (chromosome VII)
+  AUTHORS   Tettelin H, et al.
+  TITLE     The nucleotide sequence of Saccharomyces cerevisiae chromosome VII.
+  JOURNAL   Nature 387(6632 Suppl):81-4 (1997)
+REFERENCE   PMID:8091229 (chromosome VIII)
+  AUTHORS   Johnston,M., et al.
+  TITLE     Complete nucleotide sequence of Saccharomyces cerevisiae chromosome
+            VIII.
+  JOURNAL   Science 265:2077-82 (1994)
+REFERENCE   PMID:9169870 (chromosome IX)
+  AUTHORS   Churcher C, et al.
+  TITLE     The nucleotide sequence of Saccharomyces cerevisiae chromosome IX.
+  JOURNAL   Nature 387(6632 Suppl):84-7 (1997)
+REFERENCE   PMID:8641269 (chromosome X)
+  AUTHORS   Galibert,F., et al.
+  TITLE     Complete nucleotide sequence of Saccharomyces cerevisiae chromosome
+            X.
+  JOURNAL   EMBO J 15:2031-49 (1996)
+REFERENCE   PMID:8196765 (chromosome XI)
+  AUTHORS   Dujon,B., et al.
+  TITLE     Complete DNA sequence of yeast chromosome XI.
+  JOURNAL   Nature 369:371-8 (1994)
+REFERENCE   PMID:9169871 (chromosome XII)
+  AUTHORS   Johnston M, et al.
+  TITLE     The nucleotide sequence of Saccharomyces cerevisiae chromosome XII.
+  JOURNAL   Nature 387(6632 Suppl):87-90 (1997)
+REFERENCE   PMID:9169872 (chromosome XIII)
+  AUTHORS   Bowman S, et al.
+  TITLE     The nucleotide sequence of Saccharomyces cerevisiae chromosome
+            XIII.
+  JOURNAL   Nature 387(6632 Suppl):90-3 (1997)
+REFERENCE   PMID:9169873 (chromosome XIV)
+  AUTHORS   Philippsen P, et al.
+  TITLE     The nucleotide sequence of Saccharomyces cerevisiae chromosome XIV
+            and its evolutionary implications.
+  JOURNAL   Nature 387(6632 Suppl):93-8 (1997)
+REFERENCE   PMID:9169874 (chromosome XV)
+  AUTHORS   Dujon B, et al.
+  TITLE     The nucleotide sequence of Saccharomyces cerevisiae chromosome XV.
+  JOURNAL   Nature 387(6632 Suppl):98-102 (1997)
+REFERENCE   PMID:9169875 (chromosome XVI)
+  AUTHORS   Bussey H, et al.
+  TITLE     The nucleotide sequence of Saccharomyces cerevisiae chromosome XVI.
+  JOURNAL   Nature 387(6632 Suppl):103-5 (1997)
+///

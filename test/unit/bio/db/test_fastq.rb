@@ -823,6 +823,42 @@ _9_
       ERRORS = [ Bio::Fastq::Error::No_qual.new ]
     end #class TestFastq_error_trunc_at_seq
 
+    # Unit tests for Bio::Fastq#mask.
+    class TestFastq_mask < Test::Unit::TestCase
+      def setup
+        fn = File.join(TestFastqDataDir, 'wrapping_original_sanger.fastq')
+        Bio::FlatFile.open(Bio::Fastq, fn) do |ff|
+          @entry = ff.next_entry
+        end
+        @entry.format = :fastq_sanger
+      end
+
+      def test_mask_60
+        expected = 'n' * 135
+        assert_equal(expected, @entry.mask(60).seq)
+      end
+
+      def test_mask_20
+        expected = "GAAnTTnCAGGnCCACCTTTnnnnnGATAGAATAATGGAGAAnnTTAAAnGCTGTACATATACCAATGAACAATAAnTCAATACATAAAnnnGGAGAAGTnGGAACCGAAnGGnTTnGAnTTCAAnCCnTTnCGn"
+        assert_equal(expected, @entry.mask(20).seq)
+      end
+
+      def test_mask_20_with_x
+        expected = "GAAxTTxCAGGxCCACCTTTxxxxxGATAGAATAATGGAGAAxxTTAAAxGCTGTACATATACCAATGAACAATAAxTCAATACATAAAxxxGGAGAAGTxGGAACCGAAxGGxTTxGAxTTCAAxCCxTTxCGx"
+        assert_equal(expected, @entry.mask(20, 'x').seq)
+      end
+
+      def test_mask_20_with_empty_string
+        expected = "GAATTCAGGCCACCTTTGATAGAATAATGGAGAATTAAAGCTGTACATATACCAATGAACAATAATCAATACATAAAGGAGAAGTGGAACCGAAGGTTGATTCAACCTTCG"
+        assert_equal(expected, @entry.mask(20, '').seq)
+      end
+        
+      def test_mask_20_with_longer_string
+        expected = "GAA-*-TT-*-CAGG-*-CCACCTTT-*--*--*--*--*-GATAGAATAATGGAGAA-*--*-TTAAA-*-GCTGTACATATACCAATGAACAATAA-*-TCAATACATAAA-*--*--*-GGAGAAGT-*-GGAACCGAA-*-GG-*-TT-*-GA-*-TTCAA-*-CC-*-TT-*-CG-*-"
+        assert_equal(expected, @entry.mask(20, '-*-').seq)
+      end
+
+    end #class TestFastq_mask
 
   end #module TestFastq
 end #module Bio

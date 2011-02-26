@@ -10,7 +10,7 @@
 module Bio
 
   # BioRuby version (Array containing Integer)
-  BIORUBY_VERSION = [1, 4, 0].extend(Comparable).freeze
+  BIORUBY_VERSION = [1, 4, 1].extend(Comparable).freeze
 
   # Extra version specifier (String or nil).
   # Existance of the value indicates pre-release version or modified version.

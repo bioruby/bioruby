@@ -1,7 +1,7 @@
 #
 # = bio/command.rb - general methods for external command execution
 #
-# Copyright::	Copyright (C) 2003-2008
+# Copyright::	Copyright (C) 2003-2010
 # 		Naohisa Goto <ng@bioruby.org>,
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
@@ -33,6 +33,59 @@ module Command
   UNESCAPABLE_CHARS   = /[\x00-\x08\x10-\x1a\x1c-\x1f\x7f\xff]/n
 
   module_function
+
+  # *CAUTION* Bio::Command INTERNAL USE ONLY.
+  # Users must NOT use the method.
+  # The method will be removed when it is not needed.
+  #
+  # Checks if the program is running on Microsoft Windows.
+  # If Windows, returns true. Otherwise, returns false.
+  # Note that Cygwin is not treated as Windows.
+  #
+  # Known issues:
+  # * It might make a mistake in minor platforms/architectures/interpreters.
+  # * When running JRuby on Cygwin, the result is unknown.
+  # ---
+  # *Returns*:: true or false
+  def windows_platform?
+    case RUBY_PLATFORM
+    when /(?:mswin|bccwin|mingw)(?:32|64)/i
+      true
+    when /java/i
+      # Reference: Redmine's platform.rb
+      # http://www.redmine.org/projects/redmine/repository/revisions/1753/entry/trunk/lib/redmine/platform.rb
+      if /windows/i =~ (ENV['OS'] || ENV['os']).to_s then
+        true
+      else
+        false
+      end
+    else
+      false
+    end
+  end
+  private_class_method :windows_platform?
+
+  # *CAUTION* Bio::Command INTERNAL USE ONLY.
+  # Users must NOT use the method.
+  # The method will be removed when it is not needed.
+  #
+  # Checks if the OS does not support fork(2) system call.
+  # When not supported, it returns true.
+  # When supported or unknown, it returns false or nil.
+  #
+  # Known issues:
+  # * It might make a mistake in minor platforms/architectures/interpreters.
+  # ---
+  # *Returns*:: true, false or nil.
+  def no_fork?
+    if (defined?(@@no_fork) && @@no_fork) or
+        windows_platform? or /java/i =~ RUBY_PLATFORM then
+      true
+    else
+      false
+    end
+  end
+  private_class_method :no_fork?
 
   # Escape special characters in command line string for cmd.exe on Windows.
   # ---
@@ -66,8 +119,7 @@ module Command
   # * (required) _str_: String
   # *Returns*:: String object
   def escape_shell(str)
-    case RUBY_PLATFORM
-    when /mswin32|bccwin32/
+    if windows_platform? then
       escape_shell_windows(str)
     else
       escape_shell_unix(str)
@@ -80,8 +132,7 @@ module Command
   # * (required) _ary_: Array containing String objects
   # *Returns*:: String object
   def make_command_line(ary)
-    case RUBY_PLATFORM
-    when /mswin32|bccwin32/
+    if windows_platform? then
       make_command_line_windows(ary)
     else
       make_command_line_unix(ary)
@@ -130,8 +181,8 @@ module Command
     [ arg0 ]
   end
 
-  # Executes the program.  Automatically select popen for Windows
-  # environment and fork for the others.
+  # Executes the program. Automatically select popen for Ruby 1.9 or
+  # Windows environment and fork for the others.
   # A block must be given. An IO object is passed to the block.
   #
   # Available options:
@@ -143,27 +194,62 @@ module Command
   # * (optional) _options_: Hash
   # *Returns*:: (undefined)
   def call_command(cmd, options = {}, &block) #:yields: io
-    case RUBY_PLATFORM
-    when /mswin32|bccwin32/
+    if RUBY_VERSION >= "1.9.0" then
+      return call_command_popen(cmd, options, &block)
+    elsif no_fork? then
       call_command_popen(cmd, options, &block)
     else
-      call_command_fork(cmd, options, &block)
+      begin
+        call_command_fork(cmd, options, &block)
+      rescue NotImplementedError
+        # fork(2) not implemented
+        @@no_fork = true
+        call_command_popen(cmd, options, &block)
+      end
     end
   end
 
+  # This method is internally called from the call_command method.
+  # In normal case, use call_command, and do not call this method directly.
+  #
   # Executes the program via IO.popen for OS which doesn't support fork.
   # A block must be given. An IO object is passed to the block.
+  #
+  # See the document of call_command for available options.
+  #
+  # Note for Ruby 1.8:
+  # In Ruby 1.8, although shell unsafe characters are escaped.
+  # If inescapable characters exists, it raises RuntimeError.
+  # So, call_command_fork is normally recommended.
+  #
+  # Note for Ruby 1.9:
+  # In Ruby 1.9, call_command_popen is safe and robust enough, and is the
+  # recommended way, because IO.popen is improved to get a command-line
+  # as an array without calling shell.
+  #
   # ---
   # *Arguments*:
   # * (required) _cmd_: Array containing String objects
   # * (optional) _options_: Hash
   # *Returns*:: (undefined)
   def call_command_popen(cmd, options = {})
+    if RUBY_VERSION >= "1.9.0" then
+      # For Ruby 1.9 or later, using command line array with options.
+      dir = options[:chdir]
+      cmd = safe_command_line_array(cmd)
+      if dir then
+        cmd = cmd + [ { :chdir => dir } ]
+      end
+      r = IO.popen(cmd, "r+") do |io|
+        yield io
+      end
+      return r
+    end
+    # For Ruby 1.8, using command line string.
     str = make_command_line(cmd)
     # processing options
     if dir = options[:chdir] then
-      case RUBY_PLATFORM
-      when /mswin32|bccwin32/
+      if windows_platform?
         # Unix-like dir separator is changed to Windows dir separator
         # by using String#gsub.
         dirstr = dir.gsub(/\//, "\\")
@@ -182,11 +268,24 @@ module Command
     end
   end
 
+  # This method is internally called from the call_command method.
+  # In normal case, use call_command, and do not call this method directly.
+  #
   # Executes the program via fork (by using IO.popen("-")) and exec.
   # A block must be given. An IO object is passed to the block.
   #
-  # From the view point of security, this method is recommended
-  # rather than call_command_popen.
+  # See the document of call_command for available options.
+  #
+  # Note for Ruby 1.8:
+  # In Ruby 1.8, from the view point of security, this method is recommended
+  # rather than call_command_popen. However, this method might have problems
+  # with multi-threads.
+  #
+  # Note for Ruby 1.9:
+  # In Ruby 1.9, this method can not be used, because Thread.critical is
+  # removed. In Ruby 1.9, call_command_popen is safe and robust enough, and
+  # is the recommended way, because IO.popen is improved to get a
+  # command-line as an array without calling shell.
   #
   # ---
   # *Arguments*:
@@ -196,12 +295,17 @@ module Command
   def call_command_fork(cmd, options = {})
     dir = options[:chdir]
     cmd = safe_command_line_array(cmd)
+    begin
+    tc, Thread.critical, flag0, flag1 = Thread.critical, true, true, true
     IO.popen("-", "r+") do |io|
       if io then
         # parent
+        flag0, Thread.critical, flag1 = false, tc, false
         yield io
       else
         # child
+        Thread.critical = true # for safety, though already true
+        GC.disable
         # chdir to options[:chdir] if available
         begin
           Dir.chdir(dir) if dir
@@ -217,6 +321,11 @@ module Command
         end
         Process.exit!(1)
       end
+    end
+    ensure
+      # When IO.popen("-") raises error, Thread.critical will be set here.
+      Thread.critical = tc if flag0 or flag1
+      #warn 'Thread.critical might have wrong value.' if flag0 != flag1
     end
   end
 
@@ -240,7 +349,8 @@ module Command
   # waits the program termination, and returns the output data printed to the
   # standard output as a string.
   # 
-  # Automatically select popen for Windows environment and fork for the others.
+  # Automatically select popen for Ruby 1.9 or Windows environment and
+  # fork for the others.
   #
   # Available options:
   #   :chdir => "path" : changes working directory to the specified path.
@@ -252,19 +362,32 @@ module Command
   # * (optional) _options_: Hash
   # *Returns*:: String or nil
   def query_command(cmd, query = nil, options = {})
-    case RUBY_PLATFORM
-    when /mswin32|bccwin32/
+    if RUBY_VERSION >= "1.9.0" then
+      return query_command_popen(cmd, query, options)
+    elsif no_fork? then
       query_command_popen(cmd, query, options)
     else
-      query_command_fork(cmd, query, options)
+      begin
+        query_command_fork(cmd, query, options)
+      rescue NotImplementedError
+        # fork(2) not implemented
+        @@no_fork = true
+        query_command_fork(cmd, query, options)
+      end
     end
   end
 
+  # This method is internally called from the query_command method.
+  # In normal case, use query_command, and do not call this method directly.
+  #
   # Executes the program with the query (String) given to the standard input,
   # waits the program termination, and returns the output data printed to the
   # standard output as a string.
   #
-  # IO.popen is used for OS which doesn't support fork.
+  # See the document of query_command for available options.
+  #
+  # See the document of call_command_popen for the security and Ruby
+  # version specific issues.
   #
   # ---
   # *Arguments*:
@@ -283,14 +406,19 @@ module Command
     ret
   end
 
+  # This method is internally called from the query_command method.
+  # In normal case, use query_command, and do not call this method directly.
+  #
   # Executes the program with the query (String) given to the standard input,
   # waits the program termination, and returns the output data printed to the
   # standard output as a string.
   #
   # Fork (by using IO.popen("-")) and exec is used to execute the program.
   #
-  # From the view point of security, this method is recommended
-  # rather than query_command_popen.
+  # See the document of query_command for available options.
+  #
+  # See the document of call_command_fork for the security and Ruby
+  # version specific issues.
   #
   # ---
   # *Arguments*:

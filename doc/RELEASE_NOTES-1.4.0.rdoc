@@ -1,0 +1,167 @@
+= BioRuby 1.4.0 RELEASE NOTES
+
+A lot of changes have been made to the BioRuby 1.4.0 after the version 1.3.1
+is released. This document describes important and/or incompatible changes
+since the BioRuby 1.3.1 release.
+
+== New features
+
+=== PhyloXML support
+
+Support for reading and writing PhyloXML file format is added. New classes
+Bio::PhyloXML::Parser and Bio::PhyloXML::Writer are used to read and write
+a PhyloXML file, respectively.
+
+The code is developed by Diana Jaunzeikare, mentored by Christian M Zmasek
+and co-mentors, supported by Google Summer of Code 2009 in collaboration
+with the National Evolutionary Synthesis Center (NESCent).
+
+=== FASTQ file format support
+
+Support for reading and writing FASTQ file format is added. All of the
+three FASTQ format variants are supported.
+
+To read a FASTQ file, Bio::FlatFile can be used. File format auto-detection
+of the FASTQ format is supported (although the three format variants should
+be specified later by users if quality scores are needed).
+
+New class Bio::Fastq is the parser class for the FASTQ format. An object
+of the Bio::Fastq class can be converted to a Bio::Sequence object with the
+"to_biosequnece" method. Bio::Sequence#output now supports output of the
+FASTQ format.
+
+The code is written by Naohisa Goto, with the help of discussions in the
+open-bio-l mailing list. The prototype of Bio::Fastq class was first
+developed during the BioHackathon 2009 held in Okinawa.
+
+=== DNA chromatogram support
+
+Support for reading DNA chromatogram files are added. SCF and and ABIF file
+formats are supported. The code is developed by Anthony Underwood.
+
+=== MEME (motif-based sequence analysis tools) support
+
+Support for running MAST (Motif Aliginment & Search Tool, part of the MEME
+Suite, motif-based sequence analysis tools) and parsing its results are
+added. The code is developed by Adam Kraut.
+
+=== Improvement of KEGG parser classes
+
+Some new methods are added to parse new fields added to some KEGG file
+formats. Unit tests for KEGG parsers are also added and improved. In
+addition, return value types of some methods are also changed for unifying
+APIs among KEGG parser classes. See incompatible changes below for details.
+Most of them are contributed by Kozo Nishida.
+
+=== Many sample scripts are added
+
+Many sample scripts showing demonstrations of usages of classes are added.
+They are moved from primitive test codes for the classes described in the
+"if __FILE__ == $0" convention in the library files.
+
+=== Unit tests can test installed BioRuby
+
+Mechanism to load library and to find test data in the unit tests are changed,
+and the library path and test data path can be specified with environment
+variables. BIORUBY_TEST_LIB is the path to be added to the Ruby's $LOAD_PATH.
+For example, to test BioRuby installed in
+/usr/local/lib/site_ruby/1.8, run
+  env BIORUBY_TEST_LIB=/usr/local/lib/site_ruby/1.8 ruby test/runner.rb
+
+BIORUBY_TEST_DATA is the path of the test data, and BIORUBY_TEST_DEBUG is a
+flag to turn on debug of the tests.
+
+== Deprecated features
+
+=== ChangeLog is replaced by git log
+
+ChangeLog is replaced by the output of git-log command, and ChangeLog before
+the 1.3.1 release is moved to doc/ChangeLog-before-1.3.1.
+
+=== "if __FILE__ == $0" convention
+
+Primitive test codes in the "if __FILE__ == $0" convention are removed and
+the codes are moved to the sample scripts named sample/demo_*.rb (except
+some older or deprecated files).
+
+== Incompatible changes
+
+=== Bio::NCBI::REST
+
+NCBI announces that all Entrez E-utility requests must contain email and
+tool parameters, and requests without them will return error after June
+2010.
+
+To set default email address and tool name, following methods are added.
+* Bio::NCBI.default_email=(email)
+* Bio::NCBI.default_tool=(tool_name)
+
+For every query, Bio::NCBI::REST checks the email and tool parameters and
+raises error if they are empty.
+
+IMPORTANT NOTE: No default email address is preset in BioRuby. Programmers
+using BioRuby must set their own email address or implement to get user's
+email address in some way (from input form, configuration file, etc).
+
+Default tool name is set as "#{$0} (bioruby/#{Bio::BIORUBY_VERSION_ID})".
+For example, if you run "ruby my_script.rb" with BioRuby 1.4.0, the value is
+"my_script.rb (bioruby/1.4.0)".
+
+=== Bio::KEGG
+
+==== dblinks method
+
+In Bio::KEGG::COMPOUND, DRUG, ENZYME, GLYCAN and ORTHOLOGY, the method
+dblinks is changed to return a Hash. Each key of the hash is a database name
+and its value is an array of entry IDs in the database. If old behavior
+(returns raw entry lines as an array of strings) is needed, use
+dblinks_as_strings.
+
+==== pathways method
+
+In Bio::KEGG::COMPOUND, DRUG, ENZYME, GENES, GLYCAN and REACTION, the
+method pathways is changed to return a Hash. Each key of the hash is a
+pathway ID and its value is the description of the pathway.
+
+In Bio::KEGG::GENES, if old behavior (returns pathway IDs as an Array) is
+needed, use pathways.keys.
+
+In Bio::KEGG::COMPOUND, DRUG, ENZYME, GLYCAN, and REACTION, if old behavior
+(returns raw entry lines as an array of strings) is needed, use
+pathways_as_strings.
+
+Note that Bio::KEGG::ORTHOLOGY#pathways is not changed (returns an array
+containing pathway IDs).
+
+==== orthologs method
+
+In Bio::KEGG::ENZYME, GENES, GLYCAN and REACTION, the method orthologs is
+changed to return a Hash. Each key of the hash is a ortholog ID and its
+value is the name of the ortholog. If old behavior (returns raw entry lines
+as an array of strings) is needed, use orthologs_as_strings.
+
+==== genes method
+
+In Bio::KEGG::ENZYME#genes and Bio::KEGG::ORTHOLOGY#genes is changed to
+return a Hash that is the same as Bio::KEGG::ORTHOLOGY#genes_as_hash.
+If old behavior (returns raw entry lines as an array of strings) is needed,
+use genes_as_strings.
+
+==== Bio::KEGG:REACTION#rpairs
+
+Bio::KEGG::REACTION#rpairs is changed to return a Hash. Each key of the
+hash is a KEGG Rpair ID and its value is an array containing name and type.
+If old behavior (returns as tokens) is needed, use rpairs_as_tokens.
+
+==== Bio::KEGG::ORTHOLOGY
+
+Bio::KEGG:ORTHOLOGY#dblinks_as_hash does not lower-case database names.
+
+=== Bio::RestrictionEnzyme
+
+Format validation when creating an object is turned off because of efficiency.
+
+== Known problems
+
+See KNOWN_ISSUES.rdoc for details.
+

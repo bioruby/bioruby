@@ -1,7 +1,7 @@
 #
 # = bio/db/kegg/genes.rb - KEGG/GENES database class
 #
-# Copyright::   Copyright (C) 2001, 2002, 2006
+# Copyright::   Copyright (C) 2001, 2002, 2006, 2010
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
@@ -29,8 +29,7 @@
 # 
 #  # NAME
 #  p entry.name        # => String
-#  p entry.genes       # => Array
-#  p entry.gene        # => String
+#  p entry.names       # => Array
 # 
 #  # DEFINITION
 #  p entry.definition  # => String
@@ -47,7 +46,7 @@
 #  p entry.locations   # => Bio::Locations
 #
 #  # MOTIF
-#  p entry.motif       # => Hash of Array
+#  p entry.motifs      # => Hash of Array
 #
 #  # DBLINKS
 #  p entry.dblinks     # => Hash of Array
@@ -169,10 +168,24 @@ class GENES < KEGGDB
   #
   # ---
   # *Returns*:: Array containing String
-  def genes
+  def names_as_array
     name.split(', ')
   end
+  alias names names_as_array
 
+  # The method will be deprecated. Use Bio::KEGG::GENES#names.
+  #
+  # Names of the entry as an Array, described in the NAME line.
+  #
+  # ---
+  # *Returns*:: Array containing String
+  def genes
+    names_as_array
+  end
+
+  # The method will be deprecated.
+  # Use <tt>entry.names.first</tt> instead.
+  #
   # Returns the first gene name described in the NAME line.
   # ---
   # *Returns*:: String
@@ -191,12 +204,14 @@ class GENES < KEGGDB
   # ---
   # *Returns*:: Array containing String
   def eclinks
-    ec_list = definition.slice(/\[EC:(.*?)\]/, 1)
-    if ec_list
-      ec_list.strip.split(/\s+/)
-    else
-      []
+    unless defined? @eclinks
+      ec_list = 
+        definition.slice(/\[EC\:([^\]]+)\]/, 1) ||
+        definition.slice(/\(EC\:([^\)]+)\)/, 1)
+      ary = ec_list ? ec_list.strip.split(/\s+/) : []
+      @eclinks = ary
     end
+    @eclinks
   end
 
   # Orthologs described in the ORTHOLOGY lines.
@@ -210,7 +225,10 @@ class GENES < KEGGDB
   # ---
   # *Returns*:: String
   def pathway
-    field_fetch('PATHWAY')
+    unless defined? @pathway
+      @pathway = fetch('PATHWAY')
+    end
+    @pathway
   end
 
   # Pathways described in the PATHWAY lines.
@@ -218,6 +236,16 @@ class GENES < KEGGDB
   # *Returns*:: Array containing String
   def pathways_as_strings
     lines_fetch('PATHWAY')
+  end
+
+  # Returns CLASS field of the entry.
+  def keggclass
+    field_fetch('CLASS')
+  end
+
+  # Returns an Array of biological classes in CLASS field.
+  def keggclasses
+    keggclass.gsub(/ \[[^\]]+/, '').split(/\] ?/)
   end
 
   # The position in the genome described in the POSITION line.
@@ -261,14 +289,21 @@ class GENES < KEGGDB
 
   # Motif information described in the MOTIF lines.
   # ---
+  # *Returns*:: Strings
+  def motifs_as_strings
+    lines_fetch('MOTIF')
+  end
+
+  # Motif information described in the MOTIF lines.
+  # ---
   # *Returns*:: Hash
-  def motif
+  def motifs_as_hash
     unless @data['MOTIF']
       hash = {}
       db = nil
-      lines_fetch('MOTIF').each do |line|
+      motifs_as_strings.each do |line|
         if line[/^\S+:/]
-          db, str = line.split(/:/)
+          db, str = line.split(/:/, 2)
         else
           str = line
         end
@@ -278,6 +313,17 @@ class GENES < KEGGDB
       @data['MOTIF'] = hash
     end
     @data['MOTIF']		# Hash of Array of IDs in MOTIF
+  end
+  alias motifs motifs_as_hash
+
+  # The specification of the method will be changed in the future.
+  # Please use Bio::KEGG::GENES#motifs.
+  #
+  # Motif information described in the MOTIF lines.
+  # ---
+  # *Returns*:: Hash
+  def motif
+    motifs
   end
 
   # Links to other databases described in the DBLINKS lines.
@@ -298,7 +344,7 @@ class GENES < KEGGDB
   end
   alias structures structure
 
-  # Codon usage data described in the CODON_USAGE lines.
+  # Codon usage data described in the CODON_USAGE lines. (Deprecated: no more exists)
   # ---
   # *Returns*:: Hash
   def codon_usage(codon = nil)

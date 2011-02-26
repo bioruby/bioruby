@@ -188,7 +188,7 @@ class SPTR < EMBLDB
   def gn
     unless @data['GN']
       case fetch('GN')
-      when /Name=/,/ORFNames=/
+      when /Name=/,/ORFNames=/,/OrderedLocusNames=/,/Synonyms=/
         @data['GN'] = gn_uniprot_parser
       else
         @data['GN'] = gn_old_parser

@@ -125,7 +125,7 @@ __END_OF_REFERENCE__
 
     # formats date
     def date_format_genbank
-      date_modified || date_created || null_date
+      format_date(date_modified || date_created || null_date)
     end
 
     # moleculue type

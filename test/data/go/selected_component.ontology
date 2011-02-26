@@ -1,0 +1,12 @@
+!date:                 Sun Jul 26 21:12:00 PDT 2009
+!version: $Revision: 1.21 $
+!type: % OBO_REL:is_a is_a
+!type: ^ transitive_over transitive_over
+!type: - negatively_regulates negatively_regulates
+!type: < part_of part_of
+!type: + positively_regulates positively_regulates
+!type: & regulates regulates
+$Gene_Ontology ; GO:0003673
+ <cellular_component ; GO:0005575, GO:0008372 ; synonym:cellular component ; synonym:cellular component unknown
+  %cell ; GO:0005623 ; Wikipedia:Cell_(biology)
+   <cell part ; GO:0044464 % cellular_component ; GO:0005575

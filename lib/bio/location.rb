@@ -179,6 +179,28 @@ class Location
     return 0
   end
 
+  # If _other_ is equal with the self, returns true.
+  # Otherwise, returns false.
+  # ---
+  # *Arguments*:
+  # * (required) _other_: any object
+  # *Returns*:: true or false
+  def ==(other)
+    return true if super(other)
+    return false unless other.instance_of?(self.class)
+    flag = false
+    [ :from, :to, :strand, :sequence, :lt, :gt,
+      :xref_id, :carat ].each do |m|
+      begin
+        flag = (self.__send__(m) == other.__send__(m))
+      rescue NoMethodError, ArgumentError, NameError
+        flag = false
+      end
+      break unless flag
+    end
+    flag
+  end
+
 end # Location
 
 # == Description
@@ -347,6 +369,23 @@ class Locations
       return true
     else
       return false
+    end
+  end
+
+  # If _other_ is equal with the self, returns true.
+  # Otherwise, returns false.
+  # ---
+  # *Arguments*:
+  # * (required) _other_: any object
+  # *Returns*:: true or false
+  def ==(other)
+    return true if super(other)
+    return false unless other.instance_of?(self.class)
+    if self.locations == other.locations and
+        self.operator == other.operator then
+      true
+    else
+      false
     end
   end
 
@@ -593,8 +632,8 @@ class Locations
         end
       end
 
-      join_list.each do |position|
-        ary << gbl_pos2loc(position)
+      join_list.each do |pos|
+        ary << gbl_pos2loc(pos)
       end
 
     when /^complement\((.*)\)$/				# (J) complement()
