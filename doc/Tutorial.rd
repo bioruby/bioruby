@@ -30,7 +30,7 @@
 #
 #
 
-bioruby> $: << '../lib'
+bioruby> $: << '../lib'  # make sure rubydoctest finds bioruby/lib
 
 =begin
 #doctest Testing bioruby
@@ -38,9 +38,9 @@ bioruby> $: << '../lib'
 = BioRuby Tutorial
 
 * Copyright (C) 2001-2003 KATAYAMA Toshiaki <k .at. bioruby.org>
-* Copyright (C) 2005-2010 Pjotr Prins, Naohisa Goto and others
+* Copyright (C) 2005-2011 Pjotr Prins, Naohisa Goto and others
 
-This document was last modified: 2010/01/08
+This document was last modified: 2011/02/27
 Current editor: Pjotr Prins <p .at. bioruby.org>
 
 The latest version resides in the GIT source code repository:  ./doc/((<Tutorial.rd|URL:http://github.com/pjotrp/bioruby/raw/documentation/doc/Tutorial.rd>)).
@@ -62,7 +62,7 @@ version it has with the
 
 command. Showing something like:
 
-  ruby 1.8.7 (2008-08-11 patchlevel 72) [i486-linux]
+  ruby 1.9.2p136 (2010-12-25 revision 30365) [i686-linux]
 
 If you see no such thing you'll have to install Ruby using your installation
 manager. For more information see the
