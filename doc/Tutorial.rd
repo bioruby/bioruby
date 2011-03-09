@@ -30,7 +30,7 @@
 #
 #
 
-bioruby> $: << '../lib'
+bioruby> $: << '../lib'  # make sure rubydoctest finds bioruby/lib
 
 =begin
 #doctest Testing bioruby
@@ -62,7 +62,7 @@ version it has with the
 
 command. You should see something like:
 
-  ruby 1.8.7 (2008-08-11 patchlevel 72) [i486-linux]
+  ruby 1.9.2p136 (2010-12-25 revision 30365) [i686-linux]
 
 If you see no such thing you'll have to install Ruby using your installation
 manager. For more information see the
