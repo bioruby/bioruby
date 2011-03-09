@@ -1,0 +1,104 @@
+= BioRuby 1.4.1 RELEASE NOTES
+
+A lot of changes have been made to the BioRuby 1.4.1 after the version 1.4.0
+is released. This document describes important and/or incompatible changes
+since the BioRuby 1.4.0 release.
+
+For known problems, see KNOWN_ISSUES.rdoc.
+
+== New features
+
+=== PAML Codeml support is significantly improved
+
+PAML Codeml result parser is completely rewritten and is significantly
+improved. The code is developed by Pjotr Prins.
+
+=== KEGG PATHWAY and KEGG MODULE parser
+
+Parsers for KEGG PATHWAY and KEGG MODULE data are added. The code is developed
+by Kozo Nishida and Toshiaki Katayama.
+
+=== Bio::KEGG improvements
+
+Following new methods are added.
+
+* Bio::KEGG::GENES#keggclass, keggclasses, names_as_array, names,
+  motifs_as_strings, motifs_as_hash, motifs
+* Bio::KEGG::GENOME#original_databases
+
+=== Test codes are added and improved.
+
+Test codes are added and improved. Tney are developed by Kazuhiro Hayashi,
+Kozo Nishida, John Prince, and Naohisa Goto.
+
+=== Other new methods
+
+* Bio::Fastq#mask
+* Bio::Sequence#output_fasta
+* Bio::ClustalW::Report#get_sequence
+* Bio::Reference#==
+* Bio::Location#==
+* Bio::Locations#==
+* Bio::FastaNumericFormat#to_biosequence
+
+== Bug fixes
+
+=== Bio::Tree
+
+Following methods did not work correctly.
+
+* Bio::Tree#collect_edge!
+* Bio::Tree#remove_edge_if
+
+=== Bio::KEGG::GENES and Bio::KEGG::GENOME
+
+* Fixed bugs in Bio::KEGG::GENES#pathway.
+* Fixed parser errors due to the format changes of KEGG GENES and KEGG GENOME.
+
+=== Other bug fixes
+
+* In Bio::Command, changed not to call fork(2) on platforms that do not
+  support it.
+* Bio::MEDLINE#initialize should handle continuation of lines.
+* Typo and a missing field in Bio::GO::GeneAssociation#to_str.
+* Bug fix of Bio::FastaNumericFormat#to_biosequence.
+* Fixed UniProt GN parsing issue in Bio::SPTR.
+
+== Incompatible changes
+
+=== Bio::PAML::Codeml::Report
+
+The code is completely rewritten. See the RDoc for details.
+
+=== Bio::KEGG::ORTHOLOGY
+
+Bio::KEGG::ORTHOLOGY#pathways is changed to return a hash. The old pathway
+method is renamed to pathways_in_keggclass for compatibility.
+
+=== Bio::AAindex2
+
+Bio::AAindex2 now copies each symmetric element for lower triangular matrix
+to the upper right part, because the Matrix class in Ruby 1.9.2 no longer
+accepts any dimension mismatches. We think the previous behavior is a bug.
+
+=== Bio::MEDLINE
+
+Bio::MEDLINE#reference no longer puts empty values in the returned
+Bio::Reference object. We think the previous behavior is a bug.
+We also think the effect is very small.
+
+== Known issues
+
+The following issues are added or updated. See KNOWN_ISSUES.rdoc for other
+already known issues.
+
+=== String escaping of command-line arguments in Ruby 1.9.X on Windows
+
+After BioRuby 1.4.1, in Ruby 1.9.X running on Windows, escaping of
+command-line arguments are processed by the Ruby interpreter. Before BioRuby
+1.4.0, the escaping is executed in Bio::Command#escape_shell_windows, and
+the behavior is different from the Ruby interpreter's one.
+
+Curreltly, due to the change, test/functional/bio/test_command.rb may fail
+on Windows with Ruby 1.9.X.
+
