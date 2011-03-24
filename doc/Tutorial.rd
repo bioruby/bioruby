@@ -572,7 +572,7 @@ stranded RNA or double stranded DNA into fragments. To list all enzymes:
     p enzyme_name
   end
 
-and cut a sequence with an enzyme follow up with:
+and to cut a sequence with an enzyme follow up with:
 
    res = seq.cut_with_enzyme('EcoRII', {:max_permutations => 0}, 
      {:view_ranges => true})
@@ -602,7 +602,7 @@ and cut a sequence with an enzyme follow up with:
 Let's start with a query.pep file which contains a sequence in FASTA
 format.  In this example we are going to execute a homology search
 from a remote internet site or on your local machine. Note that you
-can use the ssearch program instead of fasta when you use them in your
+can use the ssearch program instead of fasta when you use it in your
 local machine.
 
 === using FASTA in local machine
@@ -656,8 +656,7 @@ Bio::Sequence#fasta method can be used.
     seq.fasta(factory)
 
 When you want to add options to FASTA command, you can set the
-third argument of Bio::Fasta.local method. For example, setting ktup to 1
-and getting top-10 hits:
+third argument of Bio::Fasta.local method. For example, the following sets ktup to 1 and gets a list of the top 10 hits:
 
     factory = Bio::Fasta.local('fasta34', 'target.pep', '-b 10')
     factory.ktup = 1
@@ -766,7 +765,7 @@ The parameter "program" is different from FASTA - as you can expect:
 Bio::BLAST uses "-m 7" XML output of BLAST by default when either
 XMLParser or REXML (both of them are XML parser libraries for Ruby -
 of the two XMLParser is the fastest) is installed on your computer. In
-Ruby version 1.8.0, or later, REXML is bundled with Ruby's
+Ruby version 1.8.0 or later, REXML is bundled with Ruby's
 distribution.
 
 When no XML parser library is present, Bio::BLAST uses "-m 8" tabular
@@ -801,10 +800,10 @@ midline.
     end
 
 For simplicity and API compatibility, some information such as score
-are extracted from the first Hsp (High-scoring Segment Pair).
+is extracted from the first Hsp (High-scoring Segment Pair).
 
 Check the documentation for Bio::Blast::Report to see what can be
-retrieved. For now suffice to state that Bio::Blast::Report has a
+retrieved. For now suffice to say that Bio::Blast::Report has a
 hierarchical structure mirroring the general BLAST output stream:
 
   * In a Bio::Blast::Report object, @iterations is an array of
@@ -879,65 +878,12 @@ Bio::Blast::Report.new(or Bio::Blast::Default::Report.new):
 
     factory = Bio::Blast.remote(program, db, option, 'MYSITE')
 
-When you write above routines, please send to the BioRuby project and
-they may be included.
+When you write above routines, please send them to the BioRuby project, and they may be included in future releases.
 
 == Generate a reference list using PubMed (Bio::PubMed)
-=end
-(EDITORs NOTE: examples in this section do not work and should be rewritten.)
-
-Below script is an example which seaches PubMed and creates a reference list.
-
-    ARGV.each do |id|
-      entry = Bio::PubMed.query(id)     # searches PubMed and get entry
-      medline = Bio::MEDLINE.new(entry) # creates Bio::MEDLINE object from entry text
-      reference = medline.reference     # converts into Bio::Reference object
-      puts reference.bibtex             # shows BibTeX formatted text
-    end
-
-We named the script pmfetch.rb.
-
-    % ./pmfetch.rb 11024183 10592278 10592173
-
-To give some PubMed ID (PMID) in arguments, the script retrieves informations
-from NCBI, parses MEDLINE format text, converts into BibTeX format and
-shows them.
-
-A keyword search is also available.
-
-    #!/usr/bin/env ruby
-
-    require 'bio'
-
-    # Concatinates argument keyword list to a string
-    keywords = ARGV.join(' ')
-
-    # PubMed keyword search
-    entries = Bio::PubMed.search(keywords)
-
-    entries.each do |entry|
-      medline = Bio::MEDLINE.new(entry) # creates Bio::MEDLINE object from text
-      reference = medline.reference     # converts into Bio::Reference object
-      puts reference.bibtex             # shows BibTeX format text
-    end
-
-We named the script pmsearch.rb.
-
-    % ./pmsearch.rb genome bioinformatics
-
-To give keywords in arguments, the script searches PubMed by given
-keywords and shows bibliography informations in a BibTex format. Other
-output formats are also avaialble like the bibitem method described
-below. Some journal formats like nature and nar can be used, but lack
-bold and italic font output.
-
-(EDITORs NOTE: do we have some simple object that can be queried for
-author, title etc.?)
-=begin
 
 Nowadays using NCBI E-Utils is recommended. Use Bio::PubMed.esearch
-and Bio::PubMed.efetch instead of above methods.
-
+and Bio::PubMed.efetch.
 
     #!/usr/bin/env ruby
 
@@ -984,7 +930,7 @@ BibTeX format bibliography data to a file named genoinfo.bib.
 
 The BibTeX can be used with Tex or LaTeX to form bibliography
 information with your journal article. For more information
-on BibTex see (EDITORS NOTE: insert URL). A quick example:
+on using BibTex see ((<BibTex HowTo site|URL:http://www.bibtex.org/Using/>)). A quick example:
 
 Save this to hoge.tex:
 
@@ -1002,14 +948,13 @@ Then,
     % latex hoge  # creates bibliography list
     % latex hoge  # inserts correct bibliography reference
 
-Now, you get hoge.dvi and hoge.ps - the latter you can view any
-Postscript viewer.
+Now, you get hoge.dvi and hoge.ps - the latter of which can be viewed with any Postscript viewer.
 
 === Bio::Reference#bibitem
 
 When you don't want to create a bib file, you can use
 Bio::Reference#bibitem method instead of Bio::Reference#bibtex.
-In above pmfetch.rb and pmsearch.rb scripts, change
+In the above pmfetch.rb and pmsearch.rb scripts, change
 
     puts reference.bibtex
 to
@@ -1056,11 +1001,11 @@ BioRuby and other projects' members (2002).
   * Server-client model for getting entry from database via http.
 
 * BioSQL
-  * Schemas to store sequence data to relational database such as
+  * Schemas to store sequence data to relational databases such as
     MySQL and PostgreSQL, and methods to retrieve entries from the database.
 
-Here we give a quick overview. Check out
-((<URL:http://obda.open-bio.org/>)) for more extensive details.
+This tutorial only gives a quick overview of OBDA. Check out
+((<the OBDA site|URL:http://obda.open-bio.org>)) for more extensive details.
 
 == BioRegistry
 
@@ -1078,17 +1023,17 @@ when all local configulation files are not available.
 In the current BioRuby implementation all local configulation files
 are read. For databases with the same name settings encountered first
 are used. This means that if you don't like some settings of a
-database in system global configuration file
-(/etc/bioinformatics/seqdatabase.ini), you can easily override it by
+database in the system's global configuration file
+(/etc/bioinformatics/seqdatabase.ini), you can easily override them by
 writing settings to ~/.bioinformatics/seqdatabase.ini.
 
 The syntax of the configuration file is called a stanza format. For example
 
     [DatabaseName]
     protocol=ProtocolName
-    location=ServeName
+    location=ServerName
 
-You can write a description like above entry for every database.
+You can write a description like the above entry for every database.
 
 The database name is a local label for yourself, so you can name it
 freely and it can differ from the name of the actual databases. In the
@@ -1113,8 +1058,7 @@ In BioRuby, you can use index-flat, index-berkleydb, biofetch and biosql.
 Note that the BioRegistry specification sometimes gets updated and BioRuby
 does not always follow quickly.
 
-Here an example. Create a Bio::Registry object. It reads the configuration
-files:
+Here is an example. It creates a Bio::Registry object and reads the configuration files:
 
     reg = Bio::Registry.new
 
@@ -1125,13 +1069,13 @@ files:
     entry = serv.get_by_id('AA2CG')
 
 
-The variable "serv" is a server object corresponding to the setting
-written in configuration files. The class of the object is one of
+The variable "serv" is a server object corresponding to the settings
+written in the configuration files. The class of the object is one of
 Bio::SQL, Bio::Fetch, and so on. Note that Bio::Registry#get_database("name")
 returns nil if no database is found.
 
-After that, you can use get_by_id method and some specific methods.
-Please refer to below documents.
+After that, you can use the get_by_id method and some specific methods.
+Please refer to the sections below for more information.
 
 == BioFlat
 
@@ -1139,27 +1083,24 @@ BioFlat is a mechanism to create index files of flat files and to retrieve
 these entries fast. There are two index types. index-flat is a simple index
 performing binary search without using an external library of Ruby. index-berkeleydb
 uses Berkeley DB for indexing - but requires installing bdb on your computer,
-as well as the BDB Ruby package. For creating the index itself, you can use
-br_bioflat.rb command bundled with BioRuby.
+as well as the BDB Ruby package. For creating the index itself, you can use br_bioflat.rb command bundled with BioRuby.
 
     % br_bioflat.rb --makeindex database_name [--format data_format] filename...
 
 The format can be omitted because BioRuby has autodetection.  If that
-does not work you can try specifying data format as a name of BioRuby
-database class.
+does not work you can try specifying data format as the name of a BioRuby database class.
 
 Search and retrieve data from database:
 
     % br_bioflat.rb database_name identifier
 
-For example, to create index of GenBank files gbbct*.seq and get entry
-from the database:
+For example, to create index of GenBank files gbbct*.seq and get the entry from the database:
 
     % br_bioflat.rb --makeindex my_bctdb --format GenBank gbbct*.seq
     % br_bioflat.rb my_bctdb A16STM262
 
 If you have Berkeley DB on your system and installed the bdb extension
-module of Ruby (see http://raa.ruby-lang.org/project/bdb/), you can
+module of Ruby (see ((<the BDB project page|URL:http://raa.ruby-lang.org/project/bdb/>)) ), you can
 create and search indexes with Berkeley DB - a very fast alternative
 that uses little computer memory. When creating the index, use the
 "--makeindex-bdb" option instead of "--makeindex".
@@ -1170,12 +1111,12 @@ that uses little computer memory. When creating the index, use the
 
   Note: this section is an advanced topic
 
-BioFetch is a database retrieval mechanism via CGI.  CGI Parameters,
-options and error codes are standardized.  There client access via
+BioFetch is a database retrieval mechanism via CGI. CGI Parameters,
+options and error codes are standardized. Client access via
 http is possible giving the database name, identifiers and format to
 retrieve entries.
 
-The BioRuby project has a BioFetch server in bioruby.org. It uses
+The BioRuby project has a BioFetch server at bioruby.org. It uses
 GenomeNet's DBGET system as a backend. The source code of the
 server is in sample/ directory. Currently, there are only two
 BioFetch servers in the world: bioruby.org and EBI.
@@ -1201,8 +1142,8 @@ Here are some methods to retrieve entries from our BioFetch server.
       serv = reg.get_database('genbank')
       entry = serv.get_by_id('AA2CG')
 
-If you want to use (4), you, obviously, have to include some settings
-in seqdatabase.ini. E.g.
+If you want to use (4), you have to include some settings
+in seqdatabase.ini. For example:
 
     [genbank]
     protocol=biofetch
@@ -1211,11 +1152,11 @@ in seqdatabase.ini. E.g.
 
 === The combination of BioFetch, Bio::KEGG::GENES and Bio::AAindex1
 
-Bioinformatics is often about glueing things together. Here we give an
-example to get the bacteriorhodopsin gene (VNG1467G) of the archaea
-Halobacterium from KEGG GENES database and to get alpha-helix index
+Bioinformatics is often about gluing things together. Here is an
+example that gets the bacteriorhodopsin gene (VNG1467G) of the archaea
+Halobacterium from KEGG GENES database and gets alpha-helix index
 data (BURA740101) from the AAindex (Amino acid indices and similarity
-matrices) database, and show the helix score for each 15-aa length
+matrices) database, and shows the helix score for each 15-aa length
 overlapping window.
 
     #!/usr/bin/env ruby
@@ -1237,16 +1178,16 @@ overlapping window.
       position += 1
     end
 
-The special method Bio::Fetch.query uses preset BioFetch server
-in bioruby.org. (The server internally get data from GenomeNet.
+The special method Bio::Fetch.query uses the preset BioFetch server
+at bioruby.org. (The server internally gets data from GenomeNet.
 Because the KEGG/GENES database and AAindex database are not available
 from other BioFetch servers, we used bioruby.org server with
 Bio::Fetch.query method.)
 
 == BioSQL
 
-BioSQL is a well known schema to store and retrive biological sequences using a RDBMS like PostgreSQL or MySQL; note that SQLite is not supported.
-First of all, you must install a database engine or have access to a remote one. Then create the schema and populate with the taxonomy. You can follow the ((<Official Guide|URL:http://code.open-bio.org/svnweb/index.cgi/biosql/view/biosql-schema/trunk/INSTALL>)) .
+BioSQL is a well known schema to store and retrive biological sequences using a RDBMS like PostgreSQL or MySQL: note that SQLite is not supported.
+First of all, you must install a database engine or have access to a remote one. Then create the schema and populate with the taxonomy. You can follow the ((<Official Guide|URL:http://code.open-bio.org/svnweb/index.cgi/biosql/view/biosql-schema/trunk/INSTALL>)) to accomplish these steps.
 Next step is to install these gems:
 * ActiveRecord
 * CompositePrimaryKeys (Rails doesn't handle by default composite primary keys)
@@ -1255,22 +1196,23 @@ Next step is to install these gems:
 
 You can find ActiveRecord's models in /bioruby/lib/bio/io/biosql
 
-When you have your database up and running, you can connect to it in this way:
+When you have your database up and running, you can connect to it like this:
 
     #!/usr/bin/env ruby
     
     require 'bio'
 
     connection = Bio::SQL.establish_connection({'development'=>{'hostname'=>"YourHostname",
-                                                   'database'=>"CoolBioSeqDB",
-                                                   'adapter'=>"jdbcmysql", 
-                                                   'username'=>"YourUser",
-                                                   'password'=>"YouPassword"
-                                                  }
-                                  },
-                                  'development')
+    'database'=>"CoolBioSeqDB",
+    'adapter'=>"jdbcmysql",
+    'username'=>"YourUser",
+    'password'=>"YouPassword"
+          }
+      },
+    'development')
 
-    #The first parameter is the hash contaning the description of the configuration similar to database.yml in Rails application, you can declare different environment. The second parameter is the environment to use: 'development', 'test', 'production'.
+    #The first parameter is the hash contaning the description of the configuration; similar to database.yml in Rails applications, you can declare different environment. 
+    #The second parameter is the environment to use: 'development', 'test', or 'production'.
     
     #To store a sequence into the database you simply need a biosequence object.
     biosql_database = Bio::SQL::Biodatabase.find(:first)
@@ -1289,20 +1231,20 @@ When you have your database up and running, you can connect to it in this way:
     #retriving a generic accession
     bioseq = Bio::SQL.fetch_accession("YouAccession")
 
-    #If you use biosequence objects, you will find all its method mapped to BioSQL sequences. But you can also access to the models directly:
+    #If you use biosequence objects, you will find all its method mapped to BioSQL sequences. 
+    #But you can also access to the models directly:
 
-    #get the raw sequence associated with you accession
+    #get the raw sequence associated with your accession
     bioseq.entry.biosequence 
    
-    #get the length of your sequence, this is the explicit form of bioseq.length
+    #get the length of your sequence; this is the explicit form of bioseq.length
     bioseq.entry.biosequence.length
 
-    #convert the sequence in GenBank format
+    #convert the sequence into GenBank format
     bioseq.to_biosequence.output(:genbank)
 
-BioSQL' ((<schema|URL:http://www.biosql.org/wiki/Schema_Overview>)) is not so intuitive at the beginning, spend some time on understanding it, in the end if you know a little bit of rails everything will go smootly. You can find information to Annotation ((<here|URL:http://www.biosql.org/wiki/Annotation_Mapping>))
+BioSQL's ((<schema|URL:http://www.biosql.org/wiki/Schema_Overview>)) is not very intuitive for beginners, so spend some time on understanding it. In the end if you know a little bit of Ruby on Rails, everything will go smoothly. You can find information on Annotation ((<here|URL:http://www.biosql.org/wiki/Annotation_Mapping>)).
 ToDo: add exemaples from George. I remember he did some cool post on BioSQL and Rails.
-
 
 = PhyloXML
 
