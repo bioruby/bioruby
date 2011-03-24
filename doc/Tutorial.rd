@@ -1249,17 +1249,17 @@ ToDo: add exemaples from George. I remember he did some cool post on BioSQL and 
 = PhyloXML
 
 PhyloXML is an XML language for saving, analyzing and exchanging data of 
-annotated phylogenetic trees. PhyloXML parser in BioRuby is implemented in 
-Bio::PhyloXML::Parser and writer in Bio::PhyloXML::Writer. 
-More information at www.phyloxml.org
+annotated phylogenetic trees. PhyloXML's parser in BioRuby is implemented in 
+Bio::PhyloXML::Parser, and its writer in Bio::PhyloXML::Writer. 
+More information can be found at ((<www.phyloxml.org|URL:http://www.phyloxml.org>)).
 
 == Requirements
 
-In addition to BioRuby library you need a libxml ruby bindings. To install:
+In addition to BioRuby, you need the libxml Ruby bindings. To install, execute:
 
   % gem install -r libxml-ruby
 
-For more information see ((<URL:http://libxml.rubyforge.org/install.xml>))
+For more information see the ((<libxml installer page|URL:http://libxml.rubyforge.org/install.xml>))
 
 == Parsing a file
 
@@ -1273,11 +1273,11 @@ For more information see ((<URL:http://libxml.rubyforge.org/install.xml>))
       puts tree.name
     end
 
-If there are several trees in the file, you can access the one you wish by an index
+If there are several trees in the file, you can access the one you wish by specifying its index:
 
     tree = phyloxml[3]
 
-You can use all Bio::Tree methods on the tree, since PhyloXML::Tree inherits from Bio::Tree. For example,
+You can use all Bio::Tree methods on the tree, since PhyloXML::Tree inherits from Bio::Tree. For example, 
 
    tree.leaves.each do |node|
      puts node.name
@@ -1305,7 +1305,7 @@ PhyloXML files can hold additional information besides phylogenies at the end of
 
 == Retrieving data
 
-Here is an example of how to retrieve the scientific name of the clades.
+Here is an example of how to retrieve the scientific name of the clades included in each tree.
 
     require 'bio'
     
@@ -1352,7 +1352,7 @@ Here is an example of how to retrieve the scientific name of the clades.
 
 == The BioRuby example programs
 
-Some sample programs are stored in ./samples/ directory. Run for example:
+Some sample programs are stored in ./samples/ directory. For example, the n2aa.rb program (transforms a nucleic acid sequence into an amino acid sequence) can be run using:
 
   ./sample/na2aa.rb test/data/fasta/example1.txt 
 
@@ -1371,21 +1371,21 @@ in this tutorial to doctest - more info upcoming.
 
 See the BioRuby in anger Wiki.  A lot of BioRuby's documentation exists in the
 source code and unit tests. To really dive in you will need the latest source
-code tree. The embedded rdoc documentation can be viewed online at
+code tree. The embedded rdoc documentation for the BioRuby source code can be viewed online at
 ((<URL:http://bioruby.org/rdoc/>)).
 
 == BioRuby Shell
 
-The BioRuby shell implementation you find in ./lib/bio/shell. It is very interesting
+The BioRuby shell implementation is located in ./lib/bio/shell. It is very interesting
 as it uses IRB (the Ruby intepreter) which is a powerful environment described in
-((<Programming Ruby's irb chapter|URL:http://ruby-doc.org/docs/ProgrammingRuby/html/irb.html>)). IRB commands can directly be typed in the shell, e.g.
+((<Programming Ruby's IRB chapter|URL:http://ruby-doc.org/docs/ProgrammingRuby/html/irb.html>)). IRB commands can be typed directly into the shell, e.g.
 
   bioruby!> IRB.conf[:PROMPT_MODE]
   ==!> :PROMPT_C
 
-optionally you also may want to install the optional Ruby readline support -
+Additionally, you also may want to install the optional Ruby readline support -
 with Debian libreadline-ruby. To edit a previous line you may have to press
-line down (arrow down) first.
+line down (down arrow) first.
 
 = Helpful tools
 
