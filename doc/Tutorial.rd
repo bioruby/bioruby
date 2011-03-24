@@ -1395,7 +1395,7 @@ source code by clicking on class and method names.
   cd bioruby/lib
   rtags -R --vi
 
-For a tutorial see ((<URL:http://rtags.rubyforge.org/>))
+For a tutorial see ((<here|URL:http://rtags.rubyforge.org/>))
 
 = APPENDIX
 
@@ -1407,9 +1407,9 @@ Please refer to KEGG_API.rd.ja (English version: ((<URL:http://www.genome.jp/keg
 
 == Ruby Ensembl API
 
-Ruby Ensembl API is a ruby API to the Ensembl database. It is NOT currently
+The Ruby Ensembl API is a Ruby API to the Ensembl database. It is NOT currently
 included in the BioRuby archives. To install it, see
-((<URL:http://wiki.github.com/jandot/ruby-ensembl-api>))
+((<the Ruby-Ensembl Github|URL:http://wiki.github.com/jandot/ruby-ensembl-api>))
 for more information.
 
 === Gene Ontology (GO) through the Ruby Ensembl API
@@ -1422,7 +1422,7 @@ Gene Ontologies can be fetched through the Ruby Ensembl API package:
    infile.each do |line|
      accs = line.split(",")          # Split the comma-sep.entries into an array
      drosphila_acc = accs.shift      # the first entry is the Drosophila acc
-     mosq_acc = accs.shift           # the second entry is you Mosq. acc
+     mosq_acc = accs.shift           # the second entry is your Mosq. acc
      gene = Ensembl::Core::Gene.find_by_stable_id(drosophila_acc)
      print "#{mosq_acc}"
      gene.go_terms.each do |go|
@@ -1437,10 +1437,10 @@ homologues.
 
 At the moment there is no easy way of accessing BioPerl from Ruby. The best way, perhaps, is to create a Perl server that gets accessed through XML/RPC or SOAP.
 
-== Installing required external library
+== Installing required external libraries
 
 At this point for using BioRuby no additional libraries are needed, except if
-you are using Bio::PhyloXML module. Then you have to install libxml-ruby.
+you are using the Bio::PhyloXML module; then you have to install libxml-ruby.
 
 This may change, so keep an eye on the Bioruby website. Also when
 a package is missing BioRuby should show an informative message.
@@ -1452,7 +1452,7 @@ carefully that come with each package.
 
 === Installing libxml-ruby
 
-The simplest way is to use gem packaging system.
+The simplest way is to use gem packaging system:
 
   gem install -r libxml-ruby
 
@@ -1466,7 +1466,7 @@ If you have other problems with installation, then see ((<URL:http://libxml.ruby
 
 * Error: in `require': no such file to load -- bio (LoadError)
 
-Ruby fails to find the BioRuby libraries - add it to the RUBYLIB path, or pass
+Ruby is failing to find the BioRuby libraries - add it to the RUBYLIB path, or pass
 it to the interpeter. For example:
 
   ruby -I$BIORUBYPATH/lib yourprogram.rb
