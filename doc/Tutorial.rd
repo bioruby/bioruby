@@ -38,12 +38,12 @@ bioruby> $: << '../lib'
 = BioRuby Tutorial
 
 * Copyright (C) 2001-2003 KATAYAMA Toshiaki <k .at. bioruby.org>
-* Copyright (C) 2005-2010 Pjotr Prins, Naohisa Goto and others
+* Copyright (C) 2005-2011 Pjotr Prins, Naohisa Goto and others
 
-This document was last modified: 2010/01/08
-Current editor: Pjotr Prins <p .at. bioruby.org>
+This document was last modified: 2011/03/24
+Current editor: Michael O'Keefe <okeefm (at) rpi (dot) edu>
 
-The latest version resides in the GIT source code repository:  ./doc/((<Tutorial.rd|URL:http://github.com/pjotrp/bioruby/raw/documentation/doc/Tutorial.rd>)).
+The latest version resides in the GIT source code repository:  ./doc/((<Tutorial.rd|URL:http://github.com/bioruby/bioruby/doc/Tutorial.rd>)).
 
 == Introduction
 
@@ -110,11 +110,11 @@ question to the mailing list. BioRuby developers usually try to help.
 
 The Bio::Sequence class allows the usual sequence transformations and
 translations.  In the example below the DNA sequence "atgcatgcaaaa" is
-converted into the complemental strand, spliced into a subsequence,
-next the nucleic acid composition is calculated and the sequence is
+converted into the complemental strand and spliced into a subsequence; 
+next, the nucleic acid composition is calculated and the sequence is
 translated into the amino acid sequence, the molecular weight
-calculated, and so on. When translating into amino acid sequences the
-frame can be specified and optionally the condon table selected (as
+calculated, and so on. When translating into amino acid sequences, the
+frame can be specified and optionally the codon table selected (as
 defined in codontable.rb).
 
   bioruby> seq = Bio::Sequence::NA.new("atgcatgcaaaa")
@@ -124,7 +124,7 @@ defined in codontable.rb).
   bioruby> seq.complement
   ==> "ttttgcatgcat"
 
-  bioruby> seq.subseq(3,8) # gets subsequence of positions 3 to 8
+  bioruby> seq.subseq(3,8) # gets subsequence of positions 3 to 8 (starting from 1)
   ==> "gcatgc"
   bioruby> seq.gc_percent 
   ==> 33
@@ -169,11 +169,11 @@ Windows). For example
   % ri p
   % ri File.open
 
-Nucleic acid sequence is an object of Bio::Sequence::NA class, and
-amino acid sequence is an object of Bio::Sequence::AA class.  Shared
+Nucleic acid sequence is an object of the Bio::Sequence::NA class, and
+amino acid sequence is an object of the Bio::Sequence::AA class.  Shared
 methods are in the parent Bio::Sequence class.
 
-As Bio::Sequence class inherits Ruby's String class, you can use
+As Bio::Sequence inherits Ruby's String class, you can use
 String class methods. For example, to get a subsequence, you can
 not only use subseq(from, to) but also String#[].
 
@@ -189,8 +189,7 @@ has index 0, for example:
 
 So when using String methods, you should subtract 1 from positions
 conventionally used in biology.  (subseq method will throw an exception if you
-specify positions smaller than or equal to 0 for either one of the "from" or
-"to".)
+specify positions smaller than or equal to 0 for either one of the "from" or "to".)
 
 The window_search(window_size, step_size) method shows a typical Ruby
 way of writing concise and clear code using 'closures'. Each sliding
@@ -268,7 +267,7 @@ For example:
 
     puts my_aaseq
 
-Save the program as na2aa.rb. Prepare a nucleic acid sequence
+Save the program above as na2aa.rb. Prepare a nucleic acid sequence
 described below and saves it as my_naseq.txt:
 
       gtggcgatctttccgaaagcgatgactggagcgaagaaccaaagcagtgacatttgtctg
@@ -540,7 +539,7 @@ Array and BioPerl's Bio::SimpleAlign.  A very simple example is:
 
 BioRuby has extensive support for restriction enzymes (REs). It contains a full
 library of commonly used REs (from REBASE) which can be used to cut single
-stranded RNA or dubbel stranded DNA into fragments. To list all enzymes:
+stranded RNA or double stranded DNA into fragments. To list all enzymes:
 
   rebase = Bio::RestrictionEnzyme.rebase
   rebase.each do |enzyme_name, info|
