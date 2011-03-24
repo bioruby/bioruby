@@ -287,7 +287,7 @@ Outputs
 
     VAIFPKAMTGAKNQSSDICLMPHVGLIRRGQRRIRHLVQMSDAA*
 
-You can also write this, a bit fanciful, as a one-liner script.
+You can also write this, a bit fancifully, as a one-liner script.
 
     % ruby -r bio -e 'p Bio::Sequence::NA.new($<.read).translate' my_naseq.txt
 
@@ -300,7 +300,7 @@ sequence files. One generic example of the above can be found in
 We assume that you already have some GenBank data files. (If you don't,
 download some .seq files from ftp://ftp.ncbi.nih.gov/genbank/)
 
-As an example we fetch the ID, definition and sequence of each entry
+As an example we will fetch the ID, definition and sequence of each entry
 from the GenBank format and convert it to FASTA. This is also an example
 script in the BioRuby distribution.
 
@@ -433,7 +433,7 @@ bio/location.rb.
     locs = Bio::Locations.new('join((8298.8300)..10206,1..855)')
     naseq.splicing(locs)
 
-You can also use the splicing method for amino acid sequences
+You can also use this splicing method for amino acid sequences
 (Bio::Sequence::AA objects).
 
 * Splicing peptide from a protein (e.g. signal peptide)
@@ -471,15 +471,14 @@ database class?
       p entry.seq               # sequence data of the entry
     end
 
-An example that can take any input, filter using a regular expression to output
+An example that can take any input, filter using a regular expression and output
 to a FASTA file can be found in sample/any2fasta.rb. With this technique it is
 possible to write a Unix type grep/sort pipe for sequence information. One
 example using scripts in the BIORUBY sample folder:
 
  fastagrep.rb '/At|Dm/' database.seq | fastasort.rb
 
-greps the database for Arabidopsis and Drosophila entries and sorts the output
-to FASTA.
+greps the database for Arabidopsis and Drosophila entries and sorts the output to FASTA.
 
 Other methods to extract specific data from database objects can be
 different between databases, though some methods are common (see the
@@ -502,7 +501,7 @@ multiple Bio::Reference objects as an Array. And some classes have a
 
 === Alignments (Bio::Alignment)
 
-Bio::Alignment class in bio/alignment.rb is a container class like Ruby's Hash,
+The Bio::Alignment class in bio/alignment.rb is a container class like Ruby's Hash,
 Array and BioPerl's Bio::SimpleAlign.  A very simple example is:
 
   bioruby> seqs = [ 'atgca', 'aagca', 'acgca', 'acgcg' ]
@@ -534,6 +533,33 @@ Array and BioPerl's Bio::SimpleAlign.  A very simple example is:
   # clustalw command must be installed.
   factory = Bio::ClustalW.new
   a2 = a.do_align(factory)
+
+Read a ClustalW or Muscle 'ALN' alignment file:
+ 
+  bioruby> aln = Bio::ClustalW::Report.new(File.read('../test/data/clustalw/example1.aln'))
+  bioruby> aln.header
+  ==> "CLUSTAL 2.0.9 multiple sequence alignment"
+
+Fetch a sequence:
+
+  bioruby> seq = aln[1]
+  bioruby> seq.definition
+  ==> "gi|115023|sp|P10425|"
+
+Get a partial sequence:
+  
+  bioruby> seq.to_s[60..120]
+  ==> "LGYFNG-EAVPSNGLVLNTSKGLVLVDSSWDNKLTKELIEMVEKKFQKRVTDVIITHAHAD"
+
+Show the full alignment residue match information for the sequences in the set:
+
+  bioruby> aln.match_line[60..120]
+  ==> "     .     **. .   ..   ::*:       . * : : .        .: .* * *"
+
+Return a Bio::Alignment object:
+
+  bioruby> aln.alignment.consensus[60..120]
+  ==> "???????????SN?????????????D??????????L??????????????????H?H?D"
 
 == Restriction Enzymes (Bio::RE)
 
