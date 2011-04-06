@@ -26,14 +26,14 @@ by Dave Thomas and Andy Hunt - the first edition is online
 <p>You can check whether Ruby is installed on your computer and what
 version it has with the</p>
 <pre>% ruby -v</pre>
-<p>command. Showing something like:</p>
+<p>command. You should see something like:</p>
 <pre>ruby 1.8.7 (2008-08-11 patchlevel 72) [i486-linux]</pre>
 <p>If you see no such thing you'll have to install Ruby using your installation
 manager. For more information see the
 <a href="http://www.ruby-lang.org/en/">Ruby</a> website.</p>
 <p>With Ruby download and install Bioruby using the links on the
 <a href="http://bioruby.org/">Bioruby</a> website. The recommended installation is via 
-Ruby gems:</p>
+RubyGems:</p>
 <pre>gem install bio</pre>
 <p>See also the Bioruby <a href="http://bioruby.open-bio.org/wiki/Installation">wiki</a>.</p>
 <p>A lot of BioRuby's documentation exists in the source code and unit tests. To
@@ -41,10 +41,10 @@ really dive in you will need the latest source code tree. The embedded rdoc
 documentation can be viewed online at
 <a href="http://bioruby.org/rdoc/">bioruby's rdoc</a>. But first lets start!</p>
 <h2><a name="label-2" id="label-2">Trying Bioruby</a></h2><!-- RDLabel: "Trying Bioruby" -->
-<p>Bioruby comes with its own shell. After unpacking the sources run the
-following command</p>
-<pre>./bin/bioruby  or
-ruby -I lib bin/bioruby</pre>
+<p>Bioruby comes with its own shell. After unpacking the sources run one of the following commands:</p>
+<pre>./bin/bioruby</pre>
+<p>or</p>
+<pre>ruby -I lib bin/bioruby</pre>
 <p>and you should see a prompt</p>
 <pre>bioruby&gt;</pre>
 <p>Now test the following:</p>
@@ -112,8 +112,8 @@ Windows). For example</p>
 <pre>% ri puts
 % ri p
 % ri File.open</pre>
-<p>Nucleic acid sequence is an object of the Bio::Sequence::NA class, and
-amino acid sequence is an object of the Bio::Sequence::AA class.  Shared
+<p>Nucleic acid sequence are members of the Bio::Sequence::NA class, and
+amino acid sequence are members of the Bio::Sequence::AA class.  Shared
 methods are in the parent Bio::Sequence class.</p>
 <p>As Bio::Sequence inherits Ruby's String class, you can use
 String class methods. For example, to get a subsequence, you can
@@ -134,7 +134,7 @@ way of writing concise and clear code using 'closures'. Each sliding
 window creates a subsequence which is supplied to the enclosed block
 through a variable named +s+.</p>
 <ul>
-<li><p>Show average percentage of GC content for 20 bases (stepping the default one base at a time)</p>
+<li><p>Show average percentage of GC content for 20 bases (stepping the default one base at a time):</p>
 <pre>bioruby&gt; seq = Bio::Sequence::NA.new("atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa")
 ==&gt; "atgcatgcaattaagctaatcccaattagatcatcccgatcatcaaaaaaaaaa"
 
@@ -195,7 +195,7 @@ my_aaseq = my_naseq.translate
 
 puts my_aaseq</pre>
 <p>Save the program above as na2aa.rb. Prepare a nucleic acid sequence
-described below and saves it as my_naseq.txt:</p>
+described below and save it as my_naseq.txt:</p>
 <pre>gtggcgatctttccgaaagcgatgactggagcgaagaaccaaagcagtgacatttgtctg
 atgccgcacgtaggcctgataagacgcggacagcgtcgcatcaggcatcttgtgcaaatg
 tcggatgcggcgtga</pre>
@@ -255,7 +255,7 @@ ff.each_entry do |f|
   puts "nalen      : " + f.nalen.to_s
   puts "naseq      : " + f.naseq
 end</pre>
-<p>In above two scripts, the first arguments of Bio::FlatFile.new are
+<p>In the above two scripts, the first arguments of Bio::FlatFile.new are
 database classes of BioRuby. This is expanded on in a later section.</p>
 <p>Again another option is to use the Bio::DB.open class:</p>
 <pre>#!/usr/bin/env ruby
@@ -310,12 +310,9 @@ end</pre>
 <ul>
 <li>Note: In this example Feature#assoc method makes a Hash from a
   feature object. It is useful because you can get data from the hash
-  by using qualifiers as keys.
-  (But there is a risk some information is lost when two or more
-  qualifiers are the same. Therefore an Array is returned by
-  Feature#feature)</li>
+  by using qualifiers as keys. But there is a risk some information is lost  when two or more qualifiers are the same. Therefore an Array is returned by  Feature#feature.</li>
 </ul>
-<p>Bio::Sequence#splicing splices subsequence from nucleic acid sequence
+<p>Bio::Sequence#splicing splices subsequences from nucleic acid sequences
 according to location information used in GenBank, EMBL and DDBJ.</p>
 <p>When the specified translation table is different from the default
 (universal), or when the first codon is not "atg" or the protein
@@ -343,10 +340,7 @@ with classes like Bio::GenBank, Bio::KEGG::GENES. A full list can be found in
 the ./lib/bio/db directory of the BioRuby source tree.</p>
 <p>In many cases the Bio::DatabaseClass acts as a factory pattern
 and recognises the database type automatically - returning a
-parsed object. For example using Bio::FlatFile</p>
-<p>Bio::FlatFile class as described above. The first argument of the
-Bio::FlatFile.new is database class name in BioRuby (such as Bio::GenBank,
-Bio::KEGG::GENES and so on).</p>
+parsed object. For example using Bio::FlatFile class as described above. The first argument of the Bio::FlatFile.new is database class name in BioRuby (such as Bio::GenBank, Bio::KEGG::GENES and so on).</p>
 <pre>ff = Bio::FlatFile.new(Bio::DatabaseClass, ARGF)</pre>
 <p>Isn't it wonderful that Bio::FlatFile automagically recognizes each
 database class?</p>
@@ -368,7 +362,7 @@ example using scripts in the BIORUBY sample folder:</p>
 <p>greps the database for Arabidopsis and Drosophila entries and sorts the output to FASTA.</p>
 <p>Other methods to extract specific data from database objects can be
 different between databases, though some methods are common (see the
-guidelines for common methods as described in bio/db.rb).</p>
+guidelines for common methods in bio/db.rb).</p>
 <ul>
 <li>entry_id --&gt; gets ID of the entry</li>
 <li>definition --&gt; gets definition of the entry</li>
@@ -378,14 +372,13 @@ guidelines for common methods as described in bio/db.rb).</p>
 </ul>
 <p>Refer to the documents of each database to find the exact naming
 of the included methods.</p>
-<p>In principal BioRuby uses the following conventions: when a method
-name is plural the method returns some object as an Array. For
+<p>In general, BioRuby uses the following conventions: when a method
+name is plural, the method returns some object as an Array. For
 example, some classes have a "references" method which returns
 multiple Bio::Reference objects as an Array. And some classes have a
 "reference" method which returns a single Bio::Reference object.</p>
 <h3><a name="label-6" id="label-6">Alignments (Bio::Alignment)</a></h3><!-- RDLabel: "Alignments (Bio::Alignment)" -->
-<p>The Bio::Alignment class in bio/alignment.rb is a container class like Ruby's Hash,
-Array and BioPerl's Bio::SimpleAlign.  A very simple example is:</p>
+<p>The Bio::Alignment class in bio/alignment.rb is a container class like Ruby's Hash and Array classes and BioPerl's Bio::SimpleAlign.  A very simple example is:</p>
 <pre>bioruby&gt; seqs = [ 'atgca', 'aagca', 'acgca', 'acgcg' ]
 bioruby&gt; seqs = seqs.collect{ |x| Bio::Sequence::NA.new(x) }
 # creates alignment object
@@ -470,8 +463,8 @@ can use the ssearch program instead of fasta when you use it in your
 local machine.</p>
 <h3><a name="label-9" id="label-9">using FASTA in local machine</a></h3><!-- RDLabel: "using FASTA in local machine" -->
 <p>Install the fasta program on your machine (the command name looks like
-fasta34. FASTA can be downloaded from ftp://ftp.virginia.edu/pub/fasta/).
-First, you must prepare your FASTA-formatted database sequence file
+fasta34. FASTA can be downloaded from ftp://ftp.virginia.edu/pub/fasta/).</p>
+<p>First, you must prepare your FASTA-formatted database sequence file
 target.pep and FASTA-formatted query.pep. </p>
 <pre>#!/usr/bin/env ruby
 
@@ -504,18 +497,18 @@ ff.each do |entry|
     end
   end
 end</pre>
-<p>We named above script as f_search.rb. You can execute as follows:</p>
+<p>We named above script f_search.rb. You can execute it as follows:</p>
 <pre>% ./f_search.rb query.pep target.pep &gt; f_search.out</pre>
 <p>In above script, the variable "factory" is a factory object for executing
 FASTA many times easily. Instead of using Fasta#query method,
 Bio::Sequence#fasta method can be used.</p>
 <pre>seq = "&gt;test seq\nYQVLEEIGRGSFGSVRKVIHIPTKKLLVRKDIKYGHMNSKE"
 seq.fasta(factory)</pre>
-<p>When you want to add options to FASTA command, you can set the
-third argument of Bio::Fasta.local method. For example, the following sets ktup to 1 and gets a list of the top 10 hits:</p>
+<p>When you want to add options to FASTA commands, you can set the
+third argument of the Bio::Fasta.local method. For example, the following sets ktup to 1 and gets a list of the top 10 hits:</p>
 <pre>factory = Bio::Fasta.local('fasta34', 'target.pep', '-b 10')
 factory.ktup = 1</pre>
-<p>Bio::Fasta#query returns Bio::Fasta::Report object.
+<p>Bio::Fasta#query returns a Bio::Fasta::Report object.
 We can get almost all information described in FASTA report text
 with the Report object. For example, getting information for hits:</p>
 <pre>report.each do |hit|
@@ -541,11 +534,10 @@ with the Report object. For example, getting information for hits:</p>
                             # in hit(target) sequence
   puts hit.lap_at           # array of above four numbers
 end</pre>
-<p>Most of above methods are common with the Bio::Blast::Report described
-below. Please refer to document of Bio::Fasta::Report class for
+<p>Most of above methods are common to the Bio::Blast::Report described
+below. Please refer to the documentation of the Bio::Fasta::Report class for
 FASTA-specific details.</p>
-<p>If you need original output text of FASTA program you can use the "output"
-method of the factory object after the "query" method.</p>
+<p>If you need the original output text of FASTA program you can use the "output" method of the factory object after the "query" method.</p>
 <pre>report = factory.query(entry)
 puts factory.output</pre>
 <h3><a name="label-10" id="label-10">using FASTA from a remote internet site</a></h3><!-- RDLabel: "using FASTA from a remote internet site" -->
@@ -572,7 +564,7 @@ same things as with a local method.</p>
 <p>Select the databases you require.  Next, give the search program from
 the type of query sequence and database.</p>
 <ul>
-<li>When query is a amino acid sequence
+<li>When query is an amino acid sequence
 <ul>
 <li>When protein database, program is "fasta".</li>
 <li>When nucleic database, program is "tfasta".</li>
@@ -580,10 +572,10 @@ the type of query sequence and database.</p>
 <li>When query is a nucleic acid sequence
 <ul>
 <li>When nucleic database, program is "fasta".</li>
-<li>(When protein database, you would fail to search.)</li>
+<li>(When protein database, the search would fail.)</li>
 </ul></li>
 </ul>
-<p>For example:</p>
+<p>For example, run:</p>
 <pre>program = 'fasta'
 database = 'genes'
 
