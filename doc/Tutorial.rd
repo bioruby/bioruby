@@ -43,34 +43,37 @@ bioruby> $: << '../lib'  # make sure rubydoctest finds bioruby/lib
 This document was last modified: 2011/03/24
 Current editor: Michael O'Keefe <okeefm (at) rpi (dot) edu>
 
-The latest version resides in the GIT source code repository:  ./doc/((<Tutorial.rd|URL:http://github.com/bioruby/bioruby/doc/Tutorial.rd>)).
+The latest version resides in the GIT source code repository:  ./doc/((<Tutorial.rd|URL:https://github.com/bioruby/bioruby/blob/master/doc/Tutorial.rd>)).
 
 == Introduction
 
 This is a tutorial for using Bioruby. A basic knowledge of Ruby is required.
-If you want to know more about the programming langauge Ruby we recommend the
+If you want to know more about the programming language, we recommend the
 latest Ruby book ((<Programming Ruby|URL:http://www.pragprog.com/titles/ruby>))
-by Dave Thomas and Andy Hunt - the first edition is online
+by Dave Thomas and Andy Hunt - the first edition can be read online
 ((<here|URL:http://www.ruby-doc.org/docs/ProgrammingRuby/>)).
 
-For BioRuby you need to install Ruby and the BioRuby package on your computer
+For BioRuby install Ruby and the BioRuby package on your computer.
 
-You can check whether Ruby is installed on your computer and what
-version it has with the
+Check whether Ruby is installed on your computer with
 
   % ruby -v
 
-command. You should see something like:
+You should see something like:
 
   ruby 1.9.2p136 (2010-12-25 revision 30365) [i686-linux]
 
 If you see no such thing you'll have to install Ruby using your installation
-manager. For more information see the
-((<Ruby|URL:http://www.ruby-lang.org/en/>)) website.
+manager. For example in Debian
+  
+  apt-get install ruby
+
+For other installations, see
+((<Ruby|URL:http://www.ruby-lang.org/en/>)).
 
 With Ruby download and install Bioruby using the links on the
 ((<Bioruby|URL:http://bioruby.org/>)) website. The recommended installation is via 
-RubyGems:
+RubyGems (which comes with Ruby):
 
   gem install bio
 
@@ -83,17 +86,20 @@ documentation can be viewed online at
 
 == Trying Bioruby
 
-Bioruby comes with its own shell. After unpacking the sources run one of the following commands:
+Bioruby comes with its own shell. After installing, run
 
-  ./bin/bioruby
-or
+  bioruby
+
+or, from the source tree
+
+  cd bioruby
   ruby -I lib bin/bioruby
 
 and you should see a prompt
 
   bioruby>
 
-Now test the following:
+Now, test the following:
 
   bioruby> require 'bio'
   bioruby> seq = Bio::Sequence::NA.new("atgcatgcaaaa")
