@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 #
-# fastagrep: Greps a FASTA file (in fact it can use any flat file input supported
-#            by BIORUBY) and outputs sorted FASTA
+# fastagrep: Greps a FASTA file (in fact it can read any flat file input supported
+#            by BioRuby) and outputs sorted FASTA
 #
 #   Copyright (C) 2008 KATAYAMA Toshiaki <k@bioruby.org> & Pjotr Prins
 #
@@ -26,18 +26,25 @@ usage = <<USAGE
 
 Usage: fastagrep.rb [--skip] [regex] infiles
 
-    -v            Invert the sense of matching, to select non-matching lines.
+    -v     Invert the sense of matching, to select non-matching lines.
 
   Examples:
 
     Output all sequence descriptors containing 'Arabidopsis' or 'Drosophila'
-    regardless of case
+    ignoring case
 		
-	    fastagrep.rb "/Arabidopsis|Drosophila/i" *.seq > reduced.fasta
+	    fastagrep.rb "/Arabidopsis|Drosophila/i" *.seq 
 
-    As the result is a FASTA stream you could pipe it for sorting:
+    As the result is a FASTA stream you could pipe it for sorting with
+    fastasort:
 		
 	    fastagrep.rb "/Arabidopsis|Drosophila/i" *.seq | fastasort.rb
+
+    Read all IDs from a file write a new FASTA file containing only those
+    IDs (Unix style):
+
+      for x in `cat ids.txt` ; do fastagrep.rb "/$x/" nt.fa ; done > nt2.fa
+
 USAGE
 
 if ARGV.size == 0
