@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# fastagrep: Writes GFF3 to FASTA using a filter, e.g. mrna
+# gff2fasta: Writes GFF3 to FASTA when sequence information is available
 #
 #   Copyright (C) 2010 Pjotr Prins
 #
