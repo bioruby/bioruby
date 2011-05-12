@@ -69,11 +69,11 @@ module Bio::Blast::Remote
   # 
   # * http://www.ncbi.nlm.nih.gov/blast/
   # * http://www.ncbi.nlm.nih.gov/Education/BLASTinfo/similarity.html
-  # * http://blast.genome.jp/ideas/ideas.html#blast
+  # * http://www.genome.jp/tools/blast/
   #
   module GenomeNet
 
-    Host = "blast.genome.jp".freeze
+    Host = "www.genome.jp".freeze
 
     # Creates a remote BLAST factory using GenomeNet.
     # Returns Bio::Blast object.
@@ -100,7 +100,7 @@ module Bio::Blast::Remote
         key = nil
         host = Bio::Blast::Remote::Genomenet::Host
         http = Bio::Command.new_http(host)
-        result = http.get('/')
+        result = http.get('/tools/blast/')
         #p result.body
         result.body.each_line do |line|
           case line
