@@ -140,6 +140,18 @@ END
       assert_equal(data, @obj.entry)
     end
 
+    def test_entry_overrun
+      data =<<END
+>gi|55416190|gb|AAV50057.1| NADH dehydrogenase subunit 2 [Dasyurus hallucatus]
+MSPYVLMILTLSLFIGTCLTIFSNHWFTAWMGLEINTLAIIPLMTAPNNPRSTEAATKYFLTQATASMLMMFAIIYNAWS
+TNQWALPQLSDDWISLLMTVALAIKLGLAPFHFWVPEVTQGIPLLTGMILLTWQKIAPTAILFQIAPYLNMKFLVILAIL
+STLVGGWGGLNQTHLRKILAYSSIAHMGWMIIIVQINPTLSIFTLTIYVMATLTTFLTLNLSNSTKIKSLGNLWNKSATA
+TIIIFLTLLSLGGLPPLTGFMPKWLILQELINNGNIITATMMALSALLNLFFYMRLIYASSLTMFPSINNSKMQWYNNSM
+KTTTLIPTATVISSLLLPLTPLFVTLY
+END
+      assert_equal(data, @obj.entry_overrun)
+    end
+
     class DummyFactory
       def query(str)
         @query_str = str
@@ -215,17 +227,5 @@ END
     end
 
   end # class TestFastaFormat
-
-
-
-
-  class TestFastaDefinition < Test::Unit::TestCase
-
-    def setup
-    end
-
-    def test_defline
-    end
-  end # class TestFastaDefinition
 
 end
