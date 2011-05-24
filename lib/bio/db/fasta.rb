@@ -148,7 +148,7 @@ module Bio
     #   end
     #
     def query(factory)
-      factory.query(@entry)
+      factory.query(entry)
     end
     alias fasta query
     alias blast query

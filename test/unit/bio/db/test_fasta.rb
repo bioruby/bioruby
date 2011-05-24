@@ -140,6 +140,28 @@ END
       assert_equal(data, @obj.entry)
     end
 
+    class DummyFactory
+      def query(str)
+        @query_str = str
+        "DummyFactoryResult#{str.length}"
+      end
+      attr_reader :query_str
+    end #class DummyFactory
+
+    def test_query
+      data =<<END
+>gi|55416189|gb|AAV50056.1| NADH dehydrogenase subunit 1 [Dasyurus hallucatus]
+MFTINLLIYIIPILLAVAFLTLIERKMLGYMQFRKGPNIVGPYGLLQPFADAVKLFTKEPLRPLTSSISIFIIAPILALT
+IALTIWTPLPMPNTLLDLNLGLIFILSLSGLSVYSILWSGWASNSKYALIGALRAVAQTISYEVSLAIILLSIMLINGSF
+TLKTLSITQENLWLIITTWPLAMMWYISTLAETNRAPFDLTEGESELVSGFNVEYAAGPFAMFFLAEYANIIAMNAITTI
+LFLGPSLTPNLSHLNTLSFMLKTLLLTMVFLWVRASYPRFRYDQLMHLLWKNFLPMTLAMCLWFISLPIALSCIPPQL
+END
+
+      factory = DummyFactory.new
+      assert_equal("DummyFactoryResult401", @obj.query(factory))
+      assert_equal(data, factory.query_str)
+    end
+
     def test_entry_id
       assert_equal('gi|55416189', @obj.entry_id)
     end
