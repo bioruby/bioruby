@@ -51,8 +51,8 @@ class SPTR < EMBLDB
   # Hash keys: ['ENTRY_NAME', 'DATA_CLASS', 'MODECULE_TYPE', 'SEQUENCE_LENGTH']
   #
   # === ID Line
-  #   ID   P53_HUMAN      STANDARD;      PRT;   393 AA.
-  #   #"ID  #{ENTRY_NAME} #{DATA_CLASS}; #{MOLECULE_TYPE}; #{SEQUENCE_LENGTH}."
+  #   ID   P53_HUMAN      STANDARD;      393 AA.
+  #   #"ID  #{ENTRY_NAME} #{DATA_CLASS}; #{SEQUENCE_LENGTH}."
   #
   # === Examples
   #   obj.id_line  #=> {"ENTRY_NAME"=>"P53_HUMAN", "DATA_CLASS"=>"STANDARD", 
@@ -68,8 +68,7 @@ class SPTR < EMBLDB
     @data['ID'] = {
       'ENTRY_NAME'      => part[1],
       'DATA_CLASS'      => part[2].sub(/;/,''),
-      'MOLECULE_TYPE'   => part[3].sub(/;/,''),
-      'SEQUENCE_LENGTH' => part[4].to_i 
+      'SEQUENCE_LENGTH' => part[3].to_i 
     }
   end
 
@@ -87,6 +86,7 @@ class SPTR < EMBLDB
   #
   # A short-cut for Bio::SPTR#id_line('MOLECULE_TYPE').
   def molecule
+    warn "[DEPRECATION] `molecule` is deprecated, the PRT section of the ID was removed by uniprot."
     id_line('MOLECULE_TYPE')
   end
   alias molecule_type molecule
@@ -142,13 +142,12 @@ class SPTR < EMBLDB
   #  SYNONYM        >=0
   #  CONTEINS       >=0
   def protein_name
-    name = ""
-    if de_line = fetch('DE') then
-      str = de_line[/^[^\[]*/] # everything preceding the first [ (the "contains" part)
-      name = str[/^[^(]*/].strip
-      name << ' (Fragment)' if str =~ /fragment/i
+    get('DE').split("\n").each do |line|
+      if (line[/RecName/])
+        return line[/Full=([^;]*)/, 1]
+      end
     end
-    return name
+    return nil
   end
 
 
@@ -157,12 +156,9 @@ class SPTR < EMBLDB
   # synonyms are each placed in () following the official name on the DE line.
   def synonyms
     ary = Array.new
-    if de_line = fetch('DE') then
-      line = de_line.sub(/\[.*\]/,'') # ignore stuff between [ and ].  That's the "contains" part
-      line.scan(/\([^)]+/) do |synonym| 
-        unless synonym =~ /fragment/i then 
-          ary << synonym[1..-1].strip # index to remove the leading (  
-        end
+    get('DE').split("\n").each do |line|
+      if (line[/AltName/])
+        ary << line[/Full=([^;]*)/, 1]
       end
     end
     return ary
@@ -923,7 +919,9 @@ class SPTR < EMBLDB
   # CC   -!- WEB RESOURCE: NAME=ResourceName[; NOTE=FreeText][; URL=WWWAddress].  
   def cc_web_resource(data)
     data.map {|x|
-      entry = {'NAME' => nil, 'NOTE' => nil, 'URL' => nil}
+      entry = {'NAME' => x[/Name=([^;]*)/, 1],
+               'NOTE' => x[/Note=([^;]*)/, 1],
+               'URL'  => x[/URL=([^;]*)/, 1]}
       x.split(';').each do |y|
         case y
         when /NAME=(.+)/
