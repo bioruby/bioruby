@@ -34,7 +34,11 @@ module Bio
     end   
 
     def test_id_line_data_class
-      assert_equal('Reviewed', @obj.id_line('DATA_CLASS'))
+      assert_equal('STANDARD', @obj.id_line('DATA_CLASS'))
+    end
+
+    def test_id_line_molecule_type
+      assert_equal('PRT', @obj.id_line('MOLECULE_TYPE'))
     end
 
     def test_id_line_sequence_length
@@ -48,6 +52,11 @@ module Bio
       assert_equal(entry, @obj.entry_id)
     end
 
+    def test_molecule
+      assert_equal('PRT', @obj.molecule)
+      assert_equal('PRT', @obj.molecule_type)
+    end
+
     def test_sequence_length
       seqlen = 393
       assert_equal(seqlen, @obj.sequence_length)
@@ -55,10 +64,9 @@ module Bio
     end
 
     def test_ac
-      acs = ["P04637", "Q15086", "Q15087", "Q15088", "Q16535", "Q16807",
-             "Q16808", "Q16809", "Q16810", "Q16811", "Q16848", "Q2XN98",
-             "Q3LRW1", "Q3LRW2", "Q3LRW3", "Q3LRW4", "Q3LRW5", "Q86UG1",
-             "Q8J016", "Q99659", "Q9BTM4", "Q9HAQ8", "Q9NP68", "Q9NPJ2",
+      acs = ["P04637", "Q15086", "Q15087", "Q15088", "Q16535", "Q16807", 
+             "Q16808", "Q16809", "Q16810", "Q16811", "Q16848", "Q86UG1", 
+             "Q8J016", "Q99659", "Q9BTM4", "Q9HAQ8", "Q9NP68", "Q9NPJ2", 
              "Q9NZD0", "Q9UBI2", "Q9UQ61"]
       assert_equal(acs, @obj.ac)
       assert_equal(acs, @obj.accessions)
@@ -69,14 +77,12 @@ module Bio
     end
 
     def test_dr
-      assert_equal(48, @obj.dr.size)
-      assert_equal(74, @obj.dr['GO'].size)
-      assert_equal([["IPR008967", "p53-like_TF_DNA-bd"],
-                    ["IPR012346", "p53/RUNT-type_TF_DNA-bd"],
-                    ["IPR011615", "p53_DNA-bd"],
-                    ["IPR010991", "p53_tetrameristn"],
-                    ["IPR013872", "p53_transactivation_domain"],
-                    ["IPR002117", "p53_tumour_suppressor"]],
+      assert_equal(17, @obj.dr.size)
+      assert_equal(27, @obj.dr['GO'].size)
+      assert_equal([["IPR002117", "P53"],
+                    ["IPR011615", "P53_DNA_bd"],
+                    ["IPR012346", "P53_RUNT_DNA_bd"],
+                    ["IPR010991", "p53_tetrameristn"]],
                    @obj.dr['InterPro'])
     end
 
@@ -85,11 +91,6 @@ module Bio
               { " "              => "1",
                 "Version"        => "P53",
                 "Accession"      => "PF00870",
-                "Molecular Type" => nil
-              },
-              { " "              => "1",
-                "Version"        => "P53_TAD",
-                "Accession"      => "PF08563",
                 "Molecular Type" => nil
               },
               { " "              => "1",
@@ -117,16 +118,16 @@ module Bio
     end
 
     def test_dt_created
-      assert_equal('13-AUG-1987, integrated into UniProtKB/Swiss-Prot.', @obj.dt('created'))
+      assert_equal('13-AUG-1987 (Rel. 05, Created)', @obj.dt('created'))
     end
 
     def test_dt_sequence
-      assert_equal('24-NOV-2009, sequence version 4.', 
+      assert_equal('01-MAR-1989 (Rel. 10, Last sequence update)', 
                    @obj.dt('sequence'))
     end
 
     def test_dt_annotation
-      assert_equal('31-MAY-2011, entry version 186.', 
+      assert_equal('13-SEP-2005 (Rel. 48, Last annotation update)', 
                    @obj.dt('annotation'))
     end
 
@@ -139,7 +140,7 @@ module Bio
     end
 
     def test_synonyms
-      ary = ["Antigen NY-CO-13", "Phosphoprotein p53", "Tumor suppressor p53"]
+      ary = ["Tumor suppressor p53", "Phosphoprotein p53", "Antigen NY-CO-13"]
       assert_equal(ary, @obj.synonyms)
     end
 
@@ -225,8 +226,8 @@ module Bio
     def test_oc
       assert_equal(["Eukaryota", "Metazoa", "Chordata", "Craniata", 
                     "Vertebrata", "Euteleostomi", "Mammalia", "Eutheria", 
-                    "Euarchontoglires", "Primates",  "Haplorrhini", "Catarrhini",
-                    "Hominidae", "Homo"], 
+                    "Euarchontoglires", "Primates", "Catarrhini", "Hominidae", 
+                    "Homo"], 
                    @obj.oc)
     end
 
@@ -243,71 +244,32 @@ module Bio
     end
    
     def test_cc_database
-      wr = [{"NAME"=>"IARC TP53 mutation database",
-            "NOTE"=>"Somatic and germline TP53 mutations in human cancers",
-            "URL"=>"http://www-p53.iarc.fr/"},
-           {"NAME"=>"p53 web site at the Institut Curie",
-            "NOTE"=>nil,
-            "URL"=>"http://p53.free.fr/"},
-           {"NAME"=>"Atlas of Genetics and Cytogenetics in Oncology and Haematology",
-            "NOTE"=>nil,
-            "URL"=>"http://atlasgeneticsoncology.org/Genes/P53ID88.html"},
-           {"NAME"=>"GeneReviews",
-            "NOTE"=>nil,
-            "URL"=>"http://www.ncbi.nlm.nih.gov/sites/GeneTests/lab/gene/TP53"},
-           {"NAME"=>"NIEHS-SNPs",
-            "NOTE"=>nil,
-            "URL"=>"http://egp.gs.washington.edu/data/tp53/"},
-           {"NAME"=>"SHMPD",
-            "NOTE"=>"The Singapore human mutation and polymorphism database",
-            "URL"=>"http://shmpd.bii.a-star.edu.sg/gene.php?genestart=A&genename=TP53"},
-           {"NAME"=>"Wikipedia",
-            "NOTE"=>"P53 entry",
-            "URL"=>"http://en.wikipedia.org/wiki/P53"}]
-      assert_equal(wr, @obj.cc('WEB RESOURCE'))
+      db = [{"NAME" => "IARC TP53 mutation database", 
+             "WWW" => "http://www.iarc.fr/p53/", 
+             "FTP" => nil, "NOTE" => "IARC db of somatic p53 mutations"},
+            {"NAME" => "Tokyo p53", 
+             "WWW" => "http://p53.genome.ad.jp/", "FTP" => nil, 
+             "NOTE" => "University of Tokyo db of p53 mutations"},
+            {"NAME" => "p53 web site at the Institut Curie", 
+             "WWW" => "http://p53.curie.fr/", "FTP" => nil, "NOTE" => nil},
+            {"NAME" => "Atlas Genet. Cytogenet. Oncol. Haematol.", 
+             "WWW" => "http://www.infobiogen.fr/services/chromcancer/Genes/P53ID88.html", 
+             "FTP" => nil, "NOTE" => nil}]
+      assert_equal(db, @obj.cc('DATABASE'))
     end
 
     def test_cc_alternative_products
-      ap = {"Event"=>["Alternative promoter usage", "Alternative splicing"],
-            "Named isoforms"=>"9",
-            "Comment"=>"",
-            "Variants"=>
-             [{"Name"=>"1",
-               "Synonyms"=>["p53", "p53alpha"],
-               "IsoId"=>["P04637-1"],
-               "Sequence"=>["Displayed"]},
-              {"Name"=>"2",
-               "Synonyms"=>["I9RET", "p53beta"],
-               "IsoId"=>["P04637-2"],
-               "Sequence"=>["VSP_006535", "VSP_006536"]},
-              {"Name"=>"3",
-               "Synonyms"=>["p53gamma"],
-               "IsoId"=>["P04637-3"],
-               "Sequence"=>["VSP_040560", "VSP_040561"]},
-              {"Name"=>"4",
-               "Synonyms"=>["Del40-p53", "Del40-p53alpha", "p47"],
-               "IsoId"=>["P04637-4"],
-               "Sequence"=>["VSP_040832"]},
-              {"Name"=>"5",
-               "Synonyms"=>["Del40-p53beta"],
-               "IsoId"=>["P04637-5"],
-               "Sequence"=>["VSP_040832", "VSP_006535", "VSP_006536"]},
-              {"Name"=>"6",
-               "Synonyms"=>["Del40-p53gamma"],
-               "IsoId"=>["P04637-6"],
-               "Sequence"=>["VSP_040832", "VSP_040560", "VSP_040561"]},
-              {"Name"=>"7",
-               "Synonyms"=>["Del133-p53", "Del133-p53alpha"],
-               "IsoId"=>["P04637-7"],
-               "Sequence"=>["VSP_040833"]},
-              {"Name"=>"8",
-               "Synonyms"=>["Del133-p53beta"],
-               "IsoId"=>["P04637-8"],
-               "Sequence"=>["VSP_040833", "VSP_006535", "VSP_006536"]},
-              {"Name"=>"9",
-               "Synonyms"=>["Del133-p53gamma"],
-               "IsoId"=>["P04637-9"],
-               "Sequence"=>["VSP_040833", "VSP_040560", "VSP_040561"]}]}
+      ap = {"Comment" => "",
+            "Named isoforms" => "2", 
+            "Variants" => [{"IsoId" => ["P04637-1"], 
+                            "Name" => "1", 
+                            "Synonyms" => [], 
+                            "Sequence" => ["Displayed"]},
+                           {"IsoId" => ["P04637-2"], 
+                            "Name" => "2", 
+                            "Synonyms" => ["I9RET"], 
+                            "Sequence" => ["VSP_006535", "VSP_006536"]}],
+            "Event" => ["Alternative splicing"]}
       assert_equal(ap, @obj.cc('ALTERNATIVE PRODUCTS'))
     end
 
@@ -317,15 +279,12 @@ module Bio
 
 
     def test_kw
-      keywords = ["3D-structure", "Acetylation", "Activator",
-                  "Alternative promoter usage", "Alternative splicing", "Apoptosis",
-                  "Cell cycle", "Complete proteome", "Cytoplasm",
-                  "Disease mutation", "DNA-binding", "Endoplasmic reticulum",
-                  "Glycoprotein", "Host-virus interaction", "Isopeptide bond",
-                  "Li-Fraumeni syndrome", "Metal-binding", "Methylation",
-                  "Nucleus", "Phosphoprotein", "Polymorphism",
-                  "Transcription", "Transcription regulation", "Tumor suppressor",
-                  "Ubl conjugation", "Zinc"]
+      keywords = ["3D-structure", "Acetylation", "Activator", 
+                  "Alternative splicing", "Anti-oncogene", 
+                  "Apoptosis", "Cell cycle", "Disease mutation", "DNA-binding", 
+                  "Glycoprotein", "Li-Fraumeni syndrome", "Metal-binding", 
+                  "Nuclear protein", "Phosphorylation", "Polymorphism", 
+                  "Transcription", "Transcription regulation", "Zinc"]
       assert_equal(keywords, @obj.kw)
     end
     
