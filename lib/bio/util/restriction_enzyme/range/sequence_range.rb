@@ -5,7 +5,7 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: sequence_range.rb,v 1.9 2007/07/16 19:28:48 k Exp $
+#  $Id:$
 #
 
 require 'bio/util/restriction_enzyme'
@@ -160,7 +160,7 @@ class SequenceRange
     @__fragments_current = true
     
     num_txt = '0123456789'
-    num_txt_repeat = (num_txt * ( @size / num_txt.size.to_f ).ceil)[0..@size-1]
+    num_txt_repeat = (num_txt * ( @size.div(num_txt.size) + 1))[0..@size-1]
     fragments = Fragments.new(num_txt_repeat, num_txt_repeat)
 
     cc = Bio::RestrictionEnzyme::Range::SequenceRange::CalculatedCuts.new(@size)
@@ -193,9 +193,9 @@ class SequenceRange
   # * +cc+: Bio::RestrictionEnzyme::Range::SequenceRange::CalculatedCuts
   # *Returns*:: +Hash+ Keys are unique, values are Bio::RestrictionEnzyme::Range::SequenceRange::Bin objects filled with indexes of the sequence locations they represent.
   def create_bins(cc)
-    p_cut = cc.vc_primary
-    c_cut = cc.vc_complement
-    h_cut = cc.hc_between_strands
+    p_cut = cc.vc_primary_as_original_class
+    c_cut = cc.vc_complement_as_original_class
+    h_cut = cc.hc_between_strands_as_original_class
     
     if @circular
       # NOTE
@@ -247,8 +247,8 @@ class SequenceRange
   # initializing the bin.
   def setup_new_bin(bins, bin_id)
     bins[ bin_id ] = Bin.new
-    bins[ bin_id ].p = []
-    bins[ bin_id ].c = []
+    bins[ bin_id ].p = DenseIntArray[] #could be replaced by SortedNumArray[]
+    bins[ bin_id ].c = DenseIntArray[] #could be replaced by SortedNumArray[] 
   end
   
 end # SequenceRange

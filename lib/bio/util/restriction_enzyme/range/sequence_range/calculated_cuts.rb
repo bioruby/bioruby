@@ -34,13 +34,40 @@ class CalculatedCuts
   include StringFormatting
 
   # +Array+ of vertical cuts on the primary strand in 0-based index notation
-  attr_reader :vc_primary
+  def vc_primary
+    #$stderr.puts caller[0].inspect ###DEBUG
+    @vc_primary.to_a
+  end
+
+  # Returns the same contents as vc_primary, but returns original data
+  # structure used in the class.
+  def vc_primary_as_original_class
+    @vc_primary
+  end
   
   # +Array+ of vertical cuts on the complementary strand in 0-based index notation
-  attr_reader :vc_complement
+  def vc_complement
+    #$stderr.puts caller[0].inspect ###DEBUG
+    @vc_complement.to_a
+  end
+
+  # Returns the same contents as vc_complement, but returns original data
+  # structure used in the class.
+  def vc_complement_as_original_class
+    @vc_complement
+  end
 
   # +Array+ of horizontal cuts between strands in 0-based index notation
-  attr_reader :hc_between_strands
+  def hc_between_strands
+    #$stderr.puts caller[0].inspect ###DEBUG
+    @hc_between_strands.to_a
+  end
+
+  # Returns the same contents as hc_between_strands, but returns original data
+  # structure used in the class.
+  def hc_between_strands_as_original_class
+    @hc_between_strands
+  end
 
   # Set to +true+ if the fragment CalculatedCuts is working on is circular
   attr_accessor :circular
@@ -60,9 +87,9 @@ class CalculatedCuts
   def initialize(size=nil, circular=false)
     @size = size
     @circular = circular
-    @vc_primary = []
-    @vc_complement = []
-    @hc_between_strands = []
+    @vc_primary = SortedNumArray[]
+    @vc_complement = SortedNumArray[]
+    @hc_between_strands = SortedNumArray[]
   end
 
   # Accepts an +Array+ of CutRange type objects and applies them to 
@@ -75,9 +102,12 @@ class CalculatedCuts
   def add_cuts_from_cut_ranges(cut_ranges)
     @strands_for_display_current = false
 
+    @vc_primary = @vc_primary.dup
+    @vc_complement = @vc_complement.dup
+
     cut_ranges.each do |cut_range|
-      @vc_primary += [cut_range.p_cut_left, cut_range.p_cut_right]
-      @vc_complement += [cut_range.c_cut_left, cut_range.c_cut_right]
+      @vc_primary.concat [cut_range.p_cut_left, cut_range.p_cut_right]
+      @vc_complement.concat [cut_range.c_cut_left, cut_range.c_cut_right]
 
       # Add horizontal cut ranges.  This may happen from cuts made inbetween a
       # VerticalCutRange or may be specifically defined by a HorizontalCutRange.
@@ -124,10 +154,10 @@ class CalculatedCuts
     @size = size if size
     raise IndexError, "Size of the strand must be provided here or during initalization." if !@size.kind_of?(Fixnum) and not @circular
 
-    vcuts = (@vc_primary + @vc_complement).uniq.sort
+    vcuts = @vc_primary + @vc_complement
     hcuts = @hc_between_strands
     last_index = @size - 1
-    good_hcuts = []
+    good_hcuts = SortedNumArray[]
     potential_hcuts = []
 
     if @circular
@@ -146,13 +176,14 @@ class CalculatedCuts
 
       if potential_hcuts.empty?
         if vcuts.include?( hcut ) and vcuts.include?( hcut - 1 )
-          good_hcuts += [hcut]
+          good_hcuts << hcut
         elsif vcuts.include?( hcut - 1 )
           potential_hcuts << hcut
         end
       else
         if vcuts.include?( hcut )
-          good_hcuts += potential_hcuts + [hcut]
+          good_hcuts.concat(potential_hcuts)
+          good_hcuts << hcut
           potential_hcuts.clear
         else
           potential_hcuts << hcut
@@ -163,7 +194,7 @@ class CalculatedCuts
     check_vc = lambda do |vertical_cuts, opposing_vcuts|
       # opposing_vcuts is here only to check for blunt cuts, so there shouldn't
       # be any out-of-order problems with this
-      good_vc = []
+      good_vc = SortedNumArray[]
       vertical_cuts.each { |vc| good_vc << vc if good_hcuts.include?( vc ) or good_hcuts.include?( vc + 1 ) or opposing_vcuts.include?( vc ) }
       good_vc
     end
@@ -192,18 +223,26 @@ class CalculatedCuts
     hcs = '-'   # Horizontal cut symbol
     vhcs = '+'  # Intersection of vertical and horizontal cut symbol
       
-    num_txt_repeat = lambda { num_txt = '0123456789'; (num_txt * ( @size / num_txt.size.to_f ).ceil)[0..@size-1] }
+    num_txt_repeat = lambda { num_txt = '0123456789'; (num_txt * (@size.div(num_txt.size) + 1))[0..@size-1] }
     (str1 == nil) ? a = num_txt_repeat.call : a = str1.dup
     (str2 == nil) ? b = num_txt_repeat.call : b = str2.dup
+
+    if vcp and !vcp.is_a?(SortedNumArray) then
+      vcp = SortedNumArray.new.concat(vcp)
+    end
+    if vcc and !vcc.is_a?(SortedNumArray) then
+      vcc = SortedNumArray.new.concat(vcc)
+    end
+    if hc and !hc.is_a?(SortedNumArray) then
+      hc = SortedNumArray.new.concat(hc)
+    end
 
     vcp = @vc_primary if vcp==nil
     vcc = @vc_complement if vcc==nil
     hc = @hc_between_strands if hc==nil
 
-    vcuts = (vcp + vcc).uniq.sort
-
-    vcp.reverse.each { |c| a.insert(c+1, vcs) }
-    vcc.reverse.each { |c| b.insert(c+1, vcs) }
+    vcp.reverse_each { |c| a.insert(c+1, vcs) }
+    vcc.reverse_each { |c| b.insert(c+1, vcs) }
 
     between = ' ' * @size
     hc.each {|hcut| between[hcut,1] = hcs }
