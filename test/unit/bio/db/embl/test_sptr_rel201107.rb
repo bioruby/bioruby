@@ -18,7 +18,7 @@ require 'test/unit'
 require 'bio/db/embl/sptr201107'
 
 module Bio
-  class TestSPTR < Test::Unit::TestCase
+  class TestSPTR201107 < Test::Unit::TestCase
 
     def setup
       data = File.read(File.join(BioRubyTestDataPath, 
