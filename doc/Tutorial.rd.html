@@ -15,25 +15,26 @@
 </ul>
 <p>This document was last modified: 2011/03/24
 Current editor: Michael O'Keefe &lt;okeefm (at) rpi (dot) edu&gt;</p>
-<p>The latest version resides in the GIT source code repository:  ./doc/<a href="http://github.com/bioruby/bioruby/doc/Tutorial.rd">Tutorial.rd</a>.</p>
+<p>The latest version resides in the GIT source code repository:  ./doc/<a href="https://github.com/bioruby/bioruby/blob/master/doc/Tutorial.rd">Tutorial.rd</a>.</p>
 <h2><a name="label-1" id="label-1">Introduction</a></h2><!-- RDLabel: "Introduction" -->
 <p>This is a tutorial for using Bioruby. A basic knowledge of Ruby is required.
-If you want to know more about the programming langauge Ruby we recommend the
+If you want to know more about the programming language, we recommend the
 latest Ruby book <a href="http://www.pragprog.com/titles/ruby">Programming Ruby</a>
-by Dave Thomas and Andy Hunt - the first edition is online
+by Dave Thomas and Andy Hunt - the first edition can be read online
 <a href="http://www.ruby-doc.org/docs/ProgrammingRuby/">here</a>.</p>
-<p>For BioRuby you need to install Ruby and the BioRuby package on your computer</p>
-<p>You can check whether Ruby is installed on your computer and what
-version it has with the</p>
+<p>For BioRuby install Ruby and the BioRuby package on your computer.</p>
+<p>Check whether Ruby is installed on your computer with</p>
 <pre>% ruby -v</pre>
-<p>command. You should see something like:</p>
-<pre>ruby 1.8.7 (2008-08-11 patchlevel 72) [i486-linux]</pre>
+<p>You should see something like:</p>
+<pre>ruby 1.9.2p136 (2010-12-25 revision 30365) [i686-linux]</pre>
 <p>If you see no such thing you'll have to install Ruby using your installation
-manager. For more information see the
-<a href="http://www.ruby-lang.org/en/">Ruby</a> website.</p>
+manager. For example in Debian</p>
+<pre>apt-get install ruby</pre>
+<p>For other installations, see
+<a href="http://www.ruby-lang.org/en/">Ruby</a>.</p>
 <p>With Ruby download and install Bioruby using the links on the
 <a href="http://bioruby.org/">Bioruby</a> website. The recommended installation is via 
-RubyGems:</p>
+RubyGems (which comes with Ruby):</p>
 <pre>gem install bio</pre>
 <p>See also the Bioruby <a href="http://bioruby.open-bio.org/wiki/Installation">wiki</a>.</p>
 <p>A lot of BioRuby's documentation exists in the source code and unit tests. To
@@ -41,13 +42,14 @@ really dive in you will need the latest source code tree. The embedded rdoc
 documentation can be viewed online at
 <a href="http://bioruby.org/rdoc/">bioruby's rdoc</a>. But first lets start!</p>
 <h2><a name="label-2" id="label-2">Trying Bioruby</a></h2><!-- RDLabel: "Trying Bioruby" -->
-<p>Bioruby comes with its own shell. After unpacking the sources run one of the following commands:</p>
-<pre>./bin/bioruby</pre>
-<p>or</p>
-<pre>ruby -I lib bin/bioruby</pre>
+<p>Bioruby comes with its own shell. After installing, run</p>
+<pre>bioruby</pre>
+<p>or, from the source tree</p>
+<pre>cd bioruby
+ruby -I lib bin/bioruby</pre>
 <p>and you should see a prompt</p>
 <pre>bioruby&gt;</pre>
-<p>Now test the following:</p>
+<p>Now, test the following:</p>
 <pre>bioruby&gt; require 'bio'
 bioruby&gt; seq = Bio::Sequence::NA.new("atgcatgcaaaa")
 ==&gt; "atgcatgcaaaa"

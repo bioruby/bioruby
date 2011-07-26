@@ -140,6 +140,40 @@ END
       assert_equal(data, @obj.entry)
     end
 
+    def test_entry_overrun
+      data =<<END
+>gi|55416190|gb|AAV50057.1| NADH dehydrogenase subunit 2 [Dasyurus hallucatus]
+MSPYVLMILTLSLFIGTCLTIFSNHWFTAWMGLEINTLAIIPLMTAPNNPRSTEAATKYFLTQATASMLMMFAIIYNAWS
+TNQWALPQLSDDWISLLMTVALAIKLGLAPFHFWVPEVTQGIPLLTGMILLTWQKIAPTAILFQIAPYLNMKFLVILAIL
+STLVGGWGGLNQTHLRKILAYSSIAHMGWMIIIVQINPTLSIFTLTIYVMATLTTFLTLNLSNSTKIKSLGNLWNKSATA
+TIIIFLTLLSLGGLPPLTGFMPKWLILQELINNGNIITATMMALSALLNLFFYMRLIYASSLTMFPSINNSKMQWYNNSM
+KTTTLIPTATVISSLLLPLTPLFVTLY
+END
+      assert_equal(data, @obj.entry_overrun)
+    end
+
+    class DummyFactory
+      def query(str)
+        @query_str = str
+        "DummyFactoryResult#{str.length}"
+      end
+      attr_reader :query_str
+    end #class DummyFactory
+
+    def test_query
+      data =<<END
+>gi|55416189|gb|AAV50056.1| NADH dehydrogenase subunit 1 [Dasyurus hallucatus]
+MFTINLLIYIIPILLAVAFLTLIERKMLGYMQFRKGPNIVGPYGLLQPFADAVKLFTKEPLRPLTSSISIFIIAPILALT
+IALTIWTPLPMPNTLLDLNLGLIFILSLSGLSVYSILWSGWASNSKYALIGALRAVAQTISYEVSLAIILLSIMLINGSF
+TLKTLSITQENLWLIITTWPLAMMWYISTLAETNRAPFDLTEGESELVSGFNVEYAAGPFAMFFLAEYANIIAMNAITTI
+LFLGPSLTPNLSHLNTLSFMLKTLLLTMVFLWVRASYPRFRYDQLMHLLWKNFLPMTLAMCLWFISLPIALSCIPPQL
+END
+
+      factory = DummyFactory.new
+      assert_equal("DummyFactoryResult401", @obj.query(factory))
+      assert_equal(data, factory.query_str)
+    end
+
     def test_entry_id
       assert_equal('gi|55416189', @obj.entry_id)
     end
@@ -193,17 +227,5 @@ END
     end
 
   end # class TestFastaFormat
-
-
-
-
-  class TestFastaDefinition < Test::Unit::TestCase
-
-    def setup
-    end
-
-    def test_defline
-    end
-  end # class TestFastaDefinition
 
 end

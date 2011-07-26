@@ -125,6 +125,9 @@ class RestrictionEnzyme
   autoload :Analysis,                'bio/util/restriction_enzyme/analysis'
   autoload :Range,                   'bio/util/restriction_enzyme/range/sequence_range'
 
+  autoload :SortedNumArray,          'bio/util/restriction_enzyme/sorted_num_array'
+  autoload :DenseIntArray,          'bio/util/restriction_enzyme/dense_int_array'
+
   include CutSymbol
   extend CutSymbol
 

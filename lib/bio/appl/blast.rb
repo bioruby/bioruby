@@ -30,7 +30,7 @@ module Bio
   #   
   #   # To run an actual BLAST analysis:
   #   #   1. create a BLAST factory
-  #   remote_blast_factory = Bio::Blast.remote('blastp', 'SWISS',
+  #   remote_blast_factory = Bio::Blast.remote('blastp', 'swissprot',
   #                                            '-e 0.0001', 'genomenet')
   #   #or:
   #   local_blast_factory = Bio::Blast.local('blastn','/path/to/db')
