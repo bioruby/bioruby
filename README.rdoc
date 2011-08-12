@@ -9,7 +9,7 @@ License::   The Ruby License
 
 = BioRuby
 
-Copyright (C) 2001-2010 Toshiaki Katayama <k@bioruby.org>
+Copyright (C) 2001-2011 Toshiaki Katayama <k@bioruby.org>
 
 BioRuby is an open source Ruby library for developing bioinformatics
 software.  Object oriented scripting language Ruby has many features
@@ -42,6 +42,7 @@ services including KEGG API can be easily utilized by BioRuby.
 README.rdoc:: This file. General information and installation procedure.
 RELEASE_NOTES.rdoc:: News and important changes in this release.
 KNOWN_ISSUES.rdoc:: Known issues and bugs in BioRuby.
+doc/RELEASE_NOTES-1.4.1.rdoc:: News and incompatible changes from 1.4.0 to 1.4.1.
 doc/RELEASE_NOTES-1.4.0.rdoc:: News and incompatible changes from 1.3.1 to 1.4.0.
 doc/Changes-1.3.rdoc:: News and incompatible changes from 1.2.1 to 1.3.0.
 doc/Changes-0.7.rd:: News and incompatible changes from 0.6.4 to 1.2.1.
@@ -55,6 +56,7 @@ doc/KEGG_API.rd:: Documents about KEGG API, including usage of Bio::KEGG::API.
 ==== BioRuby development
 
 ChangeLog:: History of changes.
+doc/ChangeLog-before-1.3.1:: changes before 1.3.1.
 README_DEV.rdoc:: Describes ways to contribute to the BioRuby project, including coding styles and documentation guidelines.
 
 ==== Documents written in Japanese
@@ -83,7 +85,7 @@ The stable release is freely available from the BioRuby website.
 
 === RubyGems
 
-RubyGems[URL:http://rubyforge.org/projects/rubygems/] version of
+{RubyGems (packaging system for Ruby)}[http://rubygems.org/] version of
 the BioRuby package is also available for easy installation.
 
 * http://rubyforge.org/projects/bioruby/
@@ -98,26 +100,14 @@ and can be obtained by the following procedure:
 
   % git clone git://github.com/bioruby/bioruby.git
 
-==== CVS
-
-CVS is now deprecated as source control has moved to github. Please use git 
-instead of CVS. For historical purposes: the anonymous CVS was provided at 
-
-* http://cvs.bioruby.org/
-
-and could be obtained by the following procedure.
-
-  % cvs -d :pserver:cvs@code.open-bio.org:/home/repository/bioruby login
-  CVS password: cvs (login with a password 'cvs' for the first time)
-  % cvs -d :pserver:cvs@code.open-bio.org:/home/repository/bioruby co bioruby
-
 
 == REQUIREMENTS
 
-* Ruby 1.8.2 or later (except Ruby 1.9.0) -- http://www.ruby-lang.org/
-  * Ruby 1.8.7-p174 or later, or Ruby 1.8.6-p383 or later is recommended.
+* Ruby 1.8.6 or later (except Ruby 1.9.0) -- http://www.ruby-lang.org/
+  * Ruby 1.8.7-p352 or later is recommended.
   * Not yet fully ready with Ruby 1.9, although many components can now work
     in Ruby 1.9.1 and Ruby 1.9.2.
+
 
 == OPTIONAL REQUIREMENTS
 
@@ -141,11 +131,6 @@ Accessing BioSQL database created by other Open Bio* libraries:
   {RubyForge:MySQL/Ruby}[http://rubyforge.org/projects/mysql-ruby/],
   {RubyForge:postgres-pr}[http://rubyforge.org/projects/postgres-pr], or
   {RubyForge:ActiveRecord Oracle enhanced adapter}[http://rubyforge.org/projects/oracle-enhanced/].
-* For BioRuby 1.2.1 or older version,
-  {RubyForge:Ruby/DBI}[http://rubyforge.org/projects/ruby-dbi] and
-  at least one driver from MySQL/Ruby, postgres-pr, or
-  {RubyForge:ruby-oci8}[http://ruby-oci8.rubyforge.org/]
-  (note that ruby-oci8 can only work with ruby-dbi 0.2.2).
 
 For parsing PhyloXML format files:
 
@@ -154,6 +139,20 @@ For parsing PhyloXML format files:
 
 
 == INSTALL
+
+=== INSTALL by using RubyGems (recommended)
+
+If you are using RubyGems, just type
+
+  % gems install bio
+
+RubyGems is bundled with Ruby 1.9.1 or later. For Ruby 1.8.7 or earlier,
+download and install RubyGems from http://rubygems.org/ .
+
+Alternatively, manually download bio-X.X.X.gem from 
+http://rubyforge.org/projects/bioruby/ and install it by using gems command.
+
+=== INSTALL without RubyGems
 
 In the bioruby source directory (such as bioruby-x.x.x/), run setup.rb
 as follows:
@@ -188,12 +187,6 @@ and run
 
 for more details.
 
-=== RubyGems
-
-If you are using RubyGems, just type
-
-  % gems install bio
-
 
 == SETUP
 
@@ -227,20 +220,14 @@ You can also read other documentation in the 'doc' directory.
 
   bioruby-x.x.x/doc/
 
-=== RubyGems
+=== RubyGems on Ruby 1.8.x
 
-With RubyGems, you need to load 'rubygems' library before using 'bio'.
+With RubyGems on Ruby 1.8.x, you may need to load 'rubygems' library before
+using 'bio'. This may not be needed, depending on settings of Ruby.
 
   #!/usr/bin/env ruby
   require 'rubygems'
   require 'bio'
-
-With old version of RubyGems, use 'require_gem' which was deprecated in
-RubyGems 0.9.0 and removed in RubyGems 1.0.1.
-
-  #!/usr/bin/env ruby
-  require 'rubygems'
-  require_gem 'bio'
 
 
 == LICENSE
