@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.4.1.5000"
+  s.version = "1.4.1.9001"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -38,6 +38,7 @@ Gem::Specification.new do |s|
     "doc/KEGG_API.rd",
     "doc/KEGG_API.rd.ja",
     "doc/RELEASE_NOTES-1.4.0.rdoc",
+    "doc/RELEASE_NOTES-1.4.1.rdoc",
     "doc/Tutorial.rd",
     "doc/Tutorial.rd.html",
     "doc/Tutorial.rd.ja",
@@ -279,6 +280,7 @@ Gem::Specification.new do |s|
     "lib/bio/util/restriction_enzyme/analysis.rb",
     "lib/bio/util/restriction_enzyme/analysis_basic.rb",
     "lib/bio/util/restriction_enzyme/cut_symbol.rb",
+    "lib/bio/util/restriction_enzyme/dense_int_array.rb",
     "lib/bio/util/restriction_enzyme/double_stranded.rb",
     "lib/bio/util/restriction_enzyme/double_stranded/aligned_strands.rb",
     "lib/bio/util/restriction_enzyme/double_stranded/cut_location_pair.rb",
@@ -297,6 +299,7 @@ Gem::Specification.new do |s|
     "lib/bio/util/restriction_enzyme/single_strand.rb",
     "lib/bio/util/restriction_enzyme/single_strand/cut_locations_in_enzyme_notation.rb",
     "lib/bio/util/restriction_enzyme/single_strand_complement.rb",
+    "lib/bio/util/restriction_enzyme/sorted_num_array.rb",
     "lib/bio/util/restriction_enzyme/string_formatting.rb",
     "lib/bio/util/sirna.rb",
     "lib/bio/version.rb",
@@ -363,6 +366,7 @@ Gem::Specification.new do |s|
     "sample/ssearch2tab.rb",
     "sample/tdiary.rb",
     "sample/test_phyloxml_big.rb",
+    "sample/test_restriction_enzyme_long.rb",
     "sample/tfastx2tab.rb",
     "sample/vs-genes.rb",
     "setup.rb",
@@ -402,6 +406,7 @@ Gem::Specification.new do |s|
     "test/data/command/echoarg2.bat",
     "test/data/embl/AB090716.embl",
     "test/data/embl/AB090716.embl.rel89",
+    "test/data/fasta/EFTU_BACSU.fasta",
     "test/data/fasta/example1.txt",
     "test/data/fasta/example2.txt",
     "test/data/fastq/README.txt",
@@ -456,12 +461,15 @@ Gem::Specification.new do |s|
     "test/data/fastq/wrapping_as_solexa.fastq",
     "test/data/fastq/wrapping_original_sanger.fastq",
     "test/data/gcg/pileup-aa.msf",
+    "test/data/genbank/CAA35997.gp",
+    "test/data/genbank/SCU49845.gb",
     "test/data/genscan/sample.report",
     "test/data/go/selected_component.ontology",
     "test/data/go/selected_gene_association.sgd",
     "test/data/go/selected_wikipedia2go",
     "test/data/iprscan/merged.raw",
     "test/data/iprscan/merged.txt",
+    "test/data/litdb/1717226.litdb",
     "test/data/medline/20146148_modified.medline",
     "test/data/meme/db",
     "test/data/meme/mast",
@@ -481,6 +489,7 @@ Gem::Specification.new do |s|
     "test/data/phyloxml/made_up.xml",
     "test/data/phyloxml/ncbi_taxonomy_mollusca_short.xml",
     "test/data/phyloxml/phyloxml_examples.xml",
+    "test/data/pir/CRAB_ANAPL.pir",
     "test/data/prosite/prosite.dat",
     "test/data/refseq/nm_126355.entret",
     "test/data/rpsblast/misc.rpsblast",
@@ -493,6 +502,8 @@ Gem::Specification.new do |s|
     "test/data/soft/GDS100_partial.soft",
     "test/data/soft/GSE3457_family_partial.soft",
     "test/data/uniprot/p53_human.uniprot",
+    "test/functional/bio/appl/blast/test_remote.rb",
+    "test/functional/bio/appl/test_blast.rb",
     "test/functional/bio/appl/test_pts1.rb",
     "test/functional/bio/io/test_ensembl.rb",
     "test/functional/bio/io/test_pubmed.rb",
@@ -539,6 +550,9 @@ Gem::Specification.new do |s|
     "test/unit/bio/db/fasta/test_defline.rb",
     "test/unit/bio/db/fasta/test_defline_misc.rb",
     "test/unit/bio/db/fasta/test_format_qual.rb",
+    "test/unit/bio/db/genbank/test_common.rb",
+    "test/unit/bio/db/genbank/test_genbank.rb",
+    "test/unit/bio/db/genbank/test_genpept.rb",
     "test/unit/bio/db/kegg/test_compound.rb",
     "test/unit/bio/db/kegg/test_drug.rb",
     "test/unit/bio/db/kegg/test_enzyme.rb",
@@ -558,7 +572,9 @@ Gem::Specification.new do |s|
     "test/unit/bio/db/test_gff.rb",
     "test/unit/bio/db/test_go.rb",
     "test/unit/bio/db/test_lasergene.rb",
+    "test/unit/bio/db/test_litdb.rb",
     "test/unit/bio/db/test_medline.rb",
+    "test/unit/bio/db/test_nbrf.rb",
     "test/unit/bio/db/test_newick.rb",
     "test/unit/bio/db/test_nexus.rb",
     "test/unit/bio/db/test_phyloxml.rb",
@@ -606,9 +622,11 @@ Gem::Specification.new do |s|
     "test/unit/bio/util/restriction_enzyme/single_strand/test_cut_locations_in_enzyme_notation.rb",
     "test/unit/bio/util/restriction_enzyme/test_analysis.rb",
     "test/unit/bio/util/restriction_enzyme/test_cut_symbol.rb",
+    "test/unit/bio/util/restriction_enzyme/test_dense_int_array.rb",
     "test/unit/bio/util/restriction_enzyme/test_double_stranded.rb",
     "test/unit/bio/util/restriction_enzyme/test_single_strand.rb",
     "test/unit/bio/util/restriction_enzyme/test_single_strand_complement.rb",
+    "test/unit/bio/util/restriction_enzyme/test_sorted_num_array.rb",
     "test/unit/bio/util/restriction_enzyme/test_string_formatting.rb",
     "test/unit/bio/util/test_color_scheme.rb",
     "test/unit/bio/util/test_contingency_table.rb",
@@ -624,7 +642,8 @@ Gem::Specification.new do |s|
     "README_DEV.rdoc",
     "RELEASE_NOTES.rdoc",
     "doc/Changes-1.3.rdoc",
-    "doc/RELEASE_NOTES-1.4.0.rdoc"
+    "doc/RELEASE_NOTES-1.4.0.rdoc",
+    "doc/RELEASE_NOTES-1.4.1.rdoc"
   ]
   s.rdoc_options << '--main' << 'README.rdoc'
   s.rdoc_options << '--title' << 'BioRuby API documentation'
