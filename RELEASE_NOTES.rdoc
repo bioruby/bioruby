@@ -22,14 +22,14 @@ The Tutorial.rd is updated by Pjotr Prins and Michael O'Keefe.
 === Many unit tests are added
 
 Added many unit tests for Bio::GenBank, Bio::GenPept, Bio::NBRF, Bio::PDB
-and so on. They are developed by Kazuhiro Hayashi during the Google Summer
-of Code 2010.
+and so on. Most of them are developed by Kazuhiro Hayashi during the
+Google Summer of Code 2010.
 
 === Other new features
 
-* In GenomeNet remote BLAST execution, support for database "mine-aa"
-  and "mine-nt" with KEGG organism codes is added.
-* Support for Ruby 1.9.2 is improved.
+* In GenomeNet remote BLAST execution, database "mine-aa" and "mine-nt"
+  with KEGG organism codes are now supported.
+* Support for Ruby 1.9.2 / 1.9.3 is improved.
 
 == Bug fixes
 
@@ -56,7 +56,7 @@ When executing remote BLAST with "genomenet" server, options "-b" and "-v"
 are now correctly used to limit the number of hits to be reported.
 In 1.4.1 and before, "-B" and "-V" were mistakenly used for the purpose.
 
-=== Bio::RestrictionEnzyme internal data structure
+=== Bio::RestrictionEnzyme internal data structure change
 
 Due to the speedup, internal data structure of the following classes
 are changed: Bio::RestrictionEnzyme::Range::SequenceRange,
@@ -71,5 +71,12 @@ public APIs of the classes keep compatibility.
 The following issues are added or updated. See KNOWN_ISSUES.rdoc for other
 already known issues.
 
-=== (to be written)
+* Added description about Ruby 1.8.5 or earlier. Problems observed only with
+  Ruby 1.8.5 or earlier will not be fixed.
+* Descriptions about very old RubyGems 0.8.11 or earlier and about CVS
+  repository are moved from README.rdoc.
+
+== Other important news
+
+* Required ruby version is now Ruby 1.8.6 or later (except 1.9.0).
 
