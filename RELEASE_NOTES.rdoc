@@ -56,9 +56,13 @@ Google Summer of Code 2010.
 
 == Incompatible changes
 
-=== Bio::SPTR
+=== Bio::Sequence#output(:fastq)
 
-==== CC line topic "WEB RESOURCE"
+In Fastq output formatter, default width value is changed from 70 to nil.
+The nil means "without wrapping". The new default behavior without wrapping
+is generally good with many recent applications that read fastq.
+
+=== Bio::SPTR CC line topic "WEB RESOURCE"
 
 In the return value of Bio::SPTR#cc('WEB RESOURCE'), "NAME" and "NOTE"
 are now renamed to "Name" and "Note", respectively. The change is due to

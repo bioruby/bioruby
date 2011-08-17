@@ -369,6 +369,18 @@ _9_
         end
       end
 
+      def test_to_biosequence_and_output
+        @ff.each_with_index do |e, i|
+          id_line = IDLINES[i]
+          seq_line = SEQS[i]
+          qual_line = QUALITY_STRINGS[i]
+          # Changed default width to nil (no wrapping)
+          expected = "@#{id_line}\n#{seq_line}\n+\n#{qual_line}\n"
+          actual = e.to_biosequence.output(:fastq_sanger)
+          assert_equal(expected, actual)
+        end
+      end
+
       def test_roundtrip
         @ff.each_with_index do |e, i|
           str_orig = @ff.entry_raw
