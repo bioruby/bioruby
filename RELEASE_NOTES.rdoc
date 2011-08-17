@@ -40,6 +40,12 @@ Google Summer of Code 2010.
 * When executing remote BLAST with "genomenet" server, options "-b" and "-v"
   are now correctly used to limit the number of hits to be reported.
 
+=== Bio::SPTR (Bio::UniProt)
+
+* Due to the UniProtKB format changes, ID, DE, and WEB RESOURCE of CC lines
+  were not correctly parsed. See also below about incompatible change of
+  the fix.
+
 === Other bug fixes
 
 * Bio::Reference#pubmed_url is updated to follow recent NCBI changes.
@@ -49,6 +55,16 @@ Google Summer of Code 2010.
 * Fixed: Bio::FastaFormat#query passes nil to the given factory object.
 
 == Incompatible changes
+
+=== Bio::SPTR
+
+==== CC line topic "WEB RESOURCE"
+
+In the return value of Bio::SPTR#cc('WEB RESOURCE'), "NAME" and "NOTE"
+are now renamed to "Name" and "Note", respectively. The change is due to
+the UniProt format change since UniProtKB release 12.2 of 11-Sep-2007.
+(See http://www.uniprot.org/docs/sp_news.htm#rel12.2 for details.)
+Note that "Name" and "Note" are used even when parsing older format.
 
 === Bio::Blast with the remote GenomeNet server
 
@@ -71,8 +87,8 @@ public APIs of the classes keep compatibility.
 The following issues are added or updated. See KNOWN_ISSUES.rdoc for other
 already known issues.
 
-* Added description about Ruby 1.8.5 or earlier. Problems observed only with
-  Ruby 1.8.5 or earlier will not be fixed.
+* Bio::SPTR should be updated to follow UniProtKB format changes.
+* Problems observed only with Ruby 1.8.5 or earlier will not be fixed.
 * Descriptions about very old RubyGems 0.8.11 or earlier and about CVS
   repository are moved from README.rdoc.
 

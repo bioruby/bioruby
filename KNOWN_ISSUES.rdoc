@@ -130,6 +130,11 @@ correctly, even running on Ruby 1.8.x. Instead, use Bio::NCBI::REST.
 Bio::KEGG::Taxonomy fails to parse current KEGG taxonomy data file probably
 because of the growth of the data size.
 
+=== Bio::SPTR
+
+Bio::SPTR should be updated to follow UniProtKB format changes described
+in http://www.uniprot.org/docs/sp_news.htm .
+
 == 4. Compatibility issues with other libraries/extensions
 
 === ActiveRecord

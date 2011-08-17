@@ -864,12 +864,12 @@ CC       URL="http://www.genetests.org/query?gene=GJB1".'
                     'NAME=Connexin-deafness homepage; URL="http://www.crg.es/deafness/".',
                     'NAME=GeneReviews; URL="http://www.genetests.org/query?gene=GJB1".'],
                    sp.cc['WEB RESOURCE'])
-      assert_equal([{'NAME' => "Inherited peripheral neuropathies mutation db", 
-                     'URL' => 'http://www.molgen.ua.ac.be/CMTMutations/', 'NOTE' => nil},
-                    {'NAME' => "Connexin-deafness homepage", 
-                     'URL' => 'http://www.crg.es/deafness/', 'NOTE' => nil},
-                    {'NAME' => "GeneReviews", 
-                     'URL' => 'http://www.genetests.org/query?gene=GJB1', 'NOTE' => nil}],
+      assert_equal([{'Name' => "Inherited peripheral neuropathies mutation db", 
+                     'URL' => 'http://www.molgen.ua.ac.be/CMTMutations/', 'Note' => nil},
+                    {'Name' => "Connexin-deafness homepage", 
+                     'URL' => 'http://www.crg.es/deafness/', 'Note' => nil},
+                    {'Name' => "GeneReviews", 
+                     'URL' => 'http://www.genetests.org/query?gene=GJB1', 'Note' => nil}],
                    sp.cc('WEB RESOURCE'))
 
     end

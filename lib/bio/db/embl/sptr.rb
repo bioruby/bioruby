@@ -50,7 +50,18 @@ class SPTR < EMBLDB
   # returns a content (Int or String) of the ID line by a given key.
   # Hash keys: ['ENTRY_NAME', 'DATA_CLASS', 'MODECULE_TYPE', 'SEQUENCE_LENGTH']
   #
-  # === ID Line
+  # === ID Line (since UniProtKB release 9.0 of 31-Oct-2006)
+  #   ID   P53_HUMAN               Reviewed;         393 AA.
+  #   #"ID  #{ENTRY_NAME} #{DATA_CLASS}; #{SEQUENCE_LENGTH}."
+  #
+  # === Examples
+  #   obj.id_line  #=> {"ENTRY_NAME"=>"P53_HUMAN", "DATA_CLASS"=>"Reviewed", 
+  #                     "SEQUENCE_LENGTH"=>393, "MOLECULE_TYPE"=>nil}
+  #
+  #   obj.id_line('ENTRY_NAME') #=> "P53_HUMAN"
+  #
+  # 
+  # === ID Line (older style)
   #   ID   P53_HUMAN      STANDARD;      PRT;   393 AA.
   #   #"ID  #{ENTRY_NAME} #{DATA_CLASS}; #{MOLECULE_TYPE}; #{SEQUENCE_LENGTH}."
   #
@@ -65,11 +76,20 @@ class SPTR < EMBLDB
     return @data['ID'] if @data['ID']
 
     part = @orig['ID'].split(/ +/)         
+    if part[4].to_s.chomp == 'AA.' then
+      # after UniProtKB release 9.0 of 31-Oct-2006
+      # (http://www.uniprot.org/docs/sp_news.htm)
+      molecule_type   = nil
+      sequence_length = part[3].to_i
+    else
+      molecule_type   = part[3].sub(/;/,'')
+      sequence_length = part[4].to_i
+    end
     @data['ID'] = {
       'ENTRY_NAME'      => part[1],
       'DATA_CLASS'      => part[2].sub(/;/,''),
-      'MOLECULE_TYPE'   => part[3].sub(/;/,''),
-      'SEQUENCE_LENGTH' => part[4].to_i 
+      'MOLECULE_TYPE'   => molecule_type,
+      'SEQUENCE_LENGTH' => sequence_length
     }
   end
 
@@ -111,12 +131,27 @@ class SPTR < EMBLDB
   # returns a Hash of information in the DT lines.
   #  hash keys: 
   #    ['created', 'sequence', 'annotation']
+  #--
   #  also Symbols acceptable (ASAP):
   #    [:created, :sequence, :annotation]
+  #++
   #
-  # returns a String of information in the DT lines by a given key..
+  # Since UniProtKB release 7.0 of 07-Feb-2006, the DT line format is
+  # changed, and the word "annotation" is no longer used in DT lines.
+  # Despite the change, the word "annotation" is still used for keeping
+  # compatibility.
+  #
+  # returns a String of information in the DT lines by a given key.
   #
   # === DT Line; date (3/entry)
+  #   DT DD-MMM-YYY (integrated into UniProtKB/XXXXX.)
+  #   DT DD-MMM-YYY (sequence version NN)
+  #   DT DD-MMM-YYY (entry version NN)
+  #
+  # The format have been changed in UniProtKB release 7.0 of 07-Feb-2006.
+  # Below is the older format.
+  #
+  # === Old format of DT Line; date (3/entry)
   #   DT DD-MMM-YYY (rel. NN, Created)
   #   DT DD-MMM-YYY (rel. NN, Last sequence update)
   #   DT DD-MMM-YYY (rel. NN, Last annotation update)
@@ -133,7 +168,79 @@ class SPTR < EMBLDB
   end
 
 
+  # (private) parses DE line (description lines)
+  # since UniProtKB release 14.0 of 22-Jul-2008
+  #
+  # Return array containing array.
+  #
+  # http://www.uniprot.org/docs/sp_news.htm
+  def parse_DE_line_rel14(str)
+    # Retruns if it is not the new format since Rel.14
+    return nil unless /^DE   (RecName|AltName|SubName)\: / =~ str
+    ret = []
+    cur = nil
+    str.each_line do |line|
+      case line
+      when /^DE   (Includes|Contains)\: *$/
+        cur = [ $1 ]
+        ret.push cur
+        cur = nil
+        #subcat_and_desc = nil
+        next
+      when /^DE   *(RecName|AltName|SubName)\: +(.*)/
+        category = $1
+        subcat_and_desc = $2
+        cur = [ category ]
+        ret.push cur
+      when /^DE   *(Flags)\: +(.*)/
+        category = $1
+        desc = $2
+        flags = desc.strip.split(/\s*\;\s*/) || []
+        cur = [ category, flags ]
+        ret.push cur
+        cur = nil
+        #subcat_and_desc = nil
+        next
+      when /^DE   *(.*)/
+        subcat_and_desc = $1
+      else
+        warn "Warning: skipped DE line in unknown format: #{line.inspect}"
+        #subcat_and_desc = nil
+        next
+      end
+      case subcat_and_desc
+      when nil
+        # does nothing
+      when /\A([^\=]+)\=(.*)/
+        subcat = $1
+        desc = $2
+        desc.sub!(/\;\s*\z/, '')
+        unless cur
+          warn "Warning: unknown category in DE line: #{line.inspect}"
+          cur = [ '' ]
+          ret.push cur
+        end
+        cur.push [ subcat, desc ]
+      else
+        warn "Warning: skipped DE line description in unknown format: #{line.inspect}"
+      end
+    end
+    ret
+  end
+  private :parse_DE_line_rel14
+
   # returns the proposed official name of the protein.
+  # Returns a String.
+  #
+  # Since UniProtKB release 14.0 of 22-Jul-2008, the DE line format have
+  # been changed. The method returns the full name which is taken from
+  # "RecName: Full=" or "SubName: Full=" line normally in the beginning of
+  # the DE lines. 
+  # Unlike parser for old format, no special treatments for fragment or
+  # precursor.
+  #
+  # For old format, the method parses the DE lines and returns the protein
+  # name as a String.
   # 
   # === DE Line; description (>=1)
   #  "DE #{OFFICIAL_NAME} (#{SYNONYM})"
@@ -142,26 +249,82 @@ class SPTR < EMBLDB
   #  SYNONYM        >=0
   #  CONTEINS       >=0
   def protein_name
-    name = ""
-    if de_line = fetch('DE') then
-      str = de_line[/^[^\[]*/] # everything preceding the first [ (the "contains" part)
-      name = str[/^[^(]*/].strip
-      name << ' (Fragment)' if str =~ /fragment/i
+    @data['DE'] ||= parse_DE_line_rel14(get('DE'))
+    parsed_de_line = @data['DE']
+    if parsed_de_line then
+      # since UniProtKB release 14.0 of 22-Jul-2008
+      name = nil
+      parsed_de_line.each do |a|
+        case a[0]
+        when 'RecName', 'SubName'
+          if name_pair = a[1..-1].find { |b| b[0] == 'Full' } then
+            name = name_pair[1]
+            break
+          end
+        end
+      end
+      name = name.to_s
+    else
+      # old format (before Rel. 13.x)
+      name = ""
+      if de_line = fetch('DE') then
+        str = de_line[/^[^\[]*/] # everything preceding the first [ (the "contains" part)
+        name = str[/^[^(]*/].strip
+        name << ' (Fragment)' if str =~ /fragment/i
+      end
     end
     return name
   end
 
 
-  # returns an array of synonyms (unofficial names).
+  # returns synonyms (unofficial and/or alternative names).
+  # Returns an Array containing String objects.
   #
+  # Since UniProtKB release 14.0 of 22-Jul-2008, the DE line format have
+  # been changed. The method returns the full or short names which are
+  # taken from "RecName: Short=", "RecName: EC=", and AltName lines,
+  # except after "Contains:" or "Includes:".
+  # For keeping compatibility with old format parser, "RecName: EC=N.N.N.N"
+  # is reported as "EC N.N.N.N".
+  # In addition, to prevent confusion, "Allergen=" and "CD_antigen=" 
+  # prefixes are added for the corresponding fields.
+  #
+  # For old format, the method parses the DE lines and returns synonyms.
   # synonyms are each placed in () following the official name on the DE line.
   def synonyms
     ary = Array.new
-    if de_line = fetch('DE') then
-      line = de_line.sub(/\[.*\]/,'') # ignore stuff between [ and ].  That's the "contains" part
+    @data['DE'] ||= parse_DE_line_rel14(get('DE'))
+    parsed_de_line = @data['DE']
+    if parsed_de_line then
+      # since UniProtKB release 14.0 of 22-Jul-2008
+      parsed_de_line.each do |a|
+        case a[0]
+        when 'Includes', 'Contains'
+          break #the each loop
+        when 'RecName', 'SubName', 'AltName'
+          a[1..-1].each do |b|
+            if name = b[1] and b[1] != self.protein_name then
+              case b[0]
+              when 'EC'
+                name = "EC " + b[1]
+              when 'Allergen', 'CD_antigen'
+                name = b[0] + '=' + b[1]
+              else
+                name = b[1]
+              end
+              ary.push name
+            end
+          end
+        end #case a[0]
+      end #parsed_de_line.each
+    else
+      # old format (before Rel. 13.x)
+      if de_line = fetch('DE') then
+        line = de_line.sub(/\[.*\]/,'') # ignore stuff between [ and ].  That's the "contains" part
       line.scan(/\([^)]+/) do |synonym| 
         unless synonym =~ /fragment/i then 
           ary << synonym[1..-1].strip # index to remove the leading (  
+        end
         end
       end
     end
@@ -919,25 +1082,34 @@ class SPTR < EMBLDB
   end
   private :cc_subcellular_location
 
-  
-  # CC   -!- WEB RESOURCE: NAME=ResourceName[; NOTE=FreeText][; URL=WWWAddress].  
+
+  #--
+  # Since UniProtKB release 12.2 of 11-Sep-2007:
+  # CC   -!- WEB RESOURCE: Name=ResourceName[; Note=FreeText][; URL=WWWAddress].  # Old format:
+  # CC   -!- WEB RESOURCE: NAME=ResourceName[; NOTE=FreeText][; URL=WWWAddress].
+  #++
+
   def cc_web_resource(data)
     data.map {|x|
-      entry = {'NAME' => nil, 'NOTE' => nil, 'URL' => nil}
+      entry = {'Name' => nil, 'Note' => nil, 'URL' => nil}
       x.split(';').each do |y|
         case y
-        when /NAME=(.+)/
-          entry['NAME'] = $1.strip
-        when /NOTE=(.+)/
-          entry['NOTE'] = $1.strip
-        when /URL="(.+)"/
+        when /(Name|Note)\=(.+)/
+          key = $1
+          val = $2.strip
+          entry[key] = val
+        when /(NAME|NOTE)\=(.+)/
+          key = $1.downcase.capitalize
+          val = $2.strip
+          entry[key] = val
+        when /URL\=\"(.+)\"/
           entry['URL'] = $1.strip
         end
       end
       entry
     }
   end
-  
+  private :cc_web_resource
 
   # returns databases cross-references in the DR lines.
   # * Bio::SPTR#dr  -> Hash w/in Array
