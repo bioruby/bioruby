@@ -407,6 +407,15 @@ class Fastq
   # raw sequence data as a String object
   attr_reader :sequence_string
 
+  # returns the fastq entry in a four line string
+  # without line wrapping of the sequence and quality string, 
+  # irrespective of the original format wrapping.
+  # otherwise the returned entry should be identical to the original.
+  # http://nar.oxfordjournals.org/content/38/6/1767.full
+  def to_s
+    "@#{@definition}\n#{@sequence_string}\n+#{@definition2}\n#{@quality_string}\n"
+  end
+
   # returns Bio::Sequence::NA
   def naseq
     unless defined? @naseq then
