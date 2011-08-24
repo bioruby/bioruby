@@ -53,27 +53,24 @@ latest Ruby book ((<Programming Ruby|URL:http://www.pragprog.com/titles/ruby>))
 by Dave Thomas and Andy Hunt - the first edition can be read online
 ((<here|URL:http://www.ruby-doc.org/docs/ProgrammingRuby/>)).
 
-For BioRuby install Ruby and the BioRuby package on your computer.
+For BioRuby you need to install Ruby and the BioRuby package on your computer
 
-Check whether Ruby is installed on your computer with
+You can check whether Ruby is installed on your computer and what
+version it has with the
 
   % ruby -v
 
-You should see something like:
+command. You should see something like:
 
-  ruby 1.9.2p136 (2010-12-25 revision 30365) [i686-linux]
+  ruby 1.8.7 (2008-08-11 patchlevel 72) [i486-linux]
 
 If you see no such thing you'll have to install Ruby using your installation
-manager. For example in Debian
-  
-  apt-get install ruby
-
-For other installations, see
-((<Ruby|URL:http://www.ruby-lang.org/en/>)).
+manager. For more information see the
+((<Ruby|URL:http://www.ruby-lang.org/en/>)) website.
 
 With Ruby download and install Bioruby using the links on the
 ((<Bioruby|URL:http://bioruby.org/>)) website. The recommended installation is via 
-RubyGems (which comes with Ruby):
+RubyGems:
 
   gem install bio
 
@@ -86,7 +83,7 @@ documentation can be viewed online at
 
 == Trying Bioruby
 
-Bioruby comes with its own shell. After installing, run
+Bioruby comes with its own shell. After unpacking the sources run one of the following commands:
 
   bioruby
 
@@ -99,7 +96,7 @@ and you should see a prompt
 
   bioruby>
 
-Now, test the following:
+Now test the following:
 
   bioruby> require 'bio'
   bioruby> seq = Bio::Sequence::NA.new("atgcatgcaaaa")
@@ -540,7 +537,7 @@ Read a ClustalW or Muscle 'ALN' alignment file:
 
 Fetch a sequence:
 
-  bioruby> seq = aln[1]
+  bioruby> seq = aln.get_sequence(1)
   bioruby> seq.definition
   ==> "gi|115023|sp|P10425|"
 
@@ -1041,8 +1038,8 @@ connection to the database is tried sequentially with the order
 written in configuration files. However, this has not (yet) been
 implemented in BioRuby.
 
-In addition, for some protocol, you must set additional options
-other than locations (e.g. user name of MySQL). In the BioRegistory
+In addition, for some protocols, you must set additional options
+other than locations (e.g. user name for MySQL). In the BioRegistory
 specification, current available protocols are:
 
   * index-flat
@@ -1079,20 +1076,20 @@ Please refer to the sections below for more information.
 
 BioFlat is a mechanism to create index files of flat files and to retrieve
 these entries fast. There are two index types. index-flat is a simple index
-performing binary search without using an external library of Ruby. index-berkeleydb
+performing binary search without using any external libraries of Ruby. index-berkeleydb
 uses Berkeley DB for indexing - but requires installing bdb on your computer,
-as well as the BDB Ruby package. For creating the index itself, you can use br_bioflat.rb command bundled with BioRuby.
+as well as the BDB Ruby package. To create the index itself, you can use br_bioflat.rb command bundled with BioRuby.
 
     % br_bioflat.rb --makeindex database_name [--format data_format] filename...
 
 The format can be omitted because BioRuby has autodetection.  If that
-does not work you can try specifying data format as the name of a BioRuby database class.
+doesn't work, you can try specifying the data format as the name of a BioRuby database class.
 
 Search and retrieve data from database:
 
     % br_bioflat.rb database_name identifier
 
-For example, to create index of GenBank files gbbct*.seq and get the entry from the database:
+For example, to create an index of GenBank files gbbct*.seq and get the entry from the database:
 
     % br_bioflat.rb --makeindex my_bctdb --format GenBank gbbct*.seq
     % br_bioflat.rb my_bctdb A16STM262
@@ -1179,7 +1176,7 @@ overlapping window.
 The special method Bio::Fetch.query uses the preset BioFetch server
 at bioruby.org. (The server internally gets data from GenomeNet.
 Because the KEGG/GENES database and AAindex database are not available
-from other BioFetch servers, we used bioruby.org server with
+from other BioFetch servers, we used the bioruby.org server with
 Bio::Fetch.query method.)
 
 == BioSQL
@@ -1403,6 +1400,18 @@ Please refer to KEGG_API.rd.ja (English version: ((<URL:http://www.genome.jp/keg
 
   * ((<URL:http://www.genome.jp/kegg/soap/>))
 
+== Comparing BioProjects
+
+For a quick functional comparison of BioRuby, BioPerl, BioPython and BioConductor (R) see ((<here|URL:http://sciruby.codeforpeople.com/sr.cgi/BioProjects>)).
+
+== Using BioPerl or BioPython from Ruby
+
+At the moment there is no easy way of accessing BioPerl from Ruby. The best way, perhaps, is to create a Perl server that gets accessed through XML/RPC or SOAP.
+
+== Using BioRuby with R
+
+Pjotr wrote a section on SciRuby. See ((<here|URL:http://sciruby.codeforpeople.com/sr.cgi/RubyWithRlang>)).
+
 == Ruby Ensembl API
 
 The Ruby Ensembl API is a Ruby API to the Ensembl database. It is NOT currently
@@ -1450,7 +1459,7 @@ carefully that come with each package.
 
 === Installing libxml-ruby
 
-The simplest way is to use gem packaging system:
+The simplest way is to use the RubyGems packaging system:
 
   gem install -r libxml-ruby
 
@@ -1458,7 +1467,7 @@ If you get `require': no such file to load - mkmf (LoadError) error then do
 
   sudo apt-get install ruby-dev
 
-If you have other problems with installation, then see ((<URL:http://libxml.rubyforge.org/install.xml>))  
+If you have other problems with installation, then see ((<URL:http://libxml.rubyforge.org/install.xml>)).
 
 == Trouble shooting
 
