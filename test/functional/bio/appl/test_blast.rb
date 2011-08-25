@@ -54,7 +54,7 @@ module FunctTestBlast
                               '-b', '10' ],
                               'ddbj')
     end
-  end if false #DISABLED #class NetTestBlast_DDBJ
+  end #class NetTestBlast_DDBJ
 
 end #module FuncTestBlast
 end #module Bio
