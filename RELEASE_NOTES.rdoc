@@ -15,6 +15,18 @@ increased. The new code is 50 to 80 fold faster than the previous code
 when cutting 1Mbp sequence running on Ruby 1.9.2p180. The code is written
 by Tomoaki NISHIYAMA and Naohisa Goto.
 
+=== New classes Bio::DDBJ::REST, REST interface for DDBJ web service
+
+For DDBJ Web API for Biology (WABI) web service, in additon to SOAP, REST
+(REpresentational State Transfer) interface is added as Bio::DDBJ::REST.
+Currently, only selected APIs are implemented.
+
+=== Bio::Blast with remote DDBJ server uses REST instead of SOAP
+
+Bio::Blast with remote DDBJ server uses REST instead of SOAP, because
+Soap4r (SOAP library for Ruby) does not work well with Ruby 1.9.
+We can now use remote DDBJ BLAST server with Ruby 1.9.
+
 === Tutorial is updated
 
 The Tutorial.rd is updated by Pjotr Prins and Michael O'Keefe.
@@ -75,6 +87,10 @@ Note that "Name" and "Note" are used even when parsing older format.
 When executing remote BLAST with "genomenet" server, options "-b" and "-v"
 are now correctly used to limit the number of hits to be reported.
 In 1.4.1 and before, "-B" and "-V" were mistakenly used for the purpose.
+
+=== Bio::Blast with the remote DDBJ server
+
+Bio::Blast with remote DDBJ server uses REST instead of SOAP.
 
 === Bio::RestrictionEnzyme internal data structure change
 
