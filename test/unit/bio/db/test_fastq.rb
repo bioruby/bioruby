@@ -278,6 +278,20 @@ _9_
         end
       end
 
+      def test_to_s
+        ids = IDLINES.dup
+        seqs = SEQS.dup
+        qstrs = QUALITY_STRINGS.dup
+        ent = []
+        while !ids.empty?
+          ent.push "@#{ids.shift}\n#{seqs.shift}\n+\n#{qstrs.shift}\n"
+        end
+        @ff.each do |e|
+          assert_equal(ent.shift, e.to_s)
+        end
+        assert(ent.empty?)
+      end
+
       def test_definition
         ids = IDLINES.dup
         @ff.each do |e|
