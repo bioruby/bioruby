@@ -22,19 +22,18 @@ If you want to know more about the programming language, we recommend the
 latest Ruby book <a href="http://www.pragprog.com/titles/ruby">Programming Ruby</a>
 by Dave Thomas and Andy Hunt - the first edition can be read online
 <a href="http://www.ruby-doc.org/docs/ProgrammingRuby/">here</a>.</p>
-<p>For BioRuby install Ruby and the BioRuby package on your computer.</p>
-<p>Check whether Ruby is installed on your computer with</p>
+<p>For BioRuby you need to install Ruby and the BioRuby package on your computer</p>
+<p>You can check whether Ruby is installed on your computer and what
+version it has with the</p>
 <pre>% ruby -v</pre>
-<p>You should see something like:</p>
-<pre>ruby 1.9.2p136 (2010-12-25 revision 30365) [i686-linux]</pre>
+<p>command. You should see something like:</p>
+<pre>ruby 1.8.7 (2008-08-11 patchlevel 72) [i486-linux]</pre>
 <p>If you see no such thing you'll have to install Ruby using your installation
-manager. For example in Debian</p>
-<pre>apt-get install ruby</pre>
-<p>For other installations, see
-<a href="http://www.ruby-lang.org/en/">Ruby</a>.</p>
+manager. For more information see the
+<a href="http://www.ruby-lang.org/en/">Ruby</a> website.</p>
 <p>With Ruby download and install Bioruby using the links on the
 <a href="http://bioruby.org/">Bioruby</a> website. The recommended installation is via 
-RubyGems (which comes with Ruby):</p>
+RubyGems:</p>
 <pre>gem install bio</pre>
 <p>See also the Bioruby <a href="http://bioruby.open-bio.org/wiki/Installation">wiki</a>.</p>
 <p>A lot of BioRuby's documentation exists in the source code and unit tests. To
@@ -42,14 +41,14 @@ really dive in you will need the latest source code tree. The embedded rdoc
 documentation can be viewed online at
 <a href="http://bioruby.org/rdoc/">bioruby's rdoc</a>. But first lets start!</p>
 <h2><a name="label-2" id="label-2">Trying Bioruby</a></h2><!-- RDLabel: "Trying Bioruby" -->
-<p>Bioruby comes with its own shell. After installing, run</p>
+<p>Bioruby comes with its own shell. After unpacking the sources run one of the following commands:</p>
 <pre>bioruby</pre>
 <p>or, from the source tree</p>
 <pre>cd bioruby
 ruby -I lib bin/bioruby</pre>
 <p>and you should see a prompt</p>
 <pre>bioruby&gt;</pre>
-<p>Now, test the following:</p>
+<p>Now test the following:</p>
 <pre>bioruby&gt; require 'bio'
 bioruby&gt; seq = Bio::Sequence::NA.new("atgcatgcaaaa")
 ==&gt; "atgcatgcaaaa"
@@ -415,7 +414,7 @@ a2 = a.do_align(factory)</pre>
 bioruby&gt; aln.header
 ==&gt; "CLUSTAL 2.0.9 multiple sequence alignment"</pre>
 <p>Fetch a sequence:</p>
-<pre>bioruby&gt; seq = aln[1]
+<pre>bioruby&gt; seq = aln.get_sequence(1)
 bioruby&gt; seq.definition
 ==&gt; "gi|115023|sp|P10425|"</pre>
 <p>Get a partial sequence:</p>
@@ -842,8 +841,8 @@ settings for a database of the same name, it is proposed that
 connection to the database is tried sequentially with the order
 written in configuration files. However, this has not (yet) been
 implemented in BioRuby.</p>
-<p>In addition, for some protocol, you must set additional options
-other than locations (e.g. user name of MySQL). In the BioRegistory
+<p>In addition, for some protocols, you must set additional options
+other than locations (e.g. user name for MySQL). In the BioRegistory
 specification, current available protocols are:</p>
 <ul>
 <li>index-flat</li>
@@ -873,15 +872,15 @@ Please refer to the sections below for more information.</p>
 <h2><a name="label-19" id="label-19">BioFlat</a></h2><!-- RDLabel: "BioFlat" -->
 <p>BioFlat is a mechanism to create index files of flat files and to retrieve
 these entries fast. There are two index types. index-flat is a simple index
-performing binary search without using an external library of Ruby. index-berkeleydb
+performing binary search without using any external libraries of Ruby. index-berkeleydb
 uses Berkeley DB for indexing - but requires installing bdb on your computer,
-as well as the BDB Ruby package. For creating the index itself, you can use br_bioflat.rb command bundled with BioRuby.</p>
+as well as the BDB Ruby package. To create the index itself, you can use br_bioflat.rb command bundled with BioRuby.</p>
 <pre>% br_bioflat.rb --makeindex database_name [--format data_format] filename...</pre>
 <p>The format can be omitted because BioRuby has autodetection.  If that
-does not work you can try specifying data format as the name of a BioRuby database class.</p>
+doesn't work, you can try specifying the data format as the name of a BioRuby database class.</p>
 <p>Search and retrieve data from database:</p>
 <pre>% br_bioflat.rb database_name identifier</pre>
-<p>For example, to create index of GenBank files gbbct*.seq and get the entry from the database:</p>
+<p>For example, to create an index of GenBank files gbbct*.seq and get the entry from the database:</p>
 <pre>% br_bioflat.rb --makeindex my_bctdb --format GenBank gbbct*.seq
 % br_bioflat.rb my_bctdb A16STM262</pre>
 <p>If you have Berkeley DB on your system and installed the bdb extension
@@ -948,7 +947,7 @@ end</pre>
 <p>The special method Bio::Fetch.query uses the preset BioFetch server
 at bioruby.org. (The server internally gets data from GenomeNet.
 Because the KEGG/GENES database and AAindex database are not available
-from other BioFetch servers, we used bioruby.org server with
+from other BioFetch servers, we used the bioruby.org server with
 Bio::Fetch.query method.)</p>
 <h2><a name="label-22" id="label-22">BioSQL</a></h2><!-- RDLabel: "BioSQL" -->
 <p>BioSQL is a well known schema to store and retrive biological sequences using a RDBMS like PostgreSQL or MySQL: note that SQLite is not supported.
@@ -1159,11 +1158,11 @@ painful, as the gem standard for packages evolved late and some still
 force you to copy things by hand. Therefore read the README's
 carefully that come with each package.</p>
 <h3><a name="label-40" id="label-40">Installing libxml-ruby</a></h3><!-- RDLabel: "Installing libxml-ruby" -->
-<p>The simplest way is to use gem packaging system:</p>
+<p>The simplest way is to use the RubyGems packaging system:</p>
 <pre>gem install -r libxml-ruby</pre>
 <p>If you get `require': no such file to load - mkmf (LoadError) error then do</p>
 <pre>sudo apt-get install ruby-dev</pre>
-<p>If you have other problems with installation, then see <a href="http://libxml.rubyforge.org/install.xml">&lt;URL:http://libxml.rubyforge.org/install.xml&gt;</a>  </p>
+<p>If you have other problems with installation, then see <a href="http://libxml.rubyforge.org/install.xml">&lt;URL:http://libxml.rubyforge.org/install.xml&gt;</a>.</p>
 <h2><a name="label-41" id="label-41">Trouble shooting</a></h2><!-- RDLabel: "Trouble shooting" -->
 <ul>
 <li>Error: in `require': no such file to load -- bio (LoadError)</li>
