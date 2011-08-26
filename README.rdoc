@@ -74,6 +74,9 @@ mailing lists, Wiki documentation etc. in the top page.
 
 * http://bioruby.org/
 
+Mirror site is available, hosted on Open Bioinformatics Foundation (OBF).
+
+* http://bioruby.open-bio.org/
 
 == WHERE TO OBTAIN
 
@@ -146,11 +149,11 @@ If you are using RubyGems, just type
 
   % gems install bio
 
-RubyGems is bundled with Ruby 1.9.1 or later. For Ruby 1.8.7 or earlier,
-download and install RubyGems from http://rubygems.org/ .
-
 Alternatively, manually download bio-X.X.X.gem from 
 http://rubyforge.org/projects/bioruby/ and install it by using gems command.
+
+RubyGems is bundled with Ruby 1.9.1 or later. For Ruby 1.8.7 or earlier,
+download and install RubyGems from http://rubygems.org/ .
 
 === INSTALL without RubyGems
 
@@ -229,6 +232,17 @@ using 'bio'. This may not be needed, depending on settings of Ruby.
   require 'rubygems'
   require 'bio'
 
+
+== PLUGIN (Biogem)
+
+Many plugins (called Biogem) are now available. See http://biogems.info/
+for list of plugins and related software utilizing BioRuby.
+
+* http://biogems.info/
+
+To develop your own plugin, see "Plugins" pages of BioRuby Wiki.
+
+* http://bioruby.open-bio.org/wiki/Plugins
 
 == LICENSE
 
