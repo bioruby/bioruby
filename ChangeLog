@@ -1,3 +1,957 @@
+commit 3acc1e098839cacbe85b5c23367ab14e0c4fe3ea
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 26 15:01:49 2011 +0900
+
+    Preparation for bioruby-1.4.2 release.
+
+ bioruby.gemspec    |    2 +-
+ lib/bio/version.rb |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit bf69125192fa01ae3495e094e7ef1b5e895954ad
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 26 14:42:02 2011 +0900
+
+    updated bioruby.gemspec
+
+ bioruby.gemspec |    3 +++
+ 1 files changed, 3 insertions(+), 0 deletions(-)
+
+commit e0a3ead917812199c6a0e495f3afa6a636bbf0c5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 26 14:39:54 2011 +0900
+
+    Added PLUGIN section to README.rdoc, and some changes made.
+
+ README.rdoc |   20 +++++++++++++++++---
+ 1 files changed, 17 insertions(+), 3 deletions(-)
+
+commit 1da0a1ce6eddcef8f8fc811b0a2cf8d58f880642
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 26 14:38:13 2011 +0900
+
+    updated doc/Tutorial.rd.html
+
+ doc/Tutorial.rd.html |   41 ++++++++++++++++++++---------------------
+ 1 files changed, 20 insertions(+), 21 deletions(-)
+
+commit a8b90367b830e58b397536be3dada10cdde97aab
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 26 14:36:24 2011 +0900
+
+    Removed sections contain obsolete (404 Not Found) URL in Tutorial.rd.
+
+ doc/Tutorial.rd |   12 ------------
+ 1 files changed, 0 insertions(+), 12 deletions(-)
+
+commit e17546cb90a012cd1f51674ceb4c8da5dd516bdf
+Author: Michael O'Keefe <okeefm@rpi.edu>
+Date:   Tue Aug 23 20:15:44 2011 -0400
+
+    Updated tutorial
+    
+     * Updated tutorial
+       (original commit id: 7b9108657961cf2354278e04971c32059b3ed4e2
+        and some preceding commits)
+
+ doc/Tutorial.rd |   55 ++++++++++++++++++++++++++++++++-----------------------
+ 1 files changed, 32 insertions(+), 23 deletions(-)
+
+commit de8a394129c752a0b9a5975a73c5eb582d9681d3
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 26 13:24:27 2011 +0900
+
+    fix typo and change order of lines
+
+ RELEASE_NOTES.rdoc |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 1cf2a11199655e4c9f5fc49c5a588b99c18ab7ca
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 26 13:16:11 2011 +0900
+
+    RELEASE_NOTE.rdoc modified to reflect recent changes
+
+ RELEASE_NOTES.rdoc |   14 ++++++++++++++
+ 1 files changed, 14 insertions(+), 0 deletions(-)
+
+commit b44871a5866eeb2d379f080b39b09693c9e9e3cc
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 26 13:15:14 2011 +0900
+
+    In BioRuby Shell, getent() fails when EMBOSS seqret does not found.
+
+ lib/bio/shell/plugin/entry.rb |   10 +++++++---
+ 1 files changed, 7 insertions(+), 3 deletions(-)
+
+commit 179e7506b008a220d5dd42ce1a6c7ce589c3fcda
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 26 12:26:52 2011 +0900
+
+    New methods Bio::NCBI::REST::EFetch.nucleotide and protein
+    
+     * New methods Bio::NCBI::REST::EFetch.nucleotide and protein,
+       to get data from "nucleotide" and "protein" database respectively.
+       Because NCBI changed not to accept "gb" format for the database
+       "sequence", the two new methods are added for convenience.
+     * In BioRuby Shell, efetch method uses the above new methods.
+
+ lib/bio/io/ncbirest.rb           |  122 +++++++++++++++++++++++++++++++++++++-
+ lib/bio/shell/plugin/ncbirest.rb |    6 ++-
+ 2 files changed, 126 insertions(+), 2 deletions(-)
+
+commit 99b31379bb41c7cad34c1e7dc00f802da37de1cd
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Aug 25 19:03:43 2011 +0900
+
+    New method Bio::Fastq#to_s
+    
+     * New method Bio::Fastq#to_s.
+       Thanks to Tomoaki NISHIYAMA who wrote a patch.
+       (https://github.com/bioruby/bioruby/pull/37)
+
+ lib/bio/db/fastq.rb            |   14 ++++++++++++++
+ test/unit/bio/db/test_fastq.rb |   14 ++++++++++++++
+ 2 files changed, 28 insertions(+), 0 deletions(-)
+
+commit 8ab772b37850c3874b55cf37d091046394cda5bd
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Aug 25 15:23:00 2011 +0900
+
+    RELEASE_NOTES.rdoc changed to reflect recent changes.
+
+ RELEASE_NOTES.rdoc |   16 ++++++++++++++++
+ 1 files changed, 16 insertions(+), 0 deletions(-)
+
+commit 8db6abdcc81db6a58bdd99e7f8d410b1a74496b1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Aug 25 14:28:42 2011 +0900
+
+    A test connecting to DDBJ BLAST web service is enabled.
+
+ test/functional/bio/appl/test_blast.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 121ad93c0c1f018ee389972ac5e5e8cc395f00d1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Aug 25 14:15:23 2011 +0900
+
+    Bio::DDBJ::REST::*. new classes for DDBJ REST web services.
+    
+     * Bio::DDBJ::REST::*: new classes for DDBJ REST web services (WABI).
+       Currently not all services are covered. (lib/bio/io/ddbjrest.rb)
+     * autoload of the above (lib/bio/db/genbank/ddbj.rb, lib/bio.rb)
+     * Tests for the above (but still incomplete)
+       (test/functional/bio/io/test_ddbjrest.rb)
+     * Remote BLAST using DDBJ server now uses REST interface instead
+       of SOAP, for Ruby 1.9.x support.
+       (lib/bio/appl/blast/ddbj.rb)
+
+ lib/bio.rb                              |    1 +
+ lib/bio/appl/blast/ddbj.rb              |   33 +---
+ lib/bio/db/genbank/ddbj.rb              |    3 +-
+ lib/bio/io/ddbjrest.rb                  |  344 +++++++++++++++++++++++++++++++
+ test/functional/bio/io/test_ddbjrest.rb |   47 +++++
+ 5 files changed, 399 insertions(+), 29 deletions(-)
+ create mode 100644 lib/bio/io/ddbjrest.rb
+ create mode 100644 test/functional/bio/io/test_ddbjrest.rb
+
+commit 7e8ba7c1388204daa5245d2128d01f6f40298185
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Aug 18 00:08:51 2011 +0900
+
+    In Fastq formatter, default width value changed to nil
+    
+     * In Bio::Sequence#output(:fastq) (Fastq output formatter),
+       default width value is changed from 70 to nil, which means
+       "without wrapping".  close [Feature #3191]
+       (https://redmine.open-bio.org/issues/3191)
+
+ RELEASE_NOTES.rdoc               |    8 ++++++--
+ lib/bio/db/fastq/format_fastq.rb |    4 ++--
+ test/unit/bio/db/test_fastq.rb   |   12 ++++++++++++
+ 3 files changed, 20 insertions(+), 4 deletions(-)
+
+commit 0fb65211519febff18413c589fe7af753ee2e61d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Aug 17 22:02:03 2011 +0900
+
+    Bug fix: Bio::SPTR follow-up of UniProtKB format changes
+    
+     * Bug fix: Bio::SPTR follow-up of UniProtKB format changes.
+     * Tests are added about the fix.
+     * Bug fix: Bio::SPTR#cc_web_resource should be private.
+     * Incompatible changes in Bio::SPTR#cc("WEB RESOURCE") is
+       documented in RELEASE_NOTES.rdoc.
+     * KNOWN_ISSUES.rdoc: description about incompleteness of the fix.
+     * Thanks to Nicholas Letourneau who reports the issue.
+       (https://github.com/bioruby/bioruby/pull/36)
+
+ KNOWN_ISSUES.rdoc                              |    5 +
+ RELEASE_NOTES.rdoc                             |   20 ++-
+ lib/bio/db/embl/sptr.rb                        |  214 +++++++++++++++++++++---
+ test/unit/bio/db/embl/test_sptr.rb             |   12 +-
+ test/unit/bio/db/embl/test_uniprot_new_part.rb |  208 +++++++++++++++++++++++
+ 5 files changed, 430 insertions(+), 29 deletions(-)
+ create mode 100644 test/unit/bio/db/embl/test_uniprot_new_part.rb
+
+commit 0d066ab6b8fc19f1cf6e66e07c2065775739cccd
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Aug 13 00:58:51 2011 +0900
+
+    preparation for release: alpha test version 1.4.2-alpha1
+
+ bioruby.gemspec    |   23 +++++++++++++++++++++--
+ lib/bio/version.rb |    4 ++--
+ 2 files changed, 23 insertions(+), 4 deletions(-)
+
+commit 55ece17775f5d24cf62f93d54ded5dc6eed53584
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 12 21:57:25 2011 +0900
+
+    Test bug fix: use sort command in PATH
+    
+     * Test bug fix: FuncTestCommandQuery: use sort command in PATH.
+       Thanks to Tomoaki Nishiyama who reports the issue.
+       (https://github.com/bioruby/bioruby/pull/13)
+
+ test/functional/bio/test_command.rb |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 2f464aae016387cd50031f9d9664e78e220e2d01
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 12 20:37:18 2011 +0900
+
+    RELEASE_NOTES.rdoc is updated following recent changes.
+
+ RELEASE_NOTES.rdoc |   21 ++++++++++++++-------
+ 1 files changed, 14 insertions(+), 7 deletions(-)
+
+commit d1a193684afdfd4c632ef75a978d4f3680d1bdf3
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 12 20:30:53 2011 +0900
+
+    README.rdoc: changed required Ruby version etc.
+    
+     * README.rdoc: now Ruby 1.8.6 or later is required.
+     * README.rdoc: removed old obsolete descriptions.
+     * README.rdoc: modified about RubyGems.
+     * KNOWN_ISSUES.rdoc: moved descriptions about older RubyGems and CVS
+       from README.rdoc.
+     * KNOWN_ISSUES.rdoc: modified about end-of-life Ruby versions.
+
+ KNOWN_ISSUES.rdoc |   40 ++++++++++++++++++++++++++++++----
+ README.rdoc       |   61 ++++++++++++++++++++--------------------------------
+ 2 files changed, 59 insertions(+), 42 deletions(-)
+
+commit b5cbdc6ab7e81aae4db9aeb708fac57ffbce5636
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Jul 16 00:12:17 2011 +0900
+
+    Added topics for the release notes
+
+ RELEASE_NOTES.rdoc |   39 ++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 38 insertions(+), 1 deletions(-)
+
+commit f062b5f37a6d8ad35b5b10c942fd61e1a4d37e08
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Jul 2 01:05:42 2011 +0900
+
+    Speedup of Bio::RestrictionEnzyme::Analysis.cut.
+    
+     * Speedup of Bio::RestrictionEnzyme::Analysis.cut. The new code
+       is 50 to 80 fold faster than the previous code when cutting
+       1Mbp sequence running on Ruby 1.9.2p180.
+     * Thanks to Tomoaki NISHIYAMA who wrote the first version of the
+       patch. Thanks to ray1729 (on GitHub) who reports the issue.
+       (https://github.com/bioruby/bioruby/issues/10)
+
+ lib/bio/util/restriction_enzyme.rb                 |    3 +
+ .../restriction_enzyme/range/sequence_range.rb     |   14 ++--
+ .../range/sequence_range/calculated_cuts.rb        |   75 +++++++++++++++-----
+ .../range/sequence_range/fragment.rb               |    4 +-
+ 4 files changed, 69 insertions(+), 27 deletions(-)
+
+commit 735379421d9d6b7ceb06b91dcfcca6d5ff841236
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Jul 2 00:59:58 2011 +0900
+
+    New classes (for internal use only) for restriction enzyme classes
+    
+     * New classes Bio::RestrictionEnzyme::SortedNumArray and
+       Bio::RestrictionEnzyme::DenseIntArray. Both of them are for
+       Bio::RestrictionEnzyme internal use only. They will be used
+       for the speedup of restriction enzyme analysis.
+
+ lib/bio/util/restriction_enzyme/dense_int_array.rb |  195 ++++++++++++++
+ .../util/restriction_enzyme/sorted_num_array.rb    |  219 +++++++++++++++
+ .../restriction_enzyme/test_dense_int_array.rb     |  201 ++++++++++++++
+ .../restriction_enzyme/test_sorted_num_array.rb    |  281 ++++++++++++++++++++
+ 4 files changed, 896 insertions(+), 0 deletions(-)
+ create mode 100644 lib/bio/util/restriction_enzyme/dense_int_array.rb
+ create mode 100644 lib/bio/util/restriction_enzyme/sorted_num_array.rb
+ create mode 100644 test/unit/bio/util/restriction_enzyme/test_dense_int_array.rb
+ create mode 100644 test/unit/bio/util/restriction_enzyme/test_sorted_num_array.rb
+
+commit 6cbb0c230d1a0bf3125c3b0fdb9ec3333d9564f8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jun 30 20:47:26 2011 +0900
+
+    A sample benchmark script for Bio::RestrictionEnzyme::Analysis.cut
+
+ sample/test_restriction_enzyme_long.rb | 4403 ++++++++++++++++++++++++++++++++
+ 1 files changed, 4403 insertions(+), 0 deletions(-)
+ create mode 100644 sample/test_restriction_enzyme_long.rb
+
+commit 413442bd7424f837c73d8170ced8e01a01f87a59
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue May 24 23:26:41 2011 +0900
+
+    Added a test for Bio::FastaFormat#entry_overrun etc.
+    
+     * Added a test for Bio::FastaFormat#entry_overrun.
+     * Removed a void test class.
+
+ test/unit/bio/db/test_fasta.rb |   24 ++++++++++++------------
+ 1 files changed, 12 insertions(+), 12 deletions(-)
+
+commit b74020ff9b5c9fc8531c584898a329987008870e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue May 24 22:21:17 2011 +0900
+
+    Bug fix: Bio::FastaFormat#query passes nil to the given factory
+    
+     * Bug fix: Bio::FastaFormat#query passes nil to the given factory
+       object. Thanks to Philipp Comans who reports the bug.
+       (https://github.com/bioruby/bioruby/issues/35)
+     * Test method for Bio::FastaFormat#query is added.
+
+ lib/bio/db/fasta.rb            |    2 +-
+ test/unit/bio/db/test_fasta.rb |   22 ++++++++++++++++++++++
+ 2 files changed, 23 insertions(+), 1 deletions(-)
+
+commit 80e49373e0e9013442680ba33499be80c58471db
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue May 17 22:33:56 2011 +0900
+
+    Changed database name in the example.
+    
+     * Changed database name in the example.
+       Thanks to Philipp Comans who reports the issue.
+
+ lib/bio/appl/blast.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 7427d1f1355a6c190c6bf8522978e462dea64134
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu May 12 22:15:37 2011 +0900
+
+    Bug fix: changed GenomeNet remote BLAST URL.
+    
+     * Bug fix: changed GenomeNet remote BLAST host name and path.
+       Thanks to Philipp Comans who reports the bug.
+       ( https://github.com/bioruby/bioruby/issues/34 )
+
+ lib/bio/appl/blast/genomenet.rb |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit c1c231b0a17c06ec042534245ed903e0256a59ed
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue May 10 20:57:17 2011 +0900
+
+    updated doc/Tutorial.rd.html
+
+ doc/Tutorial.rd.html |   34 ++++++++++++++++++----------------
+ 1 files changed, 18 insertions(+), 16 deletions(-)
+
+commit 5261c926cae8dac890d7d0380e84f2eb88912417
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Thu May 5 12:07:54 2011 +0200
+
+    Tutorial: Fixed URL and the intro
+
+ doc/Tutorial.rd |   34 ++++++++++++++++++++--------------
+ 1 files changed, 20 insertions(+), 14 deletions(-)
+
+commit 71de394053376f4759d705c52e6f16eca3da9d62
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Wed Mar 9 10:26:53 2011 +0100
+
+    Tutorial: Added a commnet for rubydoctest, changed Ruby version
+    
+     * Added a comment for rubydoctest
+     * Changed example Ruby version representation
+     * This is part of commit ba5b9c2d29223860252451110a99d4ff0250395d
+       and modified to merge with the current HEAD.
+
+ doc/Tutorial.rd |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 1d27153065b8e8595a470b2201961b0a39bf8ca1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Apr 28 23:58:57 2011 +0900
+
+    updated doc/Tutorial.rd.html
+
+ doc/Tutorial.rd.html |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit ae9beff3bc43db3724a292b10a214583d9fbc111
+Author: Michael O'Keefe <okeemf@rpi.edu>
+Date:   Wed Apr 6 11:46:54 2011 -0400
+
+    Updated through the section on Homology searching with BLAST
+
+ doc/Tutorial.rd      |   64 ++++++++++++++++++++--------------------------
+ doc/Tutorial.rd.html |   68 ++++++++++++++++++++++----------------------------
+ 2 files changed, 58 insertions(+), 74 deletions(-)
+
+commit 971da799b16628a927abd7dd6c218994506f8fd8
+Author: Michael O'Keefe <okeemf@rpi.edu>
+Date:   Thu Mar 24 18:29:20 2011 -0400
+
+    Updated the html file generated from the RDoc
+
+ doc/Tutorial.rd.html |  224 ++++++++++++++++++++++++++------------------------
+ 1 files changed, 117 insertions(+), 107 deletions(-)
+
+commit c6afd7eeed121926b56d300cb4170b5024f29eb0
+Author: Michael O'Keefe <okeemf@rpi.edu>
+Date:   Thu Mar 24 18:08:17 2011 -0400
+
+    Finished updating the tutorial
+
+ doc/Tutorial.rd |   16 ++++++++--------
+ 1 files changed, 8 insertions(+), 8 deletions(-)
+
+commit 7349ac550ec03e2c5266496297becbdb3f4e0edd
+Author: Michael O'Keefe <okeemf@rpi.edu>
+Date:   Thu Mar 24 15:56:37 2011 -0400
+
+    Edited tutorial up through the extra stuff section
+
+ doc/Tutorial.rd |   28 ++++++++++++++--------------
+ 1 files changed, 14 insertions(+), 14 deletions(-)
+
+commit 32ba3b15ad00d02b12ef2b44636505e23caaf620
+Author: Michael O'Keefe <okeemf@rpi.edu>
+Date:   Thu Mar 24 15:26:48 2011 -0400
+
+    Updated tutorial up through BioSQL
+
+ doc/Tutorial.rd |  172 ++++++++++++++++++-------------------------------------
+ 1 files changed, 57 insertions(+), 115 deletions(-)
+
+commit 249580edb49a13545708fdcb559104217e37f162
+Author: Michael O'Keefe <okeemf@rpi.edu>
+Date:   Thu Mar 24 12:09:03 2011 -0400
+
+    Updated tutorial through the section on alignments
+
+ doc/Tutorial.rd |   40 +++++++++++++++++++++++++++++++++-------
+ 1 files changed, 33 insertions(+), 7 deletions(-)
+
+commit 54f7b54044bb245ec5953dc7426f1c434b41f24f
+Author: Michael O'Keefe <okeemf@rpi.edu>
+Date:   Thu Mar 24 11:51:23 2011 -0400
+
+    Updated the tutorial (mostly grammar fixes) up until GenBank
+
+ doc/Tutorial.rd |   31 +++++++++++++++----------------
+ 1 files changed, 15 insertions(+), 16 deletions(-)
+
+commit f046a52081a8af0e9afbf65fd2673c29689be769
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Feb 8 12:58:50 2011 +0900
+
+    Added a test protein sequence data for BLAST test.
+
+ test/data/fasta/EFTU_BACSU.fasta |    8 ++++++++
+ 1 files changed, 8 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/fasta/EFTU_BACSU.fasta
+
+commit f61a5f4bdde16fa051f43cbe3efef4570b415a6a
+Author: Anthony Underwood <email2ants@gmail.com>
+Date:   Mon Jan 31 12:44:55 2011 +0000
+
+    Bug fix: GenBank sequence output should format date as 27-JAN-2011
+    
+     * Bug fix: GenBank sequence output should format date as 27-JAN-2011
+       rather than 2011-01-27 as specified by offical GenBank specs.
+
+ lib/bio/db/genbank/format_genbank.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit be144e75a059058ab000a55d7bf535597e7e2617
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Feb 3 20:28:03 2011 +0900
+
+    Added tests for remote BLAST execution via GenomeNet and DDBJ.
+    
+     * Added tests for remote BLAST execution via GenomeNet and DDBJ.
+       Currently, a test for DDBJ BLAST web API is disabled because
+       it takes relatively long time.
+     * Tests to retrieve remote BLAST database information for GenomeNet
+       and DDBJ servers are also added.
+
+ test/functional/bio/appl/blast/test_remote.rb |   93 +++++++++++++++++++++++++
+ test/functional/bio/appl/test_blast.rb        |   61 ++++++++++++++++
+ 2 files changed, 154 insertions(+), 0 deletions(-)
+ create mode 100644 test/functional/bio/appl/blast/test_remote.rb
+ create mode 100644 test/functional/bio/appl/test_blast.rb
+
+commit 67314f1f1a248954c030f7ffe048faf862bf07d2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Feb 3 20:19:11 2011 +0900
+
+    Updated _parse_databases following the changes in the DDBJ server
+    
+     * Updated _parse_databases following the changes in the DDBJ server.
+       Changed to use (NT) or (AA) in the tail of each description.
+       Thanks to DDBJ to improve their web service API.
+
+ lib/bio/appl/blast/ddbj.rb |   29 ++++++++++++++++++++---------
+ 1 files changed, 20 insertions(+), 9 deletions(-)
+
+commit d6aad2f4cc53c1227c86b6b573644cca15c9ed82
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Feb 2 00:02:32 2011 +0900
+
+    Release notes for the next release is added.
+
+ RELEASE_NOTES.rdoc |   38 ++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 38 insertions(+), 0 deletions(-)
+ create mode 100644 RELEASE_NOTES.rdoc
+
+commit b4a30cc8ac9472b9e1c2a298afc624d0229c64c9
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Feb 1 23:33:18 2011 +0900
+
+    Bug fix: Execution failure due to the changes of DDBJ BLAST server
+
+ lib/bio/appl/blast/ddbj.rb |    4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
+
+commit d30cb5975febd8b526088612c4fb9689a6cc46ba
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Feb 1 23:01:34 2011 +0900
+
+    Support for database "mine-aa" and "mine-nt" with KEGG organism codes
+    
+     * Added support for database "mine-aa" and "mine-nt" combined with
+       KEGG organism codes. When database name starts with mine-aa or
+       mine-nt, space-separated list of KEGG organism codes can be given.
+       For example, "mine-aa eco bsu hsa".
+
+ lib/bio/appl/blast/genomenet.rb |   11 +++++++++++
+ 1 files changed, 11 insertions(+), 0 deletions(-)
+
+commit abcba798ccf57894dcd570a6578ef78db30a3e25
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Feb 1 22:20:02 2011 +0900
+
+    RELEASE_NOTES.rdoc is renamed to doc/RELEASE_NOTES-1.4.1.rdoc
+
+ RELEASE_NOTES.rdoc           |  104 ------------------------------------------
+ doc/RELEASE_NOTES-1.4.1.rdoc |  104 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 104 insertions(+), 104 deletions(-)
+ delete mode 100644 RELEASE_NOTES.rdoc
+ create mode 100644 doc/RELEASE_NOTES-1.4.1.rdoc
+
+commit 8719cf4e06fc8a8cd0564aeb0b95372a7a0bcefb
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Feb 1 22:07:32 2011 +0900
+
+    Bug: Options "-v" and "-b" should be used for the limit of hits.
+    
+     * Bug: Options "-v" and "-b" should be used for the limit of hits,
+       and "-V" and "-B" should not be used for the purpose.
+
+ lib/bio/appl/blast/genomenet.rb |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+commit 974b640badae9837fe9fc173d690b27c9b045454
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Feb 1 20:34:50 2011 +0900
+
+    Bug fix: Workaround for a change in the GenomeNet BLAST site.
+    
+    * Bug fix: Workaround for a change in the GenomeNet BLAST site.
+      Thanks to the anonymous reporter. The patch was originally made
+      by Toshiaki Katyama.
+
+ lib/bio/appl/blast/genomenet.rb |    7 +++----
+ 1 files changed, 3 insertions(+), 4 deletions(-)
+
+commit 001d3e3570c77185cece4aed1be5be2ed6f94f7e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jan 6 23:39:19 2011 +0900
+
+    Added tests to check the previous Bio::Reference#endnote fix.
+
+ test/unit/bio/test_reference.rb |   30 ++++++++++++++++++++++++++++++
+ 1 files changed, 30 insertions(+), 0 deletions(-)
+
+commit e1cd766abe24dbcc08a42103127c75ad0ab929aa
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jan 6 23:07:35 2011 +0900
+
+    Bio::Reference#pubmed_url is updated to follow recent NCBI changes.
+
+ lib/bio/reference.rb            |    5 ++---
+ test/unit/bio/test_reference.rb |    5 +++++
+ 2 files changed, 7 insertions(+), 3 deletions(-)
+
+commit 48024313a7568a38f4291618708541ae1dac312c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jan 6 22:56:37 2011 +0900
+
+    Bug fix: Bio::Reference#endnote fails when url is not set
+    
+     * Bug fix: Bio::Reference#endnote fails when url is not set.
+       Thanks to Warren Kibbe who reports the bug.
+       (https://github.com/bioruby/bioruby/issues#issue/15)
+
+ lib/bio/reference.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 577278a95340abfa32d3e67415d3a10bc74b82c0
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Fri Dec 17 12:16:31 2010 +0100
+
+    Bug fix: In Bio::MEDLINE#reference, doi field should be filled.
+    
+     * Bug fix: In Bio::MEDLINE#reference, doi field should be filled.
+       (https://github.com/bioruby/bioruby/issues#issue/29)
+
+ lib/bio/db/medline.rb            |    1 +
+ test/unit/bio/db/test_medline.rb |    1 +
+ 2 files changed, 2 insertions(+), 0 deletions(-)
+
+commit daa20c85681576d3bfbdc8f87580a4b6227b122c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jan 6 20:25:03 2011 +0900
+
+    Bug fix: Bio::Newick#reparse failure
+    
+     * Bug fix: Bio::Newick#reparse failure.
+       Thanks to jdudley who reports the bug.
+       (https://github.com/bioruby/bioruby/issues#issue/28)
+     * Tests are added to confirm the bug fix.
+
+ lib/bio/db/newick.rb            |    4 +++-
+ test/unit/bio/db/test_newick.rb |   12 ++++++++++++
+ 2 files changed, 15 insertions(+), 1 deletions(-)
+
+commit 16117aefdf57ac3ae16b5568f462f7b919ef005f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jan 6 20:14:18 2011 +0900
+
+    Use setup for the preparation of adding more test methods.
+
+ test/unit/bio/db/test_newick.rb |   14 ++++++++++----
+ 1 files changed, 10 insertions(+), 4 deletions(-)
+
+commit e5dc5896a5c6249e2a6cb03d63a3c2ade36b67e7
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 19 21:07:13 2010 +0900
+
+    Ruby 1.9 support: suppressed warning "mismatched indentations"
+
+ test/unit/bio/db/pdb/test_pdb.rb |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 1bce41c7ebed46ac6cf433b047fe6a4c3a538089
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 19 21:05:06 2010 +0900
+
+    Ruby 1.9 support: Suppressed warning "shadowing outer local variable"
+
+ lib/bio/db/pdb/residue.rb |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 0f31727769833ccf9d6891ae192da1bc180223e0
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 19 21:04:07 2010 +0900
+
+    Ruby 1.9 support: Suppressed warning "shadowing outer local variable"
+
+ lib/bio/location.rb |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 70c1135b171fcf47dd9dc1bc396d15d1c3acfa62
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 19 21:02:57 2010 +0900
+
+    Ruby 1.9 support: Suppressed warning "shadowing outer local variable"
+
+ lib/bio/db/pdb/pdb.rb |   14 +++++++-------
+ 1 files changed, 7 insertions(+), 7 deletions(-)
+
+commit a77e4ab78211a85aa052ca6645a2051a4f3b76d8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 19 20:42:22 2010 +0900
+
+    Ruby 1.9 support: use Array#join instead of Array#to_s
+
+ lib/bio/db/pdb/pdb.rb |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 734c2e54613e3ed5efd95e1212feab8f014d5f19
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 19 20:38:11 2010 +0900
+
+    Changed to use assert_instance_of
+    
+     * Changed to use assert_instance_of(klass, obj) instead of
+       assert_equal(klass, obj.class).
+
+ test/unit/bio/db/pdb/test_pdb.rb |   16 ++++++++--------
+ 1 files changed, 8 insertions(+), 8 deletions(-)
+
+commit 490286018c8ce314da441c646ea9c5fb3f765c95
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 19 20:24:36 2010 +0900
+
+    Float::EPSILON was too small for the delta tolerance.
+
+ test/unit/bio/db/pdb/test_pdb.rb |   20 ++++++++++----------
+ 1 files changed, 10 insertions(+), 10 deletions(-)
+
+commit e92d225cadabe63fe23c7c32a4d1d50a371366cc
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 19 20:16:30 2010 +0900
+
+    Ruby 1.9 support: use assert_in_delta
+
+ test/unit/bio/db/pdb/test_pdb.rb |   24 +++++++++++++++---------
+ 1 files changed, 15 insertions(+), 9 deletions(-)
+
+commit 41452971a132ef55de3486022962fa2c333b4c85
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 19 13:19:39 2010 +0900
+
+    Fixed Object#id problem and suppressed warning messages.
+    
+     * Changed not to call nil.id (==4) invoked from chain.id.
+     * Suppressed warning message about useless use of a variable.
+     * Suppressed waring about conflict of IDs when testing
+       addResidue, addLigand and addChain methods.
+
+ test/unit/bio/db/pdb/test_pdb.rb |  119 +++++++++++++++++++-------------------
+ 1 files changed, 59 insertions(+), 60 deletions(-)
+
+commit b4af5826f77002933de9d3c2ddfcc5a7cb5629db
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 17 22:26:26 2010 +0900
+
+    Adjusted copyright line
+
+ test/unit/bio/db/pdb/test_pdb.rb |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 06fd989072b2287a3accbb60684b8a029bfc0ac3
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 17 21:54:05 2010 +0900
+
+    A module name is changed to avoid potential name conflict.
+    
+     * A module name is changed to avoid potential name conflict.
+     * Removed a Shift_JIS character (Zenkaku space) in a comment line.
+
+ test/unit/bio/db/pdb/test_pdb.rb |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 09007f93abe8c9c5e7561f082b55ca307a7d4a1e
+Author: Kazuhiro Hayashi <k.hayashi.info@gmail.com>
+Date:   Thu Jul 15 21:06:28 2010 +0900
+
+    Added more unit tests for Bio::PDB
+    
+     * Added more unit tests for Bio::PDB.
+     * This is part of combinations of the 13 commits:
+       * 555f7b49a43e7c35c82cd48b199af96ca93d4179
+       * 2b5c87a9ada248597e0517e22191bb4c88be2a42
+       * a16e24fa35debdcacd11cf36fdf0e60fe82b3684
+       * e3607c0f7154a4156fd53ed17470aa3628cd2586
+       * 4e74c9107f09c5eb3fc7fc9ec38d9d773fe89367
+       * 605fb0a222f70eeaa1e576d31af484a9a6a2ac27
+       * 2c8b2b5496fee04b886bfcbd11fb99948816cc28
+       * 202cf2b1b57fbcac215aa135cf6343af6a49d2ef
+       * f13c070c763c9035451c3639e6e29c9a156947cd
+       * 843378e608bd1ef27a713d9be2d50f0f56915b0b
+       * a9078b8a586b66d8026af612d9a5999c6c77de33
+       * f0174a8ca3ee136271c51047fce12597d3fbb58c
+       * 6675fd930718e41ad009f469b8167f81c9b2ad52
+
+ test/unit/bio/db/pdb/test_pdb.rb | 3281 +++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 3276 insertions(+), 5 deletions(-)
+
+commit 2f6a1d29b14d89ac39b408582c9865ad06560ae1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Nov 6 00:41:21 2010 +0900
+
+    Adjusted test data file path, required files and header descriptions.
+
+ test/unit/bio/db/test_litdb.rb |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+commit d3394e69c98b3be63c8287af84dc530830fb977a
+Author: Kazuhiro Hayashi <k.hayashi.info@gmail.com>
+Date:   Fri Jun 18 17:11:25 2010 +0900
+
+    added unit test for Bio::LITDB with a sample file
+
+ test/data/litdb/1717226.litdb  |   13 +++++
+ test/unit/bio/db/test_litdb.rb |   95 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 108 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/litdb/1717226.litdb
+ create mode 100644 test/unit/bio/db/test_litdb.rb
+
+commit cef1d2c824f138fe268d20eaa9ffd85223c85ef9
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 5 23:54:31 2010 +0900
+
+    Adjusted test data file path, required files and header descriptions.
+
+ test/unit/bio/db/test_nbrf.rb |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+commit e892e7f9b9b4daadeff44c9e479e6f51f02e383e
+Author: Kazuhiro Hayashi <k.hayashi.info@gmail.com>
+Date:   Fri Jun 25 13:20:46 2010 +0900
+
+    Added unit tests for Bio::NBRF with test data.
+    
+     * Added unit tests for Bio::NBRF with test data.
+     * This is part of combinations of the two commits:
+       * 53873a82182e072e738da20381dcb2bfd8bc9e96
+         (Modified the unit test for Bio::NBRF)
+       * 4675cf85aa9c0b4de9f527f9c6bb80804fdaaaa9
+         (Modified Bio::TestNBRF and Bio::TestTRANSFAC.)
+
+ test/data/pir/CRAB_ANAPL.pir  |    6 +++
+ test/unit/bio/db/test_nbrf.rb |   82 +++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 88 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/pir/CRAB_ANAPL.pir
+ create mode 100644 test/unit/bio/db/test_nbrf.rb
+
+commit 4922d5151138312d5a09ac60a06419c23978ba3c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 5 23:07:13 2010 +0900
+
+    Mock class for testing is moved under the test class
+    
+     * Mock class for testing is moved under the test class, to avoid
+       potential name conflicts.
+
+ test/unit/bio/db/genbank/test_common.rb |   25 ++++++++++++-------------
+ 1 files changed, 12 insertions(+), 13 deletions(-)
+
+commit 8f630700bc6dd8c183d08291c66c665394873586
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 5 23:01:32 2010 +0900
+
+    Adjusted header descriptions.
+
+ test/unit/bio/db/genbank/test_common.rb |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit ab3d6384ca721fb6004efb5988461eecefad4d6b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 5 22:58:21 2010 +0900
+
+    Adjusted test data file path and header descriptions.
+
+ test/unit/bio/db/genbank/test_genpept.rb |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+commit 1d24aecfac9dbc190cdc3eef0956451cc88cfe4f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 5 22:54:19 2010 +0900
+
+    Adjusted test data file path, required files and header descriptions.
+
+ test/unit/bio/db/genbank/test_genbank.rb |   12 ++++++++----
+ 1 files changed, 8 insertions(+), 4 deletions(-)
+
+commit 09275d8661f3d49a7e40be59a086ba33659b2448
+Author: Kazuhiro Hayashi <k.hayashi.info@gmail.com>
+Date:   Thu Jun 17 22:08:15 2010 +0900
+
+    Added unit tests for Bio::GenPept newly.
+    
+     * Added unit tests for Bio::GenPept newly.
+     * This is part of the commit 8e46ff42b627791f259033d5a20c1610e32cfa62
+       (Added unit tests for NBRF and GenPept newly.)
+
+ test/data/genbank/CAA35997.gp            |   48 ++++++++++++++++++
+ test/unit/bio/db/genbank/test_genpept.rb |   81 ++++++++++++++++++++++++++++++
+ 2 files changed, 129 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/genbank/CAA35997.gp
+ create mode 100644 test/unit/bio/db/genbank/test_genpept.rb
+
+commit 2cde22cb358a2b7ec8197866fe35a0b46ebf9b00
+Author: Kazuhiro Hayashi <k.hayashi.info@gmail.com>
+Date:   Thu Jun 24 18:52:37 2010 +0900
+
+    Added unit tests for Bio::NCBIDB::Common
+    
+     * Added unit tests for Bio::NCBIDB::Common.
+     * This is part of combination of the 4 commits:
+       * 7da8d557e8ee53da9d93c6fadfd0d8f493977c81
+         (added test/unit/bio/db/genbank/test_common.rb newly)
+       * 2b5c87a9ada248597e0517e22191bb4c88be2a42
+         (Modified a few lines of Bio::NCBIDB::TestCommon,
+          Bio::TestPDBRecord and Bio::TestPDB)
+       * 10c043535dd7bf5b9682b4060183f494742c53df
+         (Modified unit test for Bio::GenBank::Common)
+       * 0af08fb988e08948a54e33273861b5460b7f6b2d
+         (Modified the unit test for Bio::GenBank)
+
+ test/unit/bio/db/genbank/test_common.rb |  275 +++++++++++++++++++++++++++++++
+ 1 files changed, 275 insertions(+), 0 deletions(-)
+ create mode 100644 test/unit/bio/db/genbank/test_common.rb
+
+commit f775d9b7f7deda2e30d4196d4cf507b59936a654
+Author: Kazuhiro Hayashi <k.hayashi.info@gmail.com>
+Date:   Sat Jun 26 17:54:32 2010 +0900
+
+    Added unit tests for Bio::GenBank with test data.
+    
+     * Added unit tests for Bio::GenBank with test data.
+     * This is part of combination of the two commits:
+       * 555f7b49a43e7c35c82cd48b199af96ca93d4179
+         (added test_genbank.rb and test_go.rb with the test files.
+         modified test_pdb.rb)
+       * a46f895bf378ce08143ff031ddda302f970c270a
+         (Modified Bio::GenBank and Bio::Nexus)
+
+ test/data/genbank/SCU49845.gb            |  167 +++++++++++++
+ test/unit/bio/db/genbank/test_genbank.rb |  397 ++++++++++++++++++++++++++++++
+ 2 files changed, 564 insertions(+), 0 deletions(-)
+ create mode 100644 test/data/genbank/SCU49845.gb
+ create mode 100644 test/unit/bio/db/genbank/test_genbank.rb
+
+commit 33621c1f4c16173efd05861759f577b2c4733a53
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 29 16:45:22 2010 +0900
+
+    Bio::BIORUBY_EXTRA_VERSION is changed to ".5000".
+
+ bioruby.gemspec    |    2 +-
+ lib/bio/version.rb |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit cfb2c744f3762689077f5bf2092f715d25e066ed
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Oct 22 13:02:03 2010 +0900
+
+    BioRuby 1.4.1 is released.
+
+ ChangeLog |   55 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 55 insertions(+), 0 deletions(-)
+
 commit 92cfda14c08b270ed1beca33153125141f88510e
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Fri Oct 22 13:00:09 2010 +0900
