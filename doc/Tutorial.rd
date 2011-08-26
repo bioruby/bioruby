@@ -1400,18 +1400,6 @@ Please refer to KEGG_API.rd.ja (English version: ((<URL:http://www.genome.jp/keg
 
   * ((<URL:http://www.genome.jp/kegg/soap/>))
 
-== Comparing BioProjects
-
-For a quick functional comparison of BioRuby, BioPerl, BioPython and BioConductor (R) see ((<here|URL:http://sciruby.codeforpeople.com/sr.cgi/BioProjects>)).
-
-== Using BioPerl or BioPython from Ruby
-
-At the moment there is no easy way of accessing BioPerl from Ruby. The best way, perhaps, is to create a Perl server that gets accessed through XML/RPC or SOAP.
-
-== Using BioRuby with R
-
-Pjotr wrote a section on SciRuby. See ((<here|URL:http://sciruby.codeforpeople.com/sr.cgi/RubyWithRlang>)).
-
 == Ruby Ensembl API
 
 The Ruby Ensembl API is a Ruby API to the Ensembl database. It is NOT currently
