@@ -47,9 +47,9 @@ Google Summer of Code 2010.
   to get data from "nucleotide" and "protein" database respectively.
   Because NCBI changed not to accept "gb" format for the database
   "sequence", the two new methods are added for convenience.
+* In BioRuby Shell, efetch method uses the above new methods.
 * In GenomeNet remote BLAST execution, database "mine-aa" and "mine-nt"
   with KEGG organism codes are now supported.
-* In BioRuby Shell, efetch method uses the above new methods.
 * Support for Ruby 1.9.2 / 1.9.3 is improved.
 
 == Bug fixes
@@ -76,8 +76,8 @@ Google Summer of Code 2010.
 * Fixed: Bio::FastaFormat#query passes nil to the given factory object.
 * Fixed: In BioRuby Shell, efetch() with no additional arguments fails
   because of the NCBI site changes.
-* Fixed: In BioRuby Shell, getent() fails when EMBOSS seqret does not found.
-* Fixed: In BioRuby SHell, demo() fails due to the above two issues.
+* Fixed: In BioRuby Shell, getent() fails when EMBOSS seqret is not found.
+* Fixed: In BioRuby Shell, demo() fails due to the above two issues.
 
 == Incompatible changes
 
