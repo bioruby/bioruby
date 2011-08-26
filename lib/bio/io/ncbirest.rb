@@ -127,6 +127,7 @@ class REST
   def ncbi_post_form(serv, opts)
     ncbi_check_parameters(opts)
     ncbi_access_wait
+    #$stderr.puts opts.inspect
     response = Bio::Command.post_form(serv, opts)
     response
   end
@@ -485,7 +486,7 @@ class REST
       #  nucleotide = nuccore + nucest + nucgss
       #
       # format (rettype):
-      # * native       all but Gene    Default format for viewing sequences
+      # * native       all but Gene    ASN Default format for viewing sequences
       # * fasta        all sequence    FASTA view of a sequence
       # * gb           NA sequence     GenBank view for sequences
       # * gbc          NA sequence     INSDSeq structured flat file
@@ -536,6 +537,125 @@ class REST
           format = "gbc"
         end
         opts = { "db" => "sequences", "rettype" => format }
+        opts.update(hash)
+        Bio::NCBI::REST.efetch(ids, opts)
+      end
+
+      # Retrieve nucleotide sequence entries by given IDs using E-Utils
+      # (efetch).
+      #
+      # * http://eutils.ncbi.nlm.nih.gov/entrez/query/static/efetchseq_help.html
+      #  nucleotide = nuccore + nucest + nucgss
+      #
+      # format (rettype):
+      # * native       all but Gene    ASN Default format for viewing sequences
+      # * fasta        all sequence    FASTA view of a sequence
+      # * gb           NA sequence     GenBank view for sequences
+      # * gbc          NA sequence     INSDSeq structured flat file
+      # * gbwithparts  NA sequence     GenBank CON division with sequences
+      # * est          dbEST sequence  EST Report
+      # * gss          dbGSS sequence  GSS Report
+      # * gp           AA sequence     GenPept view
+      # * gpc          AA sequence     INSDSeq structured flat file
+      # * seqid        all sequence    Convert GIs into seqids
+      # * acc          all sequence    Convert GIs into accessions
+      # * chr          dbSNP only      SNP Chromosome Report
+      # * flt          dbSNP only      SNP Flat File report
+      # * rsr          dbSNP only      SNP RS Cluster report
+      # * brief        dbSNP only      SNP ID list
+      # * docset       dbSNP only      SNP RS summary
+      #
+      # == Usage
+      #
+      #  Bio::NCBI::REST::EFetch.nucleotide("123,U12345,U12345.1,gb|U12345|")
+      #
+      #  list = [123, "U12345.1", "gb|U12345|"]
+      #  Bio::NCBI::REST::EFetch.nucleotide(list)
+      #  Bio::NCBI::REST::EFetch.nucleotide(list, "fasta")
+      #  Bio::NCBI::REST::EFetch.nucleotide(list, "acc")
+      #  Bio::NCBI::REST::EFetch.nucleotide(list, "xml")
+      #
+      #  Bio::NCBI::REST::EFetch.nucleotide("AE009950")
+      #  Bio::NCBI::REST::EFetch.nucleotide("AE009950", "gbwithparts")
+      #
+      #  ncbi = Bio::NCBI::REST::EFetch.new
+      #  ncbi.nucleotide("123,U12345,U12345.1,gb|U12345|")
+      #  ncbi.nucleotide(list)
+      #  ncbi.nucleotide(list, "fasta")
+      #  ncbi.nucleotide(list, "acc")
+      #  ncbi.nucleotide(list, "xml")
+      #  ncbi.nucleotide("AE009950")
+      #  ncbi.nucleotide("AE009950", "gbwithparts")
+      #
+      # ---
+      #
+      # *Arguments*:
+      # * _ids_: list of NCBI entry IDs (required)
+      # * _format_: "gb", "gbc", "fasta", "acc", "xml" etc.
+      # *Returns*:: String
+      def nucleotide(ids, format = "gb", hash = {})
+        case format
+        when "xml"
+          format = "gbc"
+        end
+        opts = { "db" => "nucleotide", "rettype" => format }
+        opts.update(hash)
+        Bio::NCBI::REST.efetch(ids, opts)
+      end
+
+      # Retrieve protein sequence entries by given IDs using E-Utils
+      # (efetch).
+      #
+      # * http://eutils.ncbi.nlm.nih.gov/entrez/query/static/efetchseq_help.html
+      #  protein
+      #
+      # format (rettype):
+      # * native       all but Gene    ASN Default format for viewing sequences
+      # * fasta        all sequence    FASTA view of a sequence
+      # * gb           NA sequence     GenBank view for sequences
+      # * gbc          NA sequence     INSDSeq structured flat file
+      # * gbwithparts  NA sequence     GenBank CON division with sequences
+      # * est          dbEST sequence  EST Report
+      # * gss          dbGSS sequence  GSS Report
+      # * gp           AA sequence     GenPept view
+      # * gpc          AA sequence     INSDSeq structured flat file
+      # * seqid        all sequence    Convert GIs into seqids
+      # * acc          all sequence    Convert GIs into accessions
+      # * chr          dbSNP only      SNP Chromosome Report
+      # * flt          dbSNP only      SNP Flat File report
+      # * rsr          dbSNP only      SNP RS Cluster report
+      # * brief        dbSNP only      SNP ID list
+      # * docset       dbSNP only      SNP RS summary
+      #
+      # == Usage
+      #
+      #  Bio::NCBI::REST::EFetch.protein("7527480,AAF63163.1,AAF63163")
+      #
+      #  list = [ 7527480, "AAF63163.1", "AAF63163"]
+      #  Bio::NCBI::REST::EFetch.protein(list)
+      #  Bio::NCBI::REST::EFetch.protein(list, "fasta")
+      #  Bio::NCBI::REST::EFetch.protein(list, "acc")
+      #  Bio::NCBI::REST::EFetch.protein(list, "xml")
+      #
+      #  ncbi = Bio::NCBI::REST::EFetch.new
+      #  ncbi.protein("7527480,AAF63163.1,AAF63163")
+      #  ncbi.protein(list)
+      #  ncbi.protein(list, "fasta")
+      #  ncbi.protein(list, "acc")
+      #  ncbi.protein(list, "xml")
+      #
+      # ---
+      #
+      # *Arguments*:
+      # * _ids_: list of NCBI entry IDs (required)
+      # * _format_: "gp", "gpc", "fasta", "acc", "xml" etc.
+      # *Returns*:: String
+      def protein(ids, format = "gp", hash = {})
+        case format
+        when "xml"
+          format = "gpc"
+        end
+        opts = { "db" => "protein", "rettype" => format }
         opts.update(hash)
         Bio::NCBI::REST.efetch(ids, opts)
       end
