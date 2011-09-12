@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.4.2"
+  s.version = "1.4.2.5000"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -33,12 +33,14 @@ Gem::Specification.new do |s|
     "bioruby.gemspec",
     "bioruby.gemspec.erb",
     "doc/ChangeLog-before-1.3.1",
+    "doc/ChangeLog-before-1.4.2",
     "doc/Changes-0.7.rd",
     "doc/Changes-1.3.rdoc",
     "doc/KEGG_API.rd",
     "doc/KEGG_API.rd.ja",
     "doc/RELEASE_NOTES-1.4.0.rdoc",
     "doc/RELEASE_NOTES-1.4.1.rdoc",
+    "doc/RELEASE_NOTES-1.4.2.rdoc",
     "doc/Tutorial.rd",
     "doc/Tutorial.rd.html",
     "doc/Tutorial.rd.ja",
@@ -304,7 +306,6 @@ Gem::Specification.new do |s|
     "lib/bio/util/restriction_enzyme/string_formatting.rb",
     "lib/bio/util/sirna.rb",
     "lib/bio/version.rb",
-    "rdoc.zsh",
     "sample/any2fasta.rb",
     "sample/biofetch.rb",
     "sample/color_scheme_na.rb",
@@ -641,12 +642,14 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = [ 
     "ChangeLog",
     "KNOWN_ISSUES.rdoc",
+    "LEGAL",
     "README.rdoc",
     "README_DEV.rdoc",
     "RELEASE_NOTES.rdoc",
     "doc/Changes-1.3.rdoc",
     "doc/RELEASE_NOTES-1.4.0.rdoc",
-    "doc/RELEASE_NOTES-1.4.1.rdoc"
+    "doc/RELEASE_NOTES-1.4.1.rdoc",
+    "doc/RELEASE_NOTES-1.4.2.rdoc"
   ]
   s.rdoc_options << '--main' << 'README.rdoc'
   s.rdoc_options << '--title' << 'BioRuby API documentation'
