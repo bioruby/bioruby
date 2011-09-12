@@ -141,3 +141,12 @@ task :retutorial2html do
   end
 end
 
+# ChangeLog
+desc "Force update ChangeLog using git log"
+task :rechangelog do
+  # The tag name in the command line should be changed
+  # after releasing new version, updating ChangeLog,
+  # and doing "git mv ChangeLog doc/ChangeLog-X.X.X".
+  sh "git log --stat --summary 1.4.2..HEAD > ChangeLog"
+end
+
