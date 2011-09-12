@@ -1,3 +1,12 @@
+commit 510dc41f32a72b86df1aa9021de140a64e6393de
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 26 15:03:14 2011 +0900
+
+    BioRuby 1.4.2 is released.
+
+ ChangeLog |  954 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 954 insertions(+), 0 deletions(-)
+
 commit 3acc1e098839cacbe85b5c23367ab14e0c4fe3ea
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Fri Aug 26 15:01:49 2011 +0900
