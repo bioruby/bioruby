@@ -2,6 +2,7 @@
 
 Copyright::  Copyright (C) 2005, 2006 Toshiaki Katayama <k@bioruby.org>
 Copyright::  Copyright (C) 2006, 2008 Jan Aerts <jandot@bioruby.org>
+Copyright::  Copyright (C) 2011       Naohisa Goto <ng@bioruby.org>
 
 = HOW TO CONTRIBUTE TO THE BIORUBY PROJECT?
 
@@ -13,8 +14,9 @@ such as:
 * Add and correct documentation
 * Develop code for new features, etc.
 
-All of these are welcome!  However, this document describes the last option,
-how to contribute your code to the BioRuby distribution.
+All of these are welcome!  This document mainly focuses on the last option,
+how to contribute your code to the BioRuby distribution. This may also be
+helpful when you send large patches for existing codes.
 
 We would like to include your contribution as long as the scope of
 your module meets the field of bioinformatics.
@@ -24,6 +26,46 @@ your module meets the field of bioinformatics.
 Bioruby is now under git source control at http://github.com/bioruby/bioruby. 
 There are two basic ways to contribute: with patches or pull requests. Both are
 explained on the bioruby wiki at http://bioruby.open-bio.org/wiki.
+
+=== Preparation before sending patches or pull requests
+
+Before sending patches or pull requests, rewriting history and reordering or
+selecting patches are recommended. See "Creating the perfect patch series"
+in the Git User's Manual.
+http://www.kernel.org/pub/software/scm/git/docs/user-manual.html#patch-series
+
+=== Sending your contribution
+
+==== With patches
+
+You can send patches with git-format-patch. For a smaller change, unified
+diff (diff -u) without using git can also be accepted.
+
+==== With pull requests
+
+We are happy if your commits can be pulled with fast-forward. For the purpose,
+using git-rebase before sending pull request is recommended. See "Keeping a
+patch series up to date using git rebase" in the Git User's Manual.
+http://www.kernel.org/pub/software/scm/git/docs/user-manual.html#using-git-rebase
+
+=== Notes for the treatment of contributions in the blessed repository
+
+==== Merging policy
+
+We do not always merge your commits as is.  We may edit, rewrite, reorder,
+select, and/or mix your commits before and/or after merging to the blessed
+repository.
+
+==== Git commit management policy
+
+We want to keep the commit history linear as far as possible, because it is
+easy to find problems and regressions in commits.  See "Why bisecting merge
+commits can be harder than bisecting linear history" in the Git User's Manual.
+http://www.kernel.org/pub/software/scm/git/docs/user-manual.html#bisect-merges
+
+Note that the above policy is only for the main 'blessed' repository, and it
+does not aim to restrict each user's fork.
+
 
 = LICENSE
 
@@ -49,6 +91,11 @@ You will need to follow the typical coding styles of the BioRuby modules:
 
 * Use 2 spaces for indentation.
 * Don't replace spaces to tabs.
+
+== Parenthesis in the method definition line should be written
+
+* Good: <tt>def example(str, ary)</tt>
+* Discouraged: <tt>def example str, ary</tt>
 
 == Comments
 
@@ -202,6 +249,24 @@ format of this information is as follows:
 
 Attribute accessors can be preceded by a short description.
 
+  # P-value (Float)
+  attr_reader :pvalue
+
+For writing rdoc documentation, putting two or more attributes in a line
+(such as <tt>attr_reader :evalue, :pvalue</tt>) is strongly discouraged.
+
+Methods looks like attributes can also be preceded by a short description.
+
+  # Scientific name (String)
+  def scientific_name
+    #...
+  end
+
+  # Scientific name (String)
+  def scientific_name=(str)
+    #...
+  end
+
 == Exception handling
 
 Don't use
@@ -210,6 +275,12 @@ Don't use
 
 in your code. Instead, try to avoid printing error messages. For fatal errors,
 use +raise+ with an appropriate message.
+
+Kernel#warn can only be used to notice incompatible changes to programmers.
+Typically it may be used for deprecated or obsolete usage of a method.
+For example,
+
+  warn "The Foo#bar method is obsoleted. Use Foo#baz instead."
 
 == Testing code should use 'test/unit'
 
@@ -283,3 +354,23 @@ a new module or making changes on existing modules.
 Finally, please maintain the code you've contributed. Please let us know (on 
 the bioruby list) before you commit, so that users can discuss on the change.
 
+= RUBY VERSION and IMPLEMENTATION
+
+We are mainly using Ruby MRI (Matz' Ruby Implementation, or Matz' Ruby
+Interpreter).  Please confirm that your code is running on current stable
+release versions of Ruby MRI.
+
+We are very happy if your code can run on both Ruby 1.8.x and 1.9.x.
+Note that Ruby 1.9.0 should be ignored because it was discontinued.
+Ruby 1.8.5 or earlier versions can also be ignored. See README.rdoc and
+RELEASE_NOTES.rdoc for recommended Ruby versions.
+
+It is welcome to support JRuby, Rubinius, etc, in addition to Ruby MRI.
+
+Of course, it is strongly encouraged to write code that is not affected by
+differences between Ruby versions and/or implementations, as far as possible.
+
+= OS and ARCHITECTURE
+
+We hope BioRuby can be run on both UNIX (and UNIX-like OS) and Microsoft
+Windows.
