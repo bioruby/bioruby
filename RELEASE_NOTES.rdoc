@@ -28,7 +28,11 @@ For known problems, see KNOWN_ISSUES.rdoc.
 * Fixed: (...)
 * Fixed: (...)
 
-== Incompatible changes
+== Incompatible changes and removed features
+
+=== BioRuby development
+
+* rdoc.zsh is removed because it have not been used for a long time.
 
 === (tbd)
 
