@@ -407,6 +407,20 @@ class Fastq
   # raw sequence data as a String object
   attr_reader :sequence_string
 
+  # Returns Fastq formatted string constructed from instance variables.
+  # The string will always be consisted of four lines without wrapping of
+  # the sequence and quality string, and the third-line is always only
+  # contains "+". This may be different from initial entry.
+  #
+  # Note that use of the method may be inefficient and may lose performance
+  # because new string object is created every time it is called.
+  # For showing an entry as-is, consider using Bio::FlatFile#entry_raw.
+  # For output with various options, use Bio::Sequence#output(:fastq).
+  #
+  def to_s
+    "@#{@definition}\n#{@sequence_string}\n+\n#{@quality_string}\n"
+  end
+
   # returns Bio::Sequence::NA
   def naseq
     unless defined? @naseq then

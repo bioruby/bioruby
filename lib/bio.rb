@@ -82,6 +82,7 @@ module Bio
   ## below are described in bio/db/genbank/ddbj.rb
   #class DDBJ
   #  autoload :XML,          'bio/io/ddbjxml'
+  #  autoload :REST,         'bio/io/ddbjrest'
   #end
 
   ## EMBL/TrEMBL/Swiss-Prot/SPTR

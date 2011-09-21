@@ -96,9 +96,9 @@ module Bio
         @sort = "sort"
         @data = @data.join("\r\n") + "\r\n"
       else
-        @sort = "/usr/bin/sort"
-        unless FileTest.executable?(@sort) then
-          raise "Unsupported environment: /usr/bin/sort not found"
+        @sort = `which sort`.chomp
+        if @sort.empty? or !FileTest.executable?(@sort) then
+          raise "Unsupported environment: sort not found in PATH"
         end
         @data = @data.join("\n") + "\n"
       end

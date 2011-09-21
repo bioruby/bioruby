@@ -31,7 +31,11 @@ module Bio::Shell
   # Otherwise, it acts the same as Bio::NCBI::REST.efetch.
   def efetch(ids, *arg)
     if arg.empty? then
-      Bio::NCBI::REST::EFetch.sequence(ids)
+      ret = Bio::NCBI::REST::EFetch.nucleotide(ids)
+      unless /^LOCUS       / =~ ret.to_s then
+        ret = Bio::NCBI::REST::EFetch.protein(ids)
+      end
+      ret
     elsif arg[0].kind_of?(Symbol)
       meth = arg[0]
       case meth.to_s
