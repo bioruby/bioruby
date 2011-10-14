@@ -40,7 +40,7 @@ bioruby> $: << '../lib'  # make sure rubydoctest finds bioruby/lib
 * Copyright (C) 2001-2003 KATAYAMA Toshiaki <k .at. bioruby.org>
 * Copyright (C) 2005-2011 Pjotr Prins, Naohisa Goto and others
 
-This document was last modified: 2011/03/24
+This document was last modified: 2011/10/14
 Current editor: Michael O'Keefe <okeefm (at) rpi (dot) edu>
 
 The latest version resides in the GIT source code repository:  ./doc/((<Tutorial.rd|URL:https://github.com/bioruby/bioruby/blob/master/doc/Tutorial.rd>)).
@@ -62,7 +62,7 @@ version it has with the
 
 command. You should see something like:
 
-  ruby 1.8.7 (2008-08-11 patchlevel 72) [i486-linux]
+  ruby 1.9.2p290 (2011-07-09 revision 32553) [i686-linux]
 
 If you see no such thing you'll have to install Ruby using your installation
 manager. For more information see the
@@ -1430,7 +1430,9 @@ homologues.
 
 == Using BioPerl or BioPython from Ruby
 
-At the moment there is no easy way of accessing BioPerl from Ruby. The best way, perhaps, is to create a Perl server that gets accessed through XML/RPC or SOAP.
+A possible route is to opt for JRuby and Jython on the JAVA virtual machine (JVM).
+
+At the moment there is no easy way of accessing BioPerl or BioPython directly from Ruby. A possibility is to create a Perl or Python server that gets accessed through XML/RPC or SOAP.
 
 == Installing required external libraries
 
