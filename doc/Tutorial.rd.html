@@ -1119,17 +1119,24 @@ source code by clicking on class and method names. </p>
 rtags -R --vi</pre>
 <p>For a tutorial see <a href="http://rtags.rubyforge.org/">here</a></p>
 <h1><a name="label-34" id="label-34">APPENDIX</a></h1><!-- RDLabel: "APPENDIX" -->
-<h2><a name="label-35" id="label-35">KEGG API</a></h2><!-- RDLabel: "KEGG API" -->
+<h2><a name="label-35" id="label-35">Biogem: Additional BioRuby plugins</a></h2><!-- RDLabel: "Biogem: Additional BioRuby plugins" -->
+<p>Biogem is one of the exciting developments for Ruby in bioinformatics! Biogems
+add new functionality next to the BioRuby core project (BioRuby is a biogem itself). A biogem is simply installed with </p>
+<pre>gem install bio                 # The core BioRuby gem
+gem install bio-core            # BioRuby + stable pure Ruby biogems
+gem install bio-core-ext        # bio-core + stable Ruby extensions</pre>
+<p>Information on these biogems, and the many others available, see <a href="http://biogems.info/">Biogems.info</a> or <a href="http://gems.bioruby.org/">gems.bioruby.org</a>.</p>
+<h2><a name="label-36" id="label-36">KEGG API</a></h2><!-- RDLabel: "KEGG API" -->
 <p>Please refer to KEGG_API.rd.ja (English version: <a href="http://www.genome.jp/kegg/soap/doc/keggapi_manual.html">&lt;URL:http://www.genome.jp/kegg/soap/doc/keggapi_manual.html&gt;</a> ) and</p>
 <ul>
 <li><a href="http://www.genome.jp/kegg/soap/">&lt;URL:http://www.genome.jp/kegg/soap/&gt;</a></li>
 </ul>
-<h2><a name="label-36" id="label-36">Ruby Ensembl API</a></h2><!-- RDLabel: "Ruby Ensembl API" -->
+<h2><a name="label-37" id="label-37">Ruby Ensembl API</a></h2><!-- RDLabel: "Ruby Ensembl API" -->
 <p>The Ruby Ensembl API is a Ruby API to the Ensembl database. It is NOT currently
 included in the BioRuby archives. To install it, see
 <a href="http://wiki.github.com/jandot/ruby-ensembl-api">the Ruby-Ensembl Github</a>
 for more information.</p>
-<h3><a name="label-37" id="label-37">Gene Ontology (GO) through the Ruby Ensembl API</a></h3><!-- RDLabel: "Gene Ontology (GO) through the Ruby Ensembl API" -->
+<h3><a name="label-38" id="label-38">Gene Ontology (GO) through the Ruby Ensembl API</a></h3><!-- RDLabel: "Gene Ontology (GO) through the Ruby Ensembl API" -->
 <p>Gene Ontologies can be fetched through the Ruby Ensembl API package:</p>
 <pre>require 'ensembl'
 Ensembl::Core::DBConnection.connect('drosophila_melanogaster')
@@ -1146,10 +1153,10 @@ infile.each do |line|
 end</pre>
 <p>Prints each mosq. accession/uniq identifier and the GO terms from the Drosphila
 homologues.</p>
-<h2><a name="label-38" id="label-38">Using BioPerl or BioPython from Ruby</a></h2><!-- RDLabel: "Using BioPerl or BioPython from Ruby" -->
+<h2><a name="label-39" id="label-39">Using BioPerl or BioPython from Ruby</a></h2><!-- RDLabel: "Using BioPerl or BioPython from Ruby" -->
 <p>A possible route is to opt for JRuby and Jython on the JAVA virtual machine (JVM).</p>
 <p>At the moment there is no easy way of accessing BioPerl or BioPython directly from Ruby. A possibility is to create a Perl or Python server that gets accessed through XML/RPC or SOAP.</p>
-<h2><a name="label-39" id="label-39">Installing required external libraries</a></h2><!-- RDLabel: "Installing required external libraries" -->
+<h2><a name="label-40" id="label-40">Installing required external libraries</a></h2><!-- RDLabel: "Installing required external libraries" -->
 <p>At this point for using BioRuby no additional libraries are needed, except if
 you are using the Bio::PhyloXML module; then you have to install libxml-ruby.</p>
 <p>This may change, so keep an eye on the Bioruby website. Also when
@@ -1158,20 +1165,20 @@ a package is missing BioRuby should show an informative message.</p>
 painful, as the gem standard for packages evolved late and some still
 force you to copy things by hand. Therefore read the README's
 carefully that come with each package.</p>
-<h3><a name="label-40" id="label-40">Installing libxml-ruby</a></h3><!-- RDLabel: "Installing libxml-ruby" -->
+<h3><a name="label-41" id="label-41">Installing libxml-ruby</a></h3><!-- RDLabel: "Installing libxml-ruby" -->
 <p>The simplest way is to use the RubyGems packaging system:</p>
 <pre>gem install -r libxml-ruby</pre>
 <p>If you get `require': no such file to load - mkmf (LoadError) error then do</p>
 <pre>sudo apt-get install ruby-dev</pre>
 <p>If you have other problems with installation, then see <a href="http://libxml.rubyforge.org/install.xml">&lt;URL:http://libxml.rubyforge.org/install.xml&gt;</a>.</p>
-<h2><a name="label-41" id="label-41">Trouble shooting</a></h2><!-- RDLabel: "Trouble shooting" -->
+<h2><a name="label-42" id="label-42">Trouble shooting</a></h2><!-- RDLabel: "Trouble shooting" -->
 <ul>
 <li>Error: in `require': no such file to load -- bio (LoadError)</li>
 </ul>
 <p>Ruby is failing to find the BioRuby libraries - add it to the RUBYLIB path, or pass
 it to the interpeter. For example:</p>
 <pre>ruby -I$BIORUBYPATH/lib yourprogram.rb</pre>
-<h2><a name="label-42" id="label-42">Modifying this page</a></h2><!-- RDLabel: "Modifying this page" -->
+<h2><a name="label-43" id="label-43">Modifying this page</a></h2><!-- RDLabel: "Modifying this page" -->
 <p>IMPORTANT NOTICE: This page is maintained in the BioRuby source code 
 repository. Please edit the file there otherwise changes may get
 lost. See <!-- Reference, RDLabel "BioRuby Developer Information" doesn't exist --><em class="label-not-found">BioRuby Developer Information</em><!-- Reference end --> for repository and mailing list
