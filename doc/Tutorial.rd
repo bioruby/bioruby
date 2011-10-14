@@ -1394,6 +1394,22 @@ For a tutorial see ((<here|URL:http://rtags.rubyforge.org/>))
 
 = APPENDIX
 
+== Biogem: Additional BioRuby plugins
+
+Biogem is one of the exciting developments for Ruby in bioinformatics! Biogems
+add new functionality next to the BioRuby core project (BioRuby is a biogem itself). A biogem is simply installed with 
+
+  gem install bio                 # The core BioRuby gem
+  gem install bio-core            # BioRuby + stable pure Ruby biogems
+  gem install bio-core-ext        # bio-core + stable Ruby extensions
+
+Information on these biogems, and the many others available, see ((<Biogems.info|URL:http://biogems.info/>)) or ((<gems.bioruby.org|URL:http://gems.bioruby.org/>)).
+
+
+
+
+
+
 == KEGG API
 
 Please refer to KEGG_API.rd.ja (English version: ((<URL:http://www.genome.jp/kegg/soap/doc/keggapi_manual.html>)) ) and
