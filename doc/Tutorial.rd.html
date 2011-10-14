@@ -4,7 +4,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>doc/Tutorial.rd</title>
+<title>Tutorial.rd</title>
 <link href="bioruby.css" type="text/css" rel="stylesheet" />
 </head>
 <body>
@@ -13,7 +13,7 @@
 <li>Copyright (C) 2001-2003 KATAYAMA Toshiaki &lt;k .at. bioruby.org&gt;</li>
 <li>Copyright (C) 2005-2011 Pjotr Prins, Naohisa Goto and others</li>
 </ul>
-<p>This document was last modified: 2011/03/24
+<p>This document was last modified: 2011/10/14
 Current editor: Michael O'Keefe &lt;okeefm (at) rpi (dot) edu&gt;</p>
 <p>The latest version resides in the GIT source code repository:  ./doc/<a href="https://github.com/bioruby/bioruby/blob/master/doc/Tutorial.rd">Tutorial.rd</a>.</p>
 <h2><a name="label-1" id="label-1">Introduction</a></h2><!-- RDLabel: "Introduction" -->
@@ -27,7 +27,7 @@ by Dave Thomas and Andy Hunt - the first edition can be read online
 version it has with the</p>
 <pre>% ruby -v</pre>
 <p>command. You should see something like:</p>
-<pre>ruby 1.8.7 (2008-08-11 patchlevel 72) [i486-linux]</pre>
+<pre>ruby 1.9.2p290 (2011-07-09 revision 32553) [i686-linux]</pre>
 <p>If you see no such thing you'll have to install Ruby using your installation
 manager. For more information see the
 <a href="http://www.ruby-lang.org/en/">Ruby</a> website.</p>
@@ -1147,7 +1147,8 @@ end</pre>
 <p>Prints each mosq. accession/uniq identifier and the GO terms from the Drosphila
 homologues.</p>
 <h2><a name="label-38" id="label-38">Using BioPerl or BioPython from Ruby</a></h2><!-- RDLabel: "Using BioPerl or BioPython from Ruby" -->
-<p>At the moment there is no easy way of accessing BioPerl from Ruby. The best way, perhaps, is to create a Perl server that gets accessed through XML/RPC or SOAP.</p>
+<p>A possible route is to opt for JRuby and Jython on the JAVA virtual machine (JVM).</p>
+<p>At the moment there is no easy way of accessing BioPerl or BioPython directly from Ruby. A possibility is to create a Perl or Python server that gets accessed through XML/RPC or SOAP.</p>
 <h2><a name="label-39" id="label-39">Installing required external libraries</a></h2><!-- RDLabel: "Installing required external libraries" -->
 <p>At this point for using BioRuby no additional libraries are needed, except if
 you are using the Bio::PhyloXML module; then you have to install libxml-ruby.</p>
