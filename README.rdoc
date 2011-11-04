@@ -115,38 +115,55 @@ and can be obtained by the following procedure:
 == REQUIREMENTS
 
 * Ruby 1.8.6 or later (except Ruby 1.9.0) -- http://www.ruby-lang.org/
-  * Ruby 1.8.7-p352 or later is recommended.
-  * Not yet fully ready with Ruby 1.9, although many components can now work
-    in Ruby 1.9.1 and Ruby 1.9.2.
+  * Ruby 1.9.3-p0 or later, Ruby 1.9.2-p290 or later, or Ruby 1.8.7-p352 or
+    later is recommended.
+  * See KNOWN_ISSUES.rdoc for Ruby version specific problems.
 
 
 == OPTIONAL REQUIREMENTS
 
 Some optional libraries can be utilized to extend BioRuby's functionality.
-If your needs meets the following conditions, install them from the "Ruby
-Application Archive" at http://raa.ruby-lang.org/, RubyForge at
-http://rubyforge.org/, or the following web sites.
+If your needs meets the following conditions, install them by using RubyGems,
+or download and install from the "Ruby Application Archive" (RAA) at
+http://raa.ruby-lang.org/, RubyForge at http://rubyforge.org/, GitHub at
+http://github.com/, or the following web sites.
 
 For faster parsing of the BLAST XML output format:
 
 * {RAA:xmlparser}[http://raa.ruby-lang.org/project/xmlparser/]
+  * For Ruby 1.8: {gem install xmlparser}[http://rubygems.org/gems/xmlparser]
+  * For Ruby 1.9: http://www.yoshidam.net/Ruby.html#xmlparser
+  * In both cases, {The Expat XML Parser}[http://expat.sourceforge.net/]
+    and C compiler will be required.
 
 Creating faster flatfile index using Berkley DB:
 
-* {RAA:bdb}[http://raa.ruby-lang.org/project/bdb/]
-
+* {GitHub:ruby-bdb}[https://github.com/knu/ruby-bdb]
+  (which took over {RAA:bdb}[http://raa.ruby-lang.org/project/bdb/])
+  (No RubyGems available)
+  * {Oracle Berkeley DB}[http://www.oracle.com/technetwork/database/berkeleydb/index.html] and C compiler will be required.
+  
 Accessing BioSQL database created by other Open Bio* libraries:
 
-* {RubyForge:ActiveRecord}[http://rubyforge.org/projects/activerecord/]
-  and at least one driver (or adapter) from
-  {RubyForge:MySQL/Ruby}[http://rubyforge.org/projects/mysql-ruby/],
-  {RubyForge:postgres-pr}[http://rubyforge.org/projects/postgres-pr], or
-  {RubyForge:ActiveRecord Oracle enhanced adapter}[http://rubyforge.org/projects/oracle-enhanced/].
+* {gem install activerecord}[http://rubygems.org/gems/activerecord]
+  and at least one driver (or adapter):
+  * {gem install mysql}[http://rubygems.org/gems/mysql] or
+    {gem install mysql2}[http://rubygems.org/gems/mysql2]
+  * {gem install pg}[http://rubygems.org/gems/pg]
+  * {gem install sqlite-ruby}[http://rubygems.org/gems/sqlite-ruby] or
+    {gem install sqlite3}[http://rubygems.org/gems/sqlite3]
+  * {gem install activerecord-oracle_enhanced-adapter}[http://rubygems.org/gems/activerecord-oracle_enhanced-adapter]
 
 For parsing PhyloXML format files:
 
-* {RubyForge:libxml-ruby}[http://libxml.rubyforge.org/] (Ruby language
-  bindings for the {GNOME Libxml2 XML toolkit}[http://xmlsoft.org/])
+* {gem install libxml-ruby}[http://rubygems.org/gems/libxml-ruby]
+  * {GNOME Libxml2 XML toolkit}[http://xmlsoft.org/] and C compiler will be
+    required.
+
+(Only for Ruby 1.9.x) For using SOAP web services e.g. KEGG API:
+
+* {gem install soap4r-ruby1.9}[https://rubygems.org/gems/soap4r-ruby1.9]
+  * For Ruby 1.8.x, SOAP4R is bundled within the Ruby 1.8.x release.
 
 
 == INSTALL
@@ -303,6 +320,7 @@ publication.
   Bioinformatics (2010) 26(20): 2617-2619.
   * {doi: 10.1093/bioinformatics/btq475}[http://bioinformatics.oxfordjournals.org/content/26/20/2617]
   * {PMID: 20739307}[http://www.ncbi.nlm.nih.gov/pubmed/20739307]
+
 
 == CONTACT
 
