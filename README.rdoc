@@ -292,6 +292,18 @@ under different license. For example, setup.rb which comes from
 (http://i.loveruby.net/en/projects/setup/) is licensed under LGPL 2.1.
 
 
+== REFERENCE
+
+If you use BioRuby in academic research, please consider citing the following
+publication.
+
+* BioRuby: Bioinformatics software for the Ruby programming language.
+  Naohisa Goto, Pjotr Prins, Mitsuteru Nakao, Raoul Bonnal, Jan Aerts and 
+  Toshiaki Katayama.
+  Bioinformatics (2010) 26(20): 2617-2619.
+  * {doi: 10.1093/bioinformatics/btq475}[http://bioinformatics.oxfordjournals.org/content/26/20/2617]
+  * {PMID: 20739307}[http://www.ncbi.nlm.nih.gov/pubmed/20739307]
+
 == CONTACT
 
 Current staff of the BioRuby project can be reached by sending e-mail
