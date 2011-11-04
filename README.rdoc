@@ -188,15 +188,44 @@ The options "config", "setup", and "install" are still available.
   % su
   # ruby setup.rb install
 
-You can run tests by
-
-  % ruby setup.rb test
-
-and run
+You can run
 
   % ruby setup.rb --help
 
 for more details.
+
+
+=== Running self-test
+
+To check if bioruby works fine on a machine, self-test codes are bundled.
+Note that some tests may need internet connection.
+
+To run tests,
+
+ % ruby test/runner.rb
+
+If you are using Ruby 1.8.x and you want to use components installed by using
+RubyGems, explicit loading of RubyGems may be needed.
+
+ % ruby -rubygems test/runner.rb
+
+Alternatively, testrb, the test runner command of ruby, can be used.
+
+ % testrb test/
+
+With testrb, you can select tests to run, for example,
+
+ % testrb test/unit
+
+For those familiar with Rake,
+
+ % rake test
+
+also works.
+
+Before reporting test failure, please check KNOWN_ISSUES.rdoc about known
+platform-dependent issues.  We are happy if you write patches to solve the
+issues.
 
 
 == SETUP
