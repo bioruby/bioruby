@@ -116,12 +116,12 @@ module Bio
       filename = @writeto.file("test2.xml")
       writer = Bio::PhyloXML::Writer.new(filename)
       
-      tree = Bio::PhyloXML::Parser.open(TestPhyloXMLWriterData.mollusca_short_xml).next_tree
+      tree = Bio::PhyloXML::Parser.open(TestPhyloXMLWriterData.mollusca_short_xml) { |px| px.next_tree }
       
       writer.write(tree)
 
       assert_nothing_thrown do
-        Bio::PhyloXML::Parser.open(filename)
+        Bio::PhyloXML::Parser.open(filename) { |px| true }
       end
 
       #File.delete(filename)
@@ -145,7 +145,7 @@ module Bio
       tree.add_edge(root_node, node2)
       writer.write(tree)
       
-      lines = File.open(filename).readlines()
+      lines = File.readlines(filename)
       assert_equal("<phyloxml xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"http://www.phyloxml.org http://www.phyloxml.org/1.10/phyloxml.xsd\" xmlns=\"http://www.phyloxml.org\">",
                     lines[1].chomp)
       assert_equal("  <phylogeny rooted=\"true\">", lines[2].chomp)
@@ -164,7 +164,7 @@ module Bio
     end
 
     def test_phyloxml_examples_tree1
-      tree = Bio::PhyloXML::Parser.open(TestPhyloXMLWriterData.example_xml).next_tree
+      tree = Bio::PhyloXML::Parser.open(TestPhyloXMLWriterData.example_xml) { |px| px.next_tree }
 
       filename = @writeto.file('example_tree1.xml')
       writer = Bio::PhyloXML::Writer.new(filename)
@@ -172,7 +172,7 @@ module Bio
       writer.write(tree)
 
       assert_nothing_thrown do
-        tree2  = Bio::PhyloXML::Parser.open(filename)
+        tree2  = Bio::PhyloXML::Parser.open(filename) { |px| true }
       end
 
       #File.delete(filename)
@@ -185,13 +185,14 @@ module Bio
       2.times do
         @tree = phyloxml.next_tree
       end
+      phyloxml.close
       
       filename = @writeto.file('example_tree2.xml')
       writer = Bio::PhyloXML::Writer.new(filename)
       writer.write(@tree)
 
       assert_nothing_thrown do
-        tree2  = Bio::PhyloXML::Parser.open(filename)
+        tree2  = Bio::PhyloXML::Parser.open(filename) { |px| true }
       end
       
       #File.delete(filename)
@@ -202,12 +203,13 @@ module Bio
       4.times do
         @tree = phyloxml.next_tree
       end
+      phyloxml.close
       #@todo tree = phyloxml[4]
       filename = @writeto.file('example_tree4.xml')
       writer = Bio::PhyloXML::Writer.new(filename)
       writer.write(@tree)
       assert_nothing_thrown do
-        @tree2 = Bio::PhyloXML::Parser.open(filename).next_tree
+        @tree2 = Bio::PhyloXML::Parser.open(filename) { |px| px.next_tree }
       end
       assert_equal(@tree.name, @tree2.name)
       assert_equal(@tree.get_node_by_name('A').taxonomies[0].scientific_name, @tree2.get_node_by_name('A').taxonomies[0].scientific_name)
@@ -224,6 +226,7 @@ module Bio
       phyloxml.each do |tree|
         writer.write(tree)
       end
+      phyloxml.close
 
       assert_nothing_thrown do
         @phyloxml_test = Bio::PhyloXML::Parser.open(filename)
@@ -232,6 +235,8 @@ module Bio
       5.times do
         @tree = @phyloxml_test.next_tree
       end
+
+      @phyloxml_test.close
 
       assert_equal("x", @tree.sequence_relations[0].id_ref_0)
       assert_equal("z", @tree.sequence_relations[1].id_ref_1)
@@ -285,7 +290,7 @@ module Bio
       Bio::PhyloXML::Writer.new(filename).write(tree)
 
       assert_nothing_thrown do
-        Bio::PhyloXML::Parser.open(filename).next_tree
+        Bio::PhyloXML::Parser.open(filename) { |px| px.next_tree }
       end
 
       #File.delete(filename)
@@ -302,7 +307,7 @@ module Bio
       writer.write_other(phyloxml.other)
 
       assert_nothing_thrown do
-        Bio::PhyloXML::Parser.open(filename)
+        Bio::PhyloXML::Parser.open(filename) { |px| true }
       end
       # The output file is not deleted since it might be used in the phyloxml
       # parser test. But since the order of tests can't be assumed, I can't
@@ -319,6 +324,7 @@ module Bio
       phyloxml.each do |tree|
         writer.write(tree)
       end      
+      phyloxml.close
     end
 
   end
