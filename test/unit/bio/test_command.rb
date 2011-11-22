@@ -21,6 +21,11 @@ require 'bio/command'
 
 module Bio
   class TestCommand < Test::Unit::TestCase
+
+    def windows_platform?
+      Bio::Command.module_eval { windows_platform? }
+    end
+    private :windows_platform?
     
     def test_command_constants
       assert(Bio::Command::UNSAFE_CHARS_UNIX)
@@ -51,8 +56,8 @@ module Bio
       assert_equal("bio_ruby.123@456:789",
                    Bio::Command.escape_shell(str))
       str = "bio\'\"r u\"b\\y123@456:789"
-      case RUBY_PLATFORM
-      when /mswin32|bccwin32/
+      if windows_platform?
+        # mswin32, bccwin32, mingw32, etc.
         assert_equal("\"bio'\"\"r u\"\"b\\y123@456:789\"",
                      Bio::Command.escape_shell(str))
       else
@@ -64,8 +69,8 @@ module Bio
     def test_make_command_line
       ary = [ "ruby", 
         "test.rb", "atgcatgc", "bio\'\"r u\"b\\y123@456:789" ]
-      case RUBY_PLATFORM
-      when /mswin32|bccwin32/
+      if windows_platform?
+        # mswin32, bccwin32, mingw32, etc.
         assert_equal("ruby" + 
                        " test.rb atgcatgc" + 
                        " \"bio'\"\"r u\"\"b\\y123@456:789\"",
