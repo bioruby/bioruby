@@ -191,6 +191,7 @@ module Bio::TestFlatFileBufferedInputStream
   class TestBufferedInputStream < Test::Unit::TestCase
     def setup
       io = File.open(TestDataFastaFormat01)
+      io.binmode
       path = TestDataFastaFormat01
       @obj = Bio::FlatFile::BufferedInputStream.new(io, path)
     end

@@ -26,6 +26,7 @@ module TestRPSBlast
   class TestRPSBlastSplitter < Test::Unit::TestCase
     def setup
       @io = File.open(TestFileName)
+      @io.binmode
       @bstream = Bio::FlatFile::BufferedInputStream.new(@io, TestFileName)
       @klass = Bio::Blast::RPSBlast::Report
       @splitter = Bio::Blast::RPSBlast::RPSBlastSplitter.new(@klass, @bstream)
