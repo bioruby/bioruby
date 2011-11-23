@@ -378,20 +378,4 @@ module Bio
     end
   end #class FuncTestCommandTmpdir
 
-  class FuncTestCommandNet < Test::Unit::TestCase
-    def test_read_uri
-      assert_nothing_raised {
-        Bio::Command.read_uri("http://bioruby.open-bio.org/")
-      }
-    end
-
-    def test_start_http
-    end
-
-    def test_new_http
-    end
-
-    def test_post_form
-    end
-  end #class FuncTestCommandNet
 end #module Bio
