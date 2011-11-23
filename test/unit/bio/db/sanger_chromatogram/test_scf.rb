@@ -20,10 +20,12 @@ module Bio
     DataPath = Pathname.new(File.join(BioRubyTestDataPath,
                                       'sanger_chromatogram')).cleanpath.to_s
     def self.scf_version_2
-      File.read(File.join(DataPath, 'test_chromatogram_scf_v2.scf'))
+      fn = File.join(DataPath, 'test_chromatogram_scf_v2.scf')
+      File.open(fn, "rb") { |f| f.read }
     end
     def self.scf_version_3
-      File.read(File.join(DataPath, 'test_chromatogram_scf_v3.scf'))
+      fn = File.join(DataPath, 'test_chromatogram_scf_v3.scf')
+      File.open(fn, "rb") { |f| f.read }
     end
   end #module TestScfData
 

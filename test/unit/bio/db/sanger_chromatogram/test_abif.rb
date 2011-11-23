@@ -21,7 +21,8 @@ module Bio
     DataPath = Pathname.new(File.join(BioRubyTestDataPath,
                                       'sanger_chromatogram')).cleanpath.to_s
     def self.abif
-      File.read(File.join(DataPath, 'test_chromatogram_abif.ab1'))
+      fn = File.join(DataPath, 'test_chromatogram_abif.ab1')
+      File.open(fn, 'rb') { |f| f.read }
     end
   end #module TestAbifData
 
