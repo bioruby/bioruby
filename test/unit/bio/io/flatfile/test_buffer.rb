@@ -23,6 +23,145 @@ module Bio::TestFlatFileBufferedInputStream
   TestDataPath = BioRubyTestDataPath
   TestDataFastaFormat01 = File.join(TestDataPath, 'fasta', 'example1.txt')
 
+  class TestBufferedInputStreamParseFileOpenArg < Test::Unit::TestCase
+
+    K = Bio::FlatFile::BufferedInputStream
+
+    def _parse_file_open_mode(mode)
+      K.module_eval { _parse_file_open_mode(mode) }
+    end
+    private :_parse_file_open_mode
+
+    def _parse_file_open_arg(*arg)
+      K.module_eval { _parse_file_open_arg(*arg) }
+    end
+    private :_parse_file_open_arg
+
+    def test_parse_file_open_mode_nil
+      assert_equal(nil, _parse_file_open_mode(nil))
+    end
+
+    def test_parse_file_open_mode_integer
+      assert_equal({ :fmode_integer => 127 },
+                   _parse_file_open_mode(127))
+    end
+
+    def test_parse_file_open_mode_str
+      assert_equal({ :fmode_string => "r+b" },
+                   _parse_file_open_mode("r+b"))
+    end
+
+    def test_parse_file_open_mode_str_with_ext_enc
+      assert_equal({ :fmode_string => "r+t",
+                     :external_encoding => "UTF-8" },
+                   _parse_file_open_mode("r+t:UTF-8"))
+    end
+
+    def test_parse_file_open_mode_str_with_enc
+      assert_equal({ :fmode_string => "rb",
+                     :external_encoding => "EUC-JP",
+                     :internal_encoding => "UTF-8" },
+                   _parse_file_open_mode("rb:EUC-JP:UTF-8"))
+    end
+
+    def test_parse_file_open_arg_nil
+      assert_equal({}, _parse_file_open_arg(nil))
+    end
+
+    def test_parse_file_open_arg_integer
+      assert_equal({ :fmode_integer => 127 },
+                   _parse_file_open_arg(127))
+    end
+
+    def test_parse_file_open_arg_str
+      assert_equal({ :fmode_string => "r+b" },
+                   _parse_file_open_arg("r+b"))
+    end
+
+    def test_parse_file_open_arg_str_with_ext_enc
+      assert_equal({ :fmode_string => "r+t",
+                     :external_encoding => "UTF-8" },
+                   _parse_file_open_arg("r+t:UTF-8"))
+    end
+
+    def test_parse_file_open_arg_str_with_enc
+      assert_equal({ :fmode_string => "rb",
+                     :external_encoding => "EUC-JP",
+                     :internal_encoding => "UTF-8" },
+                   _parse_file_open_arg("rb:EUC-JP:UTF-8"))
+    end
+
+    def test_parse_file_open_arg_str_perm
+      assert_equal({ :fmode_string => "r+b",
+                     :perm => 0644 },
+                   _parse_file_open_arg("r+b", 0644))
+    end
+
+    def test_parse_file_open_arg_int_perm
+      assert_equal({ :fmode_integer => 255,
+                     :perm => 0755 },
+                   _parse_file_open_arg(255, 0755))
+    end
+
+    def test_parse_file_open_arg_int_perm_opt
+      assert_equal({ :fmode_integer => 191,
+                     :perm => 0600,
+                     :textmode => true,
+                     :internal_encoding => "EUC-JP" },
+                   _parse_file_open_arg(191, 0600,
+                                        :textmode => true,
+                                        :internal_encoding => "EUC-JP"))
+    end
+
+    def test_parse_file_open_arg_int_opt
+      assert_equal({ :fmode_integer => 191,
+                     :textmode => true,
+                     :internal_encoding => "EUC-JP" },
+                   _parse_file_open_arg(191, 
+                                        :textmode => true,
+                                        :internal_encoding => "EUC-JP"))
+    end
+
+    def test_parse_file_open_arg_str_perm_opt
+      assert_equal({ :fmode_string => "a",
+                     :perm => 0644,
+                     :binmode => true,
+                     :external_encoding => "UTF-8" },
+                   _parse_file_open_arg("a", 0644,
+                                        :binmode => true,
+                                        :external_encoding => "UTF-8"))
+    end
+
+    def test_parse_file_open_arg_str_opt
+      assert_equal({ :fmode_string => "a",
+                     :binmode => true,
+                     :external_encoding => "UTF-8" },
+                   _parse_file_open_arg("a",
+                                        :binmode => true,
+                                        :external_encoding => "UTF-8"))
+    end
+
+    def test_parse_file_open_arg_opt
+      assert_equal({ :fmode_string => "r",
+                     :binmode => true,
+                     :external_encoding => "UTF-8" },
+                   _parse_file_open_arg(:mode => "r",
+                                        :binmode => true,
+                                        :external_encoding => "UTF-8"))
+    end
+
+    def test_parse_file_open_arg_opt_with_integer_mode
+      assert_equal({ :fmode_integer => 123,
+                     :perm => 0600,
+                     :textmode => true,
+                     :external_encoding => "EUC-JP" },
+                   _parse_file_open_arg(:mode => 123,
+                                        :perm => 0600,
+                                        :textmode => true,
+                                        :external_encoding => "EUC-JP"))
+    end
+  end #class TestBufferedInputStreamParseFileOpenArg
+
   class TestBufferedInputStreamClassMethod < Test::Unit::TestCase
 
     def test_self_for_io

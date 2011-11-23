@@ -30,6 +30,13 @@ For known problems, see KNOWN_ISSUES.rdoc.
 
 == Incompatible changes and removed features
 
+=== Bio::FlatFile use binmode (binary mode) when opening a file
+
+In Bio::FlatFile.open and Bio::FlatFile.auto, binmode (binary mode) is used
+by default when opening a file, unless text mode is explicitly specified
+with open mode string or with options. Due to the change, files using CR+LF
+line separator might not be read correctly.
+
 === BioRuby development
 
 * rdoc.zsh is removed because it have not been used for a long time.

@@ -43,16 +43,100 @@ module Bio
       # *arg is passed to File.open.
       #
       # Like File.open, a block can be accepted.
+      #
+      # Unlike File.open, the default is binary mode, unless text mode
+      # is explicity specified in mode.
       def self.open_file(filename, *arg)
+        params = _parse_file_open_arg(*arg)
+        if params[:textmode] or /t/ =~ params[:fmode_string].to_s then
+          textmode = true
+        else
+          textmode = false
+        end
         if block_given? then
           File.open(filename, *arg) do |fobj|
+            fobj.binmode unless textmode
             yield self.new(fobj, filename)
           end
         else
           fobj = File.open(filename, *arg)
+          fobj.binmode unless textmode
           self.new(fobj, filename)
         end
       end
+
+      # Parses file open mode parameter.
+      # mode must be an Integer or a String.
+      def self._parse_file_open_mode(mode)
+        modeint = nil
+        modestr = nil
+        begin
+          modeint = mode.to_int
+        rescue NoMethodError
+        end
+        unless modeint then
+          begin
+            modestr = mode.to_str
+          rescue NoMethodError
+          end
+        end
+        if modeint then
+          return { :fmode_integer => modeint }
+        end
+        if modestr then
+          fmode, ext_enc, int_enc = modestr.split(/\:/)
+          ret = { :fmode_string => fmode }
+          ret[:external_encoding] = ext_enc if ext_enc
+          ret[:internal_encoding] = int_enc if int_enc
+          return ret
+        end
+        nil
+      end
+      private_class_method :_parse_file_open_mode
+          
+      # Parses file open arguments
+      def self._parse_file_open_arg(*arg)
+        fmode_hash = nil
+        perm = nil
+
+        elem = arg.shift
+        if elem then
+          fmode_hash = _parse_file_open_mode(elem)
+          if fmode_hash then
+            elem = arg.shift
+            if elem then
+              begin
+                perm = elem.to_int
+              rescue NoMethodError
+              end
+            end
+            elem = arg.shift if perm
+          end
+        end
+        if elem.kind_of?(Hash) then
+          opt = elem.dup
+        else
+          opt = {}
+        end
+        if elem = opt[:mode] then
+          fmode_hash = _parse_file_open_mode(elem)
+        end
+        fmode_hash ||= {}
+        fmode_hash[:perm] = perm if perm
+        unless enc = opt[:encoding].to_s.empty? then
+          ext_enc, int_enc = enc.split(/\:/)
+          fmode_hash[:external_encoding] = ext_enc if ext_enc
+          fmode_hash[:internal_encoding] = int_enc if int_enc
+        end
+
+        [ :external_encoding, :internal_encoding,
+          :textmode, :binmode, :autoclose, :perm ].each do |key|
+          val = opt[key]
+          fmode_hash[key] = val if val
+        end
+        fmode_hash
+      end
+      private_class_method :_parse_file_open_arg
 
       # Creates a new input stream wrapper from URI specified as _uri_.
       # by using OpenURI.open_uri or URI#open.
