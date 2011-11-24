@@ -51,7 +51,7 @@ Gem::Specification.new do |s|
     files = (`git ls-files` rescue nil).to_s.split(/\r?\n/)
     files.delete_if { |x| x.empty? }
     # When git-ls-files isn't available, creates a list from current files.
-    if !($?.success?) or files.size <= 0 then
+    if !$? or !($?.success?) or files.size <= 0 then
       files =
         [ "README.rdoc", "README_DEV.rdoc", 
           "ChangeLog", "KNOWN_ISSUES.rdoc",
