@@ -31,6 +31,16 @@ Rake::TestTask.new do |t|
   t.test_files = FileList["test/{unit,functional}/**/test_*.rb"]
 end
 
+Rake::TestTask.new do |t|
+  t.name = :"test-all"
+  t.test_files = FileList["test/{unit,functional,network}/**/test_*.rb"]
+end
+
+Rake::TestTask.new do |t|
+  t.name = :"test-network"
+  t.test_files = FileList["test/network/**/test_*.rb"]
+end
+
 # files not included in gem but included in tar archive
 tar_additional_files = []
 
