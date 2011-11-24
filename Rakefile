@@ -9,8 +9,25 @@ require 'rubygems'
 require 'erb'
 require 'rake/testtask'
 require 'rake/packagetask'
-require 'rake/gempackagetask'
-require 'rake/rdoctask'
+
+begin
+  require 'rubygems/package_task'
+rescue LoadError
+  # old RubyGems/Rake version
+  require 'rake/gempackagetask'
+end
+
+begin
+  require 'rdoc/task'
+rescue LoadError
+  # old RDoc/Rake version
+  require 'rake/rdoctask'
+end
+
+# workaround for new module name
+unless defined? Rake::GemPackageTask then
+  Rake::GemPackageTask = Gem::PackageTask
+end
 
 load "./lib/bio/version.rb"
 BIO_VERSION_RB_LOADED = true
