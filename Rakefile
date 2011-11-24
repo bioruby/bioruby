@@ -48,7 +48,9 @@ GEM_SPEC_FILE = "bioruby.gemspec"
 GEM_SPEC_TEMPLATE_FILE = "bioruby.gemspec.erb"
 
 # gets gem spec string
-gem_spec_string = ERB.new(File.read(GEM_SPEC_TEMPLATE_FILE)).result
+gem_spec_string = File.open(GEM_SPEC_TEMPLATE_FILE, "rb") do |f|
+                    ERB.new(f.read).result
+                  end
 
 # gets gem spec object
 spec = eval(gem_spec_string)
@@ -78,7 +80,7 @@ desc "Update #{GEM_SPEC_FILE}"
 file GEM_SPEC_FILE => [ GEM_SPEC_TEMPLATE_FILE, 'Rakefile',
                         'lib/bio/version.rb' ] do |t|
   puts "creates #{GEM_SPEC_FILE}"
-  File.open(t.name, 'w') do |w|
+  File.open(t.name, 'wb') do |w|
     w.print gem_spec_string
   end
 end
