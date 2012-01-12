@@ -158,7 +158,8 @@ module Bio::Blast::Remote
       host = Host
       #host = "blast.genome.jp"
       #path = "/sit-bin/nph-blast"
-      path = "/sit-bin/blast" #2005.08.12
+      #path = "/sit-bin/blast" #2005.08.12
+      path = "/tools-bin/blast" #2012.01.12
 
       options = make_command_line_options
       opt = Bio::Blast::NCBIOptions.new(options)
