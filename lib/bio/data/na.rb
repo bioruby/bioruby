@@ -162,7 +162,7 @@ class NucleicAcid
         'y' => '[tcy]',
         'r' => '[agr]',
         'w' => '[atw]',
-        's' => '[gcw]',
+        's' => '[gcs]',
         'k' => '[tgk]',
         'm' => '[acm]',
         'b' => '[tgcyskb]',
