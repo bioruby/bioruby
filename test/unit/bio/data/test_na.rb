@@ -42,7 +42,7 @@ module Bio
     end
 
     def test_to_re
-      re = /[tcy][agr][atw][gcw][tgk][acm][tgcyskb][atgrwkd][agcmrsv][atgcyrwskmbdhvn]atgc/
+      re = /[tcy][agr][atw][gcs][tgk][acm][tgcyskb][atgrwkd][agcmrsv][atgcyrwskmbdhvn]atgc/
       str = 'yrwskmbdvnatgc'
       str0 = str.clone
       assert_equal(re, @obj.to_re(str))

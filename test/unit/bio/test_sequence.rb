@@ -192,11 +192,11 @@ module Bio
     # Test Sequence::NA#to_re
 
     def test_dna_to_re
-      assert_equal(/atgc[agr][tcy][acm][tgk][atgrwkd][atcwmyh][agcmrsv][tgcyskb][gcw][atw][atgcyrwskmbdhvn]/, Sequence::NA.new('atgcrymkdhvbswn').to_re)
+      assert_equal(/atgc[agr][tcy][acm][tgk][atgrwkd][atcwmyh][agcmrsv][tgcyskb][gcs][atw][atgcyrwskmbdhvn]/, Sequence::NA.new('atgcrymkdhvbswn').to_re)
     end
 
     def test_rna_to_re
-      assert_equal(/augc[agr][ucy][acm][ugk][augrwkd][aucwmyh][agcmrsv][ugcyskb][gcw][auw][augcyrwskmbdhvn]/, Sequence::NA.new('augcrymkdhvbswn').to_re)
+      assert_equal(/augc[agr][ucy][acm][ugk][augrwkd][aucwmyh][agcmrsv][ugcyskb][gcs][auw][augcyrwskmbdhvn]/, Sequence::NA.new('augcrymkdhvbswn').to_re)
     end
 
     # Test Sequence::NA#names

@@ -143,7 +143,7 @@ module Bio
       @obj[3,1] = 's'
       @obj[4,1] = 'y'
       @obj[5,1] = 'w'
-      assert_equal(/a[atgcyrwskmbdhvn][agr][gcw][tcy][atw]gcatgcatgcaaaa/, @obj.to_re)
+      assert_equal(/a[atgcyrwskmbdhvn][agr][gcs][tcy][atw]gcatgcatgcaaaa/, @obj.to_re)
     end
 
     def test_names
