@@ -10,6 +10,11 @@ License::   The Ruby License
 
 = BioRuby
 
+{<img
+src="https://secure.travis-ci.org/pjotrp/bioruby.png"
+/>}[http://travis-ci.org/#!/pjotrp/bioruby]
+
+
 Copyright (C) 2001-2011 Toshiaki Katayama <k@bioruby.org>
 
 BioRuby is an open source Ruby library for developing bioinformatics
