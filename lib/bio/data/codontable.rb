@@ -91,7 +91,7 @@ class CodonTable
   # Translate a codon into a relevant amino acid.  This method is used for
   # translating a DNA sequence into amino acid sequence.
   def [](codon)
-    @table[codon]
+    @table[codon.downcase]
   end
 
   # Modify the codon table.  Use with caution as it may break hard coded
@@ -107,7 +107,7 @@ class CodonTable
   #   table['tga'] = 'U'
   #
   def []=(codon, aa)
-    @table[codon] = aa
+    @table[codon.downcase] = aa
   end
 
   # Iterates on codon table hash.

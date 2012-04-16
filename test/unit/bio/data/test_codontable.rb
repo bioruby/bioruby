@@ -80,6 +80,16 @@ module Bio
       @ct['atg'] = 'M'
       assert_equal('M', @ct['atg'])
     end
+    
+    def test_set_uppercase_accessor #[]=
+      assert_equal('Q', @ct['CAG'])
+      alternative = 'Y'
+      @ct['CAG'] = alternative
+      assert_equal(alternative, @ct['cag'])
+      @ct['cag'] = 'Q'
+      assert_equal('Q', @ct['cag'])
+      assert_equal('Q', @ct['CAG'])
+    end
 
     def test_each
       assert(@ct.each {|x| })
