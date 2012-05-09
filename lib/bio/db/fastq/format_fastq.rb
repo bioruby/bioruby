@@ -7,7 +7,6 @@
 #
 
 require 'bio/db/fastq'
-require 'bio/sequence/format'
 
 module Bio::Sequence::Format::Formatter
 

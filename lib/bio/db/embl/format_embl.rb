@@ -6,10 +6,6 @@
 #              Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: format_embl.rb,v 1.1.2.7 2008/06/19 12:45:15 ngoto Exp $
-#
-
-require 'bio/sequence/format'
 
 module Bio::Sequence::Format::NucFormatter
 

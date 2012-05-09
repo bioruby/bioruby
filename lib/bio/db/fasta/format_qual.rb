@@ -5,11 +5,6 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
-#
-
-require 'bio/sequence/format'
-require 'bio/sequence/quality_score'
 
 module Bio::Sequence::Format::Formatter
 
