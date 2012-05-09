@@ -60,9 +60,9 @@ matrix:
 # uncomment this line if your project needs to run something other than `rake`:
 # script: bundle exec rspec spec
 
-before_install:
- - sudo apt-get update
- - sudo apt-get install libxml2-dev libexpat1-dev
+#before_install:
+# - sudo apt-get update
+# - sudo apt-get install libxml2-dev libexpat1-dev
 after_install:
  - rake regemspec
 
