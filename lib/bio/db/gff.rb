@@ -1231,7 +1231,9 @@ module Bio
             attr_reader :code if false #dummy for RDoc
 
             # length (Integer)
-            attr_reader :length if false #dummy for RDoc
+            def length
+                self[:length]
+            end
  
             def to_s
               "#{code}#{length}"

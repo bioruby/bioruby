@@ -90,7 +90,7 @@ module Bio #:nodoc:
       assert_equal( @obj_dataset.database[:institute], 'NCBI NLM NIH')
 
       assert_equal( @obj_dataset.subsets.size, 8)
-      assert_equal( @obj_dataset.subsets.keys, ["GDS100_1",
+      assert_equal( @obj_dataset.subsets.keys.sort, ["GDS100_1",
        "GDS100_2",
        "GDS100_3",
        "GDS100_4",
