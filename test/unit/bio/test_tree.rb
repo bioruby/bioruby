@@ -780,20 +780,20 @@ module Bio
     end
 
     def test_total_distance
-      assert_equal("0.7777", sprintf("%.4g", @tree.total_distance))
+      assert_equal("0.7777", sprintf("%.4f", @tree.total_distance))
     end
 
     def test_distance_matrix
       mat = @tree.distance_matrix([ @mouse, @rat, @human, @chimpanzee ])
       assert_instance_of(Matrix, mat)
-      assert_equal([ "0",      "0.2093", "0.6149", "0.6266" ],
-                   mat.row(0).map { |x| sprintf("%.4g", x) }.to_a)
-      assert_equal([ "0.2093", "0",      "0.6306", "0.6423" ],
-                   mat.row(1).map { |x| sprintf("%.4g", x) }.to_a)
-      assert_equal([ "0.6149", "0.6306", "0",      "0.0889" ],
-                   mat.row(2).map { |x| sprintf("%.4g", x) }.to_a)
-      assert_equal([ "0.6266", "0.6423", "0.0889", "0" ],
-                   mat.row(3).map { |x| sprintf("%.4g", x) }.to_a)
+      assert_equal([ "0.0000", "0.2093", "0.6149", "0.6266" ],
+                   mat.row(0).map { |x| sprintf("%.4f", x) }.to_a)
+      assert_equal([ "0.2093", "0.0000", "0.6306", "0.6423" ],
+                   mat.row(1).map { |x| sprintf("%.4f", x) }.to_a)
+      assert_equal([ "0.6149", "0.6306", "0.0000", "0.0889" ],
+                   mat.row(2).map { |x| sprintf("%.4f", x) }.to_a)
+      assert_equal([ "0.6266", "0.6423", "0.0889", "0.0000" ],
+                   mat.row(3).map { |x| sprintf("%.4f", x) }.to_a)
     end
      
     def test_adjacency_matrix
@@ -842,9 +842,9 @@ module Bio
       }
       assert_equal(@tree, ret)
       distance_mouse_node1 = @tree.get_edge(@mouse, node1).distance
-      assert_equal("0.0123", sprintf("%.4g", distance_mouse_node1))
+      assert_equal("0.0123", sprintf("%.4f", distance_mouse_node1))
       distance_node1_rodents = @tree.get_edge(node1, @rodents).distance
-      assert_equal("0.0845", sprintf("%.4g", distance_node1_rodents))
+      assert_equal("0.0845", sprintf("%.4f", distance_node1_rodents))
     end
   end #class TestTree2
 
