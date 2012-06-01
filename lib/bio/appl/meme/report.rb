@@ -102,9 +102,13 @@ module Bio
               next
             # else if the start of the record has been found AND the record_regex has matched, capture input
             elsif record_start and record_regex.match(line)
-              # damn, this line looks like shit but the named captures sure are AWESOME
-              # NOTE: i believe this is a 1.9+ feature, haven't tested
-              /^(?<site_name>\w+)[\.\d\|\w]+\s+(?<site_start>\d+)\s+(?<site_pvalue>\d\.\d+e\-\d+)\s+\w+\s+(?<site_sequence>\w+)/ =~ line
+              if RUBY_VERSION > 1.9
+                /^(?<site_name>\w+)[\.\d\|\w]+\s+(?<site_start>\d+)\s+(?<site_pvalue>\d\.\d+e\-\d+)\s+\w+\s+(?<site_sequence>\w+)/ =~ line
+              else
+                site_name     = $1
+                site_start    = $2
+                site_pvalue   = $3
+                site_sequence = $4
               # need this minus 1 or else the sequence is 1 AA too long
               site_end = site_start.to_i + motif_width.to_i - 1
                             
