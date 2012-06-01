@@ -347,6 +347,12 @@ __END_OF_TEXT__
 #    def test_sim4
 #    end
 
+    def test_fastq
+      fn = File.join(TestDataPath, 'fastq', 'longreads_original_sanger.fastq')
+      text = File.read(fn, length=300)
+      assert_equal(Bio::Fastq, @ad.autodetect(text))
+    end
+
     def test_fastaformat
       fn = File.join(TestDataPath, 'fasta', 'example1.txt')
       text = File.read(fn)
