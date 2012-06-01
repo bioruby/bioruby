@@ -482,7 +482,7 @@ module Bio
             /^seq1 \= .*\, \d+ bp(\r|\r?\n)seq2 \= .*\, \d+ bp(\r|\r?\n)/ ],
 
           fastq  = RuleRegexp[ 'Bio::Fastq',
-            /^\@.+(?:\r|\r?\n)(?:[^\@\+].*(?:\r|\r?\n))+\+.*(?:\r|\r?\n).+(?:\r|\r?\n)/ ],
+            /^\@.+(?:\r|\r?\n)(?:[^\@\+].*(?:\r|\r?\n))+/ ],
 
           fastaformat = RuleProc.new('Bio::FastaFormat',
                                      'Bio::NBRF',
