@@ -70,12 +70,11 @@
 # 
 
 module Bio
-
-  autoload :KEGGDB,    'bio/db'
-  autoload :Locations, 'bio/location'
-  autoload :Sequence,  'bio/sequence'
-
   require 'bio/db/kegg/common'
+  
+  autoload :KEGGDB,    '../lib/bio/db'
+  autoload :Locations, '../lib/bio/location'
+  autoload :Sequence,  '../lib/bio/sequence'
 
 class KEGG
 
