@@ -14,26 +14,51 @@ unless defined? BioRubyTestDebug then
   end
 end #BioRubyTestDebug
 
-unless defined? BioRubyTestLibPath and BioRubyTestLibPath then
+unless defined? BioRubyTestGem then
+  gem_version = ENV['BIORUBY_TEST_GEM']
+  if gem_version then
+    $stderr.puts 'require "rubygems"' if BioRubyTestDebug
+    require "rubygems"
+    if gem_version.empty? then
+      $stderr.puts "gem 'bio'" if BioRubyTestDebug
+      gem 'bio'
+    else
+      $stderr.puts "gem 'bio', #{gem_version.inspect}" if BioRubyTestDebug
+      gem 'bio', gem_version
+    end
+  end
+  BioRubyTestGem = gem_version
+end
+
+unless defined? BioRubyTestLibPath then
   libpath = ENV['BIORUBY_TEST_LIB']
-  if libpath.to_s.empty? then
+  unless libpath then
     libpath = Pathname.new(File.join(File.dirname(__FILE__),
                                      "..", "lib")).cleanpath.to_s
   end
-  libpath.freeze
 
-  unless $:.include?(libpath)
-    $:.unshift(libpath)
-    if BioRubyTestDebug then
-      $stderr.puts "Added #{libpath.inspect} to $:."
-    end
-  else
-    if BioRubyTestDebug then
-      $stderr.puts "NOT added #{libpath.inspect} to $:. because it is already in $:."
+  # do not add path to $: if BIORUBY_TEST_LIB is empty string
+  # or BioRubyTestGem is true.
+  if (libpath and libpath.empty?) or BioRubyTestGem then
+    libpath = nil
+  end
+
+  if libpath then
+    libpath.freeze
+
+    unless $:.include?(libpath) then
+      $:.unshift(libpath)
+      if BioRubyTestDebug then
+        $stderr.puts "Added #{libpath.inspect} to $:."
+      end
+    else
+      if BioRubyTestDebug then
+        $stderr.puts "NOT added #{libpath.inspect} to $:. because it is already in $:."
+      end
     end
   end
 
-  # (String) Path to be added to $:.
+  # (String or nil) Path to be added to $:.
   # It may or may not be the path of bioruby.
   BioRubyTestLibPath = libpath
   
