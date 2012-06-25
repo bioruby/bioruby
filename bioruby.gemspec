@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
 
   s.platform = Gem::Platform::RUBY
   s.files = [
+    ".travis.yml",
     "COPYING",
     "COPYING.ja",
     "ChangeLog",
@@ -48,6 +49,10 @@ Gem::Specification.new do |s|
     "doc/bioruby.css",
     "etc/bioinformatics/seqdatabase.ini",
     "extconf.rb",
+    "gemfiles/Gemfile.travis-jruby1.8",
+    "gemfiles/Gemfile.travis-jruby1.9",
+    "gemfiles/Gemfile.travis-ruby1.8",
+    "gemfiles/Gemfile.travis-ruby1.9",
     "lib/bio.rb",
     "lib/bio/alignment.rb",
     "lib/bio/appl/bl2seq/report.rb",
