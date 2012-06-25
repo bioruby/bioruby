@@ -6,6 +6,8 @@
 #
 
 require 'pathname'
+require '../lib/bio/db.rb'
+require '../lib/bio/sequence.rb'
 
 unless defined? BioRubyTestDebug then
   BioRubyTestDebug = ENV['BIORUBY_TEST_DEBUG'].to_s.empty? ? false : true
