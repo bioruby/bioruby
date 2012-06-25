@@ -46,14 +46,14 @@ unless defined? BioRubyTestLibPath then
   if libpath then
     libpath.freeze
 
-    unless $:.include?(libpath) then
+    unless $:[0] == libpath then
       $:.unshift(libpath)
       if BioRubyTestDebug then
         $stderr.puts "Added #{libpath.inspect} to $:."
       end
     else
       if BioRubyTestDebug then
-        $stderr.puts "NOT added #{libpath.inspect} to $:. because it is already in $:."
+        $stderr.puts "NOT added #{libpath.inspect} to $:. because it is already on the top of $:."
       end
     end
   end
