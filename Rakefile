@@ -202,6 +202,11 @@ else
   end
 end
 
+def chdir_with_message(dir)
+  $stderr.puts("chdir #{dir}")
+  Dir.chdir(dir)
+end
+
 # run in different directory
 def work_in_another_directory
   ## prepare temporary directory for testing
@@ -216,11 +221,11 @@ def work_in_another_directory
     pwd = Dir.pwd
     ## disabled mktmpdir Because of JRuby's Tmpdir.mktmpdir behavior
     #mktmpdir("bioruby") do |dirname|
-      Dir.chdir(dirname)
+      chdir_with_message(dirname)
       ret = yield(dirname)
     #end
   ensure
-    Dir.chdir(pwd)
+    chdir_with_message(pwd)
   end
   ret
 end
@@ -243,22 +248,22 @@ task :"tar-install" => [ :package ] do
       # remove tar file in direname
       FileUtils.remove_entry_secure(tar_filename, true)
       # chdir to old pwd
-      Dir.chdir(pwd)
+      chdir_with_message(pwd)
       # copy (or link) tar file
       safe_ln(tar_pkg_filepath, dirname)
       # chdir to dirname again
-      Dir.chdir(dirname)
+      chdir_with_message(dirname)
       # remove a directory the tar file will contain
       FileUtils.remove_entry_secure(tar_basename, true)
       # extract tar
       sh("tar zxvf #{tar_filename}")
       # chdir to the directory
-      Dir.chdir(tar_basename)
+      chdir_with_message(tar_basename)
       # run tests
       ruby("setup.rb")
     ensure
       # cleanup
-      Dir.chdir(dirname)
+      chdir_with_message(dirname)
       FileUtils.remove_entry_secure(tar_basename, true)
       FileUtils.remove_entry_secure(tar_filename, true)
     end
