@@ -248,7 +248,7 @@ desc "DANGER: build tar, install and run test"
 task :"tar-integration-test" => [ :"tar-install",
                                   :"installed-test" ]
 
-desc "install gem and run test (with --no-ri --no-rdoc)"
+desc "DANGER: build gem, install and run test (with --no-ri --no-rdoc)"
 task :"gem-integration-test" => [ :"gem-install-nodoc",
                                   :"gem-test" ]
 
@@ -279,7 +279,7 @@ task :"gem-install" => [ :regemspec, :gem ] do
   sh("gem install --local #{gem_pkg_filepath}")
 end
 
-desc "do gem install --no-ri --no-rdoc"
+desc "DANGER: build gem and install with --no-ri --no-rdoc"
 task :"gem-install-nodoc" => [ :regemspec, :gem ] do
   sh("gem install --local --no-ri --no-rdoc #{gem_pkg_filepath}")
 end
