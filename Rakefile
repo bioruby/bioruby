@@ -236,7 +236,7 @@ task :"see-env" do
 end
 
 desc "DANGER: build tar and install (GNU tar needed)"
-task :"tar-install" => [ :regemspec, :package ] do
+task :"tar-install" => [ :package ] do
   pwd = Dir.pwd
   work_in_another_directory do |dirname|
     begin
