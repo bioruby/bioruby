@@ -8,6 +8,7 @@
 require 'rubygems'
 require 'erb'
 require 'pathname'
+require 'fileutils'
 require 'tmpdir'
 require 'rake/testtask'
 require 'rake/packagetask'
@@ -200,6 +201,29 @@ else
     Bio::Command.mktmpdir(*arg, &block)
   end
 end
+
+# run in different directory
+def work_in_another_directory
+  ## prepare temporary directory for testing
+  dirname = Pathname.new(File.join(Dir.pwd, "tmp")).cleanpath.to_s
+  begin
+    Dir.mkdir(dirname)
+  rescue Errno::EEXIST
+  end
+
+  ret = false
+  begin
+    pwd = Dir.pwd
+    ## disabled mktmpdir Because of JRuby's Tmpdir.mktmpdir behavior
+    #mktmpdir("bioruby") do |dirname|
+      Dir.chdir(dirname)
+      ret = yield(dirname)
+    #end
+  ensure
+    Dir.chdir(pwd)
+  end
+  ret
+end
     
 desc "task specified with BIORUBY_RAKE_DEFAULT_TASK (default \"test\")"
 task :"see-env" do
@@ -213,17 +237,31 @@ end
 
 desc "DANGER: build tar and install (GNU tar needed)"
 task :"tar-install" => [ :regemspec, :package ] do
-  begin
-    pwd = Dir.pwd
-    mktmpdir("bioruby") do |dirname|
+  pwd = Dir.pwd
+  work_in_another_directory do |dirname|
+    begin
+      # remove tar file in direname
+      FileUtils.remove_entry_secure(tar_filename, true)
+      # chdir to old pwd
+      Dir.chdir(pwd)
+      # copy (or link) tar file
       safe_ln(tar_pkg_filepath, dirname)
+      # chdir to dirname again
       Dir.chdir(dirname)
+      # remove a directory the tar file will contain
+      FileUtils.remove_entry_secure(tar_basename, true)
+      # extract tar
       sh("tar zxvf #{tar_filename}")
+      # chdir to the directory
       Dir.chdir(tar_basename)
+      # run tests
       ruby("setup.rb")
+    ensure
+      # cleanup
+      Dir.chdir(dirname)
+      FileUtils.remove_entry_secure(tar_basename, true)
+      FileUtils.remove_entry_secure(tar_filename, true)
     end
-  ensure
-    Dir.chdir(pwd)
   end
 end
 
@@ -238,8 +276,7 @@ task :"installed-test" do
   ENV["BIORUBY_TEST_LIB"] = ""
   ENV["BIORUBY_TEST_GEM"] = nil
 
-  mktmpdir("bioruby") do |dirname|
-    Dir.chdir(dirname)
+  work_in_another_directory do |dirname|
     ruby("-rbio", test_runner)
   end
 end
@@ -259,14 +296,8 @@ task :"gem-test" do
   ENV["BIORUBY_TEST_LIB"] = nil
   ENV["BIORUBY_TEST_GEM"] = spec.version.to_s
 
-  begin
-    pwd = Dir.pwd
-    mktmpdir("bioruby") do |dirname|
-      Dir.chdir(dirname)
-      ruby(test_runner)
-    end
-  ensure
-    Dir.chdir(pwd)
+  work_in_another_directory do |dirname|
+    ruby(test_runner)
   end
 end
 
