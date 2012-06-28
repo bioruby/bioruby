@@ -248,10 +248,6 @@ desc "DANGER: build tar, install and run test"
 task :"tar-integration-test" => [ :"tar-install",
                                   :"installed-test" ]
 
-desc "DANGER: build gem, install and run test (with --no-ri --no-rdoc)"
-task :"gem-integration-test" => [ :"gem-install-nodoc",
-                                  :"gem-test" ]
-
 desc "test installed bioruby gem version #{spec.version.to_s}"
 task :"gem-test" do
   data_path = File.join(Dir.pwd, "test/data")
@@ -274,12 +270,3 @@ task :"gem-test" do
   end
 end
 
-desc "build gem and install"
-task :"gem-install" => [ :regemspec, :gem ] do
-  sh("gem install --local #{gem_pkg_filepath}")
-end
-
-desc "DANGER: build gem and install with --no-ri --no-rdoc"
-task :"gem-install-nodoc" => [ :regemspec, :gem ] do
-  sh("gem install --local --no-ri --no-rdoc #{gem_pkg_filepath}")
-end
