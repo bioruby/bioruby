@@ -190,8 +190,43 @@ task :rechangelog do
   sh "git log --stat --summary 1.4.2..HEAD > ChangeLog"
 end
 
-# define mktmpdir 
-if Dir.respond_to?(:mktmpdir) then
+# define mktmpdir
+if true then
+  # Note: arg is a subset of Dir.mktmpdir
+  def mktmpdir(prefix)
+    ## prepare temporary directory for testing
+    top = Pathname.new(File.join(Dir.pwd, "tmp")).cleanpath.to_s
+    begin
+      Dir.mkdir(top)
+    rescue Errno::EEXIST
+    end
+
+    ## prepare working directory
+    flag = false
+    dirname = nil
+    ret = nil
+    begin
+      10.times do |n|
+        # following 3 lines are copied from Ruby 1.9.3's tmpdir.rb and modified
+        t = Time.now.strftime("%Y%m%d")
+        path = "#{prefix}#{t}-#{$$}-#{rand(0x100000000).to_s(36)}"
+        path << "-#{n}" if n > 0
+        begin
+          dirname = File.join(top, path)
+          flag = Dir.mkdir(dirname)
+          break if flag
+        rescue SystemCallError
+        end
+      end
+      raise "Couldn't create a directory under #{tmp}." unless flag
+      ret = yield(dirname)
+    ensure
+      FileUtils.remove_entry_secure(dirname, true) if flag and dirname
+    end
+    ret
+  end #def mktmpdir
+## Currently, Dir.mktmpdir isn't used Because of JRuby's behavior.
+elsif Dir.respond_to?(:mktmpdir) then
   def self.mktmpdir(*arg, &block)
     Dir.mktmpdir(*arg, &block)
   end
@@ -209,23 +244,15 @@ end
 
 # run in different directory
 def work_in_another_directory
-  ## prepare temporary directory for testing
-  dirname = Pathname.new(File.join(Dir.pwd, "tmp")).cleanpath.to_s
-  begin
-    Dir.mkdir(dirname)
-  rescue Errno::EEXIST
-  end
-
+  pwd = Dir.pwd
   ret = false
-  begin
-    pwd = Dir.pwd
-    ## disabled mktmpdir Because of JRuby's Tmpdir.mktmpdir behavior
-    #mktmpdir("bioruby") do |dirname|
+  mktmpdir("bioruby") do |dirname|
+    begin
       chdir_with_message(dirname)
       ret = yield(dirname)
-    #end
-  ensure
-    chdir_with_message(pwd)
+    ensure
+      chdir_with_message(pwd)
+    end
   end
   ret
 end
