@@ -53,6 +53,8 @@ Gem::Specification.new do |s|
     "gemfiles/Gemfile.travis-jruby1.9",
     "gemfiles/Gemfile.travis-ruby1.8",
     "gemfiles/Gemfile.travis-ruby1.9",
+    "gemfiles/modify-Gemfile.rb",
+    "gemfiles/prepare-gemspec.rb",
     "lib/bio.rb",
     "lib/bio/alignment.rb",
     "lib/bio/appl/bl2seq/report.rb",
