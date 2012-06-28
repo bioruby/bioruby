@@ -13,6 +13,7 @@ gemfile:
   - gemfiles/Gemfile.travis-jruby1.8
 before_install:
   - ruby gemfiles/modify-Gemfile.rb
+  - ruby gemfiles/prepare-gemspec.rb
 matrix:
   include:
     - rvm: 1.9.3
