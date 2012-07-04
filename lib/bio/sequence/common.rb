@@ -6,12 +6,10 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id:$
-#
 
 module Bio
 
-  autoload :Locations, 'bio/location'
+  autoload :Locations, 'bio/location' unless const_defined?(:Locations)
 
 class Sequence
 
