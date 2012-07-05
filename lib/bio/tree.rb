@@ -5,7 +5,6 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     The Ruby License
 #
-# $Id:$
 #
 
 require 'matrix'
@@ -913,5 +912,5 @@ end #module Bio
 #---
 # temporary added
 #+++
-require 'bio/db/newick'
+require 'bio/tree/output'
 
