@@ -5,12 +5,11 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id:$
-#
-
-require 'bio/util/restriction_enzyme'
 
 module Bio
+
+require 'bio/util/restriction_enzyme' unless const_defined?(:RestrictionEnzyme)
+
 class RestrictionEnzyme
 class Range
 class SequenceRange

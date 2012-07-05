@@ -5,13 +5,13 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id:$
-#
 
-require 'bio/util/restriction_enzyme'
 require 'bio/sequence'
 
 module Bio
+
+require 'bio/util/restriction_enzyme' unless const_defined?(:RestrictionEnzyme)
+
 class RestrictionEnzyme
 
 # A single strand of restriction enzyme sequence pattern with a 5' to 3' 
