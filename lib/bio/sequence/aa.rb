@@ -6,14 +6,12 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: aa.rb,v 1.4 2007/04/05 23:35:41 trevor Exp $
-#
-
-require 'bio/sequence/common'
 
 module Bio
 
-  autoload :AminoAcid, 'bio/data/aa'
+  autoload :AminoAcid, 'bio/data/aa' unless const_defined?(:AminoAcid)
+
+  require 'bio/sequence' unless const_defined?(:Sequence)
 
 class Sequence
 

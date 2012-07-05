@@ -14,6 +14,9 @@
 #
 
 module Bio
+
+require 'bio/sequence' unless const_defined?(:Sequence)
+
 class Sequence
 
   # Bio::Sequence::SequenceMasker is a mix-in module to provide helpful

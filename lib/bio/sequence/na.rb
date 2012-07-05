@@ -6,15 +6,13 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id: na.rb,v 1.7 2007/04/23 16:43:51 trevor Exp $
-#
-
-require 'bio/sequence/common'
 
 module Bio
 
-  autoload :NucleicAcid, 'bio/data/na'
-  autoload :CodonTable,  'bio/data/codontable'
+  autoload :NucleicAcid, 'bio/data/na' unless const_defined?(:NucleicAcid)
+  autoload :CodonTable,  'bio/data/codontable' unless const_defined?(:CodonTable)
+
+  require 'bio/sequence' unless const_defined?(:Sequence)
 
 class Sequence
 

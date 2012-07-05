@@ -5,15 +5,15 @@
 #              Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: dblink.rb,v 1.1.2.1 2008/06/17 15:44:22 ngoto Exp $
-#
 
-require 'bio/sequence'
+module Bio
+
+require 'bio/sequence' unless const_defined?(:Sequence)
 
 # Bio::Sequence::DBLink stores IDs with the database name.
 # Its main purpose is to store database cross-reference information
 # for a sequence entry.
-class Bio::Sequence::DBLink
+class Sequence::DBLink
 
   # creates a new DBLink object
   def initialize(database, primary_id, *secondary_ids)
@@ -49,6 +49,7 @@ class Bio::Sequence::DBLink
     self.new(*(str.split(/\s*\;\s*/)))
   end
 
-end #class Bio::Sequence::DBLink
+end #class Sequence::DBLink
 
+end #module Bio
 

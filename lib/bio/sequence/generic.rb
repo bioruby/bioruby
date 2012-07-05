@@ -5,12 +5,11 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: generic.rb,v 1.5 2007/04/05 23:35:41 trevor Exp $
-#
-
-require 'bio/sequence/common'
 
 module Bio
+
+require 'bio/sequence' unless const_defined?(:Sequence)
+
 class Sequence
 
 class Generic < String #:nodoc:

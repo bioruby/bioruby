@@ -9,10 +9,6 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# $Id:$
-#
-
-require 'bio/sequence/compat'
 
 module Bio
 
@@ -73,6 +69,12 @@ class Sequence
   autoload :Adapter, 'bio/sequence/adapter'
   autoload :QualityScore, 'bio/sequence/quality_score'
   autoload :SequenceMasker, 'bio/sequence/sequence_masker'
+
+  #--
+  # require "bio/sequence/compat.rb" here to avoid circular require and
+  # possible superclass mismatch of AA class
+  #++
+  require 'bio/sequence/compat'
 
   include Format
   include SequenceMasker

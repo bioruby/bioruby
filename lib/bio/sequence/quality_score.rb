@@ -18,6 +18,8 @@
 
 module Bio
 
+require 'bio/sequence' unless const_defined?(:Sequence)
+
 class Sequence
 
   # Bio::Sequence::QualityScore is a name space for quality score modules. 

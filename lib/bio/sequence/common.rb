@@ -11,6 +11,8 @@ module Bio
 
   autoload :Locations, 'bio/location' unless const_defined?(:Locations)
 
+  require 'bio/sequence' unless const_defined?(:Sequence)
+
 class Sequence
 
 # = DESCRIPTION
