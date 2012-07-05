@@ -22,10 +22,11 @@
 # This is beta version. Specs shall be changed frequently.
 #
 
-require 'bio/db/pdb'
 require 'bio/data/aa'
 
 module Bio
+
+  require 'bio/db/pdb' unless const_defined?(:PDB)
 
   # This is the main PDB class which takes care of parsing, annotations
   # and is the entry way to the co-ordinate data held in models.

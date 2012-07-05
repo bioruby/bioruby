@@ -6,16 +6,16 @@
 #              Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
 #
 # = Bio::PDB::Residue
 #
 # = Bio::PDB::Heterogen
 #
 
-require 'bio/db/pdb'
 
 module Bio
+
+  require 'bio/db/pdb' unless const_defined?(:PDB)
 
   class PDB
 

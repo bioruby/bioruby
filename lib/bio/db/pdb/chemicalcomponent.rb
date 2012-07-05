@@ -5,7 +5,6 @@
 #             GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::   The Ruby License
 #
-# $Id: chemicalcomponent.rb,v 1.3 2007/04/05 23:35:41 trevor Exp $
 #
 # = About Bio::PDB::ChemicalComponent
 #
@@ -17,9 +16,11 @@
 # * http://deposit.pdb.org/het_dictionary.txt
 #
 
-require 'bio/db/pdb/pdb'
 
 module Bio
+
+  require 'bio/db/pdb' unless const_defined?(:PDB)
+
   class PDB
 
     # Bio::PDB::ChemicalComponet is a parser for a entry of
