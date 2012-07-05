@@ -19,10 +19,7 @@
 # * http://www.ncbi.nlm.nih.gov/blast/ 
 #
 
-begin
-  require 'strscan'
-rescue LoadError
-end
+require 'strscan'
 require 'singleton'
 
 #--
@@ -72,19 +69,6 @@ module Bio
 
         # Returns whole entry as a string.
         def to_s; @entry; end
-
-        #:stopdoc:
-        # prevent using StringScanner_R (in old version of strscan)
-        if !defined?(StringScanner) then
-          def initialize(*arg)
-            raise 'couldn\'t load strscan.so'
-          end #def
-        elsif StringScanner.name == 'StringScanner_R' then
-          def initialize(*arg)
-            raise 'cannot use StringScanner_R'
-          end #def
-        end
-        #:startdoc:
 
         # Defines attributes which delegate to @f0dbstat objects.
         def self.delegate_to_f0dbstat(*names)
