@@ -5,12 +5,10 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id:$
-#
 
 module Bio
 
-  autoload :REBASE, 'bio/db/rebase'
+  autoload :REBASE, 'bio/db/rebase' unless const_defined?(:REBASE)
 
 # = Description
 # 
