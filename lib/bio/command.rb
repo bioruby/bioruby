@@ -547,33 +547,37 @@ module Command
   # BioRuby library internal use only.
   class Tmpdir
 
-    # Returns finalizer object for Tmpdir class.
-    # Internal use only. Users should not call this method directly.
-    # 
-    # Acknowledgement: The essense of the code is taken from tempfile.rb
-    # in Ruby 1.8.7.
+    # Internal use only. Users should not use this class directly.
     #
-    # ---
-    # *Arguments*:
-    # * (required) _data_: Array containing internal data
-    # *Returns*:: Proc object
-    def self.callback(data)
-      pid = $$
-      lambda {
-        path, = *data
-        if pid == $$
-          $stderr.print "removing ", path, " ..." if $DEBUG
-          if path and !path.empty? and
-              File.directory?(path) and
-              !File.symlink?(path) then
-            Bio::Command.remove_entry_secure(path)
-            $stderr.print "done\n" if $DEBUG
-          else
-            $stderr.print "skipped\n" if $DEBUG
-          end
+    # Bio::Command::Tmpdir::Remover is a class to remove temporary
+    # directory.
+    #
+    # Acknowledgement: The essense of the code is taken from tempfile.rb
+    # in Ruby trunk (svn 34413) and in Ruby 1.8.7.
+    class Remover
+      # Internal use only. Users should not call this method.
+      def initialize(data)
+        @pid = $$
+        @data = data
+      end
+
+      # Internal use only. Users should not call this method.
+      def call(*args)
+        return if @pid != $$
+
+        path, = *@data
+
+        STDERR.print "removing ", path, "..." if $DEBUG
+        if path and !path.empty? and
+            File.directory?(path) and
+            !File.symlink?(path) then
+          Bio::Command.remove_entry_secure(path)
+          $stderr.print "done\n" if $DEBUG
+        else
+          $stderr.print "skipped\n" if $DEBUG
         end
-      }
-    end
+      end
+    end #class Remover
 
     # Creates a new Tmpdir object.
     # The arguments are the same as Bio::Command.mktmpdir.
@@ -585,7 +589,7 @@ module Command
     # *Returns*:: Tmpdir object
     def initialize(prefix_suffix = nil, tmpdir = nil)
       @data = []
-      @clean_proc = self.class.callback(@data)
+      @clean_proc = Remover.new(@data)
       ObjectSpace.define_finalizer(self, @clean_proc)
       @data.push(@path = Bio::Command.mktmpdir(prefix_suffix, tmpdir).freeze)
     end
