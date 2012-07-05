@@ -276,6 +276,7 @@ Gem::Specification.new do |s|
     "lib/bio/shell/setup.rb",
     "lib/bio/shell/web.rb",
     "lib/bio/tree.rb",
+    "lib/bio/tree/output.rb",
     "lib/bio/util/color_scheme.rb",
     "lib/bio/util/color_scheme/buried.rb",
     "lib/bio/util/color_scheme/helix.rb",
