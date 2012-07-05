@@ -4,8 +4,6 @@
 # Copyright::  Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
-#
 # == Description
 #
 # NCBI BLAST default (-m 0 option) output parser.
@@ -22,9 +20,6 @@
 require 'strscan'
 require 'singleton'
 
-#--
-#require 'bio/db'
-#++
 require 'bio/io/flatfile'
 
 module Bio
