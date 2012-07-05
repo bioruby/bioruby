@@ -23,6 +23,9 @@ require 'singleton'
 require 'bio/io/flatfile'
 
 module Bio
+
+  require 'bio/appl/blast' unless const_defined?(:Blast)
+
   class Blast
     module Default #:nodoc:
 

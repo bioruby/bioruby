@@ -7,14 +7,12 @@
 # Copyright::  Copyright (C) 2008       Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
 #
 
 require 'net/http'
 require 'uri'
 require 'bio/command'
 require 'shellwords'
-require 'bio/appl/blast/remote'
 
 module Bio::Blast::Remote
 

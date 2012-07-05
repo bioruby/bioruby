@@ -4,7 +4,6 @@
 # Copyright::  Copyright (C) 2003, 2008 Naohisa GOTO <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
 #
 # == Description
 #
@@ -21,9 +20,10 @@
 # * http://www.ebi.ac.uk/blast2/
 #
 
-require 'bio/appl/blast/format0'
-
 module Bio
+
+  require 'bio/appl/blast' unless const_defined?(:Blast)
+
   class Blast
     module WU #:nodoc:
 

@@ -4,7 +4,6 @@
 # Copyright::  Copyright (C) 2008 Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
 #
 # == Description
 #
@@ -22,10 +21,12 @@
 # * http://www.ncbi.nlm.nih.gov/Structure/cdd/cdd_help.shtml
 #
 
-require 'bio/appl/blast/format0'
 require 'bio/io/flatfile'
 
 module Bio
+
+require 'bio/appl/blast' unless const_defined?(:Blast)
+
 class Blast
 
   # NCBI RPS Blast (Reversed Position Specific Blast) namespace.

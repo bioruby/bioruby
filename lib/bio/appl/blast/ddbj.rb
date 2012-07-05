@@ -4,10 +4,7 @@
 # Copyright::  Copyright (C) 2008       Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
-#
 
-require 'bio/appl/blast/remote'
 require 'bio/io/ddbjrest'
 
 module Bio::Blast::Remote

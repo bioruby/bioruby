@@ -4,12 +4,12 @@
 # Copyright::  Copyright (C) 2008  Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
-#
 
-require 'bio/appl/blast'
+module Bio
 
-class Bio::Blast
+require 'bio/appl/blast' unless const_defined?(:Blast)
+
+class Blast
 
   # Bio::Blast::Remote is a namespace for Remote Blast factory.
   module Remote
@@ -102,5 +102,6 @@ class Bio::Blast
 
   end #module Remote
 
-end #class Bio::Blast
+end #class Blast
 
+end #module Bio

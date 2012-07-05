@@ -4,7 +4,6 @@
 # Copyright:: Copyright (C) 2005 Naohisa Goto <ng@bioruby.org>
 # License::   The Ruby License
 #
-#  $Id:$
 #
 # Bio::Blast::Bl2seq::Report is a NCBI bl2seq (BLAST 2 sequences) output parser.
 #
@@ -15,9 +14,10 @@
 # lib/bio/appl/blast/format0.rb.
 #
 
-require 'bio/appl/blast/format0'
-
 module Bio
+
+require 'bio/appl/blast' unless const_defined?(:Blast)
+
 class Blast
 
   class Bl2seq
