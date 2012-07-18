@@ -1,6 +1,6 @@
 = BioRuby 1.5.0 RELEASE NOTES
 
-A lot of changes have been made to the BioRuby 1.5.0 after the version 1.4.2
+A lot of changes have been made to the BioRuby 1.4.3 after the version 1.4.2
 is released. This document describes important and/or incompatible changes
 since the BioRuby 1.4.2 release.
 
@@ -8,9 +8,16 @@ For known problems, see KNOWN_ISSUES.rdoc.
 
 == New features
 
-=== (tbd)
+=== Bio::KEGG::KGML
 
-(paragraph)
+* New class Bio::KEGG::KGML::Graphics for storing a graphics element.
+  In the instance of the class, "coords" attribute is now available.
+* New class Bio::KEGG::KGML::Substrate for storing a substrate element.
+* New class Bio::KEGG::KGML::Product for storing a product element.
+* New method Bio::KEGG::KGML::Reaction#id.
+* Improve RDoc documentation.
+* Unit tests are added.
+* There are incompatible changes. See Incompatible changes below.
 
 === Other new features
 
@@ -36,6 +43,37 @@ In Bio::FlatFile.open and Bio::FlatFile.auto, binmode (binary mode) is used
 by default when opening a file, unless text mode is explicitly specified
 with open mode string or with options. Due to the change, files using CR+LF
 line separator might not be read correctly.
+
+=== Bio::KEGG::KGML
+
+* Bio::KEGG::KGML::Reaction#substrates and Bio::KEGG::KGML::Reaction#products
+  are changed to return an array containing Bio::KEGG::KGML::Substrate and
+  Bio::KEGG::KGML::Product objects, respectively. The changes enables us to
+  get ID of substrates and products that were thrown away in the previous
+  versions.
+* Most attribute methods that were different from the KGML attribute names
+  are renamed to the names compatible with the KGML attribute names. Old
+  method names are changed to aliases of them and marked as deprecated.
+  The old names will be removed in the future.
+  * Bio::KEGG::KGML::Entry#id (old name: entry_id)
+  * Bio::KEGG::KGML::Entry#type (old name: category)
+  * Bio::KEGG::KGML::Entry#entry1 (old name: node1)
+  * Bio::KEGG::KGML::Entry#entry2 (old name: node2)
+  * Bio::KEGG::KGML::Entry#type (old name: rel)
+  * Bio::KEGG::KGML::Reaction#name (old name: entry_id)
+  * Bio::KEGG::KGML::Reaction#type (old name: direction)
+* Following attribute methods are deprecated because two or more graphics
+  elements may exist in an entry element. They will be removed in the future.
+  Instead, please use instance methods of Bio::KEGG::KGML::Graphics, which
+  can be obtained from Bio::KEGG::KGML::Entry#graphics attribute.
+  * Bio::KEGG::KGML::Entry#label
+  * Bio::KEGG::KGML::Entry#shape
+  * Bio::KEGG::KGML::Entry#x
+  * Bio::KEGG::KGML::Entry#y
+  * Bio::KEGG::KGML::Entry#width
+  * Bio::KEGG::KGML::Entry#height
+  * Bio::KEGG::KGML::Entry#fgcolor
+  * Bio::KEGG::KGML::Entry#bgcolor
 
 === BioRuby development
 
