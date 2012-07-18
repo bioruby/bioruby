@@ -511,9 +511,9 @@ class KGML
     dom.elements.each("/pathway/entry") { |node|
       attr = node.attributes
       entry = Entry.new
-      entry.entry_id = attr["id"].to_i
-      entry.name     = attr["name"]
-      entry.category = attr["type"]
+      entry.id   = attr["id"].to_i
+      entry.name = attr["name"]
+      entry.type = attr["type"]
       # implied
       entry.link     = attr["link"]
       entry.reaction = attr["reaction"]
@@ -562,9 +562,9 @@ class KGML
     dom.elements.each("/pathway/relation") { |node|
       attr = node.attributes
       relation = Relation.new
-      relation.node1   = attr["entry1"].to_i
-      relation.node2   = attr["entry2"].to_i
-      relation.rel     = attr["type"]
+      relation.entry1 = attr["entry1"].to_i
+      relation.entry2 = attr["entry2"].to_i
+      relation.type   = attr["type"]
 
       node.elements.each("subtype") { |subtype|
         attr = subtype.attributes
@@ -581,9 +581,9 @@ class KGML
     dom.elements.each("/pathway/reaction") { |node|
       attr = node.attributes
       reaction = Reaction.new
-      reaction.id = attr["id"].to_i
-      reaction.entry_id  = attr["name"]
-      reaction.direction = attr["type"]
+      reaction.id   = attr["id"].to_i
+      reaction.name = attr["name"]
+      reaction.type = attr["type"]
 
       substrates = Array.new
       products   = Array.new
