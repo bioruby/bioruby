@@ -16,25 +16,37 @@ class KEGG
 #
 # See http://www.genome.jp/kegg/xml/ for more details on KGML.
 #
+# === Note for older version users
+# * Most of incompatible attribute names with KGML tags are now deprecated.
+#   Use the names of KGML tags instead of old incompatible names that will
+#   be removed in the future.
+#   * Bio::KGML::Entry#id (entry_id is deprecated)
+#   * Bio::KGML::Entry#type (category is deprecated)
+#   * Bio::KGML::Relation#entry1 (node1 is deprecated)
+#   * Bio::KGML::Relation#entry2 (node2 is deprecated)
+#   * Bio::KGML::Relation#type (rel is deprecated)
+#   * Bio::KGML::Reaction#name (entry_id is deprecated)
+#   * Bio::KGML::Reaction#type (direction is deprecated)
+# * New class Bio::KGML::Graphics and new method Bio::KGML::Entry#graphics.
+#   Because two or more graphics elements may exist, following attribute
+#   methods in Bio::KGML::Entry are now deprecated and will be removed
+#   in the future. See rdoc of these methods for details.
+#   * Bio::KEGG::KGML::Entry#label
+#   * Bio::KEGG::KGML::Entry#shape
+#   * Bio::KEGG::KGML::Entry#x
+#   * Bio::KEGG::KGML::Entry#y
+#   * Bio::KEGG::KGML::Entry#width
+#   * Bio::KEGG::KGML::Entry#height
+#   * Bio::KEGG::KGML::Entry#fgcolor
+#   * Bio::KEGG::KGML::Entry#bgcolor
+#
 # === Incompatible attribute names with KGML tags
 #
-# <entry>
-#  :id -> :entry_id
-#  :type -> :category
+#  <entry>
 #  :map -> :pathway
 #  names()
-#  <graphics>
-#  :name -> :label
-#  :type -> :shape
-# <relation>
-#  :entry1 -> :node1
-#  :entry2 -> :node2
-#  :type -> :rel
 #  <subtype>
 #  edge()
-# <reaction>
-#  :name -> :entry_id
-#  :type -> :direction
 #
 # === Examples
 #
@@ -51,21 +63,22 @@ class KEGG
 #
 #  kgml.entries.each do |entry|
 #    # <entry> attributes
-#    puts entry.entry_id
+#    puts entry.id
 #    puts entry.name
-#    puts entry.category
+#    puts entry.type
 #    puts entry.link
 #    puts entry.reaction
-#    puts entry.pathway
 #    # <graphics> attributes
-#    puts entry.label	      # name
-#    puts entry.shape         # type
-#    puts entry.x
-#    puts entry.y
-#    puts entry.width
-#    puts entry.height
-#    puts entry.fgcolor
-#    puts entry.bgcolor
+#    entry.graphics.each do |graphics|
+#      puts graphics.name
+#      puts graphics.type
+#      puts graphics.x
+#      puts graphics.y
+#      puts graphics.width
+#      puts graphics.height
+#      puts graphics.fgcolor
+#      puts graphics.bgcolor
+#    end
 #    # <component> attributes
 #    puts entry.components
 #    # methood
@@ -74,11 +87,9 @@ class KEGG
 #
 #  kgml.relations.each do |relation|
 #    # <relation> attributes
-#    puts relation.node1      # entry1
-#    puts relation.node2      # entry2
-#    puts relation.rel        # type
-#    # method
-#    puts relation.edge
+#    puts relation.entry1
+#    puts relation.entry2
+#    puts relation.type
 #    # <subtype> attributes
 #    puts relation.name
 #    puts relation.value
@@ -86,8 +97,8 @@ class KEGG
 #
 #  kgml.reactions.each do |reaction|
 #    # <reaction> attributes
-#    puts reaction.entry_id   # name
-#    puts reaction.direction  # type
+#    puts reaction.name
+#    puts reaction.type
 #    # <substrate> attributes
 #    reaction.substrates.each do |entry_id|
 #      puts entry_id
