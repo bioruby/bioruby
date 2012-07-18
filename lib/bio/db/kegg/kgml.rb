@@ -128,45 +128,54 @@ class KGML
     parse_reaction(dom)
   end
 
-  # KEGG-style ID string of this pathway map (String)
+  # KEGG-style ID string of this pathway map (String or nil)
+  # ('pathway' element)
   attr_reader :name
 
   # "ko" (KEGG Orthology), "ec" (KEGG ENZYME),
-  # or the KEGG 3-letter organism code (String)
+  # or the KEGG 3-letter organism code (String or nil)
+  # ('pathway' element)
   attr_reader :org
 
-  # map number (String)
+  # map number (String or nil)
+  # ('pathway' element)
   attr_reader :number
 
-  # title (String)
+  # title (String or nil)
+  # ('pathway' element)
   attr_reader :title
 
-  # image URL of this pathway map (String)
+  # image URL of this pathway map (String or nil)
+  # ('pathway' element)
   attr_reader :image
 
-  # general information URL of this pathway map (String)
+  # information URL of this pathway map (String or nil)
+  # ('pathway' element)
   attr_reader :link
 
-  # contains KGML::Entry objects
+  # entry elements (Array containing KGML::Entry objects, or nil)
   attr_accessor :entries
 
-  # contains KGML::Relations objects
+  # relation elements (Array containing KGML::Relations objects, or nil)
   attr_accessor :relations
 
-  # contains KGML::Reactions objects
+  # reaction elements (Array containing KGML::Reactions objects, or nil)
   attr_accessor :reactions
 
   # Bio::KEGG:Entry contains an entry element in the KGML.
   class Entry
 
-    # ID of this entry in this pathway map (Integer).
+    # ID of this entry in this pathway map (Integer or nil).
     # ('id' attribute in 'entry' element)
-    attr_accessor :entry_id
+    attr_accessor :id
 
-    # KEGG-style ID string of this entry (String)
+    alias entry_id  id
+    alias entry_id= id=
+
+    # KEGG-style ID string of this entry (String or nil)
     attr_accessor :name
 
-    # type of this entry (String).
+    # type of this entry (String or nil).
     # Normally one of the following:
     # * "ortholog"
     # * "enzyme"
@@ -177,22 +186,62 @@ class KGML
     # * "map"
     # See http://www.genome.jp/kegg/xml/docs/ for details.
     # ('type' attribute in 'entry' element)
-    attr_accessor :category
+    attr_accessor :type
 
-    # URL pointing information about this entry (String)
+    alias category  type
+    alias category= type=
+
+    # URL pointing information about this entry (String or nil)
     attr_accessor :link
 
-    # KEGG-style ID string of this reaction (String)
+    # KEGG-style ID string of this reaction (String or nil)
     attr_accessor :reaction
 
     # (Deprecated?) ('map' attribute in 'entry' element)
     attr_accessor :pathway
 
-    # label of the 'graphics' element (String)
-    # ('name' attribute in 'graphics' element)
-    attr_accessor :label
+    # (private) get an attribute value in the graphics[-1] object
+    def _graphics_attr(attr)
+      if self.graphics then
+        g = self.graphics[-1]
+        g ? g.__send__(attr) : nil
+      else
+        nil
+      end
+    end
+    private :_graphics_attr
 
-    # shape of the 'graphics' element (String)
+    # (private) get an attribute value in the graphics[-1] object
+    def _graphics_set_attr(attr, val)
+      self.graphics ||= []
+      unless g = self.graphics[-1] then
+        g = Graphics.new
+        self.graphics.push(g)
+      end
+      g.__send__(attr, val)
+    end
+    private :_graphics_set_attr
+
+    # Deprecated.
+    # Same as self.graphics[-1].name (additional nil checks may be needed).
+    # 
+    # label of the 'graphics' element (String or nil)
+    # ('name' attribute in 'graphics' element)
+    def label
+      _graphics_attr(:name)
+    end
+
+    # Deprecated.
+    # Same as self.graphics[-1].name= (additional nil checks may be needed).
+    #
+    def label=(val)
+      _graphics_set_attr(:name=, val)
+    end
+
+    # Deprecated.
+    # Same as self.graphics[-1].type (additional nil checks may be needed).
+    #
+    # shape of the 'graphics' element (String or nil)
     # Normally one of the following:
     # * "rectangle"
     # * "circle"
@@ -200,48 +249,178 @@ class KGML
     # * "line"
     # If not specified, "rectangle" is the default value.
     # ('type' attribute in 'graphics' element)
-    attr_accessor :shape
+    def shape
+      _graphics_attr(:type)
+    end
 
-    # X axis position (Integer) ('graphics' element)
-    attr_accessor :x
+    # Deprecated.
+    # Same as self.graphics[-1].type= (additional nil checks may be needed).
+    #
+    def shape=(val)
+      _graphics_set_attr(:type=, val)
+    end
 
-    # Y axis position (Integer) ('graphics' element)
-    attr_accessor :y
+    # Deprecated.
+    # Same as self.graphics[-1].x (additional nil checks may be needed).
+    #
+    # X axis position (Integer or nil) ('graphics' element)
+    def x
+      _graphics_attr(:x)
+    end
 
-    # width (Integer) ('graphics' element)
-    attr_accessor :width
+    # Deprecated.
+    # Same as self.graphics[-1].x= (additional nil checks may be needed).
+    #
+    def x=(val)
+      _graphics_set_attr(:x=, val)
+    end
 
-    # height (Integer) ('graphics' element)
-    attr_accessor :height
+    # Deprecated.
+    # Same as self.graphics[-1].y (additional nil checks may be needed).
+    #
+    # Y axis position (Integer or nil) ('graphics' element)
+    def y
+      _graphics_attr(:y)
+    end
 
-    # foreground color (String) ('graphics' element)
-    attr_accessor :fgcolor
+    # Deprecated.
+    # Same as self.graphics[-1].y= (additional nil checks may be needed).
+    #
+    def y=(val)
+      _graphics_set_attr(:y=, val)
+    end
 
-    # background color (String) ('graphics' element)
-    attr_accessor :bgcolor
+    # Deprecated.
+    # Same as self.graphics[-1].width (additional nil checks may be needed).
+    #
+    # width (Integer or nil) ('graphics' element)
+    def width
+      _graphics_attr(:width)
+    end
 
-    # components included in this entry
+    # Deprecated.
+    # Same as self.graphics[-1].width= (additional nil checks may be needed).
+    #
+    def width=(val)
+      _graphics_set_attr(:width=, val)
+    end
+
+    # Deprecated.
+    # Same as self.graphics[-1].height (additional nil checks may be needed).
+    #
+    # height (Integer or nil) ('graphics' element)
+    def height
+      _graphics_attr(:height)
+    end
+
+    # Deprecated.
+    # Same as self.graphics[-1].height= (additional nil checks may be needed).
+    #
+    def height=(val)
+      _graphics_set_attr(:height=, val)
+    end
+
+    # Deprecated.
+    # Same as self.graphics[-1].fgcolor (additional nil checks may be needed).
+    #
+    # foreground color (String or nil) ('graphics' element)
+    def fgcolor
+      _graphics_attr(:fgcolor)
+    end
+
+    # Deprecated.
+    # Same as self.graphics[-1].fgcolor= (additional nil checks may be needed).
+    #
+    def fgcolor=(val)
+      _graphics_set_attr(:fgcolor=, val)
+    end
+
+    # Deprecated.
+    # Same as self.graphics[-1].bgcolor (additional nil checks may be needed).
+    #
+    # background color (String or nil) ('graphics' element)
+    def bgcolor
+      _graphics_attr(:bgcolor)
+    end
+
+    # Deprecated.
+    # Same as self.graphics[-1].bgcolor= (additional nil checks may be needed).
+    #
+    def bgcolor=(val)
+      _graphics_set_attr(:bgcolor=, val)
+    end
+
+    # graphics elements included in this entry
+    # (Array containing Graphics objects, or nil)
+    attr_accessor :graphics
+
+    # component elements included in this entry
     # (Array containing Integer objects, or nil)
     attr_accessor :components
 
-    # (Deprecated?) names (Array)
+    # the "name" attribute may contain multiple names separated
+    # with space characters. This method returns the names
+    # as an array. (Array containing String objects)
     def names
       @name.split(/\s+/)
     end
   end
 
+  # Bio::KEGG::KGML::Graphics contains a 'graphics' element in the KGML.
+  class Graphics
+    # label of the 'graphics' element (String or nil)
+    attr_accessor :name
+
+    # shape of the 'graphics' element (String or nil)
+    # Normally one of the following:
+    # * "rectangle"
+    # * "circle"
+    # * "roundrectangle"
+    # * "line"
+    # If not specified, "rectangle" is the default value.
+    attr_accessor :type
+
+    # X axis position (Integer or nil)
+    attr_accessor :x
+
+    # Y axis position (Integer or nil)
+    attr_accessor :y
+
+    # polyline coordinates
+    # (Array containing Array of [ x, y ] pair of Integer values)
+    attr_accessor :coords
+
+    # width (Integer or nil)
+    attr_accessor :width
+
+    # height (Integer or nil)
+    attr_accessor :height
+
+    # foreground color (String or nil)
+    attr_accessor :fgcolor
+
+    # background color (String or nil)
+    attr_accessor :bgcolor
+  end #class Graphics
+
   # Bio::KEGG::KGML::Relation contains a relation element in the KGML.
   class Relation
 
-    # the first entry of the relation (String)
+    # the first entry of the relation (Integer or nil)
     # ('entry1' attribute in 'relation' element)
-    attr_accessor :node1
+    attr_accessor :entry1
 
-    # the second entry of the relation (String)
+    alias node1  entry1
+    alias node1= entry1=
+
+    # the second entry of the relation (Integer or nil)
     # ('entry2' attribute in 'relation' element)
-    attr_accessor :node2
+    attr_accessor :entry2
 
-    # type of this relation (String).
+    alias node2  entry2
+    alias node2= entry2=
+
+    # type of this relation (String or nil).
     # Normally one of the following:
     # * "ECrel"
     # * "PPrel"
@@ -249,14 +428,17 @@ class KGML
     # * "PCrel"
     # * "maplink"
     # ('type' attribute in 'relation' element)
-    attr_accessor :rel
+    attr_accessor :type
 
-    # interaction and/or relation type (String).
+    alias rel  type
+    alias rel= type=
+
+    # interaction and/or relation type (String or nil).
     # See http://www.genome.jp/kegg/xml/docs/ for details.
     # ('name' attribute in 'subtype' element)
     attr_accessor :name
 
-    # interaction and/or relation information (String).
+    # interaction and/or relation information (String or nil).
     # See http://www.genome.jp/kegg/xml/docs/ for details.
     # ('value' attribute in 'subtype' element)
     attr_accessor :value
@@ -270,24 +452,33 @@ class KGML
   # Bio::KEGG::KGML::Reaction contains a reaction element in the KGML.
   class Reaction
 
-    # KEGG-stype ID string of this reaction (String)
-    # ('name' attribute in 'reaction' element)
-    attr_accessor :entry_id
+    # ID of this reaction (Integer or nil)
+    attr_accessor :id
 
-    # type of this reaction (String).
+    # KEGG-stype ID string of this reaction (String or nil)
+    # ('name' attribute in 'reaction' element)
+    attr_accessor :name
+
+    alias entry_id  name
+    alias entry_id= name=
+
+    # type of this reaction (String or nil).
     # Normally "reversible" or "irreversible".
     # ('type' attribute in 'reaction' element)
-    attr_accessor :direction
+    attr_accessor :type
+
+    alias direction  type
+    alias direction= type=
 
     # Substrates. Each substrate name is the KEGG-style ID string.
-    # (Array containing String objects)
+    # (Array containing String objects, or nil)
     attr_accessor :substrates
 
     # Products. Each product name is the KEGG-style ID string.
-    # (Array containing String objects)
+    # (Array containing String objects, or nil)
     attr_accessor :products
 
-    # (Deprecated?) (Hash)
+    # alt element (Hash)
     attr_accessor :alt
   end
 
@@ -318,15 +509,30 @@ class KGML
       entry.pathway  = attr["map"]
 
       node.elements.each("graphics") { |graphics|
+        g = Graphics.new
         attr = graphics.attributes
-        entry.x        = attr["x"].to_i
-        entry.y        = attr["y"].to_i
-        entry.shape    = attr["type"]
-        entry.label    = attr["name"]
-        entry.width    = attr["width"].to_i
-        entry.height   = attr["height"].to_i
-        entry.fgcolor  = attr["fgcolor"]
-        entry.bgcolor  = attr["bgcolor"]
+        g.x       = attr["x"].to_i
+        g.y       = attr["y"].to_i
+        g.type    = attr["type"]
+        g.name    = attr["name"]
+        g.width    = attr["width"].to_i
+        g.height   = attr["height"].to_i
+        g.fgcolor  = attr["fgcolor"]
+        g.bgcolor  = attr["bgcolor"]
+        if str = attr["coords"] then
+          coords = []
+          tmp = str.split(',')
+          tmp.collect! { |n| n.to_i }
+          while xx = tmp.shift
+            yy = tmp.shift
+            coords.push [ xx, yy ]
+          end
+          g.coords = coords
+        else
+          g.coords = nil
+        end
+        entry.graphics ||= []
+        entry.graphics.push g
       }
 
       node.elements.each("component") { |component|
@@ -364,6 +570,7 @@ class KGML
     dom.elements.each("/pathway/reaction") { |node|
       attr = node.attributes
       reaction = Reaction.new
+      reaction.id = attr["id"].to_i
       reaction.entry_id  = attr["name"]
       reaction.direction = attr["type"]
 
