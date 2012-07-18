@@ -910,13 +910,113 @@ module Bio; module TestKeggKGML
     end
 
     def test_substrates
-      assert_equal [ "cpd:C99990", "cpd:C99991" ], @obj.substrates
+      assert_equal [ "cpd:C99990", "cpd:C99991" ],
+      @obj.substrates.collect { |x| x.name }
+
+      assert_equal [ 3330, 3331 ],
+      @obj.substrates.collect { |x| x.id }
     end
 
     def test_products
-      assert_equal [ "cpd:C99902", "cpd:C99903" ], @obj.products
+      assert_equal [ "cpd:C99902", "cpd:C99903" ],
+      @obj.products.collect { |x| x.name }
+
+      assert_equal [ 3332, 3333 ],
+      @obj.products.collect { |x| x.id }
     end
   end #class TestKGMLReaction
+
+  class TestKGMLSubstrate < Test::Unit::TestCase
+    def setup
+      xmlstr = KGMLTestXMLstr
+      @obj0 = Bio::KEGG::KGML.new(xmlstr).reactions[0].substrates[0]
+      @obj1 = Bio::KEGG::KGML.new(xmlstr).reactions[0].substrates[1]
+    end
+
+    def test_id
+      assert_equal 3330, @obj0.id
+      assert_equal 3331, @obj1.id
+    end
+
+    def test_name
+      assert_equal 'cpd:C99990', @obj0.name
+      assert_equal 'cpd:C99991', @obj1.name
+    end
+  end #class TestKGMLSubstrate
+
+  class TestKGMLProduct < Test::Unit::TestCase
+    def setup
+      xmlstr = KGMLTestXMLstr
+      @obj0 = Bio::KEGG::KGML.new(xmlstr).reactions[0].products[0]
+      @obj1 = Bio::KEGG::KGML.new(xmlstr).reactions[0].products[1]
+    end
+
+    def test_id
+      assert_equal 3332, @obj0.id
+      assert_equal 3333, @obj1.id
+    end
+
+    def test_name
+      assert_equal 'cpd:C99902', @obj0.name
+      assert_equal 'cpd:C99903', @obj1.name
+    end
+  end #class TestKGMLProduct
+
+  module TestKGMLSubstrateProductSetterMethods
+    def test_initialize_0
+      assert_nil @obj.id
+      assert_nil @obj.name
+    end
+
+    def test_initialize_1
+      obj = Bio::KEGG::KGML::SubstrateProduct.new(123)
+      assert_equal 123, obj.id
+      assert_nil obj.name
+    end
+
+    def test_initialize_2
+      obj = Bio::KEGG::KGML::SubstrateProduct.new(123, 'test')
+      assert_equal 123, obj.id
+      assert_equal 'test', obj.name
+    end
+
+    def test_id=()
+      assert_nil @obj.id
+      assert_equal 123, (@obj.id = 123)
+      assert_equal 123, @obj.id
+      assert_equal 456, (@obj.id = 456)
+      assert_equal 456, @obj.id
+    end
+
+    def test_name=()
+      assert_nil @obj.name
+      assert_equal "cpd:C99990", (@obj.name = "cpd:C99990")
+      assert_equal "cpd:C99990", @obj.name
+      assert_equal "cpd:C99902", (@obj.name = "cpd:C99902")
+      assert_equal "cpd:C99902", @obj.name
+    end
+  end #module TestKGMLSubstrateProductSetterMethods
+
+  class TestKGMLSubstrateProductSetter < Test::Unit::TestCase
+    include TestKGMLSubstrateProductSetterMethods
+    def setup
+      @obj = Bio::KEGG::KGML::SubstrateProduct.new
+    end
+  end # class TestKGMLSubstrateProductSetter
+
+  class TestKGMLSubstrateSetter < Test::Unit::TestCase
+    include TestKGMLSubstrateProductSetterMethods
+    def setup
+      @obj = Bio::KEGG::KGML::Substrate.new
+    end
+  end # class TestKGMLSubstrateSetter
+
+  class TestKGMLProductSetter < Test::Unit::TestCase
+    include TestKGMLSubstrateProductSetterMethods
+    def setup
+      @obj = Bio::KEGG::KGML::Product.new
+    end
+  end # class TestKGMLProductSetter
 
 end; end #module TestKeggKGML; #module Bio
 

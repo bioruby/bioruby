@@ -39,6 +39,11 @@ class KEGG
 #   * Bio::KEGG::KGML::Entry#height
 #   * Bio::KEGG::KGML::Entry#fgcolor
 #   * Bio::KEGG::KGML::Entry#bgcolor
+# * Incompatible changes: Bio::KEGG::KGML::Reaction#substrates now returns
+#   an array containing Bio::KEGG::KGML::Substrate objects, and 
+#   Bio::KEGG::KGML::Reaction#products now returns an array containing
+#   Bio::KEGG::KGML::Product objects. The changes enable us to get id of
+#   substrates and products.
 #
 # === Incompatible attribute names with KGML tags
 #
@@ -100,8 +105,9 @@ class KEGG
 #    puts reaction.name
 #    puts reaction.type
 #    # <substrate> attributes
-#    reaction.substrates.each do |entry_id|
-#      puts entry_id
+#    reaction.substrates.each do |substrate|
+#      puts substrate.id
+#      puts substrate.name
 #      # <alt> attributes
 #      altnames = reaction.alt[entry_id]
 #      altnames.each do |name|
@@ -109,8 +115,9 @@ class KEGG
 #      end
 #    end
 #    # <product> attributes
-#    reaction.products.each do |entry_id|
-#      puts entry_id
+#    reaction.products.each do |product|
+#      puts product.id
+#      puts product.name
 #      # <alt> attributes
 #      altnames = reaction.alt[entry_id]
 #      altnames.each do |name|
@@ -493,6 +500,33 @@ class KGML
     attr_accessor :alt
   end
 
+  # Bio::KEGG::KGML::SubstrateProduct contains a substrate element
+  # or a product element in the KGML.
+  #
+  # Please do not use SubstrateProduct directly.
+  # Instead, please use Substrate or Product class.
+  class SubstrateProduct
+    # ID of this substrate or product (Integer or nil)
+    attr_accessor :id
+
+    # name of this substrate or product (String or nil)
+    attr_accessor :name
+
+    # Creates a new object
+    def initialize(id = nil, name = nil)
+      @id ||= id
+      @name ||= name
+    end
+  end #class SubstrateProduct
+
+  # Bio::KEGG::KGML::Substrate contains a substrate element in the KGML.
+  class Substrate < SubstrateProduct
+  end
+
+  # Bio::KEGG::KGML::Product contains a product element in the KGML.
+  class Product < SubstrateProduct
+  end
+
   private
 
   def parse_root(dom)
@@ -590,16 +624,18 @@ class KGML
       hash        = Hash.new
 
       node.elements.each("substrate") { |substrate|
+        id = substrate.attributes["id"].to_i
         name = substrate.attributes["name"]
-        substrates << name
+        substrates << Substrate.new(id, name)
         substrate.elements.each("alt") { |alt|
           hash[name] ||= Array.new
           hash[name] << alt.attributes["name"]
         }
       }
       node.elements.each("product") { |product|
+        id = product.attributes["id"].to_i
         name = product.attributes["name"]
-        products << name
+        products << Product.new(id, name)
         product.elements.each("alt") { |alt|
           hash[name] ||= Array.new
           hash[name] << alt.attributes["name"]
