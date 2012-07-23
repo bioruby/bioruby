@@ -56,6 +56,11 @@ module Bio::Blast::Remote
   #   tblastn  | AA    | genes-nt, genome, vgenes.nuc
   #  ----------+-------+---------------------------------------------------
   #
+  # === BLAST options
+  #
+  # Options are basically the same as those of the blastall command
+  # in NCBI BLAST. See http://www.genome.jp/tools-bin/show_man?blast2
+  #
   # == See also
   #
   # * Bio::Blast
