@@ -1,4 +1,4 @@
-= BioRuby 1.5.0 RELEASE NOTES
+= BioRuby 1.4.3 RELEASE NOTES
 
 A lot of changes have been made to the BioRuby 1.4.3 after the version 1.4.2
 is released. This document describes important and/or incompatible changes
