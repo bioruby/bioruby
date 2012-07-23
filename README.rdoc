@@ -172,7 +172,7 @@ For parsing PhyloXML format files:
 
 If you are using RubyGems, just type
 
-  % gems install bio
+  % gem install bio
 
 Alternatively, manually download bio-X.X.X.gem from 
 http://rubyforge.org/projects/bioruby/ and install it by using gems command.
