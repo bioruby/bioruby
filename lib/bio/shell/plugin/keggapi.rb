@@ -101,8 +101,8 @@ module Bio::Shell
       list = ftp.nlst(path)
       file = list.grep(/.*genome$/).shift
       if file
-        open("ftp://ftp.genome.jp/#{file}") do |file|
-          result = file.read
+        open("ftp://ftp.genome.jp/#{file}") do |f|
+          result = f.read
         end
       end
     end

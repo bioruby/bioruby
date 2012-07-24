@@ -56,7 +56,7 @@ module Bio
     end
 
     def test_reparse
-      tree = @newick.tree
+      @newick.tree
       assert_equal(@newick, @newick.reparse)
     end
 

@@ -153,8 +153,8 @@ if $0 == __FILE__
   puts seq
   
   seqs = fastacmd.fetch(['id_of_entry1','id_of_entry2'])
-  seqs.each do |seq|
-    puts seq
+  seqs.each do |s|
+    puts s
   end
 
   fastacmd.each_entry do |fasta|

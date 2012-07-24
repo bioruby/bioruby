@@ -165,47 +165,47 @@ module Bio
       #
       def self.generate_xml(root, elem, subelement_array)
        #example usage: generate_xml(node, self, [[ :complex,'accession', ], [:simple, 'name',  @name], [:simple, 'location', @location]])
-      subelement_array.each do |subelem|
-        if subelem[0] == :simple         
-          root << XML::Node.new(subelem[1], subelem[2].to_s) if subelem[2] != nil and not subelem[2].to_s.empty?
+        subelement_array.each do |subelem|
+          if subelem[0] == :simple
+            root << XML::Node.new(subelem[1], subelem[2].to_s) if subelem[2] != nil and not subelem[2].to_s.empty?
 
-        elsif subelem[0] == :complex
-          root << subelem[2].send("to_xml") if subelem[2] != nil
+          elsif subelem[0] == :complex
+            root << subelem[2].send("to_xml") if subelem[2] != nil
 
-        elsif subelem[0] == :pattern
-          #seq, self, [[:pattern, 'symbol', @symbol, "\S{1,10}"]
-          if subelem[2] != nil
-            if subelem[2] =~ subelem[3]
-              root << XML::Node.new(subelem[1], subelem[2])
-            else
-              raise "#{subelem[2]} is not a valid value of #{subelem[1]}. It should follow pattern #{subelem[3]}"
+          elsif subelem[0] == :pattern
+            #seq, self, [[:pattern, 'symbol', @symbol, "\S{1,10}"]
+            if subelem[2] != nil
+              if subelem[2] =~ subelem[3]
+                root << XML::Node.new(subelem[1], subelem[2])
+              else
+                raise "#{subelem[2]} is not a valid value of #{subelem[1]}. It should follow pattern #{subelem[3]}"
+              end
             end
-          end
 
-        elsif subelem[0] == :objarr
-          #[:objarr, 'annotation', 'annotations']])
-          obj_arr = elem.send(subelem[2])
-          obj_arr.each do |arr_elem|
-            root << arr_elem.to_xml
-          end
+          elsif subelem[0] == :objarr
+            #[:objarr, 'annotation', 'annotations']])
+            obj_arr = elem.send(subelem[2])
+            obj_arr.each do |arr_elem|
+              root << arr_elem.to_xml
+            end
 
-        elsif subelem[0] == :simplearr
-          #  [:simplearr, 'common_name', @common_names]
-          subelem[2].each do |elem_val|
-            root << XML::Node.new(subelem[1], elem_val)
+          elsif subelem[0] == :simplearr
+            #  [:simplearr, 'common_name', @common_names]
+            subelem[2].each do |elem_val|
+              root << XML::Node.new(subelem[1], elem_val)
+            end
+          elsif subelem[0] == :attr
+            #[:attr, 'rooted']
+            obj = elem.send(subelem[1])
+            if obj != nil
+              root[subelem[1]] = obj.to_s
+            end
+          else
+            raise "Not supported type of element by method generate_xml."
           end
-        elsif subelem[0] == :attr
-          #[:attr, 'rooted']
-          obj = elem.send(subelem[1])
-          if obj != nil
-            root[subelem[1]] = obj.to_s
-          end
-        else
-          raise "Not supported type of element by method generate_xml."
         end
+        return root
       end
-      return root
-     end
 
       private
 
