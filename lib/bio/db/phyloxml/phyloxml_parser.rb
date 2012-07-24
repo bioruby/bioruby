@@ -158,7 +158,7 @@ module PhyloXML
       }
       if block_given? then
         begin
-          ret = yield obj
+          yield obj
         ensure
           obj.close if obj and !obj.closed?
         end
