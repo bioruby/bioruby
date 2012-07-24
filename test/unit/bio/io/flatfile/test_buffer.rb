@@ -218,7 +218,7 @@ module Bio::TestFlatFileBufferedInputStream
     end
 
     def test_pos=()
-      str = @obj.gets
+      @obj.gets
       assert_equal(0, @obj.pos = 0)
     end
       
