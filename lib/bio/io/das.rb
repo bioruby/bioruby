@@ -51,17 +51,17 @@ class DAS
     doc = REXML::Document.new(result.body)
     doc.elements.each('/descendant::DSN') do |e|
       dsn = DSN.new
-      e.elements.each do |e|
-        case e.name
+      e.elements.each do |e2|
+        case e2.name
         when 'SOURCE'
-          dsn.source = e.text
-          dsn.source_id = e.attributes['id']
-          dsn.source_version = e.attributes['version']
+          dsn.source = e2.text
+          dsn.source_id = e2.attributes['id']
+          dsn.source_version = e2.attributes['version']
         when 'MAPMASTER'
-          dsn.mapmaster = e.text
+          dsn.mapmaster = e2.text
         when 'DESCRIPTION'
-          dsn.description = e.text
-          dsn.description_href = e.attributes['href']
+          dsn.description = e2.text
+          dsn.description_href = e2.attributes['href']
         end
       end
       ary << dsn
@@ -83,14 +83,14 @@ class DAS
     doc.elements.each('/descendant::ENTRY_POINTS') do |e|
       entry_point.href = e.attributes['href']
       entry_point.version = e.attributes['version']
-      e.elements.each do |e|
+      e.elements.each do |e2|
         segment = SEGMENT.new
-        segment.entry_id = e.attributes['id']
-        segment.start = e.attributes['start']
-        segment.stop = e.attributes['stop'] || e.attributes['size']
-        segment.orientation = e.attributes['orientation']
-        segment.subparts = e.attributes['subparts']
-        segment.description = e.text
+        segment.entry_id = e2.attributes['id']
+        segment.start = e2.attributes['start']
+        segment.stop = e2.attributes['stop'] || e2.attributes['size']
+        segment.orientation = e2.attributes['orientation']
+        segment.subparts = e2.attributes['subparts']
+        segment.description = e2.text
         entry_point.segments << segment
       end
     end
@@ -120,9 +120,9 @@ class DAS
       sequence.start = e.attributes['start']
       sequence.stop = e.attributes['stop']
       sequence.version = e.attributes['version']
-      e.elements.each do |e|
-        sequence.sequence = Bio::Sequence::NA.new(e.text)
-        sequence.length = e.attributes['length'].to_i
+      e.elements.each do |e2|
+        sequence.sequence = Bio::Sequence::NA.new(e2.text)
+        sequence.length = e2.attributes['length'].to_i
       end
       ary << sequence
     end
@@ -186,19 +186,19 @@ class DAS
     doc.elements.each('/descendant::GFF') do |e|
       types.version = e.attributes['version']
       types.href = e.attributes['href']
-      e.elements.each do |e|
+      e.elements.each do |e2|
         segment = SEGMENT.new
-        segment.entry_id = e.attributes['id']
-        segment.start = e.attributes['start']
-        segment.stop = e.attributes['stop']
-        segment.version = e.attributes['version']
-        segment.label = e.attributes['label']
-        e.elements.each do |e|
+        segment.entry_id = e2.attributes['id']
+        segment.start = e2.attributes['start']
+        segment.stop = e2.attributes['stop']
+        segment.version = e2.attributes['version']
+        segment.label = e2.attributes['label']
+        e2.elements.each do |e3|
           t = TYPE.new
-          t.entry_id = e.attributes['id']
-          t.method = e.attributes['method']
-          t.category = e.attributes['category']
-          t.count = e.text.to_i
+          t.entry_id = e3.attributes['id']
+          t.method = e3.attributes['method']
+          t.category = e3.attributes['category']
+          t.count = e3.text.to_i
           segment.types << t
         end
         types.segments << segment
@@ -237,73 +237,73 @@ class DAS
     doc.elements.each('/descendant::GFF') do |e|
       gff.version = e.attributes['version']
       gff.href = e.attributes['href']
-      e.elements.each('SEGMENT') do |e|
+      e.elements.each('SEGMENT') do |e2|
         segment = SEGMENT.new
-        segment.entry_id = e.attributes['id']
-        segment.start = e.attributes['start']
-        segment.stop = e.attributes['stop']
-        segment.version = e.attributes['version']
-        segment.label = e.attributes['label']
-        e.elements.each do |e|
+        segment.entry_id = e2.attributes['id']
+        segment.start = e2.attributes['start']
+        segment.stop = e2.attributes['stop']
+        segment.version = e2.attributes['version']
+        segment.label = e2.attributes['label']
+        e2.elements.each do |e3|
           feature = FEATURE.new
-          feature.entry_id = e.attributes['id']
-          feature.label = e.attributes['label']
-          e.elements.each do |e|
-            case e.name
+          feature.entry_id = e3.attributes['id']
+          feature.label = e3.attributes['label']
+          e3.elements.each do |e4|
+            case e4.name
             when 'TYPE'
               type = TYPE.new
-              type.entry_id = e.attributes['id']
-              type.category = e.attributes['category']
-              type.reference = e.attributes['referrence']
-              type.label = e.text
+              type.entry_id = e4.attributes['id']
+              type.category = e4.attributes['category']
+              type.reference = e4.attributes['referrence']
+              type.label = e4.text
               feature.types << type
             when 'METHOD'
-              feature.method_id = e.attributes['id']
-              feature.method = e.text
+              feature.method_id = e4.attributes['id']
+              feature.method = e4.text
             when 'START'
-              feature.start = e.text
+              feature.start = e4.text
             when 'STOP', 'END'
-              feature.stop = e.text
+              feature.stop = e4.text
             when 'SCORE'
-              feature.score = e.text
+              feature.score = e4.text
             when 'ORIENTATION'
-              feature.orientation = e.text
+              feature.orientation = e4.text
             when 'PHASE'
-              feature.phase = e.text
+              feature.phase = e4.text
             when 'NOTE'
-              feature.notes << e.text
+              feature.notes << e4.text
             when 'LINK'
               link = LINK.new
-              link.href = e.attributes['href']
-              link.text = e.text
+              link.href = e4.attributes['href']
+              link.text = e4.text
               feature.links << link
             when 'TARGET'
               target = TARGET.new
-              target.entry_id = e.attributes['id']
-              target.start = e.attributes['start']
-              target.stop = e.attributes['stop']
-              target.name = e.text
+              target.entry_id = e4.attributes['id']
+              target.start = e4.attributes['start']
+              target.stop = e4.attributes['stop']
+              target.name = e4.text
               feature.targets << target
             when 'GROUP'
               group = GROUP.new
-              group.entry_id = e.attributes['id']
-              group.label = e.attributes['label']
-              group.type = e.attributes['type']
-              e.elements.each do |e|
-                case e.name
+              group.entry_id = e4.attributes['id']
+              group.label = e4.attributes['label']
+              group.type = e4.attributes['type']
+              e4.elements.each do |e5|
+                case e5.name
                 when 'NOTE'		# in GROUP
-                  group.notes << e.text
+                  group.notes << e5.text
                 when 'LINK'		# in GROUP
                   link = LINK.new
-                  link.href = e.attributes['href']
-                  link.text = e.text
+                  link.href = e5.attributes['href']
+                  link.text = e5.text
                   group.links << link
                 when 'TARGET'		# in GROUP
                   target = TARGET.new
-                  target.entry_id = e.attributes['id']
-                  target.start = e.attributes['start']
-                  target.stop = e.attributes['stop']
-                  target.name = e.text
+                  target.entry_id = e5.attributes['id']
+                  target.start = e5.attributes['start']
+                  target.stop = e5.attributes['stop']
+                  target.name = e5.text
                   group.targets << target
                 end
               end
