@@ -996,21 +996,46 @@ module Bio
           str.empty? ? '.' : str
         end
 
+        if URI.const_defined?(:Parser) then
+          # (private) URI::Parser object for escape/unescape GFF3 columns
+          URI_PARSER = URI::Parser.new
+
+          # (private) the same as URI::Parser#escape(str, unsafe)
+          def _escape(str, unsafe)
+            URI_PARSER.escape(str, unsafe)
+          end
+
+          # (private) the same as URI::Parser#unescape(str)
+          def _unescape(str)
+            URI_PARSER.unescape(str)
+          end
+        else
+          # (private) the same as URI.escape(str, unsafe)
+          def _escape(str, unsafe)
+            URI.escape(str, unsafe)
+          end
+
+          # (private) the same as URI.unescape(str)
+          def _unescape(str)
+            URI.unescape(str)
+          end
+        end
+
         # Return the string corresponding to these characters unescaped
         def unescape(string)
-          URI.unescape(string)
+          _unescape(string)
         end
 
         # Escape a column according to the specification at
         # http://song.sourceforge.net/gff3.shtml.
         def escape(string)
-          URI.escape(string, UNSAFE)
+          _escape(string, UNSAFE)
         end
 
         # Escape seqid column according to the specification at
         # http://song.sourceforge.net/gff3.shtml.
         def escape_seqid(string)
-          URI.escape(string, UNSAFE_SEQID)
+          _escape(string, UNSAFE_SEQID)
         end
         
         # Escape attribute according to the specification at
@@ -1019,7 +1044,7 @@ module Bio
         # are escaped: ",=;".
         # Returns the string corresponding to these characters escaped.
         def escape_attribute(string)
-          URI.escape(string, UNSAFE_ATTRIBUTE)
+          _escape(string, UNSAFE_ATTRIBUTE)
         end
       end #module Escape
 
@@ -1028,6 +1053,7 @@ module Bio
       # Stores meta-data "##sequence-region seqid start end".
       class SequenceRegion
         include Escape
+        extend Escape
         
         # creates a new SequenceRegion class
         def initialize(seqid, start, endpos)
@@ -1039,7 +1065,7 @@ module Bio
         # parses given string and returns SequenceRegion class
         def self.parse(str)
           dummy, seqid, start, endpos =
-            str.chomp.split(/\s+/, 4).collect { |x| URI.unescape(x) }
+            str.chomp.split(/\s+/, 4).collect { |x| unescape(x) }
           self.new(seqid, start, endpos)
         end
 
@@ -1163,6 +1189,7 @@ module Bio
         # data of "Target" attribute.
         class Target
           include GFF3::Escape
+          extend GFF3::Escape
 
           # Creates a new Target object.
           def initialize(target_id, start, endpos, strand = nil)
@@ -1190,7 +1217,7 @@ module Bio
           #
           def self.parse(str)
             target_id, start, endpos, strand =
-              str.split(/ +/, 4).collect { |x| URI.unescape(x) }
+              str.split(/ +/, 4).collect { |x| unescape(x) }
             self.new(target_id, start, endpos, strand)
           end
 
