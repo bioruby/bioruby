@@ -319,7 +319,7 @@ module Bio
         unless other.kind_of?(Bio::Map::Mapping)
           raise "[Error] markers are not comparable"
         end
-	    unless @map.equal?(other.map)
+        unless @map.equal?(other.map)
           raise "[Error] maps have to be the same"
         end
 
