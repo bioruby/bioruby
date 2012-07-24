@@ -152,16 +152,16 @@ module PhyloXML
     # PhyloXML namspace.
     attr_accessor :other
 
-   def initialize
-     super
-     @sequence_relations = []
-     @clade_relations = []
-     @confidences = []
-     @properties = []
-     @other = []
-   end
+    def initialize
+      super
+      @sequence_relations = []
+      @clade_relations = []
+      @confidences = []
+      @properties = []
+      @other = []
+    end
 
- end
+  end
 
 
   # == Description
@@ -322,17 +322,13 @@ module PhyloXML
   # Events at the root node of a clade (e.g. one gene duplication).
   class Events
     #value comes from list: transfer, fusion, speciation_or_duplication, other, mixed, unassigned
-    attr_accessor :type
+    attr_reader :type
 
     # Integer
     attr_reader :duplications, :speciations, :losses
 
     # Confidence object
     attr_reader :confidence
-
-    def confidence=(type, value)
-      @confidence = Confidence.new(type, value)
-    end
 
     def confidence=(conf)
       @confidence = conf
@@ -437,13 +433,13 @@ module PhyloXML
     # 'map datum'), for example Google's KML uses 'WGS84'.
     class Point
       # Float. Latitude
-      attr_accessor :lat
+      attr_reader :lat
 
       # Float. Longitute
-      attr_accessor :long
+      attr_reader :long
       
       # Float. Altitude
-      attr_accessor :alt
+      attr_reader :alt
 
       # String. Altitude unit.
       attr_accessor :alt_unit
@@ -839,7 +835,7 @@ module PhyloXML
     # 'length' is the total length of the protein
     class DomainArchitecture
       # Integer. Total length of the protein
-      attr_accessor :length
+      attr_reader :length
 
       # Array of ProteinDomain objects.
       attr_reader :domains
@@ -868,7 +864,7 @@ module PhyloXML
     # name/unique identifier is described via the 'id' attribute.
     class ProteinDomain
       #Float, for example to store E-values    4.7E-14
-      attr_accessor :confidence
+      attr_reader :confidence
       
       # String
       attr_accessor :id, :value
@@ -999,7 +995,7 @@ module PhyloXML
     # For example it could be used to describe multiple parents of a clade.
     class CladeRelation
       # Float
-      attr_accessor :distance
+      attr_reader :distance
       # String. Id of the referenced parents of a clade.
       attr_accessor :id_ref_0, :id_ref_1
       # String
@@ -1107,9 +1103,9 @@ module PhyloXML
     # attribute 'type' is 'orthology').
     class SequenceRelation
       # String
-      attr_accessor :id_ref_0, :id_ref_1, :type
+      attr_accessor :id_ref_0, :id_ref_1
       # Float
-      attr_reader :distance
+      attr_reader :distance, :type
 
       #@todo it has Confidences objects.
 
@@ -1145,7 +1141,7 @@ module PhyloXML
 
     end
 
-   class Other
+    class Other
       attr_accessor :element_name, :attributes, :children, :value
       
       def initialize
