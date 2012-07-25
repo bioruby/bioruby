@@ -454,7 +454,8 @@ module Bio
 
         # Return the record as a GFF2 compatible string
         def to_s
-          cmnt = if @comment and !@comment.to_s.strip.empty? then
+          cmnt = if defined?(@comment) and @comment and
+                     !@comment.to_s.strip.empty? then
                    @comment.gsub(/[\r\n]+/, ' ')
                  else
                    false
@@ -1165,7 +1166,8 @@ module Bio
 
         # Return the record as a GFF3 compatible string
         def to_s
-          cmnt = if @comment and !@comment.to_s.strip.empty? then
+          cmnt = if defined?(@comment) and @comment and
+                     !@comment.to_s.strip.empty? then
                    @comment.gsub(/[\r\n]+/, ' ')
                  else
                    false
