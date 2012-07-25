@@ -2319,7 +2319,7 @@ module Bio
 
         # prepare temporary file
         def _prepare_tempfile(str = nil)
-          tf_in = Tempfile.open(str ? 'alignment_i' :'alignment_o')
+          tf_in = Tempfile.open(str ? 'alignment_i' : 'alignment_o')
           tf_in.print str if str
           tf_in.close(false)
           tf_in
