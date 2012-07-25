@@ -225,9 +225,9 @@ module Bio::Blast::Remote
           @output = result.body
           # waiting for BLAST finished
           while /Your job ID is/ =~ @output and
-              /Your result will be displayed here\<br\>/ =~ @output
-            if /This page will be reloaded automatically in\s*((\d+)\s*min\.)?\s*(\d+)\s*sec\./ =~ @output then
-              reloadtime = $2.to_i * 60 + $3.to_i
+              /Your result will be displayed here\.?\<br\>/i =~ @output
+            if /This page will be reloaded automatically in\s*((\d+)\s*min\.)?\s*((\d+)\s*sec\.)?/ =~ @output then
+              reloadtime = $2.to_i * 60 + $4.to_i
               reloadtime = 300 if reloadtime > 300
               reloadtime = 1 if reloadtime < 1
             else
