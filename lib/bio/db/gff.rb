@@ -1361,15 +1361,15 @@ module Bio
 
             # rest of data_ref
             len = 0
-            data_ref.each do |ref|
-              len += ref.length if ref.code == :M
+            data_ref.each do |r|
+              len += r.length if r.code == :M
             end
             data.push Code.new(:D, len) if len > 0
 
             # rest of data_tgt
             len = 0
-            data_tgt.each do |tgt|
-              len += tgt.length if tgt.code == :M
+            data_tgt.each do |t|
+              len += t.length if t.code == :M
             end
             data.push Code.new(:I, len) if len > 0
 
