@@ -220,6 +220,7 @@ module Bio::TestFlatFileBufferedInputStream
     def test_pos=()
       str = @obj.gets
       assert_equal(0, @obj.pos = 0)
+      assert_equal(str, @obj.gets)
     end
       
     def test_eof_false_first
