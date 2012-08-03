@@ -614,6 +614,125 @@ module Bio
     end
   end
 
+  module TestBlastReportTabularHelper
+    def def_test_assert_nil(test_method)
+      str = test_method.to_s
+      name = str.sub(/test(\_(Hit|Hsp))?\_/, '')
+      method = name.intern
+      instance = case self.to_s
+                 when /Iteration/
+                   :@itr
+                 when /Hit/
+                   :@hit
+                 when /Hsp/
+                   :@hsp
+                 else
+                   :@report
+                 end
+                  
+      define_method(test_method) do
+        assert_nil(instance_variable_get(instance).__send__(method))
+      end
+    end
+  end #module 
+
+  class TestBlastReportTabular < TestBlastReport
+    extend TestBlastReportTabularHelper
+
+    def_test_assert_nil :test_db
+    def_test_assert_nil :test_db_len
+    def_test_assert_nil :test_db_num
+    def_test_assert_nil :test_eff_space
+    def_test_assert_nil :test_entropy
+    def_test_assert_nil :test_expect
+    def_test_assert_nil :test_filter
+    def_test_assert_nil :test_gap_extend
+    def_test_assert_nil :test_gap_open
+    def_test_assert_nil :test_hsp_len
+    def_test_assert_nil :test_kappa
+    def_test_assert_nil :test_lambda
+    def_test_assert_nil :test_matrix
+    def_test_assert_nil :test_program
+    def_test_assert_nil :test_query_len
+    def_test_assert_nil :test_reference
+    def_test_assert_nil :test_version
+
+    # No parameters information available in the "-m 8" format
+    def test_parameters
+      assert_equal({}, @report.parameters)
+    end
+
+    def test_query_def
+      # differs from XML because of truncation in the "-m 8" format
+      assert_equal("eco:b0002", @report.query_def)
+    end
+
+    def test_query_id
+      # differs from XML because of the limited data
+      assert_equal("eco:b0002", @report.query_id)
+    end
+
+    # No statistics information available in the "-m 8" format
+    def test_statistics
+      assert_equal({}, @report.statistics)
+    end
+  end #class TestBlastReportTabular
+
+  class TestBlastReportIterationTabular < TestBlastReportIteration
+
+    # No statistics information available in the "-m 8" format
+    def test_statistics
+      assert_equal({}, @itr.statistics)
+    end
+  end #class TestBlastReportIterationTabular
+
+  class TestBlastReportHitTabular < TestBlastReportHit
+    extend TestBlastReportTabularHelper
+
+    def_test_assert_nil :test_Hit_hit_id
+    def_test_assert_nil :test_Hit_identity
+    def_test_assert_nil :test_Hit_len
+    def_test_assert_nil :test_Hit_midline
+    def_test_assert_nil :test_Hit_query_len
+    def_test_assert_nil :test_Hit_query_seq
+    def_test_assert_nil :test_Hit_target_len
+    def_test_assert_nil :test_Hit_target_seq
+
+    def test_Hit_bit_score
+      # differs from XML because of truncation in the "-m 8" format
+      assert_equal(1567.0, @hit.bit_score)
+    end
+
+    def test_Hit_query_def
+      # differs from XML because of truncation in the "-m 8" format
+      assert_equal("eco:b0002", @hit.query_def)
+    end
+
+    def test_Hit_query_id
+      # differs from XML because of the limited data
+      assert_equal("eco:b0002", @hit.query_id)
+    end
+  end #class TestBlastReportHitTabular
+
+  class TestBlastReportHspTabular < TestBlastReportHsp
+    extend TestBlastReportTabularHelper
+
+    def_test_assert_nil :test_Hsp_density
+    def_test_assert_nil :test_Hsp_hit_frame
+    def_test_assert_nil :test_Hsp_hseq
+    def_test_assert_nil :test_Hsp_identity
+    def_test_assert_nil :test_Hsp_midline
+    def_test_assert_nil :test_Hsp_positive
+    def_test_assert_nil :test_Hsp_qseq
+    def_test_assert_nil :test_Hsp_query_frame
+    def_test_assert_nil :test_Hsp_score
+
+    def test_Hsp_bit_score
+      # differs from XML because of truncation in the "-m 8" format
+      assert_equal(1567.0, @hsp.bit_score)
+    end
+  end #class TestBlastReportHspTabular
+
   ########################################################################
   # Tests for new BLAST XML format (blastall 2.2.14 or later)
   # with the result of multiple query sequences
