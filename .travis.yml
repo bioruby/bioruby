@@ -2,22 +2,23 @@ language: ruby
 rvm:
   - 1.9.3
   - 1.8.7
-  - jruby-19mode
-  - jruby-18mode
-  - rbx-19mode
   - rbx-18mode
 gemfile:
   - gemfiles/Gemfile.travis-ruby1.9
   - gemfiles/Gemfile.travis-ruby1.8
-  - gemfiles/Gemfile.travis-jruby1.9
-  - gemfiles/Gemfile.travis-jruby1.8
 before_install:
+  - mkdir /tmp/bioruby
   - ruby gemfiles/modify-Gemfile.rb
   - ruby gemfiles/prepare-gemspec.rb
 matrix:
   include:
     - rvm: 1.9.2
       gemfile: gemfiles/Gemfile.travis-ruby1.9
+    - rvm: rbx-19mode
+      gemfile: gemfiles/Gemfile.travis-jruby1.9
+    - rvm: jruby-19mode
+      gemfile: gemfiles/Gemfile.travis-jruby1.9
+      env: TMPDIR=/tmp/bioruby
     - rvm: 1.9.3
       gemfile: gemfiles/Gemfile.travis-ruby1.9
       env: BIORUBY_RAKE_DEFAULT_TASK=tar-integration-test
@@ -26,47 +27,30 @@ matrix:
       env: BIORUBY_RAKE_DEFAULT_TASK=gem-test
     - rvm: jruby-18mode
       gemfile: gemfiles/Gemfile.travis-jruby1.8
-      env: BIORUBY_RAKE_DEFAULT_TASK=tar-integration-test
+      env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=tar-integration-test
     - rvm: jruby-18mode
       gemfile: gemfiles/Gemfile.travis-jruby1.8
-      env: BIORUBY_RAKE_DEFAULT_TASK=gem-test
+      env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=gem-test
   exclude:
     - rvm: 1.8.7
       gemfile: gemfiles/Gemfile.travis-ruby1.9
-    - rvm: 1.8.7
-      gemfile: gemfiles/Gemfile.travis-jruby1.8
-    - rvm: 1.8.7
-      gemfile: gemfiles/Gemfile.travis-jruby1.9
-    - rvm: jruby-18mode
-      gemfile: gemfiles/Gemfile.travis-ruby1.8
-    - rvm: jruby-18mode
-      gemfile: gemfiles/Gemfile.travis-ruby1.9
-    - rvm: jruby-18mode
-      gemfile: gemfiles/Gemfile.travis-jruby1.9
-    - rvm: rbx-18mode
-      gemfile: gemfiles/Gemfile.travis-ruby1.9
-    - rvm: rbx-18mode
-      gemfile: gemfiles/Gemfile.travis-jruby1.8
-    - rvm: rbx-18mode
-      gemfile: gemfiles/Gemfile.travis-jruby1.9
     - rvm: 1.9.3
       gemfile: gemfiles/Gemfile.travis-ruby1.8
-    - rvm: 1.9.3
-      gemfile: gemfiles/Gemfile.travis-jruby1.8
-    - rvm: 1.9.3
-      gemfile: gemfiles/Gemfile.travis-jruby1.9
-    - rvm: jruby-19mode
-      gemfile: gemfiles/Gemfile.travis-ruby1.8
-    - rvm: jruby-19mode
+    - rvm: rbx-18mode
       gemfile: gemfiles/Gemfile.travis-ruby1.9
-    - rvm: jruby-19mode
-      gemfile: gemfiles/Gemfile.travis-jruby1.8
-    - rvm: rbx-19mode
-      gemfile: gemfiles/Gemfile.travis-ruby1.8
-    - rvm: rbx-19mode
-      gemfile: gemfiles/Gemfile.travis-jruby1.8
+  allow_failures:
     - rvm: rbx-19mode
       gemfile: gemfiles/Gemfile.travis-jruby1.9
+    - rvm: jruby-19mode
+      gemfile: gemfiles/Gemfile.travis-jruby1.9
+      env: TMPDIR=/tmp/bioruby
+    - rvm: jruby-18mode
+      gemfile: gemfiles/Gemfile.travis-jruby1.8
+      env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=tar-integration-test
+    - rvm: jruby-18mode
+      gemfile: gemfiles/Gemfile.travis-jruby1.8
+      env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=gem-test
+
 
 # uncomment this line if your project needs to run something other than `rake`:
 # script: bundle exec rspec spec
