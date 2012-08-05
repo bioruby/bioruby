@@ -120,7 +120,7 @@ module Bio
   #      ["gi", "2147182"], ["pir", nil, "I51898"], ["gi", "544724"],
   #      ["gb", "AAB29504.1", nil], ["Cavia"]]
   #
-  # === Refereneces
+  # === References
   #
   # * Fasta format description (NCBI)
   #   http://www.ncbi.nlm.nih.gov/BLAST/fasta.shtml
