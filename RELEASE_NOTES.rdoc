@@ -19,21 +19,42 @@ For known problems, see KNOWN_ISSUES.rdoc.
 * Unit tests are added.
 * There are incompatible changes. See Incompatible changes below.
 
-=== Other new features
+== Improvements
 
-* (tbd)
-* (tbd)
+=== Portability running on JRuby and Rubinius
+
+Many failures and errors running on JRuby and Rubinius are resolved.
+Some of them are due to BioRuby bugs, and some of them are due to JRuby or
+Rubinius bugs. Artem Tarasov reported bugs in BioRuby and submitted bug
+reports to Rubinius. Clayton Wheeler and Naohisa Goto fixed bugs in BioRuby
+and submitted bug reports to JRuby.
+
+=== Testing on Travis CI
+
+BioRuby is now using Travis CI (http://travis-ci.org/), a hosted continuous
+integration service for the open source community.
 
 == Bug fixes
 
-=== (tbd)
+=== Strange behavior related with "circular require" is fixed
 
-(paragraph)
+Fixed: In previous versions, some bioruby files may be required more than
+two times, and this sometimes causes strange behavior, depending on the
+order of files in the disk.  In particular, unit tests running on JRuby
+sometimes crashes with strange errors. In BioRuby 1.4.3, almost all require
+and autoload lines are revised and are changed to avoid circular require.
+This also fixes crash on JRuby due to JRuby's autoload bug.
 
 === Other bug fixes
 
-* Fixed: (...)
-* Fixed: (...)
+* Fixed: Genomenet remote BLAST does not work.
+* Fixed: Bio::KEGG::KGML ignores "coords" field.
+* Fixed: Bio::NucleicAcid.to_re("s") typo
+* To suppress rare failure of chi-square equiprobability tests for
+  Bio::Sequence::Common#randomize, test code changed to retry up to 10 times
+  if the chi-square test fails.  The assertion fails if the chi-square test
+  fails 10 consecutive times, and this strongly suggests bugs in codes or in
+  the random number generator.
 
 == Incompatible changes and removed features
 
@@ -43,6 +64,13 @@ In Bio::FlatFile.open and Bio::FlatFile.auto, binmode (binary mode) is used
 by default when opening a file, unless text mode is explicitly specified
 with open mode string or with options. Due to the change, files using CR+LF
 line separator might not be read correctly.
+
+=== Broader FASTQ file recognition
+
+Because PacBio RS sequencer may produce kilobases long reads and read buffer
+size (default 31 lines) for file format detection may not be sufficient to
+find the second id line starting with "+", the regular expression for FASTQ
+is truncated only to check the first id line starting with "@".
 
 === Bio::KEGG::KGML
 
@@ -75,22 +103,71 @@ line separator might not be read correctly.
   * Bio::KEGG::KGML::Entry#fgcolor
   * Bio::KEGG::KGML::Entry#bgcolor
 
-=== BioRuby development
+=== Tests
+
+* Tests using network connections are moved under test/network/.
+  To invoke these tests, run "rake test-network".
+* BIORUBY_TEST_LIB environment variable
+  * The directory name specified with BIORUBY_TEST_LIB is always added on the
+    top of $LOAD_PATH even if it is already included in the middle of
+    $LOAD_PATH.
+  * When BIORUBY_TEST_LIB is empty, it no longer add an empty string to
+    $LOAD_PATH.
+  * BIORUBY_TEST_LIB is ignored when BIORUBY_TEST_GEM is set.
+* BIORUBY_TEST_GEM environment variable
+  * New environment variable BIORUBY_TEST_GEM for testing installed
+    bio-X.X.X gem. Version number can be specified.
+    See the following examples with/without the version number:
+    * % env BIORUBY_TEST_GEM=1.4.2.5000 ruby test/runner.rb
+    * % env BIORUBY_TEST_GEM="" ruby test/runner.rb
+
+=== Other removed features
 
 * rdoc.zsh is removed because it have not been used for a long time.
-
-=== (tbd)
-
-(paragraph)
 
 == Known issues
 
 The following issues are added or updated. See KNOWN_ISSUES.rdoc for other
 already known issues.
 
-* (tbd)
+=== JRuby
 
-== Other important news
+On JRuby, errors may be raised due to the following unfixed bugs in JRuby.
 
-(tbd)
+* {JRUBY-6195}[http://jira.codehaus.org/browse/JRUBY-6195] Process.spawn
+  (and related methods) ignore option hash
+* {JRUBY-6818}[http://jira.codehaus.org/browse/JRUBY-6818] Kernel.exec,
+  Process.spawn (and IO.popen etc.) raise error when program is an array
+  containing two strings
+
+With older version of JRuby, you may be bothered by the following bugs that
+have already been fixed in the head of JRuby.
+
+* {JRUBY-6658}[http://jira.codehaus.org/browse/JRUBY-6658]
+* {JRUBY-6666}[http://jira.codehaus.org/browse/JRUBY-6666]
+* {JRUBY-6819}[http://jira.codehaus.org/browse/JRUBY-6819]
+
+=== Rubinius
+
+According to Travis-CI, unit tests have failed on 1.9 mode of Rubinius.
+
+With older version of Rubinius, you may be bothered by the following bugs that
+have already been fixed in the head of Rubinius.
+
+* https://github.com/rubinius/rubinius/issues/1693
+* https://github.com/rubinius/rubinius/issues/1724
+
+=== DDBJ Web API related classes (Bio::DDBJ::*, Bio::BLAST::Remote::DDBJ)
+
+DDBJ Web API is stopping after their system replacement in March 2012.
+(See the announcement though it is written only in Japanese:
+http://www.ddbj.nig.ac.jp/replace/rp120601-j.html)
+Due to the stop of the DDBJ Web API, Bio::DDBJ::* and Bio::BLAST::Remote::DDBJ
+which are using the web API can not be used.
+
+=== SOAP4R with Ruby 1.9
+
+soap4r-ruby1.9 may raise "ununitialized constant XML::SaxParser" error with
+some combinations of XML parser libraries. It seems this is a bug of
+soap4r-ruby1.9.
 
