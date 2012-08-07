@@ -68,6 +68,7 @@ module Bio
   # A larger range of methods for dealing with Fasta definition lines can be found in FastaDefline, accessed through the FastaFormat#identifiers method.
   # 
   #   f.entry_id #=> "gi|398365175"
+  #   f.first_name #=> "gi|398365175|ref|NP_009718.3|"
   #   f.definition #=> "gi|398365175|ref|NP_009718.3| Cdc28p [Saccharomyces cerevisiae S288c]"
   #   f.identifiers #=
   #   f.accession #=> "NP_009718"
@@ -90,6 +91,7 @@ module Bio
   #   f.entry #=> ">abc 123 456\nASDF"
   #
   #   f.entry_id #=> "abc"
+  #   f.first_name #=> "abc"
   #   f.definition #=> "abc 123 456"
   #   f.comment #=> nil
   #   f.accession #=> nil
@@ -281,6 +283,21 @@ module Bio
     # Returns locus.
     def locus
       identifiers.locus
+    end
+    
+    # Returns the first name (word) of the definition line - everything
+    # before the first whitespace.
+    #
+    #    >abc def #=> 'abc'
+    #    >gi|398365175|ref|NP_009718.3| Cdc28p [Saccharomyces cerevisiae S288c] #=> 'gi|398365175|ref|NP_009718.3|'
+    #    >abc #=> 'abc'
+    def first_name
+      index = definition.index(/\s/)
+      if index.nil?
+        return @definition
+      else
+        return @definition[0...index]
+      end
     end
 
   end #class FastaFormat

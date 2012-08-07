@@ -95,7 +95,7 @@ END
     def test_entry_id
       assert_equal('sce:YBR160W', @obj.entry_id)
     end
-
+    
     def test_acc_version
       assert_equal(nil, @obj.acc_version)
     end
@@ -108,6 +108,10 @@ END
     def test_definition
       data = "sce:YBR160W  CDC28, SRM5; cyclin-dependent protein kinase catalytic subunit [EC:2.7.1.-] [SP:CC28_YEAST]"
       assert_equal(data, @obj.definition)
+    end
+    
+    def test_first_name
+      assert_equal('sce:YBR160W', @obj.first_name)
     end
 
     def test_data
@@ -225,7 +229,43 @@ END
     def test_acc_version
       assert_equal('AAV50056.1', @obj.acc_version)
     end
+    
+    def test_first_name
+      assert_equal('gi|55416189|gb|AAV50056.1|', @obj.first_name)
+    end
 
   end # class TestFastaFormat
 
+
+  class TestFastaFirstName < Test::Unit::TestCase
+    def test_first_name1
+      data = ">abc def\nATGC"
+      assert_equal 'abc', Bio::FastaFormat.new(data).first_name
+    end
+    
+    def test_first_name_multi_identifier
+      data = ">gi|398365175|ref|NP_009718.3| Cdc28p [Saccharomyces cerevisiae S288c] #=> 'gi|398365175|ref|NP_009718.3|\nATGCTG"
+      assert_equal 'gi|398365175|ref|NP_009718.3|', Bio::FastaFormat.new(data).first_name
+    end
+    
+    def test_first_name_single_worded_defintion
+      data = ">abc\nATGC"
+      assert_equal 'abc', Bio::FastaFormat.new(data).first_name
+    end
+    
+    def test_no_definition
+      data = ">\nATGC"
+      assert_equal '', Bio::FastaFormat.new(data).first_name
+    end
+    
+    def test_tabbed_defintion
+      data = ">gabc\tdef\nATGC"
+      assert_equal 'gabc', Bio::FastaFormat.new(data).first_name
+    end
+    
+    def test_space_before_first_name
+      data = "> gabcds\tdef\nATGC"
+      assert_equal 'gabcds', Bio::FastaFormat.new(data).first_name
+    end
+  end
 end
