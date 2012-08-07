@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.4.2.5000"
+  s.version = "1.4.2.9501"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -669,7 +669,6 @@ Gem::Specification.new do |s|
   s.rdoc_options << '--line-numbers' << '--inline-source'
 
   s.require_path = 'lib'
-  s.autorequire = 'bio'
 
   s.bindir = "bin"
   s.executables = [
