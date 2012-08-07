@@ -1,5 +1,5 @@
 = KNOWN_ISSUES.rdoc - Known issues and bugs in BioRuby
-Copyright:: Copyright (C) 2009 Naohisa Goto <ng@bioruby.org>
+Copyright:: Copyright (C) 2009-2012 Naohisa Goto <ng@bioruby.org>
 License::   The Ruby License
 
 = Known issues and bugs in BioRuby
@@ -15,7 +15,7 @@ they are not BioRuby's issues and/or it is very difficult to fix them.
 === Ruby 1.9.1 or later
 
 Some classes/modules/methods still may not work or may return incorrect
-results in Ruby 1.9.1, especially those not covered by the unit tests.
+results in Ruby 1.9.X, especially those not covered by the unit tests.
 
 ==== String encodings
 
@@ -66,6 +66,33 @@ deprecated in RubyGems 0.9.0 and removed in RubyGems 1.0.1.
   require 'rubygems'
   require_gem 'bio'
 
+=== JRuby
+
+On JRuby, errors may be raised due to the following unfixed bugs in JRuby.
+
+* {JRUBY-6195}[http://jira.codehaus.org/browse/JRUBY-6195] Process.spawn
+  (and related methods) ignore option hash
+* {JRUBY-6818}[http://jira.codehaus.org/browse/JRUBY-6818] Kernel.exec,
+  Process.spawn (and IO.popen etc.) raise error when program is an array
+  containing two strings
+
+(WONT_FIX) With older version of JRuby, you may be bothered by the following
+bugs that have already been fixed in the head of JRuby.
+
+* {JRUBY-6658}[http://jira.codehaus.org/browse/JRUBY-6658]
+* {JRUBY-6666}[http://jira.codehaus.org/browse/JRUBY-6666]
+* {JRUBY-6819}[http://jira.codehaus.org/browse/JRUBY-6819]
+
+=== Rubinius
+
+According to Travis-CI, unit tests have failed on 1.9 mode of Rubinius.
+
+(WONT_FIX) With older version of Rubinius, you may be bothered by the
+following bugs that have already been fixed in the head of Rubinius.
+
+* https://github.com/rubinius/rubinius/issues/1693
+* https://github.com/rubinius/rubinius/issues/1724
+
 == 2. OS and/or architecture-dependent issues
 
 === Microsoft Windows
@@ -103,6 +130,14 @@ Windows 95/98/98SE/ME because of the limitation of COMMAND.COM.
 (WONT_FIX) BioRuby may not work on these platforms.
 
 == 3. Known issues and bugs in BioRuby
+
+=== DDBJ Web API related classes (Bio::DDBJ::*, Bio::BLAST::Remote::DDBJ)
+
+The DDBJ Web API is stopping after their system replacement in March 2012.
+(See the announcement though it is written only in Japanese:
+http://www.ddbj.nig.ac.jp/replace/rp120601-j.html)
+Due to the stop of the DDBJ Web API, Bio::DDBJ::* and Bio::BLAST::Remote::DDBJ
+which are using the web API can not be used.
 
 === Bio::Ensembl
 
@@ -146,6 +181,12 @@ know which version is suitable.
 
 BioRuby Shell on Web uses Ruby on Rails, but the author of the document does
 not know which version is suitable.
+
+==== SOAP4R with Ruby 1.9
+
+soap4r-ruby1.9 may raise "ununitialized constant XML::SaxParser" error with
+some combinations of XML parser libraries. It seems this is a bug of
+soap4r-ruby1.9.
 
 == 5. Historical descriptions
 
