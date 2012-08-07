@@ -69,7 +69,7 @@ module Bio
   # 
   #   f.entry_id #=> "gi|398365175"
   #   f.definition #=> "gi|398365175|ref|NP_009718.3| Cdc28p [Saccharomyces cerevisiae S288c]"
-  #   f.identifiers #=
+  #   f.identifiers #=> Bio::FastaDefline instance
   #   f.accession #=> "NP_009718"
   #   f.accessions #=> ["NP_009718"]
   #   f.acc_version #=> "NP_009718.3"
