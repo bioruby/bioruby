@@ -176,6 +176,15 @@ because of the growth of the data size.
 Bio::SPTR should be updated to follow UniProtKB format changes described
 in http://www.uniprot.org/docs/sp_news.htm .
 
+=== http://bioruby.org/cgi-bin/biofetch.rb and Bio::Fetch.query
+
+BioRuby's default BioFetch server http://bioruby.org/cgi-bin/biofetch.rb is
+down for years. Please use other server, such as EBI Dbfetch
+(http://www.ebi.ac.uk/Tools/dbfetch/dbfetch).
+
+Due to the stop of the http://bioruby.org/cgi-bin/biofetch.rb service,
+Bio::Fetch.query always raises error.
+
 == 4. Compatibility issues with other libraries/extensions
 
 === ActiveRecord
