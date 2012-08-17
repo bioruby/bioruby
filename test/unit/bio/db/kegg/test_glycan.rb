@@ -12,7 +12,7 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 
 # libraries needed for the tests
 require 'test/unit'
-require 'bio/db/kegg/glycan.rb'
+require 'bio/db/kegg/glycan'
 
 module Bio
 
