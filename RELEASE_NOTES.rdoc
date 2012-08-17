@@ -143,9 +143,13 @@ On JRuby, errors may be raised due to the following unfixed bugs in JRuby.
 With older version of JRuby, you may be bothered by the following bugs that
 have already been fixed in the head of JRuby.
 
-* {JRUBY-6658}[http://jira.codehaus.org/browse/JRUBY-6658]
-* {JRUBY-6666}[http://jira.codehaus.org/browse/JRUBY-6666]
+* {JRUBY-6658}[http://jira.codehaus.org/browse/JRUBY-6658] Problem when
+  setting up an autoload entry, defining a class via require, then redefining
+  the autoload entry
+* {JRUBY-6666}[http://jira.codehaus.org/browse/JRUBY-6666] Open3.popen3
+  failing due to missing handling for [path, argv[0]] array
 * {JRUBY-6819}[http://jira.codehaus.org/browse/JRUBY-6819]
+  java.lang.ArrayIndexOutOfBoundsException in String#each_line
 
 === Rubinius
 
@@ -154,8 +158,10 @@ According to Travis-CI, unit tests have failed on 1.9 mode of Rubinius.
 With older version of Rubinius, you may be bothered by the following bugs that
 have already been fixed in the head of Rubinius.
 
-* https://github.com/rubinius/rubinius/issues/1693
-* https://github.com/rubinius/rubinius/issues/1724
+* {Rubinius Issue #1693}[https://github.com/rubinius/rubinius/issues/1693]
+  String#split gives incorrect output when splitting by /^/
+* {Rubinius Issue #1724}[https://github.com/rubinius/rubinius/issues/1724]
+  Creating Struct class with length attribute
 
 === DDBJ Web API related classes (Bio::DDBJ::*, Bio::BLAST::Remote::DDBJ)
 
