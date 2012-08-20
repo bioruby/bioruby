@@ -2,7 +2,7 @@
 = README.rdoc - README for BioRuby
 Copyright:: Copyright (C) 2001-2007 Toshiaki Katayama <k@bioruby.org>,
             Copyright (C) 2008      Jan Aerts <jandot@bioruby.org>
-            Copyright (C) 2011      Naohisa Goto <ng@bioruby.org>
+            Copyright (C) 2011-2012 Naohisa Goto <ng@bioruby.org>
 License::   The Ruby License
 * The above statement is limited to this file. See below about BioRuby's
   copyright and license.
@@ -10,7 +10,7 @@ License::   The Ruby License
 
 = BioRuby
 
-Copyright (C) 2001-2011 Toshiaki Katayama <k@bioruby.org>
+Copyright (C) 2001-2012 Toshiaki Katayama <k@bioruby.org>
 
 BioRuby is an open source Ruby library for developing bioinformatics
 software.  Object oriented scripting language Ruby has many features
@@ -115,8 +115,7 @@ and can be obtained by the following procedure:
 == REQUIREMENTS
 
 * Ruby 1.8.6 or later (except Ruby 1.9.0) -- http://www.ruby-lang.org/
-  * Ruby 1.9.3-p0 or later, Ruby 1.9.2-p290 or later, or Ruby 1.8.7-p352 or
-    later is recommended.
+  * Ruby 1.9.3-p194 or later, or Ruby 1.8.7-p358 or later is recommended.
   * See KNOWN_ISSUES.rdoc for Ruby version specific problems.
 
 
