@@ -232,19 +232,37 @@ module Command
   # * (required) _cmd_: Array containing String objects
   # * (optional) _options_: Hash
   # *Returns*:: (undefined)
-  def call_command_popen(cmd, options = {})
+  def call_command_popen(cmd, options = {}, &block)
     if RUBY_VERSION >= "1.9.0" then
-      # For Ruby 1.9 or later, using command line array with options.
-      dir = options[:chdir]
-      cmd = safe_command_line_array(cmd)
-      if dir then
-        cmd = cmd + [ { :chdir => dir } ]
+      if RUBY_ENGINE == 'jruby' then
+        _call_command_popen_jruby19(cmd, options, &block)
+      else
+        _call_command_popen_ruby19(cmd, options, &block)
       end
-      r = IO.popen(cmd, "r+") do |io|
-        yield io
-      end
-      return r
+    else
+      _call_command_popen_ruby18(cmd, options, &block)
     end
+  end
+
+  # This method is internally called from the call_command method.
+  # In normal case, use call_command, and do not call this method directly.
+  #
+  # Executes the program via IO.popen.
+  # A block must be given. An IO object is passed to the block.
+  #
+  # See the document of call_command for available options.
+  #
+  # The method is written for Ruby 1.8.
+  #
+  # In Ruby 1.8, although shell unsafe characters are escaped,
+  # if inescapable characters exists, it raises RuntimeError.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _cmd_: Array containing String objects
+  # * (optional) _options_: Hash
+  # *Returns*:: (undefined)
+  def _call_command_popen_ruby18(cmd, options = {})
     # For Ruby 1.8, using command line string.
     str = make_command_line(cmd)
     # processing options
@@ -267,6 +285,66 @@ module Command
       yield io
     end
   end
+  private :_call_command_popen_ruby18
+
+  # This method is internally called from the call_command method.
+  # In normal case, use call_command, and do not call this method directly.
+  #
+  # Executes the program via IO.popen.
+  # A block must be given. An IO object is passed to the block.
+  #
+  # See the document of call_command for available options.
+  #
+  # The method can be run only on Ruby (MRI) 1.9 or later versions.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _cmd_: Array containing String objects
+  # * (optional) _options_: Hash
+  # *Returns*:: (undefined)
+  def _call_command_popen_ruby19(cmd, options = {})
+    # For Ruby 1.9 or later, using command line array with options.
+    dir = options[:chdir]
+    cmd = safe_command_line_array(cmd)
+    if dir then
+      cmd = cmd + [ { :chdir => dir } ]
+    end
+    r = IO.popen(cmd, "r+") do |io|
+      yield io
+    end
+    return r
+  end
+  private :_call_command_popen_ruby19
+
+  # This method is internally called from the call_command method.
+  # In normal case, use call_command, and do not call this method directly.
+  #
+  # Executes the program via IO.popen.
+  # A block must be given. An IO object is passed to the block.
+  #
+  # See the document of call_command for available options.
+  #
+  # The method is written for the workaround of the JRuby bugs:
+  # * {JRUBY-6195}[http://jira.codehaus.org/browse/JRUBY-6195] Process.spawn
+  #   (and related methods) ignore option hash
+  # * {JRUBY-6818}[http://jira.codehaus.org/browse/JRUBY-6818] Kernel.exec,
+  #   Process.spawn (and IO.popen etc.) raise error when program is an array
+  #   containing two strings
+  # This method may be removed after the bugs are resolved.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _cmd_: Array containing String objects
+  # * (optional) _options_: Hash
+  # *Returns*:: (undefined)
+  def _call_command_popen_jruby19(cmd, options = {}, &block)
+    if !options.empty? or cmd.size == 1 then
+      _call_command_popen_ruby18(cmd, options, &block)
+    else
+      _call_command_popen_ruby19(cmd, options, &block)
+    end
+  end
+  private :_call_command_popen_jruby19
 
   # This method is internally called from the call_command method.
   # In normal case, use call_command, and do not call this method directly.
