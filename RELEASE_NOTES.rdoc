@@ -165,6 +165,15 @@ have already been fixed in the head of JRuby.
 * {JRUBY-6819}[http://jira.codehaus.org/browse/JRUBY-6819]
   java.lang.ArrayIndexOutOfBoundsException in String#each_line
 
+Due to JRUBY-5678 (resolved issue) and the difference of behavior between
+CRuby and JRuby written in the comments of the issue tracking page,
+when running BioRuby on JRuby with sudo or root rights, TMPDIR environment
+variable should be set to a directory that is not world-writable. Currently,
+the workaround is needed for running BioRuby tests with JRuby on Travis-CI.
+
+* {JRUBY-5678}[http://jira.codehaus.org/browse/JRUBY-5678] tmpdir cannot
+  be delete when jruby has sudo/root rights
+
 === Rubinius
 
 According to Travis-CI, unit tests have failed on 1.9 mode of Rubinius.
