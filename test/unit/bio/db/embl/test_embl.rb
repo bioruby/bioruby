@@ -124,13 +124,8 @@ module Bio
     end
 
     def test_os
-#      assert_equal('', @obj.os)
-      assert_raises(RuntimeError) { @obj.os }
-    end
-
-    def test_os_valid
-      @obj.instance_eval { @data['OS'] = "Haplochromis sp. 'muzu rukwa'" }
-      assert_equal("Haplochromis sp. 'muzu rukwa'", @obj.os)
+      assert_equal("Haplochromis sp. 'muzu, rukwa'", @obj.os[0]['os'])
+      assert_nil(@obj.os[0]['name'])
     end
 
     # Bio::EMBLDB::COMMON#oc

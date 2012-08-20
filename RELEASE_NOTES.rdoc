@@ -55,6 +55,8 @@ This also fixes crash on JRuby due to JRuby's autoload bug.
   if the chi-square test fails.  The assertion fails if the chi-square test
   fails 10 consecutive times, and this strongly suggests bugs in codes or in
   the random number generator.
+* Fixed: Bio::EMBL#os raises RuntimeError. The fix includes incompatible
+  change. See below "Incompatible changes".
 
 == Incompatible changes and removed features
 
@@ -102,6 +104,18 @@ is truncated only to check the first id line starting with "@".
   * Bio::KEGG::KGML::Entry#height
   * Bio::KEGG::KGML::Entry#fgcolor
   * Bio::KEGG::KGML::Entry#bgcolor
+
+=== Bio::EMBL#os
+
+Bio::EMBL#os, returns parser result of the EMBL OS line, no longer splits
+the content with comma, and it no longer raises error even if the OS line
+is not in the "Genus species (name)" format. The changes may affect the
+parsing of old EMBL files which contain two or more species names in an
+OS line.
+
+Note that Bio::EMBL#os returns an Array containing several Hash objects,
+and the argument is always ignored. The return value type and the meaning
+of the argument might be changed in the future.
 
 === Tests
 
