@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.4.2.9501"
+  s.version = "1.4.2.9901"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -373,6 +373,7 @@ Gem::Specification.new do |s|
     "sample/pmfetch.rb",
     "sample/pmsearch.rb",
     "sample/psortplot_html.rb",
+    "sample/seqdatabase.ini",
     "sample/ssearch2tab.rb",
     "sample/tdiary.rb",
     "sample/test_phyloxml_big.rb",
