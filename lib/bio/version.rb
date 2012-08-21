@@ -1,7 +1,7 @@
 #
 # = bio/version.rb - BioRuby version information
 #
-# Copyright::	Copyright (C) 2001-2009
+# Copyright::	Copyright (C) 2001-2012
 #		Toshiaki Katayama <k@bioruby.org>,
 #               Naohisa Goto <ng@bioruby.org>
 # License::	The Ruby License
@@ -23,7 +23,7 @@ module Bio
   # "-preN"   (N=0..99) :: Pre-release test version.
   # "-rcN"    (N=0..99) :: Release candidate version.
   #
-  BIORUBY_EXTRA_VERSION = "-rc1"
+  BIORUBY_EXTRA_VERSION = "-rc2"
 
   # Version identifier, including extra version string (String)
   # Unlike BIORUBY_VERSION, it is not comparable.
