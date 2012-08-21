@@ -1,3 +1,12 @@
+commit 51ab2dec144c99a14ca9009c7b589b500f1cad5f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Aug 22 00:12:47 2012 +0900
+
+    Preparation to re-release BioRuby 1.4.3
+
+ ChangeLog |   22 ++++++++++++++++++++++
+ 1 files changed, 22 insertions(+), 0 deletions(-)
+
 commit 5ff159d12252393ff04afe52b59a315d15c63d18
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Wed Aug 22 00:00:40 2012 +0900
