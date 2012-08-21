@@ -343,6 +343,7 @@ module Bio::Shell::Ghost
       File.open(file, "w") do |f|
         bind = Bio::Shell.cache[:binding]
         list = eval("local_variables", bind)
+        list.collect! { |x| x.to_s }
         list -= ["_"]
         hash = {}
         list.each do |elem|

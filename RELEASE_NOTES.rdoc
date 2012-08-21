@@ -57,6 +57,8 @@ This also fixes crash on JRuby due to JRuby's autoload bug.
   the random number generator.
 * Fixed: Bio::EMBL#os raises RuntimeError. The fix includes incompatible
   change. See below "Incompatible changes".
+* Fixed: bin/bioruby: Failed to save object with error message "can't convert
+  Symbol into String" on Ruby 1.9.
 
 == Incompatible changes and removed features
 
