@@ -1,3 +1,24 @@
+commit 61af85b6cfc7bb1f3668ed68232113eb0751e7ea
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Aug 21 22:33:30 2012 +0900
+
+    preparation for BioRuby 1.4.3 release version
+
+ bioruby.gemspec    |    2 +-
+ lib/bio/version.rb |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 1ec68beac42a06e9ef0a9c953650ef4d599e4e65
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Aug 21 20:53:04 2012 +0900
+
+    ChangeLog modified; release candidate version 1.4.3-rc2
+
+ ChangeLog          | 1353 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ bioruby.gemspec    |    2 +-
+ lib/bio/version.rb |    4 +-
+ 3 files changed, 1356 insertions(+), 3 deletions(-)
+
 commit e0d570b237a8b96ae0c1e7b1ad72c7333be07c52
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Mon Aug 20 20:35:58 2012 +0900
