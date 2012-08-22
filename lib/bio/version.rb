@@ -23,7 +23,7 @@ module Bio
   # "-preN"   (N=0..99) :: Pre-release test version.
   # "-rcN"    (N=0..99) :: Release candidate version.
   #
-  BIORUBY_EXTRA_VERSION = nil
+  BIORUBY_EXTRA_VERSION = ".5000"
 
   # Version identifier, including extra version string (String)
   # Unlike BIORUBY_VERSION, it is not comparable.
