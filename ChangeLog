@@ -1,0 +1,61 @@
+commit 419b852b7cb07a723873911180b056e1913b9257
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Aug 23 00:21:53 2012 +0900
+
+    Rakefile: Update hardcoded git tag name for updateing of ChangeLog.
+
+ Rakefile |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit b10c7ad2db24d88726ffb8c63078baa217aeac43
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Aug 23 00:20:01 2012 +0900
+
+    renamed ChangeLog to doc/ChangeLog-1.4.3
+
+ ChangeLog           | 1478 ---------------------------------------------------
+ doc/ChangeLog-1.4.3 | 1478 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 1478 insertions(+), 1478 deletions(-)
+ delete mode 100644 ChangeLog
+ create mode 100644 doc/ChangeLog-1.4.3
+
+commit 0c20cb62ba6b253098e7198c14de1829f72474f5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Aug 23 00:18:50 2012 +0900
+
+    ChangeLog updated: add log about 1.4.3 release.
+
+ ChangeLog |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
+
+commit 5e88ccbe0fefdd4d57f144aaf9073f5e7d93281c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Aug 23 00:16:25 2012 +0900
+
+    New RELEASE_NOTES.rdoc for the next release version.
+
+ RELEASE_NOTES.rdoc |   47 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 47 insertions(+), 0 deletions(-)
+ create mode 100644 RELEASE_NOTES.rdoc
+
+commit e3d40b90d88ab0d0a91d8e32ebf97c16097f0996
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Aug 23 00:12:40 2012 +0900
+
+    Renamed RELEASE_NOTES.rdoc to doc/RELEASE_NOTES-1.4.3.rdoc
+
+ RELEASE_NOTES.rdoc           |  204 ------------------------------------------
+ doc/RELEASE_NOTES-1.4.3.rdoc |  204 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 204 insertions(+), 204 deletions(-)
+ delete mode 100644 RELEASE_NOTES.rdoc
+ create mode 100644 doc/RELEASE_NOTES-1.4.3.rdoc
+
+commit 08bcabecccb271385d38a0f807e8c408def5a128
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Aug 23 00:00:15 2012 +0900
+
+    Bio::BIORUBY_EXTRA_VERSION set to ".5000" (unstable version).
+
+ bioruby.gemspec    |    2 +-
+ lib/bio/version.rb |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
