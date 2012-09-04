@@ -154,22 +154,6 @@ http://www.ddbj.nig.ac.jp/replace/rp120601-j.html)
 Due to the stop of the DDBJ Web API, Bio::DDBJ::* and Bio::BLAST::Remote::DDBJ
 which are using the web API can not be used.
 
-=== Bio::Ensembl
-
-Due to the renewal of Ensembl web site, Bio::Ensembl does not work for
-the latest Ensembl. For a workaround, use an archive server. For example,
-"jul2008.archive.ensembl.org" seems to be the last server before the renewal.
-  human = Bio::Ensembl.new("Homo_sapiens", "jul2008.archive.ensembl.org")
-
-Alternatively, consider using Ruby Ensembl API.
-* http://github.com/jandot/ruby-ensembl-api
-
-=== Bio::DBGET and sample/dbget
-
-(WONT_FIX) Because the DBGET service have not been publically available for
-a long time, we give up support for Bio::DBGET and sample/dbget. Instead,
-using Bio::TogoWS or Bio::KEGG::API is recommended.
-
 === Bio::NCBI::SOAP
 
 It seems that Bio::NCBI::SOAP (in lib/bio/io/ncbisoap.rb) does not work
