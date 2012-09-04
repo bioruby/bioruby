@@ -33,6 +33,7 @@ Gem::Specification.new do |s|
     "bin/br_pmfetch.rb",
     "bioruby.gemspec",
     "bioruby.gemspec.erb",
+    "doc/ChangeLog-1.4.3",
     "doc/ChangeLog-before-1.3.1",
     "doc/ChangeLog-before-1.4.2",
     "doc/Changes-0.7.rd",
@@ -42,6 +43,7 @@ Gem::Specification.new do |s|
     "doc/RELEASE_NOTES-1.4.0.rdoc",
     "doc/RELEASE_NOTES-1.4.1.rdoc",
     "doc/RELEASE_NOTES-1.4.2.rdoc",
+    "doc/RELEASE_NOTES-1.4.3.rdoc",
     "doc/Tutorial.rd",
     "doc/Tutorial.rd.html",
     "doc/Tutorial.rd.ja",
@@ -195,11 +197,9 @@ Gem::Specification.new do |s|
     "lib/bio/io/biosql/biosql.rb",
     "lib/bio/io/biosql/config/database.yml",
     "lib/bio/io/das.rb",
-    "lib/bio/io/dbget.rb",
     "lib/bio/io/ddbjrest.rb",
     "lib/bio/io/ddbjxml.rb",
     "lib/bio/io/ebisoap.rb",
-    "lib/bio/io/ensembl.rb",
     "lib/bio/io/fastacmd.rb",
     "lib/bio/io/fetch.rb",
     "lib/bio/io/flatfile.rb",
@@ -317,7 +317,6 @@ Gem::Specification.new do |s|
     "sample/any2fasta.rb",
     "sample/biofetch.rb",
     "sample/color_scheme_na.rb",
-    "sample/dbget",
     "sample/demo_aaindex.rb",
     "sample/demo_aminoacid.rb",
     "sample/demo_bl2seq_report.rb",
@@ -521,7 +520,6 @@ Gem::Specification.new do |s|
     "test/network/bio/appl/test_blast.rb",
     "test/network/bio/appl/test_pts1.rb",
     "test/network/bio/io/test_ddbjrest.rb",
-    "test/network/bio/io/test_ensembl.rb",
     "test/network/bio/io/test_pubmed.rb",
     "test/network/bio/io/test_soapwsdl.rb",
     "test/network/bio/io/test_togows.rb",
@@ -604,7 +602,6 @@ Gem::Specification.new do |s|
     "test/unit/bio/io/flatfile/test_buffer.rb",
     "test/unit/bio/io/flatfile/test_splitter.rb",
     "test/unit/bio/io/test_ddbjxml.rb",
-    "test/unit/bio/io/test_ensembl.rb",
     "test/unit/bio/io/test_fastacmd.rb",
     "test/unit/bio/io/test_flatfile.rb",
     "test/unit/bio/io/test_soapwsdl.rb",
@@ -662,7 +659,8 @@ Gem::Specification.new do |s|
     "doc/Changes-1.3.rdoc",
     "doc/RELEASE_NOTES-1.4.0.rdoc",
     "doc/RELEASE_NOTES-1.4.1.rdoc",
-    "doc/RELEASE_NOTES-1.4.2.rdoc"
+    "doc/RELEASE_NOTES-1.4.2.rdoc",
+    "doc/RELEASE_NOTES-1.4.3.rdoc"
   ]
   s.rdoc_options << '--main' << 'README.rdoc'
   s.rdoc_options << '--title' << 'BioRuby API documentation'
