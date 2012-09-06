@@ -110,7 +110,6 @@ module Bio
     autoload :KGML,         'bio/db/kegg/kgml'
     autoload :PATHWAY,      'bio/db/kegg/pathway'
     autoload :MODULE,       'bio/db/kegg/module'
-    autoload :Taxonomy,     'bio/db/kegg/taxonomy'
   end
 
   ## other formats
@@ -168,9 +167,7 @@ module Bio
 
   autoload :PubMed,         'bio/io/pubmed'
   autoload :DAS,            'bio/io/das'
-  autoload :DBGET,          'bio/io/dbget'
 
-  autoload :Ensembl,        'bio/io/ensembl'
   autoload :Hinv,           'bio/io/hinv'
 
   ## below are described in bio/appl/blast.rb
@@ -198,7 +195,6 @@ module Bio
   autoload :NCBI,         'bio/io/ncbirest'
   ## below are described in bio/io/ncbirest.rb
   #class NCBI
-  #  autoload :SOAP,       'bio/io/ncbisoap'
   #  autoload :REST,       'bio/io/ncbirest'
   #end
 
