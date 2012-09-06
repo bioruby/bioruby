@@ -15,7 +15,6 @@ module Bio
 
 class NCBI
 
-  autoload :SOAP,       'bio/io/ncbisoap'
 
   # (Hash) Default parameters for Entrez (eUtils).
   # They may also be used for other NCBI services.
