@@ -12,15 +12,6 @@ module Bio::Shell
 
   private
 
-  def ncbisoap(wsdl = nil)
-    if wsdl
-      @ncbisoap = Bio::NCBI::SOAP.new(wsdl)
-    else
-      @ncbisoap ||= Bio::NCBI::SOAP.new
-    end
-    return @ncbisoap
-  end
-
   def ebisoap(wsdl = nil)
     case wsdl
     when :ipscan
