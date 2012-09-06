@@ -154,16 +154,6 @@ http://www.ddbj.nig.ac.jp/replace/rp120601-j.html)
 Due to the stop of the DDBJ Web API, Bio::DDBJ::* and Bio::BLAST::Remote::DDBJ
 which are using the web API can not be used.
 
-=== Bio::NCBI::SOAP
-
-It seems that Bio::NCBI::SOAP (in lib/bio/io/ncbisoap.rb) does not work
-correctly, even running on Ruby 1.8.x. Instead, use Bio::NCBI::REST.
-
-=== Bio::KEGG::Taxonomy and sample/demo_kegg_taxonomy.rb
-
-Bio::KEGG::Taxonomy fails to parse current KEGG taxonomy data file probably
-because of the growth of the data size.
-
 === Bio::SPTR
 
 Bio::SPTR should be updated to follow UniProtKB format changes described
