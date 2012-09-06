@@ -300,18 +300,5 @@ module Bio
   ### Service libraries
   autoload :Command,        'bio/command'
 
-  ### Provide BioRuby shell 'command' also as 'Bio.command' (like ChemRuby)
-
-  def self.method_missing(*args)
-    require 'bio/shell'
-    extend Bio::Shell
-    public_class_method(*Bio::Shell.private_instance_methods)
-    if Bio.respond_to?(args.first)
-      Bio.send(*args)
-    else
-      raise NameError
-    end
-  end
-
 end
 
