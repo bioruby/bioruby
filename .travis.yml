@@ -3,6 +3,8 @@ rvm:
   - 1.9.3
   - 1.8.7
   - rbx-18mode
+env:
+  - TESTOPTS=-v
 gemfile:
   - gemfiles/Gemfile.travis-ruby1.9
   - gemfiles/Gemfile.travis-ruby1.8
@@ -18,38 +20,42 @@ matrix:
       gemfile: gemfiles/Gemfile.travis-jruby1.9
     - rvm: jruby-19mode
       gemfile: gemfiles/Gemfile.travis-jruby1.9
-      env: TMPDIR=/tmp/bioruby
+      env: TMPDIR=/tmp/bioruby TESTOPTS=-v
     - rvm: 1.9.3
       gemfile: gemfiles/Gemfile.travis-ruby1.9
-      env: BIORUBY_RAKE_DEFAULT_TASK=tar-integration-test
+      env: BIORUBY_RAKE_DEFAULT_TASK=tar-integration-test TESTOPTS=-v
     - rvm: 1.9.3
       gemfile: gemfiles/Gemfile.travis-ruby1.9
-      env: BIORUBY_RAKE_DEFAULT_TASK=gem-test
+      env: BIORUBY_RAKE_DEFAULT_TASK=gem-test TESTOPTS=-v
     - rvm: jruby-18mode
       gemfile: gemfiles/Gemfile.travis-jruby1.8
-      env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=tar-integration-test
+      env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=tar-integration-test TESTOPTS=-v
     - rvm: jruby-18mode
       gemfile: gemfiles/Gemfile.travis-jruby1.8
-      env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=gem-test
+      env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=gem-test TESTOPTS=-v
   exclude:
     - rvm: 1.8.7
       gemfile: gemfiles/Gemfile.travis-ruby1.9
+      env: TESTOPTS=-v
     - rvm: 1.9.3
       gemfile: gemfiles/Gemfile.travis-ruby1.8
+      env: TESTOPTS=-v
     - rvm: rbx-18mode
       gemfile: gemfiles/Gemfile.travis-ruby1.9
+      env: TESTOPTS=-v
   allow_failures:
     - rvm: rbx-19mode
       gemfile: gemfiles/Gemfile.travis-jruby1.9
+      env: TESTOPTS=-v
     - rvm: jruby-19mode
       gemfile: gemfiles/Gemfile.travis-jruby1.9
-      env: TMPDIR=/tmp/bioruby
+      env: TMPDIR=/tmp/bioruby TESTOPTS=-v
     - rvm: jruby-18mode
       gemfile: gemfiles/Gemfile.travis-jruby1.8
-      env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=tar-integration-test
+      env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=tar-integration-test TESTOPTS=-v
     - rvm: jruby-18mode
       gemfile: gemfiles/Gemfile.travis-jruby1.8
-      env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=gem-test
+      env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=gem-test TESTOPTS=-v
 
 
 # uncomment this line if your project needs to run something other than `rake`:
