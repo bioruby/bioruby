@@ -18,6 +18,7 @@ matrix:
       gemfile: gemfiles/Gemfile.travis-ruby1.9
     - rvm: rbx-19mode
       gemfile: gemfiles/Gemfile.travis-jruby1.9
+      env: TESTOPTS=-v
     - rvm: jruby-19mode
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TMPDIR=/tmp/bioruby TESTOPTS=-v
