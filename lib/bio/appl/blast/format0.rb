@@ -1124,31 +1124,31 @@ module Bio
                 while sc.rest?
                   #p pos_st, len_seq
                   #p nextline.to_s
-                  if r = sc.skip(/(Query|Sbjct)\: *(\d+) */) then
+                  if r = sc.skip(/Query\: *(\d+) */) then
                     pos_st = r
-                    qs = sc[1]
-                    pos1 = sc[2]
+                    pos1 = sc[1]
                     len_seq = sc.skip(/[^ ]*/)
                     seq = sc[0]
                     sc.skip(/ *(\d+) *\n/)
                     pos2 = sc[1]
-                    if qs == 'Query' then
-                      raise ScanError unless nextline == :q
-                      qpos1 = pos1.to_i unless qpos1
-                      qpos2 = pos2.to_i
-                      qseq << seq
-                      nextline = :m
-                    elsif qs == 'Sbjct' then
-                      if nextline == :m then
-                        mseq << (' ' * len_seq)
-                      end
-                      spos1 = pos1.to_i unless spos1
-                      spos2 = pos2.to_i
-                      sseq << seq
-                      nextline = :q
-                    else
-                      raise ScanError
+                    raise ScanError unless nextline == :q
+                    qpos1 = pos1.to_i unless qpos1
+                    qpos2 = pos2.to_i
+                    qseq << seq
+                    nextline = :m
+                  elsif r = sc.scan(/Sbjct\: *(\d+) *.+ +(\d+) *\n/) then
+                    pos1 = sc[1]
+                    pos2 = sc[2]
+                    raise ScanError unless pos_st
+                    raise ScanError unless len_seq
+                    seq = r[pos_st, len_seq]
+                    if nextline == :m then
+                      mseq << (' ' * len_seq)
                     end
+                    spos1 = pos1.to_i unless spos1
+                    spos2 = pos2.to_i
+                    sseq << seq
+                    nextline = :q
                   elsif r = sc.scan(/ {6}.+/) then
                     raise ScanError unless nextline == :m
                     mseq << r[pos_st, len_seq]
