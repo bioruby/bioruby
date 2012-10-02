@@ -7,6 +7,8 @@
 #             Hiroyuki Nakamura <hiroyuki@1vq9.com>
 # License::   The Ruby License
 #
+require 'rational'
+
 module Bio
   ##
   # == Description
@@ -403,8 +405,8 @@ module Bio
                   :N => 0,
                   :S => 0}
       each_aa do |aa|
-        ATOM[aa].each do |type, num|
-          num_atom[type] += num
+        ATOM[aa].each do |t, num|
+          num_atom[t] += num
         end
       end
       num_atom[:H] = num_atom[:H] - 2 * (amino_acid_number - 1)
@@ -482,7 +484,7 @@ module Bio
                                residue[:pK],
                                residue[:num])
       end
-      (solve_pI charges).round(2)
+      round(solve_pI(charges), 2)
     end
 
     ##
@@ -496,14 +498,14 @@ module Bio
     # is given for 3 model organisms (human, yeast and E.coli)._
     #
     def half_life(species=nil)
-      n_end = @seq[0].to_sym
+      n_end = @seq[0].chr.to_sym
       if species
         HALFLIFE[species][n_end]
       else
         {
-          :ecoli => HALFLIFE[:ecoli][n_end],
+          :ecoli     => HALFLIFE[:ecoli][n_end],
           :mammalian => HALFLIFE[:mammalian][n_end],
-          :yeast => HALFLIFE[:yeast][n_end]
+          :yeast     => HALFLIFE[:yeast][n_end]
         }
       end
     end
@@ -526,13 +528,13 @@ module Bio
           instability_sum = 0.0
           i = 0
           while @seq[i+1] != nil
-            aa, next_aa = [@seq[i].to_sym, @seq[i+1].to_sym]
+            aa, next_aa = [@seq[i].chr.to_sym, @seq[i+1].chr.to_sym]
             if DIWV.key?(aa) && DIWV[aa].key?(next_aa)
               instability_sum += DIWV[aa][next_aa]
             end
             i += 1
           end
-          ((10.0/amino_acid_number.to_f) * instability_sum).round(2)
+          round((10.0/amino_acid_number.to_f) * instability_sum, 2)
         end
     end
 
@@ -567,9 +569,9 @@ module Bio
     #
     def aliphatic_index
       aa_map = aa_comp_map
-      @aliphatic_index ||=  (aa_map[:A]       +
-                             2.9 * aa_map[:V]  +
-                             (3.9 * (aa_map[:I] + aa_map[:L]))).round(2)
+      @aliphatic_index ||=  round(aa_map[:A]        +
+                                  2.9 * aa_map[:V]  +
+                                  (3.9 * (aa_map[:I] + aa_map[:L])), 2)
     end
 
     ##
@@ -586,7 +588,7 @@ module Bio
                    each_aa do |aa|
                      hydropathy_sum += HYDROPATHY[aa]
                    end
-                   (hydropathy_sum / @seq.length.to_f).round(3)
+                   round(hydropathy_sum / @seq.length.to_f, 3)
                  end
     end
 
@@ -598,9 +600,9 @@ module Bio
     def aa_comp(aa_code=nil)
       if aa_code.nil?
         aa_map = IUPAC_CODE.update(IUPAC_CODE){|k,v| 0.0 }
-        aa_map.update(aa_comp_map){|k,_,v| v.round(1) }
+        aa_map.update(aa_comp_map){|k,_,v| round(v, 1) }
       else
-        aa_comp_map[aa_code].round(1)
+        round(aa_comp_map[aa_code], 1)
       end
     end
 
@@ -656,19 +658,20 @@ module Bio
     def residue_count
       counted = []
       # N-terminal
-      if PK[:nterm].key? @seq[0].to_sym
+      n_term = @seq[0].chr
+      if PK[:nterm].key? n_term.to_sym
         counted << {
           :num => 1,
-          :residue => @seq[0].to_sym,
-          :pK => PK[:nterm][@seq[0].to_sym],
-          :positive => positive?(@seq[0])
+          :residue => n_term.to_sym,
+          :pK => PK[:nterm][n_term.to_sym],
+          :positive => positive?(n_term)
         }
-      elsif PK[:normal].key? @seq[0].to_sym
+      elsif PK[:normal].key? n_term.to_sym
         counted << {
           :num => 1,
-          :residue => @seq[0].to_sym,
-          :pK => PK[:normal][@seq[0].to_sym],
-          :positive => positive?(@seq[0])
+          :residue => n_term.to_sym,
+          :pK => PK[:normal][n_term.to_sym],
+          :positive => positive?(n_term)
         }
       end
       # Internal
@@ -692,12 +695,13 @@ module Bio
         counted << val
       end
       # C-terminal
-      if PK[:cterm].key? @seq[-1].to_sym
+      c_term = @seq[-1].chr
+      if PK[:cterm].key? c_term.to_sym
         counted << {
           :num => 1,
-          :residue => @seq[-1].to_sym,
-          :pK => PK[:cterm][@seq[-1].to_sym],
-          :positive => positive?(@seq[-1])
+          :residue => c_term.to_sym,
+          :pK => PK[:cterm][c_term.to_sym],
+          :positive => positive?(c_term)
         }
       end
       counted
@@ -758,6 +762,11 @@ module Bio
         raise "Failed to Calc pI: pH is higher than 14"
       end
     end
+
+    def round(num, ndigits=0)
+      (num * (10 ** ndigits)).round().to_f / (10 ** ndigits).to_f
+    end
+
     # --------------------------------
     # :section: References
     #
