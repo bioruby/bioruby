@@ -599,7 +599,10 @@ module Bio
     #
     def aa_comp(aa_code=nil)
       if aa_code.nil?
-        aa_map = IUPAC_CODE.update(IUPAC_CODE){|k,v| 0.0 }
+        aa_map = {}
+        IUPAC_CODE.keys.each do |k|
+          aa_map[k] = 0.0
+        end
         aa_map.update(aa_comp_map){|k,_,v| round(v, 1) }
       else
         round(aa_comp_map[aa_code], 1)
