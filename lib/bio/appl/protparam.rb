@@ -9,50 +9,16 @@
 #
 module Bio
   ##
+  # == Description
   #
   # Bio::Protparam is a class for calculating protein paramesters. This class
   # has a similer interface to BioPerl's Bio::Tools::Protparam. However, it
   # calculate parameters instead of throwing a query to Expasy's {Protparam
-  # tool}[http://web.expasy.org/protparam/] as Bio::Tools::Protparam does.
-  #
-  # == References
-  #
-  # 1. Protein Identification and Analysis Tools on the ExPASy Server;
-  #    Gasteiger E., Hoogland C., Gattiker A., Duvaud S., Wilkins M.R.,
-  #    Appel R.D., Bairoch A.; (In) John M. Walker (ed): The Proteomics
-  #    Protocols Handbook, Humana Press (2005). pp. 571-607
-  # 2. Pace, C.N., Vajdos, F., Fee, L., Grimsley, G., and Gray, T. (1995)
-  #    How to measure and predict the molar absorption coefficient of a
-  #    protein. Protein Sci. 11, 2411-2423.
-  # 3. Edelhoch, H. (1967) Spectroscopic determination of tryptophan and
-  #    tyrosine in proteins. Biochemistry 6, 1948-1954.
-  # 4. Gill, S.C. and von Hippel, P.H. (1989) Calculation of protein
-  #    extinction coefficients from amino acid sequence data. Anal. Biochem.
-  #    182:319-326(1989).
-  # 5. Bachmair, A., Finley, D. and Varshavsky, A. (1986) In vivo half-life
-  #    of a protein is a function of its amino-terminal residue. Science 234,
-  #    179-186.
-  # 6. Gonda, D.K., Bachmair, A., Wunning, I., Tobias, J.W., Lane, W.S. and
-  #    Varshavsky, A. J. (1989) Universality and structure of the N-end rule.
-  #    J. Biol. Chem. 264, 16700-16712.
-  # 7. Tobias, J.W., Shrader, T.E., Rocap, G. and Varshavsky, A. (1991) The
-  #    N-end rule in bacteria. Science 254, 1374-1377.
-  # 8. Ciechanover, A. and Schwartz, A.L. (1989) How are substrates
-  #    recognized by the ubiquitin-mediated proteolytic system? Trends Biochem.
-  #    Sci. 14, 483-488.
-  # 9. Varshavsky, A. (1997) The N-end rule pathway of protein degradation.
-  #    Genes Cells 2, 13-28.
-  # 10. Guruprasad, K., Reddy, B.V.B. and Pandit, M.W. (1990) Correlation
-  #     between stability of a protein and its dipeptide composition: a novel
-  #     approach for predicting in vivo stability of a protein from its primary
-  #     sequence. Protein Eng. 4,155-161.
-  # 11. Ikai, A.J. (1980) Thermostability and aliphatic index of globular
-  #     proteins. J. Biochem. 88, 1895-1898.
-  # 12. Kyte, J. and Doolittle, R.F. (1982) A simple method for displaying
-  #     the hydropathic character of a protein. J. Mol. Biol. 157, 105-132.
+  # tool}[http://web.expasy.org/protparam/]{[1]}[rdoc-label:1] as Bio::Tools::Protparam does.
   #
   class Protparam
 
+    # {IUPAC codes}[http://www.bioinformatics.org/sms2/iupac.html] for amino acids.
     IUPAC_CODE = {
       :I => "Ile",
       :V => "Val",
@@ -81,6 +47,7 @@ module Bio
       :X => "Xaa"
     }
 
+    # Dipeptide instability weight value for calculating instability index of proteins {[10]}[rdoc-label:10].
     DIWV = {
       :W => {
         :W => 1.0,   :C => 1.0,   :M => 24.68, :H => 24.68, :Y => 1.0, :F => 1.0,    :Q => 1.0,
@@ -184,10 +151,7 @@ module Bio
       }
     }
 
-    # in-vivo half life: E.coli, Mammalian, Yeast (unit: min)
-    #
-    # http://web.expasy.org/protparam/protparam-doc.html
-    #
+    # Estemated half-life of N-terminal residue of a protein.
     HALFLIFE = {
       :ecoli => {
         :I => 600,
@@ -236,8 +200,8 @@ module Bio
       },
       :yeast => {
         :A => 1200,
-        :R => 2   ,
-        :N => 3   ,
+        :R => 2,
+        :N => 3,
         :D => 3,
         :C => 1200,
         :Q => 10,
@@ -258,33 +222,33 @@ module Bio
       }
     }
 
-    # TOP-IDP
-    #
-    # http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2676888/
-    #
-    TOP_IDP = {
-      :I => -0.486,
-      :V => -0.121,
-      :L => -0.326,
-      :F => -0.697,
-      :C => 0.02,
-      :M => -0.397,
-      :A => 0.06,
-      :G => 0.166,
-      :T => 0.059,
-      :W => -0.884,
-      :S => 0.341,
-      :Y => -0.510,
-      :P => 0.987,
-      :H => 0.303,
-      :E => 0.736,
-      :Q => 0.318,
-      :D => 0.192,
-      :N => 0.007,
-      :K => 0.586,
-      :R => 0.180,
-      :U => 0.02
-    }
+    ##  TOP-IDP
+    ##
+    ##  http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2676888/
+    ##
+    # TOP_IDP = {
+    #   :I => -0.486,
+    #   :V => -0.121,
+    #   :L => -0.326,
+    #   :F => -0.697,
+    #   :C => 0.02,
+    #   :M => -0.397,
+    #   :A => 0.06,
+    #   :G => 0.166,
+    #   :T => 0.059,
+    #   :W => -0.884,
+    #   :S => 0.341,
+    #   :Y => -0.510,
+    #   :P => 0.987,
+    #   :H => 0.303,
+    #   :E => 0.736,
+    #   :Q => 0.318,
+    #   :D => 0.192,
+    #   :N => 0.007,
+    #   :K => 0.586,
+    #   :R => 0.180,
+    #   :U => 0.02
+    # }
 
     # Hydropathy values for amino acids {[12]}[rdoc-label:12].
     HYDROPATHY = {
@@ -311,6 +275,7 @@ module Bio
       :U => 2.5
     }
 
+    # {Average isotopic masses of amino acids}[http://web.expasy.org/findmod/findmod_masses.html#AA]
     AVERAGE_MASS = {
       :I => 113.1594,
       :V => 99.1326,
@@ -360,12 +325,13 @@ module Bio
       :R => {:C => 6, :H => 14, :O => 2, :N => 4, :S => 0}, # C6H14N4O2
     }
 
+    ##
     #
-    # pK value from Bjellqvist, et al.
+    # pK value from Bjellqvist, et al {[13]}[rdoc-label:13].
     # Taking into account the decrease in pK differences
     # between acids and bases when going from water
     # to 8 M urea, a value of 7.5 has been assigned to the
-    # N-terminal residue.
+    # N-terminal residue .
     #
     PK = {
       :cterm => {
@@ -395,18 +361,35 @@ module Bio
       end
     end
 
+    ##
+    #
+    # Return the number of negative amino acids (D and E) in an AA sequence.
+    #
     def num_neg
       @num_neg ||= @seq.count("DE")
     end
 
+    ##
+    #
+    # Return the number of positive amino acids (R and K) in an AA sequence.
+    #
     def num_pos
       @num_neg ||= @seq.count("RK")
     end
 
+    ##
+    #
+    # Return the number of residues in an AA sequence.
+    #
     def amino_acid_number
       @seq.length
     end
 
+    ##
+    #
+    # Return the number of atoms in a sequence. If type is given, return the
+    # number of specific atoms in a sequence.
+    #
     def total_atoms(type=nil)
       if !type.nil?
         type = type.to_sym
@@ -433,6 +416,10 @@ module Bio
       end
     end
 
+    ##
+    #
+    # Return the number of carbons.
+    #
     def num_carbon
       @num_carbon ||= total_atoms :C
     end
@@ -441,25 +428,37 @@ module Bio
       @num_hydrogen ||= total_atoms :H
     end
 
+    ##
+    #
+    # Return the number of nitrogens.
+    #
     def num_nitro
       @num_nitro ||= total_atoms :N
     end
 
+    ##
+    #
+    # Return the number of oxygens.
+    #
     def num_oxygen
       @num_oxygen ||= total_atoms :O
     end
 
+    ##
+    #
+    # Return the number of sulphurs.
+    #
     def num_sulphur
       @num_sulphur ||= total_atoms :S
     end
 
+    ##
     #
-    # Protein Mw is calculated by the addition of average isotopic masses of
+    # Calculate molecular weight of an AA sequence.
+    #
+    # _Protein Mw is calculated by the addition of average isotopic masses of
     # amino acids in the protein and the average isotopic mass of one water
-    # molecule.
-    #
-    # The list of average isotopic mass of AA is {here
-    # }[http://web.expasy.org/findmod/findmod_masses.html#AA]
+    # molecule._
     #
     def molecular_weight
       @mw ||= begin
@@ -471,7 +470,10 @@ module Bio
               end
     end
 
+    ##
     #
+    # Claculate theoretical pI for an AA sequence with bisect algorithm.
+    # pK value by Bjelqist, et al. is used to calculate pI.
     #
     def theoretical_pI
       charges = []
@@ -483,27 +485,15 @@ module Bio
       (solve_pI charges).round(2)
     end
 
+    ##
     #
-    # The half-life is a prediction of the time it takes for half of the
+    # Return estimated half_life of an AA sequence.
+    #
+    # _The half-life is a prediction of the time it takes for half of the
     # amount of protein in a cell to disappear after its synthesis in the
     # cell. ProtParam relies on the "N-end rule", which relates the half-life
     # of a protein to the identity of its N-terminal residue; the prediction
-    # is given for 3 model organisms (human, yeast and E.coli). The N-end rule
-    # (for a review see [5],[6]) originated from the observations that the
-    # identity of the N-terminal residue of a protein plays an important role
-    # in determining its stability in vivo ([2],[3],[4]). The rule was
-    # established from experiments that explored the metabolic fate of
-    # artificial beta-galactosidase proteins with different N-terminal amino
-    # acids engineered by site-directed mutagenesis. The beta-gal proteins
-    # thus designed have strikingly different half-lives in vivo, from more
-    # than 100 hours to less than 2 minutes, depending on the nature of the
-    # amino acid at the amino terminus and on the experimental model (yeast in
-    # vivo; mammalian reticulocytes in vitro, Escherichia coli in vivo). In
-    # addition, it has been shown that in eukaryotes, the association of a
-    # destabilizing N-terminal residue and of an internal lysine targets the
-    # protein to ubiquitin-mediated proteolytic degradation [6]. Note that the
-    # program gives an estimation of the protein half-life and is not
-    # applicable for N-terminally modified proteins.
+    # is given for 3 model organisms (human, yeast and E.coli)._
     #
     def half_life(species=nil)
       n_end = @seq[0].to_sym
@@ -518,16 +508,17 @@ module Bio
       end
     end
 
+    ##
     #
-    # The instability index provides an estimate of the stability of your
+    # Calculate instability index of an AA sequence.
+    #
+    # _The instability index provides an estimate of the stability of your
     # protein in a test tube. Statistical analysis of 12 unstable and 32
     # stable proteins has revealed [7] that there are certain dipeptides, the
     # occurence of which is significantly different in the unstable proteins
     # compared with those in the stable ones. The authors of this method have
     # assigned a weight value of instability to each of the 400 different
-    # dipeptides (DIWV).
-    #
-    # http://web.expasy.org/protparam/protparam-doc.html
+    # dipeptides (DIWV)._
     #
     def instability_index
       @instability_index ||=
@@ -545,23 +536,34 @@ module Bio
         end
     end
 
+    ##
     #
-    # protein whose instability index is smaller than 40 is predicted as
-    # stable, a value above 40 predicts that the protein may be unstable.
+    # Return wheter the sequence is stable or not as String (stable/unstable).
     #
-    # http://web.expasy.org/protparam/protparam-doc.html
+    # _Protein whose instability index is smaller than 40 is predicted as
+    # stable, a value above 40 predicts that the protein may be unstable._
+    #
     #
     def stability
       (instability_index <= 40) ? "stable" : "unstable"
     end
 
+    ##
     #
-    # The aliphatic index of a protein is defined as the relative volume
+    # Return true if the sequence is stable.
+    #
+    def stable?
+      (instability_index <= 40) ? true : false
+    end
+
+    ##
+    #
+    # Calculate aliphatic index of an AA sequence.
+    #
+    # _The aliphatic index of a protein is defined as the relative volume
     # occupied by aliphatic side chains (alanine, valine, isoleucine, and
     # leucine). It may be regarded as a positive factor for the increase of
-    # thermostability of globular proteins.
-    #
-    # http://web.expasy.org/protparam/protparam-doc.html
+    # thermostability of globular proteins._
     #
     def aliphatic_index
       aa_map = aa_comp_map
@@ -570,10 +572,13 @@ module Bio
                              (3.9 * (aa_map[:I] + aa_map[:L]))).round(2)
     end
 
+    ##
     #
-    # The GRAVY(Grand Average of Hydropathy) value for a peptide or protein
+    # Calculate GRAVY score of an AA sequence.
+    #
+    # _The GRAVY(Grand Average of Hydropathy) value for a peptide or protein
     # is calculated as the sum of hydropathy values [9] of all the amino acids,
-    # divided by the number of residues in the sequence.
+    # divided by the number of residues in the sequence._
     #
     def gravy
       @gravy ||= begin
@@ -585,6 +590,11 @@ module Bio
                  end
     end
 
+    ##
+    #
+    # Calculate the percentage composition of an AA sequence as a Hash object.
+    # It return percentage of a given amino acid if aa_code is not nil.
+    #
     def aa_comp(aa_code=nil)
       if aa_code.nil?
         aa_map = IUPAC_CODE.update(IUPAC_CODE){|k,v| 0.0 }
@@ -748,6 +758,48 @@ module Bio
         raise "Failed to Calc pI: pH is higher than 14"
       end
     end
-
+    # --------------------------------
+    # :section: References
+    #
+    #
+    # 1. Protein Identification and Analysis Tools on the ExPASy Server;
+    #    Gasteiger E., Hoogland C., Gattiker A., Duvaud S., Wilkins M.R.,
+    #    Appel R.D., Bairoch A.; (In) John M. Walker (ed): The Proteomics
+    #    Protocols Handbook, Humana Press (2005). pp. 571-607
+    # 2. Pace, C.N., Vajdos, F., Fee, L., Grimsley, G., and Gray, T. (1995)
+    #    How to measure and predict the molar absorption coefficient of a
+    #    protein. Protein Sci. 11, 2411-2423.
+    # 3. Edelhoch, H. (1967) Spectroscopic determination of tryptophan and
+    #    tyrosine in proteins. Biochemistry 6, 1948-1954.
+    # 4. Gill, S.C. and von Hippel, P.H. (1989) Calculation of protein
+    #    extinction coefficients from amino acid sequence data. Anal. Biochem.
+    #    182:319-326(1989).
+    # 5. Bachmair, A., Finley, D. and Varshavsky, A. (1986) In vivo half-life
+    #    of a protein is a function of its amino-terminal residue. Science 234,
+    #    179-186.
+    # 6. Gonda, D.K., Bachmair, A., Wunning, I., Tobias, J.W., Lane, W.S. and
+    #    Varshavsky, A. J. (1989) Universality and structure of the N-end rule.
+    #    J. Biol. Chem. 264, 16700-16712.
+    # 7. Tobias, J.W., Shrader, T.E., Rocap, G. and Varshavsky, A. (1991) The
+    #    N-end rule in bacteria. Science 254, 1374-1377.
+    # 8. Ciechanover, A. and Schwartz, A.L. (1989) How are substrates
+    #    recognized by the ubiquitin-mediated proteolytic system? Trends Biochem.
+    #    Sci. 14, 483-488.
+    # 9. Varshavsky, A. (1997) The N-end rule pathway of protein degradation.
+    #    Genes Cells 2, 13-28.
+    # 10. Guruprasad, K., Reddy, B.V.B. and Pandit, M.W. (1990) Correlation
+    #     between stability of a protein and its dipeptide composition: a novel
+    #     approach for predicting in vivo stability of a protein from its primary
+    #     sequence. Protein Eng. 4,155-161.
+    # 11. Ikai, A.J. (1980) Thermostability and aliphatic index of globular
+    #     proteins. J. Biochem. 88, 1895-1898.
+    # 12. Kyte, J. and Doolittle, R.F. (1982) A simple method for displaying
+    #     the hydropathic character of a protein. J. Mol. Biol. 157, 105-132.
+    # 13. Bjellqvist, B.,Hughes, G.J., Pasquali, Ch., Paquet, N., Ravier, F.,
+    #     Sanchez, J.-Ch., Frutiger, S. & Hochstrasser, D.F. The focusing positions
+    #     of polypeptides in immobilized pH gradients can be predicted from their
+    #     amino acid sequences. Electrophoresis 1993, 14, 1023-1031.
+    #
+    # --------------------------------
   end
 end
