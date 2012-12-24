@@ -72,7 +72,7 @@ module Bio
     # *Arguments*:
     # * _url_: URL of dbfetch server (default = 'http://bioruby.org/cgi-bin/biofetch.rb')
     # *Returns*:: Bio::Fetch object
-    def initialize(url = 'http://bioruby.org/cgi-bin/biofetch.rb')
+    def initialize(url = 'http://www.ebi.ac.uk/cgi-bin/dbfetch')
       @url = url
       schema, user, @host, @port, reg, @path, = URI.split(@url)
     end
