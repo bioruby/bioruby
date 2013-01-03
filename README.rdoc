@@ -31,7 +31,7 @@ analysis can be executed within the BioRuby script, and the results
 can be fully parsed to extract the portion you need.  BioRuby supports
 major biological database formats and provides many ways for accessing
 them through flatfile indexing, SQL, web services etc.  Various web
-services including KEGG API can be easily utilized by BioRuby.
+services can be easily utilized by BioRuby.
 
 
 == FOR MORE INFORMATION
@@ -55,7 +55,6 @@ doc/Changes-0.7.rd:: News and incompatible changes from 0.6.4 to 1.2.1.
 
 doc/Tutorial.rd:: BioRuby Tutorial.
 doc/Tutorial.rd.html:: HTML version of Tutorial.rd.
-doc/KEGG_API.rd:: Documents about KEGG API, including usage of Bio::KEGG::API.
 
 ==== BioRuby development
 
@@ -68,7 +67,6 @@ README_DEV.rdoc:: Describes ways to contribute to the BioRuby project, including
 
 doc/Tutorial.rd.ja:: BioRuby Tutorial written in Japanese.
 doc/Tutorial.rd.ja.html:: HTML version of Tutorial.rd.ja.
-doc/KEGG_API.rd.ja:: Japanese translation of KEGG_API.rd.
 
 ==== Sample codes
 
@@ -159,7 +157,7 @@ For parsing PhyloXML format files:
   * {GNOME Libxml2 XML toolkit}[http://xmlsoft.org/] and C compiler will be
     required.
 
-(Only for Ruby 1.9.x) For using SOAP web services e.g. KEGG API:
+(Only for Ruby 1.9.x) For using SOAP web services:
 
 * {gem install soap4r-ruby1.9}[https://rubygems.org/gems/soap4r-ruby1.9]
   * For Ruby 1.8.x, SOAP4R is bundled within the Ruby 1.8.x release.
