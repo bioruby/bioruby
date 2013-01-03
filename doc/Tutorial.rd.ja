@@ -687,7 +687,7 @@ GenBank データベースの中では、ファージのエントリが含まれる gbphg.seq の
 
 getseq コマンドは配列を取得しましたが、配列だけでなくエントリ全体を取得する
 には getent コマンド(※2)を使います。getseq コマンド同様、getent コマンドでも
-OBDA, EMBOSS, NCBI, EBI, TogoWS, KEGG API のデータベースが利用可能です(※5)。
+OBDA, EMBOSS, NCBI, EBI, TogoWS のデータベースが利用可能です(※5)。
 設定については getseq コマンドの説明を参照してください。
 
   bioruby> entry = getent("genbank:AB044425")
@@ -833,110 +833,6 @@ FASTA フォーマットに変換し、myfasta.fa というファイルに保存しています。
     converting -- gbvrl1.gbk
     converting -- gbvrl2.gbk
   done
-
-=== KEGG API
-
-BioRuby シェルでは KEGG API のウェブサービスも簡単に利用できます。
-
---- keggdbs
-
-ゲノムネットで KEGG API を通じて利用可能なデータベースのリストを表示します。
-
-  bioruby> keggdbs
-  nt:     Non-redundant nucleic acid sequence database
-  aa:     Non-redundant protein sequence database
-  gb:     GenBank nucleic acid sequence database
-  (略)
-
---- keggorgs
-
-KEGG に収録されている全生物種のリストを表示します。
-
-  bioruby> keggorgs
-  aae:    Aquifex aeolicus
-  aci:    Acinetobacter sp. ADP1
-  afu:    Archaeoglobus fulgidus
-  (略)
-
---- keggpathways
-
-KEGG に収録されている全パスウェイのリストを表示します。
-
-  bioruby> keggpathways
-  path:map00010:  Glycolysis / Gluconeogenesis - Reference pathway
-  path:map00020:  Citrate cycle (TCA cycle) - Reference pathway
-  path:map00030:  Pentose phosphate pathway - Reference pathway
-  (略)
-
-引数に３文字の KEGG 生物種記号をあたえると、その生物で利用できる
-パスウェイだけの一覧を返します。大腸菌 eco の場合以下のようになります。
-
-  bioruby> keggpathways("eco")
-  path:eco00010:  Glycolysis / Gluconeogenesis - Escherichia coli K-12 MG1655
-  path:eco00020:  Citrate cycle (TCA cycle) - Escherichia coli K-12 MG1655
-  path:eco00030:  Pentose phosphate pathway - Escherichia coli K-12 MG1655
-  (略)
-
---- keggapi
-
-これら以外の KEGG API のメソッドは、keggapi に続けて呼び出すことで
-利用できます。
-
-  bioruby> p keggapi.get_genes_by_pathway("path:eco00010")
-  ["eco:b0114", "eco:b0115", "eco:b0116", "eco:b0356", "eco:b0688", (略)
-
-利用可能なメソッドの一覧は KEGG API のマニュアルを参照してください。
-
-* ((<URL:http://www.genome.jp/kegg/soap/doc/keggapi_manual_ja.html>))
-
-=== DBGET
-
-ゲノムネットの DBGET のコマンドである binfo, bfind, bget, btit, bconv は
-KEGG API を利用してそのまま実行できるようになっています。
-
---- binfo
-
-  bioruby> binfo
-                           *** Last database updates ***
-  Date      Database              Release              #Entries      #Residues
- --------  -------------   ------------------------  ------------  ----------------
-  05/12/06  nr-nt                 05-12-04 (Dec 05)    63,078,043   111,609,773,616
-  05/12/06  nr-aa                 05-12-05 (Dec 05)     2,682,790       890,953,839
-  05/10/25  genbank                  150.0 (Oct 05)    49,152,445    53,655,236,500
-  05/12/06  genbank-upd       150.0+/12-04 (Dec 05)     7,470,976     6,357,888,366
-  (略)
-
-binfo コマンドに続けてデータベース名を指定することでより詳細な情報が
-表示されます。
-
-  bioruby> binfo "genbank"
-  genbank          GenBank nucleic acid sequence database
-  gb               Release 150.0, Oct 05
-                   National Center for Biotechnology Information
-                   49,152,445 entries, 53,655,236,500 bases
-                   Last update:  05/10/25
-                   <dbget> <fasta> <blast>
-
---- bfind(keyword)
-
-bfind コマンドでデータベースに対するキーワードサーチを行うことができます。
-データベース名と検索したいキーワードを文字列で渡します。
-
-  bioruby> list = bfind "genbank ebola human"
-  bioruby> puts list
-  gb:BD177378 [BD177378] A monoclonal antibody recognizing ebola virus.
-  gb:BD177379 [BD177379] A monoclonal antibody recognizing ebola virus.
-  (略)
-
---- bget(entry_id)
-
-bget コマンドで指定した db:entry_id のデータベースエントリを取得できます。
-
-  bioruby> entry = bget "gb:BD177378"
-  bioruby> puts entry
-  LOCUS       BD177378                  24 bp    DNA     linear   PAT 16-APR-2003
-  DEFINITION  A monoclonal antibody recognizing ebola virus.
-  (略)
 
 === スクリプト生成
 
