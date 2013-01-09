@@ -4,7 +4,7 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>doc/Tutorial.rd.ja</title>
+<title>Tutorial.rd.ja</title>
 <link href="bioruby.css" type="text/css" rel="stylesheet" />
 </head>
 <body>
@@ -572,7 +572,7 @@ GenBank データベースの中では、ファージのエントリが含まれる gbphg.seq の
 </dl>
 <p>getseq コマンドは配列を取得しましたが、配列だけでなくエントリ全体を取得する
 には getent コマンド(※2)を使います。getseq コマンド同様、getent コマンドでも
-OBDA, EMBOSS, NCBI, EBI, TogoWS, KEGG API のデータベースが利用可能です(※5)。
+OBDA, EMBOSS, NCBI, EBI, TogoWS のデータベースが利用可能です(※5)。
 設定については getseq コマンドの説明を参照してください。</p>
 <pre>bioruby&gt; entry = getent("genbank:AB044425")
 bioruby&gt; puts entry
@@ -697,97 +697,7 @@ Saving fasta file (myfasta.fa) ...
   converting -- gbvrl1.gbk
   converting -- gbvrl2.gbk
 done</pre>
-<h3><a name="label-43" id="label-43">KEGG API</a></h3><!-- RDLabel: "KEGG API" -->
-<p>BioRuby シェルでは KEGG API のウェブサービスも簡単に利用できます。</p>
-<dl>
-<dt><a name="label-44" id="label-44"><code>keggdbs</code></a></dt><!-- RDLabel: "keggdbs" -->
-</dl>
-<p>ゲノムネットで KEGG API を通じて利用可能なデータベースのリストを表示します。</p>
-<pre>bioruby&gt; keggdbs
-nt:     Non-redundant nucleic acid sequence database
-aa:     Non-redundant protein sequence database
-gb:     GenBank nucleic acid sequence database
-(略)</pre>
-<dl>
-<dt><a name="label-45" id="label-45"><code>keggorgs</code></a></dt><!-- RDLabel: "keggorgs" -->
-</dl>
-<p>KEGG に収録されている全生物種のリストを表示します。</p>
-<pre>bioruby&gt; keggorgs
-aae:    Aquifex aeolicus
-aci:    Acinetobacter sp. ADP1
-afu:    Archaeoglobus fulgidus
-(略)</pre>
-<dl>
-<dt><a name="label-46" id="label-46"><code>keggpathways</code></a></dt><!-- RDLabel: "keggpathways" -->
-</dl>
-<p>KEGG に収録されている全パスウェイのリストを表示します。</p>
-<pre>bioruby&gt; keggpathways
-path:map00010:  Glycolysis / Gluconeogenesis - Reference pathway
-path:map00020:  Citrate cycle (TCA cycle) - Reference pathway
-path:map00030:  Pentose phosphate pathway - Reference pathway
-(略)</pre>
-<p>引数に３文字の KEGG 生物種記号をあたえると、その生物で利用できる
-パスウェイだけの一覧を返します。大腸菌 eco の場合以下のようになります。</p>
-<pre>bioruby&gt; keggpathways("eco")
-path:eco00010:  Glycolysis / Gluconeogenesis - Escherichia coli K-12 MG1655
-path:eco00020:  Citrate cycle (TCA cycle) - Escherichia coli K-12 MG1655
-path:eco00030:  Pentose phosphate pathway - Escherichia coli K-12 MG1655
-(略)</pre>
-<dl>
-<dt><a name="label-47" id="label-47"><code>keggapi</code></a></dt><!-- RDLabel: "keggapi" -->
-</dl>
-<p>これら以外の KEGG API のメソッドは、keggapi に続けて呼び出すことで
-利用できます。</p>
-<pre>bioruby&gt; p keggapi.get_genes_by_pathway("path:eco00010")
-["eco:b0114", "eco:b0115", "eco:b0116", "eco:b0356", "eco:b0688", (略)</pre>
-<p>利用可能なメソッドの一覧は KEGG API のマニュアルを参照してください。</p>
-<ul>
-<li><a href="http://www.genome.jp/kegg/soap/doc/keggapi_manual_ja.html">&lt;URL:http://www.genome.jp/kegg/soap/doc/keggapi_manual_ja.html&gt;</a></li>
-</ul>
-<h3><a name="label-48" id="label-48">DBGET</a></h3><!-- RDLabel: "DBGET" -->
-<p>ゲノムネットの DBGET のコマンドである binfo, bfind, bget, btit, bconv は
-KEGG API を利用してそのまま実行できるようになっています。</p>
-<dl>
-<dt><a name="label-49" id="label-49"><code>binfo</code></a></dt><!-- RDLabel: "binfo" -->
-</dl>
-<pre>bioruby&gt; binfo
-                         *** Last database updates ***
-Date      Database              Release              #Entries      #Residues</pre>
-<pre>--------  -------------   ------------------------  ------------  ----------------
- 05/12/06  nr-nt                 05-12-04 (Dec 05)    63,078,043   111,609,773,616
- 05/12/06  nr-aa                 05-12-05 (Dec 05)     2,682,790       890,953,839
- 05/10/25  genbank                  150.0 (Oct 05)    49,152,445    53,655,236,500
- 05/12/06  genbank-upd       150.0+/12-04 (Dec 05)     7,470,976     6,357,888,366
- (略)</pre>
-<p>binfo コマンドに続けてデータベース名を指定することでより詳細な情報が
-表示されます。</p>
-<pre>bioruby&gt; binfo "genbank"
-genbank          GenBank nucleic acid sequence database
-gb               Release 150.0, Oct 05
-                 National Center for Biotechnology Information
-                 49,152,445 entries, 53,655,236,500 bases
-                 Last update:  05/10/25
-                 &lt;dbget&gt; &lt;fasta&gt; &lt;blast&gt;</pre>
-<dl>
-<dt><a name="label-50" id="label-50"><code>bfind(<var>keyword</var>)</code></a></dt><!-- RDLabel: "bfind" -->
-</dl>
-<p>bfind コマンドでデータベースに対するキーワードサーチを行うことができます。
-データベース名と検索したいキーワードを文字列で渡します。</p>
-<pre>bioruby&gt; list = bfind "genbank ebola human"
-bioruby&gt; puts list
-gb:BD177378 [BD177378] A monoclonal antibody recognizing ebola virus.
-gb:BD177379 [BD177379] A monoclonal antibody recognizing ebola virus.
-(略)</pre>
-<dl>
-<dt><a name="label-51" id="label-51"><code>bget(<var>entry_id</var>)</code></a></dt><!-- RDLabel: "bget" -->
-</dl>
-<p>bget コマンドで指定した db:entry_id のデータベースエントリを取得できます。</p>
-<pre>bioruby&gt; entry = bget "gb:BD177378"
-bioruby&gt; puts entry
-LOCUS       BD177378                  24 bp    DNA     linear   PAT 16-APR-2003
-DEFINITION  A monoclonal antibody recognizing ebola virus.
-(略)</pre>
-<h3><a name="label-52" id="label-52">スクリプト生成</a></h3><!-- RDLabel: "スクリプト生成" -->
+<h3><a name="label-43" id="label-43">スクリプト生成</a></h3><!-- RDLabel: "スクリプト生成" -->
 <p>作業手順をスクリプト化して保存しておくこともできます。</p>
 <pre>bioruby&gt; script
 -- 8&lt; -- 8&lt; -- 8&lt; --  Script  -- 8&lt; -- 8&lt; -- 8&lt; --
@@ -805,9 +715,9 @@ p seq
 p seq.translate</pre>
 <p>このスクリプトは bioruby コマンドで実行することができます。</p>
 <pre>% bioruby script.rb</pre>
-<h3><a name="label-53" id="label-53">簡易シェル機能</a></h3><!-- RDLabel: "簡易シェル機能" -->
+<h3><a name="label-44" id="label-44">簡易シェル機能</a></h3><!-- RDLabel: "簡易シェル機能" -->
 <dl>
-<dt><a name="label-54" id="label-54"><code>cd(<var>dir</var>)</code></a></dt><!-- RDLabel: "cd" -->
+<dt><a name="label-45" id="label-45"><code>cd(<var>dir</var>)</code></a></dt><!-- RDLabel: "cd" -->
 </dl>
 <p>カレントディレクトリを変更します。</p>
 <pre>bioruby&gt; cd "/tmp"
@@ -816,13 +726,13 @@ p seq.translate</pre>
 <pre>bioruby&gt; cd
 "/home/k"</pre>
 <dl>
-<dt><a name="label-55" id="label-55"><code>pwd</code></a></dt><!-- RDLabel: "pwd" -->
+<dt><a name="label-46" id="label-46"><code>pwd</code></a></dt><!-- RDLabel: "pwd" -->
 </dl>
 <p>カレントディレクトリを表示します。</p>
 <pre>bioruby&gt; pwd
 "/home/k"</pre>
 <dl>
-<dt><a name="label-56" id="label-56"><code>dir</code></a></dt><!-- RDLabel: "dir" -->
+<dt><a name="label-47" id="label-47"><code>dir</code></a></dt><!-- RDLabel: "dir" -->
 </dl>
 <p>カレントディレクトリのファイルを一覧表示します。</p>
 <pre>bioruby&gt; dir
@@ -838,7 +748,7 @@ bioruby&gt; dir "gbphg.seq"
 ------  ----------------------------  -----------  ------------
 100644  Sat Oct 15 03:01:00 JST 2005     42599518  "gbphg.seq"</pre>
 <dl>
-<dt><a name="label-57" id="label-57"><code>head(<var>file</var>, <var>lines</var> = <var>10</var>)</code></a></dt><!-- RDLabel: "head" -->
+<dt><a name="label-48" id="label-48"><code>head(<var>file</var>, <var>lines</var> = <var>10</var>)</code></a></dt><!-- RDLabel: "head" -->
 </dl>
 <p>テキストファイルやオブジェクトの先頭 10 行を表示します。</p>
 <pre>bioruby&gt; head "gbphg.seq"
@@ -860,16 +770,16 @@ bioruby&gt; head entry, 2
 GBPHG.SEQ            Genetic Sequence Data Bank
                           October 15 2005</pre>
 <dl>
-<dt><a name="label-58" id="label-58"><code>disp(<var>obj</var>)</code></a></dt><!-- RDLabel: "disp" -->
+<dt><a name="label-49" id="label-49"><code>disp(<var>obj</var>)</code></a></dt><!-- RDLabel: "disp" -->
 </dl>
 <p>テキストファイルやオブジェクトの中身をページャーで表示します。
 ここで使用するページャーは pager コマンドで変更することができます（後述）。</p>
 <pre>bioruby&gt; disp "gbphg.seq"
 bioruby&gt; disp entry
 bioruby&gt; disp [1, 2, 3] * 4</pre>
-<h3><a name="label-59" id="label-59">変数</a></h3><!-- RDLabel: "変数" -->
+<h3><a name="label-50" id="label-50">変数</a></h3><!-- RDLabel: "変数" -->
 <dl>
-<dt><a name="label-60" id="label-60"><code>ls</code></a></dt><!-- RDLabel: "ls" -->
+<dt><a name="label-51" id="label-51"><code>ls</code></a></dt><!-- RDLabel: "ls" -->
 </dl>
 <p>セッション中に作成した変数（オブジェクト）の一覧を表示します。</p>
 <pre>bioruby&gt; ls
@@ -878,7 +788,7 @@ bioruby&gt; disp [1, 2, 3] * 4</pre>
 bioruby&gt; a = 123
 ["a", "entry", "seq"]</pre>
 <dl>
-<dt><a name="label-61" id="label-61"><code>rm(<var>symbol</var>)</code></a></dt><!-- RDLabel: "rm" -->
+<dt><a name="label-52" id="label-52"><code>rm(<var>symbol</var>)</code></a></dt><!-- RDLabel: "rm" -->
 </dl>
 <p>変数を消去します。</p>
 <pre>bioruby&gt; rm "a"
@@ -886,19 +796,19 @@ bioruby&gt; a = 123
 bioruby&gt; ls
 ["entry", "seq"]</pre>
 <dl>
-<dt><a name="label-62" id="label-62"><code>savefile(<var>filename</var>, <var>object</var>)</code></a></dt><!-- RDLabel: "savefile" -->
+<dt><a name="label-53" id="label-53"><code>savefile(<var>filename</var>, <var>object</var>)</code></a></dt><!-- RDLabel: "savefile" -->
 </dl>
 <p>変数に保存されている内容をテキストファイルに保存します。</p>
 <pre>bioruby&gt; savefile "testfile.txt", entry
 Saving data (testfile.txt) ... done
 
 bioruby&gt; disp "testfile.txt"</pre>
-<h3><a name="label-63" id="label-63">各種設定</a></h3><!-- RDLabel: "各種設定" -->
+<h3><a name="label-54" id="label-54">各種設定</a></h3><!-- RDLabel: "各種設定" -->
 <p>永続化の仕組みとして BioRuby シェル終了時に session ディレクトリ内に
 ヒストリ、オブジェクト、個人の設定が保存され、次回起動時に自動的に
 読み込まれます。</p>
 <dl>
-<dt><a name="label-64" id="label-64"><code>config</code></a></dt><!-- RDLabel: "config" -->
+<dt><a name="label-55" id="label-55"><code>config</code></a></dt><!-- RDLabel: "config" -->
 </dl>
 <p>BioRuby シェルの各種設定を表示します。</p>
 <pre>bioruby&gt; config
@@ -943,7 +853,7 @@ K u m a m u s h i   g e n o m e   p r o j e c t
 <pre>bioruby&gt; config :splash
 Splash on</pre>
 <dl>
-<dt><a name="label-65" id="label-65"><code>pager(<var>command</var>)</code></a></dt><!-- RDLabel: "pager" -->
+<dt><a name="label-56" id="label-56"><code>pager(<var>command</var>)</code></a></dt><!-- RDLabel: "pager" -->
 </dl>
 <p>disp コマンドで実際に利用するページャーを切り替えます。</p>
 <pre>bioruby&gt; pager "lv"
@@ -957,9 +867,9 @@ Pager is set to 'off'</pre>
 <p>ページャーが off の時に引数なしで実行すると環境変数 PAGER の値を利用します。</p>
 <pre>bioruby&gt; pager
 Pager is set to 'less'</pre>
-<h3><a name="label-66" id="label-66">遺伝子アスキーアート</a></h3><!-- RDLabel: "遺伝子アスキーアート" -->
+<h3><a name="label-57" id="label-57">遺伝子アスキーアート</a></h3><!-- RDLabel: "遺伝子アスキーアート" -->
 <dl>
-<dt><a name="label-67" id="label-67"><code>doublehelix(<var>sequence</var>)</code></a></dt><!-- RDLabel: "doublehelix" -->
+<dt><a name="label-58" id="label-58"><code>doublehelix(<var>sequence</var>)</code></a></dt><!-- RDLabel: "doublehelix" -->
 </dl>
 <p>DNA 配列をアスキーアートで表示するオマケ機能があります。
 適当な塩基配列 seq を二重螺旋っぽく表示してみましょう。</p>
@@ -979,9 +889,9 @@ g---c
  c----g
   c----g
 (略)</pre>
-<h3><a name="label-68" id="label-68">遺伝子音楽</a></h3><!-- RDLabel: "遺伝子音楽" -->
+<h3><a name="label-59" id="label-59">遺伝子音楽</a></h3><!-- RDLabel: "遺伝子音楽" -->
 <dl>
-<dt><a name="label-69" id="label-69"><code>midifile(<var>midifile</var>, <var>sequence</var>)</code></a></dt><!-- RDLabel: "midifile" -->
+<dt><a name="label-60" id="label-60"><code>midifile(<var>midifile</var>, <var>sequence</var>)</code></a></dt><!-- RDLabel: "midifile" -->
 </dl>
 <p>DNA 配列を MIDI ファイルに変換するオマケ機能があります。
 適当な塩基配列 seq を使って生成した midifile.mid を
@@ -990,7 +900,7 @@ MIDI プレイヤーで演奏してみましょう。</p>
 Saving MIDI file (midifile.mid) ... done</pre>
 <p>以上で BioRuby シェルの解説を終わり、以下では BioRuby ライブラリ自体の
 解説を行います。</p>
-<h2><a name="label-70" id="label-70">塩基・アミノ酸配列を処理する (Bio::Sequence クラス)</a></h2><!-- RDLabel: "塩基・アミノ酸配列を処理する (Bio::Sequence クラス)" -->
+<h2><a name="label-61" id="label-61">塩基・アミノ酸配列を処理する (Bio::Sequence クラス)</a></h2><!-- RDLabel: "塩基・アミノ酸配列を処理する (Bio::Sequence クラス)" -->
 <p>Bio::Sequence クラスは、配列に対する様々な操作を行うことができます。
 簡単な例として、短い塩基配列 atgcatgcaaaa を使って、相補配列への変換、
 部分配列の切り出し、塩基組成の計算、アミノ酸への翻訳、分子量計算などを
@@ -1163,7 +1073,7 @@ VAIFPKAMTGAKNQSSDICLMPHVGLIRRGQRRIRHLVQMSDAA*</pre>
 <pre>% ruby -r bio -e 'p Bio::Sequence::NA.new($&lt;.read).translate' my_naseq.txt</pre>
 <p>しかし、いちいちファイルを作るのも面倒なので、次はデータベースから必要な
 情報を取得してみます。</p>
-<h2><a name="label-71" id="label-71">GenBank のパース (Bio::GenBank クラス)</a></h2><!-- RDLabel: "GenBank のパース (Bio::GenBank クラス)" -->
+<h2><a name="label-62" id="label-62">GenBank のパース (Bio::GenBank クラス)</a></h2><!-- RDLabel: "GenBank のパース (Bio::GenBank クラス)" -->
 <p>GenBank 形式のファイルを用意してください（手元にない場合は、
 ftp://ftp.ncbi.nih.gov/genbank/ から .seq ファイルをダウンロードします）。</p>
 <pre>% wget ftp://ftp.hgc.jp/pub/mirror/ncbi/genbank/gbphg.seq.gz
@@ -1316,7 +1226,7 @@ naseq.splicing(locs)</pre></li>
 <li><p>アミノ酸配列の部分配列を切り出す（シグナルペプチドなど）</p>
 <pre>aaseq.splicing('21..119')</pre></li>
 </ul>
-<h3><a name="label-72" id="label-72">GenBank 以外のデータベース</a></h3><!-- RDLabel: "GenBank 以外のデータベース" -->
+<h3><a name="label-63" id="label-63">GenBank 以外のデータベース</a></h3><!-- RDLabel: "GenBank 以外のデータベース" -->
 <p>BioRuby では、GenBank 以外のデータベースについても基本的な扱い方は同じで、
 データベースの１エントリ分の文字列を対応するデータベースのクラスに渡せば、
 パースされた結果がオブジェクトになって返ってきます。</p>
@@ -1371,7 +1281,7 @@ end</pre>
 たとえば references メソッドを持つクラスは複数の Bio::Reference オブジェ
 クトを Array にして返しますが、別のクラスでは単数形の reference メソッド
 しかなく、１つの Bio::Reference オブジェクトだけを返す、といった感じです。</p>
-<h2><a name="label-73" id="label-73">PDB のパース (Bio::PDB クラス)</a></h2><!-- RDLabel: "PDB のパース (Bio::PDB クラス)" -->
+<h2><a name="label-64" id="label-64">PDB のパース (Bio::PDB クラス)</a></h2><!-- RDLabel: "PDB のパース (Bio::PDB クラス)" -->
 <p>Bio::PDB は、PDB 形式を読み込むためのクラスです。PDB データベースは
 PDB, mmCIF, XML (PDBML) の３種類のフォーマットで提供されていますが、
 これらのうち BioRuby で対応しているのは PDB フォーマットです。</p>
@@ -1380,7 +1290,7 @@ PDB, mmCIF, XML (PDBML) の３種類のフォーマットで提供されていますが、
 <ul>
 <li><a href="http://www.rcsb.org/pdb/file_formats/pdb/pdbguide2.2/guide2.2_frame.html">&lt;URL:http://www.rcsb.org/pdb/file_formats/pdb/pdbguide2.2/guide2.2_frame.html&gt;</a></li>
 </ul>
-<h3><a name="label-74" id="label-74">PDB データの読み込み</a></h3><!-- RDLabel: "PDB データの読み込み" -->
+<h3><a name="label-65" id="label-65">PDB データの読み込み</a></h3><!-- RDLabel: "PDB データの読み込み" -->
 <p>PDB の１エントリが 1bl8.pdb というファイルに格納されている場合は、
 Ruby のファイル読み込み機能を使って</p>
 <pre>entry = File.read("1bl8.pdb")</pre>
@@ -1394,7 +1304,7 @@ Ruby のファイル読み込み機能を使って</p>
 Bio::FlatFile を使って１エントリ分だけ読み込むには、</p>
 <pre>pdb = Bio::FlatFile.auto("1bl8.pdb") { |ff| ff.next_entry }</pre>
 <p>とします。どちらの方法でも変数 pdb には同じ結果が得られます。</p>
-<h3><a name="label-75" id="label-75">オブジェクトの階層構造</a></h3><!-- RDLabel: "オブジェクトの階層構造" -->
+<h3><a name="label-66" id="label-66">オブジェクトの階層構造</a></h3><!-- RDLabel: "オブジェクトの階層構造" -->
 <p>各 PDB エントリは、英数字４文字からなる ID が付けられています。
 Bio::PDB オブジェクトから ID を取リ出すには entry_id メソッドを使います。</p>
 <pre>p pdb.entry_id   # =&gt; "1BL8"</pre>
@@ -1418,7 +1328,7 @@ TITLE レコードに対しては Bio::PDB::Record::TITLE クラス、というように
 Bio::PDB::Record::HELIX クラスのオブジェクトの配列として取得できます。</p>
 <p>このことをふまえ、以下では、PDB エントリのメインな内容である立体構造に
 関するデータ構造の扱い方を見ていきます。</p>
-<h4><a name="label-76" id="label-76">原子: Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM クラス</a></h4><!-- RDLabel: "原子: Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM クラス" -->
+<h4><a name="label-67" id="label-67">原子: Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM クラス</a></h4><!-- RDLabel: "原子: Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM クラス" -->
 <p>PDB エントリは、タンパク質、核酸（DNA,RNA）やその他の分子の立体構造、
 具体的には原子の３次元座標を含んでいます。</p>
 <p>タンパク質または核酸の原子の座標は、ATOM レコードに格納されています。
@@ -1427,16 +1337,16 @@ Bio::PDB::Record::HELIX クラスのオブジェクトの配列として取得できます。</p>
 対応するクラスは、Bio::PDB::Record::HETATM クラスです。</p>
 <p>HETATM　クラスは ATOM クラスを継承しているため、ATOM と HETATM の
 メソッドの使い方はまったく同じです。</p>
-<h4><a name="label-77" id="label-77">アミノ酸残基（または塩基）: Bio::PDB::Residue クラス</a></h4><!-- RDLabel: "アミノ酸残基（または塩基）: Bio::PDB::Residue クラス" -->
+<h4><a name="label-68" id="label-68">アミノ酸残基（または塩基）: Bio::PDB::Residue クラス</a></h4><!-- RDLabel: "アミノ酸残基（または塩基）: Bio::PDB::Residue クラス" -->
 <p>１アミノ酸または１塩基単位で原子をまとめたのが Bio::PDB::Residue です。
 Bio::PDB::Residue オブジェクトは、１個以上の Bio::PDB::Record::ATOM
 オブジェクトを含みます。</p>
-<h4><a name="label-78" id="label-78">化合物: Bio::PDB::Heterogen クラス</a></h4><!-- RDLabel: "化合物: Bio::PDB::Heterogen クラス" -->
+<h4><a name="label-69" id="label-69">化合物: Bio::PDB::Heterogen クラス</a></h4><!-- RDLabel: "化合物: Bio::PDB::Heterogen クラス" -->
 <p>タンパク質・核酸以外の分子の原子は、基本的には分子単位で
 Bio::PDB::Heterogen にまとめられています。
 Bio::PDB::Heterogen オブジェクトは、１個以上の
 Bio::PDB::Record::HETATM オブジェクトを含みます。</p>
-<h4><a name="label-79" id="label-79">鎖（チェイン）: Bio::PDB::Chain クラス</a></h4><!-- RDLabel: "鎖（チェイン）: Bio::PDB::Chain クラス" -->
+<h4><a name="label-70" id="label-70">鎖（チェイン）: Bio::PDB::Chain クラス</a></h4><!-- RDLabel: "鎖（チェイン）: Bio::PDB::Chain クラス" -->
 <p>Bio::PDB::Chain は、複数の Bio::PDB::Residue オブジェクトからなる
 １個のタンパク質または核酸と、複数の Bio::PDB::Heterogen オブジェクト
 からなる１個以上のそれ以外の分子を格納するデータ構造です。</p>
@@ -1445,13 +1355,13 @@ Bio::PDB::Record::HETATM オブジェクトを含みます。</p>
 Chain をひとつしか含まない PDB エントリでは両方持つ場合があるようです。</p>
 <p>各 Chain には、英数字１文字の ID が付いています（Chain をひとつしか
 含まない PDB エントリの場合は空白文字のときもあります）。</p>
-<h4><a name="label-80" id="label-80">モデル: Bio::PDB::Model</a></h4><!-- RDLabel: "モデル: Bio::PDB::Model" -->
+<h4><a name="label-71" id="label-71">モデル: Bio::PDB::Model</a></h4><!-- RDLabel: "モデル: Bio::PDB::Model" -->
 <p>１個以上の Bio::PDB::Chain が集まったものが Bio::PDB::Model です。
 Ｘ線結晶構造の場合、Model は通常１個だけですが、NMR 構造の場合、
 複数の Model が存在することがあります。
 複数の Model が存在する場合、各 Model にはシリアル番号が付きます。</p>
 <p>そして、１個以上の Model が集まったものが、Bio::PDB オブジェクトになります。</p>
-<h3><a name="label-81" id="label-81">原子にアクセスするメソッド</a></h3><!-- RDLabel: "原子にアクセスするメソッド" -->
+<h3><a name="label-72" id="label-72">原子にアクセスするメソッド</a></h3><!-- RDLabel: "原子にアクセスするメソッド" -->
 <p>Bio::PDB#each_atom は全ての ATOM を順番に１個ずつ辿るイテレータです。</p>
 <pre>pdb.each_atom do |atom|
   p atom.xyz
@@ -1474,7 +1384,7 @@ end</pre>
 <pre>p pdb.hetatms.size</pre>
 <p>これらも atoms の場合と同様に、Model, Chain, Heterogen オブジェクトに
 対して使用可能です。</p>
-<h4><a name="label-82" id="label-82">Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM クラスの使い方</a></h4><!-- RDLabel: "Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM クラスの使い方" -->
+<h4><a name="label-73" id="label-73">Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM クラスの使い方</a></h4><!-- RDLabel: "Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM クラスの使い方" -->
 <p>ATOM はタンパク質・核酸（DNA・RNA）を構成する原子、HETATM はそれ以外の
 原子を格納するためのクラスですが、HETATM が ATOM クラスを継承しているため
 これらのクラスでメソッドの使い方はまったく同じです。</p>
@@ -1512,7 +1422,7 @@ p (atom1.xyz - atom2.xyz).r  # r はベクトルの絶対値を求めるメソッド
 p atom1.xyz.inner_product(atom2.xyz)</pre>
 <p>他には、その原子に対応する TER, SIGATM, ANISOU レコードを取得する
 ter, sigatm, anisou メソッドも用意されています。</p>
-<h3><a name="label-83" id="label-83">アミノ酸残基 (Residue) にアクセスするメソッド</a></h3><!-- RDLabel: "アミノ酸残基 (Residue) にアクセスするメソッド" -->
+<h3><a name="label-74" id="label-74">アミノ酸残基 (Residue) にアクセスするメソッド</a></h3><!-- RDLabel: "アミノ酸残基 (Residue) にアクセスするメソッド" -->
 <p>Bio::PDB#each_residue は、全ての Residue を順番に辿るイテレータです。
 each_residue メソッドは、Model, Chain オブジェクトに対しても
 使用することができ、それぞれの Model, Chain に含まれる全ての
@@ -1523,7 +1433,7 @@ end</pre>
 <p>Bio::PDB#residues は、全ての Residue を配列として返すメソッドです。
 each_residue と同様に、Model, Chain オブジェクトに対しても使用可能です。</p>
 <pre>p pdb.residues.size</pre>
-<h3><a name="label-84" id="label-84">化合物 (Heterogen) にアクセスするメソッド</a></h3><!-- RDLabel: "化合物 (Heterogen) にアクセスするメソッド" -->
+<h3><a name="label-75" id="label-75">化合物 (Heterogen) にアクセスするメソッド</a></h3><!-- RDLabel: "化合物 (Heterogen) にアクセスするメソッド" -->
 <p>Bio::PDB#each_heterogen は全ての Heterogen を順番にたどるイテレータ、
 Bio::PDB#heterogens は全ての Heterogen を配列として返すメソッドです。</p>
 <pre>pdb.each_heterogen do |heterogeon|
@@ -1533,13 +1443,13 @@ end
 p pdb.heterogens.size</pre>
 <p>これらのメソッドも Residue と同様に Model, Chain オブジェクトに対しても
 使用可能です。</p>
-<h3><a name="label-85" id="label-85">Chain, Model にアクセスするメソッド</a></h3><!-- RDLabel: "Chain, Model にアクセスするメソッド" -->
+<h3><a name="label-76" id="label-76">Chain, Model にアクセスするメソッド</a></h3><!-- RDLabel: "Chain, Model にアクセスするメソッド" -->
 <p>同様に、Bio::PDB#each_chain は全ての Chain を順番にたどるイテレータ、
 Bio::PDB#chains は全ての Chain を配列として返すメソッドです。
 これらのメソッドは Model オブジェクトに対しても使用可能です。</p>
 <p>Bio::PDB#each_model は全ての Model を順番にたどるイテレータ、
 Bio::PDB#models は全ての Model を配列として返すメソッドです。</p>
-<h3><a name="label-86" id="label-86">PDB Chemical Component Dictionary のデータの読み込み</a></h3><!-- RDLabel: "PDB Chemical Component Dictionary のデータの読み込み" -->
+<h3><a name="label-77" id="label-77">PDB Chemical Component Dictionary のデータの読み込み</a></h3><!-- RDLabel: "PDB Chemical Component Dictionary のデータの読み込み" -->
 <p>Bio::PDB::ChemicalComponent クラスは、PDB Chemical Component Dictionary
 （旧名称 HET Group Dictionary）のパーサです。</p>
 <p>PDB Chemical Component Dictionary については以下のページを参照してください。</p>
@@ -1627,7 +1537,7 @@ bioruby&gt; ethanol = flatsearch("het_dic", "EOH")
 bioruby&gt; osake = flatparse(ethanol)
 # 原子間の結合テーブルを表示
 bioruby&gt; sake.conect</pre>
-<h2><a name="label-87" id="label-87">アライメント (Bio::Alignment クラス)</a></h2><!-- RDLabel: "アライメント (Bio::Alignment クラス)" -->
+<h2><a name="label-78" id="label-78">アライメント (Bio::Alignment クラス)</a></h2><!-- RDLabel: "アライメント (Bio::Alignment クラス)" -->
 <p>Bio::Alignment クラスは配列のアライメントを格納するためのコンテナです。
 Ruby の Hash や Array に似た操作が可能で、BioPerl の Bio::SimpleAlign に
 似た感じになっています。以下に簡単な使い方を示します。</p>
@@ -1666,11 +1576,11 @@ a.each_site { |x| p x }
 # 'clustalw' コマンドがシステムにインストールされている必要がある。
 factory = Bio::ClustalW.new
 a2 = a.do_align(factory)</pre>
-<h2><a name="label-88" id="label-88">FASTA による相同性検索を行う（Bio::Fasta クラス）</a></h2><!-- RDLabel: "FASTA による相同性検索を行う（Bio::Fasta クラス）" -->
+<h2><a name="label-79" id="label-79">FASTA による相同性検索を行う（Bio::Fasta クラス）</a></h2><!-- RDLabel: "FASTA による相同性検索を行う（Bio::Fasta クラス）" -->
 <p>FASTA 形式の配列ファイル query.pep に対して、自分のマシン(ローカル)あるいは
 インターネット上のサーバ(リモート)で FASTA による相同性検索を行う方法です。
 ローカルの場合は SSEARCH なども同様に使うことができます。</p>
-<h3><a name="label-89" id="label-89">ローカルの場合</a></h3><!-- RDLabel: "ローカルの場合" -->
+<h3><a name="label-80" id="label-80">ローカルの場合</a></h3><!-- RDLabel: "ローカルの場合" -->
 <p>FASTA がインストールされていることを確認してください。以下の例では、
 コマンド名が fasta34 でパスが通ったディレクトリにインストール
 されている状況を仮定しています。</p>
@@ -1754,7 +1664,7 @@ FASTA 特有の値を取り出すメソッドが必要な場合は、Bio::Fasta::Report
 puts factory.output</pre>
 <p>のように、query メソッドを実行した後で factory オブジェクトの output
 メソッドを使って取り出すことができます。</p>
-<h3><a name="label-90" id="label-90">リモートの場合</a></h3><!-- RDLabel: "リモートの場合" -->
+<h3><a name="label-81" id="label-81">リモートの場合</a></h3><!-- RDLabel: "リモートの場合" -->
 <p>今のところ GenomeNet (fasta.genome.jp) での検索のみサポートしています。
 リモートの場合は使用可能な検索対象データベースが決まっていますが、それ以
 外の点については Bio::Fasta.remote と Bio::Fasta.local は同じように使う
@@ -1792,7 +1702,7 @@ database = 'genes'
 factory = Bio::Fasta.remote(program, database)</pre>
 <p>としてファクトリーを作り、ローカルの場合と同じように factory.query など
 のメソッドで検索を実行します。</p>
-<h2><a name="label-91" id="label-91">BLAST による相同性検索を行う（Bio::Blast クラス）</a></h2><!-- RDLabel: "BLAST による相同性検索を行う（Bio::Blast クラス）" -->
+<h2><a name="label-82" id="label-82">BLAST による相同性検索を行う（Bio::Blast クラス）</a></h2><!-- RDLabel: "BLAST による相同性検索を行う（Bio::Blast クラス）" -->
 <p>BLAST もローカルと GenomeNet (blast.genome.jp) での検索をサポートして
 います。できるだけ Bio::Fasta と API を共通にしていますので、上記の例を 
 Bio::Blast と書き換えただけでも大丈夫な場合が多いです。</p>
@@ -1870,7 +1780,7 @@ Hsp (High-scoring segment pair) の値をHitで返すようにしています。</p>
 持っています。これらのメソッドの詳細や、BLAST 実行の統計情報などの値が
 必要な場合には、 bio/appl/blast/*.rb 内のドキュメントやテストコードを
 参照してください。</p>
-<h3><a name="label-92" id="label-92">既存の BLAST 出力ファイルをパースする</a></h3><!-- RDLabel: "既存の BLAST 出力ファイルをパースする" -->
+<h3><a name="label-83" id="label-83">既存の BLAST 出力ファイルをパースする</a></h3><!-- RDLabel: "既存の BLAST 出力ファイルをパースする" -->
 <p>BLAST を実行した結果ファイルがすでに保存してあって、これを解析したい場合
 には（Bio::Blast オブジェクトを作らずに） Bio::Blast::Report オブジェク
 トを作りたい、ということになります。これには Bio::Blast.reports メソッド
@@ -1895,7 +1805,7 @@ end</pre>
 があり、時々 XML のパーザがうまく使えないことがあるようです。その場合は
 Blast 2.2.5 以降のバージョンをインストールするか -D や -m などのオプショ
 ンの組み合せを変えて試してみてください。</p>
-<h3><a name="label-93" id="label-93">リモート検索サイトを追加するには</a></h3><!-- RDLabel: "リモート検索サイトを追加するには" -->
+<h3><a name="label-84" id="label-84">リモート検索サイトを追加するには</a></h3><!-- RDLabel: "リモート検索サイトを追加するには" -->
 <p>注: このセクションは上級ユーザ向けです。可能であれば SOAP などによる
 ウェブサービスを利用する方がよいでしょう。</p>
 <p>Blast 検索は NCBI をはじめ様々なサイトでサービスされていますが、今のとこ
@@ -1912,7 +1822,7 @@ Blast 2.2.5 以降のバージョンをインストールするか -D や -m などのオプショ
 <pre>factory = Bio::Blast.remote(program, db, option, 'サイト名')</pre>
 <p>のように呼び出せるようになっています。完成したら BioRuby プロジェクトま
 で送ってもらえれば取り込ませて頂きます。</p>
-<h2><a name="label-94" id="label-94">PubMed を引いて引用文献リストを作る (Bio::PubMed クラス)</a></h2><!-- RDLabel: "PubMed を引いて引用文献リストを作る (Bio::PubMed クラス)" -->
+<h2><a name="label-85" id="label-85">PubMed を引いて引用文献リストを作る (Bio::PubMed クラス)</a></h2><!-- RDLabel: "PubMed を引いて引用文献リストを作る (Bio::PubMed クラス)" -->
 <p>次は、NCBI の文献データベース PubMed を検索して引用文献リストを作成する例です。</p>
 <pre>#!/usr/bin/env ruby
 
@@ -1978,7 +1888,7 @@ NCBI E-Utils を活用することにより、検索対象の日付や最大ヒット件数などを
 が、後述のように bibitem メソッドも使える他、（強調やイタリックなど
 文字の修飾はできませんが）nature メソッドや nar など、いくつかの雑誌の
 フォーマットにも対応しています。</p>
-<h3><a name="label-95" id="label-95">BibTeX の使い方のメモ</a></h3><!-- RDLabel: "BibTeX の使い方のメモ" -->
+<h3><a name="label-86" id="label-86">BibTeX の使い方のメモ</a></h3><!-- RDLabel: "BibTeX の使い方のメモ" -->
 <p>上記の例で集めた BibTeX フォーマットのリストを TeX で使う方法を簡単にま
 とめておきます。引用しそうな文献を</p>
 <pre>% ./pmfetch.rb 10592173 &gt;&gt; genoinfo.bib
@@ -1996,7 +1906,7 @@ NCBI E-Utils を活用することにより、検索対象の日付や最大ヒット件数などを
 % platex hoge   # → 文献リストの作成
 % platex hoge   # → 文献番号</pre>
 <p>とすると無事 hoge.dvi ができあがります。</p>
-<h3><a name="label-96" id="label-96">bibitem の使い方のメモ</a></h3><!-- RDLabel: "bibitem の使い方のメモ" -->
+<h3><a name="label-87" id="label-87">bibitem の使い方のメモ</a></h3><!-- RDLabel: "bibitem の使い方のメモ" -->
 <p>文献用に別の .bib ファイルを作りたくない場合は Reference#bibitem メソッ
 ドの出力を使います。上記の pmfetch.rb や pmsearch.rb の</p>
 <pre>puts reference.bibtex</pre>
@@ -2020,7 +1930,7 @@ KEGG: kyoto encyclopedia of genes and genomes.,
 <pre>% platex hoge   # → 文献リストの作成
 % platex hoge   # → 文献番号</pre>
 <p>と２回処理すればできあがりです。</p>
-<h1><a name="label-97" id="label-97">OBDA</a></h1><!-- RDLabel: "OBDA" -->
+<h1><a name="label-88" id="label-88">OBDA</a></h1><!-- RDLabel: "OBDA" -->
 <p>OBDA (Open Bio Database Access) とは、Open Bioinformatics Foundation
 によって制定された、配列データベースへの共通アクセス方法です。これは、
 2002 年の1月と2月に Arizona と Cape Town にて開催された BioHackathon
@@ -2048,7 +1958,7 @@ KEGG: kyoto encyclopedia of genes and genomes.,
 <p>詳細は <a href="http://obda.open-bio.org/">&lt;URL:http://obda.open-bio.org/&gt;</a> を参照してください。
 それぞれの仕様書は cvs.open-bio.org の CVSレポジトリに置いてあります。
 または、<a href="http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/obda-specs/?cvsroot=obf-common">&lt;URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/obda-specs/?cvsroot=obf-common&gt;</a> から参照できます。</p>
-<h2><a name="label-98" id="label-98">BioRegistry</a></h2><!-- RDLabel: "BioRegistry" -->
+<h2><a name="label-89" id="label-89">BioRegistry</a></h2><!-- RDLabel: "BioRegistry" -->
 <p>BioRegistryとは、設定ファイルによって各データベースのエントリ取得方法を
 指定することにより、どんな方法を使っているかをほとんど意識せずデータを
 取得することを可能とするための仕組みです。
@@ -2106,7 +2016,7 @@ entry = serv.get_by_id('AA2CG')</pre>
 <p>あとは OBDA 共通のエントリ取得メソッド get_by_id を呼んだり、サーバオ
 ブジェクト毎に固有のメソッドを呼ぶことになりますので、以下の BioFetch や
 BioSQL の解説を参照してください。</p>
-<h2><a name="label-99" id="label-99">BioFlat</a></h2><!-- RDLabel: "BioFlat" -->
+<h2><a name="label-90" id="label-90">BioFlat</a></h2><!-- RDLabel: "BioFlat" -->
 <p>BioFlat はフラットファイルに対してインデックスを作成し、エントリを高速に
 取り出す仕組みです。インデックスの種類は、RUbyの拡張ライブラリに依存しない
 index-flat と Berkeley DB (bdb) を使った index-berkeleydb の2種類が存在
@@ -2128,7 +2038,7 @@ BioRuby の各データベースのクラス名を指定してください。検索は、</p>
 ことができます。この場合、</p>
 <pre>% bioflat --makeindex-bdb データベース名 [--format クラス名] ファイル名</pre>
 <p>のように "--makeindex" のかわりに "--makeindex-bdb" を指定します。</p>
-<h2><a name="label-100" id="label-100">BioFetch</a></h2><!-- RDLabel: "BioFetch" -->
+<h2><a name="label-91" id="label-91">BioFetch</a></h2><!-- RDLabel: "BioFetch" -->
 <p>BioFetch は CGI を経由してサーバからデータベースのエントリを取得する仕様
 で、サーバが受け取る CGI のオプション名、エラーコードなどが決められてい
 ます。クライアントは HTTP を使ってデータベース、ID、フォーマットなどを指
@@ -2157,7 +2067,7 @@ protocol=biofetch
 location=http://bioruby.org/cgi-bin/biofetch.rb
 biodbname=genbank</pre>
 <p>などと指定しておく必要があります。</p>
-<h3><a name="label-101" id="label-101">BioFetch と Bio::KEGG::GENES, Bio::AAindex1 を組み合わせた例</a></h3><!-- RDLabel: "BioFetch と Bio::KEGG::GENES, Bio::AAindex1 を組み合わせた例" -->
+<h3><a name="label-92" id="label-92">BioFetch と Bio::KEGG::GENES, Bio::AAindex1 を組み合わせた例</a></h3><!-- RDLabel: "BioFetch と Bio::KEGG::GENES, Bio::AAindex1 を組み合わせた例" -->
 <p>次のプログラムは、BioFetch を使って KEGG の GENES データベースから古細菌
 Halobacterium のバクテリアロドプシン遺伝子 (VNG1467G) を取ってきて、同じ
 ようにアミノ酸指標データベースである AAindex から取得したαヘリックスの
@@ -2185,17 +2095,17 @@ BioFetch サーバを使う専用のショートカットです。（このサーバは内部的には
 ゲノムネットからデータを取得しています。KEGG/GENES データベースの hal や 
 AAindex データベース aax1 のエントリは、他の BioFetch サーバでは取得でき
 ないこともあって、あえて query メソッドを使っています。）</p>
-<h2><a name="label-102" id="label-102">BioSQL</a></h2><!-- RDLabel: "BioSQL" -->
+<h2><a name="label-93" id="label-93">BioSQL</a></h2><!-- RDLabel: "BioSQL" -->
 <p>to be written...</p>
-<h2><a name="label-103" id="label-103">BioRuby のサンプルプログラムの使い方</a></h2><!-- RDLabel: "BioRuby のサンプルプログラムの使い方" -->
+<h2><a name="label-94" id="label-94">BioRuby のサンプルプログラムの使い方</a></h2><!-- RDLabel: "BioRuby のサンプルプログラムの使い方" -->
 <p>BioRuby のパッケージには samples/ ディレクトリ以下にいくつかのサンプルプ
 ログラムが含まれています。古いものも混じっていますし、量もとても十分とは
 言えないので、実用的で面白いサンプルの提供は歓迎です。</p>
 <p>to be written...</p>
-<h2><a name="label-104" id="label-104">さらなる情報</a></h2><!-- RDLabel: "さらなる情報" -->
+<h2><a name="label-95" id="label-95">さらなる情報</a></h2><!-- RDLabel: "さらなる情報" -->
 <p>他のチュートリアル的なドキュメントとしては、BioRuby Wikiに置いてある
 BioRuby in Anger があります。</p>
-<h2><a name="label-105" id="label-105">脚注</a></h2><!-- RDLabel: "脚注" -->
+<h2><a name="label-96" id="label-96">脚注</a></h2><!-- RDLabel: "脚注" -->
 <ul>
 <li><p>(※1) BioRuby 1.2.1 以前のバージョンでは、setup.rb のかわりに install.rb
   を使用します。また、以下のように3段階を踏む必要があります。</p>
