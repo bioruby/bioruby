@@ -1,3 +1,4 @@
+# coding: US-ASCII
 #
 # = bio/db/gff.rb - GFF format class
 #
