@@ -5,71 +5,71 @@
   Copyright (C) 2001-2003, 2005, 2006 Toshiaki Katayama <k@bioruby.org>
   Copyright (C) 2005, 2006 Naohisa Goto <ng@bioruby.org>
 
-= BioRuby �λȤ���
+= BioRuby の使い方
 
-BioRuby �Ϲ񻺤ιⵡǽ���֥������Ȼظ�������ץȸ��� Ruby �Τ����
-�����ץ󥽡����ʥХ�������ե��ޥƥ������ѥ饤�֥��Ǥ���
+BioRuby は国産の高機能オブジェクト指向スクリプト言語 Ruby のための
+オープンソースなバイオインフォマティクス用ライブラリです。
 
-Ruby ����� Perl ����椺��ζ��Ϥʥƥ����Ƚ����ȡ�
-����ץ��ʬ����䤹��ʸˡ�����ꥢ�ʥ��֥������Ȼظ���ǽ�ˤ�ꡢ
-�����Ȥ���褦�ˤʤ�ޤ�����Ruby �ˤĤ��ƾܤ����ϡ������֥�����
-((<URL:http://www.ruby-lang.org/>)) ����Τν������򻲾Ȥ��Ƥ���������
+Ruby 言語は Perl 言語ゆずりの強力なテキスト処理と、
+シンプルで分かりやすい文法、クリアなオブジェクト指向機能により、
+広く使われるようになりました。Ruby について詳しくは、ウェブサイト
+((<URL:http://www.ruby-lang.org/>)) や市販の書籍等を参照してください。
 
-== �Ϥ����
+== はじめに
 
-BioRuby ����Ѥ���ˤ� Ruby �� BioRuby �򥤥󥹥ȡ��뤹��ɬ�פ�����ޤ���
+BioRuby を使用するには Ruby と BioRuby をインストールする必要があります。
 
-=== Ruby �Υ��󥹥ȡ���
+=== Ruby のインストール
 
-Ruby �� Mac OS X ��Ƕ�� UNIX �ˤ��̾磻�󥹥ȡ��뤵��Ƥ��ޤ���
-Windows �ξ��⣱����å����󥹥ȡ���� ActiveScriptRuby �ʤɤ�
-�Ѱդ���Ƥ��ޤ����ޤ����󥹥ȡ��뤵��Ƥ��ʤ�����
+Ruby は Mac OS X や最近の UNIX には通常インストールされています。
+Windows の場合も１クリックインストーラや ActiveScriptRuby などが
+用意されています。まだインストールされていない場合は
 
 * ((<URL:http://jp.rubyist.net/magazine/?0002-FirstProgramming>))
 * ((<URL:http://jp.rubyist.net/magazine/?FirstStepRuby>))
 
-�ʤɤ򻲹ͤˤ��ƥ��󥹥ȡ��뤷�ޤ��礦��
+などを参考にしてインストールしましょう。
 
-���ʤ��Υ���ԥ塼���ˤɤΥС������� Ruby �����󥹥ȡ��뤵��Ƥ��뤫��
-�����å�����ˤ�
+あなたのコンピュータにどのバージョンの Ruby がインストールされているかを
+チェックするには
 
   % ruby -v
 
-�ȥ��ޥ�ɤ����Ϥ��Ƥ�������������ȡ����Ȥ���
+とコマンドを入力してください。すると、たとえば
 
   ruby 1.8.2 (2004-12-25) [powerpc-darwin7.7.0]
 
-�Τ褦�ʴ����ǥС������ɽ������ޤ����С������ 1.8.5 �ʹߤ򤪴��ᤷ�ޤ���
+のような感じでバージョンが表示されます。バージョン 1.8.5 以降をお勧めします。
 
-Ruby ɸ�������Υ��饹��᥽�åɤˤĤ��Ƥϡ�Ruby �Υ�ե���󥹥ޥ˥奢���
-���Ȥ��Ƥ���������
+Ruby 標準装備のクラスやメソッドについては、Ruby のリファレンスマニュアルを
+参照してください。
 
 * ((<URL:http://www.ruby-lang.org/ja/man/>))
 * ((<URL:http://doc.okkez.net/>))
 
-���ޥ�ɥ饤��ǥإ�פ򻲾Ȥ���ˤϡ�Ruby ɸ��ź�դ� ri ���ޥ�ɤ䡢
-���ܸ��Ǥ� refe ���ޥ�ɤ������Ǥ���
+コマンドラインでヘルプを参照するには、Ruby 標準添付の ri コマンドや、
+日本語版の refe コマンドが便利です。
 
 * ((<URL:http://i.loveruby.net/ja/prog/refe.html>))
 
-=== RubyGems �Υ��󥹥ȡ���
+=== RubyGems のインストール
 
-RubyGems �Υڡ�������ǿ��Ǥ����������ɤ��ޤ���
+RubyGems のページから最新版をダウンロードします。
 
 * ((<URL:http://rubyforge.org/projects/rubygems/>))
 
-Ÿ�����ƥ��󥹥ȡ��뤷�ޤ���
+展開してインストールします。
 
   % tar zxvf rubygems-x.x.x.tar.gz
   % cd rubygems-x.x.x
   % ruby setup.rb
 
-=== BioRuby �Υ��󥹥ȡ���
+=== BioRuby のインストール
 
-BioRuby �Υ��󥹥ȡ�����ˡ�� ((<URL:http://bioruby.org/archive/>)) ����
-�ǿ��Ǥ�������ưʲ��Τ褦�˹Ԥ��ޤ�(��1)��Ʊ������Ƥ��� README �ե�����ˤ�
-�ܤ��̤���ĺ�������ΤǤ���������ʤ��ȣ���������ˤʤ� BioPerl ����٤�
-BioRuby �Υ��󥹥ȡ���Ϥ����˽����Ϥ��Ǥ���
+BioRuby のインストール方法は ((<URL:http://bioruby.org/archive/>)) から
+最新版を取得して以下のように行います(※1)。同梱されている README ファイルにも
+目を通して頂きたいのですが、慣れないと１日がかりになる BioPerl と比べて
+BioRuby のインストールはすぐに終わるはずです。
 
   % wget http://bioruby.org/archive/bioruby-x.x.x.tar.gz
   % tar zxvf bioruby-x.x.x.tar.gz
@@ -77,128 +77,128 @@ BioRuby �Υ��󥹥ȡ���Ϥ����˽����Ϥ��Ǥ���
   % su
   # ruby setup.rb
 
-RubyGems ���Ȥ���Ķ��Ǥ����
+RubyGems が使える環境であれば
 
   % gem install bio
 
-�����ǥ��󥹥ȡ���Ǥ��ޤ������Τ��� README �ե�����˽񤫤�Ƥ���褦��
+だけでインストールできます。このあと README ファイルに書かれているように
 
   bioruby-x.x.x/etc/bioinformatics/seqdatabase.ini
 
-�Ȥ����ե������ۡ���ǥ��쥯�ȥ�� ~/.bioinformatics �˥��ԡ�����
-�����Ȥ褤�Ǥ��礦��RubyGems �ξ���
+というファイルをホームディレクトリの ~/.bioinformatics にコピーして
+おくとよいでしょう。RubyGems の場合は
 
   /usr/local/lib/ruby/gems/1.8/gems/bio-x.x.x/
 
-�ʤɤˤ���Ϥ��Ǥ���
+などにあるはずです。
 
   % mkdir ~/.bioinformatics
   % cp bioruby-x.x.x/etc/bioinformatics/seqdatabase.ini ~/.bioinformatics
 
-�ޤ���Emacs ���ǥ�����Ȥ��ͤ� Ruby �Υ�������Ʊ������Ƥ���
-misc/ruby-mode.el �򥤥󥹥ȡ��뤷�Ƥ����Ȥ褤�Ǥ��礦��
+また、Emacs エディタを使う人は Ruby のソースに同梱されている
+misc/ruby-mode.el をインストールしておくとよいでしょう。
 
   % mkdir -p ~/lib/lisp/ruby
   % cp ruby-x.x.x/misc/ruby-mode.el ~/lib/lisp/ruby
 
-�ʤɤȤ��Ƥ����ơ�~/.emacs �˰ʲ���������­���ޤ���
+などとしておいて、~/.emacs に以下の設定を書き足します。
 
-  ; subdirs ������
+  ; subdirs の設定
   (let ((default-directory "~/lib/lisp"))
     (normal-top-level-add-subdirs-to-load-path)
 
-  ; ruby-mode ������
+  ; ruby-mode の設定
   (autoload 'ruby-mode "ruby-mode" "Mode for editing ruby source files")
   (add-to-list 'auto-mode-alist '("\\.rb$" . rd-mode))
   (add-to-list 'interpeter-mode-alist '("ruby" . ruby-mode))
 
-== BioRuby ������
+== BioRuby シェル
 
-BioRuby �С������ 0.7 �ʹߤǤϡ���ñ������ BioRuby �ȶ��˥��󥹥ȡ��뤵���
-bioruby ���ޥ�ɤǹԤ����Ȥ��Ǥ��ޤ���bioruby ���ޥ�ɤ� Ruby ����¢����Ƥ���
-���󥿥饯�ƥ��֥����� irb �����Ѥ��Ƥ��ꡢRuby �� BioRuby �ˤǤ��뤳�Ȥ�����
-��ͳ�˼¹Ԥ��뤳�Ȥ��Ǥ��ޤ���
-
-  % bioruby project1
-
-�����ǻ��ꤷ��̾���Υǥ��쥯�ȥ꤬�������졢������ǲ��Ϥ�Ԥ��ޤ���
-�嵭����ξ�� project1 �Ȥ����ǥ��쥯�ȥ꤬�������졢����˰ʲ���
-���֥ǥ��쥯�ȥ��ե����뤬����ޤ���
-
-  data/           �桼���β��ϥե�������֤����
-  plugin/         ɬ�פ˱������ɲäΥץ饰������֤����
-  session/        ����䥪�֥������ȡ��ҥ��ȥ�ʤɤ���¸�������
-  session/config  �桼�����������¸�����ե�����
-  session/history �桼�������Ϥ������ޥ�ɤΥҥ��ȥ����¸�����ե�����
-  session/object  ��³�����줿���֥������Ȥγ�Ǽ�ե�����
-
-���Τ�����data �ǥ��쥯�ȥ�ϥ桼������ͳ�˽񤭴����ƹ����ޤ���
-�ޤ���session/history �ե�����򸫤�ȡ����ĤɤΤ褦������Ԥä�����
-��ǧ���뤳�Ȥ��Ǥ��ޤ���
-
-�����ܰʹߤϡ�����Ʊ�ͤ�
+BioRuby バージョン 0.7 以降では、簡単な操作は BioRuby と共にインストールされる
+bioruby コマンドで行うことができます。bioruby コマンドは Ruby に内蔵されている
+インタラクティブシェル irb を利用しており、Ruby と BioRuby にできることは全て
+自由に実行することができます。
 
   % bioruby project1
 
-�Ȥ��Ƶ�ư���Ƥ⹽���ޤ��󤷡��������줿�ǥ��쥯�ȥ�˰�ư����
+引数で指定した名前のディレクトリが作成され、その中で解析を行います。
+上記の例の場合 project1 というディレクトリが作成され、さらに以下の
+サブディレクトリやファイルが作られます。
+
+  data/           ユーザの解析ファイルを置く場所
+  plugin/         必要に応じて追加のプラグインを置く場所
+  session/        設定やオブジェクト、ヒストリなどが保存される場所
+  session/config  ユーザの設定を保存したファイル
+  session/history ユーザの入力したコマンドのヒストリを保存したファイル
+  session/object  永続化されたオブジェクトの格納ファイル
+
+このうち、data ディレクトリはユーザが自由に書き換えて構いません。
+また、session/history ファイルを見ると、いつどのような操作を行ったかを
+確認することができます。
+
+２回目以降は、初回と同様に
+
+  % bioruby project1
+
+として起動しても構いませんし、作成されたディレクトリに移動して
 
   % cd project1
   % bioruby
 
-�Τ褦�˰����ʤ��ǵ�ư���뤳�Ȥ�Ǥ��ޤ���
+のように引数なしで起動することもできます。
 
-����¾��script ���ޥ�ɤǺ�������륹����ץȥե�����䡢
-web ���ޥ�ɤǺ�������� Rails �Τ��������ե�����ʤɤ�����ޤ�����
-�����ˤĤ��Ƥ�ɬ�פ˱����Ƹ�Ҥ��ޤ���
+この他、script コマンドで作成されるスクリプトファイルや、
+web コマンドで作成される Rails のための設定ファイルなどがありますが、
+それらについては必要に応じて後述します。
 
-BioRuby ������Ǥϥǥե���ȤǤ����Ĥ��������ʥ饤�֥����ɤ߹���Ǥ��ޤ���
-�㤨�� readline �饤�֥�꤬�Ȥ���Ķ��Ǥ� Tab �����ǥ᥽�å�̾���ѿ�̾��
-�䴰�����Ϥ��Ǥ���open-uri, pp, yaml �ʤɤ�ǽ餫���ɤ߹��ޤ�Ƥ��ޤ���
+BioRuby シェルではデフォルトでいくつかの便利なライブラリを読み込んでいます。
+例えば readline ライブラリが使える環境では Tab キーでメソッド名や変数名が
+補完されるはずです。open-uri, pp, yaml なども最初から読み込まれています。
 
-=== ����, ���ߥλ����������
+=== 塩基, アミノ酸の配列を作る
 
 --- getseq(str)
 
-getseq ���ޥ��(��2)��Ȥä�ʸ���󤫤��������䥢�ߥλ�������뤳�Ȥ�
-�Ǥ��ޤ�������ȥ��ߥλ��� ATGC �δ��̤� 90% �ʾ夫�ɤ����Ǽ�ưȽ�ꤵ��ޤ���
-�����Ǥϡ��Ǥ������������ dna �Ȥ����ѿ����������ޤ���
+getseq コマンド(※2)を使って文字列から塩基配列やアミノ酸配列を作ることが
+できます。塩基とアミノ酸は ATGC の含量が 90% 以上かどうかで自動判定されます。
+ここでは、できた塩基配列を dna という変数に代入します。
 
   bioruby> dna = getseq("atgcatgcaaaa")
 
-�ѿ�����Ȥ��ǧ����ˤ� Ruby �� puts �᥽�åɤ�Ȥ��ޤ���
+変数の中身を確認するには Ruby の puts メソッドを使います。
 
   bioruby> puts dna
   atgcatgcaaaa
 
-�ե�����̾�������Ϳ����ȼ긵�ˤ���ե����뤫����������뤳�Ȥ�Ǥ��ޤ���
-GenBank, EMBL, UniProt, FASTA �ʤɼ��פ�����ե����ޥåȤϼ�ưȽ�̤���ޤ�
-�ʳ�ĥ�ҤʤɤΥե�����̾�ǤϤʤ�����ȥ����Ȥ�Ƚ�ꤷ�ޤ��ˡ�
-�ʲ��� UniProt �ե����ޥåȤΥ���ȥ��ե����뤫���ɤ߹���Ǥ��ޤ���
-������ˡ�Ǥϡ�ʣ���Υ���ȥ꤬������ǽ�Υ���ȥ�������ɤ߹��ޤ�ޤ���
+ファイル名を引数に与えると手元にあるファイルから配列を得ることもできます。
+GenBank, EMBL, UniProt, FASTA など主要な配列フォーマットは自動判別されます
+（拡張子などのファイル名ではなくエントリの中身で判定します）。
+以下は UniProt フォーマットのエントリをファイルから読み込んでいます。
+この方法では、複数のエントリがある場合最初のエントリだけが読み込まれます。
 
   bioruby> cdc2 = getseq("p04551.sp")
   bioruby> puts cdc2
-  MENYQKVEKIGEGTYGVVYKARHKLSGRIVAMKKIRLEDESEGVPSTAIREISLLKEVNDENNRSN...(ά)
+  MENYQKVEKIGEGTYGVVYKARHKLSGRIVAMKKIRLEDESEGVPSTAIREISLLKEVNDENNRSN...(略)
 
-�ǡ����١���̾�ȥ���ȥ�̾��ʬ���äƤ���С����󥿡��ͥåȤ��̤���
-�����ưŪ�˼������뤳�Ȥ��Ǥ��ޤ���
+データベース名とエントリ名が分かっていれば、インターネットを通じて
+配列を自動的に取得することができます。
 
   bioruby> psaB = getseq("genbank:AB044425")
   bioruby> puts psaB
-  actgaccctgttcatattcgtcctattgctcacgcgatttgggatccgcactttggccaaccagca...(ά)
+  actgaccctgttcatattcgtcctattgctcacgcgatttgggatccgcactttggccaaccagca...(略)
 
-�ɤ��Υǡ����١�������ɤΤ褦����ˡ�ǥ���ȥ��������뤫�ϡ�BioPerl
-�ʤɤȶ��̤� OBDA ����ե����� ~/.bioinformatics/seqdatabase.ini
-���Ѥ��ƥǡ����١������Ȥ˻��ꤹ�뤳�Ȥ��Ǥ��ޤ��ʸ�ҡˡ�
-�ޤ���EMBOSS �� seqret ���ޥ�ɤˤ����������ˤ��б����Ƥ��ޤ��Τǡ�
-EMBOSS �� USA ɽ���Ǥ⥨��ȥ������Ǥ��ޤ���EMBOSS �Υޥ˥奢��򻲾Ȥ�
-~/.embossrc ��Ŭ�ڤ����ꤷ�Ƥ���������
+どこのデータベースからどのような方法でエントリを取得するかは、BioPerl
+などと共通の OBDA 設定ファイル ~/.bioinformatics/seqdatabase.ini
+を用いてデータベースごとに指定することができます（後述）。
+また、EMBOSS の seqret コマンドによる配列取得にも対応していますので、
+EMBOSS の USA 表記でもエントリを取得できます。EMBOSS のマニュアルを参照し
+~/.embossrc を適切に設定してください。
 
-�ɤ���ˡ�Ǽ����������⡢getseq ���ޥ�ɤˤ�ä��֤��������ϡ�
-���Ѥ����󥯥饹 Bio::Sequence �ˤʤ�ޤ�(��3)��
+どの方法で取得した場合も、getseq コマンドによって返される配列は、
+汎用の配列クラス Bio::Sequence になります(※3)。
 
-���󤬱�������ȥ��ߥλ�����Τɤ����Ƚ�ꤵ��Ƥ���Τ��ϡ�
-moltype �᥽�åɤ��Ѥ���
+配列が塩基配列とアミノ酸配列のどちらと判定されているのかは、
+moltype メソッドを用いて
 
   bioruby> p cdc2.moltype
   Bio::Sequence::AA
@@ -206,9 +206,9 @@ moltype �᥽�åɤ��Ѥ���
   bioruby> p psaB.moltype
   Bio::Sequence::NA
 
-�Τ褦��Ĵ�٤뤳�Ȥ��Ǥ��ޤ�����ưȽ�꤬�ְ�äƤ�����ʤɤˤ�
-na, aa �᥽�åɤǶ���Ū���Ѵ��Ǥ��ޤ����ʤ��������Υ᥽�åɤ�
-���Υ��֥������Ȥ���Ū�˽񤭴����ޤ���
+のように調べることができます。自動判定が間違っている場合などには
+na, aa メソッドで強制的に変換できます。なお、これらのメソッドは
+元のオブジェクトを強制的に書き換えます。
 
   bioruby> dna.aa
   bioruby> p dna.moltype
@@ -218,38 +218,38 @@ na, aa �᥽�åɤǶ���Ū���Ѵ��Ǥ��ޤ����ʤ��������Υ᥽�åɤ�
   bioruby> p dna.moltype
   Bio::Sequence::NA
 
-�ޤ��ϡ�to_naseq, to_aaseq �᥽�åɤǶ���Ū���Ѵ����뤳�Ȥ�Ǥ��ޤ���
+または、to_naseq, to_aaseq メソッドで強制的に変換することもできます。
 
   bioruby> pep = dna.to_aaseq
 
-to_naseq, to_aaseq �᥽�åɤ��֤����֥������Ȥϡ����줾�졢
-DNA ����Τ���� Bio::Sequence::NA ���饹�����ߥλ�����Τ����
-Bio::Sequence::AA ���饹�Υ��֥������Ȥˤʤ�ޤ���
-���󤬤ɤ���Υ��饹��°���뤫�� Ruby �� class �᥽�åɤ��Ѥ���
+to_naseq, to_aaseq メソッドの返すオブジェクトは、それぞれ、
+DNA 配列のための Bio::Sequence::NA クラス、アミノ酸配列のための
+Bio::Sequence::AA クラスのオブジェクトになります。
+配列がどちらのクラスに属するかは Ruby の class メソッドを用いて
 
   bioruby> p pep.class
   Bio::Sequence::AA
 
-�Τ褦��Ĵ�٤뤳�Ȥ��Ǥ��ޤ���
+のように調べることができます。
 
-����Ū���Ѵ������ˡ�Bio::Sequence::NA ���饹�ޤ��� Bio::sequence::AA ���饹
-�Τɤ��餫�Υ��֥������Ȥ����������ˤ� seq �᥽�åɤ�Ȥ��ޤ�(��4)��
+強制的に変換せずに、Bio::Sequence::NA クラスまたは Bio::sequence::AA クラス
+のどちらかのオブジェクトを得たい場合には seq メソッドを使います(※4)。
 
   bioruby> pep2 = cdc2.seq
   bioruby> p pep2.class
   Bio::Sequence::AA
 
-�ޤ����ʲ��ǲ��⤹�� complement �� translate �ʤɤΥ᥽�åɤη�̤ϡ�
-����������֤����Ȥ����Ԥ����᥽�åɤ� Bio::Sequence::NA ���饹��
-���ߥλ�������֤����Ȥ����Ԥ����᥽�åɤ� Bio::sequence::AA ���饹
-�Υ��֥������Ȥˤʤ�ޤ���
+また、以下で解説する complement や translate などのメソッドの結果は、
+塩基配列を返すことが期待されるメソッドは Bio::Sequence::NA クラス、
+アミノ酸配列を返すことが期待されるメソッドは Bio::sequence::AA クラス
+のオブジェクトになります。
 
-��������䥢�ߥλ�����Υ��饹�� Ruby ��ʸ���󥯥饹�Ǥ��� String ��
-�Ѿ����Ƥ��ޤ����ޤ���Bio::Sequence ���饹�Υ��֥������Ȥ� String ��
-���֥������Ȥȸ�������Ʊ�ͤ�Ư���褦�˹��פ���Ƥ��ޤ������Τ��ᡢ
-length ��Ĺ����Ĵ�٤��ꡢ+ ��­����碌���ꡢ* �Ƿ����֤�����ʤɡ�
-Ruby ��ʸ������Ф��ƹԤ��������������Ѳ�ǽ�Ǥ���
-���Τ褦����ħ�ϥ��֥������Ȼظ��ζ��Ϥ�¦�̤ΰ�Ĥȸ�����Ǥ��礦��
+塩基配列やアミノ酸配列のクラスは Ruby の文字列クラスである String を
+継承しています。また、Bio::Sequence クラスのオブジェクトは String の
+オブジェクトと見かけ上同様に働くように工夫されています。このため、
+length で長さを調べたり、+ で足し合わせたり、* で繰り返したりなど、
+Ruby の文字列に対して行える操作は全て利用可能です。
+このような特徴はオブジェクト指向の強力な側面の一つと言えるでしょう。
 
   bioruby> puts dna.length
   12
@@ -262,32 +262,32 @@ Ruby ��ʸ������Ф��ƹԤ��������������Ѳ�ǽ�Ǥ���
 
 :complement
 
-������������亿���������ˤϱ�������� complement �᥽�åɤ�ƤӤޤ���
+塩基配列の相補鎖配列を得るには塩基配列の complement メソッドを呼びます。
 
   bioruby> puts dna.complement
   ttttgcatgcat
 
 :translate
 
-��������򥢥ߥλ��������������ˤ� translate �᥽�åɤ�Ȥ��ޤ���
-�������줿���ߥλ������ pep �Ȥ����ѿ����������Ƥߤޤ���
+塩基配列をアミノ酸配列に翻訳するには translate メソッドを使います。
+翻訳されたアミノ酸配列を pep という変数に代入してみます。
 
   bioruby> pep = dna.translate
   bioruby> puts pep
   MHAK
 
-�ե졼����Ѥ�����������ˤ�
+フレームを変えて翻訳するには
 
   bioruby> puts dna.translate(2)
   CMQ
   bioruby> puts dna.translate(3)
   ACK
 
-�ʤɤȤ��ޤ���
+などとします。
 
 :molecular_weight
 
-ʬ���̤� molecular_weight �᥽�åɤ�ɽ������ޤ���
+分子量は molecular_weight メソッドで表示されます。
 
   bioruby> puts dna.molecular_weight
   3718.66444
@@ -297,7 +297,7 @@ Ruby ��ʸ������Ф��ƹԤ��������������Ѳ�ǽ�Ǥ���
 
 --- seqstat(seq)
 
-seqstat ���ޥ�ɤ�Ȥ��ȡ������ʤɤξ������٤�ɽ������ޤ���
+seqstat コマンドを使うと、組成などの情報も一度に表示されます。
 
   bioruby> seqstat(dna)
 
@@ -350,7 +350,7 @@ seqstat ���ޥ�ɤ�Ȥ��ȡ������ʤɤξ������٤�ɽ������ޤ���
   //
 
 
-���ߥλ�����ξ��ϰʲ��Τ褦�ˤʤ�ޤ���
+アミノ酸配列の場合は以下のようになります。
 
   bioruby> seqstat(pep)
 
@@ -367,38 +367,38 @@ seqstat ���ޥ�ɤ�Ȥ��ȡ������ʤɤξ������٤�ɽ������ޤ���
 
 :composition
 
-seqstat �����ɽ������Ƥ��������� composition �᥽�åɤ����뤳�Ȥ��Ǥ��ޤ���
-��̤�ʸ����ǤϤʤ� Hash ���֤����Τǡ��Ȥꤢ����ɽ�����Ƥߤ���ˤ�
-puts ������� p ���ޥ�ɤ�Ȥ����ɤ��Ǥ��礦��
+seqstat の中で表示されている組成は composition メソッドで得ることができます。
+結果が文字列ではなく Hash で返されるので、とりあえず表示してみる場合には
+puts の代わりに p コマンドを使うと良いでしょう。
 
   bioruby> p dna.composition
   {"a"=>6, "c"=>2, "g"=>2, "t"=>2}
 
-==== �������󡢥��ߥλ�����Τ���¾�Υ᥽�å�
+==== 塩基配列、アミノ酸配列のその他のメソッド
 
-¾�ˤ�������󡢥��ߥλ�������Ф��ƹԤ������Ͽ����Ȥ���ޤ���
+他にも塩基配列、アミノ酸配列に対して行える操作は色々とあります。
 
 :subseq(from, to)
 
-��ʬ�������Ф��ˤ� subseq �᥽�åɤ�Ȥ��ޤ���
+部分配列を取り出すには subseq メソッドを使います。
 
   bioruby> puts dna.subseq(1, 3)
   atg
 
-Ruby �ʤ�¿���Υץ�����ߥ󥰸����ʸ����� 1 ʸ���ܤ� 0 ��������ޤ�����
-subseq �᥽�åɤ� 1 ����������ڤ�Ф���褦�ˤʤäƤ��ޤ���
+Ruby など多くのプログラミング言語の文字列は 1 文字目を 0 から数えますが、
+subseq メソッドは 1 から数えて切り出せるようになっています。
 
   bioruby> puts dna[0, 3]
   atg
 
-Ruby �� String ���饹������ slice �᥽�å� str[] ��Ŭ���Ȥ�ʬ�����
-�褤�Ǥ��礦��
+Ruby の String クラスが持つ slice メソッド str[] と適宜使い分けると
+よいでしょう。
 
 :window_search(len, step)
 
-window_search �᥽�åɤ�Ȥ���Ĺ���������ʬ������η����֤���
-��ñ�˹Ԥ����Ȥ��Ǥ��ޤ���DNA ����򥳥ɥ���˽��������硢
-��ʸ�����Ĥ��餷�ʤ��飳ʸ�����ڤ�Ф��Ф褤�Τǰʲ��Τ褦�ˤʤ�ޤ���
+window_search メソッドを使うと長い配列の部分配列毎の繰り返しを
+簡単に行うことができます。DNA 配列をコドン毎に処理する場合、
+３文字ずつずらしながら３文字を切り出せばよいので以下のようになります。
 
   bioruby> dna.window_search(3, 3) do |codon|
   bioruby+   puts "#{codon}\t#{codon.translate}"
@@ -408,15 +408,15 @@ window_search �᥽�åɤ�Ȥ���Ĺ���������ʬ������η����֤���
   gca     A
   aaa     K
 
-���Υ��������ü 1000bp �򥪡��С���åפ����ʤ��� 11000bp ���Ȥ�
-�֥��ڤ�ˤ� FASTA �ե����ޥåȤ�����������ϰʲ��Τ褦�ˤʤ�ޤ���
+ゲノム配列を、末端 1000bp をオーバーラップさせながら 11000bp ごとに
+ブツ切りにし FASTA フォーマットに整形する場合は以下のようになります。
 
   bioruby> seq.window_search(11000, 10000) do |subseq|
   bioruby+   puts subseq.to_fasta
   bioruby+ end
 
-�Ǹ�� 10000bp �������ʤ� 3' ü��;��������֤��ͤȤ���������Τǡ�
-ɬ�פʾ������Ӽ�����ä�ɽ�����ޤ���
+最後の 10000bp に満たない 3' 端の余り配列は返り値として得られるので、
+必要な場合は別途受け取って表示します。
 
   bioruby> i = 1
   bioruby> remainder = seq.window_search(11000, 10000) do |subseq|
@@ -427,8 +427,8 @@ window_search �᥽�åɤ�Ȥ���Ĺ���������ʬ������η����֤���
 
 :splicing(position)
 
-��������� GenBank ���� position ʸ����ˤ���ڤ�Ф��� splicing
-�᥽�åɤǹԤ��ޤ���
+塩基配列の GenBank 等の position 文字列による切り出しは splicing
+メソッドで行います。
 
   bioruby> puts dna
   atgcatgcaaaa
@@ -437,15 +437,15 @@ window_search �᥽�åɤ�Ȥ���Ĺ���������ʬ������η����֤���
 
 :randomize
 
-randomize �᥽�åɤϡ��������������¸�����ޤޥ�����������������ޤ���
+randomize メソッドは、配列の組成を保存したままランダム配列を生成します。
 
   bioruby> puts dna.randomize
   agcaatagatac
 
 :to_re
 
-to_re �᥽�åɤϡ�ۣ��ʱ����ɽ����ޤ��������� atgc ������
-�ѥ����󤫤�ʤ�����ɽ�����Ѵ����ޤ���
+to_re メソッドは、曖昧な塩基の表記を含む塩基配列を atgc だけの
+パターンからなる正規表現に変換します。
 
   bioruby> ambiguous = getseq("atgcyatgcatgcatgc")
 
@@ -455,9 +455,9 @@ to_re �᥽�åɤϡ�ۣ��ʱ����ɽ����ޤ��������� atgc ������
   bioruby> puts ambiguous.to_re
   (?-mix:atgc[tc]atgcatgcatgc)
 
-seq �᥽�åɤ� ATGC �δ�ͭ�̤� 90% �ʲ����ȥ��ߥλ�����Ȥߤʤ��Τǡ�
-ۣ��ʱ���¿���ޤޤ������ξ��� to_naseq �᥽�åɤ�Ȥä�
-����Ū�� Bio::Sequence::NA ���֥������Ȥ��Ѵ�����ɬ�פ�����ޤ���
+seq メソッドは ATGC の含有量が 90% 以下だとアミノ酸配列とみなすので、
+曖昧な塩基が多く含まれる配列の場合は to_naseq メソッドを使って
+明示的に Bio::Sequence::NA オブジェクトに変換する必要があります。
 
   bioruby> s = getseq("atgcrywskmbvhdn").to_naseq
   bioruby> p s.to_re
@@ -468,8 +468,8 @@ seq �᥽�åɤ� ATGC �δ�ͭ�̤� 90% �ʲ����ȥ��ߥλ�����Ȥߤʤ��Τǡ�
 
 :names
 
-���ޤ�Ȥ����ȤϤ���ޤ��󤬡���������̾�䥢�ߥλ�̾���Ѵ�����
-�᥽�åɤǤ���
+あまり使うことはありませんが、配列を塩基名やアミノ酸名に変換する
+メソッドです。
 
   bioruby> p dna.names
   ["adenine", "thymine", "guanine", "cytosine", "adenine", "thymine",
@@ -480,35 +480,35 @@ seq �᥽�åɤ� ATGC �δ�ͭ�̤� 90% �ʲ����ȥ��ߥλ�����Ȥߤʤ��Τǡ�
 
 :codes
 
-���ߥλ������ʸ�������ɤ��Ѵ����� names �Ȼ����᥽�åɤǤ���
+アミノ酸配列を３文字コードに変換する names と似たメソッドです。
 
   bioruby> p pep.codes
   ["Met", "His", "Ala", "Lys"]
 
 :gc_percent
 
-��������� GC ���̤� gc_percent �᥽�åɤ������ޤ���
+塩基配列の GC 含量は gc_percent メソッドで得られます。
 
   bioruby> p dna.gc_percent
   33
 
 :to_fasta
 
-FASTA �ե����ޥåȤ��Ѵ�����ˤ� to_fasta �᥽�åɤ�Ȥ��ޤ���
+FASTA フォーマットに変換するには to_fasta メソッドを使います。
 
   bioruby> puts dna.to_fasta("dna sequence")
   >dna sequence
   aaccggttacgt
 
 
-=== ����䥢�ߥλ��Υ����ɡ����ɥ�ɽ�򤢤Ĥ���
+=== 塩基やアミノ酸のコード、コドン表をあつかう
 
-���ߥλ������𡢥��ɥ�ơ��֥�����뤿��� aminoacids, nucleicacids,
-codontables, codontable ���ޥ�ɤ�Ҳ𤷤ޤ���
+アミノ酸、塩基、コドンテーブルを得るための aminoacids, nucleicacids,
+codontables, codontable コマンドを紹介します。
  
 --- aminoacids
 
-���ߥλ��ΰ����� aminoacids ���ޥ�ɤ�ɽ���Ǥ��ޤ���
+アミノ酸の一覧は aminoacids コマンドで表示できます。
 
   bioruby> aminoacids
   ?       Pyl     pyrrolysine
@@ -536,7 +536,7 @@ codontables, codontable ���ޥ�ɤ�Ҳ𤷤ޤ���
   Y       Tyr     tyrosine
   Z       Glx     glutamine/glutamic acid
 
-�֤��ͤ�û��ɽ�����б�����Ĺ��ɽ���Υϥå���ˤʤäƤ��ޤ���
+返り値は短い表記と対応する長い表記のハッシュになっています。
 
   bioruby> aa = aminoacids
   bioruby> puts aa["G"]
@@ -546,7 +546,7 @@ codontables, codontable ���ޥ�ɤ�Ҳ𤷤ޤ���
 
 --- nucleicacids
 
-����ΰ����� nucleicacids ���ޥ�ɤ�ɽ���Ǥ��ޤ���
+塩基の一覧は nucleicacids コマンドで表示できます。
 
   bioruby> nucleicacids
   a       a       Adenine
@@ -566,7 +566,7 @@ codontables, codontable ���ޥ�ɤ�Ҳ𤷤ޤ���
   d       [atg]   not C
   n       [atgc]  
 
-�֤��ͤϱ���Σ�ʸ��ɽ���ȳ����������Υϥå���ˤʤäƤ��ޤ���
+返り値は塩基の１文字表記と該当する塩基のハッシュになっています。
 
   bioruby> na = nucleicacids
   bioruby> puts na["r"]
@@ -574,7 +574,7 @@ codontables, codontable ���ޥ�ɤ�Ҳ𤷤ޤ���
 
 --- codontables
 
-���ɥ�ơ��֥�ΰ����� codontables ���ޥ�ɤ�ɽ���Ǥ��ޤ���
+コドンテーブルの一覧は codontables コマンドで表示できます。
 
   bioruby> codontables
   1       Standard (Eukaryote)
@@ -595,7 +595,7 @@ codontables, codontable ���ޥ�ɤ�Ҳ𤷤ޤ���
   22      Scenedesmus obliquus mitochondrial
   23      Thraustochytrium Mitochondrial
 
-�֤��ͤϥơ��֥��ֹ��̾���Υϥå���ˤʤäƤ��ޤ���
+返り値はテーブル番号と名前のハッシュになっています。
 
   bioruby> ct = codontables
   bioruby> puts ct[3]
@@ -603,7 +603,7 @@ codontables, codontable ���ޥ�ɤ�Ҳ𤷤ޤ���
 
 --- codontable(num)
 
-���ɥ�ɽ���Τ� codontable ���ޥ�ɤ�ɽ���Ǥ��ޤ���
+コドン表自体は codontable コマンドで表示できます。
 
   bioruby> codontable(11)
 
@@ -639,8 +639,8 @@ codontables, codontable ���ޥ�ɤ�Ҳ𤷤ޤ���
    *---------------------------------------------*
 
 
-�֤��ͤ� Bio::CodonTable ���饹�Υ��֥������Ȥǡ����ɥ�ȥ��ߥλ���
-�Ѵ����Ǥ�������Ǥʤ����ʲ��Τ褦�ʥǡ��������뤳�Ȥ��Ǥ��ޤ���
+返り値は Bio::CodonTable クラスのオブジェクトで、コドンとアミノ酸の
+変換ができるだけでなく、以下のようなデータも得ることができます。
 
   bioruby> ct = codontable(2)
   bioruby> p ct["atg"]
@@ -648,47 +648,47 @@ codontables, codontable ���ޥ�ɤ�Ҳ𤷤ޤ���
 
 :definition
 
-���ɥ�ɽ�����������
+コドン表の定義の説明
 
   bioruby> puts ct.definition
   Vertebrate Mitochondrial
 
 :start
 
-���ϥ��ɥ����
+開始コドン一覧
 
   bioruby> p ct.start
   ["att", "atc", "ata", "atg", "gtg"]
 
 :stop
 
-���ߥ��ɥ����
+終止コドン一覧
 
   bioruby> p ct.stop
   ["taa", "tag", "aga", "agg"]
 
 :revtrans
 
-���ߥλ��򥳡��ɤ��륳�ɥ��Ĵ�٤�
+アミノ酸をコードするコドンを調べる
 
   bioruby> p ct.revtrans("V")
   ["gtc", "gtg", "gtt", "gta"]
 
-=== �ե�åȥե�����Υ���ȥ�
+=== フラットファイルのエントリ
 
-�ǡ����١����Υ���ȥ�ȡ��ե�åȥե����뤽�Τ�Τ򰷤���ˡ��Ҳ𤷤ޤ���
-GenBank �ǡ����١�������Ǥϡ��ե������Υ���ȥ꤬�ޤޤ�� gbphg.seq ��
-�ե����륵�������������Τǡ����Υե��������Ȥ��ƻȤ��ޤ���
+データベースのエントリと、フラットファイルそのものを扱う方法を紹介します。
+GenBank データベースの中では、ファージのエントリが含まれる gbphg.seq の
+ファイルサイズが小さいので、このファイルを例として使います。
 
   % wget ftp://ftp.hgc.jp/pub/mirror/ncbi/genbank/gbphg.seq.gz
   % gunzip gbphg.seq.gz
 
 --- getent(str)
 
-getseq ���ޥ�ɤ������������ޤ���������������Ǥʤ�����ȥ����Τ��������
-�ˤ� getent ���ޥ��(��2)��Ȥ��ޤ���getseq ���ޥ��Ʊ�͡�getent ���ޥ�ɤǤ�
-OBDA, EMBOSS, NCBI, EBI, TogoWS �Υǡ����١��������Ѳ�ǽ�Ǥ�(��5)��
-����ˤĤ��Ƥ� getseq ���ޥ�ɤ������򻲾Ȥ��Ƥ���������
+getseq コマンドは配列を取得しましたが、配列だけでなくエントリ全体を取得する
+には getent コマンド(※2)を使います。getseq コマンド同様、getent コマンドでも
+OBDA, EMBOSS, NCBI, EBI, TogoWS のデータベースが利用可能です(※5)。
+設定については getseq コマンドの説明を参照してください。
 
   bioruby> entry = getent("genbank:AB044425")
   bioruby> puts entry
@@ -696,16 +696,16 @@ OBDA, EMBOSS, NCBI, EBI, TogoWS �Υǡ����١��������Ѳ�ǽ�Ǥ�(��5)��
   DEFINITION  Volvox carteri f. kawasakiensis chloroplast psaB gene for
               photosystem I P700 chlorophyll a apoprotein A2,
               strain:NIES-732.
-  (ά)
+  (略)
 
-getent ���ޥ�ɤΰ����ˤ� db:entry_id ������ʸ����EMBOSS �� USA��
-�ե����롢IO ��Ϳ����졢�ǡ����١����Σ�����ȥ�ʬ��ʸ�����֤���ޤ���
-����ǡ����١����˸¤餺����¿���Υǡ����١�������ȥ���б����Ƥ��ޤ���
+getent コマンドの引数には db:entry_id 形式の文字列、EMBOSS の USA、
+ファイル、IO が与えられ、データベースの１エントリ分の文字列が返されます。
+配列データベースに限らず、数多くのデータベースエントリに対応しています。
 
 --- flatparse(str)
 
-������������ȥ��ѡ��������ߤ����ǡ�����Ȥ�����ˤ� flatparse
-���ޥ�ɤ�Ȥ��ޤ���
+取得したエントリをパースして欲しいデータをとりだすには flatparse
+コマンドを使います。
 
   bioruby> entry = getent("gbphg.seq")
   bioruby> gb = flatparse(entry)
@@ -715,14 +715,14 @@ getent ���ޥ�ɤΰ����ˤ� db:entry_id ������ʸ����EMBOSS �� USA��
   Bacteriophage Mu DNA for ORF1, sheath protein gpL, ORF2, ORF3, complete cds.
   bioruby> puts psaB.naseq
   acggtcagacgtttggcccgaccaccgggatgaggctgacgcaggtcagaaatctttgtgacgacaaccgtatcaat
-  (ά)
+  (略)
 
 --- getobj(str)
 
-getobj ���ޥ��(��2)�ϡ�getent �ǥ���ȥ��ʸ����Ȥ��Ƽ����� flatparse ��
-�ѡ����������֥������Ȥ��Ѵ�����Τ�Ʊ���Ǥ���getent ���ޥ�ɤ�Ʊ��������
-�����դ��ޤ������������������ getseq������ȥ������������ getent��
-�ѡ����������֥������Ȥ����������� getobj ��Ȥ����Ȥˤʤ�ޤ���
+getobj コマンド(※2)は、getent でエントリを文字列として取得し flatparse で
+パースしたオブジェクトに変換するのと同じです。getent コマンドと同じ引数を
+受け付けます。配列を取得する時は getseq、エントリを取得する時は getent、
+パースしたオブジェクトを取得する時は getobj を使うことになります。
 
   bioruby> gb = getobj("gbphg.seq")
   bioruby> puts gb.entry_id
@@ -730,14 +730,14 @@ getobj ���ޥ��(��2)�ϡ�getent �ǥ���ȥ��ʸ����Ȥ��Ƽ����� flatparse ��
 
 --- flatfile(file)
 
-getent ���ޥ�ɤϣ�����ȥꤷ�������ʤ����ᡢ��������Υե�����򳫤��� 
-�ƥ���ȥ���˽�����Ԥ��ˤ� flatfile ���ޥ�ɤ�Ȥ��ޤ���
+getent コマンドは１エントリしか扱えないため、ローカルのファイルを開いて 
+各エントリ毎に処理を行うには flatfile コマンドを使います。
 
   bioruby> flatfile("gbphg.seq") do |entry|
   bioruby+   # do something on entry
   bioruby+ end
 
-�֥��å�����ꤷ�ʤ����ϡ��ե�������κǽ�Υ���ȥ��������ޤ���
+ブロックを指定しない場合は、ファイル中の最初のエントリを取得します。
 
   bioruby> entry = flatfile("gbphg.seq")
   bioruby> gb = flatparse(entry)
@@ -745,39 +745,39 @@ getent ���ޥ�ɤϣ�����ȥꤷ�������ʤ����ᡢ��������Υե�����򳫤���
 
 --- flatauto(file)
 
-�ƥ���ȥ�� flatparse ��Ʊ�ͤ˥ѡ����������֤ǽ��֤˽������뤿��ˤϡ�
-flatfile ���ޥ�ɤ������ flatauto ���ޥ�ɤ�Ȥ��ޤ���
+各エントリを flatparse と同様にパースした状態で順番に処理するためには、
+flatfile コマンドの代わりに flatauto コマンドを使います。
 
   bioruby> flatauto("gbphg.seq") do |entry|
   bioruby+   print entry.entry_id
   bioruby+   puts  entry.definition
   bioruby+ end
 
-flatfile Ʊ�͡��֥��å�����ꤷ�ʤ����ϡ��ե�������κǽ�Υ���ȥ��
-���������ѡ����������֥������Ȥ��֤��ޤ���
+flatfile 同様、ブロックを指定しない場合は、ファイル中の最初のエントリを
+取得し、パースしたオブジェクトを返します。
 
   bioruby> gb = flatfile("gbphg.seq")
   bioruby> puts gb.entry_id
 
-=== �ե�åȥե�����Υ���ǥ�����
+=== フラットファイルのインデクシング
 
-EMBOSS �� dbiflat �˻�����ǽ�Ȥ��ơ�BioRuby, BioPerl �ʤɤ˶��̤� BioFlat
-�Ȥ�������ǥå��������������Ȥߤ�����ޤ������٥���ǥå�����
-�������Ƥ����ȥ���ȥ�μ��Ф�����®�����ưפ˹Ԥ��ޤ���
-����ˤ�꼫ʬ���ѤΥǡ����١������ڤ˺�뤳�Ȥ��Ǥ��ޤ���
+EMBOSS の dbiflat に似た機能として、BioRuby, BioPerl などに共通の BioFlat
+というインデックスを作成する仕組みがあります。一度インデックスを
+作成しておくとエントリの取り出しが高速かつ容易に行えます。
+これにより自分専用のデータベースを手軽に作ることができます。
 
 --- flatindex(db_name, *source_file_list)
 
-GenBank �Υե�����������ե����� gbphg.seq �����äƤ��륨��ȥ���Ф���
-mydb �Ȥ����ǡ����١���̾�ǥ���ǥå�����������ޤ���
+GenBank のファージの配列ファイル gbphg.seq に入っているエントリに対して
+mydb というデータベース名でインデックスを作成します。
 
   bioruby> flatindex("mydb", "gbphg.seq")
   Creating BioFlat index (.bioruby/bioflat/mydb) ... done
 
 --- flatsearch(db_name, entry_id)
 
-�������� mydb �ǡ����١������饨��ȥ��Ȥ�Ф��ˤ� flatsearch ���ޥ�ɤ�
-�Ȥ��ޤ���
+作成した mydb データベースからエントリをとり出すには flatsearch コマンドを
+使います。
 
   bioruby> entry = flatsearch("mydb", "AB004561")
   bioruby> puts entry
@@ -785,47 +785,47 @@ mydb �Ȥ����ǡ����١���̾�ǥ���ǥå�����������ޤ���
   DEFINITION  Bacteriophage phiU gene for integrase, complete cds, integration
               site.
   ACCESSION   AB004561
-  (ά)
+  (略)
 
-=== �͡��� DB ������� FASTA �ե����ޥåȤ��Ѵ�������¸
+=== 様々な DB の配列を FASTA フォーマットに変換して保存
 
-FASTA �ե����ޥåȤ�����ǡ�����ɸ��Ū���Ѥ����Ƥ���ե����ޥåȤǤ���
-��>�׵���ǤϤ��ޤ룱���ܤ���������������ꡢ�����ܰʹߤ����󤬤ĤŤ��ޤ���
-������ζ���ʸ����̵�뤵��ޤ���
+FASTA フォーマットは配列データで標準的に用いられているフォーマットです。
+「>」記号ではじまる１行目に配列の説明があり、２行目以降に配列がつづきます。
+配列中の空白文字は無視されます。
 
   >entry_id definition ...
   ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT
   ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT
 
-����������Ԥϡ��ǽ��ñ�줬����� ID �ˤʤäƤ��뤳�Ȥ�¿���ΤǤ�����
-NCBI �� BLAST �ѥǡ����١����ǤϤ���˹��٤ʹ�¤���������ʤ��Ƥ��ޤ���
+配列の説明行は、最初の単語が配列の ID になっていることが多いのですが、
+NCBI の BLAST 用データベースではさらに高度な構造化がおこなわれています。
 
 * ((<URL:ftp://ftp.ncbi.nih.gov/blast/documents/README.formatdb>))
 * ((<URL:http://blast.wustl.edu/doc/FAQ-Indexing.html#Identifiers>))
 * FASTA format (Wikipedia)
   ((<URL:http://en.wikipedia.org/wiki/Fasta_format>))
 
-BioRuby �Υǡ����١�������ȥ�Υ��饹�ˤϥ���ȥ�ID����������ˤĤ���
-���̤Υ᥽�åɤ��Ѱդ���Ƥ��ޤ���
+BioRuby のデータベースエントリのクラスにはエントリID、配列、定義について
+共通のメソッドが用意されています。
 
-* entry_id - ����ȥ� ID �����
-* definition - ���ʸ�����
-* seq - ��������
+* entry_id - エントリ ID を取得
+* definition - 定義文を取得
+* seq - 配列を取得
 
-�����ζ��̥᥽�åɤ�Ȥ��ȡ��ɤ������ǡ����١�������ȥ�Ǥ�
-FASTA �ե����ޥåȤ��Ѵ��Ǥ���ץ�����ब��ñ�˺��ޤ���
+これらの共通メソッドを使うと、どんな配列データベースエントリでも
+FASTA フォーマットに変換できるプログラムが簡単に作れます。
 
   entry.seq.to_fasta("#{entry.entry_id} #{entry.definition}", 60)
 
-����ˡ�BioRuby �Ǥ����ϥǡ����١����η�����ưȽ�̤Ǥ��ޤ��Τǡ�
-GenBank, UniProt �ʤ�¿���μ��פ�����ǡ����١����Ǥ�
-�ե�����̾����ꤹ������� FASTA �ե����ޥåȤ��Ѵ��Ǥ��ޤ���
+さらに、BioRuby では入力データベースの形式を自動判別できますので、
+GenBank, UniProt など多くの主要な配列データベースでは
+ファイル名を指定するだけで FASTA フォーマットに変換できます。
 
 --- flatfasta(fasta_file, *source_file_list)
 
-���ϥǡ����١����Υե�����̾�Υꥹ�Ȥ��顢���ꤷ�� FASTA �ե����ޥåȤ�
-�ե�������������륳�ޥ�ɤǤ��������ǤϤ����Ĥ��� GenBank �Υե������
-FASTA �ե����ޥåȤ��Ѵ�����myfasta.fa �Ȥ����ե��������¸���Ƥ��ޤ���
+入力データベースのファイル名のリストから、指定した FASTA フォーマットの
+ファイルを生成するコマンドです。ここではいくつかの GenBank のファイルを
+FASTA フォーマットに変換し、myfasta.fa というファイルに保存しています。
 
   bioruby> flatfasta("myfasta.fa", "gbphg.seq", "gbvrl1.seq", "gbvrl2.seq")
   Saving fasta file (myfasta.fa) ... 
@@ -834,9 +834,9 @@ FASTA �ե����ޥåȤ��Ѵ�����myfasta.fa �Ȥ����ե��������¸���Ƥ��ޤ���
     converting -- gbvrl2.gbk
   done
 
-=== ������ץ�����
+=== スクリプト生成
 
-��ȼ��򥹥���ץȲ�������¸���Ƥ������Ȥ�Ǥ��ޤ���
+作業手順をスクリプト化して保存しておくこともできます。
 
   bioruby> script
   -- 8< -- 8< -- 8< --  Script  -- 8< -- 8< -- 8< --
@@ -847,7 +847,7 @@ FASTA �ե����ޥåȤ��Ѵ�����myfasta.fa �Ȥ����ե��������¸���Ƥ��ޤ���
   -- >8 -- >8 -- >8 --  Script  -- >8 -- >8 -- >8 --
   Saving script (script.rb) ... done
 
-�������줿 script.rb �ϰʲ��Τ褦�ˤʤ�ޤ���
+生成された script.rb は以下のようになります。
 
   #!/usr/bin/env bioruby
   
@@ -855,34 +855,34 @@ FASTA �ե����ޥåȤ��Ѵ�����myfasta.fa �Ȥ����ե��������¸���Ƥ��ޤ���
   p seq
   p seq.translate
 
-���Υ�����ץȤ� bioruby ���ޥ�ɤǼ¹Ԥ��뤳�Ȥ��Ǥ��ޤ���
+このスクリプトは bioruby コマンドで実行することができます。
 
   % bioruby script.rb
 
-=== �ʰץ����뵡ǽ
+=== 簡易シェル機能
 
 --- cd(dir)
 
-�����ȥǥ��쥯�ȥ���ѹ����ޤ���
+カレントディレクトリを変更します。
 
   bioruby> cd "/tmp"
   "/tmp"
 
-�ۡ���ǥ��쥯�ȥ�����ˤϰ�����Ĥ����� cd ��¹Ԥ��ޤ���
+ホームディレクトリに戻るには引数をつけずに cd を実行します。
 
   bioruby> cd
   "/home/k"
 
 --- pwd
 
-�����ȥǥ��쥯�ȥ��ɽ�����ޤ���
+カレントディレクトリを表示します。
 
   bioruby> pwd
   "/home/k"
 
 --- dir
 
-�����ȥǥ��쥯�ȥ�Υե���������ɽ�����ޤ���
+カレントディレクトリのファイルを一覧表示します。
 
   bioruby> dir
      UGO  Date                                 Byte  File
@@ -890,7 +890,7 @@ FASTA �ե����ޥåȤ��Ѵ�����myfasta.fa �Ȥ����ե��������¸���Ƥ��ޤ���
    40700  Tue Dec 06 07:07:35 JST 2005         1768  "Desktop"
    40755  Tue Nov 29 16:55:20 JST 2005         2176  "bin"
   100644  Sat Oct 15 03:01:00 JST 2005     42599518  "gbphg.seq"
-  (ά)
+  (略)
 
   bioruby> dir "gbphg.seq"
      UGO  Date                                 Byte  File
@@ -899,7 +899,7 @@ FASTA �ե����ޥåȤ��Ѵ�����myfasta.fa �Ȥ����ե��������¸���Ƥ��ޤ���
 
 --- head(file, lines = 10)
 
-�ƥ����ȥե�����䥪�֥������Ȥ���Ƭ 10 �Ԥ�ɽ�����ޤ���
+テキストファイルやオブジェクトの先頭 10 行を表示します。
 
   bioruby> head "gbphg.seq"
   GBPHG.SEQ            Genetic Sequence Data Bank
@@ -911,13 +911,13 @@ FASTA �ե����ޥåȤ��Ѵ�����myfasta.fa �Ȥ����ե��������¸���Ƥ��ޤ���
   
       2713 loci,    16892737 bases, from     2713 reported sequences
 
-ɽ������Կ�����ꤹ�뤳�Ȥ�Ǥ��ޤ���
+表示する行数を指定することもできます。
 
   bioruby> head "gbphg.seq", 2
   GBPHG.SEQ            Genetic Sequence Data Bank
                             October 15 2005
 
-�ƥ����Ȥ����äƤ����ѿ�����Ƭ�򸫤뤳�Ȥ�Ǥ��ޤ���
+テキストの入っている変数の先頭を見ることもできます。
 
   bioruby> entry = getent("gbphg.seq")
   bioruby> head entry, 2
@@ -926,18 +926,18 @@ FASTA �ե����ޥåȤ��Ѵ�����myfasta.fa �Ȥ����ե��������¸���Ƥ��ޤ���
 
 --- disp(obj)
 
-�ƥ����ȥե�����䥪�֥������Ȥ���Ȥ�ڡ����㡼��ɽ�����ޤ���
-�����ǻ��Ѥ���ڡ����㡼�� pager ���ޥ�ɤ��ѹ����뤳�Ȥ��Ǥ��ޤ��ʸ�ҡˡ�
+テキストファイルやオブジェクトの中身をページャーで表示します。
+ここで使用するページャーは pager コマンドで変更することができます（後述）。
 
   bioruby> disp "gbphg.seq"
   bioruby> disp entry
   bioruby> disp [1, 2, 3] * 4
 
-=== �ѿ�
+=== 変数
 
 --- ls
 
-���å������˺��������ѿ��ʥ��֥������ȡˤΰ�����ɽ�����ޤ���
+セッション中に作成した変数（オブジェクト）の一覧を表示します。
 
   bioruby> ls
   ["entry", "seq"]
@@ -947,7 +947,7 @@ FASTA �ե����ޥåȤ��Ѵ�����myfasta.fa �Ȥ����ե��������¸���Ƥ��ޤ���
 
 --- rm(symbol)
 
-�ѿ���õ�ޤ���
+変数を消去します。
 
   bioruby> rm "a"
 
@@ -956,22 +956,22 @@ FASTA �ե����ޥåȤ��Ѵ�����myfasta.fa �Ȥ����ե��������¸���Ƥ��ޤ���
 
 --- savefile(filename, object)
 
-�ѿ�����¸����Ƥ������Ƥ�ƥ����ȥե��������¸���ޤ���
+変数に保存されている内容をテキストファイルに保存します。
 
   bioruby> savefile "testfile.txt", entry
   Saving data (testfile.txt) ... done
 
   bioruby> disp "testfile.txt"
 
-=== �Ƽ�����
+=== 各種設定
 
-��³���λ��ȤߤȤ��� BioRuby �����뽪λ���� session �ǥ��쥯�ȥ����
-�ҥ��ȥꡢ���֥������ȡ��Ŀͤ����꤬��¸���졢����ư���˼�ưŪ��
-�ɤ߹��ޤ�ޤ���
+永続化の仕組みとして BioRuby シェル終了時に session ディレクトリ内に
+ヒストリ、オブジェクト、個人の設定が保存され、次回起動時に自動的に
+読み込まれます。
 
 --- config
 
-BioRuby ������γƼ������ɽ�����ޤ���
+BioRuby シェルの各種設定を表示します。
 
   bioruby> config
   message = "...BioRuby in the shell..."
@@ -980,11 +980,11 @@ BioRuby ������γƼ������ɽ�����ޤ���
   pager   = nil
   echo    = false
 
-echo ɽ�����뤫�ɤ������ڤ��ؤ��ޤ���on �ξ��ϡ�puts �� p �ʤɤ�
-�Ĥ��ʤ��Ƥ�ɾ�������ͤ����̤�ɽ������ޤ���
-irb ���ޥ�ɤξ��Ͻ�����꤬ on �ˤʤäƤ��ޤ�����bioruby ���ޥ�ɤǤ�
-Ĺ������䥨��ȥ�ʤ�Ĺ���ʸ����򰷤����Ȥ�¿�����ᡢ�������Ǥ�
-off �ˤ��Ƥ��ޤ���
+echo 表示するかどうかを切り替えます。on の場合は、puts や p などを
+つけなくても評価した値が画面に表示されます。
+irb コマンドの場合は初期設定が on になっていますが、bioruby コマンドでは
+長い配列やエントリなど長大な文字列を扱うことが多いため、初期設定では
+off にしています。
 
   bioruby> config :echo
   Echo on
@@ -993,22 +993,22 @@ off �ˤ��Ƥ��ޤ���
   bioruby> config :echo
   Echo off
 
-���ɥ�ɽ�ʤɡ���ǽ�ʾ��˥��顼ɽ�����뤫�ɤ������ڤ��ؤ��ޤ���
-���顼ɽ���ξ�硢�ץ���ץȤˤ⿧���Ĥ��ޤ��Τ�Ƚ�̤Ǥ��ޤ���
+コドン表など、可能な場合にカラー表示するかどうかを切り替えます。
+カラー表示の場合、プロンプトにも色がつきますので判別できます。
 
   bioruby> config :color
   bioruby> codontable
-  (���դ�)
+  (色付き)
 
-�¹Ԥ��뤿�Ӥ����꤬�ڤ��ؤ��ޤ���
+実行するたびに設定が切り替わります。
 
   bioruby> config :color
   bioruby> codontable
-  (���ʤ�)
+  (色なし)
 
-BioRuby �����뵯ư����ɽ������륹�ץ�å����å�������㤦ʸ�����
-�ѹ����ޤ������β��ϥץ����������ѤΥǥ��쥯�ȥ꤫����ꤷ�Ƥ����Τ�
-�褤�Ǥ��礦��
+BioRuby シェル起動時に表示されるスプラッシュメッセージを違う文字列に
+変更します。何の解析プロジェクト用のディレクトリかを指定しておくのも
+よいでしょう。
 
   bioruby> config :message, "Kumamushi genome project"
   
@@ -1016,20 +1016,20 @@ BioRuby �����뵯ư����ɽ������륹�ץ�å����å�������㤦ʸ�����
   
     Version : BioRuby 0.8.0 / Ruby 1.8.4
 
-�ǥե���Ȥ�ʸ������᤹�ˤϡ������ʤ��Ǽ¹Ԥ��ޤ���
+デフォルトの文字列に戻すには、引数なしで実行します。
 
   bioruby> config :message
 
-BioRuby �����뵯ư����ɽ������륹�ץ�å����å��ݥ���
-���˥᡼�����ɽ�����뤫�ɤ������ڤ��ؤ��ޤ���
-�������¹Ԥ��뤿�Ӥ����꤬�ڤ��ؤ��ޤ���
+BioRuby シェル起動時に表示されるスプラッシュメッセ−ジを
+アニメーション表示するかどうかを切り替えます。
+こちらも実行するたびに設定が切り替わります。
 
   bioruby> config :splash
   Splash on
 
 --- pager(command)
 
-disp ���ޥ�ɤǼºݤ����Ѥ���ڡ����㡼���ڤ��ؤ��ޤ���
+disp コマンドで実際に利用するページャーを切り替えます。
 
   bioruby> pager "lv"
   Pager is set to 'lv'
@@ -1037,22 +1037,22 @@ disp ���ޥ�ɤǼºݤ����Ѥ���ڡ����㡼���ڤ��ؤ��ޤ���
   bioruby> pager "less -S"
   Pager is set to 'less -S'
 
-�ڡ����㡼����Ѥ��ʤ�����ˤ�����ϰ����ʤ��Ǽ¹Ԥ��ޤ���
+ページャーを使用しない設定にする場合は引数なしで実行します。
 
   bioruby> pager
   Pager is set to 'off'
 
-�ڡ����㡼�� off �λ��˰����ʤ��Ǽ¹Ԥ���ȴĶ��ѿ� PAGER ���ͤ����Ѥ��ޤ���
+ページャーが off の時に引数なしで実行すると環境変数 PAGER の値を利用します。
 
   bioruby> pager
   Pager is set to 'less'
 
-=== �����ҥ�������������
+=== 遺伝子アスキーアート
 
 --- doublehelix(sequence)
 
-DNA ����򥢥����������Ȥ�ɽ�����륪�ޥ���ǽ������ޤ���
-Ŭ���ʱ������� seq ����������äݤ�ɽ�����Ƥߤޤ��礦��
+DNA 配列をアスキーアートで表示するオマケ機能があります。
+適当な塩基配列 seq を二重螺旋っぽく表示してみましょう。
 
   bioruby> dna = getseq("atgc" * 10).randomize
   bioruby> doublehelix dna
@@ -1069,33 +1069,33 @@ DNA ����򥢥����������Ȥ�ɽ�����륪�ޥ���ǽ������ޤ���
   g---c
    c----g
     c----g
-  (ά)
+  (略)
 
-=== �����Ҳ���
+=== 遺伝子音楽
 
 --- midifile(midifile, sequence)
 
-DNA ����� MIDI �ե�������Ѵ����륪�ޥ���ǽ������ޤ���
-Ŭ���ʱ������� seq ��Ȥä��������� midifile.mid ��
-MIDI �ץ쥤�䡼�Ǳ��դ��Ƥߤޤ��礦��
+DNA 配列を MIDI ファイルに変換するオマケ機能があります。
+適当な塩基配列 seq を使って生成した midifile.mid を
+MIDI プレイヤーで演奏してみましょう。
 
   bioruby> midifile("midifile.mid", seq)
   Saving MIDI file (midifile.mid) ... done
 
-�ʾ�� BioRuby ������β���򽪤�ꡢ�ʲ��Ǥ� BioRuby �饤�֥�꼫�Τ�
-�����Ԥ��ޤ���
+以上で BioRuby シェルの解説を終わり、以下では BioRuby ライブラリ自体の
+解説を行います。
 
 
-== ���𡦥��ߥλ������������� (Bio::Sequence ���饹)
+== 塩基・アミノ酸配列を処理する (Bio::Sequence クラス)
 
-Bio::Sequence ���饹�ϡ�������Ф����͡�������Ԥ����Ȥ��Ǥ��ޤ���
-��ñ����Ȥ��ơ�û���������� atgcatgcaaaa ��Ȥäơ���������ؤ��Ѵ���
-��ʬ������ڤ�Ф������������η׻������ߥλ��ؤ�������ʬ���̷׻��ʤɤ�
-�ԤʤäƤߤޤ������ߥλ��ؤ������Ǥϡ�ɬ�פ˱����Ʋ������ܤ���������
-�Ϥ��뤫�ե졼�����ꤷ���ꡢcodontable.rb ���������Ƥ��륳�ɥ�ơ�
-�֥���椫����Ѥ����Τ���ꤷ���ꤹ������Ǥ��ޤ��ʥ��ɥ�ơ��֥��
-�ֹ�� ((<URL:http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi>))
-�򻲾ȡˡ�
+Bio::Sequence クラスは、配列に対する様々な操作を行うことができます。
+簡単な例として、短い塩基配列 atgcatgcaaaa を使って、相補配列への変換、
+部分配列の切り出し、塩基組成の計算、アミノ酸への翻訳、分子量計算などを
+行なってみます。アミノ酸への翻訳では、必要に応じて何塩基目から翻訳を開
+始するかフレームを指定したり、codontable.rb で定義されているコドンテー
+ブルの中から使用するものを指定したりする事ができます（コドンテーブルの
+番号は ((<URL:http://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi>))
+を参照）。
 
   #!/usr/bin/env ruby
   
@@ -1103,134 +1103,134 @@ Bio::Sequence ���饹�ϡ�������Ф����͡�������Ԥ����Ȥ��Ǥ��ޤ���
   
   seq = Bio::Sequence::NA.new("atgcatgcaaaa")
   
-  puts seq                            # ��������
-  puts seq.complement                 # �������� (Bio::Sequence::NA)
-  puts seq.subseq(3,8)                # 3 �����ܤ��� 8 �����ܤޤ�
+  puts seq                            # 元の配列
+  puts seq.complement                 # 相補配列 (Bio::Sequence::NA)
+  puts seq.subseq(3,8)                # 3 塩基目から 8 塩基目まで
   
-  p seq.gc_percent                    # GC ����γ�� (Integer)
-  p seq.composition                   # ���������� (Hash)
+  p seq.gc_percent                    # GC 塩基の割合 (Integer)
+  p seq.composition                   # 全塩基組成 (Hash)
   
-  puts seq.translate                  # �������� (Bio::Sequence::AA)
-  puts seq.translate(2)               # ��ʸ���ܤ������������̤ϣ������
-  puts seq.translate(1,9)             # ���֤Υ��ɥ�ơ��֥�����
+  puts seq.translate                  # 翻訳配列 (Bio::Sequence::AA)
+  puts seq.translate(2)               # ２文字目から翻訳（普通は１から）
+  puts seq.translate(1,9)             # ９番のコドンテーブルを使用
 
-  p seq.translate.codes               # ���ߥλ���ʸ�������ɤ�ɽ�� (Array)
-  p seq.translate.names               # ���ߥλ���̾����ɽ�� (Array)
-  p seq.translate.composition         # ���ߥλ����� (Hash)
-  p seq.translate.molecular_weight    # ʬ���̤�׻� (Float)
+  p seq.translate.codes               # アミノ酸を３文字コードで表示 (Array)
+  p seq.translate.names               # アミノ酸を名前で表示 (Array)
+  p seq.translate.composition         # アミノ酸組成 (Hash)
+  p seq.translate.molecular_weight    # 分子量を計算 (Float)
   
-  puts seq.complement.translate       # �������������
+  puts seq.complement.translate       # 相補配列の翻訳
 
-print, puts, p �����Ƥ���̤�ɽ�����뤿��� Ruby ɸ��᥽�åɤǤ���
-���ܤȤʤ� print ����٤ơ�puts �ϲ��Ԥ�ư�ǤĤ��Ƥ���롢
-p ��ʸ���������ʳ��Υ��֥������Ȥ�ʹ֤����䤹���褦��ɽ�����Ƥ���롢
-�Ȥ�����ħ������ޤ��Τ�Ŭ���Ȥ�ʬ���ޤ�������ˡ�
+print, puts, p は内容を画面に表示するための Ruby 標準メソッドです。
+基本となる print と比べて、puts は改行を自動でつけてくれる、
+p は文字列や数字以外のオブジェクトも人間が見やすいように表示してくれる、
+という特徴がありますので適宜使い分けます。さらに、
 
   require 'pp'
 
-�Ȥ���лȤ���褦�ˤʤ� pp �᥽�åɤϡ�p ����ɽ�������䤹���ʤ�ޤ���
+とすれば使えるようになる pp メソッドは、p よりも表示が見やすくなります。
 
-��������� Bio::Sequence::NA ���饹�Ρ����ߥλ������ Bio::Sequence::AA
-���饹�Υ��֥������Ȥˤʤ�ޤ������줾�� Bio::Sequence ���饹��Ѿ���
-�Ƥ��뤿�ᡢ¿���Υ᥽�åɤ϶��̤Ǥ���
+塩基配列は Bio::Sequence::NA クラスの、アミノ酸配列は Bio::Sequence::AA
+クラスのオブジェクトになります。それぞれ Bio::Sequence クラスを継承し
+ているため、多くのメソッドは共通です。
 
-����� Bio::Sequence::NA, AA ���饹�� Ruby �� String ���饹��Ѿ����Ƥ���Τ�
-String ���饹�����ĥ᥽�åɤ�Ȥ������Ǥ��ޤ����㤨����ʬ������ڤ�Ф��ˤ�
-Bio::Sequence ���饹�� subseq(from,to) �᥽�åɤ�¾�ˡ�String ���饹��
-[] �᥽�åɤ�Ȥ����Ȥ�Ǥ��ޤ���
+さらに Bio::Sequence::NA, AA クラスは Ruby の String クラスを継承しているので
+String クラスが持つメソッドも使う事ができます。例えば部分配列を切り出すには
+Bio::Sequence クラスの subseq(from,to) メソッドの他に、String クラスの
+[] メソッドを使うこともできます。
 
-Ruby ��ʸ����� 1 ʸ���ܤ� 0 ���ܤȤ��ƿ��������ˤ����դ�ɬ�פǤ������Ȥ��С�
+Ruby の文字列は 1 文字目を 0 番目として数える点には注意が必要です。たとえば、
 
   puts seq.subseq(1, 3)
   puts seq[0, 3]
 
-�Ϥɤ���� seq �κǽ�Σ�ʸ�� atg ��ɽ�����ޤ���
+はどちらも seq の最初の３文字 atg を表示します。
 
-���Τ褦�ˡ�String �Υ᥽�åɤ�Ȥ����ϡ���ʪ�ؤ����̻��Ѥ���� 1 ʸ���ܤ�
-1 ���ܤȤ��ƿ�������������� 1 �����ɬ�פ�����ޤ���subseq �᥽�åɤ�
-����������Ǥ�äƤ��ޤ����ޤ���from, to �Τɤ��餫�Ǥ� 0 �ʲ��ξ���
-�㳰��ȯ������褦�ˤʤäƤ��ޤ��ˡ�
+このように、String のメソッドを使う場合は、生物学で普通使用される 1 文字目を
+1 番目として数えた数字からは 1 を引く必要があります（subseq メソッドは
+これを内部でやっています。また、from, to のどちらかでも 0 以下の場合は
+例外が発生するようになっています）。
 
-�����ޤǤν����� BioRuby ������ǻ�Ȱʲ��Τ褦�ˤʤ�ޤ���
+ここまでの処理を BioRuby シェルで試すと以下のようになります。
 
-  # ���ιԤ� seq = seq("atgcatgcaaaa") �Ǥ�褤
+  # 次の行は seq = seq("atgcatgcaaaa") でもよい
   bioruby> seq = Bio::Sequence::NA.new("atgcatgcaaaa")
-  # �������������ɽ��
+  # 生成した配列を表示
   bioruby> puts seq
   atgcatgcaaaa
-  # ���������ɽ��
+  # 相補配列を表示
   bioruby> puts seq.complement
   ttttgcatgcat
-  # ��ʬ�����ɽ���ʣ������ܤ��飸�����ܤޤǡ�
+  # 部分配列を表示（３塩基目から８塩基目まで）
   bioruby> puts seq.subseq(3,8)
   gcatgc
-  # ����� GC% ��ɽ��
+  # 配列の GC% を表示
   bioruby> p seq.gc_percent
   33
-  # �����������ɽ��
+  # 配列の組成を表示
   bioruby> p seq.composition
   {"a"=>6, "c"=>2, "g"=>2, "t"=>2}
-  # ���ߥλ�����ؤ�����
+  # アミノ酸配列への翻訳
   bioruby> puts seq.translate
   MHAK
-  # ������򳫻ϱ���Ȥ�������
+  # ２塩基を開始塩基として翻訳
   bioruby> puts seq.translate(2)
   CMQ
-  # ���֤Υ��ɥ�ơ��֥����Ѥ�������
+  # ９番のコドンテーブルを使用して翻訳
   bioruby> puts seq.translate(1,9)
   MHAN
-  # �������줿���ߥλ������ʸ�������ɤ�ɽ��
+  # 翻訳されたアミノ酸配列を３文字コードで表示
   bioruby> p seq.translate.codes
   ["Met", "His", "Ala", "Lys"]
-  # �������줿���ߥλ�����򥢥ߥλ���̾����ɽ��
+  # 翻訳されたアミノ酸配列をアミノ酸の名前で表示
   bioruby> p seq.translate.names
   ["methionine", "histidine", "alanine", "lysine"]
-  # �������줿���ߥλ������������ɽ��
+  # 翻訳されたアミノ酸配列の組成を表示
   bioruby> p seq.translate.composition
   {"K"=>1, "A"=>1, "M"=>1, "H"=>1}
-  # �������줿���ߥλ������ʬ���̤�ɽ��
+  # 翻訳されたアミノ酸配列の分子量を表示
   bioruby> p seq.translate.molecular_weight
   485.605
-  # �������������
+  # 相補配列を翻訳
   bioruby> puts seq.complement.translate
   FCMH
-  # ��ʬ����ʣ������ܤ��飳�����ܤޤǡ�
+  # 部分配列（１塩基目から３塩基目まで）
   bioruby> puts seq.subseq(1, 3)
   atg
-  # ��ʬ����ʣ������ܤ��飳�����ܤޤǡ�
+  # 部分配列（１塩基目から３塩基目まで）
   bioruby> puts seq[0, 3]
   atg
 
-window_search(window_size, step_size) �᥽�åɤ�Ȥ��ȡ�������Ф��ƥ���
-��ɥ��򤺤餷�ʤ��餽�줾�����ʬ������Ф��������Ԥ����Ȥ��Ǥ��ޤ���
-Ruby ����Ĺ�ΤҤȤĤǤ���֥֥��å��פˤ�äơ��֤��줾����Ф�������פ�
-�ʷ餫�����Ƥ˽񤯤��Ȥ���ǽ�Ǥ����ʲ�����Ǥϡ�subseq �Ȥ����ѿ��ˤ��줾��
-��ʬ������������ʤ���֥��å��򷫤��֤��¹Ԥ��뤳�Ȥˤʤ�ޤ���
+window_search(window_size, step_size) メソッドを使うと、配列に対してウィ
+ンドウをずらしながらそれぞれの部分配列に対する処理を行うことができます。
+Ruby の特長のひとつである「ブロック」によって、「それぞれに対する処理」を
+簡潔かつ明瞭に書くことが可能です。以下の例では、subseq という変数にそれぞれ
+部分配列を代入しながらブロックを繰り返し実行することになります。
 
-* 100 ���𤴤Ȥˡ�1���𤺤Ĥ��餷�ʤ����ʿ�� GC% ��׻�����ɽ������
+* 100 塩基ごとに（1塩基ずつずらしながら）平均 GC% を計算して表示する
 
     seq.window_search(100) do |subseq|
       puts subseq.gc_percent
     end
 
-�֥��å�����Ǽ��������ʬ����⡢����Ʊ�� Bio::Sequence::NA �ޤ��� 
-Bio::Sequence::AA ���饹�Υ��֥������ȤʤΤǡ����󥯥饹�λ������ƤΥ�
-���åɤ�¹Ԥ��뤳�Ȥ��Ǥ��ޤ���
+ブロックの中で受け取る部分配列も、元と同じ Bio::Sequence::NA または 
+Bio::Sequence::AA クラスのオブジェクトなので、配列クラスの持つ全てのメ
+ソッドを実行することができます。
 
-�ޤ��������ܤΰ����˰�ư������ꤹ�뤳�Ȥ������褦�ˤʤäƤ���Τǡ�
+また、２番目の引数に移動幅を指定することが出来るようになっているので、
 
-* ���ɥ�ñ�̤Ǥ��餷�ʤ��� 15 ����� 5 �Ĵ�Υڥץ��ɤ���������ɽ������
+* コドン単位でずらしながら 15 塩基を 5 残基のペプチドに翻訳して表示する
 
     seq.window_search(15, 3) do |subseq|
       puts subseq.translate
     end
 
-�Ȥ��ä����Ȥ��Ǥ��ޤ�������˰�ư���������ʤ���ü����ʬ�����᥽�å�
-���Τ��֤��ͤȤ����᤹�褦�ˤʤäƤ���Τǡ�
+といったことができます。さらに移動幅に満たない右端の部分配列をメソッド
+自体の返り値として戻すようになっているので、
 
-* ���Υ������ 10000bp ���Ȥ˥֥��ڤ�ˤ��� FASTA �ե����ޥåȤ�������
-  ���ΤȤ���ü 1000bp �ϥ����С���åפ�����10000bp �������ʤ� 3' ü��
-  ���Ӽ�����ä�ɽ������
+* ゲノム配列を 10000bp ごとにブツ切りにして FASTA フォーマットに整形、
+  このとき末端 1000bp はオーバーラップさせ、10000bp に満たない 3' 端は
+  別途受け取って表示する
 
     i = 1
     remainder = seq.window_search(10000, 9000) do |subseq|
@@ -1239,89 +1239,89 @@ Bio::Sequence::AA ���饹�Υ��֥������ȤʤΤǡ����󥯥饹�λ������ƤΥ�
     end
     puts remainder.to_fasta("segment #{i}", 60)
 
-�Τ褦�ʻ�����ȴ�ñ�ˤǤ��ޤ���
+のような事もわりと簡単にできます。
 
-������ɥ������Ȱ�ư����Ʊ���ˤ���ȥ����С���åפ��ʤ�������ɥ�����
-�����Ǥ���Τǡ�
+ウィンドウの幅と移動幅を同じにするとオーバーラップしないウィンドウサー
+チができるので、
 
-* ���ɥ����٤������
+* コドン頻度を数える
 
     codon_usage = Hash.new(0)
     seq.window_search(3, 3) do |subseq|
       codon_usage[subseq] += 1
     end
 
-* 10 �Ĵ𤺤�ʬ���̤�׻�
+* 10 残基ずつ分子量を計算
 
     seq.window_search(10, 10) do |subseq|
       puts subseq.molecular_weight
     end
 
-�Ȥ��ä����Ѥ�ͤ����ޤ���
+といった応用も考えられます。
 
-�ºݤˤ� Bio::Sequence::NA ���֥������Ȥϥե����뤫���ɤ߹����ʸ����
-�����������ꡢ�ǡ����١����������������Τ�Ȥä��ꤷ�ޤ������Ȥ��С�
+実際には Bio::Sequence::NA オブジェクトはファイルから読み込んだ文字列か
+ら生成したり、データベースから取得したものを使ったりします。たとえば、
 
     #!/usr/bin/env ruby
     
     require 'bio'
     
-    input_seq = ARGF.read       # ������Ϳ����줿�ե���������Ԥ��ɤ߹���
+    input_seq = ARGF.read       # 引数で与えられたファイルの全行を読み込む
     
     my_naseq = Bio::Sequence::NA.new(input_seq)
     my_aaseq = my_naseq.translate
     
     puts my_aaseq
 
-���Υץ������� na2aa.rb �Ȥ��ơ��ʲ��α�������
+このプログラムを na2aa.rb として、以下の塩基配列
 
       gtggcgatctttccgaaagcgatgactggagcgaagaaccaaagcagtgacatttgtctg
       atgccgcacgtaggcctgataagacgcggacagcgtcgcatcaggcatcttgtgcaaatg
       tcggatgcggcgtga
 
-��񤤤��ե����� my_naseq.txt ���ɤ߹�������������
+を書いたファイル my_naseq.txt を読み込んで翻訳すると
 
     % ./na2aa.rb my_naseq.txt
     VAIFPKAMTGAKNQSSDICLMPHVGLIRRGQRRIRHLVQMSDAA*
 
-�Τ褦�ˤʤ�ޤ������ʤߤˡ����Τ��餤����ʤ�û������ȣ��Ԥǽ񤱤ޤ���
+のようになります。ちなみに、このくらいの例なら短くすると１行で書けます。
 
     % ruby -r bio -e 'p Bio::Sequence::NA.new($<.read).translate' my_naseq.txt
 
-�����������������ե��������Τ����ݤʤΤǡ����ϥǡ����١�������ɬ�פ�
-�����������Ƥߤޤ���
+しかし、いちいちファイルを作るのも面倒なので、次はデータベースから必要な
+情報を取得してみます。
 
 
-== GenBank �Υѡ��� (Bio::GenBank ���饹)
+== GenBank のパース (Bio::GenBank クラス)
 
-GenBank �����Υե�������Ѱդ��Ƥ��������ʼ긵�ˤʤ����ϡ�
-ftp://ftp.ncbi.nih.gov/genbank/ ���� .seq �ե���������������ɤ��ޤ��ˡ�
+GenBank 形式のファイルを用意してください（手元にない場合は、
+ftp://ftp.ncbi.nih.gov/genbank/ から .seq ファイルをダウンロードします）。
 
   % wget ftp://ftp.hgc.jp/pub/mirror/ncbi/genbank/gbphg.seq.gz
   % gunzip gbphg.seq.gz
   
-�ޤ��ϡ��ƥ���ȥ꤫�� ID ������ʸ���������Ф��� FASTA �������Ѵ�����
-�ߤޤ��礦��
+まずは、各エントリから ID と説明文、配列を取り出して FASTA 形式に変換して
+みましょう。
 
-Bio::GenBank::DELIMITER �� GenBank ���饹���������Ƥ�������ǡ�
-�ǡ����١������Ȥ˰ۤʤ륨��ȥ�ζ��ڤ�ʸ���ʤ��Ȥ��� GenBank �ξ��� //��
-��Ф��Ƥ��ʤ��Ƥ��ɤ��褦�ˤʤäƤ��ޤ���
+Bio::GenBank::DELIMITER は GenBank クラスで定義されている定数で、
+データベースごとに異なるエントリの区切り文字（たとえば GenBank の場合は //）
+を覚えていなくても良いようになっています。
 
     #!/usr/bin/env ruby
     
     require 'bio'
     
     while entry = gets(Bio::GenBank::DELIMITER)
-      gb = Bio::GenBank.new(entry)      # GenBank ���֥�������
+      gb = Bio::GenBank.new(entry)      # GenBank オブジェクト
     
-      print ">#{gb.accession} "         # ACCESSION �ֹ�
-      puts gb.definition                # DEFINITION ��
-      puts gb.naseq                     # ���������Sequence::NA ���֥������ȡ�
+      print ">#{gb.accession} "         # ACCESSION 番号
+      puts gb.definition                # DEFINITION 行
+      puts gb.naseq                     # 塩基配列（Sequence::NA オブジェクト）
     end
 
-�����������ν����Ǥ� GenBank �ե�����Υǡ�����¤�˰�¸���Ƥ��ޤ���
-�ե����뤫��Υǡ������Ϥ򰷤����饹 Bio::FlatFile ����Ѥ��뤳�Ȥǡ�
-�ʲ��Τ褦�˶��ڤ�ʸ���ʤɤ򵤤ˤ����񤯤��Ȥ��Ǥ��ޤ���
+しかし、この書き方では GenBank ファイルのデータ構造に依存しています。
+ファイルからのデータ入力を扱うクラス Bio::FlatFile を使用することで、
+以下のように区切り文字などを気にせず書くことができます。
 
     #!/usr/bin/env ruby
     
@@ -1333,7 +1333,7 @@ Bio::GenBank::DELIMITER �� GenBank ���饹���������Ƥ�������ǡ�
       puts gb.naseq.to_fasta(definition, 60)
     end
 
-�����ΰ㤦�ǡ��������Ȥ���FASTA�ե����ޥåȤΥե�������ɤ߹���Ȥ��Ǥ⡢
+形式の違うデータ、たとえばFASTAフォーマットのファイルを読み込むときでも、
 
     #!/usr/bin/env ruby
     
@@ -1346,9 +1346,9 @@ Bio::GenBank::DELIMITER �� GenBank ���饹���������Ƥ�������ǡ�
       puts "naseq      : " + f.naseq
     end
 
-�Τ褦�ˡ�Ʊ���褦�ʽ����ǺѤޤ����ޤ���
+のように、同じような書き方で済ませられます。
 
-����ˡ��� Bio::DB ���饹�� open �᥽�åɤ�Ʊ�ͤΤ��Ȥ��Ǥ��ޤ������Ȥ��С�
+さらに、各 Bio::DB クラスの open メソッドで同様のことができます。たとえば、
 
     #!/usr/bin/env ruby
     
@@ -1360,11 +1360,11 @@ Bio::GenBank::DELIMITER �� GenBank ���饹���������Ƥ�������ǡ�
       puts gb.naseq.to_fasta(definition, 60)    
     end
 
-�ʤɤȽ񤯤��Ȥ��Ǥ��ޤ��ʤ����������ν����Ϥ��ޤ�Ȥ��Ƥ��ޤ���)��
+などと書くことができます（ただし、この書き方はあまり使われていません)。
 
-���ˡ�GenBank ��ʣ���� FEATURES �����ѡ�������ɬ�פʾ������Ф��ޤ���
-�ޤ��� /tranlation="���ߥλ�����" �Ȥ��� Qualifier �����������
-���ߥλ��������Ф���ɽ�����Ƥߤޤ���
+次に、GenBank の複雑な FEATURES の中をパースして必要な情報を取り出します。
+まずは /tranlation="アミノ酸配列" という Qualifier がある場合だけ
+アミノ酸配列を抽出して表示してみます。
 
     #!/usr/bin/env ruby
 
@@ -1372,27 +1372,27 @@ Bio::GenBank::DELIMITER �� GenBank ���饹���������Ƥ�������ǡ�
     
     ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
 
-    # GenBank �Σ�����ȥꤴ�Ȥ�
+    # GenBank の１エントリごとに
     ff.each_entry do |gb|
     
-      # FEATURES �����Ǥ��Ĥ��Ľ���
+      # FEATURES の要素を一つずつ処理
       gb.features.each do |feature|
 
-        # Feature �˴ޤޤ�� Qualifier �����ƥϥå�����Ѵ�
+        # Feature に含まれる Qualifier を全てハッシュに変換
         hash = feature.to_hash
 
-        # Qualifier �� translation �����������
+        # Qualifier に translation がある場合だけ
         if hash['translation']
-          # ����ȥ�Υ������å�����ֹ�����������ɽ��
+          # エントリのアクセッション番号と翻訳配列を表示
           puts ">#{gb.accession}
           puts hash['translation']
         end
       end
     end
 
-����ˡ�Feature �Υݥ������˽񤫤�Ƥ�����󤫤饨��ȥ�α��������
-���ץ饤���󥰤������������������Τ� /translation= �˽񤫤�Ƥ��������
-ξ��ɽ��������٤Ƥߤޤ��礦��
+さらに、Feature のポジションに書かれている情報からエントリの塩基配列を
+スプライシングし、それを翻訳したものと /translation= に書かれていた配列を
+両方表示して比べてみましょう。
 
     #!/usr/bin/env ruby
     
@@ -1400,95 +1400,95 @@ Bio::GenBank::DELIMITER �� GenBank ���饹���������Ƥ�������ǡ�
     
     ff = Bio::FlatFile.new(Bio::GenBank, ARGF)
 
-    # GenBank �Σ�����ȥꤴ�Ȥ�
+    # GenBank の１エントリごとに
     ff.each_entry do |gb|
 
-      # ACCESSION �ֹ����ʪ��̾��ɽ��
+      # ACCESSION 番号と生物種名を表示
       puts "### #{gb.accession} - #{gb.organism}"
     
-      # FEATURES �����Ǥ��Ĥ��Ľ���
+      # FEATURES の要素を一つずつ処理
       gb.features.each do |feature|
 
-        # Feature �� position (join ...�ʤ�) ����Ф�
+        # Feature の position (join ...など) を取り出す
         position = feature.position
 
-        # Feature �˴ޤޤ�� Qualifier �����ƥϥå�����Ѵ�
+        # Feature に含まれる Qualifier を全てハッシュに変換
         hash = feature.to_hash
 
-        # /translation= ���ʤ���Х����å�
+        # /translation= がなければスキップ
         next unless hash['translation']
 
-        # /gene=, /product= �ʤɤ� Qualifier ���������̾�ʤɤξ���򽸤��
+        # /gene=, /product= などの Qualifier から遺伝子名などの情報を集める
         gene_info = [
           hash['gene'], hash['product'], hash['note'], hash['function']
         ].compact.join(', ')
         puts "## #{gene_info}"
 
-        # ���������position �ξ���ˤ�äƥ��ץ饤���󥰡�
+        # 塩基配列（position の情報によってスプライシング）
         puts ">NA splicing('#{position}')"
         puts gb.naseq.splicing(position)
 
-        # ���ߥλ�����ʥ��ץ饤���󥰤����������󤫤�������
+        # アミノ酸配列（スプライシングした塩基配列から翻訳）
         puts ">AA translated by splicing('#{position}').translate"
         puts gb.naseq.splicing(position).translate
 
-        # ���ߥλ������/translation= �˽񤫤�Ƥ����Τ�Ρ�
+        # アミノ酸配列（/translation= に書かれていたのもの）
         puts ">AA original translation"
         puts hash['translation']
       end
     end
 
-�⤷�����Ѥ���Ƥ��륳�ɥ�ơ��֥뤬�ǥե���� (universal) �Ȱ�ä��ꡢ
-�ǽ�Υ��ɥ� "atg" �ʳ����ä��ꡢ����Υ����ƥ��󤬴ޤޤ�Ƥ����ꡢ
-���뤤�� BioRuby �˥Х�������С�������ɽ������룲�ĤΥ��ߥλ������
-�ۤʤ���ˤʤ�ޤ���
+もし、使用されているコドンテーブルがデフォルト (universal) と違ったり、
+最初のコドンが "atg" 以外だったり、セレノシステインが含まれていたり、
+あるいは BioRuby にバグがあれば、上の例で表示される２つのアミノ酸配列は
+異なる事になります。
 
-������ǻ��Ѥ���Ƥ��� Bio::Sequence#splicing �᥽�åɤϡ�GenBank, EMBL,
-DDBJ �ե����ޥåȤǻȤ��Ƥ��� Location ��ɽ���򸵤ˡ��������󤫤�
-��ʬ������ڤ�Ф����Ϥʥ᥽�åɤǤ���
+この例で使用されている Bio::Sequence#splicing メソッドは、GenBank, EMBL,
+DDBJ フォーマットで使われている Location の表記を元に、塩基配列から
+部分配列を切り出す強力なメソッドです。
 
-���� splicing �᥽�åɤΰ����ˤ� GenBank ���� Location ��ʸ����ʳ���
-BioRuby �� Bio::Locations ���֥������Ȥ��Ϥ����Ȥ��ǽ�Ǥ�����
-�̾�ϸ�����Ƥ��� Location ʸ���������ʬ����䤹�������Τ�ޤ���
-Location ʸ����Υե����ޥåȤ� Bio::Locations �ˤĤ��ƾܤ����Τꤿ������ 
-BioRuby �� bio/location.rb �򸫤Ƥ���������
+この splicing メソッドの引数には GenBank 等の Location の文字列以外に
+BioRuby の Bio::Locations オブジェクトを渡すことも可能ですが、
+通常は見慣れている Location 文字列の方が分かりやすいかも知れません。
+Location 文字列のフォーマットや Bio::Locations について詳しく知りたい場合は 
+BioRuby の bio/location.rb を見てください。
 
-* GenBank �����Υǡ����� Feature �ǻȤ��Ƥ��� Location ʸ�������
+* GenBank 形式のデータの Feature で使われていた Location 文字列の例
 
     naseq.splicing('join(2035..2050,complement(1775..1818),13..345')
 
-* ���餫���� Locations ���֥������Ȥ��Ѵ����Ƥ����Ϥ��Ƥ�褤
+* あらかじめ Locations オブジェクトに変換してから渡してもよい
 
     locs = Bio::Locations.new('join((8298.8300)..10206,1..855)')
     naseq.splicing(locs)
 
-���ʤߤˡ����ߥλ����� (Bio::Sequence::AA) �ˤĤ��Ƥ� splicing �᥽�å�
-����Ѥ�����ʬ�������Ф����Ȥ���ǽ�Ǥ���
+ちなみに、アミノ酸配列 (Bio::Sequence::AA) についても splicing メソッド
+を使用して部分配列を取り出すことが可能です。
 
-* ���ߥλ��������ʬ������ڤ�Ф��ʥ����ʥ�ڥץ��ɤʤɡ�
+* アミノ酸配列の部分配列を切り出す（シグナルペプチドなど）
 
     aaseq.splicing('21..119')
 
 
-=== GenBank �ʳ��Υǡ����١���
+=== GenBank 以外のデータベース
 
-BioRuby �Ǥϡ�GenBank �ʳ��Υǡ����١����ˤĤ��Ƥ����Ū�ʰ�������Ʊ���ǡ�
-�ǡ����١����Σ�����ȥ�ʬ��ʸ������б�����ǡ����١����Υ��饹���Ϥ��С�
-�ѡ������줿��̤����֥������Ȥˤʤä��֤äƤ��ޤ���
+BioRuby では、GenBank 以外のデータベースについても基本的な扱い方は同じで、
+データベースの１エントリ分の文字列を対応するデータベースのクラスに渡せば、
+パースされた結果がオブジェクトになって返ってきます。
 
-�ǡ����١����Υե�åȥե����뤫�飱����ȥꤺ�ļ��Ф��ƥѡ������줿
-���֥������Ȥ���Ф��ˤϡ���ˤ�ФƤ��� Bio::FlatFile ��Ȥ��ޤ���
-Bio::FlatFile.new �ΰ����ˤϥǡ����١������б����� BioRuby �ǤΥ��饹
-̾ (Bio::GenBank �� Bio::KEGG::GENES �ʤ�) ����ꤷ�ޤ���
+データベースのフラットファイルから１エントリずつ取り出してパースされた
+オブジェクトを取り出すには、先にも出てきた Bio::FlatFile を使います。
+Bio::FlatFile.new の引数にはデータベースに対応する BioRuby でのクラス
+名 (Bio::GenBank や Bio::KEGG::GENES など) を指定します。
 
-    ff = Bio::FlatFile.new(Bio::�ǡ����١������饹̾, ARGF)
+    ff = Bio::FlatFile.new(Bio::データベースクラス名, ARGF)
 
-�����������Ф餷�����Ȥˡ��¤� FlatFile ���饹�ϥǡ����١����μ�ưǧ����
-�Ǥ��ޤ��Τǡ�
+しかし、すばらしいことに、実は FlatFile クラスはデータベースの自動認識が
+できますので、
 
     ff = Bio::FlatFile.auto(ARGF)
 
-��Ȥ��Τ����ִ�ñ�Ǥ���
+を使うのが一番簡単です。
 
     #!/usr/bin/env ruby
     
@@ -1497,15 +1497,15 @@ Bio::FlatFile.new �ΰ����ˤϥǡ����١������б����� BioRuby �ǤΥ��饹
     ff = Bio::FlatFile.auto(ARGF)
 
     ff.each_entry do |entry|
-      p entry.entry_id          # ����ȥ�� ID
-      p entry.definition        # ����ȥ������ʸ
-      p entry.seq               # ����ǡ����١����ξ��
+      p entry.entry_id          # エントリの ID
+      p entry.definition        # エントリの説明文
+      p entry.seq               # 配列データベースの場合
     end
 
     ff.close
 
-����ˡ��������ǡ����١������Ĥ�˺���ʤ�������ˤ� Ruby �Υ֥��å���
-���Ѥ��ưʲ��Τ褦�˽񤯤Τ��褤�Ǥ��礦��
+さらに、開いたデータベースの閉じ忘れをなくすためには Ruby のブロックを
+活用して以下のように書くのがよいでしょう。
 
     #!/usr/bin/env ruby
     
@@ -1513,252 +1513,252 @@ Bio::FlatFile.new �ΰ����ˤϥǡ����١������б����� BioRuby �ǤΥ��饹
     
     Bio::FlatFile.auto(ARGF) do |ff|
       ff.each_entry do |entry|
-        p entry.entry_id          # ����ȥ�� ID
-        p entry.definition        # ����ȥ������ʸ
-        p entry.seq               # ����ǡ����١����ξ��
+        p entry.entry_id          # エントリの ID
+        p entry.definition        # エントリの説明文
+        p entry.seq               # 配列データベースの場合
       end
     end
 
-�ѡ������줿���֥������Ȥ��顢����ȥ���Τ��줾�����ʬ����Ф������
-�᥽�åɤϥǡ����١�����˰ۤʤ�ޤ����褯������ܤˤĤ��Ƥ�
+パースされたオブジェクトから、エントリ中のそれぞれの部分を取り出すための
+メソッドはデータベース毎に異なります。よくある項目については
 
-  * entry_id �᥽�å� �� ����ȥ�� ID �ֹ椬�֤�
-  * definition �᥽�å� �� ����ȥ������Ԥ��֤�
-  * reference �᥽�å� �� ��ե���󥹥��֥������Ȥ��֤�
-  * organism �᥽�å� �� ��ʪ��̾
-  * seq �� naseq �� aaseq �᥽�å� �� �б��������󥪥֥������Ȥ��֤�
+  * entry_id メソッド → エントリの ID 番号が返る
+  * definition メソッド → エントリの定義行が返る
+  * reference メソッド → リファレンスオブジェクトが返る
+  * organism メソッド → 生物種名
+  * seq や naseq や aaseq メソッド → 対応する配列オブジェクトが返る
 
-�ʤɤΤ褦�˶��̲����褦�Ȥ��Ƥ��ޤ��������ƤΥ᥽�åɤ���������Ƥ����
-���ǤϤ���ޤ���ʶ��̲��λؿˤ� bio/db.rb ���ȡˡ��ޤ����٤�����ʬ�ϳ�
-�ǡ����١����ѡ�����˰ۤʤ�Τǡ����줾��Υɥ�����Ȥ˽����ޤ���
+などのように共通化しようとしていますが、全てのメソッドが実装されているわ
+けではありません（共通化の指針は bio/db.rb 参照）。また、細かい部分は各
+データベースパーザ毎に異なるので、それぞれのドキュメントに従います。
 
-��§�Ȥ��ơ��᥽�å�̾��ʣ�����ξ��ϡ����֥������Ȥ�����Ȥ����֤�ޤ���
-���Ȥ��� references �᥽�åɤ���ĥ��饹��ʣ���� Bio::Reference ���֥���
-���Ȥ� Array �ˤ����֤��ޤ������̤Υ��饹�Ǥ�ñ������ reference �᥽�å�
-�����ʤ������Ĥ� Bio::Reference ���֥������Ȥ������֤����Ȥ��ä������Ǥ���
+原則として、メソッド名が複数形の場合は、オブジェクトが配列として返ります。
+たとえば references メソッドを持つクラスは複数の Bio::Reference オブジェ
+クトを Array にして返しますが、別のクラスでは単数形の reference メソッド
+しかなく、１つの Bio::Reference オブジェクトだけを返す、といった感じです。
 
-== PDB �Υѡ��� (Bio::PDB ���饹)
+== PDB のパース (Bio::PDB クラス)
 
-Bio::PDB �ϡ�PDB �������ɤ߹��ि��Υ��饹�Ǥ���PDB �ǡ����١�����
-PDB, mmCIF, XML (PDBML) �Σ�����Υե����ޥåȤ��󶡤���Ƥ��ޤ�����
-�����Τ��� BioRuby ���б����Ƥ���Τ� PDB �ե����ޥåȤǤ���
+Bio::PDB は、PDB 形式を読み込むためのクラスです。PDB データベースは
+PDB, mmCIF, XML (PDBML) の３種類のフォーマットで提供されていますが、
+これらのうち BioRuby で対応しているのは PDB フォーマットです。
 
-PDB �ե����ޥåȤλ��ͤϡ��ʲ��� Protein Data Bank Contents Guide ��
-���Ȥ��Ƥ���������
+PDB フォーマットの仕様は、以下の Protein Data Bank Contents Guide を
+参照してください。
 
 * ((<URL:http://www.rcsb.org/pdb/file_formats/pdb/pdbguide2.2/guide2.2_frame.html>))
 
-=== PDB �ǡ������ɤ߹���
+=== PDB データの読み込み
 
-PDB �Σ�����ȥ꤬ 1bl8.pdb �Ȥ����ե�����˳�Ǽ����Ƥ�����ϡ�
-Ruby �Υե������ɤ߹��ߵ�ǽ��Ȥä�
+PDB の１エントリが 1bl8.pdb というファイルに格納されている場合は、
+Ruby のファイル読み込み機能を使って
 
   entry = File.read("1bl8.pdb")
 
-�Τ褦�ˤ��뤳�Ȥǡ�����ȥ�����Ƥ�ʸ����Ȥ��� entry �Ȥ����ѿ���
-�������뤳�Ȥ��Ǥ��ޤ�������ȥ�����Ƥ�ѡ�������ˤ�
+のようにすることで、エントリの内容を文字列として entry という変数に
+代入することができます。エントリの内容をパースするには
 
   pdb = Bio::PDB.new(entry)
 
-�Ȥ��ޤ�������ǥ���ȥ꤬ Bio::PDB ���֥������ȤȤʤꡢǤ�դΥǡ�����
-���Ф���褦�ˤʤ�ޤ���
+とします。これでエントリが Bio::PDB オブジェクトとなり、任意のデータを
+取り出せるようになります。
 
-PDB �ե����ޥåȤ� Bio::FlatFile �ˤ�뼫ưǧ�����ǽ�Ǥ��������ߤ�
-���ե������ʣ������ȥ��ޤ���ˤ��б����Ƥ��ޤ���
-Bio::FlatFile ��Ȥäƣ�����ȥ�ʬ�����ɤ߹���ˤϡ�
+PDB フォーマットは Bio::FlatFile による自動認識も可能ですが、現在は
+１ファイルに複数エントリを含む場合には対応していません。
+Bio::FlatFile を使って１エントリ分だけ読み込むには、
 
   pdb = Bio::FlatFile.auto("1bl8.pdb") { |ff| ff.next_entry }
 
-�Ȥ��ޤ����ɤ������ˡ�Ǥ��ѿ� pdb �ˤ�Ʊ����̤������ޤ���
+とします。どちらの方法でも変数 pdb には同じ結果が得られます。
 
-=== ���֥������Ȥγ��ع�¤
+=== オブジェクトの階層構造
 
-�� PDB ����ȥ�ϡ��ѿ�����ʸ������ʤ� ID ���դ����Ƥ��ޤ���
-Bio::PDB ���֥������Ȥ��� ID ����Ф��ˤ� entry_id �᥽�åɤ�Ȥ��ޤ���
+各 PDB エントリは、英数字４文字からなる ID が付けられています。
+Bio::PDB オブジェクトから ID を取リ出すには entry_id メソッドを使います。
 
   p pdb.entry_id   # => "1BL8"
 
-����ȥ�γ��פ˴ؤ��������б�����᥽�åɤǼ��Ф����Ȥ��Ǥ��ޤ���
+エントリの概要に関する情報も対応するメソッドで取り出すことができます。
 
   p pdb.definition # => "POTASSIUM CHANNEL (KCSA) FROM STREPTOMYCES LIVIDANS"
   p pdb.keywords   # => ["POTASSIUM CHANNEL", "INTEGRAL MEMBRANE PROTEIN"]
 
-¾�ˡ���Ͽ�Ԥ�ʸ�����¸���ˡ�ʤɤξ��������Ǥ��ޤ��ʤ��줾��
-authors, jrnl, method �᥽�åɡˡ�
+他に、登録者や文献、実験方法などの情報も取得できます（それぞれ
+authors, jrnl, method メソッド）。
 
-PDB �ǡ����ϡ�����Ū�ˤϣ��Ԥ����ĤΥ쥳���ɤ�������Ƥ��ޤ���
-���Ԥ����꤭��ʤ��ǡ�����ʣ���Ԥ˳�Ǽ���� continuation �Ȥ���
-���Ȥߤ��Ѱդ���Ƥ��ޤ��������ܤϣ��ԣ��쥳���ɤǤ���
+PDB データは、基本的には１行が１つのレコードを形成しています。
+１行に入りきらないデータを複数行に格納する continuation という
+仕組みも用意されていますが、基本は１行１レコードです。
 
-�ƹԤ���Ƭ��ʸ�������ιԤΥǡ����μ���򼨤�̾���ʥ쥳���ɡˤˤʤ�ޤ���
-BioRuby �Ǥϡ�HEADER �쥳���ɤ��Ф��Ƥ� Bio::PDB::Record::HEADER ���饹��
-TITLE �쥳���ɤ��Ф��Ƥ� Bio::PDB::Record::TITLE ���饹���Ȥ����褦��
-����Ū�ˤϳƥ쥳���ɤ��б����륯�饹�򣱤��Ѱդ��Ƥ��ޤ���
-��������REMARK �� JRNL �쥳���ɤ˴ؤ��Ƥϡ����줾��ʣ���Υե����ޥåȤ�
-¸�ߤ��뤿�ᡢʣ���Υ��饹���Ѱդ��Ƥ��ޤ���
+各行の先頭６文字がその行のデータの種類を示す名前（レコード）になります。
+BioRuby では、HEADER レコードに対しては Bio::PDB::Record::HEADER クラス、
+TITLE レコードに対しては Bio::PDB::Record::TITLE クラス、というように
+基本的には各レコードに対応するクラスを１つ用意しています。
+ただし、REMARK と JRNL レコードに関しては、それぞれ複数のフォーマットが
+存在するため、複数のクラスを用意しています。
 
-�ƥ쥳���ɤ˥������������äȤ�ñ�����ˡ�� record �᥽�åɤǤ���
+各レコードにアクセスするもっとも単純な方法は record メソッドです。
 
   pdb.record("HELIX")
 
-�Τ褦�ˤ���ȡ����� PDB ����ȥ�˴ޤޤ�����Ƥ� HELIX �쥳���ɤ�
-Bio::PDB::Record::HELIX ���饹�Υ��֥������Ȥ�����Ȥ��Ƽ����Ǥ��ޤ���
+のようにすると、その PDB エントリに含まれる全ての HELIX レコードを
+Bio::PDB::Record::HELIX クラスのオブジェクトの配列として取得できます。
 
-���Τ��Ȥ�դޤ����ʲ��Ǥϡ�PDB ����ȥ�Υᥤ������ƤǤ���Ω�ι�¤��
-�ؤ���ǡ�����¤�ΰ������򸫤Ƥ����ޤ���
+このことをふまえ、以下では、PDB エントリのメインな内容である立体構造に
+関するデータ構造の扱い方を見ていきます。
 
-==== ����: Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM ���饹
+==== 原子: Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM クラス
 
-PDB ����ȥ�ϡ�����ѥ������˻���DNA,RNA�ˤ䤽��¾��ʬ�Ҥ�Ω�ι�¤��
-����Ū�ˤϸ��ҤΣ�������ɸ��ޤ�Ǥ��ޤ���
+PDB エントリは、タンパク質、核酸（DNA,RNA）やその他の分子の立体構造、
+具体的には原子の３次元座標を含んでいます。
 
-����ѥ����ޤ��ϳ˻��θ��Ҥκ�ɸ�ϡ�ATOM �쥳���ɤ˳�Ǽ����Ƥ��ޤ���
-�б����륯�饹�ϡ�Bio::PDB::Record::ATOM ���饹�Ǥ���
+タンパク質または核酸の原子の座標は、ATOM レコードに格納されています。
+対応するクラスは、Bio::PDB::Record::ATOM クラスです。
 
-����ѥ������˻��ʳ��θ��Ҥκ�ɸ�ϡ�HETATM �쥳���ɤ˳�Ǽ����Ƥ��ޤ���
-�б����륯�饹�ϡ�Bio::PDB::Record::HETATM ���饹�Ǥ���
+タンパク質・核酸以外の原子の座標は、HETATM レコードに格納されています。
+対応するクラスは、Bio::PDB::Record::HETATM クラスです。
 
-HETATM�����饹�� ATOM ���饹��Ѿ����Ƥ��뤿�ᡢATOM �� HETATM ��
-�᥽�åɤλȤ����Ϥޤä���Ʊ���Ǥ���
+HETATM　クラスは ATOM クラスを継承しているため、ATOM と HETATM の
+メソッドの使い方はまったく同じです。
 
-==== ���ߥλ��Ĵ�ʤޤ��ϱ����: Bio::PDB::Residue ���饹
+==== アミノ酸残基（または塩基）: Bio::PDB::Residue クラス
 
-�����ߥλ��ޤ��ϣ�����ñ�̤Ǹ��Ҥ�ޤȤ᤿�Τ� Bio::PDB::Residue �Ǥ���
-Bio::PDB::Residue ���֥������Ȥϡ����İʾ�� Bio::PDB::Record::ATOM
-���֥������Ȥ�ޤߤޤ���
+１アミノ酸または１塩基単位で原子をまとめたのが Bio::PDB::Residue です。
+Bio::PDB::Residue オブジェクトは、１個以上の Bio::PDB::Record::ATOM
+オブジェクトを含みます。
 
-==== ����ʪ: Bio::PDB::Heterogen ���饹
+==== 化合物: Bio::PDB::Heterogen クラス
 
-����ѥ������˻��ʳ���ʬ�Ҥθ��Ҥϡ�����Ū�ˤ�ʬ��ñ�̤�
-Bio::PDB::Heterogen �ˤޤȤ���Ƥ��ޤ���
-Bio::PDB::Heterogen ���֥������Ȥϡ����İʾ��
-Bio::PDB::Record::HETATM ���֥������Ȥ�ޤߤޤ���
+タンパク質・核酸以外の分子の原子は、基本的には分子単位で
+Bio::PDB::Heterogen にまとめられています。
+Bio::PDB::Heterogen オブジェクトは、１個以上の
+Bio::PDB::Record::HETATM オブジェクトを含みます。
 
-==== ���ʥ��������: Bio::PDB::Chain ���饹
+==== 鎖（チェイン）: Bio::PDB::Chain クラス
 
-Bio::PDB::Chain �ϡ�ʣ���� Bio::PDB::Residue ���֥������Ȥ���ʤ�
-���ĤΥ���ѥ����ޤ��ϳ˻��ȡ�ʣ���� Bio::PDB::Heterogen ���֥�������
-����ʤ룱�İʾ�Τ���ʳ���ʬ�Ҥ��Ǽ����ǡ�����¤�Ǥ���
+Bio::PDB::Chain は、複数の Bio::PDB::Residue オブジェクトからなる
+１個のタンパク質または核酸と、複数の Bio::PDB::Heterogen オブジェクト
+からなる１個以上のそれ以外の分子を格納するデータ構造です。
 
-�ʤ�����Ⱦ�ξ��ϡ�����ѥ������˻���Bio::PDB::Residue�ˤ���
-����ʳ���ʬ�ҡ�Bio::PDB::Heterogen�ˤΤɤ��餫����ष�������ޤ���
-Chain ��ҤȤĤ����ޤޤʤ� PDB ����ȥ�Ǥ�ξ�����ľ�礬����褦�Ǥ���
+なお、大半の場合は、タンパク質・核酸（Bio::PDB::Residue）か、
+それ以外の分子（Bio::PDB::Heterogen）のどちらか一種類しか持ちません。
+Chain をひとつしか含まない PDB エントリでは両方持つ場合があるようです。
 
-�� Chain �ˤϡ��ѿ�����ʸ���� ID ���դ��Ƥ��ޤ���Chain ��ҤȤĤ���
-�ޤޤʤ� PDB ����ȥ�ξ��϶���ʸ���ΤȤ��⤢��ޤ��ˡ�
+各 Chain には、英数字１文字の ID が付いています（Chain をひとつしか
+含まない PDB エントリの場合は空白文字のときもあります）。
 
-==== ��ǥ�: Bio::PDB::Model
+==== モデル: Bio::PDB::Model
 
-���İʾ�� Bio::PDB::Chain �����ޤä���Τ� Bio::PDB::Model �Ǥ���
-�����뾽��¤�ξ�硢Model ���̾�Ĥ����Ǥ�����NMR ��¤�ξ�硢
-ʣ���� Model ��¸�ߤ��뤳�Ȥ�����ޤ���
-ʣ���� Model ��¸�ߤ����硢�� Model �ˤϥ��ꥢ���ֹ椬�դ��ޤ���
+１個以上の Bio::PDB::Chain が集まったものが Bio::PDB::Model です。
+Ｘ線結晶構造の場合、Model は通常１個だけですが、NMR 構造の場合、
+複数の Model が存在することがあります。
+複数の Model が存在する場合、各 Model にはシリアル番号が付きます。
 
-�����ơ����İʾ�� Model �����ޤä���Τ���Bio::PDB ���֥������Ȥˤʤ�ޤ���
+そして、１個以上の Model が集まったものが、Bio::PDB オブジェクトになります。
 
-=== ���Ҥ˥�����������᥽�å�
+=== 原子にアクセスするメソッド
 
-Bio::PDB#each_atom �����Ƥ� ATOM ����֤ˣ��Ĥ���é�륤�ƥ졼���Ǥ���
+Bio::PDB#each_atom は全ての ATOM を順番に１個ずつ辿るイテレータです。
 
   pdb.each_atom do |atom|
     p atom.xyz
   end
 
-���� each_atom �᥽�åɤ� Model, Chain, Residue ���֥������Ȥ��Ф��Ƥ�
-���Ѥ��뤳�Ȥ��Ǥ������줾�졢���� Model, Chain, Residue �����Τ��٤Ƥ�
-ATOM �򤿤ɤ륤�ƥ졼���Ȥ���Ư���ޤ���
+この each_atom メソッドは Model, Chain, Residue オブジェクトに対しても
+使用することができ、それぞれ、その Model, Chain, Residue 内部のすべての
+ATOM をたどるイテレータとして働きます。
 
-Bio::PDB#atoms �����Ƥ� ATOM ������Ȥ����֤��᥽�åɤǤ���
+Bio::PDB#atoms は全ての ATOM を配列として返すメソッドです。
 
-  p pdb.atoms.size        # => 2820 �Ĥ� ATOM ���ޤޤ�뤳�Ȥ��狼��
+  p pdb.atoms.size        # => 2820 個の ATOM が含まれることがわかる
 
-each_atom ��Ʊ�ͤ� atoms �᥽�åɤ� Model, Chain, Residue ���֥�������
-���Ф��ƻ��Ѳ�ǽ�Ǥ���
+each_atom と同様に atoms メソッドも Model, Chain, Residue オブジェクト
+に対して使用可能です。
 
   pdb.chains.each do |chain|
-    p chain.atoms.size    # => �� Chain ��� ATOM ����ɽ�������
+    p chain.atoms.size    # => 各 Chain 毎の ATOM 数が表示される
   end
 
-Bio::PDB#each_hetatm �ϡ����Ƥ� HETATM ����֤ˣ��Ĥ���é�륤�ƥ졼���Ǥ���
+Bio::PDB#each_hetatm は、全ての HETATM を順番に１個ずつ辿るイテレータです。
 
   pdb.each_hetatm do |hetatm|
     p hetatm.xyz
   end
 
-Bio::PDB#hetatms ���Ƥ� HETATM ������Ȥ����֤��Τ� hetatms �᥽�åɤǤ���
+Bio::PDB#hetatms 全ての HETATM を配列として返すのは hetatms メソッドです。
 
   p pdb.hetatms.size
 
-������ atoms �ξ���Ʊ�ͤˡ�Model, Chain, Heterogen ���֥������Ȥ�
-�Ф��ƻ��Ѳ�ǽ�Ǥ���
+これらも atoms の場合と同様に、Model, Chain, Heterogen オブジェクトに
+対して使用可能です。
 
-==== Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM ���饹�λȤ���
+==== Bio::PDB::Record::ATOM, Bio::PDB::Record::HETATM クラスの使い方
 
-ATOM �ϥ���ѥ������˻���DNA��RNA�ˤ������븶�ҡ�HETATM �Ϥ���ʳ���
-���Ҥ��Ǽ���뤿��Υ��饹�Ǥ�����HETATM �� ATOM ���饹��Ѿ����Ƥ��뤿��
-�����Υ��饹�ǥ᥽�åɤλȤ����Ϥޤä���Ʊ���Ǥ���
+ATOM はタンパク質・核酸（DNA・RNA）を構成する原子、HETATM はそれ以外の
+原子を格納するためのクラスですが、HETATM が ATOM クラスを継承しているため
+これらのクラスでメソッドの使い方はまったく同じです。
 
-  p atom.serial       # ���ꥢ���ֹ�
-  p atom.name         # ̾��
+  p atom.serial       # シリアル番号
+  p atom.name         # 名前
   p atom.altLoc       # Alternate location indicator
-  p atom.resName      # ���ߥλ�������̾�ޤ��ϲ���ʪ̾
-  p atom.chainID      # Chain �� ID
-  p atom.resSeq       # ���ߥλ��Ĵ�Υ��������ֹ�
+  p atom.resName      # アミノ酸・塩基名または化合物名
+  p atom.chainID      # Chain の ID
+  p atom.resSeq       # アミノ酸残基のシーケンス番号
   p atom.iCode        # Code for insertion of residues
-  p atom.x            # X ��ɸ
-  p atom.y            # Y ��ɸ
-  p atom.z            # Z ��ɸ
+  p atom.x            # X 座標
+  p atom.y            # Y 座標
+  p atom.z            # Z 座標
   p atom.occupancy    # Occupancy
   p atom.tempFactor   # Temperature factor
   p atom.segID        # Segment identifier
   p atom.element      # Element symbol
   p atom.charge       # Charge on the atom
 
-�����Υ᥽�å�̾�ϡ���§�Ȥ��� Protein Data Bank Contents Guide ��
-���ܤ˹�碌�Ƥ��ޤ����᥽�å�̾�� resName �� resSeq �Ȥ��ä���̾ˡ
-��CamelCase�ˤ���Ѥ��Ƥ���ΤϤ��Τ���Ǥ���
-���줾��Υ᥽�åɤ��֤��ǡ����ΰ�̣�ϡ����ͽ�򻲹ͤˤ��Ƥ���������
+これらのメソッド名は、原則として Protein Data Bank Contents Guide の
+記載に合わせています。メソッド名に resName や resSeq といった記名法
+（CamelCase）を採用しているのはこのためです。
+それぞれのメソッドの返すデータの意味は、仕様書を参考にしてください。
 
-����¾�ˤ⡢�����Ĥ��������ʥ᥽�åɤ��Ѱդ��Ƥ��ޤ���
-xyz �᥽�åɤϡ���ɸ�򣳼����Υ٥��ȥ�Ȥ����֤��᥽�åɤǤ���
-���Υ᥽�åɤϡ�Ruby �� Vector ���饹��Ѿ����ƣ������Υ٥��ȥ��
-�ò������� Bio::PDB::Coordinate ���饹�Υ��֥������Ȥ��֤��ޤ�
-����: Vector��Ѿ��������饹���������ΤϤ��ޤ�侩����ʤ��褦�ʤΤǡ�
-���衢Vector���饹�Υ��֥������Ȥ��֤��褦�����ѹ����뤫�⤷��ޤ���ˡ�
+この他にも、いくつかの便利なメソッドを用意しています。
+xyz メソッドは、座標を３次元のベクトルとして返すメソッドです。
+このメソッドは、Ruby の Vector クラスを継承して３次元のベクトルに
+特化させた Bio::PDB::Coordinate クラスのオブジェクトを返します
+（注: Vectorを継承したクラスを作成するのはあまり推奨されないようなので、
+将来、Vectorクラスのオブジェクトを返すよう仕様変更するかもしれません）。
 
   p atom.xyz
 
-�٥��ȥ�ʤΤǡ�­�����������������Ѥʤɤ���뤳�Ȥ��Ǥ��ޤ���
+ベクトルなので、足し算、引き算、内積などを求めることができます。
 
-  # ���Ҵ֤ε�Υ�����
-  p (atom1.xyz - atom2.xyz).r  # r �ϥ٥��ȥ�������ͤ����᥽�å�
+  # 原子間の距離を求める
+  p (atom1.xyz - atom2.xyz).r  # r はベクトルの絶対値を求めるメソッド
 
-  # ���Ѥ����
+  # 内積を求める
   p atom1.xyz.inner_product(atom2.xyz)
 
-¾�ˤϡ����θ��Ҥ��б����� TER, SIGATM, ANISOU �쥳���ɤ��������
-ter, sigatm, anisou �᥽�åɤ��Ѱդ���Ƥ��ޤ���
+他には、その原子に対応する TER, SIGATM, ANISOU レコードを取得する
+ter, sigatm, anisou メソッドも用意されています。
 
-=== ���ߥλ��Ĵ� (Residue) �˥�����������᥽�å�
+=== アミノ酸残基 (Residue) にアクセスするメソッド
 
-Bio::PDB#each_residue �ϡ����Ƥ� Residue ����֤�é�륤�ƥ졼���Ǥ���
-each_residue �᥽�åɤϡ�Model, Chain ���֥������Ȥ��Ф��Ƥ�
-���Ѥ��뤳�Ȥ��Ǥ������줾��� Model, Chain �˴ޤޤ�����Ƥ�
-Residue ��é�륤�ƥ졼���Ȥ���Ư���ޤ���
+Bio::PDB#each_residue は、全ての Residue を順番に辿るイテレータです。
+each_residue メソッドは、Model, Chain オブジェクトに対しても
+使用することができ、それぞれの Model, Chain に含まれる全ての
+Residue を辿るイテレータとして働きます。
 
   pdb.each_residue do |residue|
     p residue.resName
   end
 
-Bio::PDB#residues �ϡ����Ƥ� Residue ������Ȥ����֤��᥽�åɤǤ���
-each_residue ��Ʊ�ͤˡ�Model, Chain ���֥������Ȥ��Ф��Ƥ���Ѳ�ǽ�Ǥ���
+Bio::PDB#residues は、全ての Residue を配列として返すメソッドです。
+each_residue と同様に、Model, Chain オブジェクトに対しても使用可能です。
 
   p pdb.residues.size
 
-=== ����ʪ (Heterogen) �˥�����������᥽�å�
+=== 化合物 (Heterogen) にアクセスするメソッド
 
-Bio::PDB#each_heterogen �����Ƥ� Heterogen ����֤ˤ��ɤ륤�ƥ졼����
-Bio::PDB#heterogens �����Ƥ� Heterogen ������Ȥ����֤��᥽�åɤǤ���
+Bio::PDB#each_heterogen は全ての Heterogen を順番にたどるイテレータ、
+Bio::PDB#heterogens は全ての Heterogen を配列として返すメソッドです。
 
   pdb.each_heterogen do |heterogeon|
     p heterogen.resName
@@ -1766,51 +1766,51 @@ Bio::PDB#heterogens �����Ƥ� Heterogen ������Ȥ����֤��᥽�åɤǤ���
 
   p pdb.heterogens.size
 
-�����Υ᥽�åɤ� Residue ��Ʊ�ͤ� Model, Chain ���֥������Ȥ��Ф��Ƥ�
-���Ѳ�ǽ�Ǥ���
+これらのメソッドも Residue と同様に Model, Chain オブジェクトに対しても
+使用可能です。
 
-=== Chain, Model �˥�����������᥽�å�
+=== Chain, Model にアクセスするメソッド
 
-Ʊ�ͤˡ�Bio::PDB#each_chain �����Ƥ� Chain ����֤ˤ��ɤ륤�ƥ졼����
-Bio::PDB#chains �����Ƥ� Chain ������Ȥ����֤��᥽�åɤǤ���
-�����Υ᥽�åɤ� Model ���֥������Ȥ��Ф��Ƥ���Ѳ�ǽ�Ǥ���
+同様に、Bio::PDB#each_chain は全ての Chain を順番にたどるイテレータ、
+Bio::PDB#chains は全ての Chain を配列として返すメソッドです。
+これらのメソッドは Model オブジェクトに対しても使用可能です。
 
-Bio::PDB#each_model �����Ƥ� Model ����֤ˤ��ɤ륤�ƥ졼����
-Bio::PDB#models �����Ƥ� Model ������Ȥ����֤��᥽�åɤǤ���
+Bio::PDB#each_model は全ての Model を順番にたどるイテレータ、
+Bio::PDB#models は全ての Model を配列として返すメソッドです。
 
-=== PDB Chemical Component Dictionary �Υǡ������ɤ߹���
+=== PDB Chemical Component Dictionary のデータの読み込み
 
-Bio::PDB::ChemicalComponent ���饹�ϡ�PDB Chemical Component Dictionary
-�ʵ�̾�� HET Group Dictionary�ˤΥѡ����Ǥ���
+Bio::PDB::ChemicalComponent クラスは、PDB Chemical Component Dictionary
+（旧名称 HET Group Dictionary）のパーサです。
 
-PDB Chemical Component Dictionary �ˤĤ��Ƥϰʲ��Υڡ����򻲾Ȥ��Ƥ���������
+PDB Chemical Component Dictionary については以下のページを参照してください。
 
   * ((<URL:http://deposit.pdb.org/cc_dict_tut.html>))
 
-�ǡ����ϰʲ��ǥ���������ɤǤ��ޤ���
+データは以下でダウンロードできます。
 
   * ((<URL:http://deposit.pdb.org/het_dictionary.txt>))
 
-���Υ��饹�ϡ�RESIDUE ����Ϥޤäƶ��Ԥǽ���룱����ȥ��ѡ������ޤ�
-��PDB �ե����ޥåȤˤΤ��б����Ƥ��ޤ��ˡ�
+このクラスは、RESIDUE から始まって空行で終わる１エントリをパースします
+（PDB フォーマットにのみ対応しています）。
 
-Bio::FlatFile �ˤ��ե����������ưȽ�̤��б����Ƥ��ޤ���
-���Υ��饹���Τ� ID ���鲽��ʪ�򸡺������ꤹ�뵡ǽ�ϻ��äƤ��ޤ���
-br_bioflat.rb �ˤ�륤��ǥå��������ˤ��б����Ƥ��ޤ��Τǡ�
-ɬ�פʤ餽�������Ѥ��Ƥ���������
+Bio::FlatFile によるファイル形式自動判別に対応しています。
+このクラス自体は ID から化合物を検索したりする機能は持っていません。
+br_bioflat.rb によるインデックス作成には対応していますので、
+必要ならそちらを使用してください。
 
   Bio::FlatFile.auto("het_dictionary.txt") |ff|
     ff.each do |het|
       p het.entry_id  # ID
-      p het.hetnam    # HETNAM �쥳���ɡʲ���ʪ��̾�Ρ�
-      p het.hetsyn    # HETSYM �쥳���ɡʲ���ʪ����̾�������
-      p het.formul    # FORMUL �쥳���ɡʲ���ʪ����������
-      p het.conect    # CONECT �쥳����
+      p het.hetnam    # HETNAM レコード（化合物の名称）
+      p het.hetsyn    # HETSYM レコード（化合物の別名の配列）
+      p het.formul    # FORMUL レコード（化合物の組成式）
+      p het.conect    # CONECT レコード
     end
   end
 
-�Ǹ�� conect �᥽�åɤϡ�����ʪ�η��� Hash �Ȥ����֤��ޤ���
-���Ȥ��С������Ρ���Υ���ȥ�ϼ��Τ褦�ˤʤ�ޤ�����
+最後の conect メソッドは、化合物の結合を Hash として返します。
+たとえば、エタノールのエントリは次のようになりますが、
 
   RESIDUE   EOH      9
   CONECT      C1     4 C2   O   1H1  2H1
@@ -1827,7 +1827,7 @@ br_bioflat.rb �ˤ�륤��ǥå��������ˤ��б����Ƥ��ޤ��Τǡ�
   HETNAM     EOH ETHANOL
   FORMUL      EOH    C2 H6 O1
 
-���Υ���ȥ���Ф��� conect �᥽�åɤ�Ƥ֤�
+このエントリに対して conect メソッドを呼ぶと
 
   { "C1"  => [ "C2", "O", "1H1", "2H1" ], 
     "C2"  => [ "C1", "1H2", "2H2", "3H2" ], 
@@ -1839,66 +1839,66 @@ br_bioflat.rb �ˤ�륤��ǥå��������ˤ��б����Ƥ��ޤ��Τǡ�
     "3H2" => [ "C2" ], 
     "HO"  => [ "O" ] }
 
-�Ȥ��� Hash ���֤��ޤ���
+という Hash を返します。
 
-�����ޤǤν����� BioRuby ������ǻ�Ȱʲ��Τ褦�ˤʤ�ޤ���
+ここまでの処理を BioRuby シェルで試すと以下のようになります。
 
-  # PDB ����ȥ� 1bl8 ��ͥåȥ����ͳ�Ǽ���
+  # PDB エントリ 1bl8 をネットワーク経由で取得
   bioruby> ent_1bl8 = getent("pdb:1bl8")
-  # ����ȥ����Ȥ��ǧ
+  # エントリの中身を確認
   bioruby> head ent_1bl8
-  # ����ȥ��ե��������¸
+  # エントリをファイルに保存
   bioruby> savefile("1bl8.pdb", ent_1bl8)
-  # ��¸���줿�ե��������Ȥ��ǧ
+  # 保存されたファイルの中身を確認
   bioruby> disp "data/1bl8.pdb"
-  # PDB ����ȥ��ѡ���
+  # PDB エントリをパース
   bioruby> pdb_1bl8 = flatparse(ent_1bl8)
-  # PDB �Υ���ȥ� ID ��ɽ��
+  # PDB のエントリ ID を表示
   bioruby> pdb_1bl8.entry_id
-  # getent("pdb:1bl8") ���� flatparse ��������ˡ��ʲ��Ǥ�OK
+  # getent("pdb:1bl8") して flatparse する代わりに、以下でもOK
   bioruby> obj_1bl8 = getobj("pdb:1bl8")
   bioruby> obj_1bl8.entry_id
-  # �� HETEROGEN ���Ȥ˻Ĵ�̾��ɽ��
+  # 各 HETEROGEN ごとに残基名を表示
   bioruby> pdb_1bl8.each_heterogen { |heterogen| p heterogen.resName }
 
-  # PDB Chemical Component Dictionary �����
+  # PDB Chemical Component Dictionary を取得
   bioruby> het_dic = open("http://deposit.pdb.org/het_dictionary.txt").read
-  # ���������ե�����ΥХ��ȿ����ǧ
+  # 取得したファイルのバイト数を確認
   bioruby> het_dic.size
-  # ���������ե��������¸
+  # 取得したファイルを保存
   bioruby> savefile("data/het_dictionary.txt", het_dic)
-  # �ե��������Ȥ��ǧ
+  # ファイルの中身を確認
   bioruby> disp "data/het_dictionary.txt"
-  # �����Τ���˥���ǥå������� het_dic �Ȥ����ǡ����١��������
+  # 検索のためにインデックス化し het_dic というデータベースを作成
   bioruby> flatindex("het_dic", "data/het_dictionary.txt")
-  # ID �� EOH �Υ����Ρ���Υ���ȥ�򸡺�
+  # ID が EOH のエタノールのエントリを検索
   bioruby> ethanol = flatsearch("het_dic", "EOH")
-  # ������������ȥ��ѡ���
+  # 取得したエントリをパース
   bioruby> osake = flatparse(ethanol)
-  # ���Ҵ֤η��ơ��֥��ɽ��
+  # 原子間の結合テーブルを表示
   bioruby> sake.conect
 
-== ���饤���� (Bio::Alignment ���饹)
+== アライメント (Bio::Alignment クラス)
 
-Bio::Alignment ���饹������Υ��饤���Ȥ��Ǽ���뤿��Υ���ƥʤǤ���
-Ruby �� Hash �� Array �˻�������ǽ�ǡ�BioPerl �� Bio::SimpleAlign ��
-���������ˤʤäƤ��ޤ����ʲ��˴�ñ�ʻȤ����򼨤��ޤ���
+Bio::Alignment クラスは配列のアライメントを格納するためのコンテナです。
+Ruby の Hash や Array に似た操作が可能で、BioPerl の Bio::SimpleAlign に
+似た感じになっています。以下に簡単な使い方を示します。
 
   require 'bio'
 
   seqs = [ 'atgca', 'aagca', 'acgca', 'acgcg' ]
   seqs = seqs.collect{ |x| Bio::Sequence::NA.new(x) }
 
-  # ���饤���ȥ��֥������Ȥ����
+  # アライメントオブジェクトを作成
   a = Bio::Alignment.new(seqs)
 
-  # ���󥻥󥵥������ɽ��
+  # コンセンサス配列を表示
   p a.consensus             # ==> "a?gc?"
 
-  # IUPAC ɸ���ۣ��ʱ������Ѥ������󥻥󥵥������ɽ��
+  # IUPAC 標準の曖昧な塩基を使用したコンセンサス配列を表示
   p a.consensus_iupac       # ==> "ahgcr"
 
-  # ������ˤĤ��Ʒ����֤�
+  # 各配列について繰り返す
   a.each { |x| p x }
     # ==>
     #    "atgca"
@@ -1906,7 +1906,7 @@ Ruby �� Hash �� Array �˻�������ǽ�ǡ�BioPerl �� Bio::SimpleAlign ��
     #    "acgca"
     #    "acgcg"
 
-  # �ƥ����ȤˤĤ��Ʒ����֤�
+  # 各サイトについて繰り返す
   a.each_site { |x| p x }
     # ==>
     #    ["a", "a", "a", "a"]
@@ -1915,250 +1915,250 @@ Ruby �� Hash �� Array �˻�������ǽ�ǡ�BioPerl �� Bio::SimpleAlign ��
     #    ["c", "c", "c", "c"]
     #    ["a", "a", "a", "g"]
 
-  # Clustal W ����Ѥ��ƥ��饤���Ȥ�Ԥ���
-  # 'clustalw' ���ޥ�ɤ������ƥ�˥��󥹥ȡ��뤵��Ƥ���ɬ�פ����롣
+  # Clustal W を使用してアライメントを行う。
+  # 'clustalw' コマンドがシステムにインストールされている必要がある。
   factory = Bio::ClustalW.new
   a2 = a.do_align(factory)
 
 
-== FASTA �ˤ����Ʊ��������Ԥ���Bio::Fasta ���饹��
+== FASTA による相同性検索を行う（Bio::Fasta クラス）
 
-FASTA ����������ե����� query.pep ���Ф��ơ���ʬ�Υޥ���(��������)���뤤��
-���󥿡��ͥåȾ�Υ�����(��⡼��)�� FASTA �ˤ����Ʊ��������Ԥ���ˡ�Ǥ���
-��������ξ��� SSEARCH �ʤɤ�Ʊ�ͤ˻Ȥ����Ȥ��Ǥ��ޤ���
+FASTA 形式の配列ファイル query.pep に対して、自分のマシン(ローカル)あるいは
+インターネット上のサーバ(リモート)で FASTA による相同性検索を行う方法です。
+ローカルの場合は SSEARCH なども同様に使うことができます。
 
-=== ��������ξ��
+=== ローカルの場合
 
-FASTA �����󥹥ȡ��뤵��Ƥ��뤳�Ȥ��ǧ���Ƥ����������ʲ�����Ǥϡ�
-���ޥ��̾�� fasta34 �ǥѥ����̤ä��ǥ��쥯�ȥ�˥��󥹥ȡ���
-����Ƥ���������ꤷ�Ƥ��ޤ���
+FASTA がインストールされていることを確認してください。以下の例では、
+コマンド名が fasta34 でパスが通ったディレクトリにインストール
+されている状況を仮定しています。
 
 * ((<URL:ftp://ftp.virginia.edu/pub/fasta/>))
 
-�����оݤȤ��� FASTA �����Υǡ����١����ե����� target.pep �ȡ�FASTA
-�������䤤��碌���󤬤����Ĥ����ä��ե����� query.pep ��������ޤ���
+検索対象とする FASTA 形式のデータベースファイル target.pep と、FASTA
+形式の問い合わせ配列がいくつか入ったファイル query.pep を準備します。
 
-������Ǥϡ����䤤��碌���󤴤Ȥ� FASTA ������¹Ԥ����ҥåȤ��������
-evalue �� 0.0001 �ʲ��Τ�Τ�����ɽ�����ޤ���
+この例では、各問い合わせ配列ごとに FASTA 検索を実行し、ヒットした配列の
+evalue が 0.0001 以下のものだけを表示します。
 
     #!/usr/bin/env ruby
     
     require 'bio'
     
-    # FASTA ��¹Ԥ���Ķ����֥������Ȥ����ssearch �ʤɤǤ��ɤ���
+    # FASTA を実行する環境オブジェクトを作る（ssearch などでも良い）
     factory = Bio::Fasta.local('fasta34', ARGV.pop)
     
-    # �ե�åȥե�������ɤ߹��ߡ�FastaFormat ���֥������ȤΥꥹ�Ȥˤ���
+    # フラットファイルを読み込み、FastaFormat オブジェクトのリストにする
     ff = Bio::FlatFile.new(Bio::FastaFormat, ARGF)
     
-    # ������ȥꤺ�Ĥ� FastaFormat ���֥������Ȥ��Ф�
+    # １エントリずつの FastaFormat オブジェクトに対し
     ff.each do |entry|
-      # '>' �ǻϤޤ륳���ȹԤ����Ƥ�ʹԾ���������ɸ�२�顼���Ϥ�ɽ��
+      # '>' で始まるコメント行の内容を進行状況がわりに標準エラー出力に表示
       $stderr.puts "Searching ... " + entry.definition
    
-      # FASTA �ˤ����Ʊ��������¹ԡ���̤� Fasta::Report ���֥�������
+      # FASTA による相同性検索を実行、結果は Fasta::Report オブジェクト
       report = factory.query(entry)
     
-      # �ҥåȤ�����Τ��줾����Ф�
+      # ヒットしたものそれぞれに対し
       report.each do |hit|
-        # evalue �� 0.0001 �ʲ��ξ��
+        # evalue が 0.0001 以下の場合
         if hit.evalue < 0.0001
-          # ���� evalue �ȡ�̾���������С���å��ΰ��ɽ��
+          # その evalue と、名前、オーバーラップ領域を表示
           print "#{hit.query_id} : evalue #{hit.evalue}\t#{hit.target_id} at "
           p hit.lap_at
         end
       end
     end
 
-������ factory �Ϸ����֤� FASTA ��¹Ԥ��뤿��ˡ����餫�����äƤ���
-�¹ԴĶ��Ǥ���
+ここで factory は繰り返し FASTA を実行するために、あらかじめ作っておく
+実行環境です。
 
-�嵭�Υ�����ץȤ� search.rb �Ȥ���ȡ��䤤��碌����ȥǡ����١��������
-�ե�����̾������ˤ��ơ��ʲ��Τ褦�˼¹Ԥ��ޤ���
+上記のスクリプトを search.rb とすると、問い合わせ配列とデータベース配列の
+ファイル名を引数にして、以下のように実行します。
 
     % ruby search.rb query.pep target.pep > search.out
 
-FASTA ���ޥ�ɤ˥��ץ�����Ϳ��������硢�����ܤΰ����� FASTA ��
-���ޥ�ɥ饤�󥪥ץ�����񤤤��Ϥ��ޤ�����������ktup �ͤ�����
-�᥽�åɤ�Ȥäƻ��ꤹ�뤳�ȤˤʤäƤ��ޤ���
-���Ȥ��� ktup �ͤ� 1 �ˤ��ơ��ȥå� 10 �̰���ΥҥåȤ��������
-���ץ����ϡ��ʲ��Τ褦�ˤʤ�ޤ���
+FASTA コマンドにオプションを与えたい場合、３番目の引数に FASTA の
+コマンドラインオプションを書いて渡します。ただし、ktup 値だけは
+メソッドを使って指定することになっています。
+たとえば ktup 値を 1 にして、トップ 10 位以内のヒットを得る場合の
+オプションは、以下のようになります。
 
     factory = Bio::Fasta.local('fasta34', 'target.pep', '-b 10')
     factory.ktup = 1
 
-Bio::Fasta#query �᥽�åɤʤɤ��֤��ͤ� Bio::Fasta::Report ���֥�������
-�Ǥ������� Report ���֥������Ȥ��顢�͡��ʥ᥽�åɤ� FASTA �ν��Ϸ�̤�
-�ۤ����Ƥ�ͳ�˼��Ф���褦�ˤʤäƤ��ޤ������Ȥ��С��ҥåȤ˴ؤ���
-�������ʤɤμ�ʾ���ϡ�
+Bio::Fasta#query メソッドなどの返り値は Bio::Fasta::Report オブジェクト
+です。この Report オブジェクトから、様々なメソッドで FASTA の出力結果の
+ほぼ全てを自由に取り出せるようになっています。たとえば、ヒットに関する
+スコアなどの主な情報は、
 
     report.each do |hit|
       puts hit.evalue           # E-value
-      puts hit.sw               # Smith-Waterman ������ (*)
+      puts hit.sw               # Smith-Waterman スコア (*)
       puts hit.identity         # % identity
-      puts hit.overlap          # �����С���åפ��Ƥ����ΰ��Ĺ�� 
-      puts hit.query_id         # �䤤��碌����� ID
-      puts hit.query_def        # �䤤��碌����Υ�����
-      puts hit.query_len        # �䤤��碌�����Ĺ��
-      puts hit.query_seq        # �䤤��碌����
-      puts hit.target_id        # �ҥåȤ�������� ID
-      puts hit.target_def       # �ҥåȤ�������Υ�����
-      puts hit.target_len       # �ҥåȤ��������Ĺ��
-      puts hit.target_seq       # �ҥåȤ�������
-      puts hit.query_start      # ��Ʊ�ΰ���䤤��碌����Ǥγ��ϻĴ����
-      puts hit.query_end        # ��Ʊ�ΰ���䤤��碌����Ǥν�λ�Ĵ����
-      puts hit.target_start     # ��Ʊ�ΰ�Υ������å�����Ǥγ��ϻĴ����
-      puts hit.target_end       # ��Ʊ�ΰ�Υ������å�����Ǥν�λ�Ĵ����
-      puts hit.lap_at           # �嵭�����֤ο��ͤ�����
+      puts hit.overlap          # オーバーラップしている領域の長さ 
+      puts hit.query_id         # 問い合わせ配列の ID
+      puts hit.query_def        # 問い合わせ配列のコメント
+      puts hit.query_len        # 問い合わせ配列の長さ
+      puts hit.query_seq        # 問い合わせ配列
+      puts hit.target_id        # ヒットした配列の ID
+      puts hit.target_def       # ヒットした配列のコメント
+      puts hit.target_len       # ヒットした配列の長さ
+      puts hit.target_seq       # ヒットした配列
+      puts hit.query_start      # 相同領域の問い合わせ配列での開始残基位置
+      puts hit.query_end        # 相同領域の問い合わせ配列での終了残基位置
+      puts hit.target_start     # 相同領域のターゲット配列での開始残基位置
+      puts hit.target_end       # 相同領域のターゲット配列での終了残基位置
+      puts hit.lap_at           # 上記４位置の数値の配列
     end
 
-�ʤɤΥ᥽�åɤǸƤӽФ��ޤ��������Υ᥽�åɤ�¿���ϸ����������
-Bio::Blast::Report ���饹�ȶ��̤ˤ��Ƥ���ޤ����嵭�ʳ��Υ᥽�åɤ�
-FASTA ��ͭ���ͤ���Ф��᥽�åɤ�ɬ�פʾ��ϡ�Bio::Fasta::Report
-���饹�Υɥ�����Ȥ򻲾Ȥ��Ƥ���������
+などのメソッドで呼び出せます。これらのメソッドの多くは後で説明する
+Bio::Blast::Report クラスと共通にしてあります。上記以外のメソッドや
+FASTA 特有の値を取り出すメソッドが必要な場合は、Bio::Fasta::Report
+クラスのドキュメントを参照してください。
 
-�⤷���ѡ����������μ��ä��Ƥ��ʤ� fasta ���ޥ�ɤμ¹Է�̤�ɬ�פ�
-���ˤϡ�
+もし、パースする前の手を加えていない fasta コマンドの実行結果が必要な
+場合には、
 
     report = factory.query(entry)
     puts factory.output
 
-�Τ褦�ˡ�query �᥽�åɤ�¹Ԥ������ factory ���֥������Ȥ� output
-�᥽�åɤ�ȤäƼ��Ф����Ȥ��Ǥ��ޤ���
+のように、query メソッドを実行した後で factory オブジェクトの output
+メソッドを使って取り出すことができます。
 
 
-=== ��⡼�Ȥξ��
+=== リモートの場合
 
-���ΤȤ��� GenomeNet (fasta.genome.jp) �Ǥθ����Τߥ��ݡ��Ȥ��Ƥ��ޤ���
-��⡼�Ȥξ��ϻ��Ѳ�ǽ�ʸ����оݥǡ����١�������ޤäƤ��ޤ����������
-�������ˤĤ��Ƥ� Bio::Fasta.remote �� Bio::Fasta.local ��Ʊ���褦�˻Ȥ�
-���Ȥ��Ǥ��ޤ���
+今のところ GenomeNet (fasta.genome.jp) での検索のみサポートしています。
+リモートの場合は使用可能な検索対象データベースが決まっていますが、それ以
+外の点については Bio::Fasta.remote と Bio::Fasta.local は同じように使う
+ことができます。
 
-GenomeNet �ǻ��Ѳ�ǽ�ʸ����оݥǡ����١�����
+GenomeNet で使用可能な検索対象データベース：
 
-  * ���ߥλ�����ǡ����١���
+  * アミノ酸配列データベース
     * nr-aa, genes, vgenes.pep, swissprot, swissprot-upd, pir, prf, pdbstr
 
-  * ��������ǡ����١���
+  * 塩基配列データベース
     * nr-nt, genbank-nonst, gbnonst-upd, dbest, dbgss, htgs, dbsts,
       embl-nonst, embnonst-upd, genes-nt, genome, vgenes.nuc
 
-�ޤ��������椫�鸡���������ǡ����١��������򤷤ޤ����䤤��碌����μ���
-�ȸ�������ǡ����١����μ���ˤ�äƥץ������Ϸ�ޤ�ޤ���
+まず、この中から検索したいデータベースを選択します。問い合わせ配列の種類
+と検索するデータベースの種類によってプログラムは決まります。
 
-  * �䤤��碌���󤬥��ߥλ��ΤȤ�
-    * �оݥǡ����١��������ߥλ�����ǡ����١����ξ�硢program �� 'fasta'
-    * �оݥǡ����١������˻�����ǡ����١����ξ�硢program �� 'tfasta'
+  * 問い合わせ配列がアミノ酸のとき
+    * 対象データベースがアミノ酸配列データベースの場合、program は 'fasta'
+    * 対象データベースが核酸配列データベースの場合、program は 'tfasta'
 
-  * �䤤��碌���󤬳˻�����ΤȤ�
-    * �оݥǡ����١������˻�����ǡ����١����ξ�硢program �� 'fasta'
-    * (�оݥǡ����١��������ߥλ�����ǡ����١����ξ��ϸ�����ǽ?)
+  * 問い合わせ配列が核酸配列のとき
+    * 対象データベースが核酸配列データベースの場合、program は 'fasta'
+    * (対象データベースがアミノ酸配列データベースの場合は検索不能?)
 
-�ץ������ȥǡ����١������Ȥ߹礻����ޤä���
+プログラムとデータベースの組み合せが決まったら
 
     program = 'fasta'
     database = 'genes'
     
     factory = Bio::Fasta.remote(program, database)
 
-�Ȥ��ƥե����ȥ꡼���ꡢ��������ξ���Ʊ���褦�� factory.query �ʤ�
-�Υ᥽�åɤǸ�����¹Ԥ��ޤ���
+としてファクトリーを作り、ローカルの場合と同じように factory.query など
+のメソッドで検索を実行します。
 
 
-== BLAST �ˤ����Ʊ��������Ԥ���Bio::Blast ���饹��
+== BLAST による相同性検索を行う（Bio::Blast クラス）
 
-BLAST ���������� GenomeNet (blast.genome.jp) �Ǥθ����򥵥ݡ��Ȥ���
-���ޤ����Ǥ������ Bio::Fasta �� API ���̤ˤ��Ƥ��ޤ��Τǡ��嵭����� 
-Bio::Blast �Ƚ񤭴����������Ǥ�����פʾ�礬¿���Ǥ���
+BLAST もローカルと GenomeNet (blast.genome.jp) での検索をサポートして
+います。できるだけ Bio::Fasta と API を共通にしていますので、上記の例を 
+Bio::Blast と書き換えただけでも大丈夫な場合が多いです。
 
-���Ȥ��С���� f_search.rb ��
+たとえば、先の f_search.rb は
 
-    # BLAST ��¹Ԥ���Ķ����֥������Ȥ���
+    # BLAST を実行する環境オブジェクトを作る
     factory = Bio::Blast.local('blastp', ARGV.pop) 
 
-���ѹ����������Ʊ���褦�˼¹ԤǤ��ޤ���
+と変更するだけで同じように実行できます。
 
-Ʊ�ͤˡ�GenomeNet ����Ѥ���BLAST��Ԥ����ˤ� Bio::Blast.remote ��Ȥ��ޤ���
-���ξ�硢program�λ������Ƥ� FASTA �Ȱۤʤ�ޤ���
+同様に、GenomeNet を使用してBLASTを行う場合には Bio::Blast.remote を使います。
+この場合、programの指定内容が FASTA と異なります。
 
-  * �䤤��碌���󤬥��ߥλ��ΤȤ�
-    * �оݥǡ����١��������ߥλ�����ǡ����١����ξ�硢program �� 'blastp'
-    * �оݥǡ����١������˻�����ǡ����١����ξ�硢program �� 'tblastn'
+  * 問い合わせ配列がアミノ酸のとき
+    * 対象データベースがアミノ酸配列データベースの場合、program は 'blastp'
+    * 対象データベースが核酸配列データベースの場合、program は 'tblastn'
 
-  * �䤤��碌���󤬱�������ΤȤ�
-    * �оݥǡ����١��������ߥλ�����ǡ����١����ξ�硢program �� 'blastx'
-    * �оݥǡ����١�������������ǡ����١����ξ�硢program �� 'blastn'
-    * (�䤤��碌���ǡ����١�������6�ե졼��������Ԥ����� 'tblastx')
+  * 問い合わせ配列が塩基配列のとき
+    * 対象データベースがアミノ酸配列データベースの場合、program は 'blastx'
+    * 対象データベースが塩基配列データベースの場合、program は 'blastn'
+    * (問い合わせ・データベース共に6フレーム翻訳を行う場合は 'tblastx')
 
-�򤽤줾����ꤷ�ޤ���
+をそれぞれ指定します。
 
-�Ȥ����ǡ�BLAST �Ǥ� "-m 7" ���ץ����ˤ�� XML ���ϥե����ޥååȤ�����
-���������˭�٤ʤ��ᡢBio::Blast �� Ruby �Ѥ� XML �饤�֥��Ǥ���
-XMLParser �ޤ��� REXML �����Ѳ�ǽ�ʾ��ϡ�XML ���Ϥ����Ѥ��ޤ���
-ξ�����Ѳ�ǽ�ʾ�硢XMLParser �Τۤ�����®�ʤΤ�ͥ��Ū�˻��Ѥ���ޤ���
-�ʤ���Ruby 1.8.0 �ʹߤǤ� REXML �� Ruby ���Τ�ɸ��ź�դ���Ƥ��ޤ���
-�⤷ XML �饤�֥�꤬���󥹥ȡ��뤵��Ƥ��ʤ����� "-m 8" �Υ��ֶ��ڤ��
-���Ϸ����򰷤��褦�ˤ��Ƥ��ޤ��������������Υե����ޥåȤǤ�������
-�ǡ������¤���Τǡ�"-m 7" �� XML �����ν��Ϥ�Ȥ����Ȥ򤪴��ᤷ�ޤ���
+ところで、BLAST では "-m 7" オプションによる XML 出力フォーマッットの方が
+得られる情報が豊富なため、Bio::Blast は Ruby 用の XML ライブラリである
+XMLParser または REXML が使用可能な場合は、XML 出力を利用します。
+両方使用可能な場合、XMLParser のほうが高速なので優先的に使用されます。
+なお、Ruby 1.8.0 以降では REXML は Ruby 本体に標準添付されています。
+もし XML ライブラリがインストールされていない場合は "-m 8" のタブ区切りの
+出力形式を扱うようにしています。しかし、このフォーマットでは得られる
+データが限られるので、"-m 7" の XML 形式の出力を使うことをお勧めします。
 
-���Ǥ˸����褦�� Bio::Fasta::Report �� Bio::Blast::Report �� Hit ���֥���
-���ȤϤ����Ĥ����̤Υ᥽�åɤ���äƤ��ޤ���BLAST ��ͭ�Υ᥽�åɤ��ɤ���
-�������ʤ�Τˤ� bit_score �� midline �ʤɤ�����ޤ���
+すでに見たように Bio::Fasta::Report と Bio::Blast::Report の Hit オブジェ
+クトはいくつか共通のメソッドを持っています。BLAST 固有のメソッドで良く使
+いそうなものには bit_score や midline などがあります。
 
     report.each do |hit|
-      puts hit.bit_score        # bit ������ (*)
-      puts hit.query_seq        # �䤤��碌����
-      puts hit.midline          # ���饤���Ȥ� midline ʸ���� (*)
-      puts hit.target_seq       # �ҥåȤ�������
+      puts hit.bit_score        # bit スコア (*)
+      puts hit.query_seq        # 問い合わせ配列
+      puts hit.midline          # アライメントの midline 文字列 (*)
+      puts hit.target_seq       # ヒットした配列
       
       puts hit.evalue           # E-value
       puts hit.identity         # % identity
-      puts hit.overlap          # �����С���åפ��Ƥ����ΰ��Ĺ�� 
-      puts hit.query_id         # �䤤��碌����� ID
-      puts hit.query_def        # �䤤��碌����Υ�����
-      puts hit.query_len        # �䤤��碌�����Ĺ��
-      puts hit.target_id        # �ҥåȤ�������� ID
-      puts hit.target_def       # �ҥåȤ�������Υ�����
-      puts hit.target_len       # �ҥåȤ��������Ĺ��
-      puts hit.query_start      # ��Ʊ�ΰ���䤤��碌����Ǥγ��ϻĴ����
-      puts hit.query_end        # ��Ʊ�ΰ���䤤��碌����Ǥν�λ�Ĵ����
-      puts hit.target_start     # ��Ʊ�ΰ�Υ������å�����Ǥγ��ϻĴ����
-      puts hit.target_end       # ��Ʊ�ΰ�Υ������å�����Ǥν�λ�Ĵ����
-      puts hit.lap_at           # �嵭�����֤ο��ͤ�����
+      puts hit.overlap          # オーバーラップしている領域の長さ 
+      puts hit.query_id         # 問い合わせ配列の ID
+      puts hit.query_def        # 問い合わせ配列のコメント
+      puts hit.query_len        # 問い合わせ配列の長さ
+      puts hit.target_id        # ヒットした配列の ID
+      puts hit.target_def       # ヒットした配列のコメント
+      puts hit.target_len       # ヒットした配列の長さ
+      puts hit.query_start      # 相同領域の問い合わせ配列での開始残基位置
+      puts hit.query_end        # 相同領域の問い合わせ配列での終了残基位置
+      puts hit.target_start     # 相同領域のターゲット配列での開始残基位置
+      puts hit.target_end       # 相同領域のターゲット配列での終了残基位置
+      puts hit.lap_at           # 上記４位置の数値の配列
     end
 
-FASTA�Ȥ�API���̲��Τ���ȴ��ؤΤ��ᡢ�������ʤɤ����Ĥ��ξ����1���ܤ�
-Hsp (High-scoring segment pair) ���ͤ�Hit���֤��褦�ˤ��Ƥ��ޤ���
+FASTAとのAPI共通化のためと簡便のため、スコアなどいくつかの情報は1番目の
+Hsp (High-scoring segment pair) の値をHitで返すようにしています。
 
-Bio::Blast::Report ���֥������Ȥϡ��ʲ��˼����褦�ʡ�BLAST�η�̽��Ϥ�
-�ǡ�����¤�򤽤Τޤ�ȿ�Ǥ�������Ū�ʥǡ�����¤����äƤ��ޤ�������Ū�ˤ�
+Bio::Blast::Report オブジェクトは、以下に示すような、BLASTの結果出力の
+データ構造をそのまま反映した階層的なデータ構造を持っています。具体的には
 
-  * Bio::Blast::Report ���֥������Ȥ� @iteratinos ��
-    * Bio::Blast::Report::Iteration ���֥������Ȥ� Array �����äƤ���
-      Bio::Blast::Report::Iteration ���֥������Ȥ� @hits ��
-      * Bio::Blast::Report::Hits ���֥������Ȥ� Array �����äƤ���
-        Bio::Blast::Report::Hits ���֥������Ȥ� @hsps ��
-        * Bio::Blast::Report::Hsp ���֥������Ȥ� Array �����äƤ���
+  * Bio::Blast::Report オブジェクトの @iteratinos に
+    * Bio::Blast::Report::Iteration オブジェクトの Array が入っており
+      Bio::Blast::Report::Iteration オブジェクトの @hits に
+      * Bio::Blast::Report::Hits オブジェクトの Array が入っており
+        Bio::Blast::Report::Hits オブジェクトの @hsps に
+        * Bio::Blast::Report::Hsp オブジェクトの Array が入っている
 
-�Ȥ������ع�¤�ˤʤäƤ��ꡢ���줾�줬�������ͤ���Ф�����Υ᥽�åɤ�
-���äƤ��ޤ��������Υ᥽�åɤξܺ٤䡢BLAST �¹Ԥ����׾���ʤɤ��ͤ�
-ɬ�פʾ��ˤϡ� bio/appl/blast/*.rb ��Υɥ�����Ȥ�ƥ��ȥ����ɤ�
-���Ȥ��Ƥ���������
+という階層構造になっており、それぞれが内部の値を取り出すためのメソッドを
+持っています。これらのメソッドの詳細や、BLAST 実行の統計情報などの値が
+必要な場合には、 bio/appl/blast/*.rb 内のドキュメントやテストコードを
+参照してください。
 
 
-=== ��¸�� BLAST ���ϥե������ѡ�������
+=== 既存の BLAST 出力ファイルをパースする
 
-BLAST ��¹Ԥ�����̥ե����뤬���Ǥ���¸���Ƥ��äơ��������Ϥ��������
-�ˤϡ�Bio::Blast ���֥������Ȥ��餺�ˡ� Bio::Blast::Report ���֥�����
-�Ȥ��ꤿ�����Ȥ������Ȥˤʤ�ޤ�������ˤ� Bio::Blast.reports �᥽�å�
-��Ȥ��ޤ����б����Ƥ���Τ� �ǥե���Ƚ��ϥե����ޥå�("-m 0") �ޤ���
-"-m 7" ���ץ����� XML �ե����ޥåȽ��ϤǤ���
+BLAST を実行した結果ファイルがすでに保存してあって、これを解析したい場合
+には（Bio::Blast オブジェクトを作らずに） Bio::Blast::Report オブジェク
+トを作りたい、ということになります。これには Bio::Blast.reports メソッド
+を使います。対応しているのは デフォルト出力フォーマット("-m 0") または
+"-m 7" オプションの XML フォーマット出力です。
 
     #!/usr/bin/env ruby
     
     require 'bio'
 
-    # BLAST���Ϥ��˥ѡ������� Bio::Blast::Report ���֥������Ȥ��֤�
+    # BLAST出力を順にパースして Bio::Blast::Report オブジェクトを返す
     Bio::Blast.reports(ARGF) do |report|
       puts "Hits for " + report.query_def + " against " + report.db
       report.each do |hit|
@@ -2166,93 +2166,93 @@ BLAST ��¹Ԥ�����̥ե����뤬���Ǥ���¸���Ƥ��äơ��������Ϥ��������
       end
     end
 
-�Τ褦�ʥ�����ץ� hits_under_0.001.rb ��񤤤ơ�
+のようなスクリプト hits_under_0.001.rb を書いて、
 
    % ./hits_under_0.001.rb *.xml
 
-�ʤɤȼ¹Ԥ���С�������Ϳ���� BLAST �η�̥ե����� *.xml ����֤˽�����
-���ޤ���
+などと実行すれば、引数に与えた BLAST の結果ファイル *.xml を順番に処理で
+きます。
 
-Blast �ΥС������� OS �ʤɤˤ�äƽ��Ϥ���� XML �η������ۤʤ��ǽ��
-�����ꡢ���� XML �Υѡ��������ޤ��Ȥ��ʤ����Ȥ�����褦�Ǥ������ξ���
-Blast 2.2.5 �ʹߤΥС������򥤥󥹥ȡ��뤹�뤫 -D �� -m �ʤɤΥ��ץ���
-����Ȥ߹礻���Ѥ��ƻ�ƤߤƤ���������
-
-
-=== ��⡼�ȸ��������Ȥ��ɲä���ˤ�
-
-��: ���Υ��������Ͼ��桼�������Ǥ�����ǽ�Ǥ���� SOAP �ʤɤˤ��
-�����֥����ӥ������Ѥ��������褤�Ǥ��礦��
-
-Blast ������ NCBI ��Ϥ����͡��ʥ����Ȥǥ����ӥ�����Ƥ��ޤ��������ΤȤ�
-�� BioRuby �Ǥ� GenomeNet �ʳ��ˤ��б����Ƥ��ޤ��󡣤����Υ����Ȥϡ�
-
-  * CGI ��ƤӽФ��ʥ��ޥ�ɥ饤�󥪥ץ����Ϥ��Υ������Ѥ˽��������
-  * -m 8 �ʤ� BioRuby ���ѡ�������äƤ�����ϥե����ޥåȤ� blast ��
-    ���Ϥ���Ф�
-
-���Ȥ����Ǥ���С�query �������äƸ�����̤� Bio::Blast::Report.new ��
-�Ϥ��褦�ʥ᥽�åɤ������������ǻȤ���褦�ˤʤ�ޤ�������Ū�ˤϡ�����
-�᥽�åɤ��exec_������̾�פΤ褦��̾���� Bio::Blast �� private �᥽�å�
-�Ȥ�����Ͽ����ȡ������ܤΰ����ˡ֥�����̾�פ���ꤷ��
-
-    factory = Bio::Blast.remote(program, db, option, '������̾')
-
-�Τ褦�˸ƤӽФ���褦�ˤʤäƤ��ޤ������������� BioRuby �ץ��������Ȥ�
-�����äƤ�館��м����ޤ���ĺ���ޤ���
+Blast のバージョンや OS などによって出力される XML の形式が異なる可能性
+があり、時々 XML のパーザがうまく使えないことがあるようです。その場合は
+Blast 2.2.5 以降のバージョンをインストールするか -D や -m などのオプショ
+ンの組み合せを変えて試してみてください。
 
 
-== PubMed ������ư���ʸ���ꥹ�Ȥ��� (Bio::PubMed ���饹)
+=== リモート検索サイトを追加するには
 
-���ϡ�NCBI ��ʸ���ǡ����١��� PubMed �򸡺����ư���ʸ���ꥹ�Ȥ����������Ǥ���
+注: このセクションは上級ユーザ向けです。可能であれば SOAP などによる
+ウェブサービスを利用する方がよいでしょう。
+
+Blast 検索は NCBI をはじめ様々なサイトでサービスされていますが、今のとこ
+ろ BioRuby では GenomeNet 以外には対応していません。これらのサイトは、
+
+  * CGI を呼び出す（コマンドラインオプションはそのサイト用に処理する）
+  * -m 8 など BioRuby がパーザを持っている出力フォーマットで blast の
+    出力を取り出す
+
+ことさえできれば、query を受け取って検索結果を Bio::Blast::Report.new に
+渡すようなメソッドを定義するだけで使えるようになります。具体的には、この
+メソッドを「exec_サイト名」のような名前で Bio::Blast の private メソッド
+として登録すると、４番目の引数に「サイト名」を指定して
+
+    factory = Bio::Blast.remote(program, db, option, 'サイト名')
+
+のように呼び出せるようになっています。完成したら BioRuby プロジェクトま
+で送ってもらえれば取り込ませて頂きます。
+
+
+== PubMed を引いて引用文献リストを作る (Bio::PubMed クラス)
+
+次は、NCBI の文献データベース PubMed を検索して引用文献リストを作成する例です。
 
     #!/usr/bin/env ruby
     
     require 'bio'
     
     ARGV.each do |id|
-      entry = Bio::PubMed.query(id)     # PubMed ��������륯�饹�᥽�å�
-      medline = Bio::MEDLINE.new(entry) # Bio::MEDLINE ���֥�������
-      reference = medline.reference     # Bio::Reference ���֥�������
-      puts reference.bibtex             # BibTeX �ե����ޥåȤǽ���
+      entry = Bio::PubMed.query(id)     # PubMed を取得するクラスメソッド
+      medline = Bio::MEDLINE.new(entry) # Bio::MEDLINE オブジェクト
+      reference = medline.reference     # Bio::Reference オブジェクト
+      puts reference.bibtex             # BibTeX フォーマットで出力
     end
 
-���Υ�����ץȤ� pmfetch.rb �ʤɹ�����̾������¸����
+このスクリプトを pmfetch.rb など好きな名前で保存し、
 
     % ./pmfetch.rb 11024183 10592278 10592173
 
-�ʤɰ��Ѥ�������ʸ�� PubMed ID (PMID) ��������¤٤�� NCBI �˥���������
-�� MEDLINE �ե����ޥåȤ�ѡ����� BibTeX �ե����ޥåȤ��Ѵ����ƽ��Ϥ���
-�����Ϥ��Ǥ���
+など引用したい論文の PubMed ID (PMID) を引数に並べると NCBI にアクセスし
+て MEDLINE フォーマットをパースし BibTeX フォーマットに変換して出力して
+くれるはずです。
 
-¾�ˡ�������ɤǸ������뵡ǽ�⤢��ޤ���
+他に、キーワードで検索する機能もあります。
 
     #!/usr/bin/env ruby
     
     require 'bio'
     
-    # ���ޥ�ɥ饤���Ϳ����������ɤΥꥹ�Ȥ򣱤Ĥ�ʸ����ˤ���
+    # コマンドラインで与えたキーワードのリストを１つの文字列にする
     keywords = ARGV.join(' ')
     
-    # PubMed �򥭡���ɤǸ���
+    # PubMed をキーワードで検索
     entries = Bio::PubMed.search(keywords)
     
     entries.each do |entry|
-      medline = Bio::MEDLINE.new(entry) # Bio::MEDLINE ���֥�������
-      reference = medline.reference     # Bio::Reference ���֥�������
-      puts reference.bibtex             # BibTeX �ե����ޥåȤǽ���
+      medline = Bio::MEDLINE.new(entry) # Bio::MEDLINE オブジェクト
+      reference = medline.reference     # Bio::Reference オブジェクト
+      puts reference.bibtex             # BibTeX フォーマットで出力
     end
 
-���Υ�����ץȤ� pmsearch.rb �ʤɹ�����̾������¸��
+このスクリプトを pmsearch.rb など好きな名前で保存し
 
     % ./pmsearch.rb genome bioinformatics
 
-�ʤɸ���������������ɤ�������¤٤Ƽ¹Ԥ���ȡ�PubMed �򥭡����
-�������ƥҥåȤ�����ʸ�Υꥹ�Ȥ� BibTeX �ե����ޥåȤǽ��Ϥ��ޤ���
+など検索したいキーワードを引数に並べて実行すると、PubMed をキーワード
+検索してヒットした論文のリストを BibTeX フォーマットで出力します。
 
-�Ƕ�Ǥϡ�NCBI �� E-Utils �Ȥ��������֥��ץꥱ��������Ȥ����Ȥ�
-�侩����Ƥ���Τǡ������ Bio::PubMed.esearch �᥽�åɤ����
-Bio::PubMed.efetch �᥽�åɤ�Ȥ������ɤ��Ǥ��礦��
+最近では、NCBI は E-Utils というウェブアプリケーションを使うことが
+推奨されているので、今後は Bio::PubMed.esearch メソッドおよび
+Bio::PubMed.efetch メソッドを使う方が良いでしょう。
 
     #!/usr/bin/env ruby
     
@@ -2273,58 +2273,58 @@ Bio::PubMed.efetch �᥽�åɤ�Ȥ������ɤ��Ǥ��礦��
       puts reference.bibtex
     end
 
-���Υ�����ץȤǤϡ��嵭�� pmsearch.rb �Ȥۤ�Ʊ���褦��ư���ޤ�������ˡ�
-NCBI E-Utils ����Ѥ��뤳�Ȥˤ�ꡢ�����оݤ����դ����ҥåȷ���ʤɤ�
-����Ǥ���褦�ˤʤäƤ���Τǡ����ⵡǽ�Ǥ������ץ�����Ϳ������
-�����ˤĤ��Ƥ� ((<E-Utils �Υإ�ץڡ���|URL:http://eutils.ncbi.nlm.nih.gov/entrez/query/static/eutils_help.html>)) �򻲾Ȥ��Ƥ���������
+このスクリプトでは、上記の pmsearch.rb とほぼ同じように動きます。さらに、
+NCBI E-Utils を活用することにより、検索対象の日付や最大ヒット件数などを
+指定できるようになっているので、より高機能です。オプションに与えられる
+引数については ((<E-Utils のヘルプページ|URL:http://eutils.ncbi.nlm.nih.gov/entrez/query/static/eutils_help.html>)) を参照してください。
 
-���ʤߤˡ������Ǥ� bibtex �᥽�åɤ� BibTeX �ե����ޥåȤ��Ѵ����Ƥ��ޤ�
-������ҤΤ褦�� bibitem �᥽�åɤ�Ȥ���¾���ʶ�Ĵ�䥤����å��ʤ�
-ʸ���ν����ϤǤ��ޤ��󤬡�nature �᥽�åɤ� nar �ʤɡ������Ĥ��λ����
-�ե����ޥåȤˤ��б����Ƥ��ޤ���
+ちなみに、ここでは bibtex メソッドで BibTeX フォーマットに変換しています
+が、後述のように bibitem メソッドも使える他、（強調やイタリックなど
+文字の修飾はできませんが）nature メソッドや nar など、いくつかの雑誌の
+フォーマットにも対応しています。
 
-=== BibTeX �λȤ����Υ��
+=== BibTeX の使い方のメモ
 
-�嵭����ǽ��᤿ BibTeX �ե����ޥåȤΥꥹ�Ȥ� TeX �ǻȤ���ˡ���ñ�ˤ�
-�Ȥ�Ƥ����ޤ������Ѥ�������ʸ����
+上記の例で集めた BibTeX フォーマットのリストを TeX で使う方法を簡単にま
+とめておきます。引用しそうな文献を
 
     % ./pmfetch.rb 10592173 >> genoinfo.bib
     % ./pmsearch.rb genome bioinformatics >> genoinfo.bib
 
-�ʤɤȤ��� genoinfo.bib �ե�����˽������¸���Ƥ�����
+などとして genoinfo.bib ファイルに集めて保存しておき、
 
     \documentclass{jarticle}
     \begin{document}
     \bibliographystyle{plain}
-    �ۤˤ��� KEGG �ǡ����١���~\cite{PMID:10592173}�Ϥդ��ۤ��Ǥ��롣
+    ほにゃらら KEGG データベース~\cite{PMID:10592173}はふがほげである。
     \bibliography{genoinfo}
     \end{document}
 
-�Ȥ����ե����� hoge.tex ��񤤤ơ�
+というファイル hoge.tex を書いて、
 
     % platex hoge
-    % bibtex hoge   # �� genoinfo.bib �ν���
-    % platex hoge   # �� ʸ���ꥹ�Ȥκ���
-    % platex hoge   # �� ʸ���ֹ�
+    % bibtex hoge   # → genoinfo.bib の処理
+    % platex hoge   # → 文献リストの作成
+    % platex hoge   # → 文献番号
 
-�Ȥ����̵�� hoge.dvi ���Ǥ�������ޤ���
+とすると無事 hoge.dvi ができあがります。
     
-=== bibitem �λȤ����Υ��
+=== bibitem の使い方のメモ
 
-ʸ���Ѥ��̤� .bib �ե�������ꤿ���ʤ����� Reference#bibitem �᥽��
-�ɤν��Ϥ�Ȥ��ޤ����嵭�� pmfetch.rb �� pmsearch.rb ��
+文献用に別の .bib ファイルを作りたくない場合は Reference#bibitem メソッ
+ドの出力を使います。上記の pmfetch.rb や pmsearch.rb の
 
     puts reference.bibtex
 
-�ιԤ�
+の行を
 
     puts reference.bibitem
 
-�˽񤭴�����ʤɤ��ơ����Ϸ�̤�
+に書き換えるなどして、出力結果を
 
     \documentclass{jarticle}
     \begin{document}
-    �ۤˤ��� KEGG �ǡ����١���~\cite{PMID:10592173}�Ϥդ��ۤ��Ǥ��롣
+    ほにゃらら KEGG データベース~\cite{PMID:10592173}はふがほげである。
 
     \begin{thebibliography}{00}
 
@@ -2336,78 +2336,78 @@ NCBI E-Utils ����Ѥ��뤳�Ȥˤ�ꡢ�����оݤ����դ����ҥåȷ���ʤɤ�
     \end{thebibliography}
     \end{document}
 
-�Τ褦�� \begin{thebibliography} �ǰϤߤޤ�������� hoge.tex �Ȥ����
+のように \begin{thebibliography} で囲みます。これを hoge.tex とすると
 
-    % platex hoge   # �� ʸ���ꥹ�Ȥκ���
-    % platex hoge   # �� ʸ���ֹ�
+    % platex hoge   # → 文献リストの作成
+    % platex hoge   # → 文献番号
 
-�ȣ����������ФǤ�������Ǥ���
+と２回処理すればできあがりです。
 
 
 = OBDA
 
-OBDA (Open Bio Database Access) �Ȥϡ�Open Bioinformatics Foundation
-�ˤ�ä����ꤵ�줿������ǡ����١����ؤζ��̥���������ˡ�Ǥ�������ϡ�
-2002 ǯ��1���2��� Arizona �� Cape Town �ˤƳ��Ť��줿 BioHackathon
-�ˤ����ơ�BioPerl, BioJava, BioPython, BioRuby �ʤɤγƥץ��������Ȥ�
-���С������ä��ƺ�������ޤ�����
+OBDA (Open Bio Database Access) とは、Open Bioinformatics Foundation
+によって制定された、配列データベースへの共通アクセス方法です。これは、
+2002 年の1月と2月に Arizona と Cape Town にて開催された BioHackathon
+において、BioPerl, BioJava, BioPython, BioRuby などの各プロジェクトの
+メンバーが参加して作成されました。
 
 * BioRegistry (Directory)
-  * �ǡ����١�����������ɤ��ˤɤΤ褦�˼��˹Ԥ�������ꤹ����Ȥ�
+  * データベース毎に配列をどこにどのように取りに行くかを指定する仕組み
 
 * BioFlat
-  * �ե�åȥե������ 2 ʬ�ڤޤ��� BDB ��Ȥä�����ǥå�������
+  * フラットファイルの 2 分木または BDB を使ったインデックス作成
 
 * BioFetch
-  * HTTP ��ͳ�ǥǡ����١������饨��ȥ��������륵���Фȥ��饤�����
+  * HTTP 経由でデータベースからエントリを取得するサーバとクライアント
 
 * BioSQL
-  * MySQL �� PostgreSQL �ʤɤδط��ǡ����١���������ǡ������Ǽ����
-    ����� schema �ȡ�����ȥ����Ф�����Υ᥽�å�
+  * MySQL や PostgreSQL などの関係データベースに配列データを格納する
+    ための schema と、エントリを取り出すためのメソッド
 
-�ܺ٤� ((<URL:http://obda.open-bio.org/>)) �򻲾Ȥ��Ƥ���������
-���줾��λ��ͽ�� cvs.open-bio.org �� CVS��ݥ��ȥ���֤��Ƥ���ޤ���
-�ޤ��ϡ�((<URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/obda-specs/?cvsroot=obf-common>)) ���黲�ȤǤ��ޤ���
+詳細は ((<URL:http://obda.open-bio.org/>)) を参照してください。
+それぞれの仕様書は cvs.open-bio.org の CVSレポジトリに置いてあります。
+または、((<URL:http://cvs.open-bio.org/cgi-bin/viewcvs/viewcvs.cgi/obda-specs/?cvsroot=obf-common>)) から参照できます。
 
 
 == BioRegistry
 
-BioRegistry�Ȥϡ�����ե�����ˤ�äƳƥǡ����١����Υ���ȥ������ˡ��
-���ꤹ�뤳�Ȥˤ�ꡢ�ɤ����ˡ��ȤäƤ��뤫��ۤȤ�ɰռ������ǡ�����
-�������뤳�Ȥ��ǽ�Ȥ��뤿��λ��ȤߤǤ���
-����ե������ͥ���̤�
+BioRegistryとは、設定ファイルによって各データベースのエントリ取得方法を
+指定することにより、どんな方法を使っているかをほとんど意識せずデータを
+取得することを可能とするための仕組みです。
+設定ファイルの優先順位は
 
-  * (�᥽�åɤΥѥ�᡼����)���ꤷ���ե�����
+  * (メソッドのパラメータで)指定したファイル
   * ~/.bioinformatics/seqdatabase.ini
   * /etc/bioinformatics/seqdatabase.ini
   * http://www.open-bio.org/registry/seqdatabase.ini
 
-�Ǹ�� open-bio.org ������ϡ��������������ե����뤬���Ĥ���ʤ�����
-�������Ȥ��ޤ���
+最後の open-bio.org の設定は、ローカルな設定ファイルが見つからない場合に
+だけ参照します。
 
-BioRuby �θ��ߤμ����Ǥϡ����٤ƤΥ������������ե�������ɤ߹��ߡ�
-Ʊ��̾�������꤬ʣ��¸�ߤ������ϡ��ǽ�˸��Ĥ��ä�������������Ѥ���ޤ���
-��������Ѥ���ȡ����Ȥ��С������ƥ�����Ԥ� /etc/bioinformatics/ ���֤���
-����Τ����Ŀ�Ū���ѹ���������Τ��� ~/.bioinformatics/ �Ǿ�񤭤��뤳�Ȥ�
-�Ǥ��ޤ�������ץ�� seqdatabase.ini �ե����뤬 bioruby �Υ������˴ޤޤ��
-���ޤ��Τǻ��Ȥ��Ƥ���������
+BioRuby の現在の実装では、すべてのローカルな設定ファイルを読み込み、
+同じ名前の設定が複数存在した場合は、最初に見つかった設定だけが使用されます。
+これを利用すると、たとえば、システム管理者が /etc/bioinformatics/ に置いた
+設定のうち個人的に変更したいものだけ ~/.bioinformatics/ で上書きすることが
+できます。サンプルの seqdatabase.ini ファイルが bioruby のソースに含まれて
+いますので参照してください。
 
-����ե��������Ȥ� stanza �ե����ޥåȤȸƤФ��񼰤ǵ��Ҥ��ޤ���
+設定ファイルの中身は stanza フォーマットと呼ばれる書式で記述します。
 
-    [�ǡ����١���̾]
-    protocol=�ץ��ȥ���̾
-    location=������̾
+    [データベース名]
+    protocol=プロトコル名
+    location=サーバ名
 
-���Τ褦�ʥ���ȥ��ƥǡ����١����ˤĤ��Ƶ��Ҥ��뤳�Ȥˤʤ�ޤ���
-�ǡ����١���̾�ϡ���ʬ�����Ѥ��뤿��Υ�٥�ʤΤ�ʬ����䤹����Τ�
-�Ĥ�����ɤ����ºݤΥǡ����١�����̾���ȰۤʤäƤ��Ƥ⹽��ʤ��褦�Ǥ���
-Ʊ��̾���Υǡ����١�����ʣ������Ȥ��Ϻǽ�˽񤫤�Ƥ����Τ�����
-��³���褦�˻��ͽ�Ǥ���Ƥ���Ƥ��ޤ��������ΤȤ��� BioRuby �Ǥ�
-����ˤ��б����Ƥ��ޤ���
+このようなエントリを各データベースについて記述することになります。
+データベース名は、自分が使用するためのラベルなので分かりやすいものを
+つければ良く、実際のデータベースの名前と異なっていても構わないようです。
+同じ名前のデータベースが複数あるときは最初に書かれているものから順に
+接続を試すように仕様書では提案されていますが、今のところ BioRuby では
+それには対応していません。
 
-�ޤ����ץ��ȥ���μ���ˤ�äƤ� location �ʳ��ˤ��MySQL �Υ桼��̾�ʤɡ�
-�ɲäΥ��ץ����򵭽Ҥ���ɬ�פ�����ޤ������ߤΤȤ��������ͽ�ǵ��ꤵ��
-�Ƥ��� protocol �Ȥ��Ƥϰʲ��Τ�Τ�����ޤ���
+また、プロトコルの種類によっては location 以外にも（MySQL のユーザ名など）
+追加のオプションを記述する必要があります。現在のところ、仕様書で規定され
+ている protocol としては以下のものがあります。
 
   * index-flat
   * index-berkeleydb
@@ -2416,112 +2416,112 @@ BioRuby �θ��ߤμ����Ǥϡ����٤ƤΥ������������ե�������ɤ߹��ߡ�
   * bsane-corba
   * xembl
 
-���ΤȤ��� BioRuby �ǻ��Ѳ�ǽ�ʤΤ� index-flat, index-berkleydb, biofetch
-�� biosql �����Ǥ����ޤ���BioRegistry��ƥץ��ȥ���λ��ͤ��ѹ�����뤳��
-������ޤ�����BioRuby�Ϥ�����ɽ��Ǥ��Ƥ��ʤ����⤷��ޤ���
+今のところ BioRuby で使用可能なのは index-flat, index-berkleydb, biofetch
+と biosql だけです。また、BioRegistryや各プロトコルの仕様は変更されること
+がありますが、BioRubyはそれに追従できていないかもしれません。
 
-BioRegistry ��Ȥ��ˤϡ��ޤ� Bio::Registry���֥������Ȥ�������ޤ���
-����ȡ�����ե����뤬�ɤ߹��ޤ�ޤ���
+BioRegistry を使うには、まず Bio::Registryオブジェクトを作成します。
+すると、設定ファイルが読み込まれます。
 
     reg = Bio::Registry.new
     
-    # ����ե�����˽񤤤��ǡ����١���̾�ǥ����Ф���³
+    # 設定ファイルに書いたデータベース名でサーバへ接続
     serv = reg.get_database('genbank')
     
-    # ID ����ꤷ�ƥ���ȥ�����
+    # ID を指定してエントリを取得
     entry = serv.get_by_id('AA2CG')
 
-������ serv ������ե������ [genbank] ����ǻ��ꤷ�� protocol �ץ��ȥ�
-����б����륵���Х��֥������Ȥǡ�Bio::SQL �� Bio::Fetch �ʤɤΥ��󥹥�
-�󥹤��֤äƤ���Ϥ��Ǥ��ʥǡ����١���̾�����Ĥ���ʤ��ä����� nil�ˡ�
+ここで serv は設定ファイルの [genbank] の欄で指定した protocol プロトコ
+ルに対応するサーバオブジェクトで、Bio::SQL や Bio::Fetch などのインスタ
+ンスが返っているはずです（データベース名が見つからなかった場合は nil）。
 
-���Ȥ� OBDA ���̤Υ���ȥ�����᥽�å� get_by_id ��Ƥ���ꡢ�����Х�
-�֥���������˸�ͭ�Υ᥽�åɤ�Ƥ֤��Ȥˤʤ�ޤ��Τǡ��ʲ��� BioFetch ��
-BioSQL �β���򻲾Ȥ��Ƥ���������
+あとは OBDA 共通のエントリ取得メソッド get_by_id を呼んだり、サーバオ
+ブジェクト毎に固有のメソッドを呼ぶことになりますので、以下の BioFetch や
+BioSQL の解説を参照してください。
 
 
 == BioFlat
 
-BioFlat �ϥե�åȥե�������Ф��ƥ���ǥå����������������ȥ���®��
-���Ф����ȤߤǤ�������ǥå����μ���ϡ�RUby�γ�ĥ�饤�֥��˰�¸���ʤ�
-index-flat �� Berkeley DB (bdb) ��Ȥä� index-berkeleydb ��2���ब¸��
-���ޤ����ʤ���index-berkeleydb ����Ѥ���ˤϡ�BDB �Ȥ��� Ruby �γ�ĥ
-�饤�֥������ӥ��󥹥ȡ��뤹��ɬ�פ�����ޤ�������ǥå����κ����ˤ�
-bioruby �ѥå���������°���� br_bioflat.rb ���ޥ�ɤ�Ȥäơ�
+BioFlat はフラットファイルに対してインデックスを作成し、エントリを高速に
+取り出す仕組みです。インデックスの種類は、RUbyの拡張ライブラリに依存しない
+index-flat と Berkeley DB (bdb) を使った index-berkeleydb の2種類が存在
+します。なお、index-berkeleydb を使用するには、BDB という Ruby の拡張
+ライブラリを別途インストールする必要があります。インデックスの作成には
+bioruby パッケージに付属する br_bioflat.rb コマンドを使って、
 
-    % br_bioflat.rb --makeindex �ǡ����١���̾ [--format ���饹̾] �ե�����̾
+    % br_bioflat.rb --makeindex データベース名 [--format クラス名] ファイル名
 
-�Τ褦�ˤ��ޤ���BioRuby�ϥǡ����ե����ޥåȤμ�ưǧ����ǽ����ܤ��Ƥ���
-�Τ� --format ���ץ����Ͼ�ά��ǽ�Ǥ��������줦�ޤ�ǧ�����ʤ��ä�����
-BioRuby �γƥǡ����١����Υ��饹̾����ꤷ�Ƥ��������������ϡ�
+のようにします。BioRubyはデータフォーマットの自動認識機能を搭載している
+ので --format オプションは省略可能ですが、万一うまく認識しなかった場合は
+BioRuby の各データベースのクラス名を指定してください。検索は、
 
-    % bioflat �ǡ����١���̾ ����ȥ�ID
+    % bioflat データベース名 エントリID
 
-�Ȥ��ޤ�������Ū�� GenBank �� gbbct*.seq �ե�����˥���ǥå����������
-�Ƹ��������硢
+とします。具体的に GenBank の gbbct*.seq ファイルにインデックスを作成し
+て検索する場合、
 
     % bioflat --makeindex my_bctdb --format GenBank gbbct*.seq
     % bioflat my_bctdb A16STM262
 
-�Τ褦�ʴ����ˤʤ�ޤ���
+のような感じになります。
 
-Ruby �� bdb ��ĥ�⥸�塼��(�ܺ٤� http://raa.ruby-lang.org/project/bdb/ ����)
-�����󥹥ȡ��뤵��Ƥ������ Berkeley DB �����Ѥ��ƥ���ǥå������������
-���Ȥ��Ǥ��ޤ������ξ�硢
+Ruby の bdb 拡張モジュール(詳細は http://raa.ruby-lang.org/project/bdb/ 参照)
+がインストールされている場合は Berkeley DB を利用してインデックスを作成する
+ことができます。この場合、
 
-    % bioflat --makeindex-bdb �ǡ����١���̾ [--format ���饹̾] �ե�����̾
+    % bioflat --makeindex-bdb データベース名 [--format クラス名] ファイル名
 
-�Τ褦�� "--makeindex" �Τ����� "--makeindex-bdb" ����ꤷ�ޤ���
+のように "--makeindex" のかわりに "--makeindex-bdb" を指定します。
 
 
 == BioFetch
 
-BioFetch �� CGI ���ͳ���ƥ����Ф���ǡ����١����Υ���ȥ������������
-�ǡ������Ф�������� CGI �Υ��ץ����̾�����顼�����ɤʤɤ������Ƥ�
-�ޤ������饤����Ȥ� HTTP ��Ȥäƥǡ����١�����ID���ե����ޥåȤʤɤ��
-�ꤷ������ȥ��������ޤ���
+BioFetch は CGI を経由してサーバからデータベースのエントリを取得する仕様
+で、サーバが受け取る CGI のオプション名、エラーコードなどが決められてい
+ます。クライアントは HTTP を使ってデータベース、ID、フォーマットなどを指
+定し、エントリを取得します。
 
-BioRuby �ץ��������ȤǤ� GenomeNet �� DBGET �����ƥ��Хå�����ɤȤ���
-BioFetch �����Ф�������Ƥ��ꡢbioruby.org �Ǳ��Ѥ��Ƥ��ޤ������Υ����Ф�
-�����������ɤ� BioRuby �� sample/ �ǥ��쥯�ȥ�����äƤ��ޤ������ߤΤȤ���
-BioFetch �����ФϤ��� bioruby.org �Τ�Τ� EBI ���󤫽ꤷ������ޤ���
+BioRuby プロジェクトでは GenomeNet の DBGET システムをバックエンドとした
+BioFetch サーバを実装しており、bioruby.org で運用しています。このサーバの
+ソースコードは BioRuby の sample/ ディレクトリに入っています。現在のところ
+BioFetch サーバはこの bioruby.org のものと EBI の二か所しかありません。
 
-BioFetch ��Ȥäƥ���ȥ���������ˤϡ������Ĥ�����ˡ������ޤ���
+BioFetch を使ってエントリを取得するには、いくつかの方法があります。
 
-(1) �����֥֥饦�����鸡��������ˡ�ʰʲ��Υڡ����򳫤���
+(1) ウェブブラウザから検索する方法（以下のページを開く）
 
       http://bioruby.org/cgi-bin/biofetch.rb
 
-(2) BioRuby��°�� br_biofetch.rb ���ޥ�ɤ��Ѥ�����ˡ
+(2) BioRuby付属の br_biofetch.rb コマンドを用いる方法
 
       % br_biofetch.rb db_name entry_id
 
-(3) ������ץȤ��椫�� Bio::Fetch ���饹��ľ�ܻȤ���ˡ
+(3) スクリプトの中から Bio::Fetch クラスを直接使う方法
 
       serv = Bio::Fetch.new(server_url)
       entry = serv.fetch(db_name, entry_id)
 
-(4) ������ץȤ���� BioRegistry ��ͳ�� Bio::Fetch ���饹�����Ū�˻Ȥ���ˡ
+(4) スクリプトの中で BioRegistry 経由で Bio::Fetch クラスを間接的に使う方法
 
       reg = Bio::Registry.new
       serv = reg.get_database('genbank')
       entry = serv.get_by_id('AA2CG')
 
-�⤷ (4) ��Ȥ��������� seqdatabase.ini ��
+もし (4) を使いたい場合は seqdatabase.ini で
 
     [genbank]
     protocol=biofetch
     location=http://bioruby.org/cgi-bin/biofetch.rb
     biodbname=genbank
 
-�ʤɤȻ��ꤷ�Ƥ���ɬ�פ�����ޤ���
+などと指定しておく必要があります。
 
-=== BioFetch �� Bio::KEGG::GENES, Bio::AAindex1 ���Ȥ߹�碌����
+=== BioFetch と Bio::KEGG::GENES, Bio::AAindex1 を組み合わせた例
 
-���Υץ������ϡ�BioFetch ��Ȥä� KEGG �� GENES �ǡ����١�������źٶ�
-Halobacterium �ΥХ��ƥꥢ���ɥץ�������� (VNG1467G) ���äƤ��ơ�Ʊ��
-�褦�˥��ߥλ���ɸ�ǡ����١����Ǥ��� AAindex ��������������إ�å�����
-��ɸ (BURA740101) ��Ȥäơ��� 15 �Ĵ�Υ�����ɥ��������򤹤���Ǥ���
+次のプログラムは、BioFetch を使って KEGG の GENES データベースから古細菌
+Halobacterium のバクテリアロドプシン遺伝子 (VNG1467G) を取ってきて、同じ
+ようにアミノ酸指標データベースである AAindex から取得したαヘリックスの
+指標 (BURA740101) を使って、幅 15 残基のウィンドウサーチをする例です。
 
     #!/usr/bin/env ruby
     
@@ -2542,45 +2542,45 @@ Halobacterium �ΥХ��ƥꥢ���ɥץ�������� (VNG1467G) ���äƤ��ơ�Ʊ��
       position += 1
     end
 
-�����ǻȤäƤ��륯�饹�᥽�å� Bio::Fetch.query �ϰ��ۤ� bioruby.org ��
-BioFetch �����Ф�Ȥ����ѤΥ��硼�ȥ��åȤǤ����ʤ��Υ����Ф�����Ū�ˤ�
-���Υ�ͥåȤ���ǡ�����������Ƥ��ޤ���KEGG/GENES �ǡ����١����� hal �� 
-AAindex �ǡ����١��� aax1 �Υ���ȥ�ϡ�¾�� BioFetch �����ФǤϼ����Ǥ�
-�ʤ����Ȥ⤢�äơ������� query �᥽�åɤ�ȤäƤ��ޤ�����
+ここで使っているクラスメソッド Bio::Fetch.query は暗黙に bioruby.org の
+BioFetch サーバを使う専用のショートカットです。（このサーバは内部的には
+ゲノムネットからデータを取得しています。KEGG/GENES データベースの hal や 
+AAindex データベース aax1 のエントリは、他の BioFetch サーバでは取得でき
+ないこともあって、あえて query メソッドを使っています。）
 
 == BioSQL
 
 to be written...
 
-== BioRuby �Υ���ץ�ץ������λȤ���
+== BioRuby のサンプルプログラムの使い方
 
-BioRuby �Υѥå������ˤ� samples/ �ǥ��쥯�ȥ�ʲ��ˤ����Ĥ��Υ���ץ��
-������ब�ޤޤ�Ƥ��ޤ����Ť���Τ⺮���äƤ��ޤ������̤�ȤƤ⽽ʬ�Ȥ�
-�����ʤ��Τǡ�����Ū�����򤤥���ץ���󶡤ϴ��ޤǤ���
+BioRuby のパッケージには samples/ ディレクトリ以下にいくつかのサンプルプ
+ログラムが含まれています。古いものも混じっていますし、量もとても十分とは
+言えないので、実用的で面白いサンプルの提供は歓迎です。
 
 to be written...
 
-== ����ʤ����
+== さらなる情報
 
-¾�Υ��塼�ȥꥢ��Ū�ʥɥ�����ȤȤ��Ƥϡ�BioRuby Wiki���֤��Ƥ���
-BioRuby in Anger ������ޤ���
+他のチュートリアル的なドキュメントとしては、BioRuby Wikiに置いてある
+BioRuby in Anger があります。
 
 
-== ����
+== 脚注
 
-* (��1) BioRuby 1.2.1 �����ΥС������Ǥϡ�setup.rb �Τ����� install.rb
-  ����Ѥ��ޤ����ޤ����ʲ��Τ褦��3�ʳ���Ƨ��ɬ�פ�����ޤ���
+* (※1) BioRuby 1.2.1 以前のバージョンでは、setup.rb のかわりに install.rb
+  を使用します。また、以下のように3段階を踏む必要があります。
 
     % ruby install.rb config
     % ruby install.rb setup
     # ruby install.rb install
 
-* (��2) BioRuby 1.0.0 �����ΥС������Ǥϡ�getseq, getent, getobj
-  �γƥ��ޥ�ɤΤ����ˡ�seq, ent, obj �γƥ��ޥ�ɤ���Ѥ��Ƥ���������
+* (※2) BioRuby 1.0.0 以前のバージョンでは、getseq, getent, getobj
+  の各コマンドのかわりに、seq, ent, obj の各コマンドを使用してください。
 
-* (��3) BioRuby 0.7.1 �����ΥС������Ǥϡ�Bio::Sequence::NA ���饹����
-  Bio::sequence::AA ���饹�Τɤ��餫�Υ��֥������Ȥˤʤ�ޤ���
-  ���󤬤ɤ���Υ��饹��°���뤫�� Ruby �� class �᥽�åɤ��Ѥ���
+* (※3) BioRuby 0.7.1 以前のバージョンでは、Bio::Sequence::NA クラスか、
+  Bio::sequence::AA クラスのどちらかのオブジェクトになります。
+  配列がどちらのクラスに属するかは Ruby の class メソッドを用いて
 
     bioruby> p cdc2.class
     Bio::Sequence::AA
@@ -2588,15 +2588,15 @@ BioRuby in Anger ������ޤ���
     bioruby> p psaB.class
     Bio::Sequence::NA
 
-  �Τ褦��Ĵ�٤뤳�Ȥ��Ǥ��ޤ�����ưȽ�꤬�ְ�äƤ�����ʤɤˤ�
-  to_naseq, to_aaseq �᥽�åɤǶ���Ū���Ѵ��Ǥ��ޤ���
+  のように調べることができます。自動判定が間違っている場合などには
+  to_naseq, to_aaseq メソッドで強制的に変換できます。
 
-* (��4) seq �᥽�åɤϡ��ɤ߹�����ǡ����μ���ˤ�äƤϡ����𡦥��ߥλ���
-  �ɤ���ˤ����ƤϤޤ�ʤ�����Τ���� Bio::Sequence::Generic ���饹��
-  String ���饹�Υ��֥������Ȥ��֤���礬���뤫�⤷��ޤ���
+* (※4) seq メソッドは、読み込んだデータの種類によっては、塩基・アミノ酸の
+  どちらにも当てはまらない配列のための Bio::Sequence::Generic クラスや
+  String クラスのオブジェクトを返す場合があるかもしれません。
 
-* (��5) NCBI, EBI, TogoWS �����̤�����̵���� getseq, getent, getobj ���ޥ��
-  �������Ѳ�ǽ�Ȥʤä��Τ� BioRuby 1.3.0 �ʹߤǤ���
+* (※5) NCBI, EBI, TogoWS が特別な設定無しに getseq, getent, getobj コマンド
+  から利用可能となったのは BioRuby 1.3.0 以降です。
 
 =end
 
