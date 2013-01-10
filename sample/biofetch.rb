@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# coding: utf-8
 #
 # biofetch.rb : BioFetch server (interface to TogoWS)
 #
