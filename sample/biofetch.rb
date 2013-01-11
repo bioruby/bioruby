@@ -127,31 +127,43 @@ module BioFetchError
   end
 
   def error1(db)
+    db = CGI.escapeHTML(db.to_s) # to avoid potential XSS with old IE
     str = "ERROR 1 Unknown database [#{db}]."
     print_text_page(str)
   end
 
   def error2(style)
+    style = CGI.escapeHTML(style.to_s) # to avoid potential XSS with old IE
     str = "ERROR 2 Unknown style [#{style}]."
     print_text_page(str)
   end
 
   def error3(format, db)
+    # to avoid potential XSS with old IE which ignores Content-Type
+    db = CGI.escapeHTML(db.to_s)
+    format = CGI.escapeHTML(format.to_s)
     str = "ERROR 3 Format [#{format}] not known for database [#{db}]."
     print_text_page(str)
   end
 
   def error4(entry_id, db)
+    # to avoid potential XSS with old IE which ignores Content-Type
+    entry_id = CGI.escapeHTML(entry_id.to_s)
+    db = CGI.escapeHTML(db.to_s)
     str = "ERROR 4 ID [#{entry_id}] not found in database [#{db}]."
     print_text_page(str)
   end
 
   def error5(count)
+    # to avoid potential XSS with old IE which ignores Content-Type
+    count = CGI.escapeHTML(count.to_s)
     str = "ERROR 5 Too many IDs [#{count}]. Max [#{MAX_ID_NUM}] allowed."
     print_text_page(str)
   end
 
   def error6(info)
+    # to avoid potential XSS with old IE which ignores Content-Type
+    count = CGI.escapeHTML(info.to_s)
     str = "ERROR 6 Illegal information request [#{info}]."
     print_text_page(str)
   end
@@ -204,11 +216,51 @@ module ApiBridge
 
 end #module ApiBridge
 
+module BioFetchCheck
 
+  include ApiBridge
 
+  private
+
+  def check_style(style)
+    style = style.to_s.downcase
+    error2(style) unless /\A(html|raw)\z/.match(style)
+    style
+  end
+
+  def check_format(format, db)
+    fmt = format ? format.to_s.downcase : nil
+    case fmt
+    when 'fasta'
+      db = check_dbname(db)
+      fmt = nil unless check_fasta_ok?(db)
+    when 'default'
+      # do nothing
+    when nil
+      fmt = 'default'
+    else
+      fmt = nil
+    end
+
+    error3(format, db) unless fmt
+    fmt
+  end
+
+  def check_number_of_id(num)
+    error5(num) if num > MAX_ID_NUM
+  end
+
+  def check_dbname(db)
+    db = db.to_s.downcase
+    error1(db) unless list_databases.include?(db)
+    db
+  end
+
+end #module BioFetchCheck
 
 class BioFetch
 
+  include BioFetchCheck
   include BioFetchError
   include ApiBridge
 
@@ -228,43 +280,21 @@ class BioFetch
 
   end
 
-  private
-
-  def check_style(style)
-    style = style.to_s.downcase
-    error2(style) unless /\A(html|raw)\z/.match(style)
-    style
-  end
-
-  def check_format(format, db)
-    error3(format, db) if format && ! /\A(fasta|default)\z/.match(format)
-    format = format ? format.downcase : nil
-    format
-  end
-
-  def check_number_of_id(num)
-    error5(num) if num > MAX_ID_NUM
-  end
-
-  def check_dbname(db)
-    db = db.to_s.downcase
-    error1(db) unless list_databases.include?(db)
-    db
-  end
-
-end
+end #class BioFetch
 
 
 
 class BioFetchInfo
 
+  include BioFetchCheck
   include BioFetchError
   include ApiBridge
 
   def initialize(info, db)
     @db = db
+
     begin
-      send(info)
+      check_info(info) ? __send__(info) : raise
     rescue
       error6(info)
     end
@@ -272,13 +302,18 @@ class BioFetchInfo
 
   private
 
+  def check_info(meth_name)
+    /\A(dbs|formats|maxids)\z/ =~ meth_name
+  end
+
   def dbs
     str = list_databases.sort.join(' ')
     print_text_page(str)
   end
 
   def formats
-    fasta = " fasta" if check_fasta_ok?(@db)
+    db = check_dbname(@db)
+    fasta = " fasta" if check_fasta_ok?(db)
     str = "default#{fasta}"
     print_text_page(str)
   end
@@ -288,7 +323,7 @@ class BioFetchInfo
     print_text_page(str)
   end
 
-end
+end #class BioFetchInfo
 
 
 
