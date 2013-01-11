@@ -434,16 +434,16 @@ BioFetch interface to
 
 <DL>
   <DT> <A href="?format=default;style=raw;db=nonexistent;id=AJ617376">Error1</A> sample : DB not found
-  <DD> <%= base_url %>?format=default;style=raw;db=nonexistent;id=AJ617376"
+  <DD> <%= base_url %>?format=default;style=raw;db=nonexistent;id=AJ617376
 
   <DT> <A href="?format=default;style=nonexistent;db=nuccore;id=AJ617376">Error2</A> sample : unknown style
-  <DD> <%= base_url %>?format=default;style=nonexistent;db=nuccore;id=AJ617376"
+  <DD> <%= base_url %>?format=default;style=nonexistent;db=nuccore;id=AJ617376
 
   <DT> <A href="?format=nonexistent;style=raw;db=nuccore;id=AJ617376">Error3</A> sample : unknown format
-  <DD> <%= base_url %>?format=nonexistent;style=raw;db=nuccore;id=AJ617376"
+  <DD> <%= base_url %>?format=nonexistent;style=raw;db=nuccore;id=AJ617376
 
   <DT> <A href="?format=default;style=raw;db=nuccore;id=nonexistent">Error4</A> sample : ID not found
-  <DD> <%= base_url %>?format=default;style=raw;db=nuccore;id=nonexistent"
+  <DD> <%= base_url %>?format=default;style=raw;db=nuccore;id=nonexistent
 
   <DT> <A href="?style=raw;db=genes;id=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51">Error5</A> sample : too many IDs
   <DD> <%= base_url %>?style=raw;db=genes;id=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51
