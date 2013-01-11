@@ -25,12 +25,92 @@
 require 'cgi'
 require 'erb'
 require 'open-uri'
+require 'fileutils'
+require 'tempfile'
 
 MAX_ID_NUM = 50
-TOGOWS = 'http://togows.dbcls.jp/'
 
+# script name
 SCRIPT_NAME = File.basename(__FILE__)
+
+# full URL for this CGI
 BASE_URL = "http://bioruby.org/cgi-bin/#{SCRIPT_NAME}"
+
+# cache directory for metadata
+# Note: The cache is only for metadata (database list and format list).
+# Data entries are NOT cached.
+CACHE_DIR = '/tmp/biofetch_rb.cache'
+
+# cache lifetime
+CACHE_LIFETIME = 60 * 60 # 1 hour
+
+module TogoWS
+  TOGOWS_URL = 'http://togows.dbcls.jp/'
+
+  def togows_database_complete_list
+    result = togows_get_cached('/entry/')
+    result.to_s.split(/\n/).collect {|x| x.split(/\t/) }
+  end
+
+  def togows_database_formats(db)
+    db = CGI.escape(db)
+    result = togows_get_cached("/entry/#{db}/?formats")
+  end
+
+  def togows_get(path)
+    uristr = TOGOWS_URL + path
+    begin
+      result = OpenURI.open_uri(uristr).read
+    rescue OpenURI::HTTPError
+      result = nil
+    end
+    result
+  end
+
+  private
+
+  def togows_get_cached(path)
+    filepath = path.sub(/\A\//, '').sub(/\/\z/, '')
+    filepath = filepath.gsub(/\//, " ")
+    filepath = filepath.sub(/\?/, '_')
+    filepath = File.join(CACHE_DIR, filepath)
+    result = nil
+    begin
+      if Time.now - File.mtime(filepath) > CACHE_LIFETIME
+        # delete expired cache file
+        File.delete(filepath)
+      end
+      result = File.read(filepath)
+    rescue IOError, SystemCallError
+      result = nil
+    end
+    unless result then
+      # valid cache is not found
+      result = togows_get(path)
+      if result then
+        # create cache directory if not found
+        FileUtils.mkdir_p(CACHE_DIR, :mode => 0700)
+        # simple security check for the cache dir
+        if File.stat(CACHE_DIR).mode & 0022 != 0 then
+          raise SecurityError, "CACHE_DIR #{CACHE_DIR} is writeable by others"
+        end
+
+        # write to temporary file
+        tmp = Tempfile.open('temp', CACHE_DIR)
+        tmp.print result
+        tmp.close
+        # create a hard link from the temporary to the cache file
+        begin
+          File.link(tmp.path, filepath)
+        rescue IOError, SystemCallError
+        end
+        # the temporay file will be automatically removed at exit
+      end
+    end
+    result
+  end
+
+end #module TogoWS
 
 module BioFetchError
 
@@ -83,15 +163,10 @@ end
 module ApiBridge
 
   include BioFetchError
+  include TogoWS
 
   def list_databases_with_synonyms
-    uristr = TOGOWS + '/entry/'
-    begin
-      result = OpenURI.open_uri(uristr).read
-    rescue OpenURI::HTTPError
-      error6('Internal server error')
-    end
-    result.split(/\n/).collect {|x| x.split(/\t/) }
+    togows_database_complete_list
   end
 
   def list_databases
@@ -110,13 +185,8 @@ module ApiBridge
     results = ''
     id_list.each do |query_id|
       query_id = CGI.escape(query_id)
-
-      uristr = "#{TOGOWS}/entry/#{db}/#{query_id}#{format}"
-      begin
-        result = OpenURI.open_uri(uristr).read
-      rescue OpenURI::HTTPError
-        result = nil
-      end
+      path = "/entry/#{db}/#{query_id}#{format}"
+      result = togows_get(path)
 
       if !result or result.empty? or /\AError\: / =~ result then
         error4(query_id, db)
@@ -128,13 +198,7 @@ module ApiBridge
   end
 
   def check_fasta_ok?(db)
-    db = CGI.escape(db)
-    uristr = "#{TOGOWS}/entry/#{db}/?formats"
-    begin
-      result = OpenURI.open_uri(uristr).read
-    rescue OpenURI::HTTPError
-      result = nil
-    end
+    result = togows_database_formats(db)
     /^fasta$/ =~ result.to_s
   end
 
@@ -258,7 +322,7 @@ class BioFetchCGI
     databases = list_databases
     script_name = SCRIPT_NAME
     base_url = BASE_URL
-    @cgi.out do
+    @cgi.out({ "type" => "text/html", "charset" => "utf-8" }) do
       html.result(binding)
     end
   end
