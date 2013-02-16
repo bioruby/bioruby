@@ -256,7 +256,7 @@ module Bio
         # Parses the first line of the BLAST result.
         def format0_parse_header
           unless defined?(@program)
-            if /([\-\w]+) +([\w\-\.\d]+) *\[ *([\-\.\w]+) *\] *(\[.+\])?/ =~ @f0header.to_s
+            if /([\-\w]+) +([\w\-\.]+) *\[ *([\-\.\w]+) *\] *(\[.+\])?/ =~ @f0header.to_s
               @program = $1
               @version = "#{$1} #{$2} [#{$3}]"
               @version_number = $2

@@ -461,7 +461,7 @@ class SPTR < EMBLDB
     unless @data['OS']
       os = Array.new
       fetch('OS').split(/, and|, /).each do |tmp|
-        if tmp =~ /(\w+ *[\w\d \:\'\+\-\.]+[\w\d\.])/
+        if tmp =~ /(\w+ *[\w \:\'\+\-\.]+[\w\.])/
           org = $1
           tmp =~ /(\(.+\))/ 
           os.push({'name' => $1, 'os' => org})
