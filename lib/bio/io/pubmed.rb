@@ -140,7 +140,7 @@ class PubMed < Bio::NCBI::REST
     http = Bio::Command.new_http(host)
     response = http.get(path + CGI.escape(str))
     result = response.body
-    result = result.scan(/value="(\d+)" id="UidCheckBox"/m).flatten
+    result = result.scan(/<dt>PMID:<\/dt>\s+<dd>(\d+)<\/dd>/m).flatten
     return result
   end
 
