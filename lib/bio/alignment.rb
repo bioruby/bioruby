@@ -1650,7 +1650,6 @@ module Bio
       # (Like Hash#rehash)
       def rehash
         @seqs.rehash
-        oldkeys = @keys
         tmpkeys = @seqs.keys
         @keys.collect! do |k|
           tmpkeys.delete(k)
