@@ -292,7 +292,6 @@ module Bio
       while token = ary.shift
         if labels = self.class::NSIDs[token] then
           di = [ token ]
-          idtype = token
           labels.each do |x|
             token = ary.shift
             break unless token
