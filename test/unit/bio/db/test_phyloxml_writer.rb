@@ -172,7 +172,7 @@ module Bio
       writer.write(tree)
 
       assert_nothing_thrown do
-        tree2  = Bio::PhyloXML::Parser.open(filename) { |px| true }
+        Bio::PhyloXML::Parser.open(filename) { |px| true }
       end
 
       #File.delete(filename)
@@ -192,7 +192,7 @@ module Bio
       writer.write(@tree)
 
       assert_nothing_thrown do
-        tree2  = Bio::PhyloXML::Parser.open(filename) { |px| true }
+        Bio::PhyloXML::Parser.open(filename) { |px| true }
       end
       
       #File.delete(filename)
