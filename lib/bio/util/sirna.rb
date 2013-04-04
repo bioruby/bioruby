@@ -1,8 +1,9 @@
 #
 # = bio/util/sirna.rb - Class for designing small inhibitory RNAs
 #
-# Copyright::   Copyright (C) 2004, 2005
+# Copyright::   Copyright (C) 2004-2013
 #               Itoshi NIKAIDO <dritoshi@gmail.com>
+#               Yuki NAITO <y-naito@rnai.jp>
 # License::     The Ruby License
 #
 # $Id:$
@@ -33,10 +34,10 @@
 # 
 # * Kumiko Ui-Tei et al.  Guidelines for the selection of highly effective
 #   siRNA sequences for mammalian and chick RNA interference.
-#   Nucl. Acids. Res. 2004 32: 936-948.
+#   Nucleic Acids Res. 2004 32: 936-948.
 #    
 # * Angela Reynolds et al.  Rational siRNA design for RNA interference.
-#   Nature Biotech. 2004 22: 326-330.
+#   Nat. Biotechnol. 2004 22: 326-330.
 #
 
 require 'bio/sequence'
@@ -71,24 +72,64 @@ module Bio
 
     # Ui-Tei's rule.
     def uitei?(target)
-      return false unless /^.{2}[GC]/i =~ target
-      return false unless /[AU].{2}$/i =~ target
-      return false if     /[GC]{9}/i   =~ target
+      return false if target.length != 23  # 21 nt target + 2 nt overhang
 
-      one_third  = target.size * 1 / 3
-      start_pos  = @target_size - one_third - 1
-      remain_seq = target.subseq(start_pos, @target_size - 2)
-      au_number  = remain_seq.scan(/[AU]/i).size
-      return false if au_number < 5
-  
+      seq19 = target[2..20]  # 19 nt double-stranded region of siRNA
+
+      # criteria i
+      return false unless seq19[18..18].match(/[AU]/i)
+
+      # criteria ii
+      return false unless seq19[0..0].match(/[GC]/i)
+
+      # criteria iii
+      au_number = seq19[12..18].scan(/[AU]/i).size
+      return false unless au_number >= 4
+
+      # criteria iv
+      return false if seq19.match(/[GC]{10}/i)
+
       return true
     end
 
     # Reynolds' rule.
     def reynolds?(target)
-      return false if /[GC]{9}/i =~ target
-      return false unless /^.{4}A.{6}U.{2}[AUC].{5}[AU].{2}$/i =~ target
-      return true
+      return false if target.length != 23  # 21 nt target + 2 nt overhang
+
+      seq19 = target[2..20]  # 19 nt double-stranded region of siRNA
+      score = 0
+
+      # criteria I
+      gc_number = seq19.scan(/[GC]/i).size
+      score += 1 if (7 <= gc_number and gc_number <= 10)
+
+      # criteria II
+      au_number = seq19[14..18].scan(/[AU]/i).size
+      score += au_number
+
+      # criteria III
+      # NotImpremented: Tm
+
+      # criteria IV
+      score += 1 if seq19[18..18].match(/A/i)
+
+      # criteria V
+      score += 1 if seq19[2..2].match(/A/i)
+
+      # criteria VI
+      score += 1 if seq19[9..9].match(/[U]/i)
+
+      # criteria VII
+      score -= 1 if seq19[18..18].match(/[GC]/i)
+
+      # criteria VIII
+      score -= 1 if seq19[12..12].match(/G/i)
+
+      if score >= 6
+        return score
+      else
+        return false
+      end
     end
 
     # same as design('uitei').
@@ -253,6 +294,25 @@ end # module Bio
 =begin
 
 = ChangeLog
+
+  2013/04/03 Yuki NAITO <y-naito@rnai.jp>
+  Modified siRNA design rules:
+
+  - Ui-Tei's rule:
+    - Restricted target length to 23 nt (21 nt plus 2 nt overhang)
+      for selecting functional siRNAs.
+    - Avoided contiguous GCs 10 nt or more. (not 9 nt or more)
+
+  - Reynolds' rule:
+    - Restricted target length to 23 nt (21 nt plus 2 nt overhang)
+      for selecting functional siRNAs.
+    - Reynolds' rule does not require to fulfill all the criteria
+      simultaneously. Total score of eight criteria is calculated
+      and used for the siRNA efficacy prediction. This change may
+      significantly alter an output.
+    - Returns total score of eight criteria for functional siRNA,
+      instead of returning 'true'.
+    - Returns 'false' for non-functional siRNA, as usual.
 
   2005/03/21 Itoshi NIKAIDO <itoshi.nikaido@nifty.com>
   Bio::SiRNA#ShRNA_designer method was changed design method.

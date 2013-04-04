@@ -63,7 +63,7 @@ module Bio
       target = "G" * 9
       assert_equal(false, @obj.reynolds?(target))
       target = "aaaaAaaaaaaUaaAaaaaaAaa"
-      assert_equal(true, @obj.reynolds?(target))
+      assert_equal(8, @obj.reynolds?(target))
     end
 
     def test_uitei
@@ -111,23 +111,23 @@ module Bio
     end
 
     def test_target
-      assert_equal("gcggacguaaggaguauuccugu", @obj.target)
+      assert_equal("uucggugcggacguaaggaguau", @obj.target)
     end
 
     def test_sense
-      assert_equal("ggacguaaggaguauuccugu", @obj.sense)
+      assert_equal("cggugcggacguaaggaguau", @obj.sense)
     end
 
     def test_antisense
-      assert_equal("aggaauacuccuuacguccgc", @obj.antisense)
+      assert_equal("acuccuuacguccgcaccgaa", @obj.antisense)
     end
 
     def test_start
-      assert_equal(9, @obj.start)
+      assert_equal(3, @obj.start)
     end
 
     def test_stop
-      assert_equal(32, @obj.stop)
+      assert_equal(26, @obj.stop)
     end
 
     def test_rule
@@ -135,19 +135,19 @@ module Bio
     end
 
     def test_gc_percent
-      assert_equal(52.0, @obj.gc_percent)
+      assert_equal(57.0, @obj.gc_percent)
     end
 
     def test_report
 report =<<END
 ### siRNA
-Start: 9
-Stop:  32
+Start: 3
+Stop:  26
 Rule:  uitei
-GC %:  52
-Target:    GCGGACGUAAGGAGUAUUCCUGU
-Sense:       GGACGUAAGGAGUAUUCCUGU
-Antisense: CGCCUGCAUUCCUCAUAAGGA
+GC %:  57
+Target:    UUCGGUGCGGACGUAAGGAGUAU
+Sense:       CGGUGCGGACGUAAGGAGUAU
+Antisense: AAGCCACGCCUGCAUUCCUCA
 END
       assert_equal(report, @obj.report)
     end
@@ -172,7 +172,7 @@ END
 
     def test_top_strand
       @obj.design
-      assert_equal("caccggacguaaggaguauuccugugtgtgctgtccacaggaauacuccuuacgucc", @obj.top_strand)
+      assert_equal("caccgcggugcggacguaaggaguaugtgtgctgtccauacuccuuacguccgcaccg", @obj.top_strand)
     end
 
     def test_top_strand_class
@@ -186,7 +186,7 @@ END
 
     def test_bottom_strand
       @obj.design
-      assert_equal("aaaaggacguaaggaguauuccuguggacagcacacacaggaauacuccuuacgucc", @obj.bottom_strand)
+      assert_equal("aaaacggugcggacguaaggaguauggacagcacacauacuccuuacguccgcaccgc", @obj.bottom_strand)
     end
 
     def test_bottom_strand_class
@@ -207,11 +207,11 @@ END
     end
 
     def test_blocK_it
-      assert_equal("aaaaggacguaaggaguauuccuguggacagcacacacaggaauacuccuuacgucc", @obj.block_it)
+      assert_equal("aaaacggugcggacguaaggaguauggacagcacacauacuccuuacguccgcaccgc", @obj.block_it)
     end
 
     def test_blocK_it_BLOCK_iT
-      assert_equal("aaaaggacguaaggaguauuccuguggacagcacacacaggaauacuccuuacgucc", @obj.block_it)
+      assert_equal("aaaacggugcggacguaaggaguauggacagcacacauacuccuuacguccgcaccgc", @obj.block_it)
     end
 
     def test_blocK_it_BLOCK_IT
@@ -219,7 +219,7 @@ END
     end
 
     def test_blocK_it_piGene
-      assert_equal("aaaaggacguaaggaguauuccuguggacagcacacacaggaauacuccuuacgucc", @obj.block_it('piGENE'))
+      assert_equal("aaaacggugcggacguaaggaguauggacagcacacauacuccuuacguccgcaccgc", @obj.block_it('piGENE'))
     end
 
     def test_blocK_it_
@@ -229,10 +229,10 @@ END
     def test_report
       report =<<END
 ### shRNA
-Top strand shRNA (57 nt):
-  5'-CACCGGACGUAAGGAGUAUUCCUGUGTGTGCTGTCCACAGGAAUACUCCUUACGUCC-3'
-Bottom strand shRNA (57 nt):
-      3'-CCUGCAUUCCUCAUAAGGACACACACGACAGGUGUCCUUAUGAGGAAUGCAGGAAAA-5'
+Top strand shRNA (58 nt):
+  5'-CACCGCGGUGCGGACGUAAGGAGUAUGTGTGCTGTCCAUACUCCUUACGUCCGCACCG-3'
+Bottom strand shRNA (58 nt):
+      3'-CGCCACGCCUGCAUUCCUCAUACACACGACAGGUAUGAGGAAUGCAGGCGUGGCAAAA-5'
 END
       #@obj.design
       @obj.block_it
