@@ -74,7 +74,7 @@ module Bio
             fields = line.split(/\s/)
             
             if fields.size == 5
-              motifs << Motif.new(fields[0], strand = nil, fields[1], fields[2], fields[3], fields[4])
+              motifs << Motif.new(fields[0], nil, fields[1], fields[2], fields[3], fields[4])
             elsif fields.size == 6
               motifs << Motif.new(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5])
             else
