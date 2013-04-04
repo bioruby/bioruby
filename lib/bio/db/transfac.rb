@@ -118,7 +118,7 @@ class TRANSFAC < EMBLDB
         end
       end
       ma_dat.keys.sort.each_with_index do |k, i|
-        rep_nt = ma_dat[k].slice!(-1, 1)
+        ma_dat[k].slice!(-1, 1)
         ma_dat[k].slice!(-1, 1)
         ma_ary[i] = ma_dat[k].split(/\s+/)
         ma_ary[i].each_with_index do |x, j|
