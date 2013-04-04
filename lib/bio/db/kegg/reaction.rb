@@ -86,7 +86,7 @@ class REACTION < KEGGDB
     unless defined? @rpairs_as_hash
       rps = {}
       rpairs_as_strings.each do |line|
-        namespace, entry_id, name, rptype = line.split(/\s+/)
+        _, entry_id, name, rptype = line.split(/\s+/)
         rps[entry_id] = [ name, rptype ]
       end
       @rpairs_as_hash = rps

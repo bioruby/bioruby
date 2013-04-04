@@ -274,5 +274,5 @@ module Bio
      def test_exec_ncbi
        # to be tested in test/functional/bio/test_blast.rb
      end
-   end
- end
+  end
+end

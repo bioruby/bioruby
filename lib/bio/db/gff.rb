@@ -1066,7 +1066,7 @@ module Bio
 
         # parses given string and returns SequenceRegion class
         def self.parse(str)
-          dummy, seqid, start, endpos =
+          _, seqid, start, endpos =
             str.chomp.split(/\s+/, 4).collect { |x| unescape(x) }
           self.new(seqid, start, endpos)
         end

@@ -399,7 +399,6 @@ module Bio
       if fmt = ncbiopt.get('-m') then
         @format = fmt.to_i
       else
-        dummy = Bio::Blast::Report #dummy to load XMLParser or REXML
         if defined?(XMLParser) or defined?(REXML)
           @format ||= 7
         else

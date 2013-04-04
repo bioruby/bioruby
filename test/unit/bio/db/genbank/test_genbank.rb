@@ -202,7 +202,7 @@ module Bio
  "Saccharomycetaceae",
  "Saccharomyces"]
       assert_equal(expected, @obj.classification)
-    end
+   end
 
     def test_strandedness
       assert_equal(nil, @obj.strandedness)

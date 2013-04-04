@@ -588,7 +588,7 @@ module Bio::PAML
       # Graph of amino acids of first sequence at locations
       def graph_seq
         graph_to_s(lambda { |site |
-          symbol = site.aaref
+          site.aaref
         })
       end
       
