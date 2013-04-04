@@ -40,7 +40,6 @@ module Bio
 
   class TestBl2seqReportConstants < Test::Unit::TestCase
     def test_rs
-      rs = nil
       assert_equal(nil, Bio::Blast::Bl2seq::Report::RS)
       assert_equal(nil, Bio::Blast::Bl2seq::Report::DELIMITER)
     end
