@@ -36,43 +36,43 @@ module Bio
 
   module TestPhyloXMLData
 
-  PHYLOXML_TEST_DATA = Pathname.new(File.join(BioRubyTestDataPath, 'phyloxml')).cleanpath.to_s
+    PHYLOXML_TEST_DATA = Pathname.new(File.join(BioRubyTestDataPath, 'phyloxml')).cleanpath.to_s
 
-  def self.example_xml
-    File.join PHYLOXML_TEST_DATA, 'phyloxml_examples.xml'
-    #If you want to test the output of writer, then do this:
-    #File.join PHYLOXML_TEST_DATA, 'phyloxml_examples_test.xml'
-    # But make sure you run ruby test/unit/bio/db/test_phyloxml_writer.rb before
-  end
+    def self.example_xml
+      File.join PHYLOXML_TEST_DATA, 'phyloxml_examples.xml'
+      #If you want to test the output of writer, then do this:
+      #File.join PHYLOXML_TEST_DATA, 'phyloxml_examples_test.xml'
+      # But make sure you run ruby test/unit/bio/db/test_phyloxml_writer.rb before
+    end
 
-  def self.made_up_xml
-    File.join PHYLOXML_TEST_DATA, 'made_up.xml'
-    #If you want to test the output of writer, then do this:
-    #File.join PHYLOXML_TEST_DATA, 'made_up_test.xml'
-    # But make sure you run ruby test/unit/bio/db/test_phyloxml_writer.rb before
-  end
+    def self.made_up_xml
+      File.join PHYLOXML_TEST_DATA, 'made_up.xml'
+      #If you want to test the output of writer, then do this:
+      #File.join PHYLOXML_TEST_DATA, 'made_up_test.xml'
+      # But make sure you run ruby test/unit/bio/db/test_phyloxml_writer.rb before
+    end
 
-  def self.metazoa_xml
-    File.join PHYLOXML_TEST_DATA, 'ncbi_taxonomy_metazoa.xml'
-  end
+    def self.metazoa_xml
+      File.join PHYLOXML_TEST_DATA, 'ncbi_taxonomy_metazoa.xml'
+    end
 
-  def self.mollusca_xml
-    File.join PHYLOXML_TEST_DATA, 'ncbi_taxonomy_mollusca.xml'
-  end
+    def self.mollusca_xml
+      File.join PHYLOXML_TEST_DATA, 'ncbi_taxonomy_mollusca.xml'
+    end
 
-  def self.life_xml
-    File.join PHYLOXML_TEST_DATA, 'tol_life_on_earth_1.xml'
-  end
+    def self.life_xml
+      File.join PHYLOXML_TEST_DATA, 'tol_life_on_earth_1.xml'
+    end
 
-  def self.dollo_xml
-    File.join PHYLOXML_TEST_DATA, 'o_tol_332_d_dollo.xml'
-  end
+    def self.dollo_xml
+      File.join PHYLOXML_TEST_DATA, 'o_tol_332_d_dollo.xml'
+    end
 
-  def self.mollusca_short_xml
-    File.join PHYLOXML_TEST_DATA, 'ncbi_taxonomy_mollusca_short.xml'
-  end
+    def self.mollusca_short_xml
+      File.join PHYLOXML_TEST_DATA, 'ncbi_taxonomy_mollusca_short.xml'
+    end
 
-end #end module TestPhyloXMLData
+  end #end module TestPhyloXMLData
 
   
 
