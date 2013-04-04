@@ -331,8 +331,6 @@ class ContingencyTable
   # *Returns*:: +Float+ chi square value
   def chi_square
     total = 0
-    c = @characters
-    max = c.size - 1
     @characters.each do |i|    # Loop through every row in the ContingencyTable
       @characters.each do |j|  # Loop through every column in the ContingencyTable
         total += chi_square_element(i, j)
