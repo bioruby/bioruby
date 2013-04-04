@@ -150,13 +150,11 @@ module Bio
     end
 
     def test_gn_uniprot_parser
-      gn_uniprot_data = ''
       assert_equal([{:orfs=>[], :loci=>[], :name=>"TP53", :synonyms=>["P53"]}], 
                    @obj.instance_eval("gn_uniprot_parser"))
     end
 
     def test_gn_old_parser
-      gn_old_data = ''
       assert_equal([["Name=TP53; Synonyms=P53;"]], 
                    @obj.instance_eval("gn_old_parser"))
     end
@@ -1655,7 +1653,6 @@ CC   -----------------------------------------------------------------------"
   class TestSPTRUniProtRel7_6 < Test::Unit::TestCase
     # Sequences with over 10000 amino acids in UniProtKB/Swiss-Prot
     def test_10000aa
-      entry_id = 'Q09165'
       data = ["SQ   SEQUENCE   393 AA;  43653 MW;  AD5C149FD8106131 CRC64;\n",
               "     MEEPQSDPSV EPPLSQETFS DLWKLLPENN VLSPLPSQAM DDLMLSPDDI EQWFTEDPGP\n" * 200,
               "//\n"].join
