@@ -251,7 +251,7 @@ __END_OF_DATA__
             flag_header = add_header_line(line)
           end
           unless flag_header then
-            r = add_line(line)
+            add_line(line)
           end
         end
       end
