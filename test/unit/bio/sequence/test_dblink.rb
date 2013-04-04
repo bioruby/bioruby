@@ -54,7 +54,7 @@ module Bio
       assert_equal('Z14088', xref.id)
       assert_equal([ 'CAA78466.1', '-', 'mRNA' ],
                    xref.secondary_ids)
-      end
+    end
   end #class
 
 end #module Bio
