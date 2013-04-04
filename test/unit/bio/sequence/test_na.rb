@@ -62,7 +62,7 @@ module Bio
     def test_forward_complement
       str       = 'atgcatgcatgcatgcaaaa'
       str_fcomp = 'tacgtacgtacgtacgtttt'
-      fcomp = @obj.forward_complement
+      @obj.forward_complement
       assert_equal(str_fcomp, @obj.forward_complement)
       assert_equal(str, @obj)
       assert_equal(str_fcomp, @obj.forward_complement!)
@@ -72,7 +72,7 @@ module Bio
     def test_reverse_complement
       str       = 'atgcatgcatgcatgcaaaa'
       str_rcomp = 'tacgtacgtacgtacgtttt'.reverse
-      rcomp = @obj.forward_complement
+      @obj.forward_complement
       assert_equal(str_rcomp, @obj.reverse_complement)
       assert_equal(str, @obj)
       assert_equal(str_rcomp, @obj.reverse_complement!)
