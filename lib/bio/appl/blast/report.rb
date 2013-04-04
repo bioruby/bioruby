@@ -518,7 +518,7 @@ class Report
     # get an entry as a Bio::Blast::Report object
     def get_parsed_entry
       if @parsed_entries.empty? then
-        ent = get_entry
+        get_entry
       else
         self.parsed_entry = @parsed_entries.shift
         self.entry = nil
