@@ -195,7 +195,7 @@ module PAML
             raise RuntimeError, msg.join("; ")
           end
           # exec command
-          stdout = exec_local([ ctlfn ], { :chdir => path })
+          exec_local([ ctlfn ], { :chdir => path })
           # get main output
           outfile.open
           @output = outfile.read
