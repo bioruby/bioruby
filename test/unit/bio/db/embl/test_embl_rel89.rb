@@ -123,7 +123,6 @@ module Bio
 
     # Bio::EMBLDB::COMMON#kw
     def test_kw 
-      k = []
       assert_equal([], @obj.kw)
       assert_equal([], @obj.keywords)
     end
