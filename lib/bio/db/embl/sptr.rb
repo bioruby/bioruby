@@ -790,7 +790,7 @@ class SPTR < EMBLDB
       return cc if cc_raw == ''
 
       begin
-        cc_raw, copyright = cc_raw.split(/#{comment_border}/)[0]
+        cc_raw, _ = cc_raw.split(/#{comment_border}/)[0]
         cc_raw = cc_raw.sub(dlm,'')
         cc_raw.split(dlm).each do |tmp|
           tmp = tmp.strip
