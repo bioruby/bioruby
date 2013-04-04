@@ -59,11 +59,10 @@ module Bio
         entry.each do |line|
           if /NUMBER OF TM HELIX = (\d+)/ =~ line
             @tms = $1
-          elsif /TM (\d+) +(\d+)- *(\d+) (\w+) +(\w+)/ =~ line
-            tmh  = $1.to_i
-            range = Range.new($2.to_i, $3.to_i)
-            grade = $4
-            seq   = $5
+          elsif /TM \d+ +(\d+)- *(\d+) (\w+) +(\w+)/ =~ line
+            range = Range.new($1.to_i, $2.to_i)
+            grade = $3
+            seq   = $4
             @tmhs.push(TMH.new(range, grade, seq))
           end
         end
