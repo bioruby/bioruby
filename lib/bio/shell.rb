@@ -31,7 +31,6 @@ module Bio::Shell
   require 'bio/shell/plugin/flatfile'
   require 'bio/shell/plugin/obda'
   require 'bio/shell/plugin/das'
-  require 'bio/shell/plugin/keggapi'
   require 'bio/shell/plugin/soap'
   require 'bio/shell/plugin/emboss'
   require 'bio/shell/plugin/blast'

@@ -267,7 +267,7 @@ class EMBL < EMBLDB
     unless @data['OS']
       os = Array.new
       tmp = fetch('OS')
-      if /([A-Z][a-z]* *[\w\d \:\'\+\-]+[\w\d]) *\(([\w\d ]+)\)\s*\z/ =~ tmp
+      if /([A-Z][a-z]* *[\w \:\'\+\-]+\w) *\(([\w ]+)\)\s*\z/ =~ tmp
         org = $1
         os.push({'name' => $2, 'os' => $1})
       else

@@ -175,10 +175,6 @@ module Bio
   #  autoload :Fastacmd,     'bio/io/fastacmd'
   #end
 
-  class KEGG
-    autoload :API,          'bio/io/keggapi'
-  end
-
   ## below are described in bio/db/genbank/ddbj.rb
   #class DDBJ
   #  autoload :XML,          'bio/io/ddbjxml'

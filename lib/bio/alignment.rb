@@ -1091,7 +1091,7 @@ module Bio
 
       # generates Phylip3.2 (old) non-interleaved format as a string
       def output_phylipnon(options = {})
-        aln, aseqs, lines = __output_phylip_common(options)
+        aln, aseqs, _ = __output_phylip_common(options)
         aln.first + aseqs.join('')
       end
 
@@ -1650,7 +1650,6 @@ module Bio
       # (Like Hash#rehash)
       def rehash
         @seqs.rehash
-        oldkeys = @keys
         tmpkeys = @seqs.keys
         @keys.collect! do |k|
           tmpkeys.delete(k)

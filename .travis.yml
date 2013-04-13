@@ -2,7 +2,6 @@ language: ruby
 rvm:
   - 1.9.3
   - 1.8.7
-  - rbx-18mode
 env:
   - TESTOPTS=-v
 gemfile:
@@ -16,6 +15,9 @@ matrix:
   include:
     - rvm: 1.9.2
       gemfile: gemfiles/Gemfile.travis-ruby1.9
+    - rvm: rbx-18mode
+      gemfile: gemfiles/Gemfile.travis-jruby1.8
+      env: TESTOPTS=-v
     - rvm: rbx-19mode
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TESTOPTS=-v
@@ -41,10 +43,10 @@ matrix:
     - rvm: 1.9.3
       gemfile: gemfiles/Gemfile.travis-ruby1.8
       env: TESTOPTS=-v
-    - rvm: rbx-18mode
-      gemfile: gemfiles/Gemfile.travis-ruby1.9
-      env: TESTOPTS=-v
   allow_failures:
+    - rvm: rbx-18mode
+      gemfile: gemfiles/Gemfile.travis-jruby1.8
+      env: TESTOPTS=-v
     - rvm: rbx-19mode
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TESTOPTS=-v

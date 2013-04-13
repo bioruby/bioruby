@@ -157,7 +157,8 @@ HTMLFILES_TUTORIAL = [ TUTORIAL_RD_HTML, TUTORIAL_RD_JA_HTML ]
 
 # Formatting RD to html.
 def rd2html(src, dst)
-  sh "rd2 -r rd/rd2html-lib.rb --with-css=bioruby.css #{src} > #{dst}"
+  title = File.basename(src)
+  sh "rd2 -r rd/rd2html-lib.rb --with-css=bioruby.css --html-title=#{title} #{src} > #{dst}"
 end
 
 # Tutorial.rd to Tutorial.rd.html

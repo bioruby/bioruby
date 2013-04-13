@@ -1410,12 +1410,6 @@ Information on these biogems, and the many others available, see ((<Biogems.info
 
 
 
-== KEGG API
-
-Please refer to KEGG_API.rd.ja (English version: ((<URL:http://www.genome.jp/kegg/soap/doc/keggapi_manual.html>)) ) and
-
-  * ((<URL:http://www.genome.jp/kegg/soap/>))
-
 == Ruby Ensembl API
 
 The Ruby Ensembl API is a Ruby API to the Ensembl database. It is NOT currently
