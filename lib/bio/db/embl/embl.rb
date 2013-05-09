@@ -269,7 +269,8 @@ class EMBL < EMBLDB
       tmp = fetch('OS')
       if /([A-Z][a-z]* *[\w \:\'\+\-]+\w) *\(([\w ]+)\)\s*\z/ =~ tmp
         org = $1
-        os.push({'name' => $2, 'os' => $1})
+        name = $2
+        os.push({'name' => name, 'os' => org})
       else
         os.push({'name' => nil, 'os' => tmp})
       end
@@ -340,7 +341,7 @@ class EMBL < EMBLDB
       @orig['FT'].each_line do |line|
         next if line =~ /^FEATURES/
 
-        head = line[0,20].strip  # feature key (source, CDS, ...)
+        #head = line[0,20].strip  # feature key (source, CDS, ...)
         body = line[20,60].chomp # feature value (position, /qualifier=)
         if line =~ /^FT {3}(\S+)/
           ary.push([ $1, body ]) # [ feature, position, /q="data", ... ]
@@ -491,7 +492,7 @@ class EMBL < EMBLDB
   def parse_release_version(str)
     return [ nil, nil ] unless str
     a = str.split(/[\(\,\)]/)
-    dstr = a.shift
+    a.shift #date string e.g. "14-OCT-2006"
     rel = nil
     ver = nil
     a.each do |x|
