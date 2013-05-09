@@ -791,6 +791,7 @@ class SPTR < EMBLDB
 
       begin
         cc_raw, copyright = cc_raw.split(/#{comment_border}/)[0]
+        _ = copyright #dummy for suppress "assigned but unused variable"
         cc_raw = cc_raw.sub(dlm,'')
         cc_raw.split(dlm).each do |tmp|
           tmp = tmp.strip
