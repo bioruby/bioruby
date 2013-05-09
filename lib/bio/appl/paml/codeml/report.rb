@@ -589,6 +589,7 @@ module Bio::PAML
       def graph_seq
         graph_to_s(lambda { |site |
           symbol = site.aaref
+          symbol
         })
       end
       
