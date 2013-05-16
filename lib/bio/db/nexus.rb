@@ -299,7 +299,7 @@ module Bio
       ary = str.split(/[\s+=]/)
       ary.collect! { |x| x.strip!; x.empty? ? nil : x }
       ary.compact!
-      in_comment = false
+      #in_comment = false
       comment_level = 0
      
       # Main loop
@@ -807,6 +807,7 @@ module Bio
       # *Returns*:: String
       def to_nexus
         str = "generic block \"" + get_name + "\" [do not know how to write in nexus format]"
+        str
       end
       
       # Adds a token to this.
@@ -1716,7 +1717,7 @@ module Bio
           return "empty"  
         end
         str = String.new
-        row_array = to_nexus_row_array( spacer = " ", false )
+        row_array = to_nexus_row_array( " ", false )
         row_array.each do | row |
           str << row << END_OF_LINE
         end
