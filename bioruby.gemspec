@@ -641,9 +641,7 @@ Gem::Specification.new do |s|
 
   s.has_rdoc = true
   s.extra_rdoc_files = [ 
-    "ChangeLog",
     "KNOWN_ISSUES.rdoc",
-    "LEGAL",
     "README.rdoc",
     "README_DEV.rdoc",
     "RELEASE_NOTES.rdoc",
