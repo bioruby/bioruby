@@ -55,10 +55,12 @@ Gem::Specification.new do |s|
       files =
         [ "README.rdoc", "README_DEV.rdoc", 
           "ChangeLog", "KNOWN_ISSUES.rdoc",
+          "RELEASE_NOTES.rdoc", 
           "Rakefile", "bioruby.gemspec.erb",
           "bioruby.gemspec", "setup.rb",
-          "extconf.rb", "rdoc.zsh"
-        ] + Dir.glob("{bin,doc,etc,lib,sample,test}/**/*").delete_if do |item|
+          "extconf.rb", "LEGAL",
+          "COPYING", "COPYING.ja", "GPL", "LGPL"
+        ] + Dir.glob("{bin,doc,etc,gemfiles,lib,sample,test}/**/*").delete_if do |item|
               case item
               when /(\A|\/)CVS(\z|\/)/, /(\A|\/)rdoc(\z|\/)/, /\~\z/
                 true
