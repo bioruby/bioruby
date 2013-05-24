@@ -88,8 +88,8 @@ Gem::Specification.new do |s|
         def rdoc_files.add_file(name)
           self.push(name) unless self.include?(name)
         end
-        rdoc_files.add_file "ChangeLog"
-        rdoc_files.add_file "LEGAL"
+        #rdoc_files.add_file "ChangeLog"
+        #rdoc_files.add_file "LEGAL"
         rdoc_files.sort.collect { |x| x.dump }.join(",\n    ")
         ###### Above is executed in ERB environment ######
     %>
