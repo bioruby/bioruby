@@ -1,3 +1,21 @@
+= BioRuby 1.4.3.0001 RELEASE NOTES
+
+Some bug fixes have been made to the BioRuby 1.4.3.0001 after the version
+1.4.3 is released.
+
+== Bug fixes
+
+=== Ruby 2.0 support
+
+* "gem install bio" failed with Ruby 2.0 or later versions.
+* lib/bio/db/gff.rb: Set script encoding to US-ASCII.
+
+=== Other bug fixes
+
+* Bio::BLAST::Default::Report parse error when subject sequence contains
+  spaces. (https://redmine.open-bio.org/issues/3385)
+
+
 = BioRuby 1.4.3 RELEASE NOTES
 
 A lot of changes have been made to the BioRuby 1.4.3 after the version 1.4.2
