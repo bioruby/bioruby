@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.4.3"
+  s.version = "1.4.3.0001"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -653,9 +653,7 @@ Gem::Specification.new do |s|
 
   s.has_rdoc = true
   s.extra_rdoc_files = [ 
-    "ChangeLog",
     "KNOWN_ISSUES.rdoc",
-    "LEGAL",
     "README.rdoc",
     "README_DEV.rdoc",
     "RELEASE_NOTES.rdoc",
