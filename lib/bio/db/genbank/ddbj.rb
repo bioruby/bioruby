@@ -11,9 +11,6 @@ module Bio
 
 class DDBJ < GenBank
 
-  autoload :XML,          'bio/io/ddbjxml'
-  autoload :REST,         'bio/io/ddbjrest'
-
   # Nothing to do (DDBJ database format is completely same as GenBank)
 
 end # DDBJ
