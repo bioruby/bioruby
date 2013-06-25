@@ -74,20 +74,6 @@ module FuncTestBlastRemote
     end
   end #class NetTestBlastRemoteGenomeNet
 
-  # This test class only contains tests for meta information.
-  # BLAST execution tests are written in ../test_blast.rb 
-  class NetTestBlastRemoteDDBJ < Test::Unit::TestCase
-
-    include NetTestBlastRemoteCommon
-
-    BLASTN_DBNAME_KEYWORDS = [ /ddbj/i, /nt/i ]
-    BLASTP_DBNAME_KEYWORDS = [ /uniprot/i, /pdb/i ]
-
-    def setup
-      @klass = Bio::Blast::Remote::DDBJ
-    end
-  end #class NetTestBlastRemoteDDBJ
-
 end #module FuncTestBlastRemote
 end #module Bio
 

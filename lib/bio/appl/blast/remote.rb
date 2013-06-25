@@ -17,19 +17,10 @@ class Blast
     autoload :GenomeNet, 'bio/appl/blast/genomenet'
     autoload :Genomenet, 'bio/appl/blast/genomenet'
 
-    autoload :DDBJ, 'bio/appl/blast/ddbj'
-    autoload :Ddbj, 'bio/appl/blast/ddbj'
-
     # creates a remote BLAST factory using GenomeNet
     def self.genomenet(program, db, options = [])
       GenomeNet.new(program, db, options)
       #Bio::Blast.new(program, db, options, 'genomenet')
-    end
-
-    # creates a remote BLAST factory using DDBJ Web service
-    def self.ddbj(program, db, options = [])
-      DDBJ.new(program, db, options)
-      #Bio::Blast.new(program, db, options, 'ddbj')
     end
 
     # Common methods for meta-information processing
