@@ -46,33 +46,5 @@ module Bio::Shell
     return @ebisoap
   end
 
-  def ddbjsoap(wsdl = nil)
-    case wsdl
-    when :blast
-      @ddbjsoap = Bio::DDBJ::XML::Blast.new
-    when :fasta
-      @ddbjsoap = Bio::DDBJ::XML::Fasta.new
-    when :clustalw
-      @ddbjsoap = Bio::DDBJ::XML::ClustalW.new
-    when :ddbj
-      @ddbjsoap = Bio::DDBJ::XML::DDBJ.new
-    when :gib
-      @ddbjsoap = Bio::DDBJ::XML::Gib.new
-    when :gtop
-      @ddbjsoap = Bio::DDBJ::XML::Gtop.new
-    when :pml
-      @ddbjsoap = Bio::DDBJ::XML::PML.new
-    when :srs
-      @ddbjsoap = Bio::DDBJ::XML::SRS.new
-    when :txsearch
-      @ddbjsoap = Bio::DDBJ::XML::TxSearch.new
-    when /^http/
-      @ddbjsoap = Bio::DDBJ::XML.new(wsdl)
-    else
-      @ddbjsoap ||= Bio::DDBJ::XML.new
-    end
-    return @ddbjsoap
-  end
-
 end
 
