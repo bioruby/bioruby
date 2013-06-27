@@ -146,14 +146,6 @@ Windows 95/98/98SE/ME because of the limitation of COMMAND.COM.
 
 == 3. Known issues and bugs in BioRuby
 
-=== DDBJ Web API related classes (Bio::DDBJ::*, Bio::BLAST::Remote::DDBJ)
-
-The DDBJ Web API is stopping after their system replacement in March 2012.
-(See the announcement though it is written only in Japanese:
-http://www.ddbj.nig.ac.jp/replace/rp120601-j.html)
-Due to the stop of the DDBJ Web API, Bio::DDBJ::* and Bio::BLAST::Remote::DDBJ
-which are using the web API can not be used.
-
 === Bio::SPTR
 
 Bio::SPTR should be updated to follow UniProtKB format changes described
