@@ -5,13 +5,20 @@
 # License::    The Ruby License
 #
 
-require 'bio/db/genbank/genbank'
+warn "Bio::DDBJ is deprecated. Use Bio::GenBank."
 
 module Bio
 
+require 'bio/db/genbank/genbank' unless const_defined?(:GenBank)
+
+# Bio::DDBJ is deprecated. Use Bio::GenBank.
 class DDBJ < GenBank
 
-  # Nothing to do (DDBJ database format is completely same as GenBank)
+  # Bio::DDBJ is deprecated. Use Bio::GenBank.
+  def initialize(str)
+    warn "Bio::DDBJ is deprecated. Use Bio::GenBank."
+    super(str)
+  end
 
 end # DDBJ
 
