@@ -1,5 +1,5 @@
 #
-# = test/functional/bio/appl/blast/test_remote.rb - Unit test for Bio::Blast::Remote::Genomenet and Bio::Blast::Remote::DDBJ with network connection
+# = test/functional/bio/appl/blast/test_remote.rb - Unit test for Bio::Blast::Remote::Genomenet with network connection
 #
 # Copyright::   Copyright (C) 2011
 #               Naohisa Goto <ng@bioruby.org>
