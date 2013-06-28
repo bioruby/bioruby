@@ -1,45 +1,44 @@
 #
-# = bio/db/embl/sptr.rb - UniProt/SwissProt and TrEMBL database class
+# = bio/db/embl/uniprotkb.rb - UniProtKB data parser class
 # 
 # Copyright::   Copyright (C) 2001-2006  Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-# $Id:$
 #
 # == Description
 # 
-# Shared methods for UniProtKB/SwissProt and TrEMBL classes.
+# See Bio::UniProtKB documents.
 #
-# See the SWISS-PROT document file SPECLIST.TXT or UniProtKB/SwissProt 
-# user manual.
-# 
-# == Examples
-#
-#   str = File.read("p53_human.swiss")
-#   obj = Bio::SPTR.new(str)
-#   obj.entry_id #=> "P53_HUMAN"
-# 
-# == References
-# 
-# * Swiss-Prot Protein knowledgebase. TrEMBL Computer-annotated supplement 
-#   to Swiss-Prot	
-#   http://au.expasy.org/sprot/
-#
-# * UniProt
-#   http://uniprot.org/
-#
-# * The UniProtKB/SwissProt/TrEMBL User Manual
-#   http://www.expasy.org/sprot/userman.html
-#
-
 
 require 'bio/db'
 require 'bio/db/embl/common'
 
 module Bio
 
+# == Description
+#
 # Parser class for UniProtKB/SwissProt and TrEMBL database entry.
-class SPTR < EMBLDB
+# 
+# See the UniProtKB document files and manuals.
+# 
+# == Examples
+#
+#   str = File.read("p53_human.swiss")
+#   obj = Bio::UniProtKB.new(str)
+#   obj.entry_id #=> "P53_HUMAN"
+# 
+# == References
+# 
+# * The UniProt Knowledgebase (UniProtKB)
+#   http://www.uniprot.org/help/uniprotkb
+#
+# * The Universal Protein Resource (UniProt)
+#   http://uniprot.org/
+#
+# * The UniProtKB/SwissProt/TrEMBL User Manual
+#   http://www.uniprot.org/docs/userman.html
+#
+class UniProtKB < EMBLDB
   include Bio::EMBLDB::Common
     
   @@entry_regrexp = /[A-Z0-9]{1,4}_[A-Z0-9]{1,5}/
@@ -105,7 +104,7 @@ class SPTR < EMBLDB
 
   # returns a MOLECULE_TYPE in the ID line.
   #
-  # A short-cut for Bio::SPTR#id_line('MOLECULE_TYPE').
+  # A short-cut for Bio::UniProtKB#id_line('MOLECULE_TYPE').
   def molecule
     id_line('MOLECULE_TYPE')
   end
@@ -114,7 +113,7 @@ class SPTR < EMBLDB
 
   # returns a SEQUENCE_LENGTH in the ID line.
   # 
-  # A short-cut for Bio::SPTR#id_line('SEQUENCE_LENGHT').
+  # A short-cut for Bio::UniProtKB#id_line('SEQUENCE_LENGHT').
   def sequence_length
     id_line('SEQUENCE_LENGTH')
   end
@@ -335,7 +334,7 @@ class SPTR < EMBLDB
   # returns gene names in the GN line.
   #
   # New UniProt/SwissProt format:
-  # * Bio::SPTR#gn -> [ <gene record>* ]
+  # * Bio::UniProtKB#gn -> [ <gene record>* ]
   # where <gene record> is:
   #                    { :name => '...', 
   #                      :synonyms => [ 's1', 's2', ... ],
@@ -344,8 +343,8 @@ class SPTR < EMBLDB
   #                    }
   #
   # Old format:
-  # * Bio::SPTR#gn -> Array      # AND 
-  # * Bio::SPTR#gn[0] -> Array   # OR
+  # * Bio::UniProtKB#gn -> Array      # AND 
+  # * Bio::UniProtKB#gn[0] -> Array   # OR
   #
   # === GN Line: Gene name(s) (>=0, optional)
   def gn
@@ -369,7 +368,7 @@ class SPTR < EMBLDB
   #
   #  GN NAME1 [(AND|OR) NAME]+.
   #
-  # Bio::SPTR#gn -> Array      # AND 
+  # Bio::UniProtKB#gn -> Array      # AND 
   #          #gn[0] -> Array   # OR
   #          #gene_names -> Array
   def gn_old_parser
@@ -391,7 +390,7 @@ class SPTR < EMBLDB
   #  GN   Name=; Synonyms=[, ...]; OrderedLocusNames=[, ...];
   #  GN   ORFNames=[, ...];
   #
-  # * Bio::SPTR#gn -> [ <gene record>* ]
+  # * Bio::UniProtKB#gn -> [ <gene record>* ]
   # where <gene record> is:
   #                    { :name => '...', 
   #                      :synonyms => [ 's1', 's2', ... ],
@@ -446,7 +445,7 @@ class SPTR < EMBLDB
   #   {'name' => '(Rat)', 'os' => 'Rattus norveticus'}]
   # * Bio::EPTR#os[0] -> Hash 
   #  {'name' => "(Human)", 'os' => 'Homo sapiens'}
-  # * Bio::SPTR#os[0]['name'] -> "(Human)"
+  # * Bio::UniProtKB#os[0]['name'] -> "(Human)"
   # * Bio::EPTR#os(0) -> "Homo sapiens (Human)"
   # 
   # === OS Line; organism species (>=1)
@@ -495,7 +494,7 @@ class SPTR < EMBLDB
 
 
   # returns a Hash of oraganism taxonomy cross-references.
-  # * Bio::SPTR#ox -> Hash
+  # * Bio::UniProtKB#ox -> Hash
   #    {'NCBI_TaxID' => ['1234','2345','3456','4567'], ...}
   #
   # === OX Line; organism taxonomy cross-reference (>=1 per entry)
@@ -687,7 +686,7 @@ class SPTR < EMBLDB
 
 
   # === The HI line
-  # Bio::SPTR#hi #=> hash
+  # Bio::UniProtKB#hi #=> hash
   def hi
     unless @data['HI']
       @data['HI'] = []
@@ -732,13 +731,13 @@ class SPTR < EMBLDB
                  'FUNCTION',
                  'SIMILARITY']
   # returns contents in the CC lines.
-  # * Bio::SPTR#cc -> Hash
+  # * Bio::UniProtKB#cc -> Hash
   #
   # returns an object of contents in the TOPIC.
-  # * Bio::SPTR#cc(TOPIC) -> Array w/in Hash, Hash
+  # * Bio::UniProtKB#cc(TOPIC) -> Array w/in Hash, Hash
   #
   # returns contents of the "ALTERNATIVE PRODUCTS".
-  # * Bio::SPTR#cc('ALTERNATIVE PRODUCTS') -> Hash
+  # * Bio::UniProtKB#cc('ALTERNATIVE PRODUCTS') -> Hash
   #    {'Event' => str, 
   #     'Named isoforms' => int,  
   #     'Comment' => str,
@@ -752,13 +751,13 @@ class SPTR < EMBLDB
   #    CC         IsoId=P15529-1; Sequence=Displayed;
   #
   # returns contents of the "DATABASE".
-  # * Bio::SPTR#cc('DATABASE') -> Array
+  # * Bio::UniProtKB#cc('DATABASE') -> Array
   #    [{'NAME'=>str,'NOTE'=>str, 'WWW'=>URI,'FTP'=>URI}, ...]
   #
   #    CC   -!- DATABASE: NAME=Text[; NOTE=Text][; WWW="Address"][; FTP="Address"].
   #
   # returns contents of the "MASS SPECTROMETRY".
-  # * Bio::SPTR#cc('MASS SPECTROMETRY') -> Array
+  # * Bio::UniProtKB#cc('MASS SPECTROMETRY') -> Array
   #    [{'MW"=>float,'MW_ERR'=>float, 'METHOD'=>str,'RANGE'=>str}, ...]
   #
   #    CC   -!- MASS SPECTROMETRY: MW=XXX[; MW_ERR=XX][; METHOD=XX][;RANGE=XX-XX].
@@ -1113,7 +1112,7 @@ class SPTR < EMBLDB
   private :cc_web_resource
 
   # returns databases cross-references in the DR lines.
-  # * Bio::SPTR#dr  -> Hash w/in Array
+  # * Bio::UniProtKB#dr  -> Hash w/in Array
   #
   # === DR Line; defabases cross-reference (>=0)
   #    DR  database_identifier; primary_identifier; secondary_identifier.
@@ -1128,7 +1127,7 @@ class SPTR < EMBLDB
   # Backup Bio::EMBLDB#dr as embl_dr
   alias :embl_dr :dr 
 
-  # Bio::SPTR#dr
+  # Bio::UniProtKB#dr
   def dr(key = nil)
     unless key
       embl_dr
@@ -1154,7 +1153,7 @@ class SPTR < EMBLDB
   #
   # == Examples
   #
-  #  sp = Bio::SPTR.new(entry)
+  #  sp = Bio::UniProtKB.new(entry)
   #  ft = sp.ft
   #  ft.class #=> Hash
   #  ft.keys.each do |feature_key|
@@ -1168,14 +1167,14 @@ class SPTR < EMBLDB
   #    end
   #  end
   #
-  # * Bio::SPTR#ft -> Hash
+  # * Bio::UniProtKB#ft -> Hash
   #    {FEATURE_KEY => [{'From' => int, 'To' => int, 
   #                      'Description' => aStr, 'FTId' => aStr,
   #                      'diff' => [original_residues, changed_residues],
   #                      'original' => aAry }],...}
   #
   # returns an Array of the information about the feature_name in the feature table.
-  # * Bio::SPTR#ft(feature_name) -> Array of Hash
+  # * Bio::UniProtKB#ft(feature_name) -> Array of Hash
   #    [{'From' => str, 'To' => str, 'Description' => str, 'FTId' => str},...]
   #
   # == FT Line; feature table data (>=0, optional)
@@ -1263,10 +1262,10 @@ class SPTR < EMBLDB
 
 
   # returns a Hash of conteins in the SQ lines.
-  # * Bio::SPTRL#sq  -> hsh
+  # * Bio::UniProtKBL#sq  -> hsh
   #
   # returns a value of a key given in the SQ lines.
-  # * Bio::SPTRL#sq(key)  -> int or str
+  # * Bio::UniProtKBL#sq(key)  -> int or str
   # * Keys: ['MW', 'mw', 'molecular', 'weight', 'aalen', 'len', 'length', 
   #          'CRC64']
   #
@@ -1301,7 +1300,7 @@ class SPTR < EMBLDB
 
 
   # returns a Bio::Sequence::AA of the amino acid sequence.
-  # * Bio::SPTR#seq -> Bio::Sequence::AA
+  # * Bio::UniProtKB#seq -> Bio::Sequence::AA
   #
   # blank Line; sequence data (>=1)
   def seq
@@ -1312,7 +1311,7 @@ class SPTR < EMBLDB
   end
   alias aaseq seq
 
-end # class SPTR
+end # class UniProtKB
 
 end # module Bio
 
@@ -1320,7 +1319,7 @@ end # module Bio
 
 =begin
 
-= Bio::SPTR < Bio::DB
+= Bio::UniProtKB < Bio::DB
 
 Class for a entry in the SWISS-PROT/TrEMBL database.
 
@@ -1329,98 +1328,98 @@ Class for a entry in the SWISS-PROT/TrEMBL database.
   * ((<URL:http://www.ebi.ac.uk/sprot/userman.html>))
   
 
---- Bio::SPTR.new(a_sp_entry)
+--- Bio::UniProtKB.new(a_sp_entry)
 
 === ID line (Identification)
 
---- Bio::SPTR#id_line -> {'ENTRY_NAME' => str, 'DATA_CLASS' => str,
+--- Bio::UniProtKB#id_line -> {'ENTRY_NAME' => str, 'DATA_CLASS' => str,
                           'MOLECULE_TYPE' => str, 'SEQUENCE_LENGTH' => int }  
---- Bio::SPTR#id_line(key) -> str
+--- Bio::UniProtKB#id_line(key) -> str
 
        key = (ENTRY_NAME|MOLECULE_TYPE|DATA_CLASS|SEQUENCE_LENGTH)
 
---- Bio::SPTR#entry_id -> str
---- Bio::SPTR#molecule -> str
---- Bio::SPTR#sequence_length -> int
+--- Bio::UniProtKB#entry_id -> str
+--- Bio::UniProtKB#molecule -> str
+--- Bio::UniProtKB#sequence_length -> int
     
 
 === AC lines (Accession number)
 
---- Bio::SPTR#ac -> ary
---- Bio::SPTR#accessions -> ary
---- Bio::SPTR#accession -> accessions.first
+--- Bio::UniProtKB#ac -> ary
+--- Bio::UniProtKB#accessions -> ary
+--- Bio::UniProtKB#accession -> accessions.first
 
  
 === GN line (Gene name(s))
 
---- Bio::SPTR#gn -> [ary, ...] or [{:name => str, :synonyms => [], :loci => [], :orfs => []}]
---- Bio::SPTR#gene_name -> str
---- Bio::SPTR#gene_names -> [str] or [str]
+--- Bio::UniProtKB#gn -> [ary, ...] or [{:name => str, :synonyms => [], :loci => [], :orfs => []}]
+--- Bio::UniProtKB#gene_name -> str
+--- Bio::UniProtKB#gene_names -> [str] or [str]
 
 
 === DT lines (Date) 
 
---- Bio::SPTR#dt -> {'created' => str, 'sequence' => str, 'annotation' => str}
---- Bio::SPTR#dt(key) -> str
+--- Bio::UniProtKB#dt -> {'created' => str, 'sequence' => str, 'annotation' => str}
+--- Bio::UniProtKB#dt(key) -> str
 
       key := (created|annotation|sequence)
 
 
 === DE lines (Description)
 
---- Bio::SPTR#de -> str
+--- Bio::UniProtKB#de -> str
              #definition -> str
 
---- Bio::SPTR#protein_name
+--- Bio::UniProtKB#protein_name
 
       Returns the proposed official name of the protein
 
 
---- Bio::SPTR#synonyms
+--- Bio::UniProtKB#synonyms
 
       Returns an array of synonyms (unofficial names)
 
 === KW lines (Keyword)
 
---- Bio::SPTR#kw -> ary
+--- Bio::UniProtKB#kw -> ary
 
 === OS lines (Organism species)
 
---- Bio::SPTR#os -> [{'name' => str, 'os' => str}, ...]
+--- Bio::UniProtKB#os -> [{'name' => str, 'os' => str}, ...]
 
 === OC lines (organism classification)
 
---- Bio::SPTR#oc -> ary
+--- Bio::UniProtKB#oc -> ary
 
 === OG line (Organella)
 
---- Bio::SPTR#og -> ary
+--- Bio::UniProtKB#og -> ary
 
 === OX line (Organism taxonomy cross-reference)
 
---- Bio::SPTR#ox -> {'NCBI_TaxID' => [], ...}
+--- Bio::UniProtKB#ox -> {'NCBI_TaxID' => [], ...}
 
 === RN RC RP RX RA RT RL RG lines (Reference)  
 
---- Bio::SPTR#ref -> [{'RN' => int, 'RP' => str, 'RC' => str, 'RX' => str, ''RT' => str, 'RL' => str, 'RA' => str, 'RC' => str, 'RG' => str},...]
+--- Bio::UniProtKB#ref -> [{'RN' => int, 'RP' => str, 'RC' => str, 'RX' => str, ''RT' => str, 'RL' => str, 'RA' => str, 'RC' => str, 'RG' => str},...]
 
 === DR lines (Database cross-reference)
 
---- Bio::SPTR#dr -> {'EMBL' => ary, ...}
+--- Bio::UniProtKB#dr -> {'EMBL' => ary, ...}
 
 === FT lines (Feature table data)
 
---- Bio::SPTR#ft -> hsh
+--- Bio::UniProtKB#ft -> hsh
 
 === SQ lines (Sequence header and data)
 
---- Bio::SPTR#sq -> {'CRC64' => str, 'MW' => int, 'aalen' => int}
---- Bio::SPTR#sq(key) -> int or str
+--- Bio::UniProtKB#sq -> {'CRC64' => str, 'MW' => int, 'aalen' => int}
+--- Bio::UniProtKB#sq(key) -> int or str
 
           key := (aalen|MW|CRC64)
 
---- Bio::EMBL#seq -> Bio::Sequece::AA
-             #aaseq -> Bio::Sequece::AA
+--- Bio::UniProtKB#seq -> Bio::Sequece::AA
+                  #aaseq -> Bio::Sequece::AA
 
 =end
 
