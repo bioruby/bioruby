@@ -1,5 +1,5 @@
 #
-# test/unit/bio/db/embl/test_uniprot_new_part.rb - Unit test for Bio::UniProt for new file formats using part of psudo entries
+# test/unit/bio/db/embl/test_uniprotkb_new_part.rb - Unit test for Bio::UniProtKB for new file formats using part of psudo entries
 #
 # Copyright::  Copyright (C) 2011 Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
@@ -12,14 +12,14 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 
 # libraries needed for the tests
 require 'test/unit'
-require 'bio/db/embl/uniprot'
+require 'bio/db/embl/uniprotkb'
 
 module Bio
-  class TestUniProt_ID_since_rel9_0 < Test::Unit::TestCase
+  class TestUniProtKB_ID_since_rel9_0 < Test::Unit::TestCase
 
     def setup
       text = "ID   ABC_DEFGH               Reviewed;         256 AA.\n"
-      @obj = Bio::UniProt.new(text)
+      @obj = Bio::UniProtKB.new(text)
     end
 
     def test_id_line
@@ -55,9 +55,9 @@ module Bio
     def test_molecule
       assert_nil(@obj.molecule)
     end
-  end #class TestUniProt_ID_since_rel9_0
+  end #class TestUniProtKB_ID_since_rel9_0
 
-  class TestUniProt_DE_since_rel14_0 < Test::Unit::TestCase
+  class TestUniProtKB_DE_since_rel14_0 < Test::Unit::TestCase
 
     def setup
       text = <<the_end_of_the_text
@@ -87,7 +87,7 @@ DE              Short=CPAC;
 DE   Flags: Precursor; Fragment;
 the_end_of_the_text
 
-      @obj = Bio::UniProt.new(text)
+      @obj = Bio::UniProtKB.new(text)
     end
 
     def test_private_parse_DE_line_rel14
@@ -165,9 +165,9 @@ the_end_of_the_text
       assert_equal(expected, @obj.synonyms)
     end
 
-  end #class TestUniProt_DE_since_rel14_0
+  end #class TestUniProtKB_DE_since_rel14_0
 
-  class TestUniProt_CC_WEB_RESOURCE_since_rel12_2 < Test::Unit::TestCase
+  class TestUniProtKB_CC_WEB_RESOURCE_since_rel12_2 < Test::Unit::TestCase
 
     def setup
       text = <<the_end_of_the_text
@@ -182,7 +182,7 @@ CC   -!- WEB RESOURCE: Name=BioRuby Wiki site;
 CC       URL="http://bioruby.open-bio.org/wiki/";
 the_end_of_the_text
 
-      @obj = Bio::UniProt.new(text)
+      @obj = Bio::UniProtKB.new(text)
     end
 
     def test_cc_web_resource
@@ -203,6 +203,6 @@ the_end_of_the_text
 
       assert_equal(expected, @obj.cc('WEB RESOURCE'))
     end
-  end #class TestUniProt_CC_WEB_RESOURCE_since_rel12_2
+  end #class TestUniProtKB_CC_WEB_RESOURCE_since_rel12_2
 
 end #module Bio
