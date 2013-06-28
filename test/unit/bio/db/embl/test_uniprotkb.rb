@@ -1,10 +1,9 @@
 #
-# test/unit/bio/db/embl/test_sptr.rb - Unit test for Bio::SPTR
+# test/unit/bio/db/embl/test_uniprotkb.rb - Unit tests for Bio::UniProtKB
 #
 # Copyright:::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-#  $Id:$
 #
 
 # loading helper routine for testing bioruby
@@ -14,15 +13,15 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 
 # libraries needed for the tests
 require 'test/unit'
-require 'bio/db/embl/sptr'
+require 'bio/db/embl/uniprotkb'
 
 module Bio
-  class TestSPTR < Test::Unit::TestCase
+  class TestUniProtKB < Test::Unit::TestCase
 
     def setup
       data = File.read(File.join(BioRubyTestDataPath, 
                                  'uniprot', 'p53_human.uniprot'))
-      @obj = Bio::SPTR.new(data)
+      @obj = Bio::UniProtKB.new(data)
     end
 
     def test_id_line
@@ -233,7 +232,7 @@ module Bio
       assert_equal({"NCBI_TaxID"=>["9606"]}, @obj.ox)
     end
 
-    def test_ref # Bio::SPTR#ref
+    def test_ref # Bio::UniProtKB#ref
       assert_equal(Array, @obj.ref.class)
     end
 
@@ -324,15 +323,15 @@ module Bio
       assert_equal(seq, @obj.aaseq)
     end
 
-  end # class TestSPTR
+  end # class TestUniProtKB
 
 
 
-  class TestSPTRCC < Test::Unit::TestCase
+  class TestUniProtKB_CC < Test::Unit::TestCase
     def test_allergen
       # ALLERGEN	Information relevant to allergenic proteins
       data = 'CC   -!- ALLERGEN: Causes an allergic reaction in human.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(['Causes an allergic reaction in human.'], 
                    sp.cc['ALLERGEN'])
       assert_equal(['Causes an allergic reaction in human.'], 
@@ -350,7 +349,7 @@ CC         Note=Contains a N-acetylmethionine at position 1 (By
 CC         similarity);"
 
       res = ["Event=Alternative initiation; Named isoforms=2; Name=Long; IsoId=P68250-1; Sequence=Displayed; Name=Short; IsoId=P68250-2; Sequence=VSP_018631; Note=Contains a N-acetylmethionine at position 1 (By similarity);"]
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(res,
                    sp.cc['ALTERNATIVE PRODUCTS'])
     end
@@ -367,7 +366,7 @@ CC         IsoId=P68250-2; Sequence=VSP_018631;
 CC         Note=Contains a N-acetylmethionine at position 1 (By
 CC         similarity);"
 
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal({"Comment"=>"",
                     "Named isoforms"=>"2",
                     "Variants"=>
@@ -391,7 +390,7 @@ CC       Name=2; Synonyms=I9RET;
 CC         IsoId=P04637-2; Sequence=VSP_006535, VSP_006536;
 CC         Note=Seems to be non-functional. Expressed in quiescent
 CC         lymphocytes;"
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal({"Comment"=>"",
                     "Named isoforms"=>"2",
                     "Variants"=>
@@ -423,7 +422,7 @@ CC         Note=May be produced by alternative promoter usage;
 CC       Name=5; Synonyms=AAT1-beta, AAT1-gamma;
 CC         IsoId=Q7Z4T9-5; Sequence=VSP_014909;
 CC         Note=May be produced by alternative promoter usage;"
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal({"Comment"=>"Additional isoforms (AAT-1L and AAT-1S) may exist",
                     "Named isoforms"=>"5",
                     "Variants"=>
@@ -452,7 +451,7 @@ CC         Note=May be produced by alternative promoter usage;"
     end
     def test_alternative_products_rf
       data = ""
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal({},
                    sp.cc('ALTERNATIVE PRODUCTS'))
     end
@@ -466,7 +465,7 @@ CC         KM=45 uM for AdoMet;
 CC         Vmax=32 uM/h/mg enzyme;
 CC       pH dependence:
 CC         Optimum pH is 8.2;'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Kinetic parameters: KM=45 uM for AdoMet; Vmax=32 uM/h/mg enzyme; pH dependence: Optimum pH is 8.2;"],
                    sp.cc['BIOPHYSICOCHEMICAL PROPERTIES'])
       assert_equal({"Redox potential" => "",
@@ -492,7 +491,7 @@ CC       Redox potential:
 CC         free_text;
 CC       Temperature dependence:
 CC         free_text;"
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal({"Redox potential"=>"free_text",
                     "Temperature dependence"=>"free_text",
                     "Kinetic parameters"=>
@@ -512,7 +511,7 @@ CC       improved ripening tomato by Monsanto. ACC is the immediate
 CC       precursor of the phytohormone ethylene which is involved in the
 CC       control of ripening. ACC deaminase reduces ethylene biosynthesis
 CC       and thus extends the shelf life of fruits and vegetables.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Introduced by genetic manipulation and expressed in improved ripening tomato by Monsanto. ACC is the immediate precursor of the phytohormone ethylene which is involved in the control of ripening. ACC deaminase reduces ethylene biosynthesis and thus extends the shelf life of fruits and vegetables."],
                    sp.cc['BIOTECHNOLOGY'])
     end
@@ -522,7 +521,7 @@ CC       and thus extends the shelf life of fruits and vegetables.'
       data = 'CC   -!- CATALYTIC ACTIVITY: Hydrolysis of alkylated DNA, releasing 3-
 CC       methyladenine, 3-methylguanine, 7-methylguanine and 7-
 CC       methyladenine.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Hydrolysis of alkylated DNA, releasing 3-methyladenine, 3-methylguanine, 7-methylguanine and 7-methyladenine."],
                    sp.cc['CATALYTIC ACTIVITY'])
     end
@@ -532,7 +531,7 @@ CC       methyladenine.'
       data = 'CC   -!- CAUTION: Ref.1 sequence differs from that shown due to a Leu codon
 CC       in position 480 which was translated as a stop codon to shorten
 CC       the sequence.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Ref.1 sequence differs from that shown due to a Leu codon in position 480 which was translated as a stop codon to shorten the sequence."],
                    sp.cc['CAUTION'])
       assert_equal("Ref.1 sequence differs from that shown due to a Leu codon in position 480 which was translated as a stop codon to shorten the sequence.",
@@ -544,7 +543,7 @@ CC       the sequence.'
       # COFACTOR	Description of any non-protein substance required by an enzyme for its catalytic activity
       data = 'CC   -!- COFACTOR: Cl(-). Is unique in requiring Cl(-) for its activity.
 CC   -!- COFACTOR: Mg(2+).'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Cl(-). Is unique in requiring Cl(-) for its activity.", 
                     "Mg(2+)."],
                    sp.cc['COFACTOR'])
@@ -559,7 +558,7 @@ CC   -!- COFACTOR: Mg(2+).'
       data = 'CC   -!- DEVELOPMENTAL STAGE: In females, isoform 1 is expressed at day 35
 CC       with higher levels detected at day 56. Isoform 1 is not detected
 CC       in males of any age.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["In females, isoform 1 is expressed at day 35 with higher levels detected at day 56. Isoform 1 is not detected in males of any age."],
                    sp.cc['DEVELOPMENTAL STAGE'])
       assert_equal("In females, isoform 1 is expressed at day 35 with higher levels detected at day 56. Isoform 1 is not detected in males of any age.",
@@ -578,7 +577,7 @@ CC       and aggressiveness of the disease. The Iowa type demonstrated no
 CC       cerebral hemorrhaging but is characterized by progressive
 CC       cognitive decline. Beta-APP40 is the predominant form of
 CC       cerebrovascular amyloid.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Defects in APP are a cause of hereditary cerebral hemorrhage with amyloidosis (HCHWAD) [MIM:609065, 104760]. This disorder is characterized by amyloid deposits in cerebral vessels. The principal clinical characteristics are recurring cerebral hemorrhages, sometimes preceded by migrainous headaches or mental cleavage. Various types of HCHWAD are known. They differ in onset and aggressiveness of the disease. The Iowa type demonstrated no cerebral hemorrhaging but is characterized by progressive cognitive decline. Beta-APP40 is the predominant form of cerebrovascular amyloid."],
                    sp.cc['DISEASE'])
       assert_equal("Defects in APP are a cause of hereditary cerebral hemorrhage with amyloidosis (HCHWAD) [MIM:609065, 104760]. This disorder is characterized by amyloid deposits in cerebral vessels. The principal clinical characteristics are recurring cerebral hemorrhages, sometimes preceded by migrainous headaches or mental cleavage. Various types of HCHWAD are known. They differ in onset and aggressiveness of the disease. The Iowa type demonstrated no cerebral hemorrhaging but is characterized by progressive cognitive decline. Beta-APP40 is the predominant form of cerebrovascular amyloid.",
@@ -599,7 +598,7 @@ CC       require the YENPTY motif for full interaction. These interactions
 CC       are independent of phosphorylation on the terminal tyrosine
 CC       residue. The NPXY site is also involved in clathrin-mediated
 CC       endocytosis (By similarity).'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["The basolateral sorting signal (BaSS) is required for sorting of membrane proteins to the basolateral surface of epithelial cells.",
  "The NPXY sequence motif found in many tyrosine-phosphorylated proteins is required for the specific binding of the PID domain. However, additional amino acids either N-or C-terminal to the NPXY motif are often required for complete interaction. The PID domain-containing proteins which bind APP require the YENPTY motif for full interaction. These interactions are independent of phosphorylation on the terminal tyrosine residue. The NPXY site is also involved in clathrin-mediated endocytosis (By similarity)."],
                    sp.cc['DOMAIN'])
@@ -612,7 +611,7 @@ CC       endocytosis (By similarity).'
       # ENZYME REGULATION	Description of an enzyme regulatory mechanism
       data = 'CC   -!- ENZYME REGULATION: Insensitive to calcium/calmodulin. Stimulated
 CC       by the G protein beta and gamma subunit complex.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Insensitive to calcium/calmodulin. Stimulated by the G protein beta and gamma subunit complex."],
                    sp.cc['ENZYME REGULATION'])
       assert_equal("Insensitive to calcium/calmodulin. Stimulated by the G protein beta and gamma subunit complex.",
@@ -625,7 +624,7 @@ CC       by the G protein beta and gamma subunit complex.'
 CC       interplay between intracellular calcium and cAMP determines the
 CC       cellular function. May be a physiologically relevant docking site
 CC       for calcineurin (By similarity).'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["May play a fundamental role in situations where fine interplay between intracellular calcium and cAMP determines the cellular function. May be a physiologically relevant docking site for calcineurin (By similarity)."],
                    sp.cc['FUNCTION'])
       assert_equal("May play a fundamental role in situations where fine interplay between intracellular calcium and cAMP determines the cellular function. May be a physiologically relevant docking site for calcineurin (By similarity).",
@@ -635,7 +634,7 @@ CC       for calcineurin (By similarity).'
     def test_induction
       # INDUCTION	Description of the compound(s) or condition(s) that regulate gene expression
       data = 'CC   -!- INDUCTION: By pheromone (alpha-factor).'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["By pheromone (alpha-factor)."],
                    sp.cc['INDUCTION'])
       assert_equal("By pheromone (alpha-factor).",
@@ -647,7 +646,7 @@ CC       for calcineurin (By similarity).'
       data = 'CC   -!- INTERACTION:
 CC       P62158:CALM1 (xeno); NbExp=1; IntAct=EBI-457011, EBI-397435;
 CC       P62155:calm1 (xeno); NbExp=1; IntAct=EBI-457011, EBI-397568;'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["P62158:CALM1 (xeno); NbExp=1; IntAct=EBI-457011, EBI-397435; P62155:calm1 (xeno); NbExp=1; IntAct=EBI-457011, EBI-397568;"],
                    sp.cc['INTERACTION'])
       assert_equal([{'SP_Ac' => 'P62158', 
@@ -669,7 +668,7 @@ CC       P62155:calm1 (xeno); NbExp=1; IntAct=EBI-457011, EBI-397568;'
 CC       NOTE=Ref.1.
 CC   -!- MASS SPECTROMETRY: MW=2892.2; METHOD=Electrospray; RANGE=1-29;
 CC       NOTE=Ref.2."
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["MW=2894.9; MW_ERR=3; METHOD=MALDI; RANGE=1-29; NOTE=Ref.1.",
                     "MW=2892.2; METHOD=Electrospray; RANGE=1-29; NOTE=Ref.2."],
                    sp.cc['MASS SPECTROMETRY'])
@@ -690,7 +689,7 @@ CC       NOTE=Ref.2."
       # MISCELLANEOUS	Any comment which does not belong to any of the other defined topics
       data = 'CC   -!- MISCELLANEOUS: There are two isozymes; a cytoplasmic one and a
 CC       mitochondrial one.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["There are two isozymes; a cytoplasmic one and a mitochondrial one."],
                    sp.cc['MISCELLANEOUS'])
     end
@@ -699,7 +698,7 @@ CC       mitochondrial one.'
       # PATHWAY	Description of the metabolic pathway(s) with which a protein is associated
       data = 'CC   -!- PATHWAY: Carbohydrate degradation; glycolysis; D-glyceraldehyde 3-
 CC       phosphate and glycerone phosphate from D-glucose: step 4.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Carbohydrate degradation; glycolysis; D-glyceraldehyde 3-phosphate and glycerone phosphate from D-glucose: step 4."],
                    sp.cc['PATHWAY'])
       assert_equal(["Carbohydrate degradation", 
@@ -716,7 +715,7 @@ CC       phosphate and glycerone phosphate from D-glucose: step 4.'
 CC       Lutrepulse or Lutrelef (Ferring Pharmaceuticals) and Relisorm
 CC       (Serono). Used in evaluating hypothalamic-pituitary gonadotropic
 CC       function.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Available under the names Factrel (Ayerst Labs), Lutrepulse or Lutrelef (Ferring Pharmaceuticals) and Relisorm (Serono). Used in evaluating hypothalamic-pituitary gonadotropic function."],
                    sp.cc['PHARMACEUTICAL'])
     end
@@ -732,7 +731,7 @@ CC       like macroglycopeptide (Pro/Thr-rich) domain. Allele D (shown
 CC       here) contains one repeat starting at position 415, allele C
 CC       contains two repeats, allele B contains three repeats and allele A
 CC       contains four repeats.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Position 161 is associated with platelet-specific alloantigen Siba. Siba(-) has Thr-161 and Siba(+) has Met-161. Siba is involved in neonatal alloimmune thrombocytopenia (NATP).",
                     "Polymorphisms arise from a variable number of tandem 13-amino acid repeats of S-E-P-A-P-S-P-T-T-P-E-P-T in the mucin-like macroglycopeptide (Pro/Thr-rich) domain. Allele D (shown here) contains one repeat starting at position 415, allele C contains two repeats, allele B contains three repeats and allele A contains four repeats."],
                    sp.cc['POLYMORPHISM'])
@@ -743,7 +742,7 @@ CC       contains four repeats.'
       data = 'CC   -!- PTM: N-glycosylated, contains approximately 8 kDa of N-linked
 CC       carbohydrate.
 CC   -!- PTM: Palmitoylated.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["N-glycosylated, contains approximately 8 kDa of N-linked carbohydrate.",
  "Palmitoylated."],
                    sp.cc['PTM'])
@@ -760,7 +759,7 @@ CC       positions 50, 78, 104, 260 and 264 are modified to sense codons.'
 CC       brain. Heteromerically expressed edited GLUR2 (R) receptor
 CC       complexes are impermeable to calcium, whereas the unedited (Q)
 CC       forms are highly permeable to divalent ions (By similarity).'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Modified_positions=607; Note=Fully edited in the brain. Heteromerically expressed edited GLUR2 (R) receptor complexes are impermeable to calcium, whereas the unedited (Q) forms are highly permeable to divalent ions (By similarity)."],
                    sp.cc['RNA EDITING'])
       assert_equal({"Modified_positions" => ['607'], 
@@ -772,7 +771,7 @@ CC       forms are highly permeable to divalent ions (By similarity).'
       # SIMILARITY	Description of the similaritie(s) (sequence or structural) of a protein with other proteins
       data = 'CC   -!- SIMILARITY: Contains 1 protein kinase domain.
 CC   -!- SIMILARITY: Contains 1 RGS domain.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Contains 1 protein kinase domain.", "Contains 1 RGS domain."],
                    sp.cc['SIMILARITY'])
     end
@@ -801,7 +800,7 @@ CC       endocytic compartment. Associates with lysosome membranes."
       data = "CC   -!- SUBCELLULAR LOCATION: Plastid; chloroplast; chloroplast membrane;
 CC       peripheral membrane protein. Plastid; chloroplast; chloroplast
 CC       stroma."
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Plastid; chloroplast; chloroplast membrane; peripheral membrane protein. Plastid; chloroplast; chloroplast stroma."],
                    sp.cc['SUBCELLULAR LOCATION'])
       assert_equal([["Plastid",
@@ -820,7 +819,7 @@ CC       stroma."
 CC       MAPK9, MAPK10 and MAPK12.'
 
       data = 'CC   -!- SUBUNIT: Homotetramer.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Homotetramer."],
                    sp.cc['SUBUNIT'])
     end
@@ -836,7 +835,7 @@ CC       thymus, testis, embryo and proliferating blood lymphocytes."
 CC       heart, spleen, kidney and blood. Isoform 2 is expressed (at
 CC       protein level) in the spleen, skeletal muscle and gastrointestinal
 CC       epithelia."
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["Isoform 2 is highly expressed in the brain, heart, spleen, kidney and blood. Isoform 2 is expressed (at protein level) in the spleen, skeletal muscle and gastrointestinal epithelia."],
                    sp.cc['TISSUE SPECIFICITY'])
     end
@@ -844,7 +843,7 @@ CC       epithelia."
     def test_toxic_dose
       # TOXIC DOSE	Description of the lethal dose (LD), paralytic dose (PD) or effective dose of a protein
       data = 'CC   -!- TOXIC DOSE: LD(50) is 12 mg/kg by intraperitoneal injection.'
-      sp = Bio::SPTR.new(data)
+      sp = Bio::UniProtKB.new(data)
       assert_equal(["LD(50) is 12 mg/kg by intraperitoneal injection."],
                    sp.cc['TOXIC DOSE'])
     end
@@ -857,7 +856,7 @@ CC   -!- WEB RESOURCE: NAME=Connexin-deafness homepage;
 CC       URL="http://www.crg.es/deafness/".
 CC   -!- WEB RESOURCE: NAME=GeneReviews;
 CC       URL="http://www.genetests.org/query?gene=GJB1".'
-            sp = Bio::SPTR.new(data)
+            sp = Bio::UniProtKB.new(data)
       assert_equal(['NAME=Inherited peripheral neuropathies mutation db; URL="http://www.molgen.ua.ac.be/CMTMutations/".',
                     'NAME=Connexin-deafness homepage; URL="http://www.crg.es/deafness/".',
                     'NAME=GeneReviews; URL="http://www.genetests.org/query?gene=GJB1".'],
@@ -872,10 +871,10 @@ CC       URL="http://www.genetests.org/query?gene=GJB1".'
 
     end
 
-  end # class TestSPTRCC
+  end # class TestUniProtKB_CC
 
   # http://br.expasy.org/sprot/userman.html#Ref_line
-  class TestSPTRRef < Test::Unit::TestCase
+  class TestUniProtKB_Ref < Test::Unit::TestCase
 
     def setup
       data = 'RN   [1]
@@ -892,7 +891,7 @@ RT   exceptionally basic N-terminal domains to capture and localize an
 RT   atypical protein kinase C: characterization of Caenorhabditis elegans
 RT   C kinase adapter 1, a protein that avidly binds protein kinase C3.";
 RL   J. Biol. Chem. 276:10463-10475(2001).'
-      @obj = SPTR.new(data)
+      @obj = UniProtKB.new(data)
     end
 
     def test_ref
@@ -961,11 +960,11 @@ RL   J. Biol. Chem. 276:10463-10475(2001).'
                    @obj.ref.first['RL'])
     end
     
-  end # class TestSPTRReferences
+  end # class TestUniProtKB_References
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel41.0
-  class TestSPTRSwissProtRel41_0 < Test::Unit::TestCase
+  class TestUniProtKB_SwissProtRel41_0 < Test::Unit::TestCase
     # Progress in the conversion of Swiss-Prot to mixed-case characters
 
     # Multiple RP lines
@@ -973,7 +972,7 @@ RL   J. Biol. Chem. 276:10463-10475(2001).'
       data = "RN    [1]
 RP   SEQUENCE FROM N.A., SEQUENCE OF 23-42 AND 351-365, AND
 RP   CHARACTERIZATION."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal(['SEQUENCE FROM N.A.', 
                     'SEQUENCE OF 23-42 AND 351-365',
                     'CHARACTERIZATION'],
@@ -983,7 +982,7 @@ RP   CHARACTERIZATION."
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel41.1
-  class TestSPTRSwissProtRel41_1 < Test::Unit::TestCase
+  class TestUniProtKB_SwissProtRel41_1 < Test::Unit::TestCase
     # New syntax of the CC line topic ALTERNATIVE PRODUCTS
     def test_alternative_products
       data = "ID   TEST_ENTRY      STANDARD;      PRT;   393 AA.
@@ -1002,7 +1001,7 @@ CC         Sequence=VSP_identifier_1, VSP_identifier_2;
 CC         Note=Free text;
 CC       Event=Alternative initiation;
 CC         Comment=Free text;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       res = {"Comment" => "Free text",
              "Named isoforms" => "2", 
              "Variants" => [{"Name" => "Isoform_1",
@@ -1047,7 +1046,7 @@ FT   VARSPLIC   1655   1705       Missing (in isoform 3A and isoform 3B).
 FT                                /FTId=VSP_004794.
 FT   VARSPLIC   1790   1790       Missing (in isoform Del-1790).
 FT                                /FTId=VSP_004795."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       
       assert_equal({"Comment" => "",
                     "Named isoforms" => "6",
@@ -1112,14 +1111,14 @@ FT                                /FTId=VSP_004795."
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel41.10
-  class TestSPTRSwissProtRel41_10 < Test::Unit::TestCase
+  class TestUniProtKB_SwissProtRel41_10 < Test::Unit::TestCase
     # Reference Comment (RC) line topics may span lines
     def test_RC_lines
       data = "RN    [1]
 RC   STRAIN=AZ.026, DC.005, GA.039, GA2181, IL.014, IN.018, KY.172, KY2.37,
 RC   LA.013, MN.001, MNb027, MS.040, NY.016, OH.036, TN.173, TN2.38,
 RC   UT.002, AL.012, AZ.180, MI.035, VA.015, and IL2.17;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal([{"Text"=>"AZ.026", "Token"=>"STRAIN"}, 
                     {"Text"=>"DC.005", "Token"=>"STRAIN"},
                     {"Text"=>"GA.039", "Token"=>"STRAIN"},
@@ -1148,11 +1147,11 @@ RC   UT.002, AL.012, AZ.180, MI.035, VA.015, and IL2.17;"
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel41.20
-  class TestSPTRSwissProtRel41_20 < Test::Unit::TestCase
+  class TestUniProtKB_SwissProtRel41_20 < Test::Unit::TestCase
     # Case and wording change for submissions to Swiss-Prot in reference location (RL) lines
     def test_RL_lines
       data = "RL   Submitted (MAY-2002) to the SWISS-PROT data bank."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal('',
                     sp.ref.first['RL'])
     end
@@ -1162,7 +1161,7 @@ RC   UT.002, AL.012, AZ.180, MI.035, VA.015, and IL2.17;"
       data = "CC   -!- ALLERGEN: Causes an allergic reaction in human. Binds IgE. It is a
 CC       partially heat-labile allergen that may cause both respiratory and
 CC       food-allergy symptoms in patients with the bird-egg syndrome."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal(["Causes an allergic reaction in human. Binds IgE. It is a partially heat-labile allergen that may cause both respiratory and food-allergy symptoms in patients with the bird-egg syndrome."],
                    sp.cc("ALLERGEN"))
     end
@@ -1170,11 +1169,11 @@ CC       food-allergy symptoms in patients with the bird-egg syndrome."
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel42.6
-  class TestSPTRSwissProtRel42_6 < Test::Unit::TestCase
+  class TestUniProtKB_SwissProtRel42_6 < Test::Unit::TestCase
     # New comment line (CC) topic RNA EDITING
     def test_CC_rna_editing
       data = "CC   -!- RNA EDITING: Modified_positions=393, 431, 452, 495."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal({"Note"=>"", 
                     "Modified_positions"=>['393', '431', '452', '495']},
                    sp.cc("RNA EDITING"))
@@ -1182,7 +1181,7 @@ CC       food-allergy symptoms in patients with the bird-egg syndrome."
       data = "CC   -!- RNA EDITING: Modified_positions=59, 78, 94, 98, 102, 121; Note=The
 CC       stop codon at position 121 is created by RNA editing. The nonsense
 CC       codon at position 59 is modified to a sense codon."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal({"Note"=>"The stop codon at position 121 is created by RNA editing. The nonsense codon at position 59 is modified to a sense codon.", 
                     "Modified_positions"=>['59', '78', '94', '98', '102', '121']},
                    sp.cc("RNA EDITING"))
@@ -1190,7 +1189,7 @@ CC       codon at position 59 is modified to a sense codon."
       data = "CC   -!- RNA EDITING: Modified_positions=Not_applicable; Note=Some
 CC       positions are modified by RNA editing via nucleotide insertion or
 CC       deletion. The initiator methionine is created by RNA editing."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal({'Modified_positions' => ['Not_applicable'],
                     'Note' => "Some positions are modified by RNA editing via nucleotide insertion or deletion. The initiator methionine is created by RNA editing."},
                    sp.cc("RNA EDITING"))
@@ -1199,14 +1198,14 @@ CC       deletion. The initiator methionine is created by RNA editing."
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel1_12
-  class TestSPTRUniProtRel1_12 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel1_12 < Test::Unit::TestCase
     # Digital Object Identifier (DOI) in the RX line
     def test_DOI_in_RX_line
       # RX   [MEDLINE=Medline_identifier; ][PubMed=Pubmed_identifier; ][DOI=Digital_object_identifier;]
       data = "
 RN   [1]
 RX   MEDLINE=97291283; PubMed=9145897; DOI=10.1007/s00248-002-2038-4;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal({'MEDLINE' => '97291283', 
                     'PubMed' => '9145897', 
                      'DOI' => '10.1007/s00248-002-2038-4'},
@@ -1219,7 +1218,7 @@ RX   MEDLINE=97291283; PubMed=9145897; DOI=10.1007/s00248-002-2038-4;"
 RN   [1]
 RG   The C. elegans sequencing consortium;
 RG   The Brazilian network for HIV isolation and characterization;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal(['The C. elegans sequencing consortium', 
                     'The Brazilian network for HIV isolation and characterization'],
                    sp.ref.first['RG'])
@@ -1228,14 +1227,14 @@ RG   The Brazilian network for HIV isolation and characterization;"
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel2_0
-  class TestSPTRUniProtRel2_0 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel2_0 < Test::Unit::TestCase
     # New format for the GN (Gene Name) line
     # GN   Name=<name>; Synonyms=<name1>[, <name2>...]; OrderedLocusNames=<name1>[, <name2>...];
     # xsGN   ORFNames=<name1>[, <name2>...];
     def test_GN_line
       data = "GN   Name=atpG; Synonyms=uncG, papC;
 GN   OrderedLocusNames=b3733, c4659, z5231, ECs4675, SF3813, S3955;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal([{:orfs => [],
                      :loci => ["b3733", "c4659", "z5231", "ECs4675", "SF3813", "S3955"],
                      :name => "atpG",
@@ -1243,7 +1242,7 @@ GN   OrderedLocusNames=b3733, c4659, z5231, ECs4675, SF3813, S3955;"
                    sp.gn)
 
       data = "GN   ORFNames=SPAC1834.11c;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal([{:orfs => ['SPAC1834.11c'], 
                      :loci => [], 
                      :name => '', 
@@ -1254,7 +1253,7 @@ GN   OrderedLocusNames=b3733, c4659, z5231, ECs4675, SF3813, S3955;"
 GN   ORFNames=MTCY164.27;
 GN   and
 GN   Name=cysA2; OrderedLocusNames=Rv0815c, MT0837; ORFNames=MTV043.07c;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal([{:orfs => ["MTCY164.27"],
                      :loci => ["Rv3117", "MT3199"],
                      :name => "cysA1", 
@@ -1268,12 +1267,12 @@ GN   Name=cysA2; OrderedLocusNames=Rv0815c, MT0837; ORFNames=MTV043.07c;"
   end
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel2_1
-  class TestSPTRUniProtRel2_1 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel2_1 < Test::Unit::TestCase
     # Format change in the comment line (CC) topic: MASS SPECTROMETRY
     def test_CC_mass_spectrometry
       data = "CC   -!- MASS SPECTROMETRY: MW=32875.93; METHOD=MALDI;
 CC       RANGE=1-284 (Isoform 3); NOTE=Ref.6."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal([{"RANGE"=>"1-284",
                      "METHOD"=>"MALDI",
                      "MW_ERR"=>nil,
@@ -1285,11 +1284,11 @@ CC       RANGE=1-284 (Isoform 3); NOTE=Ref.6."
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel2_3
-  class TestSPTRUniProtRel2_3 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel2_3 < Test::Unit::TestCase
     # New RL line structure for electronic publications
     def test_RL_line
       data = "RL   Submitted (XXX-YYYY) to the HIV data bank."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal('',
                    sp.ref.first['RL'])
     end
@@ -1297,7 +1296,7 @@ CC       RANGE=1-284 (Isoform 3); NOTE=Ref.6."
     # Format change in the cross-reference to PDB
     def test_DR_PDB
       data = "DR   PDB; 1NB3; X-ray; A/B/C/D=116-335, P/R/S/T=98-105."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal([["1NB3", "X-ray", "A/B/C/D=116-335, P/R/S/T=98-105"]],
                    sp.dr['PDB'])
     end
@@ -1305,7 +1304,7 @@ CC       RANGE=1-284 (Isoform 3); NOTE=Ref.6."
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel3_4
-  class TestSPTRUniProtRel3_4 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel3_4 < Test::Unit::TestCase
     # Changes in the RP (Reference Position) line
     def test_RP_line
       data = "
@@ -1313,7 +1312,7 @@ RN   [1]
 RP   NUCLEOTIDE SEQUENCE [LARGE SCALE MRNA] (ISOFORM 1), PROTEIN SEQUENCE 
 RP   OF 108-131; 220-231 AND 349-393, CHARACTERIZATION, AND MUTAGENESIS OF 
 RP   ARG-336."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal(['NUCLEOTIDE SEQUENCE [LARGE SCALE MRNA] (ISOFORM 1)', 
                     'PROTEIN SEQUENCE OF 108-131; 220-231 AND 349-393', 
                     'CHARACTERIZATION', 
@@ -1323,7 +1322,7 @@ RP   ARG-336."
       data = "
 RN   [1]
 RP   NUCLEOTIDE SEQUENCE [GENOMIC DNA / MRNA]."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal(['NUCLEOTIDE SEQUENCE [GENOMIC DNA / MRNA]'],
                    sp.ref.first['RP'])
     end
@@ -1337,7 +1336,7 @@ CC         Abs(max)=395 nm;
 CC         Note=Exhibits a smaller absorbance peak at 470 nm. The
 CC         fluorescence emission spectrum peaks at 509 nm with a shoulder
 CC         at 540 nm;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal({"Redox potential" => "", 
                     "Temperature dependence" => "", 
                     "Kinetic parameters" => {}, 
@@ -1355,7 +1354,7 @@ CC         Vmax=0.11 mmol/min/mg enzyme with maltose as substrate;
 CC         Note=Acetylates glucose, maltose, mannose, galactose, and
 CC         fructose with a decreasing relative rate of 1, 0.55, 0.20, 0.07,
 CC         0.04;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal({"Redox potential" => "", 
                     "Temperature dependence" => "", 
                     "Kinetic parameters" => {"KM" => "62 mM for glucose; KM=90 mM for maltose",  
@@ -1373,7 +1372,7 @@ CC         Optimum pH is 7.5. Active from pH 5.0 to 9.0;
 CC       Temperature dependence:
 CC         Optimum temperature is 45 degrees Celsius. Active from 30 to 60
 CC         degrees Celsius;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal({"Redox potential" => "", 
                     "Temperature dependence" => "Optimum temperature is 45 degrees Celsius. Active from 30 to 60 degrees Celsius", 
                     "Kinetic parameters" => {},
@@ -1385,7 +1384,7 @@ CC         degrees Celsius;"
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel3_5
-  class TestSPTRUniProtRel3_5 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel3_5 < Test::Unit::TestCase
     # Extension of the Swiss-Prot entry name format
     def test_entry_name_format
       # TBD
@@ -1393,7 +1392,7 @@ CC         degrees Celsius;"
   end
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel4_0
-  class TestSPTRUniProtRel4_0 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel4_0 < Test::Unit::TestCase
     # Extension of the TrEMBL entry name format
 
     # Change of the entry name in many Swiss-Prot entries
@@ -1402,7 +1401,7 @@ CC         degrees Celsius;"
     def test_CC_interaction
       data = "CC   -!- INTERACTION:
 CC       P11450:fcp3c; NbExp=1; IntAct=EBI-126914, EBI-159556;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal([{"SP_Ac" => "P11450",
                      "identifier" => "fcp3c",
                      "optional_identifier" => nil,
@@ -1414,7 +1413,7 @@ CC       P11450:fcp3c; NbExp=1; IntAct=EBI-126914, EBI-159556;"
     def test_CC_interaction_isoform
       data = "CC   -!- INTERACTION:
 CC       Q9W1K5-1:cg11299; NbExp=1; IntAct=EBI-133844, EBI-212772;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal([{"SP_Ac" => 'Q9W1K5-1',
                      "identifier" => 'cg11299',
                      "optional_identifier" => nil,
@@ -1426,7 +1425,7 @@ CC       Q9W1K5-1:cg11299; NbExp=1; IntAct=EBI-133844, EBI-212772;"
     def test_CC_interaction_no_gene_name
       data = "CC   -!- INTERACTION:
 CC       Q8NI08:-; NbExp=1; IntAct=EBI-80809, EBI-80799;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal([{"SP_Ac" => 'Q8NI08',
                      "identifier" => '-',
                      "optional_identifier" => nil,
@@ -1439,7 +1438,7 @@ CC       Q8NI08:-; NbExp=1; IntAct=EBI-80809, EBI-80799;"
       data = "ID   TEST_ENTRY      STANDARD;      PRT;   393 AA.
 CC   -!- INTERACTION:
 CC       Self; NbExp=1; IntAct=EBI-123485, EBI-123485;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal([{"SP_Ac" => 'TEST_ENTRY',
                      "identifier" => 'TEST_ENTRY',
                      "optional_identifier" => nil,
@@ -1451,7 +1450,7 @@ CC       Self; NbExp=1; IntAct=EBI-123485, EBI-123485;"
     def test_CC_interaction_The_source_organisms_of_the_interacting_proteins_are_different
       data = "CC   -!- INTERACTION:
 CC       Q8C1S0:2410018m14rik (xeno); NbExp=1; IntAct=EBI-394562, EBI-398761;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal([{"SP_Ac" => 'Q8C1S0', 
                      "identifier" => '2410018m14rik',
                      "optional_identifier" => '(xeno)',  
@@ -1464,7 +1463,7 @@ CC       Q8C1S0:2410018m14rik (xeno); NbExp=1; IntAct=EBI-394562, EBI-398761;"
       data = "CC   -!- INTERACTION:
 CC       P51617:irak1; NbExp=1; IntAct=EBI-448466, EBI-358664;
 CC       P51617:irak1; NbExp=1; IntAct=EBI-448472, EBI-358664;"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal([{"SP_Ac" => "P51617", 
                      "identifier" => "irak1",
                      "optional_identifier" => nil,
@@ -1481,7 +1480,7 @@ CC       P51617:irak1; NbExp=1; IntAct=EBI-448472, EBI-358664;"
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel5_0
-  class TestSPTRUniProtRel5_0 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel5_0 < Test::Unit::TestCase
     # Format change in the DR line
     # DR   DATABASE_IDENTIFIER; PRIMARY_IDENTIFIER; SECONDARY_IDENTIFIER[; TERTIARY_IDENTIFIER][; QUATERNARY_IDENTIFIER].
     def test_DR_line
@@ -1489,7 +1488,7 @@ CC       P51617:irak1; NbExp=1; IntAct=EBI-448472, EBI-358664;"
 DR   EMBL; M68939; AAA26107.1; -; Genomic_DNA.
 DR   EMBL; U56386; AAB72034.1; -; mRNA."
 
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal([["M68939", "AAA26107.1", "-", "Genomic_DNA"],
                     ["U56386", "AAB72034.1", "-", "mRNA"]],
                    sp.dr['EMBL'])
@@ -1510,12 +1509,12 @@ DR   EMBL; U56386; AAB72034.1; -; mRNA."
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel5_4
-  class TestSPTRUniProtRel5_4 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel5_4 < Test::Unit::TestCase
     # Multiple comment line (CC) topics COFACTOR
     def test_multiple_cofactors
       data = "CC   -!- COFACTOR: Binds 1 2Fe-2S cluster per subunit (By similarity).
 CC   -!- COFACTOR: Binds 1 Fe(2+) ion per subunit (By similarity)."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal(["Binds 1 2Fe-2S cluster per subunit (By similarity).", 
                     "Binds 1 Fe(2+) ion per subunit (By similarity)."],
                    sp.cc['COFACTOR'])
@@ -1527,38 +1526,38 @@ CC   -!- COFACTOR: Binds 1 Fe(2+) ion per subunit (By similarity)."
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel6_0
-  class TestSPTRUniProtRel6_0 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel6_0 < Test::Unit::TestCase
     # Changes in the OG (OrGanelle) line
     def test_OG_line
       data = "OG   Plastid."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal(['Plastid'], sp.og)
 
       data = "OG   Plastid; Apicoplast."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal(['Plastid', 'Apicoplast'], sp.og)
 
       data = "OG   Plastid; Chloroplast."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal(['Plastid', 'Chloroplast'], sp.og)
 
       data = "OG   Plastid; Cyanelle."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal(['Plastid', 'Cyanelle'], sp.og)
 
       data = "OG   Plastid; Non-photosynthetic plastid."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal(['Plastid', 'Non-photosynthetic plastid'], sp.og)
     end
   end
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel6_1
-  class TestSPTRUniProtRel6_1 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel6_1 < Test::Unit::TestCase
     # Annotation changes concerning the feature key METAL
     def test_FT_metal
       old_data = "FT   METAL        61     61       Copper and zinc."
-      sp = SPTR.new(old_data)
+      sp = UniProtKB.new(old_data)
       assert_equal([{'From' => 61,
                      'To' => 61,
                      'Description' => 'Copper and zinc.',
@@ -1569,7 +1568,7 @@ CC   -!- COFACTOR: Binds 1 Fe(2+) ion per subunit (By similarity)."
 
       new_data = "FT   METAL        61     61       Copper.
 FT   METAL        61     61       Zinc."
-      sp = SPTR.new(new_data)
+      sp = UniProtKB.new(new_data)
       assert_equal([{"From" => 61, 
                      "To" => 61, 
                      "Description" => "Copper.",
@@ -1588,7 +1587,7 @@ FT   METAL        61     61       Zinc."
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel6_5
-  class TestSPTRUniProtRel6_5 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel6_5 < Test::Unit::TestCase
     # Changes in the keywlist.txt file
     # * Modification of the HI line format:
     def test_HI_line
@@ -1597,7 +1596,7 @@ FT   METAL        61     61       Zinc."
       data = "HI   Molecular function: Ionic channel; Calcium channel.
 HI   Biological process: Transport; Ion transport; Calcium transport; Calcium channel.
 HI   Ligand: Calcium; Calcium channel."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal([{'Category' => 'Molecular function', 
                      'Keywords' => ['Ionic channel'], 
                      'Keyword' => 'Calcium channel'},
@@ -1613,13 +1612,13 @@ HI   Ligand: Calcium; Calcium channel."
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel7.0
-  class TestSPTRUniProtRel7_0 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel7_0 < Test::Unit::TestCase
     # Changes concerning dates and versions numbers (DT lines)
     def test_DT_line
       up_sp_data = "DT   01-JAN-1998, integrated into UniProtKB/Swiss-Prot.
 DT   15-OCT-2001, sequence version 3.
 DT   01-APR-2004, entry version 14."
-      sp = SPTR.new(up_sp_data)
+      sp = UniProtKB.new(up_sp_data)
       assert_equal({"sequence" => "15-OCT-2001, sequence version 3.", 
                     "annotation" => "01-APR-2004, entry version 14.", 
                     "created" => "01-JAN-1998, integrated into UniProtKB/Swiss-Prot."},
@@ -1628,7 +1627,7 @@ DT   01-APR-2004, entry version 14."
       up_tr_data = "DT   01-FEB-1999, integrated into UniProtKB/TrEMBL.
 DT   15-OCT-2000, sequence version 2.
 DT   15-DEC-2004, entry version 5."
-      sp = SPTR.new(up_tr_data)
+      sp = UniProtKB.new(up_tr_data)
       assert_equal({"sequence" => "15-OCT-2000, sequence version 2.", 
                     "annotation" => "15-DEC-2004, entry version 5.",
                     "created" => "01-FEB-1999, integrated into UniProtKB/TrEMBL."},
@@ -1643,32 +1642,32 @@ DT   15-DEC-2004, entry version 5."
 CC   Copyrighted by the UniProt Consortium, see http://www.uniprot.org/terms
 CC   Distributed under the Creative Commons Attribution-NoDerivs License
 CC   -----------------------------------------------------------------------"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal({}, sp.cc)
     end
   end
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel7.6
-  class TestSPTRUniProtRel7_6 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel7_6 < Test::Unit::TestCase
     # Sequences with over 10000 amino acids in UniProtKB/Swiss-Prot
     def test_10000aa
       data = ["SQ   SEQUENCE   393 AA;  43653 MW;  AD5C149FD8106131 CRC64;\n",
               "     MEEPQSDPSV EPPLSQETFS DLWKLLPENN VLSPLPSQAM DDLMLSPDDI EQWFTEDPGP\n" * 200,
               "//\n"].join
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal(12000, sp.seq.size)
     end
   end
 
 
   # Changes in http://br.expasy.org/sprot/relnotes/sp_news.html#rel8.0
-  class TestSPTRUniProtRel8_0 < Test::Unit::TestCase
+  class TestUniProtKB_UniProtRel8_0 < Test::Unit::TestCase
     # Replacement of the feature key VARSPLIC by VAR_SEQ
     def test_FT_VER_SEQ
       data = "FT   VAR_SEQ       1     34       Missing (in isoform 3).
 FT                                /FTId=VSP_004099."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       res = [{'From' => 1, 
               'To' => 34, 
               'Description' => 'Missing (in isoform 3).', 
@@ -1706,7 +1705,7 @@ CC       Name=2; Synonyms=p19ARF;
 CC         IsoId=O77618-1; Sequence=External;
 FT   VAR_SEQ       1     34       Missing (in isoform 3).
 FT                                /FTId=VSP_004099."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal({"Comment" => "Isoform 1 and isoform 2 arise due to the use of two alternative first exons joined to a common exon 2 at the same acceptor site but in different reading frames, resulting in two completely different isoforms", 
                      "Named isoforms" => "3",
                      "Variants" =>  [{"IsoId" => ["O77617-1"], 
@@ -1776,14 +1775,14 @@ OH   NCBI_TaxID=3603; Vitis.'
              {'NCBI_TaxID' => '4113', 'HostName' => 'Solanum tuberosum (Potato)'},
              {'NCBI_TaxID' => '13305', 'HostName' => 'Tulipa'},
              {'NCBI_TaxID' => '3603', 'HostName' => 'Vitis'}]
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal(res, sp.oh)
     end
 
     def test_OH_line_exception
       data = "ID   TEST_ENTRY      STANDARD;      PRT;   393 AA.
 OH   NCBI_TaxID=23216x: Rubus (bramble)."
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_raise(ArgumentError) { sp.oh }
     end
 
@@ -1792,13 +1791,13 @@ OH   NCBI_TaxID=23216x: Rubus (bramble)."
   class TestOSLine < Test::Unit::TestCase
     def test_uncapitalized_letter_Q32725_9POAL
       data = "OS   unknown cyperaceous sp.\n"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal('unknown cyperaceous sp.', sp.os.first['os'])
     end
 
     def test_period_trancation_O63147
       data = "OS   Hippotis sp. Clark and Watts 825.\n"
-      sp = SPTR.new(data)
+      sp = UniProtKB.new(data)
       assert_equal('Hippotis sp. Clark and Watts 825.', sp.os.first['os'])
     end
   end
