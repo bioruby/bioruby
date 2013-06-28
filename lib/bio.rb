@@ -73,24 +73,26 @@ module Bio
   autoload :KEGGDB,         'bio/db'
   autoload :EMBLDB,         'bio/db'
 
-  ## GenBank/RefSeq/DDBJ
+  ## GenBank, GenPept
 
   autoload :GenBank,        'bio/db/genbank/genbank'
   autoload :GenPept,        'bio/db/genbank/genpept'
+
+  ## (deprecated) Bio::RefSeq, Bio::DDBJ
   autoload :RefSeq,         'bio/db/genbank/refseq'
   autoload :DDBJ,           'bio/db/genbank/ddbj'
-  ## below are described in bio/db/genbank/ddbj.rb
-  #class DDBJ
-  #  autoload :XML,          'bio/io/ddbjxml'
-  #  autoload :REST,         'bio/io/ddbjrest'
-  #end
 
-  ## EMBL/TrEMBL/Swiss-Prot/SPTR
+  ## EMBL, UniProtKB
 
   autoload :EMBL,           'bio/db/embl/embl'
+  autoload :UniProtKB,      'bio/db/embl/uniprotkb'
+
+  ## aliases of Bio::UniProtKB
   autoload :SPTR,           'bio/db/embl/sptr'
-  autoload :TrEMBL,         'bio/db/embl/trembl'
   autoload :UniProt,        'bio/db/embl/uniprot'
+
+  ## (deprecated) Bio::TrEMBL, Bio::SwissProt
+  autoload :TrEMBL,         'bio/db/embl/trembl'
   autoload :SwissProt,      'bio/db/embl/swissprot'
 
   ## KEGG
