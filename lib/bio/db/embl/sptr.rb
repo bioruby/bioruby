@@ -436,7 +436,7 @@ class SPTR < EMBLDB
 
   # returns a String of the first gene name in the GN line.
   def gene_name
-    gene_names.first
+    gene_names.first if gene_names
   end
 
 
