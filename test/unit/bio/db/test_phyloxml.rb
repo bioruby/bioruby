@@ -100,7 +100,7 @@ module Bio
     end
 
     def test_new
-      str = File.read(TestPhyloXMLData.example_xml)
+      str = File.open(TestPhyloXMLData.example_xml, "rb") { |f| f.read }
       assert_instance_of(Bio::PhyloXML::Parser,
                          phyloxml = Bio::PhyloXML::Parser.new(str))
       common_test_next_tree(phyloxml)
