@@ -137,13 +137,15 @@ module Bio
         return nil if @align
         a = @raw.split(/\r?\n\r?\n/)
         @header = a.shift.to_s
+        seqnos_on = a.any?{|x| / \d/.match(x)} # Optimization only
         xalign = Bio::Alignment.new
         @match_line = ''
         if a.size > 0 then
           a[0].gsub!(/\A(\r?\n)+/, '')
           a.collect! { |x| x.split(/\r?\n/) }
           a.each { |x|
-            x.each { |y| y.sub!(/ +\d+\s*$/, '') }} #for -SEQNOS=on option
+            x.each { |y| y.sub!(/ +\d+\s*$/, '') } #for -SEQNOS=on option
+          } if seqnos_on
           @tagsize = ( a[0][0].rindex(/\s/) or -1 ) + 1
           a.each do |x|
             @match_line << x.pop.to_s[@tagsize..-1]
