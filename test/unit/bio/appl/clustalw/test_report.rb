@@ -59,29 +59,25 @@ module Bio
     end #module CommonTestMethods
 
     class TestClustalWReport < Test::Unit::TestCase
-
-      include CommonTestMethods
-
-      def setup
-        test_data_path = Pathname.new(File.join(BioRubyTestDataPath, 'clustalw')).cleanpath.to_s
-        aln_filename = File.join(test_data_path, 'example1.aln')
-        text = File.read(aln_filename)
-        @aln = Bio::ClustalW::Report.new(text)
-      end
-      
-    end # class TestClustalWReport
-
-    class TestClustalWReportWith2ndArgument < Test::Unit::TestCase
-
       include CommonTestMethods
 
       def setup
         aln_filename = File.join(BioRubyTestDataPath, 'clustalw',
-                               'example1.aln')
+                                 'example1.aln')
+        text = File.read(aln_filename)
+        @aln = Bio::ClustalW::Report.new(text)
+      end
+    end # class TestClustalWReport
+
+    class TestClustalWReportWith2ndArgument < Test::Unit::TestCase
+      include CommonTestMethods
+
+      def setup
+        aln_filename = File.join(BioRubyTestDataPath, 'clustalw',
+                                 'example1.aln')
         text = File.read(aln_filename)
         @aln = Bio::ClustalW::Report.new(text, "PROTEIN")
       end
-
     end #class TestClustalWReportWith2ndArgument
 
   end #module TestClustalWReport
