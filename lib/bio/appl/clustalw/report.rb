@@ -143,7 +143,9 @@ module Bio
           a[0].gsub!(/\A(\r?\n)+/, '')
           a.collect! { |x| x.split(/\r?\n/) }
           a.each { |x|
-            x.each { |y| y.sub!(/ +\d+\s*$/, '') }} #for -SEQNOS=on option
+            x.each { |y| y.sub!(/ +\d+\s*\z/, '') if /\d\s*\z/ =~ y }
+            # The above "if /\d\s*\z/ =~ y" is for optimization only.
+          } #for -SEQNOS=on option
           @tagsize = ( a[0][0].rindex(/\s/) or -1 ) + 1
           a.each do |x|
             @match_line << x.pop.to_s[@tagsize..-1]
