@@ -12,20 +12,36 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 1, "test",
 require 'benchmark'
 require 'bio'
 
-module BenchmarkClustalWReport
+class BenchmarkClustalWReport
+
+  DataDir = File.join(BioRubyTestDataPath, 'clustalw')
+  Filenames = [ 'example1.aln', 'example1-seqnos.aln' ]
+
   def self.benchmark_clustalw_report
+    Filenames.each do |fn|
+      print "\n", fn, "\n"
+      fullpath = File.join(DataDir, fn)
+      self.new(fullpath).benchmark
+    end
+  end
+
+  def initialize(aln_filename)
+    @text = File.open(aln_filename, 'rb') { |f| f.read }
+    @text.freeze
+  end
+
+  def benchmark
+    GC.start
     Benchmark.bmbm do |x|
-      test_data_path = Pathname.new(File.join(BioRubyTestDataPath, 'clustalw')).cleanpath.to_s
-      aln_filename = File.join(test_data_path, 'example1.aln')
-      text = File.read(aln_filename)
       x.report do
         for i in 1...10_000
-          aln = Bio::ClustalW::Report.new(text)
+          aln = Bio::ClustalW::Report.new(@text)
           aln.alignment
         end
       end
     end
   end
-end
+
+end #class BenchmarkClustalWReport
 
 BenchmarkClustalWReport.benchmark_clustalw_report
