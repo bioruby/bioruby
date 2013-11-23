@@ -80,6 +80,17 @@ module Bio
       end
     end #class TestClustalWReportWith2ndArgument
 
+    class TestClustalWReportSeqnos < Test::Unit::TestCase
+      include CommonTestMethods
+
+      def setup
+        aln_filename = File.join(BioRubyTestDataPath, 'clustalw',
+                                 'example1-seqnos.aln')
+        text = File.read(aln_filename)
+        @aln = Bio::ClustalW::Report.new(text)
+      end
+    end #class TestClustalWReportSeqnos
+
   end #module TestClustalWReport
 
 end #module Bio
