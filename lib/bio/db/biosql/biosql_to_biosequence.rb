@@ -11,6 +11,7 @@
 
 require 'bio/sequence'
 require 'bio/sequence/adapter'
+require 'bio/sequence/dblink'
 
 # Internal use only. Normal users should not use this module.
 #
