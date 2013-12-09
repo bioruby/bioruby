@@ -371,7 +371,7 @@ module Bio
         #probably would be better to d a class refrence to collect these informations
         @entry.bioentry_references.collect do |bio_ref|
           hash = Hash.new
-          hash['authors'] = bio_ref.reference.authors.gsub(/\.\s/, "\.\s\|").split(/\|/)
+          hash['authors'] = bio_ref.reference.authors.gsub(/\.\s/, "\.\s\|").split(/\|/) if (bio_ref.reference and bio_ref.reference.authors)
 
           hash['sequence_position'] = "#{bio_ref.start_pos}-#{bio_ref.end_pos}" if (bio_ref.start_pos and bio_ref.end_pos)
           hash['title'] = bio_ref.reference.title
