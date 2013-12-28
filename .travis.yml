@@ -2,6 +2,8 @@ language: ruby
 rvm:
   - 1.9.3
   - 1.8.7
+  - 2.0.0
+  - 2.1.0
 env:
   - TESTOPTS=-v
 gemfile:
@@ -30,6 +32,10 @@ matrix:
     - rvm: 1.9.3
       gemfile: gemfiles/Gemfile.travis-ruby1.9
       env: BIORUBY_RAKE_DEFAULT_TASK=gem-test TESTOPTS=-v
+    - rvm: 2.0.0
+      gemfile: gemfiles/Gemfile.travis-ruby1.9
+    - rvm: 2.1.0
+      gemfile: gemfiles/Gemfile.travis-ruby1.9
     - rvm: jruby-18mode
       gemfile: gemfiles/Gemfile.travis-jruby1.8
       env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=tar-integration-test TESTOPTS=-v
