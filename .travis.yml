@@ -20,7 +20,7 @@ matrix:
       gemfile: gemfiles/Gemfile.travis-ruby1.8
       env: TESTOPTS=-v
     - rvm: rbx-2.2.3
-      gemfile: gemfiles/Gemfile.travis-ruby1.9
+      gemfile: gemfiles/Gemfile.travis-rbx
       env: TESTOPTS=-v
     - rvm: jruby-18mode
       gemfile: gemfiles/Gemfile.travis-jruby1.8
@@ -42,7 +42,7 @@ matrix:
       env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=gem-test TESTOPTS=-v
   allow_failures:
     - rvm: rbx-2.2.3
-      gemfile: gemfiles/Gemfile.travis-ruby1.9
+      gemfile: gemfiles/Gemfile.travis-rbx
       env: TESTOPTS=-v
     - rvm: jruby-18mode
       gemfile: gemfiles/Gemfile.travis-jruby1.8
