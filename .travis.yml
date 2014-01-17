@@ -9,6 +9,8 @@ env:
 gemfile:
   - gemfiles/Gemfile.travis-ruby1.9
 before_install:
+  - gem update --system 2.1.11
+  - gem --version
   - mkdir /tmp/bioruby
   - ruby gemfiles/modify-Gemfile.rb
   - ruby gemfiles/prepare-gemspec.rb
