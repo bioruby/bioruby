@@ -41,7 +41,7 @@ matrix:
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=gem-test TESTOPTS=-v
   allow_failures:
-    - rvm: rbx-2.1.1
+    - rvm: rbx-2.2.3
       gemfile: gemfiles/Gemfile.travis-ruby1.9
       env: TESTOPTS=-v
     - rvm: jruby-18mode
@@ -56,12 +56,6 @@ matrix:
     - rvm: jruby-19mode
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=gem-test TESTOPTS=-v
-
-platforms :rbx do
-  gem 'racc'
-  gem 'rubysl', '~> 2.0'
-  gem 'psych'
-end
 
 # uncomment this line if your project needs to run something other than `rake`:
 # script: bundle exec rspec spec
