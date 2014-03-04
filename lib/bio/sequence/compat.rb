@@ -62,7 +62,7 @@ module Bio
       end
 
 
-      # <b>Bio::Sequence#to_fasta is DEPRECIATED</b>
+      # <b>Bio::Sequence#to_fasta is DEPRECATED</b>
       # Do not use Bio::Sequence#to_fasta ! Use Bio::Sequence#output instead. 
       # Note that Bio::Sequence::NA#to_fasta, Bio::Sequence::AA#to_fasata,
       # and Bio::Sequence::Generic#to_fasta <b>can still be used</b>,
