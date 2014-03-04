@@ -1476,21 +1476,16 @@ module Bio
 
       # Gets the sequence from given object.
       def extract_seq(obj)
-        seq = nil
         if obj.is_a?(Bio::Sequence::NA) or obj.is_a?(Bio::Sequence::AA) then
-          seq = obj
+          obj
         else
-          for m in [ :seq, :naseq, :aaseq ]
-            begin
-              seq = obj.send(m)
-            rescue NameError, ArgumentError
-              seq = nil
-            end
-            break if seq
-          end
-          seq = obj unless seq
+          m = [ :seq, :naseq, :aaseq ].find {|m|
+            obj.respond_to? m
+          }
+          m ?
+            obj.__send__(m) :
+            obj
         end
-        seq
       end
       module_function :extract_seq
 
