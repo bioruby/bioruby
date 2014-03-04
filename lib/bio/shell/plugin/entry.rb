@@ -18,7 +18,7 @@ module Bio::Shell
     File.open(filename).each do |line|
       list << line[/^\S+/]
     end
-    return list
+    list
   end
 
   # Obtain a Bio::Sequence::NA (DNA) or a Bio::Sequence::AA (Amino Acid)
@@ -49,11 +49,11 @@ module Bio::Shell
       tmp = ent.aaseq
     end
 
-    if tmp and tmp.is_a?(String) and not tmp.empty?
-      #seq = Bio::Sequence.auto(tmp).seq
+
+    if tmp and tmp.respond_to?(:each_char) and not tmp.empty?
       seq = Bio::Sequence.auto(tmp)
     end
-    return seq
+    seq
   end
 
   # Obtain a database entry from
@@ -92,41 +92,43 @@ module Bio::Shell
 
       # via Internet
       else
-        case db.to_s.downcase
-        when 'genbank', 'gb', 'nuccore', 'indsc'
-          # NCBI
-          puts "Retrieving entry from NCBI eUtils"
-          entry = efetch(entry_id)
+        entry = case db.to_s.downcase
+          when 'genbank', 'gb', 'nuccore', 'indsc'
+            # NCBI
+            puts "Retrieving entry from NCBI eUtils"
+            efetch(entry_id)
 
-        when 'embl', 'emb', /\Aembl/, /\Auni/, 'sp', /\Aensembl/
-          # EBI
-          puts "Retrieving entry from EBI Dbfetch"
-          db = 'embl' if db == 'emb'
-          db = 'uniprotkb' if db == 'uniprot' or db == 'sp'
-          entry = biofetch(db, entry_id)
+          when 'embl', 'emb', /\Aembl/, /\Auni/, 'sp', /\Aensembl/
+            # EBI
+            puts "Retrieving entry from EBI Dbfetch"
+            db = if db == 'emb'
+              'embl'
+            elsif db == 'uniprot' or db == 'sp'
+              'uniprotkb'
+            end
+            biofetch(db, entry_id)
 
-        when 'ddbj', 'dbj', 'dad'
-          # TogoWS REST
-          puts "Retrieving entry from TogoWS"
-          db = 'ddbj' if db == 'dbj'
-          entry = togowsentry(db, entry_id)
-
-        else
-          togodblist = Bio::TogoWS::REST.entry_database_list rescue []
-          if togodblist.include?(db) then
+          when 'ddbj', 'dbj', 'dad'
             # TogoWS REST
             puts "Retrieving entry from TogoWS"
-            entry = togowsentry(db, entry_id)
+            db = 'ddbj' if db == 'dbj'
+            togowsentry(db, entry_id)
           else
-            # KEGG API at http://www.genome.jp/kegg/soap/
-            puts "Retrieving entry from KEGG API (#{arg})"
-            entry = bget(arg)
-          end
-        end
+            togodblist = Bio::TogoWS::REST.entry_database_list rescue []
+            if togodblist.include?(db) then
+              # TogoWS REST
+              puts "Retrieving entry from TogoWS"
+              togowsentry(db, entry_id)
+            else
+              # KEGG API at http://www.genome.jp/kegg/soap/
+              puts "Retrieving entry from KEGG API (#{arg})"
+              bget(arg)
+            end
+        end # case
       end
     end
 
-    return entry
+    entry
   end
 
   # Obtain a parsed object from sources that ent() supports.

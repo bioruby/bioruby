@@ -47,7 +47,7 @@ class Sequence
 #   # Translate my sequence (see method docs for many options)
 #   puts dna.translate
 #   puts rna.translate
-class NA < String
+class NA < ::String
 
   include Bio::Sequence::Common
 

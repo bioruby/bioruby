@@ -30,7 +30,7 @@ class Sequence
 #
 #   # What is the molecular weight of this peptide?
 #   puts aa.molecular_weight
-class AA < String
+class AA < ::String
 
   include Bio::Sequence::Common
 
