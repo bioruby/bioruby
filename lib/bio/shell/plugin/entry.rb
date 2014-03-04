@@ -49,8 +49,8 @@ module Bio::Shell
       tmp = ent.aaseq
     end
 
-    if tmp and tmp.is_a?(String) and not tmp.empty?
-      #seq = Bio::Sequence.auto(tmp).seq
+
+    if tmp and tmp.respond_to?(:each_char) and not tmp.empty?
       seq = Bio::Sequence.auto(tmp)
     end
     seq
