@@ -84,17 +84,15 @@ module Bio
         raise ArgumentError, 'wrong number of arguments (0 for 1)'
       end
       x = arg.shift
-      if x.is_a?(Module) then
-        # FlatFile.open(dbclass, filename_or_io, ...)
-        dbclass = x
-      elsif x.nil? then
-        # FlatFile.open(nil, filename_or_io, ...)
-        dbclass = nil
-      else
-        # FlatFile.open(filename, ...)
-        dbclass = nil
-        arg.unshift(x)
+
+      dbclass = case x
+        when Module then x # FlatFile.open(dbclass, filename_or_io, ...)
+        when nil then nil # FlatFile.open(nil, filename_or_io, ...)
+        else # FlatFile.open(filename, ...)
+          arg.unshift(x)
+          nil
       end
+
       if arg.size <= 0
         raise ArgumentError, 'wrong number of arguments (1 for 2)'
       end
