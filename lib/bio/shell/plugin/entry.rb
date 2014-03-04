@@ -18,7 +18,7 @@ module Bio::Shell
     File.open(filename).each do |line|
       list << line[/^\S+/]
     end
-    return list
+    list
   end
 
   # Obtain a Bio::Sequence::NA (DNA) or a Bio::Sequence::AA (Amino Acid)
@@ -53,7 +53,7 @@ module Bio::Shell
       #seq = Bio::Sequence.auto(tmp).seq
       seq = Bio::Sequence.auto(tmp)
     end
-    return seq
+    seq
   end
 
   # Obtain a database entry from
@@ -126,7 +126,7 @@ module Bio::Shell
       end
     end
 
-    return entry
+    entry
   end
 
   # Obtain a parsed object from sources that ent() supports.
