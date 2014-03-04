@@ -9,8 +9,6 @@
 
 module Bio
 
-require File.expand_path(File.join File.dirname(__FILE__), '../sequence.rb')
-
   class Sequence
 
     # Return sequence as 
@@ -31,6 +29,38 @@ require File.expand_path(File.join File.dirname(__FILE__), '../sequence.rb')
 
 
     module Common
+      module ClassMethods
+
+        # Generate a new random sequence with the given frequency of bases.
+        # The sequence length is determined by their cumulative sum.
+        # (See also Bio::Sequence::Common#randomize which creates a new
+        # randomized sequence object using the base composition of an existing 
+        # sequence instance).
+        #
+        #   counts = {'a'=>1,'c'=>2,'g'=>3,'t'=>4}
+        #   puts Bio::Sequence::NA.randomize(counts)  #=> "ggcttgttac" (for example)
+        #
+        #   counts = {'R'=>1,'L'=>2,'E'=>3,'A'=>4}
+        #   puts Bio::Sequence::AA.randomize(counts)  #=> "AAEAELALRE" (for example)
+        #
+        # You may also feed the output of randomize into a block
+        #
+        #   actual_counts = {'a'=>0, 'c'=>0, 'g'=>0, 't'=>0}
+        #   Bio::Sequence::NA.randomize(counts) {|x| actual_counts[x] += 1}
+        #   actual_counts                     #=> {"a"=>1, "c"=>2, "g"=>3, "t"=>4}
+        #
+        #   actual_counts = {'R'=>0,'L'=>0,'E'=>0,'A'=>0}
+        #   Bio::Sequence::AA.randomize(counts) {|x| actual_counts[x] += 1}
+        #   actual_counts                     #=> {"A"=>4, "L"=>2, "E"=>3, "R"=>1}
+        # ---
+        # *Arguments*:
+        # * (optional) _hash_: Hash object
+        # *Returns*:: Bio::Sequence object
+        def randomize(*arg, &block)
+          new('').randomize(*arg, &block)
+        end
+      end
+
 
       # <b>Bio::Sequence#to_fasta is DEPRECIATED</b>
       # Do not use Bio::Sequence#to_fasta ! Use Bio::Sequence#output instead. 
@@ -57,65 +87,6 @@ require File.expand_path(File.join File.dirname(__FILE__), '../sequence.rb')
       end
 
     end # Common
-
-
-  class NA
-
-    # Generate a new random sequence with the given frequency of bases.
-    # The sequence length is determined by their cumulative sum.
-    # (See also Bio::Sequence::Common#randomize which creates a new
-    # randomized sequence object using the base composition of an existing 
-    # sequence instance).
-    #
-    #   counts = {'a'=>1,'c'=>2,'g'=>3,'t'=>4}
-    #   puts Bio::Sequence::NA.randomize(counts)  #=> "ggcttgttac" (for example)
-    #
-    # You may also feed the output of randomize into a block
-    #
-    #   actual_counts = {'a'=>0, 'c'=>0, 'g'=>0, 't'=>0}
-    #   Bio::Sequence::NA.randomize(counts) {|x| actual_counts[x] += 1}
-    #   actual_counts                     #=> {"a"=>1, "c"=>2, "g"=>3, "t"=>4}
-    # ---
-    # *Arguments*:
-    # * (optional) _hash_: Hash object
-    # *Returns*:: Bio::Sequence::NA object
-    def self.randomize(*arg, &block)
-      self.new('').randomize(*arg, &block)
-    end
-
-    def pikachu #:nodoc:
-      self.dna.tr("atgc", "pika") # joke, of course :-)
-    end
-
-  end # NA
-
-
-  class AA
-
-    # Generate a new random sequence with the given frequency of bases.
-    # The sequence length is determined by their cumulative sum.
-    # (See also Bio::Sequence::Common#randomize which creates a new
-    # randomized sequence object using the base composition of an existing 
-    # sequence instance).
-    #
-    #   counts = {'R'=>1,'L'=>2,'E'=>3,'A'=>4}
-    #   puts Bio::Sequence::AA.randomize(counts)  #=> "AAEAELALRE" (for example)
-    #
-    # You may also feed the output of randomize into a block
-    #
-    #   actual_counts = {'R'=>0,'L'=>0,'E'=>0,'A'=>0}
-    #   Bio::Sequence::AA.randomize(counts) {|x| actual_counts[x] += 1}
-    #   actual_counts                     #=> {"A"=>4, "L"=>2, "E"=>3, "R"=>1}
-    # ---
-    # *Arguments*:
-    # * (optional) _hash_: Hash object
-    # *Returns*:: Bio::Sequence::AA object
-    def self.randomize(*arg, &block)
-      self.new('').randomize(*arg, &block)
-    end
-
-  end # AA
-
 
   end # Sequence
 

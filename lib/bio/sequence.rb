@@ -61,20 +61,17 @@ module Bio
 #   puts dna.gc_percent
 class Sequence
 
-  autoload :Common,  'bio/sequence/common'
-  autoload :NA,      'bio/sequence/na'
-  autoload :AA,      'bio/sequence/aa'
-  autoload :Generic, 'bio/sequence/generic'
-  autoload :Format,  'bio/sequence/format'
-  autoload :Adapter, 'bio/sequence/adapter'
-  autoload :QualityScore, 'bio/sequence/quality_score'
-  autoload :SequenceMasker, 'bio/sequence/sequence_masker'
+  require File.expand_path(File.join File.dirname(__FILE__),"sequence/common.rb")
+  require File.expand_path(File.join File.dirname(__FILE__),"sequence/na.rb")
+  require File.expand_path(File.join File.dirname(__FILE__),"sequence/aa.rb")
+  require File.expand_path(File.join File.dirname(__FILE__),"sequence/generic.rb")
+  require File.expand_path(File.join File.dirname(__FILE__),"sequence/format.rb")
+  require File.expand_path(File.join File.dirname(__FILE__),"sequence/adapter.rb")
+  require File.expand_path(File.join File.dirname(__FILE__),"sequence/quality_score.rb")
+  require File.expand_path(File.join File.dirname(__FILE__),"sequence/sequence_masker.rb")
 
-  #--
-  # require "bio/sequence/compat.rb" here to avoid circular require and
-  # possible superclass mismatch of AA class
-  #++
-  require 'bio/sequence/compat'
+
+  require File.expand_path(File.join File.dirname(__FILE__),"sequence/compat.rb")
 
   include Format
   include SequenceMasker
