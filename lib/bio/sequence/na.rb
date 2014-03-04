@@ -9,10 +9,11 @@
 
 module Bio
 
-  autoload :NucleicAcid, 'bio/data/na' unless const_defined?(:NucleicAcid)
-  autoload :CodonTable,  'bio/data/codontable' unless const_defined?(:CodonTable)
+  require File.expand_path(File.join File.dirname(__FILE__), '../sequence.rb')
+  require File.expand_path(File.join File.dirname(__FILE__), '../sequence/compat.rb')
 
-  require 'bio/sequence' unless const_defined?(:Sequence)
+  require File.expand_path(File.join File.dirname(__FILE__),"../data/na.rb")
+  require File.expand_path(File.join File.dirname(__FILE__),"../data/codontable.rb")
 
 class Sequence
 
@@ -50,6 +51,7 @@ class Sequence
 class NA < ::String
 
   include Bio::Sequence::Common
+  extend Bio::Sequence::Common::ClassMethods
 
   # Generate an nucleic acid sequence object from a string.
   #
@@ -480,6 +482,11 @@ class NA < ::String
     Bio::RestrictionEnzyme::Analysis.cut(self, *args)
   end
   alias cut_with_enzymes cut_with_enzyme
+
+
+  def pikachu #:nodoc:
+    self.dna.tr("atgc", "pika") # joke, of course :-)
+  end
 
 end # NA
 
