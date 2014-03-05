@@ -108,23 +108,21 @@ class AminoAcid
     }
 
     def weight(x = nil)
-      if x
-        if x.length > 1
-          total = 0.0
-          x.each_byte do |byte|
-            aa = byte.chr.upcase
-            if WEIGHT[aa]
-              total += WEIGHT[aa]
-            else
-              raise "Error: invalid amino acid '#{aa}'"
-            end
+      return WEIGHT unless x
+
+      if x.length > 1
+        total = 0.0
+        x.each_byte do |byte|
+          aa = byte.chr.upcase
+          if WEIGHT[aa]
+            total += WEIGHT[aa]
+          else
+            raise "Error: invalid amino acid '#{aa}'"
           end
-          total -= NucleicAcid.weight[:water] * (x.length - 1)
-        else
-          WEIGHT[x]
         end
+        total -= NucleicAcid.weight[:water] * (x.length - 1)
       else
-        WEIGHT
+        WEIGHT[x]
       end
     end
 
