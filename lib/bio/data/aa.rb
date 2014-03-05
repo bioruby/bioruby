@@ -170,27 +170,18 @@ class AminoAcid
     alias three to_3
 
     def one2three(x)
-      if x and x.length != 1
-        raise ArgumentError
-      else
-        NAMES[x]
-      end
+      fail ArgumentError if x.nil? or x.length != 1
+      NAMES[x]
     end
 
     def three2one(x)
-      if x and x.length != 3
-        raise ArgumentError
-      else
-        reverse[x]
-      end
+      fail ArgumentError if x.nil? or x.length != 3
+      reverse[x]
     end
 
     def one2name(x)
-      if x and x.length != 1
-        raise ArgumentError
-      else
-        three2name(NAMES[x])
-      end
+      fail ArgumentError if x.nil? or x.length != 1
+      three2name(NAMES[x])
     end
 
     def name2one(x)
@@ -203,11 +194,8 @@ class AminoAcid
     end
 
     def three2name(x)
-      if x and x.length != 3
-        raise ArgumentError
-      else
-        NAMES[x]
-      end
+      fail ArgumentError if x.nil? or x.length != 3
+      NAMES[x]
     end
 
     def name2three(x)
