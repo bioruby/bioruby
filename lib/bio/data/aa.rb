@@ -237,11 +237,7 @@ class AminoAcid
 
 
     def reverse
-      hash = Hash.new
-      NAMES.each do |k, v|
-        hash[v] = k
-      end
-      hash
+      @reverse ||= NAMES.invert
     end
 
   end
@@ -253,18 +249,6 @@ class AminoAcid
   # as class methods
   extend Data
 
-
-  private
-
-
-  # override when used as an instance method to improve performance
-  alias orig_reverse reverse
-  def reverse
-    unless @reverse
-      @reverse = orig_reverse
-    end
-    @reverse
-  end
 
 end
 
