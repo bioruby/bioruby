@@ -28,10 +28,8 @@ module Bio::Shell
   #   * "filename" -- "gbvrl.gbk" (first entry only)
   #   * "db:entry" -- "embl:BUM"  (entry is retrieved by the ent method)
   def getseq(arg)
-    seq = ""
-    if arg.kind_of?(Bio::Sequence)
-      seq = arg
-    elsif arg.respond_to?(:gets) or File.exists?(arg)
+    return arg if arg.kind_of?(Bio::Sequence)
+    if arg.respond_to?(:gets) or File.exists?(arg)
       ent = flatauto(arg)
     elsif arg[/:/]
       ent = getobj(arg)
@@ -39,21 +37,14 @@ module Bio::Shell
       tmp = arg
     end
 
-    if ent.respond_to?(:seq)
-      tmp = ent.seq
-    elsif ent.respond_to?(:naseq)
-      #seq = ent.naseq
-      tmp = ent.naseq
-    elsif ent.respond_to?(:aaseq)
-      #seq = ent.aaseq
-      tmp = ent.aaseq
-    end
+    meth = [:seq,:naseq,:aaseq].find{|m| ent.respond_to? m }
+    tmp = ent.send(meth) unless meth.nil?
 
-
-    if tmp and tmp.respond_to?(:each_char) and not tmp.empty?
-      seq = Bio::Sequence.auto(tmp)
+    if tmp.respond_to?(:each_char) and not tmp.empty?
+      Bio::Sequence.auto(tmp)
+    else
+      ""
     end
-    seq
   end
 
   # Obtain a database entry from
