@@ -608,8 +608,8 @@ module Bio
 
       # SEQRES record class
       SEQRES =
-        def_rec(#[  9, 10, Pdb_Integer,      :serNum ],
-                [  9, 10, Pdb_Continuation, nil      ],
+        def_rec(#[  8, 10, Pdb_Integer,      :serNum ],
+                [  8, 10, Pdb_Continuation, nil      ], # PDB v3.2 (2008)
                 [ 12, 12, Pdb_Character,    :chainID ],
                 [ 14, 17, Pdb_Integer,      :numRes  ],
                 [ 20, 22, Pdb_Residue_name, :resName ],
