@@ -108,23 +108,21 @@ class AminoAcid
     }
 
     def weight(x = nil)
-      if x
-        if x.length > 1
-          total = 0.0
-          x.each_byte do |byte|
-            aa = byte.chr.upcase
-            if WEIGHT[aa]
-              total += WEIGHT[aa]
-            else
-              raise "Error: invalid amino acid '#{aa}'"
-            end
+      return WEIGHT if x.nil?
+
+      if x.length > 1
+        total = 0.0
+        x.each_byte do |byte|
+          aa = byte.chr.upcase
+          if WEIGHT[aa]
+            total += WEIGHT[aa]
+          else
+            raise "Error: invalid amino acid '#{aa}'"
           end
-          total -= NucleicAcid.weight[:water] * (x.length - 1)
-        else
-          WEIGHT[x]
         end
+        total -= NucleicAcid.weight[:water] * (x.length - 1)
       else
-        WEIGHT
+        WEIGHT[x]
       end
     end
 
@@ -172,27 +170,18 @@ class AminoAcid
     alias three to_3
 
     def one2three(x)
-      if x and x.length != 1
-        raise ArgumentError
-      else
-        NAMES[x]
-      end
+      fail ArgumentError if x.nil? or x.length != 1
+      NAMES[x]
     end
 
     def three2one(x)
-      if x and x.length != 3
-        raise ArgumentError
-      else
-        reverse[x]
-      end
+      fail ArgumentError if x.nil? or x.length != 3
+      reverse[x]
     end
 
     def one2name(x)
-      if x and x.length != 1
-        raise ArgumentError
-      else
-        three2name(NAMES[x])
-      end
+      fail ArgumentError if x.nil? or x.length != 1
+      three2name(NAMES[x])
     end
 
     def name2one(x)
@@ -205,11 +194,8 @@ class AminoAcid
     end
 
     def three2name(x)
-      if x and x.length != 3
-        raise ArgumentError
-      else
-        NAMES[x]
-      end
+      fail ArgumentError if x.nil? or x.length != 3
+      NAMES[x]
     end
 
     def name2three(x)
@@ -237,11 +223,7 @@ class AminoAcid
 
 
     def reverse
-      hash = Hash.new
-      NAMES.each do |k, v|
-        hash[v] = k
-      end
-      hash
+      @reverse ||= NAMES.invert
     end
 
   end
@@ -253,18 +235,6 @@ class AminoAcid
   # as class methods
   extend Data
 
-
-  private
-
-
-  # override when used as an instance method to improve performance
-  alias orig_reverse reverse
-  def reverse
-    unless @reverse
-      @reverse = orig_reverse
-    end
-    @reverse
-  end
 
 end
 

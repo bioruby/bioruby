@@ -9,9 +9,10 @@
 
 module Bio
 
-  autoload :AminoAcid, 'bio/data/aa' unless const_defined?(:AminoAcid)
+  require File.expand_path(File.join File.dirname(__FILE__), '../sequence.rb')
+  require File.expand_path(File.join File.dirname(__FILE__), '../sequence/compat.rb')
 
-  require 'bio/sequence' unless const_defined?(:Sequence)
+  require File.expand_path(File.join File.dirname(__FILE__), '../data/aa.rb')
 
 class Sequence
 
@@ -30,9 +31,10 @@ class Sequence
 #
 #   # What is the molecular weight of this peptide?
 #   puts aa.molecular_weight
-class AA < String
+class AA < ::String
 
   include Bio::Sequence::Common
+  extend Bio::Sequence::Common::ClassMethods
 
   # Generate an amino acid sequence object from a string.
   #

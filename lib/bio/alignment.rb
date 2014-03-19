@@ -1475,22 +1475,21 @@ module Bio
     module OriginalPrivate
 
       # Gets the sequence from given object.
+      # TODO Quite possibly could be shortened more,
+      # as the first condition appears to be a short circuit
+      # but since `seq` is really an identity, doesn't
+      # make sense.
       def extract_seq(obj)
-        seq = nil
         if obj.is_a?(Bio::Sequence::NA) or obj.is_a?(Bio::Sequence::AA) then
-          seq = obj
+          obj
         else
-          for m in [ :seq, :naseq, :aaseq ]
-            begin
-              seq = obj.send(m)
-            rescue NameError, ArgumentError
-              seq = nil
-            end
-            break if seq
-          end
-          seq = obj unless seq
+          m = [ :seq, :naseq, :aaseq ].find {|m|
+            obj.respond_to? m
+          }
+          m ?
+            obj.send(m) :
+            obj
         end
-        seq
       end
       module_function :extract_seq
 
