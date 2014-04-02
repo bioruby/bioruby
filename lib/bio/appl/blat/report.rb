@@ -438,6 +438,12 @@ module Bio
         def percent_identity
           100.0 - self.milli_bad * 0.1
         end
+        
+        #Calculates the percentage of bases of the query that are present in 
+        #the target 
+        def percentage_covered
+          ( match + mismatch ) * 100.0 / query_len.to_f
+        end
 
         # When the output data comes from the protein query, returns true.
         # Otherwise (nucleotide query), returns false.
@@ -512,6 +518,30 @@ module Bio
       alias query_id query_def
     end #class Report
 
+
+    #Executes blat with the default parameters. 
+    #It requires blat to be in the system PATH
+    def self.align(database , query , output)
+      cmdline = "blat #{database} #{query}  #{output}"
+      puts $stderr.puts cmdline
+      status, stdout, stderr = systemu cmdline
+      if status.exitstatus == 0
+        alns = Array.new unless block_given?
+        blat_aln = Bio::Blat::Report.new(Bio::FlatFile.open(output).to_io)
+        #p blat_aln
+        blat_aln.each_hit() do |hit|
+          if block_given?
+            yield hit
+          else
+            alns << hit
+          end
+        end
+        return alns unless block_given?
+      else
+        raise Exception.new(), "Error running exonerate. Command line was '#{cmdline}'\nBlat STDERR was:\n#{stderr}"
+      end
+    end
+    
   end #class Blat
 end #module Bio
 
