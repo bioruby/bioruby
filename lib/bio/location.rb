@@ -4,6 +4,7 @@
 # Copyright::	Copyright (C) 2001, 2005 Toshiaki Katayama <k@bioruby.org>
 #                             2006       Jan Aerts <jan.aerts@bbsrc.ac.uk>
 #                             2008       Naohisa Goto <ng@bioruby.org>
+#                             2014       Joachim Baran <joachim.baran@gmail.com>
 # License::	The Ruby License
 #
 # $Id:$
@@ -43,6 +44,9 @@ class Location
   #   documentation)
   # *Returns*:: the Bio::Location object
   def initialize(location = nil)
+
+    # Base URI of FALDO for use with rdfize and rdfize_positions:
+    @faldo = 'http://biohackathon.org/resource/faldo#'
 
     if location
       if location =~ /:/				# (G) ID:location
@@ -200,6 +204,86 @@ class Location
     end
     flag
   end
+
+  # Returns a FALDO based representation of the location
+  # in RDF Turtle format.
+  # *Arguments*:
+  # * (required) _prefix_: URI prefix of the location's URIs
+  # *Returns*::
+  # * a string containing the location formatted using FALDO
+  #   in RDF Turtle format; the URI prefix will be prepended
+  #   before either xref ID or a composite string that captures
+  #   the location uniquely
+  def rdfize(prefix)
+    # Less-than/greater-than (@lt, @gt) are currently not holding
+    # enough information to determine whether a single seq. position
+    # is affected, or whether start/end positions are targeted by
+    # the relation.
+    # For example, "<500..>1000" and ">500..<1000" are both encoded
+    # as:
+    #   @lt = @gt = true
+    #   @from = 500
+    #   @to = 1000
+    # It is an ambiguous representation and the original meaning
+    # can no longer be determined.
+    if @lt or @gt
+      raise "Error: cannot RDFize locations with < or > in them. Sorry."
+    end
+
+    if @strand == 1
+      faldo_begin, faldo_end = @from, @to
+    else
+      # Reverse begin/end, if on the reverse strand (5'-3' FALDO requirement)
+      faldo_end, faldo_begin = faldo_begin, faldo_end
+    end
+    
+    id = @xref_id
+    unless id
+      id = "Location#{faldo_begin}-#{faldo_end},#{@strand}"
+    end
+
+    if @caret
+      return """<#{prefix}#{id}> a <#{@faldo}InBetweenPosition> ;
+    <#{@faldo}after> <#{prefix}#{id},begin> ;
+    <#{@faldo}before> <#{prefix}#{id},end> .
+
+#{rdfize_positions("#{prefix}#{id}", faldo_begin, faldo_end)}
+"""
+    end
+
+    return """<#{prefix}#{id}> a <#{@faldo}Region> ;
+    <#{@faldo}begin> <#{prefix}#{id},begin> ;
+    <#{@faldo}end> <#{prefix}#{id},end> .
+
+#{rdfize_positions("#{prefix}#{id}", faldo_begin, faldo_end)}
+"""
+  end
+
+private
+
+   # Returns FALDO ExactPosition RDF Turtle for @from and @to.
+   # *Arguments*:
+   # * (required) _location_prefix_: URI prefix of the location object
+   #                                 whose positions are being described here
+   # * (required) faldo_begin_: start coordinate of the location
+   # * (required) faldo_end_: end coordinate of the location
+   # *Returns*::
+   # * a string containing FALDO ExactPosition instances that represent
+   #   the location's start/end coordinates.
+   def rdfize_positions(location_prefix, faldo_begin, faldo_end)
+    if @strand == 1
+      strandtype = "<#{@faldo}ForwardStrandedPosition>"
+    else
+      strandtype = "<#{@faldo}ReverseStrandedPosition>"
+    end
+
+      return """<#{location_prefix},begin> a <#{@faldo}ExactPosition>, #{strandtype} ;
+    <#{@faldo}position> #{faldo_begin} .
+
+<#{location_prefix},end> a <#{@faldo}ExactPosition>, #{strandtype} ;
+    <#{@faldo}position> #{faldo_end} .
+"""
+   end
 
 end # Location
 
