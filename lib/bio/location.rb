@@ -239,51 +239,70 @@ class Location
     
     id = @xref_id
     unless id
-      id = "Location#{faldo_begin}-#{faldo_end},#{@strand}"
+      id = "Location#{faldo_begin}-#{faldo_end}:#{@strand}"
     end
 
     if @caret
       return """<#{prefix}#{id}> a <#{@faldo}InBetweenPosition> ;
-    <#{@faldo}after> <#{prefix}#{id},begin> ;
-    <#{@faldo}before> <#{prefix}#{id},end> .
+    <#{@faldo}after> <#{prefix}#{id}:begin> ;
+    <#{@faldo}before> <#{prefix}#{id}:end> .
 
 #{rdfize_positions("#{prefix}#{id}", faldo_begin, faldo_end)}
 """
     end
 
-    return """<#{prefix}#{id}> a <#{@faldo}Region> ;
-    <#{@faldo}begin> <#{prefix}#{id},begin> ;
-    <#{@faldo}end> <#{prefix}#{id},end> .
+    if @from == @to
+      begin_uri_suffix = 'position'
+      end_uri_suffix = 'position'
+    else
+      begin_uri_suffix = 'begin'
+      end_uri_suffix = 'end'
+    end
 
-#{rdfize_positions("#{prefix}#{id}", faldo_begin, faldo_end)}
+    return """<#{prefix}#{id}> a <#{@faldo}Region> ;
+    <#{@faldo}begin> <#{prefix}#{id}:#{begin_uri_suffix}> ;
+    <#{@faldo}end> <#{prefix}#{id}:#{end_uri_suffix}> .
+
+#{rdfize_positions("#{prefix}#{id}", faldo_begin, faldo_end, begin_uri_suffix, end_uri_suffix)}
 """
   end
 
 private
 
-   # Returns FALDO ExactPosition RDF Turtle for @from and @to.
-   # *Arguments*:
-   # * (required) _location_prefix_: URI prefix of the location object
-   #                                 whose positions are being described here
-   # * (required) faldo_begin_: start coordinate of the location
-   # * (required) faldo_end_: end coordinate of the location
-   # *Returns*::
-   # * a string containing FALDO ExactPosition instances that represent
-   #   the location's start/end coordinates.
-   def rdfize_positions(location_prefix, faldo_begin, faldo_end)
+  # Returns FALDO ExactPosition RDF Turtle for @from and @to. Will only
+  # serialize a single position if begin/end URI suffixes coincide.
+  #
+  # *Arguments*:
+  # * (required) _location_prefix_: URI prefix of the location object
+  #                                 whose positions are being described here
+  # * (required) _faldo_begin_: start coordinate of the location
+  # * (required) _faldo_end_: end coordinate of the location
+  # * (optional) _begin_suffix_ : URI suffix that should be used for faldo_begin coodinate
+  # * (optional) _end_suffix_ : URI suffix that should be used for faldo_end coodinate
+  # *Returns*::
+  # * a string containing FALDO ExactPosition instances that represent
+  #   the location's start/end coordinates.
+  def rdfize_positions(location_prefix, faldo_begin, faldo_end, begin_suffix = 'begin', end_suffix = 'end')
     if @strand == 1
       strandtype = "<#{@faldo}ForwardStrandedPosition>"
     else
       strandtype = "<#{@faldo}ReverseStrandedPosition>"
     end
 
-      return """<#{location_prefix},begin> a <#{@faldo}ExactPosition>, #{strandtype} ;
+    begin_uri = """<#{location_prefix}:#{begin_suffix}> a <#{@faldo}ExactPosition>, #{strandtype} ;
     <#{@faldo}position> #{faldo_begin} .
+"""
 
-<#{location_prefix},end> a <#{@faldo}ExactPosition>, #{strandtype} ;
+    if begin_suffix == end_suffix
+      end_uri = ''
+    else
+      end_uri = """<#{location_prefix}:#{end_suffix}> a <#{@faldo}ExactPosition>, #{strandtype} ;
     <#{@faldo}position> #{faldo_end} .
 """
-   end
+    end
+
+    return begin_uri + end_uri
+  end
 
 end # Location
 
