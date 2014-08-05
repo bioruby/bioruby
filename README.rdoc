@@ -97,13 +97,13 @@ The stable release is freely available from the BioRuby website.
 {RubyGems (packaging system for Ruby)}[http://rubygems.org/] version of
 the BioRuby package is also available for easy installation.
 
-* http://rubyforge.org/projects/bioruby/
+* https://rubygems.org/gems/bio
 
 === git
 
 If you need the latest development version, this is provided at
 
-* http://github.com/bioruby/bioruby
+* https://github.com/bioruby/bioruby
 
 and can be obtained by the following procedure:
 
@@ -121,22 +121,20 @@ and can be obtained by the following procedure:
 
 Some optional libraries can be utilized to extend BioRuby's functionality.
 If your needs meets the following conditions, install them by using RubyGems,
-or download and install from the "Ruby Application Archive" (RAA) at
-http://raa.ruby-lang.org/, RubyForge at http://rubyforge.org/, GitHub at
-http://github.com/, or the following web sites.
+or download and install from the following web sites.
 
 For faster parsing of the BLAST XML output format:
 
-* {RAA:xmlparser}[http://raa.ruby-lang.org/project/xmlparser/]
+* {xmlparser}[https://rubygems.org/gems/xmlparser]
   * For Ruby 1.8: {gem install xmlparser}[http://rubygems.org/gems/xmlparser]
-  * For Ruby 1.9: http://www.yoshidam.net/Ruby.html#xmlparser
+  * For Ruby 1.9 or later: http://www.yoshidam.net/Ruby.html#xmlparser
   * In both cases, {The Expat XML Parser}[http://expat.sourceforge.net/]
     and C compiler will be required.
 
 Creating faster flatfile index using Berkley DB:
 
 * {GitHub:ruby-bdb}[https://github.com/knu/ruby-bdb]
-  (which took over {RAA:bdb}[http://raa.ruby-lang.org/project/bdb/])
+  (which took over {bdb}[https://github.com/ruby-bdb/bdb])
   (No RubyGems available)
   * {Oracle Berkeley DB}[http://www.oracle.com/technetwork/database/berkeleydb/index.html] and C compiler will be required.
   
@@ -157,7 +155,7 @@ For parsing PhyloXML format files:
   * {GNOME Libxml2 XML toolkit}[http://xmlsoft.org/] and C compiler will be
     required.
 
-(Only for Ruby 1.9.x) For using SOAP web services:
+(Only for Ruby 1.9.x or later) For using SOAP web services:
 
 * {gem install soap4r-ruby1.9}[https://rubygems.org/gems/soap4r-ruby1.9]
   * For Ruby 1.8.x, SOAP4R is bundled within the Ruby 1.8.x release.
@@ -172,7 +170,7 @@ If you are using RubyGems, just type
   % gem install bio
 
 Alternatively, manually download bio-X.X.X.gem from 
-http://rubyforge.org/projects/bioruby/ and install it by using gems command.
+http://bioruby.org/archive/ and install it by using gems command.
 
 RubyGems is bundled with Ruby 1.9.1 or later. For Ruby 1.8.7 or earlier,
 download and install RubyGems from http://rubygems.org/ .
@@ -301,9 +299,9 @@ BioRuby can be freely distributed under the same terms as Ruby.
 See the file COPYING (or COPYING.ja written in Japanese).
 
 As written in the file COPYING, see the file LEGAL for files distributed
-under different license. For example, setup.rb which comes from
-{RAA:setup}[http://raa.ruby-lang.org/project/setup/] developed by Minero Aoki
-(http://i.loveruby.net/en/projects/setup/) is licensed under LGPL 2.1.
+under different license. For example, setup.rb which comes from "setup"
+developed by Minero Aoki (http://i.loveruby.net/en/projects/setup/) is
+licensed under LGPL 2.1.
 
 
 == REFERENCE
