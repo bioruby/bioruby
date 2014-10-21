@@ -314,8 +314,9 @@ class NA < String
     count = self.composition
     at = count['a'] + count['t'] + count['u']
     gc = count['g'] + count['c']
-    return 0.0 if at + gc == 0
-    return gc.quo(at + gc)
+    total = at + gc
+    return 0.0 if total == 0
+    return gc.quo(total)
   end
 
   # Calculate the ratio of AT / ATGC bases. U is regarded as T.
@@ -338,8 +339,9 @@ class NA < String
     count = self.composition
     at = count['a'] + count['t'] + count['u']
     gc = count['g'] + count['c']
-    return 0.0 if at + gc == 0
-    return at.quo(at + gc)
+    total = at + gc
+    return 0.0 if total == 0
+    return at.quo(total)
   end
 
   # Calculate the ratio of (G - C) / (G + C) bases.
@@ -361,8 +363,9 @@ class NA < String
     count = self.composition
     g = count['g']
     c = count['c']
-    return 0.0 if g + c == 0
-    return (g - c).quo(g + c)
+    gc = g + c
+    return 0.0 if gc == 0
+    return (g - c).quo(gc)
   end
 
   # Calculate the ratio of (A - T) / (A + T) bases. U is regarded as T.
@@ -385,8 +388,9 @@ class NA < String
     count = self.composition
     a = count['a']
     t = count['t'] + count['u']
-    return 0.0 if a + t == 0
-    return (a - t).quo(a + t)
+    at = a + t
+    return 0.0 if at == 0
+    return (a - t).quo(at)
   end
 
   # Returns an alphabetically sorted array of any non-standard bases 
