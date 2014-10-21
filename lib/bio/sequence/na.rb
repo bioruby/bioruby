@@ -297,9 +297,19 @@ class NA < String
   # Calculate the ratio of GC / ATGC bases. U is regarded as T.
   #
   #   s = Bio::Sequence::NA.new('atggcgtga')
+  #   puts s.gc_content                       #=> (5/9)
+  #   puts s.gc_content.to_f                  #=> 0.5555555555555556
+  #
+  # In older Ruby versions, Float is always returned.
+  #   
+  #   s = Bio::Sequence::NA.new('atggcgtga')
   #   puts s.gc_content                       #=> 0.555555555555556
+  #
+  # Note that "u" is regarded as "t".
+  # If there are no ATGC bases in the sequence, 0.0 is returned.
+  #
   # ---
-  # *Returns*:: Float
+  # *Returns*:: Rational or Float
   def gc_content
     count = self.composition
     at = count['a'] + count['t'] + count['u']
@@ -311,9 +321,19 @@ class NA < String
   # Calculate the ratio of AT / ATGC bases. U is regarded as T.
   #
   #   s = Bio::Sequence::NA.new('atggcgtga')
+  #   puts s.at_content                       #=> 4/9
+  #   puts s.at_content.to_f                  #=> 0.444444444444444
+  #
+  # In older Ruby versions, Float is always returned.
+  #
+  #   s = Bio::Sequence::NA.new('atggcgtga')
   #   puts s.at_content                       #=> 0.444444444444444
+  #
+  # Note that "u" is regarded as "t".
+  # If there are no ATGC bases in the sequence, 0.0 is returned.
+  #
   # ---
-  # *Returns*:: Float
+  # *Returns*:: Rational or Float
   def at_content
     count = self.composition
     at = count['a'] + count['t'] + count['u']
@@ -325,9 +345,18 @@ class NA < String
   # Calculate the ratio of (G - C) / (G + C) bases.
   #
   #   s = Bio::Sequence::NA.new('atggcgtga')
+  #   puts s.gc_skew                          #=> 3/5
+  #   puts s.gc_skew.to_f                     #=> 0.6
+  #
+  # In older Ruby versions, Float is always returned.
+  #
+  #   s = Bio::Sequence::NA.new('atggcgtga')
   #   puts s.gc_skew                          #=> 0.6
+  #
+  # If there are no GC bases in the sequence, 0.0 is returned.
+  #
   # ---
-  # *Returns*:: Float
+  # *Returns*:: Rational or Float
   def gc_skew
     count = self.composition
     g = count['g']
@@ -339,9 +368,19 @@ class NA < String
   # Calculate the ratio of (A - T) / (A + T) bases. U is regarded as T.
   #
   #   s = Bio::Sequence::NA.new('atgttgttgttc')
+  #   puts s.at_skew                          #=> (-3/4)
+  #   puts s.at_skew.to_f                     #=> -0.75
+  #
+  # In older Ruby versions, Float is always returned.
+  #
+  #   s = Bio::Sequence::NA.new('atgttgttgttc')
   #   puts s.at_skew                          #=> -0.75
+  #
+  # Note that "u" is regarded as "t".
+  # If there are no AT bases in the sequence, 0.0 is returned.
+  #
   # ---
-  # *Returns*:: Float
+  # *Returns*:: Rational or Float
   def at_skew
     count = self.composition
     a = count['a']
