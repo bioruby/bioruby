@@ -37,9 +37,9 @@ module PAML
   #   require 'bio'
   #   # Reads multi-fasta formatted file and gets a Bio::Alignment object.
   #   alignment = Bio::FlatFile.open(Bio::Alignment::MultiFastaFormat,
-  #                                  'example.fst').alignment
+  #                                  'example.fst').next_entry.alignment
   #   # Reads newick tree from a file
-  #   tree = Bio::FlatFile.open(Bio::Newick, 'example.tree').tree
+  #   tree = Bio::FlatFile.open(Bio::Newick, 'example.tree').next_entry.tree
   #   # Creates a Codeml object
   #   codeml = Bio::PAML::Codeml.new
   #   # Sets parameters
