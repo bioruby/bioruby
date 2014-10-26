@@ -14,7 +14,7 @@
 # * http://meme.sdsc.edu/meme/intro.html
 #
 module Bio
-module Meme
+  class Meme
 
   # == Description
   #
@@ -24,25 +24,47 @@ module Meme
   # TODO: parse PSSM data
   #
   class Motif
-    attr_accessor :sequence_name, :strand, :motif, :start_pos, :end_pos, :pvalue
-
+    attr_accessor :motif_number, :motif_width, :motif_regex, :sites
+    
     # Creates a new Bio::Meme::Motif object
     # arguments are 
-    def initialize(sequence_name, strand, motif, start_pos, end_pos, pvalue)
-      @sequence_name = sequence_name.to_s
-      @strand = strand.to_s
-      @motif = motif.to_i
-      @start_pos = start_pos.to_i
-      @end_pos = end_pos.to_i
-      @pvalue = pvalue.to_f
+    def initialize(motif_number, motif_width, motif_regex, sites)
+      @motif_number = motif_number.to_i
+      @motif_width  = motif_width.to_i
+      # would like to have this return a Regex object
+      @motif_regex  = motif_regex
+      @sites = []
+      sites.each do |site|
+        @sites << Site.new(site[:site_name], site[:site_start], site[:site_end], site[:site_pvalue], site[:site_sequence])
+      end
+    end
+
+    def each_site 
+      @sites.each do |site|
+        yield site
+      end
     end
 
     # Computes the motif length
     def length
-      @end_pos - @start_pos
+      @motif_width
     end
 
-  end
+    
+    
+    class Site
+      attr_accessor :site_name, :site_start, :site_end, :site_pvalue, :site_sequence
+      # this site class should take in a motif and initialize each site for that motif
+      def initialize(site_name, site_start, site_end, site_pvalue, site_sequence)
+        @site_name = site_name.to_s
+        @site_start = site_start.to_i
+        @site_end = site_end.to_i
+        @site_pvalue = site_pvalue.to_f        
+        @site_sequence = site_sequence.to_s
+      end
+      
+    end # end Site class
+  end # end Motif class
   
 end  
 end
