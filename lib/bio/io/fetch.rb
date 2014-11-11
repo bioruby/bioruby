@@ -5,24 +5,31 @@
 #               Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-#  $Id:$
-#
 # == DESCRIPTION
 #
-# Using BioRuby BioFetch server
+# Using EBI Dbfetch server
 #
-#   br_server = Bio::Fetch.new()
-#   puts br_server.databases
-#   puts br_server.formats('embl')
-#   puts br_server.maxids
-#
-# Using EBI BioFetch server
-#
-#   ebi_server = Bio::Fetch.new('http://www.ebi.ac.uk/cgi-bin/dbfetch')
+#   ebi_server = Bio::Fetch::EBI.new
+#   puts ebi_server.fetch('embl', 'J00231')
 #   puts ebi_server.fetch('embl', 'J00231', 'raw')
 #   puts ebi_server.fetch('embl', 'J00231', 'html')
-#   puts Bio::Fetch.query('genbank', 'J00231')
-#   puts Bio::Fetch.query('genbank', 'J00231', 'raw', 'fasta')
+#
+# Getting metadata from EBI Dbfetch server
+#
+#   puts ebi_server.databases
+#   puts ebi_server.formats('embl')
+#   puts ebi_server.maxids
+#
+# Using EBI Dbfetch server without creating a Bio::Fetch::EBI instance
+#
+#   puts Bio::Fetch::EBI.query('ena_sequence', 'J00231')
+#   puts Bio::Fetch::EBI.query('ena_sequence', 'J00231', 'raw', 'fasta')
+#
+# Using a BioFetch server with specifying URL
+#
+#   server = Bio::Fetch.new('http://www.ebi.ac.uk/Tools/dbfetch/dbfetch')
+#   puts server.fetch('ena_sequence', 'J00231')
+#   puts server.fetch('ena_sequence', 'J00231', 'raw', 'fasta')
 # 
 
 require 'uri'
