@@ -66,13 +66,43 @@ module Bio
   #
   class Fetch
   
+    # Bio::Fetch::EBI is a client of EBI Dbfetch
+    # (http://www.ebi.ac.uk/Tools/dbfetch/dbfetch).
+    #
+    # An instance of this class works the same as:
+    #  obj = Bio::Fetch.new("http://www.ebi.ac.uk/Tools/dbfetch/dbfetch")
+    #  obj.database = "ena_sequence"
+    #
+    # See the documents of Bio::Fetch for more details.
+    class EBI < Fetch
+
+      # EBI Dbfetch server URL
+      URL = "http://www.ebi.ac.uk/Tools/dbfetch/dbfetch".freeze
+
+      # For the usage, see the document of Bio::Fetch.new.
+      def initialize(url = URL)
+        @database = "ena_sequence"
+        super
+      end
+    end #class EBI
+
     # Create a new Bio::Fetch server object that can subsequently be queried
-    # using the Bio::Fetch#fetch method
+    # using the Bio::Fetch#fetch method.
+    #
+    # You must specify _url_ of a server.
+    # The preset default server is deprecated.
+    #
+    # If you want to use a server without explicitly specifying the URL,
+    # use Bio::Fetch::EBI.new that uses EBI Dbfetch server.
+    #
     # ---
     # *Arguments*:
-    # * _url_: URL of dbfetch server (default = 'http://bioruby.org/cgi-bin/biofetch.rb')
+    # * _url_: URL of dbfetch server. (no default value)
     # *Returns*:: Bio::Fetch object
-    def initialize(url = 'http://www.ebi.ac.uk/Tools/dbfetch/dbfetch')
+    def initialize(url = nil)
+      unless url then
+        raise ArgumentError, "No server URL is given in Bio::Fetch.new. The default server URL value have been deprecated. You must explicitly specify the url or use Bio::Fetch::EBI for using EBI Dbfetch."
+      end
       @url = url
     end
   
