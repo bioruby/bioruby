@@ -30,6 +30,28 @@ For known problems, see KNOWN_ISSUES.rdoc.
 
 == Incompatible changes
 
+=== Bio::Fetch
+
+The BioRuby default BioFetch server http://bioruby.org/cgi-bin/biofetch.rb,
+that was the default server for Bio::Fetch before BioRuby 1.4, is deprecated.
+Due to the service stop, default server URL in Bio::Fetch is removed, and
+we decide not to give any server URL by default for Bio::Fetch.
+
+As an alternative, new class Bio::Fetch::EBI which uses the EBI Dbfetch
+server is added. When changing codes form Bio::Fetch to Bio::Fetch::EBI,
+be careful of the differences of database names, default and available
+data formats between the former BioRuby BioFetch server and the EBI Dbfetch
+server.
+
+Methods directly affected are:
+
+* Bio::Fetch.new (Bio::Fetch#initialize) does not have default server URL,
+  and URL of a server must always be explicitly given as the first argument.
+  Alternatively, Bio::Fetch::EBI which uses EBI Dbfetch server can be used
+  as mentioned above.
+* Bio::Fetch.query is removed. As described above, Bio::Fetch::EBI.query
+  is an alternative.
+
 === (tbd)
 
 (paragraph)
