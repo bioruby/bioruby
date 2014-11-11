@@ -84,6 +84,24 @@ module Bio
         @database = "ena_sequence"
         super
       end
+
+      # Shortcut for using EBI Dbfetch server. You can fetch an entry
+      # without creating an instance of Bio::Fetch::EBI. This method uses
+      # EBI Dbfetch server http://www.ebi.ac.uk/Tools/dbfetch/dbfetch .
+      # 
+      # Example:
+      #   puts Bio::Fetch::EBI.query('refseq','NM_123456')
+      #   puts Bio::Fetch::EBI.query('ena_sequence','J00231')
+      #
+      # ---
+      # *Arguments*:
+      # * _database_: name of database to query (see Bio::Fetch#databases to get list of supported databases)
+      # * _id_: single ID or ID list separated by commas or white space
+      # * _style_: [raw|html] (default = 'raw')
+      # * _format_: name of output format (see Bio::Fetch#formats)
+      def self.query(*args)
+        self.new.fetch(*args)
+      end
     end #class EBI
 
     # Create a new Bio::Fetch server object that can subsequently be queried
@@ -138,23 +156,6 @@ module Bio
       query.push([ 'format', format ]) if format
   
       _get(query)
-    end
-  
-    # Shortcut for using BioRuby's BioFetch server. You can fetch an entry
-    # without creating an instance of BioFetch server. This method uses the 
-    # default dbfetch server, which is http://bioruby.org/cgi-bin/biofetch.rb
-    # 
-    # Example:
-    #   puts Bio::Fetch.query('refseq','NM_12345')
-    #
-    # ---
-    # *Arguments*:
-    # * _database_: name of database to query (see Bio::Fetch#databases to get list of supported databases)
-    # * _id_: single ID or ID list separated by commas or white space
-    # * _style_: [raw|html] (default = 'raw')
-    # * _format_: name of output format (see Bio::Fetch#formats)
-    def self.query(*args)
-      self.new.fetch(*args)
     end
   
     # Using this method, the user can ask a dbfetch server what databases
