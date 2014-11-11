@@ -74,7 +74,6 @@ module Bio
     # *Returns*:: Bio::Fetch object
     def initialize(url = 'http://www.ebi.ac.uk/Tools/dbfetch/dbfetch')
       @url = url
-      schema, user, @host, @port, reg, @path, = URI.split(@url)
     end
   
     # The default database to query
