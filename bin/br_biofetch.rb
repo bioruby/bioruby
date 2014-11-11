@@ -6,7 +6,6 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: br_biofetch.rb,v 1.4 2007/04/05 23:35:39 trevor Exp $
 #
 
 require 'bio/io/fetch'
