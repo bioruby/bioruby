@@ -133,44 +133,51 @@ class PubMed < Bio::NCBI::REST
   # *Returns*:: array of PubMed IDs
   def search(str)
     host = "www.ncbi.nlm.nih.gov"
-    path = "/sites/entrez?tool=bioruby&cmd=Search&doptcmdl=Brief&db=PubMed&term="
+    path = "/pubmed?tool=bioruby&cmd=Search&doptcmdl=Brief&db=PubMed&term="
 
     ncbi_access_wait
 
     http = Bio::Command.new_http(host)
     response = http.get(path + CGI.escape(str))
     result = response.body
-    result = result.scan(/value="(\d+)" id="UidCheckBox"/m).flatten
+    result = result.scan(/<dt>PMID:<\/dt>\s+<dd>(\d+)<\/dd>/m).flatten
     return result
   end
 
   # Retrieve PubMed entry by PMID and returns MEDLINE formatted string using
-  # entrez query.
+  # pubmed query.
   # ---
   # *Arguments*:
-  # * _id_: PubMed ID (required)
-  # *Returns*:: MEDLINE formatted String
+  # * _ids_: One or more PubMed IDs (required)
+  # *Returns*:: MEDLINE formatted String, if one result, or an array of results
   def query(*ids)
+    ids = ids.flatten # Handle somone passing an array
     host = "www.ncbi.nlm.nih.gov"
-    path = "/sites/entrez?tool=bioruby&cmd=Text&dopt=MEDLINE&db=PubMed&uid="
+    path = "/pubmed?tool=bioruby&cmd=Text&dopt=MEDLINE&db=PubMed&uid="
     list = ids.collect { |x| CGI.escape(x.to_s) }.join(",")
-
     ncbi_access_wait
 
     http = Bio::Command.new_http(host)
     response = http.get(path + list)
-    result = response.body
-    result = result.scan(/<pre>\s*(.*?)<\/pre>/m).flatten
+    
+    body = response.body
+    # Extract the contents of the result from the page.
+    # PubMed returns a page with all the results in a pre tag.
+    # This may change to being pre tags for each result, so we 
+    # can handle that too as it's trivial.
+    results = []
+    body.scan(/<pre>\s*(.*?)<\/pre>/m) do |result_block|
+      # Split the result block into pieces if there are more than one.
+      # Records are split by a clear line betwen.
+      # As we are using a capture group result_block will be a single element
+      # array.
+      results += result_block.first.split("\n\n")
+    end
 
-    if result =~ /id:.*Error occurred/
-      # id: xxxxx Error occurred: Article does not exist
-      raise( result )
+    if ids.size > 1
+      return results
     else
-      if ids.size > 1
-        return result
-      else
-        return result.first
-      end
+      return results.first
     end
   end
 

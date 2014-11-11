@@ -108,6 +108,19 @@ module Bio
       assert(str.index(/\<PubmedArticleSet\>/))
     end
 
+    def test_query
+      ids = [16734914, 16381885, 10592173]
+      a = @pm.query(ids)
+      assert_kind_of(Array, a)
+      assert_operator(a.size, :>=, 3,
+                      'The failure may be caused by changes of NCBI PubMed.')
+      found_ids = a.collect do |x|
+        bits = x.scan(/PMID-\s(\d+)$/).flatten.first.to_i
+      end
+      
+      assert_equal(ids.sort, found_ids.sort)
+    end
+
   end #module FuncTestPubmedCommon
 
   class FuncTestPubmed < Test::Unit::TestCase
