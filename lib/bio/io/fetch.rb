@@ -37,26 +37,39 @@ module Bio
   # nucleic or amino acid sequence.
   #
   # Possible dbfetch servers include:
-  # * http://bioruby.org/cgi-bin/biofetch.rb (default)
-  # * http://www.ebi.ac.uk/cgi-bin/dbfetch
+  # * http://www.ebi.ac.uk/Tools/dbfetch/dbfetch
+  #
+  # Note that old URL http://www.ebi.ac.uk/cgi-bin/dbfetch still alives
+  # probably because of compatibility, but using the new URL is recommended.
+  #
+  # Historically, there were other dbfetch servers including:
+  # * http://bioruby.org/cgi-bin/biofetch.rb (default before BioRuby 1.4)
+  # But they are unavailable now.
+  #
   #
   # If you're behind a proxy server, be sure to set your HTTP_PROXY
   # environment variable accordingly.
   #
   # = USAGE
   #  require 'bio'
-  #
+  #  
   #  # Retrieve the sequence of accession number M33388 from the EMBL
   #  # database.
-  #  server = Bio::Fetch.new()  #uses default server
-  #  puts server.fetch('embl','M33388')
-  #  
-  #  # Do the same thing without creating a Bio::Fetch object. This method always
-  #  # uses the default dbfetch server: http://bioruby.org/cgi-bin/biofetch.rb
-  #  puts Bio::Fetch.query('embl','M33388')
+  #  server = Bio::Fetch::EBI.new  #uses EBI server
+  #  puts server.fetch('ena_sequence','M33388')
   #
-  #  # To know what databases are available on the bioruby dbfetch server:
-  #  server = Bio::Fetch.new()
+  #  # database name "embl" can also be used though it is not officially listed
+  #  puts server.fetch('embl','M33388')
+  #
+  #  # Do the same thing with explicitly giving the URL.
+  #  server = Bio::Fetch.new(Bio::Fetch::EBI::URL)  #uses EBI server
+  #  puts server.fetch('ena_sequence','M33388')
+  #
+  #  # Do the same thing without creating a Bio::Fetch::EBI object.
+  #  puts Bio::Fetch::EBI.query('ena_sequence','M33388')
+  #
+  #  # To know what databases are available on the dbfetch server:
+  #  server = Bio::Fetch::EBI.new
   #  puts server.databases
   #
   #  # Some databases provide their data in different formats (e.g. 'fasta',
@@ -137,8 +150,8 @@ module Bio
     end
   
     # Fetch a database entry as specified by database (db), entry id (id),
-    # 'raw' text or 'html' (style), and format.  When using BioRuby's
-    # BioFetch server, value for the format should not be set.
+    # 'raw' text or 'html' (style), and format.
+    #
     # Examples:
     #   server = Bio::Fetch.new('http://www.ebi.ac.uk/cgi-bin/dbfetch')
     #   puts server.fetch('embl','M33388','raw','fasta')
@@ -165,9 +178,8 @@ module Bio
     #  server = Bio::Fetch.new()
     #  puts server.databases # returns "aa aax bl cpd dgenes dr ec eg emb ..."
     #
-    # This method only works for the bioruby dbfetch server. For a list
-    # of databases available from the EBI, see the EBI website at 
-    # http://www.ebi.ac.uk/cgi-bin/dbfetch/
+    # This method works for EBI Dbfetch server (and for the bioruby dbfetch
+    # server). Not all servers support this method.
     # ---
     # *Returns*:: array of database names
     def databases
@@ -175,11 +187,13 @@ module Bio
     end
   
     # Lists the formats that are available for a given database. Like the
-    # Bio::Fetch#databases method, this method is only available on 
-    # the bioruby dbfetch server.
+    # Bio::Fetch#databases method, not all servers support this method.
+    # This method is available on the EBI Dbfetch server (and on the bioruby
+    # dbfetch server).
+    #
     # Example:
-    #  server = Bio::Fetch.new()
-    #  puts server.formats('embl') # returns "default fasta"
+    #  server = Bio::Fetch::EBI.new()
+    #  puts server.formats('embl') # returns [ "default", "annot", ... ]
     # ---
     # *Arguments*:
     # * _database_:: name of database you want the supported formats for
@@ -194,8 +208,13 @@ module Bio
   
     # A dbfetch server will only return entries up to a given maximum number.
     # This method retrieves that number from the server. As for the databases
-    # and formats methods, the maxids method only works for the bioruby
-    # dbfetch server.
+    # and formats methods, not all servers support the maxids method.
+    # This method is available on the EBI Dbfetch server (and on the bioruby
+    # dbfetch server).
+    #
+    # Example:
+    #  server = Bio::Fetch::EBI.new
+    #  puts server.maxids # currently returns 200
     # ---
     # *Arguments*: none
     # *Returns*:: number
