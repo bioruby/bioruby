@@ -19,8 +19,17 @@ class NCBI
   # (Hash) Default parameters for Entrez (eUtils).
   # They may also be used for other NCBI services.
   ENTREZ_DEFAULT_PARAMETERS = {
-    'tool' => "#{$0} (bioruby/#{Bio::BIORUBY_VERSION_ID})",
-    'email' => nil,
+    # Cited from
+    # http://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.Release_Notes
+    #  tool:
+    #  Name of application making the E-utility call.
+    #  Value must be a string with no internal spaces.
+    'tool' => "bioruby",
+    # Cited from
+    # http://www.ncbi.nlm.nih.gov/books/NBK25497/
+    # The value of email should be a complete and valid e-mail address
+    # of the software developer and not that of a third-party end user.
+    'email' => 'staff@bioruby.org',
   }
 
   # Resets Entrez (eUtils) default parameters.
@@ -28,8 +37,8 @@ class NCBI
   # *Returns*:: (Hash) default parameters
   def self.reset_entrez_default_parameters
     h = {
-      'tool' => "#{$0} (bioruby/#{Bio::BIORUBY_VERSION_ID})",
-      'email' => nil,
+      'tool'  => "bioruby",
+      'email' => 'staff@bioruby.org',
     }
     ENTREZ_DEFAULT_PARAMETERS.clear
     ENTREZ_DEFAULT_PARAMETERS.update(h)
@@ -44,6 +53,24 @@ class NCBI
 
   # Sets default email address used for Entrez (eUtils).
   # It may also be used for other NCBI services.
+  #
+  # In http://www.ncbi.nlm.nih.gov/books/NBK25497/ 
+  # NCBI says:
+  # "The value of email should be a complete and valid e-mail address of
+  # the software developer and not that of a third-party end user."
+  #
+  # By default, email address of BioRuby staffs is set.
+  #
+  # From the above NCBI documentation, the tool and email value is used
+  # only for unblocking IP addresses blocked by NCBI due to excess requests.
+  # For the purpose, NCBI says:
+  # "Please be aware that merely providing values for tool and email
+  # in requests is not sufficient to comply with this policy;
+  # these values must be registered with NCBI."
+  #
+  # Please use your own email address and tool name when registering
+  # tool and email values to NCBI.
+  #
   # ---
   # *Arguments*:
   # * (required) _str_: (String) email address
@@ -61,6 +88,17 @@ class NCBI
 
   # Sets default tool name for Entrez (eUtils).
   # It may also be used for other NCBI services.
+  #
+  # In http://www.ncbi.nlm.nih.gov/books/NBK25497/ 
+  # NCBI says:
+  # "The value of tool should be a string with no internal spaces that
+  # uniquely identifies the software producing the request."
+  #
+  # "bioruby" is set by default.
+  # Please use your own tool name when registering to NCBI.
+  #
+  # See the document of default_email= for more information.
+  #
   # ---
   # *Arguments*:
   # * (required) _str_: (String) tool name
@@ -147,7 +185,7 @@ class REST
   def ncbi_check_parameters(opts)
     #return if Time.now < Time.gm(2010,5,31)
     if opts['email'].to_s.empty? then
-      raise 'Set email parameter for the query, or set Bio::NCBI.default_email = "(your email address)"'
+      raise 'Set email parameter for the query, or set Bio::NCBI.default_email = "(email address of the author of this software)"'
     end
     if opts['tool'].to_s.empty? then
       raise 'Set tool parameter for the query, or set Bio::NCBI.default_tool = "(your tool name)"'
