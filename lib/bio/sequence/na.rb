@@ -279,18 +279,19 @@ class NA < String
   end
 
   # Calculate the ratio of GC / ATGC bases as a percentage rounded to 
-  # the nearest whole number. U is regarded as T.
-  #
+  # the nearest whole number by default. U is regarded as T.
+  # 
   #   s = Bio::Sequence::NA.new('atggcgtga')
-  #   puts s.gc_percent                       #=> 55
+  #   puts s.gc_percent                       #=> 56
+  #   puts s.gc_percent(2)                    #=> 55.56
   # ---
   # *Returns*:: Fixnum
-  def gc_percent
+  def gc_percent(precision=0)
     count = self.composition
     at = count['a'] + count['t'] + count['u']
     gc = count['g'] + count['c']
     return 0 if at + gc == 0
-    gc = 100 * gc / (at + gc)
+    gc = (100 * gc / (at + gc).to_f).round(precision)
     return gc
   end
 
