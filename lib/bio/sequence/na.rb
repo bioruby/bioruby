@@ -283,6 +283,14 @@ class NA < String
   #
   #   s = Bio::Sequence::NA.new('atggcgtga')
   #   puts s.gc_percent                       #=> 55
+  #
+  # Note that this method only returns an integer value.
+  # When more digits after decimal points are needed,
+  # use gc_content and sprintf like below:
+  #
+  #   s = Bio::Sequence::NA.new('atggcgtga')
+  #   puts sprintf("%3.2f", s.gc_content * 100)  #=> "55.56"
+  # 
   # ---
   # *Returns*:: Fixnum
   def gc_percent
