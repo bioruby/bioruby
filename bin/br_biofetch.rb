@@ -10,9 +10,15 @@
 
 require 'bio/io/fetch'
 
+def default_url
+  'http://bioruby.org/cgi-bin/biofetch.rb'
+end
+
+def another_url
+  'http://www.ebi.ac.uk/cgi-bin/dbfetch'
+end
+
 def usage
-  default_url = 'http://bioruby.org/cgi-bin/biofetch.rb'
-  another_url = 'http://www.ebi.ac.uk/cgi-bin/dbfetch'
   puts "#{$0} [-s[erver] #{another_url}] db id [style] [format]"
   puts "  server : URL of the BioFetch CGI (default is #{default_url})"
   puts "      db : database name (embl, genbank, etc.)"
@@ -33,11 +39,11 @@ when /^--?s/				# User specified server
   puts serv.fetch(*ARGV)
 when /^--?e/				# EBI server
   ARGV.shift
-  serv = Bio::Fetch.new('http://www.ebi.ac.uk/cgi-bin/dbfetch')
+  serv = Bio::Fetch.new(another_url)
   puts serv.fetch(*ARGV)
 when /^--?r/				# BioRuby server
   ARGV.shift
-  serv = Bio::Fetch.new('http://bioruby.org/cgi-bin/biofetch.rb')
+  serv = Bio::Fetch.new(default_url)
   puts serv.fetch(*ARGV)
 else					# Default server
   puts Bio::Fetch.query(*ARGV)
