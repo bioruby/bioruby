@@ -11,11 +11,11 @@
 require 'bio/io/fetch'
 
 def usage
-  default_url = Bio::Fetch::EBI::URL
-  another_url = "http://localhost/cgi-bin/biofetch.rb"
+  default_url = 'http://bioruby.org/cgi-bin/biofetch.rb'
+  another_url = 'http://www.ebi.ac.uk/cgi-bin/dbfetch'
   puts "#{$0} [-s[erver] #{another_url}] db id [style] [format]"
   puts "  server : URL of the BioFetch CGI (default is #{default_url})"
-  puts "      db : database name (embl, uniprot, etc.)"
+  puts "      db : database name (embl, genbank, etc.)"
   puts "      id : entry id"
   puts "   style : 'raw' or 'html' (default is 'raw')"
   puts "  format : change the output format ('default', 'fasta', etc.)"
@@ -33,13 +33,14 @@ when /^--?s/				# User specified server
   puts serv.fetch(*ARGV)
 when /^--?e/				# EBI server
   ARGV.shift
-  serv = Bio::Fetch::ebi.new
+  serv = Bio::Fetch.new('http://www.ebi.ac.uk/cgi-bin/dbfetch')
   puts serv.fetch(*ARGV)
 when /^--?r/				# BioRuby server
-  warn "BioRuby BioFetch server (http://bioruby.org/cgi-bin/biofetch.rb) is deprecated."
-  exit(1)
+  ARGV.shift
+  serv = Bio::Fetch.new('http://bioruby.org/cgi-bin/biofetch.rb')
+  puts serv.fetch(*ARGV)
 else					# Default server
-  puts Bio::Fetch::EBI.query(*ARGV)
+  puts Bio::Fetch.query(*ARGV)
 end
 
 
