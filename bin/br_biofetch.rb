@@ -8,7 +8,23 @@
 #
 #
 
+begin
+  require 'rubygems'
+rescue LoadError
+end
+
 require 'bio/io/fetch'
+
+def require_bio_old_biofetch_emulator(mandatory = true)
+  begin
+    require 'bio-old-biofetch-emulator'
+  rescue LoadError
+    if mandatory then
+      $stderr.puts "Error: please install bio-old-biofetch-emulator gem."
+      exit 1
+    end
+  end
+end
 
 def default_url
   'http://bioruby.org/cgi-bin/biofetch.rb'
@@ -34,6 +50,7 @@ end
 
 case ARGV[0]
 when /^--?s/				# User specified server
+  require_bio_old_biofetch_emulator(false)
   ARGV.shift
   serv = Bio::Fetch.new(ARGV.shift)
   puts serv.fetch(*ARGV)
@@ -42,10 +59,12 @@ when /^--?e/				# EBI server
   serv = Bio::Fetch.new(another_url)
   puts serv.fetch(*ARGV)
 when /^--?r/				# BioRuby server
+  require_bio_old_biofetch_emulator
   ARGV.shift
   serv = Bio::Fetch.new(default_url)
   puts serv.fetch(*ARGV)
 else					# Default server
+  require_bio_old_biofetch_emulator
   puts Bio::Fetch.query(*ARGV)
 end
 
