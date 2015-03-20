@@ -6,7 +6,6 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id:$
 #
 #--
 # == TODO
