@@ -5,7 +5,6 @@
 #              Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id:$
 #
 
 # loading helper routine for testing bioruby
