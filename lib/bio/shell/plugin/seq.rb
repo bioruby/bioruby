@@ -5,7 +5,6 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: seq.rb,v 1.21 2007/04/05 23:35:41 trevor Exp $
 #
 
 module Bio::Shell
