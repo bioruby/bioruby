@@ -1479,11 +1479,11 @@ module Bio
         if obj.is_a?(Bio::Sequence::NA) or obj.is_a?(Bio::Sequence::AA) then
           obj
         else
-          m = [ :seq, :naseq, :aaseq ].find {|m|
+          meth = [ :seq, :naseq, :aaseq ].find {|m|
             obj.respond_to? m
           }
-          m ?
-            obj.__send__(m) :
+          meth ?
+            obj.__send__(meth) :
             obj
         end
       end
