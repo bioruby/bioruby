@@ -96,7 +96,7 @@ class Genscan
       genes_region = report[i...j]
       genes_region.each_line("\n") do |line|
         if /Init|Intr|Term|PlyA|Prom|Sngl/ =~ line
-          gn, en = line.strip.split(" +")[0].split(/\./).map {|i| i.to_i }
+          gn, en = line.strip.split(" +")[0].split(/\./).map {|ii| ii.to_i }
           add_exon(gn, en, line)
         end
       end
