@@ -662,7 +662,7 @@ module Bio
                     y = b[j]; y.strip!
                     y.reverse!
                     z = y.split(/\s+/, 3)
-                    z.each { |y| y.reverse! }
+                    z.each { |yy| yy.reverse! }
                     h = Hit.new([ z.pop.to_s.sub(/\.+\z/, '') ])
                     bs = z.pop.to_s
                     bs = '1' + bs if bs[0] == ?e
