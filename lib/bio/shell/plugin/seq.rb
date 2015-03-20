@@ -161,20 +161,22 @@ end
 class String
 
   def step(window_size)
-    i = 0
+    j = 0
     0.step(self.length - window_size, window_size) do |i|
       yield self[i, window_size]
+      j = i
     end
-    yield self[i + window_size .. -1] if i + window_size < self.length
+    yield self[j + window_size .. -1] if j + window_size < self.length
   end
 
   def skip(window_size, step_size = 1)
-    i = 0
+    j = 0
     0.step(self.length - window_size, step_size) do |i|
       yield [self[i, window_size], i + 1, i + window_size]
+      j = i
     end
-    from = i + step_size
-    to  = [self.length, i + step_size + window_size].min
+    from = j + step_size
+    to  = [self.length, j + step_size + window_size].min
     yield [self[from, window_size], from + 1, to] if from + 1 <= to
   end
 
