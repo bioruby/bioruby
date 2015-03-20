@@ -162,6 +162,7 @@ module PhyloXML
         ensure
           obj.close if obj and !obj.closed?
         end
+        ret
       else
         obj
       end
