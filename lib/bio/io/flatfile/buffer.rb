@@ -5,7 +5,6 @@
 #
 # License:: The Ruby License
 #
-#  $Id:$
 #
 #
 # See documents for Bio::FlatFile::BufferedInputStream and Bio::FlatFile.
