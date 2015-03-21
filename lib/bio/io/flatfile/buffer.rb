@@ -151,8 +151,8 @@ module Bio
               yield self.new(fobj, uri.to_s)
             end
           else
-            fobj = uri.open(*arg)
-            self.new(fobj, uri.to_s)
+            fobj0 = uri.open(*arg)
+            self.new(fobj0, uri.to_s)
           end
         else
           if block_given?
@@ -160,8 +160,8 @@ module Bio
               yield self.new(fobj, uri)
             end
           else
-            fobj = OpenURI.open_uri(uri, *arg)
-            self.new(fobj, uri)
+            fobj0 = OpenURI.open_uri(uri, *arg)
+            self.new(fobj0, uri)
           end
         end
       end
