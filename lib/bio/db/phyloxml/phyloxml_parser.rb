@@ -259,7 +259,7 @@ module PhyloXML
 
       schema = _schema
       begin
-        flag = xml_instance.validate_schema(schema) do |msg, flag|
+        flag = xml_instance.validate_schema(schema) do |msg, _|
           # The document of libxml-ruby says that the block is called
           # when validation failed, but it seems it is never called
           # even when validation failed!
