@@ -104,12 +104,12 @@ class GO
           depth = $1.length.to_i
           rel   = $2
           term  = $3
-          goid1 = goid = $4
+          goid1 = $4
           en    = $5
           goids = parse_goids(line)   # GO:ID[ ; GO:ID...]
           parse_synonyms(line)  # synonym:Term[ ; synonym:Term...]
           stack[depth]   = goids.first
-          @id2term[goid] = term
+          @id2term[goid1] = term
           
           next if depth == 0
 
