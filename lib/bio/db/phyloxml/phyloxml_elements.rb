@@ -161,7 +161,7 @@ module PhyloXML
      @other = []
    end
 
- end
+  end
 
 
   # == Description
@@ -1145,7 +1145,7 @@ module PhyloXML
 
     end
 
-   class Other
+    class Other
       attr_accessor :element_name, :attributes, :children, :value
       
       def initialize
