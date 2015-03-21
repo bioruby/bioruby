@@ -104,7 +104,7 @@ class ConfigTable
   def remove(name)
     item = lookup(name)
     @items.delete_if {|i| i.name == name }
-    @table.delete_if {|name, i| i.name == name }
+    @table.delete_if {|na, i| i.name == na }
     item
   end
 
@@ -189,7 +189,7 @@ class ConfigTable
       path.sub(/\A#{Regexp.quote(c['prefix'])}/, '$prefix')
     }
 
-    if arg = c['configure_args'].split.detect {|arg| /--with-make-prog=/ =~ arg }
+    if arg = c['configure_args'].split.detect {|a| /--with-make-prog=/ =~ a }
       makeprog = arg.sub(/'/, '').split(/=/, 2)[1]
     else
       makeprog = 'make'
@@ -779,7 +779,7 @@ class ToplevelInstaller
   end
 
   def ToplevelInstaller.load_rbconfig
-    if arg = ARGV.detect {|arg| /\A--rbconfig=/ =~ arg }
+    if arg = ARGV.detect {|a| /\A--rbconfig=/ =~ a }
       ARGV.delete(arg)
       load File.expand_path(arg.split(/=/, 2)[1])
       $".push 'rbconfig.rb'
@@ -920,8 +920,8 @@ class ToplevelInstaller
       end
       set.push name
     end
-    evalopt.each do |name, value|
-      @config.lookup(name).evaluate value, @config
+    evalopt.each do |na, va|
+      @config.lookup(na).evaluate va, @config
     end
     # Check if configuration is valid
     set.each do |n|
