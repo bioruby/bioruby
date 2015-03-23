@@ -25,7 +25,7 @@ class Bio::Shell::Setup
     Bio::Shell.configure(savedir)
 
     # set default to irb mode
-    Bio::Shell.cache[:mode] = @mode || :irb
+    Bio::Shell.cache[:mode] = ((defined? @mode) && @mode) || :irb
 
     case Bio::Shell.cache[:mode]
     when :web
