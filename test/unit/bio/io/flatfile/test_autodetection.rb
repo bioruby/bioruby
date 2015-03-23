@@ -349,7 +349,7 @@ __END_OF_TEXT__
 
     def test_fastq
       fn = File.join(TestDataPath, 'fastq', 'longreads_original_sanger.fastq')
-      text = File.read(fn, length=300)
+      text = File.read(fn, 300)
       assert_equal(Bio::Fastq, @ad.autodetect(text))
     end
 
