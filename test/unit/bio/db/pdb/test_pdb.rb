@@ -2517,7 +2517,8 @@ EOS
   # test of Bio::PDB::Record::ATOM
   class TestResidue < Test::Unit::TestCase
     def setup
-      @res = Bio::PDB::Residue.new(resName="ALA",resSeq = 7, iCode = "", chain = nil)
+      # resName="ALA",resSeq = 7, iCode = "", chain = nil
+      @res = Bio::PDB::Residue.new("ALA", 7, "", nil)
       @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      1  N   ALA A   7      23.484 -35.866  44.510  1.00 28.52           N"))
       @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"))
       @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      3  C   ALA A   7      23.102 -34.082  46.159  1.00 26.68           C"))
@@ -2615,14 +2616,16 @@ expected = [{:serial=>1, :name=>"N", :altLoc=>" ", :resName=>"ALA", :chainID=>"A
       assert_equal(expected,actual)
     end
     def test_update_resudue_id
-      res = Bio::PDB::Residue.new(resName="ALA", resSeq = nil, iCode = nil, chain = nil)
+      # resName="ALA", resSeq = nil, iCode = nil, chain = nil
+      res = Bio::PDB::Residue.new("ALA", nil, nil, nil)
       assert_equal(nil, res.residue_id)
     end
   end
   
   class TestHeterogen < Test::Unit::TestCase
     def setup
-      @res = Bio::PDB::Heterogen.new(resName="EDO",resSeq = 701, iCode = "", chain = nil)
+      # resName="EDO",resSeq = 701, iCode = "", chain = nil
+      @res = Bio::PDB::Heterogen.new("EDO", 701, "", nil)
       @res.addAtom(Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30583  O1  EDO A 701      -1.516 -26.859  49.587  1.00 35.20           O"))
       @res.addAtom(Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30584  C2  EDO A 701      -0.275 -28.124  51.219  1.00 34.49           C"))
       @res.addAtom(Bio::PDB::Record::HETATM.new.initialize_from_string("HETATM30585  O2  EDO A 701      -1.442 -28.941  51.167  1.00 33.95           O"))
@@ -2716,7 +2719,8 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
       assert_equal(expected,actual)
     end
     def test_update_resudue_id
-      res = Bio::PDB::Heterogen.new(resName="EDD", resSeq = nil, iCode = nil, chain = nil)
+      # resName="EDD", resSeq = nil, iCode = nil, chain = nil
+      res = Bio::PDB::Heterogen.new("EDD", nil, nil, nil)
       assert_equal(nil, res.residue_id)
     end
   end
@@ -2770,13 +2774,15 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
         assert_equal(expected, actual)
       end
       def test_addResidue
-        assert_nothing_raised{ @chain.addResidue(Bio::PDB::Residue.new(resName="ALA",resSeq = 9, iCode = 1, chain = @chain))}
+        # resName="ALA",resSeq = 9, iCode = 1, chain = @chain
+        assert_nothing_raised{ @chain.addResidue(Bio::PDB::Residue.new("ALA", 9, 1, @chain))}
       end
       def test_aaseq
         assert_equal("AAA", @chain.aaseq)
       end
       def test_addLigand
-         assert_nothing_raised{ @chain.addLigand(Bio::PDB::Heterogen.new(resName="EDD",resSeq = 10, iCode = 2, chain = @chain)) }
+         # resName="EDD",resSeq = 10, iCode = 2, chain = @chain
+         assert_nothing_raised{ @chain.addLigand(Bio::PDB::Heterogen.new("EDD", 10, 2, @chain)) }
       end
       def test_atom_seq
         assert_equal("AAA", @chain.atom_seq)
@@ -2940,7 +2946,8 @@ expected = [{:z=>49.587, :resName=>"EDO", :altLoc=>" ", :resSeq=>701, :occupancy
   #this class tests Bio::PDB::Utils with Bio::PDB::Residue class witch is generated directly
   class TestUtils < Test::Unit::TestCase
     def setup
-      @res = Bio::PDB::Residue.new(resName="ALA",resSeq = 7, iCode = "", chain = nil)
+      # resName="ALA",resSeq = 7, iCode = "", chain = nil
+      @res = Bio::PDB::Residue.new("ALA", 7, "", nil)
       @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      1  N   ALA A   7      23.484 -35.866  44.510  1.00 28.52           N"))
       @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      2  CA  ALA A   7      23.849 -34.509  44.904  1.00 27.89           C"))
       @res.addAtom(Bio::PDB::Record::ATOM.new.initialize_from_string("ATOM      3  C   ALA A   7      23.102 -34.082  46.159  1.00 26.68           C"))
