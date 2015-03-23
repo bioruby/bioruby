@@ -222,10 +222,10 @@ module Bio
       expected_topology = "linear"
       expected_strandedness = nil
       expected_keywords = []
-      expected_sequence_version = "1"
-      expected_date_modified = "2010-03-23"
+      expected_sequence_version = 1
+      expected_date_modified = Date.parse("2010-03-23")
       expected_definition = "Saccharomyces cerevisiae TCP1-beta gene, partial cds; and Axl2p (AXL2) and Rev7p (REV7) genes, complete cds."
-      expected_species = []
+      expected_species = 'Saccharomyces cerevisiae'
       expected_classification= ["Eukaryota", "Fungi", "Dikarya", "Ascomycota", "Saccharomyceta", "Saccharomycotina", "Saccharomycetes", "Saccharomycetales", "Saccharomycetaceae", "Saccharomyces"]
       expected_comments = ""
       expected_references = [{
@@ -353,9 +353,15 @@ module Bio
       seqids = seq.other_seqids.first
       actual_other_seqids = [seqids.id, seqids.database, seqids.secondary_ids]
       assert_equal(expected_other_seqids, actual_other_seqids)
+      assert_equal(expected_molecule_type, seq.molecule_type)
       assert_equal(expected_division, seq.division)
+      assert_equal(expected_topology, seq.topology)
       assert_equal(expected_strandedness, seq.strandedness)
       assert_equal(expected_keywords, seq.keywords)
+      assert_equal(expected_sequence_version, seq.sequence_version)
+      assert_equal(expected_date_modified, seq.date_modified)
+      assert_equal(expected_definition, seq.definition)
+      assert_equal(expected_species, seq.species)
       assert_equal(expected_classification, seq.classification)
       assert_equal(expected_comments, seq.comments)
       refs = seq.references
