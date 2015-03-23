@@ -5,7 +5,6 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: setup.rb,v 1.8 2007/06/28 11:21:40 k Exp $
 #
 
 require 'getoptlong'
