@@ -5,7 +5,6 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: irb.rb,v 1.3 2007/04/05 23:35:41 trevor Exp $
 #
 
 module Bio::Shell
