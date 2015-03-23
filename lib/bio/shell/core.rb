@@ -195,7 +195,7 @@ module Bio::Shell::Ghost
 
   def find_flat_dir(dbname)
     dir = File.join(bioflat_dir, dbname.to_s.strip)
-    if File.exists?(dir)
+    if File.exist?(dir)
       return dir
     else
       return nil
@@ -209,7 +209,7 @@ module Bio::Shell::Ghost
   end
 
   def load_config_file(file)
-    if File.exists?(file)
+    if File.exist?(file)
       STDERR.print "Loading config (#{file}) ... "
       if hash = YAML.load(File.read(file))
         @config.update(hash)
@@ -312,7 +312,7 @@ module Bio::Shell::Ghost
   end
 
   def load_object_file(file)
-    if File.exists?(file)
+    if File.exist?(file)
       STDERR.print "Loading object (#{file}) ... "
       begin
         bind = Bio::Shell.cache[:binding]
@@ -394,7 +394,7 @@ module Bio::Shell::Ghost
   end
 
   def load_history_file(file)
-    if File.exists?(file)
+    if File.exist?(file)
       STDERR.print "Loading history (#{file}) ... "
       File.open(file).each do |line|
         unless line[/^# /]
@@ -459,7 +459,7 @@ module Bio::Shell::Ghost
 
   def save_script
     if @script_begin and @script_end and @script_begin <= @script_end
-      if File.exists?(script_file)
+      if File.exist?(script_file)
         message = "Overwrite script file (#{script_file})? [y/n] "
       else
         message = "Save script file (#{script_file})? [y/n] "
