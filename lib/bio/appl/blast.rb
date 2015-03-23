@@ -7,7 +7,6 @@
 # Copyright::  Copyright (C) 2008       Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
 #
 
 require 'bio/command'
