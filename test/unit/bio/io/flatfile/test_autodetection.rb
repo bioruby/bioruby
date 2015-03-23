@@ -5,7 +5,6 @@
 #
 # License:: The Ruby License
 #
-#  $Id:$
 #
 
 # loading helper routine for testing bioruby
