@@ -31,7 +31,7 @@ module Bio::Shell
     seq = ""
     if arg.kind_of?(Bio::Sequence)
       seq = arg
-    elsif arg.respond_to?(:gets) or File.exists?(arg)
+    elsif arg.respond_to?(:gets) or File.exist?(arg)
       ent = flatauto(arg)
     elsif arg[/:/]
       ent = getobj(arg)
@@ -65,7 +65,7 @@ module Bio::Shell
     db, entry_id = arg.to_s.strip.split(/\:/, 2)
 
     # local file
-    if arg.respond_to?(:gets) or File.exists?(arg)
+    if arg.respond_to?(:gets) or File.exist?(arg)
       puts "Retrieving entry from file (#{arg})"
       entry = flatfile(arg)
 
