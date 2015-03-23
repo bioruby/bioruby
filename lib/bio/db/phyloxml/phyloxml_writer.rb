@@ -205,7 +205,7 @@ module Bio
         end
       end
       return root
-     end
+      end
 
       private
 
