@@ -48,7 +48,7 @@ module Bio::Shell
         return line
       end
 
-      if File.exists?("./config/boot.rb")
+      if File.exist?("./config/boot.rb")
         require "./config/boot"
         require "./config/environment"
         #require 'commands/console'
