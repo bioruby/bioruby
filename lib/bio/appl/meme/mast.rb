@@ -94,7 +94,7 @@ module Meme
     # *Returns*:: a Bio::Meme::Mast object
     
     def initialize(mast_location, options = {})
-      unless File.exists?(mast_location)
+      unless File.exist?(mast_location)
         raise ArgumentError.new("mast: command not found : #{mast_location}")
       end
       @binary = mast_location
@@ -137,8 +137,8 @@ module Meme
       @options.each_key do |k|
         raise ArgumentError.new("Invalid option: #{k}") unless DEFAULT_OPTIONS.has_key?(k)
       end
-      raise ArgumentError.new("Motif file not found: #{@options[:mfile]}") if @options[:mfile].nil? or !File.exists?(@options[:mfile])
-      raise ArgumentError.new("Database not found: #{@options[:d]}") if @options[:d].nil? or !File.exists?(@options[:d])
+      raise ArgumentError.new("Motif file not found: #{@options[:mfile]}") if @options[:mfile].nil? or !File.exist?(@options[:mfile])
+      raise ArgumentError.new("Database not found: #{@options[:d]}") if @options[:d].nil? or !File.exist?(@options[:d])
     end
 
     # Run the mast program
