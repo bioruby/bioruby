@@ -5,7 +5,6 @@
 #               Diana Jaunzeikare <latvianlinuxgirl@gmail.com>
 # License::     The Ruby License
 #
-# $Id:$
 #
 # == Description
 #
