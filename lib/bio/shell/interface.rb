@@ -5,7 +5,6 @@
 #               Toshiaki Katayama <k@bioruby.org>
 # License::     The Ruby License
 #
-# $Id: interface.rb,v 1.19 2007/11/15 07:08:49 k Exp $
 #
 
 module Bio::Shell
