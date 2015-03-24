@@ -280,7 +280,7 @@ module Bio
         arg = [ 'search', database, query ]
         if offset then
           limit ||= 1
-          arg.push "#{offset},#{limit}"
+          arg.concat [ "#{offset}", :",", "#{limit}" ]
         end
         arg[-1] = "#{arg[-1]}.#{format}" if format
         response = get(*arg)
@@ -414,12 +414,30 @@ module Bio
       end
 
       # Generates path string from the given paths.
+      # Symbol objects are not URL-escaped.
+      # String objects are joined with '/'.
+      # Symbol objects are joined directly without '/'.
+      #
       # ---
       # *Arguments*:
-      # * (required) _paths_: Array containing String objects
+      # * (required) _paths_: Array containing String or Symbol objects
       # *Returns*:: String
       def make_path(paths)
-        @pathbase + paths.collect { |x| CGI.escape(x.to_s) }.join('/')
+        flag_sep = false
+        a = paths.collect do |x|
+          case x
+          when Symbol
+            # without URL escape
+            flag_sep = false
+            str = x.to_s
+          else
+            str = CGI.escape(x.to_s)
+            str = '/' + str if flag_sep
+            flag_sep = true
+          end
+          str
+        end
+        @pathbase + a.join('')
       end
 
       # If response.code == "200", returns body as a String.
