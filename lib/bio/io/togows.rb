@@ -4,7 +4,6 @@
 # Copyright::  Copyright (C) 2009 Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
 #
 # Bio::TogoWS is a set of clients for the TogoWS web services
 # (http://togows.dbcls.jp/).
