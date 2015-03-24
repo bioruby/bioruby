@@ -398,8 +398,7 @@ module Bio
       end
 
       # Access to the TogoWS by using POST method.
-      # The data is stored to the form key 'data'.
-      # Mime type is 'application/x-www-form-urlencoded'.
+      # Mime type is 'application/octet-stream'.
       # ---
       # *Arguments*:
       # * (required) _data_: String
@@ -408,10 +407,10 @@ module Bio
       def post_data(data, *paths)
         path = make_path(paths)
         if @debug then
-          $stderr.puts "TogoWS: Bio::Command.http_post_form(#{path.inspect}, { \"data\" => (#{data.size} bytes) }, #{@header.inspect})"
+          $stderr.puts "TogoWS: Bio::Command.http_post(#{path.inspect}, data(#{data.size} bytes), #{@header.inspect})"
         end
         togows_access_wait
-        Bio::Command.http_post_form(@http, path, { 'data' => data }, @header)
+        Bio::Command.http_post(@http, path, data, @header)
       end
 
       # Generates path string from the given paths.
