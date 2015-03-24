@@ -245,9 +245,16 @@ module Bio
         rescue NoMethodError
           ids = ids.to_s
         end
-        ids = a.join(',') if a
 
-        arg = [ 'entry', database, ids ]
+        arg = [ 'entry', database ]
+        if a then
+          b = a.dup
+          (a.size - 1).downto(1) { |i| b.insert(i, :",") }
+          arg.concat b
+        else
+          arg.push ids
+        end
+
         arg.push field if field
         arg[-1] = "#{arg[-1]}.#{format}" if format
         response = get(*arg)
