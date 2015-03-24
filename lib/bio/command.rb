@@ -882,6 +882,67 @@ module Command
     return result
   end
 
+  # Same as:
+  #  http = Net::HTTP.new(...); http.post(path, data, header)
+  # and 
+  # it uses proxy if an environment variable (same as OpenURI.open_uri)
+  # is set.
+  # In addition, +header+ can be set.
+  # (Default Content-Type is application/octet-stream.
+  # Content-Length is automatically set by default.)
+  # +uri+ must be a URI object, +params+ must be a hash, and
+  # +header+ must be a hash.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _http_: Net::HTTP object or compatible object
+  # * (required) _path_: String
+  # * (required) _data_: String containing data
+  # * (optional) _header_: Hash containing header strings
+  # *Returns*:: (same as Net::HTTP::post)
+  def http_post(http, path, data, header = {})
+    hash = {
+      'Content-Type'   => 'application/octet-stream',
+      'Content-Length' => data.length.to_s
+    }
+    hash.update(header)
+
+    http.post(path, data, hash)
+  end
+
+  # Same as:
+  # Net::HTTP.post(uri, params)
+  # and 
+  # it uses proxy if an environment variable (same as OpenURI.open_uri)
+  # is set.
+  # In addition, +header+ can be set.
+  # (Default Content-Type is application/octet-stream.
+  # Content-Length is automatically set by default.)
+  # +uri+ must be a URI object, +data+ must be a String, and
+  # +header+ must be a hash.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _uri_: URI object or String
+  # * (optional) _data_: String containing data
+  # * (optional) _header_: Hash containing header strings
+  # *Returns*:: (same as Net::HTTP::post)
+  def post(uri, data, header = {})
+    unless uri.is_a?(URI)
+      uri = URI.parse(uri)
+    end
+
+    hash = {
+      'Content-Type'   => 'application/octet-stream',
+      'Content-Length' => data.length.to_s
+    }
+    hash.update(header)
+
+    start_http(uri.host, uri.port) do |http|
+      http.post(uri.path, data, hash)
+    end
+  end
+
 end # module Command
 end # module Bio
 
