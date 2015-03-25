@@ -855,7 +855,7 @@ module Command
         end.join('&')
       end
     when String
-      data = URI.escape(params.strip)
+      raise TypeError, 'Bio::Command.make_cgi_params no longer accepts a single String as a form'
     end
     return data
   end

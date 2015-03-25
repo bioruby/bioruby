@@ -344,11 +344,12 @@ module Bio
     end
 
     def test_make_cgi_params_by_string
-      string = "type1=bp&type2=bp&downstream=&upstream=&format=fasta&options=similarity&options=gene&action=export&_format=Text&output=txt&submit=Continue%20%3E%3E"
-      # In this case, only URI escaping is performed.
+      ##Before BioRuby 1.4.3.0001, only URI escaping was performed.
+      #string = "type1=bp&type2=bp&downstream=&upstream=&format=fasta&options=similarity&options=gene&action=export&_format=Text&output=txt&submit=Continue%20%3E%3E"
       query = " type1=bp&type2=bp&downstream=&upstream=&format=fasta&options=similarity&options=gene&action=export&_format=Text&output=txt&submit=Continue >> "
-      result = Bio::Command.make_cgi_params(query)
-      assert_equal(string, result)
+      assert_raise(TypeError) {
+        Bio::Command.make_cgi_params(query)
+      }
     end
 
   end
