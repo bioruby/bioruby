@@ -571,7 +571,9 @@ module Bio
           # Returns nil if it is not a PHI-BLAST result.
           def pattern
             #PHI-BLAST
-            if !defined?(@pattern) and defined?(@pattern_in_database) then
+            if defined? @pattern
+              @pattern
+            elsif defined? @pattern_in_database then
               @pattern = nil
               @pattern_positions = []
               @f0message.each do |r|
@@ -582,8 +584,10 @@ module Bio
                   @pattern_positions << sc[1].to_i
                 end
               end
+              @pattern
+            else
+              nil
             end
-            @pattern
           end
 
           # (PHI-BLAST) Returns pattern positions.
