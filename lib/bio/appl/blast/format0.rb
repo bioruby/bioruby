@@ -384,10 +384,17 @@ module Bio
 
           # Returns name of the matrix.
           def matrix;      parse_params; @matrix;      end
+
           # Returns the match score of the matrix.
-          def sc_match;    parse_params; @sc_match;    end
+          def sc_match
+            parse_params
+            (defined? @sc_match) ? @sc_match : nil
+          end
           # Returns the mismatch score of the matrix.
-          def sc_mismatch; parse_params; @sc_mismatch; end
+          def sc_mismatch
+            parse_params
+            (defined? @sc_mismatch) ? @sc_mismatch : nil
+          end
 
           # Returns gap open penalty value.
           def gap_open;    parse_params; @gap_open;    end
@@ -1047,7 +1054,7 @@ module Bio
           # Defines attributes which call parse_score before accessing.
           def self.method_after_parse_score(*names)
             names.each do |x|
-              module_eval("def #{x}; parse_score; @#{x}; end")
+              module_eval("def #{x}; parse_score; (defined? @#{x}) ? @#{x} : nil; end")
             end
           end
           private_class_method :method_after_parse_score
