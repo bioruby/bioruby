@@ -88,7 +88,7 @@ module Bio
 
     def test_http_post
       ht = Bio::Command.new_http(@host)
-      res = Bio::Command.http_post_form(ht, @path,
+      res = Bio::Command.http_post(ht, @path,
                                         "this is test\n" * 10,
                                         { 'Content-Language' => 'en' })
       assert_kind_of(Net::HTTPResponse, res)
