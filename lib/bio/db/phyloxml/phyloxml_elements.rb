@@ -625,7 +625,7 @@ module PhyloXML
         # seq.primary_accession = @accession.value could be this
         seq.definition = @name
         #seq.comments = @name //this one?
-        if @uri != nil
+        if (defined? @uri) && @uri
           h = {'url' => @uri.uri,
             'title' => @uri.desc }
           ref = Bio::Reference.new(h)
