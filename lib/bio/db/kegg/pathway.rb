@@ -127,7 +127,7 @@ class PATHWAY < KEGGDB
   # ---
   # *Returns*:: Hash of disease ID and its definition
   def diseases_as_hash
-    unless @diseases_as_hash
+    unless (defined? @diseases_as_hash) && @diseases_as_hash
       @diseases_as_hash = strings_as_hash(diseases_as_strings)
     end
     @diseases_as_hash
@@ -166,7 +166,7 @@ class PATHWAY < KEGGDB
   # ---
   # *Returns*:: Hash of gene ID and its definition
   def genes_as_hash
-    unless @genes_as_hash
+    unless (defined? @genes_as_hash) && @genes_as_hash
       @genes_as_hash = strings_as_hash(genes_as_strings)
     end
     @genes_as_hash
@@ -192,7 +192,7 @@ class PATHWAY < KEGGDB
   # ---
   # *Returns*:: Hash of reaction ID and its definition
   def reactions_as_hash
-    unless @reactions_as_hash
+    unless (defined? @reactions_as_hash) && @reactions_as_hash
       @reactions_as_hash = strings_as_hash(reactions_as_strings)
     end
     @reactions_as_hash
@@ -210,7 +210,7 @@ class PATHWAY < KEGGDB
   # ---
   # *Returns*:: Hash of compound ID and its definition
   def compounds_as_hash
-    unless @compounds_as_hash
+    unless (defined? @compounds_as_hash) && @compounds_as_hash
       @compounds_as_hash = strings_as_hash(compounds_as_strings)
     end
     @compounds_as_hash
