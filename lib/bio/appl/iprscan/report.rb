@@ -5,7 +5,6 @@
 #               Mitsuteru C. Nakao <mn@kazusa.or.jp>
 # License::     The Ruby License
 #
-#  $Id: report.rb,v 1.9 2007/07/18 11:11:57 nakao Exp $
 #
 # == Report classes for the iprscan program.
 # 
