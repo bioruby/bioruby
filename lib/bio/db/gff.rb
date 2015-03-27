@@ -236,10 +236,10 @@ module Bio
           CHAR2BACKSLASH.merge({ '"' => '"', "\\" => "\\" }).freeze
 
         # prohibited characters in GFF2 columns
-        PROHIBITED_GFF2_COLUMNS = /[\t\r\n\x00-\x1f\x7f\xfe\xff]/
+        PROHIBITED_GFF2_COLUMNS = /[\t\r\n\x00-\x08\x0b\x0c\x0e-\x1f\x7f\xfe\xff]/
 
         # prohibited characters in GFF2 attribute tags
-        PROHIBITED_GFF2_TAGS = /[\s\"\;\x00-\x1f\x7f\xfe\xff]/
+        PROHIBITED_GFF2_TAGS = /[\s\"\;\x00-\x08\x0e-\x1f\x7f\xfe\xff]/
 
         private
         # (private) escapes GFF2 free text string
