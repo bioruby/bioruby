@@ -390,7 +390,7 @@ module Bio
     # Shows words used in the defline. Returns an Array.
     def words(case_sensitive = nil, kill_regexp = self.class::KillRegexpArray,
               kwhash = self.class::KillWordsHash)
-      a = descriptions.join(' ').split(/[\.\,\;\:\(\)\[\]\{\}\<\>\"\'\`\~\/\|\?\!\&\@\#\s\x00-\x1f\x7f]+/)
+      a = descriptions.join(' ').split(/[\.\,\;\:\(\)\[\]\{\}\<\>\"\'\`\~\/\|\?\!\&\@\# \x00-\x1f\x7f]+/)
       a.collect! do |x|
         x.sub!(/\A[\$\*\-\+]+/, '')
         x.sub!(/[\$\*\-\=]+\z/, '')
