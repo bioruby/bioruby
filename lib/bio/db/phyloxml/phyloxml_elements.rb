@@ -321,7 +321,7 @@ module PhyloXML
   # Events at the root node of a clade (e.g. one gene duplication).
   class Events
     #value comes from list: transfer, fusion, speciation_or_duplication, other, mixed, unassigned
-    attr_accessor :type
+    attr_reader :type
 
     # Integer
     attr_reader :duplications, :speciations, :losses
@@ -329,26 +329,33 @@ module PhyloXML
     # Confidence object
     attr_reader :confidence
 
-    def confidence=(type, value)
-      @confidence = Confidence.new(type, value)
-    end
+    #---
+    #def confidence=(type, value)
+    #  @confidence = Confidence.new(type, value)
+    #end
+    #+++
 
+    # Confidence object
     def confidence=(conf)
       @confidence = conf
     end
 
+    # Integer
     def duplications=(str)
       @duplications = str.to_i
     end
 
+    # Integer
     def losses=(str)
       @losses = str.to_i
     end
 
+    # Integer
     def speciations=(str)
       @speciations=str.to_i
     end
 
+    #value comes from list: transfer, fusion, speciation_or_duplication, other, mixed, unassigned
     def type=(str)
       @type = str
       #@todo add unit test for this
@@ -436,13 +443,13 @@ module PhyloXML
     # 'map datum'), for example Google's KML uses 'WGS84'.
     class Point
       # Float. Latitude
-      attr_accessor :lat
+      attr_reader :lat
 
       # Float. Longitute
-      attr_accessor :long
+      attr_reader :long
       
       # Float. Altitude
-      attr_accessor :alt
+      attr_reader :alt
 
       # String. Altitude unit.
       attr_accessor :alt_unit
@@ -450,14 +457,17 @@ module PhyloXML
       # Geodedic datum / map datum
       attr_accessor :geodetic_datum
 
+      # Float. Latitude
       def lat=(str)
         @lat = str.to_f unless str.nil?
       end
 
+      # Float. Longitute
       def long=(str)
         @long = str.to_f unless str.nil?
       end
 
+      # Float. Altitude
       def alt=(str)
         @alt = str.to_f unless str.nil?
       end
@@ -838,11 +848,12 @@ module PhyloXML
     # 'length' is the total length of the protein
     class DomainArchitecture
       # Integer. Total length of the protein
-      attr_accessor :length
+      attr_reader :length
 
       # Array of ProteinDomain objects.
       attr_reader :domains
 
+      # Integer. Total length of the protein
       def length=(str)
         @length = str.to_i
       end
@@ -867,7 +878,7 @@ module PhyloXML
     # name/unique identifier is described via the 'id' attribute.
     class ProteinDomain
       #Float, for example to store E-values    4.7E-14
-      attr_accessor :confidence
+      attr_reader :confidence
       
       # String
       attr_accessor :id, :value
@@ -878,14 +889,17 @@ module PhyloXML
       # Integer. End of the domain.
       attr_reader :to
 
+      # Integer. Beginning of the domain.
       def from=(str)
         @from = str.to_i
       end
 
+      # Integer. End of the domain.
       def to=(str)
         @to = str.to_i
       end
       
+      #Float, for example to store E-values    4.7E-14
       def confidence=(str)
         @confidence = str.to_f
       end
@@ -998,7 +1012,7 @@ module PhyloXML
     # For example it could be used to describe multiple parents of a clade.
     class CladeRelation
       # Float
-      attr_accessor :distance
+      attr_reader :distance
       # String. Id of the referenced parents of a clade.
       attr_accessor :id_ref_0, :id_ref_1
       # String
@@ -1006,6 +1020,7 @@ module PhyloXML
       # Confidence object
       attr_accessor :confidence
 
+      # Float
       def distance=(str)
         @distance = str.to_f
       end
@@ -1106,7 +1121,13 @@ module PhyloXML
     # attribute 'type' is 'orthology').
     class SequenceRelation
       # String
-      attr_accessor :id_ref_0, :id_ref_1, :type
+      attr_accessor :id_ref_0, :id_ref_1
+
+      # String. Allowed values: "orthology", "one_to_one_orthology",
+      # "super_orthology", "paralogy", "ultra_paralogy", "xenology",
+      # "unknown", "other"
+      attr_reader :type
+
       # Float
       attr_reader :distance
 
@@ -1116,6 +1137,9 @@ module PhyloXML
         @distance = str.to_f if str != nil
       end
 
+      # String. Allowed values: "orthology", "one_to_one_orthology",
+      # "super_orthology", "paralogy", "ultra_paralogy", "xenology",
+      # "unknown", "other"
       def type=(str)
         #@todo do warning instead?
         #@todo do validation at actually writing xml
