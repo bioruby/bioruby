@@ -127,7 +127,7 @@ class CodonTable
   #   table.revtrans("A")	# => ["gcg", "gct", "gca", "gcc"]
   #
   def revtrans(aa)
-    unless @reverse
+    unless (defined? @reverse) && @reverse
       @reverse = {}
       @table.each do |k, v|
         @reverse[v] ||= []
