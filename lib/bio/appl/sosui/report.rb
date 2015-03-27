@@ -5,7 +5,6 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-#  $Id:$
 #
 # == Example
 #
