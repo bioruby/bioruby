@@ -6,7 +6,6 @@
 #              Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: defline.rb,v 1.1.2.1 2008/06/20 13:22:32 ngoto Exp $
 # 
 # == Description
 # 
