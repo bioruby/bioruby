@@ -21,7 +21,10 @@ module Bio
     def setup
       
      @obj = Bio::DB.new
-      @obj.instance_eval { @orig = {"TAG" => "TAG value1\n    value2"} }
+      @obj.instance_eval {
+        @orig = {"TAG" => "TAG value1\n    value2"}
+        @tagsize = nil
+      }
     end
 
     def test_open
