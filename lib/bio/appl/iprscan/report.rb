@@ -296,7 +296,7 @@ module Bio
       #   end
       #
       def to_hash
-        unless @ipr_ids
+        unless (defined? @ipr_ids) && @ipr_ids
           @ipr_ids = {} 
           @matches.each_with_index do |match, i|
             @ipr_ids[match.ipr_id] ||= []
