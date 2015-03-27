@@ -90,17 +90,17 @@ module PhyloXML
     # Converts elements to xml representation. Called by PhyloXML::Writer class.
     def to_xml
       taxonomy = LibXML::XML::Node.new('taxonomy')
-      taxonomy["type"] = @type if @type != nil
-      taxonomy["id_source"] = @id_source if @id_source != nil
+      taxonomy["type"] = @type if (defined? @type) && @type
+      taxonomy["id_source"] = @id_source if (defined? @id_source) && @id_source
 
-      PhyloXML::Writer.generate_xml(taxonomy, self, [[:complex, 'id', @taxonomy_id],
-        [:pattern, 'code', @code, Regexp.new("^[a-zA-Z0-9_]{2,10}$")],
-        [:simple, 'scientific_name', @scientific_name],
-        [:simple, 'authority', @authority],
-        [:simplearr, 'common_name', @common_names],
-        [:simplearr, 'synonym', @synonyms],
-        [:simple, 'rank', @rank],
-        [:complex, 'uri',@uri]])
+      PhyloXML::Writer.generate_xml(taxonomy, self, [[:complex, 'id', (defined? @taxonomy_id) ? @taxonomy_id : nil],
+        [:pattern, 'code', (defined? @code) ? @code : nil, Regexp.new("^[a-zA-Z0-9_]{2,10}$")],
+        [:simple, 'scientific_name', (defined? @scientific_name) ? @scientific_name : nil],
+        [:simple, 'authority', (defined? @authority) ? @authority : nil],
+        [:simplearr, 'common_name', (defined? @common_names) ? @common_names : nil],
+        [:simplearr, 'synonym', (defined? @synonyms) ? @synonyms : nil],
+        [:simple, 'rank', (defined? @rank) ? @rank : nil],
+        [:complex, 'uri',(defined? @uri) ? @uri : nil]])
         #@todo anything else
 
 
@@ -286,7 +286,7 @@ module PhyloXML
     def to_xml(branch_length,  write_branch_length_as_subelement)
       clade = LibXML::XML::Node.new('clade')
       
-      PhyloXML::Writer.generate_xml(clade, self, [[:simple, 'name', @name]])
+      PhyloXML::Writer.generate_xml(clade, self, [[:simple, 'name', (defined? @name) ? @name : nil]])
 
       if branch_length != nil       
         if write_branch_length_as_subelement
@@ -300,15 +300,15 @@ module PhyloXML
       PhyloXML::Writer.generate_xml(clade, self, [
           [:attr, "id_source"],
           [:objarr, 'confidence', 'confidences'],
-          [:simple, 'width', @width],
-          [:complex, 'branch_color', @branch_color],
-          [:simple, 'node_id', @node_id],
+          [:simple, 'width', (defined? @width) ? @width : nil],
+          [:complex, 'branch_color', (defined? @branch_color) ? @branch_color : nil],
+          [:simple, 'node_id', (defined? @node_id) ? @node_id : nil],
           [:objarr, 'taxonomy', 'taxonomies'],
           [:objarr, 'sequence', 'sequences'],
-          [:complex, 'events', @events],
-          [:complex, 'binary_characters', @binary_characters],          
+          [:complex, 'events', (defined? @events) ? @events : nil],
+          [:complex, 'binary_characters', (defined? @binary_characters) ? @binary_characters : nil],
           [:objarr, 'distribution', 'distributions'],
-          [:complex, 'date', @date],          
+          [:complex, 'date', (defined? @date) ? @date : nil],
           [:objarr, 'reference', 'references'],
           [:objarr, 'propery', 'properties']])
      
@@ -362,11 +362,11 @@ module PhyloXML
       #@todo add unit test
       events = LibXML::XML::Node.new('events')
       PhyloXML::Writer.generate_xml(events, self, [
-        [:simple, 'type', @type],
-        [:simple, 'duplications', @duplications],
-        [:simple, 'speciations', @speciations],
-        [:simple, 'losses', @losses],
-        [:complex, 'confidence', @confidence]])
+        [:simple, 'type', (defined? @type) ? @type : nil],
+        [:simple, 'duplications', (defined? @duplications) ? @duplications : nil],
+        [:simple, 'speciations', (defined? @speciations) ? @speciations : nil],
+        [:simple, 'losses', (defined? @losses) ? @losses : nil],
+        [:complex, 'confidence', (defined? @confidence) ? @confidence : nil]])
       return events
     end
 
@@ -580,7 +580,7 @@ module PhyloXML
       def to_xml
         
         seq = LibXML::XML::Node.new('sequence')
-        if @type != nil
+        if (defined? @type) && @type
           if ["dna", "rna", "protein"].include?(@type)
             seq["type"] = @type
           else 
@@ -591,22 +591,22 @@ module PhyloXML
         PhyloXML::Writer.generate_xml(seq, self, [
             [:attr, 'id_source'],
             [:attr, 'id_ref'],
-            [:pattern, 'symbol', @symbol, Regexp.new("^\\S{1,10}$")],
-            [:complex, 'accession', @accession],
-            [:simple, 'name', @name],
-            [:simple, 'location', @location]])
+            [:pattern, 'symbol', (defined? @symbol) ? @symbol : nil, Regexp.new("^\\S{1,10}$")],
+            [:complex, 'accession', (defined? @accession) ? @accession : nil],
+            [:simple, 'name', (defined? @name) ? @name : nil],
+            [:simple, 'location', (defined? @location) ? @location : nil]])
 
-        if @mol_seq != nil
+        if (defined? @mol_seq) && @mol_seq
           molseq = LibXML::XML::Node.new('mol_seq', @mol_seq)
-          molseq["is_aligned"] = @is_aligned.to_s if @is_aligned != nil
+          molseq["is_aligned"] = @is_aligned.to_s if (defined? @is_aligned) && @is_aligned != nil
           seq << molseq
         end
 
         PhyloXML::Writer.generate_xml(seq, self, [
             #[:pattern, 'mol_seq', @mol_seq, Regexp.new("^[a-zA-Z\.\-\?\*_]+$")],
-            [:complex, 'uri', @uri],
+            [:complex, 'uri', (defined? @uri) ? @uri : nil],
             [:objarr, 'annotation', 'annotations'],
-            [:complex, 'domain_architecture', @domain_architecture]])
+            [:complex, 'domain_architecture', (defined? @domain_architecture) ? @domain_architecture : nil]])
             #@todo test domain_architecture
         #any
         return seq
@@ -719,11 +719,11 @@ module PhyloXML
       # Converts elements to xml representation. Called by PhyloXML::Writer class. 
       def to_xml
         annot = LibXML::XML::Node.new('annotation')
-        annot["ref"] = @ref if @ref != nil
-        PhyloXML::Writer.generate_xml(annot, self, [[:simple, 'desc', @desc],
-          [:complex, 'confidence', @confidence],
+        annot["ref"] = @ref if (defined? @ref) && @ref
+        PhyloXML::Writer.generate_xml(annot, self, [[:simple, 'desc', (defined? @desc) ? @desc : nil],
+          [:complex, 'confidence', (defined? @confidence) ? @confidence : nil],
           [:objarr, 'property', 'properties'],
-          [:complex, 'uri', @uri]])
+          [:complex, 'uri', (defined? @uri) ? @uri : nil]])
         return annot
       end
     end
@@ -824,10 +824,10 @@ module PhyloXML
         date = LibXML::XML::Node.new('date')
         PhyloXML::Writer.generate_xml(date, self, [
             [:attr, 'unit'],
-            [:simple, 'desc', @desc],
-            [:simple, 'value', @value],
-            [:simple, 'minimum', @minimum],
-            [:simple, 'maximum', @maximum]])
+            [:simple, 'desc', (defined? @desc) ? @desc : nil],
+            [:simple, 'value', (defined? @value) ? @value : nil],
+            [:simple, 'minimum', (defined? @minimum) ? @minimum : nil],
+            [:simple, 'maximum', (defined? @maximum) ? @maximum : nil]])
         return date
       end
 
@@ -900,7 +900,7 @@ module PhyloXML
           xml_node = LibXML::XML::Node.new('domain', @value)
           xml_node["from"] = @from.to_s
           xml_node["to"] = @to.to_s
-          xml_node["id"] = @id if @id != nil
+          xml_node["id"] = @id if (defined? @id) && @id
           xml_node["confidence"] = @confidence.to_s
 
           return xml_node
@@ -986,7 +986,7 @@ module PhyloXML
         ref = LibXML::XML::Node.new('reference')
         Writer.generate_xml(ref, self, [
               [:attr, 'doi'],
-              [:simple, 'desc', @desc]])
+              [:simple, 'desc', (defined? @desc) ? @desc : nil]])
          return ref
       end
 
@@ -1021,7 +1021,7 @@ module PhyloXML
               [:attr, 'id_ref_1'],
               [:attr, 'distance'],
               [:attr, 'type'],
-              [:complex, 'confidence', @confidnece]])         
+              [:complex, 'confidence', (defined? @confidnece) ? @confidnece : nil]])
 
           return cr
         end
@@ -1136,7 +1136,7 @@ module PhyloXML
           sr = LibXML::XML::Node.new('sequence_relation')
           sr['id_ref_0'] = @id_ref_0
           sr['id_ref_1'] = @id_ref_1
-          sr['distance'] = @distance.to_s if @distance != nil
+          sr['distance'] = @distance.to_s if (defined? @distance) && @distance
           sr['type'] = @type
           return sr
         end
