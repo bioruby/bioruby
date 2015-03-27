@@ -8,7 +8,6 @@
 #              2008  Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
 #
 require 'uri'
 require 'strscan'
