@@ -60,7 +60,7 @@ module Bio
           if /NUMBER OF TM HELIX = (\d+)/ =~ line
             @tms = $1
           elsif /TM (\d+) +(\d+)- *(\d+) (\w+) +(\w+)/ =~ line
-            tmh  = $1.to_i
+            #tmh  = $1.to_i
             range = Range.new($2.to_i, $3.to_i)
             grade = $4
             seq   = $5
