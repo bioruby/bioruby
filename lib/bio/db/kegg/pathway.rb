@@ -5,7 +5,6 @@
 # Copyright::  Copyright (C) 2010 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
 #
 
 require 'bio/db'
