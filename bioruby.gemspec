@@ -49,7 +49,6 @@ Gem::Specification.new do |s|
     "doc/Tutorial.rd.ja.html",
     "doc/bioruby.css",
     "etc/bioinformatics/seqdatabase.ini",
-    "extconf.rb",
     "gemfiles/Gemfile.travis-jruby1.8",
     "gemfiles/Gemfile.travis-jruby1.9",
     "gemfiles/Gemfile.travis-rbx",
