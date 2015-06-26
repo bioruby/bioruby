@@ -28,7 +28,65 @@ For known problems, see KNOWN_ISSUES.rdoc.
 * Fixed: (...)
 * Fixed: (...)
 
+== Removed features
+
+=== Bio::KEGG::API
+
+Bio::KEGG::API is removed because KEGG API SOAP service was discontinued in
+December 31, 2012. See http://www.kegg.jp/kegg/rest/ for the announcement
+of service discontinuation.
+
+=== Bio::DBGET
+
+Bio::DBGET is removed because it only supports old original DBGET protocols
+that was discontinued in 2004. Note that the DBGET is still available via
+the web. See http://www.genome.jp/en/gn_dbget.html for details.
+
+=== Bio::Ensembl
+
+Bio::Ensembl is removed because it does not work after the renewal of Ensembl
+web site in 2008. Instead, bio-ensembl gem which supports recent ensembl API
+is available.
+
+=== Bio::DDBJ::XML, Bio::DDBJ::REST
+
+Bio::DDBJ::XML and Bio::DDBJ::REST are removed because DDBJ Web API (WABI)
+web services were suspended in 2012 and then they were completely renewed
+with incompatible APIs in 2013.
+
+=== Bio::NCBI::SOAP
+
+Bio::NCBI::SOAP is removed because it always raises error during the parsing
+of WSDL files provided by NCBI. In addition, NCBI announced that the SOAP
+web service for the E-utilities will be terminated on July 1, 2015. Instead,
+Bio::NCBI::REST, REST client for the NCBI E-utility web service, is available.
+
+=== Bio::KEGG::Taxonomy
+
+Bio::KEGG::Taxonomy is removed because it does not work correctly. It raises
+error, it falls into infinite loop, or it returns apparently broken data.
+Moreover, KEGG closed public FTP site and the file "taxonomy" could only be
+obtained by paid subscribers.
+
+=== Bio.method_missing
+
+Bio.method_missing, that aims to provide shortcuts of Bio::Shell methods
+with shorter name without typing "Shell", is removed because most of the
+methods raises error mainly due to bypassing of initialization procedure.
+In addition, we now think that the use of method_missing should generally
+be avoid unless it is really necessary.
+
+=== extconf.rb
+
+extconf.rb, an alternative way to install BioRuby to the system, is removed
+because of avoiding potential confusions. Nowadays, extconf.rb is usually
+only used for building native extensions, but no native extensions are
+included in this release. Use gem or setup.rb to install BioRuby.
+
+
 == Incompatible changes
+
+Also see the above "Removed features".
 
 === Bio::Fetch
 
@@ -47,10 +105,15 @@ Methods directly affected are:
 
 * Bio::Fetch.new (Bio::Fetch#initialize) does not have default server URL,
   and URL of a server must always be explicitly given as the first argument.
-  Alternatively, Bio::Fetch::EBI which uses EBI Dbfetch server can be used
-  as mentioned above.
-* Bio::Fetch.query is removed. As described above, Bio::Fetch::EBI.query
-  is an alternative.
+* Bio::Fetch.query is removed.
+
+For the purpose running old codes, it is recommended to install
+bio-old-biofetch-emulator gem. The bio-old-biofetch-emulator gem emulates
+old BioRuby's default BioFetch server by using other existing web services.
+See https://rubygems.org/gems/bio-old-biofetch-emulator for details.
+We think many codes can run with no changes by simply installing the gem and
+adding "-r bio-old-biofetch-emulator" into the command-line when executing
+ruby.
 
 === (tbd)
 
