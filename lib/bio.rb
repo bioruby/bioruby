@@ -182,10 +182,6 @@ module Bio
   #  autoload :XML,          'bio/io/ddbjxml'
   #end
 
-  class HGC
-    autoload :HiGet,        'bio/io/higet'
-  end
-
   class EBI
     autoload :SOAP,         'bio/io/ebisoap'
   end
