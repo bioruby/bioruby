@@ -177,11 +177,6 @@ module Bio
   #  autoload :Fastacmd,     'bio/io/fastacmd'
   #end
 
-  ## below are described in bio/db/genbank/ddbj.rb
-  #class DDBJ
-  #  autoload :XML,          'bio/io/ddbjxml'
-  #end
-
   class EBI
     autoload :SOAP,         'bio/io/ebisoap'
   end
