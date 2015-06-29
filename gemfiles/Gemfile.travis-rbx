@@ -6,9 +6,6 @@ gem "rdoc"
 gem "xmlparser"
 gem "libxml-ruby"
 
-## disabled because of "uninitialized constant XML::SaxParser" error
-#gem "soap4r-ruby1.9"
-
 platforms :rbx do
   gem 'racc'
   gem 'rubysl', '~> 2.0'
