@@ -176,10 +176,6 @@ module Bio
   #  autoload :Fastacmd,     'bio/io/fastacmd'
   #end
 
-  class EBI
-    autoload :SOAP,         'bio/io/ebisoap'
-  end
-
   autoload :NCBI,         'bio/io/ncbirest'
   ## below are described in bio/io/ncbirest.rb
   #class NCBI
