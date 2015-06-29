@@ -41,12 +41,6 @@ in README.rdoc.
 (WONT_FIX) In some cases, temporary files and directories may not be
 removed because of the lack of FileUtils.remove_entry_secure.
 
-=== Issues about SOAP/WSDL
-
-SOAP4R (SOAP and WSDL implementation) is no longer bundled with Ruby 1.9.
-In addition, because of the API changes in recent SOAP4R, some
-classes/modules using SOAP4R may not work.
-
 === Problem with REXML DoS vulnerability patch before 09-Nov-2008
 
 (WONT_FIX) If you have applied a patch taken from
@@ -162,12 +156,6 @@ know which version is suitable.
 
 BioRuby Shell on Web uses Ruby on Rails, but the author of the document does
 not know which version is suitable.
-
-==== SOAP4R with Ruby 1.9
-
-soap4r-ruby1.9 may raise "ununitialized constant XML::SaxParser" error with
-some combinations of XML parser libraries. It seems this is a bug of
-soap4r-ruby1.9.
 
 == 5. Historical descriptions
 
