@@ -30,6 +30,20 @@ For known problems, see KNOWN_ISSUES.rdoc.
 
 == Removed features
 
+=== Bio::SOAPWSDL
+
+Bio::SOAPWSDL (lib/bio/io/soapwsdl.rb) is removed because SOAP4R
+(SOAP/WSDL library in Ruby) is no longer bundled with Ruby since Ruby 1.9.
+For Ruby 1.9 or later, some gems of SOAP4R are available, but we think they
+are not well-maintained. Moreover, many SOAP servers have been retired
+(see below). So, we give up maintaining Bio::SOAPWSDL and all SOAP client
+classes in BioRuby.
+
+=== Bio::EBI::SOAP
+
+Bio::EBI::SOAP (lib/bio/io/ebisoap.rb) is removed because Bio::SOAPWSDL
+is removed.
+
 === Bio::KEGG::API
 
 Bio::KEGG::API is removed because KEGG API SOAP service was discontinued in
@@ -53,6 +67,12 @@ is available.
 Bio::DDBJ::XML and Bio::DDBJ::REST are removed because DDBJ Web API (WABI)
 web services were suspended in 2012 and then they were completely renewed
 with incompatible APIs in 2013.
+
+=== Bio::HGC::HiGet
+
+Bio::HGC::HiGet (lib/bio/io/higet.rb) is removed because the HiGet web server
+http://higet.hgc.jp/ have been down since 2011, and we think that the server
+will not be restored again.
 
 === Bio::NCBI::SOAP
 
