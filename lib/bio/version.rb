@@ -10,20 +10,19 @@
 module Bio
 
   # BioRuby version (Array containing Integer)
-  BIORUBY_VERSION = [1, 4, 3].extend(Comparable).freeze
+  BIORUBY_VERSION = [1, 5, 0].extend(Comparable).freeze
 
   # Extra version specifier (String or nil).
-  # Existance of the value indicates pre-release version or modified version.
+  # Existance of the value indicates development version.
   #
   # nil                 :: Release version.
-  # ".0000"..".4999"    :: Release version with patches.
-  # ".5000"             :: Development unstable version.
-  # ".5001"..".8999"    :: Pre-alpha version.
-  # "-alphaN" (N=0..99) :: Alpha version.
-  # "-preN"   (N=0..99) :: Pre-release test version.
-  # "-rcN"    (N=0..99) :: Release candidate version.
+  # "-dev"              :: Development version (with YYYYMMDD digits).
+  # ".20150630"         :: Development version (specify the date digits).
   #
-  BIORUBY_EXTRA_VERSION = ".5000"
+  # By default, if the third digit (teeny) of BIORUBY_VERSION is 0,
+  # the version is regarded as a development version.
+  BIORUBY_EXTRA_VERSION =
+    (BIORUBY_VERSION[2] == 0) ? "-dev" : nil
 
   # Version identifier, including extra version string (String)
   # Unlike BIORUBY_VERSION, it is not comparable.
