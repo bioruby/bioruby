@@ -1,3 +1,31 @@
+commit cac63ff501df6a71afead77175db9fb491c2985b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 1 01:31:21 2015 +0900
+
+    .travis.yml: use Ruby 2.1.6 for tar and gem integration tests
+
+ .travis.yml |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+commit 5318c99249f34dacc788b82c658ea0e256770db0
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 1 00:43:39 2015 +0900
+
+    known issues added about new BLAST XML format and BLAST+ text format
+
+ KNOWN_ISSUES.rdoc  |   11 +++++++++++
+ RELEASE_NOTES.rdoc |   11 +++++++++++
+ 2 files changed, 22 insertions(+)
+
+commit b61d8df0300ef366539e1154c9a2dac2f1f4ff18
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Jun 30 23:57:01 2015 +0900
+
+    update ChangeLog with rake rechangelog
+
+ ChangeLog |   47 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+
 commit 75cf6c31c57239b2e39a171e536ad5dddcaec94a
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Tue Jun 30 23:56:08 2015 +0900
