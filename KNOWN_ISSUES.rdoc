@@ -30,10 +30,10 @@ Encoding::CompatibilityError or "ArgumentError: invalid byte sequence in
 (WONT_FIX) Ruby 1.9.0 is NOT supported because it isn't a stable release.
 Use Ruby 1.9.1 or later.
 
-==== Ruby 1.8.5 or earlier
+==== Ruby 1.8.6 or earlier
 
-(WONT_FIX) Problems observed only with Ruby 1.8.5 or earlier will not be
-fixed. Note that Ruby 1.8.5 or earlier is no longer supported, as described
+(WONT_FIX) Problems observed only with Ruby 1.8.6 or earlier will not be
+fixed. Note that Ruby 1.8.6 or earlier is no longer supported, as described
 in README.rdoc.
 
 ==== Ruby 1.8.2 or earlier
@@ -140,10 +140,14 @@ Windows 95/98/98SE/ME because of the limitation of COMMAND.COM.
 
 == 3. Known issues and bugs in BioRuby
 
-=== Bio::SPTR
+=== Bio::UniProtKB
 
-Bio::SPTR should be updated to follow UniProtKB format changes described
+Bio::UniProtKB should be updated to follow UniProtKB format changes described
 in http://www.uniprot.org/docs/sp_news.htm .
+
+=== Bio::PDB
+
+Bio::PDB should be updated to follow PDB format version 3.3.
 
 == 4. Compatibility issues with other libraries/extensions
 
