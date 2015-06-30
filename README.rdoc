@@ -155,11 +155,6 @@ For parsing PhyloXML format files:
   * {GNOME Libxml2 XML toolkit}[http://xmlsoft.org/] and C compiler will be
     required.
 
-(Only for Ruby 1.9.x or later) For using SOAP web services:
-
-* {gem install soap4r-ruby1.9}[https://rubygems.org/gems/soap4r-ruby1.9]
-  * For Ruby 1.8.x, SOAP4R is bundled within the Ruby 1.8.x release.
-
 
 == INSTALL
 
