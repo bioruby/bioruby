@@ -17,6 +17,15 @@ BioRuby codes.
 
 This release is the final BioRuby version that can be run on Ruby 1.8.
 
+=== License is updated to the new Ruby's License
+
+BioRuby is distributed under the same license as Ruby's. In October 2011,
+Ruby's License was changed from a dual license with GPLv2 to a dual license
+with 2-clause BSDL.available. Since BioRuby 1.5.0, we have updated to the
+new version of Ruby's License. For details about the license, see COPYING
+or COPYING.ja and BSDL. In addition, please do not forget to see LEGAL for
+exception files that are subjected to different licenses.
+
 === Semantic Versioning will be introduced
 
 We will adopt the Semantic Versioning since the next release version, which
