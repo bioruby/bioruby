@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.files = [
     ".travis.yml",
+    "BSDL",
     "COPYING",
     "COPYING.ja",
     "ChangeLog",
