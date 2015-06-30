@@ -2,7 +2,7 @@
 = README.rdoc - README for BioRuby
 Copyright:: Copyright (C) 2001-2007 Toshiaki Katayama <k@bioruby.org>,
             Copyright (C) 2008      Jan Aerts <jandot@bioruby.org>
-            Copyright (C) 2011-2012 Naohisa Goto <ng@bioruby.org>
+            Copyright (C) 2011-2015 Naohisa Goto <ng@bioruby.org>
 License::   The Ruby License
 * The above statement is limited to this file. See below about BioRuby's
   copyright and license.
@@ -45,6 +45,7 @@ See RELEASE_NOTES.rdoc for news and important changes in this version.
 README.rdoc:: This file. General information and installation procedure.
 RELEASE_NOTES.rdoc:: News and important changes in this release.
 KNOWN_ISSUES.rdoc:: Known issues and bugs in BioRuby.
+doc/RELEASE_NOTES-1.4.3.rdoc:: News and incompatible changes from 1.4.2 to 1.4.3.
 doc/RELEASE_NOTES-1.4.2.rdoc:: News and incompatible changes from 1.4.1 to 1.4.2.
 doc/RELEASE_NOTES-1.4.1.rdoc:: News and incompatible changes from 1.4.0 to 1.4.1.
 doc/RELEASE_NOTES-1.4.0.rdoc:: News and incompatible changes from 1.3.1 to 1.4.0.
@@ -59,6 +60,7 @@ doc/Tutorial.rd.html:: HTML version of Tutorial.rd.
 ==== BioRuby development
 
 ChangeLog:: History of changes.
+doc/ChangeLog-1.4.3:: changes from 1.4.2 to 1.4.3.
 doc/ChangeLog-before-1.4.2:: changes before 1.4.2.
 doc/ChangeLog-before-1.3.1:: changes before 1.3.1.
 README_DEV.rdoc:: Describes ways to contribute to the BioRuby project, including coding styles and documentation guidelines.
@@ -112,8 +114,9 @@ and can be obtained by the following procedure:
 
 == REQUIREMENTS
 
-* Ruby 1.8.6 or later (except Ruby 1.9.0) -- http://www.ruby-lang.org/
-  * Ruby 1.9.3-p194 or later, or Ruby 1.8.7-p358 or later is recommended.
+* Ruby 1.8.7 or later (except Ruby 1.9.0) -- http://www.ruby-lang.org/
+  * Ruby 2.1.6 or later, or Ruby 2.2.2 or later is recommended.
+  * This is the final version running on Ruby 1.8, tested with Ruby1.8.7-p374.
   * See KNOWN_ISSUES.rdoc for Ruby version specific problems.
 
 
