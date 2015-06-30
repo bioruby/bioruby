@@ -435,7 +435,7 @@ class UniProtKB < EMBLDB
 
   # returns a String of the first gene name in the GN line.
   def gene_name
-    gene_names.first
+    (x = self.gene_names) ? x.first : nil
   end
 
 
