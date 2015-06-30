@@ -149,6 +149,17 @@ in http://www.uniprot.org/docs/sp_news.htm .
 
 Bio::PDB should be updated to follow PDB format version 3.3.
 
+=== Bio::Blast::Report
+
+NCBI announces that that they are makeing a new version of BLAST XML data
+format. BioRuby should support it.
+
+=== Bio::Blast::Default::Report
+
+Bio::Blast::Default::Report currently supports legacy BLAST only.
+It may be better to support BLAST+ text output format, although NCBI
+do not recommend to do so because the format is unstable.
+
 == 4. Compatibility issues with other libraries/extensions
 
 === ActiveRecord
