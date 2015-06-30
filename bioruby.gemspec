@@ -54,6 +54,7 @@ Gem::Specification.new do |s|
     "gemfiles/Gemfile.travis-rbx",
     "gemfiles/Gemfile.travis-ruby1.8",
     "gemfiles/Gemfile.travis-ruby1.9",
+    "gemfiles/Gemfile.travis-ruby2.2",
     "gemfiles/modify-Gemfile.rb",
     "gemfiles/prepare-gemspec.rb",
     "lib/bio.rb",
