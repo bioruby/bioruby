@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.5.0.20150630"
+  s.version = "1.5.0"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
