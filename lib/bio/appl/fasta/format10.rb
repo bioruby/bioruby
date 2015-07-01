@@ -106,6 +106,11 @@ class Report
       end
     end
 
+    # remove footer comments
+    if footer_start = data.index(">>>///") then
+      data = data[0..(footer_start - 1)]
+    end
+
     # body lines - fasta execution result
     program, *hits = data.split(/\n>>/)
 
