@@ -1,3 +1,12 @@
+commit 01ac93ca3b341716c85c571f1194834db0a68e52
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 1 02:21:26 2015 +0900
+
+    update ChangeLog by rake rechangelog
+
+ ChangeLog |   28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
 commit cac63ff501df6a71afead77175db9fb491c2985b
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Wed Jul 1 01:31:21 2015 +0900
