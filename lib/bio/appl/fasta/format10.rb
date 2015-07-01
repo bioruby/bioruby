@@ -94,7 +94,7 @@ class Report
     # header lines - brief list of the hits
     if list_start = data.index("\nThe best scores are") then
       data = data[(list_start + 1)..-1]
-      data.sub!(/(.*)\n\n>>>/m, '')
+      data.sub!(/(.*?)\n\n>>>/m, '')
       @list = $1
     else
       if list_start = data.index(/\n!!\s+/) then
