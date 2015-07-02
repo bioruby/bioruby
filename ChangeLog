@@ -1,0 +1,38 @@
+commit e066e3c8bcf0c6b7eadd3573576d4550aca77cc5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jul 2 22:17:06 2015 +0900
+
+    ChangeLog is moved to doc/ChangeLog-1.5.0
+
+ ChangeLog           | 2919 ---------------------------------------------------
+ doc/ChangeLog-1.5.0 | 2919 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 2919 insertions(+), 2919 deletions(-)
+ delete mode 100644 ChangeLog
+ create mode 100644 doc/ChangeLog-1.5.0
+
+commit dd53e885c1baa765bc094897d53309af7b15497b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jul 2 22:09:26 2015 +0900
+
+    change version for generating ChangeLog to 1.5.0
+
+ Rakefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 7a5d897ebc45d9ec5357918a42eb2980decf01e4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jul 2 21:52:17 2015 +0900
+
+    version changed to 1.5.1-dev (pre-release version of 1.5.1)
+
+ lib/bio/version.rb |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit 8fc4d6c64f6958a352c36b171b00d1f1ff2a2354
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jul 2 21:47:28 2015 +0900
+
+    fix English syntax and unexpected word insertion
+
+ RELEASE_NOTES.rdoc |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
