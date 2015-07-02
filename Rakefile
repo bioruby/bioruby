@@ -188,7 +188,7 @@ task :rechangelog do
   # The tag name in the command line should be changed
   # after releasing new version, updating ChangeLog,
   # and doing "git mv ChangeLog doc/ChangeLog-X.X.X".
-  sh "git log --stat --summary 1.4.3..HEAD > ChangeLog"
+  sh "git log --stat --summary 1.5.0..HEAD > ChangeLog"
 end
 
 # define mktmpdir
