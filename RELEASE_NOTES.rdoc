@@ -21,7 +21,7 @@ This release is the final BioRuby version that can be run on Ruby 1.8.
 
 BioRuby is distributed under the same license as Ruby's. In October 2011,
 Ruby's License was changed from a dual license with GPLv2 to a dual license
-with 2-clause BSDL.available. Since BioRuby 1.5.0, we have updated to the
+with 2-clause BSDL. Since BioRuby 1.5.0, we have updated to the
 new version of Ruby's License. For details about the license, see COPYING
 or COPYING.ja and BSDL. In addition, please do not forget to see LEGAL for
 exception files that are subjected to different licenses.
@@ -29,7 +29,7 @@ exception files that are subjected to different licenses.
 === Semantic Versioning will be introduced
 
 We will adopt the Semantic Versioning since the next release version, which
-will be BioRuby 1.5.1. This means that BioRuby 1.5.0 are NOT subject to the
+will be BioRuby 1.5.1. This means that BioRuby 1.5.0 is NOT subject to the
 Semantic Versioning.
 
 
