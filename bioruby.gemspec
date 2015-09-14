@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.5.0"
+  s.version = "1.5.1.20150914"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -36,6 +36,7 @@ Gem::Specification.new do |s|
     "bioruby.gemspec",
     "bioruby.gemspec.erb",
     "doc/ChangeLog-1.4.3",
+    "doc/ChangeLog-1.5.0",
     "doc/ChangeLog-before-1.3.1",
     "doc/ChangeLog-before-1.4.2",
     "doc/Changes-0.7.rd",
@@ -44,6 +45,7 @@ Gem::Specification.new do |s|
     "doc/RELEASE_NOTES-1.4.1.rdoc",
     "doc/RELEASE_NOTES-1.4.2.rdoc",
     "doc/RELEASE_NOTES-1.4.3.rdoc",
+    "doc/RELEASE_NOTES-1.5.0.rdoc",
     "doc/Tutorial.rd",
     "doc/Tutorial.rd.html",
     "doc/Tutorial.rd.ja",
@@ -643,7 +645,8 @@ Gem::Specification.new do |s|
     "doc/RELEASE_NOTES-1.4.0.rdoc",
     "doc/RELEASE_NOTES-1.4.1.rdoc",
     "doc/RELEASE_NOTES-1.4.2.rdoc",
-    "doc/RELEASE_NOTES-1.4.3.rdoc"
+    "doc/RELEASE_NOTES-1.4.3.rdoc",
+    "doc/RELEASE_NOTES-1.5.0.rdoc"
   ]
   s.rdoc_options << '--main' << 'README.rdoc'
   s.rdoc_options << '--title' << 'BioRuby API documentation'
