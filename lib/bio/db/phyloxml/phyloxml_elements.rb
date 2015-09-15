@@ -32,8 +32,9 @@ require 'libxml'
 
 module Bio
 
-   # This is general Taxonomy class.
+module PhyloXML
 
+  # Taxonomy class for PhyloXML
   class Taxonomy
     #pattern = [a-zA-Z0-9_]{2,10} Can refer to any code/abbreviation/mnemonic, such as Bsu for Bacillus subtilis.
     attr_accessor :code
@@ -59,18 +60,19 @@ module Bio
     # An array of strings. Holds synonyms for scientific names or common names.
     attr_accessor :synonyms
 
-
+    # creates a new Bio::PhyloXML::Taxonomy object.
     def initialize
       @common_names = []
       @synonyms = []
+
+      # below attributes may be PhyloXML specific.
+      @other = []
     end
-  end
 
-module PhyloXML
+    #---
+    # Attributes and methods below may be PhyloXML specific.
+    #+++
 
-  
-  # Taxonomy class
-  class Taxonomy < Bio::Taxonomy
     # String. Unique identifier of a taxon.
     attr_accessor :taxonomy_id
     #Used to link other elements to a taxonomy (on the xml-level)
@@ -81,11 +83,6 @@ module PhyloXML
     # Array of Other objects. Used to save additional information from other than
     # PhyloXML namspace.
     attr_accessor :other
-
-    def initialize
-      super
-      @other = []
-    end
 
     # Converts elements to xml representation. Called by PhyloXML::Writer class.
     def to_xml
