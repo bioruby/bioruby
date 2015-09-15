@@ -30,6 +30,27 @@ For known problems, see KNOWN_ISSUES.rdoc.
 
 == Incompatible changes
 
+=== Bio::Taxonomy is removed and merged to Bio::PhyloXML::Taxonomy
+
+Bio::Taxonomy in lib/bio/db/phyloxml/phyloxml_elements.rb was written for
+PhyloXML in 2009. It was intended to become general taxonomy data class in
+BioRuby in these days. However, no efforts have been made to improve the
+Bio::Taxonomy class, and it still remains to be a PhyloXML specific class.
+Because Bio::PhyloXML is split as a different Gem (Biogem) package, we now
+decide to remove Bio::Taxonomy and merge it to Bio::PhyloXML::Taxonomy.
+
+In the codes using Bio::Taxonomy directly, changing Bio::Taxonomy to
+Bio::PhyloXML::Taxonomy or adding the following monkey patch may be needed.
+
+   module Bio
+      unless defined? Taxonomy
+         Taxonomy = Bio::PhyloXML::Taxonomy
+      end
+   end
+
+In the future, Bio::Taxonomy might be added as general taxonomy data class.
+The new Bio::Taxonomy might be incompatible with the current Bio::Taxonmy.
+
 === (tbd)
 
 (paragraph)
