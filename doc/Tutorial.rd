@@ -1248,102 +1248,13 @@ annotated phylogenetic trees. PhyloXML's parser in BioRuby is implemented in
 Bio::PhyloXML::Parser, and its writer in Bio::PhyloXML::Writer. 
 More information can be found at ((<www.phyloxml.org|URL:http://www.phyloxml.org>)).
 
-== Requirements
+Bio::PhyloXML have been split out from BioRuby core and have been released
+as bio-phyloxml gem. To use Bio::PhyloXML, install the bio-phyloxml gem.
 
-In addition to BioRuby, you need the libxml Ruby bindings. To install, execute:
+  % gem install bio-phyloxml
 
-  % gem install -r libxml-ruby
-
-For more information see the ((<libxml installer page|URL:http://libxml.rubyforge.org/install.xml>))
-
-== Parsing a file
-
-    require 'bio'
-    
-    # Create new phyloxml parser
-    phyloxml = Bio::PhyloXML::Parser.open('example.xml')
-    
-    # Print the names of all trees in the file
-    phyloxml.each do |tree|
-      puts tree.name
-    end
-
-If there are several trees in the file, you can access the one you wish by specifying its index:
-
-    tree = phyloxml[3]
-
-You can use all Bio::Tree methods on the tree, since PhyloXML::Tree inherits from Bio::Tree. For example, 
-
-   tree.leaves.each do |node|
-     puts node.name
-   end
-
-PhyloXML files can hold additional information besides phylogenies at the end of the file. This info can be accessed through the 'other' array of the parser object.
-
-    phyloxml = Bio::PhyloXML::Parser.open('example.xml')
-    while tree = phyloxml.next_tree
-      # do stuff with trees
-    end 
-      
-    puts phyloxml.other
-
-== Writing a file
-
-    # Create new phyloxml writer
-    writer = Bio::PhyloXML::Writer.new('tree.xml')
-   
-    # Write tree to the file tree.xml
-    writer.write(tree1) 
-    
-    # Add another tree to the file
-    writer.write(tree2)
-
-== Retrieving data
-
-Here is an example of how to retrieve the scientific name of the clades included in each tree.
-
-    require 'bio'
-    
-    phyloxml = Bio::PhyloXML::Parser.open('ncbi_taxonomy_mollusca.xml')
-    phyloxml.each do |tree|
-      tree.each_node do |node|
-        print "Scientific name: ", node.taxonomies[0].scientific_name, "\n"
-      end
-    end
-
-== Retrieving 'other' data
-
-    require 'bio'
-    
-    phyloxml = Bio::PhyloXML::Parser.open('phyloxml_examples.xml')
-    while tree = phyloxml.next_tree
-     #do something with the trees
-    end
-
-    p phyloxml.other
-    puts "\n"
-    #=> output is an object representation
-    
-    #Print in a readable way
-    puts phyloxml.other[0].to_xml, "\n"
-    #=>:
-    #
-    #<align:alignment xmlns:align="http://example.org/align">
-    #  <seq name="A">acgtcgcggcccgtggaagtcctctcct</seq>
-    #  <seq name="B">aggtcgcggcctgtggaagtcctctcct</seq>
-    #  <seq name="C">taaatcgc--cccgtgg-agtccc-cct</seq>
-    #</align:alignment>
-    
-    #Once we know whats there, lets output just sequences
-    phyloxml.other[0].children.each do |node|
-     puts node.value
-    end
-    #=>
-    #
-    #acgtcgcggcccgtggaagtcctctcct
-    #aggtcgcggcctgtggaagtcctctcct
-    #taaatcgc--cccgtgg-agtccc-cct
-
+The tutorial of Bio::PhyloXML is bundled in bio-phyloxml.
+((<URL:https://github.com/bioruby/bioruby-phyloxml/blob/master/doc/Tutorial.rd>))
 
 == The BioRuby example programs
 
@@ -1446,8 +1357,7 @@ At the moment there is no easy way of accessing BioPerl or BioPython directly fr
 
 == Installing required external libraries
 
-At this point for using BioRuby no additional libraries are needed, except if
-you are using the Bio::PhyloXML module; then you have to install libxml-ruby.
+At this point for using BioRuby no additional libraries are needed.
 
 This may change, so keep an eye on the Bioruby website. Also when
 a package is missing BioRuby should show an informative message.
@@ -1456,18 +1366,6 @@ At this point installing third party Ruby packages can be a bit
 painful, as the gem standard for packages evolved late and some still
 force you to copy things by hand. Therefore read the README's
 carefully that come with each package.
-
-=== Installing libxml-ruby
-
-The simplest way is to use the RubyGems packaging system:
-
-  gem install -r libxml-ruby
-
-If you get `require': no such file to load - mkmf (LoadError) error then do
-
-  sudo apt-get install ruby-dev
-
-If you have other problems with installation, then see ((<URL:http://libxml.rubyforge.org/install.xml>)).
 
 == Trouble shooting
 
