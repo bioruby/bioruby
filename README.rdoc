@@ -152,12 +152,6 @@ Accessing BioSQL database created by other Open Bio* libraries:
     {gem install sqlite3}[http://rubygems.org/gems/sqlite3]
   * {gem install activerecord-oracle_enhanced-adapter}[http://rubygems.org/gems/activerecord-oracle_enhanced-adapter]
 
-For parsing PhyloXML format files:
-
-* {gem install libxml-ruby}[http://rubygems.org/gems/libxml-ruby]
-  * {GNOME Libxml2 XML toolkit}[http://xmlsoft.org/] and C compiler will be
-    required.
-
 
 == INSTALL
 
