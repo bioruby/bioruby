@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.5.1.20150914"
+  s.version = "1.5.1.20150917"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -182,10 +182,6 @@ Gem::Specification.new do |s|
     "lib/bio/db/pdb/pdb.rb",
     "lib/bio/db/pdb/residue.rb",
     "lib/bio/db/pdb/utils.rb",
-    "lib/bio/db/phyloxml/phyloxml.xsd",
-    "lib/bio/db/phyloxml/phyloxml_elements.rb",
-    "lib/bio/db/phyloxml/phyloxml_parser.rb",
-    "lib/bio/db/phyloxml/phyloxml_writer.rb",
     "lib/bio/db/prosite.rb",
     "lib/bio/db/rebase.rb",
     "lib/bio/db/sanger_chromatogram/abif.rb",
@@ -365,7 +361,6 @@ Gem::Specification.new do |s|
     "sample/seqdatabase.ini",
     "sample/ssearch2tab.rb",
     "sample/tdiary.rb",
-    "sample/test_phyloxml_big.rb",
     "sample/test_restriction_enzyme_long.rb",
     "sample/tfastx2tab.rb",
     "sample/vs-genes.rb",
@@ -487,11 +482,6 @@ Gem::Specification.new do |s|
     "test/data/paml/codeml/models/results7-8.txt",
     "test/data/paml/codeml/output.txt",
     "test/data/paml/codeml/rates",
-    "test/data/phyloxml/apaf.xml",
-    "test/data/phyloxml/bcl_2.xml",
-    "test/data/phyloxml/made_up.xml",
-    "test/data/phyloxml/ncbi_taxonomy_mollusca_short.xml",
-    "test/data/phyloxml/phyloxml_examples.xml",
     "test/data/pir/CRAB_ANAPL.pir",
     "test/data/prosite/prosite.dat",
     "test/data/refseq/nm_126355.entret",
@@ -581,8 +571,6 @@ Gem::Specification.new do |s|
     "test/unit/bio/db/test_nbrf.rb",
     "test/unit/bio/db/test_newick.rb",
     "test/unit/bio/db/test_nexus.rb",
-    "test/unit/bio/db/test_phyloxml.rb",
-    "test/unit/bio/db/test_phyloxml_writer.rb",
     "test/unit/bio/db/test_prosite.rb",
     "test/unit/bio/db/test_qual.rb",
     "test/unit/bio/db/test_rebase.rb",
