@@ -10,4 +10,4 @@ RUN apt install -y libzmq3-dev libtool-bin autoconf; gem install rbczmq iruby pr
 
 
 EXPOSE 8888
-CMD iruby notebook --no-browser --ip='*' --port 8888 --notebook-dir='/usr/src/bioruby'
+CMD iruby notebook --no-browser --ip='*' --port 8888 --notebook-dir='/usr/src/bioruby/notebooks'
