@@ -15,6 +15,10 @@ else
   exit(0)
 end
 
+# update bundler to avoid Bundler's bug fixed in the latest version
+$stderr.puts "gem update bundler"
+system("gem update bundler")
+
 $stderr.puts "cd #{gem_dir}"
 Dir.chdir(gem_dir)
 
