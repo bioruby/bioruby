@@ -43,7 +43,7 @@ matrix:
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=gem-test TESTOPTS=-v
   allow_failures:
-    - rvm: rbx-3
+    - rvm: rbx-3.29
       gemfile: gemfiles/Gemfile.travis-rbx
       env: TESTOPTS=-v
     - rvm: jruby-18mode
