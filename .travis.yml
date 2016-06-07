@@ -17,7 +17,7 @@ matrix:
     - rvm: 1.8.7
       gemfile: gemfiles/Gemfile.travis-ruby1.8
       env: TESTOPTS=-v
-    - rvm: rbx-3
+    - rvm: rbx-3.29
       gemfile: gemfiles/Gemfile.travis-rbx
       env: TESTOPTS=-v
     - rvm: jruby-18mode
