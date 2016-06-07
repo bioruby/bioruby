@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.5.1.20150917"
+  s.version = "1.5.1.20160608"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -28,6 +28,7 @@ Gem::Specification.new do |s|
     "README_DEV.rdoc",
     "RELEASE_NOTES.rdoc",
     "Rakefile",
+    "appveyor.yml",
     "bin/bioruby",
     "bin/br_biofetch.rb",
     "bin/br_bioflat.rb",
