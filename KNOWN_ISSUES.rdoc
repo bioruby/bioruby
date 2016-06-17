@@ -162,11 +162,6 @@ do not recommend to do so because the format is unstable.
 
 == 4. Compatibility issues with other libraries/extensions
 
-=== ActiveRecord
-
-BioSQL support uses ActiveRecord, but the author of the document does not
-know which version is suitable.
-
 === Ruby on Rails
 
 BioRuby Shell on Web uses Ruby on Rails, but the author of the document does
