@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.5.1.20160608"
+  s.version = "1.5.1.20160617"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -123,8 +123,6 @@ Gem::Specification.new do |s|
     "lib/bio/data/na.rb",
     "lib/bio/db.rb",
     "lib/bio/db/aaindex.rb",
-    "lib/bio/db/biosql/biosql_to_biosequence.rb",
-    "lib/bio/db/biosql/sequence.rb",
     "lib/bio/db/embl/common.rb",
     "lib/bio/db/embl/embl.rb",
     "lib/bio/db/embl/embl_to_biosequence.rb",
@@ -192,9 +190,6 @@ Gem::Specification.new do |s|
     "lib/bio/db/soft.rb",
     "lib/bio/db/transfac.rb",
     "lib/bio/feature.rb",
-    "lib/bio/io/biosql/ar-biosql.rb",
-    "lib/bio/io/biosql/biosql.rb",
-    "lib/bio/io/biosql/config/database.yml",
     "lib/bio/io/das.rb",
     "lib/bio/io/fastacmd.rb",
     "lib/bio/io/fetch.rb",
@@ -209,7 +204,6 @@ Gem::Specification.new do |s|
     "lib/bio/io/ncbirest.rb",
     "lib/bio/io/pubmed.rb",
     "lib/bio/io/registry.rb",
-    "lib/bio/io/sql.rb",
     "lib/bio/io/togows.rb",
     "lib/bio/location.rb",
     "lib/bio/map.rb",
@@ -532,8 +526,6 @@ Gem::Specification.new do |s|
     "test/unit/bio/data/test_aa.rb",
     "test/unit/bio/data/test_codontable.rb",
     "test/unit/bio/data/test_na.rb",
-    "test/unit/bio/db/biosql/tc_biosql.rb",
-    "test/unit/bio/db/biosql/ts_suite_biosql.rb",
     "test/unit/bio/db/embl/test_common.rb",
     "test/unit/bio/db/embl/test_embl.rb",
     "test/unit/bio/db/embl/test_embl_rel89.rb",
