@@ -4,7 +4,6 @@ gem "rake"
 gem "rdoc"
 
 gem "xmlparser"
-gem "libxml-ruby"
 
 platforms :rbx do
   gem 'racc'
