@@ -30,7 +30,7 @@ Blast, Fasta, Hmmer and many other software packages for biological
 analysis can be executed within the BioRuby script, and the results
 can be fully parsed to extract the portion you need.  BioRuby supports
 major biological database formats and provides many ways for accessing
-them through flatfile indexing, SQL, web services etc.  Various web
+them through flatfile indexing, web services etc.  Various web
 services can be easily utilized by BioRuby.
 
 
@@ -140,17 +140,6 @@ Creating faster flatfile index using Berkley DB:
   (which took over {bdb}[https://github.com/ruby-bdb/bdb])
   (No RubyGems available)
   * {Oracle Berkeley DB}[http://www.oracle.com/technetwork/database/berkeleydb/index.html] and C compiler will be required.
-  
-Accessing BioSQL database created by other Open Bio* libraries:
-
-* {gem install activerecord}[http://rubygems.org/gems/activerecord]
-  and at least one driver (or adapter):
-  * {gem install mysql}[http://rubygems.org/gems/mysql] or
-    {gem install mysql2}[http://rubygems.org/gems/mysql2]
-  * {gem install pg}[http://rubygems.org/gems/pg]
-  * {gem install sqlite-ruby}[http://rubygems.org/gems/sqlite-ruby] or
-    {gem install sqlite3}[http://rubygems.org/gems/sqlite3]
-  * {gem install activerecord-oracle_enhanced-adapter}[http://rubygems.org/gems/activerecord-oracle_enhanced-adapter]
 
 
 == INSTALL
