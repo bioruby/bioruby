@@ -146,7 +146,6 @@ module Bio
 
   autoload :Registry,       'bio/io/registry'
   autoload :Fetch,          'bio/io/fetch'
-  autoload :SQL,            'bio/io/sql'
   autoload :FlatFile,       'bio/io/flatfile'
   autoload :FlatFileIndex,  'bio/io/flatfile/index' # chage to FlatFile::Index ?
   ## below are described in bio/io/flatfile/index.rb
