@@ -270,6 +270,16 @@ for list of plugins and related software utilizing BioRuby.
 
 * http://biogems.info/
 
+Plugins (Biogems) listed below had been included in BioRuby in former days,
+and were split to separate packages to reduce complexity and external
+dependencies.
+
+* {bioruby-phyloxml}[http://rubygems.org/gems/bioruby-phyloxml]
+  * NOTE: Please uninstall bio-phyloxml, that have been created as a
+    preliminary trial of splitting a module in 2012 and have not been
+    maintained after that.
+* {bio-biosql}[http://rubygems.org/gems/bio-biosql]
+
 To develop your own plugin, see "Plugins" pages of BioRuby Wiki.
 
 * http://bioruby.open-bio.org/wiki/Plugins
