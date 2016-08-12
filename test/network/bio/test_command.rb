@@ -13,6 +13,7 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 2,
 
 # libraries needed for the tests
 require 'test/unit'
+require 'uri'
 require 'bio/command'
 
 module Bio
@@ -22,6 +23,7 @@ module Bio
       @port = 80 
       @path = "/"
       @url = "http://bioruby.open-bio.org:80/"
+      @uri = URI.parse(@url)
     end
 
     def test_read_uri
@@ -30,6 +32,21 @@ module Bio
         str = Bio::Command.read_uri(@url)
       }
       assert(!str.to_s.empty?)
+    end
+
+    def test_start_http_uri
+      ht = Bio::Command.start_http_uri(@uri)
+      assert_kind_of(Net::HTTP, ht)
+      res = ht.get(@path)
+      assert_kind_of(Net::HTTPResponse, res)
+    end
+
+    def test_start_http_uri_with_block
+      res = Bio::Command.start_http_uri(@uri) do |ht|
+        assert_kind_of(Net::HTTP, ht)
+        ht.get(@path)
+      end
+      assert_kind_of(Net::HTTPResponse, res)
     end
 
     def test_start_http
