@@ -13,6 +13,7 @@ require 'uri'
 require 'open-uri'
 require 'cgi'
 require 'net/http'
+require 'net/https'
 require 'tmpdir'
 require 'fileutils'
 
@@ -707,6 +708,43 @@ module Command
   end
 
   # Same as:
+  #   Net::HTTP.start(uri.address, uri.port)
+  # and
+  # it uses proxy if an environment variable (same as OpenURI.open_uri)
+  # is set.
+  # It supports https.
+  #
+  # Note: This method ignores uri.path.
+  # It only uses uri.address and uri.port.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _uri_: URI object or String containing URI
+  # *Returns*:: (same as Net::HTTP::start except for proxy and https support)
+  def start_http_uri(uri, &block)
+    unless uri.is_a?(URI)
+      uri = URI.parse(uri)
+    end
+
+    # Note: URI#find_proxy is an unofficial method defined in open-uri.rb.
+    # If the spec of open-uri.rb would be changed, we should change below.
+    if proxyuri = uri.find_proxy then
+      raise 'Non-HTTP proxy' if proxyuri.class != URI::HTTP
+      klass = Net::HTTP.Proxy(proxyuri.host, proxyuri.port)
+    else
+      klass = Net::HTTP
+    end
+
+    http = klass.new(uri.host, uri.port)
+    case uri.scheme
+    when 'https'
+      http.use_ssl = true
+    end
+
+    http.start(&block)
+  end
+
+  # Same as:
   #   Net::HTTP.start(address, port)
   # and 
   # it uses proxy if an environment variable (same as OpenURI.open_uri)
@@ -813,7 +851,7 @@ module Command
     }
     hash.update(header)
 
-    start_http(uri.host, uri.port) do |http|
+    start_http_uri(uri) do |http|
       http.post(uri.path, data, hash)
     end
   end
@@ -937,7 +975,7 @@ module Command
     }
     hash.update(header)
 
-    start_http(uri.host, uri.port) do |http|
+    start_http_uri(uri) do |http|
       http.post(uri.path, data, hash)
     end
   end
