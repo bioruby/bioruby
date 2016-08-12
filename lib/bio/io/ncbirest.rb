@@ -20,13 +20,13 @@ class NCBI
   # They may also be used for other NCBI services.
   ENTREZ_DEFAULT_PARAMETERS = {
     # Cited from
-    # http://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.Release_Notes
+    # https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.Release_Notes
     #  tool:
     #  Name of application making the E-utility call.
     #  Value must be a string with no internal spaces.
     'tool' => "bioruby",
     # Cited from
-    # http://www.ncbi.nlm.nih.gov/books/NBK25497/
+    # https://www.ncbi.nlm.nih.gov/books/NBK25497/
     # The value of email should be a complete and valid e-mail address
     # of the software developer and not that of a third-party end user.
     'email' => 'staff@bioruby.org',
@@ -54,7 +54,7 @@ class NCBI
   # Sets default email address used for Entrez (eUtils).
   # It may also be used for other NCBI services.
   #
-  # In http://www.ncbi.nlm.nih.gov/books/NBK25497/ 
+  # In https://www.ncbi.nlm.nih.gov/books/NBK25497/ 
   # NCBI says:
   # "The value of email should be a complete and valid e-mail address of
   # the software developer and not that of a third-party end user."
@@ -89,7 +89,7 @@ class NCBI
   # Sets default tool name for Entrez (eUtils).
   # It may also be used for other NCBI services.
   #
-  # In http://www.ncbi.nlm.nih.gov/books/NBK25497/ 
+  # In https://www.ncbi.nlm.nih.gov/books/NBK25497/ 
   # NCBI says:
   # "The value of tool should be a string with no internal spaces that
   # uniquely identifies the software producing the request."
@@ -111,9 +111,10 @@ class NCBI
 #
 # The Bio::NCBI::REST class provides REST client for the NCBI E-Utilities
 #
-# Entrez utilities index:
+# Entrez Programming Utilities Help:
 #
-# * http://www.ncbi.nlm.nih.gov/entrez/utils/utils_index.html
+# * https://www.ncbi.nlm.nih.gov/books/NBK25501/
+# * ( redirected from http://www.ncbi.nlm.nih.gov/entrez/utils/ )
 #
 class REST
 
@@ -197,7 +198,7 @@ class REST
 
   # List the NCBI database names E-Utils (einfo) service
   # 
-  # * http://eutils.ncbi.nlm.nih.gov/entrez/eutils/einfo.fcgi
+  # * https://eutils.ncbi.nlm.nih.gov/entrez/eutils/einfo.fcgi
   #
   #  pubmed protein nucleotide nuccore nucgss nucest structure genome
   #  books cancerchromosomes cdd gap domains gene genomeprj gensat geo
@@ -215,7 +216,7 @@ class REST
   # ---
   # *Returns*:: array of string (database names)
   def einfo
-    serv = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/einfo.fcgi"
+    serv = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/einfo.fcgi"
     opts = default_parameters.merge({})
     response = ncbi_post_form(serv, opts)
     result = response.body
@@ -229,8 +230,9 @@ class REST
   # 
   # For information on the possible arguments, see
   #
-  # * http://eutils.ncbi.nlm.nih.gov/entrez/query/static/esearch_help.html
-  # * http://www.ncbi.nlm.nih.gov/books/bv.fcgi?rid=helppubmed.section.pubmedhelp.Search_Field_Descrip
+  # * https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch
+  # * ( redirected from http://eutils.ncbi.nlm.nih.gov/books/n/helpeutils/chapter4/#chapter4.ESearch )
+  # * ( redirected from http://eutils.ncbi.nlm.nih.gov/entrez/query/static/esearch_help.html )
   #
   # == Usage
   #
@@ -282,7 +284,7 @@ class REST
   # * _step_: maximum number of entries retrieved at a time
   # *Returns*:: array of entry IDs or a number of results
   def esearch(str, hash = {}, limit = nil, step = 10000)
-    serv = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+    serv = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
     opts = default_parameters.merge({ "term" => str })
     opts.update(hash)
 
@@ -313,7 +315,7 @@ class REST
   # *Arguments*:: same as esearch method
   # *Returns*:: array of entry IDs or a number of results
   def esearch_count(str, hash = {})
-    serv = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+    serv = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
     opts = default_parameters.merge({ "term" => str })
     opts.update(hash)
     opts.update("rettype" => "count")
@@ -328,7 +330,7 @@ class REST
   #
   # For information on the possible arguments, see
   #
-  # * http://eutils.ncbi.nlm.nih.gov/entrez/query/static/efetch_help.html
+  # * https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
   #
   # == Usage
   #
@@ -351,7 +353,7 @@ class REST
   # * _step_: maximum number of entries retrieved at a time
   # *Returns*:: String
   def efetch(ids, hash = {}, step = 100)
-    serv = "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
+    serv = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
     opts = default_parameters.merge({ "retmode"  => "text" })
     opts.update(hash)
 
@@ -396,12 +398,12 @@ class REST
 
     # Search database entries by given keywords using E-Utils (esearch).
     #
-    # * http://eutils.ncbi.nlm.nih.gov/entrez/query/static/esearch_help.html
+    # * https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch
     #
     #  sequences = gene + genome + nucleotide + protein + popset + snp
     #  nucleotide = nuccore + nucest + nucgss
     #
-    # * http://eutils.ncbi.nlm.nih.gov/entrez/eutils/einfo.fcgi
+    # * https://eutils.ncbi.nlm.nih.gov/entrez/eutils/einfo.fcgi
     #
     #  pubmed protein nucleotide nuccore nucgss nucest structure genome
     #  books cancerchromosomes cdd gap domains gene genomeprj gensat geo
@@ -517,7 +519,7 @@ class REST
 
       # Retrieve sequence entries by given IDs using E-Utils (efetch).
       #
-      # * http://eutils.ncbi.nlm.nih.gov/entrez/query/static/efetchseq_help.html
+      # * https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
       #
       #  sequences = gene + genome + nucleotide + protein + popset + snp
       #  nucleotide = nuccore + nucest + nucgss
@@ -581,7 +583,7 @@ class REST
       # Retrieve nucleotide sequence entries by given IDs using E-Utils
       # (efetch).
       #
-      # * http://eutils.ncbi.nlm.nih.gov/entrez/query/static/efetchseq_help.html
+      # * https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
       #  nucleotide = nuccore + nucest + nucgss
       #
       # format (rettype):
@@ -643,7 +645,7 @@ class REST
       # Retrieve protein sequence entries by given IDs using E-Utils
       # (efetch).
       #
-      # * http://eutils.ncbi.nlm.nih.gov/entrez/query/static/efetchseq_help.html
+      # * https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
       #  protein
       #
       # format (rettype):
@@ -699,7 +701,7 @@ class REST
 
       # Retrieve PubMed entries by given IDs using E-Utils (efetch).
       #
-      # * http://eutils.ncbi.nlm.nih.gov/entrez/query/static/efetchlit_help.html
+      # * https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
       #
       # == Usage
       #
@@ -741,7 +743,7 @@ class REST
 
       # Retrieve PubMed Central entries by given IDs using E-Utils (efetch).
       #
-      # * http://eutils.ncbi.nlm.nih.gov/entrez/query/static/efetchlit_help.html
+      # * https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
       #
       # == Usage
       #
@@ -776,7 +778,7 @@ class REST
 
       # Retrieve journal entries by given IDs using E-Utils (efetch).
       #
-      # * http://eutils.ncbi.nlm.nih.gov/entrez/query/static/efetchlit_help.html
+      # * https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
       #
       # == Usage
       #
@@ -811,7 +813,7 @@ class REST
 
       # Retrieve OMIM entries by given IDs using E-Utils (efetch).
       #
-      # * http://eutils.ncbi.nlm.nih.gov/entrez/query/static/efetchlit_help.html
+      # * https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
       #
       # == Usage
       #
@@ -849,7 +851,7 @@ class REST
 
       # Retrieve taxonomy entries by given IDs using E-Utils (efetch).
       #
-      # * http://eutils.ncbi.nlm.nih.gov/entrez/query/static/efetchtax_help.html
+      # * https://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
       #
       # == Usage
       #
