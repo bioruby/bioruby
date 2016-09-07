@@ -1,3 +1,29 @@
+= BioRuby 1.5.1 RELEASE NOTES
+
+Few changes have been made to the BioRuby 1.5.1 after the version 1.5.0 is
+released.
+
+== NEWS
+
+=== HTTPS is used to access NCBI web services
+
+As you may know, NCBI announced that all HTTP resources will be switched
+to HTTPS on September 30, 2016. To follow the transition, all URLs for
+accessing NCBI E-utilities in BioRuby are changed to use HTTPS.
+
+In BioRuby, the following classes/modules are affected.
+
+* Bio::NCBI::REST and descending classes
+* Bio::PubMed
+
+In some rare cases (especially when building Ruby and/or OpenSSL by yourself
+from source code), Ruby does not include SSL/TLS support, or Ruby fails to
+detect SSL root certificates. In such cases, you may need to reinstall or
+upgrade Ruby, OpenSSL (or alternatives), and/or SSL root certificates with
+appropriate configuration options. Alternatively, installing binary packages
+is generally a good idea.
+
+
 = BioRuby 1.5.0 RELEASE NOTES
 
 A lot of changes have been made to the BioRuby 1.5.0 after the version 1.4.3
