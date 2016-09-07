@@ -22,7 +22,7 @@ module Bio
   # By default, if the third digit (teeny) of BIORUBY_VERSION is 0,
   # the version is regarded as a development version.
   BIORUBY_EXTRA_VERSION =
-    "-dev" #(BIORUBY_VERSION[2] == 0) ? "-dev" : nil
+    nil #"-dev" #(BIORUBY_VERSION[2] == 0) ? "-dev" : nil
 
   # Version identifier, including extra version string (String)
   # Unlike BIORUBY_VERSION, it is not comparable.
