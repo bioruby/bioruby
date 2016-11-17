@@ -371,7 +371,7 @@ module Bio
             /^LOCUS       .+ bp .*[a-z]*[DR]?NA/ ],
           genpept  = RuleRegexp[ 'Bio::GenPept',
             /^LOCUS       .+ aa .+/ ],
-          medline  = RuleRegexp[ 'Bio::MEDLINE',
+          RuleRegexp[ 'Bio::MEDLINE',
             /^PMID\- [0-9]+$/ ],
           embl     = RuleRegexp[ 'Bio::EMBL',
             /^ID   .+\; .*(DNA|RNA|XXX)\;/ ],
@@ -383,7 +383,7 @@ module Bio
           transfac = RuleRegexp[ 'Bio::TRANSFAC',
             /^AC  [-A-Za-z0-9_\.]+$/ ],
 
-          aaindex  = RuleProc.new('Bio::AAindex1', 'Bio::AAindex2') do |text|
+          RuleProc.new('Bio::AAindex1', 'Bio::AAindex2') do |text|
             if /^H [-A-Z0-9_\.]+$/ =~ text then
               if text =~ /^M [rc]/ then
                 Bio::AAindex2
@@ -397,7 +397,7 @@ module Bio
             end
           end,
 
-          litdb    = RuleRegexp[ 'Bio::LITDB',
+          RuleRegexp[ 'Bio::LITDB',
             /^CODE        [0-9]+$/ ],
           pathway_module = RuleRegexp[ 'Bio::KEGG::MODULE',
             /^ENTRY       .+ Pathway\s+Module\s*/ ],
@@ -428,7 +428,7 @@ module Bio
           genome   = RuleRegexp[ 'Bio::KEGG::GENOME',
             /^ENTRY       [a-z]+$/ ],
 
-          fantom = RuleProc.new('Bio::FANTOM::MaXML::Cluster',
+          RuleProc.new('Bio::FANTOM::MaXML::Cluster',
                                 'Bio::FANTOM::MaXML::Sequence') do |text|
             if /\<\!DOCTYPE\s+maxml\-(sequences|clusters)\s+SYSTEM/ =~ text
               case $1
@@ -449,17 +449,17 @@ module Bio
           het = RuleRegexp[ 'Bio::PDB::ChemicalComponent',
             /^RESIDUE +.+ +\d+\s*$/ ],
 
-          clustal = RuleRegexp2[ 'Bio::ClustalW::Report',
-          /^CLUSTAL .*\(.*\).*sequence +alignment/,
-          /^CLUSTAL FORMAT for T-COFFEE/ ],
+          RuleRegexp2[ 'Bio::ClustalW::Report',
+            /^CLUSTAL .*\(.*\).*sequence +alignment/,
+            /^CLUSTAL FORMAT for T-COFFEE/ ],
 
-          gcg_msf = RuleRegexp[ 'Bio::GCG::Msf',
-          /^!!(N|A)A_MULTIPLE_ALIGNMENT .+/ ],
+          RuleRegexp[ 'Bio::GCG::Msf',
+            /^!!(N|A)A_MULTIPLE_ALIGNMENT .+/ ],
 
-          gcg_seq = RuleRegexp[ 'Bio::GCG::Seq',
-          /^!!(N|A)A_SEQUENCE .+/ ],
+          RuleRegexp[ 'Bio::GCG::Seq',
+            /^!!(N|A)A_SEQUENCE .+/ ],
 
-          blastxml = RuleRegexp[ 'Bio::Blast::Report',
+          RuleRegexp[ 'Bio::Blast::Report',
             /\<\!DOCTYPE BlastOutput PUBLIC / ],
           wublast  = RuleRegexp[ 'Bio::Blast::WU::Report',
             /^BLAST.? +[\-\.\w]+\-WashU +\[[\-\.\w ]+\]/ ],
@@ -469,16 +469,16 @@ module Bio
             /^BLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/ ],
           tblast   = RuleRegexp[ 'Bio::Blast::Default::Report_TBlast',
             /^TBLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/ ],
-          rpsblast   = RuleRegexp[ 'Bio::Blast::RPSBlast::Report',
+          RuleRegexp[ 'Bio::Blast::RPSBlast::Report',
             /^RPS\-BLAST.? +[\-\.\w]+ +\[[\-\.\w ]+\]/ ],
 
-          blat   = RuleRegexp[ 'Bio::Blat::Report',
+          RuleRegexp[ 'Bio::Blat::Report',
             /^psLayout version \d+/ ],
-          spidey = RuleRegexp[ 'Bio::Spidey::Report',
+          RuleRegexp[ 'Bio::Spidey::Report',
             /^\-\-SPIDEY version .+\-\-$/ ],
-          hmmer  = RuleRegexp[ 'Bio::HMMER::Report',
+          RuleRegexp[ 'Bio::HMMER::Report',
             /^HMMER +\d+\./ ],
-          sim4   = RuleRegexp[ 'Bio::Sim4::Report',
+          RuleRegexp[ 'Bio::Sim4::Report',
             /^seq1 \= .*\, \d+ bp(\r|\r?\n)seq2 \= .*\, \d+ bp(\r|\r?\n)/ ],
 
           fastq  = RuleRegexp[ 'Bio::Fastq',
