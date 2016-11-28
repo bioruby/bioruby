@@ -48,27 +48,29 @@ module Bio
       end
 
       def tab_parse_hsp(ary)
-        query_id, target_id,
-          percent_identity,
-          align_len,
-          mismatch_count,
-          gaps,
-          query_from,
-          query_to,
-          hit_from,
-          hit_to,
-          evalue,
-          bit_score = *ary
+        query_id,
+        target_id,
+        percent_identity,
+        align_len,
+        mismatch_count,
+        gaps,
+        openings,
+        query_from,
+        query_to,
+        hit_from,
+        hit_to,
+        evalue,
+        bit_score = *ary
 
         hsp = Hsp.new
-        hsp.align_len		= align_len.to_i
-        hsp.gaps		= gaps.to_i
-        hsp.query_from		= query_from.to_i
-        hsp.query_to		= query_to.to_i
-        hsp.hit_from		= hit_from.to_i
-        hsp.hit_to		= hit_to.to_i
-        hsp.evalue		= evalue.strip.to_f
-        hsp.bit_score		= bit_score.to_f
+        hsp.align_len	 = align_len.to_i
+        hsp.gaps       = gaps.to_i
+        hsp.query_from = query_from.to_i
+        hsp.query_to	 = query_to.to_i
+        hsp.hit_from   = hit_from.to_i
+        hsp.hit_to     = hit_to.to_i
+        hsp.evalue     = evalue.strip.to_f
+        hsp.bit_score  = bit_score.to_f
 
         hsp.percent_identity	= percent_identity.to_f
         hsp.mismatch_count	= mismatch_count.to_i
