@@ -284,6 +284,10 @@ To develop your own plugin, see "Plugins" pages of BioRuby Wiki.
 
 * http://bioruby.open-bio.org/wiki/Plugins
 
+== CODE STATUS
+
+{<img src="https://travis-ci.org/bioruby/bioruby.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/bioruby/bioruby]
+
 == LICENSE
 
 BioRuby can be freely distributed under the same terms as Ruby.
