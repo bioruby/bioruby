@@ -104,7 +104,7 @@ class Sequence
   # http://www.rubycentral.com/book/ref_c_object.html#Object.method_missing
   def method_missing(sym, *args, &block) #:nodoc:
     begin
-      seq.__send__(sym, *args, &block)
+      @seq.__send__(sym, *args, &block)
     rescue NoMethodError => evar
       lineno = __LINE__ - 2
       file = __FILE__
