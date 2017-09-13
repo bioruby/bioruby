@@ -547,6 +547,11 @@ module Bio
         #BottomRule.is_prior_to(debug_last)
         #fastaformat.is_prior_to(debug_last)
 
+        ## for suppressing warnings
+        p medline, aaindex, litdb, fantom, clustal,
+          gcg_msf, gcg_seq, blastxml, rpsblast, blat,
+          spidey, hmmer, sim4 if false
+
         a.rehash
         return a
       end
