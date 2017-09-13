@@ -90,7 +90,7 @@ module Bio
     #   class MyMapThing
     #     include Bio::Map::ActsLikeMap
     #     
-    #     def initialize (name)
+    #     def initialize(name)
     #       @name = name
     #       @mappings_as_maps = Array.new
     #     end
@@ -177,7 +177,7 @@ module Bio
     #   class MyMarkerThing
     #     include Bio::Map::ActsLikeMarker
     #     
-    #     def initialize (name)
+    #     def initialize(name)
     #       @name = name
     #       @mappings_as_marker = Array.new
     #     end
@@ -301,7 +301,7 @@ module Bio
       # * _map_: a Bio::Map::SimpleMap object
       # * _marker_: a Bio::Map::Marker object
       # * _location_: a Bio::Locations object
-      def initialize (map, marker, location = nil)
+      def initialize(map, marker, location = nil)
         @map, @marker, @location = map, marker, location
       end
       attr_accessor :map, :marker, :location
@@ -350,7 +350,7 @@ module Bio
       # * type: type of the map (e.g. linkage, radiation_hybrid, cytogenetic, ...)
       # * units: unit of the map (e.g. cM, cR, ...)
       # *Returns*:: new Bio::Map::SimpleMap object
-      def initialize (name = nil, type = nil, length = nil, units = nil)
+      def initialize(name = nil, type = nil, length = nil, units = nil)
         @name, @type, @length, @units = name, type, length, units
         @mappings_as_map = Array.new
       end
