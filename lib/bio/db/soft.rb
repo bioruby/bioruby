@@ -217,13 +217,13 @@ class SOFT
       end
       
       def [](x)
-        if x.kind_of?( Fixnum )
+        if x.kind_of?( Integer )
           super(x)
         else
           begin
             x = x.to_s.downcase.to_sym
             z = @header_object.column_index[x]
-            unless z.kind_of?( Fixnum )
+            unless z.kind_of?( Integer )
               raise IndexError, "#{x.inspect} is not a valid index.  Contents of @header_object.column_index: #{@header_object.column_index.inspect}"
             end
             self[ z ]

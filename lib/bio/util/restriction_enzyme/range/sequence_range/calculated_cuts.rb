@@ -151,7 +151,7 @@ class CalculatedCuts
   def remove_incomplete_cuts(size=nil)
     @strands_for_display_current = false
     @size = size if size
-    raise IndexError, "Size of the strand must be provided here or during initalization." if !@size.kind_of?(Fixnum) and not @circular
+    raise IndexError, "Size of the strand must be provided here or during initalization." if !@size.kind_of?(Integer) and not @circular
 
     vcuts = @vc_primary + @vc_complement
     hcuts = @hc_between_strands
