@@ -278,6 +278,8 @@ module Bio
       
       # human readable report
       def report
+        # raise NomethodError for compatibility
+        raise NoMethodError if !defined?(@top_strand) || !@top_strand
         report = "### shRNA\n"
         report << "Top strand shRNA (#{@top_strand.length} nt):\n"
         report << "  5'-#{@top_strand.upcase}-3'\n"
