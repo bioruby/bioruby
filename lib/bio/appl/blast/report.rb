@@ -43,17 +43,11 @@ class Report
   #--
   # require lines moved here to avoid circular require
   #++
-  require 'bio/appl/blast/xmlparser'
   require 'bio/appl/blast/rexml'
   require 'bio/appl/blast/format8'
 
   # for Bio::FlatFile support (only for XML data)
   DELIMITER = RS = "</BlastOutput>\n"
-
-  # Specify to use XMLParser to parse XML (-m 7) output.
-  def self.xmlparser(data)
-    self.new(data, :xmlparser)
-  end
 
   # Specify to use REXML to parse XML (-m 7) output.
   def self.rexml(data)
@@ -67,7 +61,7 @@ class Report
 
   def auto_parse(data)
     if /<?xml/.match(data[/.*/])
-      if defined?(XMLParser)
+      if defined? xmlparser_parse
         xmlparser_parse(data)
         @reports = blastxml_split_reports
       else
@@ -87,7 +81,11 @@ class Report
     @parameters = {}
     case parser
     when :xmlparser		# format 7
-      xmlparser_parse(data)
+      if defined? xmlparser_parse
+        xmlparser_parse(data)
+      else
+        raise NameError, "xmlparser_parse does not defined"
+      end
       @reports = blastxml_split_reports
     when :rexml		# format 7
       rexml_parse(data)
@@ -383,6 +381,32 @@ class Report
   attr_reader :reports
  
   private
+  # set parameter of the key as val
+  def xml_set_parameter(key, val)
+    #labels = { 
+    #  'matrix'       => 'Parameters_matrix',
+    #  'expect'       => 'Parameters_expect',
+    #  'include'      => 'Parameters_include',
+    #  'sc-match'     => 'Parameters_sc-match',
+    #  'sc-mismatch'  => 'Parameters_sc-mismatch',
+    #  'gap-open'     => 'Parameters_gap-open',
+    #  'gap-extend'   => 'Parameters_gap-extend',
+    #  'filter'       => 'Parameters_filter',
+    #  'pattern'      => 'Parameters_pattern',
+    #  'entrez-query' => 'Parameters_entrez-query',
+    #}
+    k = key.sub(/\AParameters\_/, '')
+    @parameters[k] =
+      case k
+      when 'expect', 'include'
+        val.to_f
+      when /\Agap\-/, /\Asc\-/
+        val.to_i
+      else
+        val
+      end
+  end
+
   # (private method)
   # In new BLAST XML (blastall >= 2.2.14), results of multiple queries
   # are stored in <Iteration>. This method splits iterations into
