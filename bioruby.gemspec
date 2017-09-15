@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.5.1.20160617"
+  s.version = "1.5.1.20170915"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -30,7 +30,6 @@ Gem::Specification.new do |s|
     "RELEASE_NOTES.rdoc",
     "Rakefile",
     "appveyor.yml",
-    "bin/bioruby",
     "bin/br_biofetch.rb",
     "bin/br_bioflat.rb",
     "bin/br_biogetseq.rb",
@@ -221,44 +220,6 @@ Gem::Specification.new do |s|
     "lib/bio/sequence/na.rb",
     "lib/bio/sequence/quality_score.rb",
     "lib/bio/sequence/sequence_masker.rb",
-    "lib/bio/shell.rb",
-    "lib/bio/shell/core.rb",
-    "lib/bio/shell/demo.rb",
-    "lib/bio/shell/interface.rb",
-    "lib/bio/shell/irb.rb",
-    "lib/bio/shell/object.rb",
-    "lib/bio/shell/plugin/blast.rb",
-    "lib/bio/shell/plugin/codon.rb",
-    "lib/bio/shell/plugin/das.rb",
-    "lib/bio/shell/plugin/emboss.rb",
-    "lib/bio/shell/plugin/entry.rb",
-    "lib/bio/shell/plugin/flatfile.rb",
-    "lib/bio/shell/plugin/midi.rb",
-    "lib/bio/shell/plugin/ncbirest.rb",
-    "lib/bio/shell/plugin/obda.rb",
-    "lib/bio/shell/plugin/psort.rb",
-    "lib/bio/shell/plugin/seq.rb",
-    "lib/bio/shell/plugin/togows.rb",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/bioruby_generator.rb",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/_classes.rhtml",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/_log.rhtml",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/_methods.rhtml",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/_modules.rhtml",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/_variables.rhtml",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby-bg.gif",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby-gem.png",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby-link.gif",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby.css",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby.rhtml",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby_controller.rb",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby_helper.rb",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/commands.rhtml",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/history.rhtml",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/index.rhtml",
-    "lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/spinner.gif",
-    "lib/bio/shell/script.rb",
-    "lib/bio/shell/setup.rb",
-    "lib/bio/shell/web.rb",
     "lib/bio/tree.rb",
     "lib/bio/tree/output.rb",
     "lib/bio/util/color_scheme.rb",
@@ -581,7 +542,6 @@ Gem::Specification.new do |s|
     "test/unit/bio/sequence/test_na.rb",
     "test/unit/bio/sequence/test_quality_score.rb",
     "test/unit/bio/sequence/test_sequence_masker.rb",
-    "test/unit/bio/shell/plugin/test_seq.rb",
     "test/unit/bio/test_alignment.rb",
     "test/unit/bio/test_command.rb",
     "test/unit/bio/test_db.rb",
@@ -591,7 +551,6 @@ Gem::Specification.new do |s|
     "test/unit/bio/test_pathway.rb",
     "test/unit/bio/test_reference.rb",
     "test/unit/bio/test_sequence.rb",
-    "test/unit/bio/test_shell.rb",
     "test/unit/bio/test_tree.rb",
     "test/unit/bio/util/restriction_enzyme/analysis/test_calculated_cuts.rb",
     "test/unit/bio/util/restriction_enzyme/analysis/test_cut_ranges.rb",
@@ -638,7 +597,6 @@ Gem::Specification.new do |s|
 
   s.bindir = "bin"
   s.executables = [
-    "bioruby",
     "br_biofetch.rb",
     "br_bioflat.rb",
     "br_biogetseq.rb",
