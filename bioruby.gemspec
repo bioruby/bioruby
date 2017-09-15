@@ -30,10 +30,6 @@ Gem::Specification.new do |s|
     "RELEASE_NOTES.rdoc",
     "Rakefile",
     "appveyor.yml",
-    "bin/br_biofetch.rb",
-    "bin/br_bioflat.rb",
-    "bin/br_biogetseq.rb",
-    "bin/br_pmfetch.rb",
     "bioruby.gemspec",
     "bioruby.gemspec.erb",
     "doc/ChangeLog-1.4.3",
@@ -594,13 +590,4 @@ Gem::Specification.new do |s|
   s.rdoc_options << '--line-numbers' << '--inline-source'
 
   s.require_path = 'lib'
-
-  s.bindir = "bin"
-  s.executables = [
-    "br_biofetch.rb",
-    "br_bioflat.rb",
-    "br_biogetseq.rb",
-    "br_pmfetch.rb"
-  ]
-  s.default_executable = "bioruby"
 end

@@ -48,7 +48,7 @@ Gem::Specification.new do |s|
           "bioruby.gemspec", "setup.rb",
           "extconf.rb", "LEGAL",
           "COPYING", "COPYING.ja", "GPL", "LGPL"
-        ] + Dir.glob("{bin,doc,etc,gemfiles,lib,sample,test}/**/*").delete_if do |item|
+        ] + Dir.glob("{doc,etc,gemfiles,lib,sample,test}/**/*").delete_if do |item|
               case item
               when /(\A|\/)CVS(\z|\/)/, /(\A|\/)rdoc(\z|\/)/, /\~\z/
                 true
@@ -90,23 +90,4 @@ Gem::Specification.new do |s|
   s.rdoc_options << '--line-numbers' << '--inline-source'
 
   s.require_path = 'lib'
-
-  s.bindir = "bin"
-  s.executables = [
-    <%= ###### Below is executed in ERB environment ######
-        # Files in bin/ directory are selected.
-        exec_files = files.find_all { |item| /\Abin\// =~ item }
-        # Non-executable files are removed from the list.
-        exec_files.delete_if { |item| !File.executable?(item) }
-        # strip "bin/"
-        exec_files.collect! { |item| item.sub(/\Abin\//, '') }
-        # Fail safe settings
-        if exec_files.empty? then
-            exec_files = [ "bioruby", "br_biofetch.rb", "br_biogetseq.rb", "br_bioflat.rb", "br_pmfetch.rb" ]
-        end
-        exec_files.sort.collect { |x| x.dump }.join(",\n    ")
-        ###### Above is executed in ERB environment ######
-    %>
-  ]
-  s.default_executable = "bioruby"
 end
