@@ -479,7 +479,7 @@ module Bio
     include TemplateTestBlastReportHsp
   end
 
-  if defined? XMLParser then
+  if Bio::Blast::Report.private_method_defined? :xmlparser_parse then
 
   class TestBlastReportXMLParser < Test::Unit::TestCase
     include TemplateTestBlastReport
@@ -497,7 +497,7 @@ module Bio
     include TemplateTestBlastReportHsp
   end
 
-  end #if defined? XMLParser
+  end #if
 
   class TestBlastReportDefault < Test::Unit::TestCase
     include TemplateTestBlastReport
@@ -1294,7 +1294,7 @@ module Bio
   end
 
   # Tests for XMLParser version
-  if defined? XMLParser then
+  if Bio::Blast::Report.private_method_defined? :xmlparser_parse then
 
   class TestBlastReportMultiXMLParser < Test::Unit::TestCase
     include TemplateTestBlastReportMulti
@@ -1312,6 +1312,6 @@ module Bio
     include TemplateTestBlastReportHspMulti
   end
 
-  end #if defined? XMLParser
+  end #if
 
 end # module Bio
