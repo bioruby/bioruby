@@ -15,7 +15,7 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
 
 # libraries needed for the tests
 require 'test/unit'
-require 'bio/util/restriction_enzyme.rb'
+require 'bio/util/restriction_enzyme'
 
 module Bio; module TestRestrictionEnzyme #:nodoc:
 

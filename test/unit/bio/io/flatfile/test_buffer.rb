@@ -184,7 +184,13 @@ module Bio::TestFlatFileBufferedInputStream
         assert_equal(TestDataFastaFormat01, obj.path)
         obj2 = obj
       end
-      assert_raise(IOError) { obj2.close }
+      # Since Ruby 2.3.0, calling IO#close to closed IO object is allowed
+      # without error.
+      if RUBY_VERSION >= "2.3.0"
+        assert_nothing_raised { obj2.close }
+      else
+        assert_raise(IOError) { obj2.close }
+      end
     end
   end #class TestBufferedInputStreamClassMethod
 
@@ -220,6 +226,7 @@ module Bio::TestFlatFileBufferedInputStream
     def test_pos=()
       str = @obj.gets
       assert_equal(0, @obj.pos = 0)
+      assert_equal(str, @obj.gets)
     end
       
     def test_eof_false_first

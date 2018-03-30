@@ -1,41 +1,24 @@
 #
-# = bio/db/embl/swissprot.rb - SwissProt database class
+# = bio/db/embl/swissprot.rb - (deprecated) SwissProt database class
 # 
-# Copyright::   Copyright (C) 2001, 2002 Toshiaki Katayama <k@bioruby.org>
+# Copyright::   Copyright (C) 2013 BioRuby Project
 # License::     The Ruby License
 #
-#  $Id: swissprot.rb,v 1.7 2007/04/05 23:35:40 trevor Exp $
-#
 
-require 'bio/db/embl/sptr'
+warn "Bio::SwissProt is deprecated. Use Bio::UniProtKB."
 
 module Bio
 
-# == Description
-# 
-# Parser class for SwissProt database entry. See also Bio::SPTR class.
-# This class holds name space for SwissProt specific methods.
-#
-# SwissProt (before UniProtKB/SwissProt) specific methods are defined in 
-# this class. Shared methods for UniProtKB/SwissProt and TrEMBL classes 
-# are defined in Bio::SPTR class.
-#
-# == Examples
-#
-#   str = File.read("p53_human.swiss")
-#   obj = Bio::SwissProt.new(str)
-#   obj.entry_id #=> "P53_HUMAN"
-#
-# == Referencees
-#
-# * Swiss-Prot Protein knowledgebase
-#   http://au.expasy.org/sprot/
-#
-# * Swiss-Prot Protein Knowledgebase User Manual
-#   http://au.expasy.org/sprot/userman.html
-# 
+require 'bio/db/embl/uniprotkb' unless const_defined?(:UniProtKB)
+
+# Bio::SwissProt is deprecated. Use Bio::UniProtKB.
 class SwissProt < SPTR
-  # Nothing to do (SwissProt format is abstracted in SPTR)
+
+  # Bio::SwissProt is deprecated. Use Bio::UniProtKB.
+  def initialize(str)
+    warn "Bio::SwissProt is deprecated. Use Bio::UniProtKB."
+    super(str)
+  end
 end
 
 end

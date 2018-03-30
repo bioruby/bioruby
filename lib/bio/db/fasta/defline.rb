@@ -6,7 +6,6 @@
 #              Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: defline.rb,v 1.1.2.1 2008/06/20 13:22:32 ngoto Exp $
 # 
 # == Description
 # 
@@ -120,7 +119,7 @@ module Bio
   #      ["gi", "2147182"], ["pir", nil, "I51898"], ["gi", "544724"],
   #      ["gb", "AAB29504.1", nil], ["Cavia"]]
   #
-  # === Refereneces
+  # === References
   #
   # * Fasta format description (NCBI)
   #   http://www.ncbi.nlm.nih.gov/BLAST/fasta.shtml
@@ -292,7 +291,6 @@ module Bio
       while token = ary.shift
         if labels = self.class::NSIDs[token] then
           di = [ token ]
-          idtype = token
           labels.each do |x|
             token = ary.shift
             break unless token
@@ -391,7 +389,7 @@ module Bio
     # Shows words used in the defline. Returns an Array.
     def words(case_sensitive = nil, kill_regexp = self.class::KillRegexpArray,
               kwhash = self.class::KillWordsHash)
-      a = descriptions.join(' ').split(/[\.\,\;\:\(\)\[\]\{\}\<\>\"\'\`\~\/\|\?\!\&\@\#\s\x00-\x1f\x7f]+/)
+      a = descriptions.join(' ').split(/[\.\,\;\:\(\)\[\]\{\}\<\>\"\'\`\~\/\|\?\!\&\@\# \x00-\x1f\x7f]+/)
       a.collect! do |x|
         x.sub!(/\A[\$\*\-\+]+/, '')
         x.sub!(/[\$\*\-\=]+\z/, '')

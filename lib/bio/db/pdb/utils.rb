@@ -6,7 +6,6 @@
 #              Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: utils.rb,v 1.7 2007/04/05 23:35:41 trevor Exp $
 #
 # = Bio::PDB::Utils
 #
@@ -38,9 +37,12 @@
 #
 
 require 'matrix'
-require 'bio/db/pdb'
 
-module Bio; class PDB
+module Bio
+
+require 'bio/db/pdb' unless const_defined?(:PDB)
+
+class PDB
 
   # Utility methods for PDB data.
   # The methods in this mixin should be applicalbe to all PDB objects.
@@ -395,5 +397,6 @@ module Bio; class PDB
     end
   end #module HeterogenFinder
 
-end; end #module Bio; class PDB
+end #class PDB
+end #module Bio
 

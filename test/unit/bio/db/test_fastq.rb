@@ -795,7 +795,7 @@ _9_
       ERRORS = [ Bio::Fastq::Error::Long_qual.new ]
     end #class TestFastq_error_short_qual
 
-    class TestFastq_error_spaces < Test::Unit::TestCase
+    module TemplateTestFastq_error_spaces
       include TestFastq_error
 
       FILENAME = 'error_spaces.fastq'
@@ -821,22 +821,32 @@ _9_
           end
         end
       end
+    end #module TemplateTestFastq_error_spaces
+
+    class TestFastq_error_spaces < Test::Unit::TestCase
+      include TemplateTestFastq_error_spaces
     end #class TestFastq_error_spaces
 
-    class TestFastq_error_tabs < TestFastq_error_spaces
+    class TestFastq_error_tabs < Test::Unit::TestCase
+      include TemplateTestFastq_error_spaces
       FILENAME = 'error_tabs.fastq'
     end #class TestFastq_error_tabs
 
-    class TestFastq_error_trunc_at_plus < Test::Unit::TestCase
+    module TemplateTestFastq_error_trunc_at_plus
       include TestFastq_error
 
       FILENAME = 'error_trunc_at_plus.fastq'
       PRE_SKIP = 4
       POST_SKIP = 0
       ERRORS = [ Bio::Fastq::Error::No_qual.new ]
+    end #module TemplateTestFastq_error_trunc_at_plus
+
+    class TestFastq_error_trunc_at_plus < Test::Unit::TestCase
+      include TemplateTestFastq_error_trunc_at_plus
     end #class TestFastq_error_trunc_at_plus
 
-    class TestFastq_error_trunc_at_qual < TestFastq_error_trunc_at_plus
+    class TestFastq_error_trunc_at_qual < Test::Unit::TestCase
+      include TemplateTestFastq_error_trunc_at_plus
       FILENAME = 'error_trunc_at_qual.fastq'
     end #class TestFastq_error_trunc_at_qual
 

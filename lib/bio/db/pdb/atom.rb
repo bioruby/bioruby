@@ -6,7 +6,6 @@
 #              Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id: atom.rb,v 1.8 2007/04/05 23:35:41 trevor Exp $
 #
 # = Bio::PDB::Coordinate
 #
@@ -19,9 +18,11 @@
 #
 
 require 'matrix'
-require 'bio/db/pdb'
 
 module Bio
+
+  require 'bio/db/pdb' unless const_defined?(:PDB)
+
   class PDB
 
     # Bio::PDB::Coordinate is a class to store a 3D coordinate.

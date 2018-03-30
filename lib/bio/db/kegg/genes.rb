@@ -71,10 +71,10 @@
 
 module Bio
 
-  autoload :KEGGDB,    'bio/db'
-  autoload :Locations, 'bio/location'
-  autoload :Sequence,  'bio/sequence'
+  autoload :Locations, 'bio/location' unless const_defined?(:Locations)
+  autoload :Sequence,  'bio/sequence' unless const_defined?(:Sequence)
 
+  require 'bio/db'
   require 'bio/db/kegg/common'
 
 class KEGG

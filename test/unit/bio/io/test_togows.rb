@@ -5,7 +5,6 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     The Ruby License
 #
-#  $Id:$
 #
 
 # loading helper routine for testing bioruby
@@ -59,7 +58,9 @@ module Bio
       a_and_q = {
         '/ab/cde/fghi' => [ 'ab', 'cde', 'fghi' ],
         '/a+b/a%2Bb/a%2Fb/a%26b/a%3Bb/a%2Cb/a%3Bb' =>
-        [ 'a b', 'a+b', 'a/b', 'a&b', 'a;b', 'a,b', 'a;b' ]
+        [ 'a b', 'a+b', 'a/b', 'a&b', 'a;b', 'a,b', 'a;b' ],
+        '/123,456/789%2C012,&345' =>
+        [ '123', :",", '456', '789,012', :",", :"&", '345' ]
       }
       count = 0
       a_and_q.each do |k,v|

@@ -8,7 +8,6 @@
 #              Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-# $Id: fastacmd.rb,v 1.16 2007/04/05 23:35:41 trevor Exp $
 #
 
 require 'bio/db/fasta'
@@ -146,18 +145,3 @@ end # class Fastacmd
 end # class Blast
 end # module Bio
 
-if $0 == __FILE__
-  fastacmd = Bio::Blast::Fastacmd.new("/path_to_my_db/db_name")
-  seq = fastacmd.get_by_id('id_of_entry1')
-  puts seq.class
-  puts seq
-  
-  seqs = fastacmd.fetch(['id_of_entry1','id_of_entry2'])
-  seqs.each do |seq|
-    puts seq
-  end
-
-  fastacmd.each_entry do |fasta|
-    puts fasta.seq.size.to_s + "\t" + fasta.definition
-  end
-end

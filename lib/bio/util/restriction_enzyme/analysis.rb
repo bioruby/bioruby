@@ -5,16 +5,19 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id: analysis.rb,v 1.20 2007/07/16 19:28:48 k Exp $
-#
-
-require 'bio/util/restriction_enzyme'
-require 'bio/util/restriction_enzyme/analysis_basic'
 
 module Bio
+
+require 'bio/util/restriction_enzyme' unless const_defined?(:RestrictionEnzyme)
+
 class RestrictionEnzyme
 
 class Analysis
+
+  #--
+  # require "analysis_basic.rb" here to avoid cyclic require
+  #++
+  require 'bio/util/restriction_enzyme/analysis_basic'
 
   # See cut instance method
   def self.cut( sequence, *args )

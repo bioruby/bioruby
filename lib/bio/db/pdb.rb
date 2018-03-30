@@ -5,14 +5,11 @@
 # 		GOTO Naohisa <ngoto@gen-info.osaka-u.ac.jp>
 # License::	The Ruby License
 #
-# $Id: pdb.rb,v 1.8 2007/04/05 23:35:40 trevor Exp $
 #
-
-require 'bio/db'
 
 # definition of the PDB class
 module Bio
-  class PDB #< DB
+  class PDB
 
     autoload :ChemicalComponent, 'bio/db/pdb/chemicalcomponent'
 

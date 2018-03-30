@@ -1,8 +1,8 @@
-= BioRuby 1.5.0 RELEASE NOTES
+= BioRuby 1.5.1 RELEASE NOTES
 
-A lot of changes have been made to the BioRuby 1.5.0 after the version 1.4.2
+A lot of changes have been made to the BioRuby 1.5.1 after the version 1.5.0
 is released. This document describes important and/or incompatible changes
-since the BioRuby 1.4.2 release.
+since the BioRuby 1.5.0 release.
 
 For known problems, see KNOWN_ISSUES.rdoc.
 
@@ -28,18 +28,28 @@ For known problems, see KNOWN_ISSUES.rdoc.
 * Fixed: (...)
 * Fixed: (...)
 
-== Incompatible changes and removed features
+== Incompatible changes
 
-=== Bio::FlatFile use binmode (binary mode) when opening a file
+=== Bio::Taxonomy is removed and merged to Bio::PhyloXML::Taxonomy
 
-In Bio::FlatFile.open and Bio::FlatFile.auto, binmode (binary mode) is used
-by default when opening a file, unless text mode is explicitly specified
-with open mode string or with options. Due to the change, files using CR+LF
-line separator might not be read correctly.
+Bio::Taxonomy in lib/bio/db/phyloxml/phyloxml_elements.rb was written for
+PhyloXML in 2009. It was intended to become general taxonomy data class in
+BioRuby in these days. However, no efforts have been made to improve the
+Bio::Taxonomy class, and it still remains to be a PhyloXML specific class.
+Because Bio::PhyloXML is split as a different Gem (Biogem) package, we now
+decide to remove Bio::Taxonomy and merge it to Bio::PhyloXML::Taxonomy.
 
-=== BioRuby development
+In the codes using Bio::Taxonomy directly, changing Bio::Taxonomy to
+Bio::PhyloXML::Taxonomy or adding the following monkey patch may be needed.
 
-* rdoc.zsh is removed because it have not been used for a long time.
+   module Bio
+      unless defined? Taxonomy
+         Taxonomy = Bio::PhyloXML::Taxonomy
+      end
+   end
+
+In the future, Bio::Taxonomy might be added as general taxonomy data class.
+The new Bio::Taxonomy might be incompatible with the current Bio::Taxonmy.
 
 === (tbd)
 

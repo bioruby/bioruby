@@ -5,7 +5,6 @@
 #               Mitsuteru C. Nakao <mn@kazusa.or.jp>
 # License::     The Ruby License
 #
-#  $Id: report.rb,v 1.9 2007/07/18 11:11:57 nakao Exp $
 #
 # == Report classes for the iprscan program.
 # 
@@ -296,7 +295,7 @@ module Bio
       #   end
       #
       def to_hash
-        unless @ipr_ids
+        unless (defined? @ipr_ids) && @ipr_ids
           @ipr_ids = {} 
           @matches.each_with_index do |match, i|
             @ipr_ids[match.ipr_id] ||= []

@@ -4,16 +4,13 @@
 # Copyright::  Copyright (C) 2003 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
-#
 
-require 'bio/appl/blast'
-require 'bio/appl/blast/xmlparser'
-require 'bio/appl/blast/rexml'
-require 'bio/appl/blast/format8'
 require 'bio/io/flatfile'
 
 module Bio
+
+require 'bio/appl/blast' unless const_defined?(:Blast)
+
 class Blast
 
 # = Bio::Blast::Report
@@ -42,6 +39,13 @@ class Blast
 #   * http://www.ncbi.nlm.nih.gov/dtd/NCBI_Entity.mod
 # 
 class Report
+
+  #--
+  # require lines moved here to avoid circular require
+  #++
+  require 'bio/appl/blast/xmlparser'
+  require 'bio/appl/blast/rexml'
+  require 'bio/appl/blast/format8'
 
   # for Bio::FlatFile support (only for XML data)
   DELIMITER = RS = "</BlastOutput>\n"
@@ -514,7 +518,7 @@ class Report
     # get an entry as a Bio::Blast::Report object
     def get_parsed_entry
       if @parsed_entries.empty? then
-        ent = get_entry
+        get_entry
       else
         self.parsed_entry = @parsed_entries.shift
         self.entry = nil

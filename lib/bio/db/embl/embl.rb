@@ -196,53 +196,128 @@ class EMBL < EMBLDB
 
 
 
+  #--
   ##
   # DE Line; description (>=1)
   #
+  #++
 
 
+  #--
   ##
   # KW Line; keyword (>=1)
   # KW   [Keyword;]+
   #
   # Bio::EMBLDB#kw  -> Array
   #            #keywords  -> Array
+  #++
 
 
+  #--
   ##
   # OS Line; organism species (>=1)
   # OS   Genus species (name)
   # "OS   Trifolium repens (white clover)"
   #
   # Bio::EMBLDB#os  -> Array
+  #++
+
+  # returns contents in the OS line.
+  # * Bio::EMBL#os  -> Array of <OS Hash>
+  # where <OS Hash> is:
+  #  [{'name'=>'Human', 'os'=>'Homo sapiens'}, 
+  #   {'name'=>'Rat', 'os'=>'Rattus norveticus'}]
+  # * Bio::EMBL#os[0]['name'] => "Human"
+  # * Bio::EMBL#os[0] => {'name'=>"Human", 'os'=>'Homo sapiens'}
+  #--
+  # * Bio::EMBL#os(0) => "Homo sapiens (Human)"
+  #++
+  #
+  # OS Line; organism species (>=1)
+  #   OS   Trifolium repens (white clover)
+  #
+  # Typically, OS line shows "Genus species (name)" style:
+  #   OS   Genus species (name)
+  #
+  # Other examples:
+  #   OS   uncultured bacterium
+  #   OS   xxxxxx metagenome
+  #   OS   Cloning vector xxxxxxxx
+  # Complicated examples:
+  #   OS   Poeciliopsis gracilis (Poeciliopsis gracilis (Heckel, 1848))
+  #   OS   Etmopterus sp. B Last & Stevens, 1994 (bristled lanternshark)
+  #   OS   Galaxias sp. D (Allibone et al., 1996) (Pool Burn galaxias)
+  #   OS   Sicydiinae sp. 'Keith et al., 2010'
+  #   OS   Acanthopagrus sp. 'Jean & Lee, 2008'
+  #   OS   Gaussia princeps (T. Scott, 1894)
+  #   OS   Rana sp. 8 Hillis & Wilcox, 2005
+  #   OS   Contracaecum rudolphii C D'Amelio et al., 2007
+  #   OS   Partula sp. 'Mt. Marau, Tahiti'
+  #   OS   Leptocephalus sp. 'type II larva' (Smith, 1989)
+  #   OS   Tayloria grandis (D.G.Long) Goffinet & A.J.Shaw, 2002
+  #   OS   Non-A, non-B hepatitis virus
+  #   OS   Canidae (dog, coyote, wolf, fox)
+  #   OS   Salmonella enterica subsp. enterica serovar 4,[5],12:i:-
+  #   OS   Yersinia enterocolitica (type O:5,27)
+  #   OS   Influenza A virus (A/green-winged teal/OH/72/99(H6N1,4))
+  #   OS   Influenza A virus (A/Beijing/352/1989,(highgrowth reassortant NIB26)(H3N2))
+  #   OS   Recombinant Hepatitis C virus H77(5'UTR-NS2)/JFH1_V787A,Q1247L
+  #
+  def os(num = nil)
+    unless @data['OS']
+      os = Array.new
+      tmp = fetch('OS')
+      if /([A-Z][a-z]* *[\w \:\'\+\-]+\w) *\(([\w ]+)\)\s*\z/ =~ tmp
+        org = $1
+        name = $2
+        os.push({'name' => name, 'os' => org})
+      else
+        os.push({'name' => nil, 'os' => tmp})
+      end
+      @data['OS'] = os
+    end
+    if num
+      # EX. "Trifolium repens (white clover)"
+      "#{@data['OS'][num]['os']} {#data['OS'][num]['name']"
+    end
+    @data['OS']
+  end
 
 
+  #--
   ##
   # OC Line; organism classification (>=1)
   #
   # Bio::EMBLDB#oc  -> Array
+  #++
 
 
+  #--
   ##
   # OG Line; organella (0 or 1/entry)
   # ["Mitochondrion", "Chloroplast","Kinetoplast", "Cyanelle", "Plastid"]
   #  or a plasmid name (e.g. "Plasmid pBR322").  
   #
   # Bio::EMBLDB#og  -> String
+  #++
 
 
+  #--
   ##
   # R Lines
   # RN RC RP RX RA RT RL
   #
   # Bio::EMBLDB#ref
+  #++
   
   
+  #--
   ##
   # DR Line; defabases cross-regerence (>=0)
   # "DR  database_identifier; primary_identifier; secondary_identifier."
   #
   # Bio::EMBLDB#dr
+  #++
 
 
   # returns feature table header (String) in the feature header (FH) line.
@@ -266,7 +341,7 @@ class EMBL < EMBLDB
       @orig['FT'].each_line do |line|
         next if line =~ /^FEATURES/
 
-        head = line[0,20].strip  # feature key (source, CDS, ...)
+        #head = line[0,20].strip  # feature key (source, CDS, ...)
         body = line[20,60].chomp # feature value (position, /qualifier=)
         if line =~ /^FT {3}(\S+)/
           ary.push([ $1, body ]) # [ feature, position, /q="data", ... ]
@@ -417,7 +492,7 @@ class EMBL < EMBLDB
   def parse_release_version(str)
     return [ nil, nil ] unless str
     a = str.split(/[\(\,\)]/)
-    dstr = a.shift
+    a.shift #date string e.g. "14-OCT-2006"
     rel = nil
     ver = nil
     a.each do |x|

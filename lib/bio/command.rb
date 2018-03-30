@@ -6,7 +6,6 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-#  $Id:$
 #
 
 require 'open3'
@@ -14,6 +13,7 @@ require 'uri'
 require 'open-uri'
 require 'cgi'
 require 'net/http'
+require 'net/https'
 require 'tmpdir'
 require 'fileutils'
 
@@ -232,19 +232,37 @@ module Command
   # * (required) _cmd_: Array containing String objects
   # * (optional) _options_: Hash
   # *Returns*:: (undefined)
-  def call_command_popen(cmd, options = {})
+  def call_command_popen(cmd, options = {}, &block)
     if RUBY_VERSION >= "1.9.0" then
-      # For Ruby 1.9 or later, using command line array with options.
-      dir = options[:chdir]
-      cmd = safe_command_line_array(cmd)
-      if dir then
-        cmd = cmd + [ { :chdir => dir } ]
+      if RUBY_ENGINE == 'jruby' then
+        _call_command_popen_jruby19(cmd, options, &block)
+      else
+        _call_command_popen_ruby19(cmd, options, &block)
       end
-      r = IO.popen(cmd, "r+") do |io|
-        yield io
-      end
-      return r
+    else
+      _call_command_popen_ruby18(cmd, options, &block)
     end
+  end
+
+  # This method is internally called from the call_command method.
+  # In normal case, use call_command, and do not call this method directly.
+  #
+  # Executes the program via IO.popen.
+  # A block must be given. An IO object is passed to the block.
+  #
+  # See the document of call_command for available options.
+  #
+  # The method is written for Ruby 1.8.
+  #
+  # In Ruby 1.8, although shell unsafe characters are escaped,
+  # if inescapable characters exists, it raises RuntimeError.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _cmd_: Array containing String objects
+  # * (optional) _options_: Hash
+  # *Returns*:: (undefined)
+  def _call_command_popen_ruby18(cmd, options = {})
     # For Ruby 1.8, using command line string.
     str = make_command_line(cmd)
     # processing options
@@ -267,6 +285,66 @@ module Command
       yield io
     end
   end
+  private :_call_command_popen_ruby18
+
+  # This method is internally called from the call_command method.
+  # In normal case, use call_command, and do not call this method directly.
+  #
+  # Executes the program via IO.popen.
+  # A block must be given. An IO object is passed to the block.
+  #
+  # See the document of call_command for available options.
+  #
+  # The method can be run only on Ruby (MRI) 1.9 or later versions.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _cmd_: Array containing String objects
+  # * (optional) _options_: Hash
+  # *Returns*:: (undefined)
+  def _call_command_popen_ruby19(cmd, options = {})
+    # For Ruby 1.9 or later, using command line array with options.
+    dir = options[:chdir]
+    cmd = safe_command_line_array(cmd)
+    if dir then
+      cmd = cmd + [ { :chdir => dir } ]
+    end
+    r = IO.popen(cmd, "r+") do |io|
+      yield io
+    end
+    return r
+  end
+  private :_call_command_popen_ruby19
+
+  # This method is internally called from the call_command method.
+  # In normal case, use call_command, and do not call this method directly.
+  #
+  # Executes the program via IO.popen.
+  # A block must be given. An IO object is passed to the block.
+  #
+  # See the document of call_command for available options.
+  #
+  # The method is written for the workaround of the JRuby bugs:
+  # * {JRUBY-6195}[http://jira.codehaus.org/browse/JRUBY-6195] Process.spawn
+  #   (and related methods) ignore option hash
+  # * {JRUBY-6818}[http://jira.codehaus.org/browse/JRUBY-6818] Kernel.exec,
+  #   Process.spawn (and IO.popen etc.) raise error when program is an array
+  #   containing two strings
+  # This method may be removed after the bugs are resolved.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _cmd_: Array containing String objects
+  # * (optional) _options_: Hash
+  # *Returns*:: (undefined)
+  def _call_command_popen_jruby19(cmd, options = {}, &block)
+    if !options.empty? or cmd.size == 1 then
+      _call_command_popen_ruby18(cmd, options, &block)
+    else
+      _call_command_popen_ruby19(cmd, options, &block)
+    end
+  end
+  private :_call_command_popen_jruby19
 
   # This method is internally called from the call_command method.
   # In normal case, use call_command, and do not call this method directly.
@@ -547,33 +625,37 @@ module Command
   # BioRuby library internal use only.
   class Tmpdir
 
-    # Returns finalizer object for Tmpdir class.
-    # Internal use only. Users should not call this method directly.
-    # 
-    # Acknowledgement: The essense of the code is taken from tempfile.rb
-    # in Ruby 1.8.7.
+    # Internal use only. Users should not use this class directly.
     #
-    # ---
-    # *Arguments*:
-    # * (required) _data_: Array containing internal data
-    # *Returns*:: Proc object
-    def self.callback(data)
-      pid = $$
-      lambda {
-        path, = *data
-        if pid == $$
-          $stderr.print "removing ", path, " ..." if $DEBUG
-          if path and !path.empty? and
-              File.directory?(path) and
-              !File.symlink?(path) then
-            Bio::Command.remove_entry_secure(path)
-            $stderr.print "done\n" if $DEBUG
-          else
-            $stderr.print "skipped\n" if $DEBUG
-          end
+    # Bio::Command::Tmpdir::Remover is a class to remove temporary
+    # directory.
+    #
+    # Acknowledgement: The essense of the code is taken from tempfile.rb
+    # in Ruby trunk (svn 34413) and in Ruby 1.8.7.
+    class Remover
+      # Internal use only. Users should not call this method.
+      def initialize(data)
+        @pid = $$
+        @data = data
+      end
+
+      # Internal use only. Users should not call this method.
+      def call(*args)
+        return if @pid != $$
+
+        path, = *@data
+
+        STDERR.print "removing ", path, "..." if $DEBUG
+        if path and !path.empty? and
+            File.directory?(path) and
+            !File.symlink?(path) then
+          Bio::Command.remove_entry_secure(path)
+          $stderr.print "done\n" if $DEBUG
+        else
+          $stderr.print "skipped\n" if $DEBUG
         end
-      }
-    end
+      end
+    end #class Remover
 
     # Creates a new Tmpdir object.
     # The arguments are the same as Bio::Command.mktmpdir.
@@ -585,7 +667,7 @@ module Command
     # *Returns*:: Tmpdir object
     def initialize(prefix_suffix = nil, tmpdir = nil)
       @data = []
-      @clean_proc = self.class.callback(@data)
+      @clean_proc = Remover.new(@data)
       ObjectSpace.define_finalizer(self, @clean_proc)
       @data.push(@path = Bio::Command.mktmpdir(prefix_suffix, tmpdir).freeze)
     end
@@ -623,6 +705,43 @@ module Command
   # *Returns*:: String
   def read_uri(uri)
     OpenURI.open_uri(uri).read
+  end
+
+  # Same as:
+  #   Net::HTTP.start(uri.address, uri.port)
+  # and
+  # it uses proxy if an environment variable (same as OpenURI.open_uri)
+  # is set.
+  # It supports https.
+  #
+  # Note: This method ignores uri.path.
+  # It only uses uri.address and uri.port.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _uri_: URI object or String containing URI
+  # *Returns*:: (same as Net::HTTP::start except for proxy and https support)
+  def start_http_uri(uri, &block)
+    unless uri.is_a?(URI)
+      uri = URI.parse(uri)
+    end
+
+    # Note: URI#find_proxy is an unofficial method defined in open-uri.rb.
+    # If the spec of open-uri.rb would be changed, we should change below.
+    if proxyuri = uri.find_proxy then
+      raise 'Non-HTTP proxy' if proxyuri.class != URI::HTTP
+      klass = Net::HTTP.Proxy(proxyuri.host, proxyuri.port)
+    else
+      klass = Net::HTTP
+    end
+
+    http = klass.new(uri.host, uri.port)
+    case uri.scheme
+    when 'https'
+      http.use_ssl = true
+    end
+
+    http.start(&block)
   end
 
   # Same as:
@@ -732,7 +851,7 @@ module Command
     }
     hash.update(header)
 
-    start_http(uri.host, uri.port) do |http|
+    start_http_uri(uri) do |http|
       http.post(uri.path, data, hash)
     end
   end
@@ -774,7 +893,7 @@ module Command
         end.join('&')
       end
     when String
-      data = URI.escape(params.strip)
+      raise TypeError, 'Bio::Command.make_cgi_params no longer accepts a single String as a form'
     end
     return data
   end
@@ -798,6 +917,67 @@ module Command
       result << [key, value].map {|x| CGI.escape(x.to_s) }.join('=')
     end
     return result
+  end
+
+  # Same as:
+  #  http = Net::HTTP.new(...); http.post(path, data, header)
+  # and 
+  # it uses proxy if an environment variable (same as OpenURI.open_uri)
+  # is set.
+  # In addition, +header+ can be set.
+  # (Default Content-Type is application/octet-stream.
+  # Content-Length is automatically set by default.)
+  # +uri+ must be a URI object, +params+ must be a hash, and
+  # +header+ must be a hash.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _http_: Net::HTTP object or compatible object
+  # * (required) _path_: String
+  # * (required) _data_: String containing data
+  # * (optional) _header_: Hash containing header strings
+  # *Returns*:: (same as Net::HTTP::post)
+  def http_post(http, path, data, header = {})
+    hash = {
+      'Content-Type'   => 'application/octet-stream',
+      'Content-Length' => data.length.to_s
+    }
+    hash.update(header)
+
+    http.post(path, data, hash)
+  end
+
+  # Same as:
+  # Net::HTTP.post(uri, params)
+  # and 
+  # it uses proxy if an environment variable (same as OpenURI.open_uri)
+  # is set.
+  # In addition, +header+ can be set.
+  # (Default Content-Type is application/octet-stream.
+  # Content-Length is automatically set by default.)
+  # +uri+ must be a URI object, +data+ must be a String, and
+  # +header+ must be a hash.
+  #
+  # ---
+  # *Arguments*:
+  # * (required) _uri_: URI object or String
+  # * (optional) _data_: String containing data
+  # * (optional) _header_: Hash containing header strings
+  # *Returns*:: (same as Net::HTTP::post)
+  def post(uri, data, header = {})
+    unless uri.is_a?(URI)
+      uri = URI.parse(uri)
+    end
+
+    hash = {
+      'Content-Type'   => 'application/octet-stream',
+      'Content-Length' => data.length.to_s
+    }
+    hash.update(header)
+
+    start_http_uri(uri) do |http|
+      http.post(uri.path, data, hash)
+    end
   end
 
 end # module Command

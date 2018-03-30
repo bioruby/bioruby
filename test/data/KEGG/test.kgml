@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE pathway SYSTEM "http://www.genome.jp/kegg/xml/KGML_v0.7.1_.dtd">
+<!-- mock data for testing lower-level parser functionality -->
+<pathway name="path:xxx09876" org="xxx" number="09876"
+         title="This is test title"
+         image="http://example.com/pathway/ec/09876.png"
+         link="http://example.com/show_pathway?xxx09876">
+    <entry id="1234" name="cpd:C99999" type="compound"
+        link="http://example.com/dbget-bin/www_bget?C99999">
+        <graphics name="C99999" fgcolor="#E0E0E0" bgcolor="#D0E0F0"
+             type="circle" x="1314" y="1008" width="14" height="28"/>
+    </entry>
+    <entry id="1" name="ec:1.1.1.1" type="enzyme" reaction="rn:R99999"
+        link="http://example.com/dbget-bin/www_bget?1.1.1.1">
+        <graphics name="1.1.1.1" fgcolor="#99CCFF" bgcolor="#FFFFFF"
+             type="line" coords="314,159,265,358,979,323"/>
+        <graphics name="1.1.1.1" fgcolor="#FF99CC" bgcolor="#CC99FF"
+             type="line" coords="271,828,182,845"/>
+    </entry>
+    <entry id="567" name="undefined" type="group">
+        <graphics fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="1242" y="1134" width="456" height="678"/>
+        <component id="34"/>
+        <component id="56"/>
+        <component id="78"/>
+        <component id="90"/>
+    </entry>
+    <relation entry1="109" entry2="87" type="ECrel">
+        <subtype name="compound" value="100"/>
+    </relation>
+    <reaction id="3" name="rn:R99999 rn:R99998" type="reversible">
+        <substrate id="3330" name="cpd:C99990"/>
+        <substrate id="3331" name="cpd:C99991"/>
+        <product id="3332" name="cpd:C99902"/>
+        <product id="3333" name="cpd:C99903"/>
+    </reaction>
+</pathway>

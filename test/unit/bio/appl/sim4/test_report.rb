@@ -5,7 +5,6 @@
 #              Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id:$
 #
 
 # loading helper routine for testing bioruby
@@ -56,7 +55,7 @@ module Bio
   end #class TestDataForSim4Report
 
 
-  class TestSim4Report < Test::Unit::TestCase
+  module TemplateTestSim4Report
 
     def setup
       @sim4 = TestDataForSim4Report.report1
@@ -126,9 +125,9 @@ module Bio
       assert_equal(94, @sim4.query_len)
     end
 
-  end #class TestSim4Report
+  end #module TemplateTestSim4Report
 
-  class TestSim4ReportHit < Test::Unit::TestCase
+  module TemplateTestSim4ReportHit
 
     def setup
       @hit = TestDataForSim4Report.report1.hits.first
@@ -258,9 +257,9 @@ module Bio
     def test_target_len
       assert_equal(599, @hit.target_len)
     end
-  end #class TestSim4ReportHit
+  end #module TemplateTestSim4ReportHit
 
-  class TestSim4ReportSegmentPair_exon < Test::Unit::TestCase
+  module TemplateTestSim4ReportSegmentPair_exon
     def setup
       @exon = TestDataForSim4Report.report1.hits[0].exons[1]
     end
@@ -329,9 +328,9 @@ module Bio
       assert_equal("TCTACACATCACTAGCCTGGGTGGGCGGAA GAGCAGCTCGCCACTTCAAGCTAA",
                    @exon.seq2.seq)
     end
-  end #class TestSim4ReportSegmentPair_exon
+  end #module TemplateTestSim4ReportSegmentPair_exon
 
-  class TestSim4ReportSegmentPair_intron < Test::Unit::TestCase
+  module TemplateTestSim4ReportSegmentPair_intron
     def setup
       @intron = TestDataForSim4Report.report1.hits[0].introns[0]
     end
@@ -392,10 +391,28 @@ module Bio
       assert_equal(403, @intron.seq2.to)
       assert_equal("CTG...TAC", @intron.seq2.seq)
     end
-  end #class TestSim4ReportSegmentPair_intron
+  end #module TemplateTestSim4ReportSegmentPair_intron
 
 
-  class TestSim4Report2 < TestSim4Report
+  class TestSim4Report < Test::Unit::TestCase
+    include TemplateTestSim4Report
+  end
+
+  class TestSim4ReportHit < Test::Unit::TestCase
+    include TemplateTestSim4ReportHit
+  end
+
+  class TestSim4ReportSegmentPair_exon < Test::Unit::TestCase
+    include TemplateTestSim4ReportSegmentPair_exon
+  end
+
+  class TestSim4ReportSegmentPair_intron < Test::Unit::TestCase
+    include TemplateTestSim4ReportSegmentPair_intron
+  end
+
+  class TestSim4Report2 < Test::Unit::TestCase
+    include TemplateTestSim4Report
+
     def setup
       @sim4 = TestDataForSim4Report.report2
     end
@@ -410,7 +427,9 @@ module Bio
     private :exec_test_seq1_len
   end #class TestSim4Report2
 
-  class TestSim4ReportHit2 < TestSim4ReportHit
+  class TestSim4ReportHit2 < Test::Unit::TestCase
+    include TemplateTestSim4ReportHit
+
     def setup
       @hit = TestDataForSim4Report.report2.hits.first
     end
@@ -441,7 +460,9 @@ module Bio
   end #class TestSim4ReportHit2
 
 
-  class TestSim4ReportSegmentPair2_exon < TestSim4ReportSegmentPair_exon
+  class TestSim4ReportSegmentPair2_exon < Test::Unit::TestCase
+    include TemplateTestSim4ReportSegmentPair_exon
+
     def setup
       @exon = TestDataForSim4Report.report2.hits[0].exons[1]
     end
@@ -463,14 +484,17 @@ module Bio
   end #class TestSim4ReportSegmentPair2_exon
 
 
-  class TestSim4ReportSegmentPair2_intron < TestSim4ReportSegmentPair_intron
+  class TestSim4ReportSegmentPair2_intron < Test::Unit::TestCase
+    include TemplateTestSim4ReportSegmentPair_intron
+
     def setup
       @intron = TestDataForSim4Report.report2.hits[0].introns[0]
     end
   end #class TestSim4ReportSegmentPair2_intron
 
 
-  class TestSim4Report4 < TestSim4Report
+  class TestSim4Report4 < Test::Unit::TestCase
+    include TemplateTestSim4Report
 
     def setup
       @sim4 = TestDataForSim4Report.report4
@@ -504,7 +528,8 @@ module Bio
 
   end #class TestSim4Report4
 
-  class TestSim4ReportHit4 < TestSim4ReportHit
+  class TestSim4ReportHit4 < Test::Unit::TestCase
+    include TemplateTestSim4ReportHit
 
     def setup
       @hit = TestDataForSim4Report.report4.hits.first
@@ -632,7 +657,9 @@ module Bio
     end
   end #class TestSim4ReportHit4
 
-  class TestSim4ReportSegmentPair4_exon < TestSim4ReportSegmentPair_exon
+  class TestSim4ReportSegmentPair4_exon < Test::Unit::TestCase
+    include TemplateTestSim4ReportSegmentPair_exon
+
     def setup
       @exon = TestDataForSim4Report.report4.hits[0].exons[1]
     end
@@ -704,7 +731,9 @@ module Bio
   end #class TestSim4ReportSegmentPair4_exon
 
 
-  class TestSim4ReportSegmentPair4_intron < TestSim4ReportSegmentPair_intron
+  class TestSim4ReportSegmentPair4_intron < Test::Unit::TestCase
+    include TemplateTestSim4ReportSegmentPair_intron
+
     def setup
       @intron = TestDataForSim4Report.report4.hits[0].introns[0]
     end

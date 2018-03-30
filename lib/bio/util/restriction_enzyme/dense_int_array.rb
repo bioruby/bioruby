@@ -8,6 +8,9 @@
 #
 
 module Bio
+
+require 'bio/util/restriction_enzyme' unless const_defined?(:RestrictionEnzyme)
+
 class RestrictionEnzyme
 
   # a class to store integer numbers, containing many contiguous

@@ -591,7 +591,7 @@ class Pathway
   # problem in the graph in which edge weights can be negative.
   def bellman_ford(root)
     distance, predecessor = initialize_single_source(root)
-    for i in 1 ..(self.nodes - 1) do
+    (self.nodes - 1).times do
       @graph.each_key do |u|
         @graph[u].each do |v, w|
           # relaxing procedure of root -> 'u' -> 'v'

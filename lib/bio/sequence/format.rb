@@ -8,12 +8,6 @@
 #               Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::     The Ruby License
 #
-# = TODO
-#
-# porting from N. Goto's feature-output.rb on BioRuby list.
-#
-# $Id: format.rb,v 1.4.2.8 2008/06/17 15:50:05 ngoto Exp $
-#
 
 require 'erb'
 

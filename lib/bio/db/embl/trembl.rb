@@ -1,41 +1,24 @@
 #
-# = bio/db/embl/trembl.rb - TrEMBL database class
+# = bio/db/embl/trembl.rb - (deprecated) TrEMBL database class
 # 
-# Copyright::  Copyright (C) 2001, 2002 Toshiaki Katayama <k@bioruby.org>
+# Copyright::  Copyright (C) 2013 BioRuby Project
 # License::    The Ruby License
 #
-# $Id: trembl.rb,v 1.7 2007/04/05 23:35:40 trevor Exp $
-#
 
-require 'bio/db/embl/sptr'
+warn "Bio::TrEMBL is deprecated. Use Bio::UniProtKB."
 
 module Bio
 
-# == Description
-#
-# Parser class for TrEMBL database entry. See also Bio::SPTR class.
-# This class holds name space for TrEMBL specific methods.
-#
-# UniProtKB/SwissProt specific methods are defined in this class. 
-# Shared methods for UniProtKB/SwissProt and TrEMBL classes are 
-# defined in Bio::SPTR class.
-#
-# == Examples
-#
-#   str = File.read("Q2UNG2_ASPOR.trembl")
-#   obj = Bio::TrEMBL.new(str)
-#   obj.entry_id #=> "Q2UNG2_ASPOR"
-#
-# == Referencees
-#
-# * TrEMBL Computer-annotated supplement to Swiss-Prot	
-#   http://au.expasy.org/sprot/
-#
-# * TrEMBL Computer-annotated supplement to Swiss-Prot User Manual
-#   http://au.expasy.org/sprot/userman.html
-# 
-class TrEMBL < SPTR
-  # Nothing to do (TrEMBL format is abstracted in SPTR)
+require 'bio/db/embl/uniprotkb' unless const_defined?(:UniProtKB)
+
+# Bio::TrEMBL is deprecated. Use Bio::UniProtKB.
+class TrEMBL < UniProtKB
+
+  # Bio::TrEMBL is deprecated. Use Bio::UniProtKB.
+  def initialize(str)
+    warn "Bio::TrEMBL is deprecated. Use Bio::UniProtKB."
+    super(str)
+  end
 end
 
 end

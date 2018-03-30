@@ -108,6 +108,55 @@ module Bio
       assert(str.index(/\<PubmedArticleSet\>/))
     end
 
+    def test_search
+      a = @pm.search('(bioruby OR ruby) AND bioinformatics')
+      assert_kind_of(Array, a)
+      # Maximum number of results of Bio::PubMed#search is limited to 20.
+      assert_equal(20, a.size,
+                   'The failure may be caused by changes of NCBI PubMed.')
+      a.each do |x|
+        assert_kind_of(String, x)
+        assert_equal(x.strip, x.to_i.to_s,
+                     'PMID is not an integer value. This suggests that NCBI have changed the PMID policy.')
+      end
+    end
+
+    def test_query
+      pmid = 20739307
+      str = @pm.query(pmid)
+      assert_kind_of(String, str)
+      check_pubmed_entry(pmid, str)
+    end
+
+    def test_query_single_str
+      pmid = "20739307"
+      str = @pm.query(pmid)
+      assert_kind_of(String, str)
+      check_pubmed_entry(pmid, str)
+    end
+
+    def test_query_multiple
+      arg = [ "16734914", 16381885, "10592173" ]
+      str = @pm.query(*arg)
+      assert_kind_of(String, str)
+      str.split(/\n\n/).each do |s|
+        check_pubmed_entry(arg.shift, s)
+      end
+    end
+
+    def test_pmfetch
+      pmid = 20739307
+      str = @pm.pmfetch(pmid)
+      assert_kind_of(String, str)
+      check_pubmed_entry(pmid, str)
+    end
+
+    def test_pmfetch_str
+      pmid = "20739307"
+      str = @pm.pmfetch(pmid)
+      assert_kind_of(String, str)
+      check_pubmed_entry(pmid, str)
+    end
   end #module FuncTestPubmedCommon
 
   class FuncTestPubmed < Test::Unit::TestCase

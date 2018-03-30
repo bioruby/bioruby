@@ -7,14 +7,12 @@
 # Copyright::  Copyright (C) 2008       Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
 #
 
 require 'net/http'
 require 'uri'
 require 'bio/command'
 require 'shellwords'
-require 'bio/appl/blast/remote'
 
 module Bio::Blast::Remote
 
@@ -57,6 +55,11 @@ module Bio::Blast::Remote
   #  ----------+-------+ htgs, dbsts, embl-nonst, embnonst-upd, epd,
   #   tblastn  | AA    | genes-nt, genome, vgenes.nuc
   #  ----------+-------+---------------------------------------------------
+  #
+  # === BLAST options
+  #
+  # Options are basically the same as those of the blastall command
+  # in NCBI BLAST. See http://www.genome.jp/tools-bin/show_man?blast2
   #
   # == See also
   #
@@ -222,9 +225,9 @@ module Bio::Blast::Remote
           @output = result.body
           # waiting for BLAST finished
           while /Your job ID is/ =~ @output and
-              /Your result will be displayed here\<br\>/ =~ @output
-            if /This page will be reloaded automatically in\s*((\d+)\s*min\.)?\s*(\d+)\s*sec\./ =~ @output then
-              reloadtime = $2.to_i * 60 + $3.to_i
+              /Your result will be displayed here\.?\<br\>/i =~ @output
+            if /This page will be reloaded automatically in\s*((\d+)\s*min\.)?\s*((\d+)\s*sec\.)?/ =~ @output then
+              reloadtime = $2.to_i * 60 + $4.to_i
               reloadtime = 300 if reloadtime > 300
               reloadtime = 1 if reloadtime < 1
             else
@@ -239,14 +242,23 @@ module Bio::Blast::Remote
           end
         end
 
-        # workaround 2005.08.12 + 2011.01.27
-        if /\<A +HREF=\"(http\:\/\/[\-\.a-z0-9]+\.genome\.jp(\/tmp\/[^\"]+))\"\>Show all result\<\/A\>/i =~ @output.to_s then
-          @output = Bio::Command.read_uri($1)
-          txt = @output.to_s.split(/\<pre\>/)[1]
-          raise 'cannot understand response' unless txt
-          txt.sub!(/\<\/pre\>.*\z/m, '')
-          txt.sub!(/.*^ \-{20,}\s*/m, '')
-          @output = txt.gsub(/\&lt\;/, '<')
+        # workaround 2005.08.12 + 2011.01.27 + 2011.7.22
+        if /\<A +HREF=\"(http\:\/\/[\-\.a-z0-9]+\.genome\.jp)?(\/tmp\/[^\"]+)\"\>Show all result\<\/A\>/i =~ @output.to_s then
+          all_prefix = $1
+          all_path = $2
+          all_prefix = "http://#{Host}" if all_prefix.to_s.empty?
+          all_uri = all_prefix + all_path
+          @output = Bio::Command.read_uri(all_uri)
+          case all_path
+          when /\.txt\z/
+            ; # don't touch the data
+          else
+            txt = @output.to_s.split(/\<pre\>/)[1]
+            raise 'cannot understand response' unless txt
+            txt.sub!(/\<\/pre\>.*\z/m, '')
+            txt.sub!(/.*^ \-{20,}\s*/m, '')
+            @output = txt
+          end
         else
           raise 'cannot understand response'
         end
@@ -255,10 +267,14 @@ module Bio::Blast::Remote
       # for -m 0 (NCBI BLAST default) output, html tags are removed.
       if opt_m.to_i == 0 then
         #@output_bak = @output
-        txt = @output.gsub(/^\s*\<img +src\=\"\/Fig\/arrow\_top\.gif\"\>.+$\r?\n/, '')
+        txt = @output.sub!(/^\<select .*/, '')
+        #txt.gsub!(/^\s*\<img +src\=\"\/Fig\/arrow\_top\.gif\"\>.+$\r?\n/, '')
         txt.gsub!(/^.+\<\/form\>$/, '')
-        txt.gsub!(/^\<form *method\=\"POST\" name\=\"clust\_check\"\>.+$\r?\n/, '')
+        #txt.gsub!(/^\<form *method\=\"POST\" name\=\"clust\_check\"\>.+$\r?\n/, '')
+        txt.gsub!(/\<a href\=\"\/tmp[^\"]\>\&uarr\;\&nbsp\;Top\<\/a\>/, '')
         txt.gsub!(/\<[^\>\<]+\>/m, '')
+        txt.gsub!(/\&gt\;/, '>')
+        txt.gsub!(/\&lt\;/, '<')
         @output = txt
       end
 

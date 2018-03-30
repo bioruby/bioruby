@@ -4,7 +4,6 @@
 # Copyright::  Copyright (C) 2009 Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
 #
 # Bio::TogoWS is a set of clients for the TogoWS web services
 # (http://togows.dbcls.jp/).
@@ -245,9 +244,16 @@ module Bio
         rescue NoMethodError
           ids = ids.to_s
         end
-        ids = a.join(',') if a
 
-        arg = [ 'entry', database, ids ]
+        arg = [ 'entry', database ]
+        if a then
+          b = a.dup
+          (a.size - 1).downto(1) { |i| b.insert(i, :",") }
+          arg.concat b
+        else
+          arg.push ids
+        end
+
         arg.push field if field
         arg[-1] = "#{arg[-1]}.#{format}" if format
         response = get(*arg)
@@ -280,7 +286,7 @@ module Bio
         arg = [ 'search', database, query ]
         if offset then
           limit ||= 1
-          arg.push "#{offset},#{limit}"
+          arg.concat [ "#{offset}", :",", "#{limit}" ]
         end
         arg[-1] = "#{arg[-1]}.#{format}" if format
         response = get(*arg)
@@ -398,8 +404,7 @@ module Bio
       end
 
       # Access to the TogoWS by using POST method.
-      # The data is stored to the form key 'data'.
-      # Mime type is 'application/x-www-form-urlencoded'.
+      # Mime type is 'application/octet-stream'.
       # ---
       # *Arguments*:
       # * (required) _data_: String
@@ -408,19 +413,37 @@ module Bio
       def post_data(data, *paths)
         path = make_path(paths)
         if @debug then
-          $stderr.puts "TogoWS: Bio::Command.http_post_form(#{path.inspect}, { \"data\" => (#{data.size} bytes) }, #{@header.inspect})"
+          $stderr.puts "TogoWS: Bio::Command.http_post(#{path.inspect}, data(#{data.size} bytes), #{@header.inspect})"
         end
         togows_access_wait
-        Bio::Command.http_post_form(@http, path, { 'data' => data }, @header)
+        Bio::Command.http_post(@http, path, data, @header)
       end
 
       # Generates path string from the given paths.
+      # Symbol objects are not URL-escaped.
+      # String objects are joined with '/'.
+      # Symbol objects are joined directly without '/'.
+      #
       # ---
       # *Arguments*:
-      # * (required) _paths_: Array containing String objects
+      # * (required) _paths_: Array containing String or Symbol objects
       # *Returns*:: String
       def make_path(paths)
-        @pathbase + paths.collect { |x| CGI.escape(x.to_s) }.join('/')
+        flag_sep = false
+        a = paths.collect do |x|
+          case x
+          when Symbol
+            # without URL escape
+            flag_sep = false
+            str = x.to_s
+          else
+            str = CGI.escape(x.to_s)
+            str = '/' + str if flag_sep
+            flag_sep = true
+          end
+          str
+        end
+        @pathbase + a.join('')
       end
 
       # If response.code == "200", returns body as a String.

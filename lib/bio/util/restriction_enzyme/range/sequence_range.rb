@@ -5,12 +5,11 @@
 # Copyright:: Copyright (c) 2005-2007 Midwinter Laboratories, LLC (http://midwinterlabs.com)
 # License::   The Ruby License
 #
-#  $Id:$
-#
-
-require 'bio/util/restriction_enzyme'
 
 module Bio
+
+require 'bio/util/restriction_enzyme' unless const_defined?(:RestrictionEnzyme)
+
 class RestrictionEnzyme
 class Range
 
@@ -197,7 +196,7 @@ class SequenceRange
     c_cut = cc.vc_complement_as_original_class
     h_cut = cc.hc_between_strands_as_original_class
     
-    if @circular
+    if (defined? @circular) && @circular
       # NOTE
       # if it's circular we should start at the beginning of a cut for orientation
       # scan for it, hack off the first set of hcuts and move them to the back
@@ -239,7 +238,7 @@ class SequenceRange
   
     # Bin "-1" is an easy way to indicate the start of a strand just in case
     # there is a horizontal cut at position 0
-    bins.delete(-1) unless @circular
+    bins.delete(-1) unless ((defined? @circular) && @circular)
     bins
   end
   

@@ -6,7 +6,6 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id:$
 #
 #--
 # == TODO
@@ -49,9 +48,9 @@ class DAS
     ary = []
     result = Bio::Command.post_form("#{@server}/das/dsn")
     doc = REXML::Document.new(result.body)
-    doc.elements.each('/descendant::DSN') do |e|
+    doc.elements.each('/descendant::DSN') do |ee|
       dsn = DSN.new
-      e.elements.each do |e|
+      ee.elements.each do |e|
         case e.name
         when 'SOURCE'
           dsn.source = e.text
@@ -80,10 +79,10 @@ class DAS
     end
     result = Bio::Command.post_form("#{@server}/das/#{src}/entry_points")
     doc = REXML::Document.new(result.body)
-    doc.elements.each('/descendant::ENTRY_POINTS') do |e|
-      entry_point.href = e.attributes['href']
-      entry_point.version = e.attributes['version']
-      e.elements.each do |e|
+    doc.elements.each('/descendant::ENTRY_POINTS') do |ee|
+      entry_point.href = ee.attributes['href']
+      entry_point.version = ee.attributes['version']
+      ee.elements.each do |e|
         segment = SEGMENT.new
         segment.entry_id = e.attributes['id']
         segment.start = e.attributes['start']
@@ -120,9 +119,9 @@ class DAS
       sequence.start = e.attributes['start']
       sequence.stop = e.attributes['stop']
       sequence.version = e.attributes['version']
-      e.elements.each do |e|
-        sequence.sequence = Bio::Sequence::NA.new(e.text)
-        sequence.length = e.attributes['length'].to_i
+      e.elements.each do |el|
+        sequence.sequence = Bio::Sequence::NA.new(el.text)
+        sequence.length = el.attributes['length'].to_i
       end
       ary << sequence
     end
@@ -183,22 +182,22 @@ class DAS
 
     result = Bio::Command.post_form("#{@server}/das/#{dsn}/types", opts)
     doc = REXML::Document.new(result.body)
-    doc.elements.each('/descendant::GFF') do |e|
-      types.version = e.attributes['version']
-      types.href = e.attributes['href']
-      e.elements.each do |e|
+    doc.elements.each('/descendant::GFF') do |ee|
+      types.version = ee.attributes['version']
+      types.href = ee.attributes['href']
+      ee.elements.each do |e|
         segment = SEGMENT.new
         segment.entry_id = e.attributes['id']
         segment.start = e.attributes['start']
         segment.stop = e.attributes['stop']
         segment.version = e.attributes['version']
         segment.label = e.attributes['label']
-        e.elements.each do |e|
+        e.elements.each do |el|
           t = TYPE.new
-          t.entry_id = e.attributes['id']
-          t.method = e.attributes['method']
-          t.category = e.attributes['category']
-          t.count = e.text.to_i
+          t.entry_id = el.attributes['id']
+          t.method = el.attributes['method']
+          t.category = el.attributes['category']
+          t.count = el.text.to_i
           segment.types << t
         end
         types.segments << segment
@@ -234,21 +233,21 @@ class DAS
 
     result = Bio::Command.post_form("#{@server}/das/#{dsn}/features", opts)
     doc = REXML::Document.new(result.body)
-    doc.elements.each('/descendant::GFF') do |e|
-      gff.version = e.attributes['version']
-      gff.href = e.attributes['href']
-      e.elements.each('SEGMENT') do |e|
+    doc.elements.each('/descendant::GFF') do |elem|
+      gff.version = elem.attributes['version']
+      gff.href = elem.attributes['href']
+      elem.elements.each('SEGMENT') do |ele|
         segment = SEGMENT.new
-        segment.entry_id = e.attributes['id']
-        segment.start = e.attributes['start']
-        segment.stop = e.attributes['stop']
-        segment.version = e.attributes['version']
-        segment.label = e.attributes['label']
-        e.elements.each do |e|
+        segment.entry_id = ele.attributes['id']
+        segment.start = ele.attributes['start']
+        segment.stop = ele.attributes['stop']
+        segment.version = ele.attributes['version']
+        segment.label = ele.attributes['label']
+        ele.elements.each do |el|
           feature = FEATURE.new
-          feature.entry_id = e.attributes['id']
-          feature.label = e.attributes['label']
-          e.elements.each do |e|
+          feature.entry_id = el.attributes['id']
+          feature.label = el.attributes['label']
+          el.elements.each do |e|
             case e.name
             when 'TYPE'
               type = TYPE.new
@@ -289,21 +288,21 @@ class DAS
               group.entry_id = e.attributes['id']
               group.label = e.attributes['label']
               group.type = e.attributes['type']
-              e.elements.each do |e|
-                case e.name
+              e.elements.each do |ee|
+                case ee.name
                 when 'NOTE'		# in GROUP
-                  group.notes << e.text
+                  group.notes << ee.text
                 when 'LINK'		# in GROUP
                   link = LINK.new
-                  link.href = e.attributes['href']
-                  link.text = e.text
+                  link.href = ee.attributes['href']
+                  link.text = ee.text
                   group.links << link
                 when 'TARGET'		# in GROUP
                   target = TARGET.new
-                  target.entry_id = e.attributes['id']
-                  target.start = e.attributes['start']
-                  target.stop = e.attributes['stop']
-                  target.name = e.text
+                  target.entry_id = ee.attributes['id']
+                  target.start = ee.attributes['start']
+                  target.stop = ee.attributes['stop']
+                  target.name = ee.text
                   group.targets << target
                 end
               end

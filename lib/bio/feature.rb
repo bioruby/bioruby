@@ -5,11 +5,10 @@
 #                             2006        Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::	The Ruby License
 #
-# $Id: feature.rb,v 1.13.2.1 2008/03/04 10:12:22 ngoto Exp $
-
-require 'bio/location'
 
 module Bio
+
+  autoload :Locations, 'bio/location' unless const_defined?(:Locations)
 
 # = DESCRIPTION
 # Container for the sequence annotation.

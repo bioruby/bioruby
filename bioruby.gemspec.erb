@@ -12,25 +12,12 @@ Gem::Specification.new do |s|
       suffix = nil
     when /\A\.(\d+)\z/
       suffix = $1
-    when /\-alpha(\d+)/
-      decrement = true
-      suffix = 9000 + $1.to_i
-    when /\-pre(\d+)/
-      decrement = true
-      suffix = 9500 + $1.to_i
-    when /\-rc(\d+)/
-      decrement = true
-      suffix = 9900 + $1.to_i
+    when /\A\-dev\z/
+      suffix = Time.now.strftime("%Y%m%d")
     else
-      suffix = "0000"
+      raise "unsupported BIORUBY_EXTRA_VERSION"
     end
-    ver = Bio::BIORUBY_VERSION.reverse.collect do |i|
-            if decrement then
-              i -= 1
-              i < 0 ? (i += 10) : decrement = false
-            end
-            i
-          end.reverse
+    ver = Bio::BIORUBY_VERSION.dup
     ver.push suffix if suffix
     %><%= 
     (env_ver || ver.join('.'))
@@ -40,7 +27,8 @@ Gem::Specification.new do |s|
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
   s.homepage = "http://bioruby.org/"
-  s.rubyforge_project = "bioruby"
+  s.license = "Ruby"
+
   s.summary = "Bioinformatics library"
   s.description = "BioRuby is a library for bioinformatics (biology + information science)."
 
@@ -55,10 +43,12 @@ Gem::Specification.new do |s|
       files =
         [ "README.rdoc", "README_DEV.rdoc", 
           "ChangeLog", "KNOWN_ISSUES.rdoc",
+          "RELEASE_NOTES.rdoc", 
           "Rakefile", "bioruby.gemspec.erb",
           "bioruby.gemspec", "setup.rb",
-          "extconf.rb", "rdoc.zsh"
-        ] + Dir.glob("{bin,doc,etc,lib,sample,test}/**/*").delete_if do |item|
+          "extconf.rb", "LEGAL",
+          "COPYING", "COPYING.ja", "GPL", "LGPL"
+        ] + Dir.glob("{doc,etc,gemfiles,lib,sample,test}/**/*").delete_if do |item|
               case item
               when /(\A|\/)CVS(\z|\/)/, /(\A|\/)rdoc(\z|\/)/, /\~\z/
                 true
@@ -88,8 +78,8 @@ Gem::Specification.new do |s|
         def rdoc_files.add_file(name)
           self.push(name) unless self.include?(name)
         end
-        rdoc_files.add_file "ChangeLog"
-        rdoc_files.add_file "LEGAL"
+        #rdoc_files.add_file "ChangeLog"
+        #rdoc_files.add_file "LEGAL"
         rdoc_files.sort.collect { |x| x.dump }.join(",\n    ")
         ###### Above is executed in ERB environment ######
     %>
@@ -100,24 +90,4 @@ Gem::Specification.new do |s|
   s.rdoc_options << '--line-numbers' << '--inline-source'
 
   s.require_path = 'lib'
-  s.autorequire = 'bio'
-
-  s.bindir = "bin"
-  s.executables = [
-    <%= ###### Below is executed in ERB environment ######
-        # Files in bin/ directory are selected.
-        exec_files = files.find_all { |item| /\Abin\// =~ item }
-        # Non-executable files are removed from the list.
-        exec_files.delete_if { |item| !File.executable?(item) }
-        # strip "bin/"
-        exec_files.collect! { |item| item.sub(/\Abin\//, '') }
-        # Fail safe settings
-        if exec_files.empty? then
-            exec_files = [ "bioruby", "br_biofetch.rb", "br_biogetseq.rb", "br_bioflat.rb", "br_pmfetch.rb" ]
-        end
-        exec_files.sort.collect { |x| x.dump }.join(",\n    ")
-        ###### Above is executed in ERB environment ######
-    %>
-  ]
-  s.default_executable = "bioruby"
 end

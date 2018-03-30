@@ -13,10 +13,13 @@
 # It is internally used in Bio::Blast and some other classes.
 #
 
-require 'bio/appl/blast'
 require 'shellwords'
 
-class Bio::Blast
+module Bio
+
+require 'bio/appl/blast' unless const_defined?(:Blast)
+
+class Blast
 
   # A class to parse and store NCBI-tools style command-line options.
   # It is internally used in Bio::Blast and some other classes.
@@ -217,4 +220,6 @@ class Bio::Blast
 
   end #class NCBIOptions
 
-end #class Bio::Blast
+end #class Blast
+
+end #module Bio

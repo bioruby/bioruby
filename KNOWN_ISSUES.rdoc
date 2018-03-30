@@ -1,5 +1,5 @@
 = KNOWN_ISSUES.rdoc - Known issues and bugs in BioRuby
-Copyright:: Copyright (C) 2009 Naohisa Goto <ng@bioruby.org>
+Copyright:: Copyright (C) 2009-2012 Naohisa Goto <ng@bioruby.org>
 License::   The Ruby License
 
 = Known issues and bugs in BioRuby
@@ -15,7 +15,7 @@ they are not BioRuby's issues and/or it is very difficult to fix them.
 === Ruby 1.9.1 or later
 
 Some classes/modules/methods still may not work or may return incorrect
-results in Ruby 1.9.1, especially those not covered by the unit tests.
+results in Ruby 1.9.X, especially those not covered by the unit tests.
 
 ==== String encodings
 
@@ -30,22 +30,16 @@ Encoding::CompatibilityError or "ArgumentError: invalid byte sequence in
 (WONT_FIX) Ruby 1.9.0 is NOT supported because it isn't a stable release.
 Use Ruby 1.9.1 or later.
 
-==== Ruby 1.8.5 or earlier
+==== Ruby 1.8.6 or earlier
 
-(WONT_FIX) Problems observed only with Ruby 1.8.5 or earlier will not be
-fixed. Note that Ruby 1.8.5 or earlier is no longer supported, as described
+(WONT_FIX) Problems observed only with Ruby 1.8.6 or earlier will not be
+fixed. Note that Ruby 1.8.6 or earlier is no longer supported, as described
 in README.rdoc.
 
 ==== Ruby 1.8.2 or earlier
 
 (WONT_FIX) In some cases, temporary files and directories may not be
 removed because of the lack of FileUtils.remove_entry_secure.
-
-=== Issues about SOAP/WSDL
-
-SOAP4R (SOAP and WSDL implementation) is no longer bundled with Ruby 1.9.
-In addition, because of the API changes in recent SOAP4R, some
-classes/modules using SOAP4R may not work.
 
 === Problem with REXML DoS vulnerability patch before 09-Nov-2008
 
@@ -65,6 +59,48 @@ deprecated in RubyGems 0.9.0 and removed in RubyGems 1.0.1.
   #!/usr/bin/env ruby
   require 'rubygems'
   require_gem 'bio'
+
+=== JRuby
+
+On JRuby, errors may be raised due to the following unfixed bugs in JRuby.
+
+* {JRUBY-6195}[http://jira.codehaus.org/browse/JRUBY-6195] Process.spawn
+  (and related methods) ignore option hash
+* {JRUBY-6818}[http://jira.codehaus.org/browse/JRUBY-6818] Kernel.exec,
+  Process.spawn (and IO.popen etc.) raise error when program is an array
+  containing two strings
+
+(WONT_FIX) With older version of JRuby, you may be bothered by the following
+bugs that have already been fixed in the head of JRuby.
+
+* {JRUBY-6658}[http://jira.codehaus.org/browse/JRUBY-6658] Problem when
+  setting up an autoload entry, defining a class via require, then redefining
+  the autoload entry
+* {JRUBY-6666}[http://jira.codehaus.org/browse/JRUBY-6666] Open3.popen3
+  failing due to missing handling for [path, argv[0]] array
+* {JRUBY-6819}[http://jira.codehaus.org/browse/JRUBY-6819]
+  java.lang.ArrayIndexOutOfBoundsException in String#each_line
+
+(WONT_FIX) Due to JRUBY-5678 (resolved issue) and the difference of behavior
+between CRuby and JRuby written in the comments of the issue tracking page,
+when running BioRuby on JRuby with sudo or root rights, TMPDIR environment
+variable should be set to a directory that is not world-writable. Currently,
+the workaround is needed for running BioRuby tests with JRuby on Travis-CI.
+
+* {JRUBY-5678}[http://jira.codehaus.org/browse/JRUBY-5678] tmpdir cannot
+  be delete when jruby has sudo/root rights
+
+=== Rubinius
+
+According to Travis-CI, unit tests have failed on 1.9 mode of Rubinius.
+
+(WONT_FIX) With older version of Rubinius, you may be bothered by the
+following bugs that have already been fixed in the head of Rubinius.
+
+* {Rubinius Issue #1693}[https://github.com/rubinius/rubinius/issues/1693]
+  String#split gives incorrect output when splitting by /^/
+* {Rubinius Issue #1724}[https://github.com/rubinius/rubinius/issues/1724]
+  Creating Struct class with length attribute
 
 == 2. OS and/or architecture-dependent issues
 
@@ -104,43 +140,27 @@ Windows 95/98/98SE/ME because of the limitation of COMMAND.COM.
 
 == 3. Known issues and bugs in BioRuby
 
-=== Bio::Ensembl
+=== Bio::UniProtKB
 
-Due to the renewal of Ensembl web site, Bio::Ensembl does not work for
-the latest Ensembl. For a workaround, use an archive server. For example,
-"jul2008.archive.ensembl.org" seems to be the last server before the renewal.
-  human = Bio::Ensembl.new("Homo_sapiens", "jul2008.archive.ensembl.org")
-
-Alternatively, consider using Ruby Ensembl API.
-* http://github.com/jandot/ruby-ensembl-api
-
-=== Bio::DBGET and sample/dbget
-
-(WONT_FIX) Because the DBGET service have not been publically available for
-a long time, we give up support for Bio::DBGET and sample/dbget. Instead,
-using Bio::TogoWS or Bio::KEGG::API is recommended.
-
-=== Bio::NCBI::SOAP
-
-It seems that Bio::NCBI::SOAP (in lib/bio/io/ncbisoap.rb) does not work
-correctly, even running on Ruby 1.8.x. Instead, use Bio::NCBI::REST.
-
-=== Bio::KEGG::Taxonomy and sample/demo_kegg_taxonomy.rb
-
-Bio::KEGG::Taxonomy fails to parse current KEGG taxonomy data file probably
-because of the growth of the data size.
-
-=== Bio::SPTR
-
-Bio::SPTR should be updated to follow UniProtKB format changes described
+Bio::UniProtKB should be updated to follow UniProtKB format changes described
 in http://www.uniprot.org/docs/sp_news.htm .
 
+=== Bio::PDB
+
+Bio::PDB should be updated to follow PDB format version 3.3.
+
+=== Bio::Blast::Report
+
+NCBI announces that that they are makeing a new version of BLAST XML data
+format. BioRuby should support it.
+
+=== Bio::Blast::Default::Report
+
+Bio::Blast::Default::Report currently supports legacy BLAST only.
+It may be better to support BLAST+ text output format, although NCBI
+do not recommend to do so because the format is unstable.
+
 == 4. Compatibility issues with other libraries/extensions
-
-=== ActiveRecord
-
-BioSQL support uses ActiveRecord, but the author of the document does not
-know which version is suitable.
 
 === Ruby on Rails
 

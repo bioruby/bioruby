@@ -5,7 +5,6 @@
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
-#  $Id:$
 #
 # == Gene Ontology
 #
@@ -104,12 +103,12 @@ class GO
           depth = $1.length.to_i
           rel   = $2
           term  = $3
-          goid1 = goid = $4
+          goid1 = $4
           en    = $5
           goids = parse_goids(line)   # GO:ID[ ; GO:ID...]
-          synonyms = parse_synonyms(line)  # synonym:Term[ ; synonym:Term...]
+          parse_synonyms(line)  # synonym:Term[ ; synonym:Term...]
           stack[depth]   = goids.first
-          @id2term[goid] = term
+          @id2term[goid1] = term
           
           next if depth == 0
 
@@ -128,8 +127,8 @@ class GO
                 rel1  = $1
                 term1 = $2
                 goid1 = $3
-                goids1 = parse_goids(line)
-                synonyms1 = parse_synonyms(line)
+                parse_goids(line)
+                parse_synonyms(line)
                 
                 @id2term[goid1] = term1
                 goids.each {|goid|

@@ -4,7 +4,6 @@
 # Copyright::  Copyright (C) 2005 Mitsuteru Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id:$
 #
 
 # loading helper routine for testing bioruby
@@ -21,7 +20,10 @@ module Bio
     def setup
       
      @obj = Bio::DB.new
-      @obj.instance_eval { @orig = {"TAG" => "TAG value1\n    value2"} }
+      @obj.instance_eval {
+        @orig = {"TAG" => "TAG value1\n    value2"}
+        @tagsize = nil
+      }
     end
 
     def test_open

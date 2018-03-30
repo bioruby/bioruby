@@ -5,7 +5,6 @@
 #               Naohisa Goto <ng@bioruby.org>
 # License::     The Ruby License
 #
-# $Id:$
 #
 
 require 'matrix'
@@ -615,7 +614,7 @@ module Bio
       raise IndexError, 'node2 not found' unless @pathway.graph[node2]
       return [ node1 ] if node1 == node2
       return [ node1, node2 ] if @pathway.graph[node1][node2]
-      step, path = @pathway.bfs_shortest_path(node1, node2)
+      _, path = @pathway.bfs_shortest_path(node1, node2)
       unless path[0] == node1 and path[-1] == node2 then
         raise NoPathError, 'node1 and node2 are not connected'
       end
@@ -766,7 +765,7 @@ module Bio
     # The result is unspecified for cyclic trees.
     def lowest_common_ancestor(node1, node2, root = nil)
       root ||= @root
-      distance, route = @pathway.breadth_first_search(root)
+      _, route = @pathway.breadth_first_search(root)
       x = node1; r1 = []
       begin; r1 << x; end while x = route[x]
       x = node2; r2 = []
@@ -913,5 +912,5 @@ end #module Bio
 #---
 # temporary added
 #+++
-require 'bio/db/newick'
+require 'bio/tree/output'
 

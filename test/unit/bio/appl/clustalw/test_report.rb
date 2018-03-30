@@ -13,15 +13,9 @@ require 'bio/appl/clustalw/report'
 
 module Bio
 
-  class TestClustalWReport < Test::Unit::TestCase
+  module TestClustalWReport
 
-    def setup
-      test_data_path = Pathname.new(File.join(BioRubyTestDataPath, 'clustalw')).cleanpath.to_s
-      aln_filename = File.join(test_data_path, 'example1.aln')
-      text = File.read(aln_filename)
-      @aln = Bio::ClustalW::Report.new(text)
-    end
-
+    #--
     # CLUSTAL 2.0.9 multiple sequence alignment
     #
     #
@@ -34,47 +28,69 @@ module Bio
     # query                      LNKNVWVHTELGYFSG-EAVPSNGLVLNTSKGLVLVDSSWDDKLTKELIE
     # gi|115023|sp|P10425|       LNKNVWVHTELGYFNG-EAVPSNGLVLNTSKGLVLVDSSWDNKLTKELIE
     #                                *:   .     .     **. .   ..   ::*:       . * :
+    #++
 
-    def test_header
-      assert_equal('CLUSTAL 2.0.9 multiple sequence alignment',@aln.header)
-    end
+    module CommonTestMethods
 
-    def test_sequences
-      seq = @aln.get_sequence(0)
-      assert_equal('query',seq.definition)
-      assert_equal("-MKNTLLKLGVCVSLLGITPFVSTISSVQAERTVEHKVIKNETGTISISQLNKNVWVHTELGYFSG-EAVPSNGLVLNTSKGLVLVDSSWDDKLTKELIEMVEKKFKKRVTDVIITHAHADRIGGMKTLKERGIKAHSTALTAELAKKNG--------------------YEEPLGDLQSVTNLKFGN----MKVETFYPGKGHTEDNIVVWLPQYQILAGGCLVKSASSKDLGNVADAYVNEWSTSIENVLKRYGNINLVVPGHGEVGDR-----GLLLHTLDLLK---------------------------------------------------------------------",seq.to_s)
-      seq = @aln.get_sequence(1)
-      assert_equal('gi|115023|sp|P10425|',seq.definition)
-      assert_equal("MKKNTLLKVGLCVSLLGTTQFVSTISSVQASQKVEQIVIKNETGTISISQLNKNVWVHTELGYFNG-EAVPSNGLVLNTSKGLVLVDSSWDNKLTKELIEMVEKKFQKRVTDVIITHAHADRIGGITALKERGIKAHSTALTAELAKKSG--------------------YEEPLGDLQTVTNLKFGN----TKVETFYPGKGHTEDNIVVWLPQYQILAGGCLVKSAEAKNLGNVADAYVNEWSTSIENMLKRYRNINLVVPGHGKVGDK-----GLLLHTLDLLK---------------------------------------------------------------------",seq.to_s)
-    end
+      def test_header
+        assert_equal('CLUSTAL 2.0.9 multiple sequence alignment',@aln.header)
+      end
 
-    def test_alignment
-      assert_equal("???????????SN?????????????D??????????L??????????????????H?H?D",@aln.alignment.consensus[60..120])
-    end
+      def test_sequence0
+        seq = @aln.get_sequence(0)
+        assert_equal('query',seq.definition)
+        assert_equal("-MKNTLLKLGVCVSLLGITPFVSTISSVQAERTVEHKVIKNETGTISISQLNKNVWVHTELGYFSG-EAVPSNGLVLNTSKGLVLVDSSWDDKLTKELIEMVEKKFKKRVTDVIITHAHADRIGGMKTLKERGIKAHSTALTAELAKKNG--------------------YEEPLGDLQSVTNLKFGN----MKVETFYPGKGHTEDNIVVWLPQYQILAGGCLVKSASSKDLGNVADAYVNEWSTSIENVLKRYGNINLVVPGHGEVGDR-----GLLLHTLDLLK---------------------------------------------------------------------",seq.to_s)
+      end
 
-    def test_match_line
-      assert_equal("                                              .: :    *:   .     .     **. .   ..   ::*:       . * : : .        .: .* * *   *   :   * .  :     .     .                       *   :    .: .        .:      .*:  ::***:*  .:* .* :: .           .        ::.:            *              :  .                                                                          " ,@aln.match_line)
-    end
+      def test_sequence1
+        seq = @aln.get_sequence(1)
+        assert_equal('gi|115023|sp|P10425|',seq.definition)
+        assert_equal("MKKNTLLKVGLCVSLLGTTQFVSTISSVQASQKVEQIVIKNETGTISISQLNKNVWVHTELGYFNG-EAVPSNGLVLNTSKGLVLVDSSWDNKLTKELIEMVEKKFQKRVTDVIITHAHADRIGGITALKERGIKAHSTALTAELAKKSG--------------------YEEPLGDLQTVTNLKFGN----TKVETFYPGKGHTEDNIVVWLPQYQILAGGCLVKSAEAKNLGNVADAYVNEWSTSIENMLKRYRNINLVVPGHGKVGDK-----GLLLHTLDLLK---------------------------------------------------------------------",seq.to_s)
+      end
 
-  end # class TestClustalwFormat
+      def test_alignment
+        assert_equal("???????????SN?????????????D??????????L??????????????????H?H?D",@aln.alignment.consensus[60..120])
+      end
 
-  class TestClustalWReportWith2ndArgument < Test::Unit::TestCase
+      def test_match_line
+        assert_equal("                                              .: :    *:   .     .     **. .   ..   ::*:       . * : : .        .: .* * *   *   :   * .  :     .     .                       *   :    .: .        .:      .*:  ::***:*  .:* .* :: .           .        ::.:            *              :  .                                                                          " ,@aln.match_line)
+      end
 
-    def setup
-      aln_filename = File.join(BioRubyTestDataPath, 'clustalw',
-                               'example1.aln')
-      text = File.read(aln_filename)
-      @aln = Bio::ClustalW::Report.new(text, "PROTEIN")
-    end
+    end #module CommonTestMethods
 
-    def test_sequences
-      seq = @aln.get_sequence(0)
-      assert_equal('query',seq.definition)
-      assert_equal("-MKNTLLKLGVCVSLLGITPFVSTISSVQAERTVEHKVIKNETGTISISQLNKNVWVHTELGYFSG-EAVPSNGLVLNTSKGLVLVDSSWDDKLTKELIEMVEKKFKKRVTDVIITHAHADRIGGMKTLKERGIKAHSTALTAELAKKNG--------------------YEEPLGDLQSVTNLKFGN----MKVETFYPGKGHTEDNIVVWLPQYQILAGGCLVKSASSKDLGNVADAYVNEWSTSIENVLKRYGNINLVVPGHGEVGDR-----GLLLHTLDLLK---------------------------------------------------------------------",seq.to_s)
-      seq = @aln.get_sequence(1)
-      assert_equal('gi|115023|sp|P10425|',seq.definition)
-      assert_equal("MKKNTLLKVGLCVSLLGTTQFVSTISSVQASQKVEQIVIKNETGTISISQLNKNVWVHTELGYFNG-EAVPSNGLVLNTSKGLVLVDSSWDNKLTKELIEMVEKKFQKRVTDVIITHAHADRIGGITALKERGIKAHSTALTAELAKKSG--------------------YEEPLGDLQTVTNLKFGN----TKVETFYPGKGHTEDNIVVWLPQYQILAGGCLVKSAEAKNLGNVADAYVNEWSTSIENMLKRYRNINLVVPGHGKVGDK-----GLLLHTLDLLK---------------------------------------------------------------------",seq.to_s)
-    end
+    class TestClustalWReport < Test::Unit::TestCase
+      include CommonTestMethods
 
-  end #class TestClustalWReportWith2ndArgument
-end
+      def setup
+        aln_filename = File.join(BioRubyTestDataPath, 'clustalw',
+                                 'example1.aln')
+        text = File.read(aln_filename)
+        @aln = Bio::ClustalW::Report.new(text)
+      end
+    end # class TestClustalWReport
+
+    class TestClustalWReportWith2ndArgument < Test::Unit::TestCase
+      include CommonTestMethods
+
+      def setup
+        aln_filename = File.join(BioRubyTestDataPath, 'clustalw',
+                                 'example1.aln')
+        text = File.read(aln_filename)
+        @aln = Bio::ClustalW::Report.new(text, "PROTEIN")
+      end
+    end #class TestClustalWReportWith2ndArgument
+
+    class TestClustalWReportSeqnos < Test::Unit::TestCase
+      include CommonTestMethods
+
+      def setup
+        aln_filename = File.join(BioRubyTestDataPath, 'clustalw',
+                                 'example1-seqnos.aln')
+        text = File.read(aln_filename)
+        @aln = Bio::ClustalW::Report.new(text)
+      end
+    end #class TestClustalWReportSeqnos
+
+  end #module TestClustalWReport
+
+end #module Bio

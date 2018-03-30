@@ -1,0 +1,1478 @@
+commit ad0d7a1712d8b02358763233d38e67a0fff54917
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Aug 22 00:18:14 2012 +0900
+
+    BioRuby 1.4.3 is re-released
+
+ ChangeLog |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
+
+commit 51ab2dec144c99a14ca9009c7b589b500f1cad5f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Aug 22 00:12:47 2012 +0900
+
+    Preparation to re-release BioRuby 1.4.3
+
+ ChangeLog |   22 ++++++++++++++++++++++
+ 1 files changed, 22 insertions(+), 0 deletions(-)
+
+commit 5ff159d12252393ff04afe52b59a315d15c63d18
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Aug 22 00:00:40 2012 +0900
+
+    Bug fix: bin/bioruby failed to save object
+    
+     * Bug fix: bin/bioruby: Failed to save object with error message
+       "can't convert Symbol into String" on Ruby 1.9.
+
+ RELEASE_NOTES.rdoc    |    2 ++
+ lib/bio/shell/core.rb |    1 +
+ 2 files changed, 3 insertions(+), 0 deletions(-)
+
+commit 74c6ce09413e7ddde1431d74e10cc9c4cdbb95ba
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Aug 21 22:35:18 2012 +0900
+
+    BioRuby 1.4.3 is released.
+
+ ChangeLog |   21 +++++++++++++++++++++
+ 1 files changed, 21 insertions(+), 0 deletions(-)
+
+commit 61af85b6cfc7bb1f3668ed68232113eb0751e7ea
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Aug 21 22:33:30 2012 +0900
+
+    preparation for BioRuby 1.4.3 release version
+
+ bioruby.gemspec    |    2 +-
+ lib/bio/version.rb |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 1ec68beac42a06e9ef0a9c953650ef4d599e4e65
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Aug 21 20:53:04 2012 +0900
+
+    ChangeLog modified; release candidate version 1.4.3-rc2
+
+ ChangeLog          | 1353 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ bioruby.gemspec    |    2 +-
+ lib/bio/version.rb |    4 +-
+ 3 files changed, 1356 insertions(+), 3 deletions(-)
+
+commit e0d570b237a8b96ae0c1e7b1ad72c7333be07c52
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Aug 20 20:35:58 2012 +0900
+
+    version changed to 1.4.3-rc1
+
+ bioruby.gemspec    |    3 ++-
+ lib/bio/version.rb |    2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+commit 511c81ba67f7b8dc9cff85cf68db654d2feaf52e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Aug 20 20:17:14 2012 +0900
+
+    document JRUBY-5678 (resolved) and related issue with the workaround.
+
+ KNOWN_ISSUES.rdoc  |    9 +++++++++
+ RELEASE_NOTES.rdoc |    9 +++++++++
+ 2 files changed, 18 insertions(+), 0 deletions(-)
+
+commit 2fdd7a3b3555a33dead31181c9526af22f24916f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Aug 20 19:44:39 2012 +0900
+
+    update recommended Ruby versions and the year in copyright lines
+
+ README.rdoc |    7 +++----
+ 1 files changed, 3 insertions(+), 4 deletions(-)
+
+commit b156227749e5ada74330e837c9ce48a16e6a6a2f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Aug 20 19:16:25 2012 +0900
+
+    Bug fix: Bio::EMBL#os raises error, with incompatible change
+    
+     * Bug fix: Bio::EMBL#os raises error. The bug is reported by
+       Marc P. Hoeppner in the BioRuby mailing list
+       (https://redmine.open-bio.org/issues/3294).
+     * Incompatible change: Bio::EMBL#os no longer splits the content with
+       comma, and it no longer raises error even if the OS line is not in
+       the "Genus species (name)" format. The changes may affect the parsing
+       of old EMBL files which contain two or more species names in an OS line.
+     * Unit tests are modified to catch up the above incompatible changes.
+
+ RELEASE_NOTES.rdoc                       |   14 ++++++
+ lib/bio/db/embl/embl.rb                  |   74 ++++++++++++++++++++++++++++++
+ test/unit/bio/db/embl/test_embl.rb       |    9 +---
+ test/unit/bio/db/embl/test_embl_rel89.rb |    9 +---
+ 4 files changed, 92 insertions(+), 14 deletions(-)
+
+commit 31c8b4cb6ce2364aacee8137ddec3aa5f7d2d0d8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Aug 20 19:04:50 2012 +0900
+
+    Workaround for jruby-1.7.0.preview2 bugs JRUBY-6195, JRUBY-6818
+    
+     * Workaroud for jruby-1.7.0.preview2 bugs JRUBY-6195 and JRUBY-6818.
+     * Refactoring of call_command_popen: split _call_command_popen_ruby18
+       and _call_command_popen_ruby19, add _call_command_popen_jruby19.
+       Note that _call_command_popen_jruby19 will be removed in the future
+       after the bugs are fixed.
+
+ lib/bio/command.rb |   98 ++++++++++++++++++++++++++++++++++++++++++++++-----
+ 1 files changed, 88 insertions(+), 10 deletions(-)
+
+commit 05f51fa2e871e71c2b20559eb05e456768a4f7d6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Aug 18 00:32:31 2012 +0900
+
+    New default etc/bioinformatics/seqdatabase.ini
+    
+     * New default etc/bioinformatics/seqdatabase.ini, with currently
+       available services.
+
+ etc/bioinformatics/seqdatabase.ini |   27 +++++++++++++++++++++++++++
+ 1 files changed, 27 insertions(+), 0 deletions(-)
+ create mode 100644 etc/bioinformatics/seqdatabase.ini
+
+commit a4264cc3667b98289c09efc7ccba9c8e86f6d89c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Aug 18 00:31:10 2012 +0900
+
+    etc/bioinformatics/seqdatabase.ini is moved to sample/
+
+ etc/bioinformatics/seqdatabase.ini |  210 ------------------------------------
+ sample/seqdatabase.ini             |  210 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 210 insertions(+), 210 deletions(-)
+ delete mode 100644 etc/bioinformatics/seqdatabase.ini
+ create mode 100644 sample/seqdatabase.ini
+
+commit 04b7a27b557576f5325b3ee420262922ab66ca3b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Aug 18 00:30:38 2012 +0900
+
+    known issue about http://bioruby.org/cgi-bin/biofetch.rb server down
+
+ KNOWN_ISSUES.rdoc |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
+
+commit 4a8193f7b91ff703c8f3dc6e6a6ae0c981a404e6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 17 23:45:41 2012 +0900
+
+    Update descriptions about JRuby and Rubinius bugs
+
+ KNOWN_ISSUES.rdoc  |   14 ++++++++++----
+ RELEASE_NOTES.rdoc |   14 ++++++++++----
+ 2 files changed, 20 insertions(+), 8 deletions(-)
+
+commit a2d8dd8ccebde84e91f82c59e531cc08fbf0f3fe
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 17 17:19:22 2012 +0900
+
+    Remove the suffix .rb in require, to avoid potential multiple loading.
+
+ test/unit/bio/db/fasta/test_defline.rb        |    2 +-
+ test/unit/bio/db/genbank/test_genpept.rb      |    2 +-
+ test/unit/bio/db/kegg/test_drug.rb            |    2 +-
+ test/unit/bio/db/kegg/test_genome.rb          |    2 +-
+ test/unit/bio/db/kegg/test_glycan.rb          |    2 +-
+ test/unit/bio/util/test_restriction_enzyme.rb |    2 +-
+ 6 files changed, 6 insertions(+), 6 deletions(-)
+
+commit 1d2e8b02db3699c2cd4f4890abc078ffd2b503aa
+Author: Ben J. Woodcroft <donttrustben near gmail.com>
+Date:   Wed Aug 8 09:41:20 2012 +1000
+
+    fill in missing piece of documentation in FastaFormat
+
+ lib/bio/db/fasta.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 83bf09d4d81803c8d06e0d45ca25e7c09016161c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Aug 8 00:08:26 2012 +0900
+
+    RELEASE_NOTE.rdoc modified to reflect recent changes
+
+ RELEASE_NOTES.rdoc |  107 ++++++++++++++++++++++++++++++++++++++++++++-------
+ 1 files changed, 92 insertions(+), 15 deletions(-)
+
+commit c3afb1eb98cf8777ee021624c3d2eab92b3543f2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Aug 8 00:06:09 2012 +0900
+
+    Descriptions about JRuby, Rubinius, DDBJ Web API, SOAP4R etc.
+
+ KNOWN_ISSUES.rdoc |   45 +++++++++++++++++++++++++++++++++++++++++++--
+ 1 files changed, 43 insertions(+), 2 deletions(-)
+
+commit 01da7401a011aa519c43a021f89f6e7f769b4649
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Aug 7 23:55:09 2012 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+commit 9f70c27d9b75408fddae8384a2a09715b959dcb5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Aug 7 23:51:56 2012 +0900
+
+    improve documentation; version changed to 1.4.3-pre1
+
+ lib/bio/version.rb |   13 +++++++++++--
+ 1 files changed, 11 insertions(+), 2 deletions(-)
+
+commit c11f12c8aa56b8509cd082f3478e96374210e5d7
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Aug 7 23:31:41 2012 +0900
+
+    Remove autorequire which have been deprecated
+
+ bioruby.gemspec.erb |    1 -
+ 1 files changed, 0 insertions(+), 1 deletions(-)
+
+commit 7792b092033d2c819f2bcad0e206f27608481db5
+Author: Ben J Woodcroft <donttrustben@gmail.com>
+Date:   Mon Aug 6 09:40:55 2012 +1000
+
+    flesh out FastaFormat documentation
+
+ lib/bio/db/fasta.rb         |  102 ++++++++++++++++++++++++-------------------
+ lib/bio/db/fasta/defline.rb |    2 +-
+ 2 files changed, 58 insertions(+), 46 deletions(-)
+
+commit 9a2fe67c247cdc7c9ddc9f8b8de771515ba76ac1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 3 22:36:12 2012 +0900
+
+    .travis.yml: restructure matrix, add allow_failures lines
+    
+     * Add allow_failures lines
+     * Restructure matrix: remove many exclude lines and add some
+       include lines.
+     * When running jruby, Set TMPDIR to avoid known issue about
+       FileUtils#remove_entry_secure.
+
+ .travis.yml |   52 ++++++++++++++++++----------------------------------
+ 1 files changed, 18 insertions(+), 34 deletions(-)
+
+commit 553fd102c533c42675f93895557e3e00d36fd3e7
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 3 22:05:39 2012 +0900
+
+    Improve tests for BLAST "-m 8" tabular format parser
+
+ test/unit/bio/appl/blast/test_report.rb |  119 +++++++++++++++++++++++++++++++
+ 1 files changed, 119 insertions(+), 0 deletions(-)
+
+commit 3e1c062dbc168bd558ca8408a6da115aa570f3a7
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 3 22:05:07 2012 +0900
+
+    Improve test and suppress warning: assigned but unused variable
+
+ test/unit/bio/io/flatfile/test_buffer.rb |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit 7e29ce1f050e9e5b23299372d8ddfae781447dc3
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 3 22:02:21 2012 +0900
+
+    Improve test and suppress warning: assigned but unused variable
+
+ test/unit/bio/db/test_newick.rb |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+commit 1053b62069df74f336934e4ed0f3f217e4ad3312
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jul 27 13:56:53 2012 +0900
+
+    Suppress warnings: shadowing outer local variable
+    
+     * Suppress warnings: shadowing outer local variable.
+       Thanks to Andrew Grimm: https://github.com/bioruby/bioruby/pull/64
+
+ lib/bio/db/gff.rb |    8 ++++----
+ 1 files changed, 4 insertions(+), 4 deletions(-)
+
+commit e55794f65b3fb45c99e61d45220fe42f718426a3
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 25 23:29:17 2012 +0900
+
+    Suppress warnings in lib/bio/alignment.rb:2322
+    
+     * A space is inserted to suppress warnings in lib/bio/alignment.rb:2322.
+       * warning: :' after local variable is interpreted as binary operator
+       * warning: even though it seems like symbol literal
+
+ lib/bio/alignment.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 174a38ea8c4ecea70724bf6ec8e72b2e4259853b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 25 23:12:51 2012 +0900
+
+    Modified to follow changes of GenomeNet BLAST site
+
+ lib/bio/appl/blast/genomenet.rb |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit 93e24935840dcdec76984313719700134d69daf2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 25 15:21:32 2012 +0900
+
+    suppress warnings: instance variable @comment not initialized
+
+ lib/bio/db/gff.rb |    6 ++++--
+ 1 files changed, 4 insertions(+), 2 deletions(-)
+
+commit 0ad3818fedb707a26e849877bde1f8dab006b848
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 25 00:54:02 2012 +0900
+
+    suppress warnings: URI.escape/URI.unescape is obsolete
+
+ lib/bio/db/gff.rb |   39 +++++++++++++++++++++++++++++++++------
+ 1 files changed, 33 insertions(+), 6 deletions(-)
+
+commit 1263938742e7eeedb4a877aff7314e304320eca9
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Jul 23 21:15:52 2012 +0900
+
+    Added link to blastall options reference
+    
+     * Added link to blastall options reference.
+       Thanks to Gareth Rees who sent a pull request.
+       (https://github.com/bioruby/bioruby/pull/49)
+
+ lib/bio/appl/blast/genomenet.rb |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+commit 2ec5f4fd5abd0db7ec79ab3a9fd4adde7c9384a8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Jul 23 17:26:45 2012 +0900
+
+    Next bioruby release version will be 1.4.3.
+
+ RELEASE_NOTES.rdoc |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 6cf1318507a5d82bb93acdfe33e96723a2e742fc
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Jul 23 17:25:35 2012 +0900
+
+    fix typo
+
+ README.rdoc |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 2fd71cac315affe6e4d90b03dadac782f11553a5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Jul 23 17:21:57 2012 +0900
+
+    Bug fix: Genomenet remote blast: catch up changes of the server
+
+ lib/bio/appl/blast/genomenet.rb |   33 +++++++++++++++++++++++----------
+ 1 files changed, 23 insertions(+), 10 deletions(-)
+
+commit 69d9717da11b2fe81a8f840bbafcc5fbb0dbe688
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jul 20 11:24:37 2012 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+commit 9683da186579dbfa5da1bb1a32edc49cfdc026b8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 18 23:19:33 2012 +0900
+
+    Incompatible changes in Bio::KEGG::KGML are documented.
+    
+     * Incompatible changes in Bio::KEGG::KGML are documented.
+     * Next BioRuby release version will be 1.4.3.
+
+ RELEASE_NOTES.rdoc |   44 +++++++++++++++++++++++++++++++++++++++++---
+ 1 files changed, 41 insertions(+), 3 deletions(-)
+
+commit 6cab377ae760d1abfda06caafe4a04ecd549e21d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 18 22:56:00 2012 +0900
+
+    Incompatible changes: Bio::KEGG::KGML::Reaction#substrates, products
+    
+     * Incompatible changes: Bio::KEGG::KGML::Reaction#substrates and
+       Bio::KEGG::KGML::Reaction#products are changed to return an array
+       containing Bio::KEGG::KGML::Substrate and Bio::KEGG::KGML::Product
+       objects, respectively. The aim of these changes are to store ID
+       of substrates and products that were thrown away in the previous
+       versions.
+
+ lib/bio/db/kegg/kgml.rb            |   48 ++++++++++++++--
+ test/unit/bio/db/kegg/test_kgml.rb |  104 +++++++++++++++++++++++++++++++++++-
+ 2 files changed, 144 insertions(+), 8 deletions(-)
+
+commit 3cb1e09709d3c6b934028e28f9cafed149c9c751
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 18 22:16:46 2012 +0900
+
+    Bio::KEGG::KGML#parse_* :use new attribute names
+    
+     * In Bio::KEGG::KGML#parse_* (private methods) new attribute method
+       names should be used instead of deprecated old names.
+
+ lib/bio/db/kegg/kgml.rb |   18 +++++++++---------
+ 1 files changed, 9 insertions(+), 9 deletions(-)
+
+commit c5ef981db6add98dc6778cd9809aff38a7071593
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 18 22:14:33 2012 +0900
+
+    modified documentation for Bio::KEGG::KGML
+
+ lib/bio/db/kegg/kgml.rb |   73 +++++++++++++++++++++++++++--------------------
+ 1 files changed, 42 insertions(+), 31 deletions(-)
+
+commit 5416b84eaa37b5abf15f905586a5eee65c4026f0
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 18 15:01:58 2012 +0900
+
+    New class Bio::KEGG::KGML::Graphics with tests for Bio::KEGG::KGML
+    
+     * New class Bio::KEGG::KGML::Graphics for storing a graphics element.
+       This fixes https://github.com/bioruby/bioruby/issues/51.
+     * Unit tests for Bio::KEGG::KGML are added with mock test data.
+     * Improve rdoc documentation for Bio::KEGG::KGML.
+     * New method Bio::KEGG::KGML::Reaction#id
+     * Attribute methods that were different from the KGML attribute
+       names are renamed to the names of the KGML attribute names.
+       Old method names are deprecated and are changed to aliases
+       and will be removed in the future.
+        * Bio::KEGG::KGML::Entry#id (old name: entry_id)
+        * Bio::KEGG::KGML::Entry#type (old name: category)
+        * Bio::KEGG::KGML::Entry#entry1 (old name: node1)
+        * Bio::KEGG::KGML::Entry#entry2 (old name: node2)
+        * Bio::KEGG::KGML::Entry#type (old name: rel)
+        * Bio::KEGG::KGML::Reaction#name (old name: entry_id)
+        * Bio::KEGG::KGML::Reaction#type (old name: direction)
+     * Following attribute methods are deprecated because two or more
+       graphics elements may exist in an entry element. They will be
+       removed in the future.
+        * Bio::KEGG::KGML::Entry#label
+        * Bio::KEGG::KGML::Entry#shape
+        * Bio::KEGG::KGML::Entry#x
+        * Bio::KEGG::KGML::Entry#y
+        * Bio::KEGG::KGML::Entry#width
+        * Bio::KEGG::KGML::Entry#height
+        * Bio::KEGG::KGML::Entry#fgcolor
+        * Bio::KEGG::KGML::Entry#bgcolor
+
+ lib/bio/db/kegg/kgml.rb            |  321 ++++++++++---
+ test/data/KEGG/test.kgml           |   37 ++
+ test/unit/bio/db/kegg/test_kgml.rb |  922 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 1223 insertions(+), 57 deletions(-)
+ create mode 100644 test/data/KEGG/test.kgml
+ create mode 100644 test/unit/bio/db/kegg/test_kgml.rb
+
+commit e5478363ef6969ec14c4e09c2bd7c6d27c12cf5b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Jul 17 22:23:28 2012 +0900
+
+    rdoc documentation for Bio::KEGG::KGML
+
+ lib/bio/db/kegg/kgml.rb |  166 ++++++++++++++++++++++++++++++++++++++++++++---
+ 1 files changed, 157 insertions(+), 9 deletions(-)
+
+commit 4a97e7034cae835b3bbc8ef918b9c6c48910dec5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 11 15:16:49 2012 +0900
+
+    autoload should not be used for libraries outside bio
+
+ lib/bio/db/kegg/kgml.rb |    3 +--
+ 1 files changed, 1 insertions(+), 2 deletions(-)
+
+commit 338d4cd9913d70041349c5201f80f7a65e7135a6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jul 6 00:50:01 2012 +0900
+
+    remove unnecessary require "bio/db" in lib/bio/db/pdb.rb
+
+ lib/bio/db/pdb.rb |    5 +----
+ 1 files changed, 1 insertions(+), 4 deletions(-)
+
+commit 87c806a480fcacb0fc610c9669de19e4cb661a9c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jul 6 00:47:20 2012 +0900
+
+    workaround to avoid circular require about Bio::PDB
+
+ lib/bio/db/pdb/atom.rb              |    5 +++--
+ lib/bio/db/pdb/chain.rb             |    5 ++---
+ lib/bio/db/pdb/chemicalcomponent.rb |    5 +++--
+ lib/bio/db/pdb/model.rb             |    4 ++--
+ lib/bio/db/pdb/pdb.rb               |    3 ++-
+ lib/bio/db/pdb/residue.rb           |    4 ++--
+ lib/bio/db/pdb/utils.rb             |   11 +++++++----
+ 7 files changed, 21 insertions(+), 16 deletions(-)
+
+commit 874f35c3930506fa029b419aa84677d1fea6681a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jul 6 00:24:24 2012 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
+
+commit 090d4edb5698135f87df450a963ef35a307349c4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jul 6 00:19:54 2012 +0900
+
+    Tree output (formatter) methods moved to lib/bio/tree/output.rb
+    
+     * To avoid circular require about bio/tree, phylogenetic tree output
+      (formatter) methods are moved to lib/bio/tree/output.rb.
+
+ lib/bio/db/newick.rb   |  244 --------------------------------------------
+ lib/bio/tree.rb        |    3 +-
+ lib/bio/tree/output.rb |  264 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 265 insertions(+), 246 deletions(-)
+ create mode 100644 lib/bio/tree/output.rb
+
+commit b3d12b63097a5141b029bbfb3690870cd1935a60
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jul 6 00:18:44 2012 +0900
+
+    Workaround to avoid circular require for Bio::Blast
+
+ lib/bio/appl/bl2seq/report.rb     |    6 +++---
+ lib/bio/appl/blast/ddbj.rb        |    3 ---
+ lib/bio/appl/blast/format0.rb     |    3 +++
+ lib/bio/appl/blast/genomenet.rb   |    2 --
+ lib/bio/appl/blast/ncbioptions.rb |   11 ++++++++---
+ lib/bio/appl/blast/remote.rb      |   11 ++++++-----
+ lib/bio/appl/blast/report.rb      |   16 ++++++++++------
+ lib/bio/appl/blast/rpsblast.rb    |    5 +++--
+ lib/bio/appl/blast/wublast.rb     |    6 +++---
+ 9 files changed, 36 insertions(+), 27 deletions(-)
+
+commit 8f6c906c7b0d65b93ebf0a1e1307259e6eab8465
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jul 5 23:29:42 2012 +0900
+
+    remove old require lines that are commented out
+
+ lib/bio/appl/blast/format0.rb |    5 -----
+ 1 files changed, 0 insertions(+), 5 deletions(-)
+
+commit c632fbf2d0320860eadfacb196d51d80ed3a2b34
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jul 5 23:16:49 2012 +0900
+
+    Remove old workaround of strscan.so for Ruby 1.7 or earlier
+
+ lib/bio/appl/blast/format0.rb |   18 +-----------------
+ 1 files changed, 1 insertions(+), 17 deletions(-)
+
+commit c81dce87f53d3ea7c7d2335e077fa609f2737779
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jul 5 23:03:40 2012 +0900
+
+    .travis.yml: include ruby 1.9.2 test
+
+ .travis.yml |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+commit 34709d114089c722b5da796028ffb91021761fdd
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jul 5 23:00:37 2012 +0900
+
+    Remove old comment lines
+
+ lib/bio/sequence/format.rb |    6 ------
+ 1 files changed, 0 insertions(+), 6 deletions(-)
+
+commit e0d5ed61e0101e2e72ad024dccd58c8c90def2b9
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jul 5 22:42:17 2012 +0900
+
+    Finalizer for Bio::Command::Tmpdir is changed to suppress test failure
+    
+     * New class Bio::Command::Tmpdir::Remover for removing temporary
+       directory in finilizer. This class is BioRuby internal use only.
+       Users should not use this class.
+     * Finalizer for Bio::Command::Tmpdir is changed from a Proc object
+       to an instance of the Remover class.
+     * Test failure fix: In some environment, with Ruby 1.9.2,
+       test_output_embl(Bio::FuncTestSequenceOutputEMBL) was failed with
+       "<#<ArgumentError: wrong number of arguments (1 for 0)>" that was
+       raised in the finalizer callback of Bio::Command::Tmpdir. This
+       commit fixes the problem.
+
+ lib/bio/command.rb |   56 +++++++++++++++++++++++++++------------------------
+ 1 files changed, 30 insertions(+), 26 deletions(-)
+
+commit cca98d1378ce66d6db84cc9c1beadd39ed0e0fee
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jul 5 22:21:34 2012 +0900
+
+    Workaround to avoid circular require and JRuby autoload bug
+    
+     * "require" lines are modified to avoid circular require.
+     * In files that would be required directly from outside bio/sequence
+       (aa.rb, adapter.rb, common.rb, compat.rb, dblink.rb, generic.rb,
+       na.rb, quality_score.rb, sequence_masker.rb), because of avoiding
+       potential mismatch of superclass and/or lack of some methods,
+       bio/sequence.rb is required when Bio::Sequence is not defined.
+     * workaround to avoid JRuby autoload bug
+
+ lib/bio/sequence.rb                 |   10 ++++++----
+ lib/bio/sequence/aa.rb              |    8 +++-----
+ lib/bio/sequence/adapter.rb         |   12 ++++++------
+ lib/bio/sequence/common.rb          |    2 ++
+ lib/bio/sequence/compat.rb          |    9 ++-------
+ lib/bio/sequence/dblink.rb          |   11 ++++++-----
+ lib/bio/sequence/generic.rb         |    7 +++----
+ lib/bio/sequence/na.rb              |   10 ++++------
+ lib/bio/sequence/quality_score.rb   |    2 ++
+ lib/bio/sequence/sequence_masker.rb |    3 +++
+ 10 files changed, 37 insertions(+), 37 deletions(-)
+
+commit d2915c33ae7f330837688195a58c1e60fe78402a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jul 5 21:04:28 2012 +0900
+
+    workaround to avoid circular require in Bio::RestrictionEnzyme
+    
+     * Workaround to avoid circular require in Bio::RestrictionEnzyme
+     * Special care was needed for Bio::RestrictionEnzyme::Analysis
+       because its method definitions are divided into two files:
+       analysis.rb, analysis_basic.rb.
+
+ lib/bio/util/restriction_enzyme/analysis.rb        |   13 ++++++++-----
+ lib/bio/util/restriction_enzyme/analysis_basic.rb  |    7 ++++---
+ lib/bio/util/restriction_enzyme/cut_symbol.rb      |    5 +++--
+ lib/bio/util/restriction_enzyme/dense_int_array.rb |    3 +++
+ lib/bio/util/restriction_enzyme/double_stranded.rb |    7 +++----
+ .../double_stranded/aligned_strands.rb             |    7 +++----
+ .../double_stranded/cut_location_pair.rb           |    7 +++----
+ .../cut_location_pair_in_enzyme_notation.rb        |    7 +++----
+ .../double_stranded/cut_locations.rb               |    7 +++----
+ .../cut_locations_in_enzyme_notation.rb            |    7 +++----
+ lib/bio/util/restriction_enzyme/range/cut_range.rb |    7 +++----
+ .../util/restriction_enzyme/range/cut_ranges.rb    |    7 +++----
+ .../range/horizontal_cut_range.rb                  |    7 +++----
+ .../restriction_enzyme/range/sequence_range.rb     |    7 +++----
+ .../range/sequence_range/calculated_cuts.rb        |    7 +++----
+ .../range/sequence_range/fragment.rb               |    7 +++----
+ .../range/sequence_range/fragments.rb              |    7 +++----
+ .../restriction_enzyme/range/vertical_cut_range.rb |    7 +++----
+ lib/bio/util/restriction_enzyme/single_strand.rb   |    6 +++---
+ .../cut_locations_in_enzyme_notation.rb            |    7 +++----
+ .../restriction_enzyme/single_strand_complement.rb |    7 +++----
+ .../util/restriction_enzyme/sorted_num_array.rb    |    3 +++
+ .../util/restriction_enzyme/string_formatting.rb   |    7 +++----
+ 23 files changed, 75 insertions(+), 81 deletions(-)
+
+commit 7df4843288ffde6d7132a5651fe978301f8ebd2b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jul 5 20:18:08 2012 +0900
+
+    workaround to avoid JRuby autoload bug
+
+ lib/bio/util/restriction_enzyme.rb |    4 +---
+ 1 files changed, 1 insertions(+), 3 deletions(-)
+
+commit 97d95f2b400006d4229a7ce69d7d8a5cdce42764
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 4 22:00:27 2012 +0900
+
+    changed require to autoload for the workaround of JRuby autoload bug
+
+ lib/bio/feature.rb |    5 ++---
+ 1 files changed, 2 insertions(+), 3 deletions(-)
+
+commit 530b82a45731c2a71a110826341be425de1271e0
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 4 22:00:06 2012 +0900
+
+    workaround to avoid JRuby autoload bug
+
+ lib/bio/sequence/common.rb |    4 +---
+ 1 files changed, 1 insertions(+), 3 deletions(-)
+
+commit 8614f31b36fb93d6e49d109268d646ff3032cd1a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jul 4 21:28:52 2012 +0900
+
+    workaround to avoid JRuby autoload bug
+    
+     * Workaround to avoid JRuby autoload bug.
+     * Changed to require bio/db.rb because it is always loaded.
+
+ lib/bio/db/kegg/genes.rb |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit ea500006ed56857139c858bdfeb98773e5ca541e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jun 28 21:36:35 2012 +0900
+
+    Rakefile: use own mktmpdir
+
+ Rakefile |   59 +++++++++++++++++++++++++++++++++++++++++++----------------
+ 1 files changed, 43 insertions(+), 16 deletions(-)
+
+commit 452fadcab61083dcb9d01ee05d300eae5cb23fee
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jun 28 20:37:59 2012 +0900
+
+    .travis.yml: remove "rake regemspec" from after_install
+
+ .travis.yml |    2 --
+ 1 files changed, 0 insertions(+), 2 deletions(-)
+
+commit 3fad822af3d7e558a58b71fd8ec2a7061b49f9f2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jun 28 20:36:59 2012 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+commit ea6e96fc654c797664b118a6326a84e4f9b1a8a3
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jun 28 20:35:49 2012 +0900
+
+    print message when doing Dir.chdir
+
+ Rakefile |   17 +++++++++++------
+ 1 files changed, 11 insertions(+), 6 deletions(-)
+
+commit c2fcd5e8cc71da38dc3c6d1f8c8d0233e47398b3
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jun 28 20:28:41 2012 +0900
+
+    In tar-install, removed dependency to regemspec
+
+ Rakefile |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 67a7e83d516aab5d60f8263525b359be8b0ffc0b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jun 28 20:23:24 2012 +0900
+
+    Rakefile: give up using Dir.mktmpdir because of JRuby's behavior
+    
+     * Rakefile: give up using Dir.mktmpdir because of JRuby's behavior
+       that may be related with http://jira.codehaus.org/browse/JRUBY-5678
+
+ Rakefile |   61 ++++++++++++++++++++++++++++++++++++++++++++++---------------
+ 1 files changed, 46 insertions(+), 15 deletions(-)
+
+commit cff098034a338bbe9579d6c7b4380c7132a38ef5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jun 28 19:23:57 2012 +0900
+
+    gem-integration-test, gem-install and gem-install-nodoc are removed
+    
+     * gem-integration-test, gem-install and gem-install-nodoc are removed
+       because they are useless with Bundler
+
+ Rakefile |   13 -------------
+ 1 files changed, 0 insertions(+), 13 deletions(-)
+
+commit d5c054265af4f80318cbfa5a5bbdee6125219de2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jun 28 18:10:05 2012 +0900
+
+    .travis.yml: .gemspec is needed to install local gem
+
+ .travis.yml                 |    1 +
+ gemfiles/prepare-gemspec.rb |   25 +++++++++++++++++++++++++
+ 2 files changed, 26 insertions(+), 0 deletions(-)
+ create mode 100644 gemfiles/prepare-gemspec.rb
+
+commit 05b6172123f42a1d8d46668d8a3d5f698c371704
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jun 28 17:51:43 2012 +0900
+
+    remove 1.9.2; add tar/gem integration tests
+    
+     * Remove ruby version 1.9.2 from matrix for reducing builds
+     * Add tar/gem integration tests
+     * Add a new helper script gemfiles/modify-Gemfile.rb,
+       modifying gemfile when running gem integration test.
+     * Remove jruby version comments
+
+ .travis.yml                |   26 +++++++++++++++++---------
+ gemfiles/modify-Gemfile.rb |   28 ++++++++++++++++++++++++++++
+ 2 files changed, 45 insertions(+), 9 deletions(-)
+ create mode 100644 gemfiles/modify-Gemfile.rb
+
+commit 6813f91893e7ddc3000047357c9ed2dafb32a722
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jun 28 17:06:28 2012 +0900
+
+    descriptions are modified for danger operations
+
+ Rakefile |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit a209688952c922d9ba45c227874990bccd3da7c0
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Jun 25 23:25:51 2012 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec |    5 +++++
+ 1 files changed, 5 insertions(+), 0 deletions(-)
+
+commit 8f6459497be0e9ca7dc3eb2eb9606e42d97ad60c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Jun 25 21:01:06 2012 +0900
+
+    rake tasks added and default task is changed
+    
+     * New tasks:
+       * gem-install: build gem and install it
+       * gem-install-nodoc: build gem and install it with --no-ri --no-rdoc.
+       * gem-test: test installed bioruby gem installed with gem-install
+         (or gem-install-nodoc)
+       * gem-integration-test: build gem, install and run test (with --no-ri
+         --no-rdoc)
+       * tar-install: DANGER: build tar and install by using setup.rb
+       * installed-test: test installed bioruby
+       * tar-integration-test: DANGER: build tar, install and run test
+       * see-env: see BIORUBY_RAKE_DEFAULT_TASK environment variable and
+         invoke the specified task. If the variable did not exist, it
+         invokes "test" which is previously the default task. It is added
+         for selecting task on Travis-ci. It is not recommended to invoke
+         the task explicitly by hand.
+     * Default task is changed from "test" to "see-env".
+
+ Rakefile |  110 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 files changed, 107 insertions(+), 3 deletions(-)
+
+commit 3b400042cd361e1ab6d0fb0d8c8cce14a6c2ae10
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Jun 25 20:58:13 2012 +0900
+
+    BIORUBY_TEST_LIB is always added on the top of $LOAD_PATH
+    
+     * When BIORUBY_TEST_LIB is specified, the specified directory name
+       is always added on the top of $LOAD_PATH even if it is already
+       included in the middle of $LOAD_PATH.
+
+ test/bioruby_test_helper.rb |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 848304b6f90310f8fa15c80ba06655ae5cae5053
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Jun 25 20:42:07 2012 +0900
+
+    New env BIORUBY_TEST_GEM and BIORUBY_TEST_LIB behavior changed
+    
+     * New environment variable BIORUBY_TEST_GEM for testing installed
+       bio-X.X.X gem. Version number can be specified.
+       Example with version number:
+        % env BIORUBY_TEST_GEM=1.4.2.5000 ruby test/runner.rb
+       Example without version number:
+        % env BIORUBY_TEST_GEM="" ruby test/runner.rb
+     * When BIORUBY_TEST_LIB is empty, it no longer add an empty string to
+       $LOAD_PATH. Moreover, when BIORUBY_TEST_GEM is set, the variable is
+       ignored.
+
+ test/bioruby_test_helper.rb |   49 ++++++++++++++++++++++++++++++++----------
+ 1 files changed, 37 insertions(+), 12 deletions(-)
+
+commit 9453a6773c24f866698370195fd8e767443a38b9
+Author: Tomoaki NISHIYAMA <tomoakin@kenroku.kanazawa-u.ac.jp>
+Date:   Fri Jun 1 18:06:40 2012 +0900
+
+    broader FASTQ file recognition
+    
+     * Because PacBio RS sequencer may produce kilobases long reads and
+       read buffer size (default 31 lines) for file format detection
+       may not be sufficient to find the second id line starting with "+",
+       the regular expression for FASTQ is truncated only to check the
+       first id line starting with "@".
+     * Test code is added.
+
+ lib/bio/io/flatfile/autodetection.rb            |    2 +-
+ test/unit/bio/io/flatfile/test_autodetection.rb |    6 ++++++
+ 2 files changed, 7 insertions(+), 1 deletions(-)
+
+commit 120e780c023cba06b83899c2f8a17c8fc1de4faa
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 8 15:36:29 2012 +0900
+
+    Retry sequence randomize test up to 10 times when fails
+    
+     * To suppress rare failure of chi-square equiprobability tests for
+       Bio::Sequence::Common#randomize, test code changed to retry
+       up to 10 times if the chi-square test fails.  The assertion fails
+       if the chi-square test fails 10 consecutive times, and this
+       strongly suggests bugs in codes or in the random number generator.
+     * The chi-square equiprobability tests are separated into a new
+       test class.
+
+ test/unit/bio/sequence/test_common.rb |   40 +++++++++++++++++++++++++++++---
+ 1 files changed, 36 insertions(+), 4 deletions(-)
+
+commit 20dde52f7da784d4d9ac551957700cd96e842ef6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat May 19 18:14:19 2012 +0900
+
+    libxml-ruby is disabled because of build error on Travis-ci
+
+ gemfiles/Gemfile.travis-jruby1.8 |    3 ++-
+ gemfiles/Gemfile.travis-jruby1.9 |    3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+commit 3c5c1cc277d30737815c7e44a2abbb308f5324b0
+Author: Clayton Wheeler <cswh@umich.edu>
+Date:   Mon May 14 21:48:41 2012 -0400
+
+    Use libxml-ruby instead of libxml-jruby to fix JRuby test failures.
+    
+    The travis-ci Gemfiles currently call for libxml-jruby; this appears
+    not to support the same API as libxml-ruby, resulting in several tests
+    in test/unit/bio/db/test_phyloxml.rb failing with "NameError:
+    uninitialized constant LibXMLJRuby::XML::Parser::Options". Switching
+    to the C libxml-ruby library allows these tests to pass under JRuby in
+    1.8 mode.
+    
+    JRuby in 1.9 mode still fails a few PhyloXML tests due to
+    https://jira.codehaus.org/browse/JRUBY-6662.
+
+ gemfiles/Gemfile.travis-jruby1.8 |    2 +-
+ gemfiles/Gemfile.travis-jruby1.9 |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+commit 01a618242d67f0d00fe681dfd85e68bb393513fc
+Author: Clayton Wheeler <cswh@umich.edu>
+Date:   Thu May 10 23:13:56 2012 -0400
+
+    test_tree.rb: to use %f instead of %g to prevent odd behavior.
+
+ test/unit/bio/test_tree.rb |   22 +++++++++++-----------
+ 1 files changed, 11 insertions(+), 11 deletions(-)
+
+commit 5e80e4394bf2a5e4ee472fe84ab76239b293e1b5
+Author: Clayton Wheeler <cswh@umich.edu>
+Date:   Thu May 10 23:04:55 2012 -0400
+
+    Fixed spurious JRuby failures in test_tree.rb due to floating point differences.
+
+ test/unit/bio/test_tree.rb |   14 +++++++-------
+ 1 files changed, 7 insertions(+), 7 deletions(-)
+
+commit 459d4da894e9a9b9db0d793e3711dc45bae2089b
+Author: Artem Tarasov <lomereiter@gmail.com>
+Date:   Thu May 10 16:23:13 2012 +0400
+
+    Test bug fix: order of hash keys are not guaranteed
+    
+     * Test bug fix: Bio::TestSOFT#test_dataset: order of hash keys are
+       not guaranteed.
+
+ test/unit/bio/db/test_soft.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit 7e730691d6ec597a610dc0d4665db3598fcfde59
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu May 10 00:06:19 2012 +0900
+
+    removed potential circular require about Bio::Sequence::Format
+
+ lib/bio/db/embl/format_embl.rb       |    4 ----
+ lib/bio/db/fasta/format_fasta.rb     |    4 ----
+ lib/bio/db/fasta/format_qual.rb      |    5 -----
+ lib/bio/db/fastq/format_fastq.rb     |    1 -
+ lib/bio/db/genbank/format_genbank.rb |    4 ----
+ lib/bio/sequence/format_raw.rb       |    4 ----
+ 6 files changed, 0 insertions(+), 22 deletions(-)
+
+commit f1c398fdc3488bd18bd13ac864920ce6db4dab9e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed May 9 15:54:20 2012 +0900
+
+    .travis.yml: comment out apt-get lines
+    
+     * .travis.yml: comment out apt-get lines because libxml2-dev
+       and libexpat1-dev are already installed.
+
+ .travis.yml |    6 +++---
+ 1 files changed, 3 insertions(+), 3 deletions(-)
+
+commit bc5ef4959e51f4a199d9f740b07812e9b8216255
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed May 9 15:47:11 2012 +0900
+
+    travis-ci: comment out soap4r-ruby1.9 in Gemfile because of error
+    
+     * travis-ci: soap4r-ruby1.9 gem in Gemfile.travis-ruby1.9 and
+       Gemfile.travis-jruby1.9 is commented out because of an error
+       "uninitialized constant XML::SaxParser".
+
+ gemfiles/Gemfile.travis-jruby1.9 |    4 +++-
+ gemfiles/Gemfile.travis-ruby1.9  |    4 +++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+commit 7e8153c09660c31d6286c1924680b8c5073a10b6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue May 1 18:11:09 2012 +0900
+
+    config files for Travis CI continuous integration service
+
+ .travis.yml                      |   73 ++++++++++++++++++++++++++++++++++++++
+ gemfiles/Gemfile.travis-jruby1.8 |    6 +++
+ gemfiles/Gemfile.travis-jruby1.9 |    7 ++++
+ gemfiles/Gemfile.travis-ruby1.8  |    7 ++++
+ gemfiles/Gemfile.travis-ruby1.9  |    8 ++++
+ 5 files changed, 101 insertions(+), 0 deletions(-)
+ create mode 100644 .travis.yml
+ create mode 100644 gemfiles/Gemfile.travis-jruby1.8
+ create mode 100644 gemfiles/Gemfile.travis-jruby1.9
+ create mode 100644 gemfiles/Gemfile.travis-ruby1.8
+ create mode 100644 gemfiles/Gemfile.travis-ruby1.9
+
+commit f1ecae7763648cb735a885ddb6c46d71c59b0694
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 23 01:36:59 2012 +0900
+
+    Test bug fix: tests affected by the bug of Bio::NucleicAcid.to_re("s")
+
+ test/unit/bio/data/test_na.rb     |    2 +-
+ test/unit/bio/sequence/test_na.rb |    2 +-
+ test/unit/bio/test_sequence.rb    |    4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+commit 3fd9384b1b59140a929c81dcc4b07cb3c2e47525
+Author: Trevor Wennblom <trevor@well.com>
+Date:   Sat Feb 25 15:26:27 2012 -0600
+
+    Bug fix: Bio::NucleicAcid.to_re("s") typo
+
+ lib/bio/data/na.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit c552aa3a6773139b14ae95e79e0fb43a2f91c6fb
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jan 12 22:24:37 2012 +0900
+
+    Bug fix: GenomeNet BLAST server URI changed.
+    
+     * Bug fix: GenomeNet BLAST server URI changed.
+       Reported by joaocardoso via GitHub.
+       ( https://github.com/bioruby/bioruby/issues/44 )
+
+ lib/bio/appl/blast/genomenet.rb |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+commit f33abf9bbd90c3c1e320f06447fdb54ffd094c5d
+Author: peterjc <p.j.a.cock@googlemail.com>
+Date:   Fri Nov 25 11:20:08 2011 +0000
+
+    Mark echoarg2.bat and echoarg2.sh as world executable
+
+ 0 files changed, 0 insertions(+), 0 deletions(-)
+ mode change 100644 => 100755 test/data/command/echoarg2.bat
+ mode change 100644 => 100755 test/data/command/echoarg2.sh
+
+commit d2d66f833d0b20647e8d761d2a240b99b206eaa8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 24 13:32:37 2011 +0900
+
+    Bug fix: rake aborted without git
+
+ bioruby.gemspec.erb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+commit c2139739988ef731d61bf1a8cdba2dc5c48393bd
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 24 13:07:10 2011 +0900
+
+    regenerate bioruby.gemspec with rake regemspec.
+
+ bioruby.gemspec |   18 ++++++++++--------
+ 1 files changed, 10 insertions(+), 8 deletions(-)
+
+commit 6213b45d28bfea2cc8c838813b524d48c369266b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 24 13:05:07 2011 +0900
+
+    Added workaround for changes of a module name and file names to require.
+
+ Rakefile |   21 +++++++++++++++++++--
+ 1 files changed, 19 insertions(+), 2 deletions(-)
+
+commit 39f847cf8d453476275361078b831da43d400816
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 24 12:08:47 2011 +0900
+
+    Use binary mode to open files.
+
+ Rakefile |    6 ++++--
+ 1 files changed, 4 insertions(+), 2 deletions(-)
+
+commit 688779e71a27e861fb01e07f816384561b8cfe45
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 24 11:49:30 2011 +0900
+
+    Rakefile: new tasks: test-all to run all tests, etc.
+    
+     * Rakefile: new tasks: test-all to run all tests, and test-network
+       to run tests in test/network.
+
+ Rakefile |   10 ++++++++++
+ 1 files changed, 10 insertions(+), 0 deletions(-)
+
+commit 53719535defcb0fefb3cf8bebe3fad6716bf7de2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Nov 24 11:28:38 2011 +0900
+
+    test/runner.rb: Run tests only in test/unit and test/functional.
+
+ test/runner.rb |   22 ++++++++++++++++------
+ 1 files changed, 16 insertions(+), 6 deletions(-)
+
+commit fb9ee403db6b447aee73ebb7f12ff5a5b73d6c52
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 23 20:36:36 2011 +0900
+
+    A test class using network connection is moved under test/network/.
+
+ test/functional/bio/test_command.rb |   16 ----------------
+ test/network/bio/test_command.rb    |   35 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 35 insertions(+), 16 deletions(-)
+ create mode 100644 test/network/bio/test_command.rb
+
+commit a6dda2215aa686a9ca4af7484aa190f726d51e69
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 23 20:28:58 2011 +0900
+
+    Tests using network connections are moved to test/network/
+    
+     * Tests using network connections are moved to test/network/.
+       * renamed: test/functional/bio/appl -> test/network/bio/appl
+       * renamed: test/functional/bio/io   -> test/network/bio/io
+
+ test/functional/bio/appl/blast/test_remote.rb |   93 ---------
+ test/functional/bio/appl/test_blast.rb        |   61 ------
+ test/functional/bio/appl/test_pts1.rb         |  117 -----------
+ test/functional/bio/io/test_ddbjrest.rb       |   47 -----
+ test/functional/bio/io/test_ensembl.rb        |  230 ---------------------
+ test/functional/bio/io/test_pubmed.rb         |  135 -------------
+ test/functional/bio/io/test_soapwsdl.rb       |   53 -----
+ test/functional/bio/io/test_togows.rb         |  268 -------------------------
+ test/network/bio/appl/blast/test_remote.rb    |   93 +++++++++
+ test/network/bio/appl/test_blast.rb           |   61 ++++++
+ test/network/bio/appl/test_pts1.rb            |  117 +++++++++++
+ test/network/bio/io/test_ddbjrest.rb          |   47 +++++
+ test/network/bio/io/test_ensembl.rb           |  230 +++++++++++++++++++++
+ test/network/bio/io/test_pubmed.rb            |  135 +++++++++++++
+ test/network/bio/io/test_soapwsdl.rb          |   53 +++++
+ test/network/bio/io/test_togows.rb            |  268 +++++++++++++++++++++++++
+ 16 files changed, 1004 insertions(+), 1004 deletions(-)
+ delete mode 100644 test/functional/bio/appl/blast/test_remote.rb
+ delete mode 100644 test/functional/bio/appl/test_blast.rb
+ delete mode 100644 test/functional/bio/appl/test_pts1.rb
+ delete mode 100644 test/functional/bio/io/test_ddbjrest.rb
+ delete mode 100644 test/functional/bio/io/test_ensembl.rb
+ delete mode 100644 test/functional/bio/io/test_pubmed.rb
+ delete mode 100644 test/functional/bio/io/test_soapwsdl.rb
+ delete mode 100644 test/functional/bio/io/test_togows.rb
+ create mode 100644 test/network/bio/appl/blast/test_remote.rb
+ create mode 100644 test/network/bio/appl/test_blast.rb
+ create mode 100644 test/network/bio/appl/test_pts1.rb
+ create mode 100644 test/network/bio/io/test_ddbjrest.rb
+ create mode 100644 test/network/bio/io/test_ensembl.rb
+ create mode 100644 test/network/bio/io/test_pubmed.rb
+ create mode 100644 test/network/bio/io/test_soapwsdl.rb
+ create mode 100644 test/network/bio/io/test_togows.rb
+
+commit ec747aa33d06e08a6469dfd330360161d1b0f8e2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 23 15:03:08 2011 +0900
+
+    Test bug fix: use binmode to disable CR/LF conversion (fail on Windows)
+
+ test/unit/bio/appl/blast/test_rpsblast.rb |    1 +
+ test/unit/bio/io/flatfile/test_buffer.rb  |    1 +
+ 2 files changed, 2 insertions(+), 0 deletions(-)
+
+commit 07ce32da009baa2c4e81f6d96f45e3dac49da183
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 23 14:47:33 2011 +0900
+
+    Test bug fix: Read Sanger chromatogram files with binary mode
+    
+     * Test bug fix: Read Sanger chromatogram files with binary mode.
+       Fix error/failure on Windows due to default text mode reading.
+
+ test/unit/bio/db/sanger_chromatogram/test_abif.rb |    3 ++-
+ test/unit/bio/db/sanger_chromatogram/test_scf.rb  |    6 ++++--
+ 2 files changed, 6 insertions(+), 3 deletions(-)
+
+commit 20d9068643214e3482d18c36028e50b3c9109755
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Nov 23 14:17:25 2011 +0900
+
+    Incompatible change: Bio::FlatFile.open and auto use binary mode
+    
+     * Incompatible change: Bio::FlatFile.open and auto use binary mode
+       (binmode) unless text mode option is explicitly given.
+
+ RELEASE_NOTES.rdoc                       |    7 ++
+ lib/bio/io/flatfile/buffer.rb            |   84 ++++++++++++++++++
+ test/unit/bio/io/flatfile/test_buffer.rb |  139 ++++++++++++++++++++++++++++++
+ 3 files changed, 230 insertions(+), 0 deletions(-)
+
+commit 48bd150a6180d59879872bd85dd95c7ddf1a19c0
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 22 17:32:23 2011 +0900
+
+    Test bug fix: fixed incomplete Windows platform detection.
+
+ test/unit/bio/test_command.rb |   13 +++++++++----
+ 1 files changed, 9 insertions(+), 4 deletions(-)
+
+commit d499bcee7956b1a0a4c04aeb106e50a0839167b0
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 22 16:15:05 2011 +0900
+
+    FuncTestCommandCall is changed to test various command-lines.
+    
+     * New file test/data/command/echoarg2.sh shell script, which acts
+       like echoarg2.bat for Windows.
+     * FuncTestCommandCall is changed to test various command-lines.
+
+ test/data/command/echoarg2.sh       |    4 ++
+ test/functional/bio/test_command.rb |   70 +++++++++++++++++++++++++++++------
+ 2 files changed, 62 insertions(+), 12 deletions(-)
+ create mode 100644 test/data/command/echoarg2.sh
+
+commit d45e311c09ad2f4116770dd903f81e652a63ca2a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 22 14:21:34 2011 +0900
+
+    Test bug fix: Opened files should be closed.
+    
+     * Test bug fix: Opened files should be closed.  When finalizing writer
+       tests, temporary files are not properly closed after verify reading,
+       and removing the temporary files raise erro on Windows.
+
+ test/unit/bio/db/test_phyloxml_writer.rb |   24 +++++++++++++++---------
+ 1 files changed, 15 insertions(+), 9 deletions(-)
+
+commit a9022c61b98746e98a83f1cfd902e0e6b11c7bbb
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Nov 22 13:55:15 2011 +0900
+
+    New method Bio::PhyloXML::Parser#closed?, and Bio::PhyloXML::Parser.open with block.
+    
+     * New method Bio::PhyloXML::Parser#closed? to check if it is closed
+       or not.
+     * Bio::PhyloXML::Parser.open and open_uri now can get a block.
+       When a block is given, a Bio::PhyloXML::Parser object is passed
+       to the block as an argument. When the block terminates, the object
+       is closed.
+     * Added tests about the above changes.
+
+ lib/bio/db/phyloxml/phyloxml_parser.rb |   57 +++++++++++++++++++++++++++++---
+ test/unit/bio/db/test_phyloxml.rb      |   56 ++++++++++++++++++++++++++++++-
+ 2 files changed, 106 insertions(+), 7 deletions(-)
+
+commit 893cbe6ca993eca08427074059c2ba03621ea889
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Nov 5 00:49:10 2011 +0900
+
+    Ruby 1.9 should be fully supported, and optional requirements are revised.
+
+ README.rdoc |   48 +++++++++++++++++++++++++++++++++---------------
+ 1 files changed, 33 insertions(+), 15 deletions(-)
+
+commit 38b1715c2d6bad39560e0846781ca903b1c16eda
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 4 22:12:38 2011 +0900
+
+    Added REFERENCE.
+
+ README.rdoc |   12 ++++++++++++
+ 1 files changed, 12 insertions(+), 0 deletions(-)
+
+commit 9a766cd17236bbe1e28d6972001dd5e3ed596123
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 4 21:39:20 2011 +0900
+
+    Removed "setup.rb test" and added about running tests.
+
+ README.rdoc |   39 ++++++++++++++++++++++++++++++++++-----
+ 1 files changed, 34 insertions(+), 5 deletions(-)
+
+commit 39737179b06366e1d5acf2e5ac930e41b3a4ee38
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Fri Oct 14 08:58:01 2011 +0200
+
+    Tutorial: added info on biogems
+
+ doc/Tutorial.rd      |   16 ++++++++++++++++
+ doc/Tutorial.rd.html |   23 +++++++++++++++--------
+ 2 files changed, 31 insertions(+), 8 deletions(-)
+
+commit e84400c5e9e94d95d6a8d3c4b72388b94d204766
+Author: Pjotr Prins <pjotr.public01@thebird.nl>
+Date:   Fri Oct 14 08:49:41 2011 +0200
+
+    Tutorial: small updates
+
+ doc/Tutorial.rd      |    8 +++++---
+ doc/Tutorial.rd.html |    9 +++++----
+ 2 files changed, 10 insertions(+), 7 deletions(-)
+
+commit 9fe07345b3b7be890d5baad9a51f0752af5e0ac4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 13 23:05:39 2011 +0900
+
+    README_DEV.rdoc: added git tips and policies, etc.
+    
+     * Added Git tips about sending a patch or a pull request.
+     * Added Git management policies for the blessed repository.
+     * Added some coding styles.
+     * Added descriptions about Ruby versions and OS.
+
+ README_DEV.rdoc |   95 +++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 files changed, 93 insertions(+), 2 deletions(-)
+
+commit 3c952c4a782501b21f36ece5bcab672dab12fc6d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 13 13:21:20 2011 +0900
+
+    README.rdoc: for release notes and changelog, about sample files.
+
+ README.rdoc |   10 +++++++++-
+ 1 files changed, 9 insertions(+), 1 deletions(-)
+
+commit fba9a6c0f1f79dd567ca54ba085b6258ac8efb31
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 13 13:20:05 2011 +0900
+
+    RELEASE_NOTES.rdoc: mentioned about removal of rdoc.zsh.
+
+ RELEASE_NOTES.rdoc |    6 +++++-
+ 1 files changed, 5 insertions(+), 1 deletions(-)
+
+commit 685b6bb7b98083e1b50e73baf4e7fa71bc9a39fa
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Sep 12 21:23:34 2011 +0900
+
+    bioruby.gemspec.erb: LEGAL is added to rdoc files
+    
+     * bioruby.gemspec.erb: LEGAL is added to rdoc files.
+     * bioruby.gemspec is updated by "rake regemspec".
+
+ bioruby.gemspec     |    9 ++++++---
+ bioruby.gemspec.erb |    6 +++++-
+ 2 files changed, 11 insertions(+), 4 deletions(-)
+
+commit 414a6331f40fc99f554042e9a031689ea6d76da4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Sep 12 20:54:06 2011 +0900
+
+    deleted rdoc.zsh which is obsolete and unused
+    
+     * Deleted rdoc.zsh which is obsolete and unused.
+       To generate rdoc html, "rake rdoc" or "rake rerdoc".
+       See "rake -T" for more information.
+
+ rdoc.zsh |    8 --------
+ 1 files changed, 0 insertions(+), 8 deletions(-)
+ delete mode 100644 rdoc.zsh
+
+commit 272d9106cec43b0f219edd92a6f7bd3f9875a761
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Sep 12 20:35:47 2011 +0900
+
+    Added new ChangeLog, showing changes after 1.4.2 release.
+    
+     * Added new ChangeLog, showing changes after 1.4.2 release.
+       For the changes before 1.4.2, see doc/ChangeLog-before-1.4.2.
+       For the changes before 1.3.1, see doc/ChangeLog-before-1.3.1.
+
+ ChangeLog |   64 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 64 insertions(+), 0 deletions(-)
+ create mode 100644 ChangeLog
+
+commit 941493378f9884978c81d5f63ee4ed5c175d4bea
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Sep 12 20:28:28 2011 +0900
+
+    Rakefile: add new task :rechangelog to update ChangeLog using git log.
+    
+     * Rakefile: add new task :rechangelog to update ChangeLog using
+       git log. Note that the tag name (currently 1.4.2) is hardcoded
+       in Rakefile.
+
+ Rakefile |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
+
+commit 1c89e6546223c3c05ea79b8ade4b493580851efa
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Sep 12 20:24:49 2011 +0900
+
+    renamed ChangeLog to doc/ChangeLog-before-1.4.2
+
+ ChangeLog                  | 5013 --------------------------------------------
+ doc/ChangeLog-before-1.4.2 | 5013 ++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 5013 insertions(+), 5013 deletions(-)
+ delete mode 100644 ChangeLog
+ create mode 100644 doc/ChangeLog-before-1.4.2
+
+commit 2233fbada55034bd16fb5b9c642292b4b6ccca83
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Sep 12 20:22:49 2011 +0900
+
+    ChangeLog updated: add log about 1.4.2 release
+
+ ChangeLog |    9 +++++++++
+ 1 files changed, 9 insertions(+), 0 deletions(-)
+
+commit 1c02ab0488e4097a2cf5c16180c3179c78e3d572
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Sep 12 19:40:54 2011 +0900
+
+    New RELEASE_NOTES.rdoc for next release version.
+
+ RELEASE_NOTES.rdoc |   47 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 files changed, 47 insertions(+), 0 deletions(-)
+ create mode 100644 RELEASE_NOTES.rdoc
+
+commit 4e63e69e98c0c440ec476ef3407fcc8fd2411056
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Sep 12 19:32:48 2011 +0900
+
+    renamed RELEASE_NOTES.rdoc to doc/RELEASE_NOTES-1.4.2.rdoc
+
+ RELEASE_NOTES.rdoc           |  132 ------------------------------------------
+ doc/RELEASE_NOTES-1.4.2.rdoc |  132 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 132 insertions(+), 132 deletions(-)
+ delete mode 100644 RELEASE_NOTES.rdoc
+ create mode 100644 doc/RELEASE_NOTES-1.4.2.rdoc
+
+commit 9c5c8cafc3ec372ef80aa20d01d13034f94d5af2
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 2 12:02:41 2011 +0900
+
+    Bio::BIORUBY_EXTRA_VERSION set to ".5000" (unstable version).
+
+ lib/bio/version.rb |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)

@@ -495,7 +495,7 @@ class Fastq
   # ---
   # *Returns*:: (String or nil) format name
   def format
-    @format ? @format.name : nil
+    ((defined? @format) && @format) ? @format.name : nil
   end
 
 

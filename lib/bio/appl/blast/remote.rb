@@ -4,12 +4,12 @@
 # Copyright::  Copyright (C) 2008  Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
-#
 
-require 'bio/appl/blast'
+module Bio
 
-class Bio::Blast
+require 'bio/appl/blast' unless const_defined?(:Blast)
+
+class Blast
 
   # Bio::Blast::Remote is a namespace for Remote Blast factory.
   module Remote
@@ -17,19 +17,10 @@ class Bio::Blast
     autoload :GenomeNet, 'bio/appl/blast/genomenet'
     autoload :Genomenet, 'bio/appl/blast/genomenet'
 
-    autoload :DDBJ, 'bio/appl/blast/ddbj'
-    autoload :Ddbj, 'bio/appl/blast/ddbj'
-
     # creates a remote BLAST factory using GenomeNet
     def self.genomenet(program, db, options = [])
       GenomeNet.new(program, db, options)
       #Bio::Blast.new(program, db, options, 'genomenet')
-    end
-
-    # creates a remote BLAST factory using DDBJ Web service
-    def self.ddbj(program, db, options = [])
-      DDBJ.new(program, db, options)
-      #Bio::Blast.new(program, db, options, 'ddbj')
     end
 
     # Common methods for meta-information processing
@@ -102,5 +93,6 @@ class Bio::Blast
 
   end #module Remote
 
-end #class Bio::Blast
+end #class Blast
 
+end #module Bio

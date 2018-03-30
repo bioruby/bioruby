@@ -6,16 +6,16 @@
 #             Naohisa Goto <ng@bioruby.org>
 # License::   The Ruby License
 #
-# $Id: model.rb,v 1.10 2007/12/18 13:48:42 ngoto Exp $
 #
 # = Bio::PDB::Model
 #
 # Please refer Bio::PDB::Model.
 #
 
-require 'bio/db/pdb'
 
 module Bio
+
+  require 'bio/db/pdb' unless const_defined?(:PDB)
 
   class PDB
 

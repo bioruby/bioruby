@@ -239,6 +239,10 @@ module Bio; module TestSequenceCommon
       assert(rseqs[1] != rseqs[2])
     end
 
+  end #class TestSequenceCommonRandomize
+
+  class TestSequenceCommonRandomizeChi2 < Test::Unit::TestCase
+
     def chi2(hist, f, k)
       chi2 = 0
       (0...k).each do |i|
@@ -250,7 +254,7 @@ module Bio; module TestSequenceCommon
 
     # chi-square test for distribution of chi2 values from
     # distribution of index('a')
-    def randomize_equiprobability
+    def randomize_equiprobability_chi2
       # Reference: http://www.geocities.jp/m_hiroi/light/pystat04.html
       seq = TSequence.new('ccccgggtta') # length must be 10
       k = 10
@@ -280,10 +284,38 @@ module Bio; module TestSequenceCommon
       chi2_chi2 = chi2(chi2_hist, chi2_f, k)
       #$stderr.puts chi2_chi2
 
+      chi2_chi2
+    end
+    private :randomize_equiprobability_chi2
+
+    def randomize_equiprobability(&block)
       ## chi-square test, freedom 9, significance level 5%
-      #assert_operator(16.919, :>, chi2_chi2, "test of chi2 < 16.919 failed (#{chi2_chi2})")
+      #critical_value = 16.919
+      #significance_level_message = "5%"
+      #
       # chi-square test, freedom 9, significance level 1%
-      assert_operator(21.666, :>, chi2_chi2, "test of chi2 < 21.666 failed (#{chi2_chi2})")
+      critical_value = 21.666
+      significance_level_message = "1%"
+
+      # max trial times till the test sucess
+      max_trial = 10
+
+      values =[]
+      max_trial.times do |i|
+        chi2_chi2 = randomize_equiprobability_chi2(&block)
+        values.push chi2_chi2
+        # immediately breaks if the test succeeds
+        break if chi2_chi2 < critical_value
+        $stderr.print "Bio::Sequence::Common#randomize test of chi2 (=#{chi2_chi2}) < #{critical_value} failed (expected #{significance_level_message} by chance)"
+        if values.size < max_trial then
+          $stderr.puts ", retrying."
+        else
+          $stderr.puts " #{values.size} consecutive times!"
+        end
+      end
+
+      assert_operator(values[-1], :<, critical_value,
+                      "test of chi2 < #{critical_value} failed #{values.size} times consecutively (#{values.inspect})")
     end
     private :randomize_equiprobability
 
@@ -319,7 +351,7 @@ module Bio; module TestSequenceCommon
     #  end
     #end
 
-  end
+  end #class TestSequenceCommonRandomizeChi2
 
 
   class TestSequenceCommonSubseq < Test::Unit::TestCase

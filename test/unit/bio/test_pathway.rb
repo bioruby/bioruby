@@ -43,18 +43,33 @@ module Bio
     end
 
     class TestRelation < Test::Unit::TestCase
-	def test_comparison_operator
-	    r1 = Relation.new('a', 'b', 1)
-	    r2 = Relation.new('b', 'a', 1)
-	    r3 = Relation.new('b', 'a', 2)
-	    r4 = Relation.new('a', 'b', 1)
-	    assert(r1 === r2, "r1 === r2 not true, === not symmetric wrt nodes")
-	    assert(!(r1 === r3), "r1 === r3 not false, === does not take edge into account")
-	    assert(r1 === r4, "r1 === r4 not true, === is not reflexive wrt nodes")
-	    assert_equal([r1, r3], [ r1, r2, r3, r4 ].uniq, "uniq did not have expected effect")
-	    assert(r1.eql?(r2), "r1 not eql r2")
-	    assert(!r3.eql?(r2), "r3 eql to r2")
+	def setup
+	    @r1 = Relation.new('a', 'b', 1)
+	    @r2 = Relation.new('b', 'a', 1)
+	    @r3 = Relation.new('b', 'a', 2)
+	    @r4 = Relation.new('a', 'b', 1)
 	end
+
+	def test_comparison_operator
+	    assert(@r1 === @r2, "@r1 === @r2 not true, === not symmetric wrt nodes")
+	    assert(!(@r1 === @r3), "@r1 === @r3 not false, === does not take edge into account")
+	    assert(@r1 === @r4, "@r1 === @r4 not true, === is not reflexive wrt nodes")
+	    assert(@r1.eql?(@r2), "@r1 not eql @r2")
+	    assert(!@r3.eql?(@r2), "@r3 eql to @r2")
+	end
+
+        def test_uniq
+            a =  [ @r1, @r2, @r3, @r4 ].uniq
+            # Array#uniq does not guarantee that the first value is always
+            # chosen, though the "bug" is fixed.
+            # (https://bugs.ruby-lang.org/issues/9340 )
+            # (https://github.com/bioruby/bioruby/issues/92 )
+            # #assert_equal([@r1, @r3], a, "uniq did not have expected effect")
+            assert_equal(2, a.size)
+	    assert(@r1 === a[0])
+	    assert(@r3 === a[1])
+	end
+
     end
 
     class TestSampleGraph < Test::Unit::TestCase

@@ -12,7 +12,7 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 
 # libraries needed for the tests
 require 'test/unit'
-require 'bio/db/genbank/genpept.rb'
+require 'bio/db/genbank/genpept'
 
 #The coverage of this class is 100%
 #It tests only the methods descripbed in the soruce class.(It dosen't test the inherited methods from NCBIDB)

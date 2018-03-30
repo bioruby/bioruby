@@ -62,7 +62,7 @@ module Bio
     end
   end #module TestBlastReportHelper
 
-  class TestBlastReport < Test::Unit::TestCase
+  module TemplateTestBlastReport
     include TestBlastReportHelper
 
     def setup
@@ -90,9 +90,7 @@ module Bio
     end
 
     def test_reference
-      xml_quoted_str = "~Reference: Altschul, Stephen F., Thomas L. Madden, Alejandro A. Schaffer, ~Jinghui Zhang, Zheng Zhang, Webb Miller, and David J. Lipman (1997), ~&quot;Gapped BLAST and PSI-BLAST: a new generation of protein database search~programs&quot;,  Nucleic Acids Res. 25:3389-3402."
       text_str = '~Reference: Altschul, Stephen F., Thomas L. Madden, Alejandro A. Schaffer, ~Jinghui Zhang, Zheng Zhang, Webb Miller, and David J. Lipman (1997), ~"Gapped BLAST and PSI-BLAST: a new generation of protein database search~programs",  Nucleic Acids Res. 25:3389-3402.'
-#      assert_equal(xml_quoted_str, @report.reference)
       assert_equal(text_str, @report.reference)
     end
 
@@ -203,9 +201,10 @@ module Bio
     def test_message
       assert_equal(nil, @report.message)
     end
-  end
-  
-  class TestBlastReportIteration < Test::Unit::TestCase
+  end #module TemplateTestBlastReport
+
+
+  module TemplateTestBlastReportIteration
     include TestBlastReportHelper
 
     def setup
@@ -231,9 +230,10 @@ module Bio
     def test_message
       assert_equal(nil, @itr.message)
     end
-  end
+  end #module TemplateTestBlastReportIteration
 
-  class TestBlastReportHit < Test::Unit::TestCase
+
+  module TemplateTestBlastReportHit
     include TestBlastReportHelper
 
     def setup
@@ -343,9 +343,10 @@ module Bio
     def test_Hit_lap_at
       assert_equal([1, 820, 1, 820], @hit.lap_at)
     end
-  end
+  end #module TemplateTestBlastReportHit
 
-  class TestBlastReportHsp < Test::Unit::TestCase
+
+  module TemplateTestBlastReportHsp
     include TestBlastReportHelper
 
     def setup
@@ -444,37 +445,63 @@ module Bio
       assert_nothing_raised { @hsp.mismatch_count }
     end
 
-  end 
+  end #module TestBlastReportHsp
 
-  class TestBlastReportREXML < TestBlastReport
+  class TestBlastReport < Test::Unit::TestCase
+    include TemplateTestBlastReport
   end
 
-  class TestBlastReportIterationREXML < TestBlastReportIteration
+  class TestBlastReportIteration < Test::Unit::TestCase
+    include TemplateTestBlastReportIteration
   end
 
-  class TestBlastReportHitREXML < TestBlastReportHit
+  class TestBlastReportHit < Test::Unit::TestCase
+    include TemplateTestBlastReportHit
   end
 
-  class TestBlastReportHspREXML < TestBlastReportHsp
+  class TestBlastReportHsp < Test::Unit::TestCase
+    include TemplateTestBlastReportHsp
+  end
+
+  class TestBlastReportREXML < Test::Unit::TestCase
+    include TemplateTestBlastReport
+  end
+
+  class TestBlastReportIterationREXML < Test::Unit::TestCase
+    include TemplateTestBlastReportIteration
+  end
+
+  class TestBlastReportHitREXML < Test::Unit::TestCase
+    include TemplateTestBlastReportHit
+  end
+
+  class TestBlastReportHspREXML < Test::Unit::TestCase
+    include TemplateTestBlastReportHsp
   end
 
   if defined? XMLParser then
 
-  class TestBlastReportXMLParser < TestBlastReport
+  class TestBlastReportXMLParser < Test::Unit::TestCase
+    include TemplateTestBlastReport
   end
 
-  class TestBlastReportIterationXMLParser < TestBlastReportIteration
+  class TestBlastReportIterationXMLParser < Test::Unit::TestCase
+    include TemplateTestBlastReportIteration
   end
 
-  class TestBlastReportHitXMLParser < TestBlastReportHit
+  class TestBlastReportHitXMLParser < Test::Unit::TestCase
+    include TemplateTestBlastReportHit
   end
 
-  class TestBlastReportHspXMLParser < TestBlastReportHsp
+  class TestBlastReportHspXMLParser < Test::Unit::TestCase
+    include TemplateTestBlastReportHsp
   end
 
   end #if defined? XMLParser
 
-  class TestBlastReportDefault < TestBlastReport
+  class TestBlastReportDefault < Test::Unit::TestCase
+    include TemplateTestBlastReport
+
     undef test_entrez_query
     undef test_filter
     undef test_hsp_len
@@ -519,13 +546,16 @@ module Bio
     def test_gapped_entropy
       assert_equal(0.140, @report.gapped_entropy)
     end
-  end
+  end #class TestBlastReportDefault
 
-  class TestBlastReportIterationDefault < TestBlastReportIteration
+  class TestBlastReportIterationDefault < Test::Unit::TestCase
+    include TemplateTestBlastReportIteration
     undef test_statistics
   end
 
-  class TestBlastReportHitDefault < TestBlastReportHit
+  class TestBlastReportHitDefault < Test::Unit::TestCase
+    include TemplateTestBlastReportHit
+
     undef test_Hit_accession
     undef test_Hit_hit_id
     undef test_Hit_num
@@ -560,9 +590,11 @@ module Bio
       seq = @filtered_query_sequence.gsub(/x/, 'X')
       assert_equal(seq, @hit.query_seq)
     end
-  end
+  end #class TestBlastReportHitDefault
 
-  class TestBlastReportHspDefault < TestBlastReportHsp
+  class TestBlastReportHspDefault < Test::Unit::TestCase
+    include TemplateTestBlastReportHsp
+
     undef test_Hsp_density
     undef test_Hsp_mismatch_count
     undef test_Hsp_num
@@ -612,14 +644,138 @@ module Bio
       # differs from XML because not available in the default BLASTP format
       assert_equal(nil, @hsp.query_frame)
     end
-  end
+  end #class TestBlastReportHspDefault
+
+
+  module TestBlastReportTabularHelper
+    def def_test_assert_nil(test_method)
+      str = test_method.to_s
+      name = str.sub(/test(\_(Hit|Hsp))?\_/, '')
+      method = name.intern
+      instance = case self.to_s
+                 when /Iteration/
+                   :@itr
+                 when /Hit/
+                   :@hit
+                 when /Hsp/
+                   :@hsp
+                 else
+                   :@report
+                 end
+                  
+      define_method(test_method) do
+        assert_nil(instance_variable_get(instance).__send__(method))
+      end
+    end
+  end #module TestBlastReportTabularHelper
+
+  class TestBlastReportTabular < Test::Unit::TestCase
+    extend TestBlastReportTabularHelper
+    include TemplateTestBlastReport
+
+    def_test_assert_nil :test_db
+    def_test_assert_nil :test_db_len
+    def_test_assert_nil :test_db_num
+    def_test_assert_nil :test_eff_space
+    def_test_assert_nil :test_entropy
+    def_test_assert_nil :test_expect
+    def_test_assert_nil :test_filter
+    def_test_assert_nil :test_gap_extend
+    def_test_assert_nil :test_gap_open
+    def_test_assert_nil :test_hsp_len
+    def_test_assert_nil :test_kappa
+    def_test_assert_nil :test_lambda
+    def_test_assert_nil :test_matrix
+    def_test_assert_nil :test_program
+    def_test_assert_nil :test_query_len
+    def_test_assert_nil :test_reference
+    def_test_assert_nil :test_version
+
+    # No parameters information available in the "-m 8" format
+    def test_parameters
+      assert_equal({}, @report.parameters)
+    end
+
+    def test_query_def
+      # differs from XML because of truncation in the "-m 8" format
+      assert_equal("eco:b0002", @report.query_def)
+    end
+
+    def test_query_id
+      # differs from XML because of the limited data
+      assert_equal("eco:b0002", @report.query_id)
+    end
+
+    # No statistics information available in the "-m 8" format
+    def test_statistics
+      assert_equal({}, @report.statistics)
+    end
+  end #class TestBlastReportTabular
+
+  class TestBlastReportIterationTabular < Test::Unit::TestCase
+    include TemplateTestBlastReportIteration
+
+    # No statistics information available in the "-m 8" format
+    def test_statistics
+      assert_equal({}, @itr.statistics)
+    end
+  end #class TestBlastReportIterationTabular
+
+  class TestBlastReportHitTabular < Test::Unit::TestCase
+    extend TestBlastReportTabularHelper
+    include TemplateTestBlastReportHit
+
+    def_test_assert_nil :test_Hit_hit_id
+    def_test_assert_nil :test_Hit_identity
+    def_test_assert_nil :test_Hit_len
+    def_test_assert_nil :test_Hit_midline
+    def_test_assert_nil :test_Hit_query_len
+    def_test_assert_nil :test_Hit_query_seq
+    def_test_assert_nil :test_Hit_target_len
+    def_test_assert_nil :test_Hit_target_seq
+
+    def test_Hit_bit_score
+      # differs from XML because of truncation in the "-m 8" format
+      assert_equal(1567.0, @hit.bit_score)
+    end
+
+    def test_Hit_query_def
+      # differs from XML because of truncation in the "-m 8" format
+      assert_equal("eco:b0002", @hit.query_def)
+    end
+
+    def test_Hit_query_id
+      # differs from XML because of the limited data
+      assert_equal("eco:b0002", @hit.query_id)
+    end
+  end #class TestBlastReportHitTabular
+
+  class TestBlastReportHspTabular < Test::Unit::TestCase
+    extend TestBlastReportTabularHelper
+    include TemplateTestBlastReportHsp
+
+    def_test_assert_nil :test_Hsp_density
+    def_test_assert_nil :test_Hsp_hit_frame
+    def_test_assert_nil :test_Hsp_hseq
+    def_test_assert_nil :test_Hsp_identity
+    def_test_assert_nil :test_Hsp_midline
+    def_test_assert_nil :test_Hsp_positive
+    def_test_assert_nil :test_Hsp_qseq
+    def_test_assert_nil :test_Hsp_query_frame
+    def_test_assert_nil :test_Hsp_score
+
+    def test_Hsp_bit_score
+      # differs from XML because of truncation in the "-m 8" format
+      assert_equal(1567.0, @hsp.bit_score)
+    end
+  end #class TestBlastReportHspTabular
 
   ########################################################################
   # Tests for new BLAST XML format (blastall 2.2.14 or later)
   # with the result of multiple query sequences
   ########################################################################
 
-  class TestBlastReportMulti < Test::Unit::TestCase
+  module TemplateTestBlastReportMulti
     include TestBlastReportHelper
 
     def setup
@@ -836,9 +992,9 @@ module Bio
         assert_equal(nil, r.message)
       end
     end
-  end
-  
-  class TestBlastReportIterationMulti < Test::Unit::TestCase
+  end #module TemplateTestBlastReportMulti
+
+  module TemplateTestBlastReportIterationMulti
     include TestBlastReportHelper
 
     def setup
@@ -886,9 +1042,9 @@ module Bio
     def test_message
       assert_equal(nil, @itr.message)
     end
-  end
+  end #module TemplateTestBlastReportIterationMulti
 
-  class TestBlastReportHitMulti < Test::Unit::TestCase
+  module TemplateTestBlastReportHitMulti
     include TestBlastReportHelper
 
     def setup
@@ -1000,9 +1156,9 @@ module Bio
     def test_Hit_lap_at
       assert_equal([190, 311, 569, 668], @hit.lap_at)
     end
-  end
+  end #module TemplateTestBlastReportHitMulti
 
-  class TestBlastReportHspMulti < Test::Unit::TestCase
+  module TemplateTestBlastReportHspMulti
     include TestBlastReportHelper
 
     def setup
@@ -1101,34 +1257,59 @@ module Bio
       assert_nothing_raised { @hsp.mismatch_count }
     end
 
-  end 
+  end #module TemplateTestBlastReportHspMulti
+
+
+  class TestBlastReportMulti < Test::Unit::TestCase
+    include TemplateTestBlastReportMulti
+  end
+
+  class TestBlastReportIterationMulti < Test::Unit::TestCase
+    include TemplateTestBlastReportIterationMulti
+  end
+
+  class TestBlastReportHitMulti < Test::Unit::TestCase
+    include TemplateTestBlastReportHitMulti
+  end
+
+  class TestBlastReportHspMulti < Test::Unit::TestCase
+    include TemplateTestBlastReportHspMulti
+  end
 
   # Tests for REXML version
-  class TestBlastReportMultiREXML < TestBlastReportMulti
+  class TestBlastReportMultiREXML < Test::Unit::TestCase
+    include TemplateTestBlastReportMulti
   end
 
-  class TestBlastReportIterationMultiREXML < TestBlastReportIterationMulti
+  class TestBlastReportIterationMultiREXML < Test::Unit::TestCase
+    include TemplateTestBlastReportIterationMulti
   end
 
-  class TestBlastReportHitMultiREXML < TestBlastReportHitMulti
+  class TestBlastReportHitMultiREXML < Test::Unit::TestCase
+    include TemplateTestBlastReportHitMulti
   end
 
-  class TestBlastReportHspMultiREXML < TestBlastReportHspMulti
+  class TestBlastReportHspMultiREXML < Test::Unit::TestCase
+    include TemplateTestBlastReportHspMulti
   end
 
   # Tests for XMLParser version
   if defined? XMLParser then
 
-  class TestBlastReportMultiXMLParser < TestBlastReportMulti
+  class TestBlastReportMultiXMLParser < Test::Unit::TestCase
+    include TemplateTestBlastReportMulti
   end
 
-  class TestBlastReportIterationMultiXMLParser < TestBlastReportIterationMulti
+  class TestBlastReportIterationMultiXMLParser < Test::Unit::TestCase
+    include TemplateTestBlastReportIterationMulti
   end
 
-  class TestBlastReportHitMultiXMLParser < TestBlastReportHitMulti
+  class TestBlastReportHitMultiXMLParser < Test::Unit::TestCase
+    include TemplateTestBlastReportHitMulti
   end
 
-  class TestBlastReportHspMultiXMLParser < TestBlastReportHspMulti
+  class TestBlastReportHspMultiXMLParser < Test::Unit::TestCase
+    include TemplateTestBlastReportHspMulti
   end
 
   end #if defined? XMLParser

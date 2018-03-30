@@ -6,7 +6,6 @@
 #              2005 Naohisa Goto <ng@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id:$
 #
 
 # loading helper routine for testing bioruby
@@ -178,7 +177,7 @@ module Bio
         'a' => [ 'a' ],
         'c' => [ 'c' ],
         'g' => [ 'g' ],
-        't' => [ 't' ],
+#        't' => [ 't' ],
         't' => [ 't', 'u' ],
         'm' => [ 'a', 'c' ],
         'r' => [ 'a', 'g' ],
@@ -629,9 +628,9 @@ module Bio
 
     def test_seqclass_when_seqclass_set
       alignment = Alignment.new
-      alignment.seqclass = Fixnum
+      alignment.seqclass = Integer
       alignment << "this doesn't really make sense"
-      assert_equal(Fixnum, alignment.seqclass)
+      assert_equal(Integer, alignment.seqclass)
     end
 
     # Alignment#gap_char

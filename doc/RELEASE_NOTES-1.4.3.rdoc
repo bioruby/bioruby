@@ -1,0 +1,204 @@
+= BioRuby 1.4.3 RELEASE NOTES
+
+A lot of changes have been made to the BioRuby 1.4.3 after the version 1.4.2
+is released. This document describes important and/or incompatible changes
+since the BioRuby 1.4.2 release.
+
+For known problems, see KNOWN_ISSUES.rdoc.
+
+== New features
+
+=== Bio::KEGG::KGML
+
+* New class Bio::KEGG::KGML::Graphics for storing a graphics element.
+  In the instance of the class, "coords" attribute is now available.
+* New class Bio::KEGG::KGML::Substrate for storing a substrate element.
+* New class Bio::KEGG::KGML::Product for storing a product element.
+* New method Bio::KEGG::KGML::Reaction#id.
+* Improve RDoc documentation.
+* Unit tests are added.
+* There are incompatible changes. See Incompatible changes below.
+
+== Improvements
+
+=== Portability running on JRuby and Rubinius
+
+Many failures and errors running on JRuby and Rubinius are resolved.
+Some of them are due to BioRuby bugs, and some of them are due to JRuby or
+Rubinius bugs. Artem Tarasov reported bugs in BioRuby and submitted bug
+reports to Rubinius. Clayton Wheeler and Naohisa Goto fixed bugs in BioRuby
+and submitted bug reports to JRuby.
+
+=== Testing on Travis CI
+
+BioRuby is now using Travis CI (http://travis-ci.org/), a hosted continuous
+integration service for the open source community.
+
+== Bug fixes
+
+=== Strange behavior related with "circular require" is fixed
+
+Fixed: In previous versions, some bioruby files may be required more than
+two times, and this sometimes causes strange behavior, depending on the
+order of files in the disk.  In particular, unit tests running on JRuby
+sometimes crashes with strange errors. In BioRuby 1.4.3, almost all require
+and autoload lines are revised and are changed to avoid circular require.
+This also fixes crash on JRuby due to JRuby's autoload bug.
+
+=== Other bug fixes
+
+* Fixed: Genomenet remote BLAST does not work.
+* Fixed: Bio::KEGG::KGML ignores "coords" field.
+* Fixed: Bio::NucleicAcid.to_re("s") typo
+* To suppress rare failure of chi-square equiprobability tests for
+  Bio::Sequence::Common#randomize, test code changed to retry up to 10 times
+  if the chi-square test fails.  The assertion fails if the chi-square test
+  fails 10 consecutive times, and this strongly suggests bugs in codes or in
+  the random number generator.
+* Fixed: Bio::EMBL#os raises RuntimeError. The fix includes incompatible
+  change. See below "Incompatible changes".
+* Fixed: bin/bioruby: Failed to save object with error message "can't convert
+  Symbol into String" on Ruby 1.9.
+
+== Incompatible changes and removed features
+
+=== Bio::FlatFile use binmode (binary mode) when opening a file
+
+In Bio::FlatFile.open and Bio::FlatFile.auto, binmode (binary mode) is used
+by default when opening a file, unless text mode is explicitly specified
+with open mode string or with options. Due to the change, files using CR+LF
+line separator might not be read correctly.
+
+=== Broader FASTQ file recognition
+
+Because PacBio RS sequencer may produce kilobases long reads and read buffer
+size (default 31 lines) for file format detection may not be sufficient to
+find the second id line starting with "+", the regular expression for FASTQ
+is truncated only to check the first id line starting with "@".
+
+=== Bio::KEGG::KGML
+
+* Bio::KEGG::KGML::Reaction#substrates and Bio::KEGG::KGML::Reaction#products
+  are changed to return an array containing Bio::KEGG::KGML::Substrate and
+  Bio::KEGG::KGML::Product objects, respectively. The changes enables us to
+  get ID of substrates and products that were thrown away in the previous
+  versions.
+* Most attribute methods that were different from the KGML attribute names
+  are renamed to the names compatible with the KGML attribute names. Old
+  method names are changed to aliases of them and marked as deprecated.
+  The old names will be removed in the future.
+  * Bio::KEGG::KGML::Entry#id (old name: entry_id)
+  * Bio::KEGG::KGML::Entry#type (old name: category)
+  * Bio::KEGG::KGML::Entry#entry1 (old name: node1)
+  * Bio::KEGG::KGML::Entry#entry2 (old name: node2)
+  * Bio::KEGG::KGML::Entry#type (old name: rel)
+  * Bio::KEGG::KGML::Reaction#name (old name: entry_id)
+  * Bio::KEGG::KGML::Reaction#type (old name: direction)
+* Following attribute methods are deprecated because two or more graphics
+  elements may exist in an entry element. They will be removed in the future.
+  Instead, please use instance methods of Bio::KEGG::KGML::Graphics, which
+  can be obtained from Bio::KEGG::KGML::Entry#graphics attribute.
+  * Bio::KEGG::KGML::Entry#label
+  * Bio::KEGG::KGML::Entry#shape
+  * Bio::KEGG::KGML::Entry#x
+  * Bio::KEGG::KGML::Entry#y
+  * Bio::KEGG::KGML::Entry#width
+  * Bio::KEGG::KGML::Entry#height
+  * Bio::KEGG::KGML::Entry#fgcolor
+  * Bio::KEGG::KGML::Entry#bgcolor
+
+=== Bio::EMBL#os
+
+Bio::EMBL#os, returns parser result of the EMBL OS line, no longer splits
+the content with comma, and it no longer raises error even if the OS line
+is not in the "Genus species (name)" format. The changes may affect the
+parsing of old EMBL files which contain two or more species names in an
+OS line.
+
+Note that Bio::EMBL#os returns an Array containing several Hash objects,
+and the argument is always ignored. The return value type and the meaning
+of the argument might be changed in the future.
+
+=== Tests
+
+* Tests using network connections are moved under test/network/.
+  To invoke these tests, run "rake test-network".
+* BIORUBY_TEST_LIB environment variable
+  * The directory name specified with BIORUBY_TEST_LIB is always added on the
+    top of $LOAD_PATH even if it is already included in the middle of
+    $LOAD_PATH.
+  * When BIORUBY_TEST_LIB is empty, it no longer add an empty string to
+    $LOAD_PATH.
+  * BIORUBY_TEST_LIB is ignored when BIORUBY_TEST_GEM is set.
+* BIORUBY_TEST_GEM environment variable
+  * New environment variable BIORUBY_TEST_GEM for testing installed
+    bio-X.X.X gem. Version number can be specified.
+    See the following examples with/without the version number:
+    * % env BIORUBY_TEST_GEM=1.4.2.5000 ruby test/runner.rb
+    * % env BIORUBY_TEST_GEM="" ruby test/runner.rb
+
+=== Other removed features
+
+* rdoc.zsh is removed because it have not been used for a long time.
+
+== Known issues
+
+The following issues are added or updated. See KNOWN_ISSUES.rdoc for other
+already known issues.
+
+=== JRuby
+
+On JRuby, errors may be raised due to the following unfixed bugs in JRuby.
+
+* {JRUBY-6195}[http://jira.codehaus.org/browse/JRUBY-6195] Process.spawn
+  (and related methods) ignore option hash
+* {JRUBY-6818}[http://jira.codehaus.org/browse/JRUBY-6818] Kernel.exec,
+  Process.spawn (and IO.popen etc.) raise error when program is an array
+  containing two strings
+
+With older version of JRuby, you may be bothered by the following bugs that
+have already been fixed in the head of JRuby.
+
+* {JRUBY-6658}[http://jira.codehaus.org/browse/JRUBY-6658] Problem when
+  setting up an autoload entry, defining a class via require, then redefining
+  the autoload entry
+* {JRUBY-6666}[http://jira.codehaus.org/browse/JRUBY-6666] Open3.popen3
+  failing due to missing handling for [path, argv[0]] array
+* {JRUBY-6819}[http://jira.codehaus.org/browse/JRUBY-6819]
+  java.lang.ArrayIndexOutOfBoundsException in String#each_line
+
+Due to JRUBY-5678 (resolved issue) and the difference of behavior between
+CRuby and JRuby written in the comments of the issue tracking page,
+when running BioRuby on JRuby with sudo or root rights, TMPDIR environment
+variable should be set to a directory that is not world-writable. Currently,
+the workaround is needed for running BioRuby tests with JRuby on Travis-CI.
+
+* {JRUBY-5678}[http://jira.codehaus.org/browse/JRUBY-5678] tmpdir cannot
+  be delete when jruby has sudo/root rights
+
+=== Rubinius
+
+According to Travis-CI, unit tests have failed on 1.9 mode of Rubinius.
+
+With older version of Rubinius, you may be bothered by the following bugs that
+have already been fixed in the head of Rubinius.
+
+* {Rubinius Issue #1693}[https://github.com/rubinius/rubinius/issues/1693]
+  String#split gives incorrect output when splitting by /^/
+* {Rubinius Issue #1724}[https://github.com/rubinius/rubinius/issues/1724]
+  Creating Struct class with length attribute
+
+=== DDBJ Web API related classes (Bio::DDBJ::*, Bio::BLAST::Remote::DDBJ)
+
+DDBJ Web API is stopping after their system replacement in March 2012.
+(See the announcement though it is written only in Japanese:
+http://www.ddbj.nig.ac.jp/replace/rp120601-j.html)
+Due to the stop of the DDBJ Web API, Bio::DDBJ::* and Bio::BLAST::Remote::DDBJ
+which are using the web API can not be used.
+
+=== SOAP4R with Ruby 1.9
+
+soap4r-ruby1.9 may raise "ununitialized constant XML::SaxParser" error with
+some combinations of XML parser libraries. It seems this is a bug of
+soap4r-ruby1.9.
+

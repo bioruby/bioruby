@@ -44,18 +44,6 @@ module FunctTestBlast
     end
   end #class NetTestBlast_GenomeNet
 
-  class NetTestBlast_DDBJ < Test::Unit::TestCase
-    include NetTestBlastCommonProteinQuery
-
-    def setup
-      @blast = Bio::Blast.new('blastp', 'SWISS',
-                              ['-e', '1e-10',
-                              '-v', '10',
-                              '-b', '10' ],
-                              'ddbj')
-    end
-  end #class NetTestBlast_DDBJ
-
 end #module FuncTestBlast
 end #module Bio
 

@@ -149,7 +149,7 @@ module Common
     unless @data['OS']
       os = Array.new
       fetch('OS').split(/, and|, /).each do |tmp|
-        if tmp =~ /([A-Z][a-z]* *[\w\d \:\'\+\-]+[\w\d])/
+        if tmp =~ /([A-Z][a-z]* *[\w \:\'\+\-]+\w)/
           org = $1
           tmp =~ /(\(.+\))/ 
           os.push({'name' => $1, 'os' => org})

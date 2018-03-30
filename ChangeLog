@@ -1,64 +1,38 @@
-commit 941493378f9884978c81d5f63ee4ed5c175d4bea
+commit e066e3c8bcf0c6b7eadd3573576d4550aca77cc5
 Author: Naohisa Goto <ng@bioruby.org>
-Date:   Mon Sep 12 20:28:28 2011 +0900
+Date:   Thu Jul 2 22:17:06 2015 +0900
 
-    Rakefile: add new task :rechangelog to update ChangeLog using git log.
-    
-     * Rakefile: add new task :rechangelog to update ChangeLog using
-       git log. Note that the tag name (currently 1.4.2) is hardcoded
-       in Rakefile.
+    ChangeLog is moved to doc/ChangeLog-1.5.0
 
- Rakefile |    9 +++++++++
- 1 files changed, 9 insertions(+), 0 deletions(-)
-
-commit 1c89e6546223c3c05ea79b8ade4b493580851efa
-Author: Naohisa Goto <ng@bioruby.org>
-Date:   Mon Sep 12 20:24:49 2011 +0900
-
-    renamed ChangeLog to doc/ChangeLog-before-1.4.2
-
- ChangeLog                  | 5013 --------------------------------------------
- doc/ChangeLog-before-1.4.2 | 5013 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 5013 insertions(+), 5013 deletions(-)
+ ChangeLog           | 2919 ---------------------------------------------------
+ doc/ChangeLog-1.5.0 | 2919 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 2919 insertions(+), 2919 deletions(-)
  delete mode 100644 ChangeLog
- create mode 100644 doc/ChangeLog-before-1.4.2
+ create mode 100644 doc/ChangeLog-1.5.0
 
-commit 2233fbada55034bd16fb5b9c642292b4b6ccca83
+commit dd53e885c1baa765bc094897d53309af7b15497b
 Author: Naohisa Goto <ng@bioruby.org>
-Date:   Mon Sep 12 20:22:49 2011 +0900
+Date:   Thu Jul 2 22:09:26 2015 +0900
 
-    ChangeLog updated: add log about 1.4.2 release
+    change version for generating ChangeLog to 1.5.0
 
- ChangeLog |    9 +++++++++
- 1 files changed, 9 insertions(+), 0 deletions(-)
+ Rakefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-commit 1c02ab0488e4097a2cf5c16180c3179c78e3d572
+commit 7a5d897ebc45d9ec5357918a42eb2980decf01e4
 Author: Naohisa Goto <ng@bioruby.org>
-Date:   Mon Sep 12 19:40:54 2011 +0900
+Date:   Thu Jul 2 21:52:17 2015 +0900
 
-    New RELEASE_NOTES.rdoc for next release version.
+    version changed to 1.5.1-dev (pre-release version of 1.5.1)
 
- RELEASE_NOTES.rdoc |   47 +++++++++++++++++++++++++++++++++++++++++++++++
- 1 files changed, 47 insertions(+), 0 deletions(-)
- create mode 100644 RELEASE_NOTES.rdoc
+ lib/bio/version.rb |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-commit 4e63e69e98c0c440ec476ef3407fcc8fd2411056
+commit 8fc4d6c64f6958a352c36b171b00d1f1ff2a2354
 Author: Naohisa Goto <ng@bioruby.org>
-Date:   Mon Sep 12 19:32:48 2011 +0900
+Date:   Thu Jul 2 21:47:28 2015 +0900
 
-    renamed RELEASE_NOTES.rdoc to doc/RELEASE_NOTES-1.4.2.rdoc
+    fix English syntax and unexpected word insertion
 
- RELEASE_NOTES.rdoc           |  132 ------------------------------------------
- doc/RELEASE_NOTES-1.4.2.rdoc |  132 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 132 insertions(+), 132 deletions(-)
- delete mode 100644 RELEASE_NOTES.rdoc
- create mode 100644 doc/RELEASE_NOTES-1.4.2.rdoc
-
-commit 9c5c8cafc3ec372ef80aa20d01d13034f94d5af2
-Author: Naohisa Goto <ng@bioruby.org>
-Date:   Fri Sep 2 12:02:41 2011 +0900
-
-    Bio::BIORUBY_EXTRA_VERSION set to ".5000" (unstable version).
-
- lib/bio/version.rb |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ RELEASE_NOTES.rdoc |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)

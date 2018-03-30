@@ -5,7 +5,6 @@
 #		Toshiaki Katayama <k@bioruby.org>
 # License::	The Ruby License
 #
-# $Id:$
 #
 # == Data source
 #
@@ -127,7 +126,7 @@ class CodonTable
   #   table.revtrans("A")	# => ["gcg", "gct", "gca", "gcc"]
   #
   def revtrans(aa)
-    unless @reverse
+    unless (defined? @reverse) && @reverse
       @reverse = {}
       @table.each do |k, v|
         @reverse[v] ||= []

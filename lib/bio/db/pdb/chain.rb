@@ -6,16 +6,15 @@
 #             Naohisa Goto <ng@bioruby.org>
 # License::   The Ruby License
 # 
-# $Id: chain.rb,v 1.10 2008/04/01 10:36:44 ngoto Exp $
 #
 # = Bio::PDB::Chain
 # 
 # Please refer Bio::PDB::Chain.
 #
 
-require 'bio/db/pdb'
-
 module Bio
+
+  require 'bio/db/pdb' unless const_defined?(:PDB)
 
   class PDB
 

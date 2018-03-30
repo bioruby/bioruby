@@ -1,7 +1,0 @@
-<div id="variables">
-<ul>
-<% local_variables.each do |var| %>
-<li><%= link_to_remote var, :update => "index", :url => {:action => "evaluate", :script => var} %></li>
-<% end %>
-</ul>
-</div>

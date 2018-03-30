@@ -1,0 +1,58 @@
+CLUSTAL 2.0.9 multiple sequence alignment
+
+
+query                      -MKNTLLKLGVCVSLLGITPFVSTISSVQAERTVEHKVIKNETGTISISQ 49
+gi|115023|sp|P10425|       MKKNTLLKVGLCVSLLGTTQFVSTISSVQASQKVEQIVIKNETGTISISQ 50
+gi|115030|sp|P25910|       -MKTVFILISMLFPVAVMAQKSVKIS-----------------DDISITQ 32
+gi|2984094                 MGGFLFFFLLVLFSFSSEYPKHVKET------------------LRKITD 32
+gi|282554|pir||S25844      -------------------------------------------MTVEVRE 7
+                                                                         .: :
+
+query                      LNKNVWVHTELGYFSG-EAVPSNGLVLNTSKGLVLVDSSWDDKLTKELIE 98
+gi|115023|sp|P10425|       LNKNVWVHTELGYFNG-EAVPSNGLVLNTSKGLVLVDSSWDNKLTKELIE 99
+gi|115030|sp|P25910|       LSDKVYTYVSLAEIEGWGMVPSNGMIVINNHQAALLDTPINDAQTEMLVN 82
+gi|2984094                 RIYGVFGVYEQVSYEN-RGFISNAYFYVADDGVLVVDALSTYKLGKELIE 81
+gi|282554|pir||S25844      VAEGVYAYEQAP---G-GWCVSNAGIVVGGDGALVVDTLSTIPRARRLAE 53
+                               *:   .     .     **. .   ..   ::*:       . * :
+
+query                      MVEKKFKKRVTDVIITHAHADRIGGMKTLKERGIKAHSTALTAELAKKNG 148
+gi|115023|sp|P10425|       MVEKKFQKRVTDVIITHAHADRIGGITALKERGIKAHSTALTAELAKKSG 149
+gi|115030|sp|P25910|       WVTDSLHAKVTTFIPNHWHGDCIGGLGYLQRKGVQSYANQMTIDLAKEKG 132
+gi|2984094                 SIRSVTNKPIRFLVVTHYHTDHFYGAKAFREVGAEVIAHEWAFDYISQPS 131
+gi|282554|pir||S25844      WVDKLAAGPGRTVVNTHFHGDHAFGNQVFAP-GTRIIAHEDMRSAMVTTG 102
+                            : .        .: .* * *   *   :   * .  :     .     .
+
+query                      --------------------YEEPLGDLQSVTNLKFGN----MKVETFYP 174
+gi|115023|sp|P10425|       --------------------YEEPLGDLQTVTNLKFGN----TKVETFYP 175
+gi|115030|sp|P25910|       --------------------LPVPEHGFTDSLTVSLDG----MPLQCYYL 158
+gi|2984094                 SYNFFLARKKILKEHLEGTELTPPTITLTKNLNVYLQVGKEYKRFEVLHL 181
+gi|282554|pir||S25844      ----LALTGLWPRVDWGEIELRPPNVTFRDRLTLHVGE----RQVELICV 144
+                                                  *   :    .: .        .:    
+
+query                      GKGHTEDNIVVWLPQYQILAGGCLVKSASSKDLGNVADAYVNEWSTSIEN 224
+gi|115023|sp|P10425|       GKGHTEDNIVVWLPQYQILAGGCLVKSAEAKNLGNVADAYVNEWSTSIEN 225
+gi|115030|sp|P25910|       GGGHATDNIVVWLPTENILFGGCMLKDNQATSIGNISDADVTAWPKTLDK 208
+gi|2984094                 CRAHTNGDIVVWIPDEKVLFSGDIVFDGRLPFLG---SGNSRTWLVCLDE 228
+gi|282554|pir||S25844      GPAHTDHDVVVWLPEERVLFAGDVVMSGVTPFAL---FGSVAGTLAALDR 191
+                             .*:  ::***:*  .:* .* :: .           .        ::.
+
+query                      VLKRYGNINLVVPGHGEVGDR-----GLLLHTLDLLK------------- 256
+gi|115023|sp|P10425|       MLKRYRNINLVVPGHGKVGDK-----GLLLHTLDLLK------------- 257
+gi|115030|sp|P25910|       VKAKFPSARYVVPGHGDYGGT-----ELIEHTKQIVNQYIESTSKP---- 249
+gi|2984094                 ILKMKPRILLPGHGEALIGEKKIK--EAVSWTRKYIKDLRETIRKLYEEG 276
+gi|282554|pir||S25844      LAELEPEVVVGGHGPVAGPEVIDANRDYLRWVQRLAADAVDRRLTPLQAA 241
+                           :            *              :  .                  
+
+query                      --------------------------------------------------
+gi|115023|sp|P10425|       --------------------------------------------------
+gi|115030|sp|P25910|       --------------------------------------------------
+gi|2984094                 --CDVECVRERINEELIKIDPSYAQVPVFF-NVNPVNAYYVYFEIENEIL 323
+gi|282554|pir||S25844      RRADLGAFAGLLDAERLVANLHRAHEELLGGHVRDAMEIFAELVAYNGGQ 291
+                                                                             
+
+query                      ------
+gi|115023|sp|P10425|       ------
+gi|115030|sp|P25910|       ------
+gi|2984094                 MGE--- 326
+gi|282554|pir||S25844      LPTCLA 297
+                                 

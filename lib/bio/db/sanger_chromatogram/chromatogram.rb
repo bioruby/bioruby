@@ -4,7 +4,6 @@
 # Copyright::	Copyright (C) 2009 Anthony Underwood <anthony.underwood@hpa.org.uk>, <email2ants@gmail.com>
 # License::	The Ruby License
 #
-# $Id:$
 #
 require 'bio/sequence/adapter'
 module Bio
@@ -103,7 +102,7 @@ module Bio
       @gtrace = tmp_trace.reverse
 
       # reverse base qualities
-      if !@aqual.nil? # if qualities exist
+      if (defined? @aqual) && @aqual # if qualities exist
         tmp_qual = @aqual
         @aqual = @tqual.reverse
         @tqual = tmp_qual.reverse

@@ -6,17 +6,12 @@
 #               Ryan Raaum <ryan@raaum.org>
 # License::     The Ruby License
 #
-# $Id:$
-#
-
 
 module Bio
 
-class Sequence
+require 'bio/sequence' unless const_defined?(:Sequence)
 
-  autoload :Common, 'bio/sequence/common'
-  autoload :NA,     'bio/sequence/na'
-  autoload :AA,     'bio/sequence/aa'
+class Sequence
 
   # Return sequence as 
   # String[http://corelib.rubyonrails.org/classes/String.html].
@@ -37,7 +32,7 @@ class Sequence
 
 module Common
 
-  # <b>Bio::Sequence#to_fasta is DEPRECIATED</b>
+  # <b>Bio::Sequence#to_fasta is DEPRECATED</b>
   # Do not use Bio::Sequence#to_fasta ! Use Bio::Sequence#output instead. 
   # Note that Bio::Sequence::NA#to_fasta, Bio::Sequence::AA#to_fasata,
   # and Bio::Sequence::Generic#to_fasta <b>can still be used</b>,

@@ -2,7 +2,7 @@
 = README.rdoc - README for BioRuby
 Copyright:: Copyright (C) 2001-2007 Toshiaki Katayama <k@bioruby.org>,
             Copyright (C) 2008      Jan Aerts <jandot@bioruby.org>
-            Copyright (C) 2011      Naohisa Goto <ng@bioruby.org>
+            Copyright (C) 2011-2015 Naohisa Goto <ng@bioruby.org>
 License::   The Ruby License
 * The above statement is limited to this file. See below about BioRuby's
   copyright and license.
@@ -10,7 +10,7 @@ License::   The Ruby License
 
 = BioRuby
 
-Copyright (C) 2001-2011 Toshiaki Katayama <k@bioruby.org>
+Copyright (C) 2001-2012 Toshiaki Katayama <k@bioruby.org>
 
 BioRuby is an open source Ruby library for developing bioinformatics
 software.  Object oriented scripting language Ruby has many features
@@ -30,8 +30,8 @@ Blast, Fasta, Hmmer and many other software packages for biological
 analysis can be executed within the BioRuby script, and the results
 can be fully parsed to extract the portion you need.  BioRuby supports
 major biological database formats and provides many ways for accessing
-them through flatfile indexing, SQL, web services etc.  Various web
-services including KEGG API can be easily utilized by BioRuby.
+them through flatfile indexing, web services etc.  Various web
+services can be easily utilized by BioRuby.
 
 
 == FOR MORE INFORMATION
@@ -45,6 +45,7 @@ See RELEASE_NOTES.rdoc for news and important changes in this version.
 README.rdoc:: This file. General information and installation procedure.
 RELEASE_NOTES.rdoc:: News and important changes in this release.
 KNOWN_ISSUES.rdoc:: Known issues and bugs in BioRuby.
+doc/RELEASE_NOTES-1.4.3.rdoc:: News and incompatible changes from 1.4.2 to 1.4.3.
 doc/RELEASE_NOTES-1.4.2.rdoc:: News and incompatible changes from 1.4.1 to 1.4.2.
 doc/RELEASE_NOTES-1.4.1.rdoc:: News and incompatible changes from 1.4.0 to 1.4.1.
 doc/RELEASE_NOTES-1.4.0.rdoc:: News and incompatible changes from 1.3.1 to 1.4.0.
@@ -55,11 +56,11 @@ doc/Changes-0.7.rd:: News and incompatible changes from 0.6.4 to 1.2.1.
 
 doc/Tutorial.rd:: BioRuby Tutorial.
 doc/Tutorial.rd.html:: HTML version of Tutorial.rd.
-doc/KEGG_API.rd:: Documents about KEGG API, including usage of Bio::KEGG::API.
 
 ==== BioRuby development
 
 ChangeLog:: History of changes.
+doc/ChangeLog-1.4.3:: changes from 1.4.2 to 1.4.3.
 doc/ChangeLog-before-1.4.2:: changes before 1.4.2.
 doc/ChangeLog-before-1.3.1:: changes before 1.3.1.
 README_DEV.rdoc:: Describes ways to contribute to the BioRuby project, including coding styles and documentation guidelines.
@@ -68,7 +69,6 @@ README_DEV.rdoc:: Describes ways to contribute to the BioRuby project, including
 
 doc/Tutorial.rd.ja:: BioRuby Tutorial written in Japanese.
 doc/Tutorial.rd.ja.html:: HTML version of Tutorial.rd.ja.
-doc/KEGG_API.rd.ja:: Japanese translation of KEGG_API.rd.
 
 ==== Sample codes
 
@@ -99,13 +99,13 @@ The stable release is freely available from the BioRuby website.
 {RubyGems (packaging system for Ruby)}[http://rubygems.org/] version of
 the BioRuby package is also available for easy installation.
 
-* http://rubyforge.org/projects/bioruby/
+* https://rubygems.org/gems/bio
 
 === git
 
 If you need the latest development version, this is provided at
 
-* http://github.com/bioruby/bioruby
+* https://github.com/bioruby/bioruby
 
 and can be obtained by the following procedure:
 
@@ -114,9 +114,9 @@ and can be obtained by the following procedure:
 
 == REQUIREMENTS
 
-* Ruby 1.8.6 or later (except Ruby 1.9.0) -- http://www.ruby-lang.org/
-  * Ruby 1.9.3-p0 or later, Ruby 1.9.2-p290 or later, or Ruby 1.8.7-p352 or
-    later is recommended.
+* Ruby 1.8.7 or later (except Ruby 1.9.0) -- http://www.ruby-lang.org/
+  * Ruby 2.1.6 or later, or Ruby 2.2.2 or later is recommended.
+  * This is the final version running on Ruby 1.8, tested with Ruby1.8.7-p374.
   * See KNOWN_ISSUES.rdoc for Ruby version specific problems.
 
 
@@ -124,46 +124,22 @@ and can be obtained by the following procedure:
 
 Some optional libraries can be utilized to extend BioRuby's functionality.
 If your needs meets the following conditions, install them by using RubyGems,
-or download and install from the "Ruby Application Archive" (RAA) at
-http://raa.ruby-lang.org/, RubyForge at http://rubyforge.org/, GitHub at
-http://github.com/, or the following web sites.
+or download and install from the following web sites.
 
 For faster parsing of the BLAST XML output format:
 
-* {RAA:xmlparser}[http://raa.ruby-lang.org/project/xmlparser/]
+* {xmlparser}[https://rubygems.org/gems/xmlparser]
   * For Ruby 1.8: {gem install xmlparser}[http://rubygems.org/gems/xmlparser]
-  * For Ruby 1.9: http://www.yoshidam.net/Ruby.html#xmlparser
+  * For Ruby 1.9 or later: http://www.yoshidam.net/Ruby.html#xmlparser
   * In both cases, {The Expat XML Parser}[http://expat.sourceforge.net/]
     and C compiler will be required.
 
 Creating faster flatfile index using Berkley DB:
 
 * {GitHub:ruby-bdb}[https://github.com/knu/ruby-bdb]
-  (which took over {RAA:bdb}[http://raa.ruby-lang.org/project/bdb/])
+  (which took over {bdb}[https://github.com/ruby-bdb/bdb])
   (No RubyGems available)
   * {Oracle Berkeley DB}[http://www.oracle.com/technetwork/database/berkeleydb/index.html] and C compiler will be required.
-  
-Accessing BioSQL database created by other Open Bio* libraries:
-
-* {gem install activerecord}[http://rubygems.org/gems/activerecord]
-  and at least one driver (or adapter):
-  * {gem install mysql}[http://rubygems.org/gems/mysql] or
-    {gem install mysql2}[http://rubygems.org/gems/mysql2]
-  * {gem install pg}[http://rubygems.org/gems/pg]
-  * {gem install sqlite-ruby}[http://rubygems.org/gems/sqlite-ruby] or
-    {gem install sqlite3}[http://rubygems.org/gems/sqlite3]
-  * {gem install activerecord-oracle_enhanced-adapter}[http://rubygems.org/gems/activerecord-oracle_enhanced-adapter]
-
-For parsing PhyloXML format files:
-
-* {gem install libxml-ruby}[http://rubygems.org/gems/libxml-ruby]
-  * {GNOME Libxml2 XML toolkit}[http://xmlsoft.org/] and C compiler will be
-    required.
-
-(Only for Ruby 1.9.x) For using SOAP web services e.g. KEGG API:
-
-* {gem install soap4r-ruby1.9}[https://rubygems.org/gems/soap4r-ruby1.9]
-  * For Ruby 1.8.x, SOAP4R is bundled within the Ruby 1.8.x release.
 
 
 == INSTALL
@@ -172,10 +148,10 @@ For parsing PhyloXML format files:
 
 If you are using RubyGems, just type
 
-  % gems install bio
+  % gem install bio
 
 Alternatively, manually download bio-X.X.X.gem from 
-http://rubyforge.org/projects/bioruby/ and install it by using gems command.
+http://bioruby.org/archive/ and install it by using gems command.
 
 RubyGems is bundled with Ruby 1.9.1 or later. For Ruby 1.8.7 or earlier,
 download and install RubyGems from http://rubygems.org/ .
@@ -294,6 +270,16 @@ for list of plugins and related software utilizing BioRuby.
 
 * http://biogems.info/
 
+Plugins (Biogems) listed below had been included in BioRuby in former days,
+and were split to separate packages to reduce complexity and external
+dependencies.
+
+* {bioruby-phyloxml}[http://rubygems.org/gems/bioruby-phyloxml]
+  * NOTE: Please uninstall bio-phyloxml, that have been created as a
+    preliminary trial of splitting a module in 2012 and have not been
+    maintained after that.
+* {bio-biosql}[http://rubygems.org/gems/bio-biosql]
+
 To develop your own plugin, see "Plugins" pages of BioRuby Wiki.
 
 * http://bioruby.open-bio.org/wiki/Plugins
@@ -304,9 +290,9 @@ BioRuby can be freely distributed under the same terms as Ruby.
 See the file COPYING (or COPYING.ja written in Japanese).
 
 As written in the file COPYING, see the file LEGAL for files distributed
-under different license. For example, setup.rb which comes from
-{RAA:setup}[http://raa.ruby-lang.org/project/setup/] developed by Minero Aoki
-(http://i.loveruby.net/en/projects/setup/) is licensed under LGPL 2.1.
+under different license. For example, setup.rb which comes from "setup"
+developed by Minero Aoki (http://i.loveruby.net/en/projects/setup/) is
+licensed under LGPL 2.1.
 
 
 == REFERENCE

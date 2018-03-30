@@ -1,0 +1,285 @@
+= BioRuby 1.5.0 RELEASE NOTES
+
+A lot of changes have been made to the BioRuby 1.5.0 after the version 1.4.3
+is released. This document describes important and/or incompatible changes
+since the BioRuby 1.4.3 release.
+
+For known problems, see KNOWN_ISSUES.rdoc.
+
+== NEWS
+
+=== Full support of Ruby 2.0.0, 2.1, and 2.2
+
+Ruby 2.0.0, 2.1, and 2.2 are now recommended Ruby versions for running
+BioRuby codes.
+
+=== Support of Ruby 1.8 will be stopped
+
+This release is the final BioRuby version that can be run on Ruby 1.8.
+
+=== License is updated to the new Ruby's License
+
+BioRuby is distributed under the same license as Ruby's. In October 2011,
+Ruby's License was changed from a dual license with GPLv2 to a dual license
+with 2-clause BSDL. Since BioRuby 1.5.0, we have updated to the
+new version of Ruby's License. For details about the license, see COPYING
+or COPYING.ja and BSDL. In addition, please do not forget to see LEGAL for
+exception files that are subjected to different licenses.
+
+=== Semantic Versioning will be introduced
+
+We will adopt the Semantic Versioning since the next release version, which
+will be BioRuby 1.5.1. This means that BioRuby 1.5.0 is NOT subject to the
+Semantic Versioning.
+
+
+== New features and improvements
+
+=== New method Bio::FastaFormat#first_name
+
+Bio::FastaFormat#first_name method is added to get the first word in the
+definition line. This method was proposed by Ben J. Woodcroft.
+
+=== Accuracy of Bio::SiRNA
+
+Accuracy of siRNA designing algorithms in Bio::SiRNA is improved,
+contributed by meso_cacase.
+
+=== Speed up of Bio::ClustalW::Report
+
+Running speed of Bio::ClustalW::Report is optimized, contributed by
+Andrew Grimm.
+
+=== Many warning messages are squashed
+
+Most warning messages when running ruby with "-w" option, e.g. "assigned
+but unused variable", "instance variable @xxx not initialized", are
+suppressed. Fixes are contributed by Kenichi Kamiya, Andrew Grimm, and
+BioRuby core members.
+
+=== Refactoring of codes
+
+Many existing codes are reviewed and refactored. Patches are contributed
+by Iain Barnett, Kenichi Kamiya, and BioRuby core members.
+
+
+== Bug fixes
+
+=== Bugs due to remote server changes
+
+==== Bio::PubMed
+
+Bio::PubMed#search, query, and pmfetch are re-implemented by using NCBI
+E-Utilities. They were broken because unofficial API was used.
+Paul Leader reported the bug and gave discussion.
+
+==== Bio::Hinv
+
+Bio::Hinv did not work because of the API server URL is changed.
+
+==== Bio::TogoWS::REST
+
+* Bio::TogoWS::REST#search with offset and limit did not work due to
+  TogoWS server spec change about URI escape.
+* Bio::TogoWS::REST#convert did not work because of the spec change of
+  TogoWS REST API.
+
+=== Bio::Fetch
+
+Bio::Fetch with default parameters did not work because BioRuby's default
+BioFetch server had been down. We have decided not to restore the service.
+For smooth migration of codes using BioRuby's BioFetch server, we provide
+"bio-old-biofetch-emulator" gem. See below "Imcompatible changes" for details.
+
+The bug was reported and discussed by Jose Irizarry, Robert A. Heiler, and
+others.
+
+=== BioSQL
+
+* Only do gsub on bio_ref.reference.authors if it exists.
+* Missing require when generating genbank output for BioSQL sequence.
+
+Contributed by Brynjar Smari Bjarnason.
+
+=== Bugs found in data format parsers
+
+* Bio::PDB#seqres SEQRES serNum digits were extended in PDB v3.2 (2008).
+  Thanks to a researcher who sent the patch.
+* Bio::Blast::Default::Report parse error when subject sequence contains
+  spaces. Edward Rice reported the bug.
+* Bio::UniProtKB#gene_name raised NoMethodError when gene_names method
+  returns nil. It should return nil. Candidate fix sent by Jose Irizarry.
+* Bio::PhyloXML::Parser.open_uri did not return block return value when
+  giving a block.
+
+=== Other bugs
+
+* lib/bio/shell/plugin/seq.rb: String#step and #skip (extended by bioruby
+  shell) did not yield the last part of the string due to a change from
+  Ruby 1.8 to 1.9.
+* Documentation and typo fixes. Contributed by many persons, including
+  Iain Barnett and ctSkennerton.
+
+
+== Renamed features
+
+=== Bio::SPTR, Bio::UniProt, Bio::SwissProt, and Bio::TrEMBL => Bio::UniProtKB
+
+The classes for parsing UniProtKB (former SwissProt and TrEMBL) data,
+Bio::SPTR, Bio::UniProt, Bio::SwissProt, and Bio::TrEMBL, are unified into
+the new class name Bio::UniProtKB, and old names are deprecated.
+
+For keeping backward compatibility, old class names Bio::SPTR, Bio::UniProt,
+Bio::SwissProt, and Bio::TrEMBL are still available, but warning message
+will be shown when using the old class names. These old class names will be
+deleted in the future.
+
+The file contatining Bio::UniProtKB class definition is also changed to
+lib/bio/db/embl/uniprotkb.rb. For keeping backward compatibility, old
+files sptr.rb, uniprot.rb, tremble.rb are still kept, but they will be
+removed in the future.
+
+
+== Deprecated features
+
+=== Bio::RefSeq, Bio::DDBJ
+
+Bio::RefSeq and Bio::DDBJ are deprecated because they are only an alias of
+Bio::GenBank. Warning message will be shown when loading the classes and
+initializing new instances. Please use Bio::GenBank instead.
+
+lib/bio/db/genbank/ddbj.rb and lib/bio/db/genbank/refseq.rb which contain
+Bio::DDBJ and Bio::RefSeq, respectively, are also deprecated. For keeping
+backward compatibility, old file are still kept, but they will be removed
+in the future.
+
+
+== Removed features
+
+=== Bio::SOAPWSDL
+
+Bio::SOAPWSDL (lib/bio/io/soapwsdl.rb) is removed because SOAP4R
+(SOAP/WSDL library in Ruby) is no longer bundled with Ruby since Ruby 1.9.
+For Ruby 1.9 or later, some gems of SOAP4R are available, but we think they
+are not well-maintained. Moreover, many SOAP servers have been retired
+(see below). So, we give up maintaining Bio::SOAPWSDL and all SOAP client
+classes in BioRuby.
+
+=== Bio::EBI::SOAP
+
+Bio::EBI::SOAP (lib/bio/io/ebisoap.rb) is removed because Bio::SOAPWSDL
+is removed.
+
+=== Bio::KEGG::API
+
+Bio::KEGG::API is removed because KEGG API SOAP service was discontinued in
+December 31, 2012. See http://www.kegg.jp/kegg/rest/ for the announcement
+of service discontinuation.
+
+=== Bio::DBGET
+
+Bio::DBGET is removed because it only supports old original DBGET protocols
+that was discontinued in 2004. Note that the DBGET is still available via
+the web. See http://www.genome.jp/en/gn_dbget.html for details.
+
+=== Bio::Ensembl
+
+Bio::Ensembl is removed because it does not work after the renewal of Ensembl
+web site in 2008. Instead, bio-ensembl gem which supports recent ensembl API
+is available.
+
+=== Bio::DDBJ::XML, Bio::DDBJ::REST
+
+Bio::DDBJ::XML and Bio::DDBJ::REST are removed because DDBJ Web API (WABI)
+web services were suspended in 2012 and then they were completely renewed
+with incompatible APIs in 2013.
+
+=== Bio::HGC::HiGet
+
+Bio::HGC::HiGet (lib/bio/io/higet.rb) is removed because the HiGet web server
+http://higet.hgc.jp/ have been down since 2011, and we think that the server
+will not be restored again.
+
+=== Bio::NCBI::SOAP
+
+Bio::NCBI::SOAP is removed because it always raises error during the parsing
+of WSDL files provided by NCBI. In addition, NCBI announced that the SOAP
+web service for the E-utilities will be terminated on July 1, 2015. Instead,
+Bio::NCBI::REST, REST client for the NCBI E-utility web service, is available.
+
+=== Bio::KEGG::Taxonomy
+
+Bio::KEGG::Taxonomy is removed because it does not work correctly. It raises
+error, it falls into infinite loop, or it returns apparently broken data.
+Moreover, KEGG closed public FTP site and the file "taxonomy" could only be
+obtained by paid subscribers.
+
+=== Bio.method_missing
+
+Bio.method_missing, that aims to provide shortcuts of Bio::Shell methods
+with shorter name without typing "Shell", is removed because most of the
+methods raises error mainly due to bypassing of initialization procedure.
+In addition, we now think that the use of method_missing should generally
+be avoid unless it is really necessary.
+
+=== extconf.rb
+
+extconf.rb, an alternative way to install BioRuby to the system, is removed
+because of avoiding potential confusions. Nowadays, extconf.rb is usually
+only used for building native extensions, but no native extensions are
+included in this release. Use gem or setup.rb to install BioRuby.
+
+
+== Incompatible changes
+
+Also see the above "Renamed features", "Deprecated features", and
+"Removed features" sections.
+
+=== Bio::Fetch
+
+The BioRuby default BioFetch server http://bioruby.org/cgi-bin/biofetch.rb,
+that was the default server for Bio::Fetch before BioRuby 1.4, is deprecated.
+Due to the service stop, default server URL in Bio::Fetch is removed, and
+we decide not to give any server URL by default for Bio::Fetch.
+
+As an alternative, new class Bio::Fetch::EBI which uses the EBI Dbfetch
+server is added. When changing codes form Bio::Fetch to Bio::Fetch::EBI,
+be careful of the differences of database names, default and available
+data formats between the former BioRuby BioFetch server and the EBI Dbfetch
+server.
+
+Methods directly affected are:
+
+* Bio::Fetch.new (Bio::Fetch#initialize) does not have default server URL,
+  and URL of a server must always be explicitly given as the first argument.
+* Bio::Fetch.query is removed.
+
+For the purpose running old codes, it is recommended to install
+bio-old-biofetch-emulator gem. The bio-old-biofetch-emulator gem emulates
+old BioRuby's default BioFetch server by using other existing web services.
+See https://rubygems.org/gems/bio-old-biofetch-emulator for details.
+We think many codes can run with no changes by simply installing the gem and
+adding "-r bio-old-biofetch-emulator" into the command-line when executing
+ruby.
+
+
+== Known issues
+
+The following issues are added or updated. See KNOWN_ISSUES.rdoc for other
+already known issues.
+
+=== Bio::PDB
+
+Bio::PDB should be updated to follow PDB format version 3.3.
+
+=== Bio::Blast::Report
+
+NCBI announces that that they are makeing a new version of BLAST XML data
+format. BioRuby should support it.
+
+=== Bio::Blast::Default::Report
+
+Bio::Blast::Default::Report currently supports legacy BLAST only.
+It may be better to support BLAST+ text output format, although NCBI
+do not recommend to do so because the format is unstable.
+

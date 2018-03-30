@@ -12,7 +12,7 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 
 # libraries needed for the tests
 require 'test/unit'
-require 'bio/db/fasta/defline.rb'
+require 'bio/db/fasta/defline'
 
 module Bio
   class TestBioFastaDefline < Test::Unit::TestCase

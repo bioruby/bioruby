@@ -4,8 +4,6 @@
 # Copyright::  Copyright (C) 2003-2006 GOTO Naohisa <ng@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
-#
 # == Description
 #
 # NCBI BLAST default (-m 0 option) output parser.
@@ -19,18 +17,15 @@
 # * http://www.ncbi.nlm.nih.gov/blast/ 
 #
 
-begin
-  require 'strscan'
-rescue LoadError
-end
+require 'strscan'
 require 'singleton'
 
-#--
-#require 'bio/db'
-#++
 require 'bio/io/flatfile'
 
 module Bio
+
+  require 'bio/appl/blast' unless const_defined?(:Blast)
+
   class Blast
     module Default #:nodoc:
 
@@ -72,19 +67,6 @@ module Bio
 
         # Returns whole entry as a string.
         def to_s; @entry; end
-
-        #:stopdoc:
-        # prevent using StringScanner_R (in old version of strscan)
-        if !defined?(StringScanner) then
-          def initialize(*arg)
-            raise 'couldn\'t load strscan.so'
-          end #def
-        elsif StringScanner.name == 'StringScanner_R' then
-          def initialize(*arg)
-            raise 'cannot use StringScanner_R'
-          end #def
-        end
-        #:startdoc:
 
         # Defines attributes which delegate to @f0dbstat objects.
         def self.delegate_to_f0dbstat(*names)
@@ -274,7 +256,7 @@ module Bio
         # Parses the first line of the BLAST result.
         def format0_parse_header
           unless defined?(@program)
-            if /([\-\w]+) +([\w\-\.\d]+) *\[ *([\-\.\w]+) *\] *(\[.+\])?/ =~ @f0header.to_s
+            if /([\-\w]+) +([\w\-\.]+) *\[ *([\-\.\w]+) *\] *(\[.+\])?/ =~ @f0header.to_s
               @program = $1
               @version = "#{$1} #{$2} [#{$3}]"
               @version_number = $2
@@ -402,10 +384,17 @@ module Bio
 
           # Returns name of the matrix.
           def matrix;      parse_params; @matrix;      end
+
           # Returns the match score of the matrix.
-          def sc_match;    parse_params; @sc_match;    end
+          def sc_match
+            parse_params
+            (defined? @sc_match) ? @sc_match : nil
+          end
           # Returns the mismatch score of the matrix.
-          def sc_mismatch; parse_params; @sc_mismatch; end
+          def sc_mismatch
+            parse_params
+            (defined? @sc_mismatch) ? @sc_mismatch : nil
+          end
 
           # Returns gap open penalty value.
           def gap_open;    parse_params; @gap_open;    end
@@ -589,7 +578,9 @@ module Bio
           # Returns nil if it is not a PHI-BLAST result.
           def pattern
             #PHI-BLAST
-            if !defined?(@pattern) and defined?(@pattern_in_database) then
+            if defined? @pattern
+              @pattern
+            elsif defined? @pattern_in_database then
               @pattern = nil
               @pattern_positions = []
               @f0message.each do |r|
@@ -600,8 +591,10 @@ module Bio
                   @pattern_positions << sc[1].to_i
                 end
               end
+              @pattern
+            else
+              nil
             end
-            @pattern
           end
 
           # (PHI-BLAST) Returns pattern positions.
@@ -680,7 +673,7 @@ module Bio
                     y = b[j]; y.strip!
                     y.reverse!
                     z = y.split(/\s+/, 3)
-                    z.each { |y| y.reverse! }
+                    z.each { |yy| yy.reverse! }
                     h = Hit.new([ z.pop.to_s.sub(/\.+\z/, '') ])
                     bs = z.pop.to_s
                     bs = '1' + bs if bs[0] == ?e
@@ -1061,7 +1054,7 @@ module Bio
           # Defines attributes which call parse_score before accessing.
           def self.method_after_parse_score(*names)
             names.each do |x|
-              module_eval("def #{x}; parse_score; @#{x}; end")
+              module_eval("def #{x}; parse_score; (defined? @#{x}) ? @#{x} : nil; end")
             end
           end
           private_class_method :method_after_parse_score
@@ -1142,31 +1135,31 @@ module Bio
                 while sc.rest?
                   #p pos_st, len_seq
                   #p nextline.to_s
-                  if r = sc.skip(/(Query|Sbjct)\: *(\d+) */) then
+                  if r = sc.skip(/Query\: *(\d+) */) then
                     pos_st = r
-                    qs = sc[1]
-                    pos1 = sc[2]
+                    pos1 = sc[1]
                     len_seq = sc.skip(/[^ ]*/)
                     seq = sc[0]
                     sc.skip(/ *(\d+) *\n/)
                     pos2 = sc[1]
-                    if qs == 'Query' then
-                      raise ScanError unless nextline == :q
-                      qpos1 = pos1.to_i unless qpos1
-                      qpos2 = pos2.to_i
-                      qseq << seq
-                      nextline = :m
-                    elsif qs == 'Sbjct' then
-                      if nextline == :m then
-                        mseq << (' ' * len_seq)
-                      end
-                      spos1 = pos1.to_i unless spos1
-                      spos2 = pos2.to_i
-                      sseq << seq
-                      nextline = :q
-                    else
-                      raise ScanError
+                    raise ScanError unless nextline == :q
+                    qpos1 = pos1.to_i unless qpos1
+                    qpos2 = pos2.to_i
+                    qseq << seq
+                    nextline = :m
+                  elsif r = sc.scan(/Sbjct\: *(\d+) *.+ +(\d+) *\n/) then
+                    pos1 = sc[1]
+                    pos2 = sc[2]
+                    raise ScanError unless pos_st
+                    raise ScanError unless len_seq
+                    seq = r[pos_st, len_seq]
+                    if nextline == :m then
+                      mseq << (' ' * len_seq)
                     end
+                    spos1 = pos1.to_i unless spos1
+                    spos2 = pos2.to_i
+                    sseq << seq
+                    nextline = :q
                   elsif r = sc.scan(/ {6}.+/) then
                     raise ScanError unless nextline == :m
                     mseq << r[pos_st, len_seq]

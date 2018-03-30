@@ -57,7 +57,9 @@ module Bio
 
     def test_reparse
       tree = @newick.tree
+      tree_text = tree.output(:newick)
       assert_equal(@newick, @newick.reparse)
+      assert_equal(tree_text, @newick.tree.output(:newick))
     end
 
     def test_reparse_before_lazy_parsing

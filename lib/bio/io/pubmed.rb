@@ -5,47 +5,42 @@
 # Copyright::  Copyright (C) 2006 Jan Aerts <jan.aerts@bbsrc.ac.uk>
 # License::    The Ruby License
 #
-# $Id:$
-#
 
 require 'bio/io/ncbirest'
-require 'bio/command'
-require 'cgi'
 
 module Bio
 
 # == Description
 #
 # The Bio::PubMed class provides several ways to retrieve bibliographic
-# information from the PubMed database at
-#   http://www.ncbi.nlm.nih.gov/sites/entrez?db=PubMed
+# information from the PubMed database at NCBI.
 #
 # Basically, two types of queries are possible:
 #
 # * searching for PubMed IDs given a query string:
 #   * Bio::PubMed#esearch  (recommended)
-#   * Bio::PubMed#search   (only retrieves top 20 hits)
+#   * Bio::PubMed#search   (only retrieves top 20 hits; will be deprecated)
 #
 # * retrieving the MEDLINE text (i.e. authors, journal, abstract, ...)
 #   given a PubMed ID
 #   * Bio::PubMed#efetch   (recommended)
-#   * Bio::PubMed#query    (unstable for the change of the HTML design)
-#   * Bio::PubMed#pmfetch  (still working but could be obsoleted by NCBI)
+#   * Bio::PubMed#query    (will be deprecated)
+#   * Bio::PubMed#pmfetch  (will be deprecated)
 #
-# The different methods within the same group are interchangeable and should
-# return the same result.
+# Since BioRuby 1.5, all implementations uses NCBI E-Utilities services.
+# The different methods within the same group still remain because
+# specifications of arguments and/or return values are different.
+# The search, query, and pmfetch will be obsoleted in the future.
 # 
 # Additional information about the MEDLINE format and PubMed programmable
 # APIs can be found on the following websites:
 #
-# * PubMed Overview:
-#     http://www.ncbi.nlm.nih.gov/entrez/query/static/overview.html
-# * PubMed help:
-#     http://www.ncbi.nlm.nih.gov/entrez/query/static/help/pmhelp.html
-# * Entrez utilities index:
-#      http://www.ncbi.nlm.nih.gov/entrez/utils/utils_index.html
-# * How to link:
-#     http://www.ncbi.nlm.nih.gov/books/bv.fcgi?rid=helplinks.chapter.linkshelp
+# * PubMed Tutorial:
+#   http://www.nlm.nih.gov/bsd/disted/pubmedtutorial/index.html
+# * E-utilities Quick Start:
+#   http://www.ncbi.nlm.nih.gov/books/NBK25500/
+# * Creating a Web Link to PubMed:
+#   http://www.ncbi.nlm.nih.gov/books/NBK3862/
 #
 # == Usage
 #
@@ -61,9 +56,13 @@ module Bio
 #   end
 #   
 #   # To retrieve the MEDLINE entry for a given PubMed ID:
-#   puts Bio::PubMed.efetch("10592173", "14693808")
+#   Bio::PubMed.efetch("10592173").each { |x| puts x }
 #   puts Bio::PubMed.query("10592173")
 #   puts Bio::PubMed.pmfetch("10592173")
+#
+#   # To retrieve MEDLINE entries for given PubMed IDs:
+#   Bio::PubMed.efetch([ "10592173", "14693808" ]).each { |x| puts x }
+#   puts Bio::PubMed.query("10592173", "14693808") # returns a String
 #
 #   # This can be converted into a Bio::MEDLINE object:
 #   manuscript = Bio::PubMed.query("10592173")
@@ -80,15 +79,15 @@ class PubMed < Bio::NCBI::REST
   # *Arguments*:
   # * _str_: query string (required)
   # * _hash_: hash of E-Utils options
-  #   * _retmode_: "xml", "html", ...
-  #   * _rettype_: "medline", ...
-  #   * _retmax_: integer (default 100)
-  #   * _retstart_: integer
-  #   * _field_
-  #   * _reldate_
-  #   * _mindate_
-  #   * _maxdate_
-  #   * _datetype_
+  #   * _"retmode"_: "xml", "html", ...
+  #   * _"rettype"_: "medline", ...
+  #   * _"retmax"_: integer (default 100)
+  #   * _"retstart"_: integer
+  #   * _"field"_
+  #   * _"reldate"_
+  #   * _"mindate"_
+  #   * _"maxdate"_
+  #   * _"datetype"_
   # *Returns*:: array of PubMed IDs or a number of results
   def esearch(str, hash = {})
     opts = { "db" => "pubmed" }
@@ -104,15 +103,15 @@ class PubMed < Bio::NCBI::REST
   # *Arguments*:
   # * _ids_: list of PubMed IDs (required)
   # * _hash_: hash of E-Utils options
-  #   * _retmode_: "xml", "html", ...
-  #   * _rettype_: "medline", ...
-  #   * _retmax_: integer (default 100)
-  #   * _retstart_: integer
-  #   * _field_
-  #   * _reldate_
-  #   * _mindate_
-  #   * _maxdate_
-  #   * _datetype_
+  #   * _"retmode"_: "xml", "html", ...
+  #   * _"rettype"_: "medline", ...
+  #   * _"retmax"_: integer (default 100)
+  #   * _"retstart"_: integer
+  #   * _"field"_
+  #   * _"reldate"_
+  #   * _"mindate"_
+  #   * _"maxdate"_
+  #   * _"datetype"_
   # *Returns*:: Array of MEDLINE formatted String
   def efetch(ids, hash = {})
     opts = { "db" => "pubmed", "rettype"  => "medline" }
@@ -124,26 +123,29 @@ class PubMed < Bio::NCBI::REST
     result
   end
 
+  # This method will be DEPRECATED in the future.
+  #
   # Search the PubMed database by given keywords using entrez query and returns
-  # an array of PubMed IDs. Caution: this method returns the first 20 hits only.
+  # an array of PubMed IDs.
+  #
+  # Caution: this method returns the first 20 hits only,
+  #
   # Instead, use of the 'esearch' method is strongly recomended.
+  #
+  # Implementation details: Since BioRuby 1.5, this method internally uses
+  # NCBI EUtils with retmax=20 by using Bio::PubMed#efetch method.
+  #
   # ---
   # *Arguments*:
   # * _id_: query string (required)
   # *Returns*:: array of PubMed IDs
   def search(str)
-    host = "www.ncbi.nlm.nih.gov"
-    path = "/sites/entrez?tool=bioruby&cmd=Search&doptcmdl=Brief&db=PubMed&term="
-
-    ncbi_access_wait
-
-    http = Bio::Command.new_http(host)
-    response = http.get(path + CGI.escape(str))
-    result = response.body
-    result = result.scan(/value="(\d+)" id="UidCheckBox"/m).flatten
-    return result
+    warn "Bio::PubMed#search is now a subset of Bio::PubMed#esearch. Using Bio::PubMed#esearch is recommended." if $VERBOSE
+    esearch(str, { "retmax" => 20 })
   end
 
+  # This method will be DEPRECATED in the future.
+  #
   # Retrieve PubMed entry by PMID and returns MEDLINE formatted string using
   # entrez query.
   # ---
@@ -151,68 +153,61 @@ class PubMed < Bio::NCBI::REST
   # * _id_: PubMed ID (required)
   # *Returns*:: MEDLINE formatted String
   def query(*ids)
-    host = "www.ncbi.nlm.nih.gov"
-    path = "/sites/entrez?tool=bioruby&cmd=Text&dopt=MEDLINE&db=PubMed&uid="
-    list = ids.collect { |x| CGI.escape(x.to_s) }.join(",")
-
-    ncbi_access_wait
-
-    http = Bio::Command.new_http(host)
-    response = http.get(path + list)
-    result = response.body
-    result = result.scan(/<pre>\s*(.*?)<\/pre>/m).flatten
-
-    if result =~ /id:.*Error occurred/
-      # id: xxxxx Error occurred: Article does not exist
-      raise( result )
+    warn "Bio::PubMed#query internally uses Bio::PubMed#efetch. Using Bio::PubMed#efetch is recommended." if $VERBOSE
+    ret = efetch(ids)
+    if ret && ret.size > 0 then
+      ret.join("\n\n") + "\n"
     else
-      if ids.size > 1
-        return result
-      else
-        return result.first
-      end
+      ""
     end
   end
 
-  # Retrieve PubMed entry by PMID and returns MEDLINE formatted string using
-  # entrez pmfetch.
+  # This method will be DEPRECATED in the future.
+  #
+  # Retrieve PubMed entry by PMID and returns MEDLINE formatted string.
+  #
   # ---
   # *Arguments*:
   # * _id_: PubMed ID (required)
   # *Returns*:: MEDLINE formatted String
   def pmfetch(id)
-    host = "www.ncbi.nlm.nih.gov"
-    path = "/entrez/utils/pmfetch.fcgi?tool=bioruby&mode=text&report=medline&db=PubMed&id="
+    warn "Bio::PubMed#pmfetch internally use Bio::PubMed#efetch. Using Bio::PubMed#efetch is recommended." if $VERBOSE
 
-    ncbi_access_wait
-
-    http = Bio::Command.new_http(host)
-    response = http.get(path + CGI.escape(id.to_s))
-    result = response.body
-    if result =~ /#{id}\s+Error/
-      raise( result )
+    ret = efetch(id)
+    if ret && ret.size > 0 then
+      ret.join("\n\n") + "\n"
     else
-      result = result.gsub("\r", "\n").squeeze("\n").gsub(/<\/?pre>/, '')
-      return result
+      ""
     end
   end
 
+  # The same as Bio::PubMed.new.esearch(*args).
   def self.esearch(*args)
     self.new.esearch(*args)
   end
 
+  # The same as Bio::PubMed.new.efetch(*args).
   def self.efetch(*args)
     self.new.efetch(*args)
   end
 
+  # This method will be DEPRECATED. Use esearch method.
+  #
+  # The same as Bio::PubMed.new.search(*args).
   def self.search(*args)
     self.new.search(*args)
   end
 
+  # This method will be DEPRECATED. Use efetch method.
+  #
+  # The same as Bio::PubMed.new.query(*args).
   def self.query(*args)
     self.new.query(*args)
   end
 
+  # This method will be DEPRECATED. Use efetch method.
+  #
+  # The same as Bio::PubMed.new.pmfetch(*args).
   def self.pmfetch(*args)
     self.new.pmfetch(*args)
   end

@@ -1091,7 +1091,7 @@ module Bio
 
       # generates Phylip3.2 (old) non-interleaved format as a string
       def output_phylipnon(options = {})
-        aln, aseqs, lines = __output_phylip_common(options)
+        aln, aseqs, _ = __output_phylip_common(options)
         aln.first + aseqs.join('')
       end
 
@@ -1476,21 +1476,16 @@ module Bio
 
       # Gets the sequence from given object.
       def extract_seq(obj)
-        seq = nil
         if obj.is_a?(Bio::Sequence::NA) or obj.is_a?(Bio::Sequence::AA) then
-          seq = obj
+          obj
         else
-          for m in [ :seq, :naseq, :aaseq ]
-            begin
-              seq = obj.send(m)
-            rescue NameError, ArgumentError
-              seq = nil
-            end
-            break if seq
-          end
-          seq = obj unless seq
+          meth = [ :seq, :naseq, :aaseq ].find {|m|
+            obj.respond_to? m
+          }
+          meth ?
+            obj.__send__(meth) :
+            obj
         end
-        seq
       end
       module_function :extract_seq
 
@@ -1650,7 +1645,6 @@ module Bio
       # (Like Hash#rehash)
       def rehash
         @seqs.rehash
-        oldkeys = @keys
         tmpkeys = @seqs.keys
         @keys.collect! do |k|
           tmpkeys.delete(k)
@@ -2319,7 +2313,7 @@ module Bio
 
         # prepare temporary file
         def _prepare_tempfile(str = nil)
-          tf_in = Tempfile.open(str ? 'alignment_i' :'alignment_o')
+          tf_in = Tempfile.open(str ? 'alignment_i' : 'alignment_o')
           tf_in.print str if str
           tf_in.close(false)
           tf_in

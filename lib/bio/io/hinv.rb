@@ -4,7 +4,6 @@
 # Copyright::  Copyright (C) 2008 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
 #
 
 require 'bio/command'
@@ -17,11 +16,11 @@ module Bio
   # Accessing the H-invDB web services.
   #
   # * http://www.h-invitational.jp/
-  # * http://www.jbirc.aist.go.jp/hinv/hws/doc/index.html
+  # * http://h-invitational.jp/hinv/hws/doc/index.html
   #
   class Hinv
 
-    BASE_URI = "http://www.jbirc.aist.go.jp/hinv/hws/"
+    BASE_URI = "http://h-invitational.jp/hinv/hws/"
 
     module Common
       def query(options = nil)

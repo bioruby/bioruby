@@ -5,7 +5,6 @@
 # Copyright::  Copyright (C) 2010 Toshiaki Katayama <k@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
 #
 
 require 'bio/db'
@@ -81,7 +80,7 @@ class MODULE < KEGGDB
   # ---
   # *Returns*:: Hash of pathway ID and its definition
   def pathways_as_hash
-    unless @pathways_as_hash
+    unless (defined? @pathways_as_hash) && @pathways_as_hash
       @pathways_as_hash = strings_as_hash(pathways_as_strings)
     end
     @pathways_as_hash
@@ -100,7 +99,7 @@ class MODULE < KEGGDB
   # ---
   # *Returns*:: Hash of orthology ID and its definition
   def orthologs_as_hash
-    unless @orthologs_as_hash
+    unless (defined? @orthologs_as_hash) && @orthologs_as_hash
       @orthologs_as_hash = strings_as_hash(orthologs_as_strings)
     end
     @orthologs_as_hash
@@ -126,7 +125,7 @@ class MODULE < KEGGDB
   # ---
   # *Returns*:: Hash of reaction ID and its definition
   def reactions_as_hash
-    unless @reactions_as_hash
+    unless (defined? @reactions_as_hash) && @reactions_as_hash
       @reactions_as_hash = strings_as_hash(reactions_as_strings)
     end
     @reactions_as_hash
@@ -145,7 +144,7 @@ class MODULE < KEGGDB
   # ---
   # *Returns*:: Hash of compound ID and its definition
   def compounds_as_hash
-    unless @compounds_as_hash
+    unless (defined? @compounds_as_hash) && @compounds_as_hash
       @compounds_as_hash = strings_as_hash(compounds_as_strings)
     end
     @compounds_as_hash
