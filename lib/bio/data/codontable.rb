@@ -120,7 +120,7 @@ class CodonTable
           nucleotide_sets[n1].each{|c1|
             nucleotide_sets[n2].each{|c2|
               nucleotide_sets[n3].each{|c3|
-                a << Bio::Sequence::NA.new("#{c1}#{c2}#{c3}").translate(1,code)
+                a << hash["#{c1}#{c2}#{c3}"]
               }
             }
           }
