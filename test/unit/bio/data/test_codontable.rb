@@ -71,6 +71,9 @@ module Bio
 
     def test_accessor #[]
       assert_equal('M', @ct['atg'])
+      assert_equal('*', @ct['tag'])
+      assert_equal('*', @ct['tra'])
+      assert_equal('*', @ct['tar'])
     end
 
     def test_set_accessor #[]=
