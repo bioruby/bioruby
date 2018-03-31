@@ -72,6 +72,7 @@ class CodonTable
   # start and stop codons used by 'start_codon?' and 'stop_codon?' methods.
   def initialize(hash, definition = nil, start = [], stop = [])
     @table = hash
+    @atable = gen_ambiguity_map(hash)
     @definition = definition
     @start = start
     @stop = stop.empty? ? generate_stop : stop
@@ -87,10 +88,55 @@ class CodonTable
   # codons respectively.
   attr_accessor :start, :stop
 
+  # Compute possible ambiguity nucleotide code to amino acid conversion
+  # the codon is defined when all decomposed codon translates to the
+  # same amino acid / stop codon
+  def gen_ambiguity_map(hash)
+    nucleotide_sets={
+      'a'       => ['a'],
+      't'       => ['t'],
+      'g'       => ['g'],
+      'c'       => ['c'],
+
+      'y'       => ['t','c'],
+      'r'       => ['a','g'],
+      'w'       => ['a','t'],
+      's'       => ['g','c'],
+      'k'       => ['t','g'],
+      'm'       => ['a','c'],
+
+      'b'       => ['t','g','c'],
+      'd'       => ['a','t','g'],
+      'h'       => ['a','t','c'],
+      'v'       => ['a','g','c'],
+
+      'n'       => ['a','t','g','c'],
+    }
+    atable=Hash.new
+    nucleotide_sets.keys.each{|n1|
+      nucleotide_sets.keys.each{|n2|
+        nucleotide_sets.keys.each{|n3|
+          a = Array.new
+          nucleotide_sets[n1].each{|c1|
+            nucleotide_sets[n2].each{|c2|
+              nucleotide_sets[n3].each{|c3|
+                a << Bio::Sequence::NA.new("#{c1}#{c2}#{c3}").translate(1,code)
+              }
+            }
+          }
+          a.uniq!
+          atable["#{n1}#{n2}#{n3}"] = a.to_a[0] if a.size== 1
+        }
+      }
+    }
+    atable
+  end
+
   # Translate a codon into a relevant amino acid.  This method is used for
   # translating a DNA sequence into amino acid sequence.
   def [](codon)
-    @table[codon]
+    @atable=gen_ambiguity_map(@table) if @atable == nil
+    @atable[codon]
   end
 
   # Modify the codon table.  Use with caution as it may break hard coded
@@ -107,6 +153,7 @@ class CodonTable
   #
   def []=(codon, aa)
     @table[codon] = aa
+    @atable = nil
   end
 
   # Iterates on codon table hash.
