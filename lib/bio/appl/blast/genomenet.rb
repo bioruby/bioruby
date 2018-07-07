@@ -211,7 +211,7 @@ module Bio::Blast::Remote
       end
 
       begin
-        http = Bio::Command.new_http(host)
+        http = Bio::Command.new_https(host)
         http.open_timeout = 300
         http.read_timeout = 600
         result = Bio::Command.http_post_form(http, path, form)
