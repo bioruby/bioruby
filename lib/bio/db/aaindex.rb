@@ -7,32 +7,6 @@
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
-#
-# == Description
-#
-# Classes for Amino Acid Index Database (AAindex and AAindex2).
-# * AAindex Manual: http://www.genome.jp/dbget-bin/show_man?aaindex
-#
-# == Examples
-#
-#  aax1 = Bio::AAindex.auto("PRAM900102.aaindex1")
-#  aax2 = Bio::AAindex.auto("DAYM780301.aaindex2")
-#
-#  aax1 = Bio::AAindex1.new("PRAM900102.aaindex1")
-#  aax1.entry_id
-#  aax1.index
-#
-#  aax2 = Bio::AAindex2.new("DAYM780301.aaindex2")
-#  aax2.entry_id
-#  aax2.matrix
-#  aax2.matrix[2,2]
-#  aax2.matrix('R', 'A')
-#  aax2['R', 'A']
-#
-# == References
-#
-# * http://www.genome.jp/aaindex/
 #
 
 require "bio/db"
@@ -41,6 +15,32 @@ require "matrix"
 module Bio
 
   # Super class for AAindex1 and AAindex2
+  #
+  # == Description
+  #
+  # Classes for Amino Acid Index Database (AAindex and AAindex2).
+  # * AAindex Manual: http://www.genome.jp/dbget-bin/show_man?aaindex
+  #
+  # == Examples
+  #
+  #  aax1 = Bio::AAindex.auto("PRAM900102.aaindex1")
+  #  aax2 = Bio::AAindex.auto("DAYM780301.aaindex2")
+  #
+  #  aax1 = Bio::AAindex1.new("PRAM900102.aaindex1")
+  #  aax1.entry_id
+  #  aax1.index
+  #
+  #  aax2 = Bio::AAindex2.new("DAYM780301.aaindex2")
+  #  aax2.entry_id
+  #  aax2.matrix
+  #  aax2.matrix[2,2]
+  #  aax2.matrix('R', 'A')
+  #  aax2['R', 'A']
+  #
+  # == References
+  #
+  # * http://www.genome.jp/aaindex/
+  #
   class AAindex < KEGGDB
 
     # Delimiter
