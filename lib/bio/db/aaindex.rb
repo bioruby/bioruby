@@ -7,12 +7,11 @@
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-# $Id:$
 #
 # == Description
 #
 # Classes for Amino Acid Index Database (AAindex and AAindex2).
-# * AAindex Manual: http://www.genome.jp/dbget-bin/show_man?aaindex
+# * AAindex Help: https://www.genome.jp/aaindex/aaindex_help.html
 #
 # == Examples
 #
@@ -40,7 +39,38 @@ require "matrix"
 
 module Bio
 
-  # Super class for AAindex1 and AAindex2
+  # == Description
+  #
+  # Bio::AAindex is the super class of Bio::AAindex1 and Bio::AAindex2,
+  # parser classes for AAindex Amino Acid Index Database.
+  # * AAindex Help: https://www.genome.jp/aaindex/aaindex_help.html
+  #
+  # Except Bio::AAindex.auto, do not use this class directly.
+  # Methods of this super class is used from AAindex1 and AAindex2 classes.
+  #
+  # == Examples
+  #
+  #  # auto-detection of data format
+  #  aax1 = Bio::AAindex.auto("PRAM900102.aaindex1")
+  #  aax2 = Bio::AAindex.auto("DAYM780301.aaindex2")
+  #
+  #  # Example of Bio::AAindex1 class
+  #  aax1 = Bio::AAindex1.new("PRAM900102.aaindex1")
+  #  aax1.entry_id
+  #  aax1.index
+  #
+  #  # Example of Bio::AAindex2 class
+  #  aax2 = Bio::AAindex2.new("DAYM780301.aaindex2")
+  #  aax2.entry_id
+  #  aax2.matrix
+  #  aax2.matrix[2,2]
+  #  aax2.matrix('R', 'A')
+  #  aax2['R', 'A']
+  #
+  # == References
+  #
+  # * http://www.genome.jp/aaindex/
+  #
   class AAindex < KEGGDB
 
     # Delimiter
@@ -136,7 +166,25 @@ module Bio
   end
 
 
-  # Class for AAindex1 format.
+  # == Description
+  #
+  # Parser class for AAindex1, Amino Acid Index Database.
+  # * AAindex Help: https://www.genome.jp/aaindex/aaindex_help.html
+  #
+  # == Examples
+  #
+  #  # auto-detection of data format by using Bio::AAindex class
+  #  aax1 = Bio::AAindex.auto("PRAM900102.aaindex1")
+  #
+  #  # parse a file and get contents
+  #  aax1 = Bio::AAindex1.new("PRAM900102.aaindex1")
+  #  aax1.entry_id
+  #  aax1.index
+  #
+  # == References
+  #
+  # * http://www.genome.jp/aaindex/
+  #
   class AAindex1 < AAindex
 
     def initialize(entry)
@@ -211,7 +259,28 @@ module Bio
   end
 
 
-  # Class for AAindex2 format.
+  # == Description
+  #
+  # Parser class for AAindex2, Amino Acid Index Database.
+  # * AAindex Help: https://www.genome.jp/aaindex/aaindex_help.html
+  #
+  # == Examples
+  #
+  #  # auto-detection of data format by using Bio::AAindex class
+  #  aax2 = Bio::AAindex.auto("DAYM780301.aaindex2")
+  #
+  #  # parse a file and get contents
+  #  aax2 = Bio::AAindex2.new("DAYM780301.aaindex2")
+  #  aax2.entry_id
+  #  aax2.matrix
+  #  aax2.matrix[2,2]
+  #  aax2.matrix('R', 'A')
+  #  aax2['R', 'A']
+  #
+  # == References
+  #
+  # * http://www.genome.jp/aaindex/
+  #
   class AAindex2 < AAindex
 
     def initialize(entry)
