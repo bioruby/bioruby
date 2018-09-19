@@ -102,7 +102,7 @@ module Bio::Blast::Remote
         dbdescs = {}
         key = nil
         host = Bio::Blast::Remote::Genomenet::Host
-        http = Bio::Command.new_http(host)
+        http = Bio::Command.new_https(host)
         result = http.get('/tools/blast/')
         #p result.body
         result.body.each_line do |line|
@@ -243,10 +243,10 @@ module Bio::Blast::Remote
         end
 
         # workaround 2005.08.12 + 2011.01.27 + 2011.7.22
-        if /\<A +HREF=\"(http\:\/\/[\-\.a-z0-9]+\.genome\.jp)?(\/tmp\/[^\"]+)\"\>Show all result\<\/A\>/i =~ @output.to_s then
+        if /\<A +HREF=\"(https?\:\/\/[\-\.a-z0-9]+\.genome\.jp)?(\/tmp\/[^\"]+)\"\>Show all result\<\/A\>/i =~ @output.to_s then
           all_prefix = $1
           all_path = $2
-          all_prefix = "http://#{Host}" if all_prefix.to_s.empty?
+          all_prefix = "https://#{Host}" if all_prefix.to_s.empty?
           all_uri = all_prefix + all_path
           @output = Bio::Command.read_uri(all_uri)
           case all_path
