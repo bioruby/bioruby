@@ -791,18 +791,14 @@ module Command
     end
   end
 
+  # Same as:
+  #   h = Bio::Command.new_http(address, port)
+  #   h.use_ssl = true
+  #   h
   def new_https(address, port = 443)
-    uri = URI.parse("https://#{address}:#{port}")
-    # Note: URI#find_proxy is an unofficial method defined in open-uri.rb.
-    # If the spec of open-uri.rb would be changed, we should change below.
-    if proxyuri = uri.find_proxy then
-      raise 'Non-HTTP proxy' if proxyuri.class != URI::HTTP
-      Net::HTTP.new(address, port, proxyuri.host, proxyuri.port)
-    else
-      connection = Net::HTTP.new(address, port)
-      connection.use_ssl = true
-      connection
-    end
+    connection = new_http(address, port)
+    connection.use_ssl = true
+    connection
   end
 
   # Same as:
