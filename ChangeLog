@@ -1,3 +1,144 @@
+commit 68f87dc3c4488155992f88c3cf1db27061948315
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 20 13:25:35 2018 +0900
+
+    add changes made for bioruby-1.5.2
+
+ RELEASE_NOTES.rdoc | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+commit 6b7e87abfbab88a3bb1b80227ab4b0cfaaeae26e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 20 13:24:45 2018 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit a7dbefeef20d6dea18f0bdd67df24e00c5e9ede6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 20 13:23:31 2018 +0900
+
+    version changed to 1.5.2
+
+ lib/bio/version.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit e00134a1a31db46421b6d468ea1c1d0368bfbb6c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 20 12:55:32 2018 +0900
+
+    Bug fix: printf format syntax error about single percent character
+    
+     * Bio::Shell#seqstat: Fix format specifier syntax error.
+       Recent version of Ruby raised error: 'ArgumentError:
+       incomplete format specifier;use %% (double %) instead'.
+
+ lib/bio/shell/plugin/seq.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit df61cdba5ba3e90fda6c70cc9f880567656a5a82
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 20 07:06:08 2018 +0900
+
+    Improvement documentation
+    
+     * Improve documentation.
+     * Close https://github.com/bioruby/bioruby/pull/120 .
+
+ lib/bio/db/aaindex.rb | 79 +++++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 74 insertions(+), 5 deletions(-)
+
+commit 35bcc5008c7721afb3c16467ae6dc782651f4c39
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 20 05:01:12 2018 +0900
+
+    Bug fix: Bio::Command.new_https should support proxy
+
+ lib/bio/command.rb | 18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
+
+commit 88b58e94d4612f39abb14b89779ceeb533cd552e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 20 04:58:56 2018 +0900
+
+    https support for Bio::Blast::Remote::GenomeNet::Information
+
+ lib/bio/appl/blast/genomenet.rb | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+commit dfccbdf32bf819f941f2bcb4f63b2f0ce12cacfa
+Author: ramadis <rramiro.o@hotmail.com>
+Date:   Sat Jul 7 15:12:33 2018 -0300
+
+    Add https requests in command. Fix genomenet query by allowing https requests.
+
+ lib/bio/appl/blast/genomenet.rb |  2 +-
+ lib/bio/command.rb              | 14 ++++++++++++++
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+commit d1e1358c1a5c7c7f4aa093a09d5bb45b60f7e7ee
+Author: markwilkinson <markw@illuminae.com>
+Date:   Tue Dec 12 14:13:51 2017 +0100
+
+    fixing Fasta Report parser for fasta36 -m10
+
+ lib/bio/appl/fasta/format10.rb | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit b9b11f66733e20e1ee6d2b5e0aab813b5b5d0000
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 13 22:13:59 2017 +0900
+
+    Suppress warning "assigned but unused variable"
+
+ lib/bio/io/flatfile/autodetection.rb | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+commit 580dd6bb9344c2afd0fe60b0cf53a4b28734fbbf
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 13 22:10:53 2017 +0900
+
+    Suppress warning: "instance variable @top_strand not initialized"
+    
+     * Suppress warning: "instance variable @top_strand not initialized".
+       To do so, force to raise NoMethodError when @top_strand is not
+       initialized or is nil. This should be changed to appropriate
+       exception in the future.
+
+ lib/bio/util/sirna.rb | 2 ++
+ 1 file changed, 2 insertions(+)
+
+commit 9d7ef4e66ecdc1aadc08fda4b332a51ca7739c82
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 13 21:31:38 2017 +0900
+
+    Suppress warning in Ruby 2.4: "constant ::Fixnum is deprecated"
+
+ lib/bio/db/soft.rb                                                    | 4 ++--
+ .../util/restriction_enzyme/range/sequence_range/calculated_cuts.rb   | 2 +-
+ test/unit/bio/test_alignment.rb                                       | 4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+commit 2747ee11392068de88e044abf52d12a88a0624ea
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 13 21:19:12 2017 +0900
+
+    Suppress warning "parentheses after method name is interpreted as an argument list, not a decomposed argument" in Ruby 2.4
+
+ lib/bio/map.rb | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+commit 1edbd88a703d3cff0f5a29e45fa51058405ab58c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 7 22:06:32 2016 +0900
+
+    BioRuby 1.5.1 is released
+
+ ChangeLog | 690 +++++++++++++++++++++++++++++++++++---------------------------
+ 1 file changed, 385 insertions(+), 305 deletions(-)
+
 commit 917fe0d0e9910267cd54bf48c2caabe89875a299
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Wed Sep 7 22:00:56 2016 +0900
@@ -1916,11 +2057,9 @@ Date:   Fri Jun 28 15:26:20 2013 +0900
 
     rename test/unit/bio/db/embl/test_uniprot_new_part.rb to test_uniprotkb_new_part.rb
 
- test/unit/bio/db/embl/test_uniprot_new_part.rb   | 208 -----------------------
- test/unit/bio/db/embl/test_uniprotkb_new_part.rb | 208 +++++++++++++++++++++++
- 2 files changed, 208 insertions(+), 208 deletions(-)
- delete mode 100644 test/unit/bio/db/embl/test_uniprot_new_part.rb
- create mode 100644 test/unit/bio/db/embl/test_uniprotkb_new_part.rb
+ .../bio/db/embl/{test_uniprot_new_part.rb => test_uniprotkb_new_part.rb}  | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename test/unit/bio/db/embl/{test_uniprot_new_part.rb => test_uniprotkb_new_part.rb} (100%)
 
 commit 1b51d0940712a6f144f8268dc77048bc7ec7d983
 Author: Naohisa Goto <ng@bioruby.org>
@@ -1940,11 +2079,9 @@ Date:   Fri Jun 28 15:01:15 2013 +0900
 
     test_sptr.rb is renamed to test_uniprotkb.rb
 
- test/unit/bio/db/embl/test_sptr.rb      | 1807 -------------------------------
- test/unit/bio/db/embl/test_uniprotkb.rb | 1807 +++++++++++++++++++++++++++++++
- 2 files changed, 1807 insertions(+), 1807 deletions(-)
- delete mode 100644 test/unit/bio/db/embl/test_sptr.rb
- create mode 100644 test/unit/bio/db/embl/test_uniprotkb.rb
+ test/unit/bio/db/embl/{test_sptr.rb => test_uniprotkb.rb} | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename test/unit/bio/db/embl/{test_sptr.rb => test_uniprotkb.rb} (100%)
 
 commit e1ed7fab4c0350e6866dd420a93e950c53063f38
 Author: Naohisa Goto <ng@bioruby.org>
@@ -1998,11 +2135,9 @@ Date:   Thu Jun 27 18:16:38 2013 +0900
 
     Rename lib/bio/db/embl/sptr.rb to uniprotkb.rb
 
- lib/bio/db/embl/sptr.rb      | 1456 ------------------------------------------
- lib/bio/db/embl/uniprotkb.rb | 1456 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 1456 insertions(+), 1456 deletions(-)
- delete mode 100644 lib/bio/db/embl/sptr.rb
- create mode 100644 lib/bio/db/embl/uniprotkb.rb
+ lib/bio/db/embl/{sptr.rb => uniprotkb.rb} | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename lib/bio/db/embl/{sptr.rb => uniprotkb.rb} (100%)
 
 commit 2a10ded8e1502e0db5ec3b2e060f658ee53aafd0
 Author: Naohisa Goto <ng@bioruby.org>
@@ -2951,11 +3086,9 @@ Date:   Thu Aug 23 00:20:01 2012 +0900
 
     renamed ChangeLog to doc/ChangeLog-1.4.3
 
- ChangeLog           | 1478 ---------------------------------------------------
- doc/ChangeLog-1.4.3 | 1478 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 1478 insertions(+), 1478 deletions(-)
- delete mode 100644 ChangeLog
- create mode 100644 doc/ChangeLog-1.4.3
+ ChangeLog => doc/ChangeLog-1.4.3 | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename ChangeLog => doc/ChangeLog-1.4.3 (100%)
 
 commit 0c20cb62ba6b253098e7198c14de1829f72474f5
 Author: Naohisa Goto <ng@bioruby.org>
@@ -2982,11 +3115,9 @@ Date:   Thu Aug 23 00:12:40 2012 +0900
 
     Renamed RELEASE_NOTES.rdoc to doc/RELEASE_NOTES-1.4.3.rdoc
 
- RELEASE_NOTES.rdoc           | 204 -------------------------------------------
- doc/RELEASE_NOTES-1.4.3.rdoc | 204 +++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 204 insertions(+), 204 deletions(-)
- delete mode 100644 RELEASE_NOTES.rdoc
- create mode 100644 doc/RELEASE_NOTES-1.4.3.rdoc
+ RELEASE_NOTES.rdoc => doc/RELEASE_NOTES-1.4.3.rdoc | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename RELEASE_NOTES.rdoc => doc/RELEASE_NOTES-1.4.3.rdoc (100%)
 
 commit 08bcabecccb271385d38a0f807e8c408def5a128
 Author: Naohisa Goto <ng@bioruby.org>
