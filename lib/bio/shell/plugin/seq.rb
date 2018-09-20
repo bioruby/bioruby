@@ -82,7 +82,7 @@ module Bio::Shell
       rep << "Codon usage       :\n"
       hash = Hash.new("0.0%")
       seq.codon_usage.sort.each do |codon, num|
-        percent = format("%.1f%", 100.0 * num / (seq.length / 3))
+        percent = format("%.1f%%", 100.0 * num / (seq.length / 3))
         hash[codon] = percent
       end
       rep << codontable(1, hash).output
