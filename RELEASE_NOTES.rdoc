@@ -1,3 +1,17 @@
+= BioRuby 1.5.2 RELEASE NOTES
+
+Few bug fixes have been made to the BioRuby 1.5.2 after the version 1.5.1 is
+released.
+
+* Fixed a parser bug in Bio::Fasta::Report, FASTA output (-m 10) parser,
+  contributed by William Van Etten and Mark Wilkinson via GitHub.
+* HTTPS is used to access GenomeNet BLAST web service, contributed
+  by @ramadis via GitHub.
+* Bio::Shell#seqstat: Fix format specifier syntax error.
+* Bio::AAindex documentation fix, suggested by @kojix2 via GitHub.
+* Suppress warning messages in Ruby 2.4 and later.
+
+
 = BioRuby 1.5.1 RELEASE NOTES
 
 Few changes have been made to the BioRuby 1.5.1 after the version 1.5.0 is
