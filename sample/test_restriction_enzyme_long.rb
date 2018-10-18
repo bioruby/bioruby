@@ -14,7 +14,7 @@ require 'test/unit'
 require 'benchmark'
 require 'bio'
 
-entry = Bio::TogoWS::REST.entry('genbank', 'BA000007.2')
+entry = Bio::TogoWS::REST.entry('ncbi-nucleotide', 'BA000007.2')
 EcoliO157H7Seq = Bio::GenBank.new(entry).naseq.freeze
 
 module TestRestrictionEnzymeAnalysisCutLong

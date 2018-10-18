@@ -107,14 +107,14 @@ module Bio
     # 
     # For light users, class methods can be used.
     #
-    #   print Bio::TogoWS::REST.entry('genbank', 'AF237819')
+    #   print Bio::TogoWS::REST.entry('ncbi-nucleotide', 'AF237819')
     #   print Bio::TogoWS::REST.search('uniprot', 'lung cancer')
     #
     # For heavy users, an instance of the REST class can be created, and
     # using the instance is more efficient than using class methods.
     #
     #   t = Bio::TogoWS::REST.new
-    #   print t.entry('genbank', 'AF237819')
+    #   print t.entry('ncbi-nucleotide', 'AF237819')
     #   print t.search('uniprot', 'lung cancer')
     #
     # == References
@@ -222,9 +222,9 @@ module Bio
       #
       # Example:
       #   t = Bio::TogoWS::REST.new
-      #   kuma = t.entry('genbank', 'AF237819')
+      #   kuma = t.entry('ncbi-nucleotide', 'AF237819')
       #   # multiple IDs at a time
-      #   misc = t.entry('genbank', [ 'AF237819', 'AF237820' ])
+      #   misc = t.entry('ncbi-nucleotide', [ 'AF237819', 'AF237820' ])
       #   # with format change
       #   p53 = t.entry('uniprot', 'P53_HUMAN', 'fasta')
       #
@@ -366,7 +366,7 @@ module Bio
       # Access to the TogoWS by using GET method.
       #
       # Example 1:
-      #   get('entry', 'genbank', AF209156')
+      #   get('entry', 'ncbi-nucleotide', AF209156')
       # Example 2:
       #   get('search', 'uniprot', 'lung cancer')
       #
