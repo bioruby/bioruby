@@ -32,7 +32,8 @@ require 'bio'
 #if __FILE__ == $0
 
   puts "### AAindex1 (PRAM900102)"
-  aax1 = Bio::AAindex1.new(Bio::Fetch.query('aaindex', 'PRAM900102', 'raw'))
+  aax1_str = File.read(File.expand_path("../../test/data/aaindex/PRAM900102", __FILE__))
+  aax1 = Bio::AAindex1.new(aax1_str)
   p aax1.entry_id
   p aax1.definition
   p aax1.dblinks
@@ -42,9 +43,11 @@ require 'bio'
   p aax1.comment
   p aax1.correlation_coefficient
   p aax1.index
-  p aax1
+
+  puts
   puts "### AAindex2 (DAYM780301)"
-  aax2 = Bio::AAindex2.new(Bio::Fetch.query('aaindex', 'DAYM780301', 'raw'))
+  aax2_str = File.read(File.expand_path("../../test/data/aaindex/DAYM780301", __FILE__))
+  aax2 = Bio::AAindex2.new(aax2_str)
   p aax2.entry_id
   p aax2.definition
   p aax2.dblinks
@@ -61,7 +64,6 @@ require 'bio'
   p aax2.matrix.determinant
   p aax2.matrix.rank
   p aax2.matrix.transpose
-  p aax2
 
 #end
 
