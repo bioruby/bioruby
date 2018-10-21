@@ -210,6 +210,20 @@ class KEGG
       private :strings_as_hash
     end #module StringsAsHash
 
+    # This module provides diseases_as_hash method.
+    #
+    # Bio::KEGG::* internal use only.
+    module DiseasesAsHash 
+      include StringsAsHash
+      # Returns a Hash of the disease ID and its definition
+      def diseases_as_hash
+        unless (defined? @diseases_as_hash) && @diseases_as_hash
+          @diseases_as_hash = strings_as_hash(diseases_as_strings)
+        end
+        @diseases_as_hash
+      end
+    end #module DiseasesAsHash
+
   end #module Common
 end #class KEGG
 end #module Bio

@@ -107,6 +107,11 @@ class GENES < KEGGDB
   def orthologs_as_hash; super; end if false #dummy for RDoc
   alias orthologs orthologs_as_hash
 
+  include Common::DiseasesAsHash
+  # Returns a Hash of the disease ID and its definition
+  def diseases_as_hash; super; end if false #dummy for RDoc
+  alias diseases diseases_as_hash
+
   # Creates a new Bio::KEGG::GENES object.
   # ---
   # *Arguments*:
@@ -236,6 +241,27 @@ class GENES < KEGGDB
   # *Returns*:: Array containing String
   def pathways_as_strings
     lines_fetch('PATHWAY')
+  end
+
+  # Networks described in the NETWORK lines.
+  # ---
+  # *Returns*:: Array containing String
+  def networks_as_strings
+    lines_fetch('NETWORK')
+  end
+
+  # Diseases described in the DISEASE lines.
+  # ---
+  # *Returns*:: Array containing String
+  def diseases_as_strings
+    lines_fetch('DISEASE')
+  end
+  
+  # Drug targets described in the DRUG_TARGET lines.
+  # ---
+  # *Returns*:: Array containing String
+  def drug_targets_as_strings
+    lines_fetch('DRUG_TARGET')
   end
 
   # Returns CLASS field of the entry.
