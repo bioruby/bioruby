@@ -1,0 +1,149 @@
+ENTRY       7422              CDS       T01001
+NAME        VEGFA, MVCD1, VEGF, VPF
+DEFINITION  (RefSeq) vascular endothelial growth factor A
+ORTHOLOGY   K05448  vascular endothelial growth factor A
+ORGANISM    hsa  Homo sapiens (human)
+PATHWAY     hsa01521  EGFR tyrosine kinase inhibitor resistance
+            hsa04010  MAPK signaling pathway
+            hsa04014  Ras signaling pathway
+            hsa04015  Rap1 signaling pathway
+            hsa04066  HIF-1 signaling pathway
+            hsa04151  PI3K-Akt signaling pathway
+            hsa04370  VEGF signaling pathway
+            hsa04510  Focal adhesion
+            hsa04926  Relaxin signaling pathway
+            hsa04933  AGE-RAGE signaling pathway in diabetic complications
+            hsa05163  Human cytomegalovirus infection
+            hsa05165  Human papillomavirus infection
+            hsa05167  Kaposi sarcoma-associated herpesvirus infection
+            hsa05200  Pathways in cancer
+            hsa05205  Proteoglycans in cancer
+            hsa05206  MicroRNAs in cancer
+            hsa05211  Renal cell carcinoma
+            hsa05212  Pancreatic cancer
+            hsa05219  Bladder cancer
+            hsa05323  Rheumatoid arthritis
+            hsa05418  Fluid shear stress and atherosclerosis
+NETWORK     N00079  HIF-1 signaling pathway
+            N00080  Loss of VHL to HIF-1 signaling pathway
+            N00081  Mutation-inactivated VHL to HIF-1 signaling pathway
+            N00095  ERBB2-overexpression to EGF-Jak-STAT signaling pathway
+            N00157  KSHV vGPCR to GNB/G-ERK signaling pathway
+            N00179  KSHV K1 to PI3K-NFKB signaling pathway
+DISEASE     H01456  Diabetic nephropathy
+            H01457  Diabetic retinopathy
+            H01459  Diabetic neuropathy
+            H01529  Avascular necrosis of femoral head
+            H01709  Glucocorticoid-induced osteonecrosis
+DRUG_TARGET Aflibercept: D09574
+            Aflibercept beta: D10819
+            Bevacizumab: D06409
+            Bevasiranib sodium: D08874
+            Brolucizumab: D11083
+            Navicixizumab: D11126
+            Pegaptanib: D05386
+            Ranibizumab: D05697
+BRITE       KEGG Orthology (KO) [BR:hsa00001]
+             09130 Environmental Information Processing
+              09132 Signal transduction
+               04014 Ras signaling pathway
+                7422 (VEGFA)
+               04015 Rap1 signaling pathway
+                7422 (VEGFA)
+               04010 MAPK signaling pathway
+                7422 (VEGFA)
+               04370 VEGF signaling pathway
+                7422 (VEGFA)
+               04066 HIF-1 signaling pathway
+                7422 (VEGFA)
+               04151 PI3K-Akt signaling pathway
+                7422 (VEGFA)
+             09140 Cellular Processes
+              09144 Cellular community - eukaryotes
+               04510 Focal adhesion
+                7422 (VEGFA)
+             09150 Organismal Systems
+              09152 Endocrine system
+               04926 Relaxin signaling pathway
+                7422 (VEGFA)
+             09160 Human Diseases
+              09161 Cancers: Overview
+               05200 Pathways in cancer
+                7422 (VEGFA)
+               05206 MicroRNAs in cancer
+                7422 (VEGFA)
+               05205 Proteoglycans in cancer
+                7422 (VEGFA)
+              09162 Cancers: Specific types
+               05212 Pancreatic cancer
+                7422 (VEGFA)
+               05211 Renal cell carcinoma
+                7422 (VEGFA)
+               05219 Bladder cancer
+                7422 (VEGFA)
+              09163 Immune diseases
+               05323 Rheumatoid arthritis
+                7422 (VEGFA)
+              09166 Cardiovascular diseases
+               05418 Fluid shear stress and atherosclerosis
+                7422 (VEGFA)
+              09167 Endocrine and metabolic diseases
+               04933 AGE-RAGE signaling pathway in diabetic complications
+                7422 (VEGFA)
+              09172 Infectious diseases: Viral
+               05163 Human cytomegalovirus infection
+                7422 (VEGFA)
+               05167 Kaposi sarcoma-associated herpesvirus infection
+                7422 (VEGFA)
+               05165 Human papillomavirus infection
+                7422 (VEGFA)
+              09176 Drug resistance: Antineoplastic
+               01521 EGFR tyrosine kinase inhibitor resistance
+                7422 (VEGFA)
+             09180 Brite Hierarchies
+              09183 Protein families: signaling and cellular processes
+               04052 Cytokines and growth factors [BR:hsa04052]
+                7422 (VEGFA)
+               00536 Glycosaminoglycan binding proteins [BR:hsa00536]
+                7422 (VEGFA)
+            Cytokines and growth factors [BR:hsa04052]
+             Growth factors
+              Growth factors (RTK binding)
+               7422 (VEGFA)
+            Glycosaminoglycan binding proteins [BR:hsa00536]
+             Heparan sulfate/Haparin
+              Growth factors/receptors
+               7422 (VEGFA)
+POSITION    6p21.1
+MOTIF       Pfam: VEGF_C PDGF
+DBLINKS     NCBI-GeneID: 7422
+            NCBI-ProteinID: NP_001165094
+            OMIM: 192240
+            HGNC: 12680
+            Ensembl: ENSG00000112715
+            Vega: OTTHUMG00000014745
+            Pharos: P15692(Tclin)
+            UniProt: P15692 A0A024RD33
+STRUCTURE   PDB: 1MKK 4GLN 4GLS 1FLT 4KZN 4QAF 3QTK 1VPP 2VPF 5DN2 5HHC
+                 5HHD 1MJV 5O4E 1CZ8 1BJ1 3P9W 1MKG 1VPF 3S1K 3BDY 1TZH
+                 5FV1 1QTY 4ZFF 2FJG 1TZI 3S1B 2FJH 4WPB 3V2A 5FV2 2QR0
+                 5T89 1KMX 1KAT 1VGH 2VGH
+AASEQ       232
+            MNFLLSWVHWSLALLLYLHHAKWSQAAPMAEGGGQNHHEVVKFMDVYQRSYCHPIETLVD
+            IFQEYPDEIEYIFKPSCVPLMRCGGCCNDEGLECVPTEESNITMQIMRIKPHQGQHIGEM
+            SFLQHNKCECRPKKDRARQEKKSVRGKGKGQKRKRKKSRYKSWSVYVGARCCLMPWSLPG
+            PHPCGPCSERRKHLFVQDPQTCKCSCKNTDSRCKARQLELNERTCRCDKPRR
+NTSEQ       699
+            atgaactttctgctgtcttgggtgcattggagccttgccttgctgctctacctccaccat
+            gccaagtggtcccaggctgcacccatggcagaaggaggagggcagaatcatcacgaagtg
+            gtgaagttcatggatgtctatcagcgcagctactgccatccaatcgagaccctggtggac
+            atcttccaggagtaccctgatgagatcgagtacatcttcaagccatcctgtgtgcccctg
+            atgcgatgcgggggctgctgcaatgacgagggcctggagtgtgtgcccactgaggagtcc
+            aacatcaccatgcagattatgcggatcaaacctcaccaaggccagcacataggagagatg
+            agcttcctacagcacaacaaatgtgaatgcagaccaaagaaagatagagcaagacaagaa
+            aaaaaatcagttcgaggaaagggaaaggggcaaaaacgaaagcgcaagaaatcccggtat
+            aagtcctggagcgtgtacgttggtgcccgctgctgtctaatgccctggagcctccctggc
+            ccccatccctgtgggccttgctcagagcggagaaagcatttgtttgtacaagatccgcag
+            acgtgtaaatgttcctgcaaaaacacagactcgcgttgcaaggcgaggcagcttgagtta
+            aacgaacgtacttgcagatgtgacaagccgaggcggtga
+///
