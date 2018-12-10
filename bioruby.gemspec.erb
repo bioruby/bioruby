@@ -7,18 +7,18 @@ Gem::Specification.new do |s|
 
     # By default, determined from lib/bio/version.rb
     load "./lib/bio/version.rb" unless defined?(BIO_VERSION_RB_LOADED)
+    ver = Bio::BIORUBY_VERSION.dup
     case Bio::BIORUBY_EXTRA_VERSION
     when nil
-      suffix = nil
-    when /\A\.(\d+)\z/
-      suffix = $1
-    when /\A\-dev\z/
-      suffix = Time.now.strftime("%Y%m%d")
+      # does nothing
+    when /\A\.(pre)\z/
+      ver.push $1
+      ver.push Time.now.strftime("%Y%m%d")
+    when /\A\.(.+)\z/
+      ver.push $1
     else
       raise "unsupported BIORUBY_EXTRA_VERSION"
     end
-    ver = Bio::BIORUBY_VERSION.dup
-    ver.push suffix if suffix
     %><%= 
     (env_ver || ver.join('.'))
        ###### Above is executed in ERB environment ######

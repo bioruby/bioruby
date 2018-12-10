@@ -15,14 +15,12 @@ module Bio
   # Extra version specifier (String or nil).
   # Existance of the value indicates development version.
   #
-  # nil                 :: Release version.
-  # "-dev"              :: Development version (with YYYYMMDD digits).
-  # ".20150630"         :: Development version (specify the date digits).
+  # nil             :: Release version.
+  # ".pre           :: Pre-release version.
   #
-  # By default, if the third digit (teeny) of BIORUBY_VERSION is 0,
-  # the version is regarded as a development version.
-  BIORUBY_EXTRA_VERSION =
-    "-dev" #(BIORUBY_VERSION[2] == 0) ? "-dev" : nil
+  # References: https://guides.rubygems.org/patterns/#prerelease-gems
+  BIORUBY_EXTRA_VERSION = #nil
+    ".pre"
 
   # Version identifier, including extra version string (String)
   # Unlike BIORUBY_VERSION, it is not comparable.
