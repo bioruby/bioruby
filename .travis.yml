@@ -81,5 +81,5 @@ matrix:
 # whitelist branches
 branches:
   only:
-    - master
+    - patch-1
 
