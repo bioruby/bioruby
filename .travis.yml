@@ -1,6 +1,9 @@
-sudo: false
 language: ruby
 rvm:
+  - 2.5.3
+  - 2.4.1
+  - 2.3.4
+  - 2.2.7
   - 2.1.10
   - 2.0.0
   - 1.9.3
@@ -12,8 +15,17 @@ before_install:
   - mkdir /tmp/bioruby
   - ruby gemfiles/modify-Gemfile.rb
   - ruby gemfiles/prepare-gemspec.rb
+
 matrix:
   include:
+    - rvm: 2.5.3
+      gemfile: Gemfile
+    - rvm: 2.4.1
+      gemfile: Gemfile
+    - rvm: 2.3.4
+      gemfile: Gemfile
+    - rvm: 2.2.7
+      gemfile: Gemfile
     - rvm: 1.8.7
       gemfile: gemfiles/Gemfile.travis-ruby1.8
       env: TESTOPTS=-v
