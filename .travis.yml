@@ -4,13 +4,10 @@ rvm:
   - 2.4.1
   - 2.3.4
   - 2.2.7
-  - 2.1.10
-  - 2.0.0
-  - 1.9.3
 env:
   - TESTOPTS=-v
 gemfile:
-  - gemfiles/Gemfile.travis-ruby1.9
+  - Gemfile
 before_install:
   - mkdir /tmp/bioruby
   - ruby gemfiles/modify-Gemfile.rb
@@ -19,6 +16,15 @@ matrix:
   include:
     - rvm: 1.8.7
       gemfile: gemfiles/Gemfile.travis-ruby1.8
+      env: TESTOPTS=-v
+    - rvm: 1.9.3
+      gemfile: gemfiles/Gemfile.travis-ruby1.9
+      env: TESTOPTS=-v
+    - rvm: 2.0.0
+      gemfile: gemfiles/Gemfile.travis-ruby1.9
+      env: TESTOPTS=-v
+    - rvm: 2.1.10
+      gemfile: gemfiles/Gemfile.travis-ruby1.9
       env: TESTOPTS=-v
     - rvm: rbx-3.29
       gemfile: gemfiles/Gemfile.travis-rbx
@@ -29,14 +35,10 @@ matrix:
     - rvm: jruby-19mode
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TMPDIR=/tmp/bioruby TESTOPTS=-v
-    - rvm: 2.3.1
-      gemfile: Gemfile
-    - rvm: 2.2.5
-      gemfile: Gemfile
-    - rvm: 2.2.5
+    - rvm: 2.5.3
       gemfile: Gemfile
       env: BIORUBY_RAKE_DEFAULT_TASK=tar-integration-test TESTOPTS=-v
-    - rvm: 2.2.5
+    - rvm: 2.5.3
       gemfile: Gemfile
       env: BIORUBY_RAKE_DEFAULT_TASK=gem-test TESTOPTS=-v
     - rvm: jruby-19mode
