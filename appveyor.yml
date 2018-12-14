@@ -9,7 +9,7 @@ clone_depth: 10
 install:
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - bundle config --local path vendor/bundle
-  - bundle install
+  - bundle install --gemfile=gemfiles/Gemfile.windows
   - bundle exec rake gem
   - bundle exec gem install pkg/bio-*.gem
 build: off
