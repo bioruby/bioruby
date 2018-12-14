@@ -69,8 +69,9 @@ matrix:
 # - sudo apt-get update
 # - sudo apt-get install libxml2-dev libexpat1-dev
 
-# whitelist branches
+# block build for the branches
 branches:
-  only:
-    - master
+  except:
+    - biohackathon2008
+    - bioruby-1.4.3
 
