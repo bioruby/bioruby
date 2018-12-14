@@ -1,21 +1,29 @@
 ---
 version: "{build}"
+cache:
+  - vendor/bundle
 branches:
   only:
     - master
 clone_depth: 10
 install:
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
+  - bundle config --local path vendor/bundle
+  - bundle install
+  - bundle exec rake gem
+  - bundle exec gem install pkg/bio-*.gem
+build: off
+before_test:
   - ruby --version
   - gem --version
-  - gem build bioruby.gemspec
-  - gem install *.gem
-build: off
+  - bundle --version
+test_script:
+  - bundle exec rake gem-test
 environment:
   matrix:
-    - ruby_version: "21"
-    - ruby_version: "21-x64"
-    - ruby_version: "22"
-    - ruby_version: "22-x64"
     - ruby_version: "23"
     - ruby_version: "23-x64"
+    - ruby_version: "24"
+    - ruby_version: "24-x64"
+    - ruby_version: "25"
+    - ruby_version: "25-x64"
