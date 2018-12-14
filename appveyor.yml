@@ -10,6 +10,7 @@ install:
   - bundle install
   - bundle exec rake gem
   - bundle exec gem install pkg/bio-*.gem
+  - echo gem "bio" >> gemfiles\Gemfile.windows
 build: off
 before_test:
   - ruby --version
