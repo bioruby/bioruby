@@ -8,6 +8,7 @@ install:
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
   - SET BUNDLE_GEMFILE=gemfiles/Gemfile.windows
   - bundle install
+  - bundle exec rake regemspec
   - bundle exec rake gem
   - bundle exec gem install pkg/bio-*.gem
   - echo gem "bio" >> gemfiles\Gemfile.windows
