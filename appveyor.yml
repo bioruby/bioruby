@@ -1,15 +1,13 @@
 ---
 version: "{build}"
-cache:
-  - vendor/bundle
 branches:
   only:
     - master
 clone_depth: 10
 install:
   - SET PATH=C:\Ruby%ruby_version%\bin;%PATH%
-  - bundle config --local path vendor/bundle
-  - bundle install --gemfile=gemfiles/Gemfile.windows
+  - SET BUNDLE_GEMFILE=gemfiles/Gemfile.windows
+  - bundle install
   - bundle exec rake gem
   - bundle exec gem install pkg/bio-*.gem
 build: off
