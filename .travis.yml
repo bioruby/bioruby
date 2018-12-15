@@ -26,13 +26,13 @@ matrix:
     - rvm: 2.1.10
       gemfile: gemfiles/Gemfile.travis-ruby1.9
       env: TESTOPTS=-v
+    - rvm: truffleruby
+      gemfile: gemfiles/Gemfile.travis-jruby1.9
+      env: TESTOPTS=-v
     - rvm: rbx-3.29
       gemfile: gemfiles/Gemfile.travis-rbx
       env: TESTOPTS=-v
-    - rvm: jruby-18mode
-      gemfile: gemfiles/Gemfile.travis-jruby1.8
-      env: TMPDIR=/tmp/bioruby TESTOPTS=-v
-    - rvm: jruby-19mode
+    - rvm: jruby
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TMPDIR=/tmp/bioruby TESTOPTS=-v
     - rvm: 2.5.3
@@ -41,26 +41,26 @@ matrix:
     - rvm: 2.5.3
       gemfile: Gemfile
       env: BIORUBY_RAKE_DEFAULT_TASK=gem-test TESTOPTS=-v
-    - rvm: jruby-19mode
+    - rvm: jruby
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=tar-integration-test TESTOPTS=-v
-    - rvm: jruby-19mode
+    - rvm: jruby
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=gem-test TESTOPTS=-v
   allow_failures:
+    - rvm: truffleruby
+      gemfile: gemfiles/Gemfile.travis-jruby1.9
+      env: TESTOPTS=-v
     - rvm: rbx-3.29
       gemfile: gemfiles/Gemfile.travis-rbx
       env: TESTOPTS=-v
-    - rvm: jruby-18mode
-      gemfile: gemfiles/Gemfile.travis-jruby1.8
-      env: TMPDIR=/tmp/bioruby TESTOPTS=-v
-    - rvm: jruby-19mode
+    - rvm: jruby
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TMPDIR=/tmp/bioruby TESTOPTS=-v
-    - rvm: jruby-19mode
+    - rvm: jruby
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=tar-integration-test TESTOPTS=-v
-    - rvm: jruby-19mode
+    - rvm: jruby
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=gem-test TESTOPTS=-v
 
