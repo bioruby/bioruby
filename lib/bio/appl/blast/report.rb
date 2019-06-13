@@ -46,6 +46,14 @@ class Report
   require 'bio/appl/blast/rexml'
   require 'bio/appl/blast/format8'
 
+  #--
+  # loading bio-blast-xmlparser plugin if available
+  #++
+  begin
+    require 'bio-blast-xmlparser'
+  rescue LoadError
+  end
+
   # for Bio::FlatFile support (only for XML data)
   DELIMITER = RS = "</BlastOutput>\n"
 
