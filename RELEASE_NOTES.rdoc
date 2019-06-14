@@ -61,9 +61,20 @@ upgrade Ruby, OpenSSL (or alternatives), and/or SSL root certificates with
 appropriate configuration options. Alternatively, installing binary packages
 is generally a good idea.
 
-=== Other improvements
+=== KEGG::GENES#diseases and related methods are added
 
-* Pre-calculated ambiguity codontable (contributed by Tomoaki NISHIYAMA).
+The following methods are added to KEGG::GENES, contributed by @kojix2.
+
+* networks_as_strings
+* diseases_as_strings
+* diseases_as_hash
+* diseases
+* drug_targets_as_strings
+
+=== Pre-calculated ambiguity codon tables in Bio::CodonTable
+
+Pre-calculated ambiguity codon tables are added, contributed by
+Tomoaki NISHIYAMA.
 
 
 == Bug fixes
