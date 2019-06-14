@@ -222,7 +222,7 @@ Plugins (Biogems) listed below may be useful for running existing codes.
 If possible, it may be recommended to install the following plugins:
 * bio-shell -- if you use the BioRuby Shell.
 * bio-executables -- if you use br_bio* commands.
-* bio-old-biofetch-emulator -- if you run existing codes using BioFetch, including sample codes in demo/.
+* bio-old-biofetch-emulator -- if you run existing codes using BioFetch, including sample and demo codes in sample/.
 * bio-blast-xmlparser -- if Expat XML parser (with development files) is installed in your system.
 * bioruby-phyloxml -- if you use Bio::PhyloXML and Libxml2 (with developemnt files) is installed in your system.
 
