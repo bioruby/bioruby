@@ -346,57 +346,6 @@ END
     end
 
   end #class TestBioKEGGGENES_b0529
-
-  class TestBioKEGGGENES_hsa7422 < Test::Unit::TestCase
-
-    def setup
-      filename = File.join(BioRubyTestDataPath, 'KEGG/hsa7422.gene')
-      @obj = Bio::KEGG::GENES.new(File.read(filename))
-    end
-
-    def test_diseases_as_strings
-      expected = ["H01456  Diabetic nephropathy",
-                  "H01457  Diabetic retinopathy",
-                  "H01459  Diabetic neuropathy",
-                  "H01529  Avascular necrosis of femoral head",
-                  "H01709  Glucocorticoid-induced osteonecrosis"]
-
-      assert_equal(expected, @obj.diseases_as_strings)
-    end
-
-    def test_diseases_as_hash
-      expected = {"H01456"=>"Diabetic nephropathy",
-                  "H01457"=>"Diabetic retinopathy",
-                  "H01459"=>"Diabetic neuropathy",
-                  "H01529"=>"Avascular necrosis of femoral head",
-                  "H01709"=>"Glucocorticoid-induced osteonecrosis"}
-      assert_equal(expected, @obj.diseases_as_hash)
-    end
-
-    def drug_targets_as_strings
-      expected = ["Aflibercept: D09574",
-                  "Aflibercept beta: D10819",
-                  "Bevacizumab: D06409",
-                  "Bevasiranib sodium: D08874",
-                  "Brolucizumab: D11083",
-                  "Navicixizumab: D11126",
-                  "Pegaptanib: D05386",
-                  "Ranibizumab: D05697"]
-      assert_equal(expected, @obj.drug_targets_as_strings)
-    end
-
-    def networks_as_strings
-      expected = ["N00079  HIF-1 signaling pathway",
-                  "N00080  Loss of VHL to HIF-1 signaling pathway",
-                  "N00081  Mutation-inactivated VHL to HIF-1 signaling pathway",
-                  "N00095  ERBB2-overexpression to EGF-Jak-STAT signaling pathway",
-                  "N00157  KSHV vGPCR to GNB/G-ERK signaling pathway",
-                  "N00179  KSHV K1 to PI3K-NFKB signaling pathway"]
-      assert_equal(expected, @obj.networks_as_strings)
-    end
-
-  end #class TestBioKEGGGENES_hsa7422
-
 end #module Bio
 
 
