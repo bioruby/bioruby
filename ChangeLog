@@ -1,14 +1,1049 @@
+commit 2e4046517fd8ee1c105ef53131e69f787d790099
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 14:23:19 2019 +0900
+
+    Add "Recommended Plugins" section and description is moved to it
+
+ README.rdoc | 22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
+
+commit 7a533e4f57edcebb5dfe15fdddc9fbc986d2b7ec
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 14:17:08 2019 +0900
+
+    fix directory name
+
+ README.rdoc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 805266c9c900903156efd0baa8c1e6ee524a8147
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 14:14:52 2019 +0900
+
+    add description about recommended plugins
+
+ README.rdoc | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+commit 02b7d8b9bc5dcd56f501a15e5e820f450153aa1c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 13:33:30 2019 +0900
+
+    prepare to release BioRuby 2.0.0
+
+ lib/bio/version.rb | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit f1fed8dacb425d19c12abec5d4faeb733827f80f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 13:31:08 2019 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+commit 3952ec9d5ce1e3ceea9734f667d36595808c4989
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 13:28:19 2019 +0900
+
+    Remove xmlparser dependency from Gemfile and gemfiles/Gemfile.*
+
+ Gemfile                         | 2 --
+ gemfiles/Gemfile.travis-rbx     | 2 --
+ gemfiles/Gemfile.travis-ruby1.8 | 2 --
+ gemfiles/Gemfile.travis-ruby1.9 | 2 --
+ gemfiles/Gemfile.windows        | 2 --
+ 5 files changed, 10 deletions(-)
+
+commit d4a8ee7ae3d3b13a8be4c57c1f8db5b29f2c4a13
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 12:34:45 2019 +0900
+
+    RELEASE_NOTES.rdoc: update aboue new features and improvements
+
+ RELEASE_NOTES.rdoc | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
+
+commit 2d4170a2a0262f5d75cef5a54b5d6f3da298f145
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 12:24:12 2019 +0900
+
+    Tests added in the previous commit is moved and modified
+    
+     * test/network/bio/db/kegg/test_genes_hsa7422.rb: tests added in the
+       previous commit is moved to the file and modified to get data
+       from the internet for avoiding KEGG data license issue.
+       Note that some of the tests might be fail in the near future due to
+       the database entry updates.
+
+ test/network/bio/db/kegg/test_genes_hsa7422.rb | 91 ++++++++++++++++++++++++++
+ test/unit/bio/db/kegg/test_genes.rb            | 51 ---------------
+ 2 files changed, 91 insertions(+), 51 deletions(-)
+ create mode 100644 test/network/bio/db/kegg/test_genes_hsa7422.rb
+
+commit 67f8105acf22e88a7624305743ad13802ffed124
+Author: kojix2 <2xijok@gmail.com>
+Date:   Mon Oct 22 00:46:31 2018 +0900
+
+    add DiseasesAsHash to KEGG/Common
+
+ lib/bio/db/kegg/common.rb           | 14 ++++++++++
+ lib/bio/db/kegg/genes.rb            | 26 +++++++++++++++++++
+ lib/bio/db/kegg/pathway.rb          | 16 ++++--------
+ test/unit/bio/db/kegg/test_genes.rb | 51 +++++++++++++++++++++++++++++++++++++
+ 4 files changed, 96 insertions(+), 11 deletions(-)
+
+commit 9dbb655e1c3ec7460b77f1d0ea475531ac3a9361
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 11:37:11 2019 +0900
+
+    update documents for upcoming new release
+
+ KNOWN_ISSUES.rdoc  | 14 +++-----
+ LEGAL              |  9 ------
+ README.rdoc        | 92 +++++++----------------------------------------------
+ README_DEV.rdoc    | 10 +++---
+ RELEASE_NOTES.rdoc | 93 +++++++++++++++++++++++++++++++++++++++++++-----------
+ 5 files changed, 96 insertions(+), 122 deletions(-)
+
+commit 6f388019a035a41a8867c6a03ef7e2707d1edce4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 11:32:40 2019 +0900
+
+    .travis.yml: move 1.8.7 and 1.9.3 to allow_failures; update ruby versions
+
+ .travis.yml | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
+
+commit f2cbe9db9b78df653d774a7676e00f6f1a212b23
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 11:18:27 2019 +0900
+
+    .travis.yml: Remove jobs using "tar-integration-test"
+
+ .travis.yml | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+commit 68f28e81e3fa566843b548f1899549adcad5225a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 11:10:18 2019 +0900
+
+    remove "rake tar-install" and "rake tar-integration-test" tasks
+    
+     * Rakefile: Remove "tar-install" and "tar-integration-test" tasks
+       because they use setup.rb that is removed from the repository.
+
+ Rakefile | 34 ----------------------------------
+ 1 file changed, 34 deletions(-)
+
+commit 0cbdb4586f2231a68579105dbc7f0fb413b38a96
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 10:48:15 2019 +0900
+
+    next bioruby version will be 2.0.0
+
+ lib/bio/version.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 300d10b9791b7f0c0eff1d0544cae63fecc3b31a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 10:41:12 2019 +0900
+
+    Remove setup.rb. Use RubyGems to install BioRuby.
+
+ setup.rb | 1600 --------------------------------------------------------------
+ 1 file changed, 1600 deletions(-)
+ delete mode 100644 setup.rb
+
+commit a74683d9acfc16d0d715b020839839afc8b43350
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 02:28:31 2019 +0900
+
+    try to require "bio-blast-xmlparser" provided by separete gem
+
+ lib/bio/appl/blast/report.rb | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+commit de1c1e33aed392d4e2265a028b8acb50501f56bd
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Sep 16 04:49:21 2017 +0900
+
+    check existance of a private method instead of XMLParser constant
+
+ test/unit/bio/appl/blast/test_report.rb | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+commit 3f54d19c44411e845b32c522fc0deca4288dcf07
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Sep 16 04:39:19 2017 +0900
+
+    xml_set_parameter is moved from xmlparser.rb etc.
+    
+     * The method xml_set_parameter is moved from
+       lib/bio/appl/blast/xmlparser.rb because it is used by
+       the REXML parser.
+     * The method Bio::Blast::Report.xmlparser is move to
+       lib/bio/appl/blast/xmlparser.rb in the separate repo.
+     * Use "defined? xmlparser_parse" for checking existance of
+       the blast xmlparser component.
+     * Removed line to require bio/appl/blast/xmlparser.
+
+ lib/bio/appl/blast/report.rb | 40 ++++++++++++++++++++++++++++++++--------
+ 1 file changed, 32 insertions(+), 8 deletions(-)
+
+commit b19cd507c432739c5aaac700e222e6e4ecc63ddc
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Sep 16 03:32:54 2017 +0900
+
+    lib/bio/appl/blast/xmlparser.rb is removed and moved to separate gem
+    
+     * lib/bio/appl/blast/xmlparser.rb is removed and moved to separate gem
+       to eliminate dependency to xmlparser that includes native extension.
+
+ lib/bio/appl/blast/xmlparser.rb | 236 ----------------------------------------
+ 1 file changed, 236 deletions(-)
+ delete mode 100644 lib/bio/appl/blast/xmlparser.rb
+
+commit 525d3450ad3440bfbbe3a1540fe60d83c3845ec7
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Dec 15 11:33:08 2018 +0900
+
+    .travis.yml: remove jruby-18mode and jruby-19mode; add jruby and truffleruby
+
+ .travis.yml | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
+
+commit 5bc0042b7fc39c62222534e0e4129d3f9794fd8c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 14 22:46:08 2018 +0900
+
+    appveyor.yml: regenerate bioruby.gemspec before creating gem
+
+ appveyor.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 5582dc1db60ffc812211d9803d5adce9c0dd70d3
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 14 22:39:35 2018 +0900
+
+    appveyor.yml: modify gemfile/Gemfile.windows after bundle install
+
+ appveyor.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 09031bcae0a42fe93d07b46eb489ffbabc8c1319
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 14 22:30:09 2018 +0900
+
+    appveyor.yml: give up using vendor/bundle; set BUNDLE_GEMFILE
+
+ appveyor.yml | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+commit 44fb6c67aef1b0311d32ac806fc9a62f09d401d5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 14 21:59:44 2018 +0900
+
+    appveyor.yml: Specify gemfiles/Gemfile.windows
+    
+     * appveyor.yml: Specify gemfiles/Gemfile.windows in which xmlparser gem
+       is excluded because of build failure of the xmlparser gem on Windows.
+     * gemfiles/Gemfile.windows: Gemfile for Appveyor, running on Microsoft
+       Windows.
+
+ appveyor.yml             | 2 +-
+ gemfiles/Gemfile.windows | 8 ++++++++
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+ create mode 100644 gemfiles/Gemfile.windows
+
+commit fe55e52b42660dda1d21749bf714e989e7db754e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 14 21:48:06 2018 +0900
+
+    appveyor.yml: update ruby versions and test procedure
+
+ appveyor.yml | 22 +++++++++++++++-------
+ 1 file changed, 15 insertions(+), 7 deletions(-)
+
+commit 739f5c9a512074a7de25d87e8104ed15bdb28b5d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 14 11:57:43 2018 +0900
+
+    .travis.yml: change default Gemfile
+    
+     * Change default Gemfile to Gemfile
+     * Move old Ruby versions to "include" matrix.
+     * Change ruby version for gem-integration-test and tar-integration-test
+
+ .travis.yml | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
+
+commit 2f54a9cbf8fb6d8580d488b20007d5ce4562e5e9
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Dec 14 11:42:58 2018 +0900
+
+    .travis.yml: No more limit to master branch. Instead, add blocklist.
+
+ .travis.yml | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+commit 9ac3e44318c67fd4415a2118dd5631902e784e12
+Author: Kozo Nishida <knishida@riken.jp>
+Date:   Thu Dec 13 22:47:54 2018 +0900
+
+    ci(travis): Add rvm versions
+
+ .travis.yml | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+commit 258dd67c9d65f1247e56d5c5228cc6f9c019d133
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Dec 10 21:56:16 2018 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 3920483d6b5a3759e6c610d7ee9fb1a63dcc9ce4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Dec 10 21:55:19 2018 +0900
+
+    Simplify version number processing
+
+ bioruby.gemspec.erb | 14 +++++++-------
+ lib/bio/version.rb  | 12 +++++-------
+ 2 files changed, 12 insertions(+), 14 deletions(-)
+
+commit 80949a10ea5e4f88d21d893905b720925f5a9e7b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Dec 10 18:54:00 2018 +0900
+
+    next bioruby version will be 1.6.0
+
+ lib/bio/version.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 2b542865a4d4af2684ace41f79e273ebceb51807
+Merge: 02a96424 d71e07a0
+Author: Toshiaki Katayama <k@bioruby.org>
+Date:   Fri Oct 19 06:45:49 2018 +0900
+
+    Merge pull request #125 from kojix2/master
+    
+    update TogoWS documentation. genbank -> ncbi-nucleotide
+
+commit d71e07a0cb1cc441241be91273bd44e3717b8773
+Author: kojix2 <2xijok@gmail.com>
+Date:   Thu Oct 18 19:10:29 2018 +0900
+
+    update TogoWS documentation. genbank -> ncbi-nucleotide
+
+ lib/bio/io/togows.rb                   | 10 +++++-----
+ sample/test_restriction_enzyme_long.rb |  2 +-
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+commit 02a964241b79e2307d0a00473427ea6bc2ea6932
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 20 07:06:08 2018 +0900
+
+    Improvement documentation
+    
+     * Improve documentation.
+     * Close https://github.com/bioruby/bioruby/pull/120 .
+
+ lib/bio/db/aaindex.rb | 79 +++++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 74 insertions(+), 5 deletions(-)
+
+commit 6bfef40ae87099565371abf94cf2cc8bfac76b12
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 20 05:01:12 2018 +0900
+
+    Bug fix: Bio::Command.new_https should support proxy
+
+ lib/bio/command.rb | 18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
+
+commit 4e3251d2172f58239f103e7edf8f4c351140f378
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 20 04:58:56 2018 +0900
+
+    https support for Bio::Blast::Remote::GenomeNet::Information
+
+ lib/bio/appl/blast/genomenet.rb | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+commit 6dd1f9fb8c2b4ba95086eab7bffc01583feccf3a
+Author: ramadis <rramiro.o@hotmail.com>
+Date:   Sat Jul 7 15:12:33 2018 -0300
+
+    Add https requests in command. Fix genomenet query by allowing https requests.
+
+ lib/bio/appl/blast/genomenet.rb |  2 +-
+ lib/bio/command.rb              | 14 ++++++++++++++
+ 2 files changed, 15 insertions(+), 1 deletion(-)
+
+commit 4b6f87c9fd2dc62418ddfc4b57bcc4b73287a603
+Author: Tomoaki NISHIYAMA <tomoakin@kenroku.kanazawa-u.ac.jp>
+Date:   Sat Mar 31 13:08:07 2018 +0900
+
+    directly refer to the given hash
+
+ lib/bio/data/codontable.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 25636ffa08c6ea9a9e4d1b451a456bc1f482ad40
+Author: Tomoaki NISHIYAMA <tomoakin@kenroku.kanazawa-u.ac.jp>
+Date:   Sat Jun 2 15:10:12 2018 +0900
+
+    precalculated ambiguity codontable
+
+ lib/bio/data/codontable.rb | 55 +++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 52 insertions(+), 3 deletions(-)
+
+commit b2d924045202ec3aa4e1b79341fd939a881d4c2e
+Author: Tomoaki NISHIYAMA <tomoakin@kenroku.kanazawa-u.ac.jp>
+Date:   Sat Mar 31 11:55:57 2018 +0900
+
+    construct ambiguity nucleotide to amino acid table
+
+ lib/bio/data/codontable.rb            | 49 ++++++++++++++++++++++++++++++++++-
+ test/unit/bio/data/test_codontable.rb |  3 +++
+ 2 files changed, 51 insertions(+), 1 deletion(-)
+
+commit a7378b6b269ea1c0391e259dd8e4868f03b064ea
+Author: markwilkinson <markw@illuminae.com>
+Date:   Tue Dec 12 14:13:51 2017 +0100
+
+    fixing Fasta Report parser for fasta36 -m10
+
+ lib/bio/appl/fasta/format10.rb | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit c89c40c29c3c92f8e548c79d2d04698123559007
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 15 16:33:19 2017 +0900
+
+    Remove settings about executables
+    
+     * Definitions and settings about executables are removed because
+       all files in bin/ have been moved to separate gem packages
+       (bio-shell and bio-executables).
+
+ bioruby.gemspec     | 13 -------------
+ bioruby.gemspec.erb | 21 +--------------------
+ 2 files changed, 1 insertion(+), 33 deletions(-)
+
+commit b5a8d385da8f2c1b6e1caf77295e590f55595944
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 15 16:20:03 2017 +0900
+
+    bin/br_*.rb is moved to bio-executables gem
+    
+     * The following executable files are moved to "bio-executables" gem.
+       * bin/br_biofetch.rb
+       * bin/br_bioflat.rb
+       * bin/br_biogetseq.rb
+       * bin/br_pmfetch.rb
+
+ bin/br_biofetch.rb  |  71 ---------
+ bin/br_bioflat.rb   | 293 ------------------------------------
+ bin/br_biogetseq.rb |  45 ------
+ bin/br_pmfetch.rb   | 422 ----------------------------------------------------
+ 4 files changed, 831 deletions(-)
+ delete mode 100755 bin/br_biofetch.rb
+ delete mode 100755 bin/br_bioflat.rb
+ delete mode 100755 bin/br_biogetseq.rb
+ delete mode 100755 bin/br_pmfetch.rb
+
+commit eb61d89a366437570a0590a629cb75718866b236
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 15 09:31:14 2017 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec | 44 +-------------------------------------------
+ 1 file changed, 1 insertion(+), 43 deletions(-)
+
+commit 6d40721d039fdb6b77af656f32ccabeabc427409
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 15 09:29:33 2017 +0900
+
+    Remove BioRuby Shell files that are released as independent gem package
+
+ bin/bioruby                                        |  47 --
+ lib/bio/shell.rb                                   |  44 --
+ lib/bio/shell/core.rb                              | 578 ---------------------
+ lib/bio/shell/demo.rb                              | 146 ------
+ lib/bio/shell/interface.rb                         | 217 --------
+ lib/bio/shell/irb.rb                               |  94 ----
+ lib/bio/shell/object.rb                            |  71 ---
+ lib/bio/shell/plugin/blast.rb                      |  42 --
+ lib/bio/shell/plugin/codon.rb                      | 218 --------
+ lib/bio/shell/plugin/das.rb                        |  58 ---
+ lib/bio/shell/plugin/emboss.rb                     |  23 -
+ lib/bio/shell/plugin/entry.rb                      | 137 -----
+ lib/bio/shell/plugin/flatfile.rb                   | 101 ----
+ lib/bio/shell/plugin/midi.rb                       | 430 ---------------
+ lib/bio/shell/plugin/ncbirest.rb                   |  68 ---
+ lib/bio/shell/plugin/obda.rb                       |  45 --
+ lib/bio/shell/plugin/psort.rb                      |  56 --
+ lib/bio/shell/plugin/seq.rb                        | 248 ---------
+ lib/bio/shell/plugin/togows.rb                     |  40 --
+ .../generators/bioruby/bioruby_generator.rb        |  29 --
+ .../generators/bioruby/templates/_classes.rhtml    |   4 -
+ .../generators/bioruby/templates/_log.rhtml        |  27 -
+ .../generators/bioruby/templates/_methods.rhtml    |  11 -
+ .../generators/bioruby/templates/_modules.rhtml    |   4 -
+ .../generators/bioruby/templates/_variables.rhtml  |   7 -
+ .../generators/bioruby/templates/bioruby-bg.gif    | Bin 1431 -> 0 bytes
+ .../generators/bioruby/templates/bioruby-gem.png   | Bin 6951 -> 0 bytes
+ .../generators/bioruby/templates/bioruby-link.gif  | Bin 2758 -> 0 bytes
+ .../generators/bioruby/templates/bioruby.css       | 368 -------------
+ .../generators/bioruby/templates/bioruby.rhtml     |  47 --
+ .../bioruby/templates/bioruby_controller.rb        | 144 -----
+ .../generators/bioruby/templates/bioruby_helper.rb |  47 --
+ .../generators/bioruby/templates/commands.rhtml    |   8 -
+ .../generators/bioruby/templates/history.rhtml     |  10 -
+ .../generators/bioruby/templates/index.rhtml       |  26 -
+ .../generators/bioruby/templates/spinner.gif       | Bin 1542 -> 0 bytes
+ lib/bio/shell/script.rb                            |  25 -
+ lib/bio/shell/setup.rb                             | 108 ----
+ lib/bio/shell/web.rb                               | 102 ----
+ test/unit/bio/shell/plugin/test_seq.rb             | 187 -------
+ test/unit/bio/test_shell.rb                        |  20 -
+ 41 files changed, 3837 deletions(-)
+ delete mode 100755 bin/bioruby
+ delete mode 100644 lib/bio/shell.rb
+ delete mode 100644 lib/bio/shell/core.rb
+ delete mode 100644 lib/bio/shell/demo.rb
+ delete mode 100644 lib/bio/shell/interface.rb
+ delete mode 100644 lib/bio/shell/irb.rb
+ delete mode 100644 lib/bio/shell/object.rb
+ delete mode 100644 lib/bio/shell/plugin/blast.rb
+ delete mode 100644 lib/bio/shell/plugin/codon.rb
+ delete mode 100644 lib/bio/shell/plugin/das.rb
+ delete mode 100644 lib/bio/shell/plugin/emboss.rb
+ delete mode 100644 lib/bio/shell/plugin/entry.rb
+ delete mode 100644 lib/bio/shell/plugin/flatfile.rb
+ delete mode 100644 lib/bio/shell/plugin/midi.rb
+ delete mode 100644 lib/bio/shell/plugin/ncbirest.rb
+ delete mode 100644 lib/bio/shell/plugin/obda.rb
+ delete mode 100644 lib/bio/shell/plugin/psort.rb
+ delete mode 100644 lib/bio/shell/plugin/seq.rb
+ delete mode 100644 lib/bio/shell/plugin/togows.rb
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/bioruby_generator.rb
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/_classes.rhtml
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/_log.rhtml
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/_methods.rhtml
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/_modules.rhtml
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/_variables.rhtml
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby-bg.gif
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby-gem.png
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby-link.gif
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby.css
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby.rhtml
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby_controller.rb
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/bioruby_helper.rb
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/commands.rhtml
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/history.rhtml
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/index.rhtml
+ delete mode 100644 lib/bio/shell/rails/vendor/plugins/bioruby/generators/bioruby/templates/spinner.gif
+ delete mode 100644 lib/bio/shell/script.rb
+ delete mode 100644 lib/bio/shell/setup.rb
+ delete mode 100644 lib/bio/shell/web.rb
+ delete mode 100644 test/unit/bio/shell/plugin/test_seq.rb
+ delete mode 100644 test/unit/bio/test_shell.rb
+
+commit ab9feb6f1f495a2b3ca350005c6162c51178aecb
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 13 22:13:59 2017 +0900
+
+    Suppress warning "assigned but unused variable"
+
+ lib/bio/io/flatfile/autodetection.rb | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+commit cf486e327c253482f54e59b2e18f73db27641135
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 13 22:10:53 2017 +0900
+
+    Suppress warning: "instance variable @top_strand not initialized"
+    
+     * Suppress warning: "instance variable @top_strand not initialized".
+       To do so, force to raise NoMethodError when @top_strand is not
+       initialized or is nil. This should be changed to appropriate
+       exception in the future.
+
+ lib/bio/util/sirna.rb | 2 ++
+ 1 file changed, 2 insertions(+)
+
+commit 88477698f0e1b5a74f9682f26e97c5f90f6912b4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 13 21:31:38 2017 +0900
+
+    Suppress warning in Ruby 2.4: "constant ::Fixnum is deprecated"
+
+ lib/bio/db/soft.rb                                                    | 4 ++--
+ .../util/restriction_enzyme/range/sequence_range/calculated_cuts.rb   | 2 +-
+ test/unit/bio/test_alignment.rb                                       | 4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+commit f8cff14179cfeea0d685f4df756db71ceb6d5fab
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 13 21:19:12 2017 +0900
+
+    Suppress warning "parentheses after method name is interpreted as an argument list, not a decomposed argument" in Ruby 2.4
+
+ lib/bio/map.rb | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+commit ddb25c2bf3872c6306a91e407d95caa2e136cee9
+Author: Jun Aruga <jaruga@redhat.com>
+Date:   Fri Nov 18 11:14:38 2016 +0100
+
+    Gemfile for local development.
+
+ .travis.yml                                | 8 ++++----
+ gemfiles/Gemfile.travis-ruby2.2 => Gemfile | 0
+ bioruby.gemspec                            | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+ rename gemfiles/Gemfile.travis-ruby2.2 => Gemfile (100%)
+
+commit 16faf6473b74eb172716b713ab757cb2ab2bcacc
+Author: Jun Aruga <jaruga@redhat.com>
+Date:   Thu Nov 17 17:50:40 2016 +0100
+
+    Fixes ruby1.8 Travis failure that is because rdoc 4.3.0 requires Ruby >= 1.9.3.
+
+ gemfiles/Gemfile.travis-jruby1.8 | 3 ++-
+ gemfiles/Gemfile.travis-ruby1.8  | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+commit 146fd66b3a14972bcfd0e9bf8ec007d38c55ac39
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Aug 13 08:22:22 2016 +0900
+
+    Update URLs and use https for NCBI REST web services
+
+ lib/bio/io/ncbirest.rb | 50 ++++++++++++++++++++++++++------------------------
+ 1 file changed, 26 insertions(+), 24 deletions(-)
+
+commit 7abd46f058a17ac34b263714449756383622012d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Sat Aug 13 08:12:08 2016 +0900
+
+    New method Bio::Command#start_http_uri(uri) with tests
+    
+     * lib/bio/command.rb: New method Bio::Command#start_http_uri(uri)
+       that supports HTTPS. Note that this method is intended to be
+       called only from BioRuby internals.
+     * lib/bio/command.rb: Bio::Command#post and #post_form are changed
+       to use the start_http_uri().
+     * test/network/bio/test_command.rb: tests for start_http_uri().
+
+ lib/bio/command.rb               | 42 ++++++++++++++++++++++++++++++++++++++--
+ test/network/bio/test_command.rb | 17 ++++++++++++++++
+ 2 files changed, 57 insertions(+), 2 deletions(-)
+
+commit 11c680f6d64a60bdc0f4248951bf2d2ebafbc433
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 17 20:40:41 2016 +0900
+
+    gemfiles/Gemfile.*: remove dependency on libxml-ruby
+    
+     * gemfiles/Gemfile.*: remove dependency on libxml-ruby.
+       Bio::PhyloXML required libxml-ruby but was already removed.
+
+ gemfiles/Gemfile.travis-jruby1.8 | 3 ---
+ gemfiles/Gemfile.travis-jruby1.9 | 3 ---
+ gemfiles/Gemfile.travis-rbx      | 1 -
+ gemfiles/Gemfile.travis-ruby1.8  | 1 -
+ gemfiles/Gemfile.travis-ruby1.9  | 1 -
+ gemfiles/Gemfile.travis-ruby2.2  | 1 -
+ 6 files changed, 10 deletions(-)
+
+commit 09fa57f987445e8654de6a0d0cf7c45f7625600c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 17 16:16:40 2016 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
+
+commit 87812d119820bf66767c7767cfec7554d7a00f3b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 17 15:45:46 2016 +0900
+
+    README.rdoc: about bioruby-phyloxml and bio-biosql
+
+ README.rdoc | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+commit 2294f255f5f05f9f629a1e88c0e1f59bb74b32bc
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 17 15:42:46 2016 +0900
+
+    KNOWN_ISSUES.rdoc: remove descriptions about Bio::SQL
+
+ KNOWN_ISSUES.rdoc | 5 -----
+ 1 file changed, 5 deletions(-)
+
+commit 35a6f761dc5fa493b8311747dde7f2a54d8aee75
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 17 15:40:57 2016 +0900
+
+    README.rdoc: remove descriptions about Bio::SQL
+
+ README.rdoc | 13 +------------
+ 1 file changed, 1 insertion(+), 12 deletions(-)
+
+commit 46a5bf7acdc803b7e75225c41b23396c4619f25d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 17 14:59:41 2016 +0900
+
+    remove autoload of Bio::SQL
+
+ lib/bio.rb | 1 -
+ 1 file changed, 1 deletion(-)
+
+commit 57bf535da34715beafccb902404cf1bb35b18af4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 17 14:48:46 2016 +0900
+
+    Removed Bio::SQL that have been moved to separate repository
+    
+     * Bio::SQL is moved to https://github.com/bioruby/bioruby-biosql
+       and removed from this repository.
+    
+     * List of deleted files:
+       * deleted:    lib/bio/db/biosql/biosql_to_biosequence.rb
+       * deleted:    lib/bio/db/biosql/sequence.rb
+       * deleted:    lib/bio/io/biosql/ar-biosql.rb
+       * deleted:    lib/bio/io/biosql/biosql.rb
+       * deleted:    lib/bio/io/biosql/config/database.yml
+       * deleted:    lib/bio/io/sql.rb
+       * deleted:    test/unit/bio/db/biosql/tc_biosql.rb
+       * deleted:    test/unit/bio/db/biosql/ts_suite_biosql.rb
+
+ lib/bio/db/biosql/biosql_to_biosequence.rb |  78 -----
+ lib/bio/db/biosql/sequence.rb              | 444 -----------------------------
+ lib/bio/io/biosql/ar-biosql.rb             | 257 -----------------
+ lib/bio/io/biosql/biosql.rb                |  39 ---
+ lib/bio/io/biosql/config/database.yml      |  21 --
+ lib/bio/io/sql.rb                          |  79 -----
+ test/unit/bio/db/biosql/tc_biosql.rb       | 114 --------
+ test/unit/bio/db/biosql/ts_suite_biosql.rb |   8 -
+ 8 files changed, 1040 deletions(-)
+ delete mode 100644 lib/bio/db/biosql/biosql_to_biosequence.rb
+ delete mode 100644 lib/bio/db/biosql/sequence.rb
+ delete mode 100644 lib/bio/io/biosql/ar-biosql.rb
+ delete mode 100644 lib/bio/io/biosql/biosql.rb
+ delete mode 100644 lib/bio/io/biosql/config/database.yml
+ delete mode 100644 lib/bio/io/sql.rb
+ delete mode 100644 test/unit/bio/db/biosql/tc_biosql.rb
+ delete mode 100644 test/unit/bio/db/biosql/ts_suite_biosql.rb
+
+commit 476dcdbe2b21cd5adb641952ee3da92c2d593121
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jun 8 12:38:22 2016 +0900
+
+    appveyor.yml: eliminate old Ruby versions and add Ruby 2.3
+
+ appveyor.yml | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+commit c26e2b77b75b5505a274822f53c6c5a8f842f6c0
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jun 8 01:50:19 2016 +0900
+
+    .travis.yml: fix to use rbx-3.29
+
+ .travis.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit b524abedac9c85d4f8259191b973bc38a9fc557c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jun 8 01:45:48 2016 +0900
+
+    gemfiles/Gemfile.travis-jruby1.8: use old gem versions supporting Ruby 1.8
+
+ gemfiles/Gemfile.travis-jruby1.8 | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+commit c5df9268b77f1d4dc2b29e7cfb7baf3c528c1558
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jun 8 01:42:40 2016 +0900
+
+    .travis.yml: use rbx-3.29 instead of rbx-3
+
+ .travis.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit b51b54894ca2d76d9c13680fd72b87951a10a1df
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jun 8 01:25:18 2016 +0900
+
+    Workaround to avoid bug in old versions of Bundler
+    
+     * gemfiles/prepare-gemspec.rb: execute "gem update bundler" to avoid
+       "NoMethodError: undefined method `spec' for nil:NilClass"
+       during "bundle install". This error may be due to a bug of Bundler
+       and the bug seems to be fixed in the latest version of Budler.
+
+ gemfiles/prepare-gemspec.rb | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+commit a82424b4864e243ebf1f8cc7f181044798b34b5a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jun 8 01:20:15 2016 +0900
+
+    .travis.yml: add Ruby 2.3.1; use Ruby 2.2.5 instead of 2.2
+
+ .travis.yml | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+commit ae927514a5c2853d3839750af86bfcc1fc53e4f1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jun 8 00:54:22 2016 +0900
+
+    .travis.yml: add "sudo: false" for faster testing
+
+ .travis.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 832c4dd94a5602a9deadf599ce1778fac870ac81
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jun 8 00:46:26 2016 +0900
+
+    gemfiles/Gemfile.travis-ruby1.8: use old gem versions supporting Ruby 1.8
+
+ gemfiles/Gemfile.travis-ruby1.8 | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+commit 6cf0ab84cd67aab0f6f4012438c1852a19f3ac7a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Jun 8 00:04:36 2016 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit 8e986984892d661b4f09a06158a634554d931718
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Jun 7 23:59:35 2016 +0900
+
+    .travis.yml: Update ruby versions and remove temporary workaround
+    
+     * Update Ruby versions to 2.2, 2.1.10, and rbx-3.
+     * Remove temporary workaround about RubyGems introduced in
+       e92e09edf5904f51d3e73e61d13fce4159a543c5.
+
+ .travis.yml | 18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
+
+commit 90e678d6d74d86c45631128c0f16181679f0d599
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Jun 7 23:37:45 2016 +0900
+
+    Test bug: fix gem version mismatch error on Travis-CI
+    
+     * Rakefile: prefer to use spec read from existing bioruby.gemspec file
+       instead of that of generated from bioruby.gemspec.erb.
+       This fixes "can't activate bio (= 1.5.1.2016XXXX), already activated
+       bio-1.5.1.2015NNNN" occurred on Travis-CI during gem integration tests.
+
+ Rakefile | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
+
+commit bdb33fe752b7dddcb35f57d826f85dbdd512c3c1
+Author: Kozo Nishida <knishida@riken.jp>
+Date:   Wed Nov 4 12:08:24 2015 +0900
+
+    add appveyor.yml
+
+ appveyor.yml | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+ create mode 100644 appveyor.yml
+
+commit 8b0fa73c57232a6a86d2d6fd0711f51bc50aa333
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 17 23:34:34 2015 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
+
+commit 813fc808e9a235e03ed2d5bad2d15f74946bd65a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 17 23:30:46 2015 +0900
+
+    Tutorial.rd.html is regenerated by rake retutorial2html
+
+ doc/Tutorial.rd.html | 117 +++++++++------------------------------------------
+ 1 file changed, 19 insertions(+), 98 deletions(-)
+
+commit 756f14122a45973289172a88241490a1bcc0054a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 17 23:25:07 2015 +0900
+
+    Delete Bio::PhyloXML tutorial
+    
+     * Tutorial for Bio::PhyloXML is deleted from BioRuby core.
+       It is now moved to bio-phyloxml gem. New tutorial for
+       Bio::PhyloXML is available at:
+       https://github.com/bioruby/bioruby-phyloxml/blob/master/doc/Tutorial.rd
+
+ doc/Tutorial.rd | 114 +++-----------------------------------------------------
+ 1 file changed, 6 insertions(+), 108 deletions(-)
+
+commit bb42efdd2eec380c99cbd3e505577a550dda8ce7
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 17 23:20:50 2015 +0900
+
+    Delete description of Bio::PhyloXML and its dependency libxml-ruby.
+
+ README.rdoc | 6 ------
+ 1 file changed, 6 deletions(-)
+
+commit 4202ae936baf0f4c8a722af240a6613f4e8a8cee
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 17 22:48:23 2015 +0900
+
+    Remove PhyloXML (split out bio-phyloxml gem)
+    
+     * Bio::PhyloXML is removed from BioRuby core.
+       It will soon be released as separate bio-phyloxml gem.
+       The development repository of the new Bio::PhyloXML is
+       https://github.com/bioruby/bioruby-phyloxml
+
+ lib/bio/db/phyloxml/phyloxml.xsd                   |  582 ------
+ lib/bio/db/phyloxml/phyloxml_elements.rb           | 1194 -----------
+ lib/bio/db/phyloxml/phyloxml_parser.rb             | 1001 ----------
+ lib/bio/db/phyloxml/phyloxml_writer.rb             |  227 ---
+ sample/test_phyloxml_big.rb                        |  205 --
+ test/data/phyloxml/apaf.xml                        |  666 -------
+ test/data/phyloxml/bcl_2.xml                       | 2097 --------------------
+ test/data/phyloxml/made_up.xml                     |  144 --
+ .../data/phyloxml/ncbi_taxonomy_mollusca_short.xml |   65 -
+ test/data/phyloxml/phyloxml_examples.xml           |  415 ----
+ test/unit/bio/db/test_phyloxml.rb                  |  821 --------
+ test/unit/bio/db/test_phyloxml_writer.rb           |  334 ----
+ 12 files changed, 7751 deletions(-)
+ delete mode 100644 lib/bio/db/phyloxml/phyloxml.xsd
+ delete mode 100644 lib/bio/db/phyloxml/phyloxml_elements.rb
+ delete mode 100644 lib/bio/db/phyloxml/phyloxml_parser.rb
+ delete mode 100644 lib/bio/db/phyloxml/phyloxml_writer.rb
+ delete mode 100644 sample/test_phyloxml_big.rb
+ delete mode 100644 test/data/phyloxml/apaf.xml
+ delete mode 100644 test/data/phyloxml/bcl_2.xml
+ delete mode 100644 test/data/phyloxml/made_up.xml
+ delete mode 100644 test/data/phyloxml/ncbi_taxonomy_mollusca_short.xml
+ delete mode 100644 test/data/phyloxml/phyloxml_examples.xml
+ delete mode 100644 test/unit/bio/db/test_phyloxml.rb
+ delete mode 100644 test/unit/bio/db/test_phyloxml_writer.rb
+
+commit e3a85ad9eb6d258e79fdfbe600711a5296a20e8c
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 17 22:45:32 2015 +0900
+
+    Delete autoload of Bio::PhyloXML
+    
+     * Delete autoload of Bio::PhyloXML, for preparation of spliting
+       out Bio::PhyloXML.
+
+ lib/bio.rb | 7 -------
+ 1 file changed, 7 deletions(-)
+
+commit 422ffe6fedecf41d83327c01f7a55ebce4afd70d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 15 22:33:14 2015 +0900
+
+    Incompatible change about deprecated Bio::Taxonomy is described.
+
+ RELEASE_NOTES.rdoc | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
+
+commit 3ea10d73340d8ad571ab6ca386cffca18ec725d1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 15 21:06:29 2015 +0900
+
+    Bio::Taxonomy is removed and merged to Bio::PhyloXML::Taxonomy
+    
+     * Bio::Taxonomy in lib/bio/db/phyloxml/phyloxml_elements.rb was
+       written for PhyloXML, but it was intended to become general
+       taxonomy data class in BioRuby. However, no efforts have been
+       made to improve the Bio::Taxonomy class, and it still remains
+       to be a PhyloXML specific class. As the first step to split out
+       Bio::PhyloXML to a new Gem (Biogem) package, we now decide to
+       remove Bio::Taxonomy and merge it to Bio::PhyloXML::Taxonomy.
+    
+     * Codes using Bio::Taxonomy should be modified. Changing
+       Bio::Taxonomy to Bio::PhyloXML::Taxonomy, or adding the
+       following monkey patch is needed.
+    
+          module Bio
+             unless defined? Taxonomy
+                Taxonomy = Bio::PhyloXML::Taxonomy
+             end
+          end
+
+ lib/bio.rb                               |  2 --
+ lib/bio/db/phyloxml/phyloxml_elements.rb | 21 +++++++++------------
+ 2 files changed, 9 insertions(+), 14 deletions(-)
+
+commit f89f49223f7d6ed74a8fc50aa2355fb5912c885f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Sep 14 15:15:56 2015 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+commit 809e190d710caceee1c213da1aa067dee87e6ebd
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Sep 14 15:14:05 2015 +0900
+
+    New RELEASE_NOTES.rdoc for the next release version
+
+ RELEASE_NOTES.rdoc | 47 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
+ create mode 100644 RELEASE_NOTES.rdoc
+
+commit a44257e933165509f3d2b164ea547ed8fba18ea5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Sep 14 15:10:42 2015 +0900
+
+    move RELEASE_NOTES.rdoc to doc/RELEASE_NOTES-1.5.0.rdoc
+
+ RELEASE_NOTES.rdoc => doc/RELEASE_NOTES-1.5.0.rdoc | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename RELEASE_NOTES.rdoc => doc/RELEASE_NOTES-1.5.0.rdoc (100%)
+
+commit 4d53755b0181255e2ee69193a5a3b064ef4f4b77
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Jul 2 22:19:03 2015 +0900
+
+    ChangeLog since 1.5.0 release
+
+ ChangeLog | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
+ create mode 100644 ChangeLog
+
 commit e066e3c8bcf0c6b7eadd3573576d4550aca77cc5
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Thu Jul 2 22:17:06 2015 +0900
 
     ChangeLog is moved to doc/ChangeLog-1.5.0
 
- ChangeLog           | 2919 ---------------------------------------------------
- doc/ChangeLog-1.5.0 | 2919 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 2919 insertions(+), 2919 deletions(-)
- delete mode 100644 ChangeLog
- create mode 100644 doc/ChangeLog-1.5.0
+ ChangeLog => doc/ChangeLog-1.5.0 | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename ChangeLog => doc/ChangeLog-1.5.0 (100%)
 
 commit dd53e885c1baa765bc094897d53309af7b15497b
 Author: Naohisa Goto <ng@bioruby.org>
@@ -16,7 +1051,7 @@ Date:   Thu Jul 2 22:09:26 2015 +0900
 
     change version for generating ChangeLog to 1.5.0
 
- Rakefile |    2 +-
+ Rakefile | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 commit 7a5d897ebc45d9ec5357918a42eb2980decf01e4
@@ -25,7 +1060,7 @@ Date:   Thu Jul 2 21:52:17 2015 +0900
 
     version changed to 1.5.1-dev (pre-release version of 1.5.1)
 
- lib/bio/version.rb |    4 ++--
+ lib/bio/version.rb | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 commit 8fc4d6c64f6958a352c36b171b00d1f1ff2a2354
@@ -34,5 +1069,5 @@ Date:   Thu Jul 2 21:47:28 2015 +0900
 
     fix English syntax and unexpected word insertion
 
- RELEASE_NOTES.rdoc |    4 ++--
+ RELEASE_NOTES.rdoc | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
