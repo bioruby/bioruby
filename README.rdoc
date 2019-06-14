@@ -215,6 +215,17 @@ dependencies.
     maintained after that.
 * {bio-biosql}[https://rubygems.org/gems/bio-biosql]
 
+Plugins (Biogems) listed below may be useful for running existing codes.
+
+* {bio-old-biofetch-emulator}[https://rubygems.org/gems/bio-old-biofetch-emulator] -- Emulates deprecated BioRuby's BioFetch server by using other existing web services.
+
+If possible, it may be recommended to install the following plugins:
+* bio-shell -- if you use the BioRuby Shell.
+* bio-executables -- if you use br_bio* commands.
+* bio-old-biofetch-emulator -- if you run existing codes using BioFetch, including sample codes in demo/.
+* bio-blast-xmlparser -- if Expat XML parser (with development files) is installed in your system.
+* bioruby-phyloxml -- if you use Bio::PhyloXML and Libxml2 (with developemnt files) is installed in your system.
+
 To develop your own plugin, see "Plugins" pages of BioRuby Wiki.
 
 * http://bioruby.open-bio.org/wiki/Plugins
