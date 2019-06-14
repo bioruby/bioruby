@@ -219,16 +219,24 @@ Plugins (Biogems) listed below may be useful for running existing codes.
 
 * {bio-old-biofetch-emulator}[https://rubygems.org/gems/bio-old-biofetch-emulator] -- Emulates deprecated BioRuby's BioFetch server by using other existing web services.
 
-If possible, it may be recommended to install the following plugins:
-* bio-shell -- if you use the BioRuby Shell.
-* bio-executables -- if you use br_bio* commands.
-* bio-old-biofetch-emulator -- if you run existing codes using BioFetch, including sample and demo codes in sample/.
-* bio-blast-xmlparser -- if Expat XML parser (with development files) is installed in your system.
-* bioruby-phyloxml -- if you use Bio::PhyloXML and Libxml2 (with developemnt files) is installed in your system.
-
 To develop your own plugin, see "Plugins" pages of BioRuby Wiki.
 
 * http://bioruby.open-bio.org/wiki/Plugins
+
+=== Recommended Plugins (gems)
+
+For existing BioRuby users, it is recommended to install the following gems:
+
+bio-shell :: If you use the BioRuby Shell.
+bio-executables :: If you use br_bio* commands.
+bio-old-biofetch-emulator :: If you run existing codes using BioFetch, including sample and demo codes in sample/.
+bio-blast-xmlparser :: If you treat BLAST XML result files and Expat XML parser (with development files) is installed in your system.
+bioruby-phyloxml :: If you use Bio::PhyloXML and Libxml2 (with developemnt files) is installed in your system.
+
+Note that it is NOT recommended to install bio-biosql unless you have
+really used Bio::SQL, because it depends on older version of ActiveRecords
+and ActiveSupport that may not be run on recent Ruby versions.
+
 
 == LICENSE
 
