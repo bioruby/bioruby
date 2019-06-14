@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "1.6.0.pre.20181210"
+  s.version = "2.0.0"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -54,6 +54,7 @@ Gem::Specification.new do |s|
     "gemfiles/Gemfile.travis-rbx",
     "gemfiles/Gemfile.travis-ruby1.8",
     "gemfiles/Gemfile.travis-ruby1.9",
+    "gemfiles/Gemfile.windows",
     "gemfiles/modify-Gemfile.rb",
     "gemfiles/prepare-gemspec.rb",
     "lib/bio.rb",
@@ -69,7 +70,6 @@ Gem::Specification.new do |s|
     "lib/bio/appl/blast/rexml.rb",
     "lib/bio/appl/blast/rpsblast.rb",
     "lib/bio/appl/blast/wublast.rb",
-    "lib/bio/appl/blast/xmlparser.rb",
     "lib/bio/appl/blat/report.rb",
     "lib/bio/appl/clustalw.rb",
     "lib/bio/appl/clustalw/report.rb",
@@ -316,7 +316,6 @@ Gem::Specification.new do |s|
     "sample/test_restriction_enzyme_long.rb",
     "sample/tfastx2tab.rb",
     "sample/vs-genes.rb",
-    "setup.rb",
     "test/bioruby_test_helper.rb",
     "test/data/HMMER/hmmpfam.out",
     "test/data/HMMER/hmmsearch.out",
@@ -452,6 +451,7 @@ Gem::Specification.new do |s|
     "test/network/bio/appl/blast/test_remote.rb",
     "test/network/bio/appl/test_blast.rb",
     "test/network/bio/appl/test_pts1.rb",
+    "test/network/bio/db/kegg/test_genes_hsa7422.rb",
     "test/network/bio/io/test_pubmed.rb",
     "test/network/bio/io/test_togows.rb",
     "test/network/bio/test_command.rb",
