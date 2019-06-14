@@ -1,9 +1,10 @@
 language: ruby
 rvm:
-  - 2.5.3
-  - 2.4.1
-  - 2.3.4
-  - 2.2.7
+  - 2.6
+  - 2.5
+  - 2.4
+  - 2.3.8
+  - 2.2.10
 env:
   - TESTOPTS=-v
 gemfile:
@@ -14,12 +15,6 @@ before_install:
   - ruby gemfiles/prepare-gemspec.rb
 matrix:
   include:
-    - rvm: 1.8.7
-      gemfile: gemfiles/Gemfile.travis-ruby1.8
-      env: TESTOPTS=-v
-    - rvm: 1.9.3
-      gemfile: gemfiles/Gemfile.travis-ruby1.9
-      env: TESTOPTS=-v
     - rvm: 2.0.0
       gemfile: gemfiles/Gemfile.travis-ruby1.9
       env: TESTOPTS=-v
@@ -35,13 +30,19 @@ matrix:
     - rvm: jruby
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TMPDIR=/tmp/bioruby TESTOPTS=-v
-    - rvm: 2.5.3
+    - rvm: 2.5
       gemfile: Gemfile
       env: BIORUBY_RAKE_DEFAULT_TASK=gem-test TESTOPTS=-v
     - rvm: jruby
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TMPDIR=/tmp/bioruby BIORUBY_RAKE_DEFAULT_TASK=gem-test TESTOPTS=-v
   allow_failures:
+    - rvm: 1.8.7
+      gemfile: gemfiles/Gemfile.travis-ruby1.8
+      env: TESTOPTS=-v
+    - rvm: 1.9.3
+      gemfile: gemfiles/Gemfile.travis-ruby1.9
+      env: TESTOPTS=-v
     - rvm: truffleruby
       gemfile: gemfiles/Gemfile.travis-jruby1.9
       env: TESTOPTS=-v
