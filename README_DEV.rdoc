@@ -2,7 +2,7 @@
 
 Copyright::  Copyright (C) 2005, 2006 Toshiaki Katayama <k@bioruby.org>
 Copyright::  Copyright (C) 2006, 2008 Jan Aerts <jandot@bioruby.org>
-Copyright::  Copyright (C) 2011       Naohisa Goto <ng@bioruby.org>
+Copyright::  Copyright (C) 2011, 2019 Naohisa Goto <ng@bioruby.org>
 
 = HOW TO CONTRIBUTE TO THE BIORUBY PROJECT?
 
@@ -360,15 +360,15 @@ We are mainly using Ruby MRI (Matz' Ruby Implementation, or Matz' Ruby
 Interpreter).  Please confirm that your code is running on current stable
 release versions of Ruby MRI.
 
-We are very happy if your code can run on both Ruby 1.8.x and 1.9.x.
-Note that Ruby 1.9.0 should be ignored because it was discontinued.
-Ruby 1.8.5 or earlier versions can also be ignored. See README.rdoc and
-RELEASE_NOTES.rdoc for recommended Ruby versions.
+See README.rdoc and RELEASE_NOTES.rdoc for recommended Ruby versions.
 
 It is welcome to support JRuby, Rubinius, etc, in addition to Ruby MRI.
 
 Of course, it is strongly encouraged to write code that is not affected by
 differences between Ruby versions and/or implementations, as far as possible.
+
+Although we no longer support Ruby 1.8, it might be useful if your code
+could also run on Ruby 1.8.7 in addition to supported Ruby versions.
 
 = OS and ARCHITECTURE
 

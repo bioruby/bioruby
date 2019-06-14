@@ -1,5 +1,5 @@
 = KNOWN_ISSUES.rdoc - Known issues and bugs in BioRuby
-Copyright:: Copyright (C) 2009-2012 Naohisa Goto <ng@bioruby.org>
+Copyright:: Copyright (C) 2009-2019 Naohisa Goto <ng@bioruby.org>
 License::   The Ruby License
 
 = Known issues and bugs in BioRuby
@@ -12,11 +12,6 @@ they are not BioRuby's issues and/or it is very difficult to fix them.
 
 == 1. Ruby version specific issues
 
-=== Ruby 1.9.1 or later
-
-Some classes/modules/methods still may not work or may return incorrect
-results in Ruby 1.9.X, especially those not covered by the unit tests.
-
 ==== String encodings
 
 Currently, BioRuby do not care string encodings. In some cases,
@@ -28,12 +23,11 @@ Encoding::CompatibilityError or "ArgumentError: invalid byte sequence in
 ==== Ruby 1.9.0
 
 (WONT_FIX) Ruby 1.9.0 is NOT supported because it isn't a stable release.
-Use Ruby 1.9.1 or later.
 
-==== Ruby 1.8.6 or earlier
+==== Ruby 1.9.1 or earlier (including Ruby 1.8.7)
 
-(WONT_FIX) Problems observed only with Ruby 1.8.6 or earlier will not be
-fixed. Note that Ruby 1.8.6 or earlier is no longer supported, as described
+(WONT_FIX) Problems observed only with Ruby 1.9.1 or earlier will not be
+fixed. Note that Ruby 1.9.1 or earlier is no longer supported, as described
 in README.rdoc.
 
 ==== Ruby 1.8.2 or earlier

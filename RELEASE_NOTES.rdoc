@@ -1,32 +1,80 @@
-= BioRuby 1.5.1 RELEASE NOTES
+= BioRuby 2.0.0 RELEASE NOTES
 
-A lot of changes have been made to the BioRuby 1.5.1 after the version 1.5.0
+A lot of changes have been made to the BioRuby 2.0.0 after the version 1.5.x
 is released. This document describes important and/or incompatible changes
 since the BioRuby 1.5.0 release.
 
 For known problems, see KNOWN_ISSUES.rdoc.
 
-== New features
+== Features moved to separete gems
 
-=== (tbd)
+Some features are moved to separate gems because of reducing complexity
+and/or to avoid external library dependency of BioRuby core.
 
-(paragraph)
+=== BioRuby Shell is moved to "bio-shell"
 
-=== Other new features
+BioRuby Shell is split to "bio-shell" gem.
 
-* (tbd)
-* (tbd)
+=== Executable files are moved to "bio-executables"
+
+To avoid unexpected loading of executable files by some Rails software,
+all executable commands are moved to "bio-executables" gem
+(except the "bioruby" command that is included in the above "bio-shell" gem).
+
+=== Fast BLAST XML result parser by using Expat XML Parser is moved to "bio-blast-xmlparser"
+
+Fast BLAST XML result parser by using Expat XML Parser is split to
+"bio-blast-xmlparser" gem, because of external C library dependency.
+Please install "bio-blast-xmlparser" gem if possible.
+If it is installed, BioRuby automatically use it.
+
+=== Bio::PhyloXML is moved to "bioruby-phyloxml"
+
+Bio::PhyloXML is split to "bioruby-phyloxml" gem.
+
+NOTE: Please uninstall "bio-phyloxml" gem, that have been created as a
+preliminary trial of splitting a module in 2012 and have not been
+maintained after that.
+
+=== Bio::SQL is moved to "bio-biosql"
+
+Bio::SQL is split to "bio-biosql" gem.
+
+
+== New features and improvements
+
+=== HTTPS is used to access NCBI web services
+
+As you may know, NCBI announced that all HTTP resources will be switched
+to HTTPS on September 30, 2016. To follow the transition, all URLs for
+accessing NCBI E-utilities in BioRuby are changed to use HTTPS.
+
+In BioRuby, the following classes/modules are affected.
+
+* Bio::NCBI::REST and descending classes
+* Bio::PubMed
+
+In some rare cases (especially when building Ruby and/or OpenSSL by yourself
+from source code), Ruby does not include SSL/TLS support, or Ruby fails to
+detect SSL root certificates. In such cases, you may need to reinstall or
+upgrade Ruby, OpenSSL (or alternatives), and/or SSL root certificates with
+appropriate configuration options. Alternatively, installing binary packages
+is generally a good idea.
+
+=== Other improvements
+
+* Pre-calculated ambiguity codontable (contributed by Tomoaki NISHIYAMA).
+
 
 == Bug fixes
 
-=== (tbd)
+* Fixed a parser bug in Bio::Fasta::Report, FASTA output (-m 10) parser,
+  contributed by William Van Etten and Mark Wilkinson via GitHub.
+* HTTPS is used to access GenomeNet BLAST web service, contributed
+  by @ramadis via GitHub.
+* Bio::AAindex documentation fix, suggested by @kojix2 via GitHub.
+* Suppress warning messages in Ruby 2.4 and later.
 
-(paragraph)
-
-=== Other bug fixes
-
-* Fixed: (...)
-* Fixed: (...)
 
 == Incompatible changes
 
@@ -51,18 +99,27 @@ Bio::PhyloXML::Taxonomy or adding the following monkey patch may be needed.
 In the future, Bio::Taxonomy might be added as general taxonomy data class.
 The new Bio::Taxonomy might be incompatible with the current Bio::Taxonmy.
 
-=== (tbd)
+=== Some features are moved to separete gems
 
-(paragraph)
+Some features are split to separete gems and removed from this "bio" gem.
+See the above "Features moved to separete gems" topics for details.
 
 == Known issues
 
 The following issues are added or updated. See KNOWN_ISSUES.rdoc for other
 already known issues.
 
-* (tbd)
 
 == Other important news
 
-(tbd)
+=== Ruby 1.8 is no longer supported
+
+Ruby 1.8.x is no longer supported. Though unsupported, some components
+may still run on Ruby 1.8.7. Please use Ruby 1.8.7 at your own risk
+with this version of BioRuby.
+
+=== Installation without RubyGems is no longer supported
+
+Installation by using setup.rb without RubyGems is no longer supported,
+and setup.rb is no longer included in BioRuby distribution.
 

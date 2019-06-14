@@ -2,7 +2,7 @@
 = README.rdoc - README for BioRuby
 Copyright:: Copyright (C) 2001-2007 Toshiaki Katayama <k@bioruby.org>,
             Copyright (C) 2008      Jan Aerts <jandot@bioruby.org>
-            Copyright (C) 2011-2015 Naohisa Goto <ng@bioruby.org>
+            Copyright (C) 2011-2019 Naohisa Goto <ng@bioruby.org>
 License::   The Ruby License
 * The above statement is limited to this file. See below about BioRuby's
   copyright and license.
@@ -10,7 +10,7 @@ License::   The Ruby License
 
 = BioRuby
 
-Copyright (C) 2001-2012 Toshiaki Katayama <k@bioruby.org>
+Copyright (C) 2001-2019 Toshiaki Katayama <k@bioruby.org>
 
 BioRuby is an open source Ruby library for developing bioinformatics
 software.  Object oriented scripting language Ruby has many features
@@ -45,10 +45,7 @@ See RELEASE_NOTES.rdoc for news and important changes in this version.
 README.rdoc:: This file. General information and installation procedure.
 RELEASE_NOTES.rdoc:: News and important changes in this release.
 KNOWN_ISSUES.rdoc:: Known issues and bugs in BioRuby.
-doc/RELEASE_NOTES-1.4.3.rdoc:: News and incompatible changes from 1.4.2 to 1.4.3.
-doc/RELEASE_NOTES-1.4.2.rdoc:: News and incompatible changes from 1.4.1 to 1.4.2.
-doc/RELEASE_NOTES-1.4.1.rdoc:: News and incompatible changes from 1.4.0 to 1.4.1.
-doc/RELEASE_NOTES-1.4.0.rdoc:: News and incompatible changes from 1.3.1 to 1.4.0.
+doc/RELEASE_NOTES-*.rdoc:: Release notes for old versions.
 doc/Changes-1.3.rdoc:: News and incompatible changes from 1.2.1 to 1.3.0.
 doc/Changes-0.7.rd:: News and incompatible changes from 0.6.4 to 1.2.1.
 
@@ -60,7 +57,7 @@ doc/Tutorial.rd.html:: HTML version of Tutorial.rd.
 ==== BioRuby development
 
 ChangeLog:: History of changes.
-doc/ChangeLog-1.4.3:: changes from 1.4.2 to 1.4.3.
+doc/ChangeLog-*:: ChangeLog for old versions.
 doc/ChangeLog-before-1.4.2:: changes before 1.4.2.
 doc/ChangeLog-before-1.3.1:: changes before 1.3.1.
 README_DEV.rdoc:: Describes ways to contribute to the BioRuby project, including coding styles and documentation guidelines.
@@ -114,9 +111,8 @@ and can be obtained by the following procedure:
 
 == REQUIREMENTS
 
-* Ruby 1.8.7 or later (except Ruby 1.9.0) -- http://www.ruby-lang.org/
-  * Ruby 2.1.6 or later, or Ruby 2.2.2 or later is recommended.
-  * This is the final version running on Ruby 1.8, tested with Ruby1.8.7-p374.
+* Ruby 2.0.0 or later -- http://www.ruby-lang.org/
+  * Ruby 2.4.6, 2.5.5, 2.6.3 or later is recommended.
   * See KNOWN_ISSUES.rdoc for Ruby version specific problems.
 
 
@@ -125,14 +121,6 @@ and can be obtained by the following procedure:
 Some optional libraries can be utilized to extend BioRuby's functionality.
 If your needs meets the following conditions, install them by using RubyGems,
 or download and install from the following web sites.
-
-For faster parsing of the BLAST XML output format:
-
-* {xmlparser}[https://rubygems.org/gems/xmlparser]
-  * For Ruby 1.8: {gem install xmlparser}[http://rubygems.org/gems/xmlparser]
-  * For Ruby 1.9 or later: http://www.yoshidam.net/Ruby.html#xmlparser
-  * In both cases, {The Expat XML Parser}[http://expat.sourceforge.net/]
-    and C compiler will be required.
 
 Creating faster flatfile index using Berkley DB:
 
@@ -153,40 +141,6 @@ If you are using RubyGems, just type
 Alternatively, manually download bio-X.X.X.gem from 
 http://bioruby.org/archive/ and install it by using gems command.
 
-RubyGems is bundled with Ruby 1.9.1 or later. For Ruby 1.8.7 or earlier,
-download and install RubyGems from http://rubygems.org/ .
-
-=== INSTALL without RubyGems
-
-In the bioruby source directory (such as bioruby-x.x.x/), run setup.rb
-as follows:
-
-  % su
-  # ruby setup.rb
-
-These simple step installs this program under the default location of
-Ruby libraries.  You can also install files into your favorite directory
-by supplying setup.rb some options. Try "ruby setup.rb --help".
-
-If your operating system supports 'sudo' command (such as Mac OS X),
-try the following procedure instead of the above.
-
-  % sudo ruby setup.rb
-
-For older version users: "install.rb" is now renamed to "setup.rb".
-The options "config", "setup", and "install" are still available.
-
-  % ruby setup.rb config
-  % ruby setup.rb setup
-  % su
-  # ruby setup.rb install
-
-You can run
-
-  % ruby setup.rb --help
-
-for more details.
-
 
 === Running self-test
 
@@ -196,19 +150,6 @@ Note that some tests may need internet connection.
 To run tests,
 
  % ruby test/runner.rb
-
-If you are using Ruby 1.8.x and you want to use components installed by using
-RubyGems, explicit loading of RubyGems may be needed.
-
- % ruby -rubygems test/runner.rb
-
-Alternatively, testrb, the test runner command of ruby, can be used.
-
- % testrb test/
-
-With testrb, you can select tests to run, for example,
-
- % testrb test/unit
 
 For those familiar with Rake,
 
@@ -253,15 +194,6 @@ You can also read other documentation in the 'doc' directory.
 
   bioruby-x.x.x/doc/
 
-=== RubyGems on Ruby 1.8.x
-
-With RubyGems on Ruby 1.8.x, you may need to load 'rubygems' library before
-using 'bio'. This may not be needed, depending on settings of Ruby.
-
-  #!/usr/bin/env ruby
-  require 'rubygems'
-  require 'bio'
-
 
 == PLUGIN (Biogem)
 
@@ -274,11 +206,14 @@ Plugins (Biogems) listed below had been included in BioRuby in former days,
 and were split to separate packages to reduce complexity and external
 dependencies.
 
-* {bioruby-phyloxml}[http://rubygems.org/gems/bioruby-phyloxml]
+* {bio-shell}[https://rubygems.org/gems/bioruby-shell]
+* {bio-executables}[https://rubygems.org/gems/bioruby-executables]
+* {bio-blast-xmlparser}[https://rubygems.org/gems/bioruby-blast-xmlparser]
+* {bioruby-phyloxml}[https://rubygems.org/gems/bioruby-phyloxml]
   * NOTE: Please uninstall bio-phyloxml, that have been created as a
     preliminary trial of splitting a module in 2012 and have not been
     maintained after that.
-* {bio-biosql}[http://rubygems.org/gems/bio-biosql]
+* {bio-biosql}[https://rubygems.org/gems/bio-biosql]
 
 To develop your own plugin, see "Plugins" pages of BioRuby Wiki.
 
@@ -290,10 +225,7 @@ BioRuby can be freely distributed under the same terms as Ruby.
 See the file COPYING (or COPYING.ja written in Japanese).
 
 As written in the file COPYING, see the file LEGAL for files distributed
-under different license. For example, setup.rb which comes from "setup"
-developed by Minero Aoki (http://i.loveruby.net/en/projects/setup/) is
-licensed under LGPL 2.1.
-
+under different license.
 
 == REFERENCE
 
