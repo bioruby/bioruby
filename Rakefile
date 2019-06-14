@@ -272,36 +272,6 @@ task :"see-env" do
   end
 end
 
-desc "DANGER: build tar and install (GNU tar needed)"
-task :"tar-install" => [ :package ] do
-  pwd = Dir.pwd
-  work_in_another_directory do |dirname|
-    begin
-      # remove tar file in direname
-      FileUtils.remove_entry_secure(tar_filename, true)
-      # chdir to old pwd
-      chdir_with_message(pwd)
-      # copy (or link) tar file
-      safe_ln(tar_pkg_filepath, dirname)
-      # chdir to dirname again
-      chdir_with_message(dirname)
-      # remove a directory the tar file will contain
-      FileUtils.remove_entry_secure(tar_basename, true)
-      # extract tar
-      sh("tar zxvf #{tar_filename}")
-      # chdir to the directory
-      chdir_with_message(tar_basename)
-      # run tests
-      ruby("setup.rb")
-    ensure
-      # cleanup
-      chdir_with_message(dirname)
-      FileUtils.remove_entry_secure(tar_basename, true)
-      FileUtils.remove_entry_secure(tar_filename, true)
-    end
-  end
-end
-
 desc "test installed bioruby on system"
 task :"installed-test" do
   data_path = File.join(Dir.pwd, "test/data")
@@ -317,10 +287,6 @@ task :"installed-test" do
     ruby("-rbio", test_runner)
   end
 end
-
-desc "DANGER: build tar, install and run test"
-task :"tar-integration-test" => [ :"tar-install",
-                                  :"installed-test" ]
 
 desc "test installed bioruby gem version #{spec.version.to_s}"
 task :"gem-test" do
