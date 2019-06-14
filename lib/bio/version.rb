@@ -19,8 +19,8 @@ module Bio
   # ".pre           :: Pre-release version.
   #
   # References: https://guides.rubygems.org/patterns/#prerelease-gems
-  BIORUBY_EXTRA_VERSION = #nil
-    ".pre"
+  BIORUBY_EXTRA_VERSION = nil
+    #".pre"
 
   # Version identifier, including extra version string (String)
   # Unlike BIORUBY_VERSION, it is not comparable.
