@@ -359,7 +359,9 @@ module Bio
         # Parses a GFF2-formatted line and returns a new
         # Bio::GFF::GFF2::Record object.
         def self.parse(str)
-          self.new.parse(str)
+          ret = self.new
+          ret.parse(str)
+          ret
         end
        
         # Creates a Bio::GFF::GFF2::Record object.

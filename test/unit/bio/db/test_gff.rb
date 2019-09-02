@@ -182,6 +182,11 @@ END_OF_DATA
       assert_equal(str, @obj.to_s)
     end
 
+    def test_self_parse
+      obj2 = Bio::GFF::GFF2::Record.parse(@obj.to_s)
+      assert_equal(@obj, obj2)
+    end
+
     def test_eqeq
       obj2 = Bio::GFF::GFF2::Record.new(@obj.to_s)
       assert_equal(true, @obj == obj2)
