@@ -59,7 +59,6 @@ sample/vs-genes.rb:
 
 sample/fastagrep.rb:
 sample/fastasort.rb:
-sample/na2aa.rb:
 
    Copyright (C) 2008 KATAYAMA Toshiaki <k@bioruby.org> & Pjotr Prins
 
