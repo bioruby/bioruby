@@ -17,7 +17,6 @@
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
-#  $Id: color_scheme_na.rb,v 1.3 2007/04/05 23:35:42 trevor Exp $
 #
 
 require 'bio'
@@ -58,7 +57,7 @@ end
 
 
 if fna = ARGV.shift
-  naseq = Bio::FastaFormat.new(File.open(fna, 'r').read).naseq
+  naseq = Bio::FlatFile.open(fna) { |ff| ff.next_entry.naseq }
   aaseq = naseq.translate
 else
   naseq = Bio::Sequence::NA.new('acgtu' * 20).randomize
