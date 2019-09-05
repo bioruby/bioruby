@@ -47,7 +47,7 @@ end
 # returns scheme wise html doc
 def display_scheme(scheme, naseq, aaseq)
   html = ''
-  cs = eval("Bio::ColorScheme::#{scheme}")
+  cs = Bio::ColorScheme.const_get(scheme.intern)
   [naseq, aaseq].each do |seq|
     html += display(seq, cs)
   end
