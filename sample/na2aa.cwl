@@ -11,7 +11,7 @@ inputs:
      class: File
      location: na2aa.rb
    inputBinding:
-     position: 0
+     position: -1
  - id: seqFile
    type: File[]
    inputBinding:
