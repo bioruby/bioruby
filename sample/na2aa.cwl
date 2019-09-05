@@ -3,7 +3,6 @@
 cwlVersion: v1.0
 class: CommandLineTool
 baseCommand: [ruby]
-arguments: [$(inputs.script), $(inputs.seqFile)]
 
 inputs:
  - id: script
@@ -11,8 +10,12 @@ inputs:
    default:
      class: File
      location: na2aa.rb
+   inputBinding:
+     position: 0
  - id: seqFile
    type: File[]
+   inputBinding:
+     position: 1
 
 outputs:
  - id: out
