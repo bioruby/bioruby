@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "2.0.0"
+  s.version = "2.0.1"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -258,6 +258,7 @@ Gem::Specification.new do |s|
     "sample/any2fasta.rb",
     "sample/benchmark_clustalw_report.rb",
     "sample/biofetch.rb",
+    "sample/color_scheme_aa.rb",
     "sample/color_scheme_na.rb",
     "sample/demo_aaindex.rb",
     "sample/demo_aminoacid.rb",
@@ -296,6 +297,9 @@ Gem::Specification.new do |s|
     "sample/fasta2tab.rb",
     "sample/fastagrep.rb",
     "sample/fastasort.rb",
+    "sample/fastq2html.cwl",
+    "sample/fastq2html.rb",
+    "sample/fastq2html.testdata.yaml",
     "sample/fsplit.rb",
     "sample/gb2fasta.rb",
     "sample/gb2tab.rb",
@@ -307,9 +311,14 @@ Gem::Specification.new do |s|
     "sample/genome2tab.rb",
     "sample/goslim.rb",
     "sample/gt2fasta.rb",
+    "sample/na2aa.cwl",
     "sample/na2aa.rb",
+    "sample/na2aa.testdata.yaml",
     "sample/pmfetch.rb",
     "sample/pmsearch.rb",
+    "sample/rev_comp.cwl",
+    "sample/rev_comp.rb",
+    "sample/rev_comp.testdata.yaml",
     "sample/seqdatabase.ini",
     "sample/ssearch2tab.rb",
     "sample/tdiary.rb",
