@@ -1,0 +1,7 @@
+seqFile:
+  - class: File
+    location: ../test/data/fasta/example2.txt
+  - class: File
+    location: ../test/data/fasta/example1.txt
+  - class: File
+    location: ../test/data/genbank/SCU49845.gb
