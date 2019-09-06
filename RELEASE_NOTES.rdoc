@@ -1,3 +1,43 @@
+= BioRuby 2.0.1 RELEASE NOTES
+
+Some bug fixes and improvements have been made to the BioRuby 2.0.1 after
+the version 2.0.0 is released.
+
+== Bug fixes
+
+* Bio::GFF::GFF2::Record.parse did not return correct object.
+
+== Improvement of sample scripts
+
+The following scripts in the sample/ directiry are newly added.
+
+* color_scheme_aa.rb: Example of Bio::ColorScheme for an amino acid sequence.
+* fastq2html.rb: Visualization of FASTQ sequences, colored by quality scores.
+* rev_comp.rb: Shows reverse-complement sequences of the given sequences.
+
+The floowing scripts are modified to fix bug and/or to improve features.
+
+* na2aa.rb: Completely rewritten to fix bug. Shows translated sequences.
+* color_scheme_na.rb: Added support for various sequence formats.
+
+=== CWL (Common Workflow Language) workflow files are added
+
+CWL (Common Workflow Language) workflow files are added for some sample
+scripts. The usage of each sample script will be clarified with the CWL
+workflow files.
+
+Two type of files are prepared for CWL workflow engine. *.cwl is a workflow
+definition file for each sample script. *.testdata.yaml describes sample
+input data for each CWL workflow.
+
+In this version, cwl files for the 3 sample scripts are added.
+
+* fastq2html.rb: fastq2html.cwl with fastq2html.testdata.yaml
+* na2aa.rb: na2aa.cwl with na2aa.testdata.yaml
+* rev_comp.rb: rev_comp.cwl with rev_comp.testdata.yaml
+
+
+
 = BioRuby 2.0.0 RELEASE NOTES
 
 A lot of changes have been made to the BioRuby 2.0.0 after the version 1.5.x
