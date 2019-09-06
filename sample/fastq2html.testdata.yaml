@@ -1,0 +1,5 @@
+fastq:
+  - class: File
+    location: ../test/data/fastq/longreads_as_sanger.fastq
+  - class: File
+    location: ../test/data/fastq/sanger_full_range_original_sanger.fastq
