@@ -1,3 +1,188 @@
+commit 21bf51a1ec8c18c9cdf8528ffc3c59c503cef042
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 6 15:45:47 2019 +0900
+
+    RELEASE_NOTES.rdoc: describe notable changes since 2.0.0
+
+ RELEASE_NOTES.rdoc | 40 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+
+commit 9092a629e0e28b416ee7288d349fb9d73dd2b961
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 6 15:06:11 2019 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+commit 59e24b6e55d2c9a8887e8e01a91999d33a008042
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 6 15:04:33 2019 +0900
+
+    prepare for BioRuby 2.0.1 release
+
+ lib/bio/version.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 9635a38a158db434fd2b6aff7a2ee75622ddecef
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 6 14:51:23 2019 +0900
+
+    sample/fastq2html.rb: A html visualization of FASTQ sequences
+    
+     * sample/fastq2html: A html visualization of FASTQ sequences.
+       Each sequence is colored with the quality score.
+     * sample/fastq2html.cwl: CWL workflow for the above sample script
+     * sample/fastq2html.testdata.yaml: Test data for the above workflow
+
+ sample/fastq2html.cwl           | 23 ++++++++++
+ sample/fastq2html.rb            | 94 +++++++++++++++++++++++++++++++++++++++++
+ sample/fastq2html.testdata.yaml |  5 +++
+ 3 files changed, 122 insertions(+)
+ create mode 100644 sample/fastq2html.cwl
+ create mode 100644 sample/fastq2html.rb
+ create mode 100644 sample/fastq2html.testdata.yaml
+
+commit 6bbcf8b66310c225d686f2c59359680a0bc0b4b6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 6 14:42:19 2019 +0900
+
+    sample/rev_comp.rb: Generates reverse-complement sequences
+    
+     * sample/rev_comp.rb: Generates reverse-complement sequences of
+       the given nucleotide sequences.
+     * sample/rev_comp.cwl: CWL cowkflow for the sample script
+     * sample/rev_comp.testdata.yaml: Test data for the above CWL workflow
+
+ sample/rev_comp.cwl           | 23 +++++++++++++++++++++++
+ sample/rev_comp.rb            | 20 ++++++++++++++++++++
+ sample/rev_comp.testdata.yaml |  7 +++++++
+ 3 files changed, 50 insertions(+)
+ create mode 100644 sample/rev_comp.cwl
+ create mode 100644 sample/rev_comp.rb
+ create mode 100644 sample/rev_comp.testdata.yaml
+
+commit ff0e6c3c6b6f1b56d81b5a4b579a6d0984bfc607
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 6 14:40:45 2019 +0900
+
+    sample/color_scheme_(na|aa).rb: use String#each_char instead of each_byte
+
+ sample/color_scheme_aa.rb | 6 +++---
+ sample/color_scheme_na.rb | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+commit 6f7c1be09aa3d6cdb76fd029fc0f84efda31c907
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 5 17:32:07 2019 +0900
+
+    sample/color_scheme_aa.rb: new sample based on color_scheme_na.rb
+
+ sample/color_scheme_aa.rb | 82 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 82 insertions(+)
+ create mode 100644 sample/color_scheme_aa.rb
+
+commit 51864c3857178f58133b759f7608b8d6d8991c44
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 5 17:13:20 2019 +0900
+
+    sample/color_scheme_na.rb: use const_get instead of eval
+
+ sample/color_scheme_na.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit ba0b554971a9a387a54fc04c5002853d91357347
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 5 17:02:20 2019 +0900
+
+    sample/na2aa.cwl: inputBinding position -1 for the script
+    
+     * sample/na2aa.cwl: inputBinding position -1 is used for the script
+       to emphasize that the argument is the first one.
+
+ sample/na2aa.cwl | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 26a27ec261e2251f3ff3a85007147d33682778d0
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 5 16:56:08 2019 +0900
+
+    sample/color_scheme_na.rb: Supports more file formats
+    
+     * sample/color_scheme_na.rb: Supports more file formats other than
+       fasta format, by using Bio::Flatfile.
+
+ sample/color_scheme_na.rb | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+commit 5c053a606382bb578a2b6884ee639805154433e5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Sep 5 12:32:00 2019 +0900
+
+    sample/na2aa.cwl: use inputBinding
+
+ sample/na2aa.cwl | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+commit 6a3c3e02f08549d47dda00dca92d55bbadfc468f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 4 22:59:21 2019 +0900
+
+    Sample CWL workflow to run sample/na2aa.rb
+    
+     * na2aa.cwl: A sample CWL workflow to run na2aa.rb in sample/ dir
+     * na2aa.testdata.yaml: Test data for the workflow
+
+ sample/na2aa.cwl           | 20 ++++++++++++++++++++
+ sample/na2aa.testdata.yaml |  7 +++++++
+ 2 files changed, 27 insertions(+)
+ create mode 100644 sample/na2aa.cwl
+ create mode 100644 sample/na2aa.testdata.yaml
+
+commit 960b885036f549863e3cfe9c693c90f9bef27d3d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 4 21:00:50 2019 +0900
+
+    LEGAL: na2aa.rb is now Ruby's License
+
+ LEGAL | 1 -
+ 1 file changed, 1 deletion(-)
+
+commit 7af9e81988939007eb36dab6b102a7422e8196d8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 4 14:34:05 2019 +0900
+
+    sample/na2aa.rb: Completely rewritten
+    
+     * sample/na2aa.rb: Completely rewritten. License is changed because
+       old code is completely wiped out. Note that the old code always
+       raises error due to a bug in the code.
+     * The old code was trying to replace 'X' (any) to '-' (gap) but
+       the new code does not modify translated sequences anymore.
+
+ sample/na2aa.rb | 36 +++++++++++-------------------------
+ 1 file changed, 11 insertions(+), 25 deletions(-)
+
+commit cf8cac5e32db42b6683c1a837adc9e1c04994062
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Mon Sep 2 17:11:08 2019 +0900
+
+    Bug fix: Bio::GFF::GFF2::Record.parse did not return correct object
+
+ lib/bio/db/gff.rb            | 4 +++-
+ test/unit/bio/db/test_gff.rb | 5 +++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+commit 80b387e7e2bb8570d9204e389b6c5d90c6ea31de
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Jun 14 14:33:19 2019 +0900
+
+    BioRuby 2.0.0 is released
+
+ ChangeLog | 1051 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 1043 insertions(+), 8 deletions(-)
+
 commit 2e4046517fd8ee1c105ef53131e69f787d790099
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Fri Jun 14 14:23:19 2019 +0900
