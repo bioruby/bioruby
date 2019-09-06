@@ -34,10 +34,10 @@ def display(seq, cs)
   html = '<p style="font-family: monospace">'
   postfix = '</span>'
   i = 0
-  seq.each_byte do |c|
-    color = cs[c.chr]
+  seq.each_char do |c|
+    color = cs[c]
     prefix = %Q(<span style="background:\##{color};">)
-    html += prefix + c.chr + postfix
+    html += prefix + c + postfix
     html += br(i += 1)
   end
   html + '</p>'
