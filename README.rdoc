@@ -206,9 +206,9 @@ Plugins (Biogems) listed below had been included in BioRuby in former days,
 and were split to separate packages to reduce complexity and external
 dependencies.
 
-* {bio-shell}[https://rubygems.org/gems/bioruby-shell]
-* {bio-executables}[https://rubygems.org/gems/bioruby-executables]
-* {bio-blast-xmlparser}[https://rubygems.org/gems/bioruby-blast-xmlparser]
+* {bio-shell}[https://rubygems.org/gems/bio-shell]
+* {bio-executables}[https://rubygems.org/gems/bio-executables]
+* {bio-blast-xmlparser}[https://rubygems.org/gems/bio-blast-xmlparser]
 * {bioruby-phyloxml}[https://rubygems.org/gems/bioruby-phyloxml]
   * NOTE: Please uninstall bio-phyloxml, that have been created as a
     preliminary trial of splitting a module in 2012 and have not been
