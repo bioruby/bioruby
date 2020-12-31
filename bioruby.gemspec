@@ -580,7 +580,6 @@ Gem::Specification.new do |s|
     "test/unit/bio/util/test_sirna.rb"
   ]
 
-  s.has_rdoc = true
   s.extra_rdoc_files = [ 
     "KNOWN_ISSUES.rdoc",
     "README.rdoc",
