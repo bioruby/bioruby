@@ -1,3 +1,22 @@
+= BioRuby 2.0.2 RELEASE NOTES
+
+Some bugs fixes have been made in BioRuby 2.0.2 after the release of 2.0.1.
+
+== Bug fixes
+
+* Fix NameError in Bio::Sequence#output(:embl)
+  (https://github.com/bioruby/bioruby/issues/135 )
+* Suppress warning: Gem::Specification#has_rdoc= is deprecated
+  (https://github.com/bioruby/bioruby/issues/138 )
+* Fix misspelling URL in README
+
+== Known issues
+
+A known issue about Ruby 3.0 is added to KNOWN_ISSUES.rdoc.
+The issue will be fixed in the near future.
+
+
+
 = BioRuby 2.0.1 RELEASE NOTES
 
 Some bug fixes and improvements have been made to the BioRuby 2.0.1 after
