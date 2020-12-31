@@ -1,3 +1,101 @@
+commit fd420b713ca364e677ef3551919ec907791df86d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 31 23:51:08 2020 +0900
+
+    RELEASE_NOTES.rdoc: change some description
+
+ RELEASE_NOTES.rdoc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 0ed9b37f38fa1b00dcc1d422914e4cbdbbc5f6ab
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 31 23:46:46 2020 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit fa84b8fac653c26b9f8db429321ef49202554a69
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 31 23:45:38 2020 +0900
+
+    prepare for BioRuby 2.0.2 release
+
+ lib/bio/version.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 32c5efccbad4e0d3440726383f863520ee242cc5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 31 23:39:18 2020 +0900
+
+    update release notes for upcoming BioRuby 2.0.2
+
+ RELEASE_NOTES.rdoc | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+
+commit c2f6e62ab64bc532f442bccc0d76ced5380664ec
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 31 23:38:43 2020 +0900
+
+    add a known issue about Ruby 3.0
+
+ KNOWN_ISSUES.rdoc | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+commit a733c0816da7c97ca0c23016b473b004fb755f54
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 31 23:04:55 2020 +0900
+
+    remove deprecation warning of Gem::Specification#has_rdoc=
+    
+    Gem::Specification#has_rdoc= have been deprecated since RubyGems 1.3.3
+    in 2009. (https://blog.rubygems.org/2009/05/04/1.3.3-released.html )
+    RDoc is always generated regardless of the value, and the line is
+    safely removed.
+    
+    This fixes https://github.com/bioruby/bioruby/issues/138 .
+    Thanks to @jaysonvirissimo for reporting the issue.
+
+ bioruby.gemspec     | 1 -
+ bioruby.gemspec.erb | 1 -
+ 2 files changed, 2 deletions(-)
+
+commit bed6746ce62059795996eeb6e5ac65655bab12b5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 31 22:51:56 2020 +0900
+
+    require ruby's date library to avoid NameError for Date
+    
+    In Bio::Sequence#output(:embl), NameError (uninitialized constant
+    Bio::Sequence::Format::INSDFeatureHelper::Date) is observed.
+    The error message is misleading because Date is provided by Ruby's
+    standard date library.
+    
+    This fixes https://github.com/bioruby/bioruby/issues/135 .
+    Thanks to Dr. Mark Wilkinson for reporting the issue.
+
+ lib/bio/sequence/format.rb | 1 +
+ 1 file changed, 1 insertion(+)
+
+commit 5f3aa79fdaf6dd5551d51663ca2e9b6f5e56d855
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 6 17:45:12 2020 +0900
+
+    fix mistaken URLs
+
+ README.rdoc | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+commit d5e1670ee4863cc60d3aa08432a7ee3b1e445439
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Sep 6 15:48:45 2019 +0900
+
+    BioRuby 2.0.1 is released
+
+ ChangeLog | 185 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 185 insertions(+)
+
 commit 21bf51a1ec8c18c9cdf8528ffc3c59c503cef042
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Fri Sep 6 15:45:47 2019 +0900
