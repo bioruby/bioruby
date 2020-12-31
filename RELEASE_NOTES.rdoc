@@ -8,7 +8,7 @@ Some bugs fixes have been made in BioRuby 2.0.2 after the release of 2.0.1.
   (https://github.com/bioruby/bioruby/issues/135 )
 * Suppress warning: Gem::Specification#has_rdoc= is deprecated
   (https://github.com/bioruby/bioruby/issues/138 )
-* Fix misspelling URL in README
+* Fix misspelling URL in README.rdoc
 
 == Known issues
 
