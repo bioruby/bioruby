@@ -10,6 +10,7 @@
 #
 
 require 'erb'
+require 'date'
 
 module Bio
 
