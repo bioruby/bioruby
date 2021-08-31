@@ -605,7 +605,7 @@ module Bio
     end
 
     # Gets path from node1 to node2.
-    # Retruns an array of nodes, including node1 and node2.
+    # Returns an array of nodes, including node1 and node2.
     # If node1 and/or node2 do not exist, IndexError is raised.
     # If node1 and node2 are not connected, NoPathError is raised.
     # The result is unspecified for cyclic trees.

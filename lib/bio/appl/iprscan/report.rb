@@ -83,7 +83,7 @@ module Bio
         yield Bio::Iprscan::Report.parse_raw_entry(entry) if entry != ''
       end
     
-      # Parser method for a raw formated entry. Retruns a Bio::Iprscan::Report 
+      # Parser method for a raw formated entry. Returns a Bio::Iprscan::Report 
       # object.
       def self.parse_raw_entry(str)
         report = self.new
@@ -113,7 +113,7 @@ module Bio
 
 
 
-      # Parser method for a xml formated entry. Retruns a Bio::Iprscan::Report 
+      # Parser method for a xml formated entry. Returns a Bio::Iprscan::Report 
       # object.
 #      def self.parse_xml(str)
 #      end
@@ -196,7 +196,7 @@ module Bio
         end
       end
 
-      # Parser method for a pseudo-txt formated entry. Retruns a Bio::Iprscan::Report 
+      # Parser method for a pseudo-txt formated entry. Returns a Bio::Iprscan::Report 
       # object.
       # 
       # == Usage

@@ -174,7 +174,7 @@ class UniProtKB < EMBLDB
   #
   # http://www.uniprot.org/docs/sp_news.htm
   def parse_DE_line_rel14(str)
-    # Retruns if it is not the new format since Rel.14
+    # Returns if it is not the new format since Rel.14
     return nil unless /^DE   (RecName|AltName|SubName)\: / =~ str
     ret = []
     cur = nil

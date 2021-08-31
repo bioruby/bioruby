@@ -193,7 +193,7 @@ class GO
     # Delimiter
     RS = DELIMITER 
 
-    # Retruns an Array of parsed gene_association flatfile.
+    # Returns an Array of parsed gene_association flatfile.
     # Block is acceptable.  
     def self.parser(str)
       if block_given?
@@ -226,7 +226,7 @@ class GO
     # Returns Db_Reference variable.
     attr_reader :db_reference      # -> []
 
-    # Retruns Evidence code variable.
+    # Returns Evidence code variable.
     attr_reader :evidence
 
     # Returns the entry is associated with this value.

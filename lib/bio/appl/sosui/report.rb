@@ -78,7 +78,7 @@ module Bio
         # Returns aRng of transmembrane helix
         attr_reader :range
         
-        # Retruns ``PRIMARY'' or ``SECONDARY'' of helix.
+        # Returns ``PRIMARY'' or ``SECONDARY'' of helix.
         attr_reader :grade
 
         # Returns the sequence. of transmembrane helix. 
