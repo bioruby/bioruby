@@ -12,14 +12,6 @@ they are not BioRuby's issues and/or it is very difficult to fix them.
 
 == 1. Ruby version specific issues
 
-==== Ruby 3.0
-
-Since Ruby 3.0, internal inplementation of String methods are changed and
-methods in a subclass of String return String instead of the subclass
-instance. Bio::Sequence::NA, AA, and Generic inherit String and are severely
-affected by this change.
-See GitHub issue https://github.com/bioruby/bioruby/issues/137 .
-
 ==== String encodings
 
 Currently, BioRuby do not care string encodings. In some cases,
