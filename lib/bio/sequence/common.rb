@@ -394,6 +394,23 @@ if ::RUBY_VERSION > "3"
       end
     }
   end
+
+  %w( partition rpartition ).each do |w|
+    module_eval %Q{
+      def #{w}(sep)
+        r = super
+        if r.kind_of?(Array)
+          r[1] == sep ?
+            [ self.class.new('').replace(r[0]),
+              r[1],
+              self.class.new('').replace(r[2]) ] :
+            r.collect { |x| self.class.new('').replace(x) }
+        else
+          r
+        end
+      end
+    }
+  end
 #++
 
 end # if ::RUBY_VERSION > "3"

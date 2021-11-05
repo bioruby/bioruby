@@ -365,4 +365,98 @@ module Bio; module TestSequenceRuby3
     end
   end #class TestSequenceCommon
 
+
+  class TestSequenceCommonPartition < Test::Unit::TestCase
+    def test_partition
+      str = "atgatgagttctattcatc".freeze
+      sep = "ttc".freeze
+      a0 = str.partition(sep)
+      a1 = [ TSeq.new(a0[0]), a0[1], TSeq.new(a0[2]) ]
+      obj = TSeq.new(str)
+      val = obj.partition(sep)
+      assert_instance_of(TSeq, val[0])
+      assert_instance_of(String, val[1])
+      assert_instance_of(TSeq, val[2])
+      assert_equal(a1, val)
+    end
+
+    def test_partition_sep_TSeq
+      str = "atgatgagttctattcatc".freeze
+      sep = TSeq.new("ttc").freeze
+      a0 = str.partition(sep)
+      a1 = [ TSeq.new(a0[0]), a0[1], TSeq.new(a0[2]) ]
+      obj = TSeq.new(str)
+      val = obj.partition(sep)
+      val.each { |x| assert_instance_of(TSeq, x) }
+      assert_equal(a1, val)
+    end
+
+    def test_partition_sep_regexp
+      str = "atgatgagttctattcatc".freeze
+      sep = /ttc/
+      a1 = str.partition(sep).collect { |x| TSeq.new(x) }
+      obj = TSeq.new(str)
+      val = obj.partition(sep)
+      val.each { |x| assert_instance_of(TSeq, x) }
+      assert_equal(a1, val)
+    end
+
+    def test_partition_nomatch
+      str = "atgatgagttctattcatc".freeze
+      sep = "x".freeze
+      a1 = str.partition(sep).collect { |x| TSeq.new(x) }
+      obj = TSeq.new(str)
+      val = obj.partition(sep)
+      val.each { |x| assert_instance_of(TSeq, x) }
+      assert_equal(a1, val)
+    end
+  end #class TestSequenceCommonPartition
+
+
+  class TestSequenceCommonRpartition < Test::Unit::TestCase
+    def test_rpartition
+      str = "atgatgagttctattcatc".freeze
+      sep = "ttc".freeze
+      a0 = str.rpartition(sep)
+      a1 = [ TSeq.new(a0[0]), a0[1], TSeq.new(a0[2]) ]
+      obj = TSeq.new(str)
+      val = obj.rpartition(sep)
+      assert_instance_of(TSeq, val[0])
+      assert_instance_of(String, val[1])
+      assert_instance_of(TSeq, val[2])
+      assert_equal(a1, val)
+    end
+
+    def test_rpartition_sep_TSeq
+      str = "atgatgagttctattcatc".freeze
+      sep = TSeq.new("ttc").freeze
+      a0 = str.rpartition(sep)
+      a1 = [ TSeq.new(a0[0]), a0[1], TSeq.new(a0[2]) ]
+      obj = TSeq.new(str)
+      val = obj.rpartition(sep)
+      val.each { |x| assert_instance_of(TSeq, x) }
+      assert_equal(a1, val)
+    end
+
+    def test_rpartition_sep_regexp
+      str = "atgatgagttctattcatc".freeze
+      sep = /ttc/
+      a1 = str.rpartition(sep).collect { |x| TSeq.new(x) }
+      obj = TSeq.new(str)
+      val = obj.rpartition(sep)
+      val.each { |x| assert_instance_of(TSeq, x) }
+      assert_equal(a1, val)
+    end
+
+    def test_rpartition_nomatch
+      str = "atgatgagttctattcatc".freeze
+      sep = "x".freeze
+      a1 = str.rpartition(sep).collect { |x| TSeq.new(x) }
+      obj = TSeq.new(str)
+      val = obj.rpartition(sep)
+      val.each { |x| assert_instance_of(TSeq, x) }
+      assert_equal(a1, val)
+    end
+  end #class TestSequenceCommonRpartition
+
 end; end #module Bio; module TestSequenceRuby3
