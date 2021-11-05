@@ -1,3 +1,139 @@
+commit c16e230d15cf30478a3739563b4e4745dc57ef82
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 5 23:44:45 2021 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit 1a8c44dc5b8d24342550273a594e5f75e41f41df
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 5 23:41:29 2021 +0900
+
+    prepare for BioRuby 2.0.3 release
+
+ lib/bio/version.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 863242cdb9a748ba9efb3be3b39f92c17ed3ea84
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 5 23:36:27 2021 +0900
+
+    update release notes for upcoming BioRuby 2.0.3
+
+ RELEASE_NOTES.rdoc | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+commit b97794d632c73dc45639cec000fb11238740eb30
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 5 23:26:20 2021 +0900
+
+    Ruby 3.0 compatibility fix: Bio::Sequence::*#partition, #rpartiton
+    
+     * Behaviors of Bio::Sequence::*#partition and #rpartition in Ruby 3.0
+       are changed to mimic those in Ruby 2.x.
+
+ lib/bio/sequence/common.rb           | 17 +++++++
+ test/unit/bio/sequence/test_ruby3.rb | 94 ++++++++++++++++++++++++++++++++++++
+ 2 files changed, 111 insertions(+)
+
+commit 7ff79cd449ee03e0063120fb9abec50d9b08e979
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 5 22:24:16 2021 +0900
+
+    remove resolved Ruby 3.0 issue
+
+ KNOWN_ISSUES.rdoc | 8 --------
+ 1 file changed, 8 deletions(-)
+
+commit 24bb3c3cf417837ad63a27913db7237aef1414c6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 5 21:24:26 2021 +0900
+
+    Bio::Sequence::NA,AA,Generic: workaround for Ruby 3.0.0 incompatible change
+    
+     * Since Ruby 3.0.0, over 30 methods in subclass of String class are
+       changed to return/yield String instance instead of the subclass
+       instance. (https://github.com/ruby/ruby/blob/v3_0_0/NEWS.md )
+    
+     * In this commit, workaround is made for the following methods:
+       * *
+       * capitalize
+       * center
+       * chomp
+       * chop
+       * delete
+       * delete_prefix
+       * delete_suffix
+       * downcase
+       * each_char
+       * each_grapheme_cluster
+       * each_line
+       * gsub
+       * gsub!
+       * ljust
+       * lstrip
+       * revserse
+       * rjust
+       * rstrip
+       * slice!
+       * slice / []
+       * split
+       * squeeze
+       * strip
+       * sub
+       * sub!
+       * succ / next
+       * swapcase
+       * tr
+       * tr_s
+       * upcase
+     * Note: sub! and gsub! are not described in the NEWS.md
+       but are also affected by this Ruby 3.0.0 incompatible changes.
+    
+     * The following methods are not patched i.e. they return/yield
+       String instances.
+       * dump
+       * partition
+       * rpartition
+       * scrub
+     * Note: In Ruby 2.7 or earlier, Bio::Sequence::NA#partition
+       and #rpartition methods return an array that may contain
+       mixture of Bio::Sequence::NA instances and String instances.
+    
+     * test/unit/bio/sequence/test_ruby3.rb: unit tests for the
+       above methods.
+    
+     * Close https://github.com/bioruby/bioruby/issues/137
+
+ lib/bio/sequence/common.rb           |  95 +++++++++
+ test/unit/bio/sequence/test_ruby3.rb | 368 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 463 insertions(+)
+ create mode 100644 test/unit/bio/sequence/test_ruby3.rb
+
+commit 0efc0a54685d43645daa9c53d7140bfb81577777
+Author: kojix2 <2xijok@gmail.com>
+Date:   Tue Aug 31 19:39:25 2021 +0900
+
+    Fix typos: Retrun -> Return
+
+ lib/bio/appl/iprscan/report.rb | 6 +++---
+ lib/bio/appl/sosui/report.rb   | 2 +-
+ lib/bio/db/embl/uniprotkb.rb   | 2 +-
+ lib/bio/db/go.rb               | 4 ++--
+ lib/bio/tree.rb                | 2 +-
+ 5 files changed, 8 insertions(+), 8 deletions(-)
+
+commit a291b5a72da12a5cc8b006d1dd63d002fda5dff3
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Dec 31 23:52:54 2020 +0900
+
+    BioRuby 2.0.2 is released
+
+ ChangeLog | 98 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 98 insertions(+)
+
 commit fd420b713ca364e677ef3551919ec907791df86d
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Thu Dec 31 23:51:08 2020 +0900
