@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "2.0.2"
+  s.version = "2.0.3"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -546,6 +546,7 @@ Gem::Specification.new do |s|
     "test/unit/bio/sequence/test_dblink.rb",
     "test/unit/bio/sequence/test_na.rb",
     "test/unit/bio/sequence/test_quality_score.rb",
+    "test/unit/bio/sequence/test_ruby3.rb",
     "test/unit/bio/sequence/test_sequence_masker.rb",
     "test/unit/bio/test_alignment.rb",
     "test/unit/bio/test_command.rb",
