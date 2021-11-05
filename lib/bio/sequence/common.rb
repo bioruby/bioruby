@@ -303,6 +303,101 @@ module Common
   end
   alias splicing splice
 
+#--
+# Workaround for Ruby 3.0.0 incompatible changes
+if ::RUBY_VERSION > "3"
+
+  # Acts almost the same as String#split.
+  def split(*arg)
+    if block_given?
+      super
+    else
+      ret = super(*arg)
+      ret.collect! { |x| self.class.new('').replace(x) }
+      ret
+    end
+  end
+
+  %w( * ljust rjust center ).each do |w|
+    module_eval %Q{
+      def #{w}(*arg)
+        self.class.new('').replace(super)
+      end
+    }
+  end
+
+  %w( chomp chop
+      delete delete_prefix delete_suffix
+      lstrip rstrip strip
+      reverse
+      squeeze
+      succ next
+      tr tr_s
+      capitalize upcase downcase swapcase
+  ).each do |w|
+    module_eval %Q{
+      def #{w}(*arg)
+        s = self.dup
+        s.#{w}!(*arg)
+        s
+      end
+    }
+  end
+
+  %w( sub gsub ).each do |w|
+    module_eval %Q{
+      def #{w}(*arg, &block)
+        s = self.dup
+        s.#{w}!(*arg, &block)
+        s
+      end
+    }
+  end
+
+  #Reference: https://nacl-ltd.github.io/2018/11/08/gsub-wrapper.html
+  #(Title: Is it possible to implement gsub wrapper?)
+  %w( sub! gsub! ).each do |w|
+    module_eval %Q{
+      def #{w}(*arg, &block)
+        if block_given? then
+          super(*arg) do |m|
+            b = Thread.current[:_backref]
+            Thread.current[:_backref] = ::Regexp.last_match
+            block.binding.eval("$~ = Thread.current[:_backref]")
+            Thread.current[:_backref] = b
+            block.call(self.class.new('').replace(m))
+          end
+        else
+          super
+        end
+      end
+    }
+  end
+
+  %w( each_char each_grapheme_cluster each_line ).each do |w|
+    module_eval %Q{
+      def #{w}
+        if block_given?
+          super { |c| yield(self.class.new('').replace(c)) }
+        else
+          enum_for(:#{w})
+        end
+     end
+    }
+  end
+
+  %w( slice [] slice! ).each do |w|
+    module_eval %Q{
+      def #{w}(*arg)
+        r = super
+        r ? self.class.new('').replace(r) : r
+      end
+    }
+  end
+#++
+
+end # if ::RUBY_VERSION > "3"
+
 end # Common
 
 end # Sequence
