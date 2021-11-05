@@ -1,3 +1,29 @@
+= BioRuby 2.0.3 RELEASE NOTES
+
+Some bug fixes have been made in BioRuby 2.0.3 after the release of 2.0.2.
+
+== Bug fixes
+
+* Fix Ruby 3.0.0 Bio::Sequence::* issue.
+  (https://github.com/bioruby/bioruby/issues/137 )
+* Fix typo (https://github.com/bioruby/bioruby/pull/145 )
+
+== Incompatible changes
+
+=== Bio::Sequence::* incompatible changes since Ruby 3.0.0
+
+Since Ruby 3.0.0, the following methods in Bio::Sequence::NA,
+Bio::Sequence::AA, and Bio::Sequence::Generic return or yield
+String instance, instead of the Bio::Sequence::* instance.
+
+* dump
+* scrub
+
+For details about Ruby 3.0.0 incompatible changes, see
+{News for Ruby 3.0.0}[https://github.com/ruby/ruby/blob/v3_0_0/NEWS.md].
+
+
+
 = BioRuby 2.0.2 RELEASE NOTES
 
 Some bugs fixes have been made in BioRuby 2.0.2 after the release of 2.0.1.
