@@ -248,9 +248,8 @@ class UniProtKB < EMBLDB
   #  SYNONYM        >=0
   #  CONTEINS       >=0
   def protein_name
-    @data['DE'] ||= parse_DE_line_rel14(get('DE'))
-    parsed_de_line = @data['DE']
-    if parsed_de_line then
+    parsed_de_line = self.de
+    if parsed_de_line.kind_of?(Array) then
       # since UniProtKB release 14.0 of 22-Jul-2008
       name = nil
       parsed_de_line.each do |a|
@@ -275,7 +274,6 @@ class UniProtKB < EMBLDB
     return name
   end
 
-
   # returns synonyms (unofficial and/or alternative names).
   # Returns an Array containing String objects.
   #
@@ -292,9 +290,8 @@ class UniProtKB < EMBLDB
   # synonyms are each placed in () following the official name on the DE line.
   def synonyms
     ary = Array.new
-    @data['DE'] ||= parse_DE_line_rel14(get('DE'))
-    parsed_de_line = @data['DE']
-    if parsed_de_line then
+    parsed_de_line = self.de
+    if parsed_de_line.kind_of?(Array) then
       # since UniProtKB release 14.0 of 22-Jul-2008
       parsed_de_line.each do |a|
         case a[0]
@@ -330,6 +327,20 @@ class UniProtKB < EMBLDB
     return ary
   end
 
+  # Returns an Array (for new format since rel 14)
+  # or a String (for old format before rel 14) for the DE line.
+  #
+  def de
+    return @data['DE'] if @data['DE']
+    parsed_de_line = parse_DE_line_rel14(get('DE'))
+    case parsed_de_line
+    when Array # new format since rel14
+      @data['DE'] ||= parsed_de_line
+    else
+      super
+    end
+    @data['DE']
+  end
 
   # returns gene names in the GN line.
   #

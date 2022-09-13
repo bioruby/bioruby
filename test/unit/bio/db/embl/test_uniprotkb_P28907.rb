@@ -161,6 +161,17 @@ module Bio
       assert_equal(ary, @obj.synonyms)
     end
 
+    def test_protein_name_after_calling_de
+      assert(@obj.de)
+      assert_equal("ADP-ribosyl cyclase/cyclic ADP-ribose hydrolase 1",
+                   @obj.protein_name)
+    end
+
+    def test_synonyms_after_calling_de
+      assert(@obj.de)
+      assert_equal(11, @obj.synonyms.size)
+    end
+
     def test_gn
       assert_equal([{:orfs=>[], :synonyms=>[], :name=>"CD38", :loci=>[]}], 
                    @obj.gn)
