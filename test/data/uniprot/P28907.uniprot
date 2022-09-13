@@ -1,0 +1,551 @@
+ID   CD38_HUMAN              Reviewed;         300 AA.
+AC   P28907; O00121; O00122; Q96HY4;
+DT   01-DEC-1992, integrated into UniProtKB/Swiss-Prot.
+DT   23-NOV-2004, sequence version 2.
+DT   03-AUG-2022, entry version 213.
+DE   RecName: Full=ADP-ribosyl cyclase/cyclic ADP-ribose hydrolase 1;
+DE            EC=3.2.2.6;
+DE   AltName: Full=2'-phospho-ADP-ribosyl cyclase;
+DE   AltName: Full=2'-phospho-ADP-ribosyl cyclase/2'-phospho-cyclic-ADP-ribose transferase;
+DE            EC=2.4.99.20;
+DE   AltName: Full=2'-phospho-cyclic-ADP-ribose transferase;
+DE   AltName: Full=ADP-ribosyl cyclase 1;
+DE            Short=ADPRC 1;
+DE   AltName: Full=Cyclic ADP-ribose hydrolase 1;
+DE            Short=cADPr hydrolase 1;
+DE   AltName: Full=T10;
+DE   AltName: CD_antigen=CD38;
+GN   Name=CD38;
+OS   Homo sapiens (Human).
+OC   Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi; Mammalia;
+OC   Eutheria; Euarchontoglires; Primates; Haplorrhini; Catarrhini; Hominidae;
+OC   Homo.
+OX   NCBI_TaxID=9606;
+RN   [1]
+RP   NUCLEOTIDE SEQUENCE [MRNA] (ISOFORM 1).
+RX   PubMed=2319135;
+RA   Jackson D.G., Bell J.I.;
+RT   "Isolation of a cDNA encoding the human CD38 (T10) molecule, a cell surface
+RT   glycoprotein with an unusual discontinuous pattern of expression during
+RT   lymphocyte differentiation.";
+RL   J. Immunol. 144:2811-2815(1990).
+RN   [2]
+RP   NUCLEOTIDE SEQUENCE [GENOMIC DNA], NUCLEOTIDE SEQUENCE [MRNA] (ISOFORMS 1
+RP   AND 2), AND TISSUE SPECIFICITY.
+RC   TISSUE=Esophageal carcinoma, and Pancreas;
+RX   PubMed=9074508; DOI=10.1016/s0378-1119(96)00723-8;
+RA   Nata K., Takamura T., Karasawa T., Kumagai T., Hashioka W., Tohgo A.,
+RA   Yonekura H., Takasawa S., Nakamura S., Okamoto H.;
+RT   "Human gene encoding CD38 (ADP-ribosyl cyclase/cyclic ADP-ribose
+RT   hydrolase): organization, nucleotide sequence and alternative splicing.";
+RL   Gene 186:285-292(1997).
+RN   [3]
+RP   NUCLEOTIDE SEQUENCE [LARGE SCALE MRNA] (ISOFORM 1).
+RC   TISSUE=B-cell;
+RX   PubMed=15489334; DOI=10.1101/gr.2596504;
+RG   The MGC Project Team;
+RT   "The status, quality, and expansion of the NIH full-length cDNA project:
+RT   the Mammalian Gene Collection (MGC).";
+RL   Genome Res. 14:2121-2127(2004).
+RN   [4]
+RP   SIMILARITY TO NADASE.
+RX   PubMed=1471258; DOI=10.1016/0968-0004(92)90337-9;
+RA   States D.J., Walseth T.F., Lee H.C.;
+RT   "Similarities in amino acid sequences of Aplysia ADP-ribosyl cyclase and
+RT   human lymphocyte antigen CD38.";
+RL   Trends Biochem. Sci. 17:495-495(1992).
+RN   [5]
+RP   CHARACTERIZATION.
+RX   PubMed=8253715; DOI=10.1016/s0021-9258(19)74275-6;
+RA   Takasawa S., Tohgo A., Noguchi N., Koguma T., Nata K., Sugimoto T.,
+RA   Yonekura H., Okamoto H.;
+RT   "Synthesis and hydrolysis of cyclic ADP-ribose by human leukocyte antigen
+RT   CD38 and inhibition of the hydrolysis by ATP.";
+RL   J. Biol. Chem. 268:26052-26054(1993).
+RN   [6]
+RP   ACTIVE SITE, AND MUTAGENESIS OF CYS-119; CYS-160; CYS-173 AND CYS-201.
+RX   PubMed=7961800; DOI=10.1016/s0021-9258(19)61940-x;
+RA   Tohgo A., Takasawa S., Noguchi N., Koguma T., Nata K., Sugimoto T.,
+RA   Furuya Y., Yonekura H., Okamoto H.;
+RT   "Essential cysteine residues for cyclic ADP-ribose synthesis and hydrolysis
+RT   by CD38.";
+RL   J. Biol. Chem. 269:28555-28557(1994).
+RN   [7]
+RP   SPLICE ISOFORM(S) THAT ARE POTENTIAL NMD TARGET(S).
+RX   PubMed=14759258; DOI=10.1186/gb-2004-5-2-r8;
+RA   Hillman R.T., Green R.E., Brenner S.E.;
+RT   "An unappreciated role for RNA surveillance.";
+RL   Genome Biol. 5:R8.1-R8.16(2004).
+RN   [8]
+RP   CATALYTIC ACTIVITY.
+RX   PubMed=16690024; DOI=10.1016/j.bbrc.2006.04.096;
+RA   Moreschi I., Bruzzone S., Melone L., De Flora A., Zocchi E.;
+RT   "NAADP+ synthesis from cADPRP and nicotinic acid by ADP-ribosyl cyclases.";
+RL   Biochem. Biophys. Res. Commun. 345:573-580(2006).
+RN   [9]
+RP   GLYCOSYLATION [LARGE SCALE ANALYSIS] AT ASN-100; ASN-209 AND ASN-219.
+RC   TISSUE=Liver;
+RX   PubMed=19159218; DOI=10.1021/pr8008012;
+RA   Chen R., Jiang X., Sun D., Han G., Wang F., Ye M., Wang L., Zou H.;
+RT   "Glycoproteomics analysis of human liver tissue by combination of multiple
+RT   enzyme digestion and hydrazide chemistry.";
+RL   J. Proteome Res. 8:651-661(2009).
+RN   [10]
+RP   GLYCOSYLATION [LARGE SCALE ANALYSIS] AT ASN-219.
+RC   TISSUE=Leukemic T-cell;
+RX   PubMed=19349973; DOI=10.1038/nbt.1532;
+RA   Wollscheid B., Bausch-Fluck D., Henderson C., O'Brien R., Bibel M.,
+RA   Schiess R., Aebersold R., Watts J.D.;
+RT   "Mass-spectrometric identification and relative quantification of N-linked
+RT   cell surface glycoproteins.";
+RL   Nat. Biotechnol. 27:378-386(2009).
+RN   [11]
+RP   IDENTIFICATION BY MASS SPECTROMETRY [LARGE SCALE ANALYSIS].
+RX   PubMed=21269460; DOI=10.1186/1752-0509-5-17;
+RA   Burkard T.R., Planyavsky M., Kaupe I., Breitwieser F.P., Buerckstuemmer T.,
+RA   Bennett K.L., Superti-Furga G., Colinge J.;
+RT   "Initial characterization of the human central proteome.";
+RL   BMC Syst. Biol. 5:17-17(2011).
+RN   [12]
+RP   IDENTIFICATION BY MASS SPECTROMETRY [LARGE SCALE ANALYSIS].
+RX   PubMed=25944712; DOI=10.1002/pmic.201400617;
+RA   Vaca Jacome A.S., Rabilloud T., Schaeffer-Reiss C., Rompais M., Ayoub D.,
+RA   Lane L., Bairoch A., Van Dorsselaer A., Carapito C.;
+RT   "N-terminome analysis of the human mitochondrial proteome.";
+RL   Proteomics 15:2519-2524(2015).
+RN   [13]
+RP   X-RAY CRYSTALLOGRAPHY (1.91 ANGSTROMS) OF 45-300, AND DISULFIDE BONDS.
+RX   PubMed=16154090; DOI=10.1016/j.str.2005.05.012;
+RA   Liu Q., Kriksunov I.A., Graeff R., Munshi C., Lee H.C., Hao Q.;
+RT   "Crystal structure of human CD38 extracellular domain.";
+RL   Structure 13:1331-1339(2005).
+RN   [14]
+RP   VARIANT TRP-140.
+RX   PubMed=9754820; DOI=10.1007/s001250051026;
+RA   Yagui K., Shimada F., Mimura M., Hashimoto N., Suzuki Y., Tokuyama Y.,
+RA   Nata K., Tohgo A., Ikehata F., Takasawa S., Okamoto H., Makino H.,
+RA   Saito Y., Kanatsuka A.;
+RT   "A missense mutation in the CD38 gene, a novel factor for insulin
+RT   secretion: association with Type II diabetes mellitus in Japanese subjects
+RT   and evidence of abnormal function when expressed in vitro.";
+RL   Diabetologia 41:1024-1028(1998).
+CC   -!- FUNCTION: Synthesizes the second messengers cyclic ADP-ribose and
+CC       nicotinate-adenine dinucleotide phosphate, the former a second
+CC       messenger for glucose-induced insulin secretion. Also has cADPr
+CC       hydrolase activity. Also moonlights as a receptor in cells of the
+CC       immune system.
+CC   -!- CATALYTIC ACTIVITY:
+CC       Reaction=H2O + NAD(+) = ADP-D-ribose + H(+) + nicotinamide;
+CC         Xref=Rhea:RHEA:16301, ChEBI:CHEBI:15377, ChEBI:CHEBI:15378,
+CC         ChEBI:CHEBI:17154, ChEBI:CHEBI:57540, ChEBI:CHEBI:57967; EC=3.2.2.6;
+CC         Evidence={ECO:0000269|PubMed:16690024};
+CC   -!- CATALYTIC ACTIVITY:
+CC       Reaction=NADP(+) + nicotinate = nicotinamide + nicotinate-adenine
+CC         dinucleotide phosphate; Xref=Rhea:RHEA:38599, ChEBI:CHEBI:17154,
+CC         ChEBI:CHEBI:32544, ChEBI:CHEBI:58349, ChEBI:CHEBI:75967;
+CC         EC=2.4.99.20; Evidence={ECO:0000269|PubMed:16690024};
+CC   -!- ACTIVITY REGULATION: ATP inhibits the hydrolyzing activity.
+CC   -!- SUBCELLULAR LOCATION: Membrane; Single-pass type II membrane protein.
+CC   -!- ALTERNATIVE PRODUCTS:
+CC       Event=Alternative splicing; Named isoforms=2;
+CC       Name=1;
+CC         IsoId=P28907-1; Sequence=Displayed;
+CC       Name=2;
+CC         IsoId=P28907-2; Sequence=VSP_000707, VSP_000708;
+CC   -!- TISSUE SPECIFICITY: Expressed at high levels in pancreas, liver,
+CC       kidney, brain, testis, ovary, placenta, malignant lymphoma and
+CC       neuroblastoma. {ECO:0000269|PubMed:9074508}.
+CC   -!- DEVELOPMENTAL STAGE: Preferentially expressed at both early and late
+CC       stages of the B and T-cell maturation. It is also detected on erythroid
+CC       and myeloid progenitors in bone marrow, where the level of surface
+CC       expression was shown to decrease during differentiation of blast-
+CC       forming unit E to colony-forming unit E.
+CC   -!- MISCELLANEOUS: [Isoform 2]: May be produced at very low levels due to a
+CC       premature stop codon in the mRNA, leading to nonsense-mediated mRNA
+CC       decay. {ECO:0000305}.
+CC   -!- SIMILARITY: Belongs to the ADP-ribosyl cyclase family. {ECO:0000305}.
+CC   -!- WEB RESOURCE: Name=Wikipedia; Note=CD38 entry;
+CC       URL="https://en.wikipedia.org/wiki/CD38";
+CC   -!- WEB RESOURCE: Name=Atlas of Genetics and Cytogenetics in Oncology and
+CC       Haematology;
+CC       URL="http://atlasgeneticsoncology.org/Genes/CD38ID978ch4p15.html";
+CC   ---------------------------------------------------------------------------
+CC   Copyrighted by the UniProt Consortium, see https://www.uniprot.org/terms
+CC   Distributed under the Creative Commons Attribution (CC BY 4.0) License
+CC   ---------------------------------------------------------------------------
+DR   EMBL; M34461; AAA68482.1; -; mRNA.
+DR   EMBL; D84276; BAA18964.1; -; mRNA.
+DR   EMBL; D84277; BAA18965.1; -; mRNA.
+DR   EMBL; D84284; BAA18966.1; -; Genomic_DNA.
+DR   EMBL; BC007964; AAH07964.1; -; mRNA.
+DR   CCDS; CCDS3417.1; -. [P28907-1]
+DR   PIR; A43521; A43521.
+DR   RefSeq; NP_001766.2; NM_001775.3. [P28907-1]
+DR   PDB; 1YH3; X-ray; 1.91 A; A/B=45-300.
+DR   PDB; 1ZVM; X-ray; 2.20 A; A/B/C/D=45-300.
+DR   PDB; 2EF1; X-ray; 2.40 A; A/B=45-300.
+DR   PDB; 2HCT; X-ray; 1.95 A; A/B=45-300.
+DR   PDB; 2I65; X-ray; 1.90 A; A/B=45-300.
+DR   PDB; 2I66; X-ray; 1.70 A; A/B=45-300.
+DR   PDB; 2I67; X-ray; 1.71 A; A/B=45-300.
+DR   PDB; 2O3Q; X-ray; 1.98 A; A/B=45-300.
+DR   PDB; 2O3R; X-ray; 1.75 A; A/B=45-300.
+DR   PDB; 2O3S; X-ray; 1.50 A; A/B=45-300.
+DR   PDB; 2O3T; X-ray; 1.68 A; A/B=45-300.
+DR   PDB; 2O3U; X-ray; 2.11 A; A/B=45-300.
+DR   PDB; 2PGJ; X-ray; 1.71 A; A/B=45-300.
+DR   PDB; 2PGL; X-ray; 1.76 A; A/B=45-300.
+DR   PDB; 3DZF; X-ray; 2.01 A; A/B/C/D/E/F=45-300.
+DR   PDB; 3DZG; X-ray; 1.65 A; A/B=45-300.
+DR   PDB; 3DZH; X-ray; 1.60 A; A/B=45-300.
+DR   PDB; 3DZI; X-ray; 1.73 A; A/B=45-300.
+DR   PDB; 3DZJ; X-ray; 1.90 A; A/B=45-300.
+DR   PDB; 3DZK; X-ray; 1.81 A; A/B=45-300.
+DR   PDB; 3F6Y; X-ray; 1.45 A; A=45-300.
+DR   PDB; 3I9M; X-ray; 1.75 A; A/B=45-300.
+DR   PDB; 3I9N; X-ray; 2.01 A; A/B=45-300.
+DR   PDB; 3OFS; X-ray; 2.20 A; A/B/C/D/E/F=46-300.
+DR   PDB; 3RAJ; X-ray; 3.04 A; A=46-300.
+DR   PDB; 3ROK; X-ray; 1.65 A; A/B=45-296.
+DR   PDB; 3ROM; X-ray; 2.04 A; A/B=45-296.
+DR   PDB; 3ROP; X-ray; 1.94 A; A/B=45-296.
+DR   PDB; 3ROQ; X-ray; 2.10 A; A/B=45-296.
+DR   PDB; 3U4H; X-ray; 1.88 A; A/B=45-300.
+DR   PDB; 3U4I; X-ray; 2.12 A; A/B=45-300.
+DR   PDB; 4CMH; X-ray; 1.53 A; A=45-300.
+DR   PDB; 4F45; X-ray; 2.10 A; A/B=46-300.
+DR   PDB; 4F46; X-ray; 1.69 A; A/B=46-300.
+DR   PDB; 4OGW; X-ray; 2.05 A; A=46-300.
+DR   PDB; 4TMF; X-ray; 2.05 A; A/B=50-300.
+DR   PDB; 4XJS; X-ray; 2.80 A; A=46-300.
+DR   PDB; 4XJT; X-ray; 2.60 A; A=46-300.
+DR   PDB; 5F1K; X-ray; 2.30 A; A/B=45-300.
+DR   PDB; 5F1O; X-ray; 2.20 A; A=46-300.
+DR   PDB; 5F21; X-ray; 1.90 A; A=46-300.
+DR   PDB; 6EDR; X-ray; 2.40 A; A/B=45-300.
+DR   PDB; 6VUA; X-ray; 1.50 A; A/B=45-300.
+DR   PDB; 7DHA; X-ray; 2.55 A; A=45-300.
+DR   PDB; 7DUO; X-ray; 2.81 A; B=57-285.
+DR   PDBsum; 1YH3; -.
+DR   PDBsum; 1ZVM; -.
+DR   PDBsum; 2EF1; -.
+DR   PDBsum; 2HCT; -.
+DR   PDBsum; 2I65; -.
+DR   PDBsum; 2I66; -.
+DR   PDBsum; 2I67; -.
+DR   PDBsum; 2O3Q; -.
+DR   PDBsum; 2O3R; -.
+DR   PDBsum; 2O3S; -.
+DR   PDBsum; 2O3T; -.
+DR   PDBsum; 2O3U; -.
+DR   PDBsum; 2PGJ; -.
+DR   PDBsum; 2PGL; -.
+DR   PDBsum; 3DZF; -.
+DR   PDBsum; 3DZG; -.
+DR   PDBsum; 3DZH; -.
+DR   PDBsum; 3DZI; -.
+DR   PDBsum; 3DZJ; -.
+DR   PDBsum; 3DZK; -.
+DR   PDBsum; 3F6Y; -.
+DR   PDBsum; 3I9M; -.
+DR   PDBsum; 3I9N; -.
+DR   PDBsum; 3OFS; -.
+DR   PDBsum; 3RAJ; -.
+DR   PDBsum; 3ROK; -.
+DR   PDBsum; 3ROM; -.
+DR   PDBsum; 3ROP; -.
+DR   PDBsum; 3ROQ; -.
+DR   PDBsum; 3U4H; -.
+DR   PDBsum; 3U4I; -.
+DR   PDBsum; 4CMH; -.
+DR   PDBsum; 4F45; -.
+DR   PDBsum; 4F46; -.
+DR   PDBsum; 4OGW; -.
+DR   PDBsum; 4TMF; -.
+DR   PDBsum; 4XJS; -.
+DR   PDBsum; 4XJT; -.
+DR   PDBsum; 5F1K; -.
+DR   PDBsum; 5F1O; -.
+DR   PDBsum; 5F21; -.
+DR   PDBsum; 6EDR; -.
+DR   PDBsum; 6VUA; -.
+DR   PDBsum; 7DHA; -.
+DR   PDBsum; 7DUO; -.
+DR   AlphaFoldDB; P28907; -.
+DR   SMR; P28907; -.
+DR   BioGRID; 107390; 10.
+DR   IntAct; P28907; 5.
+DR   STRING; 9606.ENSP00000226279; -.
+DR   BindingDB; P28907; -.
+DR   ChEMBL; CHEMBL4660; -.
+DR   DrugBank; DB09331; Daratumumab.
+DR   DrugBank; DB14811; Isatuximab.
+DR   DrugBank; DB16370; Mezagitamab.
+DR   DrugCentral; P28907; -.
+DR   GuidetoPHARMACOLOGY; 2766; -.
+DR   GlyConnect; 997; 1 N-Linked glycan (1 site).
+DR   GlyGen; P28907; 5 sites, 1 N-linked glycan (1 site).
+DR   iPTMnet; P28907; -.
+DR   PhosphoSitePlus; P28907; -.
+DR   SwissPalm; P28907; -.
+DR   BioMuta; CD38; -.
+DR   DMDM; 55977782; -.
+DR   EPD; P28907; -.
+DR   jPOST; P28907; -.
+DR   MassIVE; P28907; -.
+DR   MaxQB; P28907; -.
+DR   PaxDb; P28907; -.
+DR   PeptideAtlas; P28907; -.
+DR   PRIDE; P28907; -.
+DR   ProteomicsDB; 54507; -. [P28907-1]
+DR   ProteomicsDB; 54508; -. [P28907-2]
+DR   ABCD; P28907; 65 sequenced antibodies.
+DR   Antibodypedia; 9844; 2499 antibodies from 55 providers.
+DR   CPTC; P28907; 1 antibody.
+DR   DNASU; 952; -.
+DR   Ensembl; ENST00000226279.8; ENSP00000226279.2; ENSG00000004468.13. [P28907-1]
+DR   Ensembl; ENST00000502843.5; ENSP00000427277.1; ENSG00000004468.13. [P28907-2]
+DR   GeneID; 952; -.
+DR   KEGG; hsa:952; -.
+DR   MANE-Select; ENST00000226279.8; ENSP00000226279.2; NM_001775.4; NP_001766.2.
+DR   UCSC; uc003gol.2; human. [P28907-1]
+DR   CTD; 952; -.
+DR   DisGeNET; 952; -.
+DR   GeneCards; CD38; -.
+DR   HGNC; HGNC:1667; CD38.
+DR   HPA; ENSG00000004468; Tissue enhanced (lymphoid).
+DR   MIM; 107270; gene.
+DR   neXtProt; NX_P28907; -.
+DR   OpenTargets; ENSG00000004468; -.
+DR   PharmGKB; PA26214; -.
+DR   VEuPathDB; HostDB:ENSG00000004468; -.
+DR   eggNOG; ENOG502S1HV; Eukaryota.
+DR   GeneTree; ENSGT00390000017291; -.
+DR   HOGENOM; CLU_2025937_0_0_1; -.
+DR   InParanoid; P28907; -.
+DR   OMA; MNYDSCP; -.
+DR   PhylomeDB; P28907; -.
+DR   TreeFam; TF332530; -.
+DR   BioCyc; MetaCyc:HS00103-MON; -.
+DR   BRENDA; 2.4.99.20; 2681.
+DR   BRENDA; 3.2.2.5; 2681.
+DR   BRENDA; 3.2.2.6; 2681.
+DR   PathwayCommons; P28907; -.
+DR   Reactome; R-HSA-196807; Nicotinate metabolism.
+DR   SABIO-RK; P28907; -.
+DR   SignaLink; P28907; -.
+DR   SIGNOR; P28907; -.
+DR   BioGRID-ORCS; 952; 8 hits in 1077 CRISPR screens.
+DR   ChiTaRS; CD38; human.
+DR   EvolutionaryTrace; P28907; -.
+DR   GeneWiki; CD38; -.
+DR   GenomeRNAi; 952; -.
+DR   Pharos; P28907; Tclin.
+DR   PRO; PR:P28907; -.
+DR   Proteomes; UP000005640; Chromosome 4.
+DR   RNAct; P28907; protein.
+DR   Bgee; ENSG00000004468; Expressed in seminal vesicle and 129 other tissues.
+DR   ExpressionAtlas; P28907; baseline and differential.
+DR   Genevisible; P28907; HS.
+DR   GO; GO:0016323; C:basolateral plasma membrane; IEA:Ensembl.
+DR   GO; GO:0009986; C:cell surface; IEA:Ensembl.
+DR   GO; GO:0070062; C:extracellular exosome; HDA:UniProtKB.
+DR   GO; GO:0016021; C:integral component of membrane; IEA:UniProtKB-KW.
+DR   GO; GO:0016020; C:membrane; TAS:ProtInc.
+DR   GO; GO:0005634; C:nucleus; IEA:Ensembl.
+DR   GO; GO:0005886; C:plasma membrane; IDA:HPA.
+DR   GO; GO:0030667; C:secretory granule membrane; IEA:Ensembl.
+DR   GO; GO:0042802; F:identical protein binding; IEA:Ensembl.
+DR   GO; GO:0050135; F:NAD(P)+ nucleosidase activity; IEA:UniProtKB-EC.
+DR   GO; GO:0003953; F:NAD+ nucleosidase activity; IBA:GO_Central.
+DR   GO; GO:0061809; F:NAD+ nucleotidase, cyclic ADP-ribose generating; IEA:UniProtKB-EC.
+DR   GO; GO:0016849; F:phosphorus-oxygen lyase activity; IBA:GO_Central.
+DR   GO; GO:0016740; F:transferase activity; IEA:UniProtKB-KW.
+DR   GO; GO:0097190; P:apoptotic signaling pathway; TAS:ProtInc.
+DR   GO; GO:0014824; P:artery smooth muscle contraction; IEA:Ensembl.
+DR   GO; GO:0042100; P:B cell proliferation; IEA:Ensembl.
+DR   GO; GO:0050853; P:B cell receptor signaling pathway; IMP:UniProtKB.
+DR   GO; GO:0007565; P:female pregnancy; IEA:Ensembl.
+DR   GO; GO:0060292; P:long-term synaptic depression; IEA:Ensembl.
+DR   GO; GO:0019674; P:NAD metabolic process; TAS:Reactome.
+DR   GO; GO:0043066; P:negative regulation of apoptotic process; IMP:UniProtKB.
+DR   GO; GO:0045779; P:negative regulation of bone resorption; IEA:Ensembl.
+DR   GO; GO:0010977; P:negative regulation of neuron projection development; IEA:Ensembl.
+DR   GO; GO:0045892; P:negative regulation of transcription, DNA-templated; IMP:UniProtKB.
+DR   GO; GO:0030890; P:positive regulation of B cell proliferation; IMP:UniProtKB.
+DR   GO; GO:0030307; P:positive regulation of cell growth; IEA:Ensembl.
+DR   GO; GO:0007204; P:positive regulation of cytosolic calcium ion concentration; IEA:Ensembl.
+DR   GO; GO:0032024; P:positive regulation of insulin secretion; IEA:Ensembl.
+DR   GO; GO:0045893; P:positive regulation of transcription, DNA-templated; IMP:UniProtKB.
+DR   GO; GO:0045907; P:positive regulation of vasoconstriction; IEA:Ensembl.
+DR   GO; GO:0032355; P:response to estradiol; IEA:Ensembl.
+DR   GO; GO:0033194; P:response to hydroperoxide; IEA:Ensembl.
+DR   GO; GO:0001666; P:response to hypoxia; IEA:Ensembl.
+DR   GO; GO:0070555; P:response to interleukin-1; IEA:Ensembl.
+DR   GO; GO:0032570; P:response to progesterone; IEA:Ensembl.
+DR   GO; GO:0032526; P:response to retinoic acid; IEA:Ensembl.
+DR   GO; GO:0009410; P:response to xenobiotic stimulus; IMP:UniProtKB.
+DR   GO; GO:0007165; P:signal transduction; NAS:ProtInc.
+DR   CDD; cd04759; Rib_hydrolase; 1.
+DR   InterPro; IPR003193; ADP-ribosyl_cyclase.
+DR   InterPro; IPR033567; CD38.
+DR   PANTHER; PTHR10912; PTHR10912; 1.
+DR   PANTHER; PTHR10912:SF5; PTHR10912:SF5; 1.
+DR   Pfam; PF02267; Rib_hydrolayse; 1.
+PE   1: Evidence at protein level;
+KW   3D-structure; Alternative splicing; Diabetes mellitus; Disulfide bond;
+KW   Glycoprotein; Hydrolase; Membrane; NAD; NADP; Receptor; Reference proteome;
+KW   Signal-anchor; Transferase; Transmembrane; Transmembrane helix.
+FT   CHAIN           1..300
+FT                   /note="ADP-ribosyl cyclase/cyclic ADP-ribose hydrolase 1"
+FT                   /id="PRO_0000144066"
+FT   TOPO_DOM        1..21
+FT                   /note="Cytoplasmic"
+FT                   /evidence="ECO:0000255"
+FT   TRANSMEM        22..42
+FT                   /note="Helical; Signal-anchor for type II membrane protein"
+FT                   /evidence="ECO:0000255"
+FT   TOPO_DOM        43..300
+FT                   /note="Extracellular"
+FT                   /evidence="ECO:0000255"
+FT   ACT_SITE        119
+FT                   /evidence="ECO:0000269|PubMed:7961800"
+FT   ACT_SITE        201
+FT                   /evidence="ECO:0000269|PubMed:7961800"
+FT   CARBOHYD        100
+FT                   /note="N-linked (GlcNAc...) asparagine"
+FT                   /evidence="ECO:0000269|PubMed:19159218"
+FT   CARBOHYD        164
+FT                   /note="N-linked (GlcNAc...) asparagine"
+FT                   /evidence="ECO:0000255"
+FT   CARBOHYD        209
+FT                   /note="N-linked (GlcNAc...) asparagine"
+FT                   /evidence="ECO:0000269|PubMed:19159218"
+FT   CARBOHYD        219
+FT                   /note="N-linked (GlcNAc...) asparagine"
+FT                   /evidence="ECO:0000269|PubMed:19159218,
+FT                   ECO:0000269|PubMed:19349973"
+FT   DISULFID        67..82
+FT                   /evidence="ECO:0000269|PubMed:16154090"
+FT   DISULFID        99..180
+FT                   /evidence="ECO:0000269|PubMed:16154090"
+FT   DISULFID        160..173
+FT                   /evidence="ECO:0000269|PubMed:16154090"
+FT   DISULFID        254..275
+FT                   /evidence="ECO:0000269|PubMed:16154090"
+FT   DISULFID        287..296
+FT                   /evidence="ECO:0000269|PubMed:16154090"
+FT   VAR_SEQ         122
+FT                   /note="I -> K (in isoform 2)"
+FT                   /evidence="ECO:0000303|PubMed:9074508"
+FT                   /id="VSP_000707"
+FT   VAR_SEQ         123..300
+FT                   /note="Missing (in isoform 2)"
+FT                   /evidence="ECO:0000303|PubMed:9074508"
+FT                   /id="VSP_000708"
+FT   VARIANT         140
+FT                   /note="R -> W (seems to contribute to the development of
+FT                   type II diabetes; 50% reduction in activity;
+FT                   dbSNP:rs1800561)"
+FT                   /evidence="ECO:0000269|PubMed:9754820"
+FT                   /id="VAR_001323"
+FT   MUTAGEN         119
+FT                   /note="C->K: Loss of cADPr hydrolase activity."
+FT                   /evidence="ECO:0000269|PubMed:7961800"
+FT   MUTAGEN         119
+FT                   /note="C->R,E,A: Loss of cADPr hydrolase and ADP-ribosyl
+FT                   cyclase activity."
+FT                   /evidence="ECO:0000269|PubMed:7961800"
+FT   MUTAGEN         160
+FT                   /note="C->A: Loss of cADPr hydrolase and ADP-ribosyl
+FT                   cyclase activity."
+FT                   /evidence="ECO:0000269|PubMed:7961800"
+FT   MUTAGEN         173
+FT                   /note="C->A: Loss of cADPr hydrolase and ADP-ribosyl
+FT                   cyclase activity."
+FT                   /evidence="ECO:0000269|PubMed:7961800"
+FT   MUTAGEN         201
+FT                   /note="C->D,K,A: Loss of cADPr hydrolase and ADP-ribosyl
+FT                   cyclase activity."
+FT                   /evidence="ECO:0000269|PubMed:7961800"
+FT   MUTAGEN         201
+FT                   /note="C->E: Loss of cADPr hydrolase activity."
+FT                   /evidence="ECO:0000269|PubMed:7961800"
+FT   CONFLICT        49
+FT                   /note="Q -> T (in Ref. 1; AAA68482)"
+FT                   /evidence="ECO:0000305"
+FT   STRAND          51..53
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   HELIX           59..73
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   HELIX           75..77
+FT                   /evidence="ECO:0007829|PDB:2O3S"
+FT   HELIX           82..93
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   STRAND          94..96
+FT                   /evidence="ECO:0007829|PDB:3RAJ"
+FT   HELIX           98..100
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   HELIX           103..106
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   HELIX           107..112
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   HELIX           119..121
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   STRAND          122..127
+FT                   /evidence="ECO:0007829|PDB:2O3S"
+FT   STRAND          132..134
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   HELIX           136..141
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   STRAND          142..144
+FT                   /evidence="ECO:0007829|PDB:3RAJ"
+FT   HELIX           145..147
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   HELIX           149..154
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   STRAND          165..167
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   STRAND          171..173
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   TURN            176..179
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   STRAND          181..183
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   HELIX           184..199
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   STRAND          202..209
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   STRAND          212..216
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   STRAND          218..220
+FT                   /evidence="ECO:0007829|PDB:2EF1"
+FT   HELIX           221..224
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   HELIX           227..229
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   TURN            232..234
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   STRAND          235..243
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   STRAND          246..249
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   HELIX           253..255
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   HELIX           257..268
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   STRAND          272..278
+FT                   /evidence="ECO:0007829|PDB:3F6Y"
+FT   HELIX           281..289
+FT                   /evidence="ECO:0007829|PDB:2O3S"
+FT   TURN            291..293
+FT                   /evidence="ECO:0007829|PDB:3DZG"
+FT   HELIX           294..296
+FT                   /evidence="ECO:0007829|PDB:5F21"
+SQ   SEQUENCE   300 AA;  34328 MW;  47BBE38C3DE3E6AA CRC64;
+     MANCEFSPVS GDKPCCRLSR RAQLCLGVSI LVLILVVVLA VVVPRWRQQW SGPGTTKRFP
+     ETVLARCVKY TEIHPEMRHV DCQSVWDAFK GAFISKHPCN ITEEDYQPLM KLGTQTVPCN
+     KILLWSRIKD LAHQFTQVQR DMFTLEDTLL GYLADDLTWC GEFNTSKINY QSCPDWRKDC
+     SNNPVSVFWK TVSRRFAEAA CDVVHVMLNG SRSKIFDKNS TFGSVEVHNL QPEKVQTLEA
+     WVIHGGREDS RDLCQDPTIK ELESIISKRN IQFSCKNIYR PDKFLQCVKN PEDSSCTSEI
+//

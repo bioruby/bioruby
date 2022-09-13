@@ -1197,9 +1197,124 @@ class UniProtKB < EMBLDB
     return ft[feature_key] if feature_key
     return @data['FT'] if @data['FT']
 
+    ftstr = get('FT')
+    ftlines = ftstr.split("\n")
+    for i in 0..10 do
+      if /^FT +([^\s]+) +(([^\s]+)\:)?([\<\?]?[0-9]+|\?)(?:\.\.([\>\?]?[0-9]+|\?))?\s*$/ =~ ftlines[i] &&
+         /^FT +\/([^\s\=]+)(?:\=(\")?(.+)(\")?)?\s*$/ =~ ftlines[i+1] then
+        fmt_2019_11 = true
+        break #for i
+      end
+    end #for i
+
+    hash = if fmt_2019_11 then
+             ft_2019_11_parser(ftlines)
+           else
+             ft_legacy_parser(ftlines)
+           end
+    @data['FT'] = hash
+  end
+
+  # FT parser since UniProt release 2019_11
+  # https://www.uniprot.org/release-notes/2019-12-18-release#text%5Fft
+  def ft_2019_11_parser(ftlines)
+    table = []
+    cur_ft = nil
+    cont = false
+    begin
+      ftlines.each do |line|
+        if /^FT +([^\s]+) +(([^\s]+)\:)?([\<\?]?[0-9]+|\?)(?:\.\.([\>\?]?[0-9]+|\?))?\s*$/ =~ line
+          cur_ft = [$1.to_s,        # Feature Name
+                    "#{$2}#{$4}",   # From
+                    $5.to_s,        # To
+                    []              # Qualifiers
+                   ]
+          table.push cur_ft
+          cont = false
+        elsif cont && /^FT {19}/ =~ line
+          str = $'
+          str.rstrip!
+          orig = cur_ft[3][-1][1].to_s
+          if orig.size > 0 && orig[-1] != ' ' &&
+             str.length > 0 && str[0] != ' ' then
+            orig.concat ' '
+          end
+          orig.concat str
+          cur_ft[3][-1][1] = orig
+          if cont && orig[-1] == "\""
+            orig.chop!
+            cont = false
+          end
+        elsif /^FT +\/([^\s\=]+)(?:\=(\")?(.+))?\s*$/ =~ line
+          key = $1
+          val = $3
+          val.rstrip!
+          cur_ft[3].push [ key, val ]
+          cont = false
+          if $2 == "\""
+            if val.to_s[-1] == "\""
+              val.chop!
+            else
+              cont = true
+            end
+          end
+        else
+          raise "FT parse error: #{line.inspect}"
+        end
+      end
+
+      hash = {}
+      table.each do |feature|
+        cur_h = {
+          # Removing '<', '>' or '?' in FROM/TO endopoint.
+          'From' => feature[1].sub(/\D/, '').to_i,  
+          'To'   => feature[2].sub(/\D/, '').to_i, 
+          'diff' => [],
+          'original' => feature
+        }
+        hash[feature[0]] ||= []
+        hash[feature[0]].push cur_h
+        feature[3].each do |a|
+          case a[0]
+          when 'From', 'To', 'Description', 'FTId', 'diff', 'original'
+            ; # do nothing
+          else
+            cur_h[a[0]] = a[1]
+          end
+        end
+        if cur_h["id"] then
+          cur_h['FTId'] = cur_h['id']
+        end
+
+        case feature[0]
+        when 'VARSPLIC', 'VARIANT', 'VAR_SEQ', 'CONFLICT'
+          case cur_h['note'].to_s
+          when /(\w[\w ]*\w*) - ?> (\w[\w ]*\w*)/
+            original_res = $1
+            changed_res = $2
+            original_res = original_res.gsub(/ /,'').strip
+            chenged_res = changed_res.gsub(/ /,'').strip
+          when /Missing/i
+            original_res = seq.subseq(cur_h['From'],
+                                      cur_h['To'])
+            changed_res = ''
+          end
+          cur_h['diff'] = [original_res, chenged_res]
+        end
+      end
+    rescue
+      raise "Invalid FT Lines(#{$!}) in #{entry_id}:, \n'#{self.get('FT')}'\n"
+    end
+
+    hash
+  end
+  private :ft_2019_11_parser
+  
+  # FT parser for the format before Uniprot release 2019_11
+  def ft_legacy_parser(ftlines)
     table = []
     begin
-      get('FT').split("\n").each do |line|
+      ftlines.each do |line|
         if line =~ /^FT   \w/
           feature = line.chomp.ljust(74)
           table << [feature[ 5..12].strip,   # Feature Name
@@ -1256,10 +1371,9 @@ class UniProtKB < EMBLDB
       raise "Invalid FT Lines(#{$!}) in #{entry_id}:, \n'#{self.get('FT')}'\n"
     end
 
-    @data['FT'] = hash
+    hash
   end
-
-
+  private :ft_legacy_parser
 
   # returns a Hash of conteins in the SQ lines.
   # * Bio::UniProtKBL#sq  -> hsh
