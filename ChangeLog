@@ -1,3 +1,82 @@
+commit 1bc877e557e165b42eea992d89f19a63996cb586
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 13 21:19:01 2022 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+commit 190e4751b84cc45cbce636c4414482a8169b08df
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 13 21:18:06 2022 +0900
+
+    prepare for BioRuby 2.0.4 release
+
+ lib/bio/version.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit a666639e0393e96b2de0bbcb447c13f8a14ad06d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 13 21:17:11 2022 +0900
+
+    update release notes for upcoming BioRuby 2.0.4
+
+ RELEASE_NOTES.rdoc | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+commit c0d197343dd7fd8999d04083c9e8f24fa37a2f93
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 13 21:13:40 2022 +0900
+
+    License of UniProt data is CC BY 4.0
+
+ LEGAL | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+commit e670102e6d4deb04c1fcae62459cc02861132d25
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 13 21:01:50 2022 +0900
+
+    Bug fix: Bio::UniProtKB#protein_name and #synonyms may raise error
+    
+     * Bug fix: Bio::UniProtKB#protein_name and #synonyms may raise error
+       after calling Bio::UniProtKB#de method.
+
+ lib/bio/db/embl/uniprotkb.rb                   | 25 ++++++++++++++++++-------
+ test/unit/bio/db/embl/test_uniprotkb_P28907.rb | 11 +++++++++++
+ 2 files changed, 29 insertions(+), 7 deletions(-)
+
+commit 9c04e08e8d1316ffd7fc15ab311cea5dd6937d36
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 13 20:44:46 2022 +0900
+
+    Supports format change of FT lines since UniProt release 2019_11
+    
+     * Bio::UniProtKB#ft: Supports text format change of FT lines since
+       UniProt release 2019_11. (Details of the format changes:
+       https://www.uniprot.org/release-notes/2019-12-18-release#text%5Fft )
+    
+       This closes https://github.com/bioruby/bioruby/issues/147 .
+    
+     * Tests are added with a new test data
+
+ lib/bio/db/embl/uniprotkb.rb                   | 122 +++++-
+ test/data/uniprot/P28907.uniprot               | 551 +++++++++++++++++++++++++
+ test/unit/bio/db/embl/test_uniprotkb_P28907.rb | 314 ++++++++++++++
+ 3 files changed, 983 insertions(+), 4 deletions(-)
+ create mode 100644 test/data/uniprot/P28907.uniprot
+ create mode 100644 test/unit/bio/db/embl/test_uniprotkb_P28907.rb
+
+commit b18ee463d4328b5ef619733b46f568b18459be7a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Nov 5 23:49:18 2021 +0900
+
+    BioRuby 2.0.3 is released
+
+ ChangeLog | 136 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 136 insertions(+)
+
 commit c16e230d15cf30478a3739563b4e4745dc57ef82
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Fri Nov 5 23:44:45 2021 +0900
