@@ -1,3 +1,17 @@
+= BioRuby 2.0.4 RELEASE NOTES
+
+Some fixes have been made in BioRuby 2.0.4 after the release of 2.0.3.
+
+== Fixes
+
+* Bio::UniProtKB#ft: Supports text format change of FT lines since
+  UniProt release 2019_11.
+  (https://github.com/bioruby/bioruby/issues/147 )
+* Bio::UniProtKB#protein_name and #synonyms methods may raise error
+  after calling Bio::UniProtKB#de method.
+
+
+
 = BioRuby 2.0.3 RELEASE NOTES
 
 Some bug fixes have been made in BioRuby 2.0.3 after the release of 2.0.2.
