@@ -1,0 +1,227 @@
+ID   5HT1B_RABIT             Reviewed;         390 AA.
+AC   P49144;
+DT   01-FEB-1996, integrated into UniProtKB/Swiss-Prot.
+DT   01-FEB-1996, sequence version 1.
+DT   03-AUG-2022, entry version 125.
+DE   RecName: Full=5-hydroxytryptamine receptor 1B;
+DE            Short=5-HT-1B;
+DE            Short=5-HT1B;
+DE   AltName: Full=Serotonin 1D beta receptor;
+DE            Short=5-HT-1D-beta;
+DE   AltName: Full=Serotonin receptor 1B;
+GN   Name=HTR1B;
+OS   Oryctolagus cuniculus (Rabbit).
+OC   Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi; Mammalia;
+OC   Eutheria; Euarchontoglires; Glires; Lagomorpha; Leporidae; Oryctolagus.
+OX   NCBI_TaxID=9986;
+RN   [1]
+RP   NUCLEOTIDE SEQUENCE [GENOMIC DNA].
+RC   TISSUE=Liver;
+RX   PubMed=8543023; DOI=10.1016/0014-5793(95)01308-3;
+RA   Harwood G.S., Lockyer M., Giles H., Fairweather N.;
+RT   "Cloning and characterisation of the rabbit 5-HT1D alpha and 5-HT1D beta
+RT   receptors.";
+RL   FEBS Lett. 377:73-76(1995).
+RN   [2]
+RP   NUCLEOTIDE SEQUENCE.
+RC   STRAIN=New Zealand white; TISSUE=Saphenous vein;
+RA   Wurch T., Cathala C., Palmer C., Valentin J.P., John G., Colpaert F.C.,
+RA   Pauwels P.J.;
+RT   "Molecular cloning and identification of a rabbit saphenous vein 5-HT 1DB
+RT   receptor gene.";
+RL   Neurosci. Res. Commun. 18:155-162(1996).
+RN   [3]
+RP   NUCLEOTIDE SEQUENCE.
+RC   STRAIN=New Zealand white;
+RX   PubMed=8878052; DOI=10.1007/bf00171053;
+RA   Bard J.A., Kucharewicz S.A., Zgombick J.M., Weinshank R.L., Branchek T.A.,
+RA   Cohen M.L.;
+RT   "Differences in ligand binding profiles between cloned rabbit and human 5-
+RT   HT1D alpha and 5-HT1D beta receptors: ketanserin and methiothepin
+RT   distinguish rabbit 5-HT1D receptor subtypes.";
+RL   Naunyn Schmiedebergs Arch. Pharmacol. 354:237-244(1996).
+CC   -!- FUNCTION: G-protein coupled receptor for 5-hydroxytryptamine
+CC       (serotonin). Also functions as a receptor for various alkaloids and
+CC       psychoactive substances. Ligand binding causes a conformation change
+CC       that triggers signaling via guanine nucleotide-binding proteins (G
+CC       proteins) and modulates the activity of down-stream effectors, such as
+CC       adenylate cyclase. Signaling inhibits adenylate cyclase activity.
+CC       Arrestin family members inhibit signaling via G proteins and mediate
+CC       activation of alternative signaling pathways. Regulates the release of
+CC       5-hydroxytryptamine, dopamine and acetylcholine in the brain, and
+CC       thereby affects neural activity, nociceptive processing, pain
+CC       perception, mood and behavior. Besides, plays a role in
+CC       vasoconstriction of cerebral arteries.
+CC   -!- SUBUNIT: Homodimer. Heterodimer with HTR1D (By similarity).
+CC       {ECO:0000250}.
+CC   -!- SUBCELLULAR LOCATION: Cell membrane; Multi-pass membrane protein.
+CC   -!- DOMAIN: Ligands are bound in a hydrophobic pocket formed by the
+CC       transmembrane helices. {ECO:0000250}.
+CC   -!- PTM: Phosphorylated. {ECO:0000250}.
+CC   -!- PTM: Palmitoylated. {ECO:0000250}.
+CC   -!- MISCELLANEOUS: A residue in the 7th transmembrane region ('Thr-355' in
+CC       human, 'Asn-351' in mouse and rat) is important for species-specific
+CC       sensitivity to various agonists. {ECO:0000250}.
+CC   -!- SIMILARITY: Belongs to the G-protein coupled receptor 1 family.
+CC       {ECO:0000255|PROSITE-ProRule:PRU00521}.
+CC   ---------------------------------------------------------------------------
+CC   Copyrighted by the UniProt Consortium, see https://www.uniprot.org/terms
+CC   Distributed under the Creative Commons Attribution (CC BY 4.0) License
+CC   ---------------------------------------------------------------------------
+DR   EMBL; Z50163; CAA90531.1; -; Genomic_DNA.
+DR   EMBL; X89731; CAA61883.1; -; mRNA.
+DR   EMBL; U60826; AAB58467.1; -; Genomic_DNA.
+DR   PIR; S58126; S58126.
+DR   PIR; S68422; S68422.
+DR   RefSeq; NP_001076259.1; NM_001082790.1.
+DR   AlphaFoldDB; P49144; -.
+DR   SMR; P49144; -.
+DR   STRING; 9986.ENSOCUP00000016295; -.
+DR   BindingDB; P49144; -.
+DR   ChEMBL; CHEMBL5717; -.
+DR   GeneID; 100009594; -.
+DR   KEGG; ocu:100009594; -.
+DR   CTD; 3351; -.
+DR   eggNOG; KOG3656; Eukaryota.
+DR   InParanoid; P49144; -.
+DR   OrthoDB; 703991at2759; -.
+DR   TreeFam; TF316350; -.
+DR   PRO; PR:P49144; -.
+DR   Proteomes; UP000001811; Unplaced.
+DR   GO; GO:0005887; C:integral component of plasma membrane; ISS:UniProtKB.
+DR   GO; GO:0045202; C:synapse; IEA:GOC.
+DR   GO; GO:0004993; F:G protein-coupled serotonin receptor activity; ISS:UniProtKB.
+DR   GO; GO:0007198; P:adenylate cyclase-inhibiting serotonin receptor signaling pathway; ISS:UniProtKB.
+DR   GO; GO:0007610; P:behavior; IEA:UniProtKB-KW.
+DR   GO; GO:0046849; P:bone remodeling; IEA:InterPro.
+DR   GO; GO:0071312; P:cellular response to alkaloid; ISS:UniProtKB.
+DR   GO; GO:0071466; P:cellular response to xenobiotic stimulus; ISS:UniProtKB.
+DR   GO; GO:0007268; P:chemical synaptic transmission; IEA:InterPro.
+DR   GO; GO:0014063; P:negative regulation of serotonin secretion; ISS:UniProtKB.
+DR   GO; GO:0050795; P:regulation of behavior; IEA:InterPro.
+DR   GO; GO:0042310; P:vasoconstriction; IEA:InterPro.
+DR   InterPro; IPR002147; 5HT1B_rcpt.
+DR   InterPro; IPR002231; 5HT_rcpt.
+DR   InterPro; IPR000276; GPCR_Rhodpsn.
+DR   InterPro; IPR017452; GPCR_Rhodpsn_7TM.
+DR   PANTHER; PTHR24247:SF16; PTHR24247:SF16; 1.
+DR   Pfam; PF00001; 7tm_1; 1.
+DR   PRINTS; PR00513; 5HT1BRECEPTR.
+DR   PRINTS; PR01101; 5HTRECEPTOR.
+DR   PRINTS; PR00237; GPCRRHODOPSN.
+DR   SMART; SM01381; 7TM_GPCR_Srsx; 1.
+DR   PROSITE; PS00237; G_PROTEIN_RECEP_F1_1; 1.
+DR   PROSITE; PS50262; G_PROTEIN_RECEP_F1_2; 1.
+PE   2: Evidence at transcript level;
+KW   Behavior; Cell membrane; Disulfide bond; G-protein coupled receptor;
+KW   Glycoprotein; Lipoprotein; Membrane; Palmitate; Phosphoprotein; Receptor;
+KW   Reference proteome; Transducer; Transmembrane; Transmembrane helix.
+FT   CHAIN           1..390
+FT                   /note="5-hydroxytryptamine receptor 1B"
+FT                   /id="PRO_0000068920"
+FT   TOPO_DOM        1..49
+FT                   /note="Extracellular"
+FT                   /evidence="ECO:0000250"
+FT   TRANSMEM        50..75
+FT                   /note="Helical; Name=1"
+FT                   /evidence="ECO:0000250"
+FT   TOPO_DOM        76..84
+FT                   /note="Cytoplasmic"
+FT                   /evidence="ECO:0000250"
+FT   TRANSMEM        85..110
+FT                   /note="Helical; Name=2"
+FT                   /evidence="ECO:0000250"
+FT   TOPO_DOM        111..123
+FT                   /note="Extracellular"
+FT                   /evidence="ECO:0000250"
+FT   TRANSMEM        124..145
+FT                   /note="Helical; Name=3"
+FT                   /evidence="ECO:0000250"
+FT   TOPO_DOM        146..165
+FT                   /note="Cytoplasmic"
+FT                   /evidence="ECO:0000250"
+FT   TRANSMEM        166..187
+FT                   /note="Helical; Name=4"
+FT                   /evidence="ECO:0000250"
+FT   TOPO_DOM        188..205
+FT                   /note="Extracellular"
+FT                   /evidence="ECO:0000250"
+FT   TRANSMEM        206..228
+FT                   /note="Helical; Name=5"
+FT                   /evidence="ECO:0000250"
+FT   TOPO_DOM        229..315
+FT                   /note="Cytoplasmic"
+FT                   /evidence="ECO:0000250"
+FT   TRANSMEM        316..336
+FT                   /note="Helical; Name=6"
+FT                   /evidence="ECO:0000250"
+FT   TOPO_DOM        337..349
+FT                   /note="Extracellular"
+FT                   /evidence="ECO:0000250"
+FT   TRANSMEM        350..371
+FT                   /note="Helical; Name=7"
+FT                   /evidence="ECO:0000250"
+FT   TOPO_DOM        372..390
+FT                   /note="Cytoplasmic"
+FT                   /evidence="ECO:0000250"
+FT   REGION          260..282
+FT                   /note="Disordered"
+FT                   /evidence="ECO:0000256|SAM:MobiDB-lite"
+FT   MOTIF           146..148
+FT                   /note="DRY motif; important for ligand-induced conformation
+FT                   changes and signaling"
+FT                   /evidence="ECO:0000250"
+FT   MOTIF           365..369
+FT                   /note="NPxxY motif; important for ligand-induced
+FT                   conformation changes and signaling"
+FT                   /evidence="ECO:0000250"
+FT   BINDING         129
+FT                   /ligand="ergotamine"
+FT                   /ligand_id="ChEBI:CHEBI:190463"
+FT                   /ligand_note="agonist"
+FT                   /evidence="ECO:0000250|UniProtKB:P28222"
+FT   BINDING         134
+FT                   /ligand="ergotamine"
+FT                   /ligand_id="ChEBI:CHEBI:190463"
+FT                   /ligand_note="agonist"
+FT                   /evidence="ECO:0000250|UniProtKB:P28222"
+FT   BINDING         201
+FT                   /ligand="ergotamine"
+FT                   /ligand_id="ChEBI:CHEBI:190463"
+FT                   /ligand_note="agonist"
+FT                   /evidence="ECO:0000250|UniProtKB:P28222"
+FT   SITE            355
+FT                   /note="Important for species-specific agonist sensitivity"
+FT                   /evidence="ECO:0000250"
+FT   LIPID           388
+FT                   /note="S-palmitoyl cysteine"
+FT                   /evidence="ECO:0000255"
+FT   CARBOHYD        24
+FT                   /note="N-linked (GlcNAc...) asparagine"
+FT                   /evidence="ECO:0000255"
+FT   CARBOHYD        32
+FT                   /note="N-linked (GlcNAc...) asparagine"
+FT                   /evidence="ECO:0000255"
+FT   DISULFID        122..199
+FT                   /evidence="ECO:0000255|PROSITE-ProRule:PRU00521"
+FT   CONFLICT        5
+FT                   /note="G -> S (in Ref. 1 and 3)"
+FT                   /evidence="ECO:0000305"
+FT   CONFLICT        7
+FT                   /note="Q -> R (in Ref. 1 and 3)"
+FT                   /evidence="ECO:0000305"
+FT   CONFLICT        14
+FT                   /note="Missing (in Ref. 1 and 3)"
+FT                   /evidence="ECO:0000305"
+FT   CONFLICT        171
+FT                   /note="R -> A (in Ref. 1 and 3)"
+FT                   /evidence="ECO:0000305"
+SQ   SEQUENCE   390 AA;  43496 MW;  C22EBC077C6C897D CRC64;
+     MEEPGAQCAP PLAAGSQIAV PQANLSAAHS HNCSAEGYIY QDSIALPWKV LLVLLLALFT
+     LATTLSNAFV VATVYRTRKL HTPANYLIAS LAVTDLLVSI LVMPISTMYT VTGRWTLGQV
+     VCDLWLSSDI TCCTASIMHL CVIALDRYWA ITDAVEYSAK RTPKRAAIMI RLVWVFSICI
+     SLPPFFWRQA KAEEEVSECL VNTDHVLYTV YSTVGAFYLP TLLLIALYGR IYVEARSRIL
+     KQTPNRTGKR LTRAQLITDS PGSTTSVTSI NSRAPDVPSE SGSPVYVNQV KVRVSDALLE
+     KKKLMAARER KATKTLGIIL GVFIVCWLPF FIISLVMPIC KDACWFHQAI FDFFTWLGYV
+     NSLINPIIYT MSNEDFKQAF HKLIRFKCTS
+//
