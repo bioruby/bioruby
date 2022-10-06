@@ -922,6 +922,7 @@ class UniProtKB < EMBLDB
 
 
   def cc_alternative_products(data)
+    return nil unless data
     ap = data.join('')
     return ap unless ap
 
@@ -960,6 +961,7 @@ class UniProtKB < EMBLDB
 
 
   def cc_biophysiochemical_properties(data)
+    return nil unless data
     data = data[0]
 
     hash = {'Absorption' => {}, 
@@ -995,6 +997,7 @@ class UniProtKB < EMBLDB
 
 
   def cc_caution(data)
+    return nil unless data
     data.join('')
   end
   private :cc_caution
@@ -1004,6 +1007,7 @@ class UniProtKB < EMBLDB
   #
   #   CC       P46527:CDKN1B; NbExp=1; IntAct=EBI-359815, EBI-519280;
   def cc_interaction(data)
+    return nil unless data
     str = data.join('')
     it = str.scan(/(.+?); NbExp=(.+?); IntAct=(.+?);/)
     it.map {|ent|
@@ -1059,6 +1063,7 @@ class UniProtKB < EMBLDB
 
 
   def cc_pathway(data)
+    return nil unless data
     data.map {|x| x.sub(/\.$/, '') }.map {|x|
       x.split(/; | and |: /)
     }[0]
@@ -1067,6 +1072,7 @@ class UniProtKB < EMBLDB
 
 
   def cc_rna_editing(data)
+    return nil unless data
     data = data.join('')
     entry = {'Modified_positions' => [], 'Note' => ""}
     if data =~ /Modified_positions=(.+?)(\.|;)/
@@ -1083,6 +1089,7 @@ class UniProtKB < EMBLDB
 
 
   def cc_subcellular_location(data)
+    return nil unless data
     data.map {|x| 
       x.split('. ').map {|y| 
         y.split('; ').map {|z| 
@@ -1101,6 +1108,7 @@ class UniProtKB < EMBLDB
   #++
 
   def cc_web_resource(data)
+    return nil unless data
     data.map {|x|
       entry = {'Name' => nil, 'Note' => nil, 'URL' => nil}
       x.split(';').each do |y|
