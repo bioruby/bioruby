@@ -1235,10 +1235,14 @@ class UniProtKB < EMBLDB
     begin
       ftlines.each do |line|
         if /^FT +([^\s]+) +(([^\s]+)\:)?([\<\?]?[0-9]+|\?)(?:\.\.([\>\?]?[0-9]+|\?))?\s*$/ =~ line
-          cur_ft = [$1.to_s,        # Feature Name
-                    "#{$2}#{$4}",   # From
-                    $5.to_s,        # To
-                    []              # Qualifiers
+          f_name = $1.to_s
+          f_from = "#{$2}#{$4}"
+          f_to = $5.to_s
+          f_to = f_from if f_to.empty?
+          cur_ft = [f_name,   # Feature Name
+                    f_from,   # From
+                    f_to,     # To
+                    []        # Qualifiers
                    ]
           table.push cur_ft
           cont = false
