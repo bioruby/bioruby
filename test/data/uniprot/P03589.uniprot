@@ -1,0 +1,127 @@
+ID   1A_AMVLE                Reviewed;        1126 AA.
+AC   P03589;
+DT   21-JUL-1986, integrated into UniProtKB/Swiss-Prot.
+DT   21-JUL-1986, sequence version 1.
+DT   22-FEB-2023, entry version 78.
+DE   RecName: Full=Replication protein 1a;
+DE   Includes:
+DE     RecName: Full=ATP-dependent helicase;
+DE              EC=3.6.4.-;
+DE   Includes:
+DE     RecName: Full=Methyltransferase;
+DE              EC=2.1.1.-;
+GN   ORFNames=ORF1a;
+OS   Alfalfa mosaic virus (strain 425 / isolate Leiden).
+OC   Viruses; Riboviria; Orthornavirae; Kitrinoviricota; Alsuviricetes;
+OC   Martellivirales; Bromoviridae; Alfamovirus.
+OX   NCBI_TaxID=12322;
+OH   NCBI_TaxID=4045; Apium graveolens (Celery).
+OH   NCBI_TaxID=83862; Astragalus glycyphyllos (Wild liquorice).
+OH   NCBI_TaxID=4072; Capsicum annuum (Capsicum pepper).
+OH   NCBI_TaxID=41386; Caryopteris incana.
+OH   NCBI_TaxID=3827; Cicer arietinum (Chickpea) (Garbanzo).
+OH   NCBI_TaxID=3847; Glycine max (Soybean) (Glycine hispida).
+OH   NCBI_TaxID=35936; Lablab purpureus (Hyacinth bean) (Dolichos lablab).
+OH   NCBI_TaxID=4236; Lactuca sativa (Garden lettuce).
+OH   NCBI_TaxID=3864; Lens culinaris (Lentil) (Cicer lens).
+OH   NCBI_TaxID=3869; Lupinus.
+OH   NCBI_TaxID=145753; Malva parviflora (Little mallow) (Cheeseweed mallow).
+OH   NCBI_TaxID=3879; Medicago sativa (Alfalfa).
+OH   NCBI_TaxID=4097; Nicotiana tabacum (Common tobacco).
+OH   NCBI_TaxID=3885; Phaseolus vulgaris (Kidney bean) (French bean).
+OH   NCBI_TaxID=23113; Philadelphus.
+OH   NCBI_TaxID=3888; Pisum sativum (Garden pea).
+OH   NCBI_TaxID=4081; Solanum lycopersicum (Tomato) (Lycopersicon esculentum).
+OH   NCBI_TaxID=4113; Solanum tuberosum (Potato).
+OH   NCBI_TaxID=157662; Teramnus repens.
+OH   NCBI_TaxID=60916; Trifolium incarnatum (Crimson clover).
+OH   NCBI_TaxID=85293; Viburnum opulus (High-bush cranberry).
+OH   NCBI_TaxID=3916; Vigna radiata var. radiata (Mung bean) (Phaseolus aureus).
+OH   NCBI_TaxID=3917; Vigna unguiculata (Cowpea).
+RN   [1]
+RP   NUCLEOTIDE SEQUENCE [GENOMIC RNA].
+RX   PubMed=6298738; DOI=10.1093/nar/11.5.1253;
+RA   Cornelissen B.J.C., Brederode F.T., Moormann R.J.M., Bol J.F.;
+RT   "Complete nucleotide sequence of alfalfa mosaic virus RNA 1.";
+RL   Nucleic Acids Res. 11:1253-1265(1983).
+CC   -!- FUNCTION: Involved in the virus replication. Contains a helicase domain
+CC       and a methyltransferase domain. The methyltransferase domain is
+CC       probably involved in viral RNA capping. Involved in the formation of ER
+CC       membrane spherular invaginations in which RNA replication complexes
+CC       form (By similarity). {ECO:0000250}.
+CC   -!- SUBUNIT: Interacts with RNA-directed RNA polymerase 2a. {ECO:0000250}.
+CC   -!- SUBCELLULAR LOCATION: Host endoplasmic reticulum membrane
+CC       {ECO:0000250}; Peripheral membrane protein {ECO:0000250}.
+CC   -!- SIMILARITY: Belongs to the bromoviridae replication protein 1a family.
+CC       {ECO:0000305}.
+CC   ---------------------------------------------------------------------------
+CC   Copyrighted by the UniProt Consortium, see https://www.uniprot.org/terms
+CC   Distributed under the Creative Commons Attribution (CC BY 4.0) License
+CC   ---------------------------------------------------------------------------
+DR   EMBL; L00163; AAA46289.1; -; Genomic_RNA.
+DR   PIR; A04197; WMFM12.
+DR   RefSeq; NP_041192.1; NC_001495.1.
+DR   SMR; P03589; -.
+DR   GeneID; 962667; -.
+DR   KEGG; vg:962667; -.
+DR   Proteomes; UP000000358; Genome.
+DR   GO; GO:0044167; C:host cell endoplasmic reticulum membrane; IEA:UniProtKB-SubCell.
+DR   GO; GO:0016020; C:membrane; IEA:UniProtKB-KW.
+DR   GO; GO:0005524; F:ATP binding; IEA:UniProtKB-KW.
+DR   GO; GO:0004386; F:helicase activity; IEA:UniProtKB-KW.
+DR   GO; GO:0016787; F:hydrolase activity; IEA:UniProtKB-KW.
+DR   GO; GO:0008174; F:mRNA methyltransferase activity; IEA:InterPro.
+DR   GO; GO:0003723; F:RNA binding; IEA:InterPro.
+DR   GO; GO:0006396; P:RNA processing; IEA:InterPro.
+DR   Gene3D; 3.40.50.300; P-loop containing nucleotide triphosphate hydrolases; 2.
+DR   InterPro; IPR027351; (+)RNA_virus_helicase_core_dom.
+DR   InterPro; IPR002588; Alphavirus-like_MT_dom.
+DR   InterPro; IPR027417; P-loop_NTPase.
+DR   Pfam; PF01443; Viral_helicase1; 1.
+DR   Pfam; PF01660; Vmethyltransf; 1.
+DR   SUPFAM; SSF52540; P-loop containing nucleoside triphosphate hydrolases; 1.
+DR   PROSITE; PS51743; ALPHAVIRUS_MT; 1.
+DR   PROSITE; PS51657; PSRV_HELICASE; 1.
+PE   3: Inferred from homology;
+KW   ATP-binding; Helicase; Host endoplasmic reticulum; Host membrane;
+KW   Hydrolase; Membrane; Methyltransferase; Nucleotide-binding;
+KW   Reference proteome; Transferase.
+FT   CHAIN           1..1126
+FT                   /note="Replication protein 1a"
+FT                   /id="PRO_0000083254"
+FT   DOMAIN          90..278
+FT                   /note="Alphavirus-like MT"
+FT                   /evidence="ECO:0000255|PROSITE-ProRule:PRU01079"
+FT   DOMAIN          806..963
+FT                   /note="(+)RNA virus helicase ATP-binding"
+FT   DOMAIN          964..1125
+FT                   /note="(+)RNA virus helicase C-terminal"
+FT   REGION          69..406
+FT                   /note="Methyltransferase"
+FT   REGION          834..1094
+FT                   /note="ATP-dependent helicase"
+FT   BINDING         838..845
+FT                   /ligand="ATP"
+FT                   /ligand_id="ChEBI:CHEBI:30616"
+FT                   /evidence="ECO:0000255"
+SQ   SEQUENCE   1126 AA;  125828 MW;  BF5A8019B47D4CBF CRC64;
+     MNADAQSTDA SLSMREPLSH ASIQEMLRRV VEKQAADDTT AIGKVFSEAG RAYAQDALPS
+     DKGEVLKISF SLDATQQNIL RANFPGRRTV FSNSSSSSHC FAAAHRLLET DFVYRCFGNT
+     VDSIIDLGGN FVSHMKVKRH NVHCCCPILD ARDGARLTER ILSLKSYVRK HPEIVGEADY
+     CMDTFQKCSR RADYAFAIHS TSDLDVGELA CSLDQKGVMK FICTMMVDAD MLIHNEGEIP
+     NFNVRWEIDR KKDLIHFDFI DEPNLGYSHR FSLLKHYLTY NAVDLGHAAY RIERKQDFGG
+     VMVIDLTYSL GFVPKMPHSN GRSCAWYNRV KGQMVVHTVN EGYYHHSYQT AVRRKVLVDK
+     KVLTRVTEVA FRQFRPNADA HSAIQSIATM LSSSTNHTII GGVTLISGKP LSPDDYIPVA
+     TTIYYRVKKL YNAIPEMLSL LDKGERLSTD AVLKGSEGPM WYSGPTFLSA LDKVNVPGDF
+     VAKALLSLPK RDLKSLFSRS ATSHSERTPV RDESPIRCTD GVFYPIRMLL KCLGSDKFES
+     VTITDPRSNT ETTVDLYQSF QKKIETVFSF ILGKIDGPSP LISDPVYFQS LEDVYYAEWH
+     QGNAIDASNY ARTLLDDIRK QKEESLKAKA KEVEDAQKLN RAILQVHAYL EAHPDGGKIE
+     GLGLSSQFIA KIPELAIPTP KPLPEFEKNA ETGEILRINP HSDAILEAID YLKSTSANSI
+     ITLNKLGDHC QWTTKGLDVV WAGDDKRRAF IPKKNTWVGP TARSYPLAKY ERAMSKDGYV
+     TLRWDGEVLD ANCVRSLSQY EIVFVDQSCV FASAEAIIPS LEKALGLEAH FSVTIVDGVA
+     GCGKTTNIKQ IARSSGRDVD LILTSNRSSA DELKETIDCS PLTKLHYIRT CDSYLMSASA
+     VKAQRLIFDE CFLQHAGLVY AAATLAGCSE VIGFGDTEQI PFVSRNPSFV FRHHKLTGKV
+     ERKLITWRSP ADATYCLEKY FYKNKKPVKT NSRVLRSIEV VPINSPVSVE RNTNALYLCH
+     TQAEKAVLKA QTHLKGCDNI FTTHEAQGKT FDNVYFCRLT RTSTSLATGR DPINGPCNGL
+     VALSRHKKTF KYFTIAHDSD DVIYNACRDA GNTDDSILAR SYNHNF
+//
