@@ -187,8 +187,10 @@ module Bio
         return
       end
       assert_equal('', str.to_s.strip)
+      assert_equal('', err.to_s.strip)
       str, err = Bio::Command.query_command_open3(ary, @data)
       assert_equal(@sorted, str.to_s.strip.split(/\s+/))
+      assert_equal('', err.to_s.strip)
     end
   end #class FuncTestCommandQuery
 
