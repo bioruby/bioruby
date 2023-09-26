@@ -530,22 +530,43 @@ class UniProtKB < EMBLDB
   # http://br.expasy.org/sprot/userman.html#OH_line
   def oh
     unless @data['OH']
-      @data['OH'] = fetch('OH').split("\. ").map {|x|
-        if x =~ /NCBI_TaxID=(\d+);/
-          taxid = $1
-        else
-          raise ArgumentError, ["Error: Invalid OH line format (#{self.entry_id}):",
-                                $!, "\n", get('OH'), "\n"].join
-          
+      oh = []
+      a = fetch('OH').split(/(NCBI\_TaxID\=)(\d+)(\;)/)
+      t = catch :error do
+        taxid = nil
+        host_name = nil
+        while x = a.shift
+          x = x.to_s.strip
+          case x
+          when ''
+            next
+          when 'NCBI_TaxID='
+            if taxid then
+              oh.push({'NCBI_TaxID' => taxid, 'HostName' => host_name})
+              taxid = nil
+              host_name = nil
+            end
+            taxid = a.shift
+            throw :error, :missing_semicolon if a.shift != ';'
+          else
+            throw :error, :missing_taxid if host_name
+            host_name = x
+            host_name.sub!(/\.\z/, '')
+          end
+        end #while x...
+        if taxid then
+          oh.push({'NCBI_TaxID' => taxid, 'HostName' => host_name})
+        elsif host_name then
+          throw :error, :missing_taxid_last
         end
-        if x =~ /NCBI_TaxID=\d+; (.+)/ 
-          host_name = $1
-          host_name.sub!(/\.$/, '')
-        else
-          host_name = nil
-        end
-        {'NCBI_TaxID' => taxid, 'HostName' => host_name}
-      }
+        nil
+      end #t = catch...
+      if t then
+        raise ArgumentError,
+              ["Error: Invalid OH line format (#{self.entry_id}):",
+               $!, "\n", get('OH'), "\n"].join
+      end
+      @data['OH'] = oh
     end
     @data['OH']
   end
