@@ -2,7 +2,7 @@ ID   5HT1B_RABIT             Reviewed;         390 AA.
 AC   P49144;
 DT   01-FEB-1996, integrated into UniProtKB/Swiss-Prot.
 DT   01-FEB-1996, sequence version 1.
-DT   03-AUG-2022, entry version 125.
+DT   22-FEB-2023, entry version 127.
 DE   RecName: Full=5-hydroxytryptamine receptor 1B;
 DE            Short=5-HT-1B;
 DE            Short=5-HT1B;
@@ -79,16 +79,17 @@ DR   SMR; P49144; -.
 DR   STRING; 9986.ENSOCUP00000016295; -.
 DR   BindingDB; P49144; -.
 DR   ChEMBL; CHEMBL5717; -.
+DR   GlyCosmos; P49144; 2 sites, No reported glycans.
 DR   GeneID; 100009594; -.
 DR   KEGG; ocu:100009594; -.
 DR   CTD; 3351; -.
 DR   eggNOG; KOG3656; Eukaryota.
 DR   InParanoid; P49144; -.
-DR   OrthoDB; 703991at2759; -.
+DR   OrthoDB; 2999405at2759; -.
 DR   TreeFam; TF316350; -.
 DR   PRO; PR:P49144; -.
 DR   Proteomes; UP000001811; Unplaced.
-DR   GO; GO:0005887; C:integral component of plasma membrane; ISS:UniProtKB.
+DR   GO; GO:0005886; C:plasma membrane; ISS:UniProtKB.
 DR   GO; GO:0045202; C:synapse; IEA:GOC.
 DR   GO; GO:0004993; F:G protein-coupled serotonin receptor activity; ISS:UniProtKB.
 DR   GO; GO:0007198; P:adenylate cyclase-inhibiting serotonin receptor signaling pathway; ISS:UniProtKB.
@@ -100,16 +101,20 @@ DR   GO; GO:0007268; P:chemical synaptic transmission; IEA:InterPro.
 DR   GO; GO:0014063; P:negative regulation of serotonin secretion; ISS:UniProtKB.
 DR   GO; GO:0050795; P:regulation of behavior; IEA:InterPro.
 DR   GO; GO:0042310; P:vasoconstriction; IEA:InterPro.
+DR   CDD; cd15333; 7tmA_5-HT1B_1D; 1.
+DR   Gene3D; 1.20.1070.10; Rhodopsin 7-helix transmembrane proteins; 1.
 DR   InterPro; IPR002147; 5HT1B_rcpt.
 DR   InterPro; IPR002231; 5HT_rcpt.
 DR   InterPro; IPR000276; GPCR_Rhodpsn.
 DR   InterPro; IPR017452; GPCR_Rhodpsn_7TM.
-DR   PANTHER; PTHR24247:SF16; PTHR24247:SF16; 1.
+DR   PANTHER; PTHR24248; ADRENERGIC RECEPTOR-RELATED G-PROTEIN COUPLED RECEPTOR; 1.
+DR   PANTHER; PTHR24248:SF66; OCTOPAMINE RECEPTOR BETA-3R; 1.
 DR   Pfam; PF00001; 7tm_1; 1.
 DR   PRINTS; PR00513; 5HT1BRECEPTR.
 DR   PRINTS; PR01101; 5HTRECEPTOR.
 DR   PRINTS; PR00237; GPCRRHODOPSN.
 DR   SMART; SM01381; 7TM_GPCR_Srsx; 1.
+DR   SUPFAM; SSF81321; Family A G protein-coupled receptor-like; 1.
 DR   PROSITE; PS00237; G_PROTEIN_RECEP_F1_1; 1.
 DR   PROSITE; PS50262; G_PROTEIN_RECEP_F1_2; 1.
 PE   2: Evidence at transcript level;

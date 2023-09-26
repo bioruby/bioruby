@@ -75,7 +75,7 @@ module Bio
     end
 
     def test_dr
-      assert_equal(24, @obj.dr.size)
+      assert_equal(28, @obj.dr.size)
       assert_equal(12, @obj.dr['GO'].size)
       assert_equal([["IPR002147", "5HT1B_rcpt"],
                     ["IPR002231", "5HT_rcpt"],
@@ -126,7 +126,7 @@ module Bio
     end
 
     def test_dt_annotation
-      assert_equal('03-AUG-2022, entry version 125.', 
+      assert_equal('22-FEB-2023, entry version 127.',
                    @obj.dt('annotation'))
     end
 
