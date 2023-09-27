@@ -1,3 +1,39 @@
+= BioRuby 2.0.5 RELEASE NOTES
+
+Some fixes have been made in BioRuby 2.0.5 after the release of 2.0.4.
+
+== Fixes
+
+* Bio::UniProtKB#ft: Additional bug fixes for parsing FT lines
+  since UniProt release 2019_11.
+  (https://github.com/bioruby/bioruby/issues/147 )
+* Bio::UniProtKB#oh: Fixed parse error when parsing 1A_AMVLE (P03589).
+* Bio::Blast::Remote::GenomeNet: Fixed errors caused by the change of
+  GenomeNet BLAST webpage's internal URL (which is unofficial
+  internal URL and may subject to be changed without notices).
+* Bio::PTS1: Fixed errors due to the PTS1 website URL change
+  from http to https.
+
+== Changes for developers
+
+=== Changes of CI (Continuous Integration)
+
+* Started using GitHub Actions for CI.
+* Stopped using Travis-CI for CI.
+* Fixed AppVeyor CI errors.
+
+=== Changes of Gemfile and related files
+
+* Gemfile: Added "matrix" and "rexml" gems that are excluded from
+  the default gems in recent Ruby versions.
+* gemfiles/*: Removed because of the CI changes.
+
+=== Others
+
+* .gitignore is added.
+
+
+
 = BioRuby 2.0.4 RELEASE NOTES
 
 Some fixes have been made in BioRuby 2.0.4 after the release of 2.0.3.
