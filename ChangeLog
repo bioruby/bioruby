@@ -1,3 +1,290 @@
+commit 1bf3a415b694e34f112ed082184c5bdf21157d3b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 22:54:17 2023 +0900
+
+    update release notes for upcoming BioRuby 2.0.5
+
+ RELEASE_NOTES.rdoc | 36 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+
+commit e7cd12319f207da77cfcde822bfc7e158897a42b
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 22:18:54 2023 +0900
+
+    README.rdoc: change recommended Ruby versions
+
+ README.rdoc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 631f2546ca5fa9e499d55bd20053e81bb3efa206
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 21:58:24 2023 +0900
+
+    PTS1 site seems to be migrated to https
+
+ lib/bio/appl/pts1.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit f31fbbaa27532cd29c2f7303e729a97a6843b297
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 21:40:26 2023 +0900
+
+    POST path seems to be changed in remote BLAST in genome.jp (GenomeNet)
+
+ lib/bio/appl/blast/genomenet.rb | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+commit 9013c2f8b90fc1f56d410d78007dc500af87ee45
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 18:41:32 2023 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
+
+commit 6681c10f947290fc90b410c7620968164d777c85
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 18:29:40 2023 +0900
+
+    appveyor.yml: disable 31-x64 because of stringio 3.0.8 build failure
+
+ appveyor.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 002227f52b05144668214b5c460055d002d865a1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 18:11:53 2023 +0900
+
+    remove files/dirs only used from older appveyor.yml
+
+ gemfiles/Gemfile.windows | 6 ------
+ 1 file changed, 6 deletions(-)
+ delete mode 100644 gemfiles/Gemfile.windows
+
+commit e47f4dc8026cf78ab9daaa59e023512081aa88a1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 18:01:26 2023 +0900
+
+    update appveyor.yml
+    
+     * Visual Studio 2019 image is specified
+     * Branch "incoming" is added
+     * Not to use customized Gemfile
+     * Not to build and install gem but only to execute rake normally
+     * Update ruby versions
+     * Add installation retry and caching, copied from jekyll repository
+     * References:
+       * https://www.appveyor.com/docs/lang/ruby/
+       * https://github.com/jekyll/jekyll/blob/master/appveyor.yml
+
+ appveyor.yml | 27 ++++++++++++++-------------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
+
+commit b3977e58cde42f0c56fd3dccd6847d162dc349e8
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 17:03:33 2023 +0900
+
+    remove files only used for Travis-CI, mentioned in .travis.yml
+
+ gemfiles/Gemfile.travis-jruby1.8 |  6 ------
+ gemfiles/Gemfile.travis-jruby1.9 |  5 -----
+ gemfiles/Gemfile.travis-rbx      | 10 ----------
+ gemfiles/Gemfile.travis-ruby1.8  |  6 ------
+ gemfiles/Gemfile.travis-ruby1.9  |  5 -----
+ gemfiles/modify-Gemfile.rb       | 28 ----------------------------
+ gemfiles/prepare-gemspec.rb      | 29 -----------------------------
+ 7 files changed, 89 deletions(-)
+ delete mode 100644 gemfiles/Gemfile.travis-jruby1.8
+ delete mode 100644 gemfiles/Gemfile.travis-jruby1.9
+ delete mode 100644 gemfiles/Gemfile.travis-rbx
+ delete mode 100644 gemfiles/Gemfile.travis-ruby1.8
+ delete mode 100644 gemfiles/Gemfile.travis-ruby1.9
+ delete mode 100644 gemfiles/modify-Gemfile.rb
+ delete mode 100644 gemfiles/prepare-gemspec.rb
+
+commit f7a2063353351f1b7341e98857f25e182c41adaa
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 16:44:58 2023 +0900
+
+    remove .travis.yml
+    
+     * Also remove webhook for Travis-CI in GitHub settings
+     * Thanks to Travis-CI to run CI for a long time.
+     * Thanks to Open Bioinformatics Foundation for funding to
+       automatic testing of pull requests for a long time.
+       (https://www.open-bio.org/2012/07/30/travis-ci-for-testing/ ).
+
+ .travis.yml | 71 -------------------------------------------------------------
+ 1 file changed, 71 deletions(-)
+ delete mode 100644 .travis.yml
+
+commit 3ea8ecdd482ca2b5c8525959f37ed8f0f9a881e6
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 16:10:15 2023 +0900
+
+    ruby.yml: add "incoming" branch
+
+ .github/workflows/ruby.yml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+commit 350587b2b16532078e8bd5f303df96a5dc5a0d70
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 16:04:48 2023 +0900
+
+    ruby.yml: add ruby 3.1 and 3.2
+
+ .github/workflows/ruby.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 6a0de6744b7324a3a04e5c3d7468d5aec84608b1
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 15:43:27 2023 +0900
+
+    prepare for BioRuby 2.0.5 release
+
+ lib/bio/version.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 1c77ef24514e87f98be72792646910285be8498f
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 14:42:57 2023 +0900
+
+    Create ruby.yml
+    
+    Create ruby.yml from the template by GitHub
+
+ .github/workflows/ruby.yml | 38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
+ create mode 100644 .github/workflows/ruby.yml
+
+commit 22b7217c5c830013cb53cb297e6a07e940d60ddc
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 13:55:50 2023 +0900
+
+    add .gitignore
+    
+     * References:
+       * https://www.gitignore.io/api/ruby
+       * https://github.com/github/gitignore/blob/main/Ruby.gitignore
+
+ .gitignore | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+ create mode 100644 .gitignore
+
+commit 1244da434f1a46d85a3204f9ba74d038c9535631
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 11:06:49 2023 +0900
+
+    added gems that are no longer "default" gems in recent Ruby versions
+    
+     * Added gems that are no longer the default gems:
+       * "rexml"    -- since Ruby 3.0
+       * "matrix"   -- since Ruby 3.1
+
+ Gemfile | 3 +++
+ 1 file changed, 3 insertions(+)
+
+commit bd77c7a25eca7681f0176c2425d84415461bcc61
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 26 17:52:03 2023 +0900
+
+    update tests to reflect changes of hsa:7422 (KEGG GENES)
+
+ test/network/bio/db/kegg/test_genes_hsa7422.rb | 38 ++++++++++++++++++--------
+ 1 file changed, 26 insertions(+), 12 deletions(-)
+
+commit 0eca7bba8ee26f2bc4db86b10053e291cd1ab8a9
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 26 17:50:31 2023 +0900
+
+    add assertions to suppress warnings when ruby -v
+
+ test/functional/bio/test_command.rb | 2 ++
+ 1 file changed, 2 insertions(+)
+
+commit 34f56a39baadd5247423588579330f279ab220f5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 26 17:48:24 2023 +0900
+
+    update test/data/uniprot/P49144.uniprot and change related tests
+
+ test/data/uniprot/P49144.uniprot               | 13 +++++++++----
+ test/unit/bio/db/embl/test_uniprotkb_P49144.rb |  4 ++--
+ 2 files changed, 11 insertions(+), 6 deletions(-)
+
+commit 2a9f6b0b0bf10a376dff48da58b74eecb40e8553
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 26 17:34:23 2023 +0900
+
+    Bug fix: Bio::UniProtKB#oh: OH lines parser error occurred for P03589
+
+ lib/bio/db/embl/uniprotkb.rb | 51 +++++++++++++++++++++++++++++++-------------
+ 1 file changed, 36 insertions(+), 15 deletions(-)
+
+commit 5a644566891b274cc9532b926d4380899b7725af
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 26 17:28:54 2023 +0900
+
+    Add a test class to parse UniProtKB P03589 with the data
+
+ LEGAL                                          |   1 +
+ test/data/uniprot/P03589.uniprot               | 127 +++++++++
+ test/unit/bio/db/embl/test_uniprotkb_P03589.rb | 378 +++++++++++++++++++++++++
+ 3 files changed, 506 insertions(+)
+ create mode 100644 test/data/uniprot/P03589.uniprot
+ create mode 100644 test/unit/bio/db/embl/test_uniprotkb_P03589.rb
+
+commit 3273d1e9f7fa625fa1120ab17b85a222f9142cff
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 6 23:17:17 2022 +0900
+
+    Bug fix: suppress NoMethodError when parsing CC lines
+    
+     * Bio::UniProtKB#cc: When parsing a nonexistent CC topic,
+       "NoMethodError: undefined method `join' for nil:NilClass"
+       was raised. To suppress the error, changed to return nil
+       if the given data is nil.
+
+ lib/bio/db/embl/uniprotkb.rb | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+commit c426a71de2ed6bb58cd097cecc221f12c0a0ab8a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 6 23:10:42 2022 +0900
+
+    Another tests for the FT lines format change since UniProt release 2019_11
+
+ LEGAL                                          |   1 +
+ test/data/uniprot/P49144.uniprot               | 227 ++++++++++++++++
+ test/unit/bio/db/embl/test_uniprotkb_P49144.rb | 359 +++++++++++++++++++++++++
+ 3 files changed, 587 insertions(+)
+ create mode 100644 test/data/uniprot/P49144.uniprot
+ create mode 100644 test/unit/bio/db/embl/test_uniprotkb_P49144.rb
+
+commit a9af82b3c61ebaa4351c7dfdfa3d1a1c09581b73
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Thu Oct 6 23:00:37 2022 +0900
+
+    more fix for FT lines format change since UniProt release 2019_11
+    
+     * Bio::UniProtKB#ft: When the end position is empty, end position
+       is regarded as the same as start position.
+       This fix the bug:
+       https://github.com/bioruby/bioruby/issues/147#issuecomment-1246458688
+
+ lib/bio/db/embl/uniprotkb.rb | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+commit 5d1cc85ff9e028f4663d6a4ac1e312b50eb50c72
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Tue Sep 13 21:20:12 2022 +0900
+
+    BioRuby 2.0.4 is released
+
+ ChangeLog | 79 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 79 insertions(+)
+
 commit 1bc877e557e165b42eea992d89f19a63996cb586
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Tue Sep 13 21:19:01 2022 +0900
