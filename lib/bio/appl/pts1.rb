@@ -90,7 +90,7 @@ class PTS1
   #   serv_fungi_specific = Bio::PTS1.new(2)    # See Bio::PTS1::FUNCTION.
   #
   def initialize(func = 'METAZOA-specific')
-    @uri = "http://mendel.imp.ac.at/jspcgi/cgi-bin/pts1/pts1.cgi"
+    @uri = "https://mendel.imp.ac.at/jspcgi/cgi-bin/pts1/pts1.cgi"
     @output = nil
     @function = function(func)
   end
