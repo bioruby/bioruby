@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "2.0.4"
+  s.version = "2.0.5"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -15,7 +15,8 @@ Gem::Specification.new do |s|
 
   s.platform = Gem::Platform::RUBY
   s.files = [
-    ".travis.yml",
+    ".github/workflows/ruby.yml",
+    ".gitignore",
     "BSDL",
     "COPYING",
     "COPYING.ja",
@@ -49,14 +50,6 @@ Gem::Specification.new do |s|
     "doc/Tutorial.rd.ja.html",
     "doc/bioruby.css",
     "etc/bioinformatics/seqdatabase.ini",
-    "gemfiles/Gemfile.travis-jruby1.8",
-    "gemfiles/Gemfile.travis-jruby1.9",
-    "gemfiles/Gemfile.travis-rbx",
-    "gemfiles/Gemfile.travis-ruby1.8",
-    "gemfiles/Gemfile.travis-ruby1.9",
-    "gemfiles/Gemfile.windows",
-    "gemfiles/modify-Gemfile.rb",
-    "gemfiles/prepare-gemspec.rb",
     "lib/bio.rb",
     "lib/bio/alignment.rb",
     "lib/bio/appl/bl2seq/report.rb",
@@ -454,7 +447,9 @@ Gem::Specification.new do |s|
     "test/data/sim4/simple2-A4.sim4",
     "test/data/soft/GDS100_partial.soft",
     "test/data/soft/GSE3457_family_partial.soft",
+    "test/data/uniprot/P03589.uniprot",
     "test/data/uniprot/P28907.uniprot",
+    "test/data/uniprot/P49144.uniprot",
     "test/data/uniprot/p53_human.uniprot",
     "test/functional/bio/sequence/test_output_embl.rb",
     "test/functional/bio/test_command.rb",
@@ -499,7 +494,9 @@ Gem::Specification.new do |s|
     "test/unit/bio/db/embl/test_embl_to_bioseq.rb",
     "test/unit/bio/db/embl/test_uniprot.rb",
     "test/unit/bio/db/embl/test_uniprotkb.rb",
+    "test/unit/bio/db/embl/test_uniprotkb_P03589.rb",
     "test/unit/bio/db/embl/test_uniprotkb_P28907.rb",
+    "test/unit/bio/db/embl/test_uniprotkb_P49144.rb",
     "test/unit/bio/db/embl/test_uniprotkb_new_part.rb",
     "test/unit/bio/db/fasta/test_defline.rb",
     "test/unit/bio/db/fasta/test_defline_misc.rb",
