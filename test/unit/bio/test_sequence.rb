@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # test/unit/bio/test_sequence.rb - Unit test for Bio::Sequencce
 #
@@ -233,7 +234,7 @@ module Bio
     end
 
     def test_randomize_dna_with_block
-      appended = ""
+      appended = String.new
       @na.randomize {|x| appended << x}
       assert_equal(@na.composition, Sequence::NA.new(appended).composition)
     end
@@ -247,7 +248,7 @@ module Bio
     end
 
     def test_NA_randomize_with_counts_and_block
-      appended = ""
+      appended = String.new
       counts = {'a'=>10,'c'=>20,'g'=>30,'u'=>40}
       counts.default = 0
       Sequence::NA.randomize(counts) {|x| appended << x}

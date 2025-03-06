@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/appl/iprscan/report.rb - a class for iprscan output.
 #
@@ -69,7 +70,7 @@ module Bio
       #  end
       #
       def self.parse_raw(io)
-        entry = ''
+        entry = String.new
         while line = io.gets
           if entry != '' and entry.split("\t").first == line.split("\t").first
             entry << line

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/io/flatfile/buffer.rb - Input stream buffer for FlatFile
 #
@@ -24,7 +25,7 @@ module Bio
         @io = io
         @path = path
         # initialize prefetch buffer
-        @buffer = ''
+        @buffer = String.new
       end
 
       # Creates a new input stream wrapper from the given IO object.

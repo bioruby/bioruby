@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/db/embl.rb - Common methods for EMBL style database classes
 #
@@ -243,8 +244,10 @@ module Common
     unless @data['R']
       ary = Array.new
       get('R').split(/\nRN   /).each do |str|
-        raw = {'RN' => '', 'RC' => '', 'RP' => '', 'RX' => '', 
-               'RA' => '', 'RT' => '', 'RL' => '', 'RG' => ''}
+        raw = {'RN' => String.new, 'RC' => String.new,
+               'RP' => String.new, 'RX' => String.new,
+               'RA' => String.new, 'RT' => String.new,
+               'RL' => String.new, 'RG' => String.new}
         str = 'RN   ' + str unless /^RN   / =~ str
         str.split("\n").each do |line|
           if /^(R[NPXARLCTG])   (.+)/ =~ line

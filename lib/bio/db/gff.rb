@@ -1,4 +1,5 @@
 # coding: US-ASCII
+# frozen_string_literal: true
 #
 # = bio/db/gff.rb - GFF format class
 #
@@ -137,13 +138,13 @@ module Bio
 
         sc = StringScanner.new(attributes)
         attrs = []
-        token = ''
+        token = String.new
         while !sc.eos?
           if sc.scan(/[^\\\;\"]+/) then
             token.concat sc.matched
           elsif sc.scan(/\;/) then
             attrs.push token unless token.empty?
-            token = ''
+            token = String.new
           elsif sc.scan(/\"/) then
             origtext = sc.matched
             while !sc.eos?
@@ -690,22 +691,22 @@ module Bio
           sc = StringScanner.new(str)
           attr_pairs = []
           tokens = []
-          cur_token = ''
+          cur_token = String.new
           while !sc.eos?
             if sc.scan(/[^\\\;\"\s]+/) then
               cur_token.concat sc.matched
             elsif sc.scan(/\s+/) then
               tokens.push cur_token unless cur_token.empty?
-              cur_token = ''
+              cur_token = String.new
             elsif sc.scan(/\;/) then
               tokens.push cur_token unless cur_token.empty?
-              cur_token = ''
+              cur_token = String.new
               attr_pairs.push tokens
               tokens = []
             elsif sc.scan(/\"/) then
               tokens.push cur_token unless cur_token.empty?
-              cur_token = ''
-              freetext = ''
+              cur_token = String.new
+              freetext = String.new
               while !sc.eos?
                 if sc.scan(/[^\\\"]+/) then
                   freetext.concat sc.matched

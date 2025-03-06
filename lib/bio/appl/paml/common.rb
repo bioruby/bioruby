@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/appl/paml/common.rb - Basic wrapper class common to PAML programs
 #
@@ -270,7 +271,7 @@ module PAML
     def dump_parameters
       keyorder = DEFAULT_PARAMETERS_ORDER
       keys = parameters.keys
-      str = ''
+      str = String.new
       keys.sort do |x, y|
         (keyorder.index(x) || (keyorder.size + keys.index(x))) <=>
           (keyorder.index(y) || (keyorder.size + keys.index(y)))

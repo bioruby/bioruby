@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # bio/util/restriction_enzyme/range/sequence_range/fragment.rb - 
 #
@@ -27,8 +28,8 @@ class Fragment
 
   def for_display(p_str=nil, c_str=nil)
     df = DisplayFragment.new
-    df.primary = ''
-    df.complement = ''
+    df.primary = String.new
+    df.complement = String.new
 
     both_bins = @primary_bin + @complement_bin
     both_bins.each do |item|

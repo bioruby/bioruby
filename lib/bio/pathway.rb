@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/pathway.rb - Binary relations and Graph algorithms
 #
@@ -307,7 +308,7 @@ class Pathway
     end
     # end workaround removing depencency to order of Hash#each
 
-    list = ""
+    list = String.new
     enum.each do |from, hash|
       list << "#{from} => "
       # begin workaround removing depencency to order of Hash#each

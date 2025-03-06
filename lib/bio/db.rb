@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/db.rb - common API for database parsers
 #
@@ -192,19 +193,19 @@ class DB
   # Returns a String with successive white spaces are replaced by one
   # space and stripeed.
   def truncate(str)
-    str ||= ""
+    str ||= String.new
     return str.gsub(/\s+/, ' ').strip
   end
 
   # Returns a tag name of the field as a String.
   def tag_get(str)
-    str ||= ""
+    str ||= String.new
     return str[0,@tagsize].strip
   end
 
   # Returns a String of the field without a tag name.
   def tag_cut(str)
-    str ||= ""
+    str ||= String.new
     str[0,@tagsize] = ''
     return str
   end
@@ -313,7 +314,7 @@ class EMBLDB < DB
 
   # Returns the contents of the entry as a Hash.
   def entry2hash(entry)
-    hash = Hash.new { |h,k| h[k] = '' }
+    hash = Hash.new { |h,k| h[k] = String.new }
     entry.each_line do |line|
       tag = tag_get(line)
       next if tag == 'XX'

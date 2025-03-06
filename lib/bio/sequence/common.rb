@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/sequence/common.rb - common methods for biological sequence
 #
@@ -286,7 +287,7 @@ module Common
     unless position.is_a?(Locations) then
       position = Locations.new(position)
     end
-    s = ''
+    s = String.new
     position.each do |location|
       if location.sequence
         s << location.sequence

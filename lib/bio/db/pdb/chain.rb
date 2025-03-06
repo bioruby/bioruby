@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/db/pdb/chain.rb - chain class for PDB
 #
@@ -180,7 +181,7 @@ module Bio
       # gets an amino acid sequence of this chain from ATOM records
       def aaseq
         unless defined? @aaseq
-          string = ""
+          string = String.new
           last_residue_num = nil
           @residues.each do |residue|
             if last_residue_num and 

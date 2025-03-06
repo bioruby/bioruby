@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # test/unit/bio/appl/iprscan/test_report.rb - Unit test for Bio::InterProScan::Report
 #
@@ -211,14 +212,14 @@ END
   class TestIprscanRawReport < Test::Unit::TestCase
     def setup
       test_raw = Bio::TestIprscanData.raw_format
-      entry = ''
+      entry = String.new
       @obj = []
       while line = test_raw.gets
         if entry.split("\t").first == line.split("\t").first
           entry << line
         elsif entry != '' and entry.split("\t").first != line.split("\t").first
           @obj << Bio::Iprscan::Report.parse_raw_entry(entry)
-          entry = ''
+          entry = String.new
         else
           entry << line
         end

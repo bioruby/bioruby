@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # test/unit/bio/test_alignment.rb - Unit test for Bio::Alignment
 #
@@ -436,29 +437,29 @@ module Bio
 
     def test_convert_match
       a = A[
-        'aaaa',
-        'accc',
-        'acac',
-        'actc'
+        'aaaa'.dup,
+        'accc'.dup,
+        'acac'.dup,
+        'actc'.dup
       ]
       a.convert_match
       assert_equal(A[ 'aaaa', '.ccc', '.c.c', '.ctc' ], a)
     end
 
     def test_convert_unmatch
-      a = A[ 'aaaa', '.ccc', '.c.c', '.ctc' ]
+      a = A[ 'aaaa'.dup, '.ccc'.dup, '.c.c'.dup, '.ctc'.dup ]
       a.convert_unmatch
       assert_equal(A[ 'aaaa', 'accc', 'acac', 'actc' ], a)
     end
 
     def test_alignment_normalize!
-      a = A[ 'a', 'atg', 'atgc', '' ]
+      a = A[ 'a'.dup, 'atg'.dup, 'atgc'.dup, ''.dup ]
       a.alignment_normalize!
       assert_equal(A[ 'a---', 'atg-', 'atgc', '----'], a)
     end
 
     def test_alignment_rstrip!
-      a = A[ '--aaa--', '--t-t--', '---g---', '--t' ]
+      a = A[ '--aaa--'.dup, '--t-t--'.dup, '---g---'.dup, '--t'.dup ]
       assert(a.alignment_rstrip!)
       assert_equal(A[ '--aaa', '--t-t', '---g-', '--t' ], a)
     end
@@ -470,7 +471,7 @@ module Bio
     end
 
     def test_alignment_lstrip!
-      a = A[ '--aaa--', '--t-t--', '---g---', '--t' ]
+      a = A[ '--aaa--'.dup, '--t-t--'.dup, '---g---'.dup, '--t'.dup ]
       assert(a.alignment_lstrip!)
       assert_equal(A[ 'aaa--', 't-t--', '-g---', 't' ], a)
     end
@@ -482,7 +483,7 @@ module Bio
     end
 
     def test_alignment_strip!
-      a = A[ '--aaa--', '--t-t--', '---g---', '--t' ]
+      a = A[ '--aaa--'.dup, '--t-t--'.dup, '---g---'.dup, '--t'.dup ]
       assert(a.alignment_strip!)
       assert_equal(A[ 'aaa', 't-t', '-g-', 't' ], a)
     end
@@ -494,7 +495,7 @@ module Bio
     end
 
     def test_remove_all_gaps!
-      a = A[ '--aaa--', '--t-t--', '---g---', '--t' ]
+      a = A[ '--aaa--'.dup, '--t-t--'.dup, '---g---'.dup, '--t'.dup ]
       assert(a.remove_all_gaps!)
       assert_equal(A[ 'aaa', 'tt', 'g', 't' ], a)
     end
@@ -525,7 +526,7 @@ module Bio
     end
 
     def test_alignment_concat
-      a = A[ 'aaa',  'c', 'gg', 't' ]
+      a = A[ 'aaa'.dup,  'c'.dup, 'gg'.dup, 't'.dup ]
       a.alignment_concat(A[ 'ttt', 'gg', 'aa', 'cc', 'aa' ])
       assert_equal(A[ 'aaattt', 'cgg', 'ggaa', 'tcc' ], a)
       a.alignment_concat([ 'c', 't' ])
@@ -702,7 +703,7 @@ module Bio
     end
 
     def test_add_seq_using_seq_with_seq_method
-      seq = "agtc"
+      seq = "agtc".dup
       class <<seq
         def seq
           Sequence::NA.new(self)
@@ -716,7 +717,7 @@ module Bio
     end
 
     def test_add_seq_using_seq_with_naseq_method
-      seq = "agtc"
+      seq = "agtc".dup
       class <<seq
 	def naseq
           Sequence::NA.new(self)
@@ -730,7 +731,7 @@ module Bio
     end
 
     def test_add_seq_using_seq_with_aaseq_method
-      seq = "AVGR"
+      seq = "AVGR".dup
       class <<seq
 	def aaseq
           Sequence::AA.new(self)
@@ -744,7 +745,7 @@ module Bio
     end
 
     def test_add_seq_using_seq_with_definition_method
-      seq = "atgc"
+      seq = "atgc".dup
       class <<seq
 	def definition
           "this is the key"
@@ -757,7 +758,7 @@ module Bio
     end
 
     def test_add_seq_using_seq_with_entry_id_method
-      seq = "atgc"
+      seq = "atgc".dup
       class <<seq
 	def entry_id
           271828

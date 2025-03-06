@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/util/sirna.rb - Class for designing small inhibitory RNAs
 #
@@ -202,7 +203,7 @@ module Bio
 
       # human readable report
       def report
-        report =  "### siRNA\n"
+        report =  "### siRNA\n".dup
         report << 'Start: ' + @start.to_s + "\n"
         report << 'Stop:  ' + @stop.to_s  + "\n"
         report << 'Rule:  ' + @rule.to_s  + "\n"
@@ -280,7 +281,7 @@ module Bio
       def report
         # raise NomethodError for compatibility
         raise NoMethodError if !defined?(@top_strand) || !@top_strand
-        report = "### shRNA\n"
+        report = "### shRNA\n".dup
         report << "Top strand shRNA (#{@top_strand.length} nt):\n"
         report << "  5'-#{@top_strand.upcase}-3'\n"
         report << "Bottom strand shRNA (#{@bottom_strand.length} nt):\n"

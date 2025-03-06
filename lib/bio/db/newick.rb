@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/db/newick.rb - Newick Standard phylogenetic tree parser / formatter
 #
@@ -150,7 +151,7 @@ module Bio
             # Molphy-style boostrap values
             # let molphy mode if nothing determined
             @options[:original_format] ||= :molphy
-            bstr = ''
+            bstr = String.new
             while t = btokens.shift and t != :']'
               bstr.concat t.to_s
             end
@@ -162,7 +163,7 @@ module Bio
       if !btokens and !leaf_tokens.empty? then
         # syntax error?
       end
-      node.name ||= '' # compatibility for older BioRuby
+      node.name ||= String.new # compatibility for older BioRuby
 
       # returns true
       true
@@ -242,7 +243,7 @@ module Bio
 
         elsif ss.scan(/\'/) then
           # quoted_label
-          t = ''
+          t = String.new
           while true
             if ss.scan(/([^\']*)\'/) then
               t.concat ss[1]
@@ -317,7 +318,7 @@ module Bio
           if previous_token == :',' or previous_token == :'(' then
             # there is a leaf whose name is empty.
             ary.unshift(token)
-            ary.unshift('')
+            ary.unshift(String.new)
             token = nil
           end
         when :'('
@@ -330,7 +331,7 @@ module Bio
           if previous_token == :',' or previous_token == :'(' then
             # there is a leaf whose name is empty.
             ary.unshift(token)
-            ary.unshift('')
+            ary.unshift(String.new)
             token = nil
           else
             edge = Edge.new

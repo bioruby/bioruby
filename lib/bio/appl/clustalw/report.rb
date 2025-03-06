@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/appl/clustalw/report.rb - CLUSTAL W format data (*.aln) class
 #
@@ -138,7 +139,7 @@ module Bio
         a = @raw.split(/\r?\n\r?\n/)
         @header = a.shift.to_s
         xalign = Bio::Alignment.new
-        @match_line = ''
+        @match_line = String.new
         if a.size > 0 then
           a[0].gsub!(/\A(\r?\n)+/, '')
           a.collect! { |x| x.split(/\r?\n/) }
@@ -151,7 +152,7 @@ module Bio
             @match_line << x.pop.to_s[@tagsize..-1]
           end
           a[0].each do |y|
-            xalign.store(y[0, @tagsize].sub(/\s+\z/, ''), '')
+            xalign.store(y[0, @tagsize].sub(/\s+\z/, ''), String.new)
           end
           a.each do |x|
             x.each do |y|

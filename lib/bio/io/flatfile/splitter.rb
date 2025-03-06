@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/io/flatfile/splitter.rb - input data splitter for FlatFile
 #
@@ -157,7 +158,7 @@ module Bio
         # Otherwise, returns nil.
         def skip_leader
           if @header then
-            data = ''
+            data = String.new
             while s = stream.gets(@header)
               data << s
               if data.split(/[\r\n]+/)[-1] == @header then

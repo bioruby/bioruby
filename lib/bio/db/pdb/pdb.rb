@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/db/pdb/pdb.rb - PDB database class for PDB file format
 #
@@ -1645,7 +1646,7 @@ module Bio
     # Returns a string of Bio::PDB::Models. This propogates down the heirarchy
     # till you get to Bio::PDB::Record::ATOM which are outputed in PDB format
     def to_s
-      string = ""
+      string = String.new
       @models.each{ |model| string << model.to_s }
       string << "END\n"
       return string

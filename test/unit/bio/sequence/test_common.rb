@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # test/unit/bio/sequence/test_common.rb - Unit test for Bio::Sequencce::Common
 #
@@ -155,7 +156,7 @@ module Bio; module TestSequenceCommon
 
       rseqs = (0..2).collect do |i|
         newcomposition = Hash.new(0)
-        newseq = ''
+        newseq = String.new
         ret = @seq.randomize do |c|
           assert_kind_of(TSequence, c)
           newcomposition[c] += 1
@@ -215,7 +216,7 @@ module Bio; module TestSequenceCommon
 
       rseqs = (0..2).collect do |i|
         newcomposition = Hash.new(0)
-        newseq = ''
+        newseq = String.new
         ret = @seq.randomize(hash) do |c|
           #assert_kind_of(TSequence, c)
           assert_kind_of(String, c)

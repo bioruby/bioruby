@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = test/unit/bio/io/flatfile/test_splitter.rb - unit test for Bio::FlatFile::Splitter
 #
@@ -37,7 +38,7 @@ module Bio::TestFlatFileSplitter
     end
   end #class TestDataClass
 
-  TestData01 = <<__END_OF_TESTDATA__
+  testdata01 = <<__END_OF_TESTDATA__
 
         # This is test
 
@@ -54,10 +55,12 @@ tttttttttttttttttttttttt
 >test3
 atatatatatatatatatatatat
 __END_OF_TESTDATA__
-  TestData01.chomp!
-  # workaround for Windows
-  TestData01.gsub!(/\r\n/, "\n")
 
+  testdata01 = testdata01.chomp
+  # workaround for Windows
+  testdata01.gsub!(/\r\n/, "\n")
+  TestData01 = testdata01
+  
   class TestTemplate < Test::Unit::TestCase
     def setup
       @stream = Bio::FlatFile::BufferedInputStream.new(StringIO.new(TestData01), 'TestData01')

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/db/fastq.rb - FASTQ format parser class
 #
@@ -349,7 +350,7 @@ class Fastq
       return self
     end
     if defined? @definition2 then
-      @quality_string ||= ''
+      @quality_string ||= String.new
       if line[0, 1] == "@" and
           @quality_string.size >= @sequence_string.size then
         return false
@@ -358,7 +359,7 @@ class Fastq
         return self
       end
     else
-      @sequence_string ||= ''
+      @sequence_string ||= String.new
       if line[0, 1] == '+' then
         @definition2 = line[1..-1]
       else

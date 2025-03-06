@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/appl/meme/mast.rb - Wrapper for running MAST program
 #
@@ -113,7 +114,7 @@ module Meme
 
     def config(options)
       @options = DEFAULT_OPTIONS.merge(options)
-      mfile, opts, flags = "", "", ""
+      mfile, opts, flags = String.new, String.new, String.new
       @options.each_pair do |opt, val|
         if val.nil? or val == false
           next
