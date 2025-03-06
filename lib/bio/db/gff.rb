@@ -1000,10 +1000,15 @@ module Bio
           str.empty? ? '.' : str
         end
 
-        if URI.const_defined?(:Parser) then
+        if URI.const_defined?(:RFC2396_Parser) then
+          # (private) URI::Parser object for escape/unescape GFF3 columns
+          URI_PARSER = URI::RFC2396_Parser.new
+        elsif URI.const_defined?(:Parser) then
           # (private) URI::Parser object for escape/unescape GFF3 columns
           URI_PARSER = URI::Parser.new
+        end
 
+        if const_defined?(:URI_PARSER) then
           # (private) the same as URI::Parser#escape(str, unsafe)
           def _escape(str, unsafe)
             URI_PARSER.escape(str, unsafe)
