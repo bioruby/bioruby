@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # = bio/db/prosite.rb - PROSITE database class
 #
@@ -465,6 +466,7 @@ class PROSITE < EMBLDB
   # translated as: Ala-any-[Ser or Thr]-[Ser or Thr]-(any or none)-Val
   #
   def self.pa2re(pattern)
+    pattern = pattern.dup
     pattern.gsub!(/\s/, '')	# remove white spaces
     pattern.sub!(/\.$/, '')	# (1) remove trailing '.'
     pattern.sub!(/^</, '^')	# (2) restricted to the N-terminal : `<'
