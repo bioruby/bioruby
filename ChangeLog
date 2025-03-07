@@ -1,3 +1,149 @@
+commit a5fdb471873ec9f9f11eea627d76dbd4c2e4efc5
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 7 18:26:32 2025 +0900
+
+    ruby.yml: update ruby versions and other descriptions
+
+ .github/workflows/ruby.yml | 23 +++++++----------------
+ 1 file changed, 7 insertions(+), 16 deletions(-)
+
+commit 98c24b6ed9fb508b5bfc72ff965fb77e0ec7c35d
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 7 16:58:56 2025 +0900
+
+    change recommended Ruby versions
+
+ README.rdoc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 948377e3fa198e24ac2655f924b903f5296b4955
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 7 16:55:20 2025 +0900
+
+    update release notes for upcoming BioRuby 2.0.6
+
+ RELEASE_NOTES.rdoc | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+
+commit 123910e5d18caa247c40ecede67015c2e23c0538
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 7 16:25:44 2025 +0900
+
+    regenerate bioruby.gemspec with rake regemspec
+
+ bioruby.gemspec | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+commit 6c110b23d446f5926579a8e92b260a71948689eb
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 7 16:20:26 2025 +0900
+
+    prepare for BioRuby 2.0.6 release
+
+ lib/bio/version.rb | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 5c39d4c6a56c4fd2dc108d3350e9f60f26591ac4
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 7 16:14:13 2025 +0900
+
+    Fix test failure due to data changes of the KEGG databases
+
+ test/network/bio/db/kegg/test_genes_hsa7422.rb | 18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
+
+commit 6f314341e303c25385027355c3365cf0a0d2ef9a
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 7 03:56:27 2025 +0900
+
+    Ruby 3.4 support: Use URI::RFC2396_PARSER if possible.
+    
+     * Suppress warning: "URI::RFC3986_PARSER.unescape is obsolete.
+       Use URI::RFC2396_PARSER.unescape explicitly." shown in Ruby 3.4.
+
+ lib/bio/db/gff.rb | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+commit d9b83a068fbf061c7b8072e7ab2479509f9ba130
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 7 03:18:10 2025 +0900
+
+    Bug fix: Bio::PROSITE.pa2re should not modify argument string
+    
+     * For suppressing "literal string will be frozen in the future" warning
+       in Ruby 3.4, Bio::PROSITE.pa2re(string) is changed not to modify
+       the given string in the argument. Modifying argument objects by a method
+       should generally be avoided because this behavior may cause subtle bugs
+       and I think this behavior is a bug.
+
+ lib/bio/db/prosite.rb | 2 ++
+ 1 file changed, 2 insertions(+)
+
+commit cca91ac0fa39d63b85a28d72e9b2afb56a40b984
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Mar 7 03:07:11 2025 +0900
+
+    Ruby 3.4 support: suppress "literal string will be frozen" warnings
+    
+     * Suppress "literal string will be frozen in the future" warning messages
+       in Ruby 3.4.
+     * Add "frozen_string_literal: true" magic comment in each file.
+
+ lib/bio/appl/clustalw/report.rb                    |  5 ++--
+ lib/bio/appl/iprscan/report.rb                     |  3 +-
+ lib/bio/appl/meme/mast.rb                          |  3 +-
+ lib/bio/appl/paml/common.rb                        |  3 +-
+ lib/bio/db.rb                                      |  9 +++---
+ lib/bio/db/embl/common.rb                          |  7 +++--
+ lib/bio/db/fastq.rb                                |  5 ++--
+ lib/bio/db/gff.rb                                  | 15 +++++-----
+ lib/bio/db/newick.rb                               | 11 ++++----
+ lib/bio/db/pdb/chain.rb                            |  3 +-
+ lib/bio/db/pdb/pdb.rb                              |  3 +-
+ lib/bio/io/flatfile/buffer.rb                      |  3 +-
+ lib/bio/io/flatfile/splitter.rb                    |  3 +-
+ lib/bio/pathway.rb                                 |  3 +-
+ lib/bio/sequence/common.rb                         |  3 +-
+ .../range/sequence_range/fragment.rb               |  5 ++--
+ lib/bio/util/sirna.rb                              |  5 ++--
+ test/unit/bio/appl/iprscan/test_report.rb          |  5 ++--
+ test/unit/bio/io/flatfile/test_splitter.rb         | 11 +++++---
+ test/unit/bio/sequence/test_common.rb              |  5 ++--
+ test/unit/bio/test_alignment.rb                    | 33 +++++++++++-----------
+ test/unit/bio/test_sequence.rb                     |  5 ++--
+ 22 files changed, 87 insertions(+), 61 deletions(-)
+
+commit 89129b6045ebda95363e58f8724e30225aa62d27
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Fri Aug 30 16:32:33 2024 +0900
+
+    Add Tutorial.md and Tutorial_ja.md
+    converted from Tutorial.rd and Tutorial.rd.ja
+    
+    * Add Tutorial.md and Tutorial_ja.md converted
+      from Tutorial.rd and Tutorial.rd.ja
+      by using customized rd2markdown
+      (https://github.com/ngoto/rd2markdown-app )
+    * The following command line is used
+      (Note: rd2markdown-app repository is downloaded to ../tmp):
+      $ env RUBYLIB=../tmp/rd2markdown-app/lib \
+        rd2 -r rd/rd2markdown-lib.rb Tutorial.rd > Tutorial.md
+
+ doc/Tutorial.md    | 1274 ++++++++++++++++++++++++++
+ doc/Tutorial_ja.md | 2595 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 3869 insertions(+)
+ create mode 100644 doc/Tutorial.md
+ create mode 100644 doc/Tutorial_ja.md
+
+commit 7a1809f1e8b45fa8e38a6c8970b6319d04fa800e
+Author: Naohisa Goto <ng@bioruby.org>
+Date:   Wed Sep 27 23:09:03 2023 +0900
+
+    BioRuby 2.0.5 is released
+
+ ChangeLog | 287 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 287 insertions(+)
+
 commit 1bf3a415b694e34f112ed082184c5bdf21157d3b
 Author: Naohisa Goto <ng@bioruby.org>
 Date:   Wed Sep 27 22:54:17 2023 +0900
