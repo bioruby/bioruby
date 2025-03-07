@@ -3,7 +3,7 @@
 # 
 Gem::Specification.new do |s|
   s.name = 'bio'
-  s.version = "2.0.5"
+  s.version = "2.0.6"
 
   s.author = "BioRuby project"
   s.email = "staff@bioruby.org"
@@ -44,10 +44,12 @@ Gem::Specification.new do |s|
     "doc/RELEASE_NOTES-1.4.2.rdoc",
     "doc/RELEASE_NOTES-1.4.3.rdoc",
     "doc/RELEASE_NOTES-1.5.0.rdoc",
+    "doc/Tutorial.md",
     "doc/Tutorial.rd",
     "doc/Tutorial.rd.html",
     "doc/Tutorial.rd.ja",
     "doc/Tutorial.rd.ja.html",
+    "doc/Tutorial_ja.md",
     "doc/bioruby.css",
     "etc/bioinformatics/seqdatabase.ini",
     "lib/bio.rb",
