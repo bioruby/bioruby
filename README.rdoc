@@ -112,7 +112,7 @@ and can be obtained by the following procedure:
 == REQUIREMENTS
 
 * Ruby 2.0.0 or later -- http://www.ruby-lang.org/
-  * Ruby 2.7.8, 3.0.6, 3.1.4, 3.2.2 or later is recommended.
+  * Ruby 2.7.8, 3.0.7, 3.1.6, 3.2.7, 3.3.7, 3.4.2 or later is recommended.
   * See KNOWN_ISSUES.rdoc for Ruby version specific problems.
 
 
