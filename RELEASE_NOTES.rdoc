@@ -1,3 +1,31 @@
+= BioRuby 2.0.6 RELEASE NOTES
+
+Some fixes have been made in BioRuby 2.0.6 after the release of 2.0.5.
+
+== Support for Ruby 3.4
+
+* Suppress warining: "literal string will be frozen in the future"
+  which is shown in Ruby 3.4.
+  * For the purpose, "frozen_string_literal: true" magic comment is added
+    in the head of many files.
+* Suppress warning: "URI::RFC3986_PARSER.unescape is obsolete.
+  Use URI::RFC2396_PARSER.unescape explicitly." which is shown in Ruby 3.4.
+
+== Fixes
+
+* Bio::PROSITE.pa2re should not modify argument string object.
+  * This bug is found for suppressing warning in Ruby 3.4.
+* Fix test failure of KEGG tests due to data changes of the KEGG databases.
+
+== Documentation updates
+
+* Add Tutorial.md and Tutorial_ja.md that are converted from Tutorial.rd
+  and Tutorial.rd.ja.
+  * Only the file format changes have been made. They may contain many
+    outdated parts. Content updates remain a future task.
+
+
+
 = BioRuby 2.0.5 RELEASE NOTES
 
 Some fixes have been made in BioRuby 2.0.5 after the release of 2.0.4.
