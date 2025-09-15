@@ -1,7 +1,7 @@
 # BioRuby AGENTS.md file
 
 ## Setup commands
-- Install deps: `sudo apt ruby-full ruby-bundler`
+- Install deps: `sudo apt install ruby-full ruby-bundler`
 - Install BioRuby: `sudo gem install bio`
 - Run tests: `bundle exec rake`
 
