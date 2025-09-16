@@ -1,0 +1,6 @@
+AllCops:
+  NewCops: disable
+  DisabledByDefault: true
+
+Lint/Syntax:
+  Enabled: true
