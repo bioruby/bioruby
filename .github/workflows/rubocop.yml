@@ -1,0 +1,28 @@
+# .github/workflows/rubocop.yml
+name: RuboCop
+
+on:
+  push:
+    branches:
+      - '**'   # run on every branch
+  pull_request:
+    branches:
+      - '**'   # run on every PR branch
+
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'   # adjust to match your project
+          bundler-cache: true
+
+
+      - name: Run RuboCop
+        run: bundle exec rubocop
