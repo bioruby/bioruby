@@ -1,6 +1,14 @@
 AllCops:
   NewCops: disable
   DisabledByDefault: true
+  Exclude:                      # Directories excluded from RuboCop checks
+    - 'coverage/**/*'
+    - 'etc/**/*'
+    - 'pkg/**/*'
+    - 'rdoc/**/*'
+    - 'test/data/**/*'
+    - 'tmp/**/*'
+    - 'vendor/**/*'
 
 Lint/Syntax:
   Enabled: true
