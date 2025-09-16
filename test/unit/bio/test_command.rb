@@ -17,6 +17,7 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 2,
 
 # libraries needed for the tests
 require 'test/unit'
+require 'uri'
 require 'bio/command'
 
 module Bio
@@ -160,16 +161,17 @@ module Bio
 
       # round-trip test
       result_hash = {}
-      CGI.parse(result).each do |k, v|
-        v = case v.size
-            when 0
-              ''
-            when 1
-              v[0]
-            else
-              v
-            end
-        result_hash[k.intern] = v
+      URI.decode_www_form(result).each do |k, v|
+        if parsed_v = result_hash[k.intern] then
+          case parsed_v
+          when Array
+            parsed_v.push v
+          else
+            result_hash[k.intern] = [ parsed_v, v ]
+          end
+        else
+          result_hash[k.intern] = v
+        end
       end
       assert_equal(hash, result_hash)
     end
@@ -209,16 +211,17 @@ module Bio
 
       # round-trip test
       result_hash = {}
-      CGI.parse(result).each do |k, v|
-        v = case v.size
-            when 0
-              ''
-            when 1
-              v[0]
-            else
-              v
-            end
-        result_hash[k] = v
+      URI.decode_www_form(result).each do |k, v|
+        if parsed_v = result_hash[k] then
+          case parsed_v
+          when Array
+            parsed_v.push v
+          else
+            result_hash[k] = [ parsed_v, v ]
+          end
+        else
+          result_hash[k] = v
+        end
       end
       assert_equal(hash, result_hash)
     end
@@ -256,18 +259,20 @@ module Bio
       assert_equal(ary.join('&'), result)
 
       # round-trip test
-      result_array = []
-      CGI.parse(result).each do |k, v|
-        v = case v.size
-            when 0
-              ''
-            when 1
-              v[0]
-            else
-              v
-            end
-        result_array.push([ k, v ])
+      result_hash = {}
+      URI.decode_www_form(result).each do |k, v|
+        if parsed_v = result_hash[k] then
+          case parsed_v
+          when Array
+            parsed_v.push v
+          else
+            result_hash[k] = [ parsed_v, v ]
+          end
+        else
+          result_hash[k] = v
+        end
       end
+      result_array = result_hash.to_a
       assert_equal(array_of_array.sort, result_array.sort)
     end
 
@@ -304,18 +309,23 @@ module Bio
       assert_equal(ary.join('&'), result)
 
       # round-trip test
-      result_array = []
-      CGI.parse(result).each do |k, v|
-        v = case v.size
-            when 0
-              ''
-            when 1
-              v[0]
-            else
-              v
-            end
-        result_array.push({ k => v })
+      result_hash = {}
+      URI.decode_www_form(result).each do |k, v|
+        if parsed_v = result_hash[k] then
+          case parsed_v
+          when Array
+            parsed_v.push v
+          else
+            result_hash[k] = [ parsed_v, v ]
+          end
+        else
+          result_hash[k] = v
+        end
       end
+      result_array = result_hash.to_a.collect do |a|
+        { a[0] => a[1] }
+      end
+
       assert_equal(array_of_hash.sort { |x,y| x.keys[0] <=> y.keys[0] },
                    result_array.sort { |x,y| x.keys[0] <=> y.keys[0] })
     end
