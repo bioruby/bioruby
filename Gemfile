@@ -7,3 +7,6 @@ gem "rake"
 gem "rdoc"
 gem "test-unit"
 
+group :development do
+  gem 'rubocop', require: false
+end
