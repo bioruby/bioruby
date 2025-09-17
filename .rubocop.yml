@@ -1,7 +1,8 @@
+inherit_from: .rubocop_todo.yml
+
 AllCops:
-  NewCops: disable
-  DisabledByDefault: true
-  Exclude:                      # Directories excluded from RuboCop checks
+  NewCops: enable
+  Exclude:
     - 'coverage/**/*'
     - 'etc/**/*'
     - 'pkg/**/*'
@@ -10,5 +11,6 @@ AllCops:
     - 'tmp/**/*'
     - 'vendor/**/*'
 
-Lint/Syntax:
-  Enabled: true
+# Settings for line length
+Layout/LineLength:
+  URISchemes: http, https, ftp
