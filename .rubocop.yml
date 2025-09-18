@@ -14,3 +14,11 @@ AllCops:
 # Settings for line length
 Layout/LineLength:
   URISchemes: http, https, ftp
+
+# Workaround for RuboCop bug.
+# It have already been fixed in the HEAD of RuboCop.
+# Remove after new release version.
+# https://github.com/rubocop/rubocop/issues/14528
+Style/RedundantFormat:
+  Exclude:
+    - 'lib/bio/io/flatfile/index.rb'
