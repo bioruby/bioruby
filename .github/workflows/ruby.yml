@@ -28,6 +28,9 @@ jobs:
             ruby-version: jruby-head
     runs-on: ${{ matrix.os }}
     steps:
+    - name: Configure git (Windows)
+      if: runner.os == 'Windows'
+      run: git config --global core.autocrlf false
     - uses: actions/checkout@v4
     - uses: ruby/setup-ruby@v1
       with:
