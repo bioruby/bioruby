@@ -49,7 +49,7 @@ module Command
   # *Returns*:: true or false
   def windows_platform?
     case RUBY_PLATFORM
-    when /(?:mswin|bccwin|mingw)(?:32|64)/i
+    when /(?:mswin|bccwin|mingw)(?:32|64|\-)/i
       true
     when /java/i
       # Reference: Redmine's platform.rb
