@@ -17,28 +17,27 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
 require 'test/unit'
 require 'bio/util/restriction_enzyme'
 
-module Bio; module TestRestrictionEnzyme #:nodoc:
+# :nodoc:
+module Bio
+  module TestRestrictionEnzyme
+    class TestRestrictionEnzyme < Test::Unit::TestCase # :nodoc:
+      def setup
+        @t = Bio::RestrictionEnzyme
+      end
 
-class TestRestrictionEnzyme < Test::Unit::TestCase #:nodoc:
+      def test_rebase
+        assert_equal(@t.rebase.respond_to?(:enzymes), true)
+        assert_not_nil @t.rebase['AarI']
+        assert_nil @t.rebase['blah']
+      end
 
-  def setup
-    @t = Bio::RestrictionEnzyme
+      def test_enzyme_name
+        assert_equal(@t.enzyme_name?('AarI'), true)
+        assert_equal(@t.enzyme_name?('atgc'), false)
+        assert_equal(@t.enzyme_name?('aari'), true)
+        assert_equal(@t.enzyme_name?('EcoRI'), true)
+        assert_equal(@t.enzyme_name?('EcoooRI'), false)
+      end
+    end
   end
-  
-  def test_rebase
-    assert_equal(@t.rebase.respond_to?(:enzymes), true)
-    assert_not_nil @t.rebase['AarI']
-    assert_nil @t.rebase['blah']
-  end
-  
-  def test_enzyme_name
-    assert_equal(@t.enzyme_name?('AarI'), true)
-    assert_equal(@t.enzyme_name?('atgc'), false)
-    assert_equal(@t.enzyme_name?('aari'), true)
-    assert_equal(@t.enzyme_name?('EcoRI'), true)
-    assert_equal(@t.enzyme_name?('EcoooRI'), false)
-  end
-
 end
-
-end; end

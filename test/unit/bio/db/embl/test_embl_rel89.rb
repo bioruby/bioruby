@@ -18,7 +18,6 @@ require 'bio/db/embl/embl'
 
 module Bio
   class TestEMBL89 < Test::Unit::TestCase
-    
     def setup
       output = File.read(File.join(BioRubyTestDataPath, 'embl', 'AB090716.embl.rel89'))
       @obj = Bio::EMBL.new(output)
@@ -30,7 +29,7 @@ module Bio
     end
 
     def test_id_line_iterator
-      assert(@obj.id_line {|key, value| })
+      assert(@obj.id_line { |key, value| })
     end
 
     def test_id_line_entry_name
@@ -56,7 +55,7 @@ module Bio
     def test_id_line_sequence_length
       assert_equal(166, @obj.id_line('SEQUENCE_LENGTH'))
     end
-    
+
     def test_entry
       entry_id = 'AB090716'
       assert_equal(entry_id, @obj.entry)
@@ -73,7 +72,7 @@ module Bio
     def test_division
       assert_equal('VRT', @obj.division)
     end
-    
+
     def test_sequence_length
       seqlen = 166
       assert_equal(seqlen, @obj.sequence_length)
@@ -81,7 +80,7 @@ module Bio
     end
 
     # Bio::EMBLDB::COMMON#ac
-    def test_ac 
+    def test_ac
       ac = ['AB090716']
       assert_equal(ac, @obj.ac)
       assert_equal(ac, @obj.accessions)
@@ -105,7 +104,7 @@ module Bio
     end
 
     def test_dt_iterator
-      assert(@obj.dt {|key, value| })
+      assert(@obj.dt { |key, value| })
     end
 
     def test_dt_created
@@ -118,11 +117,13 @@ module Bio
 
     # Bio::EMBLDB::COMMON#de
     def test_de
-      assert_equal("Haplochromis sp. 'muzu, rukwa' LWS gene for long wavelength-sensitive opsin, partial cds, specimen_voucher:specimen No. HT-9361.", @obj.de)
+      assert_equal(
+        "Haplochromis sp. 'muzu, rukwa' LWS gene for long wavelength-sensitive opsin, partial cds, specimen_voucher:specimen No. HT-9361.", @obj.de
+      )
     end
 
     # Bio::EMBLDB::COMMON#kw
-    def test_kw 
+    def test_kw
       assert_equal([], @obj.kw)
       assert_equal([], @obj.keywords)
     end
@@ -133,12 +134,12 @@ module Bio
     end
 
     # Bio::EMBLDB::COMMON#oc
-    def test_oc 
+    def test_oc
       assert_equal('Eukaryota', @obj.oc.first)
     end
 
     # Bio::EMBLDB::COMMON#og
-    def test_og 
+    def test_og
       assert_equal([], @obj.og)
     end
 
@@ -148,7 +149,7 @@ module Bio
     end
 
     # Bio::EMBLDB::COMMON#references
-    def test_references 
+    def test_references
       assert_equal(Array, @obj.references.class)
     end
 
@@ -182,7 +183,7 @@ module Bio
     end
 
     def test_each_gene
-      @obj.each_gene do |x| 
+      @obj.each_gene do |x|
         assert_equal('gene', x.feature)
       end
     end
@@ -191,16 +192,16 @@ module Bio
       assert_equal('', @obj.cc)
     end
 
-#    def test_xx
-#    end
+    #    def test_xx
+    #    end
 
     def test_sq
-      data = {"a"=>29, "c"=>42, "ntlen"=>166, "g"=>41, "t"=>54, "other"=>0}
+      data = { 'a' => 29, 'c' => 42, 'ntlen' => 166, 'g' => 41, 't' => 54, 'other' => 0 }
       assert_equal(data, @obj.sq)
     end
 
     def test_sq_get
-      assert_equal(29, @obj.sq("a"))
+      assert_equal(29, @obj.sq('a'))
     end
 
     def test_seq

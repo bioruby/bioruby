@@ -33,10 +33,10 @@ module Bio
     end
 
     def test_secondary_ids
-      assert_equal([ 'CAA78466.1', '-', 'mRNA' ],
+      assert_equal(['CAA78466.1', '-', 'mRNA'],
                    @xref.secondary_ids)
     end
-  end #class
+  end # class
 
   class TestSequenceDBLinkClassMethods < Test::Unit::TestCase
     def test_parse_embl_DR_line
@@ -44,7 +44,7 @@ module Bio
       xref = Bio::Sequence::DBLink.parse_embl_DR_line(str)
       assert_equal('EPD', xref.database)
       assert_equal('EP07077', xref.id)
-      assert_equal([ 'HS_HBG1' ], xref.secondary_ids)
+      assert_equal(['HS_HBG1'], xref.secondary_ids)
     end
 
     def test_parse_uniprot_DR_line
@@ -52,9 +52,8 @@ module Bio
       xref = Bio::Sequence::DBLink.parse_uniprot_DR_line(str)
       assert_equal('EMBL', xref.database)
       assert_equal('Z14088', xref.id)
-      assert_equal([ 'CAA78466.1', '-', 'mRNA' ],
+      assert_equal(['CAA78466.1', '-', 'mRNA'],
                    xref.secondary_ids)
     end
-  end #class
-
-end #module Bio
+  end # class
+end # module Bio

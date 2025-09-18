@@ -18,7 +18,6 @@ require 'bio/db/embl/uniprot'
 
 module Bio
   class TestUniProt < Test::Unit::TestCase
-
     def setup
       data = File.read(File.join(BioRubyTestDataPath, 'uniprot', 'p53_human.uniprot'))
       @obj = Bio::UniProt.new(data)
@@ -27,6 +26,5 @@ module Bio
     def test_gene_name
       assert_equal('TP53', @obj.gene_name)
     end
-
   end
 end

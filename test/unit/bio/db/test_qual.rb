@@ -18,24 +18,24 @@ require 'bio/db/fasta/qual'
 
 module Bio
   class TestFastaNumericFormat < Test::Unit::TestCase
-
     DATA = [24, 15, 23, 29, 20, 13, 20, 21, 21, 23, 22, 25, 13, 22, 17, 15, 25, 27, 32, 26, 32, 29, 29, 25].freeze
 
     def setup
-      text =<<END
->CRA3575282.F 
-24 15 23 29 20 13 20 21 21 23 22 25 13 22 17 15 25 27 32 26  
-32 29 29 25
-END
+      text = <<~END
+        >CRA3575282.F#{' '}
+        24 15 23 29 20 13 20 21 21 23 22 25 13 22 17 15 25 27 32 26#{'  '}
+        32 29 29 25
+      END
       @obj = Bio::FastaNumericFormat.new(text)
     end
 
     def test_entry
-      assert_equal(">CRA3575282.F\n24 15 23 29 20 13 20 21 21 23 22 25 13 22 17 15 25 27 32 26  \n32 29 29 25\n", @obj.entry)
+      assert_equal(">CRA3575282.F\n24 15 23 29 20 13 20 21 21 23 22 25 13 22 17 15 25 27 32 26  \n32 29 29 25\n",
+                   @obj.entry)
     end
 
     def test_entry_id
-      assert_equal('CRA3575282.F', @obj.entry_id) 
+      assert_equal('CRA3575282.F', @obj.entry_id)
     end
 
     def test_definition
@@ -51,7 +51,7 @@ END
     end
 
     def test_each
-      assert(@obj.each {|x| })
+      assert(@obj.each { |x| })
     end
 
     def test_arg
@@ -65,6 +65,5 @@ END
       assert_equal(DATA, s.quality_scores)
       assert_equal(nil, s.quality_score_type)
     end
-
-  end #class TestFastaNumericFormat
-end #module Bio
+  end # class TestFastaNumericFormat
+end # module Bio

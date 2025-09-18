@@ -17,16 +17,14 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
 require 'test/unit'
 require 'bio/appl/fasta'
 
-
 module Bio
-
   class TestFastaInitialize < Test::Unit::TestCase
     def test_new_1
       program = 'string'
       db = 'string'
       option = ['-e', '0.001']
       server = 'local'
-      assert_raise(ArgumentError) { Bio::Fasta.new() }
+      assert_raise(ArgumentError) { Bio::Fasta.new }
       assert_raise(ArgumentError) { Bio::Fasta.new(program) }
       assert(Bio::Fasta.new(program, db))
       assert(Bio::Fasta.new(program, db, option))
@@ -35,19 +33,17 @@ module Bio
     end
 
     def test_option_backward_compatibility
-      fasta = Bio::Fasta.new('program', 'db', "-e 10")
-      assert_equal([ '-Q', '-H', '-m','10', '-e',  '10'], fasta.options)
+      fasta = Bio::Fasta.new('program', 'db', '-e 10')
+      assert_equal(['-Q', '-H', '-m', '10', '-e', '10'], fasta.options)
     end
 
     def test_option
-      fasta = Bio::Fasta.new('program', 'db', ["-e", "10"])
-      assert_equal([ '-Q', '-H', '-m','10', '-e', '10'], fasta.options)
+      fasta = Bio::Fasta.new('program', 'db', ['-e', '10'])
+      assert_equal(['-Q', '-H', '-m', '10', '-e', '10'], fasta.options)
     end
   end
 
-
   class TestFasta < Test::Unit::TestCase
-
     def setup
       program = 'ssearch'
       db = 'nr'
@@ -68,7 +64,7 @@ module Bio
     end
 
     def test_options
-      assert_equal(["-Q", "-H", "-m", "10", "-e", "10"], @obj.options)
+      assert_equal(['-Q', '-H', '-m', '10', '-e', '10'], @obj.options)
       @obj.options = ['-Q', '-H', '-m', '8']
       assert_equal(['-Q', '-H', '-m', '8'], @obj.options)
     end
@@ -84,6 +80,7 @@ module Bio
       @obj.ktup = 6
       assert_equal(6, @obj.ktup)
     end
+
     def test_matrix
       assert_equal(nil, @obj.matrix)
       @obj.matrix = 'PAM120'
@@ -92,15 +89,15 @@ module Bio
 
     def test_output
       assert_equal('', @obj.output)
-#      assert_raise(NoMethodError) { @obj.output = "" }
+      #      assert_raise(NoMethodError) { @obj.output = "" }
     end
-    
+
     def test_option
       option = ['-M'].join(' ')
       assert(@obj.option = option)
       assert_equal(option, @obj.option)
     end
-    
+
     def test_format
       assert_equal(10, @obj.format)
     end
@@ -117,16 +114,16 @@ module Bio
   end
 
   class TestFastaQuery < Test::Unit::TestCase
-    def test_self_parser
-    end
+    def test_self_parser; end
+
     def test_self_local
       # test/functional/bio/test_fasta.rb
     end
+
     def test_self_remote
       # test/functional/bio/test_fasta.rb
     end
-    def test_query
-    end
-  end
 
+    def test_query; end
+  end
 end

@@ -16,15 +16,11 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 require 'test/unit'
 require 'bio/appl/sosui/report'
 
-
 module Bio
-
   test_data = Pathname.new(File.join(BioRubyTestDataPath, 'SOSUI')).cleanpath.to_s
-  SOSUIReport = File.open(File.join(test_data, 'sample.report')).read
+  SOSUIReport = File.read(File.join(test_data, 'sample.report'))
 
-
-  class TestSOSUIReportConst  < Test::Unit::TestCase
-
+  class TestSOSUIReportConst < Test::Unit::TestCase
     def test_delimiter
       assert_equal("\n>", Bio::SOSUI::Report::DELIMITER)
     end
@@ -32,12 +28,9 @@ module Bio
     def test_rs
       assert_equal("\n>", Bio::SOSUI::Report::RS)
     end
-
   end
 
-
   class TestSOSUIReport < Test::Unit::TestCase
-
     def setup
       @obj = Bio::SOSUI::Report.new(SOSUIReport)
     end
@@ -58,7 +51,6 @@ module Bio
     def test_tmh
       assert_equal(7, @obj.tmhs.size)
     end
-
   end # class TestSOSUIReport
 
   class TestSOSUITMH < Test::Unit::TestCase
@@ -73,10 +65,9 @@ module Bio
     def test_grade
       assert_equal('SECONDARY', @obj.grade)
     end
-    
+
     def test_sequence
       assert_equal('HIRMTFLRKVYSILSLQVLLTTV', @obj.sequence)
     end
-
   end # class TestSOSUITMH
 end

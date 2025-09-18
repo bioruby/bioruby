@@ -23,14 +23,13 @@ module Bio
     end
   end
 
-
   class TestAA < Test::Unit::TestCase
     def setup
       @obj = Bio::AminoAcid.new
     end
 
     def test_13
-      assert_equal("Ala", @obj['A'])
+      assert_equal('Ala', @obj['A'])
     end
 
     def test_1n
@@ -76,7 +75,7 @@ module Bio
     def test_name2one
       assert_equal('A', @obj.name2one('alanine'))
     end
-    
+
     def test_three2name
       assert_equal('alanine', @obj.three2name('Ala'))
     end
@@ -84,7 +83,7 @@ module Bio
     def test_name2three
       assert_equal('Ala', @obj.name2three('alanine'))
     end
-    
+
     def test_to_re
       assert_equal(/[DNB][EQZ]ACDEFGHIKLMNPQRSTVWYU/, @obj.to_re('BZACDEFGHIKLMNPQRSTVWYU'))
     end

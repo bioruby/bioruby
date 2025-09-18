@@ -17,8 +17,7 @@ require 'test/unit'
 require 'bio/util/sirna'
 
 module Bio
-
-  RANDOM_SEQ = "ctttcggtgcggacgtaaggagtattcctgtactaactaaatggagttaccaaggtaggaccacggtaaaatcgcgagcagcctcgatacaagcgttgtgctgaagcctatcgctgacctgaaggggggcgtaagcaaggcagcggttcaccttcatcagttctgctagaaatcacctagcaccccttatcatccgcgtcaggtccattacccttcccattatgtcggactcaattgaggtgcttgtgaacttatacttgaatccaaaacgtctactgtattggcgactaaaaagcacttgtggggagtcggcttgatcagcctccattagggccaggcactgaggatcatccagttaacgtcagattcaaggtctggctcttagcactcggagttgcac"
+  RANDOM_SEQ = 'ctttcggtgcggacgtaaggagtattcctgtactaactaaatggagttaccaaggtaggaccacggtaaaatcgcgagcagcctcgatacaagcgttgtgctgaagcctatcgctgacctgaaggggggcgtaagcaaggcagcggttcaccttcatcagttctgctagaaatcacctagcaccccttatcatccgcgtcaggtccattacccttcccattatgtcggactcaattgaggtgcttgtgaacttatacttgaatccaaaacgtctactgtattggcgactaaaaagcacttgtggggagtcggcttgatcagcctccattagggccaggcactgaggatcatccagttaacgtcagattcaaggtctggctcttagcactcggagttgcac'
 
   class TestSiRNANew < Test::Unit::TestCase
     def test_new
@@ -29,7 +28,6 @@ module Bio
       assert(Bio::SiRNA.new(naseq, 21, 60.0, 40.0))
       assert_raise(ArgumentError) { Bio::SiRNA.new(naseq, 21, 60.0, 40.0, 10.0) }
     end
-
   end
 
   class TestSiRNA < Test::Unit::TestCase
@@ -51,18 +49,18 @@ module Bio
     end
 
     def test_uitei?
-      target = "aaGaa"
+      target = 'aaGaa'
       assert_equal(false, @obj.uitei?(target))
-      target = "aaAaa"
+      target = 'aaAaa'
       assert_equal(false, @obj.uitei?(target))
-      target = "G" * 9
+      target = 'G' * 9
       assert_equal(false, @obj.uitei?(target))
     end
 
     def test_reynolds?
-      target = "G" * 9
+      target = 'G' * 9
       assert_equal(false, @obj.reynolds?(target))
-      target = "aaaaAaaaaaaUaaAaaaaaAaa"
+      target = 'aaaaAaaaaaaUaaAaaaaaAaa'
       assert_equal(8, @obj.reynolds?(target))
     end
 
@@ -78,7 +76,6 @@ module Bio
       assert(@obj.design)
     end
 
-
     def test_design_uitei
       assert(@obj.design('uitei'))
     end
@@ -90,19 +87,18 @@ module Bio
 
   class TestSiRNAPairNew < Test::Unit::TestCase
     def test_new
-      target = ""
-      sense = ""
-      antisense = ""
+      target = ''
+      sense = ''
+      antisense = ''
       start = 0
       stop = 1
       rule = 'rule'
       gc_percent = 60.0
       assert_raise(ArgumentError) { Bio::SiRNA::Pair.new(target, sense, antisense, start, stop, rule) }
       assert(Bio::SiRNA::Pair.new(target, sense, antisense, start, stop, rule, gc_percent))
-      assert_raise(ArgumentError) { Bio::SiRNA::Pair.new(target, sense, antisense, start, stop, rule, gc_percent, "") }
+      assert_raise(ArgumentError) { Bio::SiRNA::Pair.new(target, sense, antisense, start, stop, rule, gc_percent, '') }
     end
   end
-
 
   class TestSiRNAPair < Test::Unit::TestCase
     def setup
@@ -111,15 +107,15 @@ module Bio
     end
 
     def test_target
-      assert_equal("uucggugcggacguaaggaguau", @obj.target)
+      assert_equal('uucggugcggacguaaggaguau', @obj.target)
     end
 
     def test_sense
-      assert_equal("cggugcggacguaaggaguau", @obj.sense)
+      assert_equal('cggugcggacguaaggaguau', @obj.sense)
     end
 
     def test_antisense
-      assert_equal("acuccuuacguccgcaccgaa", @obj.antisense)
+      assert_equal('acuccuuacguccgcaccgaa', @obj.antisense)
     end
 
     def test_start
@@ -131,7 +127,7 @@ module Bio
     end
 
     def test_rule
-      assert_equal("uitei", @obj.rule)
+      assert_equal('uitei', @obj.rule)
     end
 
     def test_gc_percent
@@ -139,26 +135,26 @@ module Bio
     end
 
     def test_report
-report =<<END
-### siRNA
-Start: 3
-Stop:  26
-Rule:  uitei
-GC %:  57
-Target:    UUCGGUGCGGACGUAAGGAGUAU
-Sense:       CGGUGCGGACGUAAGGAGUAU
-Antisense: AAGCCACGCCUGCAUUCCUCA
-END
+      report = <<~END
+        ### siRNA
+        Start: 3
+        Stop:  26
+        Rule:  uitei
+        GC %:  57
+        Target:    UUCGGUGCGGACGUAAGGAGUAU
+        Sense:       CGGUGCGGACGUAAGGAGUAU
+        Antisense: AAGCCACGCCUGCAUUCCUCA
+      END
       assert_equal(report, @obj.report)
     end
   end
 
   class TestShRNANew < Test::Unit::TestCase
     def test_new
-      pair = ""
+      pair = ''
       assert(Bio::SiRNA::ShRNA.new(pair))
       assert_raise(ArgumentError) { Bio::SiRNA::ShRNA.new }
-      assert_raise(ArgumentError) { Bio::SiRNA::ShRNA.new(pair, "") }
+      assert_raise(ArgumentError) { Bio::SiRNA::ShRNA.new(pair, '') }
     end
   end
 
@@ -172,7 +168,7 @@ END
 
     def test_top_strand
       @obj.design
-      assert_equal("caccgcggugcggacguaaggaguaugtgtgctgtccauacuccuuacguccgcaccg", @obj.top_strand)
+      assert_equal('caccgcggugcggacguaaggaguaugtgtgctgtccauacuccuuacguccgcaccg', @obj.top_strand)
     end
 
     def test_top_strand_class
@@ -186,7 +182,7 @@ END
 
     def test_bottom_strand
       @obj.design
-      assert_equal("aaaacggugcggacguaaggaguauggacagcacacauacuccuuacguccgcaccgc", @obj.bottom_strand)
+      assert_equal('aaaacggugcggacguaaggaguauggacagcacacauacuccuuacguccgcaccgc', @obj.bottom_strand)
     end
 
     def test_bottom_strand_class
@@ -207,11 +203,11 @@ END
     end
 
     def test_blocK_it
-      assert_equal("aaaacggugcggacguaaggaguauggacagcacacauacuccuuacguccgcaccgc", @obj.block_it)
+      assert_equal('aaaacggugcggacguaaggaguauggacagcacacauacuccuuacguccgcaccgc', @obj.block_it)
     end
 
     def test_blocK_it_BLOCK_iT
-      assert_equal("aaaacggugcggacguaaggaguauggacagcacacauacuccuuacguccgcaccgc", @obj.block_it)
+      assert_equal('aaaacggugcggacguaaggaguauggacagcacacauacuccuuacguccgcaccgc', @obj.block_it)
     end
 
     def test_blocK_it_BLOCK_IT
@@ -219,22 +215,22 @@ END
     end
 
     def test_blocK_it_piGene
-      assert_equal("aaaacggugcggacguaaggaguauggacagcacacauacuccuuacguccgcaccgc", @obj.block_it('piGENE'))
+      assert_equal('aaaacggugcggacguaaggaguauggacagcacacauacuccuuacguccgcaccgc', @obj.block_it('piGENE'))
     end
 
     def test_blocK_it_
-      assert_raises(NotImplementedError) { @obj.block_it("") }
+      assert_raises(NotImplementedError) { @obj.block_it('') }
     end
-    
+
     def test_report
-      report =<<END
-### shRNA
-Top strand shRNA (58 nt):
-  5'-CACCGCGGUGCGGACGUAAGGAGUAUGTGTGCTGTCCAUACUCCUUACGUCCGCACCG-3'
-Bottom strand shRNA (58 nt):
-      3'-CGCCACGCCUGCAUUCCUCAUACACACGACAGGUAUGAGGAAUGCAGGCGUGGCAAAA-5'
-END
-      #@obj.design
+      report = <<~END
+        ### shRNA
+        Top strand shRNA (58 nt):
+          5'-CACCGCGGUGCGGACGUAAGGAGUAUGTGTGCTGTCCAUACUCCUUACGUCCGCACCG-3'
+        Bottom strand shRNA (58 nt):
+              3'-CGCCACGCCUGCAUUCCUCAUACACACGACAGGUAUGAGGAAUGCAGGCGUGGCAAAA-5'
+      END
+      # @obj.design
       @obj.block_it
       assert_equal(report, @obj.report)
     end
@@ -243,5 +239,4 @@ END
       assert_raises(NoMethodError) { @obj.report }
     end
   end
-
 end

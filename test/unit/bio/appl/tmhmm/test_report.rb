@@ -16,21 +16,17 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 require 'test/unit'
 require 'bio/appl/tmhmm/report'
 
-
 module Bio
-
   test_data = Pathname.new(File.join(BioRubyTestDataPath, 'TMHMM')).cleanpath.to_s
-  TMHMMReport = File.open(File.join(test_data, 'sample.report')).read
-
+  TMHMMReport = File.read(File.join(test_data, 'sample.report'))
 
   class TestTMHMMReport_reports < Test::Unit::TestCase
     def test_reports
-      assert(Bio::TMHMM.reports(""))
+      assert(Bio::TMHMM.reports(''))
     end
   end
 
   class TestTMHMMReport < Test::Unit::TestCase
-
     def setup
       @obj = Bio::TMHMM::Report.new(TMHMMReport)
     end
@@ -68,7 +64,7 @@ module Bio
       assert_equal(7, @obj.helix.size)
       assert_equal(Bio::TMHMM::TMH, @obj.helix[0].class)
     end
-    
+
     def test_to_s
       str = ["# O42385\tLength:\t423",
              "# O42385\tNumber of predicted TMHs:\t7",
@@ -92,11 +88,9 @@ module Bio
              "O42385\tTMHMM2.0\tinside\t404\t423"].join("\n")
       assert_equal(str, @obj.to_s)
     end
-
   end # TestTMHMMReport
 
   class TestTMHMMTMH < Test::Unit::TestCase
-
     def setup
       @obj = Bio::TMHMM::Report.new(TMHMMReport).tmhs.first
     end
@@ -120,8 +114,5 @@ module Bio
     def test_pos
       assert_equal(1..46, @obj.pos)
     end
-
   end # class TestTMHMMTMH
-
-
 end

@@ -18,16 +18,13 @@ require 'test/unit'
 require 'bio/appl/paml/codeml/report'
 
 module Bio
-
   # The test code is copied from the examples of Bio::PAML::Codeml::Report
   # described in lib/bio/appl/paml/codeml/report.rb.
   module TestPAMLCodemlReportWithModels
-
     FILENAME_M0M3 = File.join(BioRubyTestDataPath,
-                             'paml/codeml/models/results0-3.txt')
+                              'paml/codeml/models/results0-3.txt')
 
     class TestCodemlReportM0M3 < Test::Unit::TestCase
-
       def setup
         buf = File.read(FILENAME_M0M3)
         @c = Bio::PAML::Codeml::Report.new(buf)
@@ -42,8 +39,8 @@ module Bio
       # Do we have two models?
       def test_models
         assert_equal(2, @c.models.size)
-        assert_equal("M0", @c.models[0].name)
-        assert_equal("M3", @c.models[1].name)
+        assert_equal('M0', @c.models[0].name)
+        assert_equal('M3', @c.models[1].name)
       end
 
       # Check the general information
@@ -56,7 +53,7 @@ module Bio
       end
 
       def test_descr
-        assert_equal("M0-3", @c.descr)
+        assert_equal('M0-3', @c.descr)
       end
 
       # Test whether the second model M3 is significant over M0
@@ -67,10 +64,10 @@ module Bio
       # Next take the overall posterior analysis
       def test_nb_sites
         assert_equal(44, @c.nb_sites.size)
-        assert_equal([17, "I", 0.988, 3.293], @c.nb_sites[0].to_a)
+        assert_equal([17, 'I', 0.988, 3.293], @c.nb_sites[0].to_a)
       end
 
-      # We also provide the raw buffers to adhere to the principle of 
+      # We also provide the raw buffers to adhere to the principle of
       # unexpected use. Test the raw buffers for content:
       def test_header
         assert_equal(1, @c.header.to_s =~ /seed/)
@@ -79,11 +76,9 @@ module Bio
       def test_footer
         assert_equal(16, @c.footer.to_s =~ /Bayes/)
       end
-
-    end #class TestCodemlReportM0M3
+    end # class TestCodemlReportM0M3
 
     class TestCodemlModelM0M3 < Test::Unit::TestCase
-
       # Now fetch the results of the first model M0, and check its values
       def setup
         buf = File.read(FILENAME_M0M3)
@@ -115,10 +110,10 @@ module Bio
       def test_alpha
         assert_equal(nil, @m0.alpha)
       end
-    
+
       # We also have a tree (as a string)
       def test_tree
-        str = "((((PITG_23265T0: 0.000004, PITG_23253T0: 0.400074): 0.000004, PITG_23257T0: 0.952614): 0.000004, PITG_23264T0: 0.445507): 0.000004, PITG_23267T0: 0.011814, PITG_23293T0: 0.092242);"
+        str = '((((PITG_23265T0: 0.000004, PITG_23253T0: 0.400074): 0.000004, PITG_23257T0: 0.952614): 0.000004, PITG_23264T0: 0.445507): 0.000004, PITG_23267T0: 0.011814, PITG_23293T0: 0.092242);'
         assert_equal(str, @m0.tree)
       end
 
@@ -129,11 +124,11 @@ module Bio
 
       def test_m3_classes
         assert_equal(3, @m3.classes.size)
-        assert_equal({:w=>0.00928, :p=>0.56413}, @m3.classes[0])
+        assert_equal({ w: 0.00928, p: 0.56413 }, @m3.classes[0])
       end
 
       def test_m3_tree
-        str = "((((PITG_23265T0: 0.000004, PITG_23253T0: 0.762597): 0.000004, PITG_23257T0: 2.721710): 0.000004, PITG_23264T0: 0.924326): 0.014562, PITG_23267T0: 0.000004, PITG_23293T0: 0.237433);"
+        str = '((((PITG_23265T0: 0.000004, PITG_23253T0: 0.762597): 0.000004, PITG_23257T0: 2.721710): 0.000004, PITG_23264T0: 0.924326): 0.014562, PITG_23267T0: 0.000004, PITG_23293T0: 0.237433);'
         assert_equal(str, @m3.tree)
       end
 
@@ -144,11 +139,9 @@ module Bio
       def test_m3_to_s
         assert_equal(3, @m3.to_s =~ /discrete/)
       end
-
-    end #class TestCodemlModelM0M3
+    end # class TestCodemlModelM0M3
 
     class TestCodemlPositiveSiteM0M3 < Test::Unit::TestCase
-
       def setup
         buf = File.read(FILENAME_M0M3)
         c = Bio::PAML::Codeml::Report.new(buf)
@@ -175,39 +168,35 @@ module Bio
       def test_w
         assert_equal(3.293, @codon.w)
       end
-
-    end #class TestCodemlPositiveSiteM0M3
+    end # class TestCodemlPositiveSiteM0M3
 
     class TestCodemlPositiveSitesM0M3 < Test::Unit::TestCase
-
       def setup
         buf = File.read(FILENAME_M0M3)
         c = Bio::PAML::Codeml::Report.new(buf)
         @nb_sites = c.nb_sites
       end
-  
-      # Now we generate special string 'graph' for positive selection. The 
-      # following returns a string the length of the input alignment and 
+
+      # Now we generate special string 'graph' for positive selection. The
+      # following returns a string the length of the input alignment and
       # shows the locations of positive selection:
       def test_graph
-        str = "                **    *       * *"
+        str = '                **    *       * *'
         assert_equal(str, @nb_sites.graph[0..32])
       end
 
       # And with dN/dS (high values are still an asterisk *)
       def test_graph_omega
-        str = "                3*    6       6 2"
+        str = '                3*    6       6 2'
         assert_equal(str, @nb_sites.graph_omega[0..32])
       end
-    end #class TestCodemlPositiveSitesM0M3
+    end # class TestCodemlPositiveSitesM0M3
 
     # Finally we do a test on an M7+M8 run.
     FILENAME_M7M8 = File.join(BioRubyTestDataPath,
                               'paml/codeml/models/results7-8.txt')
 
-
     class TestCodemlReportM7M8 < Test::Unit::TestCase
-
       def setup
         buf = File.read(FILENAME_M7M8)
         @c = Bio::PAML::Codeml::Report.new(buf)
@@ -216,8 +205,8 @@ module Bio
       # Do we have two models?
       def test_models
         assert_equal(2, @c.models.size)
-        assert_equal("M7", @c.models[0].name)
-        assert_equal("M8", @c.models[1].name)
+        assert_equal('M7', @c.models[0].name)
+        assert_equal('M8', @c.models[1].name)
       end
 
       # Assert the results are significant
@@ -235,19 +224,17 @@ module Bio
       # And this is the full Bayesian result:
       def test_sites
         assert_equal(30, @c.sites.size)
-        array = [17, "I", 0.672, 2.847]
+        array = [17, 'I', 0.672, 2.847]
         assert_equal(array, @c.sites[0].to_a)
-        str = "                **    *       * *"
+        str = '                **    *       * *'
         assert_equal(str, @c.sites.graph[0..32])
-        
-        # Note the differences of omega with earlier M0-M3 naive Bayesian 
+
+        # Note the differences of omega with earlier M0-M3 naive Bayesian
         # analysis:
-        str2 = "                24    3       3 2"
+        str2 = '                24    3       3 2'
         assert_equal(str2, @c.sites.graph_omega[0..32])
         # The locations are the same, but the omega differs.
       end
-    end #class TestCodemlReportM7M8
-
-  end #module TestPAMLCodemlReportWithModels
-end #module Bio
-
+    end # class TestCodemlReportM7M8
+  end # module TestPAMLCodemlReportWithModels
+end # module Bio

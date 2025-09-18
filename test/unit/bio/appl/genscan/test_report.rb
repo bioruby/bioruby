@@ -16,14 +16,11 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 require 'test/unit'
 require 'bio/appl/genscan/report'
 
-
 module Bio
-
   class TestGenscanReport < Test::Unit::TestCase
-
     def setup
       test_data = Pathname.new(File.join(BioRubyTestDataPath, 'genscan')).cleanpath.to_s
-      report = File.open(File.join(test_data, 'sample.report')).read
+      report = File.read(File.join(test_data, 'sample.report'))
 
       @obj = Bio::Genscan::Report.new(report)
     end
@@ -37,7 +34,7 @@ module Bio
     end
 
     def test_time
-      assert_equal("14:06:28", @obj.time)
+      assert_equal('14:06:28', @obj.time)
     end
 
     def test_query_name
@@ -45,7 +42,7 @@ module Bio
     end
 
     def test_length
-      assert_equal(12942, @obj.length)
+      assert_equal(12_942, @obj.length)
     end
 
     def test_gccontent
@@ -63,15 +60,12 @@ module Bio
     def test_predictions_size
       assert_equal(2, @obj.predictions.size)
     end
-
   end # TestGenscanReport
 
-
   class TestGenscanReportGene < Test::Unit::TestCase
-
     def setup
       test_data = Pathname.new(File.join(BioRubyTestDataPath, 'genscan')).cleanpath.to_s
-      report = File.open(File.join(test_data, 'sample.report')).read
+      report = File.read(File.join(test_data, 'sample.report'))
       @obj = Bio::Genscan::Report.new(report).predictions
     end
 
@@ -81,38 +75,35 @@ module Bio
 
     def test_aaseq
       assert_equal(Bio::FastaFormat, @obj.first.aaseq.class)
-      seq =  "MTEYKLVVVGAGGVGKSALTIQLIQNHFVDEYDPTIEDSYRKQVVIDGETCLLDILDTAGQEEYSAMRDQYMRTGEGFLCVFAINNTKSFEDIHQYREQIKRVKDSDDVPMVLVGNKCDLAARTVESRQAQDLARSYGIPYIETSAKTRQGVEDAFYTLVREIRQHKLRKLNPPDESGPGCMSCKCVLS"
+      seq = 'MTEYKLVVVGAGGVGKSALTIQLIQNHFVDEYDPTIEDSYRKQVVIDGETCLLDILDTAGQEEYSAMRDQYMRTGEGFLCVFAINNTKSFEDIHQYREQIKRVKDSDDVPMVLVGNKCDLAARTVESRQAQDLARSYGIPYIETSAKTRQGVEDAFYTLVREIRQHKLRKLNPPDESGPGCMSCKCVLS'
       assert_equal(seq, @obj.first.aaseq.seq)
-      definition = "HUMRASH|GENSCAN_predicted_peptide_1|189_aa"
+      definition = 'HUMRASH|GENSCAN_predicted_peptide_1|189_aa'
       assert_equal(definition, @obj.first.aaseq.definition)
     end
 
     def test_naseq
       assert_equal(Bio::FastaFormat, @obj.first.naseq.class)
-      seq = "atgacggaatataagctggtggtggtgggcgccggcggtgtgggcaagagtgcgctgaccatccagctgatccagaaccattttgtggacgaatacgaccccactatagaggattcctaccggaagcaggtggtcattgatggggagacgtgcctgttggacatcctggataccgccggccaggaggagtacagcgccatgcgggaccagtacatgcgcaccggggagggcttcctgtgtgtgtttgccatcaacaacaccaagtcttttgaggacatccaccagtacagggagcagatcaaacgggtgaaggactcggatgacgtgcccatggtgctggtggggaacaagtgtgacctggctgcacgcactgtggaatctcggcaggctcaggacctcgcccgaagctacggcatcccctacatcgagacctcggccaagacccggcagggagtggaggatgccttctacacgttggtgcgtgagatccggcagcacaagctgcggaagctgaaccctcctgatgagagtggccccggctgcatgagctgcaagtgtgtgctctcctga"
+      seq = 'atgacggaatataagctggtggtggtgggcgccggcggtgtgggcaagagtgcgctgaccatccagctgatccagaaccattttgtggacgaatacgaccccactatagaggattcctaccggaagcaggtggtcattgatggggagacgtgcctgttggacatcctggataccgccggccaggaggagtacagcgccatgcgggaccagtacatgcgcaccggggagggcttcctgtgtgtgtttgccatcaacaacaccaagtcttttgaggacatccaccagtacagggagcagatcaaacgggtgaaggactcggatgacgtgcccatggtgctggtggggaacaagtgtgacctggctgcacgcactgtggaatctcggcaggctcaggacctcgcccgaagctacggcatcccctacatcgagacctcggccaagacccggcagggagtggaggatgccttctacacgttggtgcgtgagatccggcagcacaagctgcggaagctgaaccctcctgatgagagtggccccggctgcatgagctgcaagtgtgtgctctcctga'
       assert_equal(seq, @obj.first.naseq.seq)
-      definition = "HUMRASH|GENSCAN_predicted_CDS_1|570_bp"
+      definition = 'HUMRASH|GENSCAN_predicted_CDS_1|570_bp'
       assert_equal(definition, @obj.first.naseq.definition)
     end
 
     def test_promoter
       assert_equal(Bio::Genscan::Report::Exon, @obj.last.promoter.class)
-      assert_equal("Prom", @obj.last.promoter.exon_type)
+      assert_equal('Prom', @obj.last.promoter.exon_type)
     end
 
     def test_polyA
       assert_equal(Bio::Genscan::Report::Exon, @obj.first.polyA.class)
       assert_equal('PlyA', @obj.first.polyA.exon_type)
     end
-
   end # TestGenscanReportGene
 
-
   class TestGenscanReportExon < Test::Unit::TestCase
-
     def setup
       test_data = Pathname.new(File.join(BioRubyTestDataPath, 'genscan')).cleanpath.to_s
-      report = File.open(File.join(test_data, 'sample.report')).read
+      report = File.read(File.join(test_data, 'sample.report'))
       @obj = Bio::Genscan::Report.new(report).predictions.first.exons.first
     end
 
@@ -125,7 +116,7 @@ module Bio
     end
 
     def test_exon_type_long
-      assert_equal('Initial exon',  @obj.exon_type_long)
+      assert_equal('Initial exon', @obj.exon_type_long)
     end
 
     def test_strand
@@ -175,7 +166,5 @@ module Bio
     def test_t_score
       assert_equal(21.33, @obj.t_score)
     end
-
   end # TestGenscanReportExon
-
 end

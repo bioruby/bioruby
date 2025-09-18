@@ -19,18 +19,18 @@ require 'bio/command'
 module Bio
   class FuncTestCommandNet < Test::Unit::TestCase
     def setup
-      @host = "bioruby.open-bio.org"
-      @port = 80 
-      @path = "/"
-      @url = "http://bioruby.open-bio.org:80/"
+      @host = 'bioruby.open-bio.org'
+      @port = 80
+      @path = '/'
+      @url = 'http://bioruby.open-bio.org:80/'
       @uri = URI.parse(@url)
     end
 
     def test_read_uri
       str = nil
-      assert_nothing_raised {
+      assert_nothing_raised do
         str = Bio::Command.read_uri(@url)
-      }
+      end
       assert(!str.to_s.empty?)
     end
 
@@ -106,10 +106,9 @@ module Bio
     def test_http_post
       ht = Bio::Command.new_http(@host)
       res = Bio::Command.http_post(ht, @path,
-                                        "this is test\n" * 10,
-                                        { 'Content-Language' => 'en' })
+                                   "this is test\n" * 10,
+                                   { 'Content-Language' => 'en' })
       assert_kind_of(Net::HTTPResponse, res)
     end
-
-  end #class FuncTestCommandNet
+  end # class FuncTestCommandNet
 end

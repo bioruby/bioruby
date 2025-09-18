@@ -7,80 +7,68 @@
 
 require 'pathname'
 
-unless defined? BioRubyTestDebug then
+unless defined? BioRubyTestDebug
   BioRubyTestDebug = ENV['BIORUBY_TEST_DEBUG'].to_s.empty? ? false : true
-  if BioRubyTestDebug then
-    $stderr.puts "BioRuby test debug enabled."
-  end
-end #BioRubyTestDebug
+  warn 'BioRuby test debug enabled.' if BioRubyTestDebug
+end # BioRubyTestDebug
 
-unless defined? BioRubyTestGem then
-  gem_version = ENV['BIORUBY_TEST_GEM']
-  if gem_version then
-    $stderr.puts 'require "rubygems"' if BioRubyTestDebug
-    require "rubygems"
-    if gem_version.empty? then
-      $stderr.puts "gem 'bio'" if BioRubyTestDebug
+unless defined? BioRubyTestGem
+  gem_version = ENV.fetch('BIORUBY_TEST_GEM', nil)
+  if gem_version
+    warn 'require "rubygems"' if BioRubyTestDebug
+    require 'rubygems'
+    if gem_version.empty?
+      warn "gem 'bio'" if BioRubyTestDebug
       gem 'bio'
     else
-      $stderr.puts "gem 'bio', #{gem_version.inspect}" if BioRubyTestDebug
+      warn "gem 'bio', #{gem_version.inspect}" if BioRubyTestDebug
       gem 'bio', gem_version
     end
   end
   BioRubyTestGem = gem_version
 end
 
-unless defined? BioRubyTestLibPath then
-  libpath = ENV['BIORUBY_TEST_LIB']
-  unless libpath then
-    libpath = Pathname.new(File.join(File.dirname(__FILE__),
-                                     "..", "lib")).cleanpath.to_s
-  end
+unless defined? BioRubyTestLibPath
+  libpath = ENV.fetch('BIORUBY_TEST_LIB', nil)
+  libpath ||= Pathname.new(File.join(File.dirname(__FILE__),
+                                     '..', 'lib')).cleanpath.to_s
 
   # do not add path to $: if BIORUBY_TEST_LIB is empty string
   # or BioRubyTestGem is true.
-  if (libpath and libpath.empty?) or BioRubyTestGem then
-    libpath = nil
-  end
+  libpath = nil if (libpath and libpath.empty?) or BioRubyTestGem
 
-  if libpath then
+  if libpath
     libpath.freeze
 
-    unless $:[0] == libpath then
-      $:.unshift(libpath)
-      if BioRubyTestDebug then
-        $stderr.puts "Added #{libpath.inspect} to $:."
-      end
+    if $:[0] == libpath
+      warn "NOT added #{libpath.inspect} to $:. because it is already on the top of $:." if BioRubyTestDebug
     else
-      if BioRubyTestDebug then
-        $stderr.puts "NOT added #{libpath.inspect} to $:. because it is already on the top of $:."
-      end
+      $:.unshift(libpath)
+      warn "Added #{libpath.inspect} to $:." if BioRubyTestDebug
     end
   end
 
   # (String or nil) Path to be added to $:.
   # It may or may not be the path of bioruby.
   BioRubyTestLibPath = libpath
-  
-  if BioRubyTestDebug then
-    $stderr.print "$: = [", "\n"
-    $stderr.puts($:.collect { |x| "\t#{x.inspect}" }.join(",\n"))
-    $stderr.print "]", "\n"
+
+  if BioRubyTestDebug
+    $stderr.print '$: = [', "\n"
+    warn($:.collect { |x| "\t#{x.inspect}" }.join(",\n"))
+    $stderr.print ']', "\n"
   end
-end #BioRubyTestLibPath
+end # BioRubyTestLibPath
 
 unless defined? BioRubyTestDataPath and BioRubyTestDataPath
-  datapath = ENV['BIORUBY_TEST_DATA']
-  if datapath.to_s.empty? then
+  datapath = ENV.fetch('BIORUBY_TEST_DATA', nil)
+  if datapath.to_s.empty?
     datapath = Pathname.new(File.join(File.dirname(__FILE__),
-                                      "data")).cleanpath.to_s
+                                      'data')).cleanpath.to_s
   end
   datapath.freeze
 
   # (String) Path to the test data.
   BioRubyTestDataPath = datapath
-  
-  if BioRubyTestDebug then
-    $stderr.print "DataPath = ", BioRubyTestDataPath.inspect, "\n"
-  end
+
+  $stderr.print 'DataPath = ', BioRubyTestDataPath.inspect, "\n" if BioRubyTestDebug
 end

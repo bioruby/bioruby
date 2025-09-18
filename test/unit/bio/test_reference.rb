@@ -1,7 +1,7 @@
 #
 # = test/unit/bio/test_reference.rb - Unit test for Bio::Reference
 #
-# Copyright::  Copyright (C) 2006 
+# Copyright::  Copyright (C) 2006
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
@@ -18,36 +18,34 @@ require 'test/unit'
 require 'bio/reference'
 require 'bio/compat/references'
 
-
 module Bio
   class TestReference < Test::Unit::TestCase
-    
     def setup
-      hash = {'authors' => [ "Hoge, J.P.", "Fuga, F.B." ], 'title' => "Title of the study.",
-              'journal' => "Theor. J. Hoge", 'volume' => 12, 'issue' => 3, 'pages' => "123-145",
-              'year' => 2001, 'pubmed' => 12345678, 'medline' => 98765432, 'abstract' => "Hoge fuga. hoge fuga.",
-              'url' => "http://example.com", 'mesh' => ['Hoge'], 'affiliations' => ['Tokyo']}
+      hash = { 'authors' => ['Hoge, J.P.', 'Fuga, F.B.'], 'title' => 'Title of the study.',
+               'journal' => 'Theor. J. Hoge', 'volume' => 12, 'issue' => 3, 'pages' => '123-145',
+               'year' => 2001, 'pubmed' => 12_345_678, 'medline' => 98_765_432, 'abstract' => 'Hoge fuga. hoge fuga.',
+               'url' => 'http://example.com', 'mesh' => ['Hoge'], 'affiliations' => ['Tokyo'] }
       @obj = Bio::Reference.new(hash)
     end
 
     def test_authors
-      ary = [ "Hoge, J.P.", "Fuga, F.B." ]
+      ary = ['Hoge, J.P.', 'Fuga, F.B.']
       assert_equal(ary, @obj.authors)
     end
 
     def test_journal
       str = 'Theor. J. Hoge'
-      assert_equal(str, @obj.journal)      
+      assert_equal(str, @obj.journal)
     end
-    
+
     def test_volume
       str = 12
-      assert_equal(str, @obj.volume)      
+      assert_equal(str, @obj.volume)
     end
 
     def test_issue
       str = 3
-      assert_equal(str, @obj.issue)      
+      assert_equal(str, @obj.issue)
     end
 
     def test_pages
@@ -59,9 +57,9 @@ module Bio
       str = 2001
       assert_equal(str, @obj.year)
     end
-    
+
     def test_pubmed
-      str = 12345678
+      str = 12_345_678
       assert_equal(str, @obj.pubmed)
     end
 
@@ -86,7 +84,7 @@ module Bio
     end
 
     def test_pubmed_url
-      assert_equal("http://www.ncbi.nlm.nih.gov/pubmed/12345678",
+      assert_equal('http://www.ncbi.nlm.nih.gov/pubmed/12345678',
                    @obj.pubmed_url)
     end
 
@@ -110,45 +108,45 @@ module Bio
     end
 
     def test_format_bibtex
-      str =<<__END__
-@article{PMID:12345678,
-  author       = {Hoge, J.P. and Fuga, F.B.},
-  title        = {Title of the study.},
-  journal      = {Theor. J. Hoge},
-  year         = {2001},
-  volume       = {12},
-  number       = {3},
-  pages        = {123--145},
-  url          = {http://example.com},
-}
-__END__
+      str = <<~__END__
+        @article{PMID:12345678,
+          author       = {Hoge, J.P. and Fuga, F.B.},
+          title        = {Title of the study.},
+          journal      = {Theor. J. Hoge},
+          year         = {2001},
+          volume       = {12},
+          number       = {3},
+          pages        = {123--145},
+          url          = {http://example.com},
+        }
+      __END__
       assert_equal(str, @obj.format('bibtex'))
       assert_equal(str, @obj.bibtex)
     end
 
     def test_format_bibtex_with_arguments
-      str =<<__END__
-@inproceedings{YourArticle,
-  author       = {Hoge, J.P. and Fuga, F.B.},
-  title        = {Title of the study.},
-  year         = {2001},
-  volume       = {12},
-  number       = {3},
-  pages        = {123--145},
-  booktitle    = {Theor. J. Hoge},
-  month        = {December},
-}
-__END__
+      str = <<~__END__
+        @inproceedings{YourArticle,
+          author       = {Hoge, J.P. and Fuga, F.B.},
+          title        = {Title of the study.},
+          year         = {2001},
+          volume       = {12},
+          number       = {3},
+          pages        = {123--145},
+          booktitle    = {Theor. J. Hoge},
+          month        = {December},
+        }
+      __END__
       assert_equal(str, @obj.format('bibtex', 'inproceedings', 'YourArticle',
-                                    { 'journal'   => false,
+                                    { 'journal' => false,
                                       'url' => false,
                                       'booktitle' => @obj.journal,
-                                      'month' => 'December'}))
+                                      'month' => 'December' }))
       assert_equal(str, @obj.bibtex('inproceedings', 'YourArticle',
-                                    { 'journal'   => false,
+                                    { 'journal' => false,
                                       'url' => false,
                                       'booktitle' => @obj.journal,
-                                      'month' => 'December'}))
+                                      'month' => 'December' }))
     end
 
     def test_format_rd
@@ -203,22 +201,21 @@ __END__
       str = 'Hoge, J.P. and Fuga, F.B. (2001). Title of the study. Theor. J. Hoge 12, 123-145.'
       assert_equal(str, @obj.format('cell'))
     end
-
   end
 
   class TestReference_noURL < Test::Unit::TestCase
     def setup
       hash = {
-        'authors' => [ "Hoge, J.P.", "Fuga, F.B." ],
-        'title' => "Title of the study.",
-        'journal' => "Theor. J. Hoge",
+        'authors' => ['Hoge, J.P.', 'Fuga, F.B.'],
+        'title' => 'Title of the study.',
+        'journal' => 'Theor. J. Hoge',
         'volume' => 12,
         'issue' => 3,
-        'pages' => "123-145",
+        'pages' => '123-145',
         'year' => 2001,
-        'pubmed' => 12345678,
-        'medline' => 98765432,
-        'abstract' => "Hoge fuga. hoge fuga.",
+        'pubmed' => 12_345_678,
+        'medline' => 98_765_432,
+        'abstract' => 'Hoge fuga. hoge fuga.',
         'mesh' => ['Hoge'],
         'affiliations' => ['Tokyo']
       }
@@ -234,27 +231,26 @@ __END__
       assert_equal(str, @obj.format('endnote'))
       assert_equal(str, @obj.endnote)
     end
-  end #class TestReference_noURL
+  end # class TestReference_noURL
 
   class TestReferences < Test::Unit::TestCase
-
     class NullStderr
       def initialize
         @log = []
       end
 
       def write(*arg)
-        #p arg
-        @log.push([ :write, *arg ])
+        # p arg
+        @log.push([:write, *arg])
         nil
       end
 
       def method_missing(*arg)
-        #p arg
+        # p arg
         @log.push arg
         nil
       end
-    end #class NullStderr
+    end # class NullStderr
 
     def setup
       # To suppress warning messages, $stderr is replaced by dummy object.
@@ -283,7 +279,5 @@ __END__
         assert(ref)
       end
     end
-
   end
-
 end

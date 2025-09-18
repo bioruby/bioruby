@@ -1,7 +1,7 @@
 #
 # test/unit/bio/test_feature.rb - Unit test for Features/Feature classes
 #
-# Copyright::  Copyright (C) 2005 
+# Copyright::  Copyright (C) 2005
 #              Mitsuteru Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
@@ -18,9 +18,7 @@ require 'test/unit'
 require 'bio/feature'
 require 'bio/compat/features'
 
-
 module Bio
-
   class TestQualifier < Test::Unit::TestCase
     def setup
       qualifier = 'gene'
@@ -37,11 +35,10 @@ module Bio
     end
   end
 
-
   class TestFeature < Test::Unit::TestCase
     def setup
       @qualifier = Bio::Feature::Qualifier.new('organism', 'Arabidopsis thaliana')
-      feature = "source"
+      feature = 'source'
       position = '1..615'
       qualifiers = [@qualifier]
       @obj = Bio::Feature.new(feature, position, qualifiers)
@@ -52,7 +49,7 @@ module Bio
     end
 
     def test_feature
-      assert_equal("source", @obj.feature)
+      assert_equal('source', @obj.feature)
     end
 
     def test_position
@@ -62,7 +59,7 @@ module Bio
     def test_qualifiers
       assert_equal([@qualifier], @obj.qualifiers)
     end
-    
+
     def test_locations
       assert_equal(1, @obj.locations.first.from)
       assert_equal(615, @obj.locations.first.to)
@@ -80,36 +77,35 @@ module Bio
     end
 
     def test_each
-      @obj.each do |qua| 
+      @obj.each do |qua|
         assert_equal('Arabidopsis thaliana', qua.value)
       end
     end
 
     def test_assoc
-      @obj.append(Bio::Feature::Qualifier.new("organism", "Arabidopsis thaliana"))
-      assert_equal({"organism" => "Arabidopsis thaliana"}, @obj.assoc)
+      @obj.append(Bio::Feature::Qualifier.new('organism', 'Arabidopsis thaliana'))
+      assert_equal({ 'organism' => 'Arabidopsis thaliana' }, @obj.assoc)
     end
   end
 
   class TestFeatures < Test::Unit::TestCase
-
     class NullStderr
       def initialize
         @log = []
       end
 
       def write(*arg)
-        #p arg
-        @log.push([ :write, *arg ])
+        # p arg
+        @log.push([:write, *arg])
         nil
       end
 
       def method_missing(*arg)
-        #p arg
+        # p arg
         @log.push arg
         nil
       end
-    end #class NullStderr
+    end # class NullStderr
 
     def setup
       # To suppress warning messages, $stderr is replaced by dummy object.
@@ -123,7 +119,7 @@ module Bio
       # bring back $stderr
       $stderr = @stderr_orig
     end
-    
+
     def test_features
       assert_equal(1, @obj.features.size)
     end
@@ -134,7 +130,7 @@ module Bio
     end
 
     def test_each
-      @obj.each do |feature| 
+      @obj.each do |feature|
         assert_equal('gene', feature.feature)
       end
     end
@@ -143,5 +139,4 @@ module Bio
       assert_equal('gene', @obj[0].feature)
     end
   end
-
 end

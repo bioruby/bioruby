@@ -19,9 +19,7 @@ require 'bio/io/pubmed'
 require 'bio/db/medline'
 
 module Bio
-
   module FuncTestPubmedCommon
-
     def test_esearch
       a = @pm.esearch('agile bioinformatics')
       assert_kind_of(Array, a)
@@ -36,14 +34,14 @@ module Bio
 
     def test_esearch_count
       a = @pm.esearch('agile bioinformatics',
-                      { "rettype"=>"count" })
+                      { 'rettype' => 'count' })
       assert_kind_of(Integer, a)
       assert_operator(a, :>=, 3,
                       'The failure may be caused by changes of NCBI PubMed.')
     end
 
     def test_esearch_retmax_retstart
-      a = @pm.esearch('p53', { "retmax" => 10, "retstart" => 20 })
+      a = @pm.esearch('p53', { 'retmax' => 10, 'retstart' => 20 })
       assert_equal(10, a.size,
                    'The failure may be caused by changes of NCBI PubMed.')
       a.each do |x|
@@ -52,12 +50,12 @@ module Bio
                      'PMID is not an integer value. This suggests that NCBI have changed the PMID policy.')
       end
 
-      a1 = @pm.esearch('p53', { "retmax" => 15, "retstart" => 35 })
-      a2 = @pm.esearch('p53', { "retmax" => 10, "retstart" => 0 })
+      a1 = @pm.esearch('p53', { 'retmax' => 15, 'retstart' => 35 })
+      a2 = @pm.esearch('p53', { 'retmax' => 10, 'retstart' => 0 })
       assert_equal(35, (a + a1 + a2).sort.uniq.size,
                    'The failure may be caused by changes of NCBI PubMed.')
 
-      a3 = @pm.esearch('p53', { "retmax" => 10 })
+      a3 = @pm.esearch('p53', { 'retmax' => 10 })
       assert_equal(a2.sort, a3.sort,
                    'The failure may be caused by changes of NCBI PubMed.')
     end
@@ -77,15 +75,15 @@ module Bio
     private :do_efetch_single
 
     def test_efetch
-      do_efetch_single(12368254)
+      do_efetch_single(12_368_254)
     end
 
     def test_efetch_str
-      do_efetch_single("16734914")
+      do_efetch_single('16734914')
     end
 
     def test_efetch_multiple
-      arg = [ 12368254, 18689808, 19304878 ]
+      arg = [12_368_254, 18_689_808, 19_304_878]
       a = @pm.efetch(arg)
       assert_kind_of(Array, a)
       assert_equal(3, a.size)
@@ -95,17 +93,17 @@ module Bio
     end
 
     def test_efetch_single_xml
-      arg = 12368254
-      str = @pm.efetch(arg, { "retmode" => 'xml' })
+      arg = 12_368_254
+      str = @pm.efetch(arg, { 'retmode' => 'xml' })
       assert_kind_of(String, str)
-      assert(str.index(/\<PubmedArticleSet\>/))
+      assert(str.index(/<PubmedArticleSet>/))
     end
 
     def test_efetch_multiple_xml
-      arg = [ "16734914", 16381885, "10592173" ]
-      str = @pm.efetch(arg, { "retmode" => 'xml' })
+      arg = ['16734914', 16_381_885, '10592173']
+      str = @pm.efetch(arg, { 'retmode' => 'xml' })
       assert_kind_of(String, str)
-      assert(str.index(/\<PubmedArticleSet\>/))
+      assert(str.index(/<PubmedArticleSet>/))
     end
 
     def test_search
@@ -122,63 +120,60 @@ module Bio
     end
 
     def test_query
-      pmid = 20739307
+      pmid = 20_739_307
       str = @pm.query(pmid)
       assert_kind_of(String, str)
       check_pubmed_entry(pmid, str)
     end
 
     def test_query_single_str
-      pmid = "20739307"
+      pmid = '20739307'
       str = @pm.query(pmid)
       assert_kind_of(String, str)
       check_pubmed_entry(pmid, str)
     end
 
     def test_query_multiple
-      arg = [ "16734914", 16381885, "10592173" ]
+      arg = ['16734914', 16_381_885, '10592173']
       str = @pm.query(*arg)
       assert_kind_of(String, str)
-      str.split(/\n\n/).each do |s|
+      str.split("\n\n").each do |s|
         check_pubmed_entry(arg.shift, s)
       end
     end
 
     def test_pmfetch
-      pmid = 20739307
+      pmid = 20_739_307
       str = @pm.pmfetch(pmid)
       assert_kind_of(String, str)
       check_pubmed_entry(pmid, str)
     end
 
     def test_pmfetch_str
-      pmid = "20739307"
+      pmid = '20739307'
       str = @pm.pmfetch(pmid)
       assert_kind_of(String, str)
       check_pubmed_entry(pmid, str)
     end
-  end #module FuncTestPubmedCommon
+  end # module FuncTestPubmedCommon
 
   class FuncTestPubmed < Test::Unit::TestCase
-
     include FuncTestPubmedCommon
 
     def setup
       Bio::NCBI.default_email = 'staff@bioruby.org'
-      #$stderr.puts Bio::NCBI.default_tool
+      # $stderr.puts Bio::NCBI.default_tool
       @pm = Bio::PubMed.new
     end
-  end #class FuncTestPubmed
+  end # class FuncTestPubmed
 
   class FuncTestPubmedClassMethod < Test::Unit::TestCase
-
     include FuncTestPubmedCommon
 
     def setup
       Bio::NCBI.default_email = 'staff@bioruby.org'
-      #$stderr.puts Bio::NCBI.default_tool
+      # $stderr.puts Bio::NCBI.default_tool
       @pm = Bio::PubMed
     end
-  end #class FuncTestPubmedClassMethod
-
+  end # class FuncTestPubmedClassMethod
 end

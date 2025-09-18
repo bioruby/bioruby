@@ -17,21 +17,19 @@ require 'test/unit'
 require 'bio/appl/blast/ncbioptions'
 
 module Bio
-
   class TestBlastNCBIOptions < Test::Unit::TestCase
-
     def setup
       @str = '-p blastn -m0 -m 1 -m2 -m 3 -F T -m 4 m5 -pblastx -m 6 -m 7'
-      @options = %w( -p blastn -m0 -m 1 -m2 -m 3 -F T -m 4 m5
-                     -pblastx -m 6 -m 7 )
-      @normalized_options = %w( -F T m5 -p blastx -m 7 )
+      @options = %w[ -p blastn -m0 -m 1 -m2 -m 3 -F T -m 4 m5
+                     -pblastx -m 6 -m 7 ]
+      @normalized_options = %w[-F T m5 -p blastx -m 7]
       @obj = Bio::Blast::NCBIOptions.parse(@str)
     end
 
     def test_parse
       str = '-p tblastx -d cdna_human -i est001.fst -o test.blastn -e 0.1'
-      options = %w( -p tblastx -d cdna_human -i est001.fst
-                    -o test.blastn -e 0.1 )
+      options = %w[ -p tblastx -d cdna_human -i est001.fst
+                    -o test.blastn -e 0.1 ]
       obj = Bio::Blast::NCBIOptions.parse(str)
       assert_equal(options, obj.options)
     end
@@ -70,12 +68,12 @@ module Bio
     def test_set
       assert_equal('blastx', @obj.set('-p', 'blastp'))
       assert_equal('blastp', @obj.set('p', 'tblastx'))
-      assert_equal('tblastx',@obj.get('p'))
-      
+      assert_equal('tblastx', @obj.get('p'))
+
       assert_equal('7', @obj.set('m', '8'))
       assert_equal('8', @obj.set('-m', '0'))
       assert_equal('0', @obj.get('m'))
-      
+
       assert_equal('T', @obj.set('-F', 'F'))
       assert_equal('F', @obj.get('F'))
 
@@ -93,22 +91,20 @@ module Bio
       obj2 = Bio::Blast::NCBIOptions.parse('-F F')
       assert_equal(false, @obj == obj2)
 
-      assert_equal(false, @obj == 12345)
+      assert_equal(false, @obj == 12_345)
     end
 
     def test_add_options
-      opts = %w( -p tblastx -m 8 -d cdna -i est.fst -o test.blast -e 0.01 )
-      result_opts = %w( -F T m5 ) + opts
+      opts = %w[-p tblastx -m 8 -d cdna -i est.fst -o test.blast -e 0.01]
+      result_opts = %w[-F T m5] + opts
       assert_nothing_raised { @obj.add_options(opts) }
       assert_equal(result_opts, @obj.options)
     end
 
     def test_make_command_line_options
-      opts = %w( -p tblastx -d cdna -i est.fst -o test.blast -e 0.01 )
-      result_opts = opts + %w( -m 0 -m 1 -m 2 -m 3 -F T -m 4 m5 -m 6 -m 7 )
+      opts = %w[-p tblastx -d cdna -i est.fst -o test.blast -e 0.01]
+      result_opts = opts + %w[-m 0 -m 1 -m 2 -m 3 -F T -m 4 m5 -m 6 -m 7]
       assert_equal(result_opts, @obj.make_command_line_options(opts))
     end
-
-  end #class TestBlastNCBIOptions
-
-end #module Bio
+  end # class TestBlastNCBIOptions
+end # module Bio

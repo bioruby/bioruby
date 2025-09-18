@@ -17,16 +17,14 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
 require 'test/unit'
 require 'bio/util/contingency_table'
 
-module Bio #:nodoc:
-  class TestContingencyTable < Test::Unit::TestCase #:nodoc:
- 
+module Bio # :nodoc:
+  class TestContingencyTable < Test::Unit::TestCase # :nodoc:
     def lite_example(sequences, max_length, characters)
-
       output = []
 
       0.upto(max_length - 1) do |i|
-        (i+1).upto(max_length - 1) do |j|
-          ctable = Bio::ContingencyTable.new( characters )
+        (i + 1).upto(max_length - 1) do |j|
+          ctable = Bio::ContingencyTable.new(characters)
           sequences.each do |seq|
             i_char = seq[i].chr
             j_char = seq[j].chr
@@ -34,19 +32,17 @@ module Bio #:nodoc:
           end
           chi_square = ctable.chi_square
           contingency_coefficient = ctable.contingency_coefficient
-          output << [(i+1), (j+1), chi_square, contingency_coefficient]
+          output << [(i + 1), (j + 1), chi_square, contingency_coefficient]
         end
       end
 
-      return output
+      output
     end
 
-
     def test_lite_example
-      ctable = Bio::ContingencyTable
       allowed_letters = 'abcdefghijk'.split('')
 
-      seqs = Array.new
+      seqs = []
       seqs << 'abcde'
       seqs << 'abcde'
       seqs << 'kacje'
@@ -54,26 +50,23 @@ module Bio #:nodoc:
       seqs << 'akcfa'
       seqs << 'akcfe'
 
-      length_of_every_sequence = seqs[0].size  # 5 letters long
+      length_of_every_sequence = seqs[0].size # 5 letters long
 
       results = lite_example(seqs, length_of_every_sequence, allowed_letters)
 
-=begin
-  i           j           chi_square  contingency_coefficient
-  1           2           2.4         0.534522483824849
-  1           3           0.0         0.0
-  1           4           6.0         0.707106781186548
-  1           5           0.24        0.196116135138184
-  2           3           0.0         0.0
-  2           4           12.0        0.816496580927726
-  2           5           2.4         0.534522483824849
-  3           4           0.0         0.0
-  3           5           0.0         0.0
-  4           5           2.4         0.534522483824849
-=end
+      #   i           j           chi_square  contingency_coefficient
+      #   1           2           2.4         0.534522483824849
+      #   1           3           0.0         0.0
+      #   1           4           6.0         0.707106781186548
+      #   1           5           0.24        0.196116135138184
+      #   2           3           0.0         0.0
+      #   2           4           12.0        0.816496580927726
+      #   2           5           2.4         0.534522483824849
+      #   3           4           0.0         0.0
+      #   3           5           0.0         0.0
+      #   4           5           2.4         0.534522483824849
 
-
-      #assert_equal(2.4, results[0][2])
+      # assert_equal(2.4, results[0][2])
       assert_in_delta(2.4, results[0][2], 1e-13)
       assert_in_delta(0.534522483824849, results[0][3], 1e-15)
 
@@ -91,6 +84,5 @@ module Bio #:nodoc:
       assert_equal(ctable.column_sum_all, ctable.row_sum_all)
       assert_equal(ctable.column_sum_all, ctable.table_sum_all)
     end
-
   end
 end

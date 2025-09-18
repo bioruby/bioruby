@@ -17,30 +17,28 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 require 'test/unit'
 require 'bio/util/restriction_enzyme/cut_symbol'
 
-module Bio; module TestRestrictionEnzyme #:nodoc:
+# :nodoc:
+module Bio
+  module TestRestrictionEnzyme
+    class TestCutSymbol < Test::Unit::TestCase # :nodoc:
+      include Bio::RestrictionEnzyme::CutSymbol
 
-class TestCutSymbol < Test::Unit::TestCase #:nodoc:
+      def setup; end
 
-  include Bio::RestrictionEnzyme::CutSymbol
+      def test_methods
+        assert_equal('^', cut_symbol)
+        assert_equal('|', set_cut_symbol('|'))
+        assert_equal('|', cut_symbol)
+        assert_equal('\\|', escaped_cut_symbol)
+        assert_equal(/\|/, re_cut_symbol)
+        assert_equal('^', set_cut_symbol('^'))
 
-  def setup
+        assert_equal(3, 'abc^de' =~ re_cut_symbol)
+        assert_equal(nil, 'abc^de' =~ re_cut_symbol_adjacent)
+        assert_equal(3, 'abc^^de' =~ re_cut_symbol_adjacent)
+        assert_equal(4, 'a^bc^^de' =~ re_cut_symbol_adjacent)
+        assert_equal(nil, 'a^bc^de' =~ re_cut_symbol_adjacent)
+      end
+    end
   end
-  
-  def test_methods
-    assert_equal('^', cut_symbol)
-    assert_equal('|', set_cut_symbol('|'))
-    assert_equal('|', cut_symbol)
-    assert_equal('\\|', escaped_cut_symbol)
-    assert_equal(/\|/, re_cut_symbol)
-    assert_equal('^', set_cut_symbol('^'))
-    
-    assert_equal(3, "abc^de" =~ re_cut_symbol)
-    assert_equal(nil, "abc^de" =~ re_cut_symbol_adjacent)
-    assert_equal(3, "abc^^de" =~ re_cut_symbol_adjacent)
-    assert_equal(4, "a^bc^^de" =~ re_cut_symbol_adjacent)
-    assert_equal(nil, "a^bc^de" =~ re_cut_symbol_adjacent)
-  end
-  
 end
-
-end; end

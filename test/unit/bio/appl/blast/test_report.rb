@@ -18,16 +18,14 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 require 'test/unit'
 require 'bio/appl/blast/report'
 
-
 module Bio
-
   module TestBlastReportHelper
     TestDataBlast = Pathname.new(File.join(BioRubyTestDataPath, 'blast')).cleanpath.to_s
 
     private
 
     def get_input_data(basename = 'b0002.faa')
-      File.open(File.join(TestDataBlast, basename)).read
+      File.read(File.join(TestDataBlast, basename))
     end
 
     def get_output_data(basename = 'b0002.faa', format = 7)
@@ -38,7 +36,7 @@ module Bio
       # 'b0002.faa.m7'
       # 'b0002.faa.m8'
 
-      File.open(File.join(TestDataBlast, fn)).read
+      File.read(File.join(TestDataBlast, fn))
     end
 
     def create_report_object(basename = 'b0002.faa')
@@ -60,7 +58,7 @@ module Bio
         Bio::Blast::Report.new(text)
       end
     end
-  end #module TestBlastReportHelper
+  end # module TestBlastReportHelper
 
   module TemplateTestBlastReport
     include TestBlastReportHelper
@@ -68,7 +66,7 @@ module Bio
     def setup
       @report = create_report_object
     end
-    
+
     def test_iterations
       assert(@report.iterations)
     end
@@ -103,7 +101,9 @@ module Bio
     end
 
     def test_query_def
-      assert_equal('eco:b0002 thrA, Hs, thrD, thrA2, thrA1; bifunctional: aspartokinase I (N-terminal); homoserine dehydrogenase I (C-terminal) [EC:2.7.2.4 1.1.1.3]; K00003 homoserine dehydrogenase; K00928 aspartate kinase (A)', @report.query_def)
+      assert_equal(
+        'eco:b0002 thrA, Hs, thrD, thrA2, thrA1; bifunctional: aspartokinase I (N-terminal); homoserine dehydrogenase I (C-terminal) [EC:2.7.2.4 1.1.1.3]; K00003 homoserine dehydrogenase; K00928 aspartate kinase (A)', @report.query_def
+      )
     end
 
     def test_query_len
@@ -151,15 +151,15 @@ module Bio
     end
 
     def test_each_iteration
-      assert_nothing_raised {
+      assert_nothing_raised do
         @report.each_iteration { |itr| }
-      }
+      end
     end
 
     def test_each_hit
-      assert_nothing_raised {
+      assert_nothing_raised do
         @report.each_hit { |hit| }
-      }
+      end
     end
 
     def test_hits
@@ -167,7 +167,10 @@ module Bio
     end
 
     def test_statistics
-      assert_equal({"kappa"=>0.041, "db-num"=>1, "eff-space"=>605284.0, "hsp-len"=>42, "db-len"=>820, "lambda"=>0.267, "entropy"=>0.14}, @report.statistics)
+      assert_equal(
+        { 'kappa' => 0.041, 'db-num' => 1, 'eff-space' => 605_284.0, 'hsp-len' => 42, 'db-len' => 820, 'lambda' => 0.267,
+          'entropy' => 0.14 }, @report.statistics
+      )
     end
 
     def test_db_num
@@ -183,7 +186,7 @@ module Bio
     end
 
     def test_eff_space
-      assert_equal(605284, @report.eff_space)
+      assert_equal(605_284, @report.eff_space)
     end
 
     def test_kappa
@@ -201,8 +204,7 @@ module Bio
     def test_message
       assert_equal(nil, @report.message)
     end
-  end #module TemplateTestBlastReport
-
+  end # module TemplateTestBlastReport
 
   module TemplateTestBlastReportIteration
     include TestBlastReportHelper
@@ -217,9 +219,9 @@ module Bio
     end
 
     def test_statistics
-      stat = {"kappa" => 0.041, "eff-space" => 605284, "db-num" => 1, 
-              "hsp-len" => 42, "db-len" => 820, "lambda" => 0.267, 
-              "entropy" => 0.14}
+      stat = { 'kappa' => 0.041, 'eff-space' => 605_284, 'db-num' => 1,
+               'hsp-len' => 42, 'db-len' => 820, 'lambda' => 0.267,
+               'entropy' => 0.14 }
       assert_equal(stat, @itr.statistics)
     end
 
@@ -230,8 +232,7 @@ module Bio
     def test_message
       assert_equal(nil, @itr.message)
     end
-  end #module TemplateTestBlastReportIteration
-
+  end # module TemplateTestBlastReportIteration
 
   module TemplateTestBlastReportHit
     include TestBlastReportHelper
@@ -250,7 +251,9 @@ module Bio
     end
 
     def test_Hit_query_def
-      assert_equal('eco:b0002 thrA, Hs, thrD, thrA2, thrA1; bifunctional: aspartokinase I (N-terminal); homoserine dehydrogenase I (C-terminal) [EC:2.7.2.4 1.1.1.3]; K00003 homoserine dehydrogenase; K00928 aspartate kinase (A)', @hit.query_def)
+      assert_equal(
+        'eco:b0002 thrA, Hs, thrD, thrA2, thrA1; bifunctional: aspartokinase I (N-terminal); homoserine dehydrogenase I (C-terminal) [EC:2.7.2.4 1.1.1.3]; K00003 homoserine dehydrogenase; K00928 aspartate kinase (A)', @hit.query_def
+      )
     end
 
     def test_Hit_query_len
@@ -262,7 +265,7 @@ module Bio
     end
 
     def test_Hit_hit_id
-      assert_equal('gnl|BL_ORD_ID|0', @hit.hit_id) 
+      assert_equal('gnl|BL_ORD_ID|0', @hit.hit_id)
     end
 
     def test_Hit_len
@@ -288,7 +291,7 @@ module Bio
     def test_Hit_target_id
       assert(@hit.target_id)
     end
-    
+
     def test_Hit_evalue
       assert_equal(0, @hit.evalue)
     end
@@ -322,29 +325,28 @@ module Bio
 
     def test_Hit_query_start
       assert_equal(1, @hit.query_start)
-#      assert_equal(1, @hit.query_from)
+      #      assert_equal(1, @hit.query_from)
     end
 
     def test_Hit_query_end
       assert_equal(820, @hit.query_end)
-#      assert_equal(820, @hit.query_to)
+      #      assert_equal(820, @hit.query_to)
     end
 
     def test_Hit_target_start
       assert_equal(1, @hit.target_start)
-#      assert_equal(1, @hit.hit_from)
+      #      assert_equal(1, @hit.hit_from)
     end
 
     def test_Hit_target_end
       assert_equal(820, @hit.target_end)
-#      assert_equal(820, @hit.hit_to)
+      #      assert_equal(820, @hit.hit_to)
     end
 
     def test_Hit_lap_at
       assert_equal([1, 820, 1, 820], @hit.lap_at)
     end
-  end #module TemplateTestBlastReportHit
-
+  end # module TemplateTestBlastReportHit
 
   module TemplateTestBlastReportHsp
     include TestBlastReportHelper
@@ -353,7 +355,7 @@ module Bio
       report = create_report_object
       @hsp = report.hits.first.hsps.first
     end
-    
+
     def test_Hsp_num
       assert_equal(1, @hsp.num)
     end
@@ -444,8 +446,7 @@ module Bio
     def test_Hsp_mismatch_count
       assert_nothing_raised { @hsp.mismatch_count }
     end
-
-  end #module TestBlastReportHsp
+  end # module TestBlastReportHsp
 
   class TestBlastReport < Test::Unit::TestCase
     include TemplateTestBlastReport
@@ -479,25 +480,25 @@ module Bio
     include TemplateTestBlastReportHsp
   end
 
-  if Bio::Blast::Report.private_method_defined? :xmlparser_parse then
+  if Bio::Blast::Report.private_method_defined? :xmlparser_parse
 
-  class TestBlastReportXMLParser < Test::Unit::TestCase
-    include TemplateTestBlastReport
-  end
+    class TestBlastReportXMLParser < Test::Unit::TestCase
+      include TemplateTestBlastReport
+    end
 
-  class TestBlastReportIterationXMLParser < Test::Unit::TestCase
-    include TemplateTestBlastReportIteration
-  end
+    class TestBlastReportIterationXMLParser < Test::Unit::TestCase
+      include TemplateTestBlastReportIteration
+    end
 
-  class TestBlastReportHitXMLParser < Test::Unit::TestCase
-    include TemplateTestBlastReportHit
-  end
+    class TestBlastReportHitXMLParser < Test::Unit::TestCase
+      include TemplateTestBlastReportHit
+    end
 
-  class TestBlastReportHspXMLParser < Test::Unit::TestCase
-    include TemplateTestBlastReportHsp
-  end
+    class TestBlastReportHspXMLParser < Test::Unit::TestCase
+      include TemplateTestBlastReportHsp
+    end
 
-  end #if
+  end # if
 
   class TestBlastReportDefault < Test::Unit::TestCase
     include TemplateTestBlastReport
@@ -546,10 +547,11 @@ module Bio
     def test_gapped_entropy
       assert_equal(0.140, @report.gapped_entropy)
     end
-  end #class TestBlastReportDefault
+  end # class TestBlastReportDefault
 
   class TestBlastReportIterationDefault < Test::Unit::TestCase
     include TemplateTestBlastReportIteration
+
     undef test_statistics
   end
 
@@ -581,16 +583,16 @@ module Bio
 
     def test_Hit_midline
       # differs from XML because filtered residues are not specified in XML
-      seq = @filtered_query_sequence.gsub(/x/, ' ')
+      seq = @filtered_query_sequence.gsub('x', ' ')
       assert_equal(seq, @hit.midline)
     end
 
     def test_Hit_query_seq
       # differs from XML because filtered residues are not specified in XML
-      seq = @filtered_query_sequence.gsub(/x/, 'X')
+      seq = @filtered_query_sequence.gsub('x', 'X')
       assert_equal(seq, @hit.query_seq)
     end
-  end #class TestBlastReportHitDefault
+  end # class TestBlastReportHitDefault
 
   class TestBlastReportHspDefault < Test::Unit::TestCase
     include TemplateTestBlastReportHsp
@@ -620,16 +622,16 @@ module Bio
 
     def test_Hsp_midline
       # differs from XML because filtered residues are not specified in XML
-      seq = @filtered_query_sequence.gsub(/x/, ' ')
+      seq = @filtered_query_sequence.gsub('x', ' ')
       assert_equal(seq, @hsp.midline)
     end
 
     def test_Hsp_qseq
       # differs from XML because filtered residues are not specified in XML
-      seq = @filtered_query_sequence.gsub(/x/, 'X')
+      seq = @filtered_query_sequence.gsub('x', 'X')
       assert_equal(seq, @hsp.qseq)
     end
-    
+
     def test_Hsp_bit_score
       # differs from XML because of truncation in the default format
       assert_equal(1567.0, @hsp.bit_score)
@@ -644,15 +646,14 @@ module Bio
       # differs from XML because not available in the default BLASTP format
       assert_equal(nil, @hsp.query_frame)
     end
-  end #class TestBlastReportHspDefault
-
+  end # class TestBlastReportHspDefault
 
   module TestBlastReportTabularHelper
     def def_test_assert_nil(test_method)
       str = test_method.to_s
-      name = str.sub(/test(\_(Hit|Hsp))?\_/, '')
+      name = str.sub(/test(_(Hit|Hsp))?_/, '')
       method = name.intern
-      instance = case self.to_s
+      instance = case to_s
                  when /Iteration/
                    :@itr
                  when /Hit/
@@ -662,12 +663,12 @@ module Bio
                  else
                    :@report
                  end
-                  
+
       define_method(test_method) do
         assert_nil(instance_variable_get(instance).__send__(method))
       end
     end
-  end #module TestBlastReportTabularHelper
+  end # module TestBlastReportTabularHelper
 
   class TestBlastReportTabular < Test::Unit::TestCase
     extend TestBlastReportTabularHelper
@@ -698,19 +699,19 @@ module Bio
 
     def test_query_def
       # differs from XML because of truncation in the "-m 8" format
-      assert_equal("eco:b0002", @report.query_def)
+      assert_equal('eco:b0002', @report.query_def)
     end
 
     def test_query_id
       # differs from XML because of the limited data
-      assert_equal("eco:b0002", @report.query_id)
+      assert_equal('eco:b0002', @report.query_id)
     end
 
     # No statistics information available in the "-m 8" format
     def test_statistics
       assert_equal({}, @report.statistics)
     end
-  end #class TestBlastReportTabular
+  end # class TestBlastReportTabular
 
   class TestBlastReportIterationTabular < Test::Unit::TestCase
     include TemplateTestBlastReportIteration
@@ -719,7 +720,7 @@ module Bio
     def test_statistics
       assert_equal({}, @itr.statistics)
     end
-  end #class TestBlastReportIterationTabular
+  end # class TestBlastReportIterationTabular
 
   class TestBlastReportHitTabular < Test::Unit::TestCase
     extend TestBlastReportTabularHelper
@@ -741,14 +742,14 @@ module Bio
 
     def test_Hit_query_def
       # differs from XML because of truncation in the "-m 8" format
-      assert_equal("eco:b0002", @hit.query_def)
+      assert_equal('eco:b0002', @hit.query_def)
     end
 
     def test_Hit_query_id
       # differs from XML because of the limited data
-      assert_equal("eco:b0002", @hit.query_id)
+      assert_equal('eco:b0002', @hit.query_id)
     end
-  end #class TestBlastReportHitTabular
+  end # class TestBlastReportHitTabular
 
   class TestBlastReportHspTabular < Test::Unit::TestCase
     extend TestBlastReportTabularHelper
@@ -768,7 +769,7 @@ module Bio
       # differs from XML because of truncation in the "-m 8" format
       assert_equal(1567.0, @hsp.bit_score)
     end
-  end #class TestBlastReportHspTabular
+  end # class TestBlastReportHspTabular
 
   ########################################################################
   # Tests for new BLAST XML format (blastall 2.2.14 or later)
@@ -780,7 +781,7 @@ module Bio
 
     def setup
       @report = create_report_object('blastp-multi')
-      @overall = [ @report ] + @report.reports
+      @overall = [@report] + @report.reports
     end
 
     def test_reports
@@ -789,7 +790,7 @@ module Bio
 
     def test_iterations
       assert_equal(1, @report.iterations.size)
-      assert_equal([ 1, 1, 1, 1, 1],
+      assert_equal([1, 1, 1, 1, 1],
                    @report.reports.collect { |x| x.iterations.size })
     end
 
@@ -830,7 +831,7 @@ module Bio
     end
 
     def test_query_id
-      qids = [ 'lcl|1_0', 'lcl|2_0', 'lcl|3_0', nil, 'lcl|5_0' ]
+      qids = ['lcl|1_0', 'lcl|2_0', 'lcl|3_0', nil, 'lcl|5_0']
       assert_equal(qids[0], @report.query_id)
       assert_equal(qids,
                    @report.reports.collect { |r| r.query_id })
@@ -838,19 +839,18 @@ module Bio
 
     def test_query_def
       qdefs =
-        [ 'gi|1790845|gb|AAC77338.1| predicted DNA-binding transcriptional regulator [Escherichia coli str. K-12 substr. MG1655]',
-          'gi|1790846|gb|AAC77339.1| lipoate-protein ligase A [Escherichia coli str. K-12',
-          'gi|1790847|gb|AAC77340.1| conserved protein [Escherichia coli str. K-12 substr. MG1655]',
-          nil,
-          'gi|1790849|gb|AAC77341.1| 3-phosphoserine phosphatase [Escherichia coli str. K-12 substr. MG1655]'
-        ]
+        ['gi|1790845|gb|AAC77338.1| predicted DNA-binding transcriptional regulator [Escherichia coli str. K-12 substr. MG1655]',
+         'gi|1790846|gb|AAC77339.1| lipoate-protein ligase A [Escherichia coli str. K-12',
+         'gi|1790847|gb|AAC77340.1| conserved protein [Escherichia coli str. K-12 substr. MG1655]',
+         nil,
+         'gi|1790849|gb|AAC77341.1| 3-phosphoserine phosphatase [Escherichia coli str. K-12 substr. MG1655]']
       assert_equal(qdefs[0], @report.query_def)
       assert_equal(qdefs,
                    @report.reports.collect { |r| r.query_def })
     end
 
     def test_query_len
-      qlens = [ 443, 346, 214, nil, 322 ]
+      qlens = [443, 346, 214, nil, 322]
       assert_equal(qlens[0], @report.query_len)
       assert_equal(qlens,
                    @report.reports.collect { |r| r.query_len })
@@ -895,23 +895,23 @@ module Bio
     def test_each_iteration
       @overall.each do |r|
         count = 0
-        assert_nothing_raised {
-          r.each_iteration { |itr| count += 1 }
-        }
+        assert_nothing_raised do
+          r.each_iteration { |_itr| count += 1 }
+        end
         assert_equal(1, count)
       end
     end
 
     def test_each_hit
       @overall.each do |r|
-        assert_nothing_raised {
+        assert_nothing_raised do
           r.each_hit { |hit| }
-        }
+        end
       end
     end
 
     def test_hits
-      hsizes = [ 0, 1, 1, 0, 2 ]
+      hsizes = [0, 1, 1, 0, 2]
       assert_equal(hsizes[0], @report.hits.size)
       assert_equal(hsizes,
                    @report.reports.collect { |r| r.hits.size })
@@ -921,11 +921,11 @@ module Bio
       assert_equal({}, @report.statistics)
 
       stat = {
-        "kappa" => 0.041, "eff-space" => 0, "db-num" => 5361, 
-        "hsp-len" => 0, "db-len" => 1609188, "lambda" => 0.267, 
-        "entropy" => 0.14
+        'kappa' => 0.041, 'eff-space' => 0, 'db-num' => 5361,
+        'hsp-len' => 0, 'db-len' => 1_609_188, 'lambda' => 0.267,
+        'entropy' => 0.14
       }
-      stats = [ {}, stat, stat, {}, stat ]
+      stats = [{}, stat, stat, {}, stat]
       @report.reports.each do |r|
         assert_equal(stats.shift, r.statistics)
       end
@@ -933,7 +933,7 @@ module Bio
 
     def test_db_num
       assert_equal(nil, @report.db_num)
-      ary = [ nil, 5361, 5361, nil, 5361 ]
+      ary = [nil, 5361, 5361, nil, 5361]
       @report.reports.each do |r|
         assert_equal(ary.shift, r.db_num)
       end
@@ -941,7 +941,7 @@ module Bio
 
     def test_db_len
       assert_equal(nil, @report.db_len)
-      ary = [ nil, 1609188, 1609188, nil, 1609188 ]
+      ary = [nil, 1_609_188, 1_609_188, nil, 1_609_188]
       @report.reports.each do |r|
         assert_equal(ary.shift, r.db_len)
       end
@@ -949,7 +949,7 @@ module Bio
 
     def test_hsp_len
       assert_equal(nil, @report.hsp_len)
-      ary = [ nil, 0, 0, nil, 0 ]
+      ary = [nil, 0, 0, nil, 0]
       @report.reports.each do |r|
         assert_equal(ary.shift, r.hsp_len)
       end
@@ -957,7 +957,7 @@ module Bio
 
     def test_eff_space
       assert_equal(nil, @report.eff_space)
-      ary = [ nil, 0, 0, nil, 0 ]
+      ary = [nil, 0, 0, nil, 0]
       @report.reports.each do |r|
         assert_equal(ary.shift, r.eff_space)
       end
@@ -965,7 +965,7 @@ module Bio
 
     def test_kappa
       assert_equal(nil, @report.kappa)
-      ary = [ nil, 0.041, 0.041, nil, 0.041 ]
+      ary = [nil, 0.041, 0.041, nil, 0.041]
       @report.reports.each do |r|
         assert_equal(ary.shift, r.kappa)
       end
@@ -973,7 +973,7 @@ module Bio
 
     def test_lambda
       assert_equal(nil, @report.lambda)
-      ary = [ nil, 0.267, 0.267, nil, 0.267 ]
+      ary = [nil, 0.267, 0.267, nil, 0.267]
       @report.reports.each do |r|
         assert_equal(ary.shift, r.lambda)
       end
@@ -981,7 +981,7 @@ module Bio
 
     def test_entropy
       assert_equal(nil, @report.entropy)
-      ary = [ nil, 0.14, 0.14, nil, 0.14 ]
+      ary = [nil, 0.14, 0.14, nil, 0.14]
       @report.reports.each do |r|
         assert_equal(ary.shift, r.entropy)
       end
@@ -992,7 +992,7 @@ module Bio
         assert_equal(nil, r.message)
       end
     end
-  end #module TemplateTestBlastReportMulti
+  end # module TemplateTestBlastReportMulti
 
   module TemplateTestBlastReportIterationMulti
     include TestBlastReportHelper
@@ -1007,7 +1007,8 @@ module Bio
     end
 
     def test_query_def
-      assert_equal('gi|1790849|gb|AAC77341.1| 3-phosphoserine phosphatase [Escherichia coli str. K-12 substr. MG1655]', @itr.query_def)
+      assert_equal('gi|1790849|gb|AAC77341.1| 3-phosphoserine phosphatase [Escherichia coli str. K-12 substr. MG1655]',
+                   @itr.query_def)
     end
 
     def test_query_len
@@ -1020,17 +1021,17 @@ module Bio
 
     def test_each
       count = 0
-      assert_nothing_raised {
-        @itr.each { |hit| count += 1 }
-      }
+      assert_nothing_raised do
+        @itr.each { |_hit| count += 1 }
+      end
       assert_equal(2, count)
     end
 
     def test_statistics
       stat = {
-        "kappa" => 0.041, "eff-space" => 0, "db-num" => 5361, 
-        "hsp-len" => 0, "db-len" => 1609188, "lambda" => 0.267, 
-        "entropy" => 0.14
+        'kappa' => 0.041, 'eff-space' => 0, 'db-num' => 5361,
+        'hsp-len' => 0, 'db-len' => 1_609_188, 'lambda' => 0.267,
+        'entropy' => 0.14
       }
       assert_equal(stat, @itr.statistics)
     end
@@ -1042,7 +1043,7 @@ module Bio
     def test_message
       assert_equal(nil, @itr.message)
     end
-  end #module TemplateTestBlastReportIterationMulti
+  end # module TemplateTestBlastReportIterationMulti
 
   module TemplateTestBlastReportHitMulti
     include TestBlastReportHelper
@@ -1061,7 +1062,8 @@ module Bio
     end
 
     def test_Hit_query_def
-      assert_equal('gi|1790849|gb|AAC77341.1| 3-phosphoserine phosphatase [Escherichia coli str. K-12 substr. MG1655]', @hit.query_def)
+      assert_equal('gi|1790849|gb|AAC77341.1| 3-phosphoserine phosphatase [Escherichia coli str. K-12 substr. MG1655]',
+                   @hit.query_def)
     end
 
     def test_Hit_query_len
@@ -1073,7 +1075,7 @@ module Bio
     end
 
     def test_Hit_hit_id
-      assert_equal('gi|13363792|dbj|BAB37741.1|', @hit.hit_id) 
+      assert_equal('gi|13363792|dbj|BAB37741.1|', @hit.hit_id)
     end
 
     def test_Hit_len
@@ -1097,10 +1099,10 @@ module Bio
     end
 
     def test_Hit_target_id
-      #assert_equal('gi|13363792|dbj|BAB37741.1|', @hit.target_id)
+      # assert_equal('gi|13363792|dbj|BAB37741.1|', @hit.target_id)
       assert_equal('BAB37741', @hit.target_id)
     end
-    
+
     def test_Hit_evalue
       assert_equal(0.000899657, @hit.evalue)
     end
@@ -1135,28 +1137,28 @@ module Bio
 
     def test_Hit_query_start
       assert_equal(190, @hit.query_start)
-#      assert_equal(190, @hit.query_from)
+      #      assert_equal(190, @hit.query_from)
     end
 
     def test_Hit_query_end
       assert_equal(311, @hit.query_end)
-#      assert_equal(311, @hit.query_to)
+      #      assert_equal(311, @hit.query_to)
     end
 
     def test_Hit_target_start
       assert_equal(569, @hit.target_start)
-#      assert_equal(569, @hit.hit_from)
+      #      assert_equal(569, @hit.hit_from)
     end
 
     def test_Hit_target_end
       assert_equal(668, @hit.target_end)
-#      assert_equal(668, @hit.hit_to)
+      #      assert_equal(668, @hit.hit_to)
     end
 
     def test_Hit_lap_at
       assert_equal([190, 311, 569, 668], @hit.lap_at)
     end
-  end #module TemplateTestBlastReportHitMulti
+  end # module TemplateTestBlastReportHitMulti
 
   module TemplateTestBlastReportHspMulti
     include TestBlastReportHelper
@@ -1165,7 +1167,7 @@ module Bio
       report = create_report_object('blastp-multi')
       @hsp = report.reports[4].iterations[0].hits[1].hsps[0]
     end
-    
+
     def test_Hsp_num
       assert_equal(1, @hsp.num)
     end
@@ -1256,9 +1258,7 @@ module Bio
     def test_Hsp_mismatch_count
       assert_nothing_raised { @hsp.mismatch_count }
     end
-
-  end #module TemplateTestBlastReportHspMulti
-
+  end # module TemplateTestBlastReportHspMulti
 
   class TestBlastReportMulti < Test::Unit::TestCase
     include TemplateTestBlastReportMulti
@@ -1294,24 +1294,23 @@ module Bio
   end
 
   # Tests for XMLParser version
-  if Bio::Blast::Report.private_method_defined? :xmlparser_parse then
+  if Bio::Blast::Report.private_method_defined? :xmlparser_parse
 
-  class TestBlastReportMultiXMLParser < Test::Unit::TestCase
-    include TemplateTestBlastReportMulti
-  end
+    class TestBlastReportMultiXMLParser < Test::Unit::TestCase
+      include TemplateTestBlastReportMulti
+    end
 
-  class TestBlastReportIterationMultiXMLParser < Test::Unit::TestCase
-    include TemplateTestBlastReportIterationMulti
-  end
+    class TestBlastReportIterationMultiXMLParser < Test::Unit::TestCase
+      include TemplateTestBlastReportIterationMulti
+    end
 
-  class TestBlastReportHitMultiXMLParser < Test::Unit::TestCase
-    include TemplateTestBlastReportHitMulti
-  end
+    class TestBlastReportHitMultiXMLParser < Test::Unit::TestCase
+      include TemplateTestBlastReportHitMulti
+    end
 
-  class TestBlastReportHspMultiXMLParser < Test::Unit::TestCase
-    include TemplateTestBlastReportHspMulti
-  end
+    class TestBlastReportHspMultiXMLParser < Test::Unit::TestCase
+      include TemplateTestBlastReportHspMulti
+    end
 
-  end #if
-
+  end # if
 end # module Bio

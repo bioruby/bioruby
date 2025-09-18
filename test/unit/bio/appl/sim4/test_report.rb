@@ -17,7 +17,6 @@ require 'test/unit'
 require 'bio/appl/sim4/report'
 
 module Bio
-
   class TestDataForSim4Report
     DataPath = Pathname.new(File.join(BioRubyTestDataPath, 'sim4')).cleanpath.to_s
 
@@ -26,37 +25,34 @@ module Bio
     end
 
     def read
-      File.read(File.join(DataPath,@filename))
+      File.read(File.join(DataPath, @filename))
     end
 
     def report
-      Bio::Sim4::Report.new(self.read)
+      Bio::Sim4::Report.new(read)
     end
 
     def self.report(filename)
-      self.new(filename).report
+      new(filename).report
     end
 
     def self.report1
-      filename = "simple-A4.sim4"
-      self.new(filename).report
+      filename = 'simple-A4.sim4'
+      new(filename).report
     end
 
     def self.report2
-      filename = "simple2-A4.sim4"
-      self.new(filename).report
+      filename = 'simple2-A4.sim4'
+      new(filename).report
     end
 
     def self.report4
-      filename = "complement-A4.sim4"
-      self.new(filename).report
+      filename = 'complement-A4.sim4'
+      new(filename).report
     end
-
-  end #class TestDataForSim4Report
-
+  end # class TestDataForSim4Report
 
   module TemplateTestSim4Report
-
     def setup
       @sim4 = TestDataForSim4Report.report1
     end
@@ -89,11 +85,11 @@ module Bio
 
     def exec_test_each(meth)
       count = 0
-      assert_nothing_raised {
-        @sim4.__send__(meth) do |x|
+      assert_nothing_raised do
+        @sim4.__send__(meth) do |_x|
           count += 1
         end
-      }
+      end
       assert_equal(1, count)
       @sim4.__send__(meth) do |x|
         assert_instance_of(Bio::Sim4::Report::Hit, x)
@@ -124,27 +120,25 @@ module Bio
     def test_query_len
       assert_equal(94, @sim4.query_len)
     end
-
-  end #module TemplateTestSim4Report
+  end # module TemplateTestSim4Report
 
   module TemplateTestSim4ReportHit
-
     def setup
       @hit = TestDataForSim4Report.report1.hits.first
     end
 
     def test_align
       a = [
-           [ "TTGTTTCCGTCGCTGGTTATTGTCTAGAACGCAAAAATAG",
-             "||||||||||||||||||||||||||||||||||||||||",
-             "TTGTTTCCGTCGCTGGTTATTGTCTAGAACGCAAAAATAG" ],
-           [ "         ",
-             "<<<...<<<",
-             "CTG...TAC" ],
-           [ "TCTACACATCACTAGCGTGGGTGGGCGGAAAGAGCAGCTCGCCACT CAAGCTAA",
-             "|||||||||||||||| |||||||||||||-|||||||||||||||-||||||||",
-             "TCTACACATCACTAGCCTGGGTGGGCGGAA GAGCAGCTCGCCACTTCAAGCTAA" ]
-          ]
+        ['TTGTTTCCGTCGCTGGTTATTGTCTAGAACGCAAAAATAG',
+         '||||||||||||||||||||||||||||||||||||||||',
+         'TTGTTTCCGTCGCTGGTTATTGTCTAGAACGCAAAAATAG'],
+        ['         ',
+         '<<<...<<<',
+         'CTG...TAC'],
+        ['TCTACACATCACTAGCGTGGGTGGGCGGAAAGAGCAGCTCGCCACT CAAGCTAA',
+         '|||||||||||||||| |||||||||||||-|||||||||||||||-||||||||',
+         'TCTACACATCACTAGCCTGGGTGGGCGGAA GAGCAGCTCGCCACTTCAAGCTAA']
+      ]
       assert_equal(a, @hit.align)
     end
 
@@ -158,11 +152,11 @@ module Bio
 
     def test_each
       count = 0
-      assert_nothing_raised {
-        @hit.each do |x|
+      assert_nothing_raised do
+        @hit.each do |_x|
           count += 1
         end
-      }
+      end
       assert_equal(2, count)
       @hit.each do |x|
         assert_instance_of(Bio::Sim4::Report::SegmentPair, x)
@@ -242,7 +236,7 @@ module Bio
       assert_equal('genome1', sd.entry_id)
       assert_equal('genome1', sd.definition)
       assert_equal(599, sd.len)
-      #assert_equal('sample10-2.fst', sd.filename)
+      # assert_equal('sample10-2.fst', sd.filename)
       assert_equal('sample10-2.fst (genome1)', sd.filename)
     end
 
@@ -257,7 +251,7 @@ module Bio
     def test_target_len
       assert_equal(599, @hit.target_len)
     end
-  end #module TemplateTestSim4ReportHit
+  end # module TemplateTestSim4ReportHit
 
   module TemplateTestSim4ReportSegmentPair_exon
     def setup
@@ -269,7 +263,7 @@ module Bio
     end
 
     def test_direction
-      assert_equal("", @exon.direction)
+      assert_equal('', @exon.direction)
     end
 
     def test_hit_from
@@ -281,22 +275,22 @@ module Bio
     end
 
     def test_hseq
-      hseq = "TCTACACATCACTAGCCTGGGTGGGCGGAA GAGCAGCTCGCCACTTCAAGCTAA"
+      hseq = 'TCTACACATCACTAGCCTGGGTGGGCGGAA GAGCAGCTCGCCACTTCAAGCTAA'
       assert_equal(hseq, @exon.hseq)
     end
 
     def test_midline
-      midline = "|||||||||||||||| |||||||||||||-|||||||||||||||-||||||||"
+      midline = '|||||||||||||||| |||||||||||||-|||||||||||||||-||||||||'
       assert_equal(midline, @exon.midline)
     end
 
     def test_percent_identity
-      #assert_equal(94, @exon.percent_identity)
-      assert_equal("94", @exon.percent_identity)
+      # assert_equal(94, @exon.percent_identity)
+      assert_equal('94', @exon.percent_identity)
     end
 
     def test_qseq
-      qseq = "TCTACACATCACTAGCGTGGGTGGGCGGAAAGAGCAGCTCGCCACT CAAGCTAA"
+      qseq = 'TCTACACATCACTAGCGTGGGTGGGCGGAAAGAGCAGCTCGCCACT CAAGCTAA'
       assert_equal(qseq, @exon.qseq)
     end
 
@@ -316,7 +310,7 @@ module Bio
 
     def test_seq1
       assert_instance_of(Bio::Sim4::Report::Segment, @exon.seq1)
-      assert_equal("TCTACACATCACTAGCGTGGGTGGGCGGAAAGAGCAGCTCGCCACT CAAGCTAA",
+      assert_equal('TCTACACATCACTAGCGTGGGTGGGCGGAAAGAGCAGCTCGCCACT CAAGCTAA',
                    @exon.seq1.seq)
       exec_test_seq1_from_to(@exon.seq1)
     end
@@ -325,10 +319,10 @@ module Bio
       assert_instance_of(Bio::Sim4::Report::Segment, @exon.seq2)
       assert_equal(404, @exon.seq2.from)
       assert_equal(457, @exon.seq2.to)
-      assert_equal("TCTACACATCACTAGCCTGGGTGGGCGGAA GAGCAGCTCGCCACTTCAAGCTAA",
+      assert_equal('TCTACACATCACTAGCCTGGGTGGGCGGAA GAGCAGCTCGCCACTTCAAGCTAA',
                    @exon.seq2.seq)
     end
-  end #module TemplateTestSim4ReportSegmentPair_exon
+  end # module TemplateTestSim4ReportSegmentPair_exon
 
   module TemplateTestSim4ReportSegmentPair_intron
     def setup
@@ -352,12 +346,12 @@ module Bio
     end
 
     def test_hseq
-      hseq = "CTG...TAC"
+      hseq = 'CTG...TAC'
       assert_equal(hseq, @intron.hseq)
     end
 
     def test_midline
-      midline = "<<<...<<<"
+      midline = '<<<...<<<'
       assert_equal(midline, @intron.midline)
     end
 
@@ -366,7 +360,7 @@ module Bio
     end
 
     def test_qseq
-      qseq = "         "
+      qseq = '         '
       assert_equal(qseq, @intron.qseq)
     end
 
@@ -382,17 +376,16 @@ module Bio
       assert_instance_of(Bio::Sim4::Report::Segment, @intron.seq1)
       assert_equal(0, @intron.seq1.from)
       assert_equal(0, @intron.seq1.to)
-      assert_equal("         ", @intron.seq1.seq)
+      assert_equal('         ', @intron.seq1.seq)
     end
 
     def test_seq2
       assert_instance_of(Bio::Sim4::Report::Segment, @intron.seq2)
       assert_equal(185, @intron.seq2.from)
       assert_equal(403, @intron.seq2.to)
-      assert_equal("CTG...TAC", @intron.seq2.seq)
+      assert_equal('CTG...TAC', @intron.seq2.seq)
     end
-  end #module TemplateTestSim4ReportSegmentPair_intron
-
+  end # module TemplateTestSim4ReportSegmentPair_intron
 
   class TestSim4Report < Test::Unit::TestCase
     include TemplateTestSim4Report
@@ -425,7 +418,7 @@ module Bio
       assert_equal(96, sd.len)
     end
     private :exec_test_seq1_len
-  end #class TestSim4Report2
+  end # class TestSim4Report2
 
   class TestSim4ReportHit2 < Test::Unit::TestCase
     include TemplateTestSim4ReportHit
@@ -436,16 +429,16 @@ module Bio
 
     def test_align
       a = [
-           [ "AGTTGTTTCCGTCGCTGGTTATTGTCTAGAACGCAAAAATAG",
-             "||||||||||||||||||||||||||||||||||||||||||",
-             "AGTTGTTTCCGTCGCTGGTTATTGTCTAGAACGCAAAAATAG" ],
-           [ "         ",
-             "<<<...<<<",
-             "CTG...TAC" ],
-           [ "TCTACACATCACTAGCGTGGGTGGGCGGAAAGAGCAGCTCGCCACT CAAGCTAA",
-             "|||||||||||||||| |||||||||||||-|||||||||||||||-||||||||",
-             "TCTACACATCACTAGCCTGGGTGGGCGGAA GAGCAGCTCGCCACTTCAAGCTAA" ]
-          ]
+        ['AGTTGTTTCCGTCGCTGGTTATTGTCTAGAACGCAAAAATAG',
+         '||||||||||||||||||||||||||||||||||||||||||',
+         'AGTTGTTTCCGTCGCTGGTTATTGTCTAGAACGCAAAAATAG'],
+        ['         ',
+         '<<<...<<<',
+         'CTG...TAC'],
+        ['TCTACACATCACTAGCGTGGGTGGGCGGAAAGAGCAGCTCGCCACT CAAGCTAA',
+         '|||||||||||||||| |||||||||||||-|||||||||||||||-||||||||',
+         'TCTACACATCACTAGCCTGGGTGGGCGGAA GAGCAGCTCGCCACTTCAAGCTAA']
+      ]
       assert_equal(a, @hit.align)
     end
 
@@ -457,8 +450,7 @@ module Bio
       assert_equal(96, sd.len)
     end
     private :exec_test_seq1_len
-  end #class TestSim4ReportHit2
-
+  end # class TestSim4ReportHit2
 
   class TestSim4ReportSegmentPair2_exon < Test::Unit::TestCase
     include TemplateTestSim4ReportSegmentPair_exon
@@ -480,9 +472,7 @@ module Bio
       assert_equal(96, seg.to)
     end
     private :exec_test_seq1_from_to
-
-  end #class TestSim4ReportSegmentPair2_exon
-
+  end # class TestSim4ReportSegmentPair2_exon
 
   class TestSim4ReportSegmentPair2_intron < Test::Unit::TestCase
     include TemplateTestSim4ReportSegmentPair_intron
@@ -490,8 +480,7 @@ module Bio
     def setup
       @intron = TestDataForSim4Report.report2.hits[0].introns[0]
     end
-  end #class TestSim4ReportSegmentPair2_intron
-
+  end # class TestSim4ReportSegmentPair2_intron
 
   class TestSim4Report4 < Test::Unit::TestCase
     include TemplateTestSim4Report
@@ -525,8 +514,7 @@ module Bio
     def test_query_len
       assert_equal(284, @sim4.query_len)
     end
-
-  end #class TestSim4Report4
+  end # class TestSim4Report4
 
   class TestSim4ReportHit4 < Test::Unit::TestCase
     include TemplateTestSim4ReportHit
@@ -537,20 +525,20 @@ module Bio
 
     def test_align
       a = [
-           [ "TTTTAGCCGGCACGAGATTG AGCGTATGATCACGCGCGCGGCCTCCT CAGAGTGATGCATGATACAACTT AT ",
-             "||||||||||||||||||||-||||-||||||||||||||||||||||-|-|||| ||||||||||||||||- |-",
-             "TTTTAGCCGGCACGAGATTGCAGCG ATGATCACGCGCGCGGCCTCCTAC GAGTCATGCATGATACAACTTCTTG"],
-           [ "         ",
-             ">>>...>>>",
-             "GTT...GAT" ],
-           [ "ATATGTACTTAGCTGGCAACCGAGATTTACTTTCGAAGCACTGTGATGAACCCGCGGCCCTTTGAGCGCT",
-             "|||||||||||||-|||||||||||||||||||||||| |||||||||||||||||-|||||||||||||",
-             "ATATGTACTTAGC GGCAACCGAGATTTACTTTCGAAGGACTGTGATGAACCCGCG CCCTTTGAGCGCT" ],
-           [ "", "", "" ],
-           [ "TATATATGTACTTAGCGG ACACCGAGATTTACTTTCGAAGGACTGTGGATGAACCCGCGCCCTTTGAGCGCT",
-             "||||||||||||||||||-|-|||||||||||||||||||||||||||-||||||||||||||||||||||||",
-             "TATATATGTACTTAGCGGCA ACCGAGATTTACTTTCGAAGGACTGTG ATGAACCCGCGCCCTTTGAGCGCT" ]
-          ]
+        ['TTTTAGCCGGCACGAGATTG AGCGTATGATCACGCGCGCGGCCTCCT CAGAGTGATGCATGATACAACTT AT ',
+         '||||||||||||||||||||-||||-||||||||||||||||||||||-|-|||| ||||||||||||||||- |-',
+         'TTTTAGCCGGCACGAGATTGCAGCG ATGATCACGCGCGCGGCCTCCTAC GAGTCATGCATGATACAACTTCTTG'],
+        ['         ',
+         '>>>...>>>',
+         'GTT...GAT'],
+        ['ATATGTACTTAGCTGGCAACCGAGATTTACTTTCGAAGCACTGTGATGAACCCGCGGCCCTTTGAGCGCT',
+         '|||||||||||||-|||||||||||||||||||||||| |||||||||||||||||-|||||||||||||',
+         'ATATGTACTTAGC GGCAACCGAGATTTACTTTCGAAGGACTGTGATGAACCCGCG CCCTTTGAGCGCT'],
+        ['', '', ''],
+        ['TATATATGTACTTAGCGG ACACCGAGATTTACTTTCGAAGGACTGTGGATGAACCCGCGCCCTTTGAGCGCT',
+         '||||||||||||||||||-|-|||||||||||||||||||||||||||-||||||||||||||||||||||||',
+         'TATATATGTACTTAGCGGCA ACCGAGATTTACTTTCGAAGGACTGTG ATGAACCCGCGCCCTTTGAGCGCT']
+      ]
       assert_equal(a, @hit.align)
     end
 
@@ -564,11 +552,11 @@ module Bio
 
     def test_each
       count = 0
-      assert_nothing_raised {
-        @hit.each do |x|
+      assert_nothing_raised do
+        @hit.each do |_x|
           count += 1
         end
-      }
+      end
       assert_equal(3, count)
       @hit.each do |x|
         assert_instance_of(Bio::Sim4::Report::SegmentPair, x)
@@ -640,7 +628,7 @@ module Bio
       assert_equal('genome4', sd.entry_id)
       assert_equal('genome4', sd.definition)
       assert_equal(770, sd.len)
-      #assert_equal('sample40-2.fst', sd.filename)
+      # assert_equal('sample40-2.fst', sd.filename)
       assert_equal('sample40-2.fst (genome4)', sd.filename)
     end
 
@@ -655,7 +643,7 @@ module Bio
     def test_target_len
       assert_equal(770, @hit.target_len)
     end
-  end #class TestSim4ReportHit4
+  end # class TestSim4ReportHit4
 
   class TestSim4ReportSegmentPair4_exon < Test::Unit::TestCase
     include TemplateTestSim4ReportSegmentPair_exon
@@ -669,7 +657,7 @@ module Bio
     end
 
     def test_direction
-      assert_equal("==", @exon.direction)
+      assert_equal('==', @exon.direction)
     end
 
     def test_hit_from
@@ -681,22 +669,22 @@ module Bio
     end
 
     def test_hseq
-      hseq = "ATATGTACTTAGC GGCAACCGAGATTTACTTTCGAAGGACTGTGATGAACCCGCG CCCTTTGAGCGCT"
+      hseq = 'ATATGTACTTAGC GGCAACCGAGATTTACTTTCGAAGGACTGTGATGAACCCGCG CCCTTTGAGCGCT'
       assert_equal(hseq, @exon.hseq)
     end
 
     def test_midline
-      midline = "|||||||||||||-|||||||||||||||||||||||| |||||||||||||||||-|||||||||||||"
+      midline = '|||||||||||||-|||||||||||||||||||||||| |||||||||||||||||-|||||||||||||'
       assert_equal(midline, @exon.midline)
     end
 
     def test_percent_identity
-      #assert_equal(95, @exon.percent_identity)
-      assert_equal("95", @exon.percent_identity)
+      # assert_equal(95, @exon.percent_identity)
+      assert_equal('95', @exon.percent_identity)
     end
 
     def test_qseq
-      qseq = "ATATGTACTTAGCTGGCAACCGAGATTTACTTTCGAAGCACTGTGATGAACCCGCGGCCCTTTGAGCGCT"
+      qseq = 'ATATGTACTTAGCTGGCAACCGAGATTTACTTTCGAAGCACTGTGATGAACCCGCGGCCCTTTGAGCGCT'
       assert_equal(qseq, @exon.qseq)
     end
 
@@ -716,7 +704,7 @@ module Bio
 
     def test_seq1
       assert_instance_of(Bio::Sim4::Report::Segment, @exon.seq1)
-      assert_equal("ATATGTACTTAGCTGGCAACCGAGATTTACTTTCGAAGCACTGTGATGAACCCGCGGCCCTTTGAGCGCT",
+      assert_equal('ATATGTACTTAGCTGGCAACCGAGATTTACTTTCGAAGCACTGTGATGAACCCGCGGCCCTTTGAGCGCT',
                    @exon.seq1.seq)
       exec_test_seq1_from_to(@exon.seq1)
     end
@@ -725,11 +713,10 @@ module Bio
       assert_instance_of(Bio::Sim4::Report::Segment, @exon.seq2)
       assert_equal(563, @exon.seq2.from)
       assert_equal(630, @exon.seq2.to)
-      assert_equal("ATATGTACTTAGC GGCAACCGAGATTTACTTTCGAAGGACTGTGATGAACCCGCG CCCTTTGAGCGCT",
+      assert_equal('ATATGTACTTAGC GGCAACCGAGATTTACTTTCGAAGGACTGTGATGAACCCGCG CCCTTTGAGCGCT',
                    @exon.seq2.seq)
     end
-  end #class TestSim4ReportSegmentPair4_exon
-
+  end # class TestSim4ReportSegmentPair4_exon
 
   class TestSim4ReportSegmentPair4_intron < Test::Unit::TestCase
     include TemplateTestSim4ReportSegmentPair_intron
@@ -747,12 +734,12 @@ module Bio
     end
 
     def test_hseq
-      hseq = "GTT...GAT"
+      hseq = 'GTT...GAT'
       assert_equal(hseq, @intron.hseq)
     end
 
     def test_midline
-      midline = ">>>...>>>"
+      midline = '>>>...>>>'
       assert_equal(midline, @intron.midline)
     end
 
@@ -760,10 +747,9 @@ module Bio
       assert_instance_of(Bio::Sim4::Report::Segment, @intron.seq2)
       assert_equal(425, @intron.seq2.from)
       assert_equal(562, @intron.seq2.to)
-      assert_equal("GTT...GAT", @intron.seq2.seq)
+      assert_equal('GTT...GAT', @intron.seq2.seq)
     end
-  end #class TestSim4ReportSegmentPair4_intron
-
+  end # class TestSim4ReportSegmentPair4_intron
 
   class TestSim4ReportSegmentPair4_intron1 < Test::Unit::TestCase
     def setup
@@ -787,11 +773,11 @@ module Bio
     end
 
     def test_hseq
-      assert_equal("", @intron.hseq)
+      assert_equal('', @intron.hseq)
     end
 
     def test_midline
-      assert_equal("", @intron.midline)
+      assert_equal('', @intron.midline)
     end
 
     def test_percent_identity
@@ -799,7 +785,7 @@ module Bio
     end
 
     def test_qseq
-      assert_equal("", @intron.qseq)
+      assert_equal('', @intron.qseq)
     end
 
     def test_query_from
@@ -814,17 +800,16 @@ module Bio
       assert_instance_of(Bio::Sim4::Report::Segment, @intron.seq1)
       assert_equal(143, @intron.seq1.from)
       assert_equal(212, @intron.seq1.to)
-      assert_equal("", @intron.seq1.seq)
+      assert_equal('', @intron.seq1.seq)
     end
 
     def test_seq2
       assert_instance_of(Bio::Sim4::Report::Segment, @intron.seq2)
       assert_equal(631, @intron.seq2.from)
       assert_equal(699, @intron.seq2.to)
-      assert_equal("", @intron.seq2.seq)
+      assert_equal('', @intron.seq2.seq)
     end
-  end #class TestSim4ReportSegmentPair4_intron1
-
+  end # class TestSim4ReportSegmentPair4_intron1
 
   class TestSim4ReportSeqDesc < Test::Unit::TestCase
     def setup
@@ -840,12 +825,12 @@ module Bio
     end
 
     def test_definition
-      assert_equal("ref|NC_000011.5|NC_000011:c101075000-101050001 Homo sapiens chromosome 11, complete sequence",
+      assert_equal('ref|NC_000011.5|NC_000011:c101075000-101050001 Homo sapiens chromosome 11, complete sequence',
                    @seqdesc.definition)
     end
 
     def test_len
-      assert_equal(25000, @seqdesc.len)
+      assert_equal(25_000, @seqdesc.len)
     end
 
     def test_filename
@@ -867,13 +852,12 @@ module Bio
                                                         123,
                                                         'file.sim4'))
     end
-  end #class TestSim4ReportSeqDesc
-
+  end # class TestSim4ReportSeqDesc
 
   class TestSim4ReportSegment < Test::Unit::TestCase
     def setup
-      @seq = "TCTACACATCACTAGCGTGGGTGGGCGGAAAGAGCAGCTCGCCACT CAAGCTAA".freeze
-      @segment = Bio::Sim4::Report::Segment.new("123", "176", @seq.dup)
+      @seq = 'TCTACACATCACTAGCGTGGGTGGGCGGAAAGAGCAGCTCGCCACT CAAGCTAA'.freeze
+      @segment = Bio::Sim4::Report::Segment.new('123', '176', @seq.dup)
     end
 
     def test_from
@@ -890,10 +874,9 @@ module Bio
 
     def test_self_new
       assert_instance_of(Bio::Sim4::Report::Segment,
-                         Bio::Sim4::Report::Segment.new(1,9))
+                         Bio::Sim4::Report::Segment.new(1, 9))
       assert_instance_of(Bio::Sim4::Report::Segment,
-                         Bio::Sim4::Report::Segment.new(2,4, "ATG"))
+                         Bio::Sim4::Report::Segment.new(2, 4, 'ATG'))
     end
-  end #class TestSim4ReportSegment
-
-end #module Bio
+  end # class TestSim4ReportSegment
+end # module Bio

@@ -20,24 +20,24 @@ require 'bio/db/fastq'
 
 module Bio
   module TestFastq
-
     TestFastqDataDir = Pathname.new(File.join(BioRubyTestDataPath,
                                               'fastq')).cleanpath.to_s
 
     # A module providing methods to compare float arrays
     module FloatArrayComparison
       private
+
       def float_array_equivalent?(expected, actual, *arg)
         assert_equal(expected.size, actual.size, *arg)
         dt = Float::EPSILON * 1024
         (0...(expected.size)).each do |i|
           e = expected[i]
           a = actual[i]
-          #assert_equal(e, a)
+          # assert_equal(e, a)
           assert_in_delta(e, a, e.abs * dt)
         end
       end
-    end #module FloatArrayComparison
+    end # module FloatArrayComparison
 
     # Tests using 'longreads_original_sanger.fastq'
     class TestFastq_longreads_original_sanger < Test::Unit::TestCase
@@ -45,7 +45,7 @@ module Bio
 
       SEQS =
         [
-         'tcagTTAAGATGGGATAATATCCTCAGATTGCGTGATGAACTTTGTTCTGGTGGAGGAGA
+          'tcagTTAAGATGGGATAATATCCTCAGATTGCGTGATGAACTTTGTTCTGGTGGAGGAGA
           AGGAAGTGCATTCGACGTATGCCCGTTTGTCGATATTTGtatttaaagtaatccgtcaca
           aatcagtgacataaatattatttagatttcgggagcaactttatttattccacaagcagg
           tttaaattttaaatttaaattattgcagaagactttaaattaacctcgttgtcggagtca
@@ -116,7 +116,7 @@ module Bio
 
       IDLINES =
         [
-         'FSRRS4401BE7HA [length=395] [gc=36.46] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=95]',
+          'FSRRS4401BE7HA [length=395] [gc=36.46] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=95]',
          'FSRRS4401BRRTC [length=145] [gc=38.62] [flows=800] [phred_min=0] [phred_max=38] [trimmed_length=74]',
          'FSRRS4401B64ST [length=382] [gc=40.58] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=346]',
          'FSRRS4401EJ0YH [length=381] [gc=48.29] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=343]',
@@ -125,11 +125,11 @@ module Bio
          'FSRRS4401CM938 [length=453] [gc=44.15] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=418]',
          'FSRRS4401EQLIK [length=411] [gc=34.31] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=374]',
          'FSRRS4401AOV6A [length=309] [gc=22.98] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=273]',
-         'FSRRS4401EG0ZW [length=424] [gc=23.82] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=389]',
+         'FSRRS4401EG0ZW [length=424] [gc=23.82] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=389]'
         ].collect { |x| x.freeze }.freeze
 
 
-      ENTRY_IDS = [ 'FSRRS4401BE7HA',
+      ENTRY_IDS = ['FSRRS4401BE7HA',
                     'FSRRS4401BRRTC',
                     'FSRRS4401B64ST',
                     'FSRRS4401EJ0YH',
@@ -138,11 +138,10 @@ module Bio
                     'FSRRS4401CM938',
                     'FSRRS4401EQLIK',
                     'FSRRS4401AOV6A',
-                    'FSRRS4401EG0ZW'
-                  ].collect { |x| x.freeze }.freeze
+                    'FSRRS4401EG0ZW'].collect { |x| x.freeze }.freeze
 
-      QUALITY_STRINGS = 
-        [ <<'_0_', <<'_1_', <<'_2_', <<'_3_', <<'_4_', <<'_5_', <<'_6_', <<'_7_', <<'_8_', <<'_9_' ].collect { |x| x.delete("\r\n").freeze }.freeze
+      QUALITY_STRINGS =
+        [<<'_0_', <<'_1_', <<'_2_', <<'_3_', <<'_4_', <<'_5_', <<'_6_', <<'_7_', <<'_8_', <<'_9_'].collect { |x| x.delete("\r\n").freeze }.freeze
 FFFDDDDDDDA666?688FFHGGIIIIIIIIIIIIIIIII
 IHHHIIIIIIIIIGHGFFFFF====DFFFFFFFFFFFFFF
 D???:3104/76=:5...4.3,,,366////4<ABBAAA=
@@ -250,13 +249,13 @@ IIIIHH999HHHIA=AEEFF@=.....AD@@@DDEEEEFI
 II;;;977FFCCC@24449?FDD!
 _9_
 
-      QUALITY_SCORES = QUALITY_STRINGS.collect { |str|
+      QUALITY_SCORES = QUALITY_STRINGS.collect do |str|
         str.unpack('C*').collect { |i| i - 33 }.freeze
-      }.freeze
+      end.freeze
 
-      ERROR_PROBABILITIES = QUALITY_SCORES.collect { |ary|
-        ary.collect { |q| 10 ** (- q / 10.0) }.freeze
-      }.freeze
+      ERROR_PROBABILITIES = QUALITY_SCORES.collect do |ary|
+        ary.collect { |q| 10**(- q / 10.0) }.freeze
+      end.freeze
 
       def setup
         fn = File.join(TestFastqDataDir, 'longreads_original_sanger.fastq')
@@ -283,7 +282,7 @@ _9_
         seqs = SEQS.dup
         qstrs = QUALITY_STRINGS.dup
         ent = []
-        while !ids.empty?
+        until ids.empty?
           ent.push "@#{ids.shift}\n#{seqs.shift}\n+\n#{qstrs.shift}\n"
         end
         @ff.each do |e|
@@ -396,11 +395,11 @@ _9_
       end
 
       def test_roundtrip
-        @ff.each_with_index do |e, i|
+        @ff.each_with_index do |e, _i|
           str_orig = @ff.entry_raw
           s = e.to_biosequence
           str = s.output(:fastq_sanger,
-                         { :repeat_title => true, :width => 80 })
+                         { repeat_title: true, width: 80 })
           assert_equal(str_orig, str)
           e2 = Bio::Fastq.new(str)
           assert_equal(e.sequence_string, e2.sequence_string)
@@ -411,8 +410,7 @@ _9_
                                   e2.error_probabilities)
         end
       end
-
-    end #class TestFastq_longreads_original_sanger
+    end # class TestFastq_longreads_original_sanger
 
     # common methods to read *_full_range_as_*.fastq and test quality scores
     # and error probabilities
@@ -420,10 +418,11 @@ _9_
       include FloatArrayComparison
 
       private
+
       def read_file(fn, format)
         path = File.join(TestFastqDataDir, fn)
         entries = Bio::FlatFile.open(Bio::Fastq, path) { |ff| ff.to_a }
-        entries.each { |e| e.format=format }
+        entries.each { |e| e.format = format }
         entries
       end
 
@@ -435,18 +434,12 @@ _9_
         min = -5
         max = 62
         sc = range.collect do |q|
-          tmp = 10 ** (q / 10.0) - 1
-          if tmp <= 0 then
+          tmp = (10**(q / 10.0)) - 1
+          if tmp <= 0
             min
           else
             r = (10 * Math.log10(tmp)).round
-            if r < min then
-              min
-            elsif r > max then
-              max
-            else
-              r
-            end
+            r.clamp(min, max)
           end
         end
         sc
@@ -456,13 +449,7 @@ _9_
         min = 0
         max = 62
         sc = range.collect do |q|
-          if q < min then
-            min
-          elsif q > max then
-            max
-          else
-            q
-          end
+          q.clamp(min, max)
         end
         sc
       end
@@ -471,20 +458,14 @@ _9_
         min = 0
         max = 93
         sc = range.collect do |q|
-          if q < min then
-            min
-          elsif q > max then
-            max
-          else
-            q
-          end
+          q.clamp(min, max)
         end
         sc
       end
 
       def scores_solexa2phred(range)
         sc = range.collect do |q|
-          r = 10 * Math.log10(10 ** (q / 10.0) + 1)
+          r = 10 * Math.log10((10**(q / 10.0)) + 1)
           r.round
         end
         sc
@@ -519,17 +500,18 @@ _9_
       end
 
       def phred_q2p(scores)
-        scores.collect { |q| 10 ** (-q / 10.0) }
+        scores.collect { |q| 10**(-q / 10.0) }
       end
 
       def solexa_q2p(scores)
         scores.collect do |q|
-          t = 10 ** (-q / 10.0)
+          t = 10**(-q / 10.0)
           t / (1.0 + t)
         end
       end
 
       public
+
       def test_validate_format
         common_test_validate_format(self.class::FILENAME_AS_SANGER,
                                     'fastq-sanger')
@@ -580,11 +562,10 @@ _9_
         scores = scores_to_illumina(self.class::RANGE)
         probs = phred_q2p(scores)
         common_test_error_probabilities(probs,
-                              self.class::FILENAME_AS_ILLUMINA,
-                              'fastq-illumina')
+                                        self.class::FILENAME_AS_ILLUMINA,
+                                        'fastq-illumina')
       end
-    end #module TestFastq_full_range
-
+    end # module TestFastq_full_range
 
     class TestFastq_sanger_full_range < Test::Unit::TestCase
       include TestFastq_full_range
@@ -597,8 +578,7 @@ _9_
       alias scores_to_sanger   scores_through
       alias scores_to_solexa   scores_phred2solexa
       alias scores_to_illumina scores_phred2illumina
-    end #class TestFastq_sanger_full_range
-
+    end # class TestFastq_sanger_full_range
 
     class TestFastq_solexa_full_range < Test::Unit::TestCase
       include TestFastq_full_range
@@ -611,8 +591,7 @@ _9_
       alias scores_to_sanger   scores_solexa2sanger
       alias scores_to_solexa   scores_through
       alias scores_to_illumina scores_solexa2illumina
-    end #class TestFastq_solexa_full_range
-
+    end # class TestFastq_solexa_full_range
 
     class TestFastq_illumina_full_range < Test::Unit::TestCase
       include TestFastq_full_range
@@ -625,12 +604,10 @@ _9_
       alias scores_to_sanger   scores_phred2sanger
       alias scores_to_solexa   scores_phred2solexa
       alias scores_to_illumina scores_through
-    end #class TestFastq_illumina_full_range
-
+    end # class TestFastq_illumina_full_range
 
     # common methods for testing error_*.fastq
     module TestFastq_error
-
       FILENAME = nil
       PRE_SKIP = 2
       POST_SKIP = 2
@@ -638,7 +615,7 @@ _9_
 
       def do_test_validate_format(ff)
         e = ff.next_entry
-        #p e
+        # p e
         a = []
         assert_equal(false, e.validate_format(a))
         assert_equal(self.class::ERRORS.size, a.size)
@@ -659,7 +636,7 @@ _9_
           assert(ff.eof?)
         end
       end
-    end #module TestFastq_error
+    end # module TestFastq_error
 
     class TestFastq_error_diff_ids < Test::Unit::TestCase
       include TestFastq_error
@@ -667,8 +644,8 @@ _9_
       FILENAME = 'error_diff_ids.fastq'
       PRE_SKIP = 2
       POST_SKIP = 2
-      ERRORS = [ Bio::Fastq::Error::Diff_ids.new ]
-    end #class TestFastq_error_diff_ids
+      ERRORS = [Bio::Fastq::Error::Diff_ids.new]
+    end # class TestFastq_error_diff_ids
 
     class TestFastq_error_double_qual < Test::Unit::TestCase
       include TestFastq_error
@@ -676,8 +653,8 @@ _9_
       FILENAME = 'error_double_qual.fastq'
       PRE_SKIP = 2
       POST_SKIP = 2
-      ERRORS = [ Bio::Fastq::Error::Long_qual.new ]
-    end #class TestFastq_error_double_qual
+      ERRORS = [Bio::Fastq::Error::Long_qual.new]
+    end # class TestFastq_error_double_qual
 
     class TestFastq_error_double_seq < Test::Unit::TestCase
       include TestFastq_error
@@ -685,8 +662,8 @@ _9_
       FILENAME = 'error_double_seq.fastq'
       PRE_SKIP = 3
       POST_SKIP = 0
-      ERRORS = [ Bio::Fastq::Error::Long_qual.new ]
-    end #class TestFastq_error_double_seq
+      ERRORS = [Bio::Fastq::Error::Long_qual.new]
+    end # class TestFastq_error_double_seq
 
     class TestFastq_error_long_qual < Test::Unit::TestCase
       include TestFastq_error
@@ -694,8 +671,8 @@ _9_
       FILENAME = 'error_long_qual.fastq'
       PRE_SKIP = 3
       POST_SKIP = 1
-      ERRORS = [ Bio::Fastq::Error::Long_qual.new ]
-    end #class TestFastq_error_long_qual
+      ERRORS = [Bio::Fastq::Error::Long_qual.new]
+    end # class TestFastq_error_long_qual
 
     class TestFastq_error_no_qual < Test::Unit::TestCase
       include TestFastq_error
@@ -705,6 +682,7 @@ _9_
       POST_SKIP = 0
 
       private
+
       def do_test_validate_format(ff)
         2.times do
           e = ff.next_entry
@@ -721,7 +699,7 @@ _9_
           assert_kind_of(Bio::Fastq::Error::Short_qual, a[0])
         end
       end
-    end #class TestFastq_error_no_qual
+    end # class TestFastq_error_no_qual
 
     class TestFastq_error_qual_del < Test::Unit::TestCase
       include TestFastq_error
@@ -729,8 +707,8 @@ _9_
       FILENAME = 'error_qual_del.fastq'
       PRE_SKIP = 3
       POST_SKIP = 1
-      ERRORS = [ Bio::Fastq::Error::Qual_char.new(12) ]
-    end #class TestFastq_error_qual_del
+      ERRORS = [Bio::Fastq::Error::Qual_char.new(12)]
+    end # class TestFastq_error_qual_del
 
     class TestFastq_error_qual_escape < Test::Unit::TestCase
       include TestFastq_error
@@ -738,8 +716,8 @@ _9_
       FILENAME = 'error_qual_escape.fastq'
       PRE_SKIP = 4
       POST_SKIP = 0
-      ERRORS = [ Bio::Fastq::Error::Qual_char.new(7) ]
-    end #class TestFastq_error_qual_escape
+      ERRORS = [Bio::Fastq::Error::Qual_char.new(7)]
+    end # class TestFastq_error_qual_escape
 
     class TestFastq_error_qual_null < Test::Unit::TestCase
       include TestFastq_error
@@ -747,8 +725,8 @@ _9_
       FILENAME = 'error_qual_null.fastq'
       PRE_SKIP = 0
       POST_SKIP = 4
-      ERRORS = [ Bio::Fastq::Error::Qual_char.new(3) ]
-    end #class TestFastq_error_qual_null
+      ERRORS = [Bio::Fastq::Error::Qual_char.new(3)]
+    end # class TestFastq_error_qual_null
 
     class TestFastq_error_qual_space < Test::Unit::TestCase
       include TestFastq_error
@@ -756,8 +734,8 @@ _9_
       FILENAME = 'error_qual_space.fastq'
       PRE_SKIP = 3
       POST_SKIP = 1
-      ERRORS = [ Bio::Fastq::Error::Qual_char.new(18) ]
-    end #class TestFastq_error_qual_space
+      ERRORS = [Bio::Fastq::Error::Qual_char.new(18)]
+    end # class TestFastq_error_qual_space
 
     class TestFastq_error_qual_tab < Test::Unit::TestCase
       include TestFastq_error
@@ -765,8 +743,8 @@ _9_
       FILENAME = 'error_qual_tab.fastq'
       PRE_SKIP = 4
       POST_SKIP = 0
-      ERRORS = [ Bio::Fastq::Error::Qual_char.new(10) ]
-    end #class TestFastq_error_qual_tab
+      ERRORS = [Bio::Fastq::Error::Qual_char.new(10)]
+    end # class TestFastq_error_qual_tab
 
     class TestFastq_error_qual_unit_sep < Test::Unit::TestCase
       include TestFastq_error
@@ -774,8 +752,8 @@ _9_
       FILENAME = 'error_qual_unit_sep.fastq'
       PRE_SKIP = 2
       POST_SKIP = 2
-      ERRORS = [ Bio::Fastq::Error::Qual_char.new(5) ]
-    end #class TestFastq_error_qual_unit_sep
+      ERRORS = [Bio::Fastq::Error::Qual_char.new(5)]
+    end # class TestFastq_error_qual_unit_sep
 
     class TestFastq_error_qual_vtab < Test::Unit::TestCase
       include TestFastq_error
@@ -783,8 +761,8 @@ _9_
       FILENAME = 'error_qual_vtab.fastq'
       PRE_SKIP = 0
       POST_SKIP = 4
-      ERRORS = [ Bio::Fastq::Error::Qual_char.new(10) ]
-    end #class TestFastq_error_qual_vtab
+      ERRORS = [Bio::Fastq::Error::Qual_char.new(10)]
+    end # class TestFastq_error_qual_vtab
 
     class TestFastq_error_short_qual < Test::Unit::TestCase
       include TestFastq_error
@@ -792,8 +770,8 @@ _9_
       FILENAME = 'error_short_qual.fastq'
       PRE_SKIP = 2
       POST_SKIP = 1
-      ERRORS = [ Bio::Fastq::Error::Long_qual.new ]
-    end #class TestFastq_error_short_qual
+      ERRORS = [Bio::Fastq::Error::Long_qual.new]
+    end # class TestFastq_error_short_qual
 
     module TemplateTestFastq_error_spaces
       include TestFastq_error
@@ -801,13 +779,13 @@ _9_
       FILENAME = 'error_spaces.fastq'
       PRE_SKIP = 0
       POST_SKIP = 0
-      ERRORS = [ Bio::Fastq::Error::Seq_char.new(9),
+      ERRORS = [Bio::Fastq::Error::Seq_char.new(9),
                  Bio::Fastq::Error::Seq_char.new(20),
                  Bio::Fastq::Error::Qual_char.new(9),
-                 Bio::Fastq::Error::Qual_char.new(20)
-               ]
+                 Bio::Fastq::Error::Qual_char.new(20)]
 
       private
+
       def do_test_validate_format(ff)
         5.times do
           e = ff.next_entry
@@ -821,16 +799,17 @@ _9_
           end
         end
       end
-    end #module TemplateTestFastq_error_spaces
+    end # module TemplateTestFastq_error_spaces
 
     class TestFastq_error_spaces < Test::Unit::TestCase
       include TemplateTestFastq_error_spaces
-    end #class TestFastq_error_spaces
+    end # class TestFastq_error_spaces
 
     class TestFastq_error_tabs < Test::Unit::TestCase
       include TemplateTestFastq_error_spaces
+
       FILENAME = 'error_tabs.fastq'
-    end #class TestFastq_error_tabs
+    end # class TestFastq_error_tabs
 
     module TemplateTestFastq_error_trunc_at_plus
       include TestFastq_error
@@ -838,17 +817,18 @@ _9_
       FILENAME = 'error_trunc_at_plus.fastq'
       PRE_SKIP = 4
       POST_SKIP = 0
-      ERRORS = [ Bio::Fastq::Error::No_qual.new ]
-    end #module TemplateTestFastq_error_trunc_at_plus
+      ERRORS = [Bio::Fastq::Error::No_qual.new]
+    end # module TemplateTestFastq_error_trunc_at_plus
 
     class TestFastq_error_trunc_at_plus < Test::Unit::TestCase
       include TemplateTestFastq_error_trunc_at_plus
-    end #class TestFastq_error_trunc_at_plus
+    end # class TestFastq_error_trunc_at_plus
 
     class TestFastq_error_trunc_at_qual < Test::Unit::TestCase
       include TemplateTestFastq_error_trunc_at_plus
+
       FILENAME = 'error_trunc_at_qual.fastq'
-    end #class TestFastq_error_trunc_at_qual
+    end # class TestFastq_error_trunc_at_qual
 
     class TestFastq_error_trunc_at_seq < Test::Unit::TestCase
       include TestFastq_error
@@ -856,8 +836,8 @@ _9_
       FILENAME = 'error_trunc_at_seq.fastq'
       PRE_SKIP = 4
       POST_SKIP = 0
-      ERRORS = [ Bio::Fastq::Error::No_qual.new ]
-    end #class TestFastq_error_trunc_at_seq
+      ERRORS = [Bio::Fastq::Error::No_qual.new]
+    end # class TestFastq_error_trunc_at_seq
 
     # Unit tests for Bio::Fastq#mask.
     class TestFastq_mask < Test::Unit::TestCase
@@ -875,27 +855,24 @@ _9_
       end
 
       def test_mask_20
-        expected = "GAAnTTnCAGGnCCACCTTTnnnnnGATAGAATAATGGAGAAnnTTAAAnGCTGTACATATACCAATGAACAATAAnTCAATACATAAAnnnGGAGAAGTnGGAACCGAAnGGnTTnGAnTTCAAnCCnTTnCGn"
+        expected = 'GAAnTTnCAGGnCCACCTTTnnnnnGATAGAATAATGGAGAAnnTTAAAnGCTGTACATATACCAATGAACAATAAnTCAATACATAAAnnnGGAGAAGTnGGAACCGAAnGGnTTnGAnTTCAAnCCnTTnCGn'
         assert_equal(expected, @entry.mask(20).seq)
       end
 
       def test_mask_20_with_x
-        expected = "GAAxTTxCAGGxCCACCTTTxxxxxGATAGAATAATGGAGAAxxTTAAAxGCTGTACATATACCAATGAACAATAAxTCAATACATAAAxxxGGAGAAGTxGGAACCGAAxGGxTTxGAxTTCAAxCCxTTxCGx"
+        expected = 'GAAxTTxCAGGxCCACCTTTxxxxxGATAGAATAATGGAGAAxxTTAAAxGCTGTACATATACCAATGAACAATAAxTCAATACATAAAxxxGGAGAAGTxGGAACCGAAxGGxTTxGAxTTCAAxCCxTTxCGx'
         assert_equal(expected, @entry.mask(20, 'x').seq)
       end
 
       def test_mask_20_with_empty_string
-        expected = "GAATTCAGGCCACCTTTGATAGAATAATGGAGAATTAAAGCTGTACATATACCAATGAACAATAATCAATACATAAAGGAGAAGTGGAACCGAAGGTTGATTCAACCTTCG"
+        expected = 'GAATTCAGGCCACCTTTGATAGAATAATGGAGAATTAAAGCTGTACATATACCAATGAACAATAATCAATACATAAAGGAGAAGTGGAACCGAAGGTTGATTCAACCTTCG'
         assert_equal(expected, @entry.mask(20, '').seq)
       end
-        
+
       def test_mask_20_with_longer_string
-        expected = "GAA-*-TT-*-CAGG-*-CCACCTTT-*--*--*--*--*-GATAGAATAATGGAGAA-*--*-TTAAA-*-GCTGTACATATACCAATGAACAATAA-*-TCAATACATAAA-*--*--*-GGAGAAGT-*-GGAACCGAA-*-GG-*-TT-*-GA-*-TTCAA-*-CC-*-TT-*-CG-*-"
+        expected = 'GAA-*-TT-*-CAGG-*-CCACCTTT-*--*--*--*--*-GATAGAATAATGGAGAA-*--*-TTAAA-*-GCTGTACATATACCAATGAACAATAA-*-TCAATACATAAA-*--*--*-GGAGAAGT-*-GGAACCGAA-*-GG-*-TT-*-GA-*-TTCAA-*-CC-*-TT-*-CG-*-'
         assert_equal(expected, @entry.mask(20, '-*-').seq)
       end
-
-    end #class TestFastq_mask
-
-  end #module TestFastq
-end #module Bio
-
+    end # class TestFastq_mask
+  end # module TestFastq
+end # module Bio

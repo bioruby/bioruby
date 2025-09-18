@@ -1,7 +1,7 @@
 #
 # test/unit/bio/db/test_aaindex.rb - Unit test for Bio::AAindex
 #
-# Copyright::  Copyright (C) 2006 
+# Copyright::  Copyright (C) 2006
 #              Mitsuteru C. Nakao <n@bioruby.org>
 # License::    The Ruby License
 #
@@ -22,11 +22,11 @@ module Bio
     TestDataAAindex = Pathname.new(File.join(BioRubyTestDataPath, 'aaindex')).cleanpath.to_s
 
     def self.aax1
-      File.read(File.join(TestDataAAindex, "PRAM900102"))
+      File.read(File.join(TestDataAAindex, 'PRAM900102'))
     end
 
     def self.aax2
-      File.read(File.join(TestDataAAindex, "DAYM780301"))
+      File.read(File.join(TestDataAAindex, 'DAYM780301'))
     end
   end
 
@@ -45,8 +45,8 @@ module Bio
 
   class TestAAindex < Test::Unit::TestCase
     def test_api
-      api_methods = ['entry_id', 'definition', 'dblinks', 'author',
-             'title', 'journal', 'comment']
+      api_methods = %w[entry_id definition dblinks author
+                       title journal comment]
       api_methods.each do |m|
       end
     end
@@ -65,7 +65,7 @@ module Bio
       str = DataAAindex.aax1
       @obj = Bio::AAindex1.new(str)
     end
-    
+
     def test_entry_id
       assert_equal('PRAM900102', @obj.entry_id)
     end
@@ -83,31 +83,36 @@ module Bio
     end
 
     def test_title
-      assert_equal('The distribution of physical, chemical and conformational properties in signal and nascent peptides', @obj.title)
+      assert_equal(
+        'The distribution of physical, chemical and conformational properties in signal and nascent peptides', @obj.title
+      )
     end
 
     def test_journal
-      assert_equal('Biochem. J. 269, 691-696 (1990) Original reference of these three data: Creighton, T.E. In "Protein Structure and Melecular Properties", (Freeman, W.H., ed.), San Francisco P.235 (1983)', @obj.journal)
+      assert_equal(
+        'Biochem. J. 269, 691-696 (1990) Original reference of these three data: Creighton, T.E. In "Protein Structure and Melecular Properties", (Freeman, W.H., ed.), San Francisco P.235 (1983)', @obj.journal
+      )
     end
 
     def test_comment
-      assert_equal("", @obj.comment)
+      assert_equal('', @obj.comment)
     end
 
     def test_correlation_coefficient
-#      str = "LEVM780101 1.000 LEVM780104 0.964 PALJ810101 0.943 KANM800101 0.942 ISOY800101 0.929 MAXF760101 0.924 ROBB760101 0.916 GEIM800101 0.912 GEIM800104 0.907 RACS820108 0.904 PALJ810102 0.902 PALJ810109 0.898 NAGK730101 0.894 CRAJ730101 0.887 CHOP780201 0.873 TANS770101 0.854 KANM800103 0.850 QIAN880107 0.829 QIAN880106 0.827 BURA740101 0.805 NAGK730103 -0.809"
-#      assert_equal(str, @obj.correlation_coefficient)
+      #      str = "LEVM780101 1.000 LEVM780104 0.964 PALJ810101 0.943 KANM800101 0.942 ISOY800101 0.929 MAXF760101 0.924 ROBB760101 0.916 GEIM800101 0.912 GEIM800104 0.907 RACS820108 0.904 PALJ810102 0.902 PALJ810109 0.898 NAGK730101 0.894 CRAJ730101 0.887 CHOP780201 0.873 TANS770101 0.854 KANM800103 0.850 QIAN880107 0.829 QIAN880106 0.827 BURA740101 0.805 NAGK730103 -0.809"
+      #      assert_equal(str, @obj.correlation_coefficient)
       # to be this ?
-      hash = {'LEVM780101' => 1.000, 'LEVM780104' => 0.964, 'PALJ810101' => 0.943,  'KANM800101' => 0.942, 'ISOY800101' => 0.929, 'MAXF760101' => 0.924, 'ROBB760101' => 0.916, 'GEIM800101' => 0.912, 'GEIM800104' => 0.907, 'RACS820108' => 0.904, 'PALJ810102' => 0.902, 'PALJ810109' => 0.898, 'NAGK730101' => 0.894, 'CRAJ730101' => 0.887, 'CHOP780201' => 0.873, 'TANS770101' => 0.854, 'KANM800103' => 0.850, 'QIAN880107' => 0.829, 'QIAN880106' => 0.827,  'BURA740101' => 0.805, 'NAGK730103' => -0.809}
+      hash = { 'LEVM780101' => 1.000, 'LEVM780104' => 0.964, 'PALJ810101' => 0.943, 'KANM800101' => 0.942,
+               'ISOY800101' => 0.929, 'MAXF760101' => 0.924, 'ROBB760101' => 0.916, 'GEIM800101' => 0.912, 'GEIM800104' => 0.907, 'RACS820108' => 0.904, 'PALJ810102' => 0.902, 'PALJ810109' => 0.898, 'NAGK730101' => 0.894, 'CRAJ730101' => 0.887, 'CHOP780201' => 0.873, 'TANS770101' => 0.854, 'KANM800103' => 0.850, 'QIAN880107' => 0.829, 'QIAN880106' => 0.827, 'BURA740101' => 0.805, 'NAGK730103' => -0.809 }
       assert_equal(hash, @obj.correlation_coefficient)
     end
 
     def test_index
-      hash = {"V"=>0.91, "K"=>1.23, "W"=>0.99, "L"=>1.3, "A"=>1.29, "M"=>1.47, "Y"=>0.72, "C"=>1.11, "N"=>0.9, "D"=>1.04, "P"=>0.52, "E"=>1.44, "F"=>1.07, "Q"=>1.27, "G"=>0.56, "R"=>0.96, "S"=>0.82, "H"=>1.22, "T"=>0.82, "I"=>0.97}
+      hash = { 'V' => 0.91, 'K' => 1.23, 'W' => 0.99, 'L' => 1.3, 'A' => 1.29, 'M' => 1.47, 'Y' => 0.72, 'C' => 1.11, 'N' => 0.9,
+               'D' => 1.04, 'P' => 0.52, 'E' => 1.44, 'F' => 1.07, 'Q' => 1.27, 'G' => 0.56, 'R' => 0.96, 'S' => 0.82, 'H' => 1.22, 'T' => 0.82, 'I' => 0.97 }
       assert_equal(hash, @obj.index)
     end
   end
-
 
   class TestAAindex2 < Test::Unit::TestCase
     def setup
@@ -128,28 +133,30 @@ module Bio
     end
 
     def test_author
-      assert_equal("Dayhoff, M.O., Schwartz, R.M. and Orcutt, B.C.", @obj.author)
+      assert_equal('Dayhoff, M.O., Schwartz, R.M. and Orcutt, B.C.', @obj.author)
     end
 
     def test_title
-      assert_equal("A model of evolutionary change in proteins", @obj.title)
+      assert_equal('A model of evolutionary change in proteins', @obj.title)
     end
 
     def test_journal
-      assert_equal('In "Atlas of Protein Sequence and Structure", Vol.5, Suppl.3 (Dayhoff, M.O., ed.), National Biomedical Research Foundation, Washington, D.C., p.352 (1978)', @obj.journal)
+      assert_equal(
+        'In "Atlas of Protein Sequence and Structure", Vol.5, Suppl.3 (Dayhoff, M.O., ed.), National Biomedical Research Foundation, Washington, D.C., p.352 (1978)', @obj.journal
+      )
     end
 
     def test_comment
-      assert_equal("", @obj.comment)
+      assert_equal('', @obj.comment)
     end
 
     def test_rows
-      ary = ["A", "R", "N", "D", "C", "Q", "E", "G", "H", "I", "L", "K", "M", "F", "P", "S", "T", "W", "Y", "V"]
+      ary = %w[A R N D C Q E G H I L K M F P S T W Y V]
       assert_equal(ary, @obj.rows)
     end
 
     def test_cols
-      ary = ["A", "R", "N", "D", "C", "Q", "E", "G", "H", "I", "L", "K", "M", "F", "P", "S", "T", "W", "Y", "V"]
+      ary = %w[A R N D C Q E G H I L K M F P S T W Y V]
       assert_equal(ary, @obj.cols)
     end
 
@@ -182,7 +189,7 @@ module Bio
     end
 
     def test_matrix_determinant
-      assert_in_delta(27926521998.0, @obj.matrix.determinant, 1e-3)
+      assert_in_delta(27_926_521_998.0, @obj.matrix.determinant, 1e-3)
     end
 
     def test_matrix_rank
@@ -191,8 +198,9 @@ module Bio
 
     def test_matrix_transpose
       assert_equal(@obj.matrix, @obj.matrix.transpose)
-      ary = Matrix.row_vector([2.0, -2.0, 0.0, 0.0, -2.0, 0.0, 0.0, 1.0, -1.0, -1.0, -2.0, -1.0, -1.0, -4.0, 1.0, 1.0, 1.0, -6.0, -3.0, 0.0]).row(0)
+      ary = Matrix.row_vector([2.0, -2.0, 0.0, 0.0, -2.0, 0.0, 0.0, 1.0, -1.0, -1.0, -2.0, -1.0, -1.0, -4.0, 1.0, 1.0,
+                               1.0, -6.0, -3.0, 0.0]).row(0)
       assert_equal(ary, @obj.matrix.transpose.row(0))
     end
-  end    
+  end
 end

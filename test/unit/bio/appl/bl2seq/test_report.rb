@@ -1,8 +1,8 @@
 #
-# test/unit/bio/appl/bl2seq/test_report.rb - Unit test for 
+# test/unit/bio/appl/bl2seq/test_report.rb - Unit test for
 # Bio::Blast::Bl2seq::Report
 #
-#  Copyright::   Copyright (C) 2006 
+#  Copyright::   Copyright (C) 2006
 #                Mitsuteru C. Nakao <n@bioruby.org>
 #  License::     The Ruby License
 #
@@ -18,7 +18,6 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 require 'test/unit'
 require 'bio/appl/bl2seq/report'
 
-
 module Bio
   class TestBl2seqReportData
     TestDataBl2seq = Pathname.new(File.join(BioRubyTestDataPath, 'bl2seq')).cleanpath.to_s
@@ -26,9 +25,9 @@ module Bio
     def self.output(format = 7)
       case format
       when 'empty'
-        File.open(File.join(TestDataBl2seq, 'cd8a_p53_e-5blastp.bl2seq')).read 
+        File.read(File.join(TestDataBl2seq, 'cd8a_p53_e-5blastp.bl2seq'))
       when 'blastp'
-        File.open(File.join(TestDataBl2seq, 'cd8a_cd8b_blastp.bl2seq')).read 
+        File.read(File.join(TestDataBl2seq, 'cd8a_cd8b_blastp.bl2seq'))
       when 'blastn'
       when 'blastx'
       when 'tblastn'
@@ -37,7 +36,6 @@ module Bio
     end
   end
 
-
   class TestBl2seqReportConstants < Test::Unit::TestCase
     def test_rs
       assert_equal(nil, Bio::Blast::Bl2seq::Report::RS)
@@ -45,9 +43,7 @@ module Bio
     end
   end
 
-
   class TestBl2seqReport < Test::Unit::TestCase
-
     def setup
       @empty = Bio::Blast::Bl2seq::Report.new(Bio::TestBl2seqReportData.output('empty'))
       @blastp = Bio::Blast::Bl2seq::Report.new(Bio::TestBl2seqReportData.output('blastp'))
@@ -68,7 +64,7 @@ module Bio
                  'converged?',
                  'reference',
                  'db']
-      
+
       methods.each do |x|
         assert_equal(false, @empty.methods.include?(x), "undefined? : #{x}")
       end
@@ -90,7 +86,7 @@ module Bio
       assert_equal(210, @blastp.db_len)
     end
 
-#    TestIteration < Test::Unit::TestCase
+    #    TestIteration < Test::Unit::TestCase
     def test_undefed_methods_for_iteration
       methods = ['message',
                  'pattern_in_database',
@@ -112,7 +108,6 @@ module Bio
     end
   end
 
-
   class TestBl2seqReportHit < Test::Unit::TestCase
     def setup
       @empty = Bio::Blast::Bl2seq::Report.new(Bio::TestBl2seqReportData.output('empty'))
@@ -130,5 +125,4 @@ module Bio
       assert_equal(1, @blastp.hits.size)
     end
   end
-
 end # module Bio

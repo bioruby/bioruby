@@ -1,7 +1,7 @@
 #
 # = test/unit/bio/sequence/test_na.rb - Unit test for Bio::Sequencce::NA
 #
-# Copyright::   Copyright (C) 2006 
+# Copyright::   Copyright (C) 2006
 #               Mitsuteru C. Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
@@ -16,10 +16,9 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
 # libraries needed for the tests
 require 'test/unit'
 require 'bio/sequence'
-require 'bio/sequence/na'  
+require 'bio/sequence/na'
 
 module Bio
-
   class TestSequenceNANew < Test::Unit::TestCase
     def test_new
       str = 'atgcatgcatgcatgcaaaa'
@@ -27,27 +26,25 @@ module Bio
     end
 
     def test_new_t
-      str = "atgcatgcatgcatgcaaaa"
+      str = 'atgcatgcatgcatgcaaaa'
       str_t = "atgcatgcat\tgca\ttgcaaaa"
       assert_equal(str, Bio::Sequence::NA.new(str_t))
     end
 
     def test_new_n
-      str = "atgcatgcatgcatgcaaaa"
+      str = 'atgcatgcatgcatgcaaaa'
       str_n = "atgcatgcat\ngca\ntgcaaaa"
       assert_equal(str, Bio::Sequence::NA.new(str_n))
     end
 
     def test_new_r
-      str = "atgcatgcatgcatgcaaaa"
+      str = 'atgcatgcatgcatgcaaaa'
       str_r = "atgcatgcat\n\rgca\n\rtgcaaaa"
       assert_equal(str, Bio::Sequence::NA.new(str_r))
     end
-
   end
-  
-  class TestSequenceNA < Test::Unit::TestCase
 
+  class TestSequenceNA < Test::Unit::TestCase
     def setup
       @obj = Bio::Sequence::NA.new('atgcatgcatgcatgcaaaa')
     end
@@ -55,8 +52,8 @@ module Bio
     def test_splicing
       #     'atgcatgcatgcatgcaaaa'
       #      12345678901234567890
-      str = 'atgca  catgcatg'.gsub(' ','')
-      assert_equal(str, @obj.splicing("join(1..5,8..15)"))
+      str = 'atgca  catgcatg'.gsub(' ', '')
+      assert_equal(str, @obj.splicing('join(1..5,8..15)'))
     end
 
     def test_forward_complement
@@ -92,7 +89,7 @@ module Bio
     end
 
     def test_codon_usage
-      usage = {"cat"=>1, "caa"=>1, "tgc"=>1, "gca"=>1, "atg"=>2}
+      usage = { 'cat' => 1, 'caa' => 1, 'tgc' => 1, 'gca' => 1, 'atg' => 2 }
       assert_equal(usage, @obj.codon_usage)
     end
 
@@ -117,21 +114,21 @@ module Bio
     def test_gc_skew
       assert_in_delta(0.0, @obj.gc_skew, Float::EPSILON)
       @obj[0, 1] = 'g'
-      assert_in_delta(1.0/9.0, @obj.gc_skew, Float::EPSILON)
-      @obj.gsub!(/a/, 'c')
-      assert_in_delta(-3.0/8.0, @obj.gc_skew, Float::EPSILON)
+      assert_in_delta(1.0 / 9.0, @obj.gc_skew, Float::EPSILON)
+      @obj.gsub!('a', 'c')
+      assert_in_delta(-3.0 / 8.0, @obj.gc_skew, Float::EPSILON)
     end
 
     def test_at_skew
-      assert_in_delta(1.0/3.0, @obj.at_skew, Float::EPSILON)
+      assert_in_delta(1.0 / 3.0, @obj.at_skew, Float::EPSILON)
       @obj[0, 1] = 'g'
-      assert_in_delta(3.0/11.0, @obj.at_skew, Float::EPSILON)
+      assert_in_delta(3.0 / 11.0, @obj.at_skew, Float::EPSILON)
     end
 
     def test_iliegal_bases
       @obj[0, 1] = 'n'
       @obj[1, 1] = 'y'
-      assert_equal(['n', 'y'], @obj.illegal_bases)
+      assert_equal(%w[n y], @obj.illegal_bases)
     end
 
     def test_molecular_weight
@@ -140,27 +137,27 @@ module Bio
 
     def test_to_re
       assert_equal(/atgcatgcatgcatgcaaaa/, @obj.to_re)
-      @obj[1,1] = 'n'
-      @obj[2,1] = 'r'
-      @obj[3,1] = 's'
-      @obj[4,1] = 'y'
-      @obj[5,1] = 'w'
+      @obj[1, 1] = 'n'
+      @obj[2, 1] = 'r'
+      @obj[3, 1] = 's'
+      @obj[4, 1] = 'y'
+      @obj[5, 1] = 'w'
       assert_equal(/a[atgcyrwskmbdhvn][agr][gcs][tcy][atw]gcatgcatgcaaaa/, @obj.to_re)
     end
 
     def test_names
-      ary = ["Adenine", "Thymine", "Guanine"]
-      assert_equal(ary , @obj.splice("1..3").names)
+      ary = %w[Adenine Thymine Guanine]
+      assert_equal(ary, @obj.splice('1..3').names)
     end
 
     def test_dna
-      @obj[0,1] = 'u'
+      @obj[0, 1] = 'u'
       assert_equal('utgcatgcatgcatgcaaaa', @obj)
       assert_equal('ttgcatgcatgcatgcaaaa', @obj.dna)
     end
 
     def test_dna!
-      @obj[0,1] = 'u'
+      @obj[0, 1] = 'u'
       assert_equal('utgcatgcatgcatgcaaaa', @obj)
       @obj.dna!
       assert_equal('ttgcatgcatgcatgcaaaa', @obj)
@@ -176,13 +173,11 @@ module Bio
       @obj.rna!
       assert_equal('augcaugcaugcaugcaaaa', @obj)
     end
-
   end
 
   class TestSequenceNACommon < Test::Unit::TestCase
-
     def setup
-      @obj  = Bio::Sequence::NA.new('atgcatgcatgcatgcaaaa')
+      @obj = Bio::Sequence::NA.new('atgcatgcatgcatgcaaaa')
     end
 
     def test_to_s
@@ -194,57 +189,55 @@ module Bio
     end
 
     def test_seq
-      str = "atgcatgcatgcatgcaaaa"
+      str = 'atgcatgcatgcatgcaaaa'
       assert_equal(str, @obj.seq)
     end
 
     # <<(*arg)
     def test_push
-      str = "atgcatgcatgcatgcaaaaa"
-      assert_equal(str, @obj << "A")
+      str = 'atgcatgcatgcatgcaaaaa'
+      assert_equal(str, @obj << 'A')
     end
 
     # concat(*arg)
     def test_concat
-      str = "atgcatgcatgcatgcaaaaa"
-      assert_equal(str, @obj.concat("A"))
+      str = 'atgcatgcatgcatgcaaaaa'
+      assert_equal(str, @obj.concat('A'))
     end
 
     # +(*arg)
-    def test_sum 
-      str = "atgcatgcatgcatgcaaaaatgcatgcatgcatgcaaaa"
+    def test_sum
+      str = 'atgcatgcatgcatgcaaaaatgcatgcatgcatgcaaaa'
       assert_equal(str, @obj + @obj)
     end
 
     # window_search(window_size, step_size = 1)
     def test_window_search
-      @obj.window_search(4) do |subseq|
+      @obj.window_search(4) do |_subseq|
         assert_equal(20, @obj.size)
       end
     end
 
-    #total(hash)
+    # total(hash)
     def test_total
-      hash = {'a' => 1, 'c' => 2, 'g' => 4, 't' => 3}
+      hash = { 'a' => 1, 'c' => 2, 'g' => 4, 't' => 3 }
       assert_equal(44.0, @obj.total(hash))
     end
 
     def test_composition
-      composition = {"a"=>8, "c"=>4, "g"=>4, "t"=>4}
+      composition = { 'a' => 8, 'c' => 4, 'g' => 4, 't' => 4 }
       assert_equal(composition, @obj.composition)
     end
-    
+
     def test_splicing
-      #(position)
-      assert_equal("atgcatgc", @obj.splicing("join(1..4, 13..16)"))
+      # (position)
+      assert_equal('atgcatgc', @obj.splicing('join(1..4, 13..16)'))
     end
   end
 
-
   class TestSequenceNATranslation < Test::Unit::TestCase
     def setup
-
-      str = "aaacccgggttttaa"
+      str = 'aaacccgggttttaa'
       #      K>>P>>G>>F>>*>>
       #       N>>P>>G>>F>>
       #        T>>R>>V>>L>>
@@ -252,72 +245,72 @@ module Bio
       #     "tttgggcccaaaatt"
       #      <<F<<G<<P<<K<<L
       #        <<G<<P<<N<<*
-      #       <<V<<R<<T<<K            
+      #       <<V<<R<<T<<K
       @obj = Bio::Sequence::NA.new(str)
     end
 
     def test_translate
-      assert_equal("KPGF*", @obj.translate)
+      assert_equal('KPGF*', @obj.translate)
     end
 
     def test_translate_1
-      assert_equal("KPGF*", @obj.translate(1))
+      assert_equal('KPGF*', @obj.translate(1))
     end
 
     def test_translate_2
-      assert_equal("NPGF", @obj.translate(2))
+      assert_equal('NPGF', @obj.translate(2))
     end
 
     def test_translate_3
-      assert_equal("TRVL", @obj.translate(3))
+      assert_equal('TRVL', @obj.translate(3))
     end
 
     def test_translate_4
-      assert_equal("LKPGF", @obj.translate(4))
+      assert_equal('LKPGF', @obj.translate(4))
     end
 
     def test_translate_5
-      assert_equal("*NPG", @obj.translate(5))
+      assert_equal('*NPG', @obj.translate(5))
     end
 
     def test_translate_6
-      assert_equal("KTRV", @obj.translate(6))
+      assert_equal('KTRV', @obj.translate(6))
     end
 
     def test_translate_7
-      assert_equal("KPGF*", @obj.translate(7))
+      assert_equal('KPGF*', @obj.translate(7))
       assert_equal(@obj.translate, @obj.translate(7))
     end
 
     def test_translate_n1
-      assert_equal("LKPGF", @obj.translate(-1))
+      assert_equal('LKPGF', @obj.translate(-1))
       assert_equal(@obj.translate(4), @obj.translate(-1))
     end
 
     def test_translate_n2
-      assert_equal("*NPG", @obj.translate(-2))
+      assert_equal('*NPG', @obj.translate(-2))
       assert_equal(@obj.translate(5), @obj.translate(-2))
     end
 
     def test_translate_n3
-      assert_equal("KTRV", @obj.translate(-3))
+      assert_equal('KTRV', @obj.translate(-3))
       assert_equal(@obj.translate(6), @obj.translate(-3))
     end
 
     def test_translate_0
-      assert_equal("KPGF*", @obj.translate(0))
+      assert_equal('KPGF*', @obj.translate(0))
       assert_equal(@obj.translate, @obj.translate(0))
       assert_equal(@obj.translate(7), @obj.translate(0))
     end
 
     def test_translate_unknown_x
       @obj[3, 1] = 'N'
-      assert_equal("KXGF*", @obj.translate)
+      assert_equal('KXGF*', @obj.translate)
     end
 
     def test_translate_unknown_o
       @obj[3, 1] = 'N'
-      assert_equal("KOGF*", @obj.translate(1, 1, 'O'))
+      assert_equal('KOGF*', @obj.translate(1, 1, 'O'))
     end
 
     def test_translate_given_codon_table
@@ -325,10 +318,8 @@ module Bio
       @obj[1, 1] = 'g'
       @obj[2, 1] = 'a'
       seleno_ct = Bio::CodonTable.copy(1)
-      seleno_ct['tga']  = 'U'
-      assert_equal("UPGF*", @obj.translate(1, seleno_ct))
+      seleno_ct['tga'] = 'U'
+      assert_equal('UPGF*', @obj.translate(1, seleno_ct))
     end
-
   end
-
 end

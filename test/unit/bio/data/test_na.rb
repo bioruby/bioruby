@@ -17,8 +17,7 @@ require 'test/unit'
 require 'bio/data/na'
 
 module Bio
-
-  class TestNAConstants  < Test::Unit::TestCase
+  class TestNAConstants < Test::Unit::TestCase
     def test_NAMES
       assert_equal('a', Bio::NucleicAcid::NAMES['a'])
     end
@@ -34,9 +33,7 @@ module Bio
     end
   end
 
-
   class TestNA < Test::Unit::TestCase
-
     def setup
       @obj = Bio::NucleicAcid.new
     end
@@ -50,7 +47,6 @@ module Bio
       assert_equal(re, Bio::NucleicAcid.to_re(str))
     end
 
-
     def test_weight
       mw = 135.15
       assert_equal(mw, @obj.weight('a'))
@@ -63,14 +59,14 @@ module Bio
       assert_equal(mw, Bio::NucleicAcid.weight('A', true))
     end
 
-    
     def test_accessor
       assert_equal('Adenine', @obj['A'])
     end
-    
+
     def test_names
       assert_equal(Bio::NucleicAcid::NAMES, @obj.names)
     end
+
     def test_na
       assert_equal(Bio::NucleicAcid::NAMES, @obj.na)
     end

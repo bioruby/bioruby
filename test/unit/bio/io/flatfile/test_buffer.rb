@@ -19,12 +19,10 @@ require 'stringio'
 require 'bio/io/flatfile/buffer'
 
 module Bio::TestFlatFileBufferedInputStream
-
   TestDataPath = BioRubyTestDataPath
   TestDataFastaFormat01 = File.join(TestDataPath, 'fasta', 'example1.txt')
 
   class TestBufferedInputStreamParseFileOpenArg < Test::Unit::TestCase
-
     K = Bio::FlatFile::BufferedInputStream
 
     def _parse_file_open_mode(mode)
@@ -42,26 +40,26 @@ module Bio::TestFlatFileBufferedInputStream
     end
 
     def test_parse_file_open_mode_integer
-      assert_equal({ :fmode_integer => 127 },
+      assert_equal({ fmode_integer: 127 },
                    _parse_file_open_mode(127))
     end
 
     def test_parse_file_open_mode_str
-      assert_equal({ :fmode_string => "r+b" },
-                   _parse_file_open_mode("r+b"))
+      assert_equal({ fmode_string: 'r+b' },
+                   _parse_file_open_mode('r+b'))
     end
 
     def test_parse_file_open_mode_str_with_ext_enc
-      assert_equal({ :fmode_string => "r+t",
-                     :external_encoding => "UTF-8" },
-                   _parse_file_open_mode("r+t:UTF-8"))
+      assert_equal({ fmode_string: 'r+t',
+                     external_encoding: 'UTF-8' },
+                   _parse_file_open_mode('r+t:UTF-8'))
     end
 
     def test_parse_file_open_mode_str_with_enc
-      assert_equal({ :fmode_string => "rb",
-                     :external_encoding => "EUC-JP",
-                     :internal_encoding => "UTF-8" },
-                   _parse_file_open_mode("rb:EUC-JP:UTF-8"))
+      assert_equal({ fmode_string: 'rb',
+                     external_encoding: 'EUC-JP',
+                     internal_encoding: 'UTF-8' },
+                   _parse_file_open_mode('rb:EUC-JP:UTF-8'))
     end
 
     def test_parse_file_open_arg_nil
@@ -69,101 +67,100 @@ module Bio::TestFlatFileBufferedInputStream
     end
 
     def test_parse_file_open_arg_integer
-      assert_equal({ :fmode_integer => 127 },
+      assert_equal({ fmode_integer: 127 },
                    _parse_file_open_arg(127))
     end
 
     def test_parse_file_open_arg_str
-      assert_equal({ :fmode_string => "r+b" },
-                   _parse_file_open_arg("r+b"))
+      assert_equal({ fmode_string: 'r+b' },
+                   _parse_file_open_arg('r+b'))
     end
 
     def test_parse_file_open_arg_str_with_ext_enc
-      assert_equal({ :fmode_string => "r+t",
-                     :external_encoding => "UTF-8" },
-                   _parse_file_open_arg("r+t:UTF-8"))
+      assert_equal({ fmode_string: 'r+t',
+                     external_encoding: 'UTF-8' },
+                   _parse_file_open_arg('r+t:UTF-8'))
     end
 
     def test_parse_file_open_arg_str_with_enc
-      assert_equal({ :fmode_string => "rb",
-                     :external_encoding => "EUC-JP",
-                     :internal_encoding => "UTF-8" },
-                   _parse_file_open_arg("rb:EUC-JP:UTF-8"))
+      assert_equal({ fmode_string: 'rb',
+                     external_encoding: 'EUC-JP',
+                     internal_encoding: 'UTF-8' },
+                   _parse_file_open_arg('rb:EUC-JP:UTF-8'))
     end
 
     def test_parse_file_open_arg_str_perm
-      assert_equal({ :fmode_string => "r+b",
-                     :perm => 0644 },
-                   _parse_file_open_arg("r+b", 0644))
+      assert_equal({ fmode_string: 'r+b',
+                     perm: 0o644 },
+                   _parse_file_open_arg('r+b', 0o644))
     end
 
     def test_parse_file_open_arg_int_perm
-      assert_equal({ :fmode_integer => 255,
-                     :perm => 0755 },
-                   _parse_file_open_arg(255, 0755))
+      assert_equal({ fmode_integer: 255,
+                     perm: 0o755 },
+                   _parse_file_open_arg(255, 0o755))
     end
 
     def test_parse_file_open_arg_int_perm_opt
-      assert_equal({ :fmode_integer => 191,
-                     :perm => 0600,
-                     :textmode => true,
-                     :internal_encoding => "EUC-JP" },
-                   _parse_file_open_arg(191, 0600,
-                                        :textmode => true,
-                                        :internal_encoding => "EUC-JP"))
+      assert_equal({ fmode_integer: 191,
+                     perm: 0o600,
+                     textmode: true,
+                     internal_encoding: 'EUC-JP' },
+                   _parse_file_open_arg(191, 0o600,
+                                        textmode: true,
+                                        internal_encoding: 'EUC-JP'))
     end
 
     def test_parse_file_open_arg_int_opt
-      assert_equal({ :fmode_integer => 191,
-                     :textmode => true,
-                     :internal_encoding => "EUC-JP" },
-                   _parse_file_open_arg(191, 
-                                        :textmode => true,
-                                        :internal_encoding => "EUC-JP"))
+      assert_equal({ fmode_integer: 191,
+                     textmode: true,
+                     internal_encoding: 'EUC-JP' },
+                   _parse_file_open_arg(191,
+                                        textmode: true,
+                                        internal_encoding: 'EUC-JP'))
     end
 
     def test_parse_file_open_arg_str_perm_opt
-      assert_equal({ :fmode_string => "a",
-                     :perm => 0644,
-                     :binmode => true,
-                     :external_encoding => "UTF-8" },
-                   _parse_file_open_arg("a", 0644,
-                                        :binmode => true,
-                                        :external_encoding => "UTF-8"))
+      assert_equal({ fmode_string: 'a',
+                     perm: 0o644,
+                     binmode: true,
+                     external_encoding: 'UTF-8' },
+                   _parse_file_open_arg('a', 0o644,
+                                        binmode: true,
+                                        external_encoding: 'UTF-8'))
     end
 
     def test_parse_file_open_arg_str_opt
-      assert_equal({ :fmode_string => "a",
-                     :binmode => true,
-                     :external_encoding => "UTF-8" },
-                   _parse_file_open_arg("a",
-                                        :binmode => true,
-                                        :external_encoding => "UTF-8"))
+      assert_equal({ fmode_string: 'a',
+                     binmode: true,
+                     external_encoding: 'UTF-8' },
+                   _parse_file_open_arg('a',
+                                        binmode: true,
+                                        external_encoding: 'UTF-8'))
     end
 
     def test_parse_file_open_arg_opt
-      assert_equal({ :fmode_string => "r",
-                     :binmode => true,
-                     :external_encoding => "UTF-8" },
-                   _parse_file_open_arg(:mode => "r",
-                                        :binmode => true,
-                                        :external_encoding => "UTF-8"))
+      assert_equal({ fmode_string: 'r',
+                     binmode: true,
+                     external_encoding: 'UTF-8' },
+                   _parse_file_open_arg(mode: 'r',
+                                        binmode: true,
+                                        external_encoding: 'UTF-8'))
     end
 
     def test_parse_file_open_arg_opt_with_integer_mode
-      assert_equal({ :fmode_integer => 123,
-                     :perm => 0600,
-                     :textmode => true,
-                     :external_encoding => "EUC-JP" },
-                   _parse_file_open_arg(:mode => 123,
-                                        :perm => 0600,
-                                        :textmode => true,
-                                        :external_encoding => "EUC-JP"))
+      assert_equal({ fmode_integer: 123,
+                     perm: 0o600,
+                     textmode: true,
+                     external_encoding: 'EUC-JP' },
+                   _parse_file_open_arg(mode: 123,
+                                        perm: 0o600,
+                                        textmode: true,
+                                        external_encoding: 'EUC-JP'))
     end
-  end #class TestBufferedInputStreamParseFileOpenArg
+  end # class TestBufferedInputStreamParseFileOpenArg
 
   class TestBufferedInputStreamClassMethod < Test::Unit::TestCase
-
     def test_self_for_io
       io = File.open(TestDataFastaFormat01)
       obj = Bio::FlatFile::BufferedInputStream.for_io(io)
@@ -186,13 +183,13 @@ module Bio::TestFlatFileBufferedInputStream
       end
       # Since Ruby 2.3.0, calling IO#close to closed IO object is allowed
       # without error.
-      if RUBY_VERSION >= "2.3.0"
+      if RUBY_VERSION >= '2.3.0'
         assert_nothing_raised { obj2.close }
       else
         assert_raise(IOError) { obj2.close }
       end
     end
-  end #class TestBufferedInputStreamClassMethod
+  end # class TestBufferedInputStreamClassMethod
 
   class TestBufferedInputStream < Test::Unit::TestCase
     def setup
@@ -220,33 +217,33 @@ module Bio::TestFlatFileBufferedInputStream
       @obj.gets
       @obj.gets
       @obj.prefetch_gets
-      assert_equal(117, @obj.pos) #the number depends on original data
+      assert_equal(117, @obj.pos) # the number depends on original data
     end
 
-    def test_pos=()
+    def test_pos=
       str = @obj.gets
       assert_equal(0, @obj.pos = 0)
       assert_equal(str, @obj.gets)
     end
-      
+
     def test_eof_false_first
       assert_equal(false, @obj.eof?)
     end
 
     def test_eof_false_after_prefetch
-      while @obj.prefetch_gets; nil; end
+      nil while @obj.prefetch_gets
       assert_equal(false, @obj.eof?)
     end
 
     def test_eof_true
-      while @obj.gets; nil; end
+      nil while @obj.gets
       assert_equal(true, @obj.eof?)
     end
 
     def test_gets
       @obj.gets
       @obj.gets
-      assert_equal("gagcaaatcgaaaaggagagatttctgcatatcaagagaaaattcgagctgagatacattccaagtgtggctactc", @obj.gets.chomp)
+      assert_equal('gagcaaatcgaaaaggagagatttctgcatatcaagagaaaattcgagctgagatacattccaagtgtggctactc', @obj.gets.chomp)
     end
 
     def test_gets_equal_prefetch_gets
@@ -259,12 +256,12 @@ module Bio::TestFlatFileBufferedInputStream
 
     def test_gets_rs
       rs = 'tggtg'
-      str = <<__END_OF_STR__
-aggcactagaattgagcagtgaa
-gaagatgaggaagatgaagaagaagatgaggaagaaatcaagaaagaaaaatgcgaattttctgaagatgtagacc
-gatttatatggacggttgggcaggactatggtttggatgatctggtcgtgcggcgtgctctcgccaagtacctcga
-agtggatgtttcggacatattggaaagatacaatgaactcaagcttaagaatgatggaactgctggtg
-__END_OF_STR__
+      str = <<~__END_OF_STR__
+        aggcactagaattgagcagtgaa
+        gaagatgaggaagatgaagaagaagatgaggaagaaatcaagaaagaaaaatgcgaattttctgaagatgtagacc
+        gatttatatggacggttgggcaggactatggtttggatgatctggtcgtgcggcgtgctctcgccaagtacctcga
+        agtggatgtttcggacatattggaaagatacaatgaactcaagcttaagaatgatggaactgctggtg
+      __END_OF_STR__
       @obj.gets(rs)
       @obj.gets(rs)
       assert_equal(str.chomp, @obj.gets(rs))
@@ -282,27 +279,28 @@ __END_OF_STR__
     def test_gets_rs_within_buffer
       rs = 'tggtg'
       a = []
-      20.times {a.push @obj.gets }
+      20.times { a.push @obj.gets }
       @obj.ungets(a.join(''))
-      
-      assert_equal(">At1g02580 mRNA (2291 bp) UTR's and CDS\naggcgagtggttaatggagaaggaaaaccatgaggacgatggtg", @obj.gets(rs))
+
+      assert_equal(">At1g02580 mRNA (2291 bp) UTR's and CDS\naggcgagtggttaatggagaaggaaaaccatgaggacgatggtg",
+                   @obj.gets(rs))
 
       assert_equal('ggctgaaagtgattctgtgattggtaagagacaaatctattatttgaatggtg',
-                   @obj.gets(rs).split(/\n/)[-1])
+                   @obj.gets(rs).split("\n")[-1])
 
       assert_equal('aggcactagaattgagcagtgaa',
-                   @obj.gets(rs).split(/\n/)[0])
+                   @obj.gets(rs).split("\n")[0])
 
-      assert_equal('aggcttct', @obj.gets(rs).split(/\n/)[0])
+      assert_equal('aggcttct', @obj.gets(rs).split("\n")[0])
 
-      assert_equal('agacacc', @obj.gets(rs).split(/\n/)[0])
+      assert_equal('agacacc', @obj.gets(rs).split("\n")[0])
     end
 
     def test_gets_paragraph_mode
       @obj.gets('')
       @obj.gets('')
       assert_equal('>At1g65300: mRNA 837bp (shortened at end)',
-                   @obj.gets('').split(/\n/)[0])
+                   @obj.gets('').split("\n")[0])
     end
 
     def test_gets_paragraph_mode_equal_prefetch_gets
@@ -317,17 +315,17 @@ __END_OF_STR__
     def test_gets_paragraph_mode_within_buffer
       @obj.gets('')
       a = []
-      20.times {a.push @obj.gets }
+      20.times { a.push @obj.gets }
       @obj.ungets(a.join(''))
-     
+
       assert_equal('>At1g65300: mRNA 837bp',
-                   @obj.gets('').split(/\n/)[0])
+                   @obj.gets('').split("\n")[0])
 
       assert_equal('>At1g65300: mRNA 837bp (shortened at end)',
-                   @obj.gets('').split(/\n/)[0])
+                   @obj.gets('').split("\n")[0])
 
       assert_equal('>At1g65300: mRNA 837bp (shortened from start)',
-                   @obj.gets('').split(/\n/)[0])
+                   @obj.gets('').split("\n")[0])
     end
 
     def test_ungets
@@ -342,12 +340,12 @@ __END_OF_STR__
     end
 
     def test_getc
-      assert_equal(?>, @obj.getc)
+      assert_equal('>', @obj.getc)
     end
 
     def test_getc_after_prefetch
       @obj.prefetch_gets
-      assert_equal(?>, @obj.getc)
+      assert_equal('>', @obj.getc)
     end
 
     def test_ungetc
@@ -391,9 +389,7 @@ __END_OF_STR__
     def test_skip_spaces
       @obj.gets('CDS')
       assert_nil(@obj.skip_spaces)
-      assert_equal(?a, @obj.getc)
+      assert_equal('a', @obj.getc)
     end
-                   
-  end #class TestBufferedInputStream
-end #module Bio::TestFlatFile
-
+  end # class TestBufferedInputStream
+end # module Bio::TestFlatFile

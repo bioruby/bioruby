@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 #
 # = test/unit/bio/io/flatfile/test_splitter.rb - unit test for Bio::FlatFile::Splitter
 #
@@ -21,7 +22,6 @@ require 'bio/io/flatfile/splitter'
 require 'bio/io/flatfile/buffer'
 
 module Bio::TestFlatFileSplitter
-
   class TestDataClass
     # Fake fasta format
     DELIMITER = RS = "\n>"
@@ -34,33 +34,33 @@ module Bio::TestFlatFileSplitter
     protected :str
 
     def ==(other)
-      self.str == other.str
+      str == other.str
     end
-  end #class TestDataClass
+  end # class TestDataClass
 
-  testdata01 = <<__END_OF_TESTDATA__
+  testdata01 = <<~__END_OF_TESTDATA__
 
-        # This is test
+            # This is test
 
->test1
-aaagggtttcccaaagggtttccc
->testC
-cccccccccccccccccccccccc
->testG
-gggggggggggggggggggggggg
->test2
-tttttttttttttttttttttttt
-tttttttttttttttttttttttt
+    >test1
+    aaagggtttcccaaagggtttccc
+    >testC
+    cccccccccccccccccccccccc
+    >testG
+    gggggggggggggggggggggggg
+    >test2
+    tttttttttttttttttttttttt
+    tttttttttttttttttttttttt
 
->test3
-atatatatatatatatatatatat
-__END_OF_TESTDATA__
+    >test3
+    atatatatatatatatatatatat
+  __END_OF_TESTDATA__
 
   testdata01 = testdata01.chomp
   # workaround for Windows
-  testdata01.gsub!(/\r\n/, "\n")
+  testdata01.gsub!("\r\n", "\n")
   TestData01 = testdata01
-  
+
   class TestTemplate < Test::Unit::TestCase
     def setup
       @stream = Bio::FlatFile::BufferedInputStream.new(StringIO.new(TestData01), 'TestData01')
@@ -76,8 +76,9 @@ __END_OF_TESTDATA__
     end
 
     def test_entry
-      assert_nothing_raised {
-        @obj.instance_eval { self.entry = 'test' } }
+      assert_nothing_raised do
+        @obj.instance_eval { self.entry = 'test' }
+      end
       assert_equal('test', @obj.entry)
     end
 
@@ -91,14 +92,16 @@ __END_OF_TESTDATA__
     end
 
     def test_entry_start_pos
-      assert_nothing_raised {
-        @obj.instance_eval { self.entry_start_pos = 123 } }
+      assert_nothing_raised do
+        @obj.instance_eval { self.entry_start_pos = 123 }
+      end
       assert_equal(123, @obj.entry_start_pos)
     end
 
     def test_entry_ended_pos
-      assert_nothing_raised {
-        @obj.instance_eval { self.entry_ended_pos = 456 } }
+      assert_nothing_raised do
+        @obj.instance_eval { self.entry_ended_pos = 456 }
+      end
       assert_equal(456, @obj.entry_ended_pos)
     end
 
@@ -125,8 +128,7 @@ __END_OF_TESTDATA__
       @obj.rewind
       assert_equal(0, @stream.pos)
     end
-
-  end #class TestTemplate
+  end # class TestTemplate
 
   class TestDefault < TestTemplate # < Test::Unit::TestCase
     def setup
@@ -223,22 +225,21 @@ __END_OF_TESTDATA__
       @obj.get_entry
       assert_equal(57, @obj.entry_ended_pos)
     end
-
-  end #class TestDefault
+  end # class TestDefault
 
   class TestLineOriented < TestTemplate # < Test::Unit::TestCase
-    testdata02 = <<__END_OF_DATA__
-#this is header line 1
-#this is header line 2
-test01 1 2 3
-test02 4 5 6
-test02 7 8 9
-test02 10 11 12
-test03 13 14 15
+    testdata02 = <<~__END_OF_DATA__
+      #this is header line 1
+      #this is header line 2
+      test01 1 2 3
+      test02 4 5 6
+      test02 7 8 9
+      test02 10 11 12
+      test03 13 14 15
 
-test03 16 17 18
-__END_OF_DATA__
-    TestData02 = testdata02.gsub(/\r\n/, "\n")
+      test03 16 17 18
+    __END_OF_DATA__
+    TestData02 = testdata02.gsub("\r\n", "\n")
 
     class TestData02Class
       FLATFILE_SPLITTER = Bio::FlatFile::Splitter::LineOriented
@@ -250,64 +251,57 @@ __END_OF_DATA__
         @lines = []
         flag_header = true
         str.each_line do |line|
-          if flag_header then
-            flag_header = add_header_line(line)
-          end
-          unless flag_header then
-            add_line(line)
-          end
+          flag_header = add_header_line(line) if flag_header
+          add_line(line) unless flag_header
         end
       end
 
-      attr_reader :headers
-      attr_reader :lines
+      attr_reader :headers, :lines
 
       def ==(other)
-        self.headers == other.headers and
-          self.lines == other.lines ? true : false
+        headers == other.headers and
+          lines == other.lines
       end
 
       def add_header_line(line)
-        #puts "add_header_line: #{@headers.inspect} #{line.inspect}"
+        # puts "add_header_line: #{@headers.inspect} #{line.inspect}"
         case line
         when /\A\#/
           @headers.push line
-          return self
+          self
         else
-          return false
+          false
         end
       end
 
       def add_line(line)
-        #puts "add_line: #{@lines.inspect} #{line.inspect}"
-        if /\A\s*\z/ =~ line then
+        # puts "add_line: #{@lines.inspect} #{line.inspect}"
+        if /\A\s*\z/ =~ line
           return @lines.empty? ? self : false
         end
+
         parsed = parse_line(line)
-        if @lines.empty? or @lines.first.name == parsed.name then
-          @lines.push parsed
-          return self
-        else
-          return false
-        end
+        return false unless @lines.empty? or @lines.first.name == parsed.name
+
+        @lines.push parsed
+        self
       end
 
       def parse_line(line)
-        LineData.new(*(line.chomp.split(/\s+/, 2)))
+        LineData.new(*line.chomp.split(/\s+/, 2))
       end
       private :parse_line
-
-    end #class TestData02Class
+    end # class TestData02Class
 
     def setup
       @stream = Bio::FlatFile::BufferedInputStream.new(StringIO.new(TestData02), 'TestData02')
       @obj = Bio::FlatFile::Splitter::LineOriented.new(TestData02Class, @stream)
       @raw_entries =
         [
-         "#this is header line 1\n#this is header line 2\ntest01 1 2 3\n",
-         "test02 4 5 6\ntest02 7 8 9\ntest02 10 11 12\n",
-         "test03 13 14 15\n",
-         "\ntest03 16 17 18\n",
+          "#this is header line 1\n#this is header line 2\ntest01 1 2 3\n",
+          "test02 4 5 6\ntest02 7 8 9\ntest02 10 11 12\n",
+          "test03 13 14 15\n",
+          "\ntest03 16 17 18\n"
         ]
       @entries = @raw_entries.collect do |str|
         TestData02Class.new(str)
@@ -366,7 +360,5 @@ __END_OF_DATA__
       @obj.get_entry
       assert_equal(101, @obj.entry_ended_pos)
     end
-
-  end #class TestLineOriented
-
+  end # class TestLineOriented
 end

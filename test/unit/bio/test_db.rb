@@ -18,83 +18,77 @@ require 'bio/db'
 module Bio
   class TestDB < Test::Unit::TestCase
     def setup
-      
-     @obj = Bio::DB.new
-      @obj.instance_eval {
-        @orig = {"TAG" => "TAG value1\n    value2"}
+      @obj = Bio::DB.new
+      @obj.instance_eval do
+        @orig = { 'TAG' => "TAG value1\n    value2" }
         @tagsize = nil
-      }
+      end
     end
 
     def test_open
       assert(Bio::DB.respond_to?(:open))
     end
- 
+
     def test_entry_id
       assert_raises(NotImplementedError) { @obj.entry_id }
     end
 
     def test_tags
-      assert_equal(["TAG"], @obj.tags)
+      assert_equal(['TAG'], @obj.tags)
     end
-    
+
     def test_exists
-      assert_equal(true, @obj.exists?("TAG"))
+      assert_equal(true, @obj.exists?('TAG'))
     end
 
     def test_get
-      assert_equal("TAG value1\n    value2", @obj.get("TAG"))
+      assert_equal("TAG value1\n    value2", @obj.get('TAG'))
     end
 
     def test_fetch
-      assert(@obj.fetch("TAG"))
-      assert(@obj.fetch("TAG", 1))
+      assert(@obj.fetch('TAG'))
+      assert(@obj.fetch('TAG', 1))
     end
   end
 
-
   class TestNCBIDB < Test::Unit::TestCase
     def setup
-      entry =<<END
-LOCUS     locus
-END
+      entry = <<~END
+        LOCUS     locus
+      END
       @obj = Bio::NCBIDB.new(entry, 10)
     end
 
     def test_fetch
-      assert_equal('locus', @obj.fetch("LOCUS"))
+      assert_equal('locus', @obj.fetch('LOCUS'))
     end
 
-    def test_p_toptag2array
-    end
+    def test_p_toptag2array; end
 
-    def test_p_subtag2array
-    end
+    def test_p_subtag2array; end
 
-    def test_p_entry2hash
-    end
+    def test_p_entry2hash; end
   end
 
-#  class TestKEGGDB < Test::Unit::TestCase
-#  end
-  
+  #  class TestKEGGDB < Test::Unit::TestCase
+  #  end
+
   class TestEMBLDB < Test::Unit::TestCase
     def setup
-      @entry =<<END
-ID id
-XX
-CC cc1
-CC cc2
-END
+      @entry = <<~END
+        ID id
+        XX
+        CC cc1
+        CC cc2
+      END
       @obj = Bio::EMBLDB.new(@entry, 2)
     end
 
     def test_fetch
-      assert_equal('id', @obj.fetch("ID"))
-      assert_equal('cc1 cc2', @obj.fetch("CC"))
+      assert_equal('id', @obj.fetch('ID'))
+      assert_equal('cc1 cc2', @obj.fetch('CC'))
     end
 
-    def test_p_entry2hash
-    end
+    def test_p_entry2hash; end
   end
 end

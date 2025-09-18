@@ -15,10 +15,9 @@ require 'bio/db/kegg/reaction'
 
 module Bio
   class TestKeggReaction < Test::Unit::TestCase
-
     def setup
       testdata_kegg = Pathname.new(File.join(BioRubyTestDataPath, 'KEGG')).cleanpath.to_s
-      entry = File.read(File.join(testdata_kegg, "R00006.reaction"))
+      entry = File.read(File.join(testdata_kegg, 'R00006.reaction'))
       @obj = Bio::KEGG::REACTION.new(entry)
     end
 
@@ -27,7 +26,9 @@ module Bio
     end
 
     def test_name
-      assert_equal('pyruvate:pyruvate acetaldehydetransferase (decarboxylating); 2-acetolactate pyruvate-lyase (carboxylating)', @obj.name)
+      assert_equal(
+        'pyruvate:pyruvate acetaldehydetransferase (decarboxylating); 2-acetolactate pyruvate-lyase (carboxylating)', @obj.name
+      )
     end
 
     def test_definition
@@ -40,57 +41,57 @@ module Bio
 
     def test_rpairs_as_hash
       expected = {
-        "RP00440" => [ "C00022_C00900", "main" ],
-        "RP05698" => [ "C00011_C00022", "leave" ],
-        "RP12733" => [ "C00022_C00900", "trans" ]
+        'RP00440' => %w[C00022_C00900 main],
+        'RP05698' => %w[C00011_C00022 leave],
+        'RP12733' => %w[C00022_C00900 trans]
       }
       assert_equal(expected, @obj.rpairs_as_hash)
       assert_equal(expected, @obj.rpairs)
     end
 
     def test_rpairs_as_strings
-      expected = [ 'RP: RP00440  C00022_C00900 main',
-                   'RP: RP05698  C00011_C00022 leave',
-                   'RP: RP12733  C00022_C00900 trans'
-                 ]
+      expected = ['RP: RP00440  C00022_C00900 main',
+                  'RP: RP05698  C00011_C00022 leave',
+                  'RP: RP12733  C00022_C00900 trans']
       assert_equal(expected, @obj.rpairs_as_strings)
     end
 
     def test_rpairs_as_tokens
-      expected = %w( RP: RP00440  C00022_C00900 main
-                     RP: RP05698  C00011_C00022 leave
-                     RP: RP12733  C00022_C00900 trans
-                 )
+      expected = %w[ RP: RP00440 C00022_C00900 main
+                     RP: RP05698 C00011_C00022 leave
+                     RP: RP12733 C00022_C00900 trans]
       assert_equal(expected, @obj.rpairs_as_tokens)
     end
 
     def test_pathways_as_strings
-      assert_equal([ "PATH: rn00770  Pantothenate and CoA biosynthesis" ],
+      assert_equal(['PATH: rn00770  Pantothenate and CoA biosynthesis'],
                    @obj.pathways_as_strings)
     end
 
     def test_pathways_as_hash
-      expected = { "rn00770" => "Pantothenate and CoA biosynthesis" }
+      expected = { 'rn00770' => 'Pantothenate and CoA biosynthesis' }
       assert_equal(expected, @obj.pathways_as_hash)
       assert_equal(expected, @obj.pathways)
     end
 
     def test_enzymes
-      assert_equal(["2.2.1.6"], @obj.enzymes)
+      assert_equal(['2.2.1.6'], @obj.enzymes)
     end
 
     def test_orthologs_as_strings
-      assert_equal(["KO: K01652  acetolactate synthase I/II/III large subunit [EC:2.2.1.6]", "KO: K01653  acetolactate synthase I/III small subunit [EC:2.2.1.6]"], @obj.orthologs_as_strings)
+      assert_equal(
+        ['KO: K01652  acetolactate synthase I/II/III large subunit [EC:2.2.1.6]',
+         'KO: K01653  acetolactate synthase I/III small subunit [EC:2.2.1.6]'], @obj.orthologs_as_strings
+      )
     end
 
     def test_orthologs_as_hash
       expected = {
-        'K01652'=>"acetolactate synthase I/II/III large subunit [EC:2.2.1.6]",
-        'K01653'=>"acetolactate synthase I/III small subunit [EC:2.2.1.6]"
+        'K01652' => 'acetolactate synthase I/II/III large subunit [EC:2.2.1.6]',
+        'K01653' => 'acetolactate synthase I/III small subunit [EC:2.2.1.6]'
       }
       assert_equal(expected, @obj.orthologs_as_hash)
       assert_equal(expected, @obj.orthologs)
     end
-
   end
 end

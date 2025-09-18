@@ -16,65 +16,61 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 require 'test/unit'
 require 'bio/appl/targetp/report'
 
-
 module Bio
-
-  TargetPReport_plant =<<HOGE
- 
-### ### ###  T A R G E T P  1.0  prediction results  ### ### ### 
- 
-# Number of input sequences:  1
-# Cleavage site predictions not included.
-# Using PLANT networks.
- 
-#                        Name   Length	  cTP   mTP    SP other  Loc.  RC
-#----------------------------------------------------------------------------------
-                   MGI_2141503	  640	0.031 0.161 0.271 0.844   _     3
-#----------------------------------------------------------------------------------
-# cutoff                                 0.00  0.00  0.00  0.00
-
-
-HOGE
-
-TargetPReport_plant_c =<<HOGE
- 
-### ### ###  T A R G E T P  1.0  prediction results  ### ### ### 
- 
-# Number of input sequences:  1
-# Cleavage site predictions included.
-# Using PLANT networks.
- 
-#                        Name   Length	  cTP   mTP    SP other  Loc.  RC     TPlen
-#----------------------------------------------------------------------------------
-                   MGI_2141503	  640	0.031 0.161 0.271 0.844   _     3	  -
-#----------------------------------------------------------------------------------
-# cutoff                                 0.00  0.00  0.00  0.00
+  TargetPReport_plant = <<~HOGE
+    #{' '}
+    ### ### ###  T A R G E T P  1.0  prediction results  ### ### ####{' '}
+    #{' '}
+    # Number of input sequences:  1
+    # Cleavage site predictions not included.
+    # Using PLANT networks.
+    #{' '}
+    #                        Name   Length	  cTP   mTP    SP other  Loc.  RC
+    #----------------------------------------------------------------------------------
+                       MGI_2141503	  640	0.031 0.161 0.271 0.844   _     3
+    #----------------------------------------------------------------------------------
+    # cutoff                                 0.00  0.00  0.00  0.00
 
 
+  HOGE
 
-HOGE
-
-TargetPReport_non_plant_c =<<HOGE
- 
-### ### ###  T A R G E T P  1.0  prediction results  ### ### ### 
- 
-# Number of input sequences:  1
-# Cleavage site predictions included.
-# Using NON-PLANT networks.
- 
-#                        Name   Length    mTP   SP  other  Loc.  RC   TPlen
-#--------------------------------------------------------------------------
-                     MGI_96083	 2187	0.292 0.053 0.746   _     3	  -
-#--------------------------------------------------------------------------
-# cutoff                                 0.00  0.00  0.00
+  TargetPReport_plant_c = <<~HOGE
+    #{' '}
+    ### ### ###  T A R G E T P  1.0  prediction results  ### ### ####{' '}
+    #{' '}
+    # Number of input sequences:  1
+    # Cleavage site predictions included.
+    # Using PLANT networks.
+    #{' '}
+    #                        Name   Length	  cTP   mTP    SP other  Loc.  RC     TPlen
+    #----------------------------------------------------------------------------------
+                       MGI_2141503	  640	0.031 0.161 0.271 0.844   _     3	  -
+    #----------------------------------------------------------------------------------
+    # cutoff                                 0.00  0.00  0.00  0.00
 
 
 
-HOGE
+  HOGE
+
+  TargetPReport_non_plant_c = <<~HOGE
+    #{' '}
+    ### ### ###  T A R G E T P  1.0  prediction results  ### ### ####{' '}
+    #{' '}
+    # Number of input sequences:  1
+    # Cleavage site predictions included.
+    # Using NON-PLANT networks.
+    #{' '}
+    #                        Name   Length    mTP   SP  other  Loc.  RC   TPlen
+    #--------------------------------------------------------------------------
+                         MGI_96083	 2187	0.292 0.053 0.746   _     3	  -
+    #--------------------------------------------------------------------------
+    # cutoff                                 0.00  0.00  0.00
 
 
-  class TestTargetPReportConst  < Test::Unit::TestCase
 
+  HOGE
+
+  class TestTargetPReportConst < Test::Unit::TestCase
     def test_delimiter
       assert_equal("\n \n", Bio::TargetP::Report::DELIMITER)
     end
@@ -82,12 +78,9 @@ HOGE
     def test_rs
       assert_equal("\n \n", Bio::TargetP::Report::RS)
     end
-
   end # class TestTargetPReportConst
 
-
   class TestTargetPReport < Test::Unit::TestCase
-
     def setup
       @obj = Bio::TargetP::Report.new(TargetPReport_plant)
     end
@@ -109,17 +102,16 @@ HOGE
     end
 
     def test_prediction
-      hash = {"Name"=>"MGI_2141503", "Loc."=>"_", "RC"=>3, "SP"=>0.271,
-              "other"=>0.844, "mTP"=>0.161, "cTP"=>0.031, "Length"=>640}
+      hash = { 'Name' => 'MGI_2141503', 'Loc.' => '_', 'RC' => 3, 'SP' => 0.271,
+               'other' => 0.844, 'mTP' => 0.161, 'cTP' => 0.031, 'Length' => 640 }
       assert_equal(hash, @obj.pred)
       assert_equal(hash, @obj.prediction)
     end
 
     def test_cutoff
-      hash = {"SP"=>0.0, "other"=>0.0, "mTP"=>0.0, "cTP"=>0.0}
+      hash = { 'SP' => 0.0, 'other' => 0.0, 'mTP' => 0.0, 'cTP' => 0.0 }
       assert_equal(hash, @obj.cutoff)
     end
-
 
     def test_entry_id
       assert_equal('MGI_2141503', @obj.entry_id)

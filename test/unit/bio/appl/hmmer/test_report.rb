@@ -16,25 +16,22 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 4,
 require 'test/unit'
 require 'bio/appl/hmmer/report'
 
-
 module Bio
-
   class TestHMMERReportData
     TestDataHMMER = Pathname.new(File.join(BioRubyTestDataPath, 'HMMER')).cleanpath.to_s
 
     def self.hmmpfam
-      File.open(File.join(TestDataHMMER, 'hmmpfam.out')).read 
+      File.read(File.join(TestDataHMMER, 'hmmpfam.out'))
     end
 
     def self.output
-      self.hmmpfam
+      hmmpfam
     end
 
     def self.hmmsearch
-      File.open(File.join(TestDataHMMER, 'hmmsearch.out')).read 
+      File.read(File.join(TestDataHMMER, 'hmmsearch.out'))
     end
   end
-
 
   class TestHMMERReportClassMethods < Test::Unit::TestCase
     def test_reports_ary
@@ -49,7 +46,6 @@ module Bio
     end
   end
 
-  
   class TestHMMERReportConstants < Test::Unit::TestCase
     def test_rs
       assert_equal("\n//\n", Bio::HMMER::Report::RS)
@@ -57,31 +53,32 @@ module Bio
     end
   end
 
-    
   class TestHMMERReportHmmpfam < Test::Unit::TestCase
     def setup
       @obj = Bio::HMMER::Report.new(Bio::TestHMMERReportData.hmmpfam)
     end
-    
+
     def test_program
       assert_equal(Hash, @obj.program.class)
-      assert_equal("hmmpfam - search one or more sequences against HMM database", @obj.program['name'])
-      assert_equal("HMMER 2.3.2 (Oct 2003)", @obj.program['version'])
-      assert_equal("Copyright (C) 1992-2003 HHMI/Washington University School of Medicine", @obj.program['copyright'])
-      assert_equal("Freely distributed under the GNU General Public License (GPL)", @obj.program['license'])
+      assert_equal('hmmpfam - search one or more sequences against HMM database', @obj.program['name'])
+      assert_equal('HMMER 2.3.2 (Oct 2003)', @obj.program['version'])
+      assert_equal('Copyright (C) 1992-2003 HHMI/Washington University School of Medicine', @obj.program['copyright'])
+      assert_equal('Freely distributed under the GNU General Public License (GPL)', @obj.program['license'])
     end
 
     def test_parameter
       assert_equal(Hash, @obj.parameter.class)
-      assert_equal("/Users/nakao/Sites/iprscan/tmp/20050517/iprscan-20050517-16244071/chunk_1/iprscan-20050517-16244071.nocrc", @obj.parameter["Sequence file"])
-      assert_equal("/Users/nakao/Sites/iprscan/data/Pfam", @obj.parameter['HMM file'])
+      assert_equal(
+        '/Users/nakao/Sites/iprscan/tmp/20050517/iprscan-20050517-16244071/chunk_1/iprscan-20050517-16244071.nocrc', @obj.parameter['Sequence file']
+      )
+      assert_equal('/Users/nakao/Sites/iprscan/data/Pfam', @obj.parameter['HMM file'])
     end
 
     def test_query_info
       assert_equal(Hash, @obj.query_info.class)
-      assert_equal("104K_THEPA", @obj.query_info["Query sequence"])
-      assert_equal("[none]", @obj.query_info["Accession"])
-      assert_equal("[none]", @obj.query_info["Description"])
+      assert_equal('104K_THEPA', @obj.query_info['Query sequence'])
+      assert_equal('[none]', @obj.query_info['Accession'])
+      assert_equal('[none]', @obj.query_info['Description'])
     end
 
     def test_hits
@@ -123,8 +120,7 @@ module Bio
         assert_equal(Bio::HMMER::Report::Hit, hit.class)
       end
     end
-  end 
-
+  end
 
   class TestHMMERReportHit < Test::Unit::TestCase
     def setup
@@ -140,28 +136,33 @@ module Bio
     end
 
     def test_accession
-      assert_equal("PF04385.4", @obj.accession)
+      assert_equal('PF04385.4', @obj.accession)
     end
+
     def test_target_id
-      assert_equal("PF04385.4", @obj.target_id)
+      assert_equal('PF04385.4', @obj.target_id)
     end
+
     def test_hit_id
-      assert_equal("PF04385.4", @obj.hit_id)
+      assert_equal('PF04385.4', @obj.hit_id)
     end
+
     def test_entry_id
-      assert_equal("PF04385.4", @obj.entry_id)
+      assert_equal('PF04385.4', @obj.entry_id)
     end
 
     def test_description
-      assert_equal("Domain of unknown function, DUF529", @obj.description)
+      assert_equal('Domain of unknown function, DUF529', @obj.description)
     end
+
     def test_definition
-      assert_equal("Domain of unknown function, DUF529", @obj.definition)
+      assert_equal('Domain of unknown function, DUF529', @obj.definition)
     end
 
     def test_score
       assert_equal(259.3, @obj.score)
     end
+
     def test_bit_score
       assert_equal(259.3, @obj.bit_score)
     end
@@ -173,7 +174,7 @@ module Bio
     def test_num
       assert_equal(4, @obj.num)
     end
-    
+
     def test_each
       @obj.each do |hsp|
         assert_equal(Bio::HMMER::Report::Hsp, hsp.class)
@@ -187,7 +188,7 @@ module Bio
     end
 
     def test_target_def
-      assert_equal("<4> Domain of unknown function, DUF529", @obj.target_def)
+      assert_equal('<4> Domain of unknown function, DUF529', @obj.target_def)
     end
 
     def test_append_hsp
@@ -197,7 +198,6 @@ module Bio
   end
 
   class TestHMMERReportHsp < Test::Unit::TestCase
-
     def setup
       @obj = Bio::HMMER::Report.new(Bio::TestHMMERReportData.output).hits.first.hsps.first
     end
@@ -205,13 +205,13 @@ module Bio
     def test_hsp
       assert_equal(Bio::HMMER::Report::Hsp, @obj.class)
     end
-    
+
     def test_accession
-      assert_equal("PF04385.4", @obj.accession)
+      assert_equal('PF04385.4', @obj.accession)
     end
 
     def test_domain
-      assert_equal("1/4", @obj.domain)
+      assert_equal('1/4', @obj.domain)
     end
 
     def test_seq_f
@@ -223,7 +223,7 @@ module Bio
     end
 
     def test_seq_ft
-      assert_equal("..", @obj.seq_ft)
+      assert_equal('..', @obj.seq_ft)
     end
 
     def test_hmm_f
@@ -237,6 +237,7 @@ module Bio
     def test_score
       assert_equal(65.0, @obj.score)
     end
+
     def test_bit_score
       assert_equal(65.0, @obj.bit_score)
     end
@@ -246,15 +247,15 @@ module Bio
     end
 
     def test_midline
-      assert_equal("t+D+n++++    f  +v+++g+++ + ++ ++v+++++++Gn+v+We++   + +l++ ++++++++++++++++ +++", @obj.midline)
+      assert_equal('t+D+n++++    f  +v+++g+++ + ++ ++v+++++++Gn+v+We++   + +l++ ++++++++++++++++ +++', @obj.midline)
     end
 
     def test_hmmseq
-      assert_equal("tLDlndtgstlkqfdykvalngdivvtytpkpGvkftkitdGnevvWeseddpefglivtlsfyldsnkfLvlllintak", @obj.hmmseq)
+      assert_equal('tLDlndtgstlkqfdykvalngdivvtytpkpGvkftkitdGnevvWeseddpefglivtlsfyldsnkfLvlllintak', @obj.hmmseq)
     end
 
     def test_flatseq
-      assert_equal("TFDINSNQTG-PAFLTAVEMAGVKYLQVQHGSNVNIHRLVEGNVVIWENA---STPLYTGAIVTNNDGPYMAYVEVLGDP", @obj.flatseq)
+      assert_equal('TFDINSNQTG-PAFLTAVEMAGVKYLQVQHGSNVNIHRLVEGNVVIWENA---STPLYTGAIVTNNDGPYMAYVEVLGDP', @obj.flatseq)
     end
 
     def test_query_frame
@@ -273,15 +274,14 @@ module Bio
       assert_equal(nil, @obj.rfline)
     end
 
-    def test_set_alignment
-    end
+    def test_set_alignment; end
 
     def test_query_seq
-      assert_equal("TFDINSNQTG-PAFLTAVEMAGVKYLQVQHGSNVNIHRLVEGNVVIWENA---STPLYTGAIVTNNDGPYMAYVEVLGDP", @obj.query_seq)
+      assert_equal('TFDINSNQTG-PAFLTAVEMAGVKYLQVQHGSNVNIHRLVEGNVVIWENA---STPLYTGAIVTNNDGPYMAYVEVLGDP', @obj.query_seq)
     end
 
     def test_target_seq
-      assert_equal("tLDlndtgstlkqfdykvalngdivvtytpkpGvkftkitdGnevvWeseddpefglivtlsfyldsnkfLvlllintak", @obj.target_seq)
+      assert_equal('tLDlndtgstlkqfdykvalngdivvtytpkpGvkftkitdGnevvWeseddpefglivtlsfyldsnkfLvlllintak', @obj.target_seq)
     end
 
     def test_target_from
@@ -310,21 +310,21 @@ module Bio
       hist = "score    obs    exp  (one = represents 1 sequences)\n-----    ---    ---\n  377      1      0|="
       assert_equal(hist, @obj.histogram)
     end
-    
+
     def test_statistical_detail
-      hash = {"P(chi-square)" => 0.0, "chi-sq statistic" => 0.0, "lambda" => 0.7676, "mu" => -10.6639}
+      hash = { 'P(chi-square)' => 0.0, 'chi-sq statistic' => 0.0, 'lambda' => 0.7676, 'mu' => -10.6639 }
       assert_equal(hash, @obj.statistical_detail)
       hash.keys.each do |key|
         assert_equal(hash[key], @obj.statistical_detail[key])
       end
     end
-    
+
     def test_total_seq_searched
       assert_equal(1, @obj.total_seq_searched)
     end
 
     def test_whole_seq_top_hit
-      hash = {"Total memory" => "16K", "Satisfying E cutoff" => 1, "Total hits" => 1}
+      hash = { 'Total memory' => '16K', 'Satisfying E cutoff' => 1, 'Total hits' => 1 }
       assert_equal(hash, @obj.whole_seq_top_hits)
       hash.keys.each do |key|
         assert_equal(hash[key], @obj.whole_seq_top_hits[key])
@@ -332,12 +332,11 @@ module Bio
     end
 
     def test_domain_top_hits
-      hash = {"Total memory" => "17K", "Satisfying E cutoff" => 1, "Total hits" => 1}
+      hash = { 'Total memory' => '17K', 'Satisfying E cutoff' => 1, 'Total hits' => 1 }
       assert_equal(hash, @obj.domain_top_hits)
       hash.keys.each do |key|
         assert_equal(hash[key], @obj.domain_top_hits[key])
       end
     end
   end
-
 end # module Bio

@@ -1,7 +1,7 @@
 #
 # = test/unit/bio/appl/test_pts1.rb - Unit test for Bio::PTS1
 #
-# Copyright::   Copyright (C) 2006 
+# Copyright::   Copyright (C) 2006
 #               Mitsuteru Nakao <n@bioruby.org>
 # License::     The Ruby License
 #
@@ -17,15 +17,12 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
 require 'test/unit'
 require 'bio/appl/pts1'
 
-
 module Bio
-
   class TestPTS1Constant < Test::Unit::TestCase
     def test_FUNCTION
-      keys = ['METAZOA-specific','FUNGI-specific','GENERAL'].sort
+      keys = %w[METAZOA-specific FUNGI-specific GENERAL].sort
       assert_equal(keys, Bio::PTS1::FUNCTION.keys.sort)
     end
-
   end
 
   class TestPTS1New < Test::Unit::TestCase
@@ -46,34 +43,32 @@ module Bio
   end
 
   class TestPTS1 < Test::Unit::TestCase
-
     def setup
       @serv = Bio::PTS1.new
     end
 
-
     def test_function_set
-      @serv.function("GENERAL")
-      assert_equal("GENERAL", @serv.function)
+      @serv.function('GENERAL')
+      assert_equal('GENERAL', @serv.function)
     end
 
     def test_function_show
-      assert_equal("METAZOA-specific", @serv.function)
+      assert_equal('METAZOA-specific', @serv.function)
     end
 
     def test_function_set_number_1
       @serv.function(1)
-      assert_equal("METAZOA-specific", @serv.function)
+      assert_equal('METAZOA-specific', @serv.function)
     end
 
     def test_function_set_number_2
       @serv.function(2)
-      assert_equal("FUNGI-specific", @serv.function)
+      assert_equal('FUNGI-specific', @serv.function)
     end
 
     def test_function_set_number_3
       @serv.function(3)
-      assert_equal("GENERAL", @serv.function)
+      assert_equal('GENERAL', @serv.function)
     end
   end
 end

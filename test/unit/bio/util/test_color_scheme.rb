@@ -17,9 +17,8 @@ load Pathname.new(File.join(File.dirname(__FILE__), ['..'] * 3,
 require 'test/unit'
 require 'bio/util/color_scheme'
 
-module Bio #:nodoc:
-  class TestColorScheme < Test::Unit::TestCase #:nodoc:
-
+module Bio # :nodoc:
+  class TestColorScheme < Test::Unit::TestCase # :nodoc:
     def test_buried
       s = Bio::ColorScheme::Buried
       assert_equal('00DC22', s['A'])
@@ -30,6 +29,5 @@ module Bio #:nodoc:
       assert_equal('FFFFFF', s['junk'])
       assert_equal('00CC32', s['t'])
     end
-
   end
 end

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 #
 # test/unit/bio/db/embl/test_uniprotkb_P28907.rb - Unit tests for Bio::UniProtKB
 #
@@ -19,9 +20,8 @@ require 'bio/db/embl/uniprotkb'
 
 module Bio
   class TestUniProtKB_P28907 < Test::Unit::TestCase
-
     def setup
-      data = File.read(File.join(BioRubyTestDataPath, 
+      data = File.read(File.join(BioRubyTestDataPath,
                                  'uniprot', 'P28907.uniprot'))
       @obj = Bio::UniProtKB.new(data)
     end
@@ -32,15 +32,15 @@ module Bio
 
     def test_id_line_entry_name
       assert_equal('CD38_HUMAN', @obj.id_line('ENTRY_NAME'))
-    end   
+    end
 
     def test_id_line_data_class
       assert_equal('Reviewed', @obj.id_line('DATA_CLASS'))
     end
 
-    #def test_id_line_molecule_type
+    # def test_id_line_molecule_type
     #  assert_equal('PRT', @obj.id_line('MOLECULE_TYPE'))
-    #end
+    # end
 
     def test_id_line_sequence_length
       assert_equal(300, @obj.id_line('SEQUENCE_LENGTH'))
@@ -53,10 +53,10 @@ module Bio
       assert_equal(entry, @obj.entry_id)
     end
 
-    #def test_molecule
+    # def test_molecule
     #  assert_equal('PRT', @obj.molecule)
     #  assert_equal('PRT', @obj.molecule_type)
-    #end
+    # end
 
     def test_sequence_length
       seqlen = 300
@@ -65,7 +65,7 @@ module Bio
     end
 
     def test_ac
-      acs = ["P28907", "O00121", "O00122", "Q96HY4"].freeze
+      acs = %w[P28907 O00121 O00122 Q96HY4].freeze
       assert_equal(acs, @obj.ac)
       assert_equal(acs, @obj.accessions)
     end
@@ -77,38 +77,37 @@ module Bio
     def test_dr
       assert_equal(81, @obj.dr.size)
       assert_equal(39, @obj.dr['GO'].size)
-      assert_equal([["IPR003193", "ADP-ribosyl_cyclase"],
-                    ["IPR033567", "CD38"]],
+      assert_equal([%w[IPR003193 ADP-ribosyl_cyclase],
+                    %w[IPR033567 CD38]],
                    @obj.dr['InterPro'])
     end
 
     def test_dr_with_key
-      pfam = [{" "              => "1",
-               "Version"        => "Rib_hydrolayse",
-               "Accession"      => "PF02267",
-               "Molecular Type" => nil
-              }].freeze
+      pfam = [{ ' ' => '1',
+                'Version' => 'Rib_hydrolayse',
+                'Accession' => 'PF02267',
+                'Molecular Type' => nil }].freeze
       assert_equal(pfam, @obj.dr('Pfam'))
-      embl = [{"Accession"      => "M34461",
-               "Version"        => "AAA68482.1",
-               " "              => "-",
-               "Molecular Type" => "mRNA"},
-              {"Accession"      => "D84276",
-               "Version"        => "BAA18964.1",
-               " "              => "-",
-               "Molecular Type" => "mRNA"},
-              {"Accession"      => "D84277",
-               "Version"        => "BAA18965.1",
-               " "              => "-",
-               "Molecular Type" => "mRNA"},
-              {"Accession"      => "D84284",
-               "Version"        => "BAA18966.1",
-               " "              => "-",
-               "Molecular Type" => "Genomic_DNA"},
-              {"Accession"      => "BC007964",
-               "Version"        => "AAH07964.1",
-               " "              => "-",
-               "Molecular Type" => "mRNA"}].freeze
+      embl = [{ 'Accession' => 'M34461',
+                'Version' => 'AAA68482.1',
+                ' ' => '-',
+                'Molecular Type' => 'mRNA' },
+              { 'Accession' => 'D84276',
+                'Version' => 'BAA18964.1',
+                ' ' => '-',
+                'Molecular Type' => 'mRNA' },
+              { 'Accession' => 'D84277',
+                'Version' => 'BAA18965.1',
+                ' ' => '-',
+                'Molecular Type' => 'mRNA' },
+              { 'Accession' => 'D84284',
+                'Version' => 'BAA18966.1',
+                ' ' => '-',
+                'Molecular Type' => 'Genomic_DNA' },
+              { 'Accession' => 'BC007964',
+                'Version' => 'AAH07964.1',
+                ' ' => '-',
+                'Molecular Type' => 'mRNA' }].freeze
       assert_equal(embl, @obj.dr('EMBL'))
     end
 
@@ -126,12 +125,12 @@ module Bio
     end
 
     def test_dt_sequence
-      assert_equal('23-NOV-2004, sequence version 2.', 
+      assert_equal('23-NOV-2004, sequence version 2.',
                    @obj.dt('sequence'))
     end
 
     def test_dt_annotation
-      assert_equal('03-AUG-2022, entry version 213.', 
+      assert_equal('03-AUG-2022, entry version 213.',
                    @obj.dt('annotation'))
     end
 
@@ -140,30 +139,30 @@ module Bio
     end
 
     def test_protein_name
-      assert_equal("ADP-ribosyl cyclase/cyclic ADP-ribose hydrolase 1",
+      assert_equal('ADP-ribosyl cyclase/cyclic ADP-ribose hydrolase 1',
                    @obj.protein_name)
     end
 
     def test_synonyms
       ary = [
-        "EC 3.2.2.6",
+        'EC 3.2.2.6',
         "2'-phospho-ADP-ribosyl cyclase",
         "2'-phospho-ADP-ribosyl cyclase/2'-phospho-cyclic-ADP-ribose transferase",
-        "EC 2.4.99.20",
+        'EC 2.4.99.20',
         "2'-phospho-cyclic-ADP-ribose transferase",
-        "ADP-ribosyl cyclase 1",
-        "ADPRC 1",
-        "Cyclic ADP-ribose hydrolase 1",
-        "cADPr hydrolase 1",
-        "T10",
-        "CD_antigen=CD38"
+        'ADP-ribosyl cyclase 1',
+        'ADPRC 1',
+        'Cyclic ADP-ribose hydrolase 1',
+        'cADPr hydrolase 1',
+        'T10',
+        'CD_antigen=CD38'
       ].freeze
       assert_equal(ary, @obj.synonyms)
     end
 
     def test_protein_name_after_calling_de
       assert(@obj.de)
-      assert_equal("ADP-ribosyl cyclase/cyclic ADP-ribose hydrolase 1",
+      assert_equal('ADP-ribosyl cyclase/cyclic ADP-ribose hydrolase 1',
                    @obj.protein_name)
     end
 
@@ -173,22 +172,22 @@ module Bio
     end
 
     def test_gn
-      assert_equal([{:orfs=>[], :synonyms=>[], :name=>"CD38", :loci=>[]}], 
+      assert_equal([{ orfs: [], synonyms: [], name: 'CD38', loci: [] }],
                    @obj.gn)
     end
 
     def test_gn_uniprot_parser
-      assert_equal([{:orfs=>[], :loci=>[], :name=>"CD38", :synonyms=>[]}], 
-                   @obj.instance_eval("gn_uniprot_parser"))
+      assert_equal([{ orfs: [], loci: [], name: 'CD38', synonyms: [] }],
+                   @obj.instance_eval('gn_uniprot_parser', __FILE__, __LINE__))
     end
 
     def test_gn_old_parser
-      assert_equal([["Name=CD38;"]], 
-                   @obj.instance_eval("gn_old_parser"))
+      assert_equal([['Name=CD38;']],
+                   @obj.instance_eval('gn_old_parser', __FILE__, __LINE__))
     end
 
     def test_gene_names
-      assert_equal(["CD38"], @obj.gene_names)
+      assert_equal(['CD38'], @obj.gene_names)
     end
 
     def test_gene_name
@@ -200,23 +199,23 @@ module Bio
     end
 
     def test_os_access
-      assert_equal("Homo sapiens (Human)", @obj.os(0))
+      assert_equal('Homo sapiens (Human)', @obj.os(0))
     end
 
     def test_os_access2
-      assert_equal({"name"=>"(Human)", "os"=>"Homo sapiens"}, @obj.os[0])
+      assert_equal({ 'name' => '(Human)', 'os' => 'Homo sapiens' }, @obj.os[0])
     end
 
     def test_oc
-      assert_equal(["Eukaryota", "Metazoa", "Chordata", "Craniata",
-                    "Vertebrata", "Euteleostomi", "Mammalia", "Eutheria",
-                    "Euarchontoglires", "Primates",
-                    "Haplorrhini", "Catarrhini", "Hominidae", "Homo"],
+      assert_equal(%w[Eukaryota Metazoa Chordata Craniata
+                      Vertebrata Euteleostomi Mammalia Eutheria
+                      Euarchontoglires Primates
+                      Haplorrhini Catarrhini Hominidae Homo],
                    @obj.oc)
     end
 
     def test_ox
-      assert_equal({"NCBI_TaxID"=>["9606"]}, @obj.ox)
+      assert_equal({ 'NCBI_TaxID' => ['9606'] }, @obj.ox)
     end
 
     def test_ref # Bio::UniProtKB#ref
@@ -226,24 +225,24 @@ module Bio
     def test_cc
       assert_equal(Hash, @obj.cc.class)
     end
-   
+
     def test_cc_database
       assert_equal(nil, @obj.cc('DATABASE'))
     end
 
     def test_cc_alternative_products
-      ap = { "Event"=>["Alternative splicing"],
-             "Named isoforms"=>"2",
-             "Comment"=>"",
-             "Variants"=>
-             [{"Name"=>"1",
-               "Synonyms"=>[],
-               "IsoId"=>["P28907-1"],
-               "Sequence"=>["Displayed"]},
-              {"Name"=>"2",
-               "Synonyms"=>[],
-               "IsoId"=>["P28907-2"],
-               "Sequence"=>["VSP_000707", "VSP_000708"]}]}
+      ap = { 'Event' => ['Alternative splicing'],
+             'Named isoforms' => '2',
+             'Comment' => '',
+             'Variants' =>
+             [{ 'Name' => '1',
+                'Synonyms' => [],
+                'IsoId' => ['P28907-1'],
+                'Sequence' => ['Displayed'] },
+              { 'Name' => '2',
+                'Synonyms' => [],
+                'IsoId' => ['P28907-2'],
+                'Sequence' => %w[VSP_000707 VSP_000708] }] }
       assert_equal(ap, @obj.cc('ALTERNATIVE PRODUCTS'))
     end
 
@@ -251,57 +250,56 @@ module Bio
       assert_equal(nil, @obj.cc('MASS SPECTROMETRY'))
     end
 
-
     def test_kw
-      keywords = ["3D-structure", "Alternative splicing",
-                  "Diabetes mellitus", "Disulfide bond",
-                  "Glycoprotein", "Hydrolase", "Membrane",
-                  "NAD", "NADP", "Receptor", "Reference proteome",
-                  "Signal-anchor", "Transferase", "Transmembrane",
-                  "Transmembrane helix"]
+      keywords = ['3D-structure', 'Alternative splicing',
+                  'Diabetes mellitus', 'Disulfide bond',
+                  'Glycoprotein', 'Hydrolase', 'Membrane',
+                  'NAD', 'NADP', 'Receptor', 'Reference proteome',
+                  'Signal-anchor', 'Transferase', 'Transmembrane',
+                  'Transmembrane helix']
       assert_equal(keywords, @obj.kw)
     end
-    
+
     def test_ft
       assert(@obj.ft)
       name = 'TOPO_DOM'
-      data = [{"From"=>1,
-               "To"=>21,
-               "diff"=>[],
-               "original"=>
-               ["TOPO_DOM",
-                "1",
-                "21",
-                [["note", "Cytoplasmic"],
-                 ["evidence", "ECO:0000255"]]],
-               "note"=>"Cytoplasmic",
-               "evidence"=>"ECO:0000255"},
-              {"From"=>43,
-               "To"=>300,
-               "diff"=>[],
-               "original"=>
-               ["TOPO_DOM",
-                "43",
-                "300",
-                [["note", "Extracellular"],
-                 ["evidence", "ECO:0000255"]]],
-               "note"=>"Extracellular",
-               "evidence"=>"ECO:0000255"}].freeze
+      data = [{ 'From' => 1,
+                'To' => 21,
+                'diff' => [],
+                'original' =>
+               ['TOPO_DOM',
+                '1',
+                '21',
+                [['note', 'Cytoplasmic'],
+                 ['evidence', 'ECO:0000255']]],
+                'note' => 'Cytoplasmic',
+                'evidence' => 'ECO:0000255' },
+              { 'From' => 43,
+                'To' => 300,
+                'diff' => [],
+                'original' =>
+               ['TOPO_DOM',
+                '43',
+                '300',
+                [['note', 'Extracellular'],
+                 ['evidence', 'ECO:0000255']]],
+                'note' => 'Extracellular',
+                'evidence' => 'ECO:0000255' }].freeze
 
       assert_equal(data, @obj.ft[name])
     end
 
     def test_sq
-      assert_equal({"CRC64"=>"47BBE38C3DE3E6AA", "aalen"=>300, "MW"=>34328}, 
+      assert_equal({ 'CRC64' => '47BBE38C3DE3E6AA', 'aalen' => 300, 'MW' => 34_328 },
                    @obj.sq)
     end
 
     def test_sq_crc64
-      assert_equal("47BBE38C3DE3E6AA", @obj.sq('CRC64'))
+      assert_equal('47BBE38C3DE3E6AA', @obj.sq('CRC64'))
     end
 
     def test_sq_mw
-      mw = 34328
+      mw = 34_328
       assert_equal(mw, @obj.sq('mw'))
       assert_equal(mw, @obj.sq('molecular'))
       assert_equal(mw, @obj.sq('weight'))
@@ -315,11 +313,9 @@ module Bio
     end
 
     def test_seq
-      seq = "MANCEFSPVSGDKPCCRLSRRAQLCLGVSILVLILVVVLAVVVPRWRQQWSGPGTTKRFPETVLARCVKYTEIHPEMRHVDCQSVWDAFKGAFISKHPCNITEEDYQPLMKLGTQTVPCNKILLWSRIKDLAHQFTQVQRDMFTLEDTLLGYLADDLTWCGEFNTSKINYQSCPDWRKDCSNNPVSVFWKTVSRRFAEAACDVVHVMLNGSRSKIFDKNSTFGSVEVHNLQPEKVQTLEAWVIHGGREDSRDLCQDPTIKELESIISKRNIQFSCKNIYRPDKFLQCVKNPEDSSCTSEI"
+      seq = 'MANCEFSPVSGDKPCCRLSRRAQLCLGVSILVLILVVVLAVVVPRWRQQWSGPGTTKRFPETVLARCVKYTEIHPEMRHVDCQSVWDAFKGAFISKHPCNITEEDYQPLMKLGTQTVPCNKILLWSRIKDLAHQFTQVQRDMFTLEDTLLGYLADDLTWCGEFNTSKINYQSCPDWRKDCSNNPVSVFWKTVSRRFAEAACDVVHVMLNGSRSKIFDKNSTFGSVEVHNLQPEKVQTLEAWVIHGGREDSRDLCQDPTIKELESIISKRNIQFSCKNIYRPDKFLQCVKNPEDSSCTSEI'
       assert_equal(seq, @obj.seq)
       assert_equal(seq, @obj.aaseq)
     end
-
   end # class TestUniProtKB
 end # module Bio
-
