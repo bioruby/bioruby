@@ -78,8 +78,8 @@ module Bio
       return unless DATA
       # Test that various entry types are represented
       types = @obj.entries.map(&:type).uniq
-      assert_include types, "enzyme"
-      # Citrate cycle should have enzyme entries
+      assert_include types, "gene"
+      # Citrate cycle should have gene entries
     end
 
     def test_relations_exist
@@ -118,14 +118,14 @@ module Bio
       assert_respond_to graphics, :height
     end
 
-    def test_enzyme_entries
+    def test_gene_entries
       return unless DATA
-      # Test specific functionality for enzyme entries
-      enzyme_entries = @obj.entries.select { |e| e.type == "enzyme" }
-      assert enzyme_entries.size > 0, "Citrate cycle should have enzyme entries"
+      # Test specific functionality for gene entries
+      gene_entries = @obj.entries.select { |e| e.type == "gene" }
+      assert gene_entries.size > 0, "Citrate cycle should have gene entries"
       
-      enzyme = enzyme_entries.first
-      assert_match(/^ec:/, enzyme.name)
+      gene = gene_entries.first
+      assert_match(/^eco:b/, gene.name)
     end
 
     def test_names_method
