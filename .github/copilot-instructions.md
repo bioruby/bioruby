@@ -15,7 +15,7 @@ BioRuby is a mature, comprehensive bioinformatics library for Ruby that provides
 # Ruby 2.7+ is required (Ruby 3.2+ recommended)
 # Install bundler if not available
 gem install --user-install bundler
-export PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
+export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
 
 # Always install gems in vendor directory to avoid permission issues
 bundle config set path 'vendor/bundle'
