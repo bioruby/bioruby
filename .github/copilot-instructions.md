@@ -29,7 +29,7 @@ bundle install
 bundle exec rake test
 # OR
 bundle exec ruby test/runner.rb
-# Expected: ~3941 tests, 0 failures (takes ~7-8 seconds)
+# Expected: all tests should pass with 0 failures (typically completes in ~7-8 seconds)
 ```
 
 **All Tests (including network - will fail without internet):**
