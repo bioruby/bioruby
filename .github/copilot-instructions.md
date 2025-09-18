@@ -1,46 +1,59 @@
-# BioRuby Copilot Instructions
+# BioRuby Development Instructions for Copilot Agents
 
 ## Repository Overview
 
-**BioRuby** is a Ruby library for bioinformatics (biology + information science). It provides tools for parsing biological databases, sequence analysis, structure prediction, phylogenetics, and more. The project is mature, stable, and widely used in the bioinformatics community.
+BioRuby is a mature, comprehensive bioinformatics library for Ruby that provides tools for biological sequence analysis, database parsing, and external application integration. The project targets Ruby 2.7+ and includes ~197 source files with ~128 test files, totaling 3941 tests covering unit, functional, and network scenarios.
 
-**Key Facts:**
-- **Size**: ~9.4MB total, 197 Ruby files in lib/, 58,438 lines of code
-- **Language**: Ruby (requires Ruby 2.7+ recommended, supports 2.7, 3.0-3.3, head, jruby)
-- **Type**: Ruby gem/library distributed via RubyGems
-- **License**: Same terms as Ruby
-- **Namespace**: All classes and modules are under the `Bio` module
+**Repository Structure:** Standard Ruby gem layout with lib/, test/, sample/, doc/ directories. Main entry point is `lib/bio.rb` which autoloads all modules under the Bio namespace.
 
-## Build and Test Instructions
+**Dependencies:** Minimal external dependencies (matrix, rexml, rake, rdoc, test-unit) managed via Bundler.
 
-### Prerequisites and Setup
-**ALWAYS** run these commands before making any changes:
+## Build and Test Environment Setup
 
+### Prerequisites and Installation
 ```bash
+# Ruby 2.7+ is required (Ruby 3.2+ recommended)
 # Install bundler if not available
-sudo gem install bundler
+gem install --user-install bundler
+export PATH="$(ruby -e 'puts Gem.user_dir')/bin:$PATH"
 
-# Install dependencies (required before any build/test)
+# Always install gems in vendor directory to avoid permission issues
+bundle config set path 'vendor/bundle'
 bundle install
 ```
 
-### Core Commands - Run These in Order
+### Running Tests and Validation
 
-1. **Install Dependencies**: `bundle install`
-   - **ALWAYS** run this first in a fresh environment
-   - Time: ~30-60 seconds depending on network
+**Standard Test Suite (ALWAYS run this):**
+```bash
+bundle exec rake test
+# OR
+bundle exec ruby test/runner.rb
+# Expected: all tests should pass with 0 failures (typically completes in ~7-8 seconds)
+```
 
-2. **Run Tests**: `bundle exec rake test`
-   - Runs unit and functional tests (~3941 tests)
-   - Time: ~7-8 seconds
-   - **MUST PASS** before committing any changes
-   - Alternative: `bundle exec rake test-all` (includes network tests)
+**All Tests (including network - will fail without internet):**
+```bash
+bundle exec rake test-all
+# NOTE: Network tests will fail in isolated environments
+```
 
-3. **Lint Code**: `bundle exec rubocop`
-   - Checks code style and quality
-   - Time: ~5-10 seconds
-   - **MUST PASS** before committing any changes
-   - May show minor warnings but should not show blocking errors
+**Default Task (runs tests):**
+```bash
+bundle exec rake
+```
+
+**Test Categories:**
+- `test/unit/` - Core unit tests (always pass offline)
+- `test/functional/` - Integration tests (always pass offline) 
+- `test/network/` - Network-dependent tests (fail without internet)
+
+### Critical Build Notes
+- **ALWAYS use bundler commands:** `bundle exec rake` instead of plain `rake`
+- **PATH setup required:** Include gem bin directory when using user-installed bundler
+- **Vendor bundle:** Use `bundle config set path 'vendor/bundle'` to avoid permission issues
+- **Test timing:** Unit tests complete in ~8 seconds, use 300s timeout for safety
+- **Network failures expected:** Network tests fail in sandboxed environments - this is normal
 
 ### Available Rake Tasks
 ```bash
@@ -52,57 +65,54 @@ bundle exec rake rdoc       # Generate documentation
 bundle exec rake gem        # Build gem package
 ```
 
-### Validation Pipeline (REQUIRED)
-**Run this sequence before every commit:**
-```bash
-bundle install              # Install/update dependencies
-bundle exec rake test      # Run test suite (must pass)
-bundle exec rubocop        # Lint code (must pass)
-```
-
 ## Project Architecture and Layout
 
-### Directory Structure
+### Core Directory Structure
 ```
-bioruby/
-├── .github/workflows/     # CI/CD workflows (GitHub Actions)
-├── lib/bio/              # Main library code
-│   ├── bio.rb           # Main entry point with autoloads
-│   ├── appl/            # External application wrappers/parsers
-│   ├── data/            # Basic biological data
-│   ├── db/              # Database entry parsers  
-│   ├── io/              # I/O interfaces (files, RDB, web services)
-│   ├── sequence/        # Sequence classes (DNA, RNA, protein)
-│   ├── tree/            # Phylogenetic trees
-│   └── util/            # Utilities and algorithms
-├── test/                # Test suite
-│   ├── unit/            # Unit tests
-│   ├── functional/      # Functional tests
-│   ├── network/         # Network-dependent tests
-│   └── data/            # Test data files
-├── sample/              # Example/demo scripts
-├── etc/                 # Configuration files
-├── doc/                 # Documentation
-├── Rakefile             # Build configuration
-├── Gemfile              # Dependencies
-├── .rubocop.yml         # Linting configuration
-└── README.rdoc          # Main documentation
+lib/bio.rb              # Main entry point, autoloads all modules
+lib/bio/                # Core Bio namespace modules
+├── sequence/           # Sequence analysis (DNA, RNA, protein)
+├── db/                 # Database format parsers (GenBank, EMBL, etc.)
+├── appl/               # External application wrappers (BLAST, FASTA, etc.)
+├── io/                 # I/O interfaces (file, web services, databases)
+├── util/               # Utilities and algorithms
+└── data/               # Biological data constants
+
+test/runner.rb          # Test execution entry point
+test/bioruby_test_helper.rb  # Test configuration and helpers
+sample/                 # Demo scripts and usage examples
+doc/                    # Tutorials, release notes, changelogs
+Rakefile               # Build automation and gem packaging
+bioruby.gemspec        # Gem specification (auto-generated from .erb)
+KNOWN_ISSUES.rdoc      # Important: known platform/version issues
+README_DEV.rdoc        # Development guidelines and coding standards
 ```
 
-### Key Files for Development
-- **lib/bio.rb**: Main entry point with autoload declarations
-- **lib/bio/version.rb**: Version information
-- **Rakefile**: Build system configuration
-- **Gemfile**: Runtime and development dependencies
-- **.rubocop.yml**: Code style configuration (inherits from .rubocop_todo.yml)
-- **bioruby.gemspec**: Gem specification (auto-generated from .erb)
+### Key Configuration Files
+- `Gemfile` - Minimal dependencies (matrix, rexml, rake, rdoc, test-unit)
+- `.github/workflows/ruby.yml` - CI for Ruby 2.7-3.3, JRuby
+- `.github/workflows/rubocop.yml` - RuboCop CI workflow
+- `appveyor.yml` - Windows CI configuration
+- `.rubocop.yml` - Code style configuration (inherits from .rubocop_todo.yml)
+- `etc/bioinformatics/seqdatabase.ini` - Database access configuration
 
-### Code Organization Pattern
-BioRuby uses a modular architecture with autoloaded modules:
-- All classes/modules are under the `Bio` namespace
-- Each major functionality area has its own subdirectory
-- Use `autoload` for lazy loading of modules
-- Follow existing naming conventions (see Coding Style below)
+### Architecture Patterns
+- **Autoloading:** Heavy use of autoload for performance (lib/bio.rb shows pattern)
+- **Namespace:** All classes under Bio module (Bio::Sequence, Bio::Blast, etc.)
+- **Parser pattern:** Database format parsers in bio/db/ follow consistent API
+- **Application wrappers:** External tool integration in bio/appl/
+
+### Version and Release Management
+- Version defined in `lib/bio/version.rb` as array `[2, 0, 6]`
+- Gemspec auto-generated from `bioruby.gemspec.erb` via rake
+- ChangeLog updated via `rake rechangelog` using git log
+
+### Development Workflow Validation
+1. **Before changes:** Run `bundle exec rake test` to ensure clean baseline
+2. **After changes:** Always re-run `bundle exec rake test` 
+3. **Code style:** Follow existing patterns (CamelCase classes, underscore_methods)
+4. **Documentation:** RDoc format required for new code
+5. **Testing:** Add unit tests in test/unit/ for new functionality
 
 ## Continuous Integration
 
@@ -120,7 +130,7 @@ BioRuby uses a modular architecture with autoloaded modules:
 **ALWAYS verify before committing:**
 - [ ] `bundle install` - dependencies up to date
 - [ ] `bundle exec rake test` - all tests pass
-- [ ] `bundle exec rubocop` - no linting errors
+- [ ] `bundle exec rubocop` - no linting errors (if available)
 - [ ] Added/updated tests for any new functionality
 - [ ] Documentation updated if needed
 
@@ -149,34 +159,47 @@ When adding new functionality, follow existing patterns:
 - Test files named `test_*.rb`
 - Include test data in test/data/ if needed
 
-## Common Issues and Workarounds
+## Common Issues and Solutions
 
 ### Environment Issues
-- **Permission Errors**: May need `sudo` for global gem installation
-- **Bundler Issues**: Use `bundle install` not `gem install` for dependencies
+- **Bundle permission errors:** Use `bundle config set path 'vendor/bundle'`
+- **Missing bundler:** Install with `gem install --user-install bundler` and update PATH  
+- **Network test failures:** Expected in isolated environments, focus on unit/functional tests
 - **Ruby Version**: Ensure Ruby 2.7+ for compatibility
 
 ### Testing Issues
-- **Network Tests**: Some tests require internet connection
-- **Timing**: Tests typically run quickly (~7-8 seconds)
+- **Network Tests**: Some tests require internet connection - failures expected in sandboxed environments
+- **Timing**: Tests typically run quickly (~7-8 seconds), use 300s timeout for safety
 - **Test Isolation**: Each test file can be run independently
 
-### RuboCop Issues
-- **Legacy Code**: Some files may have minor style warnings
-- **Configuration**: Custom rules in .rubocop.yml, inherits from .rubocop_todo.yml
-- **Non-blocking**: Minor warnings acceptable, blocking errors must be fixed
+### Code Development
+- **Autoload dependencies:** Check lib/bio.rb for module loading patterns
+- **Library loading:** Use `ruby -I lib` or `$LOAD_PATH.unshift('./lib')` for development version
+- **HACK/TODO markers:** Found throughout codebase, existing issues not your responsibility to fix
+- **Warning messages:** Bio::UniProt/Bio::SPTR deprecation warnings are expected and safe to ignore
+
+### Sample Usage (for validation)
+```ruby
+# When working with local development version
+ruby -I lib -e "require 'bio'; seq = Bio::Sequence.auto('ATGCATGC'); puts seq.translate"
+# Or in script files:
+$LOAD_PATH.unshift('./lib')
+require 'bio'
+seq = Bio::Sequence.auto('ATGCATGC')
+puts seq.translate  # Output: MH (protein translation)
+```
 
 ## Quick Reference
 
 ### Essential Commands
 ```bash
 # Setup
+bundle config set path 'vendor/bundle'
 bundle install
 
 # Development cycle
 bundle exec rake test      # Test changes
-bundle exec rubocop        # Check style
-git add -A && git commit   # Commit if both pass
+git add -A && git commit   # Commit if tests pass
 
 # Additional testing
 bundle exec rake test-all  # Include network tests
@@ -196,4 +219,4 @@ ruby test/runner.rb        # Alternative test runner
 - `KNOWN_ISSUES.rdoc`: Known platform/version issues
 - `doc/`: Additional documentation and release notes
 
-**Trust these instructions** - they have been validated against the current codebase. Only search for additional information if these instructions are incomplete or found to be incorrect.
+**Trust these instructions and only search for additional information if they prove incomplete or incorrect.**
