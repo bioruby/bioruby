@@ -52,24 +52,24 @@ module Bio
           tttgttcggttattggtcgaaagtaaccncgggaagtgccgaaaactaacaaacaaaaga
           agatagtgaaattttaattaaaanaaatagccaaacgtaactaactaaaacggacccgtc
           gaggaactgccaacggacgacacagggagtagnnn',
-         'tcagCCAGCAATTCCGACTTAATTGTTCTTCTTCCATCATTCATCTCGACTAACAGTTCT
+          'tcagCCAGCAATTCCGACTTAATTGTTCTTCTTCCATCATTCATCTCGACTAACAGTTCT
           ACGATTAATGAGTTTGGCtttaatttgttgttcattattgtcacaattacactactgaga
           ctgccaaggcacncagggataggnn',
-         'tcagTTTTCTTAAATTACTTGAATCTGTTGAAGTGGATGTCCACTTTTGTATGCCAAATA
+          'tcagTTTTCTTAAATTACTTGAATCTGTTGAAGTGGATGTCCACTTTTGTATGCCAAATA
           TGCCCAGCGTATACGATCTTGGCCACATCTCCACATAATCATCAGTCGGATGCAAAAAGC
           GATTAAACTAAAAATGAATGCGTTTTTAGATGAGTAAATAGGTAATACTTTGTTTAAATA
           ATAAATGTCACAAACAGAACGCGGATTACAGTACCTGAAAATAGTTGTACTGTATCTGTG
           CCGGCACTTCCTCGGCCCTGAGAAGTTGTCCCGTTGTTTCCATTCGCACCATCCAATGGC
           CAAAGTTTGCGAAGAATCTGTTCCGTTCCATTACCAATTGTTTTTCCATGctgagactgc
           caaggcacacaggggataggnn',
-         'tcagTTTTTGGAGAATTCCGTCAGGGACGGCATGGCATATTTGTGGGTTCGGCACGGCGT
+          'tcagTTTTTGGAGAATTCCGTCAGGGACGGCATGGCATATTTGTGGGTTCGGCACGGCGT
           CCTGGCCAAGAAGAAGAAGACGAATTAGCCCGTTAATTTAATGACACCTTCCCCAATTTT
           GCAGCAATGATTGGTTCATTCTTGGCGGTGCGTTTTTGTGCTTCGTCGAATTGTTGGCCA
           TTTTGGTCCACCGGCCATCATCTTTACGCTATCCGACTGATTGGAAATCACCGCCTAGCA
           TTTTGCCGAAGATTGTTGCGTTGTACGGCCATGTGCTGATTGTTTACATTGGCATTCTTG
           GCAATTTGTCCTTGGTCGGCTTTGACGGCAAATTTGCGGTGTTAAGTctgagactgccaa
           ggcacacagggggatagggnn',
-         'tcagTTGACCGGCGTTGTGTAACAATAATTCATTATTCTGAGACGATGCCAATGTAATCG
+          'tcagTTGACCGGCGTTGTGTAACAATAATTCATTATTCTGAGACGATGCCAATGTAATCG
           ACGGTTTATGCCCAATTATTCCCATCTATGCTTAACTGATCAAATACTATTTGCATTACG
           TCACGAAATTGCGCGAACACCGCCGGCCGACAATAATTTATACCGGACATACCGGAGTTG
           ATGGTAATCGGTAAAGAGTTTTATTTAATTATntattatcnctattaattattgttanca
@@ -78,12 +78,12 @@ module Bio
           cggggggccccccggtaaaaaaccggggaaccccctaaaacgggtaaacgtaccgtaagg
           gaccccctaaacgggggccccgaaaaaccgggacccaaaccggggggaaacggttaaagg
           ggggggaagtaggngnnnnnnnnnnnn',
-         'tcagTTATTGCAGTCGTTCCGCGCCATCGCCGGTAACCGTCCGCGTGTTATTCTGTGTAT
+          'tcagTTATTGCAGTCGTTCCGCGCCATCGCCGGTAACCGTCCGCGTGTTATTCTGTGTAT
           CGGCCAACCTTCGTATAACTTCGTATAATGTATGCTATACGAAGTTATTACGATCTATAC
           CGGCGAAACTCAGCCGAAAGGTCTCGCGGTAGAGCCTATGAGCTGCCCGACCGATGCATT
           TAAATTTCCGGGGATCGtcgctgatctgagactgccaaaggcacactagggggataggnn
           nnnnnnnnnnnnnnnnnn',
-         'tcagGTTTTAAATCGCTTTCCAAGGAATTTGAGTCTAAATCCGGTGGATCCCATCAGTAC
+          'tcagGTTTTAAATCGCTTTCCAAGGAATTTGAGTCTAAATCCGGTGGATCCCATCAGTAC
           AAATGCGGCGACAAGGCCGTGAAAACACTGCTTAATTCTTTGCACTTTTTGGCCACCTTT
           TTGGAAATGTTGTTTTGTGTTCTCAAAATTTTCCATCTCAGAACAAACATTCCATCGGGC
           TGATGTTGTGGCTTTTGGCGCGCGAAGTGCTGCTACTGCGCGGCAAAATCAGTCGCCAGA
@@ -91,20 +91,20 @@ module Bio
           AAGCGCGAATTGGTCACATAGTTATAGAATTTTTGAGCCTTTTTCTTGACATAAAAAGTG
           TGGTTTTAAAAATTTCCTGGCAGGACCCACGCCAACGTTCAGGAATAATATCTTTTAAAA
           AGctgagactgccaaggcacacaggggataggn',
-         'tcagTTTAATTTGGTGCTTCCTTTCAATTCCTTAGTTTAAACTTGGCACTGAAGTCTCGC
+          'tcagTTTAATTTGGTGCTTCCTTTCAATTCCTTAGTTTAAACTTGGCACTGAAGTCTCGC
           ATTTATAACTAGAGCCCGGATTTTAGAGGCTAAAAAGTTTTCCAGATTTCAAAATTTATT
           TCGAAACTATTTTTCTGATTGTGATGTGACGGATTTCTAAATTAAATCGAAATGATGTGT
           ATTGAACTTAACAAGTGATTTTTATCAGATTTTGTCAATGAATAAATTTTAATTTAAATC
           TCTTTCTAACACTTTCATGATTAAAATCTAACAAAGCGCGACCAGTATGTGAGAAGAGCA
           AAAACAACAAAAAGTGCTAGCACTAAAGAAGGTTCGAACCCAACACATAACGTAAGAGTT
           ACCGGGAAGAAAACCACTctgagactgccaaggcacacagggggataggnn',
-         'tcagTTTTCAAATTTTCCGAAATTTGCTGTTTGGTAGAAGGCAAATTATTTGATTGAATT
+          'tcagTTTTCAAATTTTCCGAAATTTGCTGTTTGGTAGAAGGCAAATTATTTGATTGAATT
           TTGTATTTATTTAAAACAATTTATTTTAAAATAATAATTTTCCATTGACTTTTTACATTT
           AATTGATTTTATTATGCATTTTATATTTGTTTTCTAAATATTCGTTTGCAAACTCACGTT
           GAAATTGTATTAAACTCGAAATTAGAGTTTTTGAAATTAATTTTTATGTAGCATAATATT
           TTAAACATATTGGAATTTTATAAAACATTATATTTTTctgagactgccaaggcacacagg
           gggataggn',
-         'tcagTTTTGATCTTTTAATAATGAATTTTAATGTGTTAAAATGATTGCATTGATGGCATA
+          'tcagTTTTGATCTTTTAATAATGAATTTTAATGTGTTAAAATGATTGCATTGATGGCATA
           ACCGCATTTAAATTAATTACATGAAGTGTAAGTATGAAATTTTCCTTTCCAAATTGCAAA
           AACTAAAATTTAAAATTTATCGTAAAAATTAACATATATTTTAAACGATTTTAAGAAACA
           TTTGTAAATTATATTTTTGTGAAGCGTTCAAACAAAAATAAACAATAAAATATTTTTCTA
@@ -117,28 +117,28 @@ module Bio
       IDLINES =
         [
           'FSRRS4401BE7HA [length=395] [gc=36.46] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=95]',
-         'FSRRS4401BRRTC [length=145] [gc=38.62] [flows=800] [phred_min=0] [phred_max=38] [trimmed_length=74]',
-         'FSRRS4401B64ST [length=382] [gc=40.58] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=346]',
-         'FSRRS4401EJ0YH [length=381] [gc=48.29] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=343]',
-         'FSRRS4401BK0IB [length=507] [gc=49.31] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=208]',
-         'FSRRS4401ARCCB [length=258] [gc=46.90] [flows=800] [phred_min=0] [phred_max=38] [trimmed_length=193]',
-         'FSRRS4401CM938 [length=453] [gc=44.15] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=418]',
-         'FSRRS4401EQLIK [length=411] [gc=34.31] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=374]',
-         'FSRRS4401AOV6A [length=309] [gc=22.98] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=273]',
-         'FSRRS4401EG0ZW [length=424] [gc=23.82] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=389]'
+          'FSRRS4401BRRTC [length=145] [gc=38.62] [flows=800] [phred_min=0] [phred_max=38] [trimmed_length=74]',
+          'FSRRS4401B64ST [length=382] [gc=40.58] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=346]',
+          'FSRRS4401EJ0YH [length=381] [gc=48.29] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=343]',
+          'FSRRS4401BK0IB [length=507] [gc=49.31] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=208]',
+          'FSRRS4401ARCCB [length=258] [gc=46.90] [flows=800] [phred_min=0] [phred_max=38] [trimmed_length=193]',
+          'FSRRS4401CM938 [length=453] [gc=44.15] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=418]',
+          'FSRRS4401EQLIK [length=411] [gc=34.31] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=374]',
+          'FSRRS4401AOV6A [length=309] [gc=22.98] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=273]',
+          'FSRRS4401EG0ZW [length=424] [gc=23.82] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=389]'
         ].collect { |x| x.freeze }.freeze
 
 
       ENTRY_IDS = ['FSRRS4401BE7HA',
-                    'FSRRS4401BRRTC',
-                    'FSRRS4401B64ST',
-                    'FSRRS4401EJ0YH',
-                    'FSRRS4401BK0IB',
-                    'FSRRS4401ARCCB',
-                    'FSRRS4401CM938',
-                    'FSRRS4401EQLIK',
-                    'FSRRS4401AOV6A',
-                    'FSRRS4401EG0ZW'].collect { |x| x.freeze }.freeze
+                   'FSRRS4401BRRTC',
+                   'FSRRS4401B64ST',
+                   'FSRRS4401EJ0YH',
+                   'FSRRS4401BK0IB',
+                   'FSRRS4401ARCCB',
+                   'FSRRS4401CM938',
+                   'FSRRS4401EQLIK',
+                   'FSRRS4401AOV6A',
+                   'FSRRS4401EG0ZW'].collect { |x| x.freeze }.freeze
 
       QUALITY_STRINGS =
         [<<'_0_', <<'_1_', <<'_2_', <<'_3_', <<'_4_', <<'_5_', <<'_6_', <<'_7_', <<'_8_', <<'_9_'].collect { |x| x.delete("\r\n").freeze }.freeze
@@ -780,9 +780,9 @@ _9_
       PRE_SKIP = 0
       POST_SKIP = 0
       ERRORS = [Bio::Fastq::Error::Seq_char.new(9),
-                 Bio::Fastq::Error::Seq_char.new(20),
-                 Bio::Fastq::Error::Qual_char.new(9),
-                 Bio::Fastq::Error::Qual_char.new(20)]
+                Bio::Fastq::Error::Seq_char.new(20),
+                Bio::Fastq::Error::Qual_char.new(9),
+                Bio::Fastq::Error::Qual_char.new(20)]
 
       private
 

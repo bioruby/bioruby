@@ -36,7 +36,7 @@ module Bio # :nodoc:
       assert_equal(@obj_series.platform[:data_row_count], '240')
       assert_equal(@obj_series.platform.keys.sort do |a, b|
         a.to_s <=> b.to_s
-      end[0..2], %i[contact_address contact_city contact_country])
+      end[0..2], [:contact_address, :contact_city, :contact_country])
       assert_equal(@obj_series.platform[:'contact_zip/postal_code'], '97331')
       assert_equal(@obj_series.platform[:table].header,
                    ['ID', 'GB_ACC', 'SPOT_ID', 'Function/Family', 'ORGANISM', 'SEQUENCE'])

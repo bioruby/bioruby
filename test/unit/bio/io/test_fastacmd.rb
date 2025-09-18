@@ -31,7 +31,7 @@ module Bio
     end
 
     def test_methods
-      method_list = %i[get_by_id fetch each_entry each]
+      method_list = [:get_by_id, :fetch, :each_entry, :each]
       method_list.each do |method|
         assert(@obj.respond_to?(method))
       end
