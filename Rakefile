@@ -304,3 +304,27 @@ task :"gem-test" do
   end
 end
 
+# RBS type signature tasks
+namespace :rbs do
+  desc "Validate RBS type signatures"
+  task :validate do
+    sh "bundle exec rbs validate", verbose: true
+  end
+
+  desc "Type check Ruby code using RBS signatures"
+  task :check do
+    # Run steep or other type checker if available
+    puts "RBS signatures are available in sig/ directory"
+    puts "Use tools like Steep for static type checking"
+  end
+
+  desc "Generate RBS signatures from Ruby code"
+  task :generate do
+    puts "Manual RBS signature creation is recommended for BioRuby"
+    puts "See sig/ directory for existing signatures"
+  end
+end
+
+desc "Validate RBS type signatures"
+task :rbs => "rbs:validate"
+

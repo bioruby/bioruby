@@ -1,0 +1,111 @@
+# Type signatures for Bio::Sequence subclasses
+
+module Bio
+  class Sequence
+    # Nested sequence classes
+    module Common
+      def composition: () -> Hash[String, Integer]
+      def length: () -> Integer
+      def to_s: () -> String
+      def randomize: (?String? type) -> self
+      def subseq: (Integer start, ?Integer end_pos) -> String
+      def window_search: (Integer window_size, ?Integer step_size) { (String) -> void } -> Array[String]
+      def total: (Hash[String, Numeric] hash) -> Numeric
+      def molecular_weight: () -> Float
+      def to_fasta: (String header, ?Integer width) -> String
+      def normalize!: () -> self
+      alias size length
+    end
+
+    class NA < String
+      include Common
+
+      # Constructor
+      def initialize: (String str) -> void
+
+      # Core methods
+      def complement: () -> NA
+      def reverse_complement: () -> NA
+      def translate: (?Integer frame, ?Integer codon_table, ?Symbol unknown) -> AA
+      def gc_percent: () -> Float
+      def gc_content: () -> Float
+      def gc_skew: (?Integer? window) -> (Float | Array[Float])
+      def at_skew: (?Integer? window) -> (Float | Array[Float])
+      def composition: () -> Hash[String, Integer]
+      def splice: (String position) -> NA
+      def transcription: () -> RNA
+      def dna?: () -> bool
+      def rna?: () -> bool
+      def pikachu: () -> String
+
+      # Codon methods
+      def codon_usage: (?Hash[String, Integer]? codon_table) -> Hash[String, Integer]
+
+      # Analysis methods  
+      def names: () -> Array[String]
+      def codes: () -> Array[String]
+      def to_re: () -> Regexp
+
+      # Conversion methods
+      def to_aa: () -> AA
+      def to_dna: () -> DNA
+      def to_rna: () -> RNA
+
+      private
+
+      def normalize_base: (String base) -> String
+    end
+
+    class DNA < NA
+      def transcription: () -> RNA
+      def to_rna: () -> RNA
+    end
+
+    class RNA < NA  
+      def reverse_transcription: () -> DNA
+      def to_dna: () -> DNA
+    end
+
+    class AA < String
+      include Common
+
+      # Constructor
+      def initialize: (String str) -> void
+
+      # Core methods
+      def codes: () -> Array[String]
+      def names: () -> Array[String]
+      def composition: () -> Hash[String, Integer]
+      def molecular_weight: () -> Float
+
+      # Analysis methods
+      def randomize: (?String? type) -> AA
+      def to_re: () -> Regexp
+
+      private
+
+      def normalize_amino: (String amino) -> String
+    end
+
+    # Other sequence-related classes
+    class Generic < String
+      include Common
+
+      def initialize: (String str) -> void
+    end
+
+    class DBLink
+      attr_accessor database: String
+      attr_accessor id: String
+      attr_accessor secondary_ids: Array[String]
+
+      def initialize: (String database, String id, ?Array[String] secondary_ids) -> void
+      def ==: (untyped other) -> bool
+    end
+
+    class Adapter
+      def initialize: (untyped original) -> void
+      def method_missing: (Symbol name, *untyped args) ?{ (*untyped) -> untyped } -> untyped
+    end
+  end
+end
