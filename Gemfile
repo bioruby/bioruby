@@ -1,5 +1,11 @@
 source 'https://rubygems.org'
 
+if RUBY_VERSION < '3'
+  gem 'uri', '= 0.10.0.2'
+else
+  gem 'uri'
+end
+
 gem 'cgi'
 gem 'date'
 gem 'delegate'
@@ -10,7 +16,7 @@ gem 'matrix'
 gem 'net-http'
 gem 'open3'
 gem 'open-uri'
-gem 'pathname'
+# gem 'pathname'
 gem 'rexml'
 gem 'shellwords'
 gem 'singleton'
@@ -19,7 +25,6 @@ gem 'strscan'
 gem 'tempfile'
 gem 'tmpdir'
 gem 'tsort'
-gem 'uri'
 gem 'yaml'
 
 group :development do
