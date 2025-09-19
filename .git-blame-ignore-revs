@@ -1,0 +1,15 @@
+#
+# .git-blame-ignore-revs: Commits to be ignored by `git blame`.
+#
+# This file is automatically used by GitHub.
+#
+# In you local repository:
+#  $ git config blame.ignoreRevsFile .git-blame-ignore-revs
+# For all your local repository:
+#  $ git config --global blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Date:   Thu Sep 18 22:51:37 2025 +0900
+d46012a19c6071f5af0a10d801310f4a410ff776
+
+# Date:   Fri Sep 19 01:35:17 2025 +0900
+214f851a049619bf7a6eb35c95e1bd5377e7af0f
