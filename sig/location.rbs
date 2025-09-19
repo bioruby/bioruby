@@ -1,0 +1,60 @@
+# Type signatures for Bio::Location and Bio::Locations classes
+
+module Bio
+  class Location
+    include Comparable
+
+    # Attributes
+    attr_accessor from: Integer?
+    attr_accessor to: Integer?
+    attr_accessor strand: Integer
+    attr_accessor sequence: String?
+    attr_accessor lt: bool?
+    attr_accessor gt: bool?
+    attr_accessor xref_id: String?
+    attr_accessor carat: bool?
+
+    # Constructor
+    def initialize: (?String? location) -> void
+
+    # Methods
+    def complement: () -> self
+    def replace: (String sequence) -> self
+    def range: () -> Range[Integer]
+    def <=>: (Location other) -> Integer?
+    def ==: (untyped other) -> bool
+  end
+
+  class Locations
+    include Enumerable[Location]
+
+    # Attributes
+    attr_accessor locations: Array[Location]
+    attr_accessor operator: Symbol?
+
+    # Constructor
+    def initialize: ((String | Array[Location]) position) -> void
+
+    # Methods
+    def equals?: (Locations other) -> bool?
+    def ==: (untyped other) -> bool
+    def each: () { (Location) -> void } -> void
+    def []: (Integer n) -> Location?
+    def first: () -> Location?
+    def last: () -> Location?
+    def span: () -> [Integer?, Integer?]
+    def range: () -> Range[Integer]
+    def length: () -> Integer
+    def relative: (Integer pos, ?Symbol aa) -> Integer?
+    def absolute: (Integer pos) -> Integer?
+    def complement: () -> self
+    def replace: (String str) -> self
+
+    alias size length
+
+    private
+
+    def gbl_cleanup: (String str) -> String
+    def gbl_pos2loc: (String str) -> Array[Location]
+  end
+end

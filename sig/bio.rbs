@@ -1,0 +1,68 @@
+# Type signatures for the main Bio module
+
+module Bio
+  # Version constants
+  BIORUBY_VERSION: Array[Integer]
+  BIORUBY_EXTRA_VERSION: String?
+  BIORUBY_VERSION_ID: String
+
+  # Core autoloaded classes and modules
+  class Sequence
+    include Enumerable[String]
+
+    # Attributes
+    attr_accessor entry_id: String?
+    attr_accessor definition: String?
+    attr_accessor features: Array[Feature]?
+    attr_accessor references: Array[Reference]?
+    attr_accessor comments: (String | Array[String])?
+    attr_accessor keywords: Array[String]?
+    attr_accessor dblinks: Array[untyped]?
+    attr_accessor moltype: untyped
+    attr_accessor seq: (String | untyped)
+    attr_accessor quality_scores: Array[Integer]?
+    attr_accessor quality_score_type: Symbol?
+    attr_accessor error_probabilities: Array[Float]?
+    attr_accessor sequence_version: (String | Integer)?
+    attr_accessor topology: String?
+    attr_accessor strandedness: String?
+    attr_accessor molecule_type: String?
+    attr_accessor data_class: String?
+    attr_accessor division: String?
+    attr_accessor primary_accession: String?
+    attr_accessor secondary_accessions: Array[String]?
+    attr_accessor date_created: untyped
+    attr_accessor date_modified: untyped
+    attr_accessor release_created: String?
+    attr_accessor release_modified: String?
+    attr_accessor entry_version: (String | Integer)?
+    attr_accessor species: String?
+    attr_accessor classification: Array[String]?
+    attr_accessor organelle: String?
+    attr_accessor id_namespace: String?
+
+    # Constructor
+    def initialize: (String | untyped str) -> void
+
+    # Main methods
+    def auto: () -> untyped
+    def self.auto: (String | untyped str) -> instance
+    def guess: (?Float threshold, ?Integer length, ?Integer index) -> untyped
+    def self.guess: (String | untyped str, ?Float threshold, ?Integer length, ?Integer index) -> untyped
+
+    # Delegation via method_missing
+    def method_missing: (Symbol sym, *untyped args) ?{ (*untyped) -> untyped } -> untyped
+
+    # Aliases
+    alias taxonomy classification
+  end
+
+# Core classes are defined in separate RBS files
+# See feature.rbs, reference.rbs, location.rbs for detailed signatures
+
+  class Pathway
+  end
+
+  class Relation
+  end
+end
