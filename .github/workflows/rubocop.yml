@@ -23,8 +23,5 @@ jobs:
           ruby-version: '3.2'   # adjust to match your project
           bundler-cache: true
 
-      - name: Workaround for pathname gem version mismatch
-        run: bundle update --bundler && bundle update --all
-
       - name: Run RuboCop
         run: bundle exec rubocop
