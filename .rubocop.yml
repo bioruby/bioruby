@@ -1,4 +1,7 @@
+# .rubocop.yml
+<% unless ENV['BYPASS_RUBOCOP_TODO'] %>
 inherit_from: .rubocop_todo.yml
+<% end %>
 
 AllCops:
   NewCops: enable
