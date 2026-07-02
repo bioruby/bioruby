@@ -621,7 +621,11 @@ class UniProtKB < EMBLDB
   end
 
   def set_RC(data)
-    data.scan(/([STP]\w+)=(.+);/).map { |comment|
+    # NOTE: "(.+?)" (non-greedy) is required, instead of "(.+)", to
+    # correctly handle RC lines with two or more tokens, such as
+    # "STRAIN=xxx; PLASMID=yyy;". With a greedy match, the value of
+    # the first token would swallow all of the following tokens.
+    data.scan(/([STP]\w+)=(.+?);/).map { |comment|
       [comment[1].split(/, and |, /)].flatten.map { |text|
         {'Token' => comment[0], 'Text' => text}
       }
