@@ -86,6 +86,16 @@ module Bio
         assert_equal(expected, @obj.gi)
       end
 
+      def test_gi_without_gi_number
+        # Since around 2016, NCBI/DDBJ has discontinued GI numbers, and
+        # the GI part of the VERSION line does not exist in newer entries.
+        entry = <<~EOF
+          VERSION     NM_001301717.2
+        EOF
+        obj = BioNCBIDBCommon.new(entry)
+        assert_equal(nil, obj.gi)
+      end
+
       def test_nid
         expected = ''
         assert_equal(expected, @obj.nid)

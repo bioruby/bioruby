@@ -69,8 +69,13 @@ module Common
   end
 
   # Returns the second part of the VERSION record as a "GI:#######" String.
+  # Note that NCBI/DDBJ has discontinued assigning GI numbers to newly
+  # registered entries since 2016, so newer VERSION records only have
+  # the "ACCESSION.VERSION" part and no GI part. In this case, nil is
+  # returned.
   def gi
-    versions.last
+    v = versions.last
+    v && v[/\AGI\:/] ? v : nil
   end
 
 
