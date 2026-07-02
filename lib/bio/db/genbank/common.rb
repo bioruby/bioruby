@@ -297,6 +297,18 @@ module Common
   end
 
 
+  # CONTIG -- Returns contents of the CONTIG record as a String.
+  # Note that many recent genome assembly entries (e.g. WGS scaffolds
+  # and chromosome-level RefSeq records) do not embed the sequence
+  # itself in an ORIGIN record, and instead describe it as a join of
+  # other entries in a CONTIG record. In this case, origin/seq return
+  # an empty sequence while contig returns the assembly instruction
+  # string (e.g. "join(CP009273.1:1..233524,gap(100),...)").
+  def contig
+    field_fetch('CONTIG')
+  end
+
+
   ### private methods
 
   private

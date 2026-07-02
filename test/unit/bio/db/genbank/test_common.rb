@@ -283,6 +283,18 @@ module Bio
         expected = ''
         assert_equal(expected, @obj.origin)
       end
+
+      def test_contig
+        # No CONTIG field in the sample entry.
+        assert_equal('', @obj.contig)
+
+        entry = <<~EOF
+          CONTIG      join(CP009273.1:1..233524,gap(100),CP009274.1:1..500000)
+        EOF
+        obj = BioNCBIDBCommon.new(entry)
+        expected = 'join(CP009273.1:1..233524,gap(100),CP009274.1:1..500000)'
+        assert_equal(expected, obj.contig)
+      end
     end
   end
 end
