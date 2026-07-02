@@ -44,6 +44,38 @@ class UniProtKB < EMBLDB
   @@entry_regrexp = /[A-Z0-9]{1,4}_[A-Z0-9]{1,5}/
   @@data_class = ["STANDARD", "PRELIMINARY"]
 
+  #--
+  # Since around UniProtKB release 2015_XX, many fields (GN, OX, RN, RC,
+  # DE, ...) that are populated by automatic rule-based annotation
+  # (HAMAP, SAAS, ...) carry an inline evidence tag, e.g.:
+  #   GN   Name=S {ECO:0000255|HAMAP-Rule:MF_04099}; ORFNames=2;
+  #   OX   NCBI_TaxID=1410910 {ECO:0000313|EMBL:EWU88764.1};
+  #   RN   [1] {ECO:0000313|EMBL:EWU88764.1}
+  #   RC   STRAIN=F31094 {ECO:0000313|EMBL:EWU88764.1};
+  #   DE   RecName: Full=Spike glycoprotein {ECO:0000255|HAMAP-Rule:MF_04099};
+  # This kind of tag has become common in current (2023 and later)
+  # UniProtKB entries. These helper methods strip it so that accessors
+  # keep returning plain values as before, as is already the case for
+  # entries without such tags.
+  #++
+
+  # (private) removes a trailing UniProtKB evidence tag such as
+  # " {ECO:0000255|HAMAP-Rule:MF_04099}" from the end of +str+.
+  # Returns +str+ unmodified if no evidence tag is present.
+  def strip_evidence_tag(str)
+    str.to_s.sub(/[ \t]*\{[^{}]*\}\s*\z/, '')
+  end
+  private :strip_evidence_tag
+
+  # (private) splits +str+ on +sep+ (a literal String, default: comma),
+  # ignoring occurrences of +sep+ that are inside a UniProtKB evidence
+  # tag ("{...}"), then strips a trailing evidence tag from each token.
+  def split_outside_evidence_tag(str, sep = ',')
+    str.split(/#{Regexp.escape(sep)}(?![^{]*\})/)
+       .map { |e| strip_evidence_tag(e.strip) }
+  end
+  private :split_outside_evidence_tag
+
   # returns a Hash of the ID line.
   #
   # returns a content (Int or String) of the ID line by a given key.
@@ -214,6 +246,7 @@ class UniProtKB < EMBLDB
         subcat = $1
         desc = $2
         desc.sub!(/\;\s*\z/, '')
+        desc = strip_evidence_tag(desc)
         unless cur
           warn "Warning: unknown category in DE line: #{line.inspect}"
           cur = [ '' ]
@@ -417,13 +450,13 @@ class UniProtKB < EMBLDB
       record.each_line(';') do |element|
         case element
         when /Name=/ then
-          gene_hash[:name] = $'[0..-2]
+          gene_hash[:name] = strip_evidence_tag($'[0..-2])
         when /Synonyms=/ then
-          gene_hash[:synonyms] = $'[0..-2].split(/\s*,\s*/)
+          gene_hash[:synonyms] = split_outside_evidence_tag($'[0..-2])
         when /OrderedLocusNames=/ then
-          gene_hash[:loci] = $'[0..-2].split(/\s*,\s*/)
+          gene_hash[:loci] = split_outside_evidence_tag($'[0..-2])
         when /ORFNames=/ then
-          gene_hash[:orfs] = $'[0..-2].split(/\s*,\s*/)
+          gene_hash[:orfs] = split_outside_evidence_tag($'[0..-2])
         end
       end
       @data['GN'] << gene_hash
@@ -517,7 +550,7 @@ class UniProtKB < EMBLDB
       hsh = Hash.new
       tmp.each do |e|
         db,refs = e.split(/=/)
-        hsh[db] = refs.split(/, */)
+        hsh[db] = split_outside_evidence_tag(refs)
       end
       @data['OX'] = hsh
     end
@@ -617,7 +650,7 @@ class UniProtKB < EMBLDB
   end
 
   def set_RN(data)
-    data.strip
+    strip_evidence_tag(data.strip)
   end
 
   def set_RC(data)
@@ -626,8 +659,8 @@ class UniProtKB < EMBLDB
     # "STRAIN=xxx; PLASMID=yyy;". With a greedy match, the value of
     # the first token would swallow all of the following tokens.
     data.scan(/([STP]\w+)=(.+?);/).map { |comment|
-      [comment[1].split(/, and |, /)].flatten.map { |text|
-        {'Token' => comment[0], 'Text' => text}
+      [comment[1].split(/,\s+(?:and\s+)?(?![^{]*\})/)].flatten.map { |text|
+        {'Token' => comment[0], 'Text' => strip_evidence_tag(text.strip)}
       }
     }.flatten
   end
