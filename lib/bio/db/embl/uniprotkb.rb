@@ -76,12 +76,22 @@ class UniProtKB < EMBLDB
   end
   private :split_outside_evidence_tag
 
-  # (private) returns the content (e.g. "ECO:0000255|HAMAP-Rule:MF_04099")
-  # of every UniProtKB evidence tag ("{...}") found anywhere in +str+, as
-  # an Array of unique Strings. Returns an empty Array if +str+ has no
-  # evidence tag.
+  # (private) returns every UniProtKB evidence entry found anywhere in
+  # +str+, as an Array of unique [ eco_code, source ] pairs, e.g.
+  # [ "ECO:0000256", "ARBA:ARBA00041009" ]. +source+ is nil when the
+  # evidence entry has no source reference (e.g. plain "ECO:0000305").
+  #
+  # A single evidence tag ("{...}") may bundle two or more
+  # comma-separated evidence entries, e.g.
+  #   {ECO:0000313|Ensembl:ENSP00000382340, ECO:0000313|Proteomes:UP000005640}
+  # each of which becomes its own pair in the returned Array.
+  #
+  # Returns an empty Array if +str+ has no evidence tag.
   def evidence_tags_in(str)
-    str.to_s.scan(/\{([^{}]*)\}/).flatten.uniq
+    str.to_s.scan(/\{([^{}]*)\}/).flatten
+       .flat_map { |tag| tag.split(/,\s*/) }
+       .uniq
+       .map { |entry| entry.split('|', 2).values_at(0, 1) }
   end
   private :evidence_tags_in
 
@@ -217,15 +227,15 @@ class UniProtKB < EMBLDB
   # [ subcat, desc, evidence ] array when the corresponding value in
   # the DE line carries an inline UniProtKB evidence tag such as
   # " {ECO:0000256|ARBA:ARBA00041009}"; +evidence+ is then an Array of
-  # the evidence tag contents. e.g.:
+  # [ eco_code, source_or_nil ] pairs (see #evidence_tags_in). e.g.:
   #   DE   RecName: Full=Multidrug resistance-associated protein 1
   #            {ECO:0000256|ARBA:ARBA00041009};
   #            EC=7.6.2.2 {ECO:0000256|ARBA:ARBA00012191};
   # becomes:
   #   [ "RecName",
   #     [ "Full", "Multidrug resistance-associated protein 1",
-  #       [ "ECO:0000256|ARBA:ARBA00041009" ] ],
-  #     [ "EC", "7.6.2.2", [ "ECO:0000256|ARBA:ARBA00012191" ] ] ]
+  #       [ [ "ECO:0000256", "ARBA:ARBA00041009" ] ] ],
+  #     [ "EC", "7.6.2.2", [ [ "ECO:0000256", "ARBA:ARBA00012191" ] ] ] ]
   # The pair stays a 2-element array when no evidence tag is present,
   # so entries without evidence tags keep the pre-existing structure.
   #
@@ -1115,7 +1125,8 @@ class UniProtKB < EMBLDB
   #
   # Returns an Array of Hash:
   #    [{'Reaction' => str, 'Xref' => [str, ...], 'EC' => str,
-  #      'Evidence' => [str, ...], 'PhysiologicalDirection' => str}, ...]
+  #      'Evidence' => [[eco_code, source_or_nil], ...],
+  #      'PhysiologicalDirection' => str}, ...]
   def cc_catalytic_activity(data)
     return nil unless data
     data.map { |elem|
@@ -1130,8 +1141,7 @@ class UniProtKB < EMBLDB
         when 'EC'
           entry['EC'] = val
         when 'Evidence'
-          entry['Evidence'] = val.sub(/\A\{/, '').sub(/\}\z/, '')
-                                 .split(/,\s*/)
+          entry['Evidence'] = evidence_tags_in(val)
         when 'PhysiologicalDirection'
           entry['PhysiologicalDirection'] = val
         end
@@ -1240,7 +1250,7 @@ class UniProtKB < EMBLDB
   #
   # Returns an Array of Hash:
   #    [{'Sequence' => str, 'Type' => str, 'Note' => str,
-  #      'Evidence' => [str, ...]}, ...]
+  #      'Evidence' => [[eco_code, source_or_nil], ...]}, ...]
   def cc_sequence_caution(data)
     return nil unless data
     data.map { |elem|
@@ -1250,8 +1260,7 @@ class UniProtKB < EMBLDB
         rest.scan(/([A-Za-z]+)=(.+?);/).each do |key, val|
           case key
           when 'Evidence'
-            entry['Evidence'] = val.sub(/\A\{/, '').sub(/\}\z/, '')
-                                   .split(/,\s*/)
+            entry['Evidence'] = evidence_tags_in(val)
           when 'Type', 'Note'
             entry[key] = val
           end
