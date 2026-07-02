@@ -131,7 +131,7 @@ module Bio
       # preset default databases used by the retrieve method.
       #
       DEFAULT_RETRIEVAL_DATABASES =
-        %w( genbank uniprot embl ddbj dad )
+        %w( nucleotide uniprot ena ddbj dad )
 
       # Creates a new object.
       # ---
