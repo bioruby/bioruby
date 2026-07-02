@@ -780,9 +780,10 @@ class UniProtKB < EMBLDB
                  'POLYMORPHISM',
                  'BIOPHYSICOCHEMICAL PROPERTIES',
                  'MASS SPECTROMETRY',
-                 'WEB RESOURCE', 
-                 'ENZYME REGULATION',
+                 'WEB RESOURCE',
+                 'ACTIVITY REGULATION', # renamed from 'ENZYME REGULATION'
                  'DISEASE',
+                 'DISRUPTION PHENOTYPE',
                  'INTERACTION',
                  'DEVELOPMENTAL STAGE',
                  'INDUCTION',
@@ -913,9 +914,13 @@ class UniProtKB < EMBLDB
       return @data['CC'][topic].join('')
     when 'DISEASE'
       return @data['CC'][topic].join('')
+    when 'DISRUPTION PHENOTYPE'
+      return @data['CC'][topic].join('')
     when 'DOMAIN'
       return @data['CC'][topic]
-    when 'ENZYME REGULATION'
+    when 'ENZYME REGULATION', 'ACTIVITY REGULATION'
+      # Renamed from "ENZYME REGULATION" to "ACTIVITY REGULATION" in
+      # UniProtKB; both topic names are accepted for backward compatibility.
       return @data['CC'][topic].join('')
     when 'FUNCTION'
       return @data['CC'][topic].join('')

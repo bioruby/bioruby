@@ -179,4 +179,28 @@ module Bio
       assert_equal(expected, @obj.cc('SEQUENCE CAUTION'))
     end
   end # class TestUniProtKB_CC_SEQUENCE_CAUTION
+
+  class TestUniProtKB_CC_renamed_and_new_topics < Test::Unit::TestCase
+    def setup
+      text = <<~THE_END_OF_THE_TEXT
+        ID   ABC_DEFGH               Reviewed;         256 AA.
+        CC   -!- ACTIVITY REGULATION: Inhibited by compound X.
+        CC   -!- DISRUPTION PHENOTYPE: Knockout mice show no obvious phenotype.
+      THE_END_OF_THE_TEXT
+
+      @obj = Bio::UniProtKB.new(text)
+    end
+
+    # "ACTIVITY REGULATION" is the current name of the topic that used
+    # to be called "ENZYME REGULATION".
+    def test_cc_activity_regulation
+      assert_equal('Inhibited by compound X.',
+                   @obj.cc('ACTIVITY REGULATION'))
+    end
+
+    def test_cc_disruption_phenotype
+      assert_equal('Knockout mice show no obvious phenotype.',
+                   @obj.cc('DISRUPTION PHENOTYPE'))
+    end
+  end # class TestUniProtKB_CC_renamed_and_new_topics
 end # module Bio
