@@ -118,22 +118,40 @@ module Bio
 
   class TestUniProtKB_DE_evidence_tag < Test::Unit::TestCase
     def setup
+      # Different subfields of the same DE block, such as "Full=" and
+      # "EC=", may each carry their own, different evidence tag; e.g.
+      # UniProtKB entry A0A0A0MS99_HUMAN:
+      #   DE   RecName: Full=Multidrug resistance-associated protein 1
+      #            {ECO:0000256|ARBA:ARBA00041009};
+      #            EC=7.6.2.2 {ECO:0000256|ARBA:ARBA00012191};
+      #            EC=7.6.2.3 {ECO:0000256|ARBA:ARBA00024220};
       text = <<~THE_END_OF_THE_TEXT
-        ID   ABC_DEFGH               Reviewed;         256 AA.
+        ID   ABC_DEFGH             Unreviewed;       256 AA.
         DE   RecName: Full=Test protein {ECO:0000255|HAMAP-Rule:MF_00042};
         DE            Short=TstP {ECO:0000255|HAMAP-Rule:MF_00042};
+        DE            EC=1.2.3.4 {ECO:0000256|ARBA:ARBA00012191};
+        DE            EC=1.2.3.5 {ECO:0000256|ARBA:ARBA00024220};
       THE_END_OF_THE_TEXT
 
       @obj = Bio::UniProtKB.new(text)
     end
 
-    def test_de_strips_evidence_tag
-      expected = [['RecName', ['Full', 'Test protein'], %w[Short TstP]]]
+    def test_de_strips_evidence_tag_and_exposes_it_separately
+      expected =
+        [['RecName',
+          ['Full', 'Test protein', ['ECO:0000255|HAMAP-Rule:MF_00042']],
+          ['Short', 'TstP', ['ECO:0000255|HAMAP-Rule:MF_00042']],
+          ['EC', '1.2.3.4', ['ECO:0000256|ARBA:ARBA00012191']],
+          ['EC', '1.2.3.5', ['ECO:0000256|ARBA:ARBA00024220']]]]
       assert_equal(expected, @obj.de)
     end
 
     def test_protein_name_strips_evidence_tag
       assert_equal('Test protein', @obj.protein_name)
+    end
+
+    def test_synonyms_strips_evidence_tag
+      assert_equal(['TstP', 'EC 1.2.3.4', 'EC 1.2.3.5'], @obj.synonyms)
     end
   end # class TestUniProtKB_DE_evidence_tag
 

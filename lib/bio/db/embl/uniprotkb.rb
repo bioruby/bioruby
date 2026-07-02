@@ -213,6 +213,22 @@ class UniProtKB < EMBLDB
   #
   # Return array containing array.
   #
+  # Each [ subcat, desc ] pair may become a 3-element
+  # [ subcat, desc, evidence ] array when the corresponding value in
+  # the DE line carries an inline UniProtKB evidence tag such as
+  # " {ECO:0000256|ARBA:ARBA00041009}"; +evidence+ is then an Array of
+  # the evidence tag contents. e.g.:
+  #   DE   RecName: Full=Multidrug resistance-associated protein 1
+  #            {ECO:0000256|ARBA:ARBA00041009};
+  #            EC=7.6.2.2 {ECO:0000256|ARBA:ARBA00012191};
+  # becomes:
+  #   [ "RecName",
+  #     [ "Full", "Multidrug resistance-associated protein 1",
+  #       [ "ECO:0000256|ARBA:ARBA00041009" ] ],
+  #     [ "EC", "7.6.2.2", [ "ECO:0000256|ARBA:ARBA00012191" ] ] ]
+  # The pair stays a 2-element array when no evidence tag is present,
+  # so entries without evidence tags keep the pre-existing structure.
+  #
   # http://www.uniprot.org/docs/sp_news.htm
   def parse_DE_line_rel14(str)
     # Returns if it is not the new format since Rel.14
@@ -255,13 +271,16 @@ class UniProtKB < EMBLDB
         subcat = $1
         desc = $2
         desc.sub!(/\;\s*\z/, '')
+        evidence = evidence_tags_in(desc)
         desc = strip_evidence_tag(desc)
         unless cur
           warn "Warning: unknown category in DE line: #{line.inspect}"
           cur = [ '' ]
           ret.push cur
         end
-        cur.push [ subcat, desc ]
+        pair = [ subcat, desc ]
+        pair.push(evidence) unless evidence.empty?
+        cur.push pair
       else
         warn "Warning: skipped DE line description in unknown format: #{line.inspect}"
       end
