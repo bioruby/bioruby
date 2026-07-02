@@ -128,4 +128,28 @@ module Bio
       assert_equal('Test protein', @obj.protein_name)
     end
   end # class TestUniProtKB_DE_evidence_tag
+
+  class TestUniProtKB_CC_CATALYTIC_ACTIVITY < Test::Unit::TestCase
+    def setup
+      text = <<~THE_END_OF_THE_TEXT
+        ID   ABC_DEFGH               Reviewed;         256 AA.
+        CC   -!- CATALYTIC ACTIVITY:
+        CC       Reaction=a + b = c + d; Xref=Rhea:RHEA:12345, ChEBI:CHEBI:1,
+        CC         ChEBI:CHEBI:2; EC=1.2.3.4; Evidence={ECO:0000255|HAMAP-Rule:MF_00042};
+        CC       PhysiologicalDirection=left-to-right; Xref=Rhea:RHEA:12346;
+      THE_END_OF_THE_TEXT
+
+      @obj = Bio::UniProtKB.new(text)
+    end
+
+    def test_cc_catalytic_activity
+      expected = [{ 'Reaction' => 'a + b = c + d',
+                    'Xref' => %w[Rhea:RHEA:12345 ChEBI:CHEBI:1
+                                 ChEBI:CHEBI:2 Rhea:RHEA:12346],
+                    'EC' => '1.2.3.4',
+                    'Evidence' => ['ECO:0000255|HAMAP-Rule:MF_00042'],
+                    'PhysiologicalDirection' => 'left-to-right' }]
+      assert_equal(expected, @obj.cc('CATALYTIC ACTIVITY'))
+    end
+  end # class TestUniProtKB_CC_CATALYTIC_ACTIVITY
 end # module Bio

@@ -902,7 +902,7 @@ class UniProtKB < EMBLDB
       return cc_biophysiochemical_properties(@data['CC'][topic])
     when 'BIOTECHNOLOGY'
       return @data['CC'][topic]
-    when 'CATALITIC ACTIVITY'
+    when 'CATALYTIC ACTIVITY'
       return cc_catalytic_activity(@data['CC'][topic])
     when 'CAUTION'
       return cc_caution(@data['CC'][topic])
@@ -1059,6 +1059,42 @@ class UniProtKB < EMBLDB
     data.join('')
   end
   private :cc_caution
+
+
+  # returns contents in the CC CATALYTIC ACTIVITY section.
+  #
+  #   CC   -!- CATALYTIC ACTIVITY:
+  #   CC       Reaction=a + b = c + d; Xref=Rhea:RHEA:12345, ChEBI:CHEBI:1,
+  #   CC         ChEBI:CHEBI:2; EC=1.2.3.4; Evidence={ECO:0000255};
+  #   CC       PhysiologicalDirection=left-to-right; Xref=Rhea:RHEA:12346;
+  #
+  # Returns an Array of Hash:
+  #    [{'Reaction' => str, 'Xref' => [str, ...], 'EC' => str,
+  #      'Evidence' => [str, ...], 'PhysiologicalDirection' => str}, ...]
+  def cc_catalytic_activity(data)
+    return nil unless data
+    data.map { |elem|
+      entry = {'Reaction' => nil, 'Xref' => [], 'EC' => nil,
+               'Evidence' => nil, 'PhysiologicalDirection' => nil}
+      elem.scan(/([A-Za-z]+)=(.+?);/).each do |key, val|
+        case key
+        when 'Reaction'
+          entry['Reaction'] = val
+        when 'Xref'
+          entry['Xref'].concat(val.split(/,\s*/))
+        when 'EC'
+          entry['EC'] = val
+        when 'Evidence'
+          entry['Evidence'] = val.sub(/\A\{/, '').sub(/\}\z/, '')
+                                 .split(/,\s*/)
+        when 'PhysiologicalDirection'
+          entry['PhysiologicalDirection'] = val
+        end
+      end
+      entry
+    }
+  end
+  private :cc_catalytic_activity
 
 
   # returns conteins in a line of the CC INTERACTION section.
