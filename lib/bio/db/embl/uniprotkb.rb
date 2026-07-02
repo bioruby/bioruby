@@ -76,6 +76,15 @@ class UniProtKB < EMBLDB
   end
   private :split_outside_evidence_tag
 
+  # (private) returns the content (e.g. "ECO:0000255|HAMAP-Rule:MF_04099")
+  # of every UniProtKB evidence tag ("{...}") found anywhere in +str+, as
+  # an Array of unique Strings. Returns an empty Array if +str+ has no
+  # evidence tag.
+  def evidence_tags_in(str)
+    str.to_s.scan(/\{([^{}]*)\}/).flatten.uniq
+  end
+  private :evidence_tags_in
+
   # returns a Hash of the ID line.
   #
   # returns a content (Int or String) of the ID line by a given key.
@@ -459,6 +468,8 @@ class UniProtKB < EMBLDB
           gene_hash[:orfs] = split_outside_evidence_tag($'[0..-2])
         end
       end
+      evidence = evidence_tags_in(record)
+      gene_hash[:evidence] = evidence unless evidence.empty?
       @data['GN'] << gene_hash
     end
     return @data['GN']
@@ -551,6 +562,8 @@ class UniProtKB < EMBLDB
       tmp.each do |e|
         db,refs = e.split(/=/)
         hsh[db] = split_outside_evidence_tag(refs)
+        evidence = evidence_tags_in(refs)
+        hsh["#{db}_Evidence"] = evidence unless evidence.empty?
       end
       @data['OX'] = hsh
     end
@@ -633,6 +646,8 @@ class UniProtKB < EMBLDB
           end
         end
 
+        rn_evidence = evidence_tags_in(hash['RN'])
+        hash['RN_Evidence'] = rn_evidence unless rn_evidence.empty?
         hash['RN'] = set_RN(hash['RN'])
         hash['RC'] = set_RC(hash['RC'])
         hash['RP'] = set_RP(hash['RP'])
@@ -660,7 +675,10 @@ class UniProtKB < EMBLDB
     # the first token would swallow all of the following tokens.
     data.scan(/([STP]\w+)=(.+?);/).map { |comment|
       [comment[1].split(/,\s+(?:and\s+)?(?![^{]*\})/)].flatten.map { |text|
-        {'Token' => comment[0], 'Text' => strip_evidence_tag(text.strip)}
+        hash = {'Token' => comment[0], 'Text' => strip_evidence_tag(text.strip)}
+        evidence = evidence_tags_in(text)
+        hash['Evidence'] = evidence unless evidence.empty?
+        hash
       }
     }.flatten
   end

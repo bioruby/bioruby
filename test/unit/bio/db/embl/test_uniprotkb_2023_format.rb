@@ -56,9 +56,11 @@ module Bio
       @obj = Bio::UniProtKB.new(text)
     end
 
-    def test_gn_strips_evidence_tag
+    def test_gn_strips_evidence_tag_and_exposes_it_separately
       expected = [{ name: 'fooX', synonyms: %w[barY bazZ],
-                    loci: ['XX_0001'], orfs: %w[YY0001 YY0002] }]
+                    loci: ['XX_0001'], orfs: %w[YY0001 YY0002],
+                    evidence: %w[ECO:0000255|HAMAP-Rule:MF_00042
+                                 ECO:0000313|EMBL:AAA00001.1] }]
       assert_equal(expected, @obj.gn)
     end
 
@@ -82,13 +84,17 @@ module Bio
       @obj = Bio::UniProtKB.new(text)
     end
 
-    def test_rn_strips_evidence_tag
+    def test_rn_strips_evidence_tag_and_exposes_it_separately
       assert_equal('[1]', @obj.ref[0]['RN'])
+      assert_equal(['ECO:0000313|EMBL:AAA00001.1'],
+                   @obj.ref[0]['RN_Evidence'])
     end
 
-    def test_rc_keeps_both_tokens_and_strips_evidence_tag
-      expected = [{ 'Token' => 'STRAIN', 'Text' => 'K12' },
-                  { 'Token' => 'PLASMID', 'Text' => 'pBR322' }]
+    def test_rc_keeps_both_tokens_and_exposes_their_evidence_tags
+      expected = [{ 'Token' => 'STRAIN', 'Text' => 'K12',
+                    'Evidence' => ['ECO:0000313|EMBL:AAA00001.1'] },
+                  { 'Token' => 'PLASMID', 'Text' => 'pBR322',
+                    'Evidence' => ['ECO:0000303|PubMed:12345678'] }]
       assert_equal(expected, @obj.ref[0]['RC'])
     end
   end # class TestUniProtKB_RN_RC_evidence_tag
@@ -103,8 +109,10 @@ module Bio
       @obj = Bio::UniProtKB.new(text)
     end
 
-    def test_ox_strips_evidence_tag
-      assert_equal({ 'NCBI_TaxID' => ['1234'] }, @obj.ox)
+    def test_ox_strips_evidence_tag_and_exposes_it_separately
+      expected = { 'NCBI_TaxID' => ['1234'],
+                   'NCBI_TaxID_Evidence' => ['ECO:0000313|EMBL:AAA00001.1'] }
+      assert_equal(expected, @obj.ox)
     end
   end # class TestUniProtKB_OX_evidence_tag
 
