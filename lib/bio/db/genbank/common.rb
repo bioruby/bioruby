@@ -97,6 +97,27 @@ module Common
   end
 
 
+  # DBLINK -- Returns contents of the DBLINK record as a Hash of the
+  # database name (String) and an Array of the entry IDs (Array of
+  # String). Note that DBLINK is a relatively new field introduced by
+  # NCBI/DDBJ after GenBank release 126.0 to store links to BioProject,
+  # BioSample, Sequence Read Archive, and so on, and does not exist in
+  # older entries. In this case, an empty Hash is returned.
+  def dblink
+    unless @data['DBLINK_HASH']
+      hash = {}
+      lines_fetch('DBLINK').each do |line|
+        db, ids = line.split(/\s*:\s*/, 2)
+        next unless db && ids
+
+        hash[db] = ids.split(/,\s*/)
+      end
+      @data['DBLINK_HASH'] = hash
+    end
+    @data['DBLINK_HASH']
+  end
+
+
   # SOURCE -- Returns contents of the SOURCE record as a Hash.
   def source
     unless @data['SOURCE']

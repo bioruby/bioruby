@@ -111,6 +111,21 @@ module Bio
         assert_equal(expected, @obj.segment)
       end
 
+      def test_dblink
+        # No DBLINK field in the sample entry (used before DBLINK was
+        # introduced by NCBI/DDBJ).
+        assert_equal({}, @obj.dblink)
+
+        entry = <<~EOF
+          DBLINK      BioProject: PRJNA168
+                      Sequence Read Archive: SRR13487933, SRR13487934
+        EOF
+        obj = BioNCBIDBCommon.new(entry)
+        expected = { 'BioProject' => ['PRJNA168'],
+                     'Sequence Read Archive' => ['SRR13487933', 'SRR13487934'] }
+        assert_equal(expected, obj.dblink)
+      end
+
       def test_source
         expected = { 'organism' => 'Saccharomyces cerevisiae',
                      'common_name' => "Saccharomyces cerevisiae (baker's yeast)",
