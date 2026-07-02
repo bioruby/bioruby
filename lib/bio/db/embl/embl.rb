@@ -153,6 +153,19 @@ class EMBL < EMBLDB
   # "AC   A12345; B23456;"
 
 
+  # returns the BioProject identifier(s) in the PR (project) line, as
+  # an Array of String. Returns an empty Array if the entry has no PR
+  # line (the PR line does not exist in older entries).
+  #
+  # PR Line; project identifier (0 or 1 per entry)
+  #  PR   Project:PRJEB1159;
+  def pr
+    field_fetch('PR').split(/;\s*/).map { |x| x.sub(/\AProject:/, '').strip }
+                                   .reject(&:empty?)
+  end
+  alias project pr
+
+
   # returns the version information in the sequence version (SV) line.
   # * Bio::EMBL#sv -> Accession.Version in String
   # * Bio::EMBL#version -> accession in Int
