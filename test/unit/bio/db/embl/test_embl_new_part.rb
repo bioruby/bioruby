@@ -64,4 +64,58 @@ module Bio
       assert_equal([], @obj.pr)
     end
   end # class TestEMBL_PR_line_absent
+
+  class TestEMBL_CO_line < Test::Unit::TestCase
+    def setup
+      # CON-division entries (e.g. chromosome-level assemblies built
+      # by joining WGS scaffolds, such as human GRCh38 chromosome 1,
+      # accession CM000663) do not embed the sequence itself in an
+      # SQ/sequence record; a CO line describes it as a join of other
+      # entries instead.
+      text = <<~THE_END_OF_THE_TEXT
+        ID   AB123456; SV 1; linear; genomic DNA; CON; PRO; 3100 BP.
+        XX
+        AC   AB123456;
+        XX
+        CO   join(BX000000.1:1..1000,gap(100),BX000001.1:1..2000)
+        //
+      THE_END_OF_THE_TEXT
+
+      @obj = Bio::EMBL.new(text)
+    end
+
+    def test_co
+      assert_equal('join(BX000000.1:1..1000,gap(100),BX000001.1:1..2000)',
+                   @obj.co)
+    end
+
+    def test_contig
+      assert_equal('join(BX000000.1:1..1000,gap(100),BX000001.1:1..2000)',
+                   @obj.contig)
+    end
+
+    def test_seq_is_empty_when_only_co_line_present
+      assert_equal('', @obj.seq.to_s)
+    end
+  end # class TestEMBL_CO_line
+
+  class TestEMBL_CO_line_absent < Test::Unit::TestCase
+    def setup
+      text = <<~THE_END_OF_THE_TEXT
+        ID   AB123456; SV 1; linear; genomic DNA; STD; PRO; 4 BP.
+        XX
+        AC   AB123456;
+        XX
+        SQ   Sequence 4 BP; 1 A; 1 C; 1 G; 1 T; 0 other;
+             acgt                                                               4
+        //
+      THE_END_OF_THE_TEXT
+
+      @obj = Bio::EMBL.new(text)
+    end
+
+    def test_co_absent
+      assert_equal('', @obj.co)
+    end
+  end # class TestEMBL_CO_line_absent
 end # module Bio
