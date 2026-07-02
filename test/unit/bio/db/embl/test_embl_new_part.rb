@@ -118,4 +118,46 @@ module Bio
       assert_equal('', @obj.co)
     end
   end # class TestEMBL_CO_line_absent
+
+  class TestEMBL_RG_line < Test::Unit::TestCase
+    def setup
+      # Real example pattern (Homo sapiens chromosome 1, GRCh38,
+      # accession CM000663): a reference authored solely by a
+      # consortium (no RA line at all), and one with both individual
+      # authors (RA) and a consortium name (RG).
+      text = <<~THE_END_OF_THE_TEXT
+        ID   AB123456; SV 1; linear; genomic DNA; STD; PRO; 4 BP.
+        XX
+        AC   AB123456;
+        XX
+        RN   [1]
+        RA   Doe J., Roe R.;
+        RG   Example Genome Consortium
+        RT   ;
+        RL   Submitted (01-JAN-2020) to the INSDC.
+        XX
+        RN   [2]
+        RG   Example Genome Consortium
+        RT   ;
+        RL   Submitted (01-JAN-2020) to the INSDC.
+        XX
+        SQ   Sequence 4 BP; 1 A; 1 C; 1 G; 1 T; 0 other;
+             acgt                                                               4
+        //
+      THE_END_OF_THE_TEXT
+
+      @obj = Bio::EMBL.new(text)
+    end
+
+    def test_references_authors_include_consortium_alongside_individuals
+      # Regression test: RG (reference group/consortium name) used to
+      # be silently dropped by Common#references.
+      expected = ['Doe, J.', 'Roe, R.', 'Example Genome Consortium']
+      assert_equal(expected, @obj.references[0].authors)
+    end
+
+    def test_references_authors_is_consortium_only_when_no_ra
+      assert_equal(['Example Genome Consortium'], @obj.references[1].authors)
+    end
+  end # class TestEMBL_RG_line
 end # module Bio

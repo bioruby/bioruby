@@ -311,6 +311,16 @@ module Common
               tag, xref = item.split(/\; /).map {|i| i.strip.sub(/\.\z/, '') }
               hash[ tag.downcase ]  = xref
             }
+          when 'RG'
+            # RG (reference group / consortium name), e.g.
+            # "International Human Genome Sequencing Consortium",
+            # common in large-scale genome assembly submissions.
+            # Note that 'RA' is always processed before 'RG' (see the
+            # 'raw' Hash key order in #ref), so hash['authors'] is
+            # already set to an Array at this point.
+            unless value.to_s.strip.empty?
+              hash['authors'].push value
+            end
           end
         }
         Reference.new(hash)
