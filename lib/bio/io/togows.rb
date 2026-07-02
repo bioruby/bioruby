@@ -6,7 +6,7 @@
 #
 #
 # Bio::TogoWS is a set of clients for the TogoWS web services
-# (http://togows.dbcls.jp/).
+# (https://togows.dbcls.jp/).
 #
 # * Bio::TogoWS::REST is a REST client for the TogoWS.
 # * Bio::TogoWS::SOAP will be implemented in the future.
@@ -101,7 +101,7 @@ module Bio
     #
     # Details of the service are desribed in the following URI.
     #
-    # * http://togows.dbcls.jp/site/en/rest.html
+    # * https://togows.dbcls.jp/site/en/rest.html
     #
     # == Examples
     # 
@@ -119,14 +119,14 @@ module Bio
     #
     # == References
     #
-    # * http://togows.dbcls.jp/site/en/rest.html
+    # * https://togows.dbcls.jp/site/en/rest.html
     #
     class REST
 
       include AccessWait
 
       # URI of the TogoWS REST service
-      BASE_URI = 'http://togows.dbcls.jp/'.freeze
+      BASE_URI = 'https://togows.dbcls.jp/'.freeze
 
       # preset default databases used by the retrieve method.
       #
@@ -143,7 +143,11 @@ module Bio
         @pathbase = uri.path
         @pathbase = '/' + @pathbase unless /\A\// =~ @pathbase
         @pathbase = @pathbase + '/' unless /\/\z/ =~ @pathbase
-        @http = Bio::Command.new_http(uri.host, uri.port)
+        @http = if uri.scheme == 'https' then
+                  Bio::Command.new_https(uri.host, uri.port)
+                else
+                  Bio::Command.new_http(uri.host, uri.port)
+                end
         @header = {
           'User-Agent' => "BioRuby/#{Bio::BIORUBY_VERSION_ID}"
         }

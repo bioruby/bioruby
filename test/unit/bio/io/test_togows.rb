@@ -102,6 +102,24 @@ module Bio
       assert_equal('/test/', t.instance_eval { @pathbase })
     end
 
+    def test_new_default_uses_https
+      t = Bio::TogoWS::REST.new
+      assert_equal(true, t.internal_http.use_ssl?)
+    end
+
+    def test_new_with_https_uri_string
+      t = Bio::TogoWS::REST.new('https://localhost:1234/test')
+      http = t.internal_http
+      assert_equal(true, http.use_ssl?)
+      assert_equal('localhost', http.address)
+      assert_equal(1234, http.port)
+    end
+
+    def test_new_with_http_uri_string
+      t = Bio::TogoWS::REST.new('http://localhost:1234/test')
+      assert_equal(false, t.internal_http.use_ssl?)
+    end
+
     def test_entry
       assert_respond_to(Bio::TogoWS::REST, :entry)
     end
