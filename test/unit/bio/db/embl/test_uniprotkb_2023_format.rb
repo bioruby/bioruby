@@ -152,4 +152,31 @@ module Bio
       assert_equal(expected, @obj.cc('CATALYTIC ACTIVITY'))
     end
   end # class TestUniProtKB_CC_CATALYTIC_ACTIVITY
+
+  class TestUniProtKB_CC_SEQUENCE_CAUTION < Test::Unit::TestCase
+    def setup
+      text = <<~THE_END_OF_THE_TEXT
+        ID   ABC_DEFGH               Reviewed;         256 AA.
+        CC   -!- SEQUENCE CAUTION:
+        CC       Sequence=AAA00001.1; Type=Erroneous initiation; Note=Extended
+        CC         N-terminus.; Evidence={ECO:0000305};
+        CC       Sequence=AAA00002.1; Type=Erroneous gene model prediction;
+        CC         Evidence={ECO:0000305};
+      THE_END_OF_THE_TEXT
+
+      @obj = Bio::UniProtKB.new(text)
+    end
+
+    def test_cc_sequence_caution_multiple_records_in_one_block
+      expected = [{ 'Sequence' => 'AAA00001.1',
+                    'Type' => 'Erroneous initiation',
+                    'Note' => 'Extended N-terminus.',
+                    'Evidence' => ['ECO:0000305'] },
+                  { 'Sequence' => 'AAA00002.1',
+                    'Type' => 'Erroneous gene model prediction',
+                    'Note' => nil,
+                    'Evidence' => ['ECO:0000305'] }]
+      assert_equal(expected, @obj.cc('SEQUENCE CAUTION'))
+    end
+  end # class TestUniProtKB_CC_SEQUENCE_CAUTION
 end # module Bio

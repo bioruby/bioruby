@@ -796,6 +796,7 @@ class UniProtKB < EMBLDB
                  'PATHWAY',
                  'SUBUNIT',
                  'CATALYTIC ACTIVITY',
+                 'SEQUENCE CAUTION',
                  'SUBCELLULAR LOCATION',
                  'FUNCTION',
                  'SIMILARITY']
@@ -936,6 +937,8 @@ class UniProtKB < EMBLDB
       return @data['CC'][topic]
     when 'RNA EDITING'
       return cc_rna_editing(@data['CC'][topic])
+    when 'SEQUENCE CAUTION'
+      return cc_sequence_caution(@data['CC'][topic])
     when 'SIMILARITY'
       return @data['CC'][topic]
     when 'SUBCELLULAR LOCATION'
@@ -1180,6 +1183,42 @@ class UniProtKB < EMBLDB
     entry
   end
   private :cc_rna_editing
+
+
+  # returns contents in the CC SEQUENCE CAUTION section.
+  #
+  #   CC   -!- SEQUENCE CAUTION:
+  #   CC       Sequence=AAN10183.1; Type=Erroneous initiation;
+  #   CC         Note=Extended N-terminus.; Evidence={ECO:0000305};
+  #   CC       Sequence=AAN27996.1; Type=Erroneous gene model prediction;
+  #   CC         Evidence={ECO:0000305};
+  #
+  # Note that a single "-!- SEQUENCE CAUTION:" block may contain two or
+  # more "Sequence=...;" entries, as shown above.
+  #
+  # Returns an Array of Hash:
+  #    [{'Sequence' => str, 'Type' => str, 'Note' => str,
+  #      'Evidence' => [str, ...]}, ...]
+  def cc_sequence_caution(data)
+    return nil unless data
+    data.map { |elem|
+      elem.scan(/Sequence=(.+?);(.*?)(?=Sequence=|\z)/).map { |seq, rest|
+        entry = {'Sequence' => seq, 'Type' => nil, 'Note' => nil,
+                 'Evidence' => nil}
+        rest.scan(/([A-Za-z]+)=(.+?);/).each do |key, val|
+          case key
+          when 'Evidence'
+            entry['Evidence'] = val.sub(/\A\{/, '').sub(/\}\z/, '')
+                                   .split(/,\s*/)
+          when 'Type', 'Note'
+            entry[key] = val
+          end
+        end
+        entry
+      }
+    }.flatten
+  end
+  private :cc_sequence_caution
 
 
   def cc_subcellular_location(data)
