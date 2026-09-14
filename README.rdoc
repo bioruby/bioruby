@@ -162,6 +162,32 @@ platform-dependent issues.  We are happy if you write patches to solve the
 issues.
 
 
+=== Code coverage (SimpleCov)
+
+When the {simplecov}[https://rubygems.org/gems/simplecov] gem is installed
+(it is included in the development group of the Gemfile), running the
+self-tests automatically measures code coverage.  Install the development
+gems and run the tests:
+
+  % bundle install
+  % bundle exec rake
+
+When the tests finish, a short summary is printed and a coverage report is
+generated in the coverage/ directory:
+
+  Coverage report generated for ... to coverage/index.html
+  Line coverage: 13943 / 16687 (83.55%)
+
+Open the HTML report in a web browser:
+
+  % open coverage/index.html      # macOS
+  % xdg-open coverage/index.html  # Linux
+  % start coverage\index.html     # Windows
+
+The machine-readable results are also written to coverage/coverage.json.
+If simplecov is not installed, the tests run normally without coverage.
+
+
 == SETUP
 
 If you want to use the OBDA (Open Bio Database Access) to obtain database
