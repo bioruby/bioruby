@@ -1,0 +1,110 @@
+# Type signatures for Bio::Sequence subclasses
+
+module Bio
+  class Sequence
+    # Methods mixed into Bio::Sequence subclasses (NA, AA, Generic).
+    module Common
+      def to_s: () -> String
+      alias to_str to_s
+      def seq: () -> String
+      def normalize!: () -> self
+      alias seq! normalize!
+      def concat: (*untyped arg) -> self
+      def <<: (*untyped arg) -> self
+      def +: (*untyped arg) -> self
+      def subseq: (?Integer start, ?Integer end_pos) -> untyped
+      def window_search: (Integer window_size, ?Integer step_size) { (String) -> void } -> Array[untyped]
+      def total: (Hash[untyped, Numeric] hash) -> Numeric
+      def composition: () -> Hash[String, Integer]
+      def randomize: (?untyped hash) -> self
+      def splice: (String position) -> untyped
+      alias splicing splice
+      def split: (*untyped arg) -> Array[String]
+    end
+
+    # Output formatting methods (Bio::Sequence::Format).
+    module Format
+      def output: (?Symbol format, ?Hash[untyped, untyped] options) -> String
+      def list_output_formats: () -> Array[Symbol]
+      def output_fasta: (?String? definition, ?Integer width) -> String
+    end
+
+    # Sequence masking methods (Bio::Sequence::SequenceMasker).
+    module SequenceMasker
+      def mask_with_enumerator: (untyped enum, String mask_char) { (untyped) -> bool } -> self
+      def mask_with_quality_score: (Numeric threshold, String mask_char) -> self
+      def mask_with_error_probability: (Numeric threshold, String mask_char) -> self
+    end
+
+    class NA < String
+      include Common
+
+      # Constructor
+      def initialize: (String str) -> void
+
+      # Core methods
+      def forward_complement: () -> String
+      def forward_complement!: () -> String
+      def reverse_complement: () -> String
+      def reverse_complement!: () -> String
+      alias complement reverse_complement
+      alias complement! reverse_complement!
+      def translate: (?Integer frame, ?untyped table, ?String unknown) -> Bio::Sequence::AA
+      def codon_usage: () -> Hash[String, Integer]
+      def gc_percent: () -> Integer
+      def gc_content: () -> (Float | Rational)
+      def at_content: () -> (Float | Rational)
+      def gc_skew: () -> (Float | Rational)
+      def at_skew: () -> (Float | Rational)
+      def illegal_bases: () -> Array[String]
+      def molecular_weight: () -> Float
+      def to_re: () -> Regexp
+      def names: () -> Array[String]
+      def dna: () -> String
+      def dna!: () -> String
+      def rna: () -> String
+      def rna!: () -> String
+      def cut_with_enzyme: (*untyped args) -> untyped
+      alias cut_with_enzymes cut_with_enzyme
+
+      private
+
+      def rna?: () -> Integer?
+    end
+
+    class AA < String
+      include Common
+
+      # Constructor
+      def initialize: (String str) -> void
+
+      # Core methods
+      def codes: () -> Array[String]
+      def names: () -> Array[String]
+      def molecular_weight: () -> Float
+      def to_re: () -> Regexp
+    end
+
+    # Other sequence-related classes
+    class Generic < String
+      include Common
+
+      def initialize: (String str) -> void
+    end
+
+    class DBLink
+      attr_reader database: String
+      attr_reader id: String
+      attr_reader secondary_ids: Array[String]
+
+      def initialize: (String database, String primary_id, *String secondary_ids) -> void
+      def self.parse_embl_DR_line: (String str) -> DBLink?
+      def self.parse_uniprot_DR_line: (String str) -> DBLink?
+    end
+
+    module Adapter
+      def attr_reader_lazy: (Symbol name) -> untyped
+      def def_biosequence_adapter: (Symbol name, ?Symbol source_method) ?{ () -> untyped } -> untyped
+    end
+  end
+end

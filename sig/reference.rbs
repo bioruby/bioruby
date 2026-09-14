@@ -1,0 +1,52 @@
+# Type signatures for Bio::Reference class
+
+module Bio
+  class Reference
+    # Attributes
+    attr_reader authors: Array[String]
+    attr_reader title: String
+    attr_reader journal: String
+    attr_reader volume: (Integer | String)
+    attr_reader issue: (Integer | String)
+    attr_reader pages: String
+    attr_reader year: (Integer | String)
+    attr_reader pubmed: (Integer | String)
+    attr_reader medline: (Integer | String)
+    attr_reader doi: String?
+    attr_reader abstract: String
+    attr_reader url: String?
+    attr_reader mesh: Array[String]
+    attr_reader affiliations: Array[String]
+    attr_reader embl_gb_record_number: (Integer | String)?
+    attr_reader sequence_position: String?
+    attr_reader comments: (Array[String] | String)?
+
+    # Constructor
+    def initialize: (Hash[String, untyped] hash) -> void
+
+    # Methods
+    def ==: (untyped other) -> bool
+    def format: (?String? style, *untyped options) -> String
+    def endnote: () -> String
+    def embl: () -> String
+    def bibitem: (?String? item) -> String
+    def bibtex: (?String? section, ?String? label, ?Hash[untyped, untyped] keywords) -> String
+    def general: () -> String
+    def rd: (?String? str) -> String
+    def nature: (?bool short) -> String
+    def science: () -> String
+    def genome_biol: () -> String
+    def genome_res: () -> String
+    def nar: () -> String
+    def current: () -> String
+    def trends: () -> String
+    def cell: () -> String
+    def pubmed_url: () -> String
+
+    private
+
+    def strip_dots: (String str) -> String
+    def authors_join: (String amp, ?String sep) -> String
+    def rev_name: (String name) -> String?
+  end
+end

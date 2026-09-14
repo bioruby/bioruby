@@ -1,0 +1,27 @@
+# .github/workflows/rbs.yml
+name: RBS
+
+on:
+  push:
+    branches:
+      - '**'   # run on every branch
+  pull_request:
+    branches:
+      - '**'   # run on every PR branch
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Validate RBS signatures
+        run: bundle exec rbs -I sig validate

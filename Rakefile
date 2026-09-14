@@ -313,3 +313,14 @@ begin
   end
 rescue LoadError
 end
+
+# RBS type signature tasks
+namespace :rbs do
+  desc "Validate RBS type signatures"
+  task :validate do
+    sh "bundle exec rbs -I sig validate"
+  end
+end
+
+desc "Validate RBS type signatures"
+task :rbs => "rbs:validate"

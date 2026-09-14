@@ -14,6 +14,7 @@
 - Fix any test or type errors until the whole suite is green.
 - After updating .rb files, run `rubocop` to be sure RuboCop rules still pass.
 - Add or update tests for the code you change, even if nobody asked.
+- After updating RBS signatures in `sig/`, run `bundle exec rake rbs:validate` (or `bundle exec rbs -I sig validate`). The `rbs` gem requires Ruby >= 3.1 and MRI.
  
 ## PR instructions
-- Always run `rubocop` and `bundle exec rake` before committing.
+- Always run `rubocop`, `bundle exec rake`, and `bundle exec rake rbs:validate` before committing.

@@ -38,4 +38,6 @@ group :development do
   gem 'rake'
   gem 'rdoc'
   gem 'test-unit'
+  # RBS type signatures (requires Ruby >= 3.1 and MRI)
+  gem 'rbs', require: false if RUBY_ENGINE == 'ruby' && Gem::Version.new(RUBY_VERSION) >= Gem::Version.new('3.1')
 end

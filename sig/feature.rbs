@@ -1,0 +1,32 @@
+# Type signatures for Bio::Feature class
+
+module Bio
+  class Feature
+    include Enumerable[Qualifier]
+
+    # Attributes
+    attr_accessor feature: String
+    attr_accessor position: String
+    attr_accessor qualifiers: Array[Qualifier]
+
+    # Constructor
+    def initialize: (?String feature, ?String position, ?Array[Qualifier] qualifiers) -> void
+
+    # Methods
+    def locations: () -> Locations
+    def append: (Qualifier qualifier) -> self
+    def each: (?String? key) { (Qualifier) -> void } -> void
+    def assoc: () -> Hash[String, String]
+    def to_hash: () -> Hash[String, Array[String]]
+    def []: (String key) -> Array[String]?
+
+    class Qualifier
+      # Attributes
+      attr_reader qualifier: String
+      attr_reader value: String
+
+      # Constructor
+      def initialize: (String key, String value) -> void
+    end
+  end
+end
