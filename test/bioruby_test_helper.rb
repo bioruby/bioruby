@@ -7,6 +7,23 @@
 
 require 'pathname'
 
+# Start SimpleCov before any BioRuby code is loaded so that the coverage
+# of the library is measured. SimpleCov is optional: when the gem is not
+# installed (e.g. `rake installed-test` or `rake gem-test`), the tests are
+# run without coverage.
+begin
+  require 'simplecov'
+  SimpleCov.start do
+    # SimpleCov 1.x renamed add_filter to skip.
+    filter = respond_to?(:skip) ? :skip : :add_filter
+    public_send(filter, '/test/')
+    public_send(filter, '/sample/')
+    public_send(filter, '/vendor/')
+  end
+rescue LoadError
+  # SimpleCov is not available. Continue without coverage.
+end
+
 unless defined? BioRubyTestDebug
   BioRubyTestDebug = ENV['BIORUBY_TEST_DEBUG'].to_s.empty? ? false : true
   warn 'BioRuby test debug enabled.' if BioRubyTestDebug

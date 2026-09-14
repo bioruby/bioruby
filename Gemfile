@@ -31,6 +31,8 @@ group :development do
   # RuboCop gems
   # Gem rubocop should appear before test-unit
   gem 'rubocop', require: false
+  # Code coverage
+  gem 'simplecov', require: false
   # Other gems for development
   gem 'rake'
   gem 'rdoc'
