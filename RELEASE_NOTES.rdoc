@@ -1,3 +1,66 @@
+= BioRuby 2.0.7 RELEASE NOTES
+
+Some fixes and new features have been added in BioRuby 2.0.7 after
+the release of 2.0.6.
+
+== New features
+
+* Bio::UniProtKB#cc: Added support for the SEQUENCE CAUTION and
+  DISRUPTION PHENOTYPE comment topics, and for ACTIVITY REGULATION,
+  the current name of the topic previously called ENZYME REGULATION
+  (both names are still accepted).
+* Bio::UniProtKB#gn, #ox, #ref, and #de: The content of UniProtKB
+  evidence tags (e.g. "{ECO:0000255|HAMAP-Rule:MF_04099}") is now
+  also available, split into eco_code/source pairs, via new keys:
+  :evidence for #gn, "<db>_Evidence" for #ox, "RN_Evidence" and
+  "Evidence" for #ref, and a third element appended to the
+  two-element subcat/desc pair returned by #de. The key/element is
+  only added when the entry actually has an evidence tag.
+* Bio::EMBL#pr (alias #project): Added to support the PR line
+  (BioProject reference), which has been used in EMBL/ENA flat
+  files since around 2013.
+* Bio::EMBL#co (alias #contig): Added to support the CO line, used
+  by CON-division entries (e.g. chromosome-level assemblies) that
+  describe their sequence as a join of other entries instead of
+  embedding it in an SQ/sequence record.
+
+== Fixes
+
+* Bio::UniProtKB#ref: Fixed a parsing bug in RC lines with two or
+  more tokens (e.g. "STRAIN=xxx; PLASMID=yyy;"), where the value of
+  the second and subsequent tokens was incorrectly merged into the
+  text of the first token.
+* Bio::UniProtKB#cc('CATALYTIC ACTIVITY'): Fixed a typo
+  ("CATALITIC ACTIVITY") that had always prevented this topic from
+  being recognized. It is now parsed into a structured Hash
+  supporting the current Rhea-based reaction format.
+* Bio::EMBLDB::Common#references (used by Bio::EMBL and
+  Bio::UniProtKB): RG lines (reference group / consortium name,
+  e.g. "International Human Genome Sequencing Consortium") were
+  silently dropped; the consortium name is now included in
+  Bio::Reference#authors.
+
+== Incompatible changes
+
+=== Bio::UniProtKB: evidence tags are no longer embedded in field values
+
+UniProtKB evidence tags (e.g.
+"{ECO:0000255|HAMAP-Rule:MF_04099}"), which have become common in
+current UniProtKB flat file entries, used to be left embedded at
+the end of the returned String/Hash values. For example,
+Bio::UniProtKB#gene_name or #protein_name could unexpectedly
+contain a trailing "{ECO:...}" fragment for entries with such
+annotation.
+
+Affected methods: #gn, #ox, #ref (the RN and RC values), #de (and
+the derived #gene_name, #gene_names, #protein_name, #synonyms).
+
+Evidence tags are now stripped from these values. The evidence
+content itself is not lost: it is available separately through the
+new keys described in "New features" above.
+
+
+
 = BioRuby 2.0.6 RELEASE NOTES
 
 Some fixes have been made in BioRuby 2.0.6 after the release of 2.0.5.
