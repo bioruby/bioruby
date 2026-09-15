@@ -184,7 +184,7 @@ Open the HTML report in a web browser:
   % xdg-open coverage/index.html  # Linux
   % start coverage\index.html     # Windows
 
-The machine-readable results are also written to coverage/coverage.json.
+The machine-readable results are also written to coverage/.resultset.json.
 If simplecov is not installed, the tests run normally without coverage.
 
 
@@ -289,4 +289,3 @@ publication.
 
 Current staff of the BioRuby project can be reached by sending e-mail
 to <staff@bioruby.org>.
-
