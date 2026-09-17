@@ -28,59 +28,59 @@ module Bio
     end
 
     def test_ac
-      assert(@obj.instance_methods.find { |x| x.to_s ==  'ac' })
+      assert(@obj.instance_methods.find { |x| x.to_s == 'ac' })
     end
 
     def test_accessions
-      assert(@obj.instance_methods.find { |x| x.to_s ==  'accessions' })
+      assert(@obj.instance_methods.find { |x| x.to_s == 'accessions' })
     end
 
     def test_accession
-      assert(@obj.instance_methods.find { |x| x.to_s ==  'accession' })
+      assert(@obj.instance_methods.find { |x| x.to_s == 'accession' })
     end
 
     def test_de
-      assert(@obj.instance_methods.find { |x| x.to_s ==  'de' })
+      assert(@obj.instance_methods.find { |x| x.to_s == 'de' })
     end
 
     def test_description
-      assert(@obj.instance_methods.find { |x| x.to_s ==  'description' })
+      assert(@obj.instance_methods.find { |x| x.to_s == 'description' })
     end
 
     def test_definition
-      assert(@obj.instance_methods.find { |x| x.to_s ==  'definition' })
+      assert(@obj.instance_methods.find { |x| x.to_s == 'definition' })
     end
 
     def test_os
-      assert(@obj.instance_methods.find { |x| x.to_s ==  'os' })
+      assert(@obj.instance_methods.find { |x| x.to_s == 'os' })
     end
 
     def test_og
-      assert(@obj.instance_methods.find { |x| x.to_s ==  'og' })
+      assert(@obj.instance_methods.find { |x| x.to_s == 'og' })
     end
 
     def test_oc
-      assert(@obj.instance_methods.find { |x| x.to_s ==  'oc' })
+      assert(@obj.instance_methods.find { |x| x.to_s == 'oc' })
     end
 
     def test_kw
-      assert(@obj.instance_methods.find { |x| x.to_s ==  'kw' })
+      assert(@obj.instance_methods.find { |x| x.to_s == 'kw' })
     end
 
     def test_keywords
-      assert(@obj.instance_methods.find { |x| x.to_s ==  'keywords' })
+      assert(@obj.instance_methods.find { |x| x.to_s == 'keywords' })
     end
 
     def test_ref
-      assert(@obj.instance_methods.find { |x| x.to_s ==  'ref' })
+      assert(@obj.instance_methods.find { |x| x.to_s == 'ref' })
     end
 
     def test_references
-      assert(@obj.instance_methods.find { |x| x.to_s ==  'references' })
+      assert(@obj.instance_methods.find { |x| x.to_s == 'references' })
     end
 
     def test_dr
-      assert(@obj.instance_methods.find { |x| x.to_s ==  'dr' })
+      assert(@obj.instance_methods.find { |x| x.to_s == 'dr' })
     end
   end
 

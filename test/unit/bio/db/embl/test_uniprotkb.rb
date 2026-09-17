@@ -1703,8 +1703,8 @@ OH   NCBI_TaxID=4113; Solanum tuberosum (Potato).
 OH   NCBI_TaxID=13305; Tulipa.
 OH   NCBI_TaxID=3603; Vitis.'
 
-      res = [{ 'NCBI_TaxID' => '4681',  'HostName' => 'Allium porrum (Leek)' },
-             { 'NCBI_TaxID' => '4045',  'HostName' => 'Apium graveolens (Celery)' },
+      res = [{ 'NCBI_TaxID' => '4681', 'HostName' => 'Allium porrum (Leek)' },
+             { 'NCBI_TaxID' => '4045', 'HostName' => 'Apium graveolens (Celery)' },
              { 'NCBI_TaxID' => '161934', 'HostName' => 'Beta vulgaris (Sugar beet)' },
              { 'NCBI_TaxID' => '38871', 'HostName' => 'Fraxinus (ash trees)' },
              { 'NCBI_TaxID' => '4236', 'HostName' => 'Lactuca sativa (Garden lettuce)' },

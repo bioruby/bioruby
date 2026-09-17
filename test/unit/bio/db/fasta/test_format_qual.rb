@@ -265,7 +265,7 @@ module Bio
       _END_EXPECTED_
 
       @sequence.error_probabilities =
-        (0...(@sequence.length)).collect { |i| ((i + 1)**-i) }
+        (0...(@sequence.length)).collect { |i| (i + 1)**-i }
       # Because Solexa score does not allow 1.
       @sequence.error_probabilities[0] = 0.99999999
 

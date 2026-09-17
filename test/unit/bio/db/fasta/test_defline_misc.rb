@@ -78,7 +78,7 @@ module Bio
     end
 
     def test_get_all_by_type
-      assert_equal([],  @defline.get_all_by_type)
+      assert_equal([], @defline.get_all_by_type)
     end
   end
 

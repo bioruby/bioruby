@@ -122,7 +122,7 @@ module Bio
         EOF
         obj = BioNCBIDBCommon.new(entry)
         expected = { 'BioProject' => ['PRJNA168'],
-                     'Sequence Read Archive' => ['SRR13487933', 'SRR13487934'] }
+                     'Sequence Read Archive' => %w[SRR13487933 SRR13487934] }
         assert_equal(expected, obj.dblink)
       end
 

@@ -127,7 +127,7 @@ module Bio
 
   class TestTree < Test::Unit::TestCase
     def setup
-      @tree  = Bio::Tree.new
+      @tree = Bio::Tree.new
     end
 
     def test_get_edge_distance

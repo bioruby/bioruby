@@ -128,126 +128,125 @@ module Bio
           'FSRRS4401EG0ZW [length=424] [gc=23.82] [flows=800] [phred_min=0] [phred_max=40] [trimmed_length=389]'
         ].collect { |x| x.freeze }.freeze
 
-
-      ENTRY_IDS = ['FSRRS4401BE7HA',
-                   'FSRRS4401BRRTC',
-                   'FSRRS4401B64ST',
-                   'FSRRS4401EJ0YH',
-                   'FSRRS4401BK0IB',
-                   'FSRRS4401ARCCB',
-                   'FSRRS4401CM938',
-                   'FSRRS4401EQLIK',
-                   'FSRRS4401AOV6A',
-                   'FSRRS4401EG0ZW'].collect { |x| x.freeze }.freeze
+      ENTRY_IDS = %w[FSRRS4401BE7HA
+                     FSRRS4401BRRTC
+                     FSRRS4401B64ST
+                     FSRRS4401EJ0YH
+                     FSRRS4401BK0IB
+                     FSRRS4401ARCCB
+                     FSRRS4401CM938
+                     FSRRS4401EQLIK
+                     FSRRS4401AOV6A
+                     FSRRS4401EG0ZW].collect { |x| x.freeze }.freeze
 
       QUALITY_STRINGS =
-        [<<'_0_', <<'_1_', <<'_2_', <<'_3_', <<'_4_', <<'_5_', <<'_6_', <<'_7_', <<'_8_', <<'_9_'].collect { |x| x.delete("\r\n").freeze }.freeze
-FFFDDDDDDDA666?688FFHGGIIIIIIIIIIIIIIIII
-IHHHIIIIIIIIIGHGFFFFF====DFFFFFFFFFFFFFF
-D???:3104/76=:5...4.3,,,366////4<ABBAAA=
-CCFDDDDDDDD:666CDFFFF=<ABA=;:333111<===9
-9;B889FFFFFFDDBDBDDD=8844231..,,,-,,,,,,
-,,1133..---17111,,,,,22555131121.--.,333
-11,.,,3--,,.,,--,3511123..--!,,,,--,----
-9,,,,8=,,-,,,-,,,,---26:9:5-..1,,,,11//,
-,,,!,,1917--,,,,-3.,--,,17,,,,---+11113.
-030000,,,044400036;96662.//;7><;!!!
-_0_
-FFFFFFFFFDDDDFFFFGFDDDDBAAAAA=<4444@@B=5
-55:BBBBB@@?8:8<?<89898<84442;==3,,,514,,
-,11,,,.,,21777555513,..--1115758.//34488
-><<;;;;9944/!/4,,,57855!!
-_1_
-IIIICCCCI??666IIIIIIIIIIIIIIIIIIIIIIIIII
-IIII6666IAIIIII???IIIICCCIIIIIIIIIIIIIII
-IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII66333EI
-CE::338=/----,8=>>??:2-////7>CEEIEIHHHII
-IIIIIIIE;;9911199B???IBCHIIIIIIHHHIIHHHI
-IIIIIIIIIIIIIIIIIBBCCIIIIIIIIIIIIIIIIIII
-IIIIIIIIIIIIIIIGGGIIIIIIIIID?===DIIIHHHI
-IIIIIIIIHHHIIIIIIIIIIHHHIHHHIIIIIIIIIIII
-IIIIIIIIII?>;9988==5----.@@AEGIIIIIIIIIH
-H????EIIIFF999;EIIBB!!
-_2_
-IIII?????IIIIIIIIIIIIIIHHHIIIIIIIIIIIIIH
-HHIIHHHIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-IIIIIIIIHHHIIIIIHHHIIIIIIIIIIIAAAAII>>>>
-IIIIIIIIIIIIIIIIIIIIIIIIIIEEIEE;33333D7I
-IIIIIIIIIIIIIIIIIIIICC@@HHIIIIIIIIIIIIII
-IIHHHIIIIIIIIIIIIIIIIIIIHHHIIIIIIIIIIIII
-BBBBIHCDCHIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
-IIHHHIIIHHCCDIIIIIIHHHIICCCH=CCIIIIIIIII
-GGGIIIIIIHHHHHHIIIIIIIIIIIIIIIHHHIIHHE??
->>?EFEE?/////;:80--!!
-_3_
-FFFA@@FFFFFFFFFFHHB:::@BFFFFGGHIHIIIIIII
-IIIIIIIIIIIIIIIIFFFFFFFFF?=BA@11188011<<
-88;?AABDDC???DDAAAADA666D?DDD=====AA>?>>
-<<<=<11188<<???AA?9555=ABBB@@?=>>?@@1114
-2::DDA???DFFFFFFFFFFFFFBAAAA<<0000.22=//
-//8,--111111!23--/24!37:6666<;822/..4!46
-521177553.-.23!231121112,,-,,211==5-----
--,12,,,,,,-,,,-1,,,,-,,155--,,,,13111.,,
-,,,,,,++111..11..1,,,,,,,,,+3,,,,,--22--
----//----55//**/--22--**,,,,**,,,,,,.1.,
-*,,,,***,,,,,,,,,,,,,,,,,,,,,,,),,-,,,,,
-,),,,,,**//.),,,///,,,,,,,,,,,.))33---,,
-,,,,,,,,(0,,,!.!!!!!!!!!!!!
-_4_
-FFF<8::@DFFFFFFFGGFDCAAAAAB@@000046<;663
-22366762243348<<=??4445::>ABAAA@<<==B=:5
-55:BBD??=BDDDDFFFCCCCCCCFFCDDDFFFFFDBAA=
-=88880004><<<99688;889<889?BBBBA=???DDBB
-B@@??88889---237771,,,,,,,,--1152<<00158
-A@><<<<<43277711,,,--37===75,----34666!!
-!!!!!!!!!!!!!!!!!!
-_5_
-IIIIICC>>666IIIICCCIIIIIIIIHHHIIIIIG666I
-IIIIIIIIIHHHIIIIIIIICCCIIIIIIIIIIIIIIIII
-I@@@@IIIIIIIIIIIIIHHHIIII???=;IIEEI::///
-//7544:?IBB72244E8EECEBC=@@@@@@@HHIIIIII
-IIIIBBBIIIIIIIIIHHHIIIIIIIIIIIIICCCCIIII
-IIIIIIIIIIIIIIIIIIIIIIII6666DEIIHEB??D@7
-77772222D89EEIIIIIIIHHHIIIIIIIIHHHIIIIII
-IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIHHHIIIIII
-IIIIIIIII==?==IIIII???=;I63DDD82--,,,38=
-=::----,,---+++33066;@6380008/:889<:BGII
-IIIIIIIFE<?F5500-----5:;;;:>?@C<<7999EEE
-EEE@@@@EEEEE!
-_6_
-III?666??HHHIIIIIIIIIGGGIIIIIIIIIIIGGGHH
-HIIIIIIIIIIIIIIIIIIIIGGGIIIIIIIIIIHHHIII
-@@@@IIIIEIE111100----22?=8---:-------,,,
-,33---5:3,----:1BBEEEHIIIIIIIIIIIB??A122
-000...:?=024GIIIIIIIIIIIIIIIIIIECCHHB=//
--,,21??<5-002=6FBB?:9<=11/4444//-//77??G
-EIEEHIACCIIIHHHIIIIIIICCCAIIIHHHHHHIIIII
-IIIIIIIIIIIIIIIIIEE1//--822;----.777@EII
-IIII???IIIIIIIIIIIHHHIIIIIIIIIIIIIIIIIII
-I994227775555AE;IEEEEEIIIII??9755>@==:3,
-,,,,33336!!
-_7_
-IIIICCCCI;;;CCCCIII???HHHIIIIHHHIIIIIIII
-IIHHHIIIHHHIIIIIII@@@@IFICCCICAA;;;;ED?B
-@@D66445555<<<GII>>AAIIIIIIII;;;::III???
-CCCIII;;;;IFFIIIIICCCBIBIEEDC4444?4BBBE?
-EIIICHHII;;;HIIIIIIHH;;;HHIIIII;;;IIIIHH
-HIIIIII>>??>IEEBGG::1111/46FBFBB?=;=A?97
-771119:EAAADDBD7777=/111122DA@@B68;;;I8H
-HIIIII;;;;?>IECCCB/////;745=!
-_8_
-IIA94445EEII===>IIIIIIIIICCCCIIHIIICC;;;
-;IIIIIIIIIIIIIIIIIIIIIIIIIF;;666DDIIIIII
-IIIIIIIIIIIIIEE94442244@@666CC<<BDDA=---
---2<,,,,659//00===8CIII;>>==HH;;IIIIIICC
-@@???III@@@@IC?666HIDDCI?B??CC<EE11111B4
-BDDCB;=@B777>////-=323?423,,,/=1,,,,-:4E
-;??EIIIIICCCCI>;;;IIIIIII<<@@?=////7=A99
-988<<4455IEEEIIIIIIIIIIIII<999HIIIIIIIII
-II?????IIIIIIIIIIICAC;55539EIIIIIIIIIIII
-IIIIHH999HHHIA=AEEFF@=.....AD@@@DDEEEEFI
-II;;;977FFCCC@24449?FDD!
-_9_
+        [<<~_0_, <<~_1_, <<~_2_, <<~_3_, <<~_4_, <<~_5_, <<~_6_, <<~_7_, <<~_8_, <<~_9_].collect { |x| x.delete("\r\n").freeze }.freeze
+          FFFDDDDDDDA666?688FFHGGIIIIIIIIIIIIIIIII
+          IHHHIIIIIIIIIGHGFFFFF====DFFFFFFFFFFFFFF
+          D???:3104/76=:5...4.3,,,366////4<ABBAAA=
+          CCFDDDDDDDD:666CDFFFF=<ABA=;:333111<===9
+          9;B889FFFFFFDDBDBDDD=8844231..,,,-,,,,,,
+          ,,1133..---17111,,,,,22555131121.--.,333
+          11,.,,3--,,.,,--,3511123..--!,,,,--,----
+          9,,,,8=,,-,,,-,,,,---26:9:5-..1,,,,11//,
+          ,,,!,,1917--,,,,-3.,--,,17,,,,---+11113.
+          030000,,,044400036;96662.//;7><;!!!
+        _0_
+          FFFFFFFFFDDDDFFFFGFDDDDBAAAAA=<4444@@B=5
+          55:BBBBB@@?8:8<?<89898<84442;==3,,,514,,
+          ,11,,,.,,21777555513,..--1115758.//34488
+          ><<;;;;9944/!/4,,,57855!!
+        _1_
+          IIIICCCCI??666IIIIIIIIIIIIIIIIIIIIIIIIII
+          IIII6666IAIIIII???IIIICCCIIIIIIIIIIIIIII
+          IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII66333EI
+          CE::338=/----,8=>>??:2-////7>CEEIEIHHHII
+          IIIIIIIE;;9911199B???IBCHIIIIIIHHHIIHHHI
+          IIIIIIIIIIIIIIIIIBBCCIIIIIIIIIIIIIIIIIII
+          IIIIIIIIIIIIIIIGGGIIIIIIIIID?===DIIIHHHI
+          IIIIIIIIHHHIIIIIIIIIIHHHIHHHIIIIIIIIIIII
+          IIIIIIIIII?>;9988==5----.@@AEGIIIIIIIIIH
+          H????EIIIFF999;EIIBB!!
+        _2_
+          IIII?????IIIIIIIIIIIIIIHHHIIIIIIIIIIIIIH
+          HHIIHHHIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+          IIIIIIIIHHHIIIIIHHHIIIIIIIIIIIAAAAII>>>>
+          IIIIIIIIIIIIIIIIIIIIIIIIIIEEIEE;33333D7I
+          IIIIIIIIIIIIIIIIIIIICC@@HHIIIIIIIIIIIIII
+          IIHHHIIIIIIIIIIIIIIIIIIIHHHIIIIIIIIIIIII
+          BBBBIHCDCHIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+          IIHHHIIIHHCCDIIIIIIHHHIICCCH=CCIIIIIIIII
+          GGGIIIIIIHHHHHHIIIIIIIIIIIIIIIHHHIIHHE??
+          >>?EFEE?/////;:80--!!
+        _3_
+          FFFA@@FFFFFFFFFFHHB:::@BFFFFGGHIHIIIIIII
+          IIIIIIIIIIIIIIIIFFFFFFFFF?=BA@11188011<<
+          88;?AABDDC???DDAAAADA666D?DDD=====AA>?>>
+          <<<=<11188<<???AA?9555=ABBB@@?=>>?@@1114
+          2::DDA???DFFFFFFFFFFFFFBAAAA<<0000.22=//
+          //8,--111111!23--/24!37:6666<;822/..4!46
+          521177553.-.23!231121112,,-,,211==5-----
+          -,12,,,,,,-,,,-1,,,,-,,155--,,,,13111.,,
+          ,,,,,,++111..11..1,,,,,,,,,+3,,,,,--22--
+          ---//----55//**/--22--**,,,,**,,,,,,.1.,
+          *,,,,***,,,,,,,,,,,,,,,,,,,,,,,),,-,,,,,
+          ,),,,,,**//.),,,///,,,,,,,,,,,.))33---,,
+          ,,,,,,,,(0,,,!.!!!!!!!!!!!!
+        _4_
+          FFF<8::@DFFFFFFFGGFDCAAAAAB@@000046<;663
+          22366762243348<<=??4445::>ABAAA@<<==B=:5
+          55:BBD??=BDDDDFFFCCCCCCCFFCDDDFFFFFDBAA=
+          =88880004><<<99688;889<889?BBBBA=???DDBB
+          B@@??88889---237771,,,,,,,,--1152<<00158
+          A@><<<<<43277711,,,--37===75,----34666!!
+          !!!!!!!!!!!!!!!!!!
+        _5_
+          IIIIICC>>666IIIICCCIIIIIIIIHHHIIIIIG666I
+          IIIIIIIIIHHHIIIIIIIICCCIIIIIIIIIIIIIIIII
+          I@@@@IIIIIIIIIIIIIHHHIIII???=;IIEEI::///
+          //7544:?IBB72244E8EECEBC=@@@@@@@HHIIIIII
+          IIIIBBBIIIIIIIIIHHHIIIIIIIIIIIIICCCCIIII
+          IIIIIIIIIIIIIIIIIIIIIIII6666DEIIHEB??D@7
+          77772222D89EEIIIIIIIHHHIIIIIIIIHHHIIIIII
+          IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIHHHIIIIII
+          IIIIIIIII==?==IIIII???=;I63DDD82--,,,38=
+          =::----,,---+++33066;@6380008/:889<:BGII
+          IIIIIIIFE<?F5500-----5:;;;:>?@C<<7999EEE
+          EEE@@@@EEEEE!
+        _6_
+          III?666??HHHIIIIIIIIIGGGIIIIIIIIIIIGGGHH
+          HIIIIIIIIIIIIIIIIIIIIGGGIIIIIIIIIIHHHIII
+          @@@@IIIIEIE111100----22?=8---:-------,,,
+          ,33---5:3,----:1BBEEEHIIIIIIIIIIIB??A122
+          000...:?=024GIIIIIIIIIIIIIIIIIIECCHHB=//
+          -,,21??<5-002=6FBB?:9<=11/4444//-//77??G
+          EIEEHIACCIIIHHHIIIIIIICCCAIIIHHHHHHIIIII
+          IIIIIIIIIIIIIIIIIEE1//--822;----.777@EII
+          IIII???IIIIIIIIIIIHHHIIIIIIIIIIIIIIIIIII
+          I994227775555AE;IEEEEEIIIII??9755>@==:3,
+          ,,,,33336!!
+        _7_
+          IIIICCCCI;;;CCCCIII???HHHIIIIHHHIIIIIIII
+          IIHHHIIIHHHIIIIIII@@@@IFICCCICAA;;;;ED?B
+          @@D66445555<<<GII>>AAIIIIIIII;;;::III???
+          CCCIII;;;;IFFIIIIICCCBIBIEEDC4444?4BBBE?
+          EIIICHHII;;;HIIIIIIHH;;;HHIIIII;;;IIIIHH
+          HIIIIII>>??>IEEBGG::1111/46FBFBB?=;=A?97
+          771119:EAAADDBD7777=/111122DA@@B68;;;I8H
+          HIIIII;;;;?>IECCCB/////;745=!
+        _8_
+          IIA94445EEII===>IIIIIIIIICCCCIIHIIICC;;;
+          ;IIIIIIIIIIIIIIIIIIIIIIIIIF;;666DDIIIIII
+          IIIIIIIIIIIIIEE94442244@@666CC<<BDDA=---
+          --2<,,,,659//00===8CIII;>>==HH;;IIIIIICC
+          @@???III@@@@IC?666HIDDCI?B??CC<EE11111B4
+          BDDCB;=@B777>////-=323?423,,,/=1,,,,-:4E
+          ;??EIIIIICCCCI>;;;IIIIIII<<@@?=////7=A99
+          988<<4455IEEEIIIIIIIIIIIII<999HIIIIIIIII
+          II?????IIIIIIIIIIICAC;55539EIIIIIIIIIIII
+          IIIIHH999HHHIA=AEEFF@=.....AD@@@DDEEEEFI
+          II;;;977FFCCC@24449?FDD!
+        _9_
 
       QUALITY_SCORES = QUALITY_STRINGS.collect do |str|
         str.unpack('C*').collect { |i| i - 33 }.freeze
@@ -282,9 +281,7 @@ _9_
         seqs = SEQS.dup
         qstrs = QUALITY_STRINGS.dup
         ent = []
-        until ids.empty?
-          ent.push "@#{ids.shift}\n#{seqs.shift}\n+\n#{qstrs.shift}\n"
-        end
+        ent.push "@#{ids.shift}\n#{seqs.shift}\n+\n#{qstrs.shift}\n" until ids.empty?
         @ff.each do |e|
           assert_equal(ent.shift, e.to_s)
         end
@@ -433,7 +430,7 @@ _9_
       def scores_phred2solexa(range)
         min = -5
         max = 62
-        sc = range.collect do |q|
+        range.collect do |q|
           tmp = (10**(q / 10.0)) - 1
           if tmp <= 0
             min
@@ -442,33 +439,29 @@ _9_
             r.clamp(min, max)
           end
         end
-        sc
       end
 
       def scores_phred2illumina(range)
         min = 0
         max = 62
-        sc = range.collect do |q|
+        range.collect do |q|
           q.clamp(min, max)
         end
-        sc
       end
 
       def scores_phred2sanger(range)
         min = 0
         max = 93
-        sc = range.collect do |q|
+        range.collect do |q|
           q.clamp(min, max)
         end
-        sc
       end
 
       def scores_solexa2phred(range)
-        sc = range.collect do |q|
+        range.collect do |q|
           r = 10 * Math.log10((10**(q / 10.0)) + 1)
           r.round
         end
-        sc
       end
 
       def scores_solexa2sanger(range)

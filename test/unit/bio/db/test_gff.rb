@@ -595,8 +595,8 @@ module Bio
       END_OF_DATA
 
       attributes = [
-        ['Gene',      'CEN1'],
-        ['Note',      'Chromosome I Centromere'],
+        ['Gene', 'CEN1'],
+        ['Note', 'Chromosome I Centromere'],
         ['Semicolon',
          Bio::GFF::GFF2::Record::Value.new(['a', 'b;c', 'd', 'e;f;g', 'h'])],
         ['Illegal', 'a\\'],

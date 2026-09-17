@@ -25,7 +25,7 @@ module Bio
 
     class TestSequenceCompat < Test::Unit::TestCase
       def setup
-        @obj  = TSequence.new('atgcatgcatgcatgcaaaa')
+        @obj = TSequence.new('atgcatgcatgcatgcaaaa')
       end
 
       def test_to_s

@@ -263,20 +263,20 @@ module Bio
       # disable bootstrap output
       assert_equal('ABC:0.5', @tree.instance_eval do
         __to_newick_format_leaf(node, edge,
-                                { bootstrap_style:                                                :disabled })
+                                { bootstrap_style: :disabled })
       end)
 
       # force traditional bootstrap style
       assert_equal('ABC98:0.5', @tree.instance_eval do
         __to_newick_format_leaf(node, edge,
-                                { bootstrap_style:                                                :traditional })
+                                { bootstrap_style: :traditional })
       end)
       # normally, when traditional style, no node name allowed for the node
       node2 = Bio::Tree::Node.new
       node2.bootstrap = 98
       assert_equal('98:0.5', @tree.instance_eval do
         __to_newick_format_leaf(node2, edge,
-                                { bootstrap_style:                                                :traditional })
+                                { bootstrap_style: :traditional })
       end)
     end
 
