@@ -304,3 +304,12 @@ task :"gem-test" do
   end
 end
 
+# RuboCop
+begin
+  require 'rubocop/rake_task'
+
+  RuboCop::RakeTask.new do |task|
+    task.plugins << 'rubocop-rake'
+  end
+rescue LoadError
+end

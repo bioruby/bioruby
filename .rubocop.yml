@@ -13,6 +13,7 @@ AllCops:
     - 'test/data/**/*'
     - 'tmp/**/*'
     - 'vendor/**/*'
+  SuggestExtensions: false
 
 # Settings for line length
 Layout/LineLength:
