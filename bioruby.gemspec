@@ -42,7 +42,7 @@ Gem::Specification.new do |s|
     "doc/ChangeLog-1.5.0",
     "doc/ChangeLog-before-1.3.1",
     "doc/ChangeLog-before-1.4.2",
-    "doc/Changes-0.7.rd",
+    "doc/Changes-0.7.md",
     "doc/Changes-1.3.rdoc",
     "doc/RELEASE_NOTES-1.4.0.rdoc",
     "doc/RELEASE_NOTES-1.4.1.rdoc",
