@@ -128,6 +128,17 @@ Rake::GemPackageTask.new(spec) do |pkg|
   #pkg.package_dir = "./pkg"
 end
 
+# Workaround to add prefix dirname for sig/README.md
+module RDocSigReadmePageName
+  def page_name
+    name = relative_name&.tr("\\", "/")&.sub(%r{\A\./}, "")
+    return "sig/README" if name == "sig/README.md"
+
+    super
+  end
+end
+RDoc::TopLevel.prepend(RDocSigReadmePageName)
+
 RDoc::Task.new do |r|
   r.rdoc_dir = "rdoc"
   r.rdoc_files.include(*spec.extra_rdoc_files)
