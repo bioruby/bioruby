@@ -20,12 +20,7 @@ rescue LoadError
   require 'rake/gempackagetask'
 end
 
-begin
-  require 'rdoc/task'
-rescue LoadError
-  # old RDoc/Rake version
-  require 'rake/rdoctask'
-end
+require 'rdoc/task'
 
 # workaround for new module name
 unless defined? Rake::GemPackageTask then
@@ -133,7 +128,7 @@ Rake::GemPackageTask.new(spec) do |pkg|
   #pkg.package_dir = "./pkg"
 end
 
-Rake::RDocTask.new do |r|
+RDoc::Task.new do |r|
   r.rdoc_dir = "rdoc"
   r.rdoc_files.include(*spec.extra_rdoc_files)
   r.rdoc_files.import(spec.files.find_all {|x| /\Alib\/.+\.rb\z/ =~ x})
