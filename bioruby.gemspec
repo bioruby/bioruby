@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   s.files = [
     ".git-blame-ignore-revs",
     ".github/copilot-instructions.md",
+    ".github/workflows/rbs.yml",
     ".github/workflows/rubocop.yml",
     ".github/workflows/ruby.yml",
     ".gitignore",
@@ -472,6 +473,9 @@ Gem::Specification.new do |s|
     "test/data/uniprot/P28907.uniprot",
     "test/data/uniprot/P49144.uniprot",
     "test/data/uniprot/p53_human.uniprot",
+    "test/functional/bio/appl/test_clustalw.rb",
+    "test/functional/bio/appl/test_fasta.rb",
+    "test/functional/bio/appl/test_mafft.rb",
     "test/functional/bio/sequence/test_output_embl.rb",
     "test/functional/bio/test_command.rb",
     "test/network/bio/appl/blast/test_remote.rb",
@@ -488,6 +492,7 @@ Gem::Specification.new do |s|
     "test/unit/bio/appl/blast/test_rpsblast.rb",
     "test/unit/bio/appl/clustalw/test_report.rb",
     "test/unit/bio/appl/gcg/test_msf.rb",
+    "test/unit/bio/appl/gcg/test_seq.rb",
     "test/unit/bio/appl/genscan/test_report.rb",
     "test/unit/bio/appl/hmmer/test_report.rb",
     "test/unit/bio/appl/iprscan/test_report.rb",
@@ -511,16 +516,19 @@ Gem::Specification.new do |s|
     "test/unit/bio/data/test_na.rb",
     "test/unit/bio/db/embl/test_common.rb",
     "test/unit/bio/db/embl/test_embl.rb",
+    "test/unit/bio/db/embl/test_embl_new_part.rb",
     "test/unit/bio/db/embl/test_embl_rel89.rb",
     "test/unit/bio/db/embl/test_embl_to_bioseq.rb",
     "test/unit/bio/db/embl/test_uniprot.rb",
     "test/unit/bio/db/embl/test_uniprotkb.rb",
+    "test/unit/bio/db/embl/test_uniprotkb_2023_format.rb",
     "test/unit/bio/db/embl/test_uniprotkb_P03589.rb",
     "test/unit/bio/db/embl/test_uniprotkb_P28907.rb",
     "test/unit/bio/db/embl/test_uniprotkb_P49144.rb",
     "test/unit/bio/db/embl/test_uniprotkb_new_part.rb",
     "test/unit/bio/db/fasta/test_defline.rb",
     "test/unit/bio/db/fasta/test_defline_misc.rb",
+    "test/unit/bio/db/fasta/test_fasta_to_biosequence.rb",
     "test/unit/bio/db/fasta/test_format_qual.rb",
     "test/unit/bio/db/genbank/test_common.rb",
     "test/unit/bio/db/genbank/test_genbank.rb",
@@ -540,6 +548,7 @@ Gem::Specification.new do |s|
     "test/unit/bio/db/sanger_chromatogram/test_abif.rb",
     "test/unit/bio/db/sanger_chromatogram/test_scf.rb",
     "test/unit/bio/db/test_aaindex.rb",
+    "test/unit/bio/db/test_fantom.rb",
     "test/unit/bio/db/test_fasta.rb",
     "test/unit/bio/db/test_fastq.rb",
     "test/unit/bio/db/test_gff.rb",
@@ -602,16 +611,22 @@ Gem::Specification.new do |s|
   ]
 
   s.extra_rdoc_files = [ 
+    ".github/copilot-instructions.md",
+    "AGENTS.md",
     "KNOWN_ISSUES.rdoc",
     "README.rdoc",
     "README_DEV.rdoc",
     "RELEASE_NOTES.rdoc",
+    "doc/Changes-0.7.md",
     "doc/Changes-1.3.rdoc",
     "doc/RELEASE_NOTES-1.4.0.rdoc",
     "doc/RELEASE_NOTES-1.4.1.rdoc",
     "doc/RELEASE_NOTES-1.4.2.rdoc",
     "doc/RELEASE_NOTES-1.4.3.rdoc",
-    "doc/RELEASE_NOTES-1.5.0.rdoc"
+    "doc/RELEASE_NOTES-1.5.0.rdoc",
+    "doc/Tutorial.md",
+    "doc/Tutorial_ja.md",
+    "sig/README.md"
   ]
   s.rdoc_options << '--main' << 'README.rdoc'
   s.rdoc_options << '--title' << 'BioRuby API documentation'
