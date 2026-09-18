@@ -631,7 +631,7 @@ Gem::Specification.new do |s|
   s.rdoc_options << '--main' << 'README.rdoc'
   s.rdoc_options << '--title' << 'BioRuby API documentation'
   s.rdoc_options << '--exclude' << '\.yaml\z'
-  s.rdoc_options << '--line-numbers' << '--inline-source'
+  s.rdoc_options << '--line-numbers'
 
   s.require_path = 'lib'
 end
