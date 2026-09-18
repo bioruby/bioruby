@@ -1,14 +1,14 @@
-= Incompatible and important changes since the BioRuby 0.6.4 release
+# Incompatible and important changes since the BioRuby 0.6.4 release
 
 A lot of changes have been made to the BioRuby after the version 0.6.4
 is released.
 
---- Ruby 1.6 series are no longer supported.
+## Ruby 1.6 series are no longer supported
 
 We use autoload functionality and many standard (bundled) libraries
 (such as SOAP, open-uri, pp etc.) only in Ruby >1.8.2.
 
---- BioRuby will be loaded about 30 times faster than before.
+## BioRuby will be loaded about 30 times faster than before
 
 As we changed to use autoload instead of require, time required
 to start up the BioRuby library made surprisingly faster.
@@ -16,38 +16,44 @@ to start up the BioRuby library made surprisingly faster.
 Other changes (including newly introduced BioRuby shell etc.) made
 in this series will be described in this file.
 
-== New features
+## New features
 
---- BioRuby shell
+### BioRuby shell
 
 A new command line user interface for the BioRuby is now included.
 You can invoke the shell by
 
-  % bioruby
+```
+% bioruby
+```
 
---- UnitTest
+### UnitTest
 
 Test::Unit now covers wide range of the BioRuby library.
 You can run them by
 
-  % ruby test/runner.rb
+```
+% ruby test/runner.rb
+```
 
 or
 
-  % ruby install.rb config
-  % ruby install.rb setup
-  % ruby install.rb test
+```
+% ruby install.rb config
+% ruby install.rb setup
+% ruby install.rb test
+```
 
 during the installation procedure.
 
---- Documents
+### Documents
 
 README, README.DEV, doc/Tutorial.rd, doc/Tutorial.rd.ja etc. are updated
 or newly added.
 
-== Incompatible changes
+## Incompatible changes
 
---- Bio::Sequence
+### Bio::Sequence
 
 Bio::Sequence is completely refactored to be a container class for
 any sequence annotations.  Functionalities are separated into several
@@ -80,7 +86,7 @@ its value is ambiguous.
 These two methods are removed.  Use Bio::Blast and Bio::Fasta to execute
 BLAST and FASTA search.
 
---- Bio::NucleicAcid
+### Bio::NucleicAcid
 
 Bio::NucleicAcid::Names and Bio::NucleicAcid::Weight no longer exists.
 
@@ -92,7 +98,7 @@ Bio::NucleicAcid::Weight is renamed to Bio::NucleicAcid::Data::Weight and
 can be accessed by Bio::NucleicAcid#weight, Bio::NucleicAcid.weight methods
 and Bio::NucleicAcid::WEIGHT hash as the Data module is included.
 
---- Bio::AminoAcid
+### Bio::AminoAcid
 
 Bio::AminoAcid::Names and Bio::AminoAcid::Weight no longer exists.
 
@@ -104,7 +110,7 @@ Bio::AminoAcid::Weight is renamed to Bio::AminoAcid::Data::Weight and
 can be accessed by Bio::AminoAcid#weight, Bio::AminoAcid.weight methods
 and Bio::AminoAcid::WEIGHT hash as the Data module is included.
 
---- Bio::CodonTable
+### Bio::CodonTable
 
 Bio::CodonTable::Tables, Bio::CodonTable::Definitions,
 Bio::CodonTable::Starts, and Bio::CodonTable::Stops
@@ -113,7 +119,7 @@ Bio::CodonTable::TABLES, Bio::CodonTable::DEFINITIONS,
 Bio::CodonTable::STARTS, and Bio::CodonTable::STOPS
 respectively.
 
---- Bio::KEGG::Microarrays, Bio::KEGG::Microarray
+### Bio::KEGG::Microarrays, Bio::KEGG::Microarray
 
 * lib/bio/db/kegg/microarray.rb is renamed to lib/bio/db/kegg/expression.rb
 * Bio::KEGG::Microarray is renamed to Bio::KEGG::EXPRESSION
@@ -122,24 +128,15 @@ respectively.
 Bio::KEGG::Microarrays was intended to store a series of microarray
 expressions as a Hash of Array -like data structure,
 
-  gene1 => [exp1, exp2, exp3, ... ]
-  gene2 => [exp1, exp2, exp3, ... ]
+```
+gene1 => [exp1, exp2, exp3, ... ]
+gene2 => [exp1, exp2, exp3, ... ]
+```
 
 however, it is not utilized well and more suitable container class
 can be proposed.  Until then, this class is removed.
 
-#
-# Following changes are suspended for a while (not yet introduced for now)
-#
-# --- Bio::Pathway
-#
-# * Bio::Pathway#nodes returns an Array of the node objects instead of
-#   the number of the node objects.
-# * Bio::Pathway#edges returns an Array of the edge objects instead of
-#   the number of the edge objects.
-#
-
---- Bio::GenBank
+### Bio::GenBank
 
 Bio::GenBank#gc is removed as the value can be calculated by the
 Bio::Sequence::NA#gc method and the method is also changed to
@@ -148,26 +145,26 @@ return integer instead of float.
 Bio::GenBank#varnacular_name is renamed to Bio::GenBank#vernacular_name
 as it was a typo.
 
---- Bio::GenBank::Common
+### Bio::GenBank::Common
 
 * lib/bio/db/genbank/common.rb is removed.
 
 Renamed to Bio::NCBIDB::Common to make simplify the autoload dependency.
 
---- Bio::EMBL::Common
+### Bio::EMBL::Common
 
 * lib/bio/db/embl/common.rb is removed.
 
 Renamed to Bio::EMBLDB::Common to make simplify the autoload dependency.
 
---- Bio::KEGG::GENES
+### Bio::KEGG::GENES
 
 * lib/bio/db/kegg/genes.rb
 
 linkdb method is changed to return a Hash of an Array of entry IDs
 instead of a Hash of a entry ID string.
 
---- Bio::TRANSFAC
+### Bio::TRANSFAC
 
 * Bio::TFMATRIX is renamed to Bio::TRANSFAC::MATRIX
 * Bio::TFSITE   is renamed to Bio::TRANSFAC::SITE
@@ -176,14 +173,14 @@ instead of a Hash of a entry ID string.
 * Bio::TFCLASS  is renamed to Bio::TRANSFAC::CLASS
 * Bio::TFGENE   is renamed to Bio::TRANSFAC::GENE
 
---- Bio::GFF
+### Bio::GFF
 
 * Bio::GFF2 is renamed to Bio::GFF::GFF2
 * Bio::GFF3 is renamed to Bio::GFF::GFF3
 
---- Bio::Alignment
+### Bio::Alignment
 
-In 0.7.0:
+#### In 0.7.0
 
 * Old Bio::Alignment class is renamed to Bio::Alignment::OriginalAlignment.
   Now, new Bio::Alignment is a module. However, you don't mind so much
@@ -201,14 +198,14 @@ In 0.7.0:
   not defined in IUPAC standard even if all bases are equal.
 * There are more and more changes to be written...
 
-In 1.1.0:
+#### In 1.1.0
 
 * Bio::Alignment::ClustalWFormatter is removed and methods in this module
   are renemed and moved to Bio::Alignment::Output.
 
---- Bio::PDB
+### Bio::PDB
 
-In 0.7.0:
+#### In 0.7.0
 
 * Bio::PDB::Atom is removed. Instead, please use Bio::PDB::Record::ATOM and
   Bio::PDB::Record::HETATM.
@@ -230,7 +227,7 @@ In 0.7.0:
   Bio::PDB::DataType.
 * There are more and more changes to be written...
 
-In 0.7.1:
+#### In 0.7.1
 
 * Heterogens and HETATMs are completely separeted from residues and ATOMs.
   HETATMs (Bio::PDB::Record::HETATM objects) are stored in
@@ -246,7 +243,7 @@ In 0.7.1:
   a nucleic acid sequence.
 * There are more and more changes to be written...
 
-In 1.1.0:
+#### In 1.1.0
 
 * In Bio::PDB::ATOM#name, #resName, #iCode, and #charge, whitespaces are
   stripped during initializing.
@@ -261,9 +258,9 @@ In 1.1.0:
 * Bio::PDB#record is changed to return an empty array instead of nil
   for a nonexistent record.
 
---- Bio::FlatFile
+### Bio::FlatFile
 
-In 0.7.2:
+#### In 0.7.2
 
 * Bio::FlatFile.open, Bio::FlatFile.auto and Bio::FlatFile.new are changed
   not to accept the last argument to specify raw mode, e.g. :raw => true,
@@ -283,22 +280,22 @@ In 0.7.2:
 * Internal structure is now completely changed. Codes depend on the internal
   structure (which is not recommended) would not work.
 
-In 1.1.0:
+#### In 1.1.0
 
 * Bio::FlatFile#entry_start_pos and #entry_ended_pos are enabled
   only when Bio::FlatFile#entry_pos_flag is true.
 
---- Bio::ClustalW, Bio::MAFFT, Bio::Sim4
+### Bio::ClustalW, Bio::MAFFT, Bio::Sim4
 
-In 1.1.0:
+#### In 1.1.0
 
 * Bio::(ClustalW|MAFFT|Sim4)#option is changed to #options.
 * Bio::ClustalW::errorlog and Bio::(MAFFT|Sim4)#log are removed.
   No replacements/alternatives are available.
 
---- Bio::ClustalW, Bio::MAFFT
+### Bio::ClustalW, Bio::MAFFT
 
-In 1.1.0:
+#### In 1.1.0
 
 * Bio::(ClustalW|MAFFT)#query_align, #query_string, #query_by_filename
   are changed not to get second (and third, ...) arguments.
@@ -308,27 +305,27 @@ In 1.1.0:
   If the program exists normally (exit status is 0), returns true.
   Otherwise, returns false.
 
---- Bio::MAFFT
+### Bio::MAFFT
 
-In 1.1.0:
+#### In 1.1.0
 
 * Bio::MAFFT#output is changed to return a string of multi-fasta
   formmatted text instead of Array of Bio::FastaFormat objects.
   To get an array of Bio::FastaFormat objects, please use
   report.data instead.
 
---- Bio::MAFFT::Report
+### Bio::MAFFT::Report
 
-In 1.1.0:
+#### In 1.1.0
 
 * Bio::MAFFT::Report#initialize is changed to get a string of multi-fasta
   formmatted text instead of Array.
 
---- Bio::BLAST::Default::Report, Bio::BLAST::Default::Report::Hit,
+### Bio::BLAST::Default::Report, Bio::BLAST::Default::Report::Hit,
     Bio::BLAST::Default::Report::HSP, Bio::BLAST::WU::Report,
     Bio::BLAST::WU::Report::Hit, Bio::BLAST::WU::Report::HSP
 
-In 1.1.0:
+#### In 1.1.0
 
 * Hit#evalue, HSP#evalue, WU::Hit#pvalue, and WU::HSP#pvalue are
   changed to return a Float object instead of a String object.
@@ -338,39 +335,43 @@ In 1.1.0:
   instead of a string or nil: score, percent_identity, percent_positive,
   percent_gaps.
 
---- BioRuby Shell
+### BioRuby Shell
 
-In 1.1.0:
+#### In 1.1.0
 
-* Shell commands seq, ent, obj are renamed to getseq, getent, getobj,
+* Shell commands `seq`, `ent`, `obj` are renamed to `getseq`, `getent`, `getobj`,
   respectively.
 
-=== Deleted files
+## Deleted files
 
-: lib/bio/db/genbank.rb
-: lib/bio/db/embl.rb
+* `lib/bio/db/genbank.rb`
+* `lib/bio/db/embl.rb`
 
 These files are removed as we changed to use autoload.  You can safely
 replace
 
-  require 'bio/db/genbank'
+```
+require 'bio/db/genbank'
+```
 
 or
 
-  require 'bio/db/embl'
+```
+require 'bio/db/embl'
+```
 
 in your code to
 
-  require 'bio'
+```
+require 'bio'
+```
 
 and this change will also speeds up loading time even if you only need
 one of the sub classes under the genbank/ or embl/ directory.
 
-: lib/bio/extend.rb
+### `lib/bio/extend.rb`
 
 This file contained some additional methods to String and Array classes.
 The methods added to Array are already included in Ruby itself since the
 version 1.8, and the methods added to String are moved to the BioRuby shell
 (lib/bio/shell/plugin/seq.rb).
-
-
