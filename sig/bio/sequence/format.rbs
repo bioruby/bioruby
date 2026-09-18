@@ -1,0 +1,11 @@
+# Type signatures for Bio::Sequence::Format
+
+module Bio
+  class Sequence
+    module Format
+      def output: (?Symbol format, ?Hash[untyped, untyped] options) -> String
+      def list_output_formats: () -> Array[Symbol]
+      def output_fasta: (?String? definition, ?Integer width) -> String
+    end
+  end
+end

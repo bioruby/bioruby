@@ -1,0 +1,15 @@
+# Type signatures for Bio::Sequence::AA
+
+module Bio
+  class Sequence
+    class AA < String
+      include Common
+
+      def initialize: (String str) -> void
+      def codes: () -> Array[String]
+      def names: () -> Array[String]
+      def molecular_weight: () -> Float
+      def to_re: () -> Regexp
+    end
+  end
+end

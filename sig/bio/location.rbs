@@ -4,7 +4,6 @@ module Bio
   class Location
     include Comparable
 
-    # Attributes
     attr_accessor from: Integer?
     attr_accessor to: Integer?
     attr_accessor strand: Integer
@@ -14,10 +13,7 @@ module Bio
     attr_accessor xref_id: String?
     attr_accessor carat: bool?
 
-    # Constructor
     def initialize: (?String? location) -> void
-
-    # Methods
     def complement: () -> self
     def replace: (String sequence) -> self
     def range: () -> Range[Integer]
@@ -28,14 +24,10 @@ module Bio
   class Locations
     include Enumerable[Location]
 
-    # Attributes
     attr_accessor locations: Array[Location]
     attr_accessor operator: Symbol?
 
-    # Constructor
     def initialize: ((String | Array[Location]) position) -> void
-
-    # Methods
     def equals?: (Locations other) -> bool?
     def ==: (untyped other) -> bool
     def each: () { (Location) -> void } -> void

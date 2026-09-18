@@ -1,0 +1,24 @@
+# Type signatures for Bio::Sequence::Common
+
+module Bio
+  class Sequence
+    module Common
+      def to_s: () -> String
+      alias to_str to_s
+      def seq: () -> String
+      def normalize!: () -> self
+      alias seq! normalize!
+      def concat: (*untyped arg) -> self
+      def <<: (*untyped arg) -> self
+      def +: (*untyped arg) -> self
+      def subseq: (?Integer start, ?Integer end_pos) -> untyped
+      def window_search: (Integer window_size, ?Integer step_size) { (String) -> void } -> Array[untyped]
+      def total: (Hash[untyped, Numeric] hash) -> Numeric
+      def composition: () -> Hash[String, Integer]
+      def randomize: (?untyped hash) -> self
+      def splice: (String position) -> untyped
+      alias splicing splice
+      def split: (*untyped arg) -> Array[String]
+    end
+  end
+end

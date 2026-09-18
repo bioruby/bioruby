@@ -1,0 +1,15 @@
+# Type signatures for Bio::Sequence::DBLink
+
+module Bio
+  class Sequence
+    class DBLink
+      attr_reader database: String
+      attr_reader id: String
+      attr_reader secondary_ids: Array[String]
+
+      def initialize: (String database, String primary_id, *String secondary_ids) -> void
+      def self.parse_embl_DR_line: (String str) -> DBLink?
+      def self.parse_uniprot_DR_line: (String str) -> DBLink?
+    end
+  end
+end

@@ -1,0 +1,11 @@
+# Type signatures for Bio::Sequence::SequenceMasker
+
+module Bio
+  class Sequence
+    module SequenceMasker
+      def mask_with_enumerator: (untyped enum, String mask_char) { (untyped) -> bool } -> self
+      def mask_with_quality_score: (Numeric threshold, String mask_char) -> self
+      def mask_with_error_probability: (Numeric threshold, String mask_char) -> self
+    end
+  end
+end
