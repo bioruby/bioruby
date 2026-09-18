@@ -1,0 +1,11 @@
+# Type signatures for Bio::Sequence::Generic
+
+module Bio
+  class Sequence
+    class Generic < String
+      include Common
+
+      def initialize: (String str) -> void
+    end
+  end
+end

@@ -12,11 +12,15 @@ RBS is Ruby's official type signature language. It allows you to:
 
 ## Files
 
-- `bio.rbs` - Main Bio module and Bio::Sequence class signatures
-- `sequence.rbs` - Bio::Sequence::NA, Bio::Sequence::AA and related sequence class signatures
-- `feature.rbs` - Bio::Feature and Bio::Feature::Qualifier class signatures
-- `location.rbs` - Bio::Location and Bio::Locations class signatures
-- `reference.rbs` - Bio::Reference class signatures
+The signature hierarchy tracks the corresponding files beneath `lib/`:
+
+- `bio.rbs` - Package-level `Bio` constants and declarations that do not map to a single source file
+- `bio/sequence.rbs` - `Bio::Sequence` (`lib/bio/sequence.rb`)
+- `bio/sequence/` - Signatures for components under `lib/bio/sequence/`
+- `bio/feature.rbs`, `bio/location.rbs`, and `bio/reference.rbs` - Signatures for their corresponding `lib/bio/` files
+
+Classes and modules may be reopened across signature files when their Ruby
+implementations are likewise split across multiple files.
 
 ## Usage
 

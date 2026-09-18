@@ -2,7 +2,6 @@
 
 module Bio
   class Reference
-    # Attributes
     attr_reader authors: Array[String]
     attr_reader title: String
     attr_reader journal: String
@@ -21,10 +20,7 @@ module Bio
     attr_reader sequence_position: String?
     attr_reader comments: (Array[String] | String)?
 
-    # Constructor
     def initialize: (Hash[String, untyped] hash) -> void
-
-    # Methods
     def ==: (untyped other) -> bool
     def format: (?String? style, *untyped options) -> String
     def endnote: () -> String

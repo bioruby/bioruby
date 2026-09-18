@@ -1,0 +1,10 @@
+# Type signatures for Bio::Sequence::Adapter
+
+module Bio
+  class Sequence
+    module Adapter
+      def attr_reader_lazy: (Symbol name) -> untyped
+      def def_biosequence_adapter: (Symbol name, ?Symbol source_method) ?{ () -> untyped } -> untyped
+    end
+  end
+end
